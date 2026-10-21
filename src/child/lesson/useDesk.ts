@@ -167,8 +167,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   }, [sheet, bridge]);
   const lastSafeguard = useRef<Move | null>(null);
   useEffect(() => {
-    // Safety by predicate: the server's safeguard move raises the Help sheet itself; the lesson is frozen.
-    if (state.move?.kind === "safeguard" && state.move !== lastSafeguard.current) {
+    // Safety by predicate: the server's safeguard move raises the Help sheet itself; the lesson is frozen. 14.4: not the
+    // check-in tier (one model read of a low mood or a fright: she asks first; its escalation raises the sheet).
+    if (state.move?.kind === "safeguard" && state.move.tier !== "check" && state.move !== lastSafeguard.current) {
       lastSafeguard.current = state.move;
       setSheet("help");
     }

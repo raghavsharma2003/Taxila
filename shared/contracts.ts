@@ -70,6 +70,10 @@ export interface Move {
   shape: string;
   itemId?: string; skillId?: string; probe?: ProbeId; hintLevel?: 0 | 1 | 2 | 3 | 4;
   format?: FormatFamily;
+  /** 14.4: "check" = a warm check-in after one model read of a low mood or a fright (no helpline, no Help sheet yet). */
+  tier?: "check";
+  /** 14.4: this safeguard escalated from a check-in. */
+  escalated?: boolean;
 }
 
 export type LessonPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap" | "done";

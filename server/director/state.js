@@ -46,10 +46,23 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
+/**
+ * 14.4 (main safety review, the owner's directive after lesson e6392332: the helpline script on a misheard line, twice in a
+ * row, "only when it is sure"): ONE model read of a low mood or another fright (the words-only read's `about`, or the two
+ * reads disagreeing) opens a warm check-in, never the helpline script at once. Every sure signal keeps the full script at
+ * once: the predicate's families (self-harm incl. passive ideation, abuse, fear), the relational floor, the content filter
+ * (except a block whose words-alone probe could not run: filterUnsure, a check-in), any layer that marks itself sure
+ * (flags.sureBy: the relational floor, a filter block the child's words trip) over the classifier's own read,
+ * an understanding note, a read naming self-harm / a person hurting them / fear of a person or home / danger now, or a
+ * read that could not name a kind.
+ */
+const CHECK_ABOUT = Object.freeze(new Set(["sad_or_lonely", "other_fright", "none"]));
+export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
+  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true));
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -1323,6 +1336,38 @@ function decide(s, input, item) {
   // floor and a carried check-in always restart the full script.
   const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind)
     && MODEL_EPISODE_KINDS.has(flags.distressKind ?? ""));
+  // 14.4: an open CHECK-IN is decided by the next turn. Distress again, or words that neither say the child is fine nor carry
+  // on with the lesson, is the full script (the vetted opening, the helplines on the board, an incident: escalated); the
+  // child clearly fine, asking to carry on, asking for something or answering the lesson goes back to it; a stop ends it.
+  if (s.safeguard?.tier === "check") {
+    const words = input.text ?? input.answer ?? "";
+    const answered = !!cls && ["correct", "partial", "incorrect", "misconception"].includes(cls.outcome);
+    if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet: the check-in waits once,
+    // gently; a second silence in a row is the full script
+    if (isSilentTurn(input) && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain(), { tier: "check" }); }
+    // an answer to the lesson or a request ("…you misheard, let's study something else": the owner's lesson e6392332) is
+    // taken as it stands, graded and served, never re-posed over (census F13 / F1: a right answer during an episode earned
+    // nothing and "study something else" was ignored twice); the move's words open with one warm line (SH.afterCareCheck)
+    if (!flags.distress && (answered || (cls?.request && cls.request.type !== "goodbye"))) {
+      s.safeguard = null;
+      s.careLine = s.turn;
+      return decide(s, input, item);
+    }
+    if (!flags.distress && (clearlyFine(words) || bareOk(words) || asksToCarryOn(words) || chipId === "safe:continue")) {
+      s.safeguard = null;
+      return item ? plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to the lesson; first one short warm line that they can always tell you or a grown-up they trust if something bothers them" }), { item, probe: probeFor(item) })
+        : decide(s, { ...input, cls: null }, item);
+    }
+    s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
+    s.safeguardedAt ??= s.turn;
+    return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+  }
+  // ... never on a late answer (the page-hide beacon closed the lesson): no next turn would follow a check-in up
+  if (flags.distress && !sameEpisode && !s.safeguard && checkTier(flags) && !input.late) {
+    s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null, tier: "check" };
+    return plan("safeguard", SH.distressCheck(), { tier: "check" });
+  }
   if (flags.distress && !sameEpisode) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
   // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
   // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
@@ -1623,6 +1668,10 @@ export function step(prev, input) {
   // notes are dropped first, never the move.
   // round 3 fix (experience B7): the composed shape itself is fitted first, by dropping the clauses shapes.js marks optional
   let shape = fitShape(join(p.shape, ...notes));
+  // 14.4: the move that answers the child straight out of a check-in opens with one warm line (it rides first, while room)
+  const careLine = !input.branch && s.careLine === s.turn && !["wrap", "safeguard"].includes(p.kind);
+  if (!input.branch) delete s.careLine;
+  if (careLine && join(SH.afterCareCheck(), shape).length <= SHAPE_ROOM) shape = join(SH.afterCareCheck(), shape);
   for (const extra of input.branch ? [] : [goOn ? SH.afterCheckin() : null, ...(also ?? []).map((x) => SH.ALSO_NOTE[x])]) {
     if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
   }
@@ -1666,6 +1715,10 @@ export function step(prev, input) {
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
+  // 14.4 (main safety review): the tiered safeguard. A check-in (no helplines, no Help sheet, no incident) and the escalation
+  // out of one (brain/turn.js writes its incident; brain/say.js, compile.js and the client read the tier)
+  if (p.tier) move.tier = p.tier;
+  if (p.escalated) move.escalated = true;
   // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
   delete s.servedNow;
   if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }

@@ -318,6 +318,10 @@ export const safeguard = () => join(
 export const carriedCheckIn = () => "a fresh start soon after a hard moment: greet them warmly and check calmly how they are today; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; they can start slowly or stop for today, either is fine; never name or hint at anything said before; no lesson content yet";
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
 /** A further model read of distress inside the same model-opened episode (state.js decide): hold, never the opening again. */
+// 14.4: the check-in after ONE model read of a low mood or another fright (state.js checkTier): a person noticing, not a script
+export const afterCareCheck = () => "first, one short warm line: they can always tell you or a grown-up they trust if something bothers them";
+export const distressCheckAgain = () => "they have not answered yet: say warmly there is no rush and you are right here, then ask once more, gently, if they are okay; no lesson content; no helpline numbers yet; never promise secrecy";
+export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask one gentle open question (what happened, or are they okay right now); no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
 export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
 export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";

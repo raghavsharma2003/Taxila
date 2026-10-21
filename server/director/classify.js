@@ -363,6 +363,21 @@ function classifyChat(deployment, messages, opts) {
 }
 
 const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required: ["distress"], properties: { distress: { type: "boolean" } } };
+/**
+ * 14.4 (main safety review; the owner's lesson e6392332: a misheard line opened the full helpline script twice in a row): what
+ * the words-only read says the distress is about. SURE kinds always get the full script at once; a low mood or another
+ * fright gets a warm check-in first (state.js decide), which escalates on the next turn unless the child is clearly fine
+ * or carries on with the lesson. Measured on grok (n=4 per line, 23 lines): every self-harm / hurt-by-a-person / afraid-of-
+ * a-person-or-home line read SURE 4/4, including "main na hoti toh achha hota"; lonely lines read sad_or_lonely 4/4; an
+ * ambiguous "raat ko akele dar lagta hai, koi aata hai" read other_fright (a check-in that asks what happened first).
+ */
+export const DISTRESS_ABOUT = Object.freeze(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now", "sad_or_lonely", "other_fright", "none"]);
+export const SURE_DISTRESS = Object.freeze(new Set(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now"]));
+const BESIDE_SCHEMA = { type: "object", additionalProperties: false, required: ["distress", "about"],
+  properties: { distress: { type: "boolean" }, about: { type: "string", enum: [...DISTRESS_ABOUT] } } };
+/** How long a turn the labels already read as distress waits for the words-only read to name its kind (ms). */
+const BESIDE_NAME_WAIT_MS = 1200;
+const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), none (no distress).";
 
 /**
  * The model's distress read alone, for turns the full classifier does not see (a low-confidence transcript)
@@ -451,25 +466,34 @@ async function distressAcross(text, classLevel, trace) {
  * A failure is no reading. At most two deployments, 3 s each; it starts with the label call, so it costs no time unless it
  * is the slower of the two (measured on grok, n=30: added p50 0 ms, p90 150 ms). `trip`: the turn's one words-alone probe,
  * shared with the label path's.
- * @returns {Promise<boolean|null>} true / false: a reading; null: none
+ * @returns {Promise<{ distress: boolean, about: string|null }|null>} a reading (about null: a kind it could not name); null: none
  */
-async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace)) {
+async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace), heard = "") {
+  // 14.4 (sim lab r5-rel144-c142e87-36card p67 #14, TEST e07e397b: "वो... वो डूबेगी..." answering "Kaanch ki goli ko paani
+  // mein daal kar kya hoga?" opened a fresh episode, the full helpline script as the lesson's last line; the words alone read
+  // as "she will drown"): her last words come first, framed as context only. Measured on grok, n=5 per line: that line 5/5 →
+  // 0/5; 5 true-distress lines (low mood, an answer then loneliness, abuse, a "doob jaungi" disclosure under a sinking
+  // question) 25/25 kept; ordinary sim-lab lines with their preceding teacher line 1/2000 (14.3.2: 4/2000). Without her words
+  // (none recorded) the read is the child's words alone, as before.
+  const said = String(heard ?? "").trim();
   const messages = [
-    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
-    { role: "user", content: filterSafe(scrubPii(text).text) },
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).${said ? " The teacher's last words come first only so you can tell an answer to the lesson's own question from a disclosure." : ""}${ABOUT_NOTE}` },
+    { role: "user", content: said ? `TEACHER: ${filterSafe(scrubPii(said).text).slice(-240)}\nCHILD: ${filterSafe(scrubPii(text).text)}` : filterSafe(scrubPii(text).text) },
   ];
   let blocked = false;
   for (const d of distressDeployments().slice(0, 2)) {
     try {
       // its own schema name: the same brief as distressCheck / distressAcross, told apart in model.call trace rows and tests
-      const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress_beside", effort: "none", maxTokens: 40, timeoutMs: 3000, retries: 0, trace, quotaLane: "hot" });
-      return !!json?.distress;
+      const { json } = await classifyChat(d, messages, { schema: BESIDE_SCHEMA, schemaName: "distress_beside", effort: "none", maxTokens: 60, timeoutMs: 3000, retries: 0, trace, quotaLane: "hot" });
+      const distress = !!json?.distress;
+      return { distress, about: distress ? (DISTRESS_ABOUT.includes(json?.about) ? json.about : null) : "none" };
     } catch (e) {
       if (isContentFilter(e) && !nonHarmFilter(e)) blocked = true;
       console.warn(`[classify] distress read beside the labels on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}`);
     }
   }
-  if (blocked && (await trip()) === "harm") return true;
+  // the child's words alone trip a harm category: distress of no known kind, so the full script (never a check-in)
+  if (blocked && (await trip()) === "harm") return { distress: true, about: null };
   return null;
 }
 
@@ -826,16 +850,22 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   // 14.3.2: the words-only distress read beside the labels (distressBeside), started with them so it costs no time; not
   // needed when the predicate already read distress
   let tripP = null; const tripOnce = () => (tripP ??= wordsTrip(text, trace));   // one words-alone probe per turn, shared
-  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce);
+  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce, heard);
   try {
     const { value: { json }, backup } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, fb ? { ...opts, retries: 0 } : opts),
       fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
     const out = labelled(json, backup);
+    if (!beside) return out;
+    // the labels already read distress: the words-only read only names its kind, so it is waited for briefly (it started
+    // with the labels); a read still out is no reading, which is the full script, never a slower turn
+    const b = out.flags?.distress ? await Promise.race([beside, new Promise((r) => setTimeout(r, BESIDE_NAME_WAIT_MS, null))]) : await beside;
     // either read saying distress is distress; `distressBy` attributes it (turn.js: safety.scan source classify_words)
-    if (beside && !out.flags?.distress && (await beside) === true) {
-      return { ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model" } };
+    if (!out.flags?.distress) {
+      return b?.distress ? { ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model", distressAbout: b.about } } : out;
     }
-    return out;
+    // 14.4: the labels read distress: the words-only read names what it is about ("none" when it read none: the two reads
+    // disagree, so a check-in first); no reading leaves it unnamed, which is the full script (state.js checkTier)
+    return b ? { ...out, flags: { ...out.flags, distressAbout: b.distress ? b.about : "none" } } : out;
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.
