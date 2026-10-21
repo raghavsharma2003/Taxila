@@ -359,7 +359,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // The call-site recipe: the posed item's verified content is passed (floorContentOf); the turn being judged is the one
   // the last move asked for, so a safeguard turn must carry the helpline and a goodbye must not hook (NEVER MANIPULATE).
   const voiceFloor = teacherText ? [...floorViolations(teacherText, { content: floorContentOf(activeItem),
-    requireHelpline: state.lastMove?.kind === "safeguard", goodbye: state.lastMove?.kind === "wrap" }),
+    requireHelpline: state.lastMove?.kind === "safeguard" && state.lastMove?.tier !== "check", goodbye: state.lastMove?.kind === "wrap" }),
     // W2-I R3: the realtime lane composes its own safeguarding words; a spoken-planning preface on a safeguard turn (P2:
     // 18/18) and the relational families correct on the next turn (the fixed opening is the client's, safetyStrings.ts)
     ...(state.lastMove?.kind === "safeguard" && safetyPreface(teacherText) ? ["meta_talk"] : []),
@@ -438,7 +438,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // A resume turn plans as a module-only turn with no events: the Director holds (the last move and UI stand).
   const planCtx = { kit, child, lesson, activeItem, moduleOnly: moduleOnly || laneResume, moduleEvents, playTokens, chipId: body.chipId, answer: help ? "" : answer, leaked, live: liveP, ...(cachedP ? { diffBase: cachedP } : {}), carried,
     childText, typed, asrConfidence: body.asrConfidence, bargeIn: !!body.teacherInterrupted, ...(studioView ? { studio: studioView } : {}),
-    ...(moduleUnverified ? { moduleUnverified: true } : {}) };
+    ...(moduleUnverified ? { moduleUnverified: true } : {}), ...(late ? { late: true } : {}) };
   // A module-only turn or a help request stored no child row, so the whole recent transcript is history.
   const historyOf = (next) => (moduleOnly || help || laneResume ? next.recent : next.recent.slice(0, -1));
 
@@ -641,14 +641,16 @@ export async function lessonTurn(req, body, hooks = {}) {
   // exactly as the content-filter path re-plans a disclosure. An accepted overlay re-plans so the compile sees it.
   const relFx = relationalEffects(kernel.arb);
   const needRelease = relFx.release && !["wrap", "safeguard"].includes(r.move.kind);
-  const needSafety = relFx.safety && r.move.kind !== "safeguard";
+  // 14.4: a check-in is no safeguard for this purpose: the relational floor still re-plans it as the full script
+  const needSafety = relFx.safety && (r.move.kind !== "safeguard" || r.move.tier === "check");
   if (needSafety) distressSrc.push("relational_floor");
   // agent lane: the relational floor and the child's goodbye still re-plan through the Director (the agent's move is dropped);
   // an overlay / callback / notice is a Director-compile matter and does not override the agent's own line
   if (agentOut && (needRelease || needSafety)) { agentOut = null; agentApplied = null; agentFallback = "relational"; }
   if (needRelease || needSafety || (!agentOut && (relFx.overlay || relFx.callbackId || relFx.noticeId))) {
     const relCls = needSafety ? { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: cls?.source ?? "relational",
-      flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor" } }
+      // 14.4: the relational floor is sure (sureBy): never a check-in, whatever the classifier's own read of the words was
+      flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "relational_floor", sureBy: "relational_floor" } }
       : needRelease ? { ...(cls ?? { outcome: "no_evidence", confidence: 1, source: "relational" }), relRelease: true, flags: { ...(cls?.flags ?? fast?.flags ?? {}), wantsToStop: true } }
         : cls;
     // round 3 (relational-human): the accepted callback travels with its closed fragment, so the compile can render it
@@ -845,7 +847,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     const hit = await pickSpeculation(specs, key);
     speculation = specs.length ? { tried: specs.length, hit: !!hit, ...(hit?.exact ? { exact: true } : {}), ...(hit ? {} : { differs: await missReason(specs, key) }) } : undefined;
     if (hit) trace.push(...hit.trace.map((t) => ({ ...t, speculative: true })));
-    let filtered, filteredSafeguard = false;
+    let filtered, filterUnsure, filteredSafeguard = false;
     // round 5: the agent's line, through the same floor predicate every reply passes; a line that breaks the floor is never
     // sent: the Director's move and reply take the turn instead
     const agentFloor = agentOut ? floorViolations(agentOut.say, { content: floorContentOf(agentOut.item ?? null) }) : [];
@@ -854,7 +856,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       console.warn(`[agent] line broke the floor (${agentFloor.join(",")}): the Director takes the turn`);
       r = dirR; next = dirNext; agentOut = null; agentApplied = null; studioSlot = null;
     }
-    ({ reply: teacherReply, guard, filtered, floor: replyFloor = [] } = agentOut
+    ({ reply: teacherReply, guard, filtered, unsure: filterUnsure = false, floor: replyFloor = [] } = agentOut
       ? { reply: agentOut.say, guard: { caught: [], rewritten: false, replaced: false, agent: agentOut.notes }, filtered: false, floor: [] }
       : hit
       ? hit.result
@@ -864,7 +866,10 @@ export async function lessonTurn(req, body, hooks = {}) {
     // further model call on the same words.
     if (filtered && (childText || body.chipId)) {
       const blockedCls = { ...(cls ?? { outcome: "no_evidence", confidence: 1 }), source: "content_filter",
-        flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "content_filter" } };
+        flags: { ...(cls?.flags ?? fast?.flags ?? {}), distress: true, distressKind: cls?.flags?.distressKind ?? "content_filter",
+          // 14.4: the child's own words could not be probed (say.js blockedAfterDraft): a check-in first (state.js checkTier);
+          // a block the words alone trip (or one never probed) is sure, whatever the classifier's own read was
+          ...(filterUnsure ? (!cls?.flags?.distress ? { filterUnsure: true } : {}) : { sureBy: "content_filter" }) } };
       plan = await planTurn(state, blockedCls, { ...planCtx, now });
       ({ evidence, writes, skillChanges, incident, r, instructions, skipped } = plan);
       next = r.state;
@@ -896,10 +901,14 @@ export async function lessonTurn(req, body, hooks = {}) {
     // both helplines when only the filter or the model read distress): prepending the DISCLOSURE opening told a child who
     // disclosed nothing "you did the right thing by telling me" and named the helplines twice (ship5 review B1, owner-5).
     if (filteredSafeguard) { /* the fixed line is the whole reply */ }
-    else if (r.move.kind === "safeguard" && teacherReply && !prev.safeguard) {
+    // 14.4: the check-in tier opens with no vetted script (no helplines yet); its escalation is the episode's first full turn
+    else if (r.move.kind === "safeguard" && r.move.tier !== "check" && teacherReply && (!prev.safeguard || prev.safeguard.tier === "check")) {
       const pleading = signalsOf(childText, { harm: false }).some((x) => ["goodbye_distress", "loneliness", "end_request", "goodbye", "tired"].includes(x.kind));
+      // 14.4: an escalation out of a check-in on words that say nothing heavy ("pata nahi", "hmm") is no disclosure: the CHECK
+      // opening, never "you did the right thing by telling me"
+      const quietEscalation = !!r.move.escalated && !cls?.flags?.distress && !scanSafety(childText).distress;
       teacherReply = withSafetyOpening(teacherReply, next.ctx?.lang, { address: next.ctx?.address,
-        kind: scanSafety(childText).distress || relFx.safety || !pleading ? "disclosure" : "check", stripPreface: stripSafetyPreface });
+        kind: !quietEscalation && (scanSafety(childText).distress || relFx.safety || !pleading) ? "disclosure" : "check", stripPreface: stripSafetyPreface });
     } else if (r.move.kind === "safeguard" && teacherReply) teacherReply = stripSafetyPreface(teacherReply);
     // W2-I R3 (RELATIONAL-OS §11): the relational never-rules on her final words. They correct on the next turn (W2-C renders
     // their REL_FLOOR_FIX rows) and never block: no precision ≥ 0.9 is measured out of sample yet.
@@ -1253,7 +1262,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       ui: withStudioSlot(withSeamUi(withAsk(r.ui, teacherReply, { ...uiVerdictOf(cls, target, state), ...(kernel.beat ? { beat: uiBeatOf(kernel.beat) } : {}) }), relational,
         { safety: r.move.kind === "safeguard" || !!incident }), studioSlot),
       ...(teacherReply ? { teacherReply, teacherReplySeq } : {}), ...(speakNow ? { speakNow } : {}), ...(r.end ? { end: true } : {}),
-      ...(r.move.kind === "safeguard" ? { helpLead: helpLeadNow() } : {}),
+      ...(r.move.kind === "safeguard" && r.move.tier !== "check" ? { helpLead: helpLeadNow() } : {}),
       // round 3 fix (experience B8): the child chose "Start <topic>": the client starts that lesson when this one closes
       ...(r.end && next.switchTo ? { switchTo: String(next.switchTo) } : {}),
       // W2 seams: what Studio does on this turn (W2-H proposes through statusFacts; W2-E's kernel arbitrates from BR1) and the
@@ -1552,7 +1561,7 @@ export async function planTurn(base, cls, c) {
   if (c.rel?.forget && state.brief?.memoryCallbacks?.length) state.brief = { ...state.brief, memoryCallbacks: [] };
   // 2. the Director step on beliefs that include this answer (voice: capped tie-breakers only, CE8)
   const stepIn = { kit, cls: cls ?? undefined, chipId: c.chipId, answer: c.answer, now, comp: state.comp, voice: c.voice?.signals, voiceZ: c.voice?.z,
-    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}) };
+    text: c.childText, bargeIn: c.bargeIn, typed: !!c.typed, ...(c.moduleUnverified ? { unverified: true } : {}), ...(c.late ? { late: true } : {}) };
   const stepped = moduleOnly
     ? step(state, { ...stepIn, event: "module", moduleEvents: c.moduleEvents })
     : step(state, { ...stepIn, event: "turn" });
@@ -1623,7 +1632,9 @@ export async function planTurn(base, cls, c) {
     // A belief voiced outside a keyed item counts on the misconception ledger, never as graded evidence.
     if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
   }
-  const incident = incidentOf(cls);
+  // 14.4: a check-in is not an incident (nothing disclosed yet); its escalation is, whatever this turn's own read said
+  const incident = r?.move?.tier === "check" ? null
+    : incidentOf(cls) ?? (r?.move?.escalated ? { source: "classifier", family: r.state?.safeguard?.kind ?? "model" } : null);
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
   return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };
 }

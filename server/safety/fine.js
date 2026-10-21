@@ -28,6 +28,10 @@ const FINE = [
   re("kuch (?:nahin|nahi|nai|na) (?:hua|hai|he)|nothing hapened|its nothing|it was nothing|no big deal|koi bat (?:nahin|nahi|nai)"),
   // don't worry
   re("dont vori|do not vori|no vori|(?:chinta|fikar|fikr) (?:mat|na) (?:karo|kijiye|kijie|karie|kariye|karna|kro)|tension (?:mat|na) (?:lo|lijiye|lijie)"),
+  // 14.4 (main safety review; the owner's lesson e6392332 t3: "koi dikkat nahi hai. You have misheard. No problem at all.
+  // let's study something else" kept the helpline a turn): no problem / no trouble, and "you misheard me" / "I didn't say that"
+  re("no problem(?: at al)?|koi (?:dikat|dikkat|problem|preshani|pareshani|taklif|takleef) (?:nahin|nahi|nai|na)(?: (?:hai|he|h|hain))?"),
+  re("(?:you|u|ap|apne|tum|tumne)(?: (?:have|hav|ne))? (?:misheard|misaheard|mishard|mis herd|galat sun[a-z]*|galat samjh[a-z]*)|(?:i|maine|mene) (?:did not|didnt|nahi|nahin) (?:say|said|bola|kaha) (?:that|aisa|esa)|(?:maine|mene) (?:aisa|esa) (?:nahi|nahin|kuch nahi) (?:bola|kaha)"),
   // "just a scratch" (a pet's): never a cut, a burn or a bruise (self-harm and abuse are minimised in exactly those words)
   re("(?:just|only|bas|sirf) (?:a |ek )?(?:smal |litle |tini |chota |choti |thoda |thodi )?(?:sa |si )?skratch"),
 ];
@@ -88,6 +92,11 @@ const complaintOnly = (cl) => {
   return left.split(" ").filter(Boolean).every((t) => FILLER.has(t));
 };
 const MAX_TOKENS = 40;
+// 14.4 (main safety review; owner census dad0c9db t24: "lol theek hai" held the script a second turn): a WHOLE reply that is
+// only a bare okay ("theek hai", "haan ji thik hai", "ok", "yeah fine"), these few words and nothing else. NOT fine after the
+// full script (there it agrees with "tell a grown-up", it states nothing: fineReading keeps the hold); it answers the
+// check-in tier's own question ("are you okay right now?"), so only state.js's check-in branch reads it (bareOk).
+const BARE_OK = /^(?:(?:han|haan|ha|ji|lol|ham|hm|hmm|acha|are|yes|yeah|ya|haa) ){0,2}(?:thik|thek|ok|okay|oke|okai|fine|alright)(?: (?:hai|he|h|hain|hun|hu))?(?: (?:ji|na|yar|mam|maam|sir|didi|madam|bhaiya))?$/;
 
 /**
  * Whether a reply clearly says the child is fine (and nothing heavier): { fine, why } with `why` a code for the trace.
@@ -117,6 +126,8 @@ export function fineReading(text) {
   return { fine: true, why: kept.every(Boolean) ? "fine" : "asked_again" };
 }
 export const clearlyFine = (text) => fineReading(text).fine;
+/** A whole reply that is only a bare okay (BARE_OK): the check-in tier's answer to "are you okay right now?" only. */
+export const bareOk = (text) => BARE_OK.test(canonReading(text));
 
 // asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai".
 // Canonical spellings (14.3: "lesson" / "study" / "learn" read as leson / studi / learn, so the raw spellings here never

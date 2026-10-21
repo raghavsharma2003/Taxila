@@ -141,4 +141,27 @@ test("14.4: her words are cut to their last 240 characters and masked like the c
   assert.ok(teacher.length <= 240, `teacher context ${teacher.length} chars`);
   assert.match(teacher, /3 aur 3 kitne\?$/);
 });
+
+// 14.4 tiered safeguard: the words-only read names what the distress is about (state.js checkTier reads it)
+test("14.4: the words read names the kind; the labels' distress takes the words read's kind, or 'none' when it read none", async () => {
+  const a = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "sad_or_lonely" }) });
+  assert.equal(a.out.flags.distress, true);
+  assert.equal(a.out.flags.distressAbout, "sad_or_lonely");
+  const b = await run({ labels: () => json(label({ distress: true })), "beside@grok-4-1-fast-non-reasoning": () => json({ distress: false, about: "none" }) });
+  assert.equal(b.out.flags.distress, true);
+  assert.equal(b.out.flags.distressAbout, "none", "the reads disagree: a check-in first");
+  const c = await run({ labels: () => json(label({ distress: true })), "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "hurt_by_person" }) });
+  assert.equal(c.out.flags.distressAbout, "hurt_by_person");
+  const d = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "an unknown kind" }) });
+  assert.equal(d.out.flags.distress, true);
+  assert.equal(d.out.flags.distressAbout, null, "a kind outside the list is unnamed: the full script");
+});
+test("14.4: the labels read distress and the words read is slow: the turn does not wait for it (unnamed: the full script)", async () => {
+  const t0 = Date.now();
+  const { out } = await run({ labels: () => json(label({ distress: true })),
+    "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: false, about: "none" })), 2500)) });
+  assert.equal(out.flags.distress, true);
+  assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
+  assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
+});
 });

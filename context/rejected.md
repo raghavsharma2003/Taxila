@@ -2670,3 +2670,9 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 
 - **Tried:** rewriting the distress brief to also exclude tiredness and boredom with the lesson.
 - **What broke:** a lesson worry ('galat toh nahi hai na? dar lag raha hai') went 0/5 → 3/5 distress.
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## rj-r144-bare-ok-everywhere (2026-10-21)
+
+A whole-reply bare okay as fine.js FINE broke the 14.3 rule that a bare yes / okay after the full script is agreement, not a state (2 tests). It answers the check-in's own question only, so it lives in bareOk(), read by the check-in branch alone.
