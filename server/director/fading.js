@@ -127,7 +127,12 @@ export function blankOf(step, faded) {
   const [a, b] = parts;
   const s = String(step ?? "");
   if (!s.startsWith(a) || !s.endsWith(b) || s.length <= a.length + b.length) return null;
-  const blank = s.slice(a.length, s.length - b.length).trim().replace(/[.,;:!।]+$/u, "").trim();
+  let blank = s.slice(a.length, s.length - b.length).trim().replace(/[.,;:!।]+$/u, "").trim();
+  // census 14.5 (sim lab p55: "5" to "7 − 2 = ___" earned no evidence): a faded line that ends at its gap, on a step that
+  // goes on after the answer ("7 − 2 = 5. 5 kites are still flying."), keyed the whole rest; a number then a sentence is
+  // the number. (An abbreviation key, "e.g." / "बी.ए.", is not a number and stays as it is.)
+  const lead = blank.match(/^([-−]?\d[\d,]*(?:\.\d+)?)[.!?।]\s+\S/u);
+  if (lead) blank = lead[1];
   return blank && blank.length <= BLANK_MAX ? blank : null;
 }
 

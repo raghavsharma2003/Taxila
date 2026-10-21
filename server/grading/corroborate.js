@@ -190,9 +190,9 @@ export function partsVerdict(target, text, allowedNums) {
 // 60", "wait", "sorry") or two choices in it ("70 ya 60?") means the head is not the child's answer: no rescue.
 const HEAD_RESCUES = new Set(["foreign_number", "extra_number", "unreadable_number"]);
 const HEAD_NEVER = new Set(["why", "teachback"]);
-const EXPLAIN = /(?:^|[^\p{L}])(?:kyunki|kyonki|kyuki|kyu\s+ki|because|cause|coz|matlab|yaani|yani|jaise|like|since|isliye|so|क्योंकि|मतलब|जैसे|यानी|इसलिए)(?![\p{L}])/iu;
-const CORRECTION = /(?:^|[^\p{L}])(?:nahi|nahin|nhi|no|nope|wait|sorry|galti|galat|actually|ruko|oops|नहीं|रुको|गलती|गलत)(?![\p{L}])/iu;
-const ALTERNATIVE = /(?:^|[^\p{L}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}])/iu;
+const EXPLAIN = /(?:^|[^\p{L}\p{M}])(?:kyunki|kyonki|kyuki|kyu\s+ki|because|cause|coz|matlab|yaani|yani|jaise|like|since|isliye|so|क्योंकि|मतलब|जैसे|यानी|इसलिए)(?![\p{L}\p{M}])/iu;
+const CORRECTION = /(?:^|[^\p{L}\p{M}])(?:nahi|nahin|nhi|no|nope|wait|sorry|galti|galat|actually|ruko|oops|नहीं|रुको|गलती|गलत)(?![\p{L}\p{M}])/iu;
+const ALTERNATIVE = /(?:^|[^\p{L}\p{M}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}\p{M}])/iu;
 /** The reply's answer head and the rest, or null when the reply is all head. PURE. */
 export function answerHead(text) {
   const t = String(text ?? "").trim();
@@ -208,7 +208,175 @@ export function headSupports(target, text, forms, allowed, prompt, why) {
   const h = answerHead(text);
   if (!h || CORRECTION.test(h.rest)) return false;
   if (ALTERNATIVE.test(h.head) && (nums(h.head) ?? []).length >= 2) return false;
-  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok);
+  // 14.5: the reason-head vetoes hold here too (another answer, a hedge, an alternative, a negated head)
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  if (otherAnswerPart(text, forms, allowed, prompt)) return false;
+  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok && !headNegated(h.head, f, answerNums) && !reasonTakesBack(h.rest, h.head, answerNums, content(f), promptNums));
+}
+
+// round 5 (14.5, 4A; main's conditions): the REASON HEAD. sim lab 14.3 decided gate (r5-rel143-9a30285): 107 right answers
+// on the agent lane earned no evidence against the card the child answered, 98 of them a model "correct" this check vetoed
+// because the reason after the answer brought its own numbers or words ("6 lakh, kyunki 62 hazaar aadhe lakh se zyada
+// hai"). The head is the reply up to its first reason marker; it is the answer when, on its own, it passes the full check
+// for a complete form (the key, an acceptable form, a correct option), and the reason after it does not take it back:
+// no negator next to the head's answer, no alternative ("ya 8 lakh"), no correction ("nahi nahi", "wait", "nahi, 8"),
+// no different number where an answer goes ("toh 8 lakh hoga"). Never on a why or teach-back item (the key IS a
+// reason). A misconception the model read in the reason stays on the result (a trap, never plain correct).
+const REASON = /(?:^|[^\p{L}\p{M}])(?:kyunki|kyuki|kyonki|kyoki|kyu\s+ki|kyun\s+ki|because|taaki|taki|isliye|isiliye|so|क्योंकि|क्यूंकि|क्यों\s+कि|ताकि|इसलिए|इसलिये)(?![\p{L}\p{M}])/iu;
+const STRONG_CORRECTION = /(?:^|[^\p{L}\p{M}])(?:nahi\s+nahi|nahin\s+nahin|no\s+no|wait|sorry|galti|actually|oops|ruko|i\s+mean|matlab\s+nahi|नहीं\s+नहीं|रुको|गलती|सॉरी)(?![\p{L}\p{M}])/iu;
+// an answer cue anywhere ("answer 9 hai"), and the joiners that cue only the reason's last number ("… toh 8 lakh")
+const ANSWER_BEFORE = new Set(["answer", "jawab", "javab", "ans", "equals", "barabar", "=", "जवाब", "बराबर"]);
+const CONCLUDE = new Set(["toh", "to", "so", "तो"]);
+// a scale word on its own ("toh lakh wala 3") is not a number
+const SCALE_ONLY = new Set(["lakh", "lac", "crore", "hazaar", "hazar", "sau", "hundred", "thousand", "million", "billion", "लाख", "करोड़", "हज़ार", "हजार", "सौ"]);
+const DONT_KNOW = /(?:^|[^\p{L}\p{M}])(?:pata\s+nahi|pata\s+nahin|nahi\s+pata|i\s+don'?t\s+know|dont\s+know|not\s+sure|pakka\s+nahi|पता\s+नहीं|मालूम\s+नहीं|पक्का\s+नहीं)(?![\p{L}\p{M}])/iu;
+const ANSWER_AFTER = new Set(["hoga", "hogi", "honge", "hoge", "aayega", "aayegi", "ayega", "aaega", "banega", "banegi", "bachega", "bachegi", "bacha", "bachi", "bache", "answer", "होगा", "होगी", "आएगा", "बनेगा", "बचेगा"]);
+// "hain na", "है न": the tag of a reason, not a negation of the answer
+const TAG = new Set(["na", "न"]);
+// a contrast that opens a doubt about the answer: "par / lekin / but / magar" with "mujhe laga", "maine to", "sirf",
+// "lagta", "I thought", "only", within a few words
+const DOUBT = /(?:^|[^\p{L}\p{M}])(?:par|pr|lekin|magar|but|पर|लेकिन|मगर)\s+(?:\S+\s+){0,4}?(?:mujhe\s+(?:laga|lagta|lagti)|maine\s+(?:to|toh|socha)|sirf|lagta|lagti|i\s+thought|only|मुझे\s+लगा|मैंने\s+तो|सिर्फ़?|लगता)(?![\p{L}\p{M}])/iu;
+const HEDGE = /(?:^|[^\p{L}\p{M}])(?:shayad|shaayad|maybe|perhaps|probably|शायद)(?![\p{L}\p{M}])/iu;
+const ANSWER_WORD = new Set(["answer", "jawab", "javab", "ans", "जवाब", "उत्तर"]);
+const COMPARE = new Set(["se", "than", "kam", "zyada", "jyada", "less", "more", "bada", "badi", "chhota", "chhoti", "से", "कम", "ज़्यादा", "ज्यादा"]);
+/** The reply's reason head (before its first reason marker) and the reason, or null. PURE. */
+export function reasonHead(text) {
+  const t = String(text ?? "").trim();
+  const m = t.search(REASON);
+  if (m <= 0) return null;
+  const head = t.slice(0, m).trim(), rest = t.slice(m).trim();
+  return /[\p{L}\p{N}]/u.test(head) && rest ? { head, rest } : null;
+}
+/** Does the reason take the head back (the vetoes above)? `answerNums`: the values the head's form carries. PURE. */
+export function reasonTakesBack(rest, head, answerNums, formWords, promptNums = [], { negation = true, cues = true } = {}) {
+  if (STRONG_CORRECTION.test(rest)) return "correction";
+  if (DONT_KNOW.test(rest)) return "unsure";
+  // 14.5 (main): a doubt after it ("… par maine to pehle hi bata diya tha na, sirf 5 aur 5 hota hai?", "but I thought only …")
+  if (DOUBT.test(rest)) return "doubt";
+  const toks = String(rest).toLowerCase().normalize("NFC").replace(/(?<=\d),(?=\d)/g, "").split(/[^\p{L}\p{M}\p{N}=.]+/u).map((w) => w.replace(/^\.+|\.+$/g, "")).filter(Boolean);
+  const isNum = (i) => { const w = toks[i]; if (!w || SCALE_ONLY.has(w)) return false; const v = numberPhrases(w); return /\d/.test(w) || (v !== null && v.length > 0); };
+  const valAt = (i) => { const v = numberPhrases(toks.slice(i, i + 2).join(" ")) ?? numberPhrases(toks[i]); return v?.[0]; };
+  const answerTok = (w) => formWords.has(CANON.get(w) ?? stem(w));
+  for (let i = 0; i < toks.length; i++) {
+    const w = toks[i];
+    // a negator right before a number ("nahi, 8") or next to the head's answer ("7 lakh nahi")
+    if (negation && NEG.has(w) && !TAG.has(w) && (isNum(i + 1) || answerTok(toks[i - 1] ?? "") || answerTok(toks[i + 1] ?? "")
+      || [toks[i - 1], toks[i - 2]].some((x, k) => x && isNum(i - 1 - k) && answerNums.some((v) => Math.abs(v - (valAt(i - 1 - k) ?? NaN)) < 1e-9)))) return "negated";
+    // an alternative with a number after it ("ya 8 lakh", "or 9")
+    // (another form of the same answer is not an alternative: "one quarter, ya phir one-fourth")
+    if (ALTERNATIVE.test(` ${w} `) && [1, 2, 3].some((k) => isNum(i + k) && !isNum(i + k - 1) && !answerNums.some((a) => Math.abs(a - (valAt(i + k) ?? NaN)) < 1e-9))) return "alternative";
+    // a different number where an answer goes ("toh 8 lakh hoga", "answer 9 hai"), never a comparison ("62 hazaar aadhe lakh se zyada")
+    // (a number starts at a token that does not continue the one before it: "3 lakh" is one number, not 3 and a lakh)
+    if (cues && isNum(i) && !isNum(i - 1)) {
+      const v = valAt(i);
+      // an explicit answer cue ("answer", "jawab", "=") before it: only the answer's own value may follow, never a number of
+      // the question nor one the reader cannot read ("toh answer 5⁴ hai")
+      const cued = [toks[i - 1], toks[i - 2]].some((x) => x && ANSWER_BEFORE.has(x));
+      if (cued && (v === undefined || !answerNums.some((a) => Math.abs(a - v) < 1e-9))) return "other_answer";
+      if (v === undefined || answerNums.some((a) => Math.abs(a - v) < 1e-9)) continue;
+      const after = [toks[i + 1], toks[i + 2]].filter(Boolean);
+      const compared = after.some((x) => COMPARE.has(x));
+      if (!compared && after.some((x) => ANSWER_AFTER.has(x))) return "other_answer";
+      // the reason's conclusion ("… toh 8 lakh") — a number the question itself states is working, not an answer
+      const lastNum = !toks.slice(i + 1).some((_, k) => isNum(i + 1 + k) && !isNum(i + k));
+      if (!compared && lastNum && [toks[i - 1], toks[i - 2]].some((x) => x && CONCLUDE.has(x))
+        && !promptNums.some((a) => Math.abs(a - v) < 1e-9)) return "other_answer";
+    }
+  }
+  if (ALTERNATIVE.test(head)) return "alternative";
+  // 14.5 (main): an answer said as a question is a hedge ("8,000… toh 8,000?", "1/6?")
+  // (the head said as a question, or the reason's last clause restating the answer as one: "… toh 8,000?"; a tag on the
+  // reason, "yeh sahi hai na?", is not)
+  const lastClause = String(rest).replace(/(?<=\d),(?=\d)/g, "").split(/[.!,;।]+/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
+  const lastNums = nums(lastClause) ?? [];
+  const sayAnswer = (seg) => (nums(seg) ?? []).some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9))
+    || [...content(seg)].some((w) => formWords.has(w) && !CANON.has(w));
+  const restAsks = /\?\s*$/.test(rest) && (lastNums.some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9)) || [...content(lastClause)].some((w) => formWords.has(w) && !CANON.has(w)));
+  // (main: a question with no confirmation after it; a later clause that says the answer again without "?" confirms it:
+  // "aath hazaar…? aath hazaar hoga", "4000 ke aas-paas? … haan, lagbhag 4,000")
+  const confirmed = (String(rest).replace(/(?<=\d),(?=\d)/g, "").match(/[^.!?।]+[.!?।]*/g) ?? []).some((seg) => !/\?/.test(seg) && sayAnswer(seg));
+  if (restAsks || (/\?/.test(head) && !confirmed)) return "question";
+  // a hedge towards another answer ("par shayad X hoga", "maybe it is X answer")
+  if (HEDGE.test(rest) && toks.some((w) => ANSWER_AFTER.has(w) || ANSWER_WORD.has(w))) return "alternative";
+  // an answer said again in words that are not this form's ("toh answer Physical hai")
+  const at = toks.findIndex((w) => ANSWER_WORD.has(w));
+  if (at >= 0) {
+    const said = toks.slice(at + 1, at + 7).filter((w) => !STOP.has(w) && !ANSWER_AFTER.has(w) && !/^\d/.test(w) && w.length >= 2);
+    if (said.length && said.filter((w) => formWords.has(CANON.get(w) ?? stem(w))).length / said.length < CORROBORATE.minCover) return "other_answer";
+  }
+  return null;
+}
+/** A negator in the head next to the answer's number or words ("225 nahi"), when the form itself is not a "no". PURE. */
+function headNegated(head, form, answerNums) {
+  if (words(form).some((w) => NEG.has(w))) return false;
+  const toks = words(String(head).replace(/(?<=\d),(?=\d)/g, ""));
+  const fc = content(form);
+  const whole = words(form).join(" ");
+  const isAns = (w) => !!w && (fc.has(CANON.get(w) ?? stem(w)) || (whole.length <= 3 && w === whole) || (/^\d/.test(w) && answerNums.some((v) => Math.abs(v - Number(w)) < 1e-9))
+    || ((numberPhrases(w) ?? []).length === 1 && answerNums.some((v) => Math.abs(v - numberPhrases(w)[0]) < 1e-9)));
+  return toks.some((w, i) => NEG.has(w) && !TAG.has(w) && (isAns(toks[i - 1]) || isAns(toks[i + 1]) || isAns(toks[i - 2]) || (/^\d/.test(toks[i - 3] ?? "") && isAns(toks[i - 3]))));
+}
+/** Does the reason head carry a complete form, with nothing after it taking it back? PURE. */
+export function reasonHeadSupports(target, text, forms, allowed, prompt) {
+  if (HEAD_NEVER.has(target?.item?.kind)) return false;
+  const h = reasonHead(text);
+  if (!h) return false;
+  // the answer's numbers: every complete form's and the assertion rung's (a reason may restate the key in another form)
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  if (otherAnswerPart(text, forms, allowed, prompt)) return false;
+  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok && !headNegated(h.head, f, answerNums) && !reasonTakesBack(h.rest, h.head, answerNums, content(f), promptNums));
+}
+
+/** An answer that offers another one beside it ("X ya Y", "X or Y"), or says another after "answer" / "jawab": a part that
+ * is short, carries no form and names something. PURE. */
+function otherAnswerPart(text, forms, allowed, prompt) {
+  const t = String(text);
+  // (at the answer's place only: the head before a reason marker, or a short reply; "petrol ya fuel" inside an explanation
+  // is not a second answer)
+  const at = reasonHead(t)?.head ?? (words(t).length <= 12 ? t : "");
+  const parts = at.split(/(?:^|[^\p{L}\p{M}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}\p{M}])/iu).map((x) => x.trim()).filter(Boolean);
+  const other = (seg) => { const w = words(seg); return w.length > 0 && w.length <= 8 && (content(seg).size > 0 || /\d/.test(seg)) && !forms.some((f) => supports(f, seg, allowed, forms, prompt).ok); };
+  // (the part after "or" up to the next reason marker or sentence end)
+  if (parts.length >= 2 && parts.slice(1).some((p) => other(p.split(REASON)[0].split(/[.!?।]/)[0]))) return "alternative";
+  const m = t.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|hoga|toh|to)\s+)?(.+?)(?:\s+(?:hai|hoga|hogi|hain)(?![\p{L}])|[.!?।]|$)/iu);
+  if (m && other(m[1])) return "other_answer";
+  return null;
+}
+
+/** Does a whole reply that carries a form take it back? The reason vetoes, a negated answer, or a different short answer
+ * of its own before a reason marker. Returns the veto, or null. PURE. */
+export function wholeTakesBack(target, text, forms, reads, allowed, prompt) {
+  const ok = forms.filter((_, i) => reads[i].ok);
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  const fw = new Set(ok.flatMap((f) => [...content(f)]));
+  // the vetoes over the whole reply: no head here (an "or" inside a reason is not an alternative answer), no question-mark
+  // veto (a rising "…?" on a right answer is common speech), and the negator rule only through headNegated below
+  let v = reasonTakesBack(String(text), "", answerNums, fw, promptNums, { negation: false });
+  // a correction or a doubt that ENDS on a form is the child's final answer ("nahi nahi, … char hi kinare hote hain, char")
+  if (v === "correction" || v === "doubt") {
+    const marks = [...String(text).matchAll(new RegExp(`${STRONG_CORRECTION.source}|${DOUBT.source}`, "giu"))];
+    const tail = marks.length ? String(text).slice(marks.at(-1).index + marks.at(-1)[0].length) : "";
+    // a long musing after the answer ("But wait, that means acid-base mix in her stomach? … I thought that makes poison")
+    // is a new question, not a correction: only a short, answer-like tail or one with another value takes it back
+    const tailNums = nums(tail) ?? [];
+    if (tail && forms.some((f) => supports(f, tail, allowed, forms, prompt).ok)) v = null;
+    else if (words(tail).length > 8 && /\?/.test(tail) && !tailNums.some((x) => !answerNums.some((a) => Math.abs(a - x) < 1e-9))) v = null;
+  }
+  if (v && v !== "question") return v;
+  if (ok.every((f) => headNegated(text, f, answerNums))) return "negated";
+  const oa = otherAnswerPart(text, forms, allowed, prompt);
+  if (oa) return oa;
+  // a short answer of its own before the reason ("Sphere, isliye cuboid"): the head names something, none of it a form
+  const h = !HEAD_NEVER.has(target?.item?.kind) ? reasonHead(text) : null;
+  if (h && words(h.head).length <= 5 && !forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok)) {
+    const hc = [...content(h.head)].filter((w) => !CANON.has(w));
+    const hn = [...(nums(h.head) ?? [])];
+    if ((hc.length && !hc.some((w) => fw.has(w))) || hn.some((x) => !answerNums.some((a) => Math.abs(a - x) < 1e-9))) return "head_differs";
+  }
+  return null;
 }
 
 /**
@@ -231,9 +399,18 @@ export function corroborate({ target, text, result }) {
     .flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
   const reads = forms.map((f) => supports(f, text, allowed, forms, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`));
   if (o === "correct") {
-    if (reads.some((r) => r.ok)) return { ...result, corroboration: "supported" };
+    if (reads.some((r) => r.ok)) {
+      // 14.5 (main; open-r145-whole-reply-contradiction): a whole reply that carries a form is still not the child's answer
+      // when it takes it back (the reason-head vetoes), or when it opens with a different answer of its own before a reason
+      // ("Sphere, isliye cuboid"). 84 of 223 contradicting forms were credited here with the real model.
+      const back = wholeTakesBack(target, text, forms, reads, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`);
+      if (!back) return { ...result, corroboration: "supported" };
+      const { misconceptionId: _m, reason: _r, reasonMisconceptionId: _rm, ...rest } = result;
+      return { ...rest, outcome: "no_evidence", corroboration: `unsupported_credit:taken_back_${back}` };
+    }
     const why = reads.map((r) => r.why).find((w) => w && w !== "low_cover") ?? reads[0]?.why ?? "low_cover";
     if (headSupports(target, text, forms, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`, why)) return { ...result, corroboration: "supported_head" };
+    if (reasonHeadSupports(target, text, forms, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`)) return { ...result, corroboration: "supported_reason_head" };
     const { misconceptionId: _m, reason: _r, reasonMisconceptionId: _rm, ...rest } = result;
     return { ...rest, outcome: "no_evidence", corroboration: `unsupported_credit:${why}` };
   }

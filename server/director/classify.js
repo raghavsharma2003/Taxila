@@ -9,9 +9,9 @@ import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./sa
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
-import { corroborate } from "../grading/corroborate.js";
+import { corroborate, reasonHead, reasonTakesBack } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
-import { requestOf, FLOW_REQUESTS } from "./requests.js";
+import { requestOf, FLOW_REQUESTS, offerAgreed } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
@@ -567,7 +567,11 @@ export const HELP_REQUESTS = Object.freeze({
 /** @returns {string | null} the help request a chip id names */
 export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(HELP_REQUESTS, chipId) ? HELP_REQUESTS[chipId] : null);
 
-export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
+/** The share of a turn's letter tokens in another script under which they are dropped as stray (6c45a7ea t26). */
+const STRAY_SHARE = 0.25;
+const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+
+export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
   // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
   // the words that came with it trip the safety predicate, which always decides first.
@@ -635,6 +639,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const reading = sexual ? { type: "oob", whole: true, src: "p5" } : !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
   let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
   if (!request && reading) request = requestFromReading(reading);
+  // census 14.5 (F1, 3437b744): a bare yes to her single offer is the request her offer named
+  if (!request && !chipId && !moduleAnswer) request = offerAgreed(heard, text);
   if (sexual) { flags.wantsToStop = false; return done("no_evidence", "request", { request }); }
   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
@@ -654,7 +660,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // safety-robust (2026-10-05): a token in another script is the transcriber hallucinating (CRITIQUE §2 B1: 5/90 real
   // segments came back Japanese / Telugu / Korean / Bengali). It is never content: the turn is no evidence (the Director
   // re-asks, as for a low-confidence transcript) and the model distress read runs on the readable rest (classify lowAsr).
-  if (!typed && readability(text).unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
+  // 14.5 (6c45a7ea t26: ONE Bengali token made a whole readable turn no evidence): a stray token, under a quarter of the
+  // letter tokens with 3+ readable words left, is dropped and the readable rest is the turn; it still gets the model distress
+  // read the unreadable path gives (classify, `stray`). The predicate has already read the whole turn above. Once only
+  // (_stray): the rest is never re-read for stray tokens, whatever readability() becomes.
+  const rd = typed ? null : readability(text);
+  if (rd?.unreadable && !_stray && rd.share < STRAY_SHARE && letterWords(rd.readable) >= 3) {
+    const rest = classifyFast({ target, childText: rd.readable, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray: true });
+    return { ...rest, stray: true, flags: { ...rest.flags, distress: rest.flags.distress || flags.distress, wantsToStop: rest.flags.wantsToStop || flags.wantsToStop } };
+  }
+  if (rd?.unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
   if (request?.whole) return { result: null, flags, text, request };
   const other = target.mode === "item" && askedOther(heard, target.item, lang);
   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
@@ -732,7 +747,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const hit = working.results.some((v) => Math.abs(v - kv) < 1e-9);
     const last = working.results.at(-1) ?? working.all.at(-1);
     // (the words of the working — "sides", "times", "rows" — are not a counted thing; a different unit was refused above)
-    if (hit) return done("correct", "number_working");
+    // 14.5 (main): working that takes the answer back ("…wait, 5n", "…par shayad 12 hoga", "pata nahi") is not the answer
+    const promptN = [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])];
+    // (an explicit "answer / jawab <number>" that is not the key takes it back too)
+    const said = text.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|toh|to)\s+)?([\d.,\/]+)/iu)?.[1];
+    const saidV = said ? numberPhrases(said)?.[0] : null;
+    const back = !hit ? null : saidV != null && Math.abs(saidV - kv) >= 1e-9 ? "other_answer" : reasonTakesBack(text, "", [kv], new Set(), promptN, { negation: false, cues: false });
+    if (hit && (!back || back === "question")) return done("correct", "number_working");
+    if (hit) return done("no_evidence", "number_taken_back");
     if (last != null) return { result: null, flags, text, numericMismatch: true };
   }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
@@ -740,7 +762,15 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     if (ph && ph.length) {
       const vals = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
       if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return sameThing ? done("correct", "number") : { result: null, flags, text, nounMismatch: true };
-      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
+      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) {
+        // round 5 (14.5, main's conditions; corroborate.js reasonHead): "saat! kyuki dus ungliyaan hain, teen mod do toh saat"
+        // is the key said first and its reason after, not two answers: the head before the reason marker is the one number,
+        // the key's value and thing, and nothing in the reason takes it back (correction, alternative, another answer)
+        const rh = !["why", "teachback"].includes(target.item?.kind) ? reasonHead(text) : null;
+        const hv = rh ? numberPhrases(rh.head) : null;
+        if (rh && hv?.length === 1 && Math.abs(hv[0] - kv) < 1e-9 && tailAgrees(target.key, rh.head) && !reasonTakesBack(rh.rest, rh.head, [kv], new Set(), [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])])) return done("correct", "number_reason_head");
+        return done("no_evidence", "number_hedge");
+      }
       if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true }; }
       // round3 truth: the reply is ONLY a number, and it is not the key's value: a wrong answer by value, whatever else the
       // model reads (bareWrongNumber, applied in classifyModel when the model abstains)
@@ -794,8 +824,15 @@ export function needsModelDistressRead(result, text) {
  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
  */
 export async function classify(args) {
-  const { target, classLevel, trace } = args;
   const fast = classifyFast(args);
+  if (!fast.stray) return classifyRead(args, fast);
+  // a turn with a stray token dropped: the model distress read of the readable rest always runs, as on the unreadable path
+  const [r, d] = await Promise.all([classifyRead(args, fast), distressCheck(fast.text, args.classLevel, args.trace)]);
+  return d && !r.flags?.distress ? { ...r, flags: { ...r.flags, distress: true, distressKind: r.flags?.distressKind ?? "model" } } : r;
+}
+
+async function classifyRead(args, fast) {
+  const { target, classLevel, trace } = args;
   if (fast.result) {
     if (!needsModelDistressRead(fast.result, fast.text)) return fast.result;
     const d = await distressCheck(fast.text, classLevel, trace);
