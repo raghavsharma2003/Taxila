@@ -6343,3 +6343,27 @@ In a lesson with a safeguarding turn, the summary and parent note are written fr
 ## dc-r1441-distresscheck-hate-stays-closed — the outage-path distress read keeps a hate block as a check-in (2026-10-21)
 
 The reply probe and the across-deployment read stopped treating a hate-only filter block as distress in 14.4. The rare outage-path read still does, because no one has measured bullying lines that quote slurs. Here a fail-closed read is only a gentle check-in, never the helpline script.
+
+
+<!-- merged from inbox/r1441-teachq-open-main.json -->
+## open-r1441-teaching-question-unread — her teaching questions are not evidence (open, 2026-10-21)
+
+When she ends an explanation on a question and the child answers it right, nothing is recorded, because no card was posed. That is by design today, the same as worked-example steps. Whether such answers should count belongs to the understanding phase.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## dc-r5-failed-board-why — a failed board says why (2026-10-21)
+
+38aad918 had two boards fail with why: null. The live board's failing checks went only to the server console, and the template's refusal went nowhere. The failed slot now carries both as codes (never the child's words), so the trace explains itself. A later draw of the same piece clears it.
+
+## dc-r5-subject-not-verb — a verb is never the thing to draw (2026-10-21)
+
+The child said 'aapne toh bola picture dikhao'. freeSubjectOf named 'bola', the Director kept it, and the board drew 'bola' as a label on two pages. The subject readers now share one list of verbs and fillers.
+
+## dc-r5-kept-subject-spent — a kept subject is used once (2026-10-21)
+
+The kept subject rode on every later picture ask that named nothing: in 38aad918, t7 and t9-t11 all asked for 'bola'. It is now spent once a board is asked for it. The Director can't see whether that board drew, so 'asked' stands in for 'drawn' until the seam's result reaches it.
+
+## dc-r5-picture-under-board — never an empty screen after a failed board (2026-10-21)
+
+On 38aad918 t9-t11 a picture was revealed, the same turn's board retired it, and then the board failed. The child saw nothing three turns running and said so. The picture now stays under the board until the board draws. If the board fails, the picture comes back, and it becomes the turn's slot.

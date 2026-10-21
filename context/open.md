@@ -136,3 +136,9 @@ RESET-PLAN §9 needs these owner decisions:
 - **Pose:** shallow error_spot items keep the planted-mistake pose. Predict items keep the predict engine mode. Why-kind items skip the follow-up why. A re-tag needs blind-solver re-verification.
 - **Split items:** 2608 (33.9%) stay deep unread.
 - **Error_spot boundary:** whether refuting a stated false claim from a fact counts as error_spot (12 of 25) needs an owner call.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## open-r5-ask-subject-first — the ask's own subject before a guessed one (parked, 2026-10-21)
+
+The idea is to keep the subject visualAskOf reads before freeSubjectOf's guess (on 38aad918 t6 that is 'triangle', not nothing). Main parked it until three things exist: how many readings flip offTopic or visualUnavailable (code replay: 5 offTopic, 0 moves; the real effect is on model-read requests), the odd readings fixed or explained (cake: past-clause photo mention; दी: stop word; laddoo: fair), and a sim-lab A/B on the affected cards.
