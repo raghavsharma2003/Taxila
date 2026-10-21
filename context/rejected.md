@@ -2676,3 +2676,9 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 ## rj-r144-bare-ok-everywhere (2026-10-21)
 
 A whole-reply bare okay as fine.js FINE broke the 14.3 rule that a bare yes / okay after the full script is agreement, not a state (2 tests). It answers the check-in's own question only, so it lives in bareOk(), read by the check-in branch alone.
+
+
+<!-- merged from inbox/r144-tier2-main.json -->
+## rj-r144-escalate-not-fine (2026-10-21)
+
+The first tier cut escalated any reply to a check-in that was neither clearly fine nor a carry-on. The check-in's own question invites exactly the words that fail that test ("main dar gayi thi", "okay, bas tired"), so 2 of 6 scripted fright/secrecy cards escalated to the full script on the child's answer. Replaced by dc-r144-checkin-next-turn.

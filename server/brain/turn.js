@@ -260,9 +260,15 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (u && Number(u.turn_seq) === turnSeq && Number(u.turn) === Number(lesson.state.turn)) undo = { turn: Number(u.turn), prev: u.prev, ids: u.ids ?? {}, current: lesson.state };
   }
   if (replay && !undo) {
-    if (edited && editMissed(lesson.state, turnSeq) && await undoP) {
-      console.info(`[lesson] edit missed ${lesson.id} turnSeq=${turnSeq}: a later turn already landed`);
-      q("update brain_trace set reasons = reasons || '{turn.edit_missed}'::text[] where lesson_id = $1 and turn = $2", [lesson.id, Number(lesson.state.turn)]).catch(() => {});
+    // An edit that came after its turn landed, traced whether or not the undo is on (main's 14.5 measurement: how often a
+    // correction lands after its turn): edit_after_landed = its turn was still the latest (the undo would supersede it),
+    // edit_missed = a later turn had landed too. A repeat of an edit that landed is neither (that ack is marked edited).
+    const lateEdit = !edited ? null : editMissed(lesson.state, turnSeq) ? "edit_missed" : supersedable(lesson.state, turnSeq) ? "edit_after_landed" : null;
+    if (lateEdit) {
+      console.info(`[lesson] ${lateEdit.replace("_", " ")} ${lesson.id} turnSeq=${turnSeq}`);
+      // once per trace row: a client retry of the same edit is not a second correction
+      q(`update brain_trace set reasons = reasons || $3::text[] where lesson_id = $1 and turn = $2 and not ($3::text[] <@ reasons)`,
+        [lesson.id, Number(lesson.state.turn), [`turn.${lateEdit}`]]).catch(() => {});
     }
     return replayResponse(lesson, lesson.state, replay, edited ? { editLanded: true } : {});
   }
@@ -734,6 +740,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     } catch { return null; }
   };
   seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldFor("")), null);
+  // census F9: the safeguard closed on this turn's plan (a content-filter re-plan below freezes again)
+  if (safeguardClosed(next, r.move, incident)) seamSafe("studio.onSafetyClosed", () => studioSeam.onSafetyClosed?.(lesson.id), null);
   let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
@@ -1288,7 +1296,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   const releaseReasons = [...(r.move.kind === "wrap" && (relFx.release || cls?.flags?.wantsToStop) ? ["release.goodbye_wrap"] : []),
     ...(next.stopAsked === next.turn && r.move.kind !== "wrap" ? ["release.check_in_given"] : [])];
   // the turn's reason codes: the brain_trace row and the flight recorder's director.turn carry the same list
-  const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(undo ? ["turn.superseded_edit"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
+  const traceReasons = [`lane.${lane}`, ...(late ? ["turn.late"] : []), ...(edited ? ["turn.edited"] : []), ...(undo ? ["turn.superseded_edit"] : []), ...(moduleOnly ? ["turn.module_only"] : []),
           ...(help ? ["turn.help"] : []), ...(laneResume ? [revoice ? "turn.lane_resume_revoice" : "turn.lane_resume"] : []), ...(kernel.replanned ? ["turn.replanned"] : []), ...(kernel.wb.declined ? [kernel.wb.declined] : []),
           ...(speculation ? [speculation.hit ? "turn.speculation_hit" : "turn.speculation_miss"] : []), ...(pre ? ["turn.prefetch_adopted"] : []), ...(wbAcked ? ["studio.whiteboard_slot"] : []),
           ...(rungReplaced ? ["studio.rung_replaced"] : []), ...(agentOut ? ["turn.agent"] : agentFallback ? ["turn.agent_fallback"] : []), ...studioReasons, ...releaseReasons,
@@ -1436,6 +1444,9 @@ const KIND_CODE = /^[a-z][a-z0-9_]{0,31}$/;
  * "duplex_pending" | "relational_floor" | "content_filter" | "episode_open"], kind }, or null on a turn with no distress and
  * no safeguarding move. "episode_open" = the move is a safeguard only because an earlier turn opened the episode.
  */
+/** Census F9: the Director's safeguard episode is closed on this plan (no open safeguard, no safeguard move, no incident). */
+export const safeguardClosed = (next, move, incident) => !next?.safeguard && move?.kind !== "safeguard" && !incident;
+
 export function distressOf(sources, { move, episodeOpen = false, kind = null } = {}) {
   const src = [...new Set(sources)];
   if (!src.length && move === "safeguard") src.push(episodeOpen ? "episode_open" : "unattributed");
@@ -1621,7 +1632,8 @@ export async function planTurn(base, cls, c) {
     if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
   }
   // 14.4: a check-in is not an incident (nothing disclosed yet); its escalation is, whatever this turn's own read said
-  const incident = r?.move?.tier === "check" ? null
+  // ... nor a move whose check-kind read the Director set aside (a check-in that released, its cooldown: move.setAside)
+  const incident = r?.move?.tier === "check" || r?.move?.setAside ? null
     : incidentOf(cls) ?? (r?.move?.escalated ? { source: "classifier", family: r.state?.safeguard?.kind ?? "model" } : null);
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
   return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };

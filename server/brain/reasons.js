@@ -55,8 +55,9 @@ export const FAMILIES = Object.freeze({
   turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice", "agent", "agent_fallback",
     // round 5 truth bar (server/brain/supersede.js): an edit superseded the landed turn / came after a later turn landed
     "superseded_edit", "edit_missed",
-    // …and a late verdict about the superseded words was dropped (comprehension/later.js)
-    "verdict_dropped"],
+    // …and a late verdict about the superseded words was dropped (comprehension/later.js); an edit that came after its
+    // turn landed while it was still the latest (traced with the undo off too); a turn that IS an edit of its turnSeq
+    "verdict_dropped", "edit_after_landed", "edited"],
   // component_error.<seam>: a seam call threw (seam-safe.js fell back); director: the move sent differs from the kernel's
   component_error: ["safety", "director", "comprehension", "relational", "studio", "vibe", "conductor", "moment", "signals", "expressive", "purpose",
     "realtime", "voicesig"],
