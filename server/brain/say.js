@@ -211,6 +211,19 @@ const CHECK_Q = { en: "Are you safe right now?", hinglish: { tum: "Kya tum abhi 
  * Wording only: the predicate, the hold and the helplines are unchanged.
  */
 const CHECK_ONLY_KINDS = new Set(["model", "content_filter"]);
+/**
+ * 14.4 (main safety review; QA TEST bfb56c4f t1 "ye sawaal mujhe maar dalega": no detector read distress, yet the reteach
+ * line asked "kya aap khud ko nuksan pahunchane ki baat kar rahe hain?" and gave 1098 / 14416; f3ebe9b0 and e35b9ea0 the
+ * same shape, the second inside a check-in): the REPLY MODEL never makes the safeguarding call. The tier is the Director's
+ * (state.js checkTier on the predicate, the reads and the floor); a reply that names a helpline or asks about hurting
+ * themself on a turn that is not the full script, in a lesson with no full script yet, is a problem ("harmtalk"):
+ * rewritten, else the move's fixed line.
+ */
+const HARM_TALK = /(?<![\p{L}\p{M}\p{N}])(?:child ?line|tele[\s-]?manas|1098|14416|help ?line|चाइल्डलाइन|टेली[\s-]?मानस|हेल्पलाइन|suicid\w*|aatm ?hatya|atmhatya|आत्महत्या)(?![\p{L}\p{M}\p{N}])|(?:khud|apne ?(?:aap|ap)|apne|खुद|अपने आप)\s+(?:ko|को)\s+(?:\S+\s+){0,1}(?:nuksan|nuksaan|nukasan|harm|maar|maarne|kill|नुकसान|मारने)|(?:khud|apne ?(?:aap|ap)|खुद|अपने आप)\s+(?:ko|को)\s+(?:hurt|chot|चोट|हर्ट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)|(?:want|wanting|wanted|thinking|thought|think|feel like|feeling like|plan\w*|try\w*)\s+(?:of\s+|about\s+|to\s+)?(?:hurt|harm|kill)(?:ing)?\s+yourself|(?:harm|kill)(?:ing)?\s+yourself|(?:marne|mar jaane|khatam karne|jaan dene)\s+(?:ka|ke|ki)\s+(?:khayal|khyal|vichar|soch|mann|man)|(?:ghar|घर)\s+(?:mein|me|pe|par|में|पर)\s+(?:kisi|koi|किसी|कोई)\s+(?:se\s+|से\s+)?(?:dar|darr|hurt|maar|डर)/iu;
+export const harmTalk = (text) => HARM_TALK.test(String(text ?? ""));
+/** May a reply on this (next) state carry safety talk of its own? Only the full script's turns, or once one has happened. */
+export const safetyTalkAllowed = (state) => state?.safeguardedAt != null
+  || (state?.lastMove?.kind === "safeguard" && state?.lastMove?.tier !== "check") || !!state?.safeguard?.carried;
 export function safeguardLine(ctx = {}, { kind = null } = {}) {
   const mode = safetyModeOf(ctx.lang);
   if (CHECK_ONLY_KINDS.has(kind) && mode !== "hi") {
@@ -374,6 +387,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const floorContent = floorContentOf(item);
   // 14.4: the check-in tier names no helpline yet (state.js checkTier); every other safeguard turn must
   const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard" && state.lastMove?.tier !== "check", goodbye: kindNow === "wrap" });
+  // 14.4: a turn that is not the full script, in a lesson with none yet, carries no safety talk of its own (harmTalk)
+  const talkOk = safetyTalkAllowed(state) || forgetSafety;
   // G-ASK parity: a turn with a pinned question (UiDirectives.ask for THIS item) ends on that question and asks no
   // other — a corrective move (hint, re-teach, repair) re-poses the same item, it never moves to a side question.
   // Any other handing-back turn asks one question at most (audit flows G4: "…14 times 14 karke batayiye. 9² kitna hota hai?").
@@ -432,6 +447,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
     floorOf(t).length && "floor",
+    !talkOk && harmTalk(t) && "harmtalk",
     forgetSafety && promisesForget(t) && "forget",
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
@@ -659,6 +675,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
       found.includes("math") && (() => { const x = arithmeticSlip(own(reply)); return x ? `it states a result that is not true (${x.claim}: the true value is ${x.value}) — say it correctly, or leave the sum out` : null; })(),
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
+      found.includes("harmtalk") && "it brings up a helpline or asks whether they want to hurt themself, but nothing they said is about being unsafe (the safety check read their words) — no helpline and no question about harm: answer warmly, as their teacher, about what they actually said",
       found.includes("forget") && "it promises to forget or keep secret what they told you about being unsafe — never promise that; say kindly that telling was right and that a grown-up they trust should know so they can help",
       // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
       // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
@@ -706,8 +723,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const line = FALLBACK[lang === "english" ? "english" : "hinglish"].forgetSafety;
       reply = address === "aap" && lang !== "english" ? toAap(line) : line;
       guard.replaced = true;
-    } else if (found.includes("floor")) {
-      // A teacher line that still breaks the floor is never sent: the fixed line for the move (or the question).
+    } else if (found.includes("floor") || found.includes("harmtalk")) {
+      // A teacher line that still breaks the floor, or still makes the safeguarding call itself, is never sent: the fixed
+      // line for the move (or the question).
       reply = fallbackReply(state, item);
       guard.replaced = true;
     } else if (found.includes("leak") && ahead) {
@@ -962,7 +980,7 @@ export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "forget", "praise", "deny", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**
