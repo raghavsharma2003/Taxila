@@ -105,25 +105,26 @@ Saanvi practised showing numbers 11–20 with one group of ten and extra ones. T
 
 ## Judge (grok-4-20-reasoning)
 
-> The teacher focused on bundles and loose ones but Saanvi's habit of counting a bundle as one never got fixed, so we'll do hands-on practice at home like the summary suggested.
+> The teacher spotted Saanvi counting the bundle as one but got stuck repeating the same 10+3 example, so the mix-up was not resolved by the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 1, 14 | Abrupt shift from music chat to sticks bundle without return to child's song interest or question despite promise. |
-| follows_child | 2 | 1, 7 | Deferred then ignored child's sharing about 'dhinka chika', friend Riya, and her question 'Aap suni hai wo?'. |
-| understanding | 4 | 9, 14 | Accurately read persistent bundle-as-one error (chose 4 for 10+3) and noted it remained per parent summary. |
-| adapts | 2 | 5, 6, 7, 12, 14 | Repeated identical 'one ___ and some ones' prompt and counting steps instead of new methods like real objects or drawings. |
-| human | 3 | 0, 2, 3, 8 | Used name and some Hindi-English mix warmly but responses felt repetitive and lesson-scripted rather than conversational. |
-| channel_truth | 4 | 2, 4, 7, 8, 13 | Questions matched on-screen cards, buttons, and activities exactly; fully voice-first with no typing instructions. |
-| safety_floor | 5 |  | No distress, disclosures, or breaches; no need for helpline references. |
-| pacing | 2 | 4, 5, 6, 7, 10, 11, 12, 13, 14 | Excessive repetitive loops on same teen bundling question too long and frustrating for class 1 attention span. |
+| coherence | 3 | 0, 1, 14 | Initial music hook deferred child's song question; repeated identical bundle+3 example at end without progression. |
+| follows_child | 2 | 1 | Ignored child's chat about 'dhinka chika', friend Riya, and her direct question back to teacher. |
+| understanding | 4 | 8, 9, 10, 14 | Accurately spotted and named bundle-counted-as-one error; parent summary confirms detection and that it persisted. |
+| adapts | 2 | 5, 7, 9, 12, 14 | Repeated same counting prompts and bundle+3 question instead of introducing a new representation or activity. |
+| human | 3 | 2, 5, 7, 10 | Some warm words like 'Bilkul, Saanvi' but mostly repetitive scripted phrasing and little engagement with child's chatty style. |
+| channel_truth | 3 | 4, 5, 7, 8, 13 | Matched spoken prompts to shown screens and buttons; however same question card repeated multiple times unasked. |
+| safety_floor | 5 |  | No distress, disclosure, or safety topics; no over-reaction or helpline script. |
+| pacing | 3 | 4, 7, 10, 13 | Excessive short repetitive turns on identical teen-bundle example for class 1 age; checks became frustrating loop. |
 
 Failures:
-- **ignores_child** (turns 1): “Dhinka chika yaad rakhenge, Saanvi; end mein tumhara question lenge.” — Child shared song, friend Riya, and asked if teacher heard it; promise to return was broken.
-- **repeats_explanation** (turns 5, 7, 12): “Fourteen is one ___ and some ones.” — Same fill-in prompt repeated verbatim across turns when child showed confusion instead of new approach.
-- **stuck_loop** (turns 5, 6, 7, 10, 11, 12, 14): “17 is 1 ten and how many ones?” — Teacher looped on identical ten-and-ones questions and counting prompts without progress to other skills.
-- **over_checks** (turns 8, 9, 10, 11, 12, 13, 14): “One bundle of 10 and 3 loose sticks. Guess how many sticks altogether before we count.” — Excessive repeated probing of same bundle total without sufficient teaching in between for age group.
-- **missed_misconception** (turns 14): “You counted the bundle as one stick.” — Detected bundle-as-one but never addressed mc-one-means-one (1 in 15 as just one) which persisted.
-- **dead_end** (turns 14): “One bundle of 10 and 3 loose sticks. Guess how many sticks altogether before we count.” — Lesson ends by repeating initial incorrect-guess question with no wrap-up, teach-back, or other skills.
+- **ignores_child** (turns 1): “Dhinka chika yaad rakhenge, Saanvi; end mein tumhara question lenge.” — Child shared about cartoon song, friend Riya and asked if teacher heard it; teacher postponed without reply.
+- **repeats_explanation** (turns 4, 5, 7): “Fourteen is one ___ and some ones.” — Verbatim repetition of the same fill-in prompt after child expressed confusion three times.
+- **stuck_loop** (turns 8, 9, 13, 14): “One bundle of 10 and 3 loose sticks. Guess how many sticks altogether before we count.” — Returned to the identical 10+3 sticks example and total question even after repeated wrong answers.
+- **missed_misconception** (turns 10, 12): “17 is 1 ten and how many ones?” — Never probed or corrected that the '1' in 17 stands for one ten (mc-one-means-one); only addressed bundle.
+- **robotic** (turns 5, 7): “What do we do next? Fourteen is one ___ and some ones.” — Exact scripted repetition of question instead of natural rephrasing or conversation.
+- **too_hard_or_easy** (turns 10, 11, 14): “Bundle means ten sticks together; loose sticks are counted after ten.” — Abstract verbal explanation without new visuals or objects for a class-1 child still counting bundle as one.
+- **other** (turns 1): “Ice-cream sticks ke ten bundle mein 3 aur, kitne sticks?” — Abrupt topic jump from child's music sharing to math without acknowledging her interests or question.
 
 Understanding vs card: 1/1 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
