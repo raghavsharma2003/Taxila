@@ -59,3 +59,12 @@ test("F4: studioSeam.waysFor — frozen or off Studio offers nothing visual; a p
     assert.deepEqual(studioSeam.waysFor("L-ways", { skillId: "s1" }), { picture: false, game: false });
   } finally { if (prev === undefined) delete process.env.FORGE3_PLAY; else process.env.FORGE3_PLAY = prev; L.safety = false; }
 });
+
+test("F3 (census a95d2ff1 t23/25): the cantshow rewrite note never tells her a board is drawing (it pushed claims about a board with nothing on it)", async () => {
+  const fs = await import("node:fs");
+  const src = fs.readFileSync(new URL("../server/brain/say.js", import.meta.url), "utf8");
+  const note = src.split("\n").find((l) => l.includes('found.includes("cantshow")'));
+  assert.ok(note, "the cantshow note");
+  assert.doesNotMatch(note, /board draws for you/);
+  assert.match(note, /point at the screen only at what is on it now/);
+});
