@@ -892,7 +892,10 @@ export const studioSeam = {
         const t = boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
         // round 5 (stream 2): the template is the lesson's own board: shown for a request only when it shows what was asked,
         // and never as the same page again
-        return t && answersRequest(t, request) && !shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? t : null;
+        // telemetry names the refusing step (QA run 8: a template refused here left no line saying why)
+        const why = !t ? "gate" : !answersRequest(t, request) ? `not_the_ask(${request?.kind ?? "-"})` : shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : null;
+        if (why) console.info(`[studio] template board refused: ${why}`);
+        return why ? null : t;
       } catch { return null; }
     };
     // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured

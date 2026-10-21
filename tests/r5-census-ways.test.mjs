@@ -151,3 +151,13 @@ test("QA on D42 run 3: the board's 'side' and her 'sides' are one word (a Roman 
   assert.equal(syncedWithLine(page("side", "corner"), "Ab rectangle ki kitni sides aur kitne kone hote hain?"), true);
   assert.equal(syncedWithLine(page("Rice crop", "Food"), "January mein crops ready hoti hain."), true);
 });
+
+test("QA on 14.4.1 (run 8, aadae80b t1): a rectangle with its side labels is a drawing (the picture ask's template fallback shows it); a rectangle around its text is still a box", async () => {
+  const { isDrawing, answersRequest } = await import("../server/studio/request.js");
+  const drawn = { ops: [{ id: "r", op: "rect", at: [120, 100], w: 300, h: 180 }, { id: "a", op: "text", at: [270, 85], text: "50 m" }, { id: "b", op: "text", at: [440, 190], text: "30 m" }] };
+  assert.equal(isDrawing(drawn), true);
+  assert.equal(answersRequest(drawn, { kind: "picture" }), true, "a picture ask with no thing named takes it");
+  const boxes = { ops: [{ id: "r1", op: "rect", at: [20, 40], w: 160, h: 60 }, { id: "t1", op: "text", at: [100, 70], text: "Change to grams" }, { id: "r2", op: "rect", at: [220, 40], w: 160, h: 60 }, { id: "t2", op: "text", at: [300, 70], text: "Compare weights" }] };
+  assert.equal(isDrawing(boxes), false, "text boxes (a flow chart) are not a picture");
+  assert.equal(answersRequest(boxes, { kind: "picture" }), false);
+});

@@ -153,7 +153,13 @@ export function syncedWithLine(script, line) {
 
 /** A board that draws something (a figure or a number line), not only text boxes. PURE. */
 export function isDrawing(script) {
-  return (script?.ops ?? []).some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line"));
+  const ops = script?.ops ?? [];
+  // QA on 14.4.1 (aadae80b t1: a picture ask; the rung's rectangle with "50 m" / "30 m" on its sides was refused as "a page
+  // of text boxes", the live board failed, and the child saw nothing): a rectangle no text sits inside is a drawn shape; a
+  // rectangle around its text is a box (flow@1), as before
+  const texts = ops.filter((o) => (o?.op === "text" || o?.op === "label") && Array.isArray(o.at));
+  const shapeRect = (o) => o?.op === "rect" && Array.isArray(o.at) && !texts.some((t) => t.at[0] > o.at[0] + 2 && t.at[0] < o.at[0] + o.w - 2 && t.at[1] > o.at[1] + 2 && t.at[1] < o.at[1] + o.h - 2);
+  return ops.some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line") || shapeRect(o));
 }
 
 /** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */
