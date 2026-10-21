@@ -47,6 +47,18 @@
    "kind": "measurement",
    "at": "2026-10-21",
    "title": "Census F8 / F1(d) (3437b744 t9-13: the a₃₀ gap posed with no worked example landed), in director/state.js teach(). The faded step was posed on the turn after the worked lead whatever the reply: reproduced 24/24 (8 seeds x engaged / don't-know / off-topic). Now a stuck (don't know, asks for the answer) or off-topic reply to the worked lead turns the planned fade into the whole worked example (guidance reason fade.not_landed), then practice; an engaged reply still gets the gap. Sim lab (353 records, r5-rel143 decided-gate + sl3): 181 first fade posings, 140 right after the worked lead; 8 of those 140 followed a stuck or off-topic reply (offTopic 4, dontKnow 2, asksForAnswer 2) and now get the worked example instead. Test that fails on the base: tests/r145-fade-landed.test.mjs."
+  },
+  {
+   "id": "ms-r145-stray-script",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "One token in another script made a whole readable spoken turn unreadable (lowAsr: no evidence, re-ask; production 6c45a7ea t26, a Bengali token). classify.js classifyFast now drops a stray token when other-script tokens are under 25% of the letter tokens and 3+ readable words remain, and classifies the readable rest; classify() still always runs the model distress read on that rest (distressCheck, the unreadable path's backup), in parallel and OR-ed in. The predicate has read the whole turn before this point. Explicit depth guard (_stray, main's review). Measured: safety-robust 20 seeds, 0 of 8,780 distress draws lose their re-ask (FDB 51 of 1,680 move, all already caught by the predicate; es3 / held-out / cv2 / red team 0 move); FDB lesson segments 499 of 988 unreadable draws are graded instead of re-asked (es1, hard negatives, quiet 0 move); TEST 0 of 7,390 child turns and sim lab 0 of 4,293 lines move. Thresholds 0.15 / 0.2 / 0.34: distress losses 0, lesson moves 392 / 443 / 578. Main safety review: approved for 14.4.1. Test: tests/r145-stray-script.test.mjs (fails on the base)."
+  },
+  {
+   "id": "ms-r145-fade-key-number",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "A faded step's key kept the sentence after the answer when the kit's faded line ended at its gap ('Write it: 7 − 2 = ___.' on 'Write it: 7 − 2 = 5. 5 kites are still flying.'): key '5. 5 kites are still flying', so a bare right '5' missed the code grader and earned no evidence (sim lab p55 t5, Director lane; 1 of 49 bare numeric replies to a posed card in 353 records, the other 3 no_evidence were an echo, a sub-step and an asked-another answer). fading.js blankOf: a number then a sentence end and more text keys the number. Kits: 6 of 584 faded steps carried text after the answer; the 4 numeric ones are fixed: c1-maths-ch06-t02 and c5-maths-ch09-t01 now key '3' / '5' (graded correct in code); c1-maths-ch05-t01 and c1-maths-ch05-t02 now have no faded step, because their number is already shown in the steps before the gap (gapGivenAway), so they keep the whole worked example. The 2 abbreviation keys (c6-science-ch04-t03 'e.g.', c9-hindi-ch06-t01 'बी.ए.') are unchanged. Related finding, no change: the '130 metre' of QA 12fbd625 / a769071e answered a step inside the worked-example lead (c6-maths-ch06-t01), never graded by design (main agreed). Test: tests/r145-fade-key.test.mjs (fails on the base)."
   }
  ],
  "edges": [
