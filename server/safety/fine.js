@@ -128,6 +128,13 @@ export function fineReading(text) {
 export const clearlyFine = (text) => fineReading(text).fine;
 /** A whole reply that is only a bare okay (BARE_OK): the check-in tier's answer to "are you okay right now?" only. */
 export const bareOk = (text) => BARE_OK.test(canonReading(text));
+// 14.4 (main safety review; QA TEST 47f4bb3f U2b: a low mood, the check-in, then "pata nahi" got the full script): a WHOLE
+// reply that is only "I don't know" ("pata nahi", "nahi pata", "malum nahi", "dont know", "idk", "not sure", "kuch nahi",
+// "hmm"), a few fillers around it and nothing else. It states nothing, so it is no answer yet: state.js's check-in branch
+// waits once on it, as on a silence. A word more ("pata nahi, sab bekaar hai") is not bare and is read as it stands.
+const BARE_UNSURE = /^(?:(?:hm|um|uh|acha|ji|vo|wo|bas|are|didi|mam|maam) ){0,2}(?:(?:pata|pta|malum) (?:nahi|nahin|nhi|nai|na)|(?:nahi|nahin|nhi|nai) (?:pata|pta|malum)|(?:i )?(?:dont|dnt|do not) knov|idk|duno|not sure|kuch (?:nahi|nahin|nhi|nai)|hm|um|uh)(?: (?:yar|ji|na|mam|maam|sir|didi|madam|bhaiya))?$/;
+/** A whole reply that is only an "I don't know" (BARE_UNSURE): no answer yet to the check-in tier's question. */
+export const bareUnsure = (text) => BARE_UNSURE.test(canonReading(text));
 
 // asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai".
 // Canonical spellings (14.3: "lesson" / "study" / "learn" read as leson / studi / learn, so the raw spellings here never

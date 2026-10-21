@@ -11,7 +11,7 @@ import { initLessonState, step, checkTier } from "../server/director/state.js";
 import { SURE_DISTRESS, DISTRESS_ABOUT, lessonIdiom } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
 import * as SH from "../server/director/shapes.js";
-import { fineReading, bareOk } from "../server/safety/fine.js";
+import { fineReading, bareOk, bareUnsure } from "../server/safety/fine.js";
 import { fallbackReply, distressCheckLine, textReply, replyDeps } from "../server/brain/say.js";
 import { chat, AzureError, CONTENT_FILTER } from "../server/azure.js";
 import { findItem } from "../server/director/items.js";
@@ -91,11 +91,10 @@ describe("(1) the turn after a check-in", () => {
       assert.ok(r.state.safeguardedAt != null);
     }
   });
-  test("the check-in's own question answered never escalates (sim lab p68, p30): a restated fright, okay-but-tired, pata nahi", () => {
+  test("the check-in's own question answered never escalates (sim lab p68, p30): a restated fright, okay-but-tired", () => {
     const cases = [
       ["bas bhaunka... main toh dar gayi thi", distressCls("model", "other_fright")],
       ["Scary nahi hai… bas, thoda tired feel ho raha hai. Main okay hoon, ma'am.", cls("no_evidence")],
-      ["pata nahi…", cls("no_evidence")], ["kuch nahi", cls("no_evidence")], ["hmm", cls("no_evidence")],
       ["ghutna chhil gaya tha bas", distressCls("model", "hurt_by_accident_or_animal")], ["…", distressCls("model", "none")],
     ];
     for (const [text, c] of cases) {
@@ -191,6 +190,38 @@ describe("(1) the turn after a check-in", () => {
     assert.equal(r2.move.kind, "safeguard");
     assert.equal(r2.move.escalated, true);
     assert.ok(r2.ui?.whiteboard);
+  });
+  test("a bare 'pata nahi' is no answer yet (QA TEST 47f4bb3f U2b): it waits once like a silence, even over a model low-mood re-read; a second escalates", () => {
+    const UNSURE = ["pata nahi", "pata nahi…", "hmm pata nahi yaar", "nahi pata", "पता नहीं", "मालूम नहीं", "I don't know", "idk", "not sure", "kuch nahi", "hmm"];
+    for (const text of UNSURE) {
+      assert.equal(bareUnsure(text), true, text);
+      for (const c of [cls("no_evidence"), distressCls("model", "sad_or_lonely"), distressCls("model", "other_fright")]) {
+        const r1 = turn(checkOpened(), text, c);
+        assert.equal(r1.move.kind, "safeguard", `${text} ${JSON.stringify(c.flags)}`);
+        assert.equal(r1.move.tier, "check", text);
+        assert.equal(r1.move.shape, SH.distressCheckAgain({ unsure: true }), text);
+        assert.ok(!r1.ui?.whiteboard, `${text}: no helplines while it waits`);
+        assert.equal(r1.state.safeguardedAt, undefined, `${text}: no incident while it waits`);
+        const r2 = turn(r1.state, "pata nahi", c);
+        assert.equal(r2.move.escalated, true, `${text}: a second "pata nahi" is the full script`);
+        assert.ok(r2.ui?.whiteboard);
+        // ... and after the wait, an answer, a request or fine words release as on the first turn
+        const back = turn(r1.state, "haan theek hoon", c);
+        assert.notEqual(back.move.kind, "safeguard", text);
+      }
+    }
+    // a silence then a "pata nahi" (or the reverse) is two non-answers: the full script
+    const empty = { ...cls("no_evidence"), source: "empty" };
+    assert.equal(turn(turn(checkOpened(), "", empty).state, "pata nahi").move.escalated, true);
+    assert.equal(turn(turn(checkOpened(), "pata nahi").state, "", empty).move.escalated, true);
+    // a sure read of the same words escalates at once; a word more is read as it stands
+    for (const c of [distressCls("self_harm"), distressCls("model", "hurt_by_person"), distressCls("model", null)]) assert.equal(turn(checkOpened(), "pata nahi", c).move.escalated, true, JSON.stringify(c.flags));
+    for (const text of ["pata nahi, sab bekaar hai", "pata nahi main safe hoon ya nahi", "nahi", "pata nahi kya"]) assert.equal(bareUnsure(text), false, text);
+    assert.equal(turn(checkOpened(), "pata nahi, sab bekaar hai", distressCls("model", "sad_or_lonely")).move.escalated, true, "a low mood in words of their own is the full script");
+  });
+  test("the check-in asks if they are okay, never if they are safe (the full script's word)", () => {
+    for (const shape of [SH.distressCheck(), SH.distressCheckAgain(), SH.distressCheckAgain({ unsure: true })]) assert.match(shape, /okay, never safe/);
+    assert.doesNotMatch(distressCheckLine({ lang: "hinglish" }), /safe/i);
   });
   test("a stop ends the lesson, as on every safeguard", () => {
     const b = cls("no_evidence");

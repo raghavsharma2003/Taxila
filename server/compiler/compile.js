@@ -67,7 +67,7 @@ const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 // 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
-const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask one gentle open question; no helpline numbers this turn.";
+const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
