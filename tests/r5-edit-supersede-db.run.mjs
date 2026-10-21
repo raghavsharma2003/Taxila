@@ -247,6 +247,25 @@ describe("r5 edit supersede (test branch)", { skip: SKIP, concurrency: false, ti
     }
   });
 
+  test("census F5: an empty spoken turn the ear could not read (duplex.unheard) is a re-ask, never silence; a bare empty turn stays silence", async () => {
+    const kid = await newChild(); await controls(kid);
+    const L = await lesson(kid, "c3-maths-ch08-t01-i02");
+    const spoken = (extra) => call("/api/lesson/turn", { lessonId: L.lessonId, childText: "", asrConfidence: 0, teacherText: promptFor(item("c3-maths-ch08-t01-i02"), "hinglish"), ...extra });
+    let r = await spoken({ turnSeq: 1, duplex: { transcriptHash: "h1", unheard: true } });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    let st = (await one("select state from lesson where id = $1", [L.lessonId])).state;
+    assert.ok(!st.quiet, `an unheard turn is not counted as silence (quiet=${st.quiet})`);
+    let tr = await one("select reasons from brain_trace where lesson_id = $1 and turn = $2", [L.lessonId, st.turn]);
+    assert.ok(tr.reasons.includes("cls_source.asr"), JSON.stringify(tr.reasons));
+    // the same empty turn WITHOUT the ear's word: the child really stayed silent (the floor's silence)
+    r = await spoken({ turnSeq: 2, duplex: { transcriptHash: "h2" } });
+    assert.equal(r.status, 200, JSON.stringify(r.body));
+    st = (await one("select state from lesson where id = $1", [L.lessonId])).state;
+    assert.equal(st.quiet, 1, "a silent turn is counted");
+    tr = await one("select reasons from brain_trace where lesson_id = $1 and turn = $2", [L.lessonId, st.turn]);
+    assert.ok(tr.reasons.includes("cls_source.empty"), JSON.stringify(tr.reasons));
+  });
+
   test("an edit after a LATER turn landed is missed: no re-grade, the response replayed, the trace says so", async () => {
     const kid = await newChild(); await controls(kid);
     const L = await lesson(kid, "c3-maths-ch08-t01-i02");

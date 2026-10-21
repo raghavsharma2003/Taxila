@@ -106,7 +106,7 @@ function rig(opts) {
   const acts = [];
   const port = {
     duck: (lv) => acts.push([clock, "duck", lv]), pause: () => { acts.push([clock, "pause"]); return true; }, resume: () => acts.push([clock, "resume"]),
-    stop: () => acts.push([clock, "stop"]), commit: (t) => acts.push([clock, "commit", t.text]), sttCommit: () => acts.push([clock, "probe"]),
+    stop: () => acts.push([clock, "stop"]), commit: (t) => acts.push([clock, "commit", t.text, t.duplex?.unheard ?? null]), sttCommit: () => acts.push([clock, "probe"]),
     dropReply: () => {}, fallback: (w) => acts.push([clock, "fallback", w]), state: () => {},
   };
   const live = new DuplexLive({ lessonId: "t", port, now: () => clock, setInterval: (fn) => { tick = fn; return 1; }, clearInterval: () => {}, band: "B2", ...opts });
@@ -226,6 +226,8 @@ for (const ending of ["failed", "empty"]) {
     assert.equal(c[0][2], "");
     assert.ok(c[0][0] - 3260 <= 2500, `at the closed backstop: ${c[0][0] - 3260} ms after the burst`);
     assert.ok(r.live.d5.reasks >= 1);
+    // census F5: the child spoke and the ear found no words: the turn says so (the server reads it as a re-ask, not silence)
+    assert.equal(c[0][3], true, "an unheard turn, never silence");
   });
 }
 

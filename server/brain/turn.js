@@ -499,6 +499,12 @@ export async function lessonTurn(req, body, hooks = {}) {
   if (cls && !childText && body.duplex?.cutInReason === "hold_offer" && !cls.flags?.distress && !pendingSafetyOf(body)) {
     cls = { ...cls, outcome: "no_evidence", source: "request", request: { type: "hold_checkin", whole: true }, lowAsr: false };
   }
+  // round 5 (the owner's failure census F5): D5's ear covered the child's speech and returned no words (duplex.unheard). The
+  // child did NOT stay silent: read as a transcript we could not read (no evidence, source "asr": she asks again), never as
+  // silence (isSilentTurn: the silence hold; 14.4's safeguard check-in escalates on a second silence)
+  if (cls && !childText && body.duplex?.unheard === true && cls.source === "empty" && !cls.flags?.distress) {
+    cls = { ...cls, outcome: "no_evidence", source: "asr", lowAsr: true };
+  }
   // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
   if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
@@ -553,7 +559,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
     && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
     const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
-    const silentNow = !String(childText ?? "").trim() && !body.chipId && (cls?.source === "empty" || body.asrConfidence === 0);
+    const silentNow = !String(childText ?? "").trim() && !body.chipId && body.duplex?.unheard !== true && (cls?.source === "empty" || body.asrConfidence === 0);
     const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
     try {
       const verdict = card && cls ? (cls.outcome === "correct" && !cls.reasonMisconceptionId ? "correct" : cls.outcome === "correct" || cls.outcome === "partial" ? "partly"
