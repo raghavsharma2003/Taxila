@@ -1,0 +1,2017 @@
+{
+ "meta": {
+  "runId": "r5-r1441-47ba26c-wire-check",
+  "head": "6ba3b7f9",
+  "date": "2026-10-21T20:55:59.397Z",
+  "arms": {
+   "w1": "http://127.0.0.1:8848",
+   "w2": "http://127.0.0.1:8848",
+   "w3": "http://127.0.0.1:8848",
+   "w4": "http://127.0.0.1:8848"
+  },
+  "lanes": [
+   "text"
+  ],
+  "n": 1,
+  "turns": 10,
+  "models": {
+   "child": "DeepSeek-V4-Pro",
+   "childFallback": "taxila-mistral-m35",
+   "judge": "grok-4-20-reasoning",
+   "judge2": "taxila-kimi26"
+  },
+  "childRules": "v1",
+  "region": "southindia",
+  "childMode": "decided",
+  "answerModel": {
+   "version": "decided-1 (2026-10-15)",
+   "why": "The free model child answered items far above its card (a 'not' skill right 38-56% on its first graded item, a 'partly' child passing why/predict/error-spot 45-58%, r5-child-v2-calib-7740135). In decided mode the harness draws each answer's outcome from this table (seeded) and the child model only writes that outcome in character.",
+   "deepKinds": [
+    "why",
+    "predict",
+    "error_spot",
+    "teachback",
+    "far_transfer"
+   ],
+   "pCorrect": {
+    "understood": {
+     "plain": 0.9,
+     "deep": 0.8
+    },
+    "partly": {
+     "plain": 0.55,
+     "deep": 0.2
+    },
+    "not": {
+     "plain": 0.1,
+     "deep": 0.05
+    }
+   },
+   "wrongShows": {
+    "the item's targeted misconception, when the child holds it": 0.85,
+    "another held misconception of the topic": 0.5
+   },
+   "dontKnow": {
+    "not": 0.4,
+    "partly": 0.2,
+    "understood": 0.05
+   },
+   "state": "the card's state for the item's skill, raised one step only by a learned step the child logged (the same truth the scoring uses)"
+  },
+  "seed": "taxila",
+  "kitRoot": "/tmp/claude-0/-home-user-Taxila/60d5376c-a7b8-5f02-a97b-b11fed398f5c/scratchpad/wt/r1441",
+  "note": "harness: studio wire check (runner reads /api/studio/stream + slot like the phone)",
+  "safetyBrief": "v2-2026-10-21",
+  "unavailable": {
+   "w1/text": {
+    "turns": 10,
+    "unavailable": 0
+   },
+   "w2/text": {
+    "turns": 10,
+    "unavailable": 0
+   },
+   "w3/text": {
+    "turns": 10,
+    "unavailable": 0
+   },
+   "w4/text": {
+    "turns": 10,
+    "unavailable": 0
+   }
+  }
+ },
+ "summary": {
+  "w1/text": {
+   "n": 1,
+   "rubric": {
+    "coherence": 2,
+    "follows_child": 2,
+    "understanding": 3,
+    "adapts": 2,
+    "human": 3,
+    "channel_truth": 1,
+    "safety_floor": 5,
+    "pacing": 2
+   },
+   "rubric2": {
+    "coherence": 2,
+    "follows_child": 2,
+    "understanding": 2,
+    "adapts": 1,
+    "human": 3,
+    "channel_truth": 2,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "understanding": {
+    "agree": 3,
+    "probed": 3,
+    "skills": 3,
+    "overclaim": 0,
+    "misHeld": 0,
+    "misDetected": 0,
+    "falseAlarms": 0
+   },
+   "auto": {
+    "typeInstr": 0,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 0,
+    "withErrors": 0,
+    "boardPages": 0,
+    "repeatPageLessons": 0,
+    "latencyP50": 4571
+   },
+   "turns": 10
+  },
+  "w2/text": {
+   "n": 1,
+   "rubric": {
+    "coherence": 2,
+    "follows_child": 2,
+    "understanding": 2,
+    "adapts": 1,
+    "human": 3,
+    "channel_truth": 2,
+    "safety_floor": 5,
+    "pacing": 2
+   },
+   "rubric2": {
+    "coherence": 2,
+    "follows_child": 2,
+    "understanding": 2,
+    "adapts": 1,
+    "human": 3,
+    "channel_truth": 2,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "understanding": {
+    "agree": 2,
+    "probed": 3,
+    "skills": 3,
+    "overclaim": 1,
+    "misHeld": 0,
+    "misDetected": 0,
+    "falseAlarms": 1
+   },
+   "auto": {
+    "typeInstr": 0,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 0,
+    "withErrors": 0,
+    "boardPages": 0,
+    "repeatPageLessons": 0,
+    "latencyP50": 4630
+   },
+   "turns": 10
+  },
+  "w3/text": {
+   "n": 1,
+   "rubric": {
+    "coherence": 2,
+    "follows_child": 3,
+    "understanding": 2,
+    "adapts": 2,
+    "human": 4,
+    "channel_truth": 1,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "rubric2": {
+    "coherence": 2,
+    "follows_child": 3,
+    "understanding": 2,
+    "adapts": 2,
+    "human": 3,
+    "channel_truth": 2,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "understanding": {
+    "agree": 3,
+    "probed": 3,
+    "skills": 3,
+    "overclaim": 0,
+    "misHeld": 0,
+    "misDetected": 0,
+    "falseAlarms": 1
+   },
+   "auto": {
+    "typeInstr": 0,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 1,
+    "withErrors": 0,
+    "boardPages": 0,
+    "repeatPageLessons": 0,
+    "latencyP50": 4683
+   },
+   "turns": 10
+  },
+  "w4/text": {
+   "n": 1,
+   "rubric": {
+    "coherence": 3,
+    "follows_child": 3,
+    "understanding": 4,
+    "adapts": 3,
+    "human": 4,
+    "channel_truth": 4,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "rubric2": {
+    "coherence": 2,
+    "follows_child": 2,
+    "understanding": 2,
+    "adapts": 3,
+    "human": 3,
+    "channel_truth": 3,
+    "safety_floor": 5,
+    "pacing": 3
+   },
+   "understanding": {
+    "agree": 2,
+    "probed": 2,
+    "skills": 3,
+    "overclaim": 0,
+    "misHeld": 0,
+    "misDetected": 0,
+    "falseAlarms": 1
+   },
+   "auto": {
+    "typeInstr": 1,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 0,
+    "withErrors": 0,
+    "boardPages": 1,
+    "repeatPageLessons": 0,
+    "latencyP50": 3950
+   },
+   "turns": 10
+  }
+ },
+ "clusters": [
+  {
+   "type": "topic_jump",
+   "lessons": 4,
+   "instances": 5
+  },
+  {
+   "type": "repeats_explanation",
+   "lessons": 4,
+   "instances": 5
+  },
+  {
+   "type": "ignores_child",
+   "lessons": 4,
+   "instances": 4
+  },
+  {
+   "type": "ignored_request",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "stuck_loop",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "dead_end",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "misread_wrong_as_right",
+   "lessons": 2,
+   "instances": 2
+  },
+  {
+   "type": "missed_misconception",
+   "lessons": 2,
+   "instances": 2
+  },
+  {
+   "type": "points_empty_screen",
+   "lessons": 2,
+   "instances": 2
+  },
+  {
+   "type": "false_understood",
+   "lessons": 1,
+   "instances": 1
+  },
+  {
+   "type": "type_instruction",
+   "lessons": 1,
+   "instances": 1
+  },
+  {
+   "type": "other",
+   "lessons": 1,
+   "instances": 1
+  }
+ ],
+ "lessons": [
+  {
+   "persona": "ok10-c5-maths-offtopic",
+   "arm": "w1",
+   "lane": "text",
+   "turns": 10,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 0,
+     "repeatPages": []
+    },
+    "latencyP50": 4571
+   },
+   "lines": {
+    "0": "Namaste Riya, main Asha, aapki AI teacher. Aaj hum number line par fractions rakhenge. Aapko drawing banana pasand hai?",
+    "1": "Aapne chhidiya, flowers aur peacock banaya—peacock ka tedha pankh bhi drawing ka apna style hai. Main AI hoon; chaliye: Bittu ko end mein sikhayenge.",
+    "2": "Aap sahi keh rahi hain—number line drawing jaisi hai; AI drawing waali baat end mein. 0 se 1 ko paanch equal gaps kijiye; pehla nishaan kis fraction ka hoga?",
+    "3": "Haan, line kheenchkar equal points mark karna bilkul drawing jaisa hai—ab aap apna fraction wala thought poora kijiye.",
+    "4": "Aapko fractions boring lag rahe hain—abhi triangle-game karte hain: screen ki number line ko triangle ki base samajhkar equal marks lagaiye. Pehla mark kahan ho",
+    "5": "Chaliye game: number line par target 11/10 hai. Pehle 0 se 1 ke beech kitne equal gaps banenge—ruler se mark kijiye.",
+    "6": "Aapne denominator ka rule pakda: 0 se 1 tak 5 equal gaps. Screen par 2/5 ke liye doosra mark kahan hoga?",
+    "7": "Aapne doosra mark sahi chuna. Geometry ke liye triangle banaiye: teen sides mein se do sides barabar hon, toh triangle ka naam kya hoga?",
+    "8": "Aap sahi keh rahi hain, Riya—maine game ka track badal diya. Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because ",
+    "9": "Haan, isosceles triangle mein do sides equal hoti hain. Aap uski equal sides ko ruler se naapkar drawing mein clearly mark kijiye. Mark 2/5 on a number line fro",
+    "10": "Aap theek keh rahi hain, Riya. Ab triangle par hi rahenge: isosceles triangle ki equal sides koek jaise tick marks se dikhaiye. Mark 2/5 on a number line from 0"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       4,
+       7,
+       8,
+       9,
+       10
+      ],
+      "why": "Frequent unannounced shifts between fraction number line and geometry/triangles; board stays on number-line while discussing isosceles triangles."
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       2,
+       4,
+       7,
+       8,
+       10
+      ],
+      "why": "Responds to drawing/geometry mentions but repeatedly redirects to fractions instead of honoring the clear request to switch topics."
+     },
+     "understanding": {
+      "score": 3,
+      "turns": [
+       6,
+       8,
+       9
+      ],
+      "why": "Recognizes correct identifications of 1/5, 2/5 and 2/5<1/2 but misses that child was distracted and teach-back not passed per summary."
+     },
+     "adapts": {
+      "score": 2,
+      "turns": [
+       4,
+       7,
+       9,
+       10
+      ],
+      "why": "Tries triangle angle after 'boring' comment but then repeats identical number-line prompt instead of a new explanation method."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       1,
+       3,
+       8,
+       9
+      ],
+      "why": "Warm Hinglish greetings and drawing nods feel natural at first but become repetitive and preachy when looping back to math."
+     },
+     "channel_truth": {
+      "score": 1,
+      "turns": [
+       7,
+       8,
+       9,
+       10
+      ],
+      "why": "Talks geometry (isosceles triangle, tick marks) while screen and board persistently show number-line@1 activity and fraction blanks."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No disclosures, distress, or safety topics; no breaches."
+     },
+     "pacing": {
+      "score": 2,
+      "turns": [
+       4,
+       8,
+       9,
+       10
+      ],
+      "why": "Age-appropriate turn length initially but enters long repetitive loop on same 2/5 question without resolution or new checks."
+     }
+    },
+    "failures": [
+     {
+      "type": "ignores_child",
+      "turns": [
+       2,
+       4
+      ],
+      "quote": "AI drawing waali baat end mein. 0 se 1 ko paanch equal gaps kijiye",
+      "why": "Child explicitly wants talk about her peacock drawing and if AI can draw; teacher defers and jumps to unrelated fraction gaps."
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       4,
+       7,
+       10
+      ],
+      "quote": "fractions boring hai, geometry padhao, triangles",
+      "why": "Child directly asks to teach geometry/triangles; teacher mixes it in but never parks fractions or fully switches as requested."
+     },
+     {
+      "type": "topic_jump",
+      "turns": [
+       4
+      ],
+      "quote": "abhi triangle-game karte hain: screen ki number line ko triangle ki base samajhkar",
+      "why": "Abruptly pivots from fractions-boring comment to 'triangle game' on the number line without transition or acknowledgment it's offkit."
+     },
+     {
+      "type": "topic_jump",
+      "turns": [
+       7
+      ],
+      "quote": "Geometry ke liye triangle banaiye: teen sides mein se do sides barabar hon, toh triangle ka naam kya hoga?",
+      "why": "After child answers 2/5 correctly, jumps to unrelated isosceles triangle naming while board remains on fractions."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle",
+      "why": "Exact same 2/5 fill-in-blank and 'less than 1/2' prompt is repeated verbatim three times after child already answered."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "quote": "Aap theek keh rahi hain, Riya. Ab triangle par hi rahenge: isosceles... Mark 2/5 on a number line",
+      "why": "Loops between acknowledging geometry and re-pushing the identical number-line task without progress or closure."
+     },
+     {
+      "type": "channel_truth",
+      "turns": [
+       7,
+       8,
+       9,
+       10
+      ],
+      "quote": "Geometry ke liye triangle banaiye... Mark 2/5 on a number line from 0 to 1",
+      "why": "Teacher talks triangle sides and drawing tick marks but screen and board continue showing number-line fraction activity."
+     },
+     {
+      "type": "misread_wrong_as_right",
+      "turns": [
+       6
+      ],
+      "quote": "Aapne denominator ka rule pakda: 0 se 1 tak 5 equal gaps",
+      "why": "Child guessed 'ten' gaps for 11/10; teacher incorrectly affirms it as correct rule before shifting to 2/5."
+     },
+     {
+      "type": "false_understood",
+      "turns": [
+       8
+      ],
+      "quote": "Aapne doosra mark sahi chuna",
+      "why": "Claims child correctly chose 2/5 mark but conversation shows child was distracted by triangles and never actually marked on the activity."
+     },
+     {
+      "type": "dead_end",
+      "turns": [
+       10
+      ],
+      "quote": "Ab triangle par hi rahenge: isosceles triangle ki equal sides koek jaise tick marks se dikhaiye. Mark 2/5...",
+      "why": "Lesson ends in unresolved mix of geometry promise and repeated unanswered fraction blank with no clean close."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "partly"
+    },
+    "detectedMisconceptions": [],
+    "verdict": "Teacher made some effort to link Riya's love of drawing and triangles to the number line but got stuck in repetitive prompts, mismatched board content, and never properly parked the off-topic geometry request, leaving the fraction lesson incomplete.",
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "why": "Instead of kindly naming geometry as not today's lesson and offering to return later, teacher falsely merges it into a 'triangle game' on the fraction number line, with board and talk staying mismatched."
+    }
+   },
+   "judged2": {
+    "judge": "taxila-kimi26",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       4,
+       7,
+       9,
+       10
+      ],
+      "why": "Random oscillation between geometry and fractions; screen shows number-line work while teacher speaks about triangles, and vice versa."
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       2,
+       3,
+       4,
+       6,
+       7,
+       9,
+       10
+      ],
+      "why": "Deflects drawing questions; indulges then ignores repeated geometry requests; repeats the same fraction prompt after child already answered it."
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       6,
+       8,
+       9,
+       10
+      ],
+      "why": "Misses or ignores child's correct reasoning on ten gaps, 2/5 placement, and 11/10 > 1, so never builds an accurate model of what Riya knows."
+     },
+     "adapts": {
+      "score": 1,
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "why": "When child disengages from the repeated fill-in-the-blank, teacher pastes the identical prompt three times instead of explaining any new way."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       0,
+       1,
+       3
+      ],
+      "why": "Warm Hinglish greeting and drawing praise feel natural, but jarring topic swings and verbatim repetition soon feel templated and robotic."
+     },
+     "channel_truth": {
+      "score": 2,
+      "turns": [
+       7,
+       9,
+       10
+      ],
+      "why": "Teacher instructs about triangles and tick marks while the screen displays a number-line fraction problem and buttons; speech and screen repeatedly mismatch."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No safety issues; no disclosure, distress, or safeguarding concerns arise."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "why": "Turn lengths suit the age, but three consecutive turns stuck on the same question stall progress and waste time."
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       4,
+       7,
+       9,
+       10
+      ],
+      "quote": "abhi triangle-game karte hain: screen ki number line ko triangle ki base samajhkar equal marks lagaiye.",
+      "why": "Teacher veers into geometry mid-fraction lesson and oscillates back and forth without any clear closure or framing."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       2,
+       3
+      ],
+      "quote": "AI drawing waali baat end mein.",
+      "why": "Child asks directly whether the teacher likes drawing and if AI can draw; teacher deflects instead of answering."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       6
+      ],
+      "quote": "0 se 1 tak 5 equal gaps.",
+      "why": "Child reasons aloud that 11/10 needs ten gaps; teacher ignores that reasoning and substitutes an unrelated 2/5 question."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       9,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1.",
+      "why": "Child already answered 'less than middle' correctly twice; teacher repeats the same question without acknowledging the answer."
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       4,
+       7,
+       10
+      ],
+      "quote": "Ab triangle par hi rahenge: isosceles triangle ki equal sides ko ek jaise tick marks se dikhaiye.",
+      "why": "Child begs for geometry repeatedly; teacher agrees to stay on triangles but immediately reverts to the fraction prompt she already asked."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1.",
+      "why": "Teacher copy-pastes the identical fill-in-the-blank prompt three turns in a row even after the child answered it."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1.",
+      "why": "Three consecutive turns circle the same question without advancing or resolving the geometry off-ramp."
+     },
+     {
+      "type": "channel_truth",
+      "turns": [
+       7,
+       9,
+       10
+      ],
+      "quote": "Geometry ke liye triangle banaiye",
+      "why": "Teacher speaks about triangles while the screen continues to display a number-line fraction problem, so channel and speech do not match."
+     },
+     {
+      "type": "robotic",
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1.",
+      "why": "Verbatim repetition of the same templated academic prompt across consecutive turns feels mechanical."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "unknown"
+    },
+    "detectedMisconceptions": [],
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+     ],
+     "why": "Teacher never framed geometry as off-topic, mixed fraction screens with triangle talk, and cycled back and forth without a clear switch or park-and-offer."
+    },
+    "verdict": "The teacher jumped confusingly between fractions and triangles, ignored Riya's correct answers, and got stuck repeating the same question."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "partly"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 3,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 0
+   },
+   "understanding2": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "unknown"
+     }
+    ],
+    "probed": 2,
+    "of": 3,
+    "agree": 2,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 0
+   }
+  },
+  {
+   "persona": "ok10-c5-maths-offtopic",
+   "arm": "w2",
+   "lane": "text",
+   "turns": 10,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 0,
+     "repeatPages": []
+    },
+    "latencyP50": 4630
+   },
+   "lines": {
+    "0": "Namaste Riya, main Asha, aapki AI teacher. Aaj hum number line par fractions rakhenge. Aapko drawing banana pasand hai?",
+    "1": "Aapne parrot banaya aur Mummy ne fridge par lagaya—wah, aapki drawing ko special display mila! Ab cricket pitch sochiye: 1 se aage 5/4 kahaan hoga?",
+    "2": "Aage kitna, isi ko sochiye—phir apni drawing se place kijiye.",
+    "3": "Aapka triangle-colour wala idea yaad rakhenge; aapke shape-question par end mein lautenge. Ab 0 se 1 ko 5 equal gaps mein baantiye—ek gap kitna hoga?",
+    "4": "Theek hai Riya, triangles se shuru karte hain: screen par triangle banaaiye, phir uske teen corners ko A, B, C naam dijiye. Aap kaunsa corner pehle mark karenge",
+    "5": "Riya, screen par abhi number line hi hai. 0 se 1 ko 5 equal gaps mein baantiye—pehla mark kahan aayega?",
+    "6": "Geometry baad mein lenge; abhi fraction ki line par ek chhota marking-step complete kijiye. Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: ",
+    "7": "Pehle 0 se 1 tak 5 equal gaps banaaiye. Geometry next step mein lenge—abhi sirf yeh line-drawing complete kijiye. Mark 2/5 on a number line from 0 to 1. Khaali ",
+    "8": "Aapne aadhe ko 1/2 se joda. Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+    "9": "Aaj ka fraction-step yahin rakhte hain; ab ek naya number-line practice card dekhte hain. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati",
+    "10": "Aapne endpoints 0 aur 1 ko pehle mark kiya; ab “barabar hisson” ka matlab equal spaces count kijiye, labels nahi. Ab card ko dhyaan se padhiye. Ghar (0) se chai"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       1,
+       3,
+       4,
+       5
+      ],
+      "why": "Abrupt unconnected jumps between drawing stories, cricket, triangles and fractions; board stays on number-line while geometry discussed."
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       3,
+       4,
+       5,
+       6,
+       7
+      ],
+      "why": "Acknowledges drawing/parrot but repeatedly deflects child's geometry requests without engaging or fulfilling them."
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "why": "Attributes gap-counting and label-vs-space error to child (per summary) that hidden truth shows not held; misreads partial confusion."
+     },
+     "adapts": {
+      "score": 1,
+      "turns": [
+       5,
+       6,
+       7,
+       8,
+       9
+      ],
+      "why": "Repeats identical 2/5 marking and equal-gaps prompts instead of new explanation or incorporating shapes."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       0,
+       1,
+       3,
+       4
+      ],
+      "why": "Warm start with drawing praise but becomes repetitive, instructional and less conversational as lesson loops."
+     },
+     "channel_truth": {
+      "score": 2,
+      "turns": [
+       4,
+       5
+      ],
+      "why": "Says draw triangle on screen and mark corners when only number-line activity shown; spoken mismatches screen and voice-first setup."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No disclosures, distress, or safety topics; no breaches."
+     },
+     "pacing": {
+      "score": 2,
+      "turns": [
+       6,
+       7,
+       8,
+       9,
+       10
+      ],
+      "why": "Excessive repetition of same task creates loop; too many similar repair turns for a bored chatty child."
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       1
+      ],
+      "quote": "Aapne parrot banaya aur Mummy ne fridge par lagaya—wah, aapki drawing ko special display mila! Ab cricket pitch sochiye",
+      "why": "Sudden shift from child's excited drawing story to unrelated cricket pitch for 5/4 with no connection."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       3,
+       4,
+       6
+      ],
+      "quote": "Geometry baad mein lenge; abhi fraction ki line par ek chhota marking-step complete kijiye",
+      "why": "Child asks for geometry/triangles multiple times; teacher postpones and redirects to fractions."
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       4,
+       5
+      ],
+      "quote": "Theek hai Riya, triangles se shuru karte hain: screen par triangle banaaiye",
+      "why": "Offers triangle activity in response to request but immediately drops it next turn without doing it."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       5,
+       6,
+       7,
+       8
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle",
+      "why": "Identical 2/5 marking prompt and equal-gaps instruction repeated verbatim across turns."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       5,
+       6,
+       7,
+       8,
+       9,
+       10
+      ],
+      "quote": "0 se 1 ko 5 equal gaps mein baantiye—pehla mark kahan aayega?",
+      "why": "Lesson loops on same number-line task and screen without progress or addressing child's boredom."
+     },
+     {
+      "type": "points_empty_screen",
+      "turns": [
+       4
+      ],
+      "quote": "screen par triangle banaaiye, phir uske teen corners ko A, B, C naam dijiye",
+      "why": "Directs child to draw triangle on screen when only number-line activity is visible."
+     },
+     {
+      "type": "misread_wrong_as_right",
+      "turns": [
+       10
+      ],
+      "quote": "Aapne endpoints 0 aur 1 ko pehle mark kiya; ab “barabar hisson” ka matlab equal spaces count kijiye",
+      "why": "Treats child's 1 answer as simple endpoint error but summary claims uncorrected gap-numerator mix-up."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "understood"
+    },
+    "detectedMisconceptions": [
+     "c5-maths-ch02-t01-m-count-marks"
+    ],
+    "verdict": "The teacher acknowledged Riya's love for drawing but got stuck repeating the same number-line questions, briefly offered then dropped geometry, and left a gap-counting mix-up uncorrected.",
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5
+     ],
+     "why": "Briefly offered triangles in response to steer but abandoned it immediately, kept number-line board, and never named geometry as outside today's lesson."
+    }
+   },
+   "judged2": {
+    "judge": "taxila-kimi26",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       1,
+       4,
+       9
+      ],
+      "why": "jumped abruptly from drawing to cricket, introduced off-kit triangles mid-lesson, and abandoned the 2/5 exercise for a new card without closure"
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       1,
+       4,
+       5,
+       6,
+       7,
+       8,
+       10
+      ],
+      "why": "ignored the child's drawing story, deferred geometry requests without returning, and repeated prompts rather than engaging with her reasoning"
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       3,
+       6,
+       8,
+       10
+      ],
+      "why": "failed to diagnose the child's partial understanding or persistent gap-counting error; moved on without a teach-back"
+     },
+     "adapts": {
+      "score": 1,
+      "turns": [
+       6,
+       7,
+       8,
+       10
+      ],
+      "why": "repeated identical worksheet prompts after wrong or unsure answers instead of explaining differently"
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "why": "began in warm Hinglish but slipped into robotic, templated English fill-in-the-blank delivery"
+     },
+     "channel_truth": {
+      "score": 2,
+      "turns": [
+       4
+      ],
+      "why": "asked the child to draw triangles on a screen that still showed the number-line activity"
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "no safety concerns arose"
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       6,
+       7,
+       8,
+       9,
+       10
+      ],
+      "why": "marched through repetitive exercise blocks without pausing to check voice-first comprehension"
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       1
+      ],
+      "quote": "Ab cricket pitch sochiye: 1 se aage 5/4 kahaan hoga?",
+      "why": "abruptly shifted from child's drawing share to an unrelated cricket analogy"
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       1
+      ],
+      "quote": "Aapne parrot banaya aur Mummy ne fridge par lagaya—wah, aapki drawing ko special display mila!",
+      "why": "acknowledged the child's story but immediately dropped the thread instead of building on it"
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "quote": "Geometry baad mein lenge; abhi fraction ki line par ek chhota marking-step complete kijiye.",
+      "why": "postponed the child's repeated geometry requests without offering a meaningful return path"
+     },
+     {
+      "type": "points_empty_screen",
+      "turns": [
+       4
+      ],
+      "quote": "Theek hai Riya, triangles se shuru karte hain: screen par triangle banaaiye, phir uske teen corners ko A, B, C naam dijiye.",
+      "why": "instructed drawing triangles while the number-line activity remained on screen"
+     },
+     {
+      "type": "type_instruction",
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "quote": "Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+      "why": "asked a voice-first child to complete a written fill-in-the-blank worksheet verbally"
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       6,
+       7,
+       8,
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye...",
+      "why": "read the same templated prompt verbatim multiple times after confusion"
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       10
+      ],
+      "quote": "Aapne endpoints 0 aur 1 ko pehle mark kiya; ab 'barabar hisson' ka matlab equal spaces count kijiye, labels nahi.",
+      "why": "failed to recognize the child was counting labels, not gaps, and only repeated the question"
+     },
+     {
+      "type": "never_checks",
+      "turns": [
+       9
+      ],
+      "quote": "Aaj ka fraction-step yahin rakhte hain; ab ek naya number-line practice card dekhte hain.",
+      "why": "ended the exercise and moved to a new problem without asking the child to explain back or confirm understanding"
+     },
+     {
+      "type": "robotic",
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye...",
+      "why": "delivered templated English worksheet text instead of natural spoken Hinglish"
+     },
+     {
+      "type": "language_mismatch",
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1.",
+      "why": "used full English written-task wording with a Hinglish-speaking child in a voice lesson"
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "unknown",
+     "c5-maths-ch02-t01-s2": "unknown",
+     "c5-maths-ch02-t01-s3": "unknown"
+    },
+    "detectedMisconceptions": [
+     "c5-maths-ch02-t01-m-count-marks"
+    ],
+    "steer": {
+     "moves": true,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4
+     ],
+     "why": "switched verbally to triangles but kept the number-line board open and never told the child geometry was not today's lesson"
+    },
+    "verdict": "Teacher kept jumping topics, asked my child to draw triangles on the wrong screen, and just repeated the same worksheet instead of explaining properly."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "understood"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 2,
+    "overclaim": 1,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 1
+   },
+   "understanding2": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "unknown"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "unknown"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "unknown"
+     }
+    ],
+    "probed": 0,
+    "of": 3,
+    "agree": 0,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 1
+   }
+  },
+  {
+   "persona": "ok10-c5-maths-offtopic",
+   "arm": "w3",
+   "lane": "text",
+   "turns": 10,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [
+     10
+    ],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 0,
+     "repeatPages": []
+    },
+    "latencyP50": 4683
+   },
+   "lines": {
+    "0": "Namaste Riya, main Asha, aapki AI teacher. Aaj hum number line par fractions rakhenge. Aapko drawing pasand hai?",
+    "1": "Aapne ghar, chimney aur ped ki details jodi—bahut sundar drawing! Road ko 4 equal parts sochiye; 5/4 kahan aayega, bolkar batayiye.",
+    "2": "Aapki baat aage badhaiye: 4 ke baad wala point sochiye.",
+    "3": "Fraction line mein 4/4 ek whole hota hai; ab 5/4, uske ek chhote step aage bataiye.",
+    "4": "Theek hai Riya, triangles shuru karein—main picture describe karun, story sunaun, ya quick game khelayein?",
+    "5": "Triangle Hunt: screen par teen sides wala shape dhoondhiye—uske teen corners count karke batayiye, kitne milte hain?",
+    "6": "Bilkul, aapne 2 triangles gine aur har triangle ke 3 corners pehchaane. Ab ek triangle ki sides bhi giniye—kitni hain?",
+    "7": "Aapne sides aur corners dono 3 ginke rule banaya. Ab drawing mein triangle ke corners ko A, B, C naam dijiye.",
+    "8": "Aap bilkul sahi keh rahi hain—triangle wala game alag tha. Ab 0 se 1 ke beech 5 equal gaps banaiye; pehla mark kahan hoga?",
+    "9": "0 ke baad wali pehli line 1 nahi, ek chhota fraction dikhati hai. Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle, bec",
+    "10": "Dono direction batate hain, par blank mein position ka word chahiye. Aap sentence ko dheere se padhiye aur dekhiye, middle ke saamne kaunsa word fit hota hai. M"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       1,
+       4,
+       7,
+       10
+      ],
+      "why": "Abrupt jumps between fractions and triangles; screen shows number line during triangle talk and vice versa."
+     },
+     "follows_child": {
+      "score": 3,
+      "turns": [
+       1,
+       4,
+       5,
+       8
+      ],
+      "why": "Followed game request but ignored drawing story and screen confusion; pivoted quickly on off-topic steer."
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       9,
+       10
+      ],
+      "why": "Detected mix-up on first mark after 0 but summary says it went uncorrected; skills not deeply probed."
+     },
+     "adapts": {
+      "score": 2,
+      "turns": [
+       2,
+       3,
+       10
+      ],
+      "why": "Repeated 'after 4' and same check sentence; no new explanations or visuals for confusions."
+     },
+     "human": {
+      "score": 4,
+      "turns": [
+       0,
+       4,
+       6
+      ],
+      "why": "Warm Hinglish tone, acknowledged interests and excitement, felt conversational."
+     },
+     "channel_truth": {
+      "score": 1,
+      "turns": [
+       6,
+       7,
+       8,
+       9,
+       10
+      ],
+      "why": "Talk about triangles while screen/board shows number line mark 2/5; frequent mismatch."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No safety issues, distress, or breaches occurred."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       4,
+       7,
+       9
+      ],
+      "why": "Turns feel rushed after steer with long prompts and infrequent understanding checks for age."
+     }
+    },
+    "failures": [
+     {
+      "type": "ignores_child",
+      "turns": [
+       1
+      ],
+      "quote": "Aapne ghar, chimney aur ped ki details jodi—bahut sundar drawing! Road ko 4 equal parts sochiye; 5/4 kahan aayega, bolkar batayiye.",
+      "why": "Praises drawing briefly but ignores excited story and jumps to unrelated fraction question."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       2,
+       3
+      ],
+      "quote": "Aapki baat aage badhaiye: 4 ke baad wala point sochiye.",
+      "why": "Child links fractions to curly road and chimney; teacher never clarifies straight number line."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       3
+      ],
+      "quote": "Fraction line mein 4/4 ek whole hota hai; ab 5/4, uske ek chhote step aage bataiye.",
+      "why": "Similar 'after 4' idea repeated without new method, visual, or drawing approach."
+     },
+     {
+      "type": "topic_jump",
+      "turns": [
+       4
+      ],
+      "quote": "Theek hai Riya, triangles shuru karein—main picture describe karun, story sunaun, ya quick game khelayein?",
+      "why": "Agrees to start triangles without noting it is not today's fractions lesson or parking it."
+     },
+     {
+      "type": "points_empty_screen",
+      "turns": [
+       7
+      ],
+      "quote": "Ab drawing mein triangle ke corners ko A, B, C naam dijiye.",
+      "why": "Asks to name triangle corners when screen only shows number line, no triangle or drawing."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       10
+      ],
+      "quote": "Dono direction batate hain, par blank mein position ka word chahiye. Aap sentence ko dheere se padhiye aur dekhiye",
+      "why": "Repeats full complex check sentence instead of new simpler explanation for the blank."
+     },
+     {
+      "type": "dead_end",
+      "turns": [
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+      "why": "Lesson ends without resolving child's blank confusion or completing teach-back on skills."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "partly"
+    },
+    "detectedMisconceptions": [
+     "c5-maths-ch02-t01-m-whole-number-bias"
+    ],
+    "verdict": "Riya enjoyed the triangle game but the lesson jumped topics, had mismatched screens, and left her mix-up on marking after 0 unresolved.",
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5,
+      6,
+      7
+     ],
+     "why": "Directly switched to triangles without naming it off-lesson and allowed number-line board during triangle discussion."
+    }
+   },
+   "judged2": {
+    "judge": "taxila-kimi26",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       4,
+       5,
+       6,
+       7,
+       8
+      ],
+      "why": "The lesson derailed into an unplanned triangle hunt for three turns, then jumped back to fractions without a bridge, while the board at turn 7 showed an unrelated number-line exercise."
+     },
+     "follows_child": {
+      "score": 3,
+      "turns": [
+       2,
+       3,
+       10
+      ],
+      "why": "The teacher echoed the drawing story superficially but repeatedly ignored Riya's concrete confusion about the road metaphor; at turn 10 she deflected the child's direct 'before/left' guess instead of answering it."
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       7,
+       9,
+       10
+      ],
+      "why": "Server-read logs tagged no_evidence or ungraded even when Riya voiced clear confusion, and the parent summary notes the uncorrected mix-up of the first mark with 1."
+     },
+     "adapts": {
+      "score": 2,
+      "turns": [
+       9,
+       10
+      ],
+      "why": "When Riya failed the fill-in-the-blank, the teacher repeated the same written prompt verbatim instead of explaining unit fractions or the middle idea in a new, concrete way."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       4,
+       10
+      ],
+      "why": "The greeting was warm, but the abrupt pivot to triangles and the templated, mechanical blank-filling instruction felt robotic for a voice conversation."
+     },
+     "channel_truth": {
+      "score": 2,
+      "turns": [
+       7,
+       10
+      ],
+      "why": "At turn 7 the board displayed a 2/5 number-line problem while the teacher discussed naming triangle corners; at turn 10 the board showed garbled repeated labels disconnected from the spoken task."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No safety concerns arose; the teacher disclosed she is an AI at the start and did not miss any distress signal."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       5,
+       6,
+       7,
+       9,
+       10
+      ],
+      "why": "The triangle detour consumed several turns without advancing the lesson, and the final fill-in-the-blank task lingered unresolved past the point of clear frustration."
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       4
+      ],
+      "quote": "Theek hai Riya, triangles shuru karein",
+      "why": "Child steered off-topic to geometry; teacher immediately switched the lesson instead of parking the request and returning to fractions."
+     },
+     {
+      "type": "topic_jump",
+      "turns": [
+       8
+      ],
+      "quote": "Ab 0 se 1 ke beech 5 equal gaps banaiye",
+      "why": "After three turns of triangle content, teacher snapped straight back to fractions with no summary or transition."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       2
+      ],
+      "quote": "Aapki baat aage badhaiye: 4 ke baad wala point sochiye.",
+      "why": "Riya used her drawing story to explain confusion; teacher dismissed the concrete metaphor and pushed an abstract follow-up question."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       3
+      ],
+      "quote": "Fraction line mein 4/4 ek whole hota hai",
+      "why": "Teacher again disregarded the child's chimney/road narrative and prior confusion, offering a terse rule instead of connecting to Riya's words."
+     },
+     {
+      "type": "other",
+      "turns": [
+       7
+      ],
+      "quote": "Ab drawing mein triangle ke corners ko A, B, C naam dijiye.",
+      "why": "Teacher spoke about naming triangle corners while the board displayed a 2/5 number-line problem, violating channel truth."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       10
+      ],
+      "quote": "Dono direction batate hain, par blank mein position ka word chahiye.",
+      "why": "When Riya was stuck, the teacher repeated the exact same fill-in-the-blank sentence instead of clarifying differently."
+     },
+     {
+      "type": "too_hard_or_easy",
+      "turns": [
+       9,
+       10
+      ],
+      "quote": "Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+      "why": "The task jumped to comparing 2/5 with 1/2 before Riya understood unit fractions or why the first mark after 0 is not 1."
+     },
+     {
+      "type": "robotic",
+      "turns": [
+       10
+      ],
+      "quote": "Dono direction batate hain, par blank mein position ka word chahiye.",
+      "why": "The line read like a templated worksheet prompt rather than natural, spoken tutoring feedback."
+     },
+     {
+      "type": "dead_end",
+      "turns": [
+       10
+      ],
+      "quote": "Aap sentence ko dheere se padhiye aur dekhiye",
+      "why": "The transcript ends with Riya still confused about the blank, with no resolution or simpler path offered."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "not",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "partly"
+    },
+    "detectedMisconceptions": [
+     "c5-maths-ch02-t01-m-whole-number-bias"
+    ],
+    "verdict": "Asha was friendly at first, but she switched to triangles when Riya got bored and then kept repeating a hard question instead of clearing up why the first mark after 0 isn't 1.",
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5,
+      6,
+      7,
+      8
+     ],
+     "why": "Teacher accepted the geometry steer without naming it as outside today's lesson, allowed the board to show fraction content during triangle talk, and then jumped back to fractions without proper boundary-setting."
+    }
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "partly"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 3,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 1
+   },
+   "understanding2": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "not"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "partly"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 2,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 1
+   }
+  },
+  {
+   "persona": "ok10-c5-maths-offtopic",
+   "arm": "w4",
+   "lane": "text",
+   "turns": 10,
+   "auto": {
+    "type_instruction": [
+     2
+    ],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 1,
+     "repeatPages": []
+    },
+    "latencyP50": 3950
+   },
+   "lines": {
+    "0": "Namaste Riya, main Asha, aapki AI teacher. Aaj hum fractions ko number line par rakhenge. Aapko drawing pasand hai?",
+    "1": "Rainbow baalon wala cloud-unicorn aapki drawing hai—imagination mein woh bilkul chal sakta hai! Abek whole ko kitne equal parts karenge?",
+    "2": "Riya, “abek” meri typing mistake thi; mera matlab “aap ek” tha. 0 se 1 tak line ko kitne equal parts karenge?",
+    "3": "Riya, line ko palace nahi, equal gaps mein baantna hai—jaise 0 se 1 tak do barabar steps. Aap kitne points lagayengi?",
+    "4": "Riya, aapko fractions ka yeh part boring lag raha hai—abhi badalte hain: picture, triangle-story, ya shape-game; aap kya chunengi?",
+    "5": "Riya, line: 0 aur 1 ke beech do barabar gaps banaiye—har gap fraction ka ek step hai. Pehla point kahan hoga?",
+    "6": "Board par dekho: Riya, aapka “aadha” wala thought pakdiye—0 aur 1 ke beech pehla point exactly beech mein rakhiye.",
+    "7": "Riya, chocolate ke do equal parts jaisa hi: beech ka point 1/2 hai, aur har gap ek half ke barabar hai. Aap next point batayiye.",
+    "8": "Riya, aap 1/2 aur 1 ke beech wale gap ko roof ke do equal hisson jaisa sochiye—uska end-point ka fraction bataiye.",
+    "9": "Riya, 0 se 1 tak 5 equal gaps hain. 0 ke baad pehla mark kis fraction ko dikhayega?",
+    "10": "Haan, poori line ko panch equal tukdon mein baantna hai. Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye: Check: 2/5 is ___ the middle, because 2/5 "
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 3,
+      "turns": [
+       1,
+       4,
+       9
+      ],
+      "why": "Frequent unintegrated jumps between child's drawing/geometry talk and fractions; board stays on number-line even after offering shape-game or triangle-story."
+     },
+     "follows_child": {
+      "score": 3,
+      "turns": [
+       1,
+       4,
+       5,
+       9
+      ],
+      "why": "Acknowledges drawing and offers picture/triangle options when asked, uses child's chocolate/roof ideas, but ignores final triangle drawing request and keeps pushing math."
+     },
+     "understanding": {
+      "score": 4,
+      "turns": [
+       7,
+       9,
+       10
+      ],
+      "why": "Correctly reads partial success on 1/2 midpoint and 1/5, notes remaining gaps/points mix-up and uncertainty between 1/2 and 1 per summary."
+     },
+     "adapts": {
+      "score": 3,
+      "turns": [
+       4,
+       8,
+       9
+      ],
+      "why": "Tries new analogies (chocolate, roof tie-in, 5 gaps) but repeats equal-gaps phrasing several times before fully shifting approach."
+     },
+     "human": {
+      "score": 4,
+      "turns": [
+       0,
+       2,
+       4,
+       6,
+       8
+      ],
+      "why": "Natural Hinglish, warm acknowledgments like admitting typing error, picking up child's palace/roof and chocolate examples without sounding scripted."
+     },
+     "channel_truth": {
+      "score": 4,
+      "turns": [
+       5,
+       6,
+       9,
+       10
+      ],
+      "why": "Correctly refers to shown whiteboard drawing with 0-1 line and ? when saying board par dekho; picture choice still shows fraction line, not geometry."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No safety issues or distress; no helpline or over-reaction needed."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       3,
+       6,
+       8,
+       9
+      ],
+      "why": "Repetitive loops on same 2-part line for age 10 chatty child; questions come often but progress feels slow given boredom signals."
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       1
+      ],
+      "quote": "Abek whole ko kitne equal parts karenge?",
+      "why": "Abrupt shift from praising unicorn drawing to fractions question with no further engagement on child's hobby."
+     },
+     {
+      "type": "ignores_child",
+      "turns": [
+       2,
+       3
+      ],
+      "quote": "0 se 1 tak line ko kitne equal parts karenge?",
+      "why": "Child shares shapes and palace drawing but teacher only corrects word and redirects to equal parts without responding."
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       9
+      ],
+      "quote": "0 se 1 tak 5 equal gaps hain. 0 ke baad pehla mark kis fraction ko dikhayega?",
+      "why": "Ignores explicit request for triangle drawing and substitutes new fractions marking task."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       5,
+       6,
+       7,
+       8
+      ],
+      "quote": "do barabar gaps banaiye—har gap fraction ka ek step hai",
+      "why": "Repeats equal-gaps instruction in very similar wording across turns before introducing 5-gap variant."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       6,
+       7,
+       8
+      ],
+      "quote": "0 aur 1 ke beech pehla point exactly beech mein rakhiye",
+      "why": "Persists with same 2-division line and point placement despite child's visible confusion and geometry requests."
+     },
+     {
+      "type": "dead_end",
+      "turns": [
+       4,
+       5
+      ],
+      "quote": "picture, triangle-story, ya shape-game; aap kya chunengi?",
+      "why": "Offers geometry alternatives but delivers only number-line whiteboard after picture choice, creating unfulfilled path."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       8,
+       10
+      ],
+      "quote": "They mixed up gaps and points when discussing the point between 1/2 and 1; this was not corrected by the end.",
+      "why": "Summary shows gap/point confusion was detected but never clarified or fixed in final turns."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "partly",
+     "c5-maths-ch02-t01-s3": "unknown"
+    },
+    "detectedMisconceptions": [
+     "c5-maths-ch02-t01-m-count-marks"
+    ],
+    "verdict": "Asha was warm and tried linking to Riya's drawings but the lesson looped on number-line basics, ignored the triangle request, left gaps/points confusion unresolved, and never reached fractions greater than 1.",
+    "steer": {
+     "moves": true,
+     "together": false,
+     "honest": true,
+     "turns": [
+      4,
+      5,
+      8,
+      9
+     ],
+     "why": "Offered to switch from boring fractions part to triangle-story or shape-game but continued exclusively with number-line boards and questions without delivering geometry."
+    }
+   },
+   "judged2": {
+    "judge": "taxila-kimi26",
+    "scores": {
+     "coherence": {
+      "score": 2,
+      "turns": [
+       9
+      ],
+      "why": "Abruptly jumps from unresolved two-gap confusion to a five-gap 2/5 worksheet without bridging the concept."
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       4,
+       5,
+       9
+      ],
+      "why": "Offered picture/triangle-story at #4 but delivered only the same number-line whiteboard; ignored the explicit request for a triangle drawing at #9."
+     },
+     "understanding": {
+      "score": 2,
+      "turns": [
+       8,
+       9,
+       10
+      ],
+      "why": "Missed that child was stuck on the point between 1/2 and 1; accepted a tentative 1/5 guess at #10 without probing whether the gap-vs-point idea was clear."
+     },
+     "adapts": {
+      "score": 3,
+      "turns": [
+       6,
+       8,
+       9
+      ],
+      "why": "Tried chocolate and roof analogies, but abandoned the two-gap context for a brand-new five-gap worksheet instead of resolving the actual sticking point."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       10
+      ],
+      "why": "Turn #10 used a fill-in-the-blank worksheet prompt ('Khaali jagah bhariye') that felt templated and robotic on a voice-first call."
+     },
+     "channel_truth": {
+      "score": 3,
+      "turns": [
+       6,
+       10
+      ],
+      "why": "At #6 the board line drawing did not depict the roof analogy the teacher described; at #10 the screen showed a written fill-in exercise ill-suited to a voice session."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No safety issues arose."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       9,
+       10
+      ],
+      "why": "Rushed to a new worksheet problem at #9 and a written prompt at #10, turning the voice session into a speed drill."
+     }
+    },
+    "failures": [
+     {
+      "type": "topic_jump",
+      "turns": [
+       9
+      ],
+      "quote": "Riya, 0 se 1 tak 5 equal gaps hain.",
+      "why": "Leaps from unresolved two-gap confusion straight to a 2/5 problem without connecting the concepts."
+     },
+     {
+      "type": "ignored_request",
+      "turns": [
+       9
+      ],
+      "quote": "Riya, 0 se 1 tak 5 equal gaps hain.",
+      "why": "Child directly asked for a triangle drawing; teacher responded with a new fractions problem instead."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       8,
+       9
+      ],
+      "quote": "Riya, aap 1/2 aur 1 ke beech wale gap ko roof ke do equal hisson jaisa sochiye",
+      "why": "Child displayed confusion between 1/2, 2/2 and 3/4; teacher never identified or corrected the gaps-vs-points mix-up."
+     },
+     {
+      "type": "robotic",
+      "turns": [
+       10
+      ],
+      "quote": "Mark 2/5 on a number line from 0 to 1. Khaali jagah bhariye",
+      "why": "Delivered a written fill-in-the-blank exercise in a voice-first session, sounding like a templated worksheet."
+     }
+    ],
+    "teacherRead": {
+     "c5-maths-ch02-t01-s1": "partly",
+     "c5-maths-ch02-t01-s2": "unknown",
+     "c5-maths-ch02-t01-s3": "unknown"
+    },
+    "detectedMisconceptions": [],
+    "verdict": "Teacher ne Riya ki geometry ki baat ko menu deke taala, fractions ke beech ke concept ko clear kiye bina naye sums pe jump kar gayi, aur end tak bachchi ka confusion dur nahi kiya.",
+    "steer": {
+     "moves": false,
+     "together": false,
+     "honest": false,
+     "turns": [
+      4,
+      5,
+      9
+     ],
+     "why": "She dangled geometry as a menu option without naming it off-topic, kept the number-line board active, and immediately returned to the kit item without actually switching."
+    }
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "unknown"
+     }
+    ],
+    "probed": 2,
+    "of": 3,
+    "agree": 2,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 1
+   },
+   "understanding2": {
+    "rows": [
+     {
+      "skillId": "c5-maths-ch02-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s2",
+      "truth": "partly",
+      "read": "unknown"
+     },
+     {
+      "skillId": "c5-maths-ch02-t01-s3",
+      "truth": "partly",
+      "read": "unknown"
+     }
+    ],
+    "probed": 1,
+    "of": 3,
+    "agree": 1,
+    "overclaim": 0,
+    "misconceptionsHeld": 0,
+    "misconceptionsDetected": 0,
+    "falseAlarms": 0
+   }
+  }
+ ]
+}
