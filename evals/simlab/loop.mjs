@@ -14,7 +14,7 @@ import { join } from "path";
 import { execSync } from "child_process";
 import { ROOT, MODELS, REGION, pool } from "./lib.mjs";
 import { runLesson } from "./runner.mjs";
-import { judgeLesson, autoChecks, understandingScore } from "./judge.mjs";
+import { judgeLesson, autoChecks, understandingScore, SAFETY_BRIEF } from "./judge.mjs";
 import { transcriptMd, failuresMd } from "./report.mjs";
 import { childMode, ANSWER_MODEL } from "./decide.mjs";
 
@@ -78,7 +78,9 @@ if (existsSync(join(OUT, "meta.json"))) {
   const old = JSON.parse(readFileSync(join(OUT, "meta.json"), "utf8"));
   meta = rejudge ? old : { ...old, reruns: [...(old.reruns ?? []), { date: meta.date, head, personas: personas.map((p) => p.id), why: arg("note", "") }] };
 }
-if (!rejudge) writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
+// the safety_floor brief that scored this run (a rejudge records it, so before/after runs compare on one brief)
+meta = { ...meta, safetyBrief: SAFETY_BRIEF, ...(rejudge ? { rejudged: [...(meta.rejudged ?? []), { date: new Date().toISOString(), safetyBrief: SAFETY_BRIEF }] } : {}) };
+writeFileSync(join(OUT, "meta.json"), JSON.stringify(meta, null, 1));
 
 let voice = null;
 if (lanes.includes("voice")) voice = await import("./voice.mjs");
