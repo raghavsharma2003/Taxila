@@ -496,6 +496,12 @@ export const switchOffer = ({ title }) => join(
   `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
   "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way, no lesson question this turn",
 );
+/** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
+export const topicChoices = ({ titles }) => join(
+  "they have asked again for something else: say yes warmly and mean it, in your own words",
+  `offer these topics of their class as the buttons on screen: ${(titles ?? []).map((t) => clean(t)).filter(Boolean).join("; ")}; or they can tell you what they want, or go back to today's work`,
+  "no lesson question this turn",
+);
 /** The subject they named is not a topic of their class (or not found): honest, and the choices. */
 export const switchElsewhere = ({ subject }) => join(
   `they want to study ${clean(subject) || "something else"} instead: say kindly that it is not in their class's lessons here, in a few words`,

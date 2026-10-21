@@ -23,7 +23,7 @@ import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
-import { getTopic, findTopic } from "../content/curriculum.js";
+import { getTopic, findTopic, topicSequence } from "../content/curriculum.js";
 import { planModule } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
@@ -974,6 +974,14 @@ function requestMove(s, input, item, req, labels) {
         // release 13 (A): never offer a picture that cannot be made: with a subject outside the kit named, the ways in are
         // words only (no "Show me a picture" chip; turn 21 offered "aloo par picture" and nothing could draw it)
         const off = offTopicNow(s, kit);
+        // census 14.5 (F1, 3437b744 / e6392332: the same ask three times, the same offer of ways into TODAY's idea): asked
+        // again within a few turns, they mean another topic, so real topics of their class are offered as buttons
+        const again = (s.topicAsks ?? []).some((t) => s.turn - t <= TOPIC_ASK_WINDOW);
+        s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
+        // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
+        const choices = again && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
+        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title) }), {
+          chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
         if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysChips(labels).filter((c) => c.id !== "req:visual"), request: "change_topic" });
         return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
       }
@@ -1068,6 +1076,17 @@ export const drawableSubject = (subject) => {
   const w = String(subject ?? "").trim();
   return !!w && w.split(/\s+/).length <= 4 && !/\d/.test(w) && !NOT_DRAWABLE.test(w) && !unsafeChildPhrase(w);
 };
+/** A "something else" asked again within this many turns is a request for another topic (census 14.5, F1). */
+const TOPIC_ASK_WINDOW = 6;
+/** Up to n other topics of the child's class and this subject, the ones after today's first (curriculum order). */
+function nextTopics(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return [];
+  const seq = topicSequence(cur.classLevel, cur.subject);
+  const at = seq.indexOf(cur.id);
+  const order = at < 0 ? seq : [...seq.slice(at + 1), ...seq.slice(0, at).reverse()];
+  return order.map((id) => getTopic(id)).filter(Boolean).slice(0, n);
+}
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
 /** The off-kit subject the child named in the last few turns (state.offTopic), else null. */
@@ -1457,7 +1476,10 @@ function decide(s, input, item) {
     const t = getTopic(chipId.slice("switch:".length));
     if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
   }
-  if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
+  // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
+  // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
+  const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
+  if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
