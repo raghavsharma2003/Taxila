@@ -85,3 +85,15 @@ test("F3 (census b08fe8a7 t7): pointing at a diagram / picture with nothing on t
   assert.equal(stripScreenRefs("Is diagram mein dekho, 5 groups hain. 5 groups mein kitne hue?", { stageEmpty: true }), "5 groups mein kitne hue?");
   assert.equal(stripScreenRefs("Is diagram mein dekho, 5 groups hain. Kitne hue?"), "Is diagram mein dekho, 5 groups hain. Kitne hue?", "a caller that does not pass the stage strips as before");
 });
+
+test("F3 (census 6c45a7ea t33): choice chips never single the key out by its look — a key with its working is not offered beside bare answers; alike answers still are", async () => {
+  const { choicesFor } = await import("../server/director/items.js");
+  const items = [{ id: "a", skillId: "s", answer: "₹20" }, { id: "b", skillId: "s", answer: "₹35" }, { id: "c", skillId: "s", answer: "I walk with my feet." }, { id: "d", skillId: "s", answer: "ears" }];
+  const worked = { id: "k1", skillId: "s", answer: "₹45 (30 + 15)" };
+  assert.equal(choicesFor(worked, { items: [...items, worked] }, 3), null, "the key's own working would give it away: no chips");
+  const bare = { id: "k2", skillId: "s", answer: "₹45" };
+  assert.deepEqual([...choicesFor(bare, { items: [...items, bare] }, 3)].sort(), ["₹20", "₹35", "₹45"]);
+  const word = { id: "k3", skillId: "s", answer: "eyes" };
+  const c = choicesFor(word, { items: [...items, word] }, 3);
+  assert.ok(c && !c.includes("I walk with my feet."), String(c));
+});
