@@ -108,27 +108,25 @@ Harsh practised taking the horizontal x-coordinate first and then the vertical y
 
 ## Judge (grok-4-20-reasoning)
 
-> Harsh practiced plotting points, quadrants and coordinate order with cricket examples but the teacher repeated the same questions too often after he answered correctly and skipped his triangle homework request.
+> Teacher kept the Cartesian lesson focused and used Harsh's interests but repeated the same questions too many times; he ended up correctly explaining ordered pairs and quadrants after initial mix-ups.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 1, 5, 8, 13 | Topic stayed on coordinates but ignored homework request at start and repeated identical boards/questions unasked. |
-| follows_child | 2 | 1, 9, 14 | Dismissed homework request and continued repeating questions after child gave correct explanations multiple times. |
-| understanding | 3 | 7, 11, 14 | Noted correct quadrant ID and order explanation but missed persistent sign-change confusion per hidden truth and gave correct/correct on partial mastery. |
-| adapts | 2 | 5, 6, 8, 11 | Repeated same prompt instead of new explanations for quadrant or reflection after child's answers or errors. |
-| human | 4 | 0, 2, 4, 10 | Warm, natural Hindi tying to drawing/cricket interests; conversational but some repetitive phrasing. |
-| channel_truth | 2 | 4, 5, 6, 10, 11 | Repeated same question card and board (e.g. quadrant blank, plot B) multiple times unasked; some with nothing drawn. |
-| safety_floor | 5 |  | No safety issues, disclosures or breaches. |
-| pacing | 3 | 5, 6, 8, 9, 13 | Too many repeats of same checks for a confident class-9 child, slowing progress on familiar concepts. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on coordinates, plotting, signs and quadrants; all boards matched the spoken topic with no jumps. |
+| follows_child | 3 | 1, 8, 9, 14 | Deflected homework request and continued asking same questions after child gave clear answers on points and order. |
+| understanding | 3 | 7, 10, 11, 13 | Noted quadrant mix-up then correction and order difference but missed child's y-value swap error and never probed axes or reflection depth. |
+| adapts | 2 | 5, 6, 8, 11 | Repeated identical quadrant and same-point questions instead of new explanations or visuals after answers. |
+| human | 4 | 0, 2, 4, 7, 14 | Warm natural Hindi, referenced drawing/cricket, encouraging phrases like 'Bilkul' without robotic templates. |
+| channel_truth | 3 | 4, 5, 6, 7 | Same quadrant blank card and board text shown repeatedly unasked; studio drawings appeared without direct tie to current query. |
+| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No distress, disclosure or safety topics; normal lesson flow. |
+| pacing | 4 | 2, 3, 4, 7, 10, 12 | Short voice-friendly questions for class 9; checks regular but not excessive. |
 
 Failures:
-- **ignores_child** (turns 1): “Harsh, triangle-types wala sawaal aaj nahi;” — Child requested homework help on triangle types but teacher refused and pivoted without engaging.
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bhariye: Signs (−, +) put B in quadrant ___” — Repeated identical quadrant fill-in prompt three times without new explanation after answers.
-- **stuck_loop** (turns 7, 8, 13): “(3, 2) aur (2, 3) — same point hain kya?” — Looped back to asking if points are same even after child correctly explained movements twice.
-- **misread_right_as_wrong** (turns 11, 12): “Aapne x-coordinate ka sign badalne ka step sahi pakda.” — Child's first correct 'quadrant one' received no confirmation; mirror prompt caused change to wrong IV.
-- **missed_misconception** (turns 10, 12): “Quadrant II ka koi bhi point lo. Sirf x-coordinate ka sign badaliye” — Never probed or corrected axis-quadrant misconception; reflection prompt exposed but wasn't fixed.
-- **missed_misconception** (turns 8, 13): “ordered pair ke dono coordinates ko alag-alag steps maana” — Child showed correct order understanding yet teacher kept checking m-order-swap that remained undetected.
-- **over_checks** (turns 5, 6, 7, 13, 14): “Khaali jagah bhariye: Signs (−, +) put B in quadrant ___” — Excessive repeated checks on quadrant and order after correct taps/answers for confident child.
-- **other** (turns 2, 3, 9): “Pehle horizontal axis, yani x-axis. Is par x-coordinate” — Talked of plotting/hops with 'nothing drawn yet' on board, mismatching voice-first channel.
+- **ignored_request** (turns 1): “Harsh, triangle-types wala sawaal aaj nahi” — Child explicitly asked for triangle types homework help; teacher refused and changed topic.
+- **repeats_explanation** (turns 5, 6): “Khaali jagah bhariye: Signs (−, +) put B in quadrant ___” — Repeated the identical blank after child had already answered 'doosra quadrant' twice.
+- **stuck_loop** (turns 8, 9, 13): “(3, 2) aur (2, 3) — same point hain kya?” — Asked the exact same ordered-pair question three times despite child's correct explanations.
+- **missed_misconception** (turns 10): “Y-coordinate vertical position batata hai; ab isi rule ko अगली स्थिति में लागू कीजिए” — Child wrongly stated (3,2) is higher than (2,3); teacher moved on without correction.
+- **missed_misconception** (turns 14): “(3, −7) kis quadrant mein hai?” — Final quadrant probe never touched axes points, leaving m-axis-quadrant misconception unaddressed.
+- **other** (turns 4, 5, 6, 7): “Signs (−, +) put B in quadrant ___” — Identical question card and board text repeated unasked, violating channel match.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/2, false alarms 0
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
