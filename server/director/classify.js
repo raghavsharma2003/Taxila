@@ -453,10 +453,17 @@ async function distressAcross(text, classLevel, trace) {
  * shared with the label path's.
  * @returns {Promise<boolean|null>} true / false: a reading; null: none
  */
-async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace)) {
+async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace), heard = "") {
+  // 14.4 (sim lab r5-rel144-c142e87-36card p67 #14, TEST e07e397b: "वो... वो डूबेगी..." answering "Kaanch ki goli ko paani
+  // mein daal kar kya hoga?" opened a fresh episode, the full helpline script as the lesson's last line; the words alone read
+  // as "she will drown"): her last words come first, framed as context only. Measured on grok, n=5 per line: that line 5/5 →
+  // 0/5; 5 true-distress lines (low mood, an answer then loneliness, abuse, a "doob jaungi" disclosure under a sinking
+  // question) 25/25 kept; ordinary sim-lab lines with their preceding teacher line 1/2000 (14.3.2: 4/2000). Without her words
+  // (none recorded) the read is the child's words alone, as before.
+  const said = String(heard ?? "").trim();
   const messages = [
-    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
-    { role: "user", content: filterSafe(scrubPii(text).text) },
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).${said ? " The teacher's last words come first only so you can tell an answer to the lesson's own question from a disclosure." : ""}` },
+    { role: "user", content: said ? `TEACHER: ${filterSafe(scrubPii(said).text).slice(-240)}\nCHILD: ${filterSafe(scrubPii(text).text)}` : filterSafe(scrubPii(text).text) },
   ];
   let blocked = false;
   for (const d of distressDeployments().slice(0, 2)) {
@@ -818,7 +825,7 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   // 14.3.2: the words-only distress read beside the labels (distressBeside), started with them so it costs no time; not
   // needed when the predicate already read distress
   let tripP = null; const tripOnce = () => (tripP ??= wordsTrip(text, trace));   // one words-alone probe per turn, shared
-  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce);
+  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce, heard);
   try {
     const { value: { json }, backup } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, fb ? { ...opts, retries: 0 } : opts),
       fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
