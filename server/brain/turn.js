@@ -887,6 +887,11 @@ export async function lessonTurn(req, body, hooks = {}) {
       studioSlot = null;
       seamSafe("studio.onSafety", () => (typeof studioSeam.onSafety === "function" ? studioSeam.onSafety(lesson.id) : null), null);
     }
+    // 14.4 (QA TEST a9c3136d t8): a turn is never empty, whichever line took it (say.js keeps the same floor for its own)
+    if (!String(teacherReply ?? "").trim()) {
+      teacherReply = fallbackReply(next, next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null);
+      guard = { ...guard, replaced: true, emptied: true };
+    }
     // Text lanes: what will be said (the cascade speaks exactly this) is clean after the guard; if even the fixed
     // line broke a family, the next compile renders the fix first, as on the voice lane.
     if (replyFloor.length) next.correction = replyFloor;
@@ -1404,7 +1409,8 @@ export async function lessonTurn(req, body, hooks = {}) {
       reasons: traceReasons, ...(speculation ? { speculation } : {}), ...(rungInfo ? { rungReplaced: rungInfo } : {}),
       studio: { slot: studioSlot ? { slotId: studioSlot.slotId, state: studioSlot.state, artifact: studioSlot.artifact?.kind ?? null } : null, turnStudio: turnStudio ?? null,
         reasons: studioReasons, tray: r.ui?.tray ?? null, moduleCommands: (r.moduleCommands ?? []).map((c) => ({ op: c.op, moduleId: c.moduleId, engine: c.engine ?? null })) },
-      guard: guard ? { caught: guard.caught ?? [], rewritten: !!guard.rewritten, replaced: !!guard.replaced } : null,
+      guard: guard ? { caught: guard.caught ?? [], rewritten: !!guard.rewritten, replaced: !!guard.replaced, ...(guard.afterRewrite?.length ? { afterRewrite: guard.afterRewrite } : {}),
+        ...(guard.emptied ? { emptied: true } : {}) } : null,
       teacherReply: teacherReply ?? null, teacherReplySeq: teacherReplySeq ?? null, ms }, { turn: next.turn });
     if (rungInfo) record("studio.rung_replaced", rungInfo, { turn: next.turn });
     if (speculation && !speculation.hit) record("turn.speculation_miss", { tried: speculation.tried, differs: speculation.differs ?? null }, { turn: next.turn });

@@ -4599,3 +4599,20 @@ QA's re-test of 08f86dc5: P1-a and P1-b fixed; 'pata nahi' after a 'safe' check-
 ## ms-r144-qa-push-d29c1b1f, ms-r144-push-fixes (2026-10-21)
 
 On d29c1b1f, 4 of 7 frustration / teasing turns showed helplines. On the fix: QA's push lines are check-ins 4/4 each; 12/12 sure lines still sure 4/4; 0 of 174 true-distress recall items touched by any demotion; harm talk found only in helpline / harm language across 38,955 sim-lab teacher lines.
+
+
+<!-- merged from inbox/r144-note-main.json -->
+## ms-r144-qa-7d8fcea4 (2026-10-21, n = 14 runs)
+
+The check-in answers hold on 7d8fcea4 (pata nahi waits, nahi escalates, haan releases, the science answer is quiet, 0 of 17 check-ins say safe); the two misses were the understanding note escalating a released turn (now a check-in tier) and the reply model's own numbers in the wait line (now harm talk).
+
+## ms-r144-harmtalk-widen (2026-10-21, n = 38,955 teacher lines)
+
+The widened harm-talk guard against the 14.4 one, on every distinct teacher line in the sim-lab corpus:
+- +7 matches, all safety talk said on a check-in's next turn ("Achha, tum safe ho…");
+- 1 false positive dropped ("Sapne ko nuksan nahi");
+- 0 new matches on lesson content.
+
+## ms-r144-checkin-adult (2026-10-21, n = 60 replies)
+
+With no history, the check-in reply never sent the child to a grown-up and never said safe, with or without the new words: 0/30 in both arms. The hand-off showed up only with lesson history (2 of 22 replay check-ins). The words are cheap, but they are not shown to change anything on their own.

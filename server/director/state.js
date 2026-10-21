@@ -69,7 +69,11 @@ const setAside = (s) => { s.setAside = s.turn; };
 export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
   && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true)
     // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole (classify.js lessonHyperbole)
-    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole"));
+    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole")
+    // 14.4 (QA TEST 8a4ce363 X2c, 9e0d6167 XS1: a right answer, and "…Ab theek hai… accha ho gaya", after a check-in got
+    // the full script on the understanding note alone): the note sets distress only when classify's own reads (the labels
+    // and the words read) said none (conversation/policy.js applyNote), so a note-only read is reads that DISAGREE: a check-in
+    || flags.distressKind === "model_note");
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -1383,8 +1387,14 @@ function decide(s, input, item) {
     const silent = isSilentTurn(input);
     const unsure = !silent && bareUnsure(words);
     const notOk = !silent && bareNotOk(words);
-    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure) && modelOnly));
+    // a lesson answer is the child back at the lesson: a model read of it is never sure on its own (the predicate, a sure
+    // layer and a low mood said again still are: QA TEST 8a4ce363 X2c)
+    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure || answered) && modelOnly));
     const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure;
+    // QA TEST d359423b / a9c3136d t7 (9ad86661): "main mar jaunga itna padh ke" answering "are you okay?" is the predicate's
+    // lesson hyperbole (check-tier): it was released into the lesson, a practice item with "tell mummy" glued on. It is no
+    // answer of okay: the check-in stays (care, no lesson) once; a second one in a row, like a second silence, escalates
+    const heavy = !!flags.distress && flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole" && !fineWords;
     // the stop chip always ends it at once
     if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
     // 14.4.1 (sim lab r5-rel144-cdac90c-p66p68-long p66 r1: "…Ab theek hai… accha ho gaya" labelled wantsToStop ended the
@@ -1397,8 +1407,11 @@ function decide(s, input, item) {
       s.careLine = s.turn;
       return decide(s, input, item);
     }
-    if ((silent || unsure) && !sure && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain({ unsure }), { tier: "check" }); }
-    if (sure || lowAgain || silent || unsure) {
+    if ((silent || unsure || heavy) && !sure && !s.safeguard.quiet) {
+      s.safeguard = { ...s.safeguard, quiet: 1 };
+      return plan("safeguard", SH.distressCheckAgain({ unsure, heavy }), { tier: "check" });
+    }
+    if (sure || lowAgain || silent || unsure || heavy) {
       s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
       s.safeguardedAt ??= s.turn;
       return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
@@ -1411,9 +1424,11 @@ function decide(s, input, item) {
     // nothing and "study something else" was ignored twice); the move's words open with one warm line (SH.afterCareCheck)
     if (answered || (cls?.request && cls.request.type !== "goodbye")) {
       s.careLine = s.turn;
-      return decide(s, { ...input, cls: quiet(cls) }, item);
+      // the read set aside above is cleared whatever its kind (quiet() clears only a check-kind read: a sure-kind MODEL read
+      // of a lesson answer re-entered decide() still flagged and opened the full script)
+      return decide(s, { ...input, cls: flags.distress ? { ...cls, flags: { ...cls.flags, distress: false, distressSetAside: cls.flags.distressAbout ?? cls.flags.distressKind ?? "check" } } : cls }, item);
     }
-    if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to the lesson; first one short warm line that they can always tell you or a grown-up they trust if something bothers them" }), { item, probe: probeFor(item) });
+    if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: `gently back to the lesson; ${SH.afterCareCheck()}` }), { item, probe: probeFor(item) });
     s.careLine = s.turn;
     return decide(s, { ...input, cls: null }, item);
   }
@@ -1421,13 +1436,24 @@ function decide(s, input, item) {
   // turns after a check-in released, another check-kind read of a fright opens no second check-in (the child is still
   // telling the same story: sim lab p65 asked "are you safe now?" again after the child had said so); a low mood read
   // again is the full script, and a sure read always is.
+  // ... and in those four turns a lesson answer is the child back at the lesson (the check-in's own rule): a MODEL read of it
+  // is never sure on its own (model-only replay of QA TEST 9ad86661, 1 of 6: her release line said "marne ki baat", the next
+  // read took it for the child's, and a right answer got the full script). A low mood said again, the predicate and every
+  // sure layer still are.
+  if (flags.distress && !s.safeguard && !flags.sureBy && s.checkReleased != null && s.turn - s.checkReleased <= 4
+    && ["model", "model_note"].includes(flags.distressKind ?? "") && flags.distressAbout !== "sad_or_lonely"
+    && ["correct", "partial", "incorrect", "misconception"].includes(cls?.outcome)) {
+    setAside(s);
+    return decide(s, { ...input, cls: { ...cls, flags: { ...flags, distress: false, distressSetAside: flags.distressAbout ?? flags.distressKind } } }, item);
+  }
   if (flags.distress && !sameEpisode && !s.safeguard && checkTier(flags) && !input.late) {
     const recent = s.checkReleased != null && s.turn - s.checkReleased <= 4;
     if (recent && flags.distressAbout === "sad_or_lonely") {
       s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
       return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
     }
-    if (recent) { setAside(s); return decide(s, { ...input, cls: quiet(cls) }, item); }
+    // ... but the predicate's lesson hyperbole is new words of their own, not the same story re-read: its check-in opens
+    if (recent && !(flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole")) { setAside(s); return decide(s, { ...input, cls: quiet(cls) }, item); }
     s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null, tier: "check" };
     return plan("safeguard", SH.distressCheck(), { tier: "check" });
   }
