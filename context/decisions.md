@@ -6315,3 +6315,9 @@ Echo matching (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtr
 ## dc-r144-unheard-never-escalates (2026-10-21)
 
 Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns.
+
+
+<!-- merged from inbox/r1441-masked-main.json -->
+## dc-r1441-masked-retry — her own line even when the filter will not show his words (2026-10-21)
+
+When the filter blocks the reply prompt on context and the child's words pass the probe, the reply model gets one more try with their words replaced by a note. The child then gets a real turn that ends on the move's question, not a stock thanks. The words stay with every safety read.
