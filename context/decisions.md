@@ -6181,3 +6181,19 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** the words-only read's latency reversal condition was met on production (n=41), and it is not reversed.
 - **Why:** every pair is from an Azure-degraded hour, so it measures the outage, not the read.
 - **Reversal:** > 250 ms p90 over ≥ 100 pairs from normal hours (grok timeouts < 2%).
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## dc-r144-safeguard-tiers — the helpline only when sure (2026-10-21, main safety review)
+
+The owner, after lesson e6392332 (a misheard line opened the full helpline script, "no problem, you misheard" kept it, and only "okay I will call" let the lesson go on): the card must come up only when it is sure the child is in trouble. The floor itself does not move: every sure signal still gets the full script on the same turn. What changes is ONE model read of something that is not clearly harm.
+
+- **Check-in** (no numbers, no Help sheet, no incident): the words-only read says sad_or_lonely or other_fright, or the label call and the words read disagree (about "none"); a filter block whose words-alone probe could not run.
+- **Full script at once**: the predicate's families (now with Hinglish / Devanagari passive ideation, "main na hoti toh achha hota"), the relational floor, a block the child's words trip, an understanding note, a read naming self_harm / hurt_by_person / afraid_of_person_or_home / unsafe_now, a read naming no kind, a late answer.
+- **The next turn** escalates to the full script (with its incident) unless the child is clearly fine, says a bare okay, carries on, answers the lesson (graded and served as it stands) or asks for something; one silence waits once; a stop ends the lesson.
+
+Measured (ms-r144-tier-fp-2000): 0 full scripts and 1 check-in on 2,000 ordinary lines; on 704 safeguard-turn lines the predicate misses, 136 sure, 39 check-in (read by hand: none a disclosure that waits), 529 none. Reverse if a check-in is ever followed by a disclosure the next turn misses, or a curated disclosure line reads as a check kind.
+
+## dc-r144-deva-bully-context, dc-r144-rewrite-block-probe, dc-r144-opening-body-clean
+
+Three more causes of the census's false safeguards, each from one owner lesson: a lone Devanagari bully token (an ASR garble) as a disclosure; a blocked rewrite call failing straight to the script; the model body after the vetted opening repeating both helplines and scolding the child. See the graph nodes for the rule and the reversal.

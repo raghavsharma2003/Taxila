@@ -4544,3 +4544,17 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 
 - The 140 sim-lab leaks are 80 digit, 49 word, 8 number word and 3 other; the verb 'do' accounts for none.
 - f642ecf4 over-expands acceptable forms; a scoped fix is in progress.
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## ms-r144-tier-fp-2000 (2026-10-21, n = 2,704)
+
+b145 classify() on grok-4-1-fast-non-reasoning (label call OR the words-only read with the about note, her last words as context), TEST endpoints, model-only. 2,000 ordinary sim-lab lines (seed 1432): NO 1,999, CHECK 1, SURE 0. 704 safeguard-turn lines the predicate misses: SURE 136 (afraid_of_person_or_home 106, self_harm 12, hurt_by_person 8, unnamed 8, unsafe_now 2), CHECK 39 (sad_or_lonely 20, none 12, other_fright 7), NO 529. Script: scratchpad tierfp.mjs; result tierfp-result.json (synthetic sim-lab lines).
+
+## ms-r144-census-15 (2026-10-21, n = 151 findings)
+
+15 production lessons, 3 coders, taxonomy F1-F14; docs/research/census/2026-10-21-failure-census.md.
+
+## ms-r144-about-note-ab (2026-10-21, n = 699)
+
+The words-only read alone, V2 brief vs V2 + about note, on the 704 predicate-missed safeguard-turn lines (699 read on both): 181 → 166 distress (44 lost, 29 gained). The 44 lost are in-episode replies to "are you safe?", none a first disclosure (read by hand). Script: scratchpad aboutab.mjs.

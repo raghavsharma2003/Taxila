@@ -66,6 +66,8 @@ const ESCAPE_VOICE = "unsafe, hurt or scared → no lesson now: calm care, a tru
 const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
+// 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
+const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask one gentle open question; no helpline numbers this turn.";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
@@ -252,11 +254,12 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
         : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead`;
   let check, shape;
   if (move.kind === "safeguard") {
-    check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
+    check = move.tier === "check" ? DISTRESS_CHECK : voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     // W2-I R3 (P2: a spoken-planning preface on 18/18 heavy turns): the reply begins with the child, never with a sentence
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
-    shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+    shape = move.tier === "check" ? "at most 30 words, short warm sentences. End with your one gentle question, then stop."
+      : "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (move.intake) {
     // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe
     // that is the kit question, pinned verbatim (content); never a lesson explanation or a quiz of her own here

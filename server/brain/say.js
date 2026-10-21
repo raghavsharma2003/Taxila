@@ -256,7 +256,19 @@ export function safeguardStayLine(ctx = {}) {
   const mode = safetyModeOf(ctx.lang);
   return STAY[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
 }
+// 14.4: the fixed line for the check-in tier when no model line could be written: noticing and one open question, no numbers
+const CHECK_IN = {
+  en: { tum: "That sounds hard. Are you okay right now? You can tell me what happened.", aap: "That sounds hard. Are you okay right now? You can tell me what happened." },
+  hinglish: { tum: "Yeh sunke lag raha hai kuch mushkil hai. Kya tum abhi theek ho? Jo hua, mujhe bata sakte ho.", aap: "Yeh sunke lag raha hai kuch mushkil hai. Kya aap abhi theek hain? Jo hua, mujhe bata sakte hain." },
+  hi: { tum: "यह सुनकर लग रहा है कुछ मुश्किल है। क्या तुम अभी ठीक हो? जो हुआ, मुझे बता सकते हो।", aap: "यह सुनकर लग रहा है कुछ मुश्किल है। क्या आप अभी ठीक हैं? जो हुआ, मुझे बता सकते हैं।" },
+};
+/** The fixed check-in line (the check-in tier's fallback). Exported for tests. */
+export function distressCheckLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return CHECK_IN[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
 export function fallbackReply(state, item) {
+  if (state.lastMove?.kind === "safeguard" && state.lastMove?.tier === "check") return distressCheckLine(state.ctx);
   if (state.lastMove?.kind === "safeguard") {
     return (state.safeguard?.calm ?? 0) >= 1 ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   }
@@ -360,7 +372,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const kindNow = state.lastMove?.kind;
   // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
   const floorContent = floorContentOf(item);
-  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard", goodbye: kindNow === "wrap" });
+  // 14.4: the check-in tier names no helpline yet (state.js checkTier); every other safeguard turn must
+  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard" && state.lastMove?.tier !== "check", goodbye: kindNow === "wrap" });
   // G-ASK parity: a turn with a pinned question (UiDirectives.ask for THIS item) ends on that question and asks no
   // other — a corrective move (hint, re-teach, repair) re-poses the same item, it never moves to a side question.
   // Any other handing-back turn asks one question at most (audit flows G4: "…14 times 14 karke batayiye. 9² kitna hota hai?").
@@ -486,7 +499,24 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
   // outage: the caller fails CLOSED to the safeguarding protocol (turn(): `filtered`).
-  const blocked = () => ({ reply: fallbackReply(state, item), filtered: true, guard: { caught: ["content_filter"], rewritten: false, replaced: true } });
+  // 14.4: `probe` is what the child's own words alone did (childWordsTrip); a probe that could not run is UNSURE: the caller
+  // opens a check-in (one gentle question, no helplines yet; the next turn escalates unless the child is clearly fine)
+  const blocked = (probe = "harm") => ({ reply: fallbackReply(state, item), filtered: true, ...(probe === "unknown" ? { unsure: true } : {}),
+    guard: { caught: ["content_filter"], rewritten: false, replaced: true } });
+  // 14.4 (main safety review; owner census dad0c9db t22: "pata nahi" got the helpline script with no disclosure anywhere in
+  // the lesson): a block on a REWRITE or REPAIR call (the brief, her draft and the child's words) is judged as every other
+  // reply-side block. A non-harm detector: a neutral line. Otherwise the child's own words alone decide: clear, a neutral
+  // line; a harm block, the safeguard; a probe that could not run, the check-in.
+  const blockedAfterDraft = async (e, code) => {
+    if (nonHarmFilter(e)) return { reply: fallbackReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    const probe = await childWordsTrip(probeWords(history, childText), { trace });
+    if (probe === "clear") {
+      console.warn(`[lesson] ${code} blocked but the child's own words pass: a neutral line`);
+      return { reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } };
+    }
+    console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
+    return blocked(probe);
+  };
   // round 2 (conversation): the LEAD SLOT. A turn that answers a request before the card question, or puts the same
   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
@@ -549,7 +579,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       ]);
       if (probe !== "clear") {
         console.warn(`[lesson] reply prompt blocked (${cats}); the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}: fail closed`);
-        return blocked();
+        return blocked(probe);
       }
       console.warn(`[lesson] reply prompt blocked (${cats}) but the child's own words pass: ${retry ? "the retry on this turn alone" : "a neutral line"}`);
       if (!retry) return neutral("content_filter_context");
@@ -576,6 +606,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           console.warn("[lesson] her reply was blocked on completion but the child's own words pass: a neutral line");
           return neutral("content_filter_output");
         }
+        console.warn("[lesson] her reply was blocked on completion and the child's own words could not be cleared");
+        return blocked(probe);
       }
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
@@ -660,7 +692,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       guard.rewritten = true;
       found = problems(reply);
     } catch (e) {
-      if (isContentFilter(e)) { console.warn("[lesson] rewrite blocked by the content filter"); return blocked(); }
+      if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_rewrite");
       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
     }
     guard.afterRewrite = found;
@@ -699,7 +731,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           let a = again;
           if (problems(a).includes("long")) a = trimToWords(a, max);
           if (!problems(a).filter((p) => !SOFT_FIX.has(p)).length && !problems(a).includes("long") && !isBare(a, askEnd, pinned)) { reply = a; guard.reasked = true; }
-        } catch (e) { if (isContentFilter(e)) return blocked(); }
+        } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
       }
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
@@ -767,7 +799,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
-      } catch (e) { if (isContentFilter(e)) return blocked(); }
+      } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
     }
     // a hint turn still only the question after the rewrite: the rung's own kit hint (verified content that never states
     // the key, never a teacher note) leads the question
@@ -796,7 +828,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
             const now = problems(again);
             if (!now.includes("bare") && !now.includes("same") && !now.includes("leak") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
           }
-        } catch (e) { if (isContentFilter(e)) return blocked(); }
+        } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
       }
     }
     // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
