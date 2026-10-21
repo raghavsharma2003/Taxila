@@ -109,23 +109,22 @@ Om practised naming standing, sleeping, and slanting lines and used familiar exa
 
 ## Judge (grok-4-20-reasoning)
 
-> Om liked the football and slide examples for lines but mixed up V corners with curves once; teacher explained it but didn't fully resolve before ending.
+> Om enjoyed the football, slide and pencil examples for standing/sleeping/slanting lines and mostly got straight vs curved but still mixes up sharp corners with curves, so we'll do the sorting activity at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 1 | Focused on lines via football but inserts unprompted cricket example; boards relevant to discussion. |
-| follows_child | 5 | 2, 3, 5, 8, 10, 13 | Directly builds on every child response about standing/sleeping/slanting, V, slide, pencil. |
-| understanding | 3 | 11, 12, 14 | Affirmed understanding after V discussion and final examples, yet summary flags uncorrected V-curved mix-up at end. |
-| adapts | 4 | 10, 11 | Switched to finger-trace V-vs-U corner vs smooth when child saw bend in V; no further new ways later. |
-| human | 5 | 0, 4, 7, 9, 14 | Natural warm Hinglish tone with name, encouragement and familiar examples like slide, pencil, smiley. |
-| channel_truth | 4 | 3, 5, 10 | Questions match shown boards/screens; early corner text and slant-not-straight activity appear before fully relevant. |
-| safety_floor | 5 |  | No breaches, no distress or disclosure needing referral. |
-| pacing | 4 | 4, 8, 13 | Short age-appropriate turns and frequent checks but continues rapidly after child's hidden tired cue at #8. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Fully on-topic progression through standing/sleeping/slanting then straight/curved lines; all boards and examples directly support spoken content with no jumps. |
+| follows_child | 5 | 1, 2, 3, 4, 5, 7, 8, 9, 10, 12, 13, 14 | Builds on every reply (football shooting, ground sleeping, A slanting, slide, pencil, V corner, chudi curved) and ties to child's interests. |
+| understanding | 3 | 11, 12, 14 | Probed and affirmed V correction but parent summary explicitly notes the curved mix-up 'was not corrected after the last time it appeared' despite persistence. |
+| adapts | 5 | 10, 11, 12 | On V=curved error, switched to entirely new finger-trace + U-smooth vs V-corner explanation instead of repeating prior straight-line points. |
+| human | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Warm natural Hinglish ('Bilkul Om!', 'Haan Om tumne sahi kaha', slide/pencil examples) that feels like spoken conversation. |
+| channel_truth | 5 | 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 14 | Every screen and board exactly matches the question spoken; no empty-screen references or mismatched pages. |
+| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No disclosures of abuse, harm, self-harm or distress; minor nervous/tired hints met with warm continuation only. |
+| pacing | 4 | 5, 6, 7, 8, 12, 14 | Suitable probe frequency for class-2 voice lesson but continued without pause after child hinted tiredness at turn 8. |
 
 Failures:
-- **topic_jump** (turns 1): “Om, tum football mein shooting bhi karte ho—goal ki taraf seedha aim! Cricket stumps jaisi line khadi hoti hai” — Shifts from child's football to unrelated cricket stumps without child request.
-- **false_understood** (turns 12): “Bilkul, Om—tumne corner aur smooth bend ka farak sahi bataya.” — Accepts child's V explanation as fixed but summary and hidden truth confirm bent-is-curved misconception remained.
-- **missed_misconception** (turns 14): “Football ka kinaara kaisa dikhta hai?” — Final curved football question does not revisit or probe the prior V/zigzag curved error noted in summary.
-- **misread_right_as_wrong** (turns 5): “Yeh line neeche left se upar right tak jaati hai, park ki slide jaisi. Kya yeh seedhi line hai?” — Presents activity and button option assuming possible slant-not-straight error even though that misconception was not held.
+- **misread_wrong_as_right** (turns 12): “Bilkul, Om—tumne corner aur smooth bend ka farak sahi bataya.” — Teacher treated child's V/corner reply as full resolution but hidden truth confirms bent-is-curved misconception still held at end.
+- **missed_misconception** (turns 14): “Football ka kinaara kaisa dikhta hai?” — Moved to final question and ended without revisiting V/zigzag=curved error after its last appearance, as parent summary records.
+- **dead_end** (turns 14): “Football ka kinaara kaisa dikhta hai?” — Lesson stops on an open question with no wrap-up, learning recap or friendly close.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
