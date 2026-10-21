@@ -23,6 +23,18 @@
       "kind": "decision",
       "at": "2026-10-21",
       "title": "The fold-in's carried turn keeps the burst's OWN ear item: an item still open at the carried onset (opened at most CARRY_PRE_MS = 1,200 ms before it, with a KNOWN audio end past it) belongs to the turn; the hold offer after \"wait\" is always wordless. Not changed (tried, no effect on the 132 recorded runs): carrying a hushed burst at her_end when her line did not hand over (governor carryCheck) — kept as a candidate if production shows a request said over an explanation, read as a short burst, lost. Reversal: production traces showing the previous turn's words (an echo item, the last answer) folded into the next turn."
+    },
+    {
+      "id": "ms-r144-negation-echo",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "title": "The echo filters ate the child's NEGATION (census F5 #2, main's hypothesis confirmed; evals/duplex-2026-10/negation-echo.mjs, results/negation-echo.json). Cause: the consonant skeleton of \"नहीं\" is \"n\" — the same as her \"हैं\", her tag \"ना\" and \"हाँ\" — so the child's negation matched her ordinary words: \"मुझे नहीं पता कितने corners होते हैं\" over her \"…कितने corners होते हैं?\" became \"मुझे पता\" (meaning flipped), \"नहीं तीन नहीं होगा\" over \"…तीन होगा ना?\" and \"नहीं मज़ा नहीं आ रहा\" were emptied. Method: every (her line → the child's heard reply) pair of the cached sim lab voice records, text level (her words timed at 70 ms/char, the reply's audio after her line), base filters (int @ b8285b2b) vs fixed. n = 41,259 distinct pairs, 20,109 replies with a negation. Duplex echo filter (server/duplex/echo.js): replies whose negation was removed 510 → 156 (the rest: surface-identical runs, the child repeating her phrase with her negation, which text alone cannot tell from echo); other replies changed 24 (her tag \"ना\" kept). Cascade lane isEcho (whole reply read as her echo): negated replies 1,823 → 908. ECHO FLOOR unchanged: her own line fed back as echo — tokens left 2,029 → 2,029 over 39,955 lines, isEcho on her line 39,908 → 39,908. The D5 bake replay (132 runs): 0 commits changed (no such collision in the 66 scenarios)."
+    },
+    {
+      "id": "dc-r144-negation-surface-key",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "Echo matching keys a negation word (नहीं / नही / ना / न / मत / nahi / no / not / never / don't …) on its own SURFACE, never its consonant skeleton (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtractor and the cascade lane's isEcho): a negation is echo only when she said that very word. Reversal: her echo containing a negation SPELLED differently by the ear (\"नही\" for her \"नहीं\") leaking into the child's turn on device traces."
     }
   ],
   "edges": [
@@ -34,6 +46,11 @@
     {
       "from": "dc-r144-fanin-carried-burst-item",
       "to": "ms-r144-d5-overlap-words-lost",
+      "rel": "measured_by"
+    },
+    {
+      "from": "dc-r144-negation-surface-key",
+      "to": "ms-r144-negation-echo",
       "rel": "measured_by"
     }
   ]

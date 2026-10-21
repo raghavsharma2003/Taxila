@@ -14,6 +14,7 @@ import { createEngine, TrainedEngine, loadOnnxFloorModel } from "../src/duplex/a
 import { FEATURE_NAMES, FEATURE_SPEC, packFeatures } from "../src/duplex/features.ts";
 import { CONTEXT, VERDICT, OVERLAP, FIRST_TEXT_P90 } from "../src/duplex/config.ts";
 import { TurnTranscript } from "../server/duplex/fanin.js";
+import { isEcho } from "../src/lesson/cascadeLink.ts";
 import { EchoSubtractor } from "../server/duplex/echo.js";
 import { PartialSafety } from "../server/duplex/partialSafety.js";
 import { Speculator } from "../server/duplex/speculator.js";
@@ -531,6 +532,26 @@ test("census F5: the carried burst's OWN item joins the fold-in though the ear o
   g.push({ type: "final", itemId: "before", text: "पुराना", t: 3400, audioStartMs: 1700, audioEndMs: 2400 });
   g.push({ type: "final", itemId: "early", text: "बहुत पहले", t: 3500, audioStartMs: 900, audioEndMs: 3000 });
   assert.equal(g.view(3500).text, "");
+});
+
+test("census F5 #2: a negation never matches her words by consonant skeleton (\"नहीं\" = \"n\" = her \"हैं\" / \"ना\")", () => {
+  const sub = (her, child) => {
+    const e = new EchoSubtractor();
+    e.heardText("u1", her, 0, 70);
+    const end = her.length * 70;
+    return e.subtract(child, end + 600, 0, { fromMs: end - 1500, toMs: end + 400 }).text;
+  };
+  // the meaning must not flip, and an answer must not vanish
+  assert.equal(sub("अब बताओ, कितने corners होते हैं?", "मुझे नहीं पता कितने corners होते हैं"), "मुझे नहीं पता");
+  assert.equal(sub("तो ये तीन होगा ना?", "नहीं तीन नहीं होगा"), "नहीं तीन नहीं");
+  assert.equal(sub("तुम्हें मज़ा आ रहा है ना?", "नहीं मज़ा नहीं आ रहा"), "नहीं मज़ा नहीं आ रहा");
+  // the cascade lane's whole-utterance test: a negated reply is not her echo; her own line still is
+  assert.equal(isEcho("मुझे नहीं पता कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), false);
+  assert.equal(isEcho("अब बताओ कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), true);
+  // her OWN negation echoed back is still echo (surface match)
+  const e = new EchoSubtractor();
+  e.heardText("u1", "नहीं नहीं, ये तीन नहीं है", 0, 70);
+  assert.equal(e.subtract("नहीं नहीं ये तीन नहीं है", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "");
 });
 
 test("echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers", () => {

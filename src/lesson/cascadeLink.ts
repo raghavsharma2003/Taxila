@@ -273,10 +273,23 @@ export function skeleton(word: string): string {
  * Four or more words, at least 70% of them in her reply by skeleton. A child repeating a short phrase of
  * hers as an answer ("teen chauthai") stays a turn.
  */
+/**
+ * Census F5 #2 (main 2026-10-21: a fragment lost its negation): negation words never match by consonant skeleton. "नहीं"'s
+ * skeleton is "n", the same as her "हैं", her tag "ना" and "हाँ", so the child's negation read as one of her words: the
+ * duplex echo filter turned "मुझे नहीं पता कितने corners होते हैं" (over "…कितने corners होते हैं?") into "मुझे पता", and this
+ * lane's isEcho read the whole reply as echo. A negation keys on its own SURFACE: echo only when she said that very word.
+ */
+const NEGATION = new Set(["नहीं", "नही", "नहि", "नहिं", "ना", "न", "मत", "nahi", "nahin", "nahee", "nai", "na", "no", "not", "nope", "never", "mat", "dont", "don't", "doesnt", "didnt", "cant", "isnt"]);
+export function echoKey(word: string): string {
+  const s = String(word ?? "").normalize("NFC").toLowerCase();
+  const bare = s.replace(/[^\p{L}\p{M}\p{N}']+/gu, "");
+  return NEGATION.has(bare) || NEGATION.has(bare.replace(/'/g, "")) ? `¬${bare.replace(/'/g, "")}` : skeleton(word);
+}
+
 export function isEcho(heard: string, spoken: string): boolean {
-  const h = tokens(heard).map(skeleton).filter((w) => w.length >= 1);
+  const h = tokens(heard).map(echoKey).filter((w) => w.length >= 1);
   if (h.length < 4) return false;
-  const said = new Set(tokens(spoken).map(skeleton).filter(Boolean));
+  const said = new Set(tokens(spoken).map(echoKey).filter(Boolean));
   return h.filter((w) => said.has(w)).length / h.length >= 0.7;
 }
 

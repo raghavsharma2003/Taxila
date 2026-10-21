@@ -13,12 +13,13 @@
 // What is KEPT: an isolated single-token match. A child repeating one word of hers as an answer ("चौथाई", "बारह") is a
 // turn, not an echo, and deleting it would delete an answer — except a FRESH one (her word ended <= 1 s before the text's
 // audio time): that is her echo arriving token by token on a word-timed stream.
-import { skeleton } from "../../src/lesson/cascadeLink.ts";
+import { echoKey } from "../../src/lesson/cascadeLink.ts";
 
 const WORD = /[^\p{L}\p{M}\p{N}]+/u;
 const split = (t) => String(t ?? "").split(/\s+/).filter(Boolean);
-const sk = (w) => skeleton(String(w).replace(new RegExp(WORD.source, "gu"), ""));
 const surf = (w) => String(w).normalize("NFC").toLowerCase().replace(new RegExp(WORD.source, "gu"), "");
+// Census F5 #2: a negation keys on its surface, never its consonant skeleton (echoKey, shared with the cascade lane's isEcho)
+const sk = (w) => echoKey(String(w).replace(new RegExp(WORD.source, "gu"), ""));
 
 export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4, freshMs: 1000 };
 
