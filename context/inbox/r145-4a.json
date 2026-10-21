@@ -29,6 +29,19 @@
    "kind": "open",
    "at": "2026-10-21",
    "title": "'तेरा' for 13 (also 'your') is not read as a number: 1 right answer on the 14.3 decided gate earned no evidence (p03 #13). Out of scope for the reason head (main); needs a context rule if it recurs."
+  },
+  {
+   "id": "rj-r145-kit-deep-marks",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "The deep-kind audit's 1,927 marks (deep: false on items whose kind says deep but whose question is plain), measured before applying (dc-r144-deep-marks-switch) and rejected. Sim lab run r5-deepmarks-9f1fc91-min (claude/r5-simlab), 64 cards x 2 arms, agent teacher, text, decided child (seed taxila), 0 unavailable turns. off_kind (marks off, the child answers by kind) vs on_audit (TAXILA_KIT_DEEP_MARKS=1, the child answers marked items on the plain row): judge read agree 122/180 (68%) vs 125/184 (68%), overclaimed 22 vs 21, false alarms 8 vs 13; her own read agree 88/160 (55%) vs 97/174 (56%), over 20 vs 21, under 52 vs 56; rubric means inside the A/A band on every axis. The marks made the real gap worse: deep items asked of an understood child 66 vs 47, and of the understood under-reads 11/42 vs 23/46 were 'untested' (never given a deep item to pass). About 40% of marked-item answers were unverified in both arms (the grading loss ms-r145-whole-reply-vetoes targets). Removed: the switch, data/kits/deep-marks-2026-10-15.json, and main's deep-kind patch (items.js plainEvidence, the kit deep: false field, the agent's plain flag and read.js plain row), since the next step, one deep item per probed skill, does not use them. Reversal: a later audit showing a marked-plain item mis-reads a child, measured the same way."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rj-r145-kit-deep-marks",
+   "rel": "supersedes",
+   "dst": "dc-r144-deep-marks-switch"
   }
  ]
 }

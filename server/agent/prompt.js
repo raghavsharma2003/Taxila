@@ -3,7 +3,7 @@
 // friendly); each turn adds ONE compact state and the event. The safety floor is the compiled floor, verbatim
 // (server/compiler/floor.js floorText: the same text every lane carries), and it is the last section.
 import { floorText } from "../compiler/floor.js";
-import { promptFor, plainEvidence } from "../director/items.js";
+import { promptFor } from "../director/items.js";
 import { AGENT_LIMITS } from "./flags.js";
 
 const LANG = { hinglish: "Hinglish (Hindi and English mixed the way Indian children speak, Roman script)", hindi: "simple Hindi (Roman script); name the lesson's ideas with Hindi words, an English term only as a short gloss after the Hindi one", english: "simple English" };
@@ -85,16 +85,15 @@ export function offeredItems(state, kit, limit = AGENT_LIMITS.offerItems) {
   // a skill with a right plain answer and no right deep one: its deep item (contrast / transfer / error-spot / predict) next,
   // the only evidence that separates understood from partly (agent.js earnedRead)
   const DEEP = new Set(["contrast", "near_transfer", "far_transfer", "error_spot", "predict", "translate_rep", "why"]);
-  const deepItem = (i) => DEEP.has(i.kind) && !plainEvidence(i);
   const needsDeep = new Set(Object.entries(state.agent?.learner ?? {}).filter(([, v]) => (v.graded ?? []).some((x) => x.g === "correct")
-    && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind) && !x.plain)).map(([k]) => k));
-  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && deepItem(i) ? -50 : 0)
+    && !(v.graded ?? []).some((x) => x.g === "correct" && DEEP.has(x.kind))).map(([k]) => k));
+  const rank = (i) => (i.targetsMisconception && shown.has(i.targetsMisconception) ? -100 : 0) + (needsDeep.has(i.skillId) && DEEP.has(i.kind) ? -50 : 0)
     + (i.skillId === cur ? 0 : skillOrder.indexOf(i.skillId) > skillOrder.indexOf(cur) ? 1 : 2) * 10 + (i.difficulty ?? 2);
   const open = (kit.items ?? []).filter((i) => !done.has(i.id) && KINDS.has(i.kind));
   // sim lab 35c0b7c (44 understood skills held at partly: the deep item never came): a skill that needs deep evidence offers
   // ONLY its deep items while it has one left, so the next question she poses on it is the one that can show understanding
-  const deepLeft = new Set(open.filter((i) => needsDeep.has(i.skillId) && deepItem(i)).map((i) => i.skillId));
-  return open.filter((i) => !(deepLeft.has(i.skillId) && !deepItem(i) && !(i.targetsMisconception && shown.has(i.targetsMisconception))))
+  const deepLeft = new Set(open.filter((i) => needsDeep.has(i.skillId) && DEEP.has(i.kind)).map((i) => i.skillId));
+  return open.filter((i) => !(deepLeft.has(i.skillId) && !DEEP.has(i.kind) && !(i.targetsMisconception && shown.has(i.targetsMisconception))))
     .sort((a, b) => rank(a) - rank(b)).slice(0, limit);
 }
 

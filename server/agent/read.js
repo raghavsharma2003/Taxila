@@ -29,8 +29,7 @@ const outcomeOf = (g) => (g === "correct" ? 0 : String(g ?? "").startsWith("part
 export function posteriorOf(graded, { prior = PRIOR, learn = LEARN } = {}) {
   let p = [...prior];
   for (const x of graded ?? []) {
-    // a deep-tagged item the deep-kind audit marked plain (graded entry `plain`, kit item deep: false) weighs as plain
-    const table = P[x.plain ? "plain" : depthOf(x.kind)];
+    const table = P[depthOf(x.kind)];
     const o = outcomeOf(x.g);
     p = LEVELS.map((s, i) => { const [c, pt] = table[s]; const like = o === 0 ? c : o === 1 ? pt : Math.max(0.02, 1 - c - pt); return p[i] * like; });
     const z = p.reduce((a, b) => a + b, 0) || 1;

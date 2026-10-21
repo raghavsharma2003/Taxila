@@ -17,8 +17,6 @@ export interface KitItem {
   prompt_en: string; prompt_hi: string; answer: string; acceptable: string[];
   hints: [string, string, string, string]; targetsMisconception?: string;
   verified?: { solverAnswer: string; agrees: boolean; note?: string };
-  /** Deep-kind audit: false = a deep-tagged item that is recall / one step / read-off; its answer is plain evidence (server/director/items.js plainEvidence). */
-  deep?: false;
 }
 export interface KitMisconception {
   id: string; belief: string; signs: string[];
