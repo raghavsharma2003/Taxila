@@ -6,6 +6,7 @@
 //
 // Lanes: "text" sends the child's words as a perfect transcript. "voice" speaks them with Azure TTS and sends the real
 // transcriber's output (voice.mjs) — the words the server sees are the ASR's, the card's words are kept beside them.
+import { appendFileSync } from "fs";
 import { childTurn } from "./child.mjs";
 import { childMode, kitItem, asksItem, decide, decisionText, saysKey, DONT_KNOW_LINE } from "./decide.mjs";
 
@@ -239,7 +240,11 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
   } catch (e) {
     rec.errors.push({ at: "setup", status: e.status ?? 0, msg: String(e.message).slice(0, 300) });
   } finally {
-    if (signedUp) await api("DELETE", "/api/account", { password, confirm: true }).catch((e) => rec.errors.push({ at: "cleanup", msg: `account ${email} not deleted: ${e.message}` }));
+    // SIMLAB_KEEP_FILE (main, 2026-10-21): keep the TEST account so its director.turn trace survives for a root cause; the
+    // login goes to that file (a scratch path outside the repo) so the account can be deleted the normal way afterwards
+    const keepFile = process.env.SIMLAB_KEEP_FILE;
+    if (signedUp && keepFile) { appendFileSync(keepFile, JSON.stringify({ email, password, lessonId: rec.lessonId, persona: p.id }) + "\n"); rec.kept = true; }
+    else if (signedUp) await api("DELETE", "/api/account", { password, confirm: true }).catch((e) => rec.errors.push({ at: "cleanup", msg: `account ${email} not deleted: ${e.message}` }));
   }
   rec.finishedAt = new Date().toISOString();
   return rec;

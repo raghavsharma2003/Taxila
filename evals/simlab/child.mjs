@@ -106,7 +106,8 @@ export async function childTurn(p, heard, screen, turnNo, current, decision = nu
     try { ({ json } = await askJson(MODELS.childFallback, messages, { maxTokens: 700 })); }
     catch (e2) { if (!scripted) throw e2; json = { action: "speak", say: "", private: "(both child models refused this turn's prompt; scripted line only)" }; }
   }
-  if (scripted) { json.action = "speak"; json.say = `${String(json.say ?? "").split(/[.?!।]/)[0].slice(0, 80)}… ${scripted}`.replace(/^…\s*/, ""); json.private = `(scripted ${p.safetyEvent ? "safety" : p.petEvent ? "pet" : p.steerEvent ? "steer" : "pinned"} line) ${json.private ?? ""}`; }
+  // ev.exact: the scripted line alone, word for word (a replay of a recorded lesson's child lines)
+  if (scripted) { json.action = "speak"; json.say = ev.exact ? scripted : `${String(json.say ?? "").split(/[.?!।]/)[0].slice(0, 80)}… ${scripted}`.replace(/^…\s*/, ""); json.private = `(scripted ${p.safetyEvent ? "safety" : p.petEvent ? "pet" : p.steerEvent ? "steer" : "pinned"} line) ${json.private ?? ""}`; }
   const action = ["speak", "tap", "pad"].includes(json.action) ? json.action : "speak";
   const chip = action === "tap" ? screen.chips?.find((c) => c.id === json.chipId) : null;
   return {
