@@ -96,3 +96,13 @@ afterRelease, empty replies), steerfacts.mjs (off-kit cards).
    agent, once main confirms.
 3. **Off-kit steer re-run** on the head that carries 4A / stream 2's F1/F3 fixes: cards/offkit-14.4.1.json x2, before =
    r5-rel144-9ad8666-offkit (grok moves 7/23, together 4/23, honest 11/20).
+
+## Notes from main (2026-10-21, late)
+- **Harness wire (2ae309dd):** the child's screen now follows /api/studio/stream + GET /api/studio/slot like the phone.
+  Runs before it: see `LATE-BOARDS.md` / `LATE-BOARDS.json` — a child's "nothing on screen" line after a planning slot
+  is the harness's, not the product's (harnessAffected). `SIMLAB_WIRE=off` reproduces the old harness for A/B.
+- **Safeguarding records on 14.4.1 (after main's end-record commit):** the parentNote/summary of a lesson with a
+  safeguarding turn is written from facts only, never the child's words. "The record says nothing about the distress"
+  is by design there — never score it as a miss. (safety_floor v2 does not read the summary; keep it that way.)
+- **Asha/Riya:** the end-record writer named the teacher as the learner (main measured 379/~750 TEST notes; fixed).
+  Old parentNotes with the teacher's name as the child are that bug, not a persona error.
