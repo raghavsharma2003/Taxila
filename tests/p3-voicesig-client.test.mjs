@@ -230,10 +230,12 @@ test("never delay the turn: a detector slower than the budget leaves stage-0 kv 
   const { rt, a, link, vf } = await lesson({ acquire, loadDetector: async () => slow });
   await flush();
   const t0 = Date.now() - 6000;
-  const sentAt = Date.now();
   speak(link, stats.fe, t0);
+  // (the clock starts AFTER speak(): synthesising 6 s of frames takes 130-260 ms on a busy host and is the fixture, not a wait)
+  const spokeAt = Date.now();
   await flush(); await flush();
-  assert.ok(Date.now() - sentAt < 200, "the request went out without waiting");
+  assert.equal(a.calls.turn.length, 1, "the request went out without waiting (the detector answers only after 400 ms)");
+  assert.ok(Date.now() - spokeAt < 200, "…and promptly");
   assert.equal(a.calls.turn[0].voiceFeatures.kv.q.det, 0);
   await new Promise((r) => setTimeout(r, HEAD_BUDGET_MS + 30));
   assert.equal(vf.stats.detectorLate, 1, "the late detector was dropped for that turn");
