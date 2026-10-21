@@ -3,7 +3,7 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
@@ -424,7 +424,7 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
 /**
  * 14.3: do the child's words ALONE trip the content filter? A neutral brief ("Answer with one word: ok") on the reply
  * deployment, the same probe the reply path runs (brain/say.js childWordsTrip). "harm": a harm or unreadable block;
- * "clear": passed, or only an injection / copyright detector fired; "unknown": the probe failed (the caller fails closed).
+ * "clear": passed, or only an injection / copyright / hate detector fired (14.4, azure.js notChildSafety); "unknown": the probe failed (the caller fails closed).
  * @returns {Promise<"harm"|"clear"|"unknown">}
  */
 async function wordsTrip(text, trace) {
@@ -433,7 +433,8 @@ async function wordsTrip(text, trace) {
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
     return "clear";
   } catch (e) {
-    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    // 14.4: a block by the hate detectors alone is no child-safety signal (azure.js notChildSafety); the distress read still runs
+    if (isContentFilter(e)) return notChildSafety(e) ? "clear" : "harm";
     return "unknown";
   }
 }

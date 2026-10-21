@@ -94,6 +94,18 @@ export const NON_HARM_FILTERS = new Set(["jailbreak", "indirect_attack", "protec
  * other). Unknown or empty → false: the caller fails closed exactly as before.
  */
 export const nonHarmFilter = (e) => Array.isArray(e?.filterCats) && e.filterCats.length > 0 && e.filterCats.every((c) => NON_HARM_FILTERS.has(c));
+/** The hate detectors (the category and its multi-severity score). */
+export const HATE_FILTERS = new Set(["hate", "multiseverity_hatespeechscore"]);
+/**
+ * 14.4 (main safety review; sim lab off-kit ok03 r1 on 9ad86661, TEST 30 days): did the CHILD'S OWN WORDS, probed alone, trip
+ * a child-safety filter? A block by the hate detectors alone (with any injection / copyright detector) is not one: on TEST it
+ * failed closed to the full helpline script on 10 turns in 30 days, every one harmless (class 8 answers about British rule,
+ * "Kala Chashma", "humne race lagayi", Eid in Kashmir), and it fires on 0 of 276 curated distress lines (the red team, es3,
+ * TaxilaFDB, conversation-v2). The filter probes only (brain/say.js childWordsTrip, director/classify.js wordsTrip): every
+ * distress READ, the predicate, and sexual / self_harm / violence / unknown / unreadable blocks fail closed exactly as before.
+ */
+export const notChildSafety = (e) => Array.isArray(e?.filterCats) && e.filterCats.length > 0
+  && e.filterCats.every((c) => NON_HARM_FILTERS.has(c) || HATE_FILTERS.has(c));
 const withCats = (err, body) => { if (err && err.code === CONTENT_FILTER) err.filterCats = filterCategories(body); return err; };
 
 /** A config error from server/endpoints.js surfaces as an AzureError, as the old inline env reads did. */
