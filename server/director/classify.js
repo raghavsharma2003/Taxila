@@ -439,6 +439,48 @@ async function distressAcross(text, classLevel, trace) {
 }
 
 /**
+ * 14.3.2 (main safety review; QA TEST 6148384f t2): the words-only distress read that runs BESIDE the label call on every
+ * turn the model labels. The label call reads distress as one flag among the grading ones, and on production's classifier
+ * (grok-4-1-fast-non-reasoning) it missed low-mood lines this read catches: in a class 6 lesson context "sab bekaar lagta
+ * hai, koi mujhse baat nahi karta" 0/6 with an item open and 1/6 with none, QA's "aaj mera mann bilkul nahi lag raha, sab
+ * bekaar lagta hai, koi mujhse baat nahi karta" 3/6 with none; this brief alone 30/30 on six such lines and 0/20 on lesson
+ * boredom, on both deployments. Either read saying distress is distress (an OR: the label call's own read and its fail-closed
+ * rules are untouched). A SECOND read: a filter block on its brief moves to the next deployment, and when every deployment
+ * is blocked the child's words alone decide (wordsTrip: a harm block is distress; anything else is no reading, because the
+ * label call read the same words unblocked: the 14.3 p26 shape, a history answer whose words with this brief read `hate`).
+ * A failure is no reading. At most two deployments, 3 s each; it starts with the label call, so it costs no time unless it
+ * is the slower of the two (measured on grok, n=30: added p50 0 ms, p90 150 ms). `trip`: the turn's one words-alone probe,
+ * shared with the label path's.
+ * @returns {Promise<boolean|null>} true / false: a reading; null: none
+ */
+async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace), heard = "") {
+  // 14.4 (sim lab r5-rel144-c142e87-36card p67 #14, TEST e07e397b: "वो... वो डूबेगी..." answering "Kaanch ki goli ko paani
+  // mein daal kar kya hoga?" opened a fresh episode, the full helpline script as the lesson's last line; the words alone read
+  // as "she will drown"): her last words come first, framed as context only. Measured on grok, n=5 per line: that line 5/5 →
+  // 0/5; 5 true-distress lines (low mood, an answer then loneliness, abuse, a "doob jaungi" disclosure under a sinking
+  // question) 25/25 kept; ordinary sim-lab lines with their preceding teacher line 1/2000 (14.3.2: 4/2000). Without her words
+  // (none recorded) the read is the child's words alone, as before.
+  const said = String(heard ?? "").trim();
+  const messages = [
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).${said ? " The teacher's last words come first only so you can tell an answer to the lesson's own question from a disclosure." : ""}` },
+    { role: "user", content: said ? `TEACHER: ${filterSafe(scrubPii(said).text).slice(-240)}\nCHILD: ${filterSafe(scrubPii(text).text)}` : filterSafe(scrubPii(text).text) },
+  ];
+  let blocked = false;
+  for (const d of distressDeployments().slice(0, 2)) {
+    try {
+      // its own schema name: the same brief as distressCheck / distressAcross, told apart in model.call trace rows and tests
+      const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress_beside", effort: "none", maxTokens: 40, timeoutMs: 3000, retries: 0, trace, quotaLane: "hot" });
+      return !!json?.distress;
+    } catch (e) {
+      if (isContentFilter(e) && !nonHarmFilter(e)) blocked = true;
+      console.warn(`[classify] distress read beside the labels on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}`);
+    }
+  }
+  if (blocked && (await trip()) === "harm") return true;
+  return null;
+}
+
+/**
  * The deterministic part of classify(): chips, module answers, empty, the safety predicate, exact key or option
  * matches and a lexical don't-know. Returns the label when the bytes decide, or null when classify() must ask
  * the model (or, for a low-ASR transcript, run its distress backup) — which is what lets the turn route start
@@ -780,10 +822,19 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   // child ~15-21 s (7 s timeout + one retry + the same-deployment hedge, then the 6 s fallback); now the fallback starts at
   // the hedge (1.5 s) or at once when the primary fails fast, and neither call retries (the other is the retry).
   const fb = classifyFallback();
+  // 14.3.2: the words-only distress read beside the labels (distressBeside), started with them so it costs no time; not
+  // needed when the predicate already read distress
+  let tripP = null; const tripOnce = () => (tripP ??= wordsTrip(text, trace));   // one words-alone probe per turn, shared
+  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce, heard);
   try {
     const { value: { json }, backup } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, fb ? { ...opts, retries: 0 } : opts),
       fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
-    return labelled(json, backup);
+    const out = labelled(json, backup);
+    // either read saying distress is distress; `distressBy` attributes it (turn.js: safety.scan source classify_words)
+    if (beside && !out.flags?.distress && (await beside) === true) {
+      return { ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model" } };
+    }
+    return out;
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.
@@ -804,7 +855,7 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
       // brief (wordsTrip, as the reply path's childWordsTrip) — a harm block or an unreadable probe fails CLOSED; (2) the
       // distress read across deployments (distressAcross): a block on one deployment's brief moves to the next filter; a
       // clean read decides; no deployment able to read it fails CLOSED.
-      const trip = await wordsTrip(text, trace);
+      const trip = await tripOnce();
       if (trip !== "clear") return filtered();
       const read = await distressAcross(text, classLevel, trace);
       if (read !== false) return filtered();

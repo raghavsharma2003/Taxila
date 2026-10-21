@@ -6093,3 +6093,91 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.
 - **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.
 - **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## dc-r1431-completion-block-probe (2026-10-15)
+
+- **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.
+- **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.
+- **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear.
+
+
+<!-- merged from inbox/r1431b-main.json -->
+## dc-r143-animal-scare-unchanged (2026-10-15)
+
+- **What:** no change to the distress brief or the opening for the monkey-chase card.
+- **Why:** the scripted line says the child was very scared, which the brief is meant to catch. Organic animal stories trip it on 1 in 585 turns, and the hold now ends in 1-2 turns. A model-only read keeps the disclosure opening because that read also catches disclosures the predicate misses. Over-answering a monkey costs one heavy turn; under-answering a disclosure costs the child.
+- **Reversal:** such safeguards reach 1 per 100 lessons (free-child sim lab, or production real lessons), or an owner or parent reports one. Then measure a narrow carve-out on the distress battery before shipping it.
+
+
+<!-- merged from inbox/r1432-main.json -->
+## dc-r1432-distress-beside (2026-10-15)
+
+- **What:** a words-only distress read now runs beside the grading call on every graded turn. Either one saying distress is distress. It never removes distress, and the existing fail-closed paths are unchanged.
+- **Why:** the grading call misses low-mood lines on production's model that the words-only read catches.
+- **Cost:** about 0.2% of ordinary turns flagged, which the model-episode release ends quickly, and p90 +150 ms.
+- **Reversal:** on production, false flags on lesson talk above 0.5% of graded turns, or more than 250 ms added at p90.
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## dc-r143-kit-deep-false (2026-10-15, PROPOSED)
+
+**What:** a deep-tagged kit item that is recall, one step or read-off carries the optional field `deep: false`.
+
+- What stays: its kind, key, grading and pose.
+- What changes: its answer counts as plain evidence.
+  - KT: `evidenceProbeFor` gives P15, so the answer is `item.open`: no U / T facet and no generative pass.
+  - Agent lane: the evidence read uses the plain table, and `earnedRead`, `deepAvailable` and `offeredItems` count only real deep items.
+- Set: 1927 items, where both cross-family models agree and the human read does not overrule (`docs/research/kits/DEEP-KIND-AUDIT.md`).
+- How: patch `docs/research/kits/deep-kind-fix-2026-10-15.patch`, then mark the kits with `evals/kit-deep-kinds/apply.mjs --write`.
+
+**Why:**
+
+- One shallow "deep" right answer moves U past 0.6 (why) or T past 0.6 (far transfer). It can make a skill `learned_today`.
+- On the agent lane it lifts the evidence read from 0.715 (partly) to 0.816 (understood).
+- Retagging the kind would also change the grading path (a why item gets open grading and the held blind grader) and the teacher's pose. Its keys were verified as posed.
+- The probe-to-class route needs no migration.
+
+**Reversal:**
+
+- a second human read, or another rubric / model pair, overrules more than 10% of the set;
+- child data show `deep: false` items are no easier for partly children than real deep items, or under-reads rise more than the over-reads removed;
+- the kits are re-authored so that kind matches demand.
+
+
+<!-- merged from inbox/r5-stream2-14.4.json -->
+## r5-self-answered-question
+**When her line states, before its numeric question, the answer that question asks for (TEST 1695e941 '0 se 160 metres tak … boundary distance kitna hai?'; fa2f04e7 'Aap 160 par ungli rakhenge?'), the stating clause goes and a question naming it asks 'kis number' instead; the board never draws that answer.** (2026-10-15, 69fe6bc1, c57e5bfb)
+- Predicate: the question's operation from its own words (W18's reading), or the line's when the question names the answer; operands from the question, her line, her last two lines, the worked example's givens; the result stated AS a result (a result word or a range end); never a number the child said, a why / how question, or an earlier sum restated.
+- Measured: sim-lab 14.2 / 14.3, 4384 teacher lines: 2 before, 0 after; looser drafts fired 9-30, all extra hits false and pinned quiet in tests/r5-board-edges.
+- Reversal: a measured real self-answer the predicate misses that a broader reading catches without false hits.
+
+## r5-board-reshown-gated-now
+**A whiteboard drawn earlier is gated against the item open WHEN it is drawn; re-showing it later (keepBoardSlot D42, onScreenSlot late board, slotFor re-reveal, the subscribe replay on reload) now re-checks the open item's withheld values (whiteboard.js withheldValues, a key her line says stays hers) and fails closed when they cannot be computed or are omitted.** (2026-10-15, 205df090, a853362c, 86570734, 50c3622a; main's safety review)
+- A kept board also goes when the move asks another item / skill, or her last sentence brings a number it does not show (QA D43); units and fillers are no shared word (syncedWithLine stop list).
+- Text lane only for the keep: the voice lane's reply text is not on the server.
+- Reversal: a client-side page store that outlives the response (then the client must take the same gate).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r144-ways-chips-lang` (2026-10-15): r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).
+- `dc-r144-deep-marks-switch` (2026-10-15): The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.
+- `r5a-dc-agent-record-check` (2026-10-15): On the agent lane the end record (summary and parent note) words each skill only as far as her earned read: lessonFacts carries a per-skill check (shown / practised, not yet checked with a why or new-situation question / partly / still building) and the writer's last rule bounds the wording. Her read holds 'understood' after a miss until three right answers follow it, one deep. The agent opening never takes a safeguard move or an open episode. Reversal: a live gate where the agent's overclaims stay above the Director's with the record already matching her read (then the read rule, not the wording, needs the next look), or a parent-facing review that finds the 'practised, still to check' wording discouraging.
+- `dc-r5-d4-half-duplex` (2026-10-14): D4 (the fallback lane when D5 cannot open, and the live lane without D5) runs HALF-DUPLEX: while her line plays, her output is audible, or within the tail after either (250 ms + AudioContext.outputLatency within 400-900 ms, else 600), the mic track is disabled, the engine reads the room's quiet level, and any transcription item that starts in that window is dropped whole; micro-commits only for audio the transcriber holds (no commit_empty); an empty turn is never committed on D4. ?duplexfull=1 keeps the full engine on a device. Merged with main's release-14 implementation (337b09a). Reverse if: the owner's real-phone recorder shows a child's answer lost inside the tail more than 1 in 20 turns, or the device AEC is shown sufficient on the cohort's phones (then full-duplex D4 for headsets only).
+- `dc-r5-one-turn-at-a-time` (2026-10-14): One turn at a time on every lane: no engine turn while an engine-committed turn or a tapped / typed answer is waiting for her reply (cleared when her reply starts; a lost reply stops holding after 15 s), none within 3 s of a tap, and the link drops a spoken final within 3 s of a tap until her reply to it arrives. The safety floor (safeguard / safety cut-in) is never held. Reverse if: real sessions show a child's spoken correction right after a tap lost more than 1 in 20 times.
+- `dc-r5-d5-preduck-pitch` (2026-10-14): D5 pre-duck ON by default, straight to the hush level (-26 dB), only for a burst 12 dB above her predicted echo for 80 ms with a pitch >= 1.5 semitones from her own output pitch and its octaves (her echo carries her pitch; measured: 4,448 echo frames at 0 st, ~30 at each of +-12). Voice Live silence 250 ms (decide-late in the engine). No text echo subtraction on D5 (the ear removed her echo acoustically; subtracting her words deleted a child's 'आठ corners'). Reverse if: the owner's recorder shows false pre-ducks on her own echo on more than 2 % of her lines, or barge-in pre-duck <= 500 ms falls below 80 % on real children.
+- `dc-r5-d5-empty-turn-only-from-the-ear` (2026-10-14): D5 posts an empty child turn ONLY when Voice Live itself opened an item and returned an empty or failed final over the burst (the ear covered it). A burst only the device heard (her echo through a weak device AEC, a door, a cough Voice Live ignored) never becomes a turn: after the ear's slowest final it returns the floor unspoken. Cost: a lone haan Voice Live never opens an item for is unheard (1/34 after-her turns on the owner harness). Reversal: if owner-cohort recordings show real children unheard this way more than 1 in 20 closed answers AND their device bursts are distinguishable from echo (pitch / level vs her output), re-admit those bursts as re-asks.
+- `dc-r5-d5-eot-at-the-final` (2026-10-15): D5 closed answers commit at Voice Live's covering final when it carries a value (D5_CLOSED_AT_FINAL_MS 600 floor; never over a hold stretch or the child's own pace); an empty final re-asks 300 ms after it (D5_EMPTY_FINAL_REASK_MS); Voice Live silence 250 → 200 (D5_SERVER_VAD_MS). Measured: ms-r5-d5-eot-steps-2026-10-15. Reversal: owner-cohort recordings show a self-correction cut, a changed value, or a re-ask with the child starting within 600 ms, at a rate above the pre-change engine on the same recordings.
+- `dc-r5-verdict-hold-2500` (2026-10-15): Her reply to a closed answer carrying a value never SOUNDS before the value's end + 2,500 ms (VERDICT_HOLD_MS; the engine's G7 stamp + 500, carried on the commit as verdictHoldUntil, enforced by CascadeLink on both the promptTeacher and early-audio paths by holding the stream's hand-over; the speech request still goes out at once; the ack clip is not held; a correction during the hold revokes and stops the reply). Main 2026-10-15, G = 2,500. Measured: ms-r5-truth-bar-stress-2026-10-15. Reversal: if the measured first-sound cost at the then-current R exceeds ~250 ms on closed-value turns, revisit G with data.
+- `dec-r5-lat-continuer-gate-tuned` (2026-10-15): The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: "aap kaise ho", "aapne Pushpa 2 dekhi?"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, "ek" alone not counted), working aloud, counting, guessing, "you asked". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own "what do you like?" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.
+- `dec-r5-lat-agent-spec-off` (2026-10-15): The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.
+- `dec-r5-lat-ack-trace` (2026-10-15): 14.3.1 (main merged 69542351): the acknowledgement is visible in the flight recorder, codes only. Server: one `ack.decision` row per decision on a lesson (sid = the lesson), built by the pure ackDecisionRow (server/latency/routes.js): kind echo | continuer, or none = one of 21 closed gate reasons (anything else 'other'), decidedMs, shadow, audio, continuerAsked, cohort, ms; never the child's words, the phrase or the echo's token; tier 1, no blob. Device: one `ack.outcome` per decided clip (played | reply_first | late | mismatched | interrupted, afterStopMs). docs/design/round5/results/latency/ack-cohort-query.sql reads them over real-lesson sids only. Why: with the continuer on for the owner cohort, a continuer on a safety turn could not be seen in production. Reverse if: a row is ever found carrying words (then fix the builder, do not drop the trace).
+
+
+<!-- merged from inbox/r144-main.json -->
+## dc-r1432-beside-reversal-tightened (2026-10-21)
+
+- **What:** the words-only read's latency reversal condition was met on production (n=41), and it is not reversed.
+- **Why:** every pair is from an Azure-degraded hour, so it measures the outage, not the read.
+- **Reversal:** > 250 ms p90 over ≥ 100 pairs from normal hours (grok timeouts < 2%).

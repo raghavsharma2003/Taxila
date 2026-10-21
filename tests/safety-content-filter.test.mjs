@@ -71,7 +71,8 @@ for (const deployment of ["grok-4-1-fast-non-reasoning", "taxila-fast"]) {
       process.env.DEPLOY_CLASSIFY = deployment;
       process.env.TAXILA_CLASSIFY_HEDGE_MS = "0";
       let calls = 0;
-      globalThis.fetch = async () => { calls += 1; return res(); };
+      // 14.3.2: the words-only read beside the labels is not counted (r5-safety-distress-beside); it shares the one probe
+      globalThis.fetch = async (url, init) => { if (JSON.parse(init.body).response_format?.json_schema?.name !== "distress_beside") calls += 1; return res(); };
       const s = practiceState();
       const out = await classify(argsFor(s));
       assert.equal(out.flags.distress, true, "a filter block is never read as safe");

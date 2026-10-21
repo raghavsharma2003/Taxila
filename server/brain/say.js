@@ -565,6 +565,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (again) reply = again;
     else {
       if (isContentFilter(e) && nonHarmFilter(e)) return neutral("content_filter_nonharm");
+      // 14.3.1 (main safety review; sim lab rel143 p16 r2, TEST 955a17b7 t12): HER OWN reply about chips packets and nitrogen
+      // was blocked on completion twice. The prompt with the child's words had passed and the classifier read the answer
+      // correct, yet the turn failed closed to the helpline script, and the lesson held helplines two more turns. A block on
+      // HER completion is a safeguard only when the child's own words trip the filter (the 14.2 prompt-side rule): a clear
+      // probe gives a neutral line, never the helplines; a harm or unreadable probe fails CLOSED exactly as before.
+      if (isContentFilter(e) && e.status === 200) {
+        const probe = await childWordsTrip(probeWords(history, childText), { trace });
+        if (probe === "clear") {
+          console.warn("[lesson] her reply was blocked on completion but the child's own words pass: a neutral line");
+          return neutral("content_filter_output");
+        }
+      }
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
       return { reply: fallbackReply(state, item), guard: { caught: ["unavailable"], rewritten: false, replaced: true } };
@@ -947,4 +959,37 @@ export function lockFirstSentence({ reply, askEnd, problems, closing, spoken, co
   const whole = problems(fallback);
   if (whole.length) return no(`min_${whole[0]}`);
   return { locked: true, s1, fallback, ms: Math.round(performance.now() - t0) };
+}
+
+// ───────────── round 5 (14.4, main; open-r143-affirm-on-no-answer): no affirmation that approves what nobody said ─────────────
+// Sim lab p30 @f444f064 #6: the child tapped "No — insects have six legs…" (graded right) and her reply opened "Yes, Pihu—
+// earthworm has no legs": a bare Yes before a negative fact agrees with the opposite of what the child said. And an
+// opener of agreement on a not-yet / partly-right answer, or on no input at all, approves an answer that was not given.
+// (a) not_yet / partial verdict, or truly empty input (no words, no tap): the leading affirmation goes, the rest stands.
+// (b) a right answer that itself opens with No / nahi / नहीं: a bare Yes / Haan opener becomes "Right" / "Sahi" / "सही"
+// (agreeing with the child), never a Yes before their No. Ungraded / unverified / attempt turns are left alone (main: 175
+// mostly-fine openers on 14.2 when they were in). PURE.
+const AFFIRM = "(?:ji\\s+haan|yes|yeah|yep|haa+n?|han|bilkul(?:\\s+sahi)?|ekdam\\s+sahi|sahi(?:\\s+(?:hai|kaha|jawab|baat))?|right|correct|exactly|sha+ba+sh|very\\s+good|well\\s+done|great|हाँ|हां|बिल्कुल(?:\\s+सही)?|सही|शाबाश)";
+const YES_ONLY = /^(?:ji\s+haan|yes|yeah|yep|haa+n?|han|हाँ|हां)$/iu;
+const NO_FIRST = /^\s*(?:no|nope|nahi|nahin|nhi|na|नहीं|ना)(?![\p{L}])/iu;
+const escapeRe = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export function affirmOpenerFix(reply, { verdict = null, empty = false, answer = "", name = null, lang = "hinglish" } = {}) {
+  const text = String(reply ?? "");
+  const lead = name ? `(?:${escapeRe(name)}\\s*[,،—–-]?\\s*)?` : "";
+  if (verdict === "not_yet" || verdict === "partial" || empty) {
+    const m = text.match(new RegExp(`^\\s*(${lead})((?:${AFFIRM}(?![\\p{L}-])\\s*[,!.।—–-]*\\s*)+)`, "iu"));
+    if (!m) return { text, fix: null };
+    const rest = text.slice(m[0].length).trim();
+    if (!rest) return { text, fix: null };
+    const named = m[1] ? `${m[1].trim().replace(/[,،—–-]+$/, "")}, ` : "";
+    const body = named ? rest : rest[0].toUpperCase() + rest.slice(1);
+    return { text: `${named}${body}`, fix: "strip" };
+  }
+  if (verdict === "correct" && NO_FIRST.test(String(answer ?? ""))) {
+    const m = text.match(new RegExp(`^(\\s*)(${AFFIRM})(?![\\p{L}])`, "iu"));
+    if (!m || !YES_ONLY.test(m[2])) return { text, fix: null };
+    const word = /[ऀ-ॿ]/.test(m[2]) ? "सही" : lang === "english" ? "Right" : "Sahi";
+    return { text: `${m[1]}${word}${text.slice(m[0].length)}`, fix: "polarity" };
+  }
+  return { text, fix: null };
 }

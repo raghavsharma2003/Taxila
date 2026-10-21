@@ -225,18 +225,22 @@ test("config: fails OPEN on a network error or a non-200; a kill is honoured; on
 test("never delay the turn: a detector slower than the budget leaves stage-0 kv on the request", async () => {
   const stats = { attaches: 0, detaches: 0 };
   const acquire = (o) => acquireFrontEnd({ ...o, workletUrl: "x", attach: fakeAttach(stats) });
-  // a session that never answers within the budget
-  const slow = { session: { run: () => new Promise((r) => setTimeout(() => r({ p: { data: new Float32Array(0) } }), 400)) }, ort: { Tensor: class { constructor() {} } }, thr: 0.44, ver: "slow" };
+  // a session that has NOT answered until the test releases it: the property is ORDER, not wall time (14.4, stream 3). The
+  // old bound (< 200 ms from before speak()) timed the harness: speak() synthesises and pushes ~6 s of frames, 169-252 ms
+  // on a loaded 4-core container (it failed 1 in 3 alone), while the child's final -> the turn request took 2-4 ms.
+  let pending = 0;
+  const releases = [];
+  const slow = { session: { run: () => { pending++; return new Promise((r) => releases.push(() => { pending--; r({ p: { data: new Float32Array(0) } }); })); } },
+    ort: { Tensor: class { constructor() {} } }, thr: 0.44, ver: "slow" };
   const { rt, a, link, vf } = await lesson({ acquire, loadDetector: async () => slow });
   await flush();
   const t0 = Date.now() - 6000;
   speak(link, stats.fe, t0);
-  // (the clock starts AFTER speak(): synthesising 6 s of frames takes 130-260 ms on a busy host and is the fixture, not a wait)
-  const spokeAt = Date.now();
   await flush(); await flush();
-  assert.equal(a.calls.turn.length, 1, "the request went out without waiting (the detector answers only after 400 ms)");
-  assert.ok(Date.now() - spokeAt < 200, "…and promptly");
+  assert.equal(a.calls.turn.length, 1, "the turn request went out");
+  assert.ok(pending > 0, "while the detector had still not answered: the request never waits on it");
   assert.equal(a.calls.turn[0].voiceFeatures.kv.q.det, 0);
+  for (const r of releases.splice(0)) r();
   await new Promise((r) => setTimeout(r, HEAD_BUDGET_MS + 30));
   assert.equal(vf.stats.detectorLate, 1, "the late detector was dropped for that turn");
   await rt.end();

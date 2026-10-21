@@ -142,11 +142,13 @@ describe("reply filter categories (round 5)", () => {
     assert.equal(out.reply, said);
   });
 
-  test("a COMPLETION block (HTTP 200) is unchanged: one fresh reply, a second block fails closed, no probe", async () => {
+  // 14.3.1 (main safety review, dc-r1431-completion-block-probe) supersedes "no probe": a second COMPLETION block now probes
+  // the child's own words once; when they trip the filter too (this stub blocks every call) the turn still fails closed
+  test("a COMPLETION block (HTTP 200): one fresh reply, then one probe of the child's words; a blocked probe fails closed", async () => {
     const r = lesson();
     let probes = 0;
     replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) probes++; throw block(["sexual"], 200); };
     assert.equal((await run(r, hist)).filtered, true);
-    assert.equal(probes, 0);
+    assert.equal(probes, 1);
   });
 });

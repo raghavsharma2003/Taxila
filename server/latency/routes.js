@@ -22,6 +22,7 @@ import { loadLive } from "../learner/live.js";
 import { perceive, fingerprint, putPrefetch, allowPrefetch, exactSpecOn } from "./perceive.js";
 import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerCohortHas, lessonTurnOf } from "./ack.js";
 import { scanSafety } from "../director/safety.js";
+import { record } from "../trace/writer.js";
 // round 3 (relational-human): the perception bus (the turn and the prefetch say "classify is running on these words") and
 // the played acknowledgement (POST /api/lesson/turn-ack below)
 import { publishPerception, awaitPerception, perceptionsFor } from "./bus.js";
@@ -252,6 +253,24 @@ const ACK_DEPS = Object.freeze({
   styleOf: (child, state) => styleForChild(child, undefined, state?.ctx?.teacherId, state?.ctx?.teacherName, { laneSwitched: !!state?.laneSwitch }),
 });
 
+/** The closed sets an `ack.decision` row may carry (14.3.1, main: codes only; anything else is "other"). */
+export const ACK_KINDS = Object.freeze(["echo", "continuer"]);
+export const ACK_NONE_REASONS = Object.freeze(["ended", "lane", "rate", "safety", "token_screen", "no_token", "no_perception", "late", "filtered",
+  "refused", "no_echo", "no_audio", "consecutive", "window", "leaving", "unclassified", "relational", "not_lesson", "off_topic", "not_an_answer", "empty"]);
+/**
+ * PURE. The `ack.decision` trace row for one decision: CODES ONLY. Never the child's words, never the phrase or the token
+ * (an echo's phrase IS the child's word). `r` is ackDecision's result or { none } from the route.
+ * @param {{ none?: string, ack?: { kind?: string, decidedMs?: number, shadow?: boolean }, pcm?: unknown }} r
+ * @param {{ continuerAsked?: boolean, cohort?: boolean, ms?: number }} [x]
+ */
+export function ackDecisionRow(r, x = {}) {
+  const base = { ...(typeof x.continuerAsked === "boolean" ? { continuerAsked: x.continuerAsked } : {}), ...(typeof x.cohort === "boolean" ? { cohort: x.cohort } : {}),
+    ...(Number.isFinite(x.ms) ? { ms: Math.round(x.ms) } : {}) };
+  if (r?.none || !r?.ack) return { none: ACK_NONE_REASONS.includes(r?.none) ? r.none : "other", ...base };
+  return { kind: ACK_KINDS.includes(r.ack.kind) ? r.ack.kind : "other", ...(Number.isFinite(r.ack.decidedMs) ? { decidedMs: Math.round(r.ack.decidedMs) } : {}),
+    shadow: !!r.ack.shadow, audio: !!r.pcm, ...base };
+}
+
 async function turnAck(req, res, body) {
   const t0 = performance.now();
   const mode = ackMode();
@@ -260,15 +279,23 @@ async function turnAck(req, res, body) {
   if (!text) return none(res, "empty");
   const { lesson, child, core, guardian } = await loadTurnContext(req, body?.lessonId);
   if (!core) return none(res, "consent");
-  if (lesson.ended_at) return none(res, "ended");
-  if (lesson.state?.mode !== "cascade") return none(res, "lane");
-  if (!allowAck(lesson.id)) return none(res, "rate");
+  // round 5 (main, 14.3): every decision on a lesson is one `ack.decision` trace row keyed to the lesson (sid), CODES ONLY
+  // (never the child's words, never an echo's phrase): the played / refused mix on the owner cohort's real lessons is read
+  // from these rows (dc-r143-prod-numbers-need-a-lesson-sid). The device records what it then played (ack.outcome).
+  const turn = (lesson.state?.turn ?? 0) + 1;
+  const decided = (r, asked = {}) => record("ack.decision", ackDecisionRow(r, { ...asked, ms: performance.now() - t0 }), { sid: lesson.id, turn });
+  const refuse = (why, asked = {}) => { decided({ none: why }, asked); return none(res, why); };
+  if (lesson.ended_at) return refuse("ended");
+  if (lesson.state?.mode !== "cascade") return refuse("lane");
+  if (!allowAck(lesson.id)) return refuse("rate");
   const kit = await kitFor(lesson.topic_id, lesson.state).catch(() => null);
   const item = kit ? findItem(lesson.state, kit, lesson.state?.activeItemId) : null;
   // round 5: the continuer only for the owner cohort AND when the device asks (it does not on D5, typed or tapped turns)
   const continuer = body?.continuer === true && continuerCohortHas(guardian?.email);
   const r = await ackDecision(ACK_DEPS, { lessonId: lesson.id, text, state: lesson.state, child, item, mode, continuer });
-  if (r.none) return none(res, r.none);
+  const asked = { continuerAsked: body?.continuer === true, cohort: continuer };
+  if (r.none) return refuse(r.none, asked);
+  decided(r, asked);
   if (!r.pcm) return json(res, 200, { ack: r.ack });
   json(res, 200, { ack: { ...r.ack, rate: PCM_RATE, ms: pcmMs(r.pcm), pcm: r.pcm.toString("base64"), readyMs: Math.round(performance.now() - t0) } });
 }

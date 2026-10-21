@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r1432-live",
+      "kind": "measurement",
+      "at": "2026-10-15",
+      "n": 1,
+      "method": "deploy-azure via scratchpad deploy-143.mjs from int/r5-rel143 @7c869811; /api/health",
+      "title": "Release 14.3.2 live: taxila-web--s7c86981-rx7j (image 7c86981) at 100% from ~16:25 UTC; s3a18c0e-xvg1 (14.3.1) kept as previous. Gate on 7c86981: npm test 3416 pass / 0 fail, prompt budget PASS, no new migrations; canary smoke 4/4. Contents: the words-only distress read beside the label call (dc-r1432-distress-beside). Not checked live by design: a safeguard on production writes an incident (QA's TEST re-run and the sim lab's 32-card false-safeguard run are queued for the next session)."
+    },
+    {
+      "id": "open-r1432-next-session",
+      "kind": "open",
+      "at": "2026-10-15",
+      "title": "Handover at the owner's usage limit (2026-10-15 ~16:30 UTC). Live: 14.3.2 (7c86981). Next session: (1) verify 14.3.2 on TEST (QA's 6148384f sequence + low-mood / boredom lines) and the sim lab's 32 regular cards + TP cards for classify_words false safeguards; (2) after a day, run docs/design/round5/results/latency/ack-cohort-query.sql read-only on prod, real lesson sids only, aggregated rows to stream 3; (3) integrate 14.4 on int (stream 2 86570734 + its revealsAnswer unit-key head; 4A 316994c8 + D41; 4B 0c3967a7/60610ba4, verdict hold only with first-sound cost ≤ 250 ms p50 at today's R; stream 3 3b1e317d); notes in the main loop's r144-notes (rejection rj-r144-tray-certificate-cited-as-content-gate still to log); (4) key rotation needs the owner's answer (it cuts off the other agent holding the credentials file)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "ms-r1432-live",
+      "rel": "measured_by",
+      "dst": "dc-r1432-distress-beside"
+    }
+  ],
+  "md": {
+    "measurements": "## ms-r1432-live (2026-10-15)\n\n- **14.3.2 is live:** s7c86981-rx7j at 100%, with 14.3.1 kept for rollback.\n- Gate: 3,416 pass / 0 fail. Canary smoke 4/4.\n- It wasn't checked live with a safeguard, because that would write a production incident. The TEST and sim lab checks are queued for the next session."
+  }
+}

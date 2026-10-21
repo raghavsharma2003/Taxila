@@ -31,6 +31,10 @@ beforeEach(() => {
 afterEach(() => { globalThis.fetch = realFetch; reply = undefined; });
 
 const flags = { off_topic: false, distress: false, asks_for_answer: false, wants_to_stop: false };
+// 14.3.2: the words-only distress read beside the label call (schema distress_beside) is its own suite's
+// (r5-safety-distress-beside); these tests count the label path's calls
+const BESIDE = (c) => c.body.response_format?.json_schema?.name === "distress_beside";
+const labelCalls = () => calls.filter((c) => !BESIDE(c));
 
 test("parse: key → correct, a misconception tag → its real id, other_wrong → incorrect", () => {
   const t = targetOn("i3");
@@ -65,9 +69,11 @@ test("parse: teach-back passes at ≥60% of expectations with no misconception",
 test("classify: calls taxila-fast with a strict json_schema keyed to the item, and maps the answer", async () => {
   reply = { match: "m1", confidence: 0.85, ...flags };
   const r = await classify({ target: targetOn("i3"), childText: "teen wala bada hai kyunki teen bada number hai", typed: true, classLevel: 4 });
-  assert.equal(calls.length, 1);
-  const body = calls[0].body;
-  assert.equal(calls[0].url, "https://example.test/openai/v1/chat/completions");
+  assert.equal(labelCalls().length, 1);
+  assert.equal(calls.filter(BESIDE).length, 1, "the words-only distress read went beside it");
+  assert.equal(calls.find(BESIDE).body.messages[1].content, "3 wala bada hai kyunki 3 bada number hai", "the child's words only (teen as 3)");
+  const body = labelCalls()[0].body;
+  assert.equal(labelCalls()[0].url, "https://example.test/openai/v1/chat/completions");
   assert.equal(body.model, "taxila-fast");
   assert.equal(body.response_format.type, "json_schema");
   assert.equal(body.response_format.json_schema.strict, true);
@@ -126,8 +132,8 @@ test("classify: model flags merge in, and an outage costs evidence, never the tu
   assert.equal(down.outcome, "no_evidence");
   assert.equal(down.source, "error");
   assert.equal(down.flags.distress, false, "a failed backup leaves the predicate's verdict");
-  assert.equal(calls.length, 4, "one call, the failed call and its single retry, then one distress-only try (no retry)");
-  assert.equal(calls[3].body.response_format.json_schema.name, "distress");
+  assert.equal(labelCalls().length, 4, "one call, the failed call and its single retry, then one distress-only try (no retry)");
+  assert.equal(labelCalls()[3].body.response_format.json_schema.name, "distress");
 });
 
 test("parse: a reason volunteered with a correct answer is labelled right or as the misconception it expresses", () => {
@@ -145,8 +151,8 @@ test("parse: a reason volunteered with a correct answer is labelled right or as 
 test("classify: the teacher's last turn goes to the classifier so an answer to another question is not evidence", async () => {
   reply = { match: "no_attempt", reason: "none", confidence: 0.9, ...flags };
   const r = await classify({ target: targetOn("i3"), childText: "1/4 bada hai", heard: "Ab 1/4 aur 1/8 mein kaunsa bada hai?", typed: true, classLevel: 4 });
-  assert.match(calls[0].body.messages[1].content, /WHAT THE TEACHER LAST SAID: Ab 1\/4 aur 1\/8/);
-  assert.match(calls[0].body.messages[0].content, /DIFFERENT question/);
+  assert.match(labelCalls()[0].body.messages[1].content, /WHAT THE TEACHER LAST SAID: Ab 1\/4 aur 1\/8/);
+  assert.match(labelCalls()[0].body.messages[0].content, /DIFFERENT question/);
   assert.equal(r.outcome, "no_evidence");
 });
 

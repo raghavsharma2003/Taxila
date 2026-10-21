@@ -18,6 +18,15 @@ const ERROR_SPOT_P = 0.7;
 
 const DIAG_PREFIX = "diag:";
 export const probeFor = (item) => (item.diagnostic ? "P7" : PROBE_FOR_KIND[item.kind] ?? "P15");
+/**
+ * Deep-kind audit (2026-10-15, docs/research/kits/DEEP-KIND-AUDIT.md): a deep-tagged item that two cross-family models read
+ * as recall, one step or read-off carries `deep: false`. Its kind, key, classifier target and pose stay; its ANSWER is plain
+ * evidence: item.open by the hint ladder (never a U / T facet probe, never a generative pass), and never the deep right answer
+ * agent.js earnedRead needs.
+ */
+export const plainEvidence = (item) => item?.deep === false;
+/** The probe an answer to this item is EVIDENCE as (probeFor is what is asked; they differ only for a deep: false item). */
+export const evidenceProbeFor = (item) => (plainEvidence(item) && !item.diagnostic ? "P15" : probeFor(item));
 
 /** The prompt to pose, in the child's language (Hinglish/Hindi kits carry prompt_hi). */
 export const promptFor = (item, lang) => (lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en;
@@ -434,7 +443,9 @@ export function canonicalFractions(t) {
 // at will: "बर्फ़" / "बर्फ") is folded.
 // free variation folded (ASR and children write either): nukta dropped, candrabindu ँ = anusvara ं (चाँद = चांद), the loanword
 // o ॉ = ा (ब्रेकफॉस्ट = ब्रेकफास्ट), the loanword e ॅ = े, visarga dropped (दुःख = दुख); the grammatical matras (ा / ी, gender) stay
-export const norm = (s) => canonicalFractions(String(s || "").normalize("NFC").toLowerCase().replace(/[“”"'’`]/g, "").replace(/\u093C/g, "").replace(/\u0901/g, "\u0902").replace(/\u0949/g, "\u093E").replace(/\u0911/g, "\u0906").replace(/\u0945/g, "\u0947").replace(/\u0903/g, "").replace(/[^\p{L}\p{M}\p{N}/.\s-]/gu, " ").replace(/\s+/g, " ").trim());
+// (14.4: a number written with thousands separators is ONE number: "2,700" was the tokens "2" and "700", so a key 2 matched it;
+//  Indian "2,07,040" and "4,113" join, a list "1,2" / "2, 3" stays two)
+export const norm = (s) => canonicalFractions(String(s || "").replace(/(\d),(?=\d{2,3}(?!\d))/g, "$1").normalize("NFC").toLowerCase().replace(/[“”"'’`]/g, "").replace(/\u093C/g, "").replace(/\u0901/g, "\u0902").replace(/\u0949/g, "\u093E").replace(/\u0911/g, "\u0906").replace(/\u0945/g, "\u0947").replace(/\u0903/g, "").replace(/[^\p{L}\p{M}\p{N}/.\s-]/gu, " ").replace(/\s+/g, " ").trim());
 const VERDICT = new Set(["bada", "badi", "bade", "zyada", "jyada", "bigger", "larger", "greater", "more", "chhota", "chhoti", "smaller",
   "less", "kam", "sahi", "correct", "right", "answer", "jawab", "uttar", "hota", "hoti", "equals", "is"]);
 function containsTerm(text, term) {
@@ -567,10 +578,35 @@ function distinguishingNumbers(item) {
  * pairs a comparison verdict with a number only one choice has ("2 tukdon wali bar ka har tukda bada hai")
  * says the answer in other words, and is a leak too (measured in evals/director-sim.mjs at hint rung 2).
  */
+/**
+ * 14.4 (QA pass 16 / main: "Aap 160 par ungli rakhenge?" under the key "160 m" was no leak, the key's run being "160 m"): a key
+ * "N unit" is also its number alone and the number with any spelling of the same unit, so it leaks exactly as a bare key "N"
+ * does today. The added forms go through the same loop as every form: the existing exemption (a form the item's own prompt
+ * names leaks only next to a verdict word) applies to them unchanged; no new exemption. Code-only table.
+ */
+const UNIT_GROUPS = [
+  ["m", "metre", "metres", "meter", "meters", "mtr"], ["cm", "centimetre", "centimetres", "centimeter", "centimeters"],
+  ["mm", "millimetre", "millimetres", "millimeter", "millimeters"], ["km", "kilometre", "kilometres", "kilometer", "kilometers"],
+  ["g", "gm", "gram", "grams", "gramme"], ["kg", "kilogram", "kilograms", "kilo", "kilos"], ["l", "litre", "litres", "liter", "liters"],
+  ["ml", "millilitre", "millilitres", "milliliter", "milliliters"], ["rs", "₹", "rupee", "rupees", "rupaye", "rupaiye"],
+  ["min", "mins", "minute", "minutes", "minat"], ["h", "hr", "hrs", "hour", "hours", "ghanta", "ghante"], ["s", "sec", "secs", "second", "seconds"],
+  ["°", "degree", "degrees", "digri"], ["sq", "square"],
+];
+const UNIT_OF = new Map(UNIT_GROUPS.flatMap((g) => g.map((u) => [u, g])));
+function withUnitForms(forms) {
+  const out = [...forms];
+  const has = (f) => out.some((x) => x.length === f.length && x.every((w, i) => w === f[i]));
+  for (const f of forms) {
+    if (f.length !== 2 || !/^-?\d+(?:[./]\d+)?$/.test(f[0]) || !UNIT_OF.has(f[1])) continue;
+    for (const g of [[f[0]], ...UNIT_OF.get(f[1]).map((u) => [f[0], u])]) if (!has(g)) out.push(g);
+  }
+  return out;
+}
+
 export function revealsAnswer(text, item) {
   if (!item) return false;
-  const forms = (item.diagnostic ? [headOf(item.answer)] : [item.answer, ...(item.acceptable || [])].map(norm))
-    .filter(Boolean).map((f) => f.split(" ")).filter((f) => f.length);
+  const forms = withUnitForms((item.diagnostic ? [headOf(item.answer)] : [item.answer, ...(item.acceptable || [])].map(norm))
+    .filter(Boolean).map((f) => f.split(" ")).filter((f) => f.length));
   const sources = [item.prompt_en, item.prompt_hi].filter(Boolean).map(wordsOf);
   const named = norm([item.prompt_en, item.prompt_hi, ...(item.diagnostic ? item.options.map((o) => o.text) : [])].join(" "));
   const strip = (t) => {

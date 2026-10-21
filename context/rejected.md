@@ -2636,3 +2636,37 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.
 - **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.
 - **Instead:** move superseded rows to archive tables.
+
+
+<!-- merged from inbox/r1432-main.json -->
+## rj-r1432-beside-on-taxila-fast (2026-10-15)
+
+- **Tried:** the second read on taxila-fast, for model diversity.
+- **What broke:** it added p50 268 ms / p90 542 ms to the turn.
+
+## rj-r1432-beside-on-relational-trigger (2026-10-15)
+
+- **Considered:** running the read only when a low-mood signal fires.
+- **What breaks:** the missed line carries no such signal.
+
+
+<!-- merged from inbox/r1432rj-main.json -->
+## rj-r144-tray-certificate-cited-as-content-gate (2026-10-15)
+
+- **Claimed in review:** a kept board is re-gated against the open question, so it can't leak that question's answer.
+- **What broke:** the check only certifies legibility. A board showing 160 was re-sent while a question keyed 160 was open.
+- **Lesson:** a gate is no protection until a test shows the content refused.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r144-wordtoks-keep-marks` (2026-10-15): Keeping Devanagari vowel signs (\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines.
+- `rj-r144-ignore-devanagari-tail` (2026-10-15): Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved).
+- `rj-r5-unenforced-verdict-gate-cited` (2026-10-15): REJECTED claim (4B, 2026-10-15): "her verdict cannot sound before value end + VERDICT.delayMs" was cited as the protection against a verdict on an abandoned value. The gate was computed (governor G7 verdictNotBefore) and emitted on the speak command but NOTHING enforced it (live.ts / cascadeDuplex / the link never read it). Lesson: a computed gate is not a protection until a test shows the sound waiting for it. Now enforced: dc-r5-verdict-hold-2500.
+- `rj-r5-w9-open-key-withheld-when-said` (2026-10-15): Round 5 (QA pass 15, TEST 1695e941): withholding the open item's key from the board even when her line says it (whiteboard.js withheldValues). Rejected: it broke the pinned design in tests/studio-qa.test.mjs 'W9 no reveal … a value she says herself': 'she said it: the board only repeats her', and the MCQ options she reads aloud are hers to draw; and 1695e941 had no item open (activeItemId null, warmup), so it would not have fixed the case anyway. The fix is the self-answered-question predicate (studio/request.js selfAnswer): her line loses the clause that states its own question's answer, and the board never draws it (W18 ctx.answers). Reversal: only if a measured leak needs a key withheld that she says, and then without breaking said-is-hers.
+
+
+<!-- merged from inbox/r144-main.json -->
+## rj-r144-beside-brief-rewrite (2026-10-21)
+
+- **Tried:** rewriting the distress brief to also exclude tiredness and boredom with the lesson.
+- **What broke:** a lesson worry ('galat toh nahi hai na? dar lag raha hai') went 0/5 → 3/5 distress.

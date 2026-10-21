@@ -404,3 +404,12 @@ test("the read follows the graded answers on every graded turn, not only when th
   await step(n2, K.items.find((i) => i.id === "i6"), "correct");
   assert.equal(n2.agent.learner[s2].read, "understood");
 });
+
+test("streamed: a right answer that said No is never met with a bare Yes in her first clause (14.4, open-r143-affirm-on-no-answer b)", async () => {
+  const { clauseGate } = await import("../server/agent/agent.js");
+  const g = clauseGate({ verdict: "correct", screen: { on: "board" }, lane: "voice", answer: "No — insects have six legs", lang: "english" });
+  assert.equal(g("Yes, Pihu, an earthworm has no legs.").clause, "Right, Pihu, an earthworm has no legs.");
+  assert.equal(g("Insects have six.").clause, "Insects have six.", "only the first clause");
+  const h = clauseGate({ verdict: "correct", screen: { on: "board" }, lane: "voice", answer: "chhe pair", lang: "hinglish" });
+  assert.equal(h("Haan, chhe pair.").clause, "Haan, chhe pair.", "an ordinary right answer keeps its Haan");
+});

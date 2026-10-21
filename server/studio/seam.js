@@ -19,7 +19,8 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine, textsOf } from "./request.js";
+import { numbersIn as boardNumbersIn } from "./qa/whiteboard.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -99,7 +100,7 @@ function lessonState(lessonId, init) {
   if (!L && init) {
     L = { lessonId, startedAt: Date.now(), childId: null, child: null, kit: null, topicId: null, band: "B3", lang: "hinglish", mode: "text",
       purpose: "lesson", bondStage: null, pieces: new Map(), subs: new Set(), turn: 0, lastRevealTurn: -99, liveBuilds: 0, onScreen: null,
-      wbPrev: null, excluded: new Set(), redact: [], ...init };
+      wbPrev: null, excluded: new Set(), redact: [], held: [], ...init };   // held: no item is open when a lesson's Studio state is made
     lessons.set(lessonId, L);
     // LRU: the least recently used lesson goes; its open wrong items are closed as evidence first (closeLesson)
     if (lessons.size > STUDIO_LIMITS.lessonsInMemory) {
@@ -140,6 +141,8 @@ export function subscribe(lessonId, sub) {
     try {
       // the replay is gated like the turn: a board this device's box cannot show legibly is not sent
       if (p.artifact?.kind === "whiteboard" && !certifyForTray(p.artifact, gateCtx(L, p)).ok) continue;
+      // 14.4: ... and (a reload / reconnect mid-lesson) never one that writes the key of the item open now; unknown → not replayed
+      if (p.artifact?.kind === "whiteboard" && (!Array.isArray(L.held) || writesWithheld(p.artifact.script, L.held))) continue;
       sub.send({ t: "status", status: statusOf(p) });
       if (p.artifact?.kind === "whiteboard") sub.send({ t: "script", intentId: p.intentId, script: p.artifact.script });
     } catch { /* a dead stream is dropped on the next push */ }
@@ -264,6 +267,23 @@ export const gateRefusals = () => refusals.slice();
  * The slot of a piece IF its artifact is certified at the device's class, else null. A frame that is not judged at this
  * size falls back to its skeleton-as-activity when the skeleton is certified (the same params and words; host-graded).
  */
+/** 14.4 (main's release blocker on D42): a board re-sent on a LATER turn (kept, or the late asked board) was gated when drawn,
+ *  before the item now open existed: one that writes a value withheld now (the open item's key, whiteboard.js withheldValues)
+ *  is not sent again. */
+const writesWithheld = (script, withhold) => {
+  const vals = (withhold ?? []).map(String).filter(Boolean);
+  if (!vals.length) return false;
+  const on = new Set(boardNumbersIn(textsOf(script).join(" ")));
+  return vals.some((v) => on.has(v) || [...boardNumbersIn(v)].some((n) => on.has(n)));
+};
+/** main 14.4 (QA D43): a board is never kept across an item change: the item it was drawn for, or (drawn with no item) its
+ *  skill, must be what the move asks now. */
+const movedFrom = (p, move) => {
+  const item = move?.itemId ?? null, skill = move?.skillId ?? null;
+  if (p.itemId && item && p.itemId !== item) return true;
+  if (!p.itemId && p.skillId && skill && p.skillId !== skill) return true;
+  return false;
+};
 function gatedSlot(L, p, state = p.state, where = "slot") {
   const slot = slotOf(p, state);
   if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
@@ -714,6 +734,8 @@ export const studioSeam = {
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
       if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
+      else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
         const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "reveal");
         // round 4 content: not certified at this device's size → held (onReveal skips it; it never reaches the tray)
@@ -1064,6 +1086,48 @@ export const studioSeam = {
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     // a picture the child asked for is taken down on the same rules as a board (turn.js leftBoard)
     return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
+  },
+
+  /**
+   * 14.4 (QA D42, TEST c667c262 / ff19f258: the picture board was up, the next turn's response carried no slot (slotFor never
+   * re-sends a whiteboard) with the Director's tray "none", and the page closed while her line still talked about it,
+   * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
+   * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
+   */
+  keepBoardSlot(lessonId, line, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    if (movedFrom(on, move)) return null;
+    if (!syncedWithLine(on.artifact.script, line)) return null;
+    // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
+    // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
+    const last = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean).pop() ?? "";
+    const onBoard = new Set(boardNumbersIn(textsOf(on.artifact.script).join(" ")));
+    if ([...boardNumbersIn(last)].some((n) => !onBoard.has(n))) return null;
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return null;   // fail closed: unknown → not re-sent
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
+  },
+
+  /** 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn (null when they could not be
+   *  computed). The stream replay and a re-reveal of a board already shown read them; null fails closed. */
+  noteWithheld(lessonId, values) {
+    const L = lessons.get(lessonId);
+    if (L) L.held = Array.isArray(values) ? values.map(String) : null;
+  },
+
+  /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
+  onScreenSlot(lessonId, intentId, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
+    if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
+    if (movedFrom(on, move)) return null;
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
   },
 
   /** round 5: is a board (not a game, not a picture) what the child sees now? */

@@ -126,3 +126,13 @@ RESET-PLAN §9 needs these owner decisions:
 | O-R6 | Approve a consented child panel (n ≥ 24) for X1, X4, X6 and the Fun Toolkit. |
 | O-R7 | A human reviews the synthetic safeguarding incidents that block deletion of 3 leftover production test accounts. |
 | O-R9 | Approve the Wave 2.5 Azure envelope, about USD 60-90 [E]. |
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## open-r143-kit-kind-pose-mismatch (2026-10-15)
+
+`deep: false` fixes the evidence weight only.
+
+- **Pose:** shallow error_spot items keep the planted-mistake pose. Predict items keep the predict engine mode. Why-kind items skip the follow-up why. A re-tag needs blind-solver re-verification.
+- **Split items:** 2608 (33.9%) stay deep unread.
+- **Error_spot boundary:** whether refuting a stated false claim from a fact counts as error_spot (12 of 25) needs an owner call.

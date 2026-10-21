@@ -42,3 +42,6 @@ statement per call).
 --                                    remediation, the P21 change of approach) write their row; must ship before or with the
 --                                    director patch (docs/design/round3/truth/patches/02), whose rows would fail the turn
 ```
+
+-- Round 5 (2026-10-15, main): 030 is allotted to 4B (claude/r4-duplex) for the edit full-undo (lesson_undo + the
+-- *_superseded archive tables, dc-r143-edit-full-undo). 027 stays a gap. Next free after that: 031.
