@@ -5,6 +5,8 @@
 // board-first pick, a speculative board, the kit's code board, the template rung) must pass them before it is drawn for a
 // request; the line planner is told the request and draws it. PURE: no model, no I/O.
 
+import { canonKey } from "../safety/normalize.js";
+
 /** Words that are never the subject itself ("plant ki life cycle" → plant, life, cycle). */
 const GLUE = new Set(["ka", "ki", "ke", "ko", "aur", "and", "of", "the", "a", "an", "se", "me", "mein", "par", "pe", "wala", "wali", "wale",
   "का", "की", "के", "को", "और", "से", "में", "पर"]);
@@ -131,7 +133,12 @@ const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC")
   .flatMap((w) => NUM_WORDS[w] ?? [w])
   // a word and its other-language name are one word ("भिन्न" in her line, "fraction" on the board): the SAME table above
   .flatMap((w) => (SAME_OF.has(w) ? [w, SAME_OF.get(w)[0]] : [w]))
-  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
+  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w))
+  // census 2026-10-21 (main: the overlap measure's cross-script false misses, "पत्ता" on the board, "patta" in her line):
+  // a word is also its canonical reading in either script (safety/normalize.js canonKey: पत्ता / patta → "pata")
+  // (the whole reading, never a prefix: "kahaniyan" is not "कहाँ"; never for a token with digits: "30th" is not "100th")
+  .flatMap((w) => (/^\p{N}+$/u.test(w) ? [w] : [w.slice(0, 5), ...canonOf(w)])));
+const canonOf = (w) => { if (/\p{N}/u.test(w)) return []; const k = canonKey(w); return k && k.length >= 4 ? [`~${k}`] : []; };
 export function syncedWithLine(script, line) {
   const text = String(line ?? "").trim();
   const page = textsOf(script).join(" ");

@@ -125,3 +125,13 @@ test("F9 (census b08fe8a7; sim lab p55): the thing to draw is a short noun phras
   for (const t of ["umm... mujhe addition thoda sahi lagta hai, par subtraction mein thoda problem hota hai... drawing dikhao", "High Court... par aapne draw nahi kiya abhi tak. Kahan hai? Mujhe dekhna hai, please dikhao",
     "um… theek hai. dikhao. maybe 5 group lag rahe hain.", "नहीं, मेरे को आप डायग्राम दिखाओ, मुझे देखना है डायग्राम।"]) assert.equal(subj(t), null, t);
 });
+
+test("census (main): a board and her line meet across scripts — पत्ता / patta, टिल्लू / Tillu — by the whole canonical reading, never a prefix or a token with digits", async () => {
+  const { syncedWithLine } = await import("../server/studio/request.js");
+  const page = (...t) => ({ ops: t.map((x, i) => ({ id: `t${i}`, op: "text", text: x })) });
+  assert.equal(syncedWithLine(page("पत्ता"), "Photo nahi hai; patta bana hai—gol, hara. Uska edge kaisa hai?"), true);
+  assert.equal(syncedWithLine(page("टिल्लू", "टि"), "Aaj hum Tillu ji padhenge."), true);
+  assert.equal(syncedWithLine(page("पायल"), "Aaj hum Mala ki chaandi ki paayal padhenge."), true);
+  assert.equal(syncedWithLine(page("कहाँ"), "Aapne teen sources bataye, aur bolkar chali aayi kahaniyan."), false, "kahaniyan is not कहाँ");
+  assert.equal(syncedWithLine(page("100th step", "every step"), "Khaali jagah bhariye: 30th term?"), false, "30th is not 100th");
+});
