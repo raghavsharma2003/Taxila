@@ -11,6 +11,7 @@
 // What a signal never is: an emotion label. The child's voice is never classified (Microsoft AI Code of Conduct;
 // ct-no-voice-emotion-inference): every signal here is lexical, from words the child chose to say.
 import { normForMatch, scanSafety } from "../director/safety.js";
+import { lessonHyperbole } from "../safety/idioms.js";
 import { LEXICON } from "./lexicon/index.js";
 
 const LEX = Object.entries(LEXICON);
@@ -200,7 +201,10 @@ export function signalsOf(text, ctx = {}) {
   if (found.has("goodbye")) found.delete("end_request");
   // Harm words are the safety gate's (F6): the same predicate the turn already runs, mirrored as a signal for the policy's
   // precedence (a goodbye after harm words gets the check-in, I-7).
-  if (ctx.harm !== false && scanSafety(raw).distress) add("harm");
+  // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole ("main mar jaunga itna padh ke") is a
+  // check-in tier (classify.js flags.idiom), so it raises no harm signal here: the floor would re-plan it as the full script
+  const harmScan = ctx.harm !== false ? scanSafety(raw) : null;
+  if (harmScan?.distress && !(harmScan.kind === "self_harm" && lessonHyperbole(raw))) add("harm");
   // A share that is sad is a sad share (gentle concern, never a helpline on its own).
   if (found.has("share_sad")) found.delete("share");
   // "you are my best friend" is a warmth offer, not a share about their life

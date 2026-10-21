@@ -17,6 +17,8 @@ import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { canonReading } from "../safety/fine.js";
+import { lessonIdiom, scoldOnly, lessonHyperbole } from "../safety/idioms.js";
+export { lessonIdiom } from "../safety/idioms.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
 // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
@@ -376,18 +378,14 @@ export const DISTRESS_ABOUT = Object.freeze(["self_harm", "hurt_by_person", "afr
 export const SURE_DISTRESS = Object.freeze(new Set(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now"]));
 const BESIDE_SCHEMA = { type: "object", additionalProperties: false, required: ["distress", "about"],
   properties: { distress: { type: "boolean" }, about: { type: "string", enum: [...DISTRESS_ABOUT] } } };
-// 14.4 (main safety review; QA TEST d3c1ab60 / 06376c93: "160 metre, mar gaya main toh ye sawaal karke", "this question
-// killed me", read self_harm by the words read on an opening turn: the full script at once): the lesson's own frustration
-// idiom in the PAST ("mar gaya / gayi … ye sawaal / homework …", "this question is killing me") turns a model self-harm read
-// (or an unnamed one) into a check-in, never into nothing. Never with a wish, the self or life in the line, never the future
-// first person ("mar jaungi"), never a threat by someone ("… maar dalenge": no such form here), never over the predicate,
-// which runs first and is untouched.
-const LESSON_OBJ = /(?<![a-z])(?:saval|savaal|sawal|kuestion|kuestions|homevork|homework|padhai|padhay|maths|math|sum|sums|test|exam|chapter|leson|klas|topic|ganit)(?![a-z])/;
-const FRUSTRATION_PAST = /(?<![a-z])(?:mar (?:gaya|gayi|gai|gaye|gya|gyi)|kiling me|killing me|im ded|i am ded|i died)(?![a-z])/;
-const WISH_SELF = /(?<![a-z])(?:chahta|chahti|chahte|chahiye|vant|want|wish|vish|vished|kash|kaash|marna|mar jana|mar jaun|mar jau|mar jaungi|mar jaunga|khud|myself|apne ap|jina|jine|jindagi|zindagi|life|khatam|suiside|suicide|rehna|rahna)(?![a-z])/;
-export const lessonIdiom = (text) => { const c = canonReading(text); return FRUSTRATION_PAST.test(c) && LESSON_OBJ.test(c) && !WISH_SELF.test(c); };
-const idiomCheck = (out, text) => (out?.flags?.distress && (out.flags.distressAbout === "self_harm" || out.flags.distressAbout == null) && lessonIdiom(text)
-  ? { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_frustration" } } : out);
+// The lesson's idioms (the past / future frustration idiom, scolding, the hyperbole): server/safety/idioms.js
+const SCOLD_ABOUT = new Set(["afraid_of_person_or_home", "hurt_by_person", null, undefined]);
+const idiomCheck = (out, text) => {
+  if (!out?.flags?.distress || ["self_harm", "abuse", "fear"].includes(out.flags.distressKind ?? "")) return out;
+  if ((out.flags.distressAbout === "self_harm" || out.flags.distressAbout == null) && lessonIdiom(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_frustration" } };
+  if (SCOLD_ABOUT.has(out.flags.distressAbout) && scoldOnly(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "scolding" } };
+  return out;
+};
 /** How long a turn the labels already read as distress waits for the words-only read to name its kind (ms). */
 const BESIDE_NAME_WAIT_MS = 1200;
 const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), hurt_by_accident_or_animal (hurt in a fall, a game or sport, or by a pet or animal, with no person hurting them), none (no distress).";
@@ -563,6 +561,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const flags = {
     dontKnow: read.dontKnow, asksForAnswer: read.asksForAnswer, minimal: read.minimal,
     offTopic: false, distress: safety.distress, distressKind: safety.kind, wantsToStop: wantsToStop(text),
+    // 14.4: the predicate's self_harm on the lesson's own hyperbole ("main mar jaunga itna padh ke"): still distress, a
+    // check-in tier (state.js checkTier), never cleared
+    ...(safety.distress && safety.kind === "self_harm" && lessonHyperbole(text) ? { idiom: "lesson_hyperbole" } : {}),
   };
   const done = (outcome, source, extra = {}) => ({ result: { outcome, confidence: 1, source, flags, ...extra }, flags, text });
 
