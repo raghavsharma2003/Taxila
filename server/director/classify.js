@@ -371,13 +371,13 @@ const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required:
  * a-person-or-home line read SURE 4/4, including "main na hoti toh achha hota"; lonely lines read sad_or_lonely 4/4; an
  * ambiguous "raat ko akele dar lagta hai, koi aata hai" read other_fright (a check-in that asks what happened first).
  */
-export const DISTRESS_ABOUT = Object.freeze(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now", "sad_or_lonely", "other_fright", "none"]);
+export const DISTRESS_ABOUT = Object.freeze(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now", "sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"]);
 export const SURE_DISTRESS = Object.freeze(new Set(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now"]));
 const BESIDE_SCHEMA = { type: "object", additionalProperties: false, required: ["distress", "about"],
   properties: { distress: { type: "boolean" }, about: { type: "string", enum: [...DISTRESS_ABOUT] } } };
 /** How long a turn the labels already read as distress waits for the words-only read to name its kind (ms). */
 const BESIDE_NAME_WAIT_MS = 1200;
-const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), none (no distress).";
+const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), hurt_by_accident_or_animal (hurt in a fall, a game or sport, or by a pet or animal, with no person hurting them), none (no distress).";
 
 /**
  * The model's distress read alone, for turns the full classifier does not see (a low-confidence transcript)

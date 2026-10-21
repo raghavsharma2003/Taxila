@@ -1621,7 +1621,8 @@ export async function planTurn(base, cls, c) {
     if (cls?.voiced) writes.push(misconceptionFlagStmt(child.id, cls.voiced, child));
   }
   // 14.4: a check-in is not an incident (nothing disclosed yet); its escalation is, whatever this turn's own read said
-  const incident = r?.move?.tier === "check" ? null
+  // ... nor a move whose check-kind read the Director set aside (a check-in that released, its cooldown: move.setAside)
+  const incident = r?.move?.tier === "check" || r?.move?.setAside ? null
     : incidentOf(cls) ?? (r?.move?.escalated ? { source: "classifier", family: r.state?.safeguard?.kind ?? "model" } : null);
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
   return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };
