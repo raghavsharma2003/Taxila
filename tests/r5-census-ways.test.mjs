@@ -68,3 +68,20 @@ test("F3 (census a95d2ff1 t23/25): the cantshow rewrite note never tells her a b
   assert.doesNotMatch(note, /board draws for you/);
   assert.match(note, /point at the screen only at what is on it now/);
 });
+
+test("F3 (census b08fe8a7 t7): pointing at a diagram / picture with nothing on the stage is a screen problem, and the pointing sentence goes; the bare words and a stage with something on it are untouched", async () => {
+  const { screenProblem, stripScreenRefs, POINT_DIAG } = await import("../server/director/say.js");
+  const empty = {};
+  const board = { studioSlot: { artifact: { kind: "whiteboard", script: { ops: [{ op: "text", text: "5 groups" }] } } } };
+  for (const t of ["Is diagram mein dekho, 5 groups hain. Kitne hue?", "Ab picture mein charpai dekho: cat upar hai ya neeche?", "Look at the diagram: which side is longer?", "इस चित्र में कितने त्रिकोण हैं?"]) {
+    assert.equal(screenProblem(t, empty, null), true, t);
+    assert.equal(screenProblem(t, board, null), false, `with a board: ${t}`);
+    assert.equal(screenProblem(t, empty, null, { coming: true }), false, `a piece coming this turn: ${t}`);
+  }
+  for (const t of ["Tumhe drawing pasand hai?", "Now picture the next row and count all dots.", "Aap game, picture, ya quick challenge chunenge?", "Picture: 1,48,700 + 2,52,900 ko 1."]) {
+    assert.equal(POINT_DIAG.test(t), false, t);
+    assert.equal(screenProblem(t, empty, null), false, t);
+  }
+  assert.equal(stripScreenRefs("Is diagram mein dekho, 5 groups hain. 5 groups mein kitne hue?", { stageEmpty: true }), "5 groups mein kitne hue?");
+  assert.equal(stripScreenRefs("Is diagram mein dekho, 5 groups hain. Kitne hue?"), "Is diagram mein dekho, 5 groups hain. Kitne hue?", "a caller that does not pass the stage strips as before");
+});
