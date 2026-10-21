@@ -5,7 +5,25 @@
    "kind": "measurement",
    "at": "2026-10-21",
    "title": "Census F1 round 3 (TEST 38aad918 t1, sim lab p10 #8 and ok10 t4): a request that opens or closes a LONG turn was lost to the length rule ('Picture dikhao, maine kal ek peacock banaya tha, …'; '…, par main thak gayi hoon, can we stop now?'; 'didi, pehla gap… fractions boring hai, geometry padhao, triangles'), and the understanding note's share / hedge then took the empty slot (policy.js applyNote already keeps any code request). director/requests.js: when the whole turn reads as no request (or as a non-whole one of the same kind), its first or last clause (a leading 'didi / haan / umm' skipped), read on its own as a whole request in an explicit ask form, is the turn's request: visual / game needs a show / draw / play verb, stop an explicit stop ask ('can we stop', 'aaj ke liye bas'; never a bare 'bas.' or 'khatam' closing an answer), break 'break / aaram / ruk', example / slower an imperative, a topic switch only as the opening clause, and an explicit study wish ('X padhao', new; 'X padhna hai') from any clause when its subject is not generic. A non-flow request is never taken from a turn whose rest carries an answer attempt (the answer is graded as before); stop / goodbye ride along and the answer is still graded. Fixed on the way: 'see you' inside a sentence read as a goodbye ('then the monkeys see you and copy?' would have ended the lesson). Main's rule (14.4.2): the stop family (stop, goodbye, break) closing a long turn is that request even with an answer in the rest ('Thirteen? … bas, thak gayi. Can we stop now?' is a stop; '…game khelein please? bas, thak gayi' a break; a bare 'bas.' closing an answer stays the answer). Measured, old vs new requestOf: sim lab 4,357 lines, 101 moved, all checked: 74 visual / game asks ('photo dikhao', 'Game khelein?', 'whiteboard pe dog draw karo please'), 4 example asks, 2 study wishes, 16 stop / break / non-whole made whole from a tired child's closing clause, 2 byes, 2 non-whole visual made whole; TEST 7,390 child turns, 4 moved, all 'gaali sikhao', whose out-of-bounds read comes first in classify (declined, test). ok10 t4 now gets the honest 'not in your class here' offer instead of a reteach (findTopic does not map geometry / triangles to class 5's shapes: open). Tests: tests/r145-f1b-round3.test.mjs (fail on the base)."
+  },
+  {
+   "id": "ms-r1442-corroborate-hinglish",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "grading/corroborate.js, 14.4.2 (sim lab 1b3bb12c p66 / p68 stuck probes: a right Hinglish answer to an English-only key vetoed low_cover). Four components, forced-correct false credit over 9,462 word-key items in all kits, each alone vs base: (1) a whole-reply veto, '<the key>? ya phir <another answer>' is a choice between answers: −1,101 (F5 all parts + another answer); (2) decisive opposite pairs band / khula (close / open) and saaf / ganda (clean / dirty) in SIDES: −153 (F3 opposite 138, F6 8, F4 6, F5 1; hot / cold was tried and dropped: it raised credit on English replies); (3) an 'Any N:' count heading a list is no number the reply must say, the form as written kept too: +1 alone, 0 with (1); (4) a reply's everyday Hinglish / Devanagari words (45 curated groups) also read as the English they mean, reply side only, never on a Hindi / English language item, only when no form passes without it and only at the key-like cover (0.8): 0 removed, 0 new. All together: 0 new false credits in every family (F1 another answer, F2 negated, F3 opposite, F4 one part, F5 parts + taken back, F5 parts + another answer, F6 concept words in a wrong claim), −1,253 removed. Real-label sets: TEST 236 graded pairs, sim-lab decided-truth headeval 857, the 148 lost right answers of the 14.3 RCA: 0 rescued, 0 lost, 0 new false credits. The Hinglish reading rescued 0 on every real set and 0 of the 12 target no_evidence turns in p66 / p66 r1 / p68 / p10 (the key's English filler keeps the cover under 0.8; 'Any two: …' needs a per-element count; 'shower nahi' reads as negating the key). The stuck probe itself is not fixed here (Director (d), kits (e)). A parts-based credit ('every adjudicated part carried') was built and dropped: 203 new forced false credits. Tests: tests/r1442-hinglish-cover.test.mjs (fail on the base)."
+  },
+  {
+   "id": "dc-r1442-hinglish-reading-rescue-only",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The Hinglish reply reading in corroborate.js ships rescue-only (no form passes without it; key-like cover 0.8; reply side only; never on a language item), with 0 new forced false credits and 0 rescues on every real set measured. Main, 14.4.2. Reversal condition: remove the reading (HI_EN / hiContent and the hinglish path in corroborate) if a later real-label set (a sim-lab decided-truth run with EVS / science Hinglish answers, or TEST) shows it still rescues 0 right answers, or if any forced or real set shows a new false credit from it."
   }
  ],
- "edges": []
+ "edges": [
+  {
+   "src": "dc-r1442-hinglish-reading-rescue-only",
+   "rel": "measured_by",
+   "dst": "ms-r1442-corroborate-hinglish"
+  }
+ ]
 }

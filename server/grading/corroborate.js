@@ -42,6 +42,9 @@ const SIDES = [
   [["north", "uttar", "उत्तर"], ["south", "dakshin", "दक्षिण"]],
   [["east", "purab", "poorv", "पूर्व"], ["west", "paschim", "पश्चिम"]],
   [["clockwise"], ["anticlockwise", "anti-clockwise", "counterclockwise"]],
+  // 14.5 (Hinglish cover): the opposite pairs of the everyday words below, so a Hinglish reply cannot take the other side
+  [["close", "closed", "shut", "band", "बंद"], ["open", "opened", "khula", "khule", "khuli", "kholo", "kholna", "खुला", "खुले", "खोलो"]],
+  [["clean", "cleaned", "saaf", "साफ", "साफ़"], ["dirty", "ganda", "gande", "gandi", "गंदा", "गंदे", "गंदी"]],
 ];
 
 // the decisive words in Hindi / Hinglish read as their English side word for the cover too ("bada" covers "bigger")
@@ -57,6 +60,36 @@ const DECISIVE = new Set(("ones tens hundreds thousands tenths hundredths thousa
 const words = (s) => String(s ?? "").toLowerCase().normalize("NFC").replace(/[’`]/g, "'").split(/[^\p{L}\p{M}\p{N}']+/u).filter(Boolean);
 const stem = (w) => (w.length > 4 && /[a-z]s$/.test(w) && !/ss$/.test(w) ? w.slice(0, -1) : w);
 const content = (s) => new Set(words(s).filter((w) => (!STOP.has(w) || CANON.has(w)) && !/^\d+$/.test(w) && w.length >= 2).map((w) => CANON.get(w) ?? stem(w)));
+// 14.5 (sim lab 1b3bb12c p66 / p68: "dhool, machchar, kitanu" for "dust, germs and insects (like mosquitoes)" covered none of
+// the key, so every model "correct" was vetoed low_cover and the probe was asked again): a REPLY's everyday Hinglish /
+// Devanagari words also read as the English words they mean. Only the reply side, only those words (an English reply reads
+// exactly as before), never on a Hindi or English language item (whose questions test the word forms themselves).
+// Curated, never model output; a word with a second everyday meaning is left out (bacha, halka, kam, jal).
+const HI_EN = [
+  [["dhool", "dhul", "dhuul", "dhooli", "धूल"], ["dust"]], [["machchar", "machchhar", "macchar", "machhar", "मच्छर"], ["mosquito", "mosquitoes", "insect", "insects"]],
+  [["kitanu", "keetanu", "kitaanu", "keetaanu", "rogaanu", "roganu", "कीटाणु", "रोगाणु"], ["germ", "germs", "bacteria"]],
+  [["keeda", "keede", "keedon", "kida", "kide", "कीड़ा", "कीड़े"], ["insect", "insects"]], [["paani", "pani", "पानी"], ["water"]],
+  [["dhakkan", "dhakan", "ढक्कन"], ["lid", "lids", "cover"]], [["dhak", "dhako", "dhakna", "dhaka", "dhake", "dhakke", "dhakkar", "ढको", "ढक", "ढका", "ढककर"], ["cover", "covered", "covers", "covering"]],
+  [["nal", "nalka", "नल"], ["tap", "taps"]], [["balti", "बाल्टी"], ["bucket", "buckets"]],
+  [["nahana", "nahao", "nahate", "nahane", "nahaana", "nahaate", "nahaane", "snan", "नहाना", "नहाते", "नहाने"], ["bath", "bathe", "bathing"]],
+  [["haath", "hath", "हाथ"], ["hand", "hands"]], [["paudha", "paudhe", "paudhon", "paudho", "पौधा", "पौधे", "पौधों"], ["plant", "plants"]],
+  [["ped", "pedh", "पेड़"], ["tree", "trees"]], [["patta", "patte", "patti", "pattiyan", "पत्ता", "पत्ते", "पत्ती"], ["leaf", "leaves"]],
+  [["suraj", "sooraj", "सूरज"], ["sun", "sunlight"]], [["hawa", "हवा"], ["air", "wind"]], [["mitti", "मिट्टी"], ["soil", "mud"]], [["beej", "बीज"], ["seed", "seeds"]],
+  [["jad", "jadein", "jadon", "जड़", "जड़ें"], ["root", "roots"]], [["phool", "फूल"], ["flower", "flowers"]], [["phal", "फल"], ["fruit", "fruits"]],
+  [["khana", "bhojan", "खाना", "भोजन"], ["food"]], [["doodh", "दूध"], ["milk"]], [["namak", "नमक"], ["salt", "salts"]], [["cheeni", "chini", "चीनी", "शक्कर"], ["sugar"]],
+  [["ghul", "ghulna", "ghulta", "ghulti", "घुल", "घुलना", "घुलती", "घुलता"], ["dissolve", "dissolves", "dissolved", "dissolving"]],
+  [["pighal", "pighalna", "pighalta", "pighalti", "pighla", "पिघल", "पिघलती", "पिघलता"], ["melt", "melts", "melted", "melting"]],
+  [["ubal", "ubalna", "ubaal", "ubla", "ubalo", "उबाल", "उबालो", "उबलना"], ["boil", "boils", "boiled", "boiling"]], [["barf", "baraf", "बर्फ"], ["ice", "snow"]],
+  [["bhaap", "bhap", "भाप"], ["steam", "vapour", "vapor"]], [["baarish", "barish", "बारिश"], ["rain", "rainfall"]], [["nadi", "नदी"], ["river", "rivers"]],
+  [["jaanwar", "janwar", "जानवर"], ["animal", "animals"]], [["chidiya", "pakshi", "चिड़िया", "पक्षी"], ["bird", "birds"]], [["machhli", "machli", "मछली"], ["fish"]],
+  [["daant", "dant", "दांत", "दाँत"], ["teeth", "tooth"]], [["bachana", "bachao", "bachate", "bachaana", "बचाना", "बचाओ"], ["save", "saving"]],
+  [["bartan", "bartano", "बर्तन"], ["utensil", "utensils", "container", "containers"]], [["ghar", "घर"], ["house", "home"]],
+];
+const HI_STEMS = new Map(HI_EN.flatMap(([hi, en]) => hi.map((w) => [w, en.map((e) => CANON.get(e) ?? stem(e))])));
+/** The English words a reply's Hinglish / Devanagari words mean (reply side only). */
+const hiContent = (s) => new Set(words(s).flatMap((w) => HI_STEMS.get(w) ?? []));
+/** Language items test the word forms: no Hinglish reading there. */
+const LANGUAGE_ITEM = /^(?:diag:)?c\d+-(?:hindi|english)-/;
 /** Number values in a text (digits, English / Roman-Hindi / Devanagari number words), as the shared reader composes them;
  * null when a number phrase cannot be read. */
 // the shared reader on the whole reply; when it cannot read it (a list said aloud: "twenty five, thirty eight, fifty two",
@@ -85,17 +118,22 @@ export function assertionOf(target) {
 }
 
 /** The complete forms of the item's answer the label can be checked against. */
+// (only a count that heads a list: "Any two: …"; "any four biomes with a correct feature each" keeps its number)
+const ANY_COUNT = /^\s*(?:any|koi\s+bhi)\s+(?:one|two|three|four|five|ek|do|teen|char|chaar|paanch|\d)\b(?:\s+of\s+(?:these|them|the\s+following))?\s*:\s*/iu;
 export function completeForms(target) {
   const lab = target?.alsoLabel ?? {};
   const also = (target?.also ?? []).filter((a) => a && lab[a] !== "partial" && lab[a] !== "wrong");
   const opts = (target?.options ?? []).filter((o) => o?.correct).map((o) => o.text);
-  return [target?.key, ...also, ...opts].filter((x) => x != null && String(x).trim()).map(String);
+  // 14.5 (p66 i01 "Any two: keep it covered; …"): the count of a pick-any list is no number the reply must say
+  // (both: the form as written, and the same form without its count)
+  return [target?.key, ...also, ...opts].filter((x) => x != null && String(x).trim()).map(String)
+    .flatMap((x) => { const bare = x.replace(ANY_COUNT, "").trim(); return bare && bare !== x ? [x, bare] : [x]; });
 }
 
 /**
  * How well a reply supports one form. @returns {{ ok: boolean, keyLike: boolean, why: string|null, cover: number }}
  */
-export function supports(form, text, allowedNums, negForms = null, prompt = "", siblingNums = null) {
+export function supports(form, text, allowedNums, negForms = null, prompt = "", siblingNums = null, { hinglish = false } = {}) {
   const fw = new Set(words(form)), tw = new Set(words(text));
   const fn = nums(form), tn = nums(text);
   if (tn === null) return { ok: false, keyLike: false, why: "unreadable_number", cover: 0 };
@@ -122,6 +160,7 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "", 
     return (taken[0].a && t.b && !t.a) || (taken[0].b && t.a && !t.b);
   });
   const fc = content(form), tc = content(text);
+  if (hinglish) for (const w of hiContent(text)) tc.add(w);
   // a negator in the reply next to the words of ANY complete form, when that form has none: "not X", "X nahi" (checked
   // over all forms, so "Largest: Jupiter. Smallest: Mercury. nahi" is negated for the shorter forms too)
   const list = words(text);
@@ -129,7 +168,7 @@ export function supports(form, text, allowedNums, negForms = null, prompt = "", 
   const all = negForms ?? [form];
   if (!all.some((g) => words(g).some((w) => NEG.has(w)))) for (const g of all) {
     const gc = content(g);
-    if (list.some((w, i) => NEG.has(w) && [list[i - 1], list[i + 1], list[i + 2]].some((x) => x && gc.has(CANON.get(x) ?? stem(x))))) return { ok: false, keyLike: false, why: "negated", cover: 0 };
+    if (list.some((w, i) => NEG.has(w) && [list[i - 1], list[i + 1], list[i + 2]].some((x) => x && (gc.has(CANON.get(x) ?? stem(x)) || (hinglish && (HI_STEMS.get(x) ?? []).some((e) => gc.has(e))))))) return { ok: false, keyLike: false, why: "negated", cover: 0 };
   }
   const fnv = fn ?? [];
   const rawF = rawNums(form);
@@ -367,6 +406,10 @@ export function wholeTakesBack(target, text, forms, reads, allowed, prompt) {
   }
   if (v && v !== "question") return v;
   if (ok.every((f) => headNegated(text, f, answerNums))) return "negated";
+  // 14.5: a question then another answer ("… it can cost more? ya phir the distance food travels"): a choice between two
+  // answers, never the child's answer (the clause after it carries no form)
+  const alt = /[?？]\s*(?:ya\s+(?:phir|fir)|ya|yaa|or(?:\s+maybe)?|athva|या\s+फिर|या)\s+(\S.*)$/iu.exec(String(text));
+  if (alt && !forms.some((f) => supports(f, alt[1], allowed, forms, prompt).ok)) return "alternative";
   const oa = otherAnswerPart(text, forms, allowed, prompt);
   if (oa) return oa;
   // a short answer of its own before the reason ("Sphere, isliye cuboid"): the head names something, none of it a form
@@ -397,7 +440,14 @@ export function corroborate({ target, text, result }) {
   // "neither" was credited. Only the assertion rung: an earlier rung may name a wrong option to compare.
   const allowed = [target.key, ...(target.also ?? []), ...(target.options ?? []).map((x) => x?.text), target.item?.prompt_en, target.item?.prompt_hi, assertionOf(target)]
     .flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
-  const reads = forms.map((f) => supports(f, text, allowed, forms, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`));
+  // (the count a pick-any key states, "Any three:", may still be said: "teen cheezen" is no extra number)
+  const anyCount = [target.key, ...(target.also ?? [])].map((x) => ANY_COUNT.exec(String(x ?? ""))?.[0] ?? "").join(" ");
+  const qText = `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""} ${anyCount}`;
+  const plain = forms.map((f) => supports(f, text, allowed, forms, qText));
+  // (the Hinglish reading only when no form is carried without it, and only at the key-like cover: it rescues, it never
+  // changes which forms a take-back is judged against)
+  const hinglish = !plain.some((r) => r.ok) && !LANGUAGE_ITEM.test(String(target.item?.id ?? ""));
+  const reads = hinglish ? forms.map((f) => { const r = supports(f, text, allowed, forms, qText, null, { hinglish: true }); return r.ok && r.cover < CORROBORATE.keyLikeCover && content(f).size > 0 && !nums(f)?.length ? { ...r, ok: false, why: "low_cover" } : r; }) : plain;
   if (o === "correct") {
     if (reads.some((r) => r.ok)) {
       // 14.5 (main; open-r145-whole-reply-contradiction): a whole reply that carries a form is still not the child's answer
