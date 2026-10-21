@@ -556,7 +556,11 @@ export const HELP_REQUESTS = Object.freeze({
 /** @returns {string | null} the help request a chip id names */
 export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(HELP_REQUESTS, chipId) ? HELP_REQUESTS[chipId] : null);
 
-export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
+/** The share of a turn's letter tokens in another script under which they are dropped as stray (6c45a7ea t26). */
+const STRAY_SHARE = 0.25;
+const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+
+export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
   // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
   // the words that came with it trip the safety predicate, which always decides first.
@@ -643,7 +647,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // safety-robust (2026-10-05): a token in another script is the transcriber hallucinating (CRITIQUE §2 B1: 5/90 real
   // segments came back Japanese / Telugu / Korean / Bengali). It is never content: the turn is no evidence (the Director
   // re-asks, as for a low-confidence transcript) and the model distress read runs on the readable rest (classify lowAsr).
-  if (!typed && readability(text).unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
+  // 14.5 (6c45a7ea t26: ONE Bengali token made a whole readable turn no evidence): a stray token, under a quarter of the
+  // letter tokens with 3+ readable words left, is dropped and the readable rest is the turn; it still gets the model distress
+  // read the unreadable path gives (classify, `stray`). The predicate has already read the whole turn above. Once only
+  // (_stray): the rest is never re-read for stray tokens, whatever readability() becomes.
+  const rd = typed ? null : readability(text);
+  if (rd?.unreadable && !_stray && rd.share < STRAY_SHARE && letterWords(rd.readable) >= 3) {
+    const rest = classifyFast({ target, childText: rd.readable, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray: true });
+    return { ...rest, stray: true, flags: { ...rest.flags, distress: rest.flags.distress || flags.distress, wantsToStop: rest.flags.wantsToStop || flags.wantsToStop } };
+  }
+  if (rd?.unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
   if (request?.whole) return { result: null, flags, text, request };
   const other = target.mode === "item" && askedOther(heard, target.item, lang);
   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
@@ -798,8 +811,15 @@ export function needsModelDistressRead(result, text) {
  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
  */
 export async function classify(args) {
-  const { target, classLevel, trace } = args;
   const fast = classifyFast(args);
+  if (!fast.stray) return classifyRead(args, fast);
+  // a turn with a stray token dropped: the model distress read of the readable rest always runs, as on the unreadable path
+  const [r, d] = await Promise.all([classifyRead(args, fast), distressCheck(fast.text, args.classLevel, args.trace)]);
+  return d && !r.flags?.distress ? { ...r, flags: { ...r.flags, distress: true, distressKind: r.flags?.distressKind ?? "model" } } : r;
+}
+
+async function classifyRead(args, fast) {
+  const { target, classLevel, trace } = args;
   if (fast.result) {
     if (!needsModelDistressRead(fast.result, fast.text)) return fast.result;
     const d = await distressCheck(fast.text, classLevel, trace);
