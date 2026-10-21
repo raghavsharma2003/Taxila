@@ -400,6 +400,15 @@ the recording lane; the two-turn spoken run uses one WAV with both lines, and th
 - **BLOCKER: a history line about British rule gets the full script** (7590e26d). Grok's 400 names the category
   `multiseverity_hatespeechscore`, not `hate`, so the hate-only rule fails closed: "blocked by the content filter: routed to
   safeguarding".
+- **5c127d1a (when every distress read is blocked only by the hate filter, it reads as no distress): PASS, no QA blocker**
+  - The British line ×3 → hook (4b3d875c, f4ba38ec, 1096c69c). Her line is only a carry-on, "Accha, batane ke liye thanks!
+    Chaliye, aage badhte hain.", with no question for the child (P3).
+  - Weavers → repair, the line whole (d14a1fe7).
+  - The uncle line → full script (ae457f7d).
+  - W2b waits with no harm question (718a1211).
+
+**Studio fallback, b6c9c154 (cf25ca72):** 4 runs, the live board drew every time, with board_kept on t2 ×4. The run-8 failure
+did not recur, so the template fallback is not seen live.
 
 **D42 on 86b54376 (the plural fix): fixed**
 - "160 metre" with the board revealed: `board_not_kept {why: "new_number"}` as her line moves to the square (8a39216c).
