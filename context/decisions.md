@@ -6327,3 +6327,13 @@ When the filter blocks the reply prompt on context and the child's words pass th
 ## dc-r1441-motion-not-leaving — going two gaps ahead is not going home (2026-10-21)
 
 A right answer on a number line ('do gaps aage jaana padega') ended a lesson as a goodbye because the lexicon's bare 'jaana padega' cannot tell motion along a line from leaving. A word of motion before it now keeps the turn in the lesson. Every real goodbye is unchanged, and the sim-lab corpus shows no other change.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## dc-r1441-record-learner-subject — the child did the learning (2026-10-21)
+
+The end-record writer used to make the teacher the one who practised ("Asha practised …") in about half of all notes, and lent her pronouns to the child. It now names the child as the learner and the subject of the parent note. The teacher is only the one who taught. Replay: 64/120 → 0/120.
+
+## dc-r1441-safeguarded-record-facts-only — a disclosure never reaches the guardian through the lesson record (2026-10-21)
+
+In a lesson with a safeguarding turn, the summary and parent note are written from the learning facts only, never from the child's words. Every record then passes a fence that drops distress, a reported harm or a safeguarding referral. The guardian can be the person the child named. A disclosure reaches a parent only through the safeguarding protocol and its human queue. Replay: disclosures in the note 8/30 → 0/30. The fence touched 0 of 288 ordinary records.

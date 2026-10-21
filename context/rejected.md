@@ -2727,3 +2727,9 @@ Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has
 ## rj-r5-simlab-turn-only-screen — a simulated child that sees only the turn response (2026-10-21)
 
 The sim lab's child saw only what the turn response carried. A board that arrived a second later never reached it. 1,521 turns in 938 lessons across 65 runs showed the child an empty screen that the real client would have filled. Judgements that rest on the child's 'nothing on screen' after a planning slot are not evidence of a product failure. A simulated client must subscribe to everything the real client subscribes to.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## rj-r1441-record-fence-alone (2026-10-21)
+
+An output-only fence using the child-speech safety predicate. It misses the writer's third-person report ("Riya said she wants to die") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.

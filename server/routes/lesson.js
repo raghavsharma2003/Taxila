@@ -622,13 +622,41 @@ async function withPlanNext(did, child) {
   return { ...did, nextTitle: next?.title ?? did.nextTitle ?? null };
 }
 
+/**
+ * Did this lesson have a safeguarding turn: an incident row, a safeguard move (state.safeguardedAt), a check-in still
+ * open (state.safeguard) or released (state.checkReleased)? Its end record is then written from the FACTS alone. The
+ * parent note, the summary and the account export all reach the guardian, and a disclosure goes to the parent only
+ * through the safeguarding protocol (decision safety-parent-notice-settle). The guardian can be the very adult the
+ * child named. r1441: 93 of 741 TEST records quoted the disclosure ("… said that her father hits her …"), all from
+ * lessons with an incident. PURE.
+ */
+export const safeguardedRecord = (state, incidents = 0) =>
+  Number(incidents) > 0 || state?.safeguardedAt != null || !!state?.safeguard || state?.checkReleased != null;
+
+const REFERRAL = /\b(safeguard\w*|unsafe|childline|tele-?manas|1098|14416|counsell?or|trusted (adult|grown-?up)|(seek|get|arrange|find) (some |immediate |urgent |professional )*(support|help)|immediate (support|help|safety)|(their|his|her|\p{Lu}\p{L}+['’]s) (immediate |personal )?(safety|well-?being)(?![\s-]+(rules?|gear|tips?|steps?|measures?|precautions?|signs?|first)\b))\b/iu;
+// the writer reports in the third person ("Riya said she wants to die"), which the child-speech predicate does not read
+const REPORTED = /\b((wants?|wanted|wanting|wish(es|ed)?) to die|(kill|hurt|harm|cut)(s|ing)? (her|him|them)sel(f|ves)|suicid\w*|self-?harm\w*|(hits?|hitting|beats?|beating|beaten|slaps?|slapping|touch(es|ed|ing)?) (her|him|them)\b|abus\w*|(afraid|scared|frightened) (to go|of going) home|unsafe at home|better if (she|he|they) (was|were)(n['’]t| not) here|(not|no longer) (want|wants|wanted|wish|wishes) to (live|be alive|be here)|run(ning)? away from home)/i;
+/**
+ * The end record's last fence: a sentence (or, with `lines`, a summary line) that carries distress words (the one
+ * safety predicate, or the writer's third-person report of them) or a safeguarding referral is dropped, never rewritten.
+ * Backstop for any lesson that wrote no incident. PURE. → the kept text ("" when nothing is left).
+ */
+export function recordFence(text, { lines = false } = {}) {
+  const unsafe = (s) => scanSafety(s).distress || REPORTED.test(s) || REFERRAL.test(s);
+  const parts = String(text ?? "").split(lines ? /\n+/ : /(?<=[.!?।])\s+/);
+  return parts.filter((p) => !(lines ? p.split(/(?<=[.!?।])\s+/).some(unsafe) : unsafe(p))).join(lines ? "\n" : " ").trim();
+}
+
 /** The end-of-lesson record's messages (the writer words the FACTS; it does not decide them). PURE. */
 export function endMessages({ child, teacher, facts, childTurns }) {
   return [
     { role: "system", content: [
-      `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
-      `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only. Refer to the child by first name or "they".`,
-      "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
+      // r1441 (38aad918): "with <child>" then "The teacher is <name> … name her by name" made the teacher the actor of
+      // 379 of ~750 TEST notes ("Asha practised …") and lent her pronouns to the child; the learner is named as the
+      // subject of every practised/tried/said, the teacher only as the one who taught
+      `You write the record of one tutoring lesson. The learner is ${child.first_name} (class ${child.class_level}): everything practised, tried, said or mixed up in the FACTS and the child turns is ${child.first_name}'s. Name the learner by first name or "they" only, never he/she.`,
+      `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): the one who taught, never the learner. Name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only; they are never the learner's.`,
+      `Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines on what ${child.first_name} did (the parent reads it too). parentNote: to ${child.first_name}'s parent, with ${child.first_name} as its subject — plain, warm, specific: what ${child.first_name} practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.`,
       "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
       // last: the rule that must fire (a skill's `check`, the agent lane's earned read, decides how far its words go)
       ...(facts.skills?.some((s) => s.check) ? ["A skill with a check is worded only as far as its check: a \"shown\" skill may read as understood; every other skill reads as practised, with what is still to check next time, in summary and parentNote alike, never as understood, mastered, secure, done well or explained correctly."] : []),
@@ -676,11 +704,13 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   // The last why / teach-back of the lesson is still held (its verdict lands "on the next turn", and there is none):
   // wait for the blind grader while the summary is written, then fold and store it like a turn would.
   const heldP = flushHeld(child, lesson, state).catch((e) => console.warn("[lesson] end: held evidence not stored:", e.message));
-  const [turns, evidence, memoryOk, profileOk, kit] = await Promise.all([
+  const [turns, evidence, memoryOk, profileOk, kit, incidents] = await Promise.all([
     q("select id, seq, speaker, text from turn where lesson_id = $1 order by seq", [lesson.id]),
     q("select skill_id, item_id, probe, outcome, misconception_id, hints_used from evidence where lesson_id = $1 order by at", [lesson.id]),
     hasConsent(guardian.id, child.id, "memory"), hasConsent(guardian.id, child.id, "learning_profile"),
     state.kitHash ? pinnedKit(topicId, state.kitHash) : getKit(topicId, { generate: false }),
+    // fails closed: an unread count is a safeguarded lesson (safeguardedRecord)
+    one("select count(*)::int as n from incident where lesson_id = $1", [lesson.id]).then((r) => r?.n ?? 0, () => 1),
     ...(topicId !== lesson.topic_id ? [q("update lesson set topic_id = $2 where id = $1", [lesson.id, topicId]).catch(() => null)] : []),
     // the school position the intake confirmed (a school_continue / school_reteach segment): child.school_chapter, which
     // content/next-topic.js schoolStartIndex already reads (migration patch 01 adds the column; never the start's error)
@@ -694,19 +724,21 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
     console.info(`[talk] lesson=${lesson.id} childTalkShare=${talk.childTalkShare} child=${talk.childWords}w/${talk.childTurns}t teacher=${talk.teacherWords}w/${talk.teacherTurns}t mix=${JSON.stringify(state.talk?.mix ?? {})}`);
   } catch { /* telemetry never fails an end */ }
 
+  const held = safeguardedRecord(state, incidents);
   let summary, parentNote, memories = [];
   try {
-    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
-    summary = json.summary;
+    // a safeguarded lesson's record is written from the FACTS alone: the child's words never reach the writer
+    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns: held ? [] : childTurns }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
+    summary = recordFence(json.summary, { lines: true }) || null;
     // Ability-label fence on what a parent reads: a sentence with a label is dropped, never rewritten.
-    parentNote = json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" ");
+    parentNote = recordFence(json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" "));
     // round 3 fix (adversarial N2): no memory is kept from a lesson that had a safeguarding turn (state.safeguardedAt)
-    memories = memoryOk && state.safeguardedAt == null && !state.safeguard ? json.memories : [];
+    memories = memoryOk && !held ? json.memories : [];
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
-    summary = `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
-    parentNote = `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
   }
+  summary ||= `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
+  parentNote ||= `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
 
   // The writer's view of this child: its mode plus the memory consent (P3, personal details).
   const writerChild = { ...child, consent: { ...(child.consent ?? {}), P3: !!memoryOk } };
@@ -831,7 +863,7 @@ export const routes = {
 };
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
-export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed };
+export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed, lessonFacts };
 
 /** Round 4 (4A patch request 10b): the lane a start runs on. Only an explicit "text" or "voice" is honoured; no mode, or an
  *  unknown one, is the cascade lane (the strongest floor: the server writes every reply). PURE; exported for tests. */

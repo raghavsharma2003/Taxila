@@ -4695,3 +4695,15 @@ Method: scratchpad boardspeech / rungspeech / offboard / offkit .mjs over sim-la
 QA 14.4.1 run 8 (aadae80b t1): a subject-less picture ask failed its slot when the live board failed (W6.timing, W2.text_clear_of_lines). The gated template was refused by answersRequest because isDrawing did not count a rect (the c6-maths-ch06-t01 field: rect + outside side labels + arrows + numwork), and nothing was logged. Fixed in cf25ca72 (a rect with no text inside it is a shape; gatedFallback logs the refusing step). Library templates: 0 of 316 change. Director rungs on a picture ask: 670, drawing 514 -> 516.
 
 Method: isDrawing before/after over every library template (316) and every Director board rung for a picture ask (kitFromFile), plus run 8 reproduced through answersRequest
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## ms-r1441-endrecord-replay (2026-10-21)
+
+Old vs new end-record writer on TEST lessons, taxila-fast, production call shape:
+
+- Run 1 (40×1): teacher-as-learner 26 → 1. The 1 was a teaching verb, a false hit.
+- Run 2 (60×2): 64 → 0; child named in the first sentence 81 → 120.
+- Run 3, as production now runs (30 safeguarded + 30 ordinary): teacher-as-learner 30 → 0; disclosures 8 → 0.
+- Fence on stored records: 0/288 ordinary records touched.
+- Prod: 0 of 15 notes carry disclosure words.
