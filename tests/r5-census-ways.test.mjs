@@ -161,3 +161,12 @@ test("QA on 14.4.1 (run 8, aadae80b t1): a rectangle with its side labels is a d
   assert.equal(isDrawing(boxes), false, "text boxes (a flow chart) are not a picture");
   assert.equal(answersRequest(boxes, { kind: "picture" }), false);
 });
+
+test("38aad918: a verb or a filler is never the named subject ('maine bola picture dikhao' drew 'bola' as a label)", async () => {
+  const { freeSubjectOf, visualAskOf } = await import("../server/director/requests.js");
+  for (const t of ["maine bola picture dikhao", "aapne bola tha picture dikhaogi", "toh picture dikhao", "aur photo dikhao"]) assert.equal(freeSubjectOf(t), null, t);
+  assert.equal(visualAskOf("maine kaha drawing dikhao")?.subject, undefined);
+  // a real thing named is still the subject
+  assert.equal(freeSubjectOf("aloo ki photo dikhao"), "aloo");
+  assert.equal(visualAskOf("maine bola triangle ka drawing dikhao")?.subject, "triangle");
+});

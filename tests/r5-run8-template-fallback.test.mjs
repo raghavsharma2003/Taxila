@@ -35,3 +35,19 @@ test("run 8: a picture ask whose live board fails gets the kit's template board,
     assert.equal(s?.artifact?.kind, "whiteboard");
   } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
 });
+
+test("38aad918: a board slot that fails says why (the live board's reason and the template's), never why: null", async () => {
+  const prevSync = process.env.TAXILA_BOARD_SYNC_MS;
+  process.env.TAXILA_BOARD_SYNC_MS = "300";
+  try {
+    const id = "r8-seam-why";
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
+    const intent = { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", skillId: "s", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue",
+      request: { kind: "picture" }, style: { band: "B3", lang: "hinglish", motion: "lively" } };
+    seam.studioSeam.requestIntent({ intent, line: { lessonId: id, text: "Dekhiye, ek triangle ke teen corners hote hain." }, mode: "fresh", kit: { topicId: "x", content: [] } });
+    await new Promise((res) => setTimeout(res, 1500));
+    assert.equal(seam.slotSnapshot(id, intent.intentId)?.state, "failed");
+    assert.equal(seam._lesson(id)?.pieces?.get(intent.intentId)?.failWhy, "live:planner_error template:none");
+  } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
+});
