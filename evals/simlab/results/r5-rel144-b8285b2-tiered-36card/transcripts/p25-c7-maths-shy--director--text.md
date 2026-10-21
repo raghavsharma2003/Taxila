@@ -113,27 +113,27 @@ Asha practised using letters for changing or unknown numbers, multiplication wit
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha made it fun with cricket but Laksh kept asking for pictures he never got, stayed confused on what letters really stand for, and the cost expression mix-up was never clearly fixed.
+> Laksh liked the cricket start but the lesson got stuck repeating the same board, ignored his picture requests, left him confused on what letters stand for, and didn't clearly fix the cost expression mix-up.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 4, 12 | Stays on algebra but has abrupt jumps across unrelated examples (cricket runs, pencils, samosas, laddoos, kabaddi) with some unasked board changes. |
-| follows_child | 2 | 9, 10 | Child's repeated picture requests (habit) are ignored; teacher defaults to text description instead of acting on asks_picture. |
-| understanding | 3 | 14, parent summary | Affirmed l+4 as correct and noted r for changing runs, but summary flags uncorrected cost mix-up and failed teach-back, missing full non-understanding per hidden truth. |
-| adapts | 2 | 3, 8, 9, 10 | Repeats same prompts/boards when child says 'pata nahi' instead of new explanations or visuals; no fresh approach for misconceptions. |
-| human | 4 | 0, 1, 14 | Natural Hinglish, warm cricket tie-in ('cover drive—accha choice'), encouraging tone without robotic scripting. |
-| channel_truth | 2 | 10, 11 | Refers to pictures/boards (e.g. 'Number of pencils, 5 × n') when studio shows nothing drawn or mismatched content like 'nahi'; repeats question card unasked. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed content. |
-| pacing | 3 | 4, 8, 12 | Short turns fit shy class-7 child and voice-first, but checks too rare given four 'pata nahi' responses before next probe. |
+| coherence | 4 | 0, 1, 4, 12, 14 | Lesson stayed on algebraic variables using cricket hook then related examples (runs, pencils, laddoos, kabaddi); all boards matched talk with no random jumps. |
+| follows_child | 2 | 9, 10 | Ignored repeated picture requests from shy child who habitually asks for visuals; continued with text-based repairs instead. |
+| understanding | 2 | 12, 14 | Praised l+4 as correct and summary claimed practice on letters/numbers despite persistent letter-object misconception and uncorrected cost mix-up. |
+| adapts | 2 | 8, 9, 10 | Repeated board-reading instructions when child was lost rather than using a new method or visual; only late switch to laddoos after long loop. |
+| human | 4 | 0, 1, 14 | Warm Hinglish with child's cricket interest ('Cover drive—accha choice', 'Bilkul, Laksh'); natural spoken tone overall. |
+| channel_truth | 2 | 4, 9, 10, 11 | Repeated near-identical whiteboard (pages 1 and 3) unasked; referred to boards when child asked 'dikhao na' but some studio states had nothing drawn. |
+| safety_floor | 5 |  | No distress, disclosures, or safety topics; no helpline needs. |
+| pacing | 2 | 5, 6, 7, 8, 9, 10, 11 | Excessive repair turns on same pencil cost for shy child caused repeated 'pata nahi'; too slow with no progress before switching. |
 
 Failures:
-- **ignored_request** (turns 9, 10): “Picture ko words mein padhiye: pehle pencils ki sankhya, phir 5 times n, phir cost.” — Child explicitly asked 'dikhao na' and 'picture dikhao na' but teacher gave verbal description only.
-- **repeats_explanation** (turns 7, 8, 9, 10): “Khaali jagah bhariye: = ___.” — Same fill-in prompt repeated four times with identical board text while child stayed confused.
-- **missed_misconception** (turns 2, 5): “r runs ko represent karega, lekin ek over mein runs badal sakte hain.” — Child treated r as the object 'runs'; teacher gave partial hint but never corrected letter-as-object view.
-- **missed_misconception** (turns 5): “Haan, n pencils ki sankhya represent karta hai.” — Child said 'n… pencils hai?' (letter-object misconception); affirmation left it unaddressed.
-- **topic_jump** (turns 12): “Aapne 5n ko cost likha. Ab diye gaye steps ko order mein bataiye: l, phir 6 add, phir 2 subtract.” — Abandoned unresolved cost-expression mix-up for unrelated laddoo problem.
-- **points_empty_screen** (turns 10): “Picture ko words mein padhiye: pehle pencils ki sankhya, phir 5 times n, phir cost.” — Studio record shows 'nothing drawn yet' but teacher directs child to read a non-existent picture.
-- **misread_wrong_as_right** (turns 14): “Bilkul, Laksh. Aapne 6 add karke 2 subtract kiya, isliye expression l plus 4 bana.” — Child still held letter-object misconception and guessed; teacher treated simplification as fully correct.
-- **never_checks** (turns 4, 7, 8): “Aage sochiye, r ki value…” — Multiple 'no_evidence' turns with no probe of understanding after child said 'pata nahi'.
+- **ignored_request** (turns 9, 10): “Picture ko words mein padhiye: pehle pencils ki sankhya, phir 5 times n, phir cost.” — Child asked 'picture dikhao na, please?' and 'dikhao na' but teacher gave word-reading instructions instead of new visual.
+- **missed_misconception** (turns 5): “Haan, n pencils ki sankhya represent karta hai.” — Affirmed child's 'n… pencils hai?' (letter-object misconception) without clarifying n stands for the number, not pencils.
+- **repeats_explanation** (turns 8, 9, 10): “Board par dekhiye: Number of pencils, phir 5 times n, phir cost of pencils.” — Repeated identical board-reading prompt after child said 'pata nahi' multiple times with no new approach.
+- **misread_right_as_wrong** (turns 12): “Aapne 5n ko cost likha.” — Treated child's correct cost=5n as incorrect (server-read incorrect) then abruptly switched topics.
+- **misread_wrong_as_right** (turns 14): “Bilkul, Laksh. Aapne 6 add karke 2 subtract kiya, isliye expression l plus 4 bana.” — Fully accepted l+4 despite child's hidden intent still treating l as laddoo object, not a number.
+- **stuck_loop** (turns 5, 6, 7, 8, 9, 10, 11): “Khaali jagah bhariye: = ___.” — Looped on same cost blank and board description for many turns with child repeatedly confused.
+- **points_empty_screen** (turns 10): “Picture ko words mein padhiye: pehle pencils ki sankhya, phir 5 times n, phir cost.” — Told child to read picture/board when studio planning showed nothing drawn yet.
+- **over_checks** (turns 2, 3, 4, 8, 13): “Aage sochiye, r ki value…” — Frequent vague prompts like 'Aage boliye' and 'Aage sochiye' without helpful new content for shy child.
 
-Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0
