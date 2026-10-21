@@ -118,6 +118,12 @@ const FAMILIES = {
     // form already fired through the lexicon).
     /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai|ab)\s+(?:ab\s+|aur\s+|bilkul\s+)?(?:nahi+n?|nhi|na)\s+jee?na|(?:nahi+n?|nhi)\s+jee?na\s+(?:hai|h|he|mujhe|ab)|(?:mujhe|mereko|mujhko|ab)\s+(?:ab\s+|aur\s+)?jee?na\s+nahi+n?|(?:main|mai)\s+(?:ab\s+|aur\s+|aise\s+|ab\s+aur\s+)?(?:zinda|jinda)\s+nahi+n?\s+(?:reh|rah)\s*(?:sakta|sakti|paunga|paungi|paaunga|paaungi|unga|ungi|na\s+chaht\w*))(?![\p{L}\p{M}])/iu,
     /((?:मुझे|मुझको|अब|मैं)\s+(?:अब\s+|और\s+)?(?:नहीं|ना|न)\s+जीना|नहीं\s+जीना\s+(?:है|मुझे|अब)|मैं\s+(?:अब\s+|और\s+|ऐसे\s+)?(?:जिंदा|जिन्दा)\s+नहीं\s+रह\s*(?:सकता|सकती|पाऊंगा|पाऊंगी|पाउंगा|पाउंगी|ूंगा|ूंगी))/,
+    // 14.4 (main safety review; sim lab card p19 "sab mujhe stupid bolte hain… kabhi kabhi lagta hai main na hoti toh achha
+    // hota", read only by the model; the English "better if I was not here" already fired): the Hinglish and Devanagari
+    // "it would be better if I were not (here)" and "I wish I had never been born", self-referential only ("mein" is also "in":
+    // "agar main school mein na hoti toh achha hota" stays quiet). Over 40,261 sim-lab child lines: 37 new hits, all p19's line.
+    /(?<![\p{L}\p{M}])(?:(?:main|mai)\s+(?:na|naa|nahi+n?|nhi)\s+(?:hoti|hota|hoon|hun|rahti|rahta|rehti|rehta)\s+(?:to|toh|tho)\s+(?:sab\s+(?:ke\s+liye\s+)?)?(?:acha|achha|accha|achcha|behtar|better|theek|thik)\s+(?:hota|hoti|rehta|rahta|hai)|(?:kaash|kash)\s+(?:main|mai)\s+(?:paida|janam|janm)\s+(?:hi\s+)?(?:na|naa|nahi+n?)\s+(?:hoti|hota|hui|hua|leti|leta))(?![\p{L}\p{M}])/iu,
+    /(?:मैं\s+(?:ना|न|नहीं)\s+(?:होती|होता|रहती|रहता)\s+तो\s+(?:सब\s+(?:के\s+लिए\s+)?)?(?:अच्छा|बेहतर|ठीक)\s+(?:होता|होती|रहता)|काश\s+मैं\s+(?:पैदा|जन्म)\s+(?:ही\s+)?(?:ना|न|नहीं)\s+(?:होती|होता|हुई|हुआ|लेती|लेता))/u,
     // round 5 (14.2, main safety review): "khud ko kaat" was carried, the other self-objects children use were not: "apne
     // aap ko cut kiya", "apne aapko hurt kiya", "myself ko scratch kiya", "khud ko blade se cut kiya", "अपने आप को काट लिया".
     // The self-object needs its "ko" ("apne aap cut ho gaya" = it got cut by itself), as in the khud shape above, and a

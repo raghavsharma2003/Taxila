@@ -849,7 +849,8 @@ export class LessonRuntime {
     } else if (r.speakNow === "interrupt") {
       // Safety by predicate: the safeguarding hand-off is voiced now, not left to instructions she may
       // already have answered from (or to the child speaking again).
-      this.safeguardPending = r.move?.kind === "safeguard";
+      // 14.4: a check-in (move.tier "check") is no hand-off: a blocked or lost check-in is re-planned by the server (sure)
+      this.safeguardPending = r.move?.kind === "safeguard" && r.move.tier !== "check";
       link.interrupt();
       link.promptTeacher();
     } else if (r.speakNow === "when_free" && !r.end) {
