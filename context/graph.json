@@ -22539,7 +22539,7 @@
    "id": "dc-r144-after-check-note",
    "kind": "decision",
    "at": "2026-10-21",
-   "title": "On a lesson move within three turns of a released check-in, or a move whose read was set aside, with no full script in the lesson, the brief's last check carries one constraint: the safety check already read their earlier heavy words, so no helpline, no telling them to go to a grown-up now, no question about harm or being safe. The release's care line no longer points at a grown-up ('they can always tell you if something bothers them'); the hand-off belongs to the full script. The check-in brief says the same: no sending them to a grown-up this turn. Reverse if replays show the note recited, or a released check-in followed by a real disclosure the reply then fails to take up (the predicate and the reads still decide that turn).",
+   "title": "On a lesson move within three turns of a released check-in, or a move whose read was set aside, with no full script in the lesson, the brief's last check carries one constraint: the safety check already read their earlier heavy words, so no helpline, no telling them to go to a grown-up now, no question about harm or being safe. The release's care line no longer points at a grown-up ('they can always tell you if something bothers them'); the hand-off belongs to the full script. The check-in brief is unchanged (rj-r144-checkin-no-grownup). Reverse if replays show the note recited, or a released check-in followed by a real disclosure the reply then fails to take up (the predicate and the reads still decide that turn).",
    "source": "inbox/r144-qa9ad8-main.json"
   },
   {
@@ -22589,6 +22589,13 @@
    "at": "2026-10-21",
    "title": "Tried: the after-check note alone, with the history verbatim and the release care line still saying 'or a grown-up they trust'. What broke: the reply still made the safeguarding call on t8 in 4 of 6 replay runs ('abhi mummy ya kisi trusted grown-up ko abhi batayiye… akele mat rahiye', 'aapki jaan padhai se zyada zaroori hai'), and in one run her line fed the next read and a right answer got the full script. The note contradicted the care line, and the model resolved it toward safety. It works only with the care line changed and the idiom lines reworded in the history.",
    "source": "inbox/r144-qa9ad8-main.json"
+  },
+  {
+   "id": "rj-r144-checkin-no-grownup",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Tried, in 10465444 and taken back out before it shipped: 'no sending them to a grown-up this turn' in the check-in brief (compile.js DISTRESS_CHECK). Why it broke: its effect was never shown (ms-r144-checkin-adult: 0 of 30 in both arms with no history), and QA's 9ad86661 XS1 run (7b6a4169, P2) shows a check-in on an injury ('haath se khoon nikla') should send the child to an adult. Showing a bleeding cut to mummy is practical care, not the safeguarding hand-off. The words would have taken that away from every check-in on an accident or animal. The after-check note on lesson turns stays (dc-r144-after-check-note, measured).",
+   "source": "inbox/r144-qa9ad8b-main.json"
   }
  ],
  "edges": [
@@ -36091,6 +36098,16 @@
    "src": "dc-r144-answer-after-release",
    "rel": "part_of",
    "dst": "dc-r144-safeguard-tiers"
+  },
+  {
+   "src": "rj-r144-checkin-no-grownup",
+   "rel": "part_of",
+   "dst": "dc-r144-after-check-note"
+  },
+  {
+   "src": "rj-r144-checkin-no-grownup",
+   "rel": "measured_by",
+   "dst": "ms-r144-checkin-adult"
   }
  ]
 }

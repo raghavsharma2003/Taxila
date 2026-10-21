@@ -6257,7 +6257,7 @@ The Director already decided that "main mar jaunga itna padh ke" is the lesson's
 
 ## dc-r144-after-check-note — the check is done, said last; the care line stops pointing at a grown-up (2026-10-21)
 
-For three turns after a check-in releases, and on a move whose read was set aside, the brief's last check says the safety check already read their heavy words: no helpline, no sending them to a grown-up now, no question about harm or being safe. The release's care line became "they can always tell you if something bothers them". With "or a grown-up they trust", the model turned it into "abhi mummy ya kisi trusted adult ko turant batayiye". The check-in brief says the same. The hand-off is the full script's job.
+For three turns after a check-in releases, and on a move whose read was set aside, the brief's last check says the safety check already read their heavy words: no helpline, no sending them to a grown-up now, no question about harm or being safe. The release's care line became "they can always tell you if something bothers them". With "or a grown-up they trust", the model turned it into "abhi mummy ya kisi trusted adult ko turant batayiye". The hand-off is the full script's job. The check-in brief itself is unchanged: an injury check-in may still send the child to an adult (rj-r144-checkin-no-grownup).
 
 ## dc-r144-reply-never-empty — a reply is never blank (2026-10-21)
 

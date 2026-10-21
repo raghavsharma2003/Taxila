@@ -67,9 +67,7 @@ const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 // 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
-// 14.4 (model-only replay of QA TEST 9ad86661: "mummy ya trusted adult ko turant batayiye. Aap abhi okay hain?" on 2 of 22
-// check-ins): sending them to a grown-up is the full script's hand-off, never the check-in's
-const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers and no sending them to a grown-up this turn.";
+const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
 const AFTER_CHECK = "the safety check already read their earlier heavy words: no helpline, no telling them to go to a grown-up now, no question about harm or being safe; answer what they said now, as their teacher";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**

@@ -2688,3 +2688,9 @@ The first tier cut escalated any reply to a check-in that was neither clearly fi
 ## rj-r144-note-alone — a brief note against the history (2026-10-21)
 
 A pre-emptive 'the check was done' note, added while the care line still said 'or a grown-up they trust' and the history still carried 'main mar jaunga', left the safeguarding call in 4 of 6 replay runs. The model resolved the contradiction toward safety. Change the trigger, not only the instruction.
+
+
+<!-- merged from inbox/r144-qa9ad8b-main.json -->
+## rj-r144-checkin-no-grownup — the check-in may still send a hurt child to an adult (2026-10-21)
+
+'No sending them to a grown-up this turn' was added to the check-in brief with no measured effect (0/30 vs 0/30), then removed before it shipped. An injury check-in needs the practical 'show it to mummy' (QA XS1 7b6a4169). A blanket ban would have taken that away. The full script's hand-off and the check-in's practical care are different acts.
