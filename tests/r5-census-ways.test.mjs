@@ -189,3 +189,13 @@ test("(a) review: 'दी' (a spoken 'the') is never part of the thing ('दी 
   const { visualAskOf } = await import("../server/director/requests.js");
   assert.equal(visualAskOf("पर आइसक्रीम कोन कुकिंग है। दी कोन दिखाओ।")?.subject, "कोन");
 });
+
+test("(a) review: a picture SEEN somewhere ('photo mein dekha tha') is not the ask; the ask's own clause names the thing", async () => {
+  const { visualAskOf } = await import("../server/director/requests.js");
+  assert.equal(visualAskOf("cylinder... gol hai na side se? lekin cake toh photo mein dekha tha book mein... cylinder dikhao")?.subject, "cylinder");
+  assert.equal(visualAskOf("maine photo mein dekha tha, aloo dikhao")?.subject, "aloo");
+  assert.equal(visualAskOf("par picture mein kya likha hai? Dikhao na")?.subject, undefined);
+  // a picture word that IS the ask still names its thing
+  assert.equal(visualAskOf("aloo ki photo dikhao")?.subject, "aloo");
+  assert.equal(visualAskOf("aloo photo mein dikhao")?.subject, "aloo");
+});
