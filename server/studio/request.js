@@ -137,7 +137,9 @@ const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC")
   // census 2026-10-21 (main: the overlap measure's cross-script false misses, "पत्ता" on the board, "patta" in her line):
   // a word is also its canonical reading in either script (safety/normalize.js canonKey: पत्ता / patta → "pata")
   // (the whole reading, never a prefix: "kahaniyan" is not "कहाँ"; never for a token with digits: "30th" is not "100th")
-  .flatMap((w) => (/^\p{N}+$/u.test(w) ? [w] : [w.slice(0, 5), ...canonOf(w)])));
+  // (QA on D42 run 3: the board's "side" and her "sides" are one word: a Roman plural is also its singular)
+  .flatMap((w) => (/^\p{N}+$/u.test(w) ? [w] : [w.slice(0, 5), ...singularOf(w), ...canonOf(w)])));
+const singularOf = (w) => (/^[a-z]{4,}(?:es|s)$/.test(w) && !/(?:ss|us|is)$/.test(w) ? [w.replace(/(?:es|s)$/, "").slice(0, 5), w.slice(0, -1).slice(0, 5)] : []);
 const canonOf = (w) => { if (/\p{N}/u.test(w)) return []; const k = canonKey(w); return k && k.length >= 4 ? [`~${k}`] : []; };
 export function syncedWithLine(script, line) {
   const text = String(line ?? "").trim();

@@ -144,3 +144,10 @@ test("F9 re-check after ca0a5e11 (main): the last fillers and verbs out of a dra
   assert.equal(subj("हाँ, जयपुर बेंच बोल सकते हैं, लेकिन बेंच का मतलब क्या है? फोटो दिखाओ न"), "बेंच");
   assert.equal(subj("बस फॉर्म बदला है, स्केच दिखाओ"), null);
 });
+
+test("QA on D42 run 3: the board's 'side' and her 'sides' are one word (a Roman plural is also its singular)", async () => {
+  const { syncedWithLine } = await import("../server/studio/request.js");
+  const page = (...t) => ({ ops: t.map((x, i) => ({ id: `t${i}`, op: "text", text: x })) });
+  assert.equal(syncedWithLine(page("side", "corner"), "Ab rectangle ki kitni sides aur kitne kone hote hain?"), true);
+  assert.equal(syncedWithLine(page("Rice crop", "Food"), "January mein crops ready hoti hain."), true);
+});
