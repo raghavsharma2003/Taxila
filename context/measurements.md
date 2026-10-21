@@ -4513,3 +4513,34 @@ Out-of-sample continuer check: 32 cards not used for tuning, plus p30's re-run. 
 - `ms-r5-lat-agent-spec-probe-2026-10-15` (2026-10-15): The agent lane's speculated call (stream 3's server/latency/agentSpec.js on 4A's agentSpeculate / agentCallOf key, 93334bd8): her model call started on the device prefetch once its classify (and the understanding note) settled clean, adopted by the turn only on an identical input key. turn-e2e --turn-audio --prefetch, prod routing, TEST, effort none, class 4, n = 10 turns: adopted 7/7 speculable turns (3 were requests: not speculated), 0 wrong adoptions, 0 spoken drafts; but it started only 0-81 ms ahead of the turn's own call. The prefetch leads the turn by ~0.3-0.6 s and its classify takes about as long, so both reach 'classify settled' together. Before the take waited for a pending start of the same words, 7/8 turns missed (the turn arrived while the last prefetch's classify was still settling). A turn whose deltas changed started two calls, one wasted.
 - `ms-r5-lat-continuer-relational-refusals-2026-10-15` (2026-10-15): The 44 'relational' continuer refusals on ordinary turns in the sim lab's 63bf58d6 voice arm, each attributed offline: 17 right (time left, tired, stop, bored + game ask, are-you-real, best friend + secret, girlfriend, talk to or complaints about her), 4 reason_given mixed with tired / contest / share (right), about 16 lesson content hitting a word meant for something else (paani/water x5, ghar x3, 'oxygen chhodte', 'empty nahi hoga', 'maza aata hai', 'rabbit is so cute', 'staff thak jaayenge', 'mummy bolti hain', 'poora insaan', Minecraft), 3 not reproducible offline (the transcript differs from the scripted line). The third pass (main agreed, AFTER the owner cohort's day on this gate): paani only as a break, ghar soft, chhod / nahi hoga / thak first-person or giving-up only, maza only with nahi, cute only with a person object; each with a test pair (the over-refused line passes, the meant line still refuses); romance / secrecy / are-you-real untouched; then a fresh sim-lab arm. Expected ~12 of 44 recovered.
 - `ms-r5-lat-voicesig-flake-2026-10-15` (2026-10-15): tests/p3-voicesig-client 'never delay the turn' failed 1 in 3 alone and under every loaded gate. Not a product delay: its < 200 ms bound timed the harness's speak() (synthesising ~6 s of frames: 169-252 ms on a loaded 4-core container), while the child's final -> the turn request took 2-4 ms. Fixed (3b1e317d, queued for 14.4) to prove ORDER: the slow detector's run is held open by the test and the turn must already be sent while it is pending. Spread: whole file 10/10 alone; under 3 CPU-busy loops the old version failed 4/8 runs, the new one 0/8; full gate 3375/0.
+
+
+<!-- merged from inbox/r144-main.json -->
+## ms-r1431-ack-prod-6d (2026-10-21)
+
+- 6 days of production acknowledgements: 44 decisions, and 0 from the owner cohort, so the continuer has no production data yet.
+- Echoes sound ~2.0 s after the child stops; 27% are refused as late.
+- Under 1 s is not reachable: the words arrive ~1.1 s after the stop.
+
+## ms-r1432-prod-latency-1016 (2026-10-21)
+
+- All lessons since 14.3.2 fall in one degraded window (2026-10-16 08:00-10:00 UTC).
+- 45 of 183 reply calls timed out at 6 s; the day before, 0 of 48.
+- The grading call runs p50 1,038 / p90 2,212 ms.
+
+## ms-r144-simlab-36card (2026-10-21)
+
+- 14.4 on the 36 cards: 1 false safeguard from the grading call, released the next turn.
+- 1 fresh episode from the words-only read on 'वो डूबेगी', fixed in e053ca38.
+- Every true positive holds.
+
+## ms-r144-beside-context (2026-10-21)
+
+- With her last words as context, 'वो डूबेगी' went 5/5 → 0/5.
+- True distress held 25/25.
+- Ordinary lines flagged 1/2,000, against 4/2,000 for the words alone.
+
+## ms-r144-revealsanswer-forms (2026-10-21)
+
+- The 140 sim-lab leaks are 80 digit, 49 word, 8 number word and 3 other; the verb 'do' accounts for none.
+- f642ecf4 over-expands acceptable forms; a scoped fix is in progress.
