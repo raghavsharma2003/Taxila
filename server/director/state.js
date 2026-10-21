@@ -46,7 +46,7 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn, bareOk, bareUnsure } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
@@ -1356,15 +1356,29 @@ function decide(s, input, item) {
     const words = input.text ?? input.answer ?? "";
     const fineWords = clearlyFine(words) || bareOk(words);
     const modelOnly = !!flags.distress && !flags.sureBy && ["model", "model_note"].includes(flags.distressKind ?? "");
-    const sure = !!flags.distress && !checkTier(flags) && !(fineWords && modelOnly);
     // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet, and so is a bare "pata
-    // nahi" / "I don't know" / "hmm": the words read sees her question, so a low mood read of those words is her last
-    // turn's mood, not theirs (QA TEST 47f4bb3f U2b: "pata nahi" got the full script). The check-in waits once, gently; a
-    // second silence or "pata nahi" in a row is the full script; a sure read escalates at once
+    // nahi" / "I don't know" / "hmm": the reads see her question, so a MODEL read of those words (the words read, the
+    // understanding note) is her last turn's mood, not theirs (QA TEST 47f4bb3f / 8df85690 U2b: "pata nahi" got the full
+    // script, by the words read and then by the note). The check-in waits once, gently; a second silence or "pata nahi" in a
+    // row is the full script; the predicate or a sure layer escalates at once. A bare "nahi" / "theek nahi hoon" answers her
+    // "are you okay?": they are not, and that is the full script whatever a model read (QA TEST 7555e558 W2e)
     const silent = isSilentTurn(input);
     const unsure = !silent && bareUnsure(words);
+    const notOk = !silent && bareNotOk(words);
+    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure) && modelOnly));
     const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure;
-    if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // the stop chip always ends it at once
+    if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // 14.4.1 (sim lab r5-rel144-cdac90c-p66p68-long p66 r1: "…Ab theek hai… accha ho gaya" labelled wantsToStop ended the
+    // lesson in 6 turns, with no offer): a stop READ in their words is not the stop chip. The check-in is released into the
+    // lesson's own stop handling: a true goodbye still ends at once, anything else gets the one carry-on / break / stop offer.
+    // A stop read in a bare "nahi" is their answer to "are you okay?" (notOk below), never a goodbye.
+    if (!flags.distress && flags.wantsToStop && !notOk) {
+      s.safeguard = null;
+      s.checkReleased = s.turn;
+      s.careLine = s.turn;
+      return decide(s, input, item);
+    }
     if ((silent || unsure) && !sure && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain({ unsure }), { tier: "check" }); }
     if (sure || lowAgain || silent || unsure) {
       s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };

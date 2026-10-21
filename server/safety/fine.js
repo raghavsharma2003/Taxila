@@ -135,6 +135,13 @@ export const bareOk = (text) => BARE_OK.test(canonReading(text));
 const BARE_UNSURE = /^(?:(?:hm|um|uh|acha|ji|vo|wo|bas|are|didi|mam|maam) ){0,2}(?:(?:pata|pta|malum) (?:nahi|nahin|nhi|nai|na)|(?:nahi|nahin|nhi|nai) (?:pata|pta|malum)|(?:i )?(?:dont|dnt|do not) knov|idk|duno|not sure|kuch (?:nahi|nahin|nhi|nai)|hm|um|uh)(?: (?:yar|ji|na|mam|maam|sir|didi|madam|bhaiya))?$/;
 /** A whole reply that is only an "I don't know" (BARE_UNSURE): no answer yet to the check-in tier's question. */
 export const bareUnsure = (text) => BARE_UNSURE.test(canonReading(text));
+// 14.4 (main safety review; QA TEST 7555e558 W2e: a low mood, "Kya aap abhi theek hain?", then "nahi" released to the lesson
+// on a words read that named no low mood): a WHOLE reply that is only a no or a not-okay ("nahi", "na", "no", "theek nahi
+// hoon", "not okay") answers the check-in's own question: they are not okay. state.js's check-in branch escalates on it
+// (the full script), whatever the model read. "kuch nahi" is not here (BARE_UNSURE: it waits).
+const BARE_NOT_OK = /^(?:(?:hm|um|uh|ji|vo|wo|bas|are|didi|mam|maam) ){0,2}(?:nahi|nahin|nhi|nai|na|no|nope|nahi (?:hun|hu|hoon)|(?:thik|thek|ok|okay|oke|fine) (?:nahi|nahin|nhi|nai)(?: (?:hun|hu|hai|he|hain|lag raha|lag rahi|lagta|lagti))?|nahi (?:thik|thek|ok|okay)(?: (?:hun|hu|hai|he|hain))?|not (?:ok|okay|oke|fine|realy|really)|i am not (?:ok|okay|fine)|im not (?:ok|okay|fine))(?: (?:yar|ji|na|mam|maam|sir|didi|madam|bhaiya))?$/;
+/** A whole reply that is only "no" / "not okay" (BARE_NOT_OK): the check-in tier's question answered, they are not okay. */
+export const bareNotOk = (text) => BARE_NOT_OK.test(canonReading(text));
 
 // asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai".
 // Canonical spellings (14.3: "lesson" / "study" / "learn" read as leson / studi / learn, so the raw spellings here never

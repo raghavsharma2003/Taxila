@@ -11,7 +11,7 @@ import { initLessonState, step, checkTier } from "../server/director/state.js";
 import { SURE_DISTRESS, DISTRESS_ABOUT, lessonIdiom } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
 import * as SH from "../server/director/shapes.js";
-import { fineReading, bareOk, bareUnsure } from "../server/safety/fine.js";
+import { fineReading, bareOk, bareUnsure, bareNotOk } from "../server/safety/fine.js";
 import { fallbackReply, distressCheckLine, textReply, replyDeps } from "../server/brain/say.js";
 import { chat, AzureError, CONTENT_FILTER } from "../server/azure.js";
 import { findItem } from "../server/director/items.js";
@@ -214,14 +214,58 @@ describe("(1) the turn after a check-in", () => {
     const empty = { ...cls("no_evidence"), source: "empty" };
     assert.equal(turn(turn(checkOpened(), "", empty).state, "pata nahi").move.escalated, true);
     assert.equal(turn(turn(checkOpened(), "pata nahi").state, "", empty).move.escalated, true);
-    // a sure read of the same words escalates at once; a word more is read as it stands
-    for (const c of [distressCls("self_harm"), distressCls("model", "hurt_by_person"), distressCls("model", null)]) assert.equal(turn(checkOpened(), "pata nahi", c).move.escalated, true, JSON.stringify(c.flags));
+    // a MODEL read of a bare "pata nahi" is her last turn's mood (the words read sees her question; the understanding note
+    // reads the lesson): it waits like any other (QA TEST 8df85690 W2b: the note escalated it); the predicate or a sure
+    // layer escalates at once; a word more is read as it stands
+    for (const c of [distressCls("model_note"), distressCls("model", "hurt_by_person"), distressCls("model", null), distressCls("model", "self_harm")]) {
+      const r = turn(checkOpened(), "pata nahi", c);
+      assert.equal(r.move.tier, "check", JSON.stringify(c.flags));
+      assert.equal(r.move.escalated, undefined, JSON.stringify(c.flags));
+      assert.equal(turn(r.state, "pata nahi", c).move.escalated, true, `${JSON.stringify(c.flags)}: the second escalates`);
+    }
+    const floor = distressCls("model", "sad_or_lonely");
+    for (const c of [distressCls("self_harm"), { ...floor, flags: { ...floor.flags, sureBy: "relational_floor" } }]) assert.equal(turn(checkOpened(), "pata nahi", c).move.escalated, true, JSON.stringify(c.flags));
     for (const text of ["pata nahi, sab bekaar hai", "pata nahi main safe hoon ya nahi", "nahi", "pata nahi kya"]) assert.equal(bareUnsure(text), false, text);
     assert.equal(turn(checkOpened(), "pata nahi, sab bekaar hai", distressCls("model", "sad_or_lonely")).move.escalated, true, "a low mood in words of their own is the full script");
+  });
+  test("a bare 'nahi' / 'theek nahi hoon' answers 'are you okay?': not okay, the full script whatever a model read (QA TEST 7555e558 W2e)", () => {
+    const NOT_OK = ["nahi", "Nahi.", "na", "no", "nahin", "नहीं", "theek nahi hoon", "ठीक नहीं हूँ", "thik nahi lag raha", "not okay", "I am not okay", "nahi mam", "hmm nahi"];
+    for (const text of NOT_OK) {
+      assert.equal(bareNotOk(text), true, text);
+      for (const c of [cls("no_evidence"), distressCls("model", "none"), distressCls("model", "other_fright"), distressCls("model_note")]) {
+        const r = turn(checkOpened(), text, c);
+        assert.equal(r.move.kind, "safeguard", `${text} ${JSON.stringify(c.flags)}`);
+        assert.equal(r.move.escalated, true, `${text} ${JSON.stringify(c.flags)}`);
+        assert.ok(r.ui?.whiteboard, `${text}: helplines on the board`);
+      }
+      // ... after a wait too
+      assert.equal(turn(turn(checkOpened(), "pata nahi").state, text).move.escalated, true, `${text} after a wait`);
+    }
+    for (const text of ["nahi pata", "kuch nahi", "nahi, main theek hoon", "haan", "160", "nahi yaar padhte hain", "no problem"]) assert.equal(bareNotOk(text), false, text);
+    // a stop read in a bare "nahi" is the answer, never a goodbye; the stop chip still ends it
+    const b = cls("no_evidence");
+    const stopRead = { ...b, flags: { ...b.flags, wantsToStop: true } };
+    assert.equal(turn(checkOpened(), "nahi", stopRead).move.escalated, true);
+    assert.equal(turn(checkOpened(), "nahi", b, { chipId: "safe:stop" }).move.kind, "wrap");
   });
   test("the check-in asks if they are okay, never if they are safe (the full script's word)", () => {
     for (const shape of [SH.distressCheck(), SH.distressCheckAgain(), SH.distressCheckAgain({ unsure: true })]) assert.match(shape, /okay, never safe/);
     assert.doesNotMatch(distressCheckLine({ lang: "hinglish" }), /safe/i);
+  });
+  test("a stop READ in their words gets the one carry-on / break / stop offer, never an end at once (sim lab p66 r1)", () => {
+    const b = cls("no_evidence");
+    const falseStop = { ...b, flags: { ...b.flags, wantsToStop: true, offTopic: true } };
+    const r = turn(checkOpened("hurt_by_accident_or_animal"), "Nahi, bleeding nahi hai ab. Thoda sa cut tha, bas. Ab theek hai. Mummy ne medicine lagayi, accha ho gaya.", falseStop);
+    assert.equal(r.move.kind, "break", JSON.stringify(r.move));
+    assert.equal(r.move.checkin, "stop");
+    assert.ok((r.ui?.chips ?? []).some((c) => c.id === "stop:continue") && (r.ui?.chips ?? []).some((c) => c.id === "stop:end"), JSON.stringify(r.ui?.chips));
+    assert.equal(r.state.safeguard, null, "the check-in is released");
+    assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)));
+    assert.ok(r.move.shape.startsWith(SH.afterCareCheck()), "it opens with the one warm line");
+    // the stop chip still ends at once; so does a second stop right after the offer
+    const tap = turn(checkOpened(), "", b, { chipId: "safe:stop" });
+    assert.equal(tap.move.kind, "wrap");
+    assert.equal(turn(r.state, "haan bas, band karo", falseStop).move.kind, "wrap", "a second stop within two turns ends it");
   });
   test("a stop ends the lesson, as on every safeguard", () => {
     const b = cls("no_evidence");
