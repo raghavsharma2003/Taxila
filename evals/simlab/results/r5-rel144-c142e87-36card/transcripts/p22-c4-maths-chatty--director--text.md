@@ -106,23 +106,26 @@ Asha practised equal shares using roti, groups, and shaded shapes. Nisha explain
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha helped Nisha see the denominator counts all equal parts using roti and chocolate examples, but more home practice is needed as the 2/5 was not fully confirmed.
+> Teacher spotted Nisha's part-left misconception and corrected the denominator with the chocolate example, but too much repetition on the flag question made it drag and the 2/5 was left unconfirmed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 14 | Music hook links smoothly to roti sharing then fractions; no jumps or unasked board pages. |
-| follows_child | 3 | 1, 3, 14 | Acknowledges music/Priya story and pata nahi but doesn't deeply address rambling confusion. |
-| understanding | 3 | 13, 14 | Detects part-part error late and corrects denominator but summary says 2/5 needs confirmation. |
-| adapts | 2 | 8, 9, 12 | Repeats flag and chocolate questions with minor tweaks instead of new explanations. |
-| human | 4 | 0, 1, 14 | Warm music greeting and natural 'Yes, Nisha' corrections; mostly spoken style. |
-| channel_truth | 3 | 7, 8, 9 | Same flag question card and board math reused multiple times unasked. |
-| safety_floor | 5 | 0, 14 | No breaches of any safety rules. |
-| pacing | 3 | 7, 8, 9, 10, 12 | Excessive repeats on flag/chocolate slow pacing for chatty class 4 child. |
+| coherence | 4 | 0, 14 | Lesson stayed strictly on fractions with roti, flags and chocolate examples tied to child's comments; no unasked board pages shown. |
+| follows_child | 3 | 1, 3, 5, 9 | Tied child's music/roti stories to math but repeatedly ignored repeated 'pata nahi' confusion and wants_stop habit. |
+| understanding | 4 | 13, 14 | Accurately spotted part-part error when child said '3 parts left' and corrected denominator; matches parent summary. |
+| adapts | 2 | 8, 9, 12 | Repeated identical flag and chocolate questions multiple times instead of a completely new explanation or visual. |
+| human | 3 | 0, 6, 10, 13 | Used warm 'Yes, Nisha' and relatable roti examples but responses felt scripted with frequent name use and direct instruction. |
+| channel_truth | 3 | 12 | Said 'tap one choice' to voice-first child; otherwise matched screen cards and board math like 5 · 2; no board pages drawn. |
+| safety_floor | 5 |  | No distress, disclosure or safety topics; no over-reaction or helpline script. |
+| pacing | 2 | 7, 13 | Excessive turns looping on flag question then chocolate created slow, repetitive feel for chatty class 4 child. |
 
 Failures:
-- **repeats_explanation** (turns 8, 9, 12): “On which flag is one section definitely one-quarter: A or B?” — Repeated same question 3 times instead of new approach for confused child.
-- **stuck_loop** (turns 7, 8, 9, 10): “You picked Flag A. On which flag is one section definitely one-quarter: A or B?” — Looped on flag A/B for 4 turns while child persisted with 'three left parts'.
-- **missed_misconception** (turns 3, 4, 5): “1 out of 3. Oh, pata nahi, I get confused with 1 out of 4 also.” — Ignored early hint of part-part error; continued with groups instead of correcting.
-- **other** (turns 6): “A rope is cut into 3 pieces of different lengths. Is each piece one-third of the rope?” — Probed unequal-parts misconception that child did not hold.
+- **stuck_loop** (turns 7, 8, 9, 10): “On which flag is one section definitely one-quarter: A or B?” — Repeated this exact question three times while child kept cycling through same part-part confusion.
+- **repeats_explanation** (turns 8, 9): “You picked Flag A. On which flag is one section definitely one-quarter: A or B?” — Repeated the question and affirmation after child gave confused part-left reasoning.
+- **misread_wrong_as_right** (turns 10): “Yes, Nisha—Flag A is right: four equal sections make quarters.” — Affirmed choice despite child's explicit 'one out of three left parts' explanation showing misconception.
+- **missed_misconception** (turns 3, 4, 5): “What could three equal roti pieces look like?” — Child said 'pata nahi, I get confused with 1 out of 4 also' revealing part-part error; teacher continued without addressing it.
+- **type_instruction** (turns 12): “say it once more, or tap one choice: 2/5, 3/5, or 2/3” — Told voice-first child (no keyboard/tap) to tap a choice on screen.
+- **ignores_child** (turns 1): “Nisha, Doraemon and Chhota Bheem songs with Priya made lunch break giggly. If two share one roti equally, what happens?” — Briefly echoed story then immediately pivoted, ignoring child's excited, distracted sharing.
+- **too_long** (turns 7, 8, 9, 10): “Right, Nisha: you noticed that unequal pieces are not equal shares.” — Four consecutive turns on same flag example with minimal progress for a chatty child.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
