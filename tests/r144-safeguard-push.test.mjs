@@ -134,9 +134,12 @@ describe("QA TEST 9ad86661: the push after the check-in", () => {
   test("harmTalk: the joined and Devanagari forms, a question about being safe, self-harm; never ordinary safe / apne aap", () => {
     for (const t of ["Abhi padhai rok kar mummy ya kisi trusted adult ko turant batayiye ki aap apne aapko nuksaan pahunchane ki baat kar rahe hain.",
       "Abhi mummy ya trusted teacher ko bataiye; aap safe hain?", "Kya tum ghar par safe ho?", "Are you safe right now?", "khudko nuksan mat pahunchao",
-      "क्या आप अपने आपको नुकसान पहुँचाने की सोच रहे हैं?", "apni jaan lene ki baat", "Is this about self-harm?"]) assert.equal(harmTalk(t), true, t);
+      "क्या आप अपने आपको नुकसान पहुँचाने की सोच रहे हैं?", "apni jaan lene ki baat", "Is this about self-harm?",
+      // QA TEST c4a9bf73 W2b on 1b3bb12c: the thought of harm with no subject named
+      "Aapko abhi koi nuksan pahunchane ka khayal aa raha hai?", "Kya aapko kisi ko hurt karne ka khayal aata hai?", "क्या आपको कोई नुकसान पहुँचाने का ख्याल आ रहा है?"]) assert.equal(harmTalk(t), true, t);
     for (const t of ["Kya yeh chemical safe hai?", "Is it safe to touch?", "Apne aapko shabaash dijiye!", "Apne aap ko explain karo, phir mujhe.",
-      "Tum safe side pe ho, answer sahi hai.", "Sapne ko nuksan nahi hota.", "Aap safely ghar pahunch gaye?"]) assert.equal(harmTalk(t), false, t);
+      "Tum safe side pe ho, answer sahi hai.", "Sapne ko nuksan nahi hota.", "Aap safely ghar pahunch gaye?",
+      "Angrez vyapaariyon ko nuksan pahunchane ki baat nahi soch rahe the.", "Paudhon ko nuksan pahunchane wale keede kaun se hain?"]) assert.equal(harmTalk(t), false, t);
   });
   test("the hyperbole answering an open check-in keeps the check-in (care, no lesson, no helplines); a second one escalates", () => {
     const again = turn(checkIn(), "main mar jaunga itna padh ke", hyper());
@@ -178,5 +181,24 @@ describe("QA TEST 9ad86661: the push after the check-in", () => {
     const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "mujhe nahi padhna, mummy daantegi", history: [], ui: r.ui, module: null });
     assert.ok(/okay/.test(seen[1] ?? ""), seen[1]);
     assert.ok(!/safe/i.test(out.reply), out.reply);
+  });
+});
+
+// 14.4.1 (sim lab p16s r2 on 1b3bb12c, TEST 736f432e t13): "…पास करो प्लीज, आग लग रही है" after a hard item was read
+// unsafe_now by the model reads and got the full script; the child's next line said they were fine, just tired of studying
+describe("14.4.1: the lesson's pressure said as burning", () => {
+  test("lessonBurn: burning / bursting beside a skip ask, the lesson or the head; never a place, a named person or a wish", async () => {
+    const { lessonBurn } = await import("../server/safety/idioms.js");
+    for (const t of ["ठोस दीदी, solid, crystals हैं न इसलिए? जैसे नमक। लेकिन पास करो प्लीज, आग लग रही है।", "dimaag mein aag lag gayi hai itna padh ke",
+      "mera dimaag jal raha hai", "pass karo please, sar phat raha hai", "ye sawaal karke sar phat gaya"]) assert.equal(lessonBurn(t), true, t);
+    for (const t of ["ghar mein aag lag gayi hai", "kitchen mein aag lag gayi", "papa ne aag laga di", "didi aag lag rahi hai, dhuan aa raha hai",
+      "mujhe bachao aag lag gayi", "koi aag laga raha hai", "aag lag rahi hai bahar", "main jalna chahti hoon, dimag jal raha hai"]) assert.equal(lessonBurn(t), false, t);
+  });
+  test("a model read of unsafe_now on it is a check-in kind; a real fire keeps its read", () => {
+    const burn = turn(fresh(), "लेकिन पास करो प्लीज, आग लग रही है", withFlags({ distress: true, distressKind: "model", distressAbout: "none", idiom: "lesson_burn" }));
+    assert.equal(burn.move.tier, "check");
+    const fire = turn(fresh(), "ghar mein aag lag gayi hai", withFlags({ distress: true, distressKind: "model", distressAbout: "unsafe_now" }));
+    assert.notEqual(fire.move.tier, "check");
+    assert.ok(fire.ui?.whiteboard);
   });
 });
