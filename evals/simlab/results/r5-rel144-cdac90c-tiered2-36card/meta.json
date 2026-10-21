@@ -1,0 +1,60 @@
+{
+ "runId": "r5-rel144-cdac90c-tiered2-36card",
+ "head": "5facdc2f",
+ "date": "2026-10-21T14:57:36.760Z",
+ "arms": {
+  "director": "http://127.0.0.1:8843"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 36,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "childRules": "v1",
+ "region": "southindia",
+ "childMode": "decided",
+ "answerModel": {
+  "version": "decided-1 (2026-10-15)",
+  "why": "The free model child answered items far above its card (a 'not' skill right 38-56% on its first graded item, a 'partly' child passing why/predict/error-spot 45-58%, r5-child-v2-calib-7740135). In decided mode the harness draws each answer's outcome from this table (seeded) and the child model only writes that outcome in character.",
+  "deepKinds": [
+   "why",
+   "predict",
+   "error_spot",
+   "teachback",
+   "far_transfer"
+  ],
+  "pCorrect": {
+   "understood": {
+    "plain": 0.9,
+    "deep": 0.8
+   },
+   "partly": {
+    "plain": 0.55,
+    "deep": 0.2
+   },
+   "not": {
+    "plain": 0.1,
+    "deep": 0.05
+   }
+  },
+  "wrongShows": {
+   "the item's targeted misconception, when the child holds it": 0.85,
+   "another held misconception of the topic": 0.5
+  },
+  "dontKnow": {
+   "not": 0.4,
+   "partly": 0.2,
+   "understood": 0.05
+  },
+  "state": "the card's state for the item's skill, raised one step only by a learned step the child logged (the same truth the scoring uses)"
+ },
+ "seed": "taxila",
+ "kitRoot": "/tmp/claude-0/-home-user-Taxila/60d5376c-a7b8-5f02-a97b-b11fed398f5c/scratchpad/wt/rel144c",
+ "note": "14.4 tiered safeguard v2 int/r5-rel144 @cdac90c3 (code 510f242d: post-check-in escalation only on a sure signal, 4-turn cooldown, hurt_by_accident_or_animal check-in, night-visitor predicate, p13/p16 predicate fixes): the same 36 cards, Director, text, decided seed taxila, southindia; before = r5-rel144-b8285b2-tiered-36card"
+}
