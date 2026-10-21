@@ -17,7 +17,7 @@ import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { canonReading } from "../safety/fine.js";
-import { lessonIdiom, scoldOnly, lessonHyperbole } from "../safety/idioms.js";
+import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
@@ -384,6 +384,9 @@ const idiomCheck = (out, text) => {
   if (!out?.flags?.distress || ["self_harm", "abuse", "fear"].includes(out.flags.distressKind ?? "")) return out;
   if ((out.flags.distressAbout === "self_harm" || out.flags.distressAbout == null) && lessonIdiom(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_frustration" } };
   if (SCOLD_ABOUT.has(out.flags.distressAbout) && scoldOnly(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "scolding" } };
+  // 14.4.1 (sim lab p16s r2, TEST 736f432e t13: "…पास करो प्लीज, आग लग रही है" read unsafe_now): the lesson's pressure said as
+  // burning (idioms.js lessonBurn) is a check-in kind, never the full script on a model read alone
+  if ((out.flags.distressAbout === "unsafe_now" || out.flags.distressAbout == null) && lessonBurn(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_burn" } };
   return out;
 };
 /**
@@ -462,14 +465,22 @@ async function distressAcross(text, classLevel, trace) {
     { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
     { role: "user", content: filterSafe(scrubPii(text).text) },
   ];
+  // 14.4 (QA TEST 7590e26d on f0cb84c8: "वो cotton shirt, British लोग control करते होंगे price… rule कर रहे थे", class 6):
+  // every deployment's read blocked by the hate detectors alone (grok `multiseverity_hatespeechscore`, taxila-fast `hate`)
+  // is no child-safety signal (azure.js notChildSafety): no distress. On 276 curated distress lines, 22 are blocked on both
+  // deployments and none hate-only; a failure, or any other category on any deployment, is still no reading (fail closed)
+  let tried = 0, hateOnly = 0;
   for (const d of distressDeployments()) {
+    tried++;
     try {
       const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" });
       return !!json?.distress;
     } catch (e) {
+      if (isContentFilter(e) && notChildSafety(e)) hateOnly++;
       console.warn(`[classify] distress read on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}: next deployment`);
     }
   }
+  if (tried > 0 && hateOnly === tried) { console.warn("[classify] every distress read blocked by the hate detectors alone: no child-safety signal"); return false; }
   return null;
 }
 
