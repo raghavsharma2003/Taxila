@@ -17,6 +17,12 @@
    "kind": "decision",
    "at": "2026-10-21",
    "title": "The Hinglish reply reading in corroborate.js ships rescue-only (no form passes without it; key-like cover 0.8; reply side only; never on a language item), with 0 new forced false credits and 0 rescues on every real set measured. Main, 14.4.2. Reversal condition: remove the reading (HI_EN / hiContent and the hinglish path in corroborate) if a later real-label set (a sim-lab decided-truth run with EVS / science Hinglish answers, or TEST) shows it still rescues 0 right answers, or if any forced or real set shows a new false credit from it."
+  },
+  {
+   "id": "ms-r1442-unverified-moveon",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "14.4.2 (d), director/state.js unclear(): a reply the model read as right that corroboration could not verify against the item's verified forms (corroboration unsupported_credit:*), the second time on one card, means no third pose: one verdict-neutral line (SH.unverifiedMoveOn: thanks them for the idea, never for the answer; no sahi / galat / almost / close) and the next card. The card goes to s.skipped (lesson-local), never itemsDone, never noteStuck: no verdict, no evidence row, due again another day. Measured on the sim lab 1b3bb12c records (p66, p66 r1, p68, p10 + 6 control cards p01 / p07 / p14 / p20 / p26 / p43), re-classifying every no_evidence card reply with the real classifier: 1 of 10 children had a card posed again after its 2nd unverified reply today (p66 r1, c3-evs-ch07-t02-i02: 4 unverified replies, 2 re-poses), 0 with (d); the other repeats in these runs come from the wrong / partial path (hint rungs), which (d) does not touch (p66 r1 i13: 1 unverified, then 'incorrect', then 'partial'). The re-classification is a fresh model call, so labels can differ from the run's own. Tests: tests/r1442-unverified-moveon.test.mjs (the first fails on the base; a control keeps the plain unclear path)."
   }
  ],
  "edges": [

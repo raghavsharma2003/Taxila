@@ -513,6 +513,8 @@ export const switchOffer = ({ title }) => join(
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
 /** census 14.5 (F1, 310b8c82): they asked for the idea first, before any question (the card waits). */
 export const explainFirstAsked = () => "they asked for the idea first, before any question: yes, warmly, and teach it plainly now; the question waits";
+/** 14.4.2 (d): an answer read right that the code could not verify, twice on one card: no third pose, no verdict either way. */
+export const unverifiedMoveOn = () => "thank them warmly for their idea in one short line of your own, never for the answer; say nothing about whether it was right or wrong (no sahi, no galat, no almost, no close); then go on to the next question";
 export const topicChoices = ({ titles }) => join(
   "they have asked again for something else: say yes warmly and mean it, in your own words",
   `offer these topics of their class as the buttons on screen: ${(titles ?? []).map((t) => clean(t)).filter(Boolean).join("; ")}; or they can tell you what they want, or go back to today's work`,
