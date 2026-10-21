@@ -144,6 +144,15 @@ async function lessonLane(lessonId) {
   return rows[0] ? { teacher: rows[0].teacher ?? "director", agent: rows[0].agent ?? null } : null;
 }
 
+/** The lesson row's stored end record (TEST branch only): lesson.summary and lesson.parent_note. */
+async function endRow(lessonId) {
+  const url = process.env.DATABASE_URL ?? "";
+  if (!url.includes(process.env.SIMLAB_DB_HOST || "ep-winter-tooth")) return null;
+  if (!sql) { const { neon } = await import("@neondatabase/serverless"); sql = neon(url); }
+  const rows = await sql.query("select summary, parent_note from lesson where id = $1", [lessonId]);
+  return rows[0] ? { summary: rows[0].summary ?? null, parentNote: rows[0].parent_note ?? null } : null;
+}
+
 /** The lesson's active kit item (TEST branch only): which item a reworded Director card is posing. */
 async function activeItemId(lessonId) {
   const url = process.env.DATABASE_URL ?? "";
@@ -317,6 +326,8 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
     rec.lane2 = await lessonLane(s.lessonId).catch((err) => { rec.errors.push({ at: "lesson_state", msg: String(err.message).slice(0, 160) }); return null; });
     const e = await api("POST", "/api/lesson/end", { lessonId: s.lessonId }).catch((err) => { rec.errors.push({ at: "end", msg: err.message }); return null; });
     if (e) rec.end = { summary: e.summary, parentNote: e.parentNote, did: e.did, facts: e.debug?.facts ?? null };
+    // 14.4.1 end-record check (main): what the lesson row itself stores, read before the account (and the row) is erased
+    rec.endDb = await endRow(s.lessonId).catch((err) => { rec.errors.push({ at: "end_row", msg: String(err.message).slice(0, 160) }); return null; });
   } catch (e) {
     rec.errors.push({ at: "setup", status: e.status ?? 0, msg: String(e.message).slice(0, 300) });
   } finally {
