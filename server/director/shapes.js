@@ -397,6 +397,8 @@ export const boardCleared = () => "they asked to clear the board: it is cleared 
 export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
 // round 5 (owner 2026-10-14): silence is never a cue to move on
 export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+/** D5 unheard (census 4B): they DID speak and the microphone could not make out the words — her ear, never their fault. */
+export const unheardAgain = () => "they spoke but the microphone could not make out the words (her ear, not their fault): ask them kindly to say it once more, in a few words";
 export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
 export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";

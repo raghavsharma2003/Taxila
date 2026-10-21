@@ -153,6 +153,37 @@ describe("(1) the turn after a check-in", () => {
     assert.equal(r2.move.escalated, true);
     assert.ok(r2.ui?.whiteboard);
   });
+  test("speech the ear could not read (D5 unheard: empty text, source asr) is never the child's answer: she asks again, twice; a third escalates", () => {
+    const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
+    let st = checkOpened();
+    for (let i = 1; i <= 2; i++) {
+      const r = turn(st, "", unheard);
+      assert.equal(r.move.kind, "safeguard", `unheard #${i}`);
+      assert.equal(r.move.tier, "check", `unheard #${i}: her mishearing is not the child's answer`);
+      assert.equal(r.move.shape, SH.distressCheckAgain());
+      assert.ok(!r.ui?.whiteboard, `unheard #${i}: no helplines on her ear alone`);
+      st = r.state;
+    }
+    const r3 = turn(st, "", unheard);
+    assert.equal(r3.move.escalated, true, "fail closed: a third unheard turn in a row is the full script");
+    assert.ok(r3.ui?.whiteboard);
+  });
+  test("an unheard turn does not use up the check-in's one silence", () => {
+    const r1 = turn(checkOpened(), "", { ...cls("no_evidence"), source: "asr", lowAsr: true });
+    const r2 = turn(r1.state, "", { ...cls("no_evidence"), source: "empty" });
+    assert.equal(r2.move.tier, "check", "the silence still waits once");
+    assert.ok(!r2.ui?.whiteboard);
+  });
+  test("outside a safeguard an unheard turn is the same gentle ask-again as a silence, but never the are-you-there check", () => {
+    let st = fresh();
+    for (let i = 0; i < 4; i++) {
+      const r = turn(st, "", { ...cls("no_evidence"), source: "asr", lowAsr: true });
+      assert.notEqual(r.move.kind, "break", `unheard #${i + 1} never asks whether they are still there`);
+      assert.ok(String(r.move.shape ?? "").includes(SH.unheardAgain()), `unheard #${i + 1} asks again (they spoke; her ear missed it): ${r.move.kind} ${String(r.move.shape).slice(0, 80)}`);
+      assert.ok(!r.state.quiet, "not counted as silence");
+      st = r.state;
+    }
+  });
   test("a stop ends the lesson, as on every safeguard", () => {
     const b = cls("no_evidence");
     const r = turn(checkOpened(), "bye", { ...b, flags: { ...b.flags, wantsToStop: true } });

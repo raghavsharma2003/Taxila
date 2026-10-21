@@ -32,13 +32,14 @@ export function classify(run, meta) {
   for (const a of commits) {
     if (String(a[2] ?? "").trim()) continue;
     const reason = a[3] ?? null;
-    if (reason === "cut_in:hold_offer") { out.push({ t: a[0], reason, kind: "hold_offer" }); continue; }
+    const unheardFlag = a[6] === true;
+    if (reason === "cut_in:hold_offer") { out.push({ t: a[0], reason, kind: "hold_offer", unheardFlag }); continue; }
     // the ear item behind it: the latest EMPTY final before the commit
     const it = [...items.values()].filter((x) => x.final !== undefined && x.final <= a[0] && !x.text).sort((x, y) => y.final - x.final)[0];
-    if (!it || it.a0 === undefined || it.a1 === undefined) { out.push({ t: a[0], reason, kind: "no_item" }); continue; }
+    if (!it || it.a0 === undefined || it.a1 === undefined) { out.push({ t: a[0], reason, kind: "no_item", unheardFlag }); continue; }
     const child = meta.gold.childSegs.reduce((s, c) => s + overlap(it.a0, it.a1, c.start, c.end), 0);
     const her = meta.gold.herSpan ? overlap(it.a0, it.a1, meta.gold.herSpan.start, meta.gold.herSpan.end) : 0;
-    out.push({ t: a[0], reason, kind: child >= MIN_CHILD ? "unheard" : her > 0 ? "echo" : "noise", a0: it.a0, a1: it.a1, childMs: Math.round(child), herMs: Math.round(her), failed: !!it.failed });
+    out.push({ t: a[0], reason, kind: child >= MIN_CHILD ? "unheard" : her > 0 ? "echo" : "noise", a0: it.a0, a1: it.a1, childMs: Math.round(child), herMs: Math.round(her), failed: !!it.failed, unheardFlag });
   }
   return { commits: commits.length, empty: out };
 }
@@ -56,8 +57,11 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       agg.commits += c.commits; agg.empty += c.empty.length;
       for (const e of c.empty) { agg.kinds[e.kind] = (agg.kinds[e.kind] ?? 0) + 1; all.push({ arm, variant: v, id: run.id, sub: meta.sub, ...e }); }
     }
-    // read as silence by the server today: every empty commit but the hold offer
-    agg.readAsSilence = agg.empty - (agg.kinds.hold_offer ?? 0);
+    // read as SILENCE by the server: every empty commit but the hold offer and a turn marked unheard (census F5 fix)
+    agg.readAsSilence = all.filter((e) => e.arm === arm && e.variant === v && e.kind !== "hold_offer" && !e.unheardFlag).length;
+    agg.markedUnheard = all.filter((e) => e.arm === arm && e.variant === v && e.unheardFlag).length;
+    // a child who spoke, read as silence: the false silence the check-in tier would count
+    agg.falseSilence = all.filter((e) => e.arm === arm && e.variant === v && e.kind === "unheard" && !e.unheardFlag).length;
     agg.phantom = (agg.kinds.echo ?? 0) + (agg.kinds.noise ?? 0) + (agg.kinds.no_item ?? 0);
     byVar[`${arm}.${v}`] = agg;
   }

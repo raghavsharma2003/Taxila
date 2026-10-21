@@ -1,0 +1,23 @@
+{
+  "nodes": [
+    {
+      "id": "ms-r144-d5-false-silence",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "title": "D5 empty turns read as SILENCE (main 2026-10-21, the owner's census F5 + 14.4's safeguard check-in tier; evals/duplex-2026-10/phantom-empty.mjs, results/phantom-empty-{owner,phone}.json). Method: a fresh live Voice Live D5 pass over all 66 bake scenarios, owner and phone-echo variants (today's ear, audio times recorded), then the SAME recorded ear events replayed through the base engine (int/r5-rel144 @ b8285b2b) and the fixed one; every empty commit classified against the gold (child speech under the ear item ≥ 150 ms = unheard; her playback only = echo; neither = noise; no item = no_item; the floor's hold offer). BEFORE: owner 7 empty of 46 commits (4 unheard, 3 hold offer), phone 6 of 44 (5 unheard, 1 hold offer); true phantoms (echo / noise / no item) 0 of 90 commits; every unheard turn reached the server as \"\" + asrConfidence 0 → cls source empty → isSilentTurn: a child who SPOKE read as silent in 9 of 90 commits (10%). AFTER: false silences 0 of 9 (each marked duplex.unheard → source asr); commit streams identical in all 132 runs (time and text); the new no-item drop fired 9 times, each on an empty SPEAK the base engine also never posted (held: one turn at a time). Earlier recorded arms agree (d5v200.owner 4 unheard + 3 hold offer; d5r11.owner 5 + 2). The harness's stereo AEC produced no echo-opened empty items; a real phone's may (production census F5) — only the item-less case is guarded at the client."
+    },
+    {
+      "id": "dc-r144-d5-unheard-not-silence",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN an unheard turn re-asks the check-in and does not use up its one silence, failing closed on the THIRD unheard turn in a row (UNHEARD_CHECKS = 2). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns."
+    }
+  ],
+  "edges": [
+    {
+      "from": "dc-r144-d5-unheard-not-silence",
+      "to": "ms-r144-d5-false-silence",
+      "rel": "measured_by"
+    }
+  ]
+}
