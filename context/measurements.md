@@ -4616,3 +4616,15 @@ The widened harm-talk guard against the 14.4 one, on every distinct teacher line
 ## ms-r144-checkin-adult (2026-10-21, n = 60 replies)
 
 With no history, the check-in reply never sent the child to a grown-up and never said safe, with or without the new words: 0/30 in both arms. The hand-off showed up only with lesson history (2 of 22 replay check-ins). The words are cheap, but they are not shown to change anything on their own.
+
+
+<!-- merged from inbox/r144-hate-main.json -->
+## ms-r144-hate-filter (2026-10-21, n = 373 probed lines + 22 TEST turns)
+
+On TEST, the hate filter alone opened the full script on 10 turns in 30 days, all of them harmless. The probe finds 0 hate-only blocks across 276 distress and 97 quiet curated lines, and 4 of 6 on the false alarms. Live on the real filter: fail-closed 3/3 on the old tree, a lesson line 3/3 on the new.
+
+
+<!-- merged from inbox/r144-beside-main.json -->
+## ms-r144-beside-latency (2026-10-21, n = 14,865 calls)
+
+grok timed out on 0.5% of words reads. The fallback's median is 1.6 s. Under the old 1.2 s wait, each timeout on a distress-labelled turn was the full script.

@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter, nonHarmFilter } from "../azure.js";
+import { chat, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -92,7 +92,8 @@ export async function childWordsTrip(words, { trace } = {}) {
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, purpose: "filter_probe" });
     return "clear";
   } catch (e) {
-    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    // 14.4: a block by the hate detectors alone is no child-safety signal (azure.js notChildSafety)
+    if (isContentFilter(e)) return notChildSafety(e) ? "clear" : "harm";
     return "unknown";
   }
 }
@@ -149,12 +150,14 @@ export const FALLBACK = {
   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
     other: "Sorry, I lost my words for a second. Can you say that again?",
+    heard: "Thanks for telling me! Let's keep going.",
     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
     checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
     forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
+    heard: "Accha, batane ke liye thanks! Chalo, aage badhte hain.",
     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
     forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
@@ -312,6 +315,20 @@ export function fallbackReply(state, item) {
   const line = lines[kind] ?? lines.other;
   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
   return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
+}
+/**
+ * 14.4 (live on the real filter: "humne race lagayi", two class 8 answers about British rule): a block of the CONTEXT whose
+ * child's words pass (or trip only a detector that is no child-safety signal) never gets "say that again": the same words
+ * would trip it again. The move's own fixed line when it has one (an item's question, a check-in, a wrap), else a warm
+ * carry-on. Exported for tests.
+ */
+export function filterNeutralReply(state, item) {
+  const line = fallbackReply(state, item);
+  const lang = state.ctx.lang;
+  const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
+  const aap = state.ctx.address === "aap" && lang !== "english";
+  if (line !== (aap ? toAap(lines.other) : lines.other)) return line;
+  return aap ? toAap(lines.heard) : lines.heard;
 }
 
 /**
@@ -534,11 +551,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // reply-side block. A non-harm detector: a neutral line. Otherwise the child's own words alone decide: clear, a neutral
   // line; a harm block, the safeguard; a probe that could not run, the check-in.
   const blockedAfterDraft = async (e, code) => {
-    if (nonHarmFilter(e)) return { reply: fallbackReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    if (nonHarmFilter(e)) return { reply: filterNeutralReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
     const probe = await childWordsTrip(probeWords(history, childText), { trace });
     if (probe === "clear") {
       console.warn(`[lesson] ${code} blocked but the child's own words pass: a neutral line`);
-      return { reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } };
+      return { reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } };
     }
     console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
     return blocked(probe);
@@ -582,7 +599,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
     // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
     // still fail CLOSED below, exactly as before.
-    const neutral = (code) => ({ reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
+    const neutral = (code) => ({ reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
     const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
     let triedLone = false;
     if (isContentFilter(e) && nonHarmFilter(e)) {
