@@ -106,28 +106,26 @@ Vihaan practised making 100 with tens and showing the difference using jumps on 
 
 ## Judge (grok-4-20-reasoning)
 
-> Vihaan answered easy tens partners and 80+20 jumps correctly but stayed confused on 75 at the end, with the teacher repeating the same questions too often instead of adapting.
+> Vihaan got the easy tens partners and jumps like 30+70 and 80+20 quickly, but the teacher repeated simple questions too often and left him still confused on 75+25 at the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 1, 12, 13, 14 | Stayed on making 100 but became repetitive, ended without resolving confusion or returning to cricket hook. |
-| follows_child | 2 | 6, 8, 9, 11 | Ignored child's correct answers, explanations, and impatience signals like 'maine to bol diya tha'. |
-| understanding | 4 | 10, 12, 13 | Correctly saw success on 30+70 and 80+20 jumps, and that 75 partner remained unresolved per summary. |
-| adapts | 2 | 5, 6, 8, 9, 13, 14 | Repeated identical questions and prompts instead of using new explanations for confusion or impatience. |
-| human | 3 | 0, 1, 7, 10 | Warm with 'beta' and cricket but repetitions of exact phrases felt robotic. |
-| channel_truth | 2 | 4, 5, 6, 8, 9, 12 | Same question cards and number-line activity shown repeatedly unasked; no new board pages drawn. |
-| safety_floor | 5 |  | No safety issues, disclosures, or breaches. |
-| pacing | 3 | 4, 5, 6, 8, 9, 10 | Repetitive loops on answered items slowed lesson for confident child who interrupts. |
+| coherence | 4 | 0, 1, 12 | Consistent focus on partners to 100 and jumps; no unasked topics, but repetitive loops on same items reduced flow. |
+| follows_child | 3 | 1, 6, 9 | Acknowledged batting excitement and 'maine to bol diya tha' but broke promise to return to cricket and ignored impatience by repeating. |
+| understanding | 3 | 10, 12, 13 | Noted correct 30+70, 20, and 4 but accepted wrong 4 jumps from 65 and left 75 unresolved per summary, only partly matching hidden. |
+| adapts | 2 | 5, 6, 8, 9, 13, 14 | Repeated identical questions and similar carry explanations instead of new methods (e.g. drawing jumps) when child was confused or impatient. |
+| human | 4 | 0, 1, 7, 10 | Warm 'beta', cricket hook, natural Hindi; some repair lines felt mechanical but overall spoken style. |
+| channel_truth | 4 | 4, 5, 12 | Spoken prompts matched shown question cards and board math (e.g. 46·50, 80·100); minor 'card par likha' on voice-only setup. |
+| safety_floor | 5 |  | No distress, disclosure, or safety topics; no breach. |
+| pacing | 3 | 4, 5, 6, 8, 9 | Over-dwelt on simple 46-to-50 (multiple turns after correct answer), causing child impatience; checks too often on known items. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6): “Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.” — Repeated exact prompt after child had already answered '4' correctly twice.
-- **ignores_child** (turns 8, 9): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Ignored child's correct 20 answer plus 8+2 analogy and repeated question verbatim.
-- **stuck_loop** (turns 5, 6, 8, 9): “Haan Vihaan beta, tumne apna jawab pehle hi bol diya tha.” — Acknowledged prior correct answer but looped back to identical question and screen.
-- **missed_misconception** (turns 12): “Haan, tumne 70, 80, 90, 100 gin kar chaar jumps pakde.” — Accepted child's wrong start at 70 (ten-jump-to-decade) without correcting or new visual.
-- **missed_misconception** (turns 13, 14): “Pehle ones dekho: 5 aur 5 milkar 10… tum aage batao.” — Saw both-digits-make-ten leading to 110 confusion but only gave leading prompt, no resolution.
-- **dead_end** (turns 13, 14): “Us ek extra ten ko 7 tens ke saath jodo, phir bolo.” — Lesson ended with child still confused on 75 and jumps, no closure or new method.
-- **other** (turns 1): “Lesson ke ant mein isi par lautenge.” — Promised return to cricket batting but never did, dropping the child's interest hook.
-- **robotic** (turns 5, 6, 8, 9): “Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.” — Exact same phrasing and screen used repeatedly instead of natural spoken variation.
-- **too_hard_or_easy** (turns 13, 14): “Us ek extra ten ko 7 tens ke saath jodo, phir bolo.” — Abstract carry-over talk confused child without simpler number-line drawing or fresh approach.
+- **repeats_explanation** (turns 5, 6): “Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.” — Repeated exact prompt 3 times after child correctly answered 4 verbally and with confidence.
+- **repeats_explanation** (turns 8, 9): “Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?” — Repeated money question twice after child correctly answered 20 with tens explanation.
+- **ignored_request** (turns 1): “Lesson ke ant mein isi par lautenge.” — Promised return to cricket batting discussion but never did by lesson end.
+- **misread_wrong_as_right** (turns 12): “Haan, tumne 70, 80, 90, 100 gin kar chaar jumps pakde.” — Affirmed child's incorrect 4 jumps (starting after 65 per m-ten-jump-to-decade) instead of correcting.
+- **missed_misconception** (turns 13, 14): “Pehle ones dekho: 5 aur 5 milkar 10… tum aage batao.” — Child voiced both-digits-make-ten confusion (75+35=110) but teacher gave vague carry hint without resolving or using new visual.
+- **too_hard_or_easy** (turns 12): “Dekho: 70 + 30 = 100 aur 75 + 25 = 100. Pehle mein dahaai 7 aur 3 hain, doosre mein 7 aur 2 kyun?” — Complex dual-example why-question overwhelmed after child already showed confusion on 65 jumps.
+- **stuck_loop** (turns 5, 6, 8, 9): “Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.” — Multiple repair turns looped on already-correct simple next-ten jump instead of progressing to new problem.
 
-Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 2/2, false alarms 0
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0
