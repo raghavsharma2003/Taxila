@@ -227,6 +227,11 @@ export interface TurnRequest {
     superseded?: string[];
     heardUpTo?: { chars: number; words: number; ms: number } | null;
     cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
+    /**
+     * D5 (round 5, census F5): the text is empty because the ear's item covered the child's speech and returned no words. The
+     * server reads the turn as an unreadable transcript (a re-ask, cls source "asr"), never as silence.
+     */
+    unheard?: boolean;
     engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
   };
 }

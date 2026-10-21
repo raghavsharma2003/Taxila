@@ -193,6 +193,69 @@ describe("(1) the turn after a check-in", () => {
     assert.equal(r2.move.escalated, true);
     assert.ok(r2.ui?.whiteboard);
   });
+  test("speech the ear could not read (D5 unheard) never escalates on its own: three, four in a row still re-ask the check-in, chips on screen, no helplines", () => {
+    const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
+    let st = checkOpened();
+    for (let i = 1; i <= 4; i++) {
+      const r = turn(st, "", unheard);
+      assert.equal(r.move.kind, "safeguard", `unheard #${i}`);
+      assert.equal(r.move.tier, "check", `unheard #${i}: her mishearing is not the child's answer, nor a reason to escalate`);
+      assert.equal(r.move.escalated, undefined, `unheard #${i}: never the full script`);
+      assert.equal(r.move.shape, SH.distressCheckAgain({ unheard: true }), "she says SHE could not make it out");
+      assert.match(r.move.shape, /okay, never safe/);
+      assert.ok(!r.ui?.whiteboard, `unheard #${i}: no helplines on her ear alone`);
+      assert.equal(r.state.safeguardedAt, undefined, `unheard #${i}: no incident`);
+      assert.deepEqual((r.ui?.chips ?? []).map((x) => x.id), ["safe:continue", "safe:stop"], `unheard #${i}: a way to answer that does not need her ear`);
+      st = r.state;
+    }
+    // silence keeps its own rule (one wait, a second escalates), and a sure read still escalates at once
+    const empty = { ...cls("no_evidence"), source: "empty" };
+    assert.equal(turn(turn(st, "", empty).state, "", empty).move.escalated, true, "two silences after the unheard turns: the full script");
+    assert.equal(turn(st, "mujhe khud ko hurt karna hai", distressCls("self_harm")).move.escalated, true, "the predicate escalates whatever the ear did");
+  });
+  test("an unheard turn never RELEASES a check-in (the child's answer is still to come)", () => {
+    const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
+    let st = checkOpened();
+    for (let i = 1; i <= 2; i++) {
+      const r = turn(st, "", unheard);
+      assert.equal(r.state.safeguard?.tier, "check", `unheard #${i}: the check-in stays open`);
+      assert.notEqual(r.state.checkReleased, r.state.turn, `unheard #${i}: not released`);
+      assert.ok(!r.state.careLine || r.state.careLine !== r.state.turn, `unheard #${i}: no warm back-to-the-lesson line`);
+      st = r.state;
+    }
+    // then the child's words decide, as on any check-in (clearly fine releases it)
+    const fine = turn(st, "haan main theek hoon");
+    assert.equal(fine.state.safeguard, null, "the child's own fine words release it");
+  });
+  test("an unheard turn does not use up the check-in's one silence", () => {
+    const r1 = turn(checkOpened(), "", { ...cls("no_evidence"), source: "asr", lowAsr: true });
+    const r2 = turn(r1.state, "", { ...cls("no_evidence"), source: "empty" });
+    assert.equal(r2.move.tier, "check", "the silence still waits once");
+    assert.ok(!r2.ui?.whiteboard);
+  });
+  test("outside a safeguard an unheard turn is the same gentle ask-again as a silence, but never the are-you-there check", () => {
+    let st = fresh();
+    for (let i = 0; i < 4; i++) {
+      const r = turn(st, "", { ...cls("no_evidence"), source: "asr", lowAsr: true });
+      assert.notEqual(r.move.kind, "break", `unheard #${i + 1} never asks whether they are still there`);
+      assert.ok(String(r.move.shape ?? "").includes(SH.unheardAgain()), `unheard #${i + 1} asks again (they spoke; her ear missed it): ${r.move.kind} ${String(r.move.shape).slice(0, 80)}`);
+      assert.ok(!r.state.quiet, "not counted as silence");
+      st = r.state;
+    }
+  });
+  test("from an unheard wait, a tap is the child's own answer: safe:continue releases the check-in, safe:stop ends the lesson", () => {
+    const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
+    for (const waits of [1, 2]) {
+      let st = checkOpened();
+      for (let i = 0; i < waits; i++) st = turn(st, "", unheard).state;
+      const go = turn(st, "", cls("no_evidence"), { chipId: "safe:continue" });
+      assert.equal(go.state.safeguard, null, `after ${waits} unheard: safe:continue releases`);
+      assert.notEqual(go.move.kind, "safeguard");
+      assert.ok(!go.ui?.whiteboard || !/1098/.test(JSON.stringify(go.ui.whiteboard)), "no helplines on a tap to carry on");
+      const stop = turn(st, "", cls("no_evidence"), { chipId: "safe:stop" });
+      assert.equal(stop.move.kind, "wrap", `after ${waits} unheard: safe:stop ends it`);
+    }
+  });
   test("a bare 'pata nahi' is no answer yet (QA TEST 47f4bb3f U2b): it waits once like a silence, even over a model low-mood re-read; a second escalates", () => {
     const UNSURE = ["pata nahi", "pata nahi…", "hmm pata nahi yaar", "nahi pata", "पता नहीं", "मालूम नहीं", "I don't know", "idk", "not sure", "kuch nahi", "hmm"];
     for (const text of UNSURE) {

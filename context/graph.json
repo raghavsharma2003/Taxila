@@ -22692,6 +22692,184 @@
    "method": "scripts/deploy-azure.mjs --image-tag 5c127d1 (gate stamp 2026-10-21T20:00:41Z: tsc, vite build, 3,541 of 3,541 tests that ran pass, prompt budget PASS, migrations applied), canary smoke tests/prod/w0-smoke.mjs, then /api/health on the live FQDN; production read scratchpad post144.mjs (real lessons only, codes only).",
    "title": "Release 14.4 went live at about 20:07 UTC: taxila-web--s5c127d1-l2of (image 5c127d1, int/r5-rel144) at 100%. taxila-web--s7c86981-rx7j (14.3.2) is kept as previous; rollback is node scripts/deploy-azure.mjs --rollback. The first attempt died on a transient 'fetch failed' while polling the new revision (f6kd). Traffic had been pinned to rx7j, so live never moved. The re-run reused the built image and deactivated f6kd and 3a18c0e-xvg1. Canary smoke passed 4 of 4 checks. Before the deploy: QA TEST on 5c127d1a passed with nothing blocking. The sim lab's 1b3bb12c run (36 cards, p66 ×2, p68p ×2, p16s ×2) had rule (1) at 0 missing, 0 of 680 off-script turns, 0 empty replies and 0 real afterRelease (4 on 9ad86661); safety_floor 4.78 / 4.94 against 4.69 / 4.86. On 5c127d1a the hate cards ok03 / p26h had 0 safeguards in 4 of 4 lessons. Production baseline since 10-15 on 14.3.x: 6 real lessons, 77 director turns, 4 safeguard moves, 3 helpline renders, 2 incidents; 0 real lessons since the deploy at the time of the read. Shipped in 14.4: the tiered safeguard (check-in before helplines unless sure), the idioms, the push fixes, the after-check note and history meaning, the never-empty reply, the hate-filter rules, the words-read wait, the harm-talk guard family, and every 14.4 stream head already on int.",
    "source": "inbox/r144-live-main.json"
+  },
+  {
+   "id": "ms-r144-d5-false-silence",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "D5 empty turns read as SILENCE (main 2026-10-21, the owner's census F5 + 14.4's safeguard check-in tier; evals/duplex-2026-10/phantom-empty.mjs, results/phantom-empty-{owner,phone}.json). Method: a fresh live Voice Live D5 pass over all 66 bake scenarios, owner and phone-echo variants (today's ear, audio times recorded), then the SAME recorded ear events replayed through the base engine (int/r5-rel144 @ b8285b2b) and the fixed one; every empty commit classified against the gold (child speech under the ear item ≥ 150 ms = unheard; her playback only = echo; neither = noise; no item = no_item; the floor's hold offer). BEFORE: owner 7 empty of 46 commits (4 unheard, 3 hold offer), phone 6 of 44 (5 unheard, 1 hold offer); true phantoms (echo / noise / no item) 0 of 90 commits; every unheard turn reached the server as \"\" + asrConfidence 0 → cls source empty → isSilentTurn: a child who SPOKE read as silent in 9 of 90 commits (10%). AFTER: false silences 0 of 9 (each marked duplex.unheard → source asr); commit streams identical in all 132 runs (time and text); the new no-item drop fired 9 times, each on an empty SPEAK the base engine also never posted (held: one turn at a time). Earlier recorded arms agree (d5v200.owner 4 unheard + 3 hold offer; d5r11.owner 5 + 2). The harness's stereo AEC produced no echo-opened empty items; a real phone's may (production census F5) — only the item-less case is guarded at the client.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "dc-r144-d5-unheard-not-silence",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN every unheard turn re-asks it (her own wording, the safe:continue / safe:stop chips on screen) and never uses up its one silence nor escalates (dc-r144-unheard-never-escalates). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "ms-r144-d5-overlap-words-lost",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "D5 drops the child's words said OVER her line (census F5 #1, main's priority: the topic request lost in a barge-in merge; evals/duplex-2026-10/results/lost-words.json). Method: the live Voice Live D5 events of all 66 scenarios, owner + phone variants, replayed through the engine before / after; an ear final with content words (not a continuer / stop / hold phrase) that no commit carried is LOST. BEFORE: 12 content finals lost (owner 7, phone 5): every barge_fold_in (0/5 committed in EVERY D5 arm ever recorded, d5r5…d5v200, while D4-full committed 4/5) and the content barge_stops (\"8 minutes duty\"). Cause: over her playback the device detects the child's onset late (her echo masks it; 2,620 ms vs the ear's 1,996 in fold_in-0389), the fold-in carries the turn from that late onset, and the fan-in (server/duplex/fanin.js belongs) admitted only items that started after it — the burst's own item, with the words, was dropped as the old turn's; with no partials on D5 the words always land after her line, so the her-floor lexical yield never saw them either. AFTER (an item still open at the carried onset, opened ≤ 1.2 s before it, with a known audio end past it, joins): content lost 12 → 1 (phone barge_stop 0386 left); fold-ins committed owner 0/5 → 5/5, phone 0/5 → 3/5 (the other two heard \"Yes.\" / nothing); control phrases unchanged (11 / 11, never turns); the duplex scorer's floor metrics unchanged on both variants (cut-offs, continuers, phantom, EOT p50/p90, skeleton CER) except lone words noticed 5/8 → 6/8. The carried request words also leaked into the HOLD OFFER (base already did on hold_long: \"रुको, रुको।\" sent as the offer's words, which the server reads as words, not a hold check-in): the hold offer is now always wordless (2 → 0 per variant).",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "dc-r144-fanin-carried-burst-item",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The fold-in's carried turn keeps the burst's OWN ear item: an item still open at the carried onset (opened at most CARRY_PRE_MS = 1,200 ms before it, with a KNOWN audio end past it) belongs to the turn; the hold offer after \"wait\" is always wordless. Not changed (tried, no effect on the 132 recorded runs): carrying a hushed burst at her_end when her line did not hand over (governor carryCheck) — kept as a candidate if production shows a request said over an explanation, read as a short burst, lost. Reversal: production traces showing the previous turn's words (an echo item, the last answer) folded into the next turn.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "ms-r144-negation-echo",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "The echo filters ate the child's words with ONE-letter skeletons, the negation first (census F5 #2; the owner's e6392332 t14-15: नहीं→n, रहा→r, आप→p, क्या→k, है/हो/आ→empty stripped, \"I don't understand\" became \"I understand something\"; evals/duplex-2026-10/negation-echo.mjs, results/negation-echo.json). Cause: \"नहीं\" = \"n\" = her \"हैं\" / tag \"ना\" / \"हाँ\", and short runs of one-letter skeletons match her Roman Hinglish (\"aap kya\" → p k took the child's own \"आप क्या\"). Method: 41,259 distinct (her line → the child's heard reply) pairs of the cached sim lab voice records (20,109 with a negation), text level, base filters (int @ b8285b2b) vs fixed; floors: her own line fed back as echo in the same script, and CROSS-SCRIPT (her Roman line through the rules transliterator, as the ear writes her echo: 35,962 lines). Fixed (a negation keys on one class across scripts, नहीं/nahi → ¬nahi; a run of her words counts only with a match of 2+ letters; the whole-text echo share needs one too): replies losing a negation 510 → 169 (the rest: the child repeating her phrase, negation and all, in a long-anchored run); negated replies read whole as echo by the cascade lane's isEcho 1,823 → 937; child words removed in all 36,556 → 32,864; floors: same script 2,029 → 2,053 tokens left, cross-script 15,521 → 15,689 (+1%). The first cut pushed at d5788971 (negation keyed on its SURFACE) broke her cross-script echo runs at every negation: cross-script floor 15,521 → 22,761 (superseded here). Main's literal bar (a negation NEVER subtracted) measured: negation loss 0, but floors 2,029 → 10,917 and 15,521 → 23,824 (her own echoed negations leak into the child's turn, a stray \"nahi\" beside the child's \"haan\"). D5 bake replay (132 runs): 0 commits changed.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "dc-r144-negation-surface-key",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "Echo matching (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtractor and isEcho): a negation keys on ONE class across scripts (नहीं / नही / nahi / nahin → ¬nahi; ना / na; मत / mat; no; not …), never its consonant skeleton; a run of her words is echo only with at least one match of two letters or more, and the whole-text echo share needs one too — so a one-letter skeleton (नहीं, रहा, आप, क्या) never anchors a removal, while her Roman line echoed back in Devanagari still goes. Main's literal \"never subtracted\" bar was measured and is left to main (see ms-r144-negation-echo). Reversal: device traces with her echo leaking short words into the child's turn, or a child's negation still removed inside a long run.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "rj-r144-governor-carry-check",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Not shipped: carrying a hushed burst over her line into the next turn at her_end when her line did NOT hand over (governor carryCheck: its words decide, a lone continuer or no words drop back to idle). Measured on the 132 recorded D5 runs (66 scenarios × owner + phone): 0 commits changed with it on or off, before and after the fan-in fix (the fold-in path, phase overlap at her_end, already carries; the loss was the fan-in's). Revisit only if production shows a request said over an explanation, read as a short burst, lost.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "ms-r144-unheard-three-in-a-row",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "How often three UNHEARD turns come in a row (main's check before relying on the check-in's fail-closed). The 132 recorded D5 runs are single exchanges: no run holds two unheard turns (max 1). Per committed turn, unheard is 4/53 = 7.5 % (owner) and 5/48 = 10.4 % (phone echo) after the fixes; the bake over-represents hard tails. If turns were independent, P(≥ 3 in a row in a lesson) = 0.7 % / 1.1 % / 1.9 % (owner, 20 / 30 / 50 turns) and 1.8 % / 2.8 % / 4.8 % (phone) — above main's ~1 in 100 bar on the phone variant; a bad microphone makes turns correlated (worse). No D5 production codes visible to this stream. Hence the tap path (safe:continue / safe:stop on every unheard wait) ships with it.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "dc-r144-unheard-never-escalates",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "rj-r144-negation-never-subtracted",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Rejected (main 2026-10-21): the literal bar \"a negation is never subtracted as echo, whatever\". Measured on the same 41,259 sim lab pairs: negation loss 510 → 0, but her own echoed negations leak into the child's turn — echo floors 2,029 → 10,917 tokens left (same script) and 15,521 → 23,824 (cross-script); a stray \"nahi\" of hers beside the child's \"haan\" inverts the child, a more frequent meaning flip than the one it removes. Shipped instead: dc-r144-negation-surface-key (510 → 169 for +1 % cross-script floor, 0 D5 commits changed).",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "op-r144-negation-acoustic-lever",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "Next lever for the 169 replies that still lose a negation (ms-r144-negation-echo): the child repeating her own phrase, negation included, inside a long-anchored run of her words, which text alone cannot tell from her echo. Needs acoustic or timing evidence: the ear item's audio window vs her playback (an item that started after her line ended cannot hold her echo), word timings where the source gives them, or the stereo reference's her-energy over the item. Not built.",
+   "source": "inbox/r144-duplex.json"
+  },
+  {
+   "id": "dc-r5-studio-thaws-after-safeguard",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "Studio draws again once the Director's safeguard episode closes (bfc57b9a, main safety review passed): studioSeam.onSafetyClosed clears L.safety and Stagecraft's quarantine when brain/turn.js safeguardClosed(next, move, incident) holds (no open state.safeguard, no safeguard move, no incident). Opening, stay, resume offer and the check-in tier still freeze; a content-filter re-plan freezes again; nothing retired is re-shown. Census F9 (66407a56, e6392332): Studio stayed frozen for the rest of the lesson after any safeguard. Reverse if a board drawn after release ever shows on a turn whose plan is a safeguard.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "dc-r5-ways-by-capability",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The ways-in chips (change topic, boredom) offer only what can be built, and her shape names exactly the chips offered (64a1b78b): director/state.js WAYS is the single list (chip id, label, words); studioSeam.waysFor gives picture (Studio on, not frozen) and game (play coverage admits the skill / topic, or a prepared doable piece), the Director adds the topic engine (modules.js topicGameFor). Census F4 (a95d2ff1 P0, 6c45a7ea, c85501ec). Reverse if a game chip is ever tapped and no game, engine or prepared piece answers it, or a story / challenge alone proves too thin a choice in a census.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "ms-r5-game-coverage-830",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 830,
+   "method": "scratchpad gamecov.mjs: forge3 admitPlay(null, topicId) and modules.js topicGameFor over every kit topic (kitFromFile), no lesson pieces",
+   "title": "Game paths per topic: play coverage 59, topic engine 189, either 219 of 830; 611 topics have neither and were offered the game chip before 64a1b78b. By subject (either / topics): maths 156/304, science 49/146, evs 14/64, english 0/118, hindi 0/133, sst 0/65.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "ms-r5-diagram-pointing",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 4384,
+   "method": "scratchpad diagpoint*.mjs / diagmeasure.mjs: sim-lab 14.2-14.4 teacher lines, the turn's recorded screen (whiteboard / module / studio) as the stage",
+   "title": "Diagram / picture words in teacher lines: the bare words (diagram, chart, chitra, tasveer, picture, figure, drawing, sketch + Devanagari) in 124 lines with no screen word, 31 on an empty stage, all false pointers ('tumhe drawing pasand hai?', 'picture the next row', the ways offer). The pointing forms shipped in 384ba4be (POINT_DIAG): 5 lines, all with something on stage, 0 on an empty one: 0 moved lines. Census F3 b08fe8a7.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "ms-r5-choice-shape",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 4640,
+   "method": "scratchpad choices*.mjs: items.js choicesFor over every kit item with a non-numeric, non-fraction key (seed 1), a chip set 'stands out' when a distractor differs from the key in digits, money, working / notes, sentence form or length (> 2x+1 words)",
+   "title": "Choice chips for non-numeric keys: before bf4b070c, 4511 sets offered and 2572 had a key that stood out (a sentence key beside one-word answers, the key's own working beside bare answers, other questions' answers as distractors); after, 3421 offered, all alike, 1090 fall to the hint rung. Census F3 6c45a7ea t33.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "rj-r5-worked-number-guard",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Tried by measurement (census F3 P0 310b8c82, main #4 option b): a reply guard flagging a non-worked-example reply that uses the kit worked example's numbers and not the open item's. Sim-lab 14.2-14.4: 252 of 1902 lines naive; refined (fade items skipped, numbers >= 11 and not multiples of 10) 14 of 1567, of which at most 2 look like the census mix; the rest are explain / reteach turns continuing a worked example just posed, a screen showing it, or a repair restating the child's working. A rewrite trigger at that precision strips legitimate teaching. The worked example already reaches the prompt only as a move's content (describe(): the item and that content); the census turn's numbers came from the transcript history.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "open-r5-reply-off-screen-numbers",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "Census F3 P0 310b8c82 t12-14: on probe / celebrate / repair moves on an item whose module and boards showed its numbers, the reply talked the earlier worked example's numbers. No predicate cleared the bar: option b (worked-example numbers) 14 of 1567 lines, at most 2 real (rj-r5-worked-number-guard); option c (a probe / practice reply whose numbers share none with the open item while the screen shows it) fires 11 of 328 sim-lab candidates, all 11 legitimate by hand (confirming the child's last answer, then the item posed with its numbers in words). The broader fix is the screen following the move (census F3), not a number guard.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "open-r5-resume-checkin-patch",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "Census F4 P2 dad0c9db t25-27 (the resume after a safeguard asked a rule never taught; its fallback posed the item): a safety-lane patch for main, not applied: docs/design/round5/content/patches/census-f4-resume-checkin.diff (ad9057e3). The resume plans carry checkin 'resume' (checkInProblems: hold / nostop), and its fixed line is the carry-on-or-stop offer (new FALLBACK.checkinResume, to check against the vetted strings). Its test fails on base; the 1061 existing tests that touch safeguard / checkin / fallbackReply pass with it.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "dc-r5-same-page-not-redrawn",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A fresh board script that draws exactly what the board shows now is the same page (StudioWhiteboard sameAsBoard: same lesson board, size and ops, ids and timing ignored): drawn complete at once (the player frozen at its end), no wipe, no replay, no new page in the client's page count. Census F9 (3437b744, 310b8c82; main's production read of ui.render.board): every board was drawn twice, the next turn's kept continue board re-sent under a new intent id and the client cleared and redrew it. Client-side so it holds whatever path re-sends the page. Reverse if a teacher line ever needs the same picture re-drawn in step with a new line (it then needs a new page, not a replay).",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "open-r5-cross-lesson-repeat",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "The same board page in one child's next lesson on the same topic (310b8c82 seq2 = 3437b744 seq2, 10 minutes apart): studio shownBefore is lesson-scoped. Production cannot size it yet (13 board.page rows in 5 real lessons, 2 children since the page trace began: 1 repeat inside a lesson, 1 across lessons). Held as acceptable (a recap); re-count when production has >= 100 lessons with boards, and build a per-child recent-pages memory only if it is common.",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "ms-r5-board-follows-kit",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 4384,
+   "method": "scratchpad boardspeech / rungspeech / offboard / offkit .mjs over sim-lab 14.2-14.4 records: a board page (boardPages, wb:N = record turn n, alignment checked at offsets -1/0/+1) or explainer@1 rung mount against her line that turn (studio/request.js syncedWithLine), her line >= 6 content words; an off-kit line = no content word in kitWordsOf",
+   "title": "Census F3 'board on the kit, speech on the child' on sim-lab: Studio pages sharing nothing with her line 129 of 746 (recent builds: 2183c32 1/75, rel143 2/46; one real case p52 voice, two cross-script misses पत्ता/patta); explainer@1 rungs 12 of 33, mostly legitimate by hand (the topic's template board through the teach steps under another example of the same skill or a paraphrase); an off-kit-line detector fired on 113 lines, none a real departure (numeric work, safeguard turns, Devanagari). Sim personas do not pull the reply off the kit, so the census shape is not measurable here; in both census lessons (6c45a7ea, 310b8c82) the Director never registered the child's departure (F1 upstream).",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "rj-r5-offer-guard",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).",
+   "source": "inbox/r5-census-s2.json"
+  },
+  {
+   "id": "ms-r5-rect-is-drawing",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "QA 14.4.1 run 8 (aadae80b t1): a subject-less picture ask failed its slot when the live board failed (W6.timing, W2.text_clear_of_lines). The gated template was refused by answersRequest because isDrawing did not count a rect (the c6-maths-ch06-t01 field: rect + outside side labels + arrows + numwork), and nothing was logged. Fixed in cf25ca72 (a rect with no text inside it is a shape; gatedFallback logs the refusing step). Library templates: 0 of 316 change. Director rungs on a picture ask: 670, drawing 514 -> 516.",
+   "n": 670,
+   "method": "isDrawing before/after over every library template (316) and every Director board rung for a picture ask (kitFromFile), plus run 8 reproduced through answersRequest",
+   "source": "inbox/r5-census-s2.json"
   }
  ],
  "edges": [
@@ -36264,6 +36442,16 @@
    "src": "ms-r144-live",
    "rel": "part_of",
    "dst": "dc-r144-safeguard-tiers"
+  },
+  {
+   "src": "dc-r5-ways-by-capability",
+   "rel": "measured_by",
+   "dst": "ms-r5-game-coverage-830"
+  },
+  {
+   "src": "rj-r5-worked-number-guard",
+   "rel": "part_of",
+   "dst": "open-r5-reply-off-screen-numbers"
   }
  ]
 }
