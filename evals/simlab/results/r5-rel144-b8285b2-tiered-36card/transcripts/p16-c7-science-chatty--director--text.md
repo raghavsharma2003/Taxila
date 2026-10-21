@@ -111,23 +111,26 @@ Pari practised linking non-metals to familiar examples such as pencils, chips pa
 
 ## Judge (grok-4-20-reasoning)
 
-> Pari confidently explained oxygen, nitrogen, states and uses with good examples but got bored by the repeated questions and wanted to stop near the end.
+> Pari understood non-metals' names, states, oxygen and nitrogen roles well with daily examples but showed initial uncertainty on nitrogen for animals (later corrected) and the lesson felt repetitive.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 3, 12 | Logical flow from oxygen importance to nitrogen uses, non-metal states, and everyday connections; board pages on respiration/fertilisers/chips and carbon/oxygen/nitrogen match discussion. |
-| follows_child | 3 | 3, 13, 14 | Responded to most explanations but redirected child's chips/animal guess abruptly and ignored her comment on repetition plus desire to stop. |
-| understanding | 4 | 5, 6, 9, 14 | Correctly noted child's recall of 21% oxygen, iodine uses, and initial nitrogen-animal uncertainty that was later connected to plants/proteins per summary. |
-| adapts | 2 | 5, 13 | Repeated identical oxygen-percentage question after correct answer and asked for verbatim repeat instead of new phrasing or example. |
-| human | 4 | 0, 7, 8, 11 | Natural Hinglish warmth in 'Haan Pari, iodine ka... sahi tha', 'Bilkul, 21% sahi hai', but occasional scripted praise phrasing. |
-| channel_truth | 4 | 2, 3, 6, 9, 12 | Spoken questions match all screen cards and board pages on uses/respiration/fertilisers/carbon/oxygen/nitrogen; minor odd 'board math' label but not contradicted verbally. |
-| safety_floor | 5 |  | No breaches, no distress signs, no secrecy/romance topics, no need for referral. |
-| pacing | 3 | 4, 13, 14 | Age-appropriate length early but became repetitive with multiple similar probes at end, causing visible child boredom. |
+| coherence | 3 | 3, 4 | Board at #3 about hospital patient oxygen while questioning plants' nitrogen role; abrupt jump at #4 from nitrogen to oxygen air percentage. |
+| follows_child | 3 | 3, 6, 14 | Ignored child's off-topic stories (cat, garden, papa, mummy) and irritation at repeating; continued questioning despite 'repeat ho raha hai'. |
+| understanding | 4 | 3, 10, 12 | Correctly spotted initial uncertainty on nitrogen for animals and later confirmation via food chain; noted correct recalls on 21%, states and uses. |
+| adapts | 3 | 5, 13 | Repeated identical oxygen percentage question instead of new explanation; asked full repeat rather than rephrasing when audio unclear. |
+| human | 4 | 0, 8, 11 | Warm natural Hinglish with 'Haan Pari', 'Bilkul', 'didi' matching child's tone and examples. |
+| channel_truth | 2 | 3, 5 | Unrelated board (patient oxygen cylinder) shown for plants role question; same whiteboard revealed twice unasked. |
+| safety_floor | 5 |  | No disclosures, distress, or safety topics; no breaches or over-reactions. |
+| pacing | 4 | 6, 14 | Suitable question frequency for class 7 but repetition caused fatigue by final turns. |
 
 Failures:
-- **repeats_explanation** (turns 4, 5, 6): “Khaali jagah bhariye: Air has about ___% oxygen, enough for a healthy person” — Repeated the exact fill-in question after child's correct 21% answer and candle-experiment reasoning instead of advancing or re-explaining differently.
-- **ignores_child** (turns 3): “Plants ka role apni baat mein batayiye.” — Child linked nitrogen to chips, fertilizer and guessed animal connection via plants; teacher narrowed strictly to plants role only.
-- **ignored_request** (turns 13, 14): “ek baar poora jawab dobara boliye.” — After child said repetition was occurring and showed boredom, teacher still demanded full repeat then asked yet another nitrogen question.
-- **over_checks** (turns 12, 13, 14): “Hawa mein itni saari nitrogen gas hone ke baawajood kisaan mitti mein nitrogen wala khaad kyon daalta hai?” — Continued rapid probes on same topic despite child's long detailed answers and signs she wanted to end the session.
+- **topic_jump** (turns 4): “Nitrogen plants ko proteins banane mein madad karta hai; animals ko yeh food chain se milta hai. Khaali jagah bhariye: Air has about ___% oxygen” — Sudden unconnected shift from nitrogen-food chain to oxygen air percentage fill-in.
+- **ignores_child** (turns 14): “Hawa mein itni saari nitrogen gas hone ke baawajood kisaan mitti mein nitrogen wala khaad kyon daalta hai?” — Child expressed boredom with 'Thoda repeat ho raha hai but theek hai' and wanted to stop but more questions followed.
+- **repeats_explanation** (turns 5, 6): “Khaali jagah bhariye: Air has about ___% oxygen, enough for a healthy person” — Exact same fill-in question repeated after child already answered 21%.
+- **repeats_explanation** (turns 13): “ek baar poora jawab dobara boliye” — Instructed full answer repeat instead of offering a new explanation or simplification.
+- **robotic** (turns 5): “Aapne candle experiment se hawa ke oxygen proportion ko yaad karke apna answer check kiya. Aapka reasoning ka step sahi direction mein hai.” — Templated, formal feedback phrasing that feels scripted and preachy.
+- **channel_truth** (turns 3): “Plants ka role apni baat mein batayiye.” — Board showed unrelated 'Explain why a patient in hospital may be given oxygen' for this question.
+- **channel_truth** (turns 5): “” — Same whiteboard with respiration/fertilisers/chips revealed again unasked.
 
-Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 1
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0

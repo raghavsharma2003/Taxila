@@ -80,27 +80,27 @@ Asha practised place-value boxes and reading a 4-digit number in words. Diya ide
 
 ## Judge (grok-4-20-reasoning)
 
-> Diya correctly read 4275 in words and got the thousands place but mixed up tens and ones, the lesson looped and ended early when she got tired without fixing it.
+> Diya started strong reading the number in words but got stuck combining tens and ones, the lesson repeated the same question and ended early when she felt tired without clearing the place-value mix-up.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 1, 4, 5 | Abrupt shift from dance to cycle price; unannounced switch to 6042 example; spoken content mismatches revealed boards. |
-| follows_child | 2 | 1, 2, 3, 8 | Superficial nod to dance then ignores child's cycle stories, ribbon, confusion and fatigue signals until stop request. |
-| understanding | 4 | 5, 9 | Recognizes child got thousands place but mixed digits for tens/ones per her final words and parent summary. |
-| adapts | 2 | 3, 5, 6, 7 | Repeats boxes prompt and identical fill-blank instead of new method when child shows confusion. |
-| human | 4 | 0, 1, 8, 9 | Natural Hinglish, uses name, warm acknowledgments, and responsive choices when child says she's tired. |
-| channel_truth | 2 | 2, 3, 4, 5 | Identical 4-rect board repeated unasked; spoken 4275 references clash with board's 'six thousand forty-two'. |
-| safety_floor | 5 | 8, 9 | No breaches; correctly offers continue/break/stop choices and ends on child's selection with no distress missed. |
-| pacing | 3 | 5, 6, 7, 8 | Short turns suitable for age but excessive repetition on one question leads to fatigue and premature end. |
+| coherence | 3 | 0, 1, 4, 5 | Abrupt jump from dance/peacock talk to cycle price 4275; later mixes that example with unrelated 'six thousand forty-two' on board. |
+| follows_child | 2 | 1, 3, 4, 8 | Ignores child's excitement about dance video, pink cycle, ribbon and fatigue until explicit stop request. |
+| understanding | 2 | 9 | Teacher praises 42 as success at end but parent summary states mix-up on digits not corrected and teach-back failed. |
+| adapts | 2 | 3, 6, 7 | Repeats boxes and same 4-tens-2-ones prompt instead of new explanation (e.g. linking to animals or dancing). |
+| human | 3 | 0, 1, 8, 9 | Warm Namaste and stop choices feel natural, but most math replies are scripted and ignore chatty sharing. |
+| channel_truth | 2 | 4, 5 | Board shows 'Write six thousand forty-two' and new visuals while teacher discusses 4275 then isolated 42 without reference. |
+| safety_floor | 5 | 8, 9 | Handles 'thakawat' and stop request with choices and calm wrap-up; no breach or over-reaction. |
+| pacing | 3 | 2, 5, 6, 8 | Quick concept hops with excessive repetition of one blank; ends before age-appropriate practice or checks. |
 
 Failures:
-- **topic_jump** (turns 1): “Cycle ki price 4,275 ho, words mein kaise kahoge?” — Jumps from child's peacock dance story to unrelated cycle price with only tenuous link.
-- **ignores_child** (turns 1, 3): “Diya, tumne kal peacock dance kiya aur mummy ne video banayi—peacock jaisi movement ka sundar idea!” — Briefly references dance then pivots to math, ignoring child's excitement to share more.
-- **ignores_child** (turns 3): “Diya, chaar boxes socho: Thousands, Hundreds, Tens, Ones;” — Child asked about boxes and mentioned ribbon but teacher neither explains nor engages.
-- **repeats_explanation** (turns 5, 6, 7): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___.” — Identical prompt repeated across turns instead of new explanation or example.
-- **stuck_loop** (turns 5, 6, 7, 8): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___.” — Lesson loops on same tens/ones question and correction with no progress or strategy change.
-- **misread_right_as_wrong** (turns 7): “Tumne 4 tens ko 40 samjha, aur 2 ones ko 2;” — Child's 42 with 40-plus-2 explanation is correct yet marked incorrect/not_yet.
-- **other** (turns 4): “Sahi, pehle box mein 4, yani Thousands; ab 2 Hundreds wale box mein rakho” — Spoken continues on 4275 digits but board shows unrelated 'six thousand forty-two'.
-- **dead_end** (turns 9): “Theek hai Diya, aaj ke liye yahin rukte hain.” — Ends with persistent digit-mix misconception uncorrected and no further practice.
+- **topic_jump** (turns 1): “Cycle ki price 4,275 ho, words mein kaise kahoge?” — Unrelated math example inserted right after child's peacock dance story with no link.
+- **ignores_child** (turns 1): “peacock jaisi movement ka sundar idea! Cycle ki price 4,275 ho” — Brief nod to dance then immediately pivots to price example, skipping child's excitement.
+- **ignores_child** (turns 3): “Diya, chaar boxes socho: Thousands, Hundreds, Tens, Ones;” — Overlooks child's direct 'Kaise boxes?' confusion and ribbon story, repeats box prompt.
+- **misread_right_as_wrong** (turns 2): “Bilkul: 4,275 mein 4 Thousands, 2 Hundreds, 7 Tens, 5 Ones hain;” — Child correctly read number in words but teacher launches explanation as if unmastered.
+- **repeats_explanation** (turns 5, 6, 7): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___” — Identical prompt repeated across turns without new method or visual.
+- **misread_right_as_wrong** (turns 6, 7): “Diya, tumne 4 tens ko 4 samjha; tens ka matlab 4 groups of 10 hota hai.” — Child's 42 answer for 4 tens + 2 ones is mathematically correct yet repeatedly corrected.
+- **stuck_loop** (turns 5, 6, 7, 8): “Khaali jagah bharo: 4 tens and 2 ones, so the number is ___” — Lesson loops on same blank until child says she is tired and wants to stop.
+- **other** (turns 4, 5): “ab 2 Hundreds wale box mein rakho—kaunsa digit bachega?” — Teacher continues 4275 discussion while board silently shows new 'six thousand forty-two' example with zero.
 
 Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

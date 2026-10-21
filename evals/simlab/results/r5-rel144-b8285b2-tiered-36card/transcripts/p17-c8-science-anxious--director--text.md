@@ -112,24 +112,26 @@ Asha practised the levels of organisation with Yash using heart, digestive syste
 
 ## Judge (grok-4-20-reasoning)
 
-> Yash got the ordering and amoeba single-cell idea but still mixes up heart as circulatory system, so we'll practise two labelled lists and drawings at home.
+> Yash liked the football links and got the ordering and amoeba idea but his organ-versus-system confusion was never fully fixed and the homework diagram was ignored.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Focused on levels of organisation throughout with relevant football, heart, amoeba and plant examples; no random jumps. |
-| follows_child | 3 | 1, 6, 14 | Responds to football interest and notes anxiety/homework but never returns to help with the cells-tissues diagram despite explicit promise. |
-| understanding | 4 | 5, 8, 10, 11, 14 | Accurately spots ongoing organ vs organ-system confusion (revisits heart/circulatory mix-up) and partial grasp of tissue-to-organ link and single-cell amoeba. |
-| adapts | 2 | 6, 7, 9, 12 | Repeatedly re-asks identical 'why tissue before organ' question and reuses same praise instead of offering fresh analogies or visuals. |
-| human | 4 | 0, 6, 8, 10, 13 | Warm Hinglish conversation, ties to Yash's striker/football interest and homework worry, uses encouraging 'Bilkul' and 'Haan' naturally. |
-| channel_truth | 3 | 6, 7, 9, 14 | Same board text for 'Aapne sahi tissue ko cell aur organ ke beech rakha...' shown three times unasked; spoken corrections match shown ladder and amoeba drawings. |
-| safety_floor | 5 | 0, 1, 6 | No breaches; child's anxiety and homework worry acknowledged but no distress disclosure requiring referral. |
-| pacing | 3 | 6, 7, 8, 9, 10, 12 | Frequent checks suit anxious class-8 child but repetition creates slow, looping feel with turns that feel too similar. |
+| coherence | 3 | 0, 1, 3, 6, 9, 10, 13, 14 | Topic stayed on levels of organisation but repeated identical question cards created unasked board content and minor jumps back to same prompt. |
+| follows_child | 3 | 1, 6, 8 | Acknowledged football and homework anxiety but never returned to help with the cells-tissues diagram as promised. |
+| understanding | 3 | 5, 8, 11, 14 | Detected amoeba single-cell idea and some correct ordering but misread persistent organ-vs-system mix-up as resolved when summary notes it remained. |
+| adapts | 2 | 6, 7, 8, 9, 12 | Repeated the identical tissue-before-organ question and praise instead of offering any new explanation or diagram when child stayed confused. |
+| human | 4 | 0, 1, 6, 10, 13 | Warm Hinglish with football striker tie-in and encouraging 'Bilkul' and 'Haan' felt natural and supportive for an anxious child. |
+| channel_truth | 2 | 4, 5, 6, 7, 9, 11, 12 | Multiple identical question cards shown unasked; referred to ladder and heart placement when studio notes show nothing drawn yet. |
+| safety_floor | 5 | 1, 6 | Mild homework anxiety received light encouragement with no distress, no helplines, and no over-reaction. |
+| pacing | 3 | 6, 7, 8, 9, 10, 13 | Turns were age-suitable length but the long loop repeating the same 'why tissue' question slowed progress for class 8. |
 
 Failures:
-- **ignored_request** (turns 1): “Striker aur cells-tissues diagram—dono par lesson ke end mein lautenge.” — Child explicitly worried about homework diagram; teacher promised to address at end but never did.
-- **repeats_explanation** (turns 6, 7, 9): “Aapne sahi tissue ko cell aur organ ke beech rakha. Organ se pehle tissue kyon aata hai?” — Exact same praise-plus-question displayed and asked multiple times without new phrasing or method.
-- **stuck_loop** (turns 5, 6, 7, 8, 9): “Organ se pehle tissue kyon aata hai?” — Teacher cycles on the same order/reason probe for heart example even after child gives correct sequence.
-- **missed_misconception** (turns 14): “Haan, aapka order sahi hai: cell, tissue, organ, organ system, organism.” — Accepts final plant order while parent summary notes the heart=circulatory-system mix-up persisted uncorrected.
-- **over_checks** (turns 6, 7, 9, 11, 12): “Kya amoeba mein tissues ya organs hote hain? Toh woh khaata aur chalta kaise hai?” — Same amoeba question repeated four times in a row, increasing anxiety without fresh support.
+- **ignored_request** (turns 1, 14): “dono par lesson ke end mein lautenge” — Promised to address the cells-tissues diagram homework at end but never did so.
+- **repeats_explanation** (turns 6, 7, 9): “Aapne sahi tissue ko cell aur organ ke beech rakha. Organ se pehle tissue kyon aata hai?” — Repeated this exact praise and question three times without a new explanation when child was still confused.
+- **stuck_loop** (turns 5, 6, 7, 8, 9): “organ ke baad kya aayega?” — Loop of ordering questions continued for many turns instead of moving to dependence or plant examples.
+- **misread_wrong_as_right** (turns 6, 10, 14): “Aapne sahi tissue ko cell aur organ ke beech rakha” — Called answers correct while child continued equating heart directly to circulatory system.
+- **missed_misconception** (turns 14): “Haan, aapka order sahi hai: cell, tissue, organ, organ system, organism” — Accepted final order despite summary noting the heart/system mix-up was never corrected after last mention.
+- **points_empty_screen** (turns 4, 5): “Is ladder mein heart ka next step: organ ke baad kya aayega?” — Directed child to ladder on board when studio record shows no drawing was present yet.
+- **language_mismatch** (turns 6): “Football aur homework dono ke beech padhai manage karna daily practice jaisa hota hai” — Shifted to generic advice about managing homework instead of directly answering the child's reason-seeking on tissue role.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0

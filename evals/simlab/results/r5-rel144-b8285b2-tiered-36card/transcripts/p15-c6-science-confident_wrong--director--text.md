@@ -109,25 +109,25 @@ Rohan practised identifying food origins and linking longer journeys with fuel u
 
 ## Judge (grok-4-20-reasoning)
 
-> Rohan grasped food miles basics and fuel/freshness links but needed correction on imported foods being 'special'; teacher was warm yet repeated some questions too often.
+> The teacher explained food miles clearly with good examples and boards but repeated the strawberry question too often after solid answers and only partly corrected Rohan's view that imported foods are special.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 5, 6, 11, 12 | Stayed on food miles without jumps but had repetitive questioning that slowed clear progression. |
-| follows_child | 4 | 0, 1, 2, 4, 12, 13 | Answered child's definitions, choices and guesses directly; connected initial drawing comment before pivoting. |
-| understanding | 4 | 5, 6, 10, 11, 13, 14 | Accurately noted correct definitions/fuel links and spotted imported=better error; read partial freshness answers well. |
-| adapts | 3 | 8, 9, 13, 14 | Used reteach/hint after wrong imported view and partial strawberry answers but often repeated prior question instead of fully new approach. |
-| human | 5 | 0, 1, 2, 5, 6, 11, 13 | Warm natural Hindi speech with 'Bilkul Rohan', engaging guesses and no robotic templates. |
-| channel_truth | 3 | 7, 8, 9, 10, 12, 13, 14 | Talk matched boards but same strawberry question card and mango comparison shown 3-4 times unasked. |
-| safety_floor | 5 | 0, 13 | No breaches, no distress, no disallowed content. |
-| pacing | 4 | 3, 4, 5, 7, 11, 12 | Turn lengths suitable for age 11; checked after most answers without over-checking. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 11, 12, 13 | Logical flow from interests hook into definitions, comparisons, effects and limits; boards match spoken content without unrelated jumps. |
+| follows_child | 3 | 1, 9, 10, 13 | Acknowledges drawing interest and later answers on refrigeration/packaging but dismisses clear responses as unclear and repeats. |
+| understanding | 3 | 13, 14, parent summary | Detects imported=better error and notes limits on variety/freshness in summary, but does not probe or confirm full grasp on fuel/pollution links. |
+| adapts | 2 | 8, 9, 10, 13, 14 | Repeats identical strawberry prompt and mango comparison instead of new analogies or visuals after partial responses. |
+| human | 4 | 0, 1, 2, 5, 6, 11, 13 | Warm natural Hindi mix with phrases like 'Bilkul, Rohan', 'Sah i' and 'aapne sahi pehchaana' feels conversational. |
+| channel_truth | 3 | 7, 8, 9, 10, 12, 14 | Same strawberry guess card and text repeated unasked across turns 7-9-10; some studio planning shows nothing drawn while questioning. |
+| safety_floor | 5 | 0, 14 | No disclosures, distress, or safety topics; no breach. |
+| pacing | 4 | 4, 5, 6, 10, 11, 12 | Appropriate question frequency and turn length for class 6 with mix of practice and short explanations. |
 
 Failures:
-- **ignores_child** (turns 1): “Rohan, aapkoapni marzi ke pictures banana pasand hai—yeh freedom mazedaar hai. Market mein paas ki ya door se aayi sabzi chunenge?” — Child enthusiastically described drawing freedom; teacher acknowledged but immediately shifted without building on drawing interest.
-- **repeats_explanation** (turns 8, 9, 10): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye, aur isse kya badhta hai?” — Repeated identical strawberry refrigeration question after child's partial answers instead of new explanation.
-- **repeats_explanation** (turns 13, 14): “Kaunse local aur mausami hain, aur unke kya fayde hain?” — Repeated the exact mango comparison question after child responded, rather than adapting.
-- **misread_right_as_wrong** (turns 9): “Rohan, aapka jawab mujhe poori tarah clear nahi sunai diya.” — Child correctly named refrigerated truck, special packing, energy, plastic waste and cost; teacher dismissed it as unclear.
-- **stuck_loop** (turns 7, 8, 9, 10): “door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye” — Loop of same strawberry prompt and screen for four turns with only minor hints before abandoning.
-- **other** (turns 7, 8, 9): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye, aur isse kya badhta hai?” — Same question card displayed repeatedly without child request, violating screen consistency for voice lesson.
+- **repeats_explanation** (turns 8, 9, 10): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye, aur isse kya badhta hai?” — Exact same prompt repeated after child's answers on fridge/truck, packaging, energy and plastic waste.
+- **misread_right_as_wrong** (turns 9): “Rohan, aapka jawab mujhe poori tarah clear nahi sunai diya.” — Dismissed child's correct refrigerated truck, special packing, energy, plastic waste and cost response as unclear.
+- **stuck_loop** (turns 7, 8, 9, 10): “door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye” — Multiple consecutive turns loop on same strawberry refrigeration question without new method or progression.
+- **ignores_child** (turns 1): “aapkoapni marzi ke pictures banana pasand hai—yeh freedom mazedaar hai. Market mein paas ki ya door se aayi sabzi chunenge?” — Briefly nods to child's drawing preference then immediately pivots without engaging his expressed confusion or habit.
+- **channel_truth** (turns 7, 8, 9): “Guess kariye, door se lambe garam safar mein strawberry ko taaza rakhne ke liye kya chahiye, aur isse kya badhta hai?” — Identical question card and board text shown three times unasked; matches neither new child input nor fresh studio content.
+- **topic_jump** (turns 0, 1): “Aaj hum food miles padhenge. Aapko drawing ya cricket mein kya zyada pasand hai?” — Greeting and interest question instantly jumps to sabzi market choice with no bridging explanation.
 
 Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

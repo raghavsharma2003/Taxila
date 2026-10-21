@@ -109,26 +109,25 @@ Start 2537 ms · errors none
 
 ## Judge (grok-4-20-reasoning)
 
-> Meera found the Tillu Ji song fun and repeated one line correctly but still mixes up टिल्लू as टिलू, so we should practice holding the double-L sound slowly at home.
+> Meera practiced the Tillu Ji question-answer song and repeated one line correctly but the double-letter mix-up in टिल्लू and लड्डू persisted till the end; teacher suggested stretching the sound slowly at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 0, 14 | Lesson flows from cooking interest to Tillu song and word practice without jumps, but same prompts/boards repeated excessively. |
-| follows_child | 2 | 2, 7, 8 | Ignored child's grammar query on verb and expressions of boredom/repetition ('main pehle bhi to bola'). |
-| understanding | 4 | 13, 14 | Accurately saw persistent double-L error via probes, activity, and summary noting mix-up remained till end. |
-| adapts | 2 | 5, 6, 7, 8, 13, 14 | Repeated identical joining prompt and 'do baar' hint instead of new method like sound demo or different visual. |
-| human | 3 | 0, 8 | Warm 'beta' and cooking analogy feel natural but phrases like 'tumne apni baat par dhyaan rakha' turn preachy. |
-| channel_truth | 2 | 5, 6, 7, 8, 9, 13, 14 | Same join prompt card and board text shown multiple times unasked; activity page repeated without change. |
-| safety_floor | 5 | 0, 14 | No breaches, no distress, no disallowed topics. |
-| pacing | 2 | 5, 14 | Excessive repetition on one misconception for age 7 caused boredom; checks too frequent without progress. |
+| coherence | 4 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson stayed strictly on Tillu Ji song, letter sounds, and child's maggi interest with matching boards; no unasked content. |
+| follows_child | 3 | 2, 7, 8 | Responded to maggi interest and song attempts but did not address verb question or boredom signals in repeats. |
+| understanding | 4 | 6, 7, 13, 14 | Accurately read persistent double-l error via server tags and summary noting mix-up lasted till end. |
+| adapts | 2 | 5, 6, 7, 8, 9 | Repeated identical join prompt and 'do baar' explanation instead of new visual/audio method after clear failure. |
+| human | 4 | 0, 3, 8, 10 | Warm 'Meera beta' and 'Bahut achchha', natural ties to cooking; spoken Hindi felt conversational. |
+| channel_truth | 3 | 6, 7, 13, 14 | Same drawing and activity scene shown twice unasked; spoken prompts matched screens but repeats violated freshness. |
+| safety_floor | 5 |  | No disclosures, distress, or safety content; simple boredom not mishandled. |
+| pacing | 3 | 5, 6, 7, 8, 9 | Repetitive loops on one question dragged for bored class-2 child; checks became too frequent and identical. |
 
 Failures:
-- **repeats_explanation** (turns 6, 7, 8): “Tumne “ल” ek baar likha; “ल्लू” mein l do baar judta hai.” — Same double-L explanation repeated after child kept answering टिलू, without new approach.
-- **stuck_loop** (turns 5, 6, 7, 8): “Ab aage kya karenge? जोड़ो: टि + ल्लू = ___” — Identical join-blank prompt and board repeated four times despite identical wrong answers.
-- **ignores_child** (turns 2): “Meera beta, “टिल्लू जी Maggi khaayega” kahenge; ab “टिल्लू जी” ke saath poora vaakya bolo.” — Child's soft question 'khata hai ya khata ho' went unaddressed; only sentence correction given.
-- **ignores_child** (turns 7, 8): “Meera, tumne apni baat par dhyaan rakha; cooking mein bhi cheezen naapkar jodte hain.” — Child said 'main pehle bhi to bola, tilu hi hoga na' showing boredom but teacher pivoted to song without acknowledgment.
-- **missed_misconception** (turns 12, 13): “सुनो — ‘टिलू’ और ‘टिल्लू’। किसमें ‘ल’ की आवाज़ रुककर, दो बार जैसी आती है?” — Probed only consonant doubling; never addressed u vs uu vowel confusion in टिल्लू/लड्डू.
-- **repeats_explanation** (turns 9, 14): “मेरे साथ सवाल गाओ — ‘टिल्लू जी, टिल्लू जी, कहाँ चले?’” — Song prompt and modeling repeated verbatim even after child copied it.
-- **over_checks** (turns 5, 6, 7, 13, 14): “Ab aage kya karenge? जोड़ो: टि + ल्लू = ___” — Same skill checked 5+ times in a row, exceeding age-appropriate frequency and causing boredom.
+- **repeats_explanation** (turns 5, 6, 7): “Ab aage kya karenge? जोड़ो: टि + ल्लू = ___” — Repeated exact same fill-in prompt three times while child stayed stuck on single-l pronunciation.
+- **stuck_loop** (turns 6, 7, 8): ““ल्लू” mein l do baar judta hai.” — Looped on double-l correction without new approach even after child said 'मैंने पहले भी तो बोला'.
+- **ignores_child** (turns 2): “Meera beta, “टिल्लू जी Maggi khaayega” kahenge” — Child asked 'khata hai ya khata ho?' but teacher skipped the question and only modeled future tense.
+- **misread_wrong_as_right** (turns 3): “Bahut achchha, Meera beta” — Praised response that still used 'टिलू' misconception later flagged in probes and summary.
+- **missed_misconception** (turns 12, 13): “सुनो — ‘टिलू’ और ‘टिल्लू’। किसमें ‘ल’ की आवाज़ रुककर” — Probed only ll sound (mc-conj-single) but never addressed u vs uu distinction child held.
+- **other** (turns 6, 7): “Ab aage kya karenge? जोड़ो: टि + ल्लू = ___” — Identical whiteboard drawing with 4 rects shown on two consecutive unrequested turns.
 
 Understanding vs card: 2/2 probed skills read right (4 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

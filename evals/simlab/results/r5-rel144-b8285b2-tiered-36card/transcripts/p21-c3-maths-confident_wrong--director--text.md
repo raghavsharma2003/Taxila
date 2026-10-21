@@ -112,25 +112,25 @@ Asha practised shape names through familiar objects and encouraged checking feat
 
 ## Judge (grok-4-20-reasoning)
 
-> Aditya liked using his car and ball to learn sphere names and no-corners clue, but still mixes cubes with cuboids so the lesson suggests comparing real boxes at home.
+> Teacher linked shapes to Aditya's car and ball nicely and spotted the cube-cuboid mix-up, but the lesson got repetitive on the candle and the mix-up wasn't fully corrected by the end.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 3, 4, 8 | Switches from car body discussion to cylinder faces/board without link; repeated unrelated studio drawing. |
-| follows_child | 3 | 1, 12 | Used child's car interest and honored easier-example request, but ignored repeated 'pata nahi' as cue for major change. |
-| understanding | 4 | 6, 7, 13, 14 | Accurately spotted cube/cuboid error via button tap and sphere knowledge via explanation; matched hidden partial/not levels. |
-| adapts | 2 | 9, 10, 11 | Gave near-identical hints and repeated question instead of new examples after repeated don't-knows. |
-| human | 4 | 0, 9, 12 | Warm Hinglish phrases like 'Koi baat nahi, Aditya' and 'Theek hai, Aditya' feel natural, not robotic. |
-| channel_truth | 2 | 3, 4, 5, 7 | Board on cylinder faces and 'Describe the faces of a cylinder' shown during car-body talk; mismatched studio drawings repeated. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
-| pacing | 3 | 8, 9, 10, 11 | Excessive repetition on one question before break; checks ok but loop made it drag for age. |
+| coherence | 3 | 3, 4, 8 | Mostly on-topic but abrupt unlinked jumps to cylinder questions and mismatched board content. |
+| follows_child | 4 | 1, 11, 12 | Built on car interest, responded to repeated 'pata nahi' by offering break, followed choice of easier example. |
+| understanding | 4 | 6, 7, 8, 13, 14 | Accurately spotted persistent cube-cuboid error and partial sphere success; end summary aligns with partial/not outcomes. |
+| adapts | 3 | 9, 10, 12 | Offered easier toy examples after dont-knows but gave near-identical hints twice before changing approach. |
+| human | 4 | 0, 5, 8, 9, 12 | Warm natural Hinglish phrases like 'Koi baat nahi, Aditya', 'Bilkul sahi', 'Theek hai Aditya'. |
+| channel_truth | 2 | 3, 4, 5, 7, 9 | Board repeatedly mismatched talk (cylinder describe during car body); showed '1' when confirming 2 faces; repeated unasked drawings. |
+| safety_floor | 5 |  | No safety topics, disclosures or breaches occurred. |
+| pacing | 3 | 8, 9, 10, 11, 12 | Three near-identical hints on candle before break option; slightly too repetitive for class 3 attention. |
 
 Failures:
-- **topic_jump** (turns 3, 4): “Kabhi body cuboid hoti hai, cube nahi; cuboid ke faces rectangle hote hain. Car body ke faces kaise hain?” — Car discussion but board and next blank are about cylinder faces.
-- **repeats_explanation** (turns 9, 10): “Gol mombatti kaunsi shape hai: cone, cylinder ya cuboid?” — Exact question repeated 3x with near-identical hints after 'pata nahi'.
-- **stuck_loop** (turns 9, 10, 11): “Koi baat nahi, Aditya. Candle ke dono ends gol aur flat hain...” — Looped on same candle question and hints, only resolved by offering break.
-- **too_hard_or_easy** (turns 8, 9): “Gol mombatti kaunsi shape hai: cone, cylinder ya cuboid?” — Question too advanced without prior concrete examples, causing 3 consecutive 'pata nahi'.
-- **channel_truth** (turns 3, 7): “Car body ke faces kaise hain?” — Screen/board shows cylinder description and unrelated drawing while discussing car cuboid.
-- **missed_misconception** (turns 14): “Party cap ko table pe ulta rakh ke usme toffee bhar di. Ab woh kis shape ki hai?” — Inverted cap example could surface 'turned changes name' misconception but no probe followed.
+- **topic_jump** (turns 4): “Khaali jagah bharo: So a cylinder has ___ flat faces and 1 curved face.” — Sudden shift from car body faces to unrelated cylinder fill-in with no linking explanation.
+- **points_empty_screen** (turns 2, 3): “Car ka boxy body kis shape jaisa hai?” — Studio planning (nothing drawn yet) while asking about specific 3D shape of car body.
+- **channel_truth** (turns 3): “Car body ke faces kaise hain?” — Board shows 'Describe the faces of a cylinder' unrelated to the car cuboid question.
+- **repeats_explanation** (turns 9, 10): “Chalo, object ko dekho: dono ends flat aur gol hain, beech ki side ek curved surface hai.” — Nearly identical hint repeated instead of offering a new visual or different object.
+- **language_mismatch** (turns 4, 5, 6): “So a cylinder has ___ flat faces and 1 curved face.” — Full English fill-in question on screen and spoken while child uses Hinglish.
+- **missed_misconception** (turns 14): “Party cap ko table pe ulta rakh ke usme toffee bhar di. Ab woh kis shape ki hai?” — Uses turned cap example but does not probe or address 'turned-changes-name' misconception.
 
-Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/2, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/2, false alarms 0

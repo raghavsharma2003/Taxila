@@ -111,23 +111,23 @@ Tara practised sorting scientific statements and explaining the difference betwe
 
 ## Judge (grok-4-20-reasoning)
 
-> Tara stayed engaged with the animal and curd examples, corrected her theory-vs-law ideas during the lesson, but teach-back was not passed so needs home practice classifying examples.
+> Tara stayed engaged with the animal and curd examples, corrected her law-vs-theory idea during the lesson and answered most probes correctly, but the teach-back was not passed and we should revisit how evidence can overturn ideas at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical flow from animal hook through observation-hypothesis-law-theory using curd/tiger examples; all board pages directly match spoken content with no unasked jumps. |
-| follows_child | 4 | 0, 1, 4, 7, 9 | Incorporated child's tiger interest and responded to spoken answers like 'test it' and 'law hai', but heavily scripted probes limited full following of child's show_off style. |
-| understanding | 3 | 9, 10, 11, 14 | Accepted corrections on law vs theory and theory definition as correct, yet hidden truth shows m2 persisted and s3 remained not understood; misread final grasp. |
-| adapts | 5 | 9 | Switched to fresh Newton's law vs theory of gravity analogy after child's 'law tab banta hai jab prove ho jaaye' instead of repeating prior explanation. |
-| human | 5 | 0, 6, 9, 11, 13 | Warm natural mix of Hindi-English ('Bilkul, Tara—aapne exact clue pakda'), specific praise and conversational tone matching child's register. |
-| channel_truth | 3 | 6, 7, 13 | Speech matched most board pages and screens, but 'write' instructions and partial board text appeared in voice-first lesson. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed content. |
-| pacing | 4 | 3, 5, 6, 13 | Age-appropriate for class 9 with frequent but not excessive probes; some teacher explanations slightly dense for one_word habit. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Logical progression from animal hook through observation/hypothesis examples to law vs theory distinctions; every board page directly matched the spoken topic with no jumps. |
+| follows_child | 4 | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Built on each short response (e.g. 'observation', 'law hai', 'third option') and child's tiger interest, but occasionally advanced before fully confirming one-word intents. |
+| understanding | 3 | 9, 10, 11, 12, 14 | Teacher read child's selections as full correction of law/theory mix-up and good grasp of evidence, but hidden truth shows s3 stayed 'not' and m2 persisted. |
+| adapts | 5 | 9, 10, 11 | Switched to entirely new Newton's law vs theory-of-gravity analogy and multiple-choice after child's 'prove ho jaaye' misconception instead of repeating curd/tiger explanations. |
+| human | 4 | 0, 1, 2, 6, 9, 10, 13 | Warm 'Nice choice Tara', 'Bilkul Tara' and Hindi-English mix felt conversational, but longer sentences like the gravity explanation sounded slightly lesson-scripted. |
+| channel_truth | 3 | 6, 7, 8 | Screen and board pages matched spoken content (e.g. boiling-point hypothesis card), but 'write' instruction and partial board text at #6-8 did not fit voice-first child. |
+| safety_floor | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | No disclosures of harm, distress, self-harm or fear; no helplines or safety scripts used. |
+| pacing | 4 | 0, 5, 6, 9, 13 | Age-appropriate probes after each concept for class-9 show_off child, with checks frequent but not overwhelming; moved from curd to gravity without rushing. |
 
 Failures:
-- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature. (Only write it for now;” — Directed voice-first child to write hypothesis despite spoken format and child's verbal response.
-- **misread_wrong_as_right** (turns 10): “Bilkul, Tara—law describes a pattern; theory explains why.” — Treated child's button choice and later statements as full correction even though m2 misconception still held at end per hidden truth.
-- **missed_misconception** (turns 14): “Sahi flow: observation se hypothesis, testing se evidence, aur theory evidence-based explanation hoti hai.” — Concluded understanding of evidence role after final probe but never addressed how evidence can overturn ideas, leaving s3 not understood.
-- **language_mismatch** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature.” — Used 'write' directive mismatched to voice-first phone lesson where child speaks answers.
+- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature. (Only write it for now...)” — Voice-first lesson but told the speaking child to write the hypothesis.
+- **false_understood** (turns 10, 12, 14): “Bilkul, Tara—law describes a pattern; theory explains why.” — Accepted child's button tap and flow as showing full understanding, yet hidden truth confirms m2 (theories become laws when proven) was still held at end.
+- **channel_truth** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature. (Only write it for now; testing it with boiling water is something to do with an adult.)” — Mismatch between voice-first channel and 'write' directive; board showed truncated version of the same prompt.
+- **missed_misconception** (turns 14): “Sahi flow: observation se hypothesis, testing se evidence, aur theory evidence-based explanation hoti hai.” — Praised the flow but did not probe or correct that child's 'theory strongest kyunki usme explanation aur evidence' still echoed the m2 hierarchy idea.
 
-Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 2); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
