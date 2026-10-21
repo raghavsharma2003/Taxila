@@ -1372,11 +1372,15 @@ function decide(s, input, item) {
     const sure = !!flags.distress && !checkTier(flags) && !(fineWords && modelOnly);
     const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords;
     if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer. She asks the check-in
-    // again; it never escalates on her ear alone, until a third unheard turn in a row (then the full script: fail closed)
-    if (isUnheardTurn(input) && (s.safeguard.unheard ?? 0) < UNHEARD_CHECKS) {
-      s.safeguard = { ...s.safeguard, unheard: (s.safeguard.unheard ?? 0) + 1 };
-      return plan("safeguard", SH.distressCheckAgain(), { tier: "check" });
+    // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer — it neither releases
+    // the check-in nor uses up its one silence. She asks the check-in again; a third unheard turn in a row is the full script
+    // (fail closed: she cannot hear a child she has asked whether they are all right)
+    if (isUnheardTurn(input)) {
+      const n = (s.safeguard.unheard ?? 0) + 1;
+      if (n <= UNHEARD_CHECKS) { s.safeguard = { ...s.safeguard, unheard: n }; return plan("safeguard", SH.distressCheckAgain(), { tier: "check" }); }
+      s.safeguard = { calm: 0, asked: false, kind: s.safeguard.kind ?? null };
+      s.safeguardedAt ??= s.turn;
+      return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
     }
     // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet: the check-in waits once,
     // gently; a second silence in a row is the full script

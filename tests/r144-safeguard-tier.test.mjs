@@ -207,6 +207,20 @@ describe("(1) the turn after a check-in", () => {
     assert.equal(r3.move.escalated, true, "fail closed: a third unheard turn in a row is the full script");
     assert.ok(r3.ui?.whiteboard);
   });
+  test("an unheard turn never RELEASES a check-in (the child's answer is still to come)", () => {
+    const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
+    let st = checkOpened();
+    for (let i = 1; i <= 2; i++) {
+      const r = turn(st, "", unheard);
+      assert.equal(r.state.safeguard?.tier, "check", `unheard #${i}: the check-in stays open`);
+      assert.notEqual(r.state.checkReleased, r.state.turn, `unheard #${i}: not released`);
+      assert.ok(!r.state.careLine || r.state.careLine !== r.state.turn, `unheard #${i}: no warm back-to-the-lesson line`);
+      st = r.state;
+    }
+    // then the child's words decide, as on any check-in (clearly fine releases it)
+    const fine = turn(st, "haan main theek hoon");
+    assert.equal(fine.state.safeguard, null, "the child's own fine words release it");
+  });
   test("an unheard turn does not use up the check-in's one silence", () => {
     const r1 = turn(checkOpened(), "", { ...cls("no_evidence"), source: "asr", lowAsr: true });
     const r2 = turn(r1.state, "", { ...cls("no_evidence"), source: "empty" });
