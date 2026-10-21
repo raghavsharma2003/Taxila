@@ -110,18 +110,28 @@ export class EchoSubtractor {
     const set = new Set(hs);
     const ts = toks.map(sk);
     const drop = new Array(toks.length).fill(false);
+    // Census F5 #2 (the owner's lesson e6392332: of "…नहीं आ रहा… आप क्या … है/हो" every token with a ONE-letter or empty
+    // skeleton — नहीं→n, रहा→r, आप→p, क्या→k — was stripped as her echo; her Roman "nahi aa raha", "aap kya" share those
+    // skeletons): one letter is too lossy to ANCHOR on. Short tokens still match by skeleton (her Roman line echoes back in
+    // Devanagari), but a run counts only with at least one match of two letters or more (`long`), and the whole-text
+    // echo share needs one too.
+    const eq = (i, k) => ts[i] === hs[k];
+    const long = (i) => !!ts[i] && ts[i].length >= 2;
+    const hersToo = (i) => !!ts[i] && set.has(ts[i]);
     // runs: transcript tokens i..j matching her words k..k+(j-i) (empty-skeleton tokens ride along inside a run)
     for (let i = 0; i < toks.length; i++) {
-      if (!ts[i] || !set.has(ts[i])) continue;
+      if (!hersToo(i)) continue;
       for (let k = 0; k < hs.length; k++) {
-        if (hs[k] !== ts[i]) continue;
-        let a = i, b = k, n = 0;
+        if (!eq(i, k)) continue;
+        let a = i, b = k, n = 0, nLong = 0;
         while (a < toks.length && b < hs.length) {
           if (!ts[a]) { a++; continue; }
-          if (ts[a] !== hs[b]) break;
+          if (!eq(a, b)) break;
+          if (long(a)) nLong++;
           a++; b++; n++;
         }
-        if (n >= this.o.minRun) while (a < toks.length && !ts[a] && herSurfEmpty.has(surf(toks[a]))) a++;
+        const run = n >= this.o.minRun && nLong >= 1;
+        if (run) while (a < toks.length && !ts[a] && herSurfEmpty.has(surf(toks[a]))) a++;
         // a single matching token is kept (a child repeating one word of hers is a turn) UNLESS it is FRESH: her word ended
         // within freshMs of the text's own audio time (t - lag). While she is mid-sentence that is her echo arriving word by
         // word (word-timed streaming STT emits it one token at a time: TaxilaFDB F12, 2026-10-04, 26/40 self-yields).
@@ -140,7 +150,7 @@ export class EchoSubtractor {
         // a single token whose OWN audio time sits on her matching word (word-timed sources) is her echo whatever its age:
         // the child's repeat of her word is spoken after her, never on top of it (the aligned test is ±300 ms)
         const timedSingle = n === 1 && !!times && !!times[i] && surf(toks[i]) === surf(her[k].w);
-        if ((n >= this.o.minRun || fresh || timedSingle) && aligned) for (let x = i; x < a; x++) drop[x] = true;
+        if ((run || fresh || timedSingle) && aligned) for (let x = i; x < a; x++) drop[x] = true;
       }
     }
     // word-timed sources: an empty-skeleton token ("है?") whose audio time sits on her word of the same surface is echo too
@@ -153,15 +163,18 @@ export class EchoSubtractor {
       });
     }
     // the whole text is echo-shaped: the shipped isEcho rule (>= 4 tokens, >= 70 % hers)
-    const content = ts.filter(Boolean);
-    if (content.length >= this.o.echoMinTokens && content.filter((s) => set.has(s)).length / content.length >= this.o.echoShare) {
+    const content = ts.map((s, i) => (s ? i : -1)).filter((i) => i >= 0);
+    if (content.length >= this.o.echoMinTokens && content.some((i) => long(i) && hersToo(i)) && content.filter((i) => hersToo(i)).length / content.length >= this.o.echoShare) {
       // ...but never past the last matched run: words AFTER her echo in the same item are the child's (a straddling item:
       // "<her question> एक मिनट" must keep "एक" even though "एक" is also one of her words)
       let lastRun = -1;
       for (let i = 0; i < drop.length; i++) if (drop[i]) lastRun = i;
       const upto = lastRun >= 0 ? lastRun : ts.length - 1;
-      ts.forEach((s, i) => { if (i <= upto && (!s || set.has(s))) drop[i] = true; });
+      ts.forEach((s, i) => { if (i <= upto && (!s || hersToo(i))) drop[i] = true; });
     }
+    // Census F5 #2: a negation goes only inside a run of her words anchored by a long match (her echo, clearly): never
+    // alone, never on a one-letter collision. (Never subtracting it at all, measured: her own echoed negations then leak
+    // into the child's turn — a stray "nahi" beside the child's "haan" flips the meaning the other way.)
     const removed = drop.filter(Boolean).length;
     if (!removed) return { text: toks.join(" "), removed: 0 };
     return { text: toks.filter((_, i) => !drop[i]).join(" "), removed };

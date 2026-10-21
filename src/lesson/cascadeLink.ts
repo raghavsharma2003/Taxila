@@ -279,11 +279,18 @@ export function skeleton(word: string): string {
  * duplex echo filter turned "मुझे नहीं पता कितने corners होते हैं" (over "…कितने corners होते हैं?") into "मुझे पता", and this
  * lane's isEcho read the whole reply as echo. A negation keys on its own SURFACE: echo only when she said that very word.
  */
-const NEGATION = new Set(["नहीं", "नही", "नहि", "नहिं", "ना", "न", "मत", "nahi", "nahin", "nahee", "nai", "na", "no", "not", "nope", "never", "mat", "dont", "don't", "doesnt", "didnt", "cant", "isnt"]);
+// One CLASS per negation across scripts: her Roman "nahi" and the ear's Devanagari "नहीं" for her echo are the same word
+// (skeletons exist for that cross-script match: keying on the surface broke her echo runs at every negation, measured), while
+// the child's "नहीं" can no longer collide with her "हैं" / "ना" / "हाँ".
+const NEGATION: Record<string, string> = {
+  "नहीं": "nahi", "नही": "nahi", "नहि": "nahi", "नहिं": "nahi", nahi: "nahi", nahin: "nahi", nahee: "nahi", nai: "nahi",
+  "ना": "na", "न": "na", na: "na", "मत": "mat", mat: "mat",
+  no: "no", nope: "no", not: "not", never: "never", dont: "dont", doesnt: "dont", didnt: "dont", cant: "cant", isnt: "isnt",
+};
 export function echoKey(word: string): string {
-  const s = String(word ?? "").normalize("NFC").toLowerCase();
-  const bare = s.replace(/[^\p{L}\p{M}\p{N}']+/gu, "");
-  return NEGATION.has(bare) || NEGATION.has(bare.replace(/'/g, "")) ? `¬${bare.replace(/'/g, "")}` : skeleton(word);
+  const bare = String(word ?? "").normalize("NFC").toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, "");
+  const neg = NEGATION[bare];
+  return neg ? `¬${neg}` : skeleton(word);
 }
 
 export function isEcho(heard: string, spoken: string): boolean {

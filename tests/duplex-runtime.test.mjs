@@ -548,10 +548,25 @@ test("census F5 #2: a negation never matches her words by consonant skeleton (\"
   // the cascade lane's whole-utterance test: a negated reply is not her echo; her own line still is
   assert.equal(isEcho("मुझे नहीं पता कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), false);
   assert.equal(isEcho("अब बताओ कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), true);
-  // her OWN negation echoed back is still echo (surface match)
+  // her OWN echoed negation goes with the run of her words it sits in (one class across scripts: her Roman "nahi" echoes
+  // back as the ear's "नहीं"); a lone negation of the child's never goes on a one-letter collision
   const e = new EchoSubtractor();
-  e.heardText("u1", "नहीं नहीं, ये तीन नहीं है", 0, 70);
-  assert.equal(e.subtract("नहीं नहीं ये तीन नहीं है", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "");
+  e.heardText("u1", "Nahi nahi, ye teen nahi hai", 0, 70);
+  assert.equal(e.subtract("नहीं नहीं ये तीन नहीं है", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "है", "every negation of her echo goes (the trailing empty-skeleton word across scripts stays, as before)");
+  const lone = new EchoSubtractor();
+  lone.heardText("u1", "Kya ye teen hai na?", 0, 70);
+  assert.equal(lone.subtract("नहीं", 1400, 0, { fromMs: 0, toMs: 1600 }).text, "नहीं");
+  // the owner's lesson e6392332 shape (tokens only): every one-letter / empty skeleton (रहा→r, आप→p, क्या→k, है/हो/आ) was
+  // stripped. A one-letter skeleton now matches only her identical word; her echo of her own line is still removed
+  assert.equal(sub("Agar samajh nahi aa raha toh batao, aap kya soch rahe ho?", "मुझे कुछ समझ नहीं आ रहा सर आप क्या बोल रहे हो"),
+    "मुझे कुछ समझ नहीं आ रहा सर आप क्या बोल रहे हो", "her Roman \"aap kya\" never takes the child's own \"आप क्या\"");
+  // ...while her own Roman line, echoed back in Devanagari by the ear, is still removed (a run anchored by a long match)
+  const x = new EchoSubtractor();
+  x.heardText("u3", "Kya aap samajh rahe ho?", 0, 70);
+  assert.equal(x.subtract("क्या आप समझ रहे हो", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "हो", "(a trailing empty-skeleton word across scripts stays, as before)");
+  const h = new EchoSubtractor();
+  h.heardText("u2", "अच्छा, अब ये बताओ कि ये पौधे कैसे बढ़ते हैं", 0, 70);
+  assert.equal(h.subtract("अच्छा अब ये बताओ कि ये पौधे कैसे बढ़ते हैं", 3000, 0, { fromMs: 0, toMs: 3200 }).text, "");
 });
 
 test("echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers", () => {

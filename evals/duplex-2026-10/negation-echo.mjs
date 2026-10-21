@@ -15,6 +15,8 @@ const { EchoSubtractor: Before } = await import(path.resolve(BASE));
 // the cascade lane's whole-utterance echo test, before / after (the base tree's cascadeLink.ts beside its echo.js)
 const { isEcho: isEchoAfter } = await import(new URL("../../src/lesson/cascadeLink.ts", import.meta.url).href);
 const { isEcho: isEchoBefore } = await import(path.resolve(path.dirname(BASE), "../../src/lesson/cascadeLink.ts"));
+const { toDevanagari } = await import(new URL("../../server/voice/translit/index.js", import.meta.url).href);
+const words = (x) => String(x).split(/\s+/).filter(Boolean).length;
 const NEG = /(^|\s)(नहीं|नही|नहि|ना|न|मत|nahi|nahin|na|no|not|never|dont|don't)(?=\s|[।?.!,]|$)/iu;
 const negCount = (s) => (String(s).match(new RegExp(NEG.source, "giu")) ?? []).length;
 
@@ -40,13 +42,15 @@ for (const dir of DIRS) for (const f of fs.readdirSync(dir).filter((x) => x.ends
     pairs.push({ her, child });
   }
 }
-const out = { pairs: pairs.length, withNegation: 0, damage: { before: 0, after: 0 }, isEchoNegatedReply: { before: 0, after: 0 }, isEchoHerLine: { before: 0, after: 0 }, otherChanged: 0, floor: { herLines: 0, leftTokensBefore: 0, leftTokensAfter: 0, linesNotFullyRemovedBefore: 0, linesNotFullyRemovedAfter: 0 }, examples: [] };
+const out = { pairs: pairs.length, withNegation: 0, damage: { before: 0, after: 0 }, isEchoNegatedReply: { before: 0, after: 0 }, isEchoHerLine: { before: 0, after: 0 }, childTokensRemoved: { before: 0, after: 0 }, crossScriptFloor: { herLines: 0, leftTokensBefore: 0, leftTokensAfter: 0, linesNotFullyRemovedBefore: 0, linesNotFullyRemovedAfter: 0 }, otherChanged: 0, floor: { herLines: 0, leftTokensBefore: 0, leftTokensAfter: 0, linesNotFullyRemovedBefore: 0, linesNotFullyRemovedAfter: 0 }, examples: [] };
 const herLines = new Set();
 for (const { her, child } of pairs) {
   herLines.add(her);
   const b = run(Before, her, child), a = run(After, her, child);
   const n = negCount(child);
   if (n) out.withNegation++;
+  out.childTokensRemoved.before += words(child) - words(b);
+  out.childTokensRemoved.after += words(child) - words(a);
   if (negCount(b) < n) out.damage.before++;
   if (negCount(a) < n) out.damage.after++;
   if (negCount(b) < n && out.examples.length < 12) out.examples.push({ her: her.slice(-60), child, before: b, after: a });
@@ -57,6 +61,16 @@ for (const { her, child } of pairs) {
 }
 for (const her of herLines) {
   out.floor.herLines++;
+  // her Roman line as the ear writes her echo back (Devanagari, the rules transliterator): skeletons must still match
+  const dev = /[A-Za-z]/.test(her) ? toDevanagari(her, { force: true, fallback: "rules" }) : null;
+  if (dev && dev !== her) {
+    const f = out.crossScriptFloor;
+    f.herLines++;
+    const b2 = words(run(Before, her, dev, true)), a2 = words(run(After, her, dev, true));
+    f.leftTokensBefore += b2; f.leftTokensAfter += a2;
+    if (b2) f.linesNotFullyRemovedBefore++;
+    if (a2) f.linesNotFullyRemovedAfter++;
+  }
   if (isEchoBefore(her, her)) out.isEchoHerLine.before++;
   if (isEchoAfter(her, her)) out.isEchoHerLine.after++;
   const b = run(Before, her, her, true).split(/\s+/).filter(Boolean).length, a = run(After, her, her, true).split(/\s+/).filter(Boolean).length;
