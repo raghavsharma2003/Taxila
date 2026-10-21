@@ -488,9 +488,18 @@ function teach(s, input, prefix) {
     if (stepName === "fade") {
       // Backward fading: the earlier steps shown, the next one a gap the child fills (graded against the blank's key,
       // with help). Posing it hands the lesson to practice.
-      s.teachIdx += 1;
       const item = s.fadeItem ? findItem(s, kit, s.fadeItem.id) : null;
       const we = kit.workedExample;
+      // census 14.5 (F8, 3437b744 t9-13: the a₃₀ gap posed when the worked steps never landed): a don't-know or an off-topic
+      // reply to the worked steps is no ground for a gap; the whole worked example is shown instead, then practice
+      const v = input.event === "turn" && s.lastMove?.kind === "worked_example" ? verdict(input.cls) : null;
+      if (item && we && (v === "stuck" || v === "off")) {
+        s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), "worked_example", ...s.teachPlan.slice(s.teachIdx + 1)];
+        s.fadeItem = undefined;
+        s.guidance = { ...s.guidance, level: "worked", reason: "fade.not_landed" };
+        continue;
+      }
+      s.teachIdx += 1;
       if (!item || !we) continue;
       const i = Number(item.id.slice(FADE_PREFIX.length));
       if (!s.introduced.includes(item.skillId)) s.introduced.push(item.skillId);
