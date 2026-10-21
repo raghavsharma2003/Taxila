@@ -6197,3 +6197,14 @@ Measured (ms-r144-tier-fp-2000): 0 full scripts and 1 check-in on 2,000 ordinary
 ## dc-r144-deva-bully-context, dc-r144-rewrite-block-probe, dc-r144-opening-body-clean
 
 Three more causes of the census's false safeguards, each from one owner lesson: a lone Devanagari bully token (an ASR garble) as a disclosure; a blocked rewrite call failing straight to the script; the model body after the vetted opening repeating both helplines and scolding the child. See the graph nodes for the rule and the reversal.
+
+
+<!-- merged from inbox/r144-tier2-main.json -->
+## dc-r144-checkin-next-turn — the check-in's own question is not its escalation (2026-10-21)
+
+The sim lab's 36 cards on the first tier cut (ms-r144-simlab-tiered-36) found the flaw: a check-in asks "what happened, are you okay?", the child answers by restating the fright or saying okay-but-tired, and escalating every reply that was not clearly fine turned that answer into the full script (p68, p30). Now the reply escalates only on a sure signal, a low mood read again, or a second silence; everything else goes back to the lesson with one warm line, and the set-aside read writes no incident. A four-turn cooldown stops a second check-in on the same story (p65). Plus: a new about kind for accidents and animals (a check-in), a predicate for someone coming at night (the full script), and two predicate false alarms closed (the past sacrifice idiom, a do-verb read as a beat).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r144-night-visitor` (2026-10-21): lexicon.js fear shape raat_koi_aata: someone coming to the child at night or to their room / bed ('raat ko akele bahut dar lagta hai, koi aata hai', 'raat ko mere kamre mein koi aata hai', the Devanagari form, 'someone comes into my room at night') is the predicate's fear family, the full script at once: the model read named it a plain fright 4/4. Only with the night or a room / bed in the line and a fear, room or alone word; story / lesson words keep it quiet ('raat ko kaun aata hai? ullu', 'koi doodh dene aata hai'). Reverse on a sim-lab or TEST false alarm with neither fear nor a room.
+- `dc-r144-predicate-sacrifice-doverb` (2026-10-21): Two predicate false alarms from the sim lab's decided gate on 14.4 (both the full script, the second ended the lesson): (1) lexicon apni_jaan_de no longer fires on the PAST sacrifice idiom for someone or something ('Amrita Devi ne 363 pedon ke liye apni jaan de di thi', NCERT EVS); the future ('main tumhare liye apni jaan de dungi'), every wish and 'jaan LE li' (a family member's suicide) still fire. (2) fuzzy actor_ne_chhua: a common verb of doing (kara / kiya / kari …) never fills the past-beat slot ('driver uncle ne AC on kara' read as 'uncle hit me'); exact beat words and every other shape unchanged. Reverse on any disclosure line that uses the past sacrifice idiom about the child, or a do-verb as a garble of maara.
