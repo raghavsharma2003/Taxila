@@ -885,8 +885,9 @@ export const studioSeam = {
     const fallbackScript = fb?.ok ? boardSync.retimeToLine(fb.script, ask.line?.text) : null;
     // ship5 review B3: the template is drawn only when it passes the same whiteboard gate (W0-W9: numbers from truth,
     // counts match her line, no answer reveal) against her REAL line; a refused template is never shown (voice instead).
+    let fbWhy = null;   // why no template was shown (codes only), for the failed slot's trace row
     const gatedFallback = () => {
-      if (!fb?.ok) return null;
+      if (!fb?.ok) { fbWhy = "invalid"; return null; }
       try {
         const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
         const t = boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
@@ -895,8 +896,9 @@ export const studioSeam = {
         // telemetry names the refusing step (QA run 8: a template refused here left no line saying why)
         const why = !t ? "gate" : !answersRequest(t, request) ? `not_the_ask(${request?.kind ?? "-"})` : shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : null;
         if (why) console.info(`[studio] template board refused: ${why}`);
+        fbWhy = why;
         return why ? null : t;
-      } catch { return null; }
+      } catch { fbWhy = "error"; return null; }
     };
     // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured
     // c7-science "screen par flow dekhiye: …" twice in 27 boards) keeps the board on screen, when it passes the full gate
@@ -913,7 +915,9 @@ export const studioSeam = {
         return r.ok ? r.script : null;
       } catch { return null; }
     };
-    const showFallbackOrFail = () => {
+    // `liveWhy`: why the live board was not drawn (check ids or a reason code); with the template's own reason it is the
+    // failed slot's `why` (38aad918: two boards failed with why null, the reason only in the server log)
+    const showFallbackOrFail = (liveWhy = null) => {
       const kept = keptPrevious();
       if (kept && drawn({ ok: true, script: kept, source: "kept", syncMs: null })) return;
       const shown0 = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
@@ -924,6 +928,7 @@ export const studioSeam = {
       // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
       const shown = tg?.ok && (ask?.requested || ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
       if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
+      if (!shown) fbWhy = !fallbackScript ? "none" : p.retired || L.onScreen !== intentId ? "off_screen" : tg && !tg.ok ? "tray" : tg?.ok ? "unsynced" : fbWhy;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -933,7 +938,7 @@ export const studioSeam = {
         push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts } });
         return;
       }
-      p.state = "failed"; p.fallback = "voice";
+      p.state = "failed"; p.fallback = "voice"; p.failWhy = `live:${liveWhy ?? "-"} template:${fbWhy ?? "-"}`.slice(0, 120);
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
     };
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
@@ -957,7 +962,7 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
-      p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
       // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
       p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
@@ -1027,10 +1032,10 @@ export const studioSeam = {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
           console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template re-gated)" : ""}`);
-          showFallbackOrFail();
+          showFallbackOrFail(r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40) || null);
         }
       })
-      .catch(() => { if (!keptNow) showFallbackOrFail(); });
+      .catch(() => { if (!keptNow) showFallbackOrFail("error"); });
     // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
     // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
     const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
