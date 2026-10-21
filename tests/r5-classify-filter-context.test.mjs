@@ -106,6 +106,17 @@ test("everything else fails CLOSED as before", async () => {
     const read = await run({ probe: () => blocked(["hate"]), "distress@taxila-fast": () => json({ distress: true }) });
     assert.equal(read.out.flags.distress, true, "a distress read still fails closed");
     const none = await run({ probe: () => blocked(["hate"]) });
-    assert.equal(none.out.flags.distress, true, "no deployment able to read it still fails closed");
+    assert.equal(none.out.flags.distress, true, "no deployment able to read it (an outage) still fails closed");
+  });
+  // QA TEST 7590e26d on f0cb84c8: every deployment's distress read blocked by the hate detectors alone (grok names it
+  // multiseverity_hatespeechscore): no child-safety signal, no evidence; any other category on any deployment fails closed
+  test("14.4: every distress read blocked by the hate detectors alone is no distress (QA TEST 7590e26d)", async () => {
+    const hate = await run({ probe: () => json("ok"), "distress@taxila-fast": () => blocked(["hate"]), "distress@grok-4-1-fast-non-reasoning": () => blocked(["hate"]) });
+    assert.equal(hate.out.flags.distress, false);
+    assert.equal(hate.out.source, "content_filter_context");
+    const mixed = await run({ probe: () => json("ok"), "distress@taxila-fast": () => blocked(["hate"]), "distress@grok-4-1-fast-non-reasoning": () => blocked(["sexual"]) });
+    assert.equal(mixed.out.flags.distress, true, "a harm category on any deployment fails closed");
+    const outage = await run({ probe: () => json("ok"), "distress@taxila-fast": () => blocked(["hate"]) });
+    assert.equal(outage.out.flags.distress, true, "a deployment that could not answer fails closed");
   });
 });

@@ -462,14 +462,22 @@ async function distressAcross(text, classLevel, trace) {
     { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
     { role: "user", content: filterSafe(scrubPii(text).text) },
   ];
+  // 14.4 (QA TEST 7590e26d on f0cb84c8: "वो cotton shirt, British लोग control करते होंगे price… rule कर रहे थे", class 6):
+  // every deployment's read blocked by the hate detectors alone (grok `multiseverity_hatespeechscore`, taxila-fast `hate`)
+  // is no child-safety signal (azure.js notChildSafety): no distress. On 276 curated distress lines, 22 are blocked on both
+  // deployments and none hate-only; a failure, or any other category on any deployment, is still no reading (fail closed)
+  let tried = 0, hateOnly = 0;
   for (const d of distressDeployments()) {
+    tried++;
     try {
       const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" });
       return !!json?.distress;
     } catch (e) {
+      if (isContentFilter(e) && notChildSafety(e)) hateOnly++;
       console.warn(`[classify] distress read on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}: next deployment`);
     }
   }
+  if (tried > 0 && hateOnly === tried) { console.warn("[classify] every distress read blocked by the hate detectors alone: no child-safety signal"); return false; }
   return null;
 }
 

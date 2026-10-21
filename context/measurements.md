@@ -4634,3 +4634,9 @@ grok timed out on 0.5% of words reads. The fallback's median is 1.6 s. Under the
 ## ms-r144-harmtalk-thought (2026-10-21, n = 38,955 teacher lines)
 
 The thought of harm with no subject named ('koi nuksan pahunchane ka khayal') is now harm talk: 0 new matches on the corpus. 'baat' is left out because it matched history narrative.
+
+
+<!-- merged from inbox/r144-across-main.json -->
+## ms-r144-across-hate (2026-10-21, n = 283 lines × 2 deployments)
+
+The hate rule had to reach classify's distress reads as well as the probes. When every deployment blocks the brief only for hate, the read means no distress. That holds for 0 of 276 curated distress lines, and 22 of them stay blocked on harm categories and fail closed. It covers 2 of 7 false alarms, including QA's class 6 history answer.
