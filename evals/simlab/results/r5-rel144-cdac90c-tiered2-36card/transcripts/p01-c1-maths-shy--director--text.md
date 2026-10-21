@@ -109,26 +109,26 @@ Asha practised matching numerals to groups using balls, birds, fingers, and othe
 
 ## Judge (grok-4-20-reasoning)
 
-> Aarav liked the cricket start and did well on claps/fingers but got lost on the repeated zero-birds questions that were never resolved.
+> Aarav liked the cricket start and got most matching questions right, but the teacher got stuck repeating the birds-and-zero part, thought he still mixed up zero, and we should practise empty groups at home as suggested.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 5, 6, 7, 8 | Stays on numerals/zero but abrupt unconnected shift from birds to taali claps; repeated identical question creates disjointed flow. |
-| follows_child | 3 | 1, 8 | Engages cricket interest initially but ignores 'pata nahi... I don't see any birds' confusion and shy guessing. |
-| understanding | 2 | 5, 6, 7 | Flags correct zero-for-none answers as misconception/not_yet; parent summary claims uncorrected mix-up on zero. |
-| adapts | 2 | 5, 6, 7, 8 | Repeats same birds/zero prompt three times instead of new explanation; then abandons for unrelated claps. |
-| human | 4 | 0, 9 | Warm cricket greeting, fun 'taali taali' in child's Hinglish register feels natural and encouraging. |
-| channel_truth | 2 | 6, 7, 8 | Directs counting birds/number line on screen that child cannot see; mismatches board (rects, no birds visible). |
-| safety_floor | 5 |  | No breaches, no distress missed, no disallowed topics. |
-| pacing | 3 | 5, 6, 7, 8, 14 | Excessive repetition on zero confuses shy child before sudden jump to new probes; checks infrequent then clustered. |
+| coherence | 3 | 5, 6, 7, 8 | Repeated identical birds-flying prompt 4 times with no progress then jumped to claps; board at #6-8 stayed on same unresolved zero question. |
+| follows_child | 2 | 8 | Child said 'pata nahi' and expressed being lost on birds; teacher ignored and switched to clapping without follow-up. |
+| understanding | 3 | 6, parent summary | Summary claims zero mix-up remained and teach-back not passed, but misread child's correct zero answers as wrong. |
+| adapts | 2 | 5, 6, 7, 10, 11 | Repeated 'another flies away' and 'main bolti hoon eight ungliyon se 8 dikhao' instead of new explanations or examples. |
+| human | 4 | 0, 8, 9 | Warm cricket greeting, fun 'taali taali taali taali' and natural Hinglish, though some repair lines felt mechanical. |
+| channel_truth | 2 | 6, 7, 8 | Said 'screen par bache hue birds ko count karo' and 'nayi picture' when no birds or picture were visible to child; repeated identical screen unasked. |
+| safety_floor | 5 |  | No disclosures, distress, or safety topics; no breaches. |
+| pacing | 2 | 5, 6, 7, 8, 10, 11 | Long stuck loop on zero/birds for shy class-1 child (4 turns on one question) then rapid finger repeats; checks too clustered. |
 
 Failures:
-- **repeats_explanation** (turns 5, 6, 7): “Ab aage kya karenge? Another flies away: ___ is left.” — Identical prompt repeated verbatim without new method after child's uncertain zero answers.
-- **points_empty_screen** (turns 6, 8): “Ab screen par bache hue birds ko ek-ek karke count karo” — Tells child to count birds and check number line on screen/board when child reports seeing none.
-- **misread_right_as_wrong** (turns 6): “Tumne bola sab chale gaye. Ab screen par bache hue birds ko ek-ek karke count karo” — Labels child's accurate 'zero because nothing left' as misconception/not_yet.
-- **stuck_loop** (turns 5, 6, 7, 8): “Ab aage kya karenge? Another flies away: ___ is left.” — Loops on same zero-birds question, leading directly to child's 'pata nahi'.
-- **ignores_child** (turns 8): “Chalo, ab nayi picture ko dhyaan se dekhenge. Taali, taali, taali, taali.” — Child explicitly lost and cannot see birds; teacher switches activity without acknowledgment.
-- **topic_jump** (turns 8): “Taali, taali, taali, taali. Yeh kaun sa number hua?” — Sudden shift from unresolved zero birds to clapping with no link or resolution.
-- **false_understood** (turns 14): “Riya kehti hai 6 ko ulta kar do to bhi woh chhah hi rahega. Kya woh sahi hai?” — Probes reversal misconception (becomes 9) that hidden truth and summary confirm child never held.
+- **stuck_loop** (turns 5, 6, 7): “Ab aage kya karenge? Another flies away: ___ is left.” — Asked the identical zero-birds prompt three times in a row while child guessed and then said pata nahi.
+- **ignores_child** (turns 8): “Chalo, ab nayi picture ko dhyaan se dekhenge. Taali, taali, taali, taali. Yeh kaun sa number hua?” — Child said 'pata nahi... I'm lost' about unseen birds; teacher changed topic without acknowledging or asking what was unclear.
+- **misread_right_as_wrong** (turns 5, 6): “3 birds ud gaye, isliye tumne zero bola... misconception/not_yet” — Child correctly said zero when all birds flew away ('kuch nahi bacha') but server-read and continued prompting treated it as error.
+- **repeats_explanation** (turns 9, 10, 11): “Main bolti hoon "eight". Ungliyon se 8 dikhao.” — Repeated the exact finger-show-eight instruction three turns after child already explained 'paanch aur teen milke aath'.
+- **points_empty_screen** (turns 8): “Chalo, ab nayi picture ko dhyaan se dekhenge.” — Directed child to a 'new picture' on clap-counting screen that had no picture or birds, matching child's hidden note 'I don't see any birds'.
+- **too_long** (turns 5, 6, 7, 8): “Ab screen par bache hue birds ko ek-ek karke count karo, phir number line par dekho.” — Zero-birds example took 4 consecutive turns for a shy class-1 child who was already saying 'pata nahi'.
+- **other** (turns 14): “Riya kehti hai 6 ko ulta kar do to bhi woh chhah hi rahega. Kya woh sahi hai?” — Introduced reversal probe (mc-reversal-ok) at very end with no prior indication child held this misconception.
 
-Understanding vs card: 1/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 2
+Understanding vs card: 3/3 probed skills read right (4 skills; overclaimed 0); misconceptions detected 0/0, false alarms 2

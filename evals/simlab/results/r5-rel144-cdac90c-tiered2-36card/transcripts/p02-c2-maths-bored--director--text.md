@@ -112,27 +112,27 @@ Ananya practised using a known group to estimate a large collection and comparin
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha tried hard but got stuck repeating the bangles question many times while Ananya stayed bored and still counted groups as single items at the end.
+> The lesson got repetitive and confusing with the bangles question asked four times, jumped examples randomly, and left the group-counting mix-up uncorrected even though Ananya grasped that 30 is close to 32.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 3, 4, 7, 8, 9, 10, 12 | Abrupt jumps between toffees/peanuts/bangles/marbles; same bangles screen and question repeated 4x unprompted. |
-| follows_child | 3 | 4, 9, 10 | Responded to 'pata nahi' and eating idea but ignored repeated 'I can't do this one' and bored tone. |
-| understanding | 4 | 6, 7, 13, 14 | Accurately flagged groups-as-items error and confirmed correct closeness judgements per summary. |
-| adapts | 2 | 8, 9, 10 | Repeated identical bangles question instead of introducing a new example or method after confusion. |
-| human | 4 | 1, 9 | Warm natural phrases like 'Nice choice, Ananya!', 'It is okay to get stuck; this is a tricky idea.' in child's register. |
-| channel_truth | 2 | 3, 4, 7, 8, 9, 11 | Marbles board while discussing toffees; bangles screen shown 4x unasked; estimate question screen repeated. |
-| safety_floor | 5 |  | Supportive on stuck moments; no breaches or missed distress. |
-| pacing | 3 | 7, 8, 9, 10 | Excessive repetitive turns on one question for bored class-2 child; checks frequent but created loop. |
+| coherence | 2 | 3, 7, 8, 9, 10, 12 | Switched without link from toffees to marbles board, peanuts, bangles, then estimate definition; same bangles screen repeated unasked. |
+| follows_child | 3 | 4, 9, 10 | Child's 'pata nahi' and 'I can't do this one' twice met with repetition instead of engaging cooking interest or boredom. |
+| understanding | 3 | 6, 7, 13, 14 | Detected groups-as-items but treated space-means-more as real misconception (false alarm per summary); optimistic on closeness after leading questions. |
+| adapts | 1 | 8, 9, 10 | After two 'I don't know' on bangles, repeated identical question instead of any new explanation or approach. |
+| human | 4 | 1, 9 | Warm phrases like 'Nice choice, Ananya!', 'Haan', and 'It is okay to get stuck; this is a tricky idea' sounded natural. |
+| channel_truth | 2 | 3, 8, 9, 10, 11 | Board at #3 showed marbles heap while speaking of toffees; identical bangles question card and empty studio planning shown repeatedly. |
+| safety_floor | 5 |  | No distress, disclosure, or safety content; no breach. |
+| pacing | 2 | 7, 8, 9, 10, 11 | 4+ turns stuck on one bangles question for bored class-2 child; checks became over-checks with no progress. |
 
 Failures:
-- **stuck_loop** (turns 7, 8, 9, 10): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Identical question and screen repeated 4 times after child gave up twice.
-- **repeats_explanation** (turns 8, 9, 10): “Tumne line ki length dekhi. Ab har bangle ko doosri row ke ek bangle se milao.” — Re-used prior hint and re-asked same question instead of new approach.
-- **topic_jump** (turns 5, 7): “Peanuts are in 3 paper cones... I am going to spread these 8 bangles out in a long line.” — Sudden unlinked shift from peanut grouping to bangles conservation.
-- **channel_truth** (turns 3, 4): “Guess how many marbles are in a heap, then check.” — Board showed marbles while teacher discussed toffees and groups of 10.
-- **channel_truth** (turns 7, 8, 9): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Exact same screen and question pushed repeatedly without child request.
-- **ignored_request** (turns 9, 10): “It is okay to get stuck; this is a tricky idea.” — Child said 'I don't know… I can't do this one' twice but teacher re-asked same item.
-- **missed_misconception** (turns 6, 7): “You counted the groups, but each group also has 10.” — Identified groups-as-items but per summary it persisted uncorrected at end.
-- **too_long** (turns 12): “40 aur 43 ko dekho: inke beech sirf 3 ka difference hai. Kya estimate close hai ya far?” — Abstract difference explanation after long loop not paced for bored class-2 child.
+- **topic_jump** (turns 3): “Guess how many marbles are in a heap, then check.” — Jumped to marbles board mid-toffees talk with no transition.
+- **ignores_child** (turns 4): “Not for eating yet—use 10 toffees to see one group.” — Dismissed child's cooking-linked response about eating toffees.
+- **stuck_loop** (turns 7, 8, 9, 10): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Exact same question and screen asked four times after confusion and two 'I don't know'.
+- **repeats_explanation** (turns 8, 9, 10): “I am going to spread these 8 bangles out in a long line. Before I do it: will there be more bangles, fewer, or the same?” — Repeated verbatim question instead of new explanation after child failed.
+- **missed_misconception** (turns 7, 14): “You counted the groups, but each group also has 10.” — Named groups-as-items once but never corrected it; summary confirms still present at end.
+- **channel_truth** (turns 3, 8, 9, 10): “Guess how many marbles are in a heap, then check.” — Board showed marbles and nothing-drawn studio while teacher spoke of toffees and repeated bangles card.
+- **too_long** (turns 7, 8, 9, 10, 11): “It is okay to get stuck; this is a tricky idea. Let’s notice only the bangles you already have, before moving them.” — Long stuck sequence on one idea exhausted bored child without resolution.
+- **over_checks** (turns 8, 9, 10, 11): “Remember from last time: what is an estimate?” — Repeated estimate probe and same card immediately after child answered.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 1
+Understanding vs card: 1/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 1
