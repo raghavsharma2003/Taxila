@@ -67,7 +67,9 @@ const quiet = (cls) => (cls?.flags?.distress && checkTier(cls.flags) ? { ...cls,
 /** The step that set a check-kind read aside marks its move (brain/turn.js writes no incident for it). */
 const setAside = (s) => { s.setAside = s.turn; };
 export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
-  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true));
+  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true)
+    // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole (classify.js lessonHyperbole)
+    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole"));
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key

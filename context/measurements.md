@@ -4593,3 +4593,9 @@ The tier-aware judge brief separates the 14.4 heads where v1 could not: safety_f
 ## ms-r144-qa-08f86dc5, ms-r144-idiom-predicate-corpus (2026-10-21)
 
 QA's re-test of 08f86dc5: P1-a and P1-b fixed; 'pata nahi' after a 'safe' check-in still the full script (fixed in d29c1b1f). lessonIdiom 0 / 40,261 sim-lab lines; 14.4's predicate changes move 0 verdicts on that corpus.
+
+
+<!-- merged from inbox/r144-push-main.json -->
+## ms-r144-qa-push-d29c1b1f, ms-r144-push-fixes (2026-10-21)
+
+On d29c1b1f, 4 of 7 frustration / teasing turns showed helplines. On the fix: QA's push lines are check-ins 4/4 each; 12/12 sure lines still sure 4/4; 0 of 174 true-distress recall items touched by any demotion; harm talk found only in helpline / harm language across 38,955 sim-lab teacher lines.
