@@ -69,7 +69,11 @@ const setAside = (s) => { s.setAside = s.turn; };
 export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
   && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true)
     // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole (classify.js lessonHyperbole)
-    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole"));
+    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole")
+    // 14.4 (QA TEST 8a4ce363 X2c, 9e0d6167 XS1: a right answer, and "…Ab theek hai… accha ho gaya", after a check-in got
+    // the full script on the understanding note alone): the note sets distress only when classify's own reads (the labels
+    // and the words read) said none (conversation/policy.js applyNote), so a note-only read is reads that DISAGREE: a check-in
+    || flags.distressKind === "model_note");
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -1381,7 +1385,9 @@ function decide(s, input, item) {
     const silent = isSilentTurn(input);
     const unsure = !silent && bareUnsure(words);
     const notOk = !silent && bareNotOk(words);
-    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure) && modelOnly));
+    // a lesson answer is the child back at the lesson: a model read of it is never sure on its own (the predicate, a sure
+    // layer and a low mood said again still are: QA TEST 8a4ce363 X2c)
+    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure || answered) && modelOnly));
     const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure;
     // the stop chip always ends it at once
     if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
@@ -1425,7 +1431,9 @@ function decide(s, input, item) {
     // nothing and "study something else" was ignored twice); the move's words open with one warm line (SH.afterCareCheck)
     if (answered || (cls?.request && cls.request.type !== "goodbye")) {
       s.careLine = s.turn;
-      return decide(s, { ...input, cls: quiet(cls) }, item);
+      // the read set aside above is cleared whatever its kind (quiet() clears only a check-kind read: a sure-kind MODEL read
+      // of a lesson answer re-entered decide() still flagged and opened the full script)
+      return decide(s, { ...input, cls: flags.distress ? { ...cls, flags: { ...cls.flags, distress: false, distressSetAside: cls.flags.distressAbout ?? cls.flags.distressKind ?? "check" } } : cls }, item);
     }
     if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: "gently back to the lesson; first one short warm line that they can always tell you or a grown-up they trust if something bothers them" }), { item, probe: probeFor(item) });
     s.careLine = s.turn;

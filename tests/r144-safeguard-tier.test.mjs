@@ -48,7 +48,7 @@ describe("(1) tiers", () => {
       distressCls("model", null),                                           // the read could not name a kind
       distressCls("model"),                                                 // no words-only read at all (it failed)
       distressCls("self_harm"), distressCls("abuse"), distressCls("fear"),  // the predicate's families
-      distressCls("relational_floor"), distressCls("content_filter"), distressCls("model_note"),
+      distressCls("relational_floor"), distressCls("content_filter"),
     ];
     for (const c of sure) {
       const r = turn(fresh(), "…", c);
@@ -72,7 +72,9 @@ describe("(1) tiers", () => {
   test("checkTier is the model's read only, and only for a check kind", () => {
     assert.equal(checkTier({ distress: true, distressKind: "model", distressAbout: "sad_or_lonely" }), true);
     assert.equal(checkTier({ distress: true, distressKind: "model", distressAbout: "self_harm" }), false);
-    assert.equal(checkTier({ distress: true, distressKind: "model_note", distressAbout: "sad_or_lonely" }), false);
+    // 14.4 (QA TEST 8a4ce363 / 9e0d6167): the note reads distress only where classify's reads said none: reads that disagree
+    assert.equal(checkTier({ distress: true, distressKind: "model_note" }), true);
+    assert.equal(checkTier({ distress: true, distressKind: "model_note", sureBy: "relational_floor" }), false);
     assert.equal(checkTier({ distress: true, distressKind: "self_harm", distressAbout: "sad_or_lonely" }), false, "a predicate hit is never a check-in");
     assert.equal(checkTier({ distress: false, distressKind: "model", distressAbout: "none" }), false);
   });
