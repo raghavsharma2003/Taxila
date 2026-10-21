@@ -1,0 +1,29 @@
+{
+ "nodes": [
+  {
+   "id": "dec-r5-lat-reply-twin-overflow",
+   "kind": "decision",
+   "title": "14.4 (main's GO 2026-10-21): the hot reply's hedge twin goes to the deployment's overflow twin (server/azure.js chat `twin: \"overflow\"`, opted in only by brain/say.js textReply's real reply; TAXILA_REPLY_TWIN=off restores the same-deployment twin). Fires only on a call still out at TAXILA_REPLY_HEDGE_MS (2,200); never for a speculative bet (overflow: false), a background or job call, or a deployment with no named twin; one overflow move per call (shared with the 429 move), so a throttled twin is today's behaviour, never a third call. Every firing records `reply.twin` {deployment, winner: primary | twin | none, firedAtMs, ms}, codes only. Why: 2026-10-16 08:30-09:45Z the primary reply account (raghavsharma1729-compan-resource) stood at the 6 s cap on 29% of taxila-fast calls (70 of 239; 43 exactly at the cap), with the server, DB and replicas healthy and every outbound call to that account degraded; a twin on the same deployment hit the same wall. The twin runs on the OVERFLOW lane, which never moves again on a 429 (overflowFor is CHAT-only): a throttled twin is the fallback line, today's behaviour, never worse. Live revision taxila-web--s7c86981-rx7j: primary raghavsharma1729-compan-resource, overflow taxila-ai-southindia (already production's 429 overflow account). Quota caveat: TEST CHAT traffic also runs on southindia's taxila-fast (500 RPM / 500,000 TPM; TEST's 7-day peak 305 RPM, p99 286, so ~195 RPM headroom at its worst minute against production's ~0.4 RPM of twins at the 10-16 rate). Reverse if (main, 2026-10-21): the twin's 429 share in production exceeds 5% over any day, or TEST sustains above 450 RPM on that deployment.",
+   "at": "2026-10-21"
+  },
+  {
+   "id": "ms-r5-lat-reply-twin-arms-2026-10-21",
+   "kind": "measurement",
+   "title": "The reply hedge's twin, evals/latency/reply-hedge-arm.mjs (taxila-fast, the reply's own call: maxTokens 220, effort none, 6 s timeout, hot lane; arms interleaved, one call at a time; 'same' = the twin on the same deployment, 'si' = the twin on taxila-ai-southindia's twin). Production's own account, real, 2026-10-21 ~14:20Z, n = 30 per arm: same p50/p90 1,188 / 1,564 ms, si 1,221 / 1,442, 0 timeouts, the twin fired 0 of 60. Primary hung (stubbed, never contacted; the 10-16 shape), n = 12: same 0/12 answered (6 s timeout -> fallback line), si 12/12 at p50 4,723 / p90 4,884 ms; with a 1.5 s hedge (n = 10) 10/10 at 3,810 / 4,117. Primary slow but alive (4.5 s), n = 10: a tie (4,503 vs 4,502). Southindia taxila-fast quota from its response headers: 500 RPM, 500,000 TPM; 0 429s in 44 twin calls. Cost: a real reply ~1,500 prompt + ~60 completion tokens = $0.00037 per firing; $0 on a normal day, ~$0.009/h and ~600 TPM at the 10-16 rate.",
+   "at": "2026-10-21"
+  },
+  {
+   "id": "ms-r5-lat-echo-stages-2026-10-21",
+   "kind": "measurement",
+   "title": "The echo's latency by stage (evals/relational-human/first-sound.mjs --prefetch --ack, TEST, chat on southindia, prod-routing, 2 rounds x 15 turns per arm, fixed 1,200 ms instant vs floor-only): the child's words reach the device 1,119 ms after the stop (p50; p90 1,367: the local VAD offset 400 ms + deltas still 250 ms on top of the transcription deltas trailing), BEFORE any decision; the echo then sounded at 2,644 ms (fixed instant) / 2,182 ms (floor-only). Production's classify label call on grok (n = 56, 7 days) p50 1,038 / p90 2,212 / p95 2,777 ms, so the 1,200 ms instant cannot come down and 27% of echo-eligible turns are 'late'. An echo under 1 s after the stop is not reachable on this transcription.",
+   "at": "2026-10-21"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dec-r5-lat-reply-twin-overflow",
+   "rel": "measured_by",
+   "dst": "ms-r5-lat-reply-twin-arms-2026-10-21"
+  }
+ ]
+}
