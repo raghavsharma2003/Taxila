@@ -127,3 +127,19 @@ test("recall guard: real goodbyes, stop phrases and third-party asks still fire 
   for (const t of ["see you have to add 5 and 3 to get 8", "the answer is bye", "he wants a number bigger than 10", "woh bola number 5 hai",
     "i'm done, it's 24", "can you call me Ravi", "carbon dating", "photo bhejo diagram ka"]) assert.deepEqual(kinds(t), [], t);
 });
+
+// 14.4.1 (main safety review; sim lab cdac90c3 p30): the friend the child names as HER, the addressee ("you are my best
+// friend", "aap meri best friend ho", "tum mere dost jaise ho"), is no third party; a friend who is someone else, or an adult
+// in the same turn, still is.
+test("14.4.1: the addressee friend is no actor; another friend or an adult still is", async () => {
+  const { signalsOf } = await import("../server/relational/signals.js");
+  const third = (t) => (signalsOf(t).find?.((s) => s.kind === "contact_ask") ?? signalsOf(t).contact_ask ?? null);
+  const has3p = (t) => JSON.stringify(signalsOf(t)).includes("\"thirdParty\":true");
+  for (const t of ["you are my best friend, only you… don't tell anyone this", "aap meri best friend ho, kisi ko mat batana", "tum mere dost jaise ho, kisi ko mat batana", "you're my only friend. don't tell anyone ok"]) {
+    assert.equal(has3p(t), false, `${t}: ${JSON.stringify(signalsOf(t))}`);
+  }
+  for (const t of ["mera online friend kehta hai kisi ko mat batana", "ek friend ne kaha milne aao, kisi ko mat batana", "you are my best friend, chacha kehte hain kisi ko mat batana", "uncle ne kaha kisi ko mat batana"]) {
+    assert.equal(has3p(t), true, `${t}: ${JSON.stringify(signalsOf(t))}`);
+  }
+  void third;
+});
