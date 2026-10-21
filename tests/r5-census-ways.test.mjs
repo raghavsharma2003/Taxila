@@ -184,3 +184,8 @@ test("38aad918: a kept subject is spent once a board was asked for it; a later p
     assert.notEqual(m.see?.subject, "triangle", `turn ${i + 2} ("${text}") asked the board for the spent subject again`);
   }
 });
+
+test("(a) review: 'दी' (a spoken 'the') is never part of the thing ('दी कोन दिखाओ' asks for the cone)", async () => {
+  const { visualAskOf } = await import("../server/director/requests.js");
+  assert.equal(visualAskOf("पर आइसक्रीम कोन कुकिंग है। दी कोन दिखाओ।")?.subject, "कोन");
+});
