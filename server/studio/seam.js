@@ -866,7 +866,10 @@ export const studioSeam = {
     const p = { intentId, slotId: `${intentId}:slot`, kind: "whiteboard", archetype: "whiteboard", source: "whiteboard", skillId: ask.intent.skillId ?? null, itemId: ask.intent.itemIds?.[0] ?? null,
       need: ask.intent.need, state: "planning", artifact: null, retired: false, createdAt: Date.now(), facts: null };
     L.pieces.set(intentId, p);
-    if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // 38aad918 t9-t11: a picture on screen stays under the board until the board draws; a board that fails gives the screen
+    // back to it (it was retired here, then the board failed: three turns ended on an empty screen)
+    if (on && on.kind === "image" && VISIBLE.has(on.state) && !on.retired && on.artifact) p.under = on.intentId;
+    else if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     // round 5 (stream 2): the page on the board when this ask came in; a new page is never that page again (unless it is
@@ -940,6 +943,16 @@ export const studioSeam = {
       }
       p.state = "failed"; p.fallback = "voice"; p.failWhy = `live:${liveWhy ?? "-"} template:${fbWhy ?? "-"}`.slice(0, 120);
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
+      restoreUnder();
+    };
+    // the picture this board was drawn over: back on screen when the board did not draw (never an empty screen)
+    const restoreUnder = () => {
+      const img = p.under ? L.pieces.get(p.under) : null;
+      p.under = undefined;
+      if (!img || img.retired || !VISIBLE.has(img.state) || L.onScreen !== intentId) return;
+      L.onScreen = img.intentId; p.restored = img.intentId;
+      push(L, { t: "slot", slot: slotOf(img, "revealed") });
+      push(L, { t: "status", status: statusOf(img) });
     };
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
     const drawn = (r0) => {
@@ -962,6 +975,7 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
+      if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
       // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
       p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
@@ -1038,7 +1052,9 @@ export const studioSeam = {
       .catch(() => { if (!keptNow) showFallbackOrFail("error"); });
     // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
     // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
-    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
+    // (a board that failed over a picture: the turn's slot is that picture, back on screen)
+    const restoredSlot = () => { const img = p.restored ? L.pieces.get(p.restored) : null; return img && !img.retired && L.onScreen === img.intentId ? { slotId: img.slotId, intentId: img.intentId, state: "revealed", artifact: img.artifact } : null; };
+    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : restoredSlot()), () => restoredSlot());
     if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
     return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
@@ -1241,6 +1257,8 @@ function retirePiece(L, intentId, why) {
   if (!p || p.state === "retired") return;
   const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
+  // a board taken down before it drew takes the picture it was held over with it (never revealed off screen)
+  if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, why); }
   // round 4: the child declined a game: the practice beat goes back to Stagecraft / the boards for this lesson
   // (server/stagecraft/seam-bridge.js merge)
   if ((why === "not_this" || why === "declined") && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"))) L.playDeclined = true;
