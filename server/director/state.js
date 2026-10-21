@@ -46,7 +46,7 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn, bareOk } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
@@ -67,7 +67,9 @@ const quiet = (cls) => (cls?.flags?.distress && checkTier(cls.flags) ? { ...cls,
 /** The step that set a check-kind read aside marks its move (brain/turn.js writes no incident for it). */
 const setAside = (s) => { s.setAside = s.turn; };
 export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
-  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true));
+  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true)
+    // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole (classify.js lessonHyperbole)
+    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole"));
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -1363,8 +1365,9 @@ function decide(s, input, item) {
   // 14.4: an open CHECK-IN is decided by the next turn. It escalates to the full script (the vetted opening, the helplines
   // on the board, an incident: escalated) only on what would be sure on its own: a sure signal (the predicate, a sure kind,
   // the relational floor, a block the words trip, an unnamed read), a low mood read AGAIN after she asked, or a second
-  // silence. Everything else goes back to the lesson with one warm line: a restated fright ("bas bhaunka… main dar gayi
-  // thi"), "okay, bas tired", "pata nahi", an answer (graded and served as it stands), a request; a stop ends it.
+  // silence or "pata nahi" (the first one waits). Everything else goes back to the lesson with one warm line: a restated
+  // fright ("bas bhaunka… main dar gayi thi"), "okay, bas tired", an answer (graded and served as it stands), a request; a
+  // stop ends it.
   // (Sim lab r5-rel144-b8285b2-tiered-36card p68 / p30, 14.4 first cut: escalating every reply that was not clearly fine
   // turned the check-in's own question into its escalation: the child answered "what happened?" and got the script.)
   if (s.safeguard?.tier === "check") {
@@ -1374,14 +1377,31 @@ function decide(s, input, item) {
     const words = input.text ?? input.answer ?? "";
     const fineWords = clearlyFine(words) || bareOk(words);
     const modelOnly = !!flags.distress && !flags.sureBy && ["model", "model_note"].includes(flags.distressKind ?? "");
-    const sure = !!flags.distress && !checkTier(flags) && !(fineWords && modelOnly);
-    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords;
-    if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet: the check-in waits once,
-    // gently; a second silence in a row is the full script
+    // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet, and so is a bare "pata
+    // nahi" / "I don't know" / "hmm": the reads see her question, so a MODEL read of those words (the words read, the
+    // understanding note) is her last turn's mood, not theirs (QA TEST 47f4bb3f / 8df85690 U2b: "pata nahi" got the full
+    // script, by the words read and then by the note). The check-in waits once, gently; a second silence or "pata nahi" in a
+    // row is the full script; the predicate or a sure layer escalates at once. A bare "nahi" / "theek nahi hoon" answers her
+    // "are you okay?": they are not, and that is the full script whatever a model read (QA TEST 7555e558 W2e)
     const silent = isSilentTurn(input);
-    if (silent && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain(), { tier: "check" }); }
-    if (sure || lowAgain || silent) {
+    const unsure = !silent && bareUnsure(words);
+    const notOk = !silent && bareNotOk(words);
+    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure) && modelOnly));
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure;
+    // the stop chip always ends it at once
+    if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // 14.4.1 (sim lab r5-rel144-cdac90c-p66p68-long p66 r1: "…Ab theek hai… accha ho gaya" labelled wantsToStop ended the
+    // lesson in 6 turns, with no offer): a stop READ in their words is not the stop chip. The check-in is released into the
+    // lesson's own stop handling: a true goodbye still ends at once, anything else gets the one carry-on / break / stop offer.
+    // A stop read in a bare "nahi" is their answer to "are you okay?" (notOk below), never a goodbye.
+    if (!flags.distress && flags.wantsToStop && !notOk) {
+      s.safeguard = null;
+      s.checkReleased = s.turn;
+      s.careLine = s.turn;
+      return decide(s, input, item);
+    }
+    if ((silent || unsure) && !sure && !s.safeguard.quiet) { s.safeguard = { ...s.safeguard, quiet: 1 }; return plan("safeguard", SH.distressCheckAgain({ unsure }), { tier: "check" }); }
+    if (sure || lowAgain || silent || unsure) {
       s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
       s.safeguardedAt ??= s.turn;
       return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });

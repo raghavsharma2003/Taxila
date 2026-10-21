@@ -44,7 +44,7 @@ import { isBoardFirstRow } from "../stagecraft/board-first.js";
 import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
-import { affirmOpenerFix, fallbackReply, floorContentOf, safeguardLine, scrubbed, textReply } from "./say.js";
+import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply } from "./say.js";
 import { arbitrate } from "./kernel.js";
 import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
@@ -846,7 +846,9 @@ export async function lessonTurn(req, body, hooks = {}) {
     let filtered, filterUnsure, filteredSafeguard = false;
     // round 5: the agent's line, through the same floor predicate every reply passes; a line that breaks the floor is never
     // sent: the Director's move and reply take the turn instead
-    const agentFloor = agentOut ? floorViolations(agentOut.say, { content: floorContentOf(agentOut.item ?? null) }) : [];
+    // 14.4: and never its own safeguarding call (say.js harmTalk): the Director's move and reply take the turn
+    const agentFloor = agentOut ? [...floorViolations(agentOut.say, { content: floorContentOf(agentOut.item ?? null) }),
+      ...(!safetyTalkAllowed(next) && harmTalk(agentOut.say) ? ["harmtalk"] : [])] : [];
     if (agentOut && agentFloor.length) {
       agentFallback = `floor:${agentFloor.join(",")}`.slice(0, 80);
       console.warn(`[agent] line broke the floor (${agentFloor.join(",")}): the Director takes the turn`);
