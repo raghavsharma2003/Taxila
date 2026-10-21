@@ -10,7 +10,7 @@
       "id": "dc-r144-d5-unheard-not-silence",
       "kind": "decision",
       "at": "2026-10-21",
-      "title": "D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN an unheard turn re-asks the check-in and does not use up its one silence, failing closed on the THIRD unheard turn in a row (UNHEARD_CHECKS = 2). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns."
+      "title": "D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN every unheard turn re-asks it (her own wording, the safe:continue / safe:stop chips on screen) and never uses up its one silence nor escalates (dc-r144-unheard-never-escalates). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns."
     },
     {
       "id": "ms-r144-d5-overlap-words-lost",
@@ -47,6 +47,24 @@
       "kind": "measurement",
       "at": "2026-10-21",
       "title": "How often three UNHEARD turns come in a row (main's check before relying on the check-in's fail-closed). The 132 recorded D5 runs are single exchanges: no run holds two unheard turns (max 1). Per committed turn, unheard is 4/53 = 7.5 % (owner) and 5/48 = 10.4 % (phone echo) after the fixes; the bake over-represents hard tails. If turns were independent, P(≥ 3 in a row in a lesson) = 0.7 % / 1.1 % / 1.9 % (owner, 20 / 30 / 50 turns) and 1.8 % / 2.8 % / 4.8 % (phone) — above main's ~1 in 100 bar on the phone variant; a bad microphone makes turns correlated (worse). No D5 production codes visible to this stream. Hence the tap path (safe:continue / safe:stop on every unheard wait) ships with it."
+    },
+    {
+      "id": "dc-r144-unheard-never-escalates",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns."
+    },
+    {
+      "id": "rj-r144-negation-never-subtracted",
+      "kind": "rejection",
+      "at": "2026-10-21",
+      "title": "Rejected (main 2026-10-21): the literal bar \"a negation is never subtracted as echo, whatever\". Measured on the same 41,259 sim lab pairs: negation loss 510 → 0, but her own echoed negations leak into the child's turn — echo floors 2,029 → 10,917 tokens left (same script) and 15,521 → 23,824 (cross-script); a stray \"nahi\" of hers beside the child's \"haan\" inverts the child, a more frequent meaning flip than the one it removes. Shipped instead: dc-r144-negation-surface-key (510 → 169 for +1 % cross-script floor, 0 D5 commits changed)."
+    },
+    {
+      "id": "op-r144-negation-acoustic-lever",
+      "kind": "open",
+      "at": "2026-10-21",
+      "title": "Next lever for the 169 replies that still lose a negation (ms-r144-negation-echo): the child repeating her own phrase, negation included, inside a long-anchored run of her words, which text alone cannot tell from her echo. Needs acoustic or timing evidence: the ear item's audio window vs her playback (an item that started after her line ended cannot hold her echo), word timings where the source gives them, or the stereo reference's her-energy over the item. Not built."
     }
   ],
   "edges": [
@@ -68,6 +86,11 @@
     {
       "from": "rj-r144-governor-carry-check",
       "to": "ms-r144-d5-overlap-words-lost",
+      "rel": "measured_by"
+    },
+    {
+      "from": "dc-r144-unheard-never-escalates",
+      "to": "ms-r144-unheard-three-in-a-row",
       "rel": "measured_by"
     }
   ]

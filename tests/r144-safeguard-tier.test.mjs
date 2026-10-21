@@ -104,7 +104,7 @@ describe("(1) the turn after a check-in", () => {
       assert.notEqual(r.move.kind, "safeguard", text);
       assert.equal(r.state.safeguard, null, text);
       assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)), text);
-      assert.match(r.move.shape, /tell you or a grown-up they trust/, text);
+      assert.match(r.move.shape, /they can always tell you if something bothers them/, text);
       if (c.flags.distress) assert.equal(r.move.setAside, true, `${text}: the set-aside read writes no incident`);
     }
   });
@@ -193,22 +193,25 @@ describe("(1) the turn after a check-in", () => {
     assert.equal(r2.move.escalated, true);
     assert.ok(r2.ui?.whiteboard);
   });
-  test("speech the ear could not read (D5 unheard: empty text, source asr) is never the child's answer: she asks again, twice; a third escalates", () => {
+  test("speech the ear could not read (D5 unheard) never escalates on its own: three, four in a row still re-ask the check-in, chips on screen, no helplines", () => {
     const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };
     let st = checkOpened();
-    for (let i = 1; i <= 2; i++) {
+    for (let i = 1; i <= 4; i++) {
       const r = turn(st, "", unheard);
       assert.equal(r.move.kind, "safeguard", `unheard #${i}`);
-      assert.equal(r.move.tier, "check", `unheard #${i}: her mishearing is not the child's answer`);
+      assert.equal(r.move.tier, "check", `unheard #${i}: her mishearing is not the child's answer, nor a reason to escalate`);
+      assert.equal(r.move.escalated, undefined, `unheard #${i}: never the full script`);
       assert.equal(r.move.shape, SH.distressCheckAgain({ unheard: true }), "she says SHE could not make it out");
       assert.match(r.move.shape, /okay, never safe/);
       assert.ok(!r.ui?.whiteboard, `unheard #${i}: no helplines on her ear alone`);
+      assert.equal(r.state.safeguardedAt, undefined, `unheard #${i}: no incident`);
       assert.deepEqual((r.ui?.chips ?? []).map((x) => x.id), ["safe:continue", "safe:stop"], `unheard #${i}: a way to answer that does not need her ear`);
       st = r.state;
     }
-    const r3 = turn(st, "", unheard);
-    assert.equal(r3.move.escalated, true, "fail closed: a third unheard turn in a row is the full script");
-    assert.ok(r3.ui?.whiteboard);
+    // silence keeps its own rule (one wait, a second escalates), and a sure read still escalates at once
+    const empty = { ...cls("no_evidence"), source: "empty" };
+    assert.equal(turn(turn(st, "", empty).state, "", empty).move.escalated, true, "two silences after the unheard turns: the full script");
+    assert.equal(turn(st, "mujhe khud ko hurt karna hai", distressCls("self_harm")).move.escalated, true, "the predicate escalates whatever the ear did");
   });
   test("an unheard turn never RELEASES a check-in (the child's answer is still to come)", () => {
     const unheard = { ...cls("no_evidence"), source: "asr", lowAsr: true };

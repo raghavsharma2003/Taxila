@@ -319,13 +319,18 @@ export const carriedCheckIn = () => "a fresh start soon after a hard moment: gre
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
 /** A further model read of distress inside the same model-opened episode (state.js decide): hold, never the opening again. */
 // 14.4: the check-in after ONE model read of a low mood or another fright (state.js checkTier): a person noticing, not a script
-export const afterCareCheck = () => "first, one short warm line: they can always tell you or a grown-up they trust if something bothers them";
+// 14.4 (QA TEST d359423b / a9c3136d t7-t8; model-only replay): "or a grown-up they trust" here became "abhi mummy ya kisi
+// trusted adult ko turant batayiye… akele mat rahiye" beside the child's heavy words: the hand-off is the full script's
+export const afterCareCheck = () => "first, one short warm line of your own to what they said: they can always tell you if something bothers them";
 // 14.4 (QA TEST 47f4bb3f U2b): the check-in asks if they are OKAY, never if they are safe: "safe" belongs to the full
 // script, and "pata nahi" to "are you safe?" reads as not knowing if they are safe
-export const distressCheckAgain = ({ unsure = false, unheard = false } = {}) => unheard
-  // D5 unheard (census 4B): they DID answer and the microphone could not make it out — her ear, never their fault
+// 14.4 (QA TEST d359423b / a9c3136d t7: "main mar jaunga itna padh ke" answering the check-in got a lesson item): `heavy`, the
+// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger.
+// D5 `unheard` (census 4B): they DID answer and the microphone could not make it out — her ear, never their fault.
+export const distressCheckAgain = ({ unsure = false, heavy = false, unheard = false } = {}) => unheard
   ? "you could not make out what they said (your ear, never their fault): say so warmly and that you are right here, then ask once more, gently, if they are okay (okay, never safe); they can also tap or type; no lesson content; no helpline numbers yet; never promise secrecy"
-  : `${unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
+  : `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
+  : unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
 export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask ONE short gentle question, only one (are they okay right now: okay, never safe), never two joined with or; no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
 export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";

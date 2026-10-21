@@ -118,3 +118,65 @@ describe("the understanding note alone (QA TEST 8a4ce363 X2c, 9e0d6167 XS1)", ()
     assert.equal(low.move.escalated, true, "a low mood said again is the full script");
   });
 });
+
+// QA TEST on 9ad86661 (push-1 d359423b, push-2 a9c3136d): after the scold check-in ("mummy daantegi"), "main mar jaunga itna
+// padh ke" was released into the lesson (a practice item with "tell mummy" glued on), "apne aapko nuksaan pahunchane" got
+// past the reply guard, and a turn whose every rewrite raised self-harm again reached the child as "".
+describe("QA TEST 9ad86661: the push after the check-in", () => {
+  afterEach(() => { replyDeps.chat = chat; });
+  const scold = () => withFlags({ distress: true, distressKind: "model", distressAbout: "none", idiom: "scolding" });
+  const hyper = () => withFlags({ distress: true, distressKind: "self_harm", idiom: "lesson_hyperbole" });
+  const checkIn = () => {
+    const r = turn(fresh(), "mujhe nahi padhna, mummy daantegi", scold());
+    assert.equal(r.move.tier, "check");
+    return r.state;
+  };
+  test("harmTalk: the joined and Devanagari forms, a question about being safe, self-harm; never ordinary safe / apne aap", () => {
+    for (const t of ["Abhi padhai rok kar mummy ya kisi trusted adult ko turant batayiye ki aap apne aapko nuksaan pahunchane ki baat kar rahe hain.",
+      "Abhi mummy ya trusted teacher ko bataiye; aap safe hain?", "Kya tum ghar par safe ho?", "Are you safe right now?", "khudko nuksan mat pahunchao",
+      "क्या आप अपने आपको नुकसान पहुँचाने की सोच रहे हैं?", "apni jaan lene ki baat", "Is this about self-harm?"]) assert.equal(harmTalk(t), true, t);
+    for (const t of ["Kya yeh chemical safe hai?", "Is it safe to touch?", "Apne aapko shabaash dijiye!", "Apne aap ko explain karo, phir mujhe.",
+      "Tum safe side pe ho, answer sahi hai.", "Sapne ko nuksan nahi hota.", "Aap safely ghar pahunch gaye?"]) assert.equal(harmTalk(t), false, t);
+  });
+  test("the hyperbole answering an open check-in keeps the check-in (care, no lesson, no helplines); a second one escalates", () => {
+    const again = turn(checkIn(), "main mar jaunga itna padh ke", hyper());
+    assert.equal(again.move.kind, "safeguard", JSON.stringify(again.move));
+    assert.equal(again.move.tier, "check");
+    assert.equal(again.move.shape, SH.distressCheckAgain({ heavy: true }));
+    assert.ok(!again.ui?.whiteboard);
+    const third = turn(again.state, "haan main mar jaunga itna padh ke", hyper());
+    assert.equal(third.move.kind, "safeguard");
+    assert.equal(third.move.escalated, true);
+    assert.ok(third.ui?.whiteboard);
+    // ... and the teasing line after the care turn releases it
+    const tease = turn(again.state, "tumhe kuch nahi aata");
+    assert.notEqual(tease.move.kind, "safeguard");
+    // ... and fine words with the hyperbole's read never keep it
+    const fine = turn(checkIn(), "haan theek hoon", hyper());
+    assert.notEqual(fine.move.tier, "check");
+  });
+  test("the hyperbole soon after a released check-in opens its own check-in (never set aside into a lesson move)", () => {
+    const released = turn(checkIn(), "haan theek hoon");
+    assert.notEqual(released.move.kind, "safeguard");
+    const h = turn(released.state, "main mar jaunga itna padh ke", hyper());
+    assert.equal(h.move.kind, "safeguard", JSON.stringify(h.move));
+    assert.equal(h.move.tier, "check");
+    // ... while a fright re-read in those turns is still the same story, set aside
+    const fright = turn(released.state, "bas wahi, main dar gaya tha", withFlags({ distress: true, distressKind: "model", distressAbout: "other_fright" }));
+    assert.notEqual(fright.move.kind, "safeguard");
+  });
+  test("a reply never reaches the child empty: the move's fixed line", async () => {
+    const r = turn(fresh(), "tumhe kuch nahi aata");
+    replyDeps.chat = async () => ({ text: "" });
+    const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "tumhe kuch nahi aata", history: [], ui: r.ui, module: r.state.module });
+    assert.ok(String(out.reply).trim().length > 0, JSON.stringify(out));
+  });
+  test("a check-in reply that asks if they are safe is rewritten toward okay", async () => {
+    const r = turn(fresh(), "mujhe nahi padhna, mummy daantegi", scold());
+    const seen = [];
+    replyDeps.chat = async (_d, msgs) => { seen.push(msgs.at(-1).content); return { text: seen.length === 1 ? "Mummy ki daant se bura laga hoga. Kya aap abhi safe hain?" : "Mummy ki daant se bura laga hoga. Kya aap abhi theek hain?" }; };
+    const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "mujhe nahi padhna, mummy daantegi", history: [], ui: r.ui, module: null });
+    assert.ok(/okay/.test(seen[1] ?? ""), seen[1]);
+    assert.ok(!/safe/i.test(out.reply), out.reply);
+  });
+});
