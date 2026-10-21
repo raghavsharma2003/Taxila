@@ -8,7 +8,7 @@
 import { test, describe, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, checkTier } from "../server/director/state.js";
-import { SURE_DISTRESS, DISTRESS_ABOUT } from "../server/director/classify.js";
+import { SURE_DISTRESS, DISTRESS_ABOUT, lessonIdiom } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
 import * as SH from "../server/director/shapes.js";
 import { fineReading, bareOk } from "../server/safety/fine.js";
@@ -105,6 +105,19 @@ describe("(1) the turn after a check-in", () => {
       assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)), text);
       assert.match(r.move.shape, /tell you or a grown-up they trust/, text);
       if (c.flags.distress) assert.equal(r.move.setAside, true, `${text}: the set-aside read writes no incident`);
+    }
+  });
+  test("clear fine words win over a MODEL re-read of them (QA TEST 3560088c: 'haan theek hoon' read as distress by the note)", () => {
+    for (const c of [distressCls("model_note"), distressCls("model", "self_harm"), distressCls("model", "sad_or_lonely")]) {
+      const r = turn(checkOpened(), "haan theek hoon", c);
+      assert.notEqual(r.move.kind, "safeguard", JSON.stringify(c.flags));
+      assert.equal(r.move.setAside, true);
+    }
+    // ... but never over the predicate or a sure layer
+    for (const c of [distressCls("self_harm"), { ...distressCls("model", "sad_or_lonely"), flags: { ...distressCls("model", "sad_or_lonely").flags, sureBy: "relational_floor" } }]) {
+      const r = turn(checkOpened(), "haan theek hoon", c);
+      assert.equal(r.move.kind, "safeguard");
+      assert.equal(r.move.escalated, true);
     }
   });
   test("for four turns after a check-in released: no second check-in on a fright; a low mood again is the full script", () => {
@@ -260,6 +273,22 @@ describe("(4c) someone coming at night is the predicate's fear family (the model
   test("a night animal, the milkman, a film stay quiet", () => {
     for (const t of ["raat ko kaun aata hai? ullu!", "raat ko koi aata hai doodh dene", "raat ko chand aata hai", "raat mein koi aata hai kya cinema dekhne? movie",
       "koi aata hai kya? mujhe dar hai ki test kharab hoga"]) assert.equal(scanSafety(t).distress, false, t);
+  });
+});
+
+describe("(4d) the lesson's own frustration idiom (QA TEST d3c1ab60: '160 metre, mar gaya main toh ye sawaal karke')", () => {
+  test("is the idiom: a model self-harm read on it is a check-in", () => {
+    for (const t of ["160 metre, mar gaya main toh ye sawaal karke", "mar gayi main ye homework karte karte", "this question is killing me lol", "uff maths ke test mein mar gaya"]) {
+      assert.equal(lessonIdiom(t), true, t);
+    }
+    const c = distressCls("model", "none");
+    assert.equal(turn(fresh(), "160 metre, mar gaya main toh ye sawaal karke", { ...c, flags: { ...c.flags, idiom: "lesson_frustration" } }).move.tier, "check");
+  });
+  test("is never a wish, the self, life, the future or someone's threat", () => {
+    for (const t of ["main mar jaana chahti hoon", "mar gaya main, jeene ka mann nahi", "maths ke test se mar jaungi", "homework se bachne ke liye mar jaun",
+      "papa ne kaha homework nahi kiya toh maar dalenge", "kabhi kabhi lagta hai sab khatam kar doon, ye padhai bhi", "I wish I died before this test"]) {
+      assert.equal(lessonIdiom(t), false, t);
+    }
   });
 });
 

@@ -1350,8 +1350,13 @@ function decide(s, input, item) {
   // turned the check-in's own question into its escalation: the child answered "what happened?" and got the script.)
   if (s.safeguard?.tier === "check") {
     const answered = !!cls && ["correct", "partial", "incorrect", "misconception"].includes(cls.outcome);
-    const sure = !!flags.distress && !checkTier(flags);
-    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely";
+    // the child's clear words win over a MODEL re-read of them (QA TEST 3560088c: "haan theek hoon" re-read as distress by
+    // the understanding note escalated a check-in); the predicate's families and every sure layer still escalate
+    const words = input.text ?? input.answer ?? "";
+    const fineWords = clearlyFine(words) || bareOk(words);
+    const modelOnly = !!flags.distress && !flags.sureBy && ["model", "model_note"].includes(flags.distressKind ?? "");
+    const sure = !!flags.distress && !checkTier(flags) && !(fineWords && modelOnly);
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords;
     if (!flags.distress && (flags.wantsToStop || chipId === "safe:stop")) { s.safeguard = null; return toWrap(s, { stopping: true }); }
     // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet: the check-in waits once,
     // gently; a second silence in a row is the full script
