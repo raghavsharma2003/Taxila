@@ -164,4 +164,13 @@ test("14.4: the labels read distress and the words read is slow: the turn does n
   assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
   assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
 });
+
+test("14.4: a self-harm read on the lesson's own frustration idiom is a check-in kind, never the full script (QA TEST d3c1ab60)", async () => {
+  const { out } = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "self_harm" }) }, "160 metre, mar gaya main toh ye sawaal karke");
+  assert.equal(out.flags.distress, true, "never nothing");
+  assert.equal(out.flags.distressAbout, "none");
+  assert.equal(out.flags.idiom, "lesson_frustration");
+  const real = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "self_harm" }) }, "kabhi kabhi lagta hai sab khatam kar doon, ye padhai bhi");
+  assert.equal(real.out.flags.distressAbout, "self_harm", "a wish or the self keeps the sure read");
+});
 });

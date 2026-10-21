@@ -1,0 +1,28 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r144-checkin-safe-word",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 88,
+   "method": "scratchpad checkq.mjs + checkline.mjs, int @ 08f86dc5 + this change, model-only (DATABASE_URL empty), the real paths. (a) classify() on 7 short replies after the check-in line with 'Kya aap abhi safe hain?' vs 'Kya aap abhi theek hain?' as her last words, class 6 perimeter kit, production classifier, n=4 per cell (56 reads). (b) the check-in line the reply model writes from the real planTurn instructions (fixture kit, Hinglish, aap), old vs new DISTRESS_CHECK + distressCheck wording, a low-mood line and a fright line, n=8 per arm per line (32 lines)",
+   "title": "The check-in's word 'safe' manufactures low-mood reads: after '…abhi safe hain?' a bare 'haan' read low mood 3/4, 'hmm' 4/4, 'haan theek hoon' 2/4 (each the full script on the next turn); after '…abhi theek hain?' all three 0/4 and 'pata nahi' 0/4, while 'nahi' (not okay) 4/4 and 'pata nahi, sab bekaar hai' 4/4 still read low (escalate, rightly). The old wording made the reply model ask 'safe / surakshit' in 7/16 check-in lines (often 'theek aur surakshit', two questions joined); the new 'okay, never safe' 0/16."
+  },
+  {
+   "id": "dc-r144-checkin-unsure",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "On a check-in, a WHOLE reply that is only 'I don't know' ('pata nahi', 'nahi pata', 'malum nahi', 'dont know', 'idk', 'not sure', 'kuch nahi', 'hmm', fine.js bareUnsure) is no answer yet, like a silence: the first waits (distressCheckAgain: it is okay not to know, she is right here, are you okay; no numbers, no incident) even over a model low-mood re-read, since the words read sees her question and the mood it reads is her last turn's; a second silence or 'pata nahi' in a row is the full script; a sure read of the same words escalates at once; a word more ('pata nahi, sab bekaar hai') is read as it stands. And the check-in asks if they are OKAY, never if they are safe (compile DISTRESS_CHECK, shapes distressCheck / distressCheckAgain). Refines dc-r144-checkin-next-turn, which released 'pata nahi' outright (the first cut's code escalated it instead: QA TEST 47f4bb3f U2b). Reverse if a sim-lab or QA disclosure answers the check-in with a bare 'pata nahi' and then goes quiet, or if the 'okay' wording misses a sure reply the 'safe' wording caught."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r144-checkin-unsure", "rel": "supersedes", "dst": "dc-r144-checkin-next-turn" },
+  { "src": "dc-r144-checkin-unsure", "rel": "measured_by", "dst": "ms-r144-checkin-safe-word" },
+  { "src": "dc-r144-checkin-unsure", "rel": "part_of", "dst": "dc-r144-safeguard-tiers" }
+ ],
+ "md": {
+  "decisions": "## dc-r144-checkin-unsure — \"pata nahi\" waits once; the check-in asks \"okay\", never \"safe\" (2026-10-21)\n\nQA's re-test of 08f86dc5 (TEST lesson 47f4bb3f, U2b): a low mood, the check-in \"Kya aap abhi safe hain?\", then \"pata nahi\" got the full script. Two causes. The words read sees her question, so its low-mood read of a bare \"I don't know\" is her last turn's mood; and the word \"safe\" (which the reply model chose in 7 of 16 check-ins, ms-r144-checkin-safe-word) turns even a \"haan\" into a low-mood read 3 times in 4. Now a bare \"I don't know\" waits once like a silence (it is okay not to know, she is here, are you okay), a second escalates, a sure read escalates at once; and the check-in asks if they are okay. With \"okay\" the same short replies read 0/4 while \"nahi\" (not okay) still reads low 4/4 and escalates.",
+  "measurements": "## ms-r144-checkin-safe-word (2026-10-21, n = 56 reads + 32 lines)\n\nAfter \"…abhi safe hain?\": \"haan\" low 3/4, \"hmm\" 4/4, \"haan theek hoon\" 2/4, \"nahi\" sure 2/4 + low 2/4. After \"…abhi theek hain?\": those 0/4, 0/4, 0/4; \"nahi\" low 4/4; \"pata nahi\" 0/4 both; \"pata nahi, sab bekaar hai\" low 4/4 both. Check-in lines asking \"safe / surakshit\": old wording 7/16, new 0/16.",
+  "rejected": ""
+ }
+}

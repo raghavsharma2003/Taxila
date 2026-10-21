@@ -493,8 +493,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   // r5-latency: hedged (azure.js hedged): a call still out at REPLY_HEDGE_MS gets an identical twin, the first answer wins
-  // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? {} : { overflow: false }) }).then((r) => r.text.trim());
+  // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves;
+  // the real reply's hedge twin goes to the overflow account (azure.js chat twin, 14.4), a bet's never does
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => r.text.trim());
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
