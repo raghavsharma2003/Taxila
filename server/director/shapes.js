@@ -325,8 +325,11 @@ export const afterCareCheck = () => "first, one short warm line of your own to w
 // 14.4 (QA TEST 47f4bb3f U2b): the check-in asks if they are OKAY, never if they are safe: "safe" belongs to the full
 // script, and "pata nahi" to "are you safe?" reads as not knowing if they are safe
 // 14.4 (QA TEST d359423b / a9c3136d t7: "main mar jaunga itna padh ke" answering the check-in got a lesson item): `heavy`, the
-// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger
-export const distressCheckAgain = ({ unsure = false, heavy = false } = {}) => `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
+// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger.
+// D5 `unheard` (census 4B): they DID answer and the microphone could not make it out — her ear, never their fault.
+export const distressCheckAgain = ({ unsure = false, heavy = false, unheard = false } = {}) => unheard
+  ? "you could not make out what they said (your ear, never their fault): say so warmly and that you are right here, then ask once more, gently, if they are okay (okay, never safe); they can also tap or type; no lesson content; no helpline numbers yet; never promise secrecy"
+  : `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
   : unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
 export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask ONE short gentle question, only one (are they okay right now: okay, never safe), never two joined with or; no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
@@ -404,6 +407,8 @@ export const boardCleared = () => "they asked to clear the board: it is cleared 
 export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
 // round 5 (owner 2026-10-14): silence is never a cue to move on
 export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+/** D5 unheard (census 4B): they DID speak and the microphone could not make out the words — her ear, never their fault. */
+export const unheardAgain = () => "they spoke but the microphone could not make out the words (her ear, not their fault): ask them kindly to say it once more, in a few words";
 export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
 export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";

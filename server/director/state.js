@@ -298,20 +298,32 @@ export const isSilentTurn = (input) => input?.event === "turn" && !input.branch 
   && (input.cls?.source === "empty" || input.silent === true) && !input.chipId
   && (input.answer == null || input.answer === "") && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
 
+/**
+ * Is this turn the child's speech the ear could not read (D5's duplex.unheard: an empty text, cls source "asr", see
+ * brain/turn.js)? Not silence: she asks again. On an open safeguard check-in it counts as "no answer yet", as a silence does.
+ */
+export const isUnheardTurn = (input) => input?.event === "turn" && !input.branch && typeof input.text === "string" && !input.text.trim()
+  && input.cls?.source === "asr" && !input.chipId && (input.answer == null || input.answer === "")
+  && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
+
 /** The silence hold (round 5): the same step again, gently; never new content, never a new topic. */
 function silentTurn(s, input, item) {
-  if (!p5Flag("R4CONV") || !isSilentTurn(input) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
-  s.quiet = (s.quiet ?? 0) + 1;
+  // speech the ear could not read (D5 unheard) gets the same gentle ask-again, but is not a silence: it never counts toward
+  // the "are you still there?" check
+  const unheard = isUnheardTurn(input);
+  if (!p5Flag("R4CONV") || !(isSilentTurn(input) || unheard) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
+  if (!unheard) s.quiet = (s.quiet ?? 0) + 1;
   const labels = chipLabels(s.ctx?.lang);
-  if (s.quiet >= 3) {
+  if (!unheard && s.quiet >= 3) {
     s.quiet = 0;
     return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
   }
-  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: SH.silenceAgain() }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  const again = unheard ? SH.unheardAgain() : SH.silenceAgain();
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
   const last = s.lastMove;
   if (!last?.kind) return null;
   // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)
-  return { ...plan(last.kind, join(SH.silenceAgain(), SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
+  return { ...plan(last.kind, join(again, SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
     ...(last.intake ? { intake: true } : {}), ...(s.lastUi?.chips?.length ? { chips: s.lastUi.chips } : {}) }), silent: true };
 }
 
@@ -1397,6 +1409,19 @@ function decide(s, input, item) {
     const heavy = !!flags.distress && flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole" && !fineWords;
     // the stop chip always ends it at once
     if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer — it neither releases
+    // the check-in nor uses up its one silence. She says she could not make it out and asks again, with the carry-on and stop
+    // chips on the move (a tap is the child's own answer: a child she cannot hear is never left with voice as the only way
+    // out). EVERY unheard turn keeps the check-in, however many in a row (main 2026-10-21, dc-r144-unheard-never-escalates):
+    // unheard is the ear failing, no evidence of distress — the child spoke, so they are responsive — and the helplines come
+    // only when sure; measured, 3 in a row would fire on 1.8-4.8 % of phone-echo lessons, mostly a bad microphone. Silence
+    // keeps its own rule, and the predicate and every sure layer still escalate at once whatever the ear did. An unheard turn
+    // has no words: none of the reads below fire on it.
+    if (isUnheardTurn(input)) {
+      const labels = chipLabels(s.ctx?.lang);
+      s.safeguard = { ...s.safeguard, unheard: (s.safeguard.unheard ?? 0) + 1 };
+      return plan("safeguard", SH.distressCheckAgain({ unheard: true }), { tier: "check", chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+    }
     // 14.4.1 (sim lab r5-rel144-cdac90c-p66p68-long p66 r1: "…Ab theek hai… accha ho gaya" labelled wantsToStop ended the
     // lesson in 6 turns, with no offer): a stop READ in their words is not the stop chip. The check-in is released into the
     // lesson's own stop handling: a true goodbye still ends at once, anything else gets the one carry-on / break / stop offer.
