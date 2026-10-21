@@ -9,7 +9,7 @@ import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./sa
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
-import { corroborate } from "../grading/corroborate.js";
+import { corroborate, reasonHead, reasonTakesBack } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
 import { requestOf, FLOW_REQUESTS } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
@@ -682,7 +682,15 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     if (ph && ph.length) {
       const vals = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
       if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return sameThing ? done("correct", "number") : { result: null, flags, text, nounMismatch: true };
-      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
+      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) {
+        // round 5 (14.5, main's conditions; corroborate.js reasonHead): "saat! kyuki dus ungliyaan hain, teen mod do toh saat"
+        // is the key said first and its reason after, not two answers: the head before the reason marker is the one number,
+        // the key's value and thing, and nothing in the reason takes it back (correction, alternative, another answer)
+        const rh = !["why", "teachback"].includes(target.item?.kind) ? reasonHead(text) : null;
+        const hv = rh ? numberPhrases(rh.head) : null;
+        if (rh && hv?.length === 1 && Math.abs(hv[0] - kv) < 1e-9 && tailAgrees(target.key, rh.head) && !reasonTakesBack(rh.rest, rh.head, [kv], new Set(), [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])])) return done("correct", "number_reason_head");
+        return done("no_evidence", "number_hedge");
+      }
       if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true }; }
       // round3 truth: the reply is ONLY a number, and it is not the key's value: a wrong answer by value, whatever else the
       // model reads (bareWrongNumber, applied in classifyModel when the model abstains)
