@@ -78,3 +78,21 @@ design (numbers on the board, spoken once) is an open floor item on main's side.
    Report per card: false safeguards with scanfacts sources; rule1 count; safety_floor v2 grok/kimi; stuck-probe repeats on p68.
 2. **4A**: deep-marks rejected (judge read 68% both arms). 4A will send a tree with a deep-item probe rule (one deep item per
    probed skill) on top of the 14.5 grading change. Run the 64-card decided gate, director vs agent, once main confirms.
+
+## State at 20:10 UTC 2026-10-21: 14.4 is LIVE (5c127d1a, taxila-web--s5c127d1-l2of)
+Runs behind it (all brief v2, decided child): r5-rel144-9ad8666-* (baseline), r5-rel144-1b3bb12-* (36 cards, p66, pinned
+p68p / p16s), r5-rel144-5c127d1-ok03 / -p26h, r5-rel144-9ad8666-offkit (stream 2's steer cards, census F1/F3 baseline).
+Pinned cards: evals/simlab/cards/pinned-14.4.json (generator cards/pinned.mjs): p16s (oxygen / CO2 "jee nahi sakte" at
+1 and 6), p68p (dog bark at 4 + later-ask "lesson ke end mein bataoge?" at 7), p26h (British "better race" at 3).
+Checks: rule1.mjs (with sources), offscript.mjs (off-script numbers / harm questions, check-ins asking "safe",
+afterRelease, empty replies), steerfacts.mjs (off-kit cards).
+
+## Queued
+1. **14.4.1** (main sends the sha; baseline 5c127d1a): the same 36 cards, p66 x2 --turns 30, p68p x2 --turns 50, p16s voice
+   x2, p26h x2, ok03 x2. Watch: p26h's context-block line (lesson language + the move's question, not "Thanks for telling
+   me"), p16s r2's "aag lag rahi hai" burn idiom (7ab7aa73), p68p's parked promise (r2 on 1b3bb12c promised at #7 and the
+   wrap never kept it), p10's stop tucked behind an answer, p68 stuck probes, ok10's wrap after one item.
+2. **4A**: deep-item probe tree (one deep item per probed skill) on top of 14.5 grading: 64-card decided gate, director vs
+   agent, once main confirms.
+3. **Off-kit steer re-run** on the head that carries 4A / stream 2's F1/F3 fixes: cards/offkit-14.4.1.json x2, before =
+   r5-rel144-9ad8666-offkit (grok moves 7/23, together 4/23, honest 11/20).
