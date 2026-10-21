@@ -2721,3 +2721,9 @@ Rejected (main 2026-10-21): the literal bar "a negation is never subtracted as e
 ## rj-r5-offer-guard (2026-10-21)
 
 Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).
+
+
+<!-- merged from inbox/r1441-simlab-wire-main.json -->
+## rj-r5-simlab-turn-only-screen — a simulated child that sees only the turn response (2026-10-21)
+
+The sim lab's child saw only what the turn response carried. A board that arrived a second later never reached it. 1,521 turns in 938 lessons across 65 runs showed the child an empty screen that the real client would have filled. Judgements that rest on the child's 'nothing on screen' after a planning slot are not evidence of a product failure. A simulated client must subscribe to everything the real client subscribes to.

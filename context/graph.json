@@ -22891,6 +22891,20 @@
    "at": "2026-10-21",
    "title": "The bare goodbye 'jaana padega' no longer fires after a word of motion in the lesson: aage, peeche, upar, neeche, left, right, daaye, baaye, gap(s), step(s), kadam, jump(s), tak, wapas, zero se. 'mujhe / abhi / ok didi … jaana padega' and 'mummy bula rahi hai, jaana padega' still release as goodbyes. Measured on 40,261 sim-lab child lines: 0 stopKind changes (92 leaving, 505 end_request before and after); the hand cases are 4 motion lines → none and 4 real goodbyes → leaving. Reverse if a real goodbye with one of those words before 'jaana padega' is missed in QA, the sim lab or production.",
    "source": "inbox/r1441-goodbye-main.json"
+  },
+  {
+   "id": "fd-r5-simlab-harness-late-boards",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Measurement-validity finding. Until 2026-10-21, the sim lab's runner.mjs never opened /api/studio/stream and never called GET /api/studio/slot, so the decided child's screen came only from the turn response's ui.studioSlot. A board that landed about 1 s after the reply (slot 'planning' with no artifact) was shown to the child as nothing drawn. Affected: 1,521 turns in 938 of 3,729 lessons with board pages, across 65 runs (agent-gate runs 21-57 such turns each, board-content and board-* runs 24-81, rel14x 36-card runs 18-24, voice-cont runs 11-52). The judges always saw the boards through boardPages, so judgements of the teacher's own board claims stand. Any judgement that rests on the CHILD saying 'screen pe kuch nahi / drawing nahi dikhaya' right after a planning slot is suspect, and so are follows_child and channel_truth scores driven by such complaints. Found while root-causing 38aad918 (subscribers:0 on every reveal, boards drawn at t5/t6). The runner now opens the stream and waits for the artifact (SIMLAB_WIRE, default on; SIMLAB_WIRE=off reproduces the old harness for A/B).",
+   "source": "inbox/r1441-simlab-wire-main.json"
+  },
+  {
+   "id": "rj-r5-simlab-turn-only-screen",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Tried and wrong since the sim lab began: a simulated child whose screen is only the turn response's ui.studioSlot. What broke: every board that landed after the reply (planning, then the artifact about 1 s later) was invisible to the child: 1,521 turns in 938 lessons across 65 runs. The child's 'nothing on screen' complaints that followed were harness artifacts, and they fed follows_child / channel_truth judgements. The fix: subscribe the way the real client does (fd-r5-simlab-harness-late-boards).",
+   "source": "inbox/r1441-simlab-wire-main.json"
   }
  ],
  "edges": [
@@ -36483,6 +36497,11 @@
    "src": "dc-r1441-motion-not-leaving",
    "rel": "caused_by",
    "dst": "fd-r1441-motion-goodbye"
+  },
+  {
+   "src": "rj-r5-simlab-turn-only-screen",
+   "rel": "caused_by",
+   "dst": "fd-r5-simlab-harness-late-boards"
   }
  ]
 }
