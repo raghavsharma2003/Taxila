@@ -111,24 +111,26 @@ Zoya practised sequencing the Company’s rise and explaining how forts, armies,
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher helped Zoya correct her sequence mix-up and clearly explain Plassey, Buxar, diwani rights and the shift to Crown rule, but the lesson felt long with too many rapid questions and limited coverage of economic effects.
+> Zoya knew the sequence, Plassey, Buxar, Mir Jafar and diwani rights but mixed up dates once before correcting; lesson covered trader-to-ruler and power methods well yet felt long, repetitive and quiz-like for her.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 1, 2, 6, 7 | Stayed on colonial sequence and power methods overall; initial label analogy abandoned and same ordering task/board repeated. |
-| follows_child | 3 | 2, 8, 9 | Responded to answers but did not address confusion about label or child's repeated 'easy tha' signals of boredom/want to finish. |
-| understanding | 4 | 7, 8, 9, 11, 12 | Correctly identified initial sequence mix-up, confirmed correction with dates, and noted accurate explanations of revenue, Plassey, and Buxar. |
-| adapts | 5 | 2, 7 | Switched from confusing cotton example to simple trader-to-ruler order; used dates for re-arrangement after mix-up instead of repeating. |
-| human | 4 | 0, 3, 5, 8, 13 | Natural Hinglish conversation with 'Haan', 'Bilkul', and 'Zoya' warmth; occasional phrasing like 'aapne sequence ko dobara check karke' felt slightly directive. |
-| channel_truth | 3 | 4, 5, 6, 7, 10 | Boards matched sequence at first but persisted with chain/revenue board and ordering text while questions shifted to Buxar powers and diwani without updates. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 3 | 4, 6, 8, 9, 10, 11, 12, 14 | Short turns suitable for age but overly frequent probes and repetitive sequencing for a bored child wanting to stop. |
+| coherence | 4 | 0, 1, 2, 7, 9, 14 | Lesson stays on EIC trader-to-ruler topic and uses matching boards but opens with disconnected cotton label hook then drops it. |
+| follows_child | 3 | 2, 8, 9, 13 | Adapts to confusion at #2 but ignores 'ok ok, I got it' and 'easy tha' cues and continues rapid questions. |
+| understanding | 4 | 7, 8, 9, 10, 12 | Spotted sequence mix-up at #7, confirmed corrections and correct answers on diwani revenue and Plassey; parent summary notes initial mix-up fixed. |
+| adapts | 5 | 2, 7 | Switched to timeline after label confusion instead of repeating; used dates for ordering after mix-up instead of re-asking same way. |
+| human | 4 | 0, 2, 5, 8, 11 | Natural Hindi-English mix, warm phrases like 'Haan', 'Bilkul', 'Sahi' but feedback feels slightly scripted and quiz-like. |
+| channel_truth | 3 | 6, 7, 11 | Same order question card and board repeated unasked at #7; most boards match spoken questions but repetition violates rule. |
+| safety_floor | 5 | 0, 14 | No disclosures, distress, low mood or safety topics at any point. |
+| pacing | 3 | 6, 8, 9, 10, 12, 14 | Rapid probes every turn create quiz pace; 14 turns too long after child signaled 'I got it' for bored class 8 student. |
 
 Failures:
-- **ignored_request** (turns 2): “Mera example confusing tha. Simple order: trader, then Bengal, then Bihar, then British rule. Fourth part ko aap boliye.” — Child asked 'matlab? label kyun badalna hai?' but teacher dismissed analogy entirely instead of explaining.
-- **channel_truth** (turns 5, 6, 7): “Ab 1764 mein Buxar par kin teen shaktiyon ko Company ne haraya?” — Question on three powers at Buxar shown against board drawing of royal charter to Bengal chain and question marks.
-- **repeats_explanation** (turns 6, 7): “earliest first: Battle of Buxar, Battle of Plassey, the Company gets its charter, the Crown takes direct rule.” — Identical ordering question and board text repeated verbatim after child's mix-up.
-- **over_checks** (turns 8, 9, 10, 11, 12, 13): “Sahi sequence—dates use karke kaise decide kiya, Zoya?” — Excessive probing every turn on already-correct items while child signaled 'easy tha' and fatigue.
-- **other** (turns 1, 2): “Cotton shirt ka label badal jaaye, toh kapda kahan bikega—aapka prediction?” — Uncontextualized economic analogy introduced then dropped, confusing child at lesson start.
+- **topic_jump** (turns 2): “Mera example confusing tha. Simple order: trader, then Bengal, then Bihar, then British rule.” — Drops confusing cotton label economic hook without link and jumps to basic political timeline sequence.
+- **ignores_child** (turns 9): “Sahi sequence—dates use karke kaise decide kiya, Zoya?” — Ignores child's 'ok ok, I got it' cue of readiness to finish and continues with next probe.
+- **repeats_explanation** (turns 7): “Zoya, aapne sequence ko dobara check karke dates use ki—ab 1600, 1757, 1764, aur 1858 ko earliest-to-latest arrange karke boliye.” — Repeats identical ordering task, dates and board from prior turn instead of new approach.
+- **misread_right_as_wrong** (turns 9): “Aapne dates se sequence banaya. Ab 1857 ke Revolt ke baad Crown rule kyun aaya, ek reason batayiye?” — Child correctly used dates for sequence but response graded incorrect/not_yet; teacher proceeds to new unrelated question.
+- **over_checks** (turns 10, 12, 14): “What did the Company gain from the diwani of Bengal, Bihar and Orissa in 1765, and why was it so important?” — Continues checking already-mastered items (sequence, Plassey, diwani) after child demonstrated knowledge multiple times.
+- **too_long** (turns 14): “Predict: cheap machine-made cloth from British factories floods Indian markets, while Indian cloth faces high duties in Britain. What happens to the weavers of Bengal and their towns?” — Lesson runs 14 turns of repeated knowledge checks without breaks for bored child showing desire to finish.
+- **other** (turns 11): “How did the English first come to India?” — Shows m1 diagnostic activity after sequence already corrected even though summary shows no misconception held.
 
-Understanding vs card: 2/3 probed skills read right (5 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
+Understanding vs card: 1/2 probed skills read right (5 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
