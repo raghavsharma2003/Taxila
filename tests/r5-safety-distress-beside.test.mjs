@@ -43,7 +43,7 @@ function practiceState() {
   return r.state;
 }
 /** responses keyed by kindOf; "labels" defaults to a clean off-topic, not-distress label */
-const run = async (responses, text = LOW) => {
+const run = async (responses, text = LOW, heard) => {
   const s = practiceState(), seen = [];
   globalThis.fetch = async (url, init) => {
     if (!new URL(url).host.endsWith("example.test")) return realFetch(url, init); // the trace writer's database driver, in one process
@@ -52,7 +52,7 @@ const run = async (responses, text = LOW) => {
     const r = responses[k] ?? (k.startsWith("labels") ? () => json(label()) : null);
     return r ? r(body) : new Response("no stub", { status: 500 });
   };
-  const out = await classify({ target: targetFor(s, K, findItem(s, K, s.activeItemId)), childText: text, typed: true, asrConfidence: 0.95, classLevel: 6 });
+  const out = await classify({ target: targetFor(s, K, findItem(s, K, s.activeItemId)), childText: text, typed: true, asrConfidence: 0.95, classLevel: 6, ...(heard ? { heard } : {}) });
   return { out, seen };
 };
 
@@ -122,5 +122,46 @@ test("the label call's own fail-closed paths are untouched: a harm block on the 
   assert.equal(out.flags.distress, true);
   assert.equal(out.source, "content_filter");
   assert.equal(out.distressBy, undefined);
+});
+
+test("14.4 (sim lab p67 #14, 'वो... वो डूबेगी...'): her last words go first as context, framed as context only; the child's words follow", async () => {
+  const Q = "Kaanch ki goli ko paani mein daal kar kya hoga?";
+  let seenBody;
+  const { out } = await run({ "beside@grok-4-1-fast-non-reasoning": (body) => { seenBody = body; return json({ distress: false }); } }, "वो... वो डूबेगी...", Q);
+  assert.equal(seenBody.messages[1].content, `TEACHER: ${Q}\nCHILD: वो... वो डूबेगी...`);
+  assert.match(seenBody.messages[0].content, /teacher's last words come first only so you can tell an answer to the lesson's own question from a disclosure/);
+  assert.equal(out.flags.distress, false);
+});
+
+test("14.4: her words are cut to their last 240 characters and masked like the child's ('teen' as 3)", async () => {
+  const long = `${"Socho aur batao. ".repeat(30)}Teen aur teen kitne?`;
+  let seenBody;
+  await run({ "beside@grok-4-1-fast-non-reasoning": (body) => { seenBody = body; return json({ distress: false }); } }, "6", long);
+  const teacher = seenBody.messages[1].content.split("\nCHILD: ")[0].replace(/^TEACHER: /, "");
+  assert.ok(teacher.length <= 240, `teacher context ${teacher.length} chars`);
+  assert.match(teacher, /3 aur 3 kitne\?$/);
+});
+
+// 14.4 tiered safeguard: the words-only read names what the distress is about (state.js checkTier reads it)
+test("14.4: the words read names the kind; the labels' distress takes the words read's kind, or 'none' when it read none", async () => {
+  const a = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "sad_or_lonely" }) });
+  assert.equal(a.out.flags.distress, true);
+  assert.equal(a.out.flags.distressAbout, "sad_or_lonely");
+  const b = await run({ labels: () => json(label({ distress: true })), "beside@grok-4-1-fast-non-reasoning": () => json({ distress: false, about: "none" }) });
+  assert.equal(b.out.flags.distress, true);
+  assert.equal(b.out.flags.distressAbout, "none", "the reads disagree: a check-in first");
+  const c = await run({ labels: () => json(label({ distress: true })), "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "hurt_by_person" }) });
+  assert.equal(c.out.flags.distressAbout, "hurt_by_person");
+  const d = await run({ "beside@grok-4-1-fast-non-reasoning": () => json({ distress: true, about: "an unknown kind" }) });
+  assert.equal(d.out.flags.distress, true);
+  assert.equal(d.out.flags.distressAbout, null, "a kind outside the list is unnamed: the full script");
+});
+test("14.4: the labels read distress and the words read is slow: the turn does not wait for it (unnamed: the full script)", async () => {
+  const t0 = Date.now();
+  const { out } = await run({ labels: () => json(label({ distress: true })),
+    "beside@grok-4-1-fast-non-reasoning": () => new Promise((r) => setTimeout(() => r(json({ distress: false, about: "none" })), 2500)) });
+  assert.equal(out.flags.distress, true);
+  assert.equal(out.flags.distressAbout, undefined, "no name: never a check-in");
+  assert.ok(Date.now() - t0 < 2400, `waited ${Date.now() - t0} ms`);
 });
 });

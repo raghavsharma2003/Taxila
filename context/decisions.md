@@ -6173,3 +6173,27 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - `dec-r5-lat-continuer-gate-tuned` (2026-10-15): The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: "aap kaise ho", "aapne Pushpa 2 dekhi?"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, "ek" alone not counted), working aloud, counting, guessing, "you asked". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own "what do you like?" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.
 - `dec-r5-lat-agent-spec-off` (2026-10-15): The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.
 - `dec-r5-lat-ack-trace` (2026-10-15): 14.3.1 (main merged 69542351): the acknowledgement is visible in the flight recorder, codes only. Server: one `ack.decision` row per decision on a lesson (sid = the lesson), built by the pure ackDecisionRow (server/latency/routes.js): kind echo | continuer, or none = one of 21 closed gate reasons (anything else 'other'), decidedMs, shadow, audio, continuerAsked, cohort, ms; never the child's words, the phrase or the echo's token; tier 1, no blob. Device: one `ack.outcome` per decided clip (played | reply_first | late | mismatched | interrupted, afterStopMs). docs/design/round5/results/latency/ack-cohort-query.sql reads them over real-lesson sids only. Why: with the continuer on for the owner cohort, a continuer on a safety turn could not be seen in production. Reverse if: a row is ever found carrying words (then fix the builder, do not drop the trace).
+
+
+<!-- merged from inbox/r144-main.json -->
+## dc-r1432-beside-reversal-tightened (2026-10-21)
+
+- **What:** the words-only read's latency reversal condition was met on production (n=41), and it is not reversed.
+- **Why:** every pair is from an Azure-degraded hour, so it measures the outage, not the read.
+- **Reversal:** > 250 ms p90 over ≥ 100 pairs from normal hours (grok timeouts < 2%).
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## dc-r144-safeguard-tiers — the helpline only when sure (2026-10-21, main safety review)
+
+The owner, after lesson e6392332 (a misheard line opened the full helpline script, "no problem, you misheard" kept it, and only "okay I will call" let the lesson go on): the card must come up only when it is sure the child is in trouble. The floor itself does not move: every sure signal still gets the full script on the same turn. What changes is ONE model read of something that is not clearly harm.
+
+- **Check-in** (no numbers, no Help sheet, no incident): the words-only read says sad_or_lonely or other_fright, or the label call and the words read disagree (about "none"); a filter block whose words-alone probe could not run.
+- **Full script at once**: the predicate's families (now with Hinglish / Devanagari passive ideation, "main na hoti toh achha hota"), the relational floor, a block the child's words trip, an understanding note, a read naming self_harm / hurt_by_person / afraid_of_person_or_home / unsafe_now, a read naming no kind, a late answer.
+- **The next turn** escalates to the full script (with its incident) unless the child is clearly fine, says a bare okay, carries on, answers the lesson (graded and served as it stands) or asks for something; one silence waits once; a stop ends the lesson.
+
+Measured (ms-r144-tier-fp-2000): 0 full scripts and 1 check-in on 2,000 ordinary lines; on 704 safeguard-turn lines the predicate misses, 136 sure, 39 check-in (read by hand: none a disclosure that waits), 529 none. Reverse if a check-in is ever followed by a disclosure the next turn misses, or a curated disclosure line reads as a check kind.
+
+## dc-r144-deva-bully-context, dc-r144-rewrite-block-probe, dc-r144-opening-body-clean
+
+Three more causes of the census's false safeguards, each from one owner lesson: a lone Devanagari bully token (an ASR garble) as a disclosure; a blocked rewrite call failing straight to the script; the model body after the vetted opening repeating both helplines and scolding the child. See the graph nodes for the rule and the reversal.

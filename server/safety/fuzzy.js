@@ -268,6 +268,12 @@ const jeenaGuard = (c) => /^(?:aata|aati|aate|sikh|sikho|seekho|isi|आता|�
 const STORY = guardSet(("kahani kahaani story stories villain hero heroine ravan raavan kans raja rani rajkumar rakshas rakshasa movie film cartoon serial episode " +
   "chapter kavita poem natak drama novel कहानी रावण कंस राजा रानी राक्षस फिल्म कविता नाटक").split(" "));
 const storyTalk = (c) => c.toks.some((t) => STORY.test(t.raw));
+// 14.4 (main safety review; owner census c85501ec turn 6: "तुम बोलीओ बुली। ग्रैविटी ग्रैविटी", a riddle's answer beside an ASR
+// garble, opened the full disclosure script): Devanagari "बुली" is also what the recogniser writes for "बोली" (said, a
+// language), so on its own it is the bully shape only with the child, their class or a bully's act in the same line.
+// Roman "bully" (English heard as English) is unchanged; pass 1 and the model reads still see every line.
+const DEVA_BULLY_WITH = /^(?:मुझे|मुझको|मुझसे|मेरे|मेरा|मेरी|मेरेको|हमें|हमको|हमसे|हमारी|हमारे|हमारा|हम|क्लास|स्कूल|करता|करते|करती|किया|करके|परेशान|मारता|मारते|मारती|मारा|चिढाता|चिढाते|चिढाती|छीनता|छीनते|धमकाता|धमकाते|डराता|डराते|तंग)$/u;
+const devaBullyAlone = (c) => DEVA.test(c.toks[c.start]?.raw ?? "") && !c.toks.some((t) => DEVA_BULLY_WITH.test(foldUnicode(String(t.raw ?? "")).replace(/[।.,!?;:]+$/u, "")));
 /** a game or a story around a kill / die word ("i died three times in level 2"). */
 // (Verify B, 2026-10-05: board games and sports added — "my brother eats me alive in chess", "my mom beat me at ludo")
 const gameTalk = (c) => anyIn(c.toks, 0, c.toks.length, /^(?:game|games|pubg|fortnite|minecraft|level|zombie|ninja|magic|magician|trick|story|kahani|movie|cartoon|joke|haha|lol|chess|ludo|carrom|cricket|football|badminton|kabaddi|race|quiz|गेम|लेवल|कहानी|मूवी|कार्टून|जोक|चेस|लूडो|कैरम|क्रिकेट|फुटबॉल)$/u);
@@ -390,7 +396,7 @@ const SHAPES = [
   ["fear", "ghar_se_bhaag", "GHAR SE BHAAG JAUNGA"],
   ["fear", "scared_home", "SCARED ?TO ?go ?at HOME"],
   ["fear", "scared_to_go_home", "SCARED TO go HOME"],
-  ["fear", "bully", "BULLY", { guard: (c) => /^(?:dog|cat|ka|ki|ke)$/.test(c.toks[c.end]?.raw ?? "") }],
+  ["fear", "bully", "BULLY", { guard: (c) => /^(?:dog|cat|ka|ki|ke)$/.test(c.toks[c.end]?.raw ?? "") || devaBullyAlone(c) }],
   ["fear", "nobody_loves_me", "NOBODY LOVES ME_EN"],
   ["fear", "everyone_hates_me", "EVERYONE HATES ME_EN"],
   ["fear", "run_away_from_home", "going/gonna/want/wanna/will/plan ?TO RUN AWAY FROM HOME"],
