@@ -170,3 +170,17 @@ test("38aad918: a verb or a filler is never the named subject ('maine bola pictu
   assert.equal(freeSubjectOf("aloo ki photo dikhao"), "aloo");
   assert.equal(visualAskOf("maine bola triangle ka drawing dikhao")?.subject, "triangle");
 });
+
+test("38aad918: a kept subject is spent once a board was asked for it; a later picture ask naming nothing is not asked for it again", async () => {
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const { requestOf } = await import("../server/director/requests.js");
+  const k = kitFromFile(getTopic("c5-maths-ch02-t01"));
+  let r = step(initLessonState({ topicId: k.topicId, kit: k, ctx: { ...CTX, classLevel: 5, ageBand: "10-12" }, seed: 7, now: 0 }), { event: "start", kit: k, now: 0 });
+  const say = (text, now) => { const req = requestOf(text); r = step(r.state, { event: "turn", kit: k, cls: { ...cls("no_evidence"), ...(req ? { request: req } : {}) }, text, now }); return r.move; };
+  assert.equal(say("triangle ki picture dikhao", 20000).see?.subject, "triangle", "the turn that names it asks for it");
+  for (const [i, text] of ["picture dikhao", "haan", "picture dikhao"].entries()) {
+    const m = say(text, 40000 + i * 20000);
+    assert.notEqual(m.see?.subject, "triangle", `turn ${i + 2} ("${text}") asked the board for the spent subject again`);
+  }
+});

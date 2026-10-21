@@ -51,3 +51,50 @@ test("38aad918: a board slot that fails says why (the live board's reason and th
     assert.equal(seam._lesson(id)?.pieces?.get(intent.intentId)?.failWhy, "live:planner_error template:none");
   } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
 });
+
+// 38aad918 t9-t11: a picture was revealed, the same turn's board replaced it, the board failed, and the turn ended on an
+// empty screen. A picture now stays under the board until the board draws; a board that fails gives the screen back to it.
+const PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+const wbAsk = (id, extra = {}) => ({ intent: { intentId: `${id}:wb:9`, lessonId: id, kind: "whiteboard", skillId: "s", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue",
+  request: { kind: "picture" }, style: { band: "B3", lang: "hinglish", motion: "lively" } }, line: { lessonId: id, text: "Dekhiye, ek triangle ke teen corners hote hain." }, mode: "fresh", ...extra });
+
+test("38aad918 t9: a board that fails over a picture leaves the picture on screen, and the turn's slot is that picture", async () => {
+  const prevSync = process.env.TAXILA_BOARD_SYNC_MS;
+  process.env.TAXILA_BOARD_SYNC_MS = "300";
+  try {
+    const id = "r8-keep-pic";
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
+    const pic = seam.studioSeam.showImage(id, { src: PNG, alt: "triangle", subject: "triangle", jobId: "j9" });
+    assert.equal(pic?.state, "revealed");
+    const ack = seam.studioSeam.requestIntent(wbAsk(id, { kit: { topicId: "x", content: [] } }));
+    assert.equal(ack?.state, "planning");
+    const got = await ack.ready;
+    const L = seam._lesson(id);
+    assert.equal(L.onScreen, pic.intentId, "the screen went back to the picture");
+    assert.equal(L.pieces.get(pic.intentId)?.state, "revealed");
+    assert.equal(got?.intentId, pic.intentId, "the turn's slot is the picture");
+    assert.equal(seam.slotSnapshot(id, `${id}:wb:9`)?.state, "failed");
+  } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
+});
+
+test("38aad918: a board that draws over a picture still retires the picture (as before)", async () => {
+  const prevSync = process.env.TAXILA_BOARD_SYNC_MS;
+  process.env.TAXILA_BOARD_SYNC_MS = "300";
+  try {
+    const kit = kitFromFile(getTopic("c6-maths-ch06-t01"));
+    let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: { ...CTX, classLevel: 6, ageBand: "10-12" }, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+    r = step(r.state, { event: "turn", kit, cls: { ...cls("no_evidence"), request: { type: "visual", kind: "picture", whole: true } }, text: "picture dikhao", now: 20000 });
+    const id = "r8-draw-over-pic";
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
+    const pic = seam.studioSeam.showImage(id, { src: PNG, alt: "field", subject: "field", jobId: "j1" });
+    const ack = seam.studioSeam.requestIntent(wbAsk(id, { kit, fallback: { script: r.state.module?.params?.script },
+      line: { lessonId: id, text: "picture: ek rectangle ki opposite sides 50 metre aur 30 metre hain. Aap boundary ki chaar sides kaise likhenge?" } }));
+    const got = await ack.ready;
+    const L = seam._lesson(id);
+    assert.equal(got?.intentId, `${id}:wb:9`, "the board drew");
+    assert.equal(L.onScreen, `${id}:wb:9`);
+    assert.equal(L.pieces.get(pic.intentId)?.retiredWhy, "replaced");
+  } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
+});

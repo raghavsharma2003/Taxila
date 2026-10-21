@@ -1094,6 +1094,9 @@ function requestMove(s, input, item, req, labels) {
       // model). Anything else keeps release 13 (A): she says plainly she cannot show it and gives it in words.
       const see = req.see ? { ...req.see, ...(off ? { subject: off, off: true } : {}) } : off ? { show: "show", subject: off, off: true } : null;
       if (off && see && drawableSubject(off)) {
+        // 38aad918: a kept subject is spent once a board is asked for it; a later picture ask that names nothing is not
+        // asked for it again (t7, t9-t11 all asked for t6's subject)
+        if (s.offTopic && offSubject(s.offTopic.subject, kit) === off) s.offTopic = { ...s.offTopic, spent: s.offTopic.spent ?? s.turn };
         return plan("reteach", SH.drawAsked({ subject: off, show: see.show }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: "diagram", request: "visual", see });
       }
       if (off && !unsafeChildPhrase(off)) return plan("reteach", SH.visualUnavailable({ subject: off }), { skillId: currentSkillId(s, kit, item), request: "visual_unavailable" });
@@ -1149,7 +1152,7 @@ function nextTopics(s, n) {
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
 /** The off-kit subject the child named in the last few turns (state.offTopic), else null. */
-const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 ? offSubject(s.offTopic.subject, kit) : null);
+const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 && !(s.offTopic.spent != null && s.turn > s.offTopic.spent) ? offSubject(s.offTopic.subject, kit) : null);
 
 const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
 /** The ways-in chips (the child's words, in her language; r5 QA D41): a picture, a story, a game, or back to the lesson.
