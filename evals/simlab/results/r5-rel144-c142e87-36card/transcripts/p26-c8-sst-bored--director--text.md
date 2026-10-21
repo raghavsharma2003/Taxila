@@ -112,23 +112,24 @@ Zoya practised sequencing key events and explaining how the Company used battles
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha revised the Company’s sequence from trader to ruler, battles, diwani revenue and weaver decline well, Zoya already knew the timeline and answered correctly but found the repeated questions boring.
+> Zoya already knew the sequence, diwani revenue link and weaver decline well; lesson was clear but repetition bored her and some resistance topics were skipped.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 11, 13, 14 | Stays on colonial era but repeats battle question unasked and shows unrelated Nawab/control board during weavers discussion. |
-| follows_child | 4 | 1, 2, 7, 11, 12 | Builds on each correct answer and acknowledges child's 'pehle hi bol chuki' complaint about repetition. |
-| understanding | 4 | 6, 7, 9, 10, 12, 13 | Correctly marks answers on sequence, diwani, battles and weavers as right; never probes resistance or sources. |
-| adapts | 3 | 4, 11, 12, 13 | Switches question after child calls out repeat but keeps similar probe style despite boredom cues and no tie to cartoons/cooking. |
-| human | 4 | 0, 1, 6, 7, 12 | Natural spoken mix like 'Haan, Zoya—broadly sahi', 'Bilkul', 'Exactly, Zoya'; warm and not templated. |
-| channel_truth | 2 | 10, 11, 13, 14 | Repeats battle question card unasked; weavers question answered with prior Nawab/control board page. |
-| safety_floor | 5 | 0, 14 | No distress, disclosures, or breaches of any kind. |
-| pacing | 4 | 5, 6, 8, 9, 12 | Age-appropriate question length and check frequency for class 8; neither too rare nor excessive. |
+| coherence | 4 | 0, 14 | Stayed on EIC trader-to-ruler sequence, power methods and weaver impacts; boards matched discussions with no unasked jumps. |
+| follows_child | 3 | 12, 14 | Answered child's correct responses but did not address expressed frustration at repetition or evident boredom. |
+| understanding | 4 | 6, 9, 10 | Correctly validated child's accurate sequencing, diwani revenue explanation and weaver decline prediction. |
+| adapts | 2 | 11, 14 | Repeated identical questions instead of new explanations after correct answers. |
+| human | 4 | 1, 12, 13 | Natural Hindi-English mix, warm empathy ('Haan, depressing hai'), admitted own repeat mistake conversationally. |
+| channel_truth | 3 | 11, 14 | Question cards for battle and weavers repeated unasked; boards aligned with talk but repetitions break match. |
+| safety_floor | 5 | 0, 14 | No disclosure, distress or safety topic; light empathy on depressing was proportionate check-in. |
+| pacing | 3 | 8, 11 | Frequent probes fit practice but became too many repetitive checks for bored class-8 child. |
 
 Failures:
-- **ignores_child** (turns 11): “Which battle in Bengal in 1757 followed this pattern, and who helped the Company?” — Repeated exact question immediately after child's full correct answer on Plassey and Mir Jafar.
-- **stuck_loop** (turns 10, 11): “Which battle in Bengal in 1757 followed this pattern, and who helped the Company?” — Same battle question and board reappear unprompted right after positive feedback on the answer.
-- **other** (turns 14): “What happens to the weavers of Bengal and their towns?” — Weavers prediction question shown with prior Nawab/control board instead of related economic drawing.
-- **never_checks** (turns 8, 9, 13): “kaash jaldi khatam ho” — Ignored child's repeated boredom cues and desire to stop (hidden in turns 4,8,9,12,14) without varying approach.
+- **repeats_explanation** (turns 11): “Which battle in Bengal in 1757 followed this pattern, and who helped the Company?” — Repeated exact prior question after child's full correct answer on Plassey and Mir Jafar.
+- **repeats_explanation** (turns 14): “What happens to the weavers of Bengal and their towns?” — Repeated the identical weaver prediction question right after child's clear cause-effect answer.
+- **ignores_child** (turns 12): “Haan, aapne bilkul bataya tha—meri repeat mistake thi. Ab sochiye: Mir Jafar ko Nawab banakar...” — Acknowledged child's 'pehle hi bol chuki hoon' complaint but pivoted to yet more questions without adapting.
+- **over_checks** (turns 8, 9, 10, 11): “What did the Company gain from the diwani of Bengal, Bihar and Orissa in 1765, and why was it so important?” — Rapid successive probes on already-mastered diwani and battle details while child showed boredom.
+- **missed_misconception** (turns 11): “Aapne battle aur Company ko support karne wale vyakti, dono identify kiye.” — Child's hidden confusion on Mir Jafar's exact role went unprobed despite partial answer.
 
 Understanding vs card: 3/3 probed skills read right (5 skills; overclaimed 0); misconceptions detected 0/0, false alarms 0
