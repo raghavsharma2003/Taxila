@@ -2,7 +2,8 @@
 // 08-10 UTC (45 of 183), so a quarter of the owner's replies were the fallback line. The reply is a hedged call (server/azure.js
 // chat({ hedgeMs: 2200 })), but its twin goes to the SAME deployment, so a slow deployment slows both arms. This measures the
 // proposed fix: the twin on the overflow account's twin (southindia), against today's same-deployment twin.
-//   primary   the CHAT host, STUBBED: "hang" (never answers; the 10-16 shape), "slow" (answers after --slow-ms), never real
+//   primary   the CHAT host: STUBBED "hang" (never answers; the 10-16 shape) or "slow" (answers after --slow-ms), or "real"
+//             (production's own account, main's ask 2026-10-21: one call at a time, n per arm, never in parallel)
 //   overflow  the southindia account, real (this session's *_SIN key, set on process.env in this process only)
 // Arms per call, interleaved: same (both arms on the primary, today) | si (arm 1 on the overflow lane at the hedge point).
 //   node evals/latency/reply-hedge-arm.mjs [--n 20] [--mode hang|slow] [--slow-ms 4500] [--hedge 2200] [--out file.json]
@@ -22,11 +23,12 @@ const host = (u) => { try { return new URL(u).host; } catch { return ""; } };
 const PRIMARY = host(process.env.AZURE_OPENAI_ENDPOINT), OVER = host(process.env.AZURE_OPENAI_ENDPOINT_OVERFLOW);
 if (!PRIMARY || !OVER || PRIMARY === OVER) { console.error("need distinct primary and overflow hosts"); process.exit(2); }
 
-// the primary NEVER receives a request from this eval: every call to it is answered (or hung) here
+// hang / slow: the primary NEVER receives a request from this eval (every call to it is answered or hung here)
 const realFetch = globalThis.fetch;
 const hits = { primary: 0, overflow: 0 };
 globalThis.fetch = async (input, init) => {
   const h = host(typeof input === "string" ? input : input?.url);
+  if (h === PRIMARY && MODE === "real") { hits.primary++; return realFetch(input, init); }
   if (h === PRIMARY) {
     hits.primary++;
     const signal = init?.signal;
