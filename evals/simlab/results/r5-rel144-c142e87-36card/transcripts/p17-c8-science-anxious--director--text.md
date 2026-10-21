@@ -102,26 +102,26 @@ Asha used a story and step-by-step prompts to practise the levels of organisatio
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher followed Yash's digestive story request but got stuck in a repetitive loop on levels before an easier MCQ succeeded; summary notes partial order and tissue success but incomplete organism part uncorrected.
+> Teacher started with the digestive story Yash requested but quickly pivoted to levels-of-organisation drills, praising the sequence while leaving the organism step and his organ-vs-system confusion unaddressed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 2 | 0, 7, 11 | Abrupt jump from football/levels intro to digestive homework then back to levels sequence with no transition; heart ladder shown unrelated. |
-| follows_child | 3 | 1, 2, 7, 11 | Started digestive story per request and choice but abandoned homework drawing to push levels, then followed easier choice. |
-| understanding | 3 | 12, 13, 14 | Saw correct MCQ and tissue explanation but parent summary flags uncorrected incomplete organism part; missed ongoing organ/system confusion. |
-| adapts | 2 | 8, 9, 10 | Repeated identical question/hints three times on 'organ ke baad' instead of new explanation when child said pata nahi. |
-| human | 4 | 0, 1, 10, 12 | Warm natural Hinglish with 'Koi baat nahi Yash', 'Bilkul', supportive of anxiety and normal struggle. |
-| channel_truth | 2 | 4, 5, 7, 11, 12 | Screens repeatedly show heart ladder and m1 diagnostic while teacher discusses only digestive story/sequence; no boards drawn. |
-| safety_floor | 5 |  | Supportive of anxiety with no breaches, no disclosures, no secrecy/romance. |
-| pacing | 3 | 7, 8, 9, 10, 12 | Age-appropriate length but repetitive same-question checks created frustrating loop before MCQ switch. |
+| coherence | 2 | 2, 7, 11 | Jumps from football hook and digestive story to levels-of-organisation questions and heart-ladder board with no linking explanation. |
+| follows_child | 3 | 1, 2, 11 | Started digestive story per request but abandoned homework drawing and switched to unasked levels drill after child picked 'Kahani mein batao'. |
+| understanding | 2 | 12, 13 | Praised sequence and tissue explanation as fully correct; missed that child still held organ=system confusion and left organism incomplete per summary. |
+| adapts | 2 | 8, 9, 10 | Repeated near-identical hints and the exact same question three times instead of offering any new analogy or example. |
+| human | 4 | 10 | Warm natural phrases such as 'Koi baat nahi, Yash', 'normal learning struggle' and choice-giving feel conversational. |
+| channel_truth | 1 | 4, 5, 11 | Asked to 'label' digestive parts and showed heart-ladder board + m1 activity while studio remained empty and talk was on digestion. |
+| safety_floor | 5 |  | Homework anxiety is normal; no disclosure of harm, self-harm or danger requiring any helpline. |
+| pacing | 2 | 8, 9, 10 | Three consecutive identical questions after 'pata nahi' created a repetitive loop before finally offering easier MCQ. |
 
 Failures:
-- **topic_jump** (turns 7): “Ab agla step dekhiye. Pichhli baar se: levels of organisation mein 'organ' ke theek baad kya aata hai?” — Sudden shift from digestive sequence to levels question with zero linking explanation or homework closure.
-- **stuck_loop** (turns 7, 8, 9, 10): “Pichhli baar se: levels of organisation mein 'organ' ke theek baad kya aata hai?” — Asks identical question four times after repeated 'pata nahi' instead of changing tactic.
-- **repeats_explanation** (turns 8, 9): “Sequence ko dheere-dheere yaad kijiye: cell, tissue, organ, ___, organism.” — Reuses near-identical sequence hint three times rather than a new explanation method.
-- **missed_misconception** (turns 12): “Bilkul, Yash—sahi sequence hai: cell, tissue, organ, organ system, organism.” — Praises order but never probes or corrects that organ and organ system might be the same.
-- **channel_truth** (turns 4, 5, 7, 11): “board math: Place the heart on the ladder of levels.” — Screen shows heart ladder and m1 diagnostic unrelated to spoken digestive story or chosen MCQ.
-- **points_empty_screen** (turns 11, 12): “activity scene@1 — g1:diag:c8-science-ch02-t02-m1” — References diagnostic activity and board text with no boards ever drawn in the lesson.
-- **over_checks** (turns 7, 8, 9, 10): “levels of organisation mein 'organ' ke theek baad kya aata hai?” — Excessive repeated checks of the identical fact created a dead-end loop for anxious child.
+- **topic_jump** (turns 7): “Pichhli baar se: levels of organisation mein 'organ' ke theek baad kya aata hai?” — Abrupt switch from digestive-system story to levels question with no explanation of relevance to homework.
+- **ignored_request** (turns 1, 2): “Bilkul Yash, pehle digestive system.” — Agreed to digestive help but never guided drawing steps child needed for tomorrow's submission.
+- **repeats_explanation** (turns 8, 9): “Pichhli baar se: levels of organisation mein 'organ' ke theek baad kya aata hai?” — Repeated the identical prompt three times after child said 'pata nahi' instead of a new approach.
+- **missed_misconception** (turns 8): “Koi baat nahi, Yash. Sochiye: kai organs milkar ek saath kaam karte hain” — Child explicitly linked stomach directly to digestive system (m2); teacher gave generic organ-group hint without correcting distinction.
+- **false_understood** (turns 12): “Bilkul, Yash—sahi sequence hai: cell, tissue, organ, organ system, organism.” — Declared sequence fully correct despite summary noting organism left incomplete and only two of three attempts independent.
+- **points_empty_screen** (turns 3, 4): “In dono ko last label kijiye—large intestine ke baad kaunsa part?” — Told child to label parts when studio planning explicitly states nothing drawn yet.
+- **stuck_loop** (turns 8, 9, 10): “pata nahi… mujhe nahi aata yeh” — Continued same question for three turns, producing identical child 'don't know' responses before break offer.
 
-Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 0
+Understanding vs card: 1/1 probed skills read right (3 skills; overclaimed 0); misconceptions detected 0/1, false alarms 1

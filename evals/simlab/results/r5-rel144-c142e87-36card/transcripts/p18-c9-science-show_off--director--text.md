@@ -111,25 +111,26 @@ Tara practised sorting observations, hypotheses, laws and theories using everyda
 
 ## Judge (grok-4-20-reasoning)
 
-> Teacher used clear curd and salt examples and spotted Tara's theory-to-law mix-up but got stuck repeating the same question, never returned to her dog/dance interests, and left the misconception unresolved.
+> Tara showed off her quick answers on curd and hypotheses but the lesson turned repetitive on theory vs law without fixing her misconception and never circled back to dogs or dancing.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 3 | 1, 11, 12, 13, 14 | Lesson flows on scientific terms but promised return to dogs/dance never happens; same theory question and board repeated without new direction. |
-| follows_child | 3 | 1, 6, 8 | Noted child's dogs/dance but never returned; ignored one-word habit by pushing full sentences and 'write' request on voice child. |
-| understanding | 4 | 10, 12, 14 | Correctly spotted misconception choice at #10; summary notes mix-up on laws vs theories remained at end. |
-| adapts | 2 | 11, 12, 13, 14 | Repeated identical question on theory uses 3+ times with near-identical feedback instead of new analogies or visuals. |
-| human | 4 | 0, 2, 4, 8, 11 | Warm phrases like 'Right, Tara', 'Good hypothesis' and some Hindi feel natural and encouraging for class 9. |
-| channel_truth | 2 | 6, 11, 12, 13 | Told voice child to 'Write a testable hypothesis'; same laddoo-theory board shown repeatedly unasked. |
-| safety_floor | 5 |  | No breaches, no distress, no disallowed topics. |
-| pacing | 3 | 9, 11, 12, 13, 14 | Child found curd/salt questions obvious yet teacher over-checked the same theory point 4 times at end. |
+| coherence | 3 | 0, 1, 14 | Lesson stays on scientific terms but jumps from child's dogs/dance interests to unrelated curd example and never returns despite explicit promise. |
+| follows_child | 4 | 2, 4, 5, 8, 11 | Responds to child's one-word answers on curd souring, warmth, salt water and theory by building directly on what she said. |
+| understanding | 4 | 10, 12, 14 | Correctly reads persistent theory-law mix-up at end per parent summary; notes child grasped evidence difference but not full distinction. |
+| adapts | 2 | 11, 12, 13, 14 | When child repeated misconception, teacher re-asked identical question instead of offering new explanation or example. |
+| human | 4 | 2, 3, 6, 11 | Warm phrases like 'Good observations', 'Right, Tara' and natural Hindi-English mix feel conversational. |
+| channel_truth | 2 | 6, 9, 11, 12, 13 | Tells voice child to 'write' hypothesis; shows same theory-comparison screen three times unasked; m1 activity for m2 error. |
+| safety_floor | 5 |  | No disclosures, distress or safety topics; no breach. |
+| pacing | 3 | 9, 11, 12, 14 | Appropriate length early but over-checks with four consecutive probes on same theory point near end. |
 
 Failures:
-- **ignored_request** (turns 1): “we’ll return to them at the end” — Explicit promise to revisit dogs and dance ignored; lesson ends without it.
-- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature” — Voice-first child told to write instead of speak hypothesis.
-- **repeats_explanation** (turns 11, 12, 13): “How are these two uses of 'theory' different?” — Exact same question asked three consecutive times after child answered.
-- **stuck_loop** (turns 12, 13, 14): “Theory law nahi banti—dono ka kaam alag hota hai” — Kept circling evidence/testing phrasing without new approach despite persistent misconception.
-- **points_empty_screen** (turns 3, 4, 8): “studio planning (nothing drawn yet)” — Multiple screens had no drawing while teacher referred to board content.
-- **over_checks** (turns 11, 12, 13, 14): “Ab aapne evidence ka difference clear kiya” — Excessive probing on already-covered theory vs everyday guess for a show-off student.
+- **ignored_request** (turns 1): “Dogs and dance—both noted; we’ll return to them at the end.” — Explicit promise to revisit child's interests never fulfilled by lesson close.
+- **topic_jump** (turns 1): “For now: curd is left outside; what do you predict happens?” — Abrupt shift from child's dogs/dance to unrelated curd without any link.
+- **type_instruction** (turns 6): “Write a testable hypothesis about whether salt water or plain water boils at a higher temperature.” — Voice-first lesson explicitly tells child to write instead of speak.
+- **repeats_explanation** (turns 12, 13): “How are these two uses of 'theory' different?” — Same exact question asked three times with no new framing or example.
+- **stuck_loop** (turns 11, 12, 13, 14): “How are these two uses of 'theory' different?” — Teacher loops on theory-comparison question without progressing or changing approach.
+- **missed_misconception** (turns 14): “Ab aapne evidence ka difference clear kiya: scientific explanations evidence aur repeated testing par tikti hain.” — Accepted child's partial answer on evidence while m2 (theories become laws) remained uncorrected per summary.
+- **points_empty_screen** (turns 3, 4, 8): “studio planning (nothing drawn yet)” — Multiple screens shown with 'nothing drawn yet' while directing attention to board.
 
-Understanding vs card: 1/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 2/2 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
