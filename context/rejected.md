@@ -2733,3 +2733,7 @@ The sim lab's child saw only what the turn response carried. A board that arrive
 ## rj-r1441-record-fence-alone (2026-10-21)
 
 An output-only fence using the child-speech safety predicate. It misses the writer's third-person report ("Riya said she wants to die") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.
+
+## rj-r145-kit-deep-marks (2026-10-21, stream 4A)
+
+The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 64 cards × 2 arms, agent, decided child. The judge read agreed 68% in both arms. The marks asked an understood child fewer deep items (66 → 47), and doubled the "untested" understood under-reads (11/42 → 23/46). The switch, the marks file and the plain-evidence patch are removed. Reverse if a later audit shows a marked-plain item mis-reads a child, measured the same way.
