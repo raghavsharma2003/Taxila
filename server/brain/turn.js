@@ -26,9 +26,10 @@ import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
 import { step, evidenceFrom, upcomingItem } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
+import { withheldValues } from "../studio/qa/whiteboard.js";
 import { registerBroken } from "../director/register.js";
 import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
-import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen } from "../studio/request.js";
+import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen, selfAnswer, unanswer } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
 import { instructionsFor, instructionsAfter } from "../compiler/instructions.js";
@@ -698,6 +699,18 @@ export async function lessonTurn(req, body, hooks = {}) {
     && !kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
   if (leftBoard) seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" && (upFor || studioSeam.boardUp?.(lesson.id)) ? studioSeam.clearBoard(lesson.id) : null), null);
   // round 5 merge: on the agent lane the agent drew (or did not draw) its own board; the Director-lane board rules stand aside
+  // 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn; null when they cannot be computed
+  // (no kit, the item not found, an error): every path that re-shows an earlier board fails closed on null
+  const heldFor = (line) => {
+    try {
+      const itemId = r.move?.itemId ?? next.activeItemId ?? null;
+      if (!itemId) return [];
+      if (!kit) return null;
+      const item = findItem(next, kit, itemId);
+      return item ? withheldValues({ items: [item] }, { itemId: item.id, line: line ?? "" }).values : null;
+    } catch { return null; }
+  };
+  seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldFor("")), null);
   let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
@@ -1051,6 +1064,65 @@ export async function lessonTurn(req, body, hooks = {}) {
         studioReasons.push("say.stay_on_screen");
         delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
       }
+    }
+    // main 14.4 (QA pass 15, TEST 1695e941): her line states the answer of its own numeric question before asking it ("0 se
+    // 160 metres tak. Rectangle ka boundary distance kitna hai?"): the clause that states it goes, the question stays (code,
+    // studio/request.js selfAnswer; never on a safeguarding turn)
+    if (!safetyWords && teacherReply) {
+      const said = (next.recent ?? []).slice(0, -1);
+      const hit = seamSafe("say.selfAnswer", () => selfAnswer(teacherReply, { recent: said.filter((x) => x.who === "teacher").map((x) => String(x.text ?? "")),
+        child: said.filter((x) => x.who === "child").map((x) => String(x.text ?? "")), worked: String(kit?.workedExample?.problem ?? "") }), null);
+      const fixed = hit ? seamSafe("say.unanswer", () => unanswer(teacherReply, hit), null) : null;
+      if (fixed && fixed !== teacherReply) {
+        teacherReply = fixed;
+        const row = staged.find((x) => x.seq === teacherReplySeq);
+        if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "self_answer"])] }; }
+        const last = next.recent?.[next.recent.length - 1];
+        if (last?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...last, text: fixed.slice(0, 400) }];
+        guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "self_answer"])], replaced: true };
+        studioReasons.push("say.self_answer");
+        delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+      }
+    }
+    // 14.4 (main): the board the child asked for landed AFTER a line that could not point at it (it was still being drawn,
+    // her words stayed off the screen): her NEXT line points at it once (the same fixed pointer, in her line's language),
+    // and the board goes on that response. Remembered for two turns at most; never on a safeguarding turn.
+    // (main's release blocker on D42: a board re-sent on a later turn never carries the key of the item open NOW; a key her
+    // own line says stays hers, the pinned W9 design)
+    const heldNow = heldFor(teacherReply);
+    // QA D43 (TEST d4aa3f0b / e737d1a4: the rectangle board stayed under "Ab square ki har side 8 metre ho, perimeter
+    // batayiye"): a turn that moves to another item keeps no earlier board, however many words the new item shares with it
+    const itemMoved = !!r.move?.itemId && r.move.itemId !== (prev?.activeItemId ?? null);
+    seamSafe("studio.noteWithheld", () => studioSeam.noteWithheld?.(lesson.id, heldNow), null);
+    const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
+    if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
+    if (lateAsk && !late && !itemMoved && !safetyWords && teacherReply && !studioSlot) {
+      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }) : null), null);
+      if (slot) {
+        delete next.lateBoard;
+        studioSlot = slot; studioReasons.push("studio.late_board_shown");
+        if (!refersToBoard(teacherReply)) {
+          const fixed = boardPointer(next.ctx?.lang, teacherReply) + teacherReply;
+          teacherReply = fixed;
+          const row = staged.find((x) => x.seq === teacherReplySeq);
+          if (row) { row.text = fixed; row.meta = { ...(row.meta ?? {}), guard: [...new Set([...(row.meta?.guard ?? []), "point_late_board"])] }; }
+          const lastR = next.recent?.[next.recent.length - 1];
+          if (lastR?.who === "teacher") next.recent = [...next.recent.slice(0, -1), { ...lastR, text: fixed.slice(0, 400) }];
+          guard = { ...guard, caught: [...new Set([...(guard?.caught ?? []), "point_late_board"])], replaced: true };
+          studioReasons.push("say.point_late_board");
+          delivery = seamSafe("expressive.planDelivery", () => expressiveSeam.planDelivery(moment, teacherReply), delivery);
+        }
+      }
+    }
+    // ... and THIS turn's asked board is still being drawn under a line that does not point at it: remembered for the next
+    if (!safetyWords && r.move?.request === "visual" && wbAcked && studioSlot?.intentId && !studioSlot?.artifact && teacherReply && !refersToBoard(teacherReply)) {
+      next.lateBoard = { intentId: String(studioSlot.intentId), turn: next.turn };
+    }
+    // 14.4 (QA D42): the board already on screen stays on the response while her line still talks about it (no new slot this
+    // turn, the board not taken down, the Director's tray free): the client closes a page a response does not carry
+    if (!studioSlot && !leftBoard && !itemMoved && !late && !agentApplied && !safetyWords && teacherReply && (!r.ui?.tray || r.ui.tray === "none") && !(r.ui?.chips?.length)) {
+      const kept = seamSafe("studio.keepBoardSlot", () => (typeof studioSeam.keepBoardSlot === "function" ? studioSeam.keepBoardSlot(lesson.id, teacherReply, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }) : null), null);
+      if (kept) { studioSlot = kept; studioReasons.push("studio.board_kept"); }
     }
     // round 5 (sim lab 709b6acb): over an empty stage, a line that ASSUMES a visual without a screen word ("Table mein
     // Baisakhi kis month mein dikh rahi hai?", "3335 ko mark kijiye", "Timeline picture: …") loses the visual noun, its
