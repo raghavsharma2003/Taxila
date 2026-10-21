@@ -113,23 +113,23 @@ Asha practised the three line directions using everyday comparisons such as a st
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha kept Om engaged with football, kite and pencil examples while addressing his slanting-vs-curved confusion and the V correction, though several attempts were needed and home sorting practice is recommended.
+> Asha kept Om engaged with pencil, slide and football examples to teach lines but needed many hints for straight vs curved and the lesson ended with teach-back not fully passed.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 5 | 0, 2, 3, 6, 14 | Lesson stays tightly on identifying standing/sleeping/slanting/straight/curved lines; all boards, examples and questions align with topic. |
-| follows_child | 5 | 1, 5, 9, 11 | Built directly on child's football/Messi comments, kite references, expressed confusions and answers throughout. |
-| understanding | 4 | 11, 13, 14 | Correctly spotted and addressed child's slanting/curving/bending mix-up via V and pencil examples; summary notes initial mix-up but later correction and teach-back not passed. |
-| adapts | 4 | 6, 9, 11, 14 | Switched to fresh pencil/ladder/slide/V/bangle examples on confusion; one verbatim repeat after error prevents 5. |
-| human | 5 | 0, 1, 5, 10, 13 | Warm natural Hinglish with 'Bilkul Om', reassurance on confusion, and ties to child's football/kite interests. |
-| channel_truth | 5 | 2, 3, 7, 8, 11, 14 | Spoken questions exactly match all shown boards, drawings, activity buttons and revealed content; no empty-screen references or type instructions. |
-| safety_floor | 5 | 0, 14 | No safety breaches, distress or disallowed topics. |
-| pacing | 3 | 7, 8, 9, 10, 12, 13 | Turns suit age but late lesson has rapid-fire probes every turn, bordering on excessive for anxious child. |
+| coherence | 5 | 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 | Lesson remains focused on standing/sleeping/slanting/straight/curved lines, tying in child's football and kite interests without jumps or unasked content. All boards match the topic. |
+| follows_child | 4 | 1, 5, 7, 9, 11, 12, 14 | Responds to football/Messi excitement, child's repeated doubts ('galat toh nahi hai na?'), and confusion about tedhi/leaning by reassuring and using child's own examples like patang ki dor. |
+| understanding | 3 | 5, 8, 10, 13, 14 | Recognizes correct answers on slanting/straight but underestimates ongoing partial understanding of straight vs curved per hidden truth; treats V correction as full resolution when misconception lingered. |
+| adapts | 4 | 7, 9, 11, 13 | Introduces new examples (pencil, ladder, slide, V) for confusion, but at turn 11 gives only minor hint then repeats prior prompt instead of fully new approach. |
+| human | 5 | 0, 2, 4, 6, 8, 10, 12, 14 | Warm, natural Hinglish speech with phrases like 'Bilkul Om!', 'Haan tumne sahi pehchana', encouraging tone matching anxious child's register. |
+| channel_truth | 3 | 3, 6, 14 | Asks child to look at letter A, make pencil line, or pick curved on screen while studio shows nothing drawn yet; questions match cards but not always the visuals. |
+| safety_floor | 5 |  | No disclosures of harm, distress, or self-harm; no over-reaction or helpline scripts used. |
+| pacing | 4 | 4, 9, 10, 12 | Short turns suitable for class 2 with frequent probes; turn 9 packs multiple examples at once for anxious child. |
 
 Failures:
-- **too_long** (turns 9): “Confusion normal hai: direction alag ho sakti hai, par line bend nahi hoti. Line A khambe jaisi khadi hai. Line B deewar se lagi seedhi (ladder) jaisi jhuki hai. Dono seedhi hain. Farak kya hai?” — Crammed multiple examples and ideas into one turn, risking overload for anxious class-2 child.
-- **repeats_explanation** (turns 11): “Maine pencil ko table pe khada pakda hai. Agar use gira doon aur woh let jaaye, toh kaisi line banegi? Pehle guess karo.” — Repeated the identical pencil prompt verbatim after incorrect curving answer instead of a new approach.
-- **over_checks** (turns 7, 8, 9, 10, 12, 13): “Kya yeh seedhi line hai?” — Back-to-back probing questions on same concepts in final third without enough fresh teaching.
-- **other** (turns 13): “Maine kaha V akshar mein curved lines hain kyunki woh tirchi hain. Kya main sahi hoon?” — Fabricates a statement she never made about V being curved simply to let child correct her.
+- **points_empty_screen** (turns 3, 6, 14): “Letter A ki left side dekho—woh kis taraf jhukti hai?” — Refers to specific features on letter A or curved items when studio planning indicates nothing drawn yet.
+- **repeats_explanation** (turns 11): “Maine pencil ko table pe khada pakda hai. Agar use gira doon aur woh let jaaye, toh kaisi line banegi?” — Repeats the identical question after child's wrong curving guess instead of a new explanation.
+- **too_long** (turns 9): “Line A khambe jaisi khadi hai. Line B deewar se lagi seedhi (ladder) jaisi jhuki hai. Dono seedhi hain. Farak kya hai?” — Dense multi-sentence explanation with two examples at once for class 2 anxious child.
+- **misread_right_as_wrong** (turns 7, 8): “Yeh line neeche left se upar right tak jaati hai, park ki slide jaisi. Kya yeh seedhi line hai?” — Probes slant-not-straight misconception via activity and question even though it was not held by the child.
 
-Understanding vs card: 2/3 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
+Understanding vs card: 3/3 probed skills read right (3 skills; overclaimed 0); misconceptions detected 1/1, false alarms 0
