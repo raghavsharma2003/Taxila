@@ -1044,7 +1044,9 @@ function requestMove(s, input, item, req, labels) {
       if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
         return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
       if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
-      return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
+      // (no topic found for their words: never "not in your class"; real topics of their class on the buttons, as for a repeated ask)
+      const near = nextTopics(s, 2);
+      return plan("break", SH.switchElsewhere({ subject, titles: near.map((t) => t.title) }), { chips: [...near.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "switch" });
     }
     case "topic": {
       const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
