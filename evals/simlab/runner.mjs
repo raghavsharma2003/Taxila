@@ -54,6 +54,76 @@ async function askAck(base, cookie, lessonId, text) {
   } catch (e) { return { none: `error:${String(e.message).slice(0, 40)}` }; }
 }
 
+/**
+ * The lesson's Studio wire, as the client keeps it (src/studio/useStudio.ts): one GET /api/studio/stream per lesson, every
+ * message cached per piece, the early slot the server pushes for an ask. Before this (main, 2026-10-21) the child saw only
+ * the turn's ui.studioSlot, so a board whose script landed on the wire after the turn read "nothing drawn yet" (38aad918
+ * t5-t7) while the real phone showed it. Never throws: a dead stream leaves the turn's slot as it was.
+ */
+function studioWire(base, cookie, lessonId) {
+  const w = { pieces: new Map(), early: null, log: [], ac: new AbortController(), open: false };
+  const patch = (id, p) => w.pieces.set(id, { ...w.pieces.get(id), ...p });
+  const take = (m) => {
+    if (!m || typeof m !== "object") return;
+    w.log.push({ at: Date.now(), t: m.t, intentId: m.intentId ?? m.status?.intentId ?? m.slot?.intentId ?? null, state: m.status?.state ?? null });
+    if (m.t === "status" && m.status?.intentId) patch(m.status.intentId, { status: m.status });
+    else if (m.t === "script" && m.intentId && m.script) patch(m.intentId, { artifact: { kind: "whiteboard", stage: { w: m.script.board?.w, h: m.script.board?.h }, script: m.script } });
+    else if (m.t === "slot" && m.slot?.intentId && m.slot.artifact) { w.early = { slot: m.slot, at: Date.now() }; patch(m.slot.intentId, { artifact: m.slot.artifact }); }
+    else if (m.t === "retract" && m.intentId) { if (w.early?.slot.intentId === m.intentId) w.early = null; patch(m.intentId, { retracted: true }); }
+  };
+  (async () => {
+    try {
+      const res = await fetch(`${base}/api/studio/stream?lessonId=${encodeURIComponent(lessonId)}`, { headers: { cookie, accept: "text/event-stream" }, signal: w.ac.signal });
+      if (res.status !== 200 || !res.body) return;
+      w.open = true;
+      const dec = new TextDecoder();
+      let buf = "";
+      for await (const chunk of res.body) {
+        buf += dec.decode(chunk, { stream: true });
+        let i;
+        while ((i = buf.indexOf("\n\n")) >= 0) {
+          const frame = buf.slice(0, i); buf = buf.slice(i + 2);
+          const data = frame.split("\n").filter((l) => l.startsWith("data:")).map((l) => l.slice(5).trim()).join("\n");
+          if (data) { try { take(JSON.parse(data)); } catch { /* a bad frame is ignored, as on the phone */ } }
+        }
+      }
+    } catch { /* aborted or dropped */ } finally { w.open = false; }
+  })();
+  /**
+   * The turn's slot completed as the phone completes it (useStudioSlot): the turn's own artifact wins, else the wire's,
+   * else one GET /api/studio/slot. A pending board is waited for up to waitMs (the child is hearing the reply meanwhile).
+   * An early slot pushed after the reply landed (the phone drops it once a newer turn's ui arrives: useDesk earlyLive) and
+   * not the turn's own piece takes the tray.
+   */
+  w.settle = async (r, replyAt, waitMs) => {
+    const ui = r.ui ?? {};
+    let slot = ui.studioSlot ?? null, via = slot?.artifact ? "turn" : null, waited = 0;
+    if (slot && !slot.artifact && slot.intentId) {
+      const t0 = Date.now();
+      while (!w.pieces.get(slot.intentId)?.artifact && !w.pieces.get(slot.intentId)?.retracted && Date.now() - t0 < waitMs) await new Promise((ok) => setTimeout(ok, 100));
+      waited = Date.now() - t0;
+      const p = w.pieces.get(slot.intentId);
+      let artifact = p?.artifact ?? null;
+      if (artifact) via = "wire";
+      else {
+        const res = await fetch(`${base}/api/studio/slot?lessonId=${encodeURIComponent(lessonId)}&intentId=${encodeURIComponent(slot.intentId)}`, { headers: { cookie } }).catch(() => null);
+        const s = res?.ok ? (await res.json().catch(() => ({}))).slot : null;
+        if (s?.artifact) { artifact = s.artifact; via = "slot"; }
+      }
+      let state = slot.state;
+      if (p?.status?.state === "in_use" && (state === "revealed" || state === "ready")) state = "in_use";
+      if (state === "planning" && artifact) state = "revealed";
+      if (p?.status?.state === "failed" && !artifact && state === "planning") state = "fallback_shown";
+      slot = { ...slot, state, ...(artifact ? { artifact } : {}) };
+    }
+    const early = w.early && w.early.at >= replyAt && slot?.intentId !== w.early.slot.intentId ? w.early.slot : null;
+    if (early) { slot = early; via = "early"; }
+    return { r: (slot ?? null) === (ui.studioSlot ?? null) ? r : { ...r, ui: { ...ui, ...(early ? { tray: "studio" } : {}), studioSlot: slot } }, wire: { via: via ?? (slot ? "none" : null), waitedMs: waited, open: w.open } };
+  };
+  w.close = () => { try { w.ac.abort(); } catch { /* closed */ } };
+  return w;
+}
+
 let sql = null;
 async function boardPages(lessonId) {
   const url = process.env.DATABASE_URL ?? "";
@@ -151,7 +221,7 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
   const email = emailKey ? `${tag}+${p.id}-${emailKey}@taxila.test` : `${tag}+${p.id}-${st}${rnd}@taxila.test`, password = `sim-pw-${st}-${rnd}`;
   const rec = { persona: p.id, lane, startedAt: new Date().toISOString(), turns: [], errors: [], state: Object.fromEntries(p.skills.map((s) => [s.id, s.state])),
     misconceptionsHeld: p.misconceptions.map((m) => m.id), learning: [], end: null, start: null };
-  let signedUp = false;
+  let signedUp = false, wire = null;
   try {
     await api("POST", "/api/auth/signup", { email, password, name: "Sim Lab", isGuardianAdult: true });
     signedUp = true;
@@ -167,7 +237,12 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       : v && typeof v === "object" ? (d > 3 ? "{…}" : Object.fromEntries(Object.entries(v).filter(([k]) => !/token|secret|key|password|cookie/i.test(k)).map(([k, x]) => [k, keep(x, d + 1)]))) : v;
     rec.startRaw = keep(Object.fromEntries(Object.entries(s).filter(([k]) => !["_ms", "teacher"].includes(k))));
     rec.lessonId = s.lessonId; // TEST lesson id, so a turn can be traced server-side (never a child or account id)
-    let screen = nextScreen({}, s);
+    // SIMLAB_WIRE=off: the old harness (turn slot only), to compare runs made before 2026-10-21
+    wire = process.env.SIMLAB_WIRE === "off" ? null : studioWire(base, api.cookie(), s.lessonId);
+    const waitMs = Number(process.env.SIMLAB_WIRE_WAIT_MS ?? 4000);
+    rec.wire = wire ? { waitMs } : "off";
+    const startSettled = wire ? await wire.settle(s, Date.now(), waitMs) : { r: s, wire: null };
+    let screen = nextScreen({}, startSettled.r);
     const decided = childMode() === "decided";
     let posed = decided ? await posedItem(s.ui?.ask, s.lessonId) : null;
     const heard = [];
@@ -220,13 +295,14 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
       const ackRes = ackP ? await ackP : null;
       // played as the device would: it arrived before her reply was ready (the reply's round trip)
       if (ackRes && ackRes.phrase) ackRes.played = (ackRes.readyMs ?? Infinity) < r._ms;
-      screen = nextScreen(screen, r);
+      const settled = wire ? await wire.settle(r, Date.now(), waitMs) : { r, wire: null };
+      screen = nextScreen(screen, settled.r);
       const teacher = r.teacherReply ?? "";
       if (teacher) heard.push({ who: "teacher", text: teacher });
       rec.turns.push({ n, at: new Date().toISOString(), child: { action: c.action, say: c.say, chipId: c.chipId, chipLabel: c.chipLabel, private: c.private, sent: body.childText, ...(asr ? { asr } : {}) },
         // move.request / move.visual: what the server read the child as asking to see (stream 2's honesty-floor scope)
         teacher, move: r.move?.kind ?? null, moveAsk: r.move ? { request: r.move.request ?? null, visual: r.move.visual ?? null } : null, ui: r.ui, moduleCommands: r.moduleCommands ?? [], studio: r.studio ?? null, screen, end: !!r.end,
-        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(ackRes ? { ack: ackRes } : {}), ...(d ? { decided: d } : {}) });
+        speakNow: r.speakNow ?? null, reasons: reasonsOf(r), ms: r._ms, ...(settled.wire ? { wire: settled.wire } : {}), ...(ackRes ? { ack: ackRes } : {}), ...(d ? { decided: d } : {}) });
       posed = decided ? await posedItem(r.ui?.ask, s.lessonId) : null;
       if (r.end) break;
     }
@@ -240,6 +316,7 @@ export async function runLesson(p, { base, lane = "text", maxTurns = 14, voice =
   } catch (e) {
     rec.errors.push({ at: "setup", status: e.status ?? 0, msg: String(e.message).slice(0, 300) });
   } finally {
+    if (wire) { wire.close(); rec.wireLog = wire.log.map((x) => ({ ...x, at: new Date(x.at).toISOString() })); }
     // SIMLAB_KEEP_FILE (main, 2026-10-21): keep the TEST account so its director.turn trace survives for a root cause; the
     // login goes to that file (a scratch path outside the repo) so the account can be deleted the normal way afterwards
     const keepFile = process.env.SIMLAB_KEEP_FILE;
