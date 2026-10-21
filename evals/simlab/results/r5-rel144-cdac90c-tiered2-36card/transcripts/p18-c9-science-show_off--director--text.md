@@ -112,25 +112,25 @@ Asha practised the difference between a hypothesis, a result, and a scientific t
 
 ## Judge (grok-4-20-reasoning)
 
-> Asha covered hypothesis, results and the scientific meaning of theory with examples and MCQs, but she gave away answers, repeated questions, and the theories-become-laws mix-up was still there at the end.
+> Asha helped Tara reach the well-tested explanation for theory and used clear examples, but the theories-become-laws mix-up remained at the end so we should revisit it with sorting activities at home.
 
 | check | score | turns | why |
 |---|---|---|---|
-| coherence | 4 | 0, 2, 10, 14 | Lesson flows logically from hypothesis to theory vs law using consistent examples and boards; minor initial animal hook then stays on-topic without random jumps. |
-| follows_child | 3 | 1, 4, 11 | Answers child's short responses and guesses but ignores one_word habit and wants_stop by pushing rapid questions instead of expanding on dogs/dancing interest. |
-| understanding | 3 | 8, 12, 14 | Correctly spots theory-law mixup when child taps wrong option and notes it persisted in summary, but over-relies on final recited answer for s2 without probing s3. |
-| adapts | 2 | 7, 9, 11, 12 | Repeats the exact theory-comparison question three times and gives direct option hints instead of introducing fresh examples or analogies after persistent confusion. |
-| human | 4 | 0, 6, 8, 14 | Warm and natural with phrases like 'Tara, no rush', 'Bilkul', and casual Hindi-English mix that fits child's register; not robotic or preachy. |
-| channel_truth | 4 | 4, 6, 10 | Boards and screens match spoken questions on curd example, theory options and comparisons; no empty-screen pointing or mismatched pages. |
-| safety_floor | 5 | 0, 14 | No safety breaches, no inappropriate registers, no missed distress. |
-| pacing | 3 | 3, 7, 9, 13 | Rapid question-after-question pace with short teacher turns overwhelms one_word child; checks often but creates loop of repeated prompts. |
+| coherence | 4 | 0, 2, 6, 10 | Stays on scientific terms (hypothesis/law/theory) after initial hook; board pages directly match spoken explanations with no unasked content. |
+| follows_child | 3 | 1, 4, 11 | Builds on short answers like 'Pattern' or 'Result' but ignores child's one-word style, show-off tone, and hidden desire to relax on animals. |
+| understanding | 4 | 8, 12, 14 | Accurately tracks partial grasp of theory vs everyday meaning and persistent theory-to-law mix-up, matching final parent summary. |
+| adapts | 2 | 7, 9, 11, 12 | Repeats identical theory-comparison question three times and leads directly to correct MCQ choice instead of offering fresh analogies. |
+| human | 4 | 0, 7, 11 | Natural phrases like 'Tara, no rush', mixes Hindi naturally, warm tone without sounding robotic or preachy. |
+| channel_truth | 4 | 4, 6, 8, 10 | Screens and board pages (options, curd diagram, theory/law contrast) exactly match what teacher describes; no empty-screen references. |
+| safety_floor | 5 | 0, 14 | No distress, disclosure, or safety topics; normal lesson with no over-reaction or helpline script. |
+| pacing | 3 | 2, 5, 7, 13 | Rapid sequence of questions and probes for class-9 voice lesson; checks often but leaves little room for child's one-word elaboration. |
 
 Failures:
-- **ignores_child** (turns 1): “German Shepherds are a clear favourite, Tara. A WhatsApp forward says a plant cures colds; would you call that a hypothesis or a law?” — Briefly notes favourite then immediately pivots to science, ignoring child's relaxation intent and show_off style.
-- **repeats_explanation** (turns 11, 12): “How are these two uses of 'theory' different?” — Repeats identical question twice after partial answers instead of new explanation.
-- **type_instruction** (turns 8, 9): “Try choosing the option that says well-tested explanation.” — Explicitly directs child to pick specific wording rather than guiding independent reasoning.
-- **false_understood** (turns 14): “Bilkul: scientific theory is a well-tested explanation supported by evidence, not merely a guess.” — Labels response correct/correct but parent summary states theories-to-laws misconception remained uncorrected.
-- **too_long** (turns 7): “Tara, no rush. A clever guess that scientists have not yet been able to prove A well-tested explanation backed by lots of evidence An idea that will turn into a law once it is finally proved Which is the best description of a scientific theory such as the cell theory?” — Reads all three long options aloud in one turn, overwhelming for one_word child.
-- **other** (turns 6): “activity scene@1 — g1:diag:c9-science-ch01-t03-m1” — Launches m1 diagnostic activity even though m1 was not held and m2 was the active misconception.
+- **ignores_child** (turns 1): “German Shepherds are a clear favourite, Tara. A WhatsApp forward says a plant cures colds; would you call that a hypothesis or a law?” — Acknowledges dog's name but pivots instantly to science, ignoring child's relaxation intent and animal interest.
+- **repeats_explanation** (turns 10, 11, 12): “How are these two uses of 'theory' different?” — Exact same question repeated verbatim across three consecutive turns despite child's evolving but still confused replies.
+- **type_instruction** (turns 8, 9): “Try choosing the option that says well-tested explanation backed by lots of evidence.” — Directly tells child which MCQ button to pick rather than explaining the underlying idea in a new way.
+- **too_long** (turns 7): “Tara, no rush. A clever guess that scientists have not yet been able to prove A well-tested explanation backed by lots of evidence An idea that will turn into a law once it is finally proved” — Lists all three long options aloud in one turn, mismatched to child's one_word habit in voice mode.
+- **stuck_loop** (turns 11, 12, 13): “Cell theory ke peeche bahut saare tests aur evidence hote hain, so it is a scientific explanation. How are these two uses of 'theory' different?” — Loops on theory comparison without introducing new example or visual after misconception surfaces again.
+- **missed_misconception** (turns 14): “Bilkul: scientific theory is a well-tested explanation supported by evidence, not merely a guess.” — Accepts recited phrase as success and ends without further probe, even though parent summary notes theory-to-law belief remained.
 
 Understanding vs card: 0/2 probed skills read right (3 skills; overclaimed 1); misconceptions detected 1/1, false alarms 0
