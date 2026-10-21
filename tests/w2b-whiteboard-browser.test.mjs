@@ -236,3 +236,42 @@ test("the first mount adopts the pre-booted spare frame (no new document), and i
     assert.equal(await page.$$eval('iframe[src*="#m9"]', (fs) => fs.length), 0);
   } finally { await page.close(); }
 });
+
+// census 2026-10-21 F9 (3437b744, 310b8c82: every board drawn twice): the next turn re-sent the page already on the board
+// under a new script id (a kept continue board), and the client wiped and redrew it. The same picture is shown complete
+// at once (frozen at its end, no anchor wait, no replay); a different page still draws from her line's anchor.
+test("a re-sent page that draws exactly what the board shows is not wiped and redrawn; a different page still draws on its anchor", { skip: SKIP, timeout: 120_000 }, async () => {
+  const a = expand({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }, { lessonId: "L-wb", scriptId: "s-same-a" });
+  const slot = (script, n) => ({ ...studioUi(script), status: "your_turn", studioSlot: { slotId: `slot-${n}`, intentId: `i-${n}`, state: "revealed", artifact: { kind: "whiteboard", script } } });
+  // the board clock on the first frame the next page is mounted (its script id on the board's host), read inside the page
+  const firstOf = (page, id) => page.evaluate((id) => new Promise((res) => {
+    const tick = () => {
+      const host = document.querySelector(`[data-script="${id}"]`);
+      const svg = host?.querySelector("svg");
+      if (!svg) return requestAnimationFrame(tick);
+      res({ t: Number(svg.getAttribute("data-wb-t")), same: host.getAttribute("data-same") === "1" });
+    };
+    tick();
+  }), id);
+  for (const [what, next, frozen] of [["same page, new id", { ...a.script, scriptId: "s-same-b" }, true],
+    ["a different page", expand({ template: "flow@1", steps: ["rain", "river", "sea"] }, { lessonId: "L-wb", scriptId: "s-same-c" }).script, false]]) {
+    const page = await lessonWith({ width: 360, height: 800 }, { ui: slot(a.script, 1), turn: { ui: slot(next, 2) } });
+    try {
+      await page.waitForSelector('[data-testid="studio-box"] svg', { timeout: 30_000 });
+      // the first page has drawn to its end (the grace, then its own clock)
+      await page.waitForFunction((end) => Number(document.querySelector('[data-testid="studio-box"] svg')?.getAttribute("data-wb-t")) >= end, a.script.durationMs, { timeout: a.script.durationMs + 8000 });
+      const seen = firstOf(page, next.scriptId);
+      await typeTurn(page, "ok");
+      const { t: t0, same } = await seen;
+      if (process.env.WB_ANCHOR_LOG) console.log(`[wb-same] ${what}: t=${t0} same=${same}`);
+      assert.equal(same, frozen, what);
+      if (frozen) {
+        assert.equal(t0, next.durationMs, `${what}: shown complete on its first frame (t=${t0})`);
+        await page.waitForTimeout(300);
+        assert.equal(await page.$eval('[data-testid="studio-box"] svg', (s) => Number(s.getAttribute("data-wb-t"))), next.durationMs, `${what}: never replayed`);
+      } else {
+        assert.ok(t0 <= 0, `${what}: waits for her line's anchor (t=${t0})`);
+      }
+    } finally { await page.close(); }
+  }
+});
