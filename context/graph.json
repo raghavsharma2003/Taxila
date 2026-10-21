@@ -23077,6 +23077,27 @@
    "at": "2026-10-21",
    "title": "Proposal (a), parked by main: keep req.subject ?? visualAskOf(text).subject ?? freeSubjectOf(text). It moves 96 readings over the sim-lab lines. A code-read Director replay changes s.offTopic on 5 of 4,068 turns and no move (0 visualUnavailable or off-kit sketch flips); its effect is on model-read requests and needs a sim-lab A/B. Odd readings: 'cake' (a predicate bug that takes a past-clause photo mention over the asked clause), 'दी कोन' (दी missing from ASK_STOP), 'laddoo' over 'recipe' (a fair reading).",
    "source": "inbox/r5-38aad918-s2.json"
+  },
+  {
+   "id": "dc-r1441-held-record-not-silence",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A safeguarded lesson's end record, which the writer gets without the child's turns, now marks those turns '(left out)', never '(none)'. A rule placed before the last-position check rule tells the writer to say nothing about whether or what the child said, replied or answered beyond the FACTS' own counts, and nothing about why. Found end to end on the 14.4.1 candidate be9b766a (10 TEST lessons from QA and the sim lab, 6 safeguarded): with '(none)' the writer read the absence as silence, writing 'No spoken or written response was recorded' for a child who had spoken all lesson (60a23346, 4 incidents). Reverse if a replay shows the rule leaking the reason ('left out', 'withheld'), or the facts-only notes losing true practice counts.",
+   "source": "inbox/r1441-heldsilence-main.json"
+  },
+  {
+   "id": "ms-r1441-endrecord-e2e",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "End records written by the 14.4.1 candidate be9b766a itself, read from TEST rows (QA + sim lab scripted children, 10 ended lessons, 22:24-22:40 UTC; 6 safeguarded = incident, safeguardedAt or check-in): teacher as the learner 0/10, he/she for the child 0/10, a 3-word run of the child's own words in a safeguarded record 0/6, the fence would drop nothing in any of the 10. Defect found: 3 of 6 safeguarded notes spoke of the child's responses as absent (one 'No spoken or written response was recorded'). Fix replay (40 safeguarded TEST lessons with 3+ child turns, x2, taxila-fast): claims of no response / no answer recorded 12/80 -> 1/80 (the 1 a facts-count statement of 0 practice attempts); spoken-silence claims 1 -> 0; mentions of anything left out or withheld 0 -> 0; fence hits 0 -> 0. 1 of the 10 e2e lessons took the deterministic line ('Today Riya practised Grams and kilograms with Asha.': writer unavailable or fenced empty, not distinguished in the row).",
+   "source": "inbox/r1441-heldsilence-main.json"
+  },
+  {
+   "id": "rj-r1441-shared-branch-worktrees",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Checking out one branch in two worktrees (the integration tree by 'git checkout -B', the 14.4.1 tree already on it). A commit in one moved the other's HEAD while its files stayed: the integration tree showed the inverse diff as staged, and a gate there stamps a HEAD whose files it never tested (the 3ed0767d gate was stopped for this; its index was verified identical to 3ed0767d's tree before the reset). Rule: one branch, one worktree; a tree that merges and pushes works detached and pushes HEAD:int/<branch>.",
+   "source": "inbox/r1441-heldsilence-main.json"
   }
  ],
  "edges": [
@@ -36719,6 +36740,21 @@
    "src": "dc-r5-picture-under-board",
    "rel": "measured_by",
    "dst": "ms-r5-picture-under-board"
+  },
+  {
+   "src": "dc-r1441-held-record-not-silence",
+   "rel": "part_of",
+   "dst": "dc-r1441-safeguarded-record-facts-only"
+  },
+  {
+   "src": "dc-r1441-held-record-not-silence",
+   "rel": "measured_by",
+   "dst": "ms-r1441-endrecord-e2e"
+  },
+  {
+   "src": "dc-r1441-safeguarded-record-facts-only",
+   "rel": "measured_by",
+   "dst": "ms-r1441-endrecord-e2e"
   }
  ]
 }

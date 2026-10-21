@@ -4771,3 +4771,14 @@ freeSubjectOf readings go 157 -> 113. All 44 removed were fillers or verbs. No r
 ## ms-r5-picture-under-board (2026-10-21, n = 3 turns of 38aad918)
 
 Empty screen at turn end goes 3 -> 0, from main's per-turn studio events walked through the new rules. The sim-lab records have no pictures to count.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## ms-r1441-endrecord-e2e (2026-10-21)
+
+The 14.4.1 candidate's own end records, read from 10 TEST lessons (6 safeguarded):
+- teacher as the learner 0/10;
+- he/she for the child 0/10;
+- the child's words in a safeguarded record 0/6.
+
+One defect: 3 of 6 safeguarded notes called the child's responses absent. After the fix, replay on 40 lessons × 2: 12/80 → 1/80.

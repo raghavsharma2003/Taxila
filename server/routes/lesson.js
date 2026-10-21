@@ -648,7 +648,7 @@ export function recordFence(text, { lines = false } = {}) {
 }
 
 /** The end-of-lesson record's messages (the writer words the FACTS; it does not decide them). PURE. */
-export function endMessages({ child, teacher, facts, childTurns }) {
+export function endMessages({ child, teacher, facts, childTurns, held = false }) {
   return [
     { role: "system", content: [
       // r1441 (38aad918): "with <child>" then "The teacher is <name> … name her by name" made the teacher the actor of
@@ -658,11 +658,14 @@ export function endMessages({ child, teacher, facts, childTurns }) {
       `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): the one who taught, never the learner. Name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only; they are never the learner's.`,
       `Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines on what ${child.first_name} did (the parent reads it too). parentNote: to ${child.first_name}'s parent, with ${child.first_name} as its subject — plain, warm, specific: what ${child.first_name} practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.`,
       "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
+      // a safeguarded lesson's record is written without the child's turns (safeguardedRecord): their absence is not
+      // silence (r1441 TEST: "No spoken or written response was recorded" for a child who had talked all lesson)
+      ...(held ? [`The child turns are left out of this record, not missing: say nothing about whether or what ${child.first_name} said, replied or answered beyond the FACTS' own counts, and nothing about why.`] : []),
       // last: the rule that must fire (a skill's `check`, the agent lane's earned read, decides how far its words go)
       ...(facts.skills?.some((s) => s.check) ? ["A skill with a check is worded only as far as its check: a \"shown\" skill may read as understood; every other skill reads as practised, with what is still to check next time, in summary and parentNote alike, never as understood, mastered, secure, done well or explained correctly."] : []),
     ].join("\n") },
     // the child's words reach the model with direct identifiers masked (scrubPii), like every other model call
-    { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
+    { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${held ? "(left out)" : childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
   ];
 }
 
@@ -728,7 +731,7 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   let summary, parentNote, memories = [];
   try {
     // a safeguarded lesson's record is written from the FACTS alone: the child's words never reach the writer
-    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns: held ? [] : childTurns }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
+    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns: held ? [] : childTurns, held }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
     summary = recordFence(json.summary, { lines: true }) || null;
     // Ability-label fence on what a parent reads: a sentence with a label is dropped, never rewritten.
     parentNote = recordFence(json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" "));

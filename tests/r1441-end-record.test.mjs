@@ -23,6 +23,17 @@ test("endMessages: the check rule stays last; no child turns reads (none)", () =
   assert.match(m[1].content, /CHILD TURNS:\n\(none\)$/);
 });
 
+test("endMessages held: the child turns are 'left out', never '(none)', and the record says nothing about what they said; the check rule stays last", () => {
+  const facts = { topic: "T", skills: [{ skill: "a", attempts: 1, unaidedCorrect: 0, check: "practised: x" }] };
+  const held = endMessages({ child, teacher, facts, childTurns: [], held: true });
+  assert.match(held[1].content, /CHILD TURNS:\n\(left out\)$/);
+  assert.match(held[0].content, /The child turns are left out of this record, not missing: say nothing about whether or what Riya said/);
+  assert.match(held[0].content.split("\n").at(-1), /worded only as far as its check/);
+  const plain = endMessages({ child, teacher, facts: { topic: "T", skills: [] }, childTurns: [] });
+  assert.match(plain[1].content, /CHILD TURNS:\n\(none\)$/);
+  assert.doesNotMatch(plain[0].content, /left out/);
+});
+
 test("safeguardedRecord: an incident, a safeguard move, an open or released check-in each hold the record", () => {
   assert.equal(safeguardedRecord({}, 0), false);
   assert.equal(safeguardedRecord(null, 0), false);
