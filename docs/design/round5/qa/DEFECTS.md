@@ -61,7 +61,7 @@ Status: **FIXED** (on `claude/r5-qa`, verified by a repro script) · **OWNER** (
 | D39 | P1 (14.4) | OWNER | stream 2 (one predicate: reply rewrite + board) | Her line states the open item's key ("0 se 160 metres tak … boundary distance kitna hai?") and the number line draws 0 … 160 |
 | D40 | P2 | WAI (re-tested) | main | After a model-opened safeguard, "Main already bol diya na" safeguards again (Help sheet) instead of reading as fine |
 | D41 | P2 | OWNER (14.4) | 4A | After a safeguard, "Can we do the lesson now?" gets mixed-language chips ("Show me a picture / Tell it as a story / Play a game / Lesson par wapas") and an English reply for a Hinglish child |
-| D42 | P2 | OWNER | stream 2 + client | A Studio page closes when the next reply carries `tray: none`, even when that reply still talks about it ("isi rectangle ka perimeter…") |
+| D42 | P2 | FIXED on claude/r4-content 86b54376 (re-tested) | stream 2 + client | A Studio page closes when the next reply carries `tray: none`, even when that reply still talks about it ("isi rectangle ka perimeter…") |
 | D43 | P2 | OWNER | stream 2 | After the D42 fix the picture board stays into the NEXT item: "Ab square ki har side 8 metre ho…" with the old "rectangle" board up |
 | D44 | P0 | OWNER | main (safety tiering) | The owner's complaint reproduces on d29c1b1f: helplines on 4 of 7 ordinary frustration / teasing turns (bfb56c4f); 3 of 7 on 7d8fcea4 (58af1bcb); 0 of 14 on 9ad86661 (what remains is D47 / D48) |
 | D45 | P1 | OWNER | main | Check-in answers. On d29c1b1f, "nahi" did not escalate and "pata nahi" escalated 2 of 3 times; both are right on 7d8fcea4. On 7d8fcea4 a right answer (8a4ce363) and "Ab theek hai…" after a fall (9e0d6167) both got the full script via understand_note; both release on 9ad86661 (×2 each) |
@@ -384,6 +384,13 @@ the recording lane; the two-turn spoken run uses one WAV with both lines, and th
 - **Lost board (aadae80b):** the ready explainer module was replaced by a planning slot. The slot failed 3 s later
   (fallback=voice), so her "picture: …" line went out with no board.
 - **The key stated after a wrong answer:** "ek side chhoot gayi… yani total 160 metre. Ab square…" (dbf607cb, D39-like).
+
+**D42 on 86b54376 (the plural fix): fixed**
+- "160 metre" with the board revealed: `board_not_kept {why: "new_number"}` as her line moves to the square (8a39216c).
+- "130 metre" with the board revealed: `studio.board_kept` while her line says "sides" (a769071e, 12fbd625).
+- A late board holds the tray (18066cde).
+- **Open, not a board issue:** a wrong "130 metre" carries `conv2.note.answer_correct` in its reasons, so the understanding note
+  reads a wrong answer as correct. Sent to stream 2.
 
 ## 14.4 pass — int/r5-rel144 @ c142e876, local TEST (migration 030 not applied; TAXILA_EDIT_UNDO is off, so not needed)
 Class 6 Hinglish unless noted; typed unless noted. A second local server with TAXILA_TEACHER=agent was used for item 4.
