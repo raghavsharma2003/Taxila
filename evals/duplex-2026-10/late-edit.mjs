@@ -43,7 +43,7 @@ const summary = {
   runs: n, kinds: Object.fromEntries(["inside", "edit", "split", "no_commit"].map((k) => [k, rows.filter((r) => r.kind === k).length])),
   editGap: edits.map((r) => r.gap).sort((a, b) => a - b),
   late: Object.fromEntries(LANDS.map((L) => [L, lateAt(L)])),
-  ...(sample ? { lateOverSandboxL: +(edits.reduce((s, r) => s + sample.filter((L) => r.gap > L).length / sample.length, 0)).toFixed(2), sandboxL: { n: sample.length, p50: [...sample].sort((a, b) => a - b)[Math.floor(sample.length / 2)] } } : {}),
+  ...(sample ? { lateShareOverSandboxL: edits.length ? +(edits.reduce((s, r) => s + sample.filter((L) => r.gap > L).length / sample.length, 0) / edits.length).toFixed(3) : null, sandboxL: { n: sample.length, p50: [...sample].sort((a, b) => a - b)[Math.floor(sample.length / 2)] } } : {}),
 };
 for (const r of rows) console.log(`${r.arm} ${r.id} pause=${r.pauseMs} ${r.kind}${r.gap !== null ? ` gap=${r.gap}` : ""} endAfterCommit=${r.endAfterCommit} "${r.text1}"${r.text2 ? ` → "${r.text2}"` : ""}`);
 console.log(JSON.stringify(summary, null, 1));
