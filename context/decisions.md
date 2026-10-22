@@ -6421,3 +6421,29 @@ After a check-in, a child who says they are safe and asks to tell family is neve
 ## dc-r1443-sacrifice-for-after — "unhone apni jaan de di ped bachane ke liye" is history too (2026-10-22)
 
 The sacrifice idiom with the purpose after the verb no longer fires the self-harm script, unless the turn names the child or their family. The safety battery is unchanged.
+
+
+<!-- merged from inbox/r1443-helped-main.json -->
+## dc-r1443-helped-tier: once help is in place, no numbers or "are you safe?" again (2026-10-22)
+
+Once help is in place in a safeguarding episode, the episode becomes "helped". Help in place means a trusted grown-up has been told, has called, or is with the child, or the child called Childline themselves.
+
+The hold stays: no lesson, the helplines on the board and the Help sheet, the same climb to the resume offer.
+
+What stops: she no longer re-says the numbers or re-asks "are you safe?". She tells the child they did the right thing.
+
+A new predicate read or a sure layer brings back the full script.
+
+**Reverse** if a child marked helped turns out to have still been in danger with no adult acting.
+
+## dc-r1443-same-story: the same story told on is not a new opening (2026-10-22)
+
+The case: before help is in place, the model re-reads distress inside an episode the predicate opened.
+
+The full script restarts with its active hand-off to a grown-up and Childline 1098. It never asks "are you safe?" again; it asks one new question about where they are or who is near.
+
+New danger words still get the original script.
+
+## dc-r1443-kind-kept: a model re-read never weakens a predicate episode (2026-10-22)
+
+The episode keeps its stronger kind. Before this, a re-kinded self-harm episode could be released early by "I'm fine".

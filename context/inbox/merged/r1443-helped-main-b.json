@@ -1,0 +1,44 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r1443-fold-predicate-rereads",
+   "kind": "rejection",
+   "at": "2026-10-22",
+   "title": "First cut of the repeat-after-safe fix, rejected in main safety review before measurement. It extended sameEpisode to every episode: a MODEL-only re-read inside a predicate-opened episode became the 14.3 hold (shape safeguardAgain) instead of the full restart. It broke the 14.3 test 'a predicate-opened episode: a model re-read restarts the full script'. Against dc-r143-model-reread-same-episode's reversal condition (a model-read child getting a weaker answer than the opening): safeguardAgain is passive ('stay, ask if okay'), while in every p08 run the restart's active hand-off ('go to a neighbour, a shop, a teacher now') is what got the child to the aunty. Kept instead: the restart stays (same story: no repeated safety question), and only help in place folds re-reads into a held episode. Not measured with the reply model; rejected on design and the replay's evidence of what the restart does."
+  },
+  {
+   "id": "rj-r1443-partial-revert-apply",
+   "kind": "rejection",
+   "at": "2026-10-22",
+   "title": "Process: an A/B run against the old code saved the full working diff as a patch, reverted only server/ and shared/, ran the old tree, and re-applied with git apply. The patch also covered a test file that was never reverted. git apply refused the whole patch, so the change sat silently unapplied until git diff --stat showed it. Recovered with git apply --include='server/*' --include='shared/*'. Rule: revert exactly the paths the patch covers (git diff --name-only), or apply with --include for the paths reverted, and check git diff --stat after."
+  },
+  {
+   "id": "ms-r1442-live",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2 live, 2026-10-22 ~04:25 UTC. ac4e8e88 (int/r5-rel1441) deployed by scripts/deploy-azure.mjs with the gate stamp. ACR build ch2h succeeded; revision taxila-web--sac4e8e8-3x6d took 0% canary and passed the canary smoke 4/4, then 100%. taxila-web--sf74d1aa-tdd6 (14.4.1) is kept as previous; taxila-web--s5c127d1-l2of (14.4) is deactivated. Migrations: every db/migrations file of ac4e8e8 was already applied. Total 260.6 s. Rollback: node scripts/deploy-azure.mjs --rollback. Shipped on ms-r1442-gate-evidence."
+  }
+ ],
+ "edges": [
+  {
+   "src": "rj-r1443-fold-predicate-rereads",
+   "rel": "caused_by",
+   "dst": "dc-r143-model-reread-same-episode"
+  },
+  {
+   "src": "dc-r1443-same-story",
+   "rel": "supersedes",
+   "dst": "rj-r1443-fold-predicate-rereads"
+  },
+  {
+   "src": "ms-r1442-live",
+   "rel": "measured_by",
+   "dst": "ms-r1442-gate-evidence"
+  }
+ ],
+ "md": {
+  "decisions": "",
+  "measurements": "## ms-r1442-live (2026-10-22)\n\n14.4.2 (ac4e8e88) is live as taxila-web--sac4e8e8-3x6d. Canary smoke passed 4/4; 14.4.1 is kept for rollback.\n",
+  "rejected": ""
+ }
+}
