@@ -147,6 +147,32 @@ const LOW_WORDS = /(?<![a-z])(?:udas|dukhi|sad|bura|upset|akeli|akela|alone|lone
 export const safeAndTells = (text) => { const c = canonReading(text); return SAFE_SELF.test(c) && TELL_HOME.test(c) && !LOW_WORDS.test(c); };
 /** A low mood the child sizes as small, with nothing that makes it bigger (MILD, BIGGER): the check-in's care, never the script. */
 export const mildLow = (text) => { const c = canonReading(text); return MILD.test(c) && !BIGGER.test(c); };
+// 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14 "aunty ke ghar pahunch gayi", "haan, abhi safe hoon… aunty ne
+// call kar diya", p19 r3 #8 "maine aunty ko bata diya": both helplines and "are you safe?" again on every turn): help is IN
+// PLACE. A grown-up they trust now knows (told), has called, or is with them, or they called a helpline themselves; and
+// nothing in the turn is low, heavy, a new danger, a no or a secret. state.js holds such an episode (tier "helped"): no lesson,
+// the helplines stay on the board, and she stops re-saying the numbers and re-asking if they are safe. A parent counts as told
+// or calling, never as "with them" (the episode may be about home). Canonical spellings: call → kal, phone → fon / fone,
+// aunty → aunti, paas → pas, saath → sath, aa → a, police → polike. Precision over recall: a miss keeps the shipped hold.
+const ADULT = "aunti|auntie|unkle|nani|nana|dadi|dada|mausi|masi|chachi|chacha|bua|mami|mama|didi|bhaiya|bhai|teacher|mam|sir|madam|prinkipal|padosi|pados|padosvali|pados vali|neighbour|neighbor|grandma|grandmother|grandpa";
+const PARENT = "mumi|muma|mom|mum|mother|ma|ama|papa|dad|father";
+const HELP_DONE = new RegExp([
+  // told: "maine aunty ko bata diya", "mummy ko sab bata diya", "teacher ko bol diya hai"
+  `(?:${ADULT}|${PARENT})(?: ji)? ko(?: [a-z]+){0,2} (?:bata|bol|keh|kah) (?:diya|di|dia|chuka|chuki|chuke)`,
+  // they called: "aunty ne call kar diya", "nani ne childline ko phone kar diya"
+  `(?:${ADULT}|${PARENT})(?: ji)? ne(?: [a-z]+){0,3} (?:kal|fon|fone) (?:kar|kr) (?:diya|di|dia|liya|li|lia)`,
+  // the child called a helpline: "maine childline ko call kar diya", "humne police ko phone kiya"
+  `(?:maine|mene|humne|hamne|hum ne|ham ne)(?: [a-z]+){0,2}? (?:childline|child line|helpline|polike)(?: (?:ko|pe|par|me|mein))? (?:kal|fon|fone) (?:kar diya|kar di|kiya|ki|kar liya|kar li)`,
+  // with them: "aunty ke ghar pahunch gayi", "nani ke paas hoon", "padosi aunty ke saath hun"
+  `(?:${ADULT})(?: ji)?(?: ke| ki)? (?:pas|sath|ghar)(?: (?:me|mein|men|par|pe))? (?:hun|hu|hon|a gayi|a gaya|a gai|pahunch gayi|pahunch gaya|pahunch gai)`,
+  // English: "I told my aunt", "I called Childline", "my aunt called them", "my teacher knows"
+  `(?:i|ve|we) (?:told|kaled|foned)(?: (?:my|mi|the|a|our))? (?:${ADULT}|${PARENT}|aunt|childline|child line|helpline|polike)`,
+  `(?:my|mi|our) (?:${ADULT}|${PARENT}|aunt) (?:kaled|foned|knovs|is here|is vith me)`,
+].map((s) => `(?<![a-z])(?:${s})(?![a-z])`).join("|"));
+// a no, a secret, someone coming, or the help undone: "aunty ko nahi bataya", "mat batana", "papa aa rahe hain"
+const HELP_VETO = /(?<![a-z])(?:nahi|nahin|nai|na|not|nt|dont|didnt|never|mat|no|sekret|secret|promise|chup|a rahe|a raha|a rahi|aa rahe|coming)(?![a-z])/;
+/** Help is in place (HELP_DONE: a trusted grown-up told, calling or with them; a helpline called), nothing low, heavy or vetoed. */
+export const helpInPlace = (text) => { const c = canonReading(text); return HELP_DONE.test(c) && !HELP_VETO.test(c) && !LOW_WORDS.test(c); };
 // 14.4 (main safety review; QA TEST 47f4bb3f U2b: a low mood, the check-in, then "pata nahi" got the full script): a WHOLE
 // reply that is only "I don't know" ("pata nahi", "nahi pata", "malum nahi", "dont know", "idk", "not sure", "kuch nahi",
 // "hmm"), a few fillers around it and nothing else. It states nothing, so it is no answer yet: state.js's check-in branch

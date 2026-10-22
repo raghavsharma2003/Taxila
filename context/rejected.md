@@ -2751,3 +2751,13 @@ A reply-honesty guard (the claimed-mistake strip) that also ran on safeguard tur
 ## rj-r1442-source-env-file (2026-10-22)
 
 Sourcing .env.local in bash (`. ./.env.local`). A value with an unquoted & is run as a background job, and its contents are echoed into the tool output; a test-branch credential was exposed in a stream's own transcript. Load env only with `node --env-file`, or one `export` per key, never by sourcing the file. Rotating the exposed test-branch password is the owner's call.
+
+
+<!-- merged from inbox/r1443-helped-main.json -->
+## rj-r1443-fold-predicate-rereads (2026-10-22)
+
+The first cut folded every model re-read in a predicate episode into the passive 14.3 hold. That would have dropped the active hand-off that got p08's child to a neighbour. Rejected before measurement; the same-story restart replaced it.
+
+## rj-r1443-partial-revert-apply (2026-10-22)
+
+The A/B run reverted only some of a patch's paths, so re-applying the whole patch failed silently. Revert exactly the patch's paths, or apply with --include, and check git diff --stat.

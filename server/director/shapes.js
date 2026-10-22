@@ -312,7 +312,16 @@ export const stopCheck = () => (p5Flag("R3CONV")
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
 
-export const safeguard = () => join(
+// 14.4.3 `sameStory` (state.js: a MODEL re-read restarted an episode the predicate or a sure layer opened; sim lab 6da8f599 p08
+// r1-r3 #7-11 "Kya aap abhi safe hain?" five turns running after "abhi theek hai"): the same active hand-off to a grown-up, but
+// no second "are you safe?" and no second list of both numbers; one new, concrete question instead
+export const safeguard = ({ sameStory = false } = {}) => sameStory ? join(
+  "STOP the lesson; calm, warm, plain words",
+  "acknowledge what they said now, in new words; never ask again if they are safe: one new question about where they are or who is near",
+  "help them reach a trusted adult now — who is near, where they can go",
+  "name Childline 1098 once (Tele-MANAS 14416 is on the screen)",
+  "never promise secrecy; stay with them",
+) : join(
   "STOP the lesson; calm, warm, plain words",
   "acknowledge what they said; ask if they are safe right now",
   "tell them to tell a trusted adult now — parent, a teacher",
@@ -337,7 +346,10 @@ export const distressCheckAgain = ({ unsure = false, heavy = false, unheard = fa
   : unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
 export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask ONE short gentle question, only one (are they okay right now: okay, never safe), never two joined with or; no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
-export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+// 14.4.3: help is in place (state.js `helped`; fine.js helpInPlace): the hold and the board stay, the numbers are not re-said
+export const safeguardHelped = () => "help is in place now (a grown-up they trust knows, is calling or is with them): warmly, in your own words, that they did the right thing; stay with them and keep listening; no lesson content; never ask again if they are safe; never re-list the helplines (they are on the screen): one number only if they ask for it or a call is about to be made; never promise secrecy; do not repeat your earlier words";
+export const resumeAfterSafeguard = () =>"gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+export const resumeAfterHelp = () => "help is in place now (a grown-up they trust knows, is calling or is with them): warmly, in a few words, that they did the right thing; no lesson content yet; never ask again if they are safe; then ask whether to carry on with the lesson or stop for today — either is fine";
 export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";
 
 export const teachback = ({ protege }) => join(
