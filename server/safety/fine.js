@@ -128,6 +128,15 @@ export function fineReading(text) {
 export const clearlyFine = (text) => fineReading(text).fine;
 /** A whole reply that is only a bare okay (BARE_OK): the check-in tier's answer to "are you okay right now?" only. */
 export const bareOk = (text) => BARE_OK.test(canonReading(text));
+// 14.4.2 (main safety review; sim lab be9b766a p30 #8: "haan okay… par thodi udaas. aapne maana nahi mujhe best friend",
+// answering the check-in, got the full script as a low mood said again): a low mood the child sizes as SMALL ("thodi udaas",
+// "thoda bura laga", "a little sad", "bas thoda sad hun") is care, not trouble. A degree word right next to a sad word, and
+// nothing that makes it bigger: an intensity, a time ("roj", "hamesha"), being alone, crying, hopelessness, fear or harm.
+// Loneliness is never sized down here. state.js releases such a check-in with its warm line instead of the helplines.
+const MILD = /(?<![a-z])(?:(?:thoda|thodi|thora|thori|jara|halka|halki|a litle|a bit|litle|kuch kuch|slightli)(?: (?:sa|si|se))? (?:udas|dukhi|sad|bura|upset|lov|dovn)|(?:udas|dukhi|sad|bura|upset)(?: (?:sa|si))? (?:thoda|thodi|jara|a litle|a bit))(?![a-z])/;
+const BIGGER = /(?<![a-z])(?:bahut|bohot|bht|veri|reali|itna|itni|alvays|hamesha|roj|daili|har din|kabhi|never|nobodi|koi(?: [a-z]+){0,3} nahi|everyone|khatam|hopeles|bekar|akeli|akela|alone|loneli|rona|ro|roti|rota|kri|mar|mara|mari|mare|marta|marti|marte|marna|pitai|pit|pita|pite|thapad|chamat|chanta|hit|beat|die|dard|hurt|dar|dara|dari|skared)(?![a-z])/;
+/** A low mood the child sizes as small, with nothing that makes it bigger (MILD, BIGGER): the check-in's care, never the script. */
+export const mildLow = (text) => { const c = canonReading(text); return MILD.test(c) && !BIGGER.test(c); };
 // 14.4 (main safety review; QA TEST 47f4bb3f U2b: a low mood, the check-in, then "pata nahi" got the full script): a WHOLE
 // reply that is only "I don't know" ("pata nahi", "nahi pata", "malum nahi", "dont know", "idk", "not sure", "kuch nahi",
 // "hmm"), a few fillers around it and nothing else. It states nothing, so it is no answer yet: state.js's check-in branch
