@@ -73,7 +73,7 @@ import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
-import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, drawAsked, pictureNote } from "../director/shapes.js";
+import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
 /** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
 const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
@@ -799,6 +799,19 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (fixed !== next.lastMove.shape) {
       next.lastMove = { ...next.lastMove, shape: fixed };
       try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] visual-ask truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+    }
+  }
+  // QA on be9b766a (13ec94a7: "picture yahan nahi dikh rahi" under triangle boards): a picture ask that names nothing, with
+  // no Director module, was told "nothing is on the screen this turn" while the turn's own board was being drawn, or a board
+  // was up. The board it asked for draws while she speaks; a board already up is on the screen. (A board that then does
+  // not answer the ask has her line unpointed after it, as before.)
+  if (!late && r.move?.request === "visual" && !INTERACTIVE_ASKS.has(String(r.move?.visual ?? "")) && String(next.lastMove?.shape ?? "").includes(VISUAL_NOT_YET)) {
+    const askedBoard = kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard");
+    const up = !askedBoard && !!seamSafe("studio.boardUp", () => studioSeam.boardUp?.(lesson.id), false);
+    const shape = boardTruthShape(next.lastMove.shape, { askedBoard, boardUp: up });
+    if (shape !== next.lastMove.shape) {
+      next.lastMove = { ...next.lastMove, shape };
+      try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] board truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
     }
   }
   // round 5 (owner decision 14.2): a REAL picture of what they asked to see, for the picture cohort (studio/picture.js
@@ -1850,6 +1863,13 @@ const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn:
  * dikhao" was cut as "parts the screen does not show" against the open question's 5-part engine, leaving "Woh 0 se kitna door
  * hai?"). The board itself is gated against her line (W8 counts) and checked against the request (studio/request.js). PURE.
  */
+/** PURE. "nothing is on the screen this turn" made true for the board: the board asked for draws while she speaks; a board
+ * already up is on the screen; otherwise unchanged (QA on be9b766a, 13ec94a7). */
+export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } = {}) => {
+  const s = String(shape ?? "");
+  const truth = askedBoard ? VISUAL_DRAWING : boardUp ? VISUAL_ON_STAGE : null;
+  return truth && s.includes(VISUAL_NOT_YET) ? s.replace(VISUAL_NOT_YET, truth) : shape;
+};
 export const boardAnswersAsk = (move) => !!(move?.request === "visual" && move.see && (move.see.subject || move.see.show === "number_line" || move.see.show === "picture"));
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
 

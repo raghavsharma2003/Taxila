@@ -98,3 +98,42 @@ test("38aad918: a board that draws over a picture still retires the picture (as 
     assert.equal(L.pieces.get(pic.intentId)?.retiredWhy, "replaced");
   } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
 });
+
+test("QA on be9b766a (459069d8 t5, 7461bc46 t2): a piece taken down is traced as studio.slot.retired with its reason, never as a failed slot", async () => {
+  const { flushTrace, _setTraceDeps, _resetTrace } = await import("../server/trace/writer.js");
+  const rows = [];
+  _setTraceDeps({ off: false, insert: async (rs) => { rows.push(...rs); return rs.length; } });
+  try {
+    const id = "r8-retired-trace";
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    const a = seam.studioSeam.showImage(id, { src: PNG, alt: "a", subject: "a", jobId: "ja" });
+    const b = seam.studioSeam.showImage(id, { src: PNG, alt: "b", subject: "b", jobId: "jb" });   // replaces a
+    seam.studioSeam.clearBoard(id);                                                            // clears b
+    await flushTrace();
+    const of = (intentId) => rows.filter((r) => r.data?.intentId === intentId && String(r.kind).startsWith("studio.slot."));
+    assert.deepEqual(of(a.intentId).map((r) => [r.kind, r.data.why]).filter(([k]) => k !== "studio.slot.revealed"), [["studio.slot.retired", "replaced"]]);
+    assert.deepEqual(of(b.intentId).map((r) => [r.kind, r.data.why]).filter(([k]) => k !== "studio.slot.revealed"), [["studio.slot.retired", "cleared"]]);
+  } finally { _setTraceDeps({ insert: null, off: null }); _resetTrace(); }
+});
+
+test("QA on be9b766a (897a7453): triangle board, then a rocket board, then her line goes back to the triangle: the triangle board comes back", () => {
+  const id = "r8-board-back";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const page = (texts) => ({ v: 1, scriptId: texts[0], line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "p", op: "polygon", startMs: 0, endMs: 800, points: [[200, 300], [340, 100], [480, 300]] }, ...texts.map((t, i) => ({ id: `t${i}`, op: "text", startMs: 800 + i * 300, endMs: 1100 + i * 300, at: [120 + i * 200, 360], text: t, size: "m" }))] });
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "wb-1:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["triangle", "corners"]) }, revealedTurn: 1, lines: ["Triangle ke teen corners hote hain."] });
+  L.pieces.set("wb-2", { intentId: "wb-2", slotId: "wb-2:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["rocket", "flame"]) }, revealedTurn: 2, prevBoard: "wb-1", lines: ["Rocket ki flame neeche hoti hai."] });
+  L.onScreen = "wb-2";
+  // a line about neither board: nothing comes back (the rocket board goes, as before)
+  assert.equal(seam.studioSeam.keepBoardSlot(id, "Theek hai, ab ek naya sawaal karte hain.", [], {}), null);
+  L.onScreen = "wb-2"; L.pieces.get("wb-2").state = "revealed"; L.pieces.get("wb-2").retired = false;
+  const back = seam.studioSeam.keepBoardSlot(id, "Ab triangle par lautte hain. Iske corners gino.", [], {});
+  assert.equal(back?.intentId, "wb-1", "the triangle board is back on the response");
+  assert.equal(L.onScreen, "wb-1");
+  assert.equal(L.pieces.get("wb-2").retiredWhy, "replaced");
+  // a number the earlier board never had is a new problem: it does not come back for it
+  L.pieces.set("wb-3", { intentId: "wb-3", slotId: "wb-3:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["rocket", "flame"]) }, revealedTurn: 3, prevBoard: "wb-1", lines: [] });
+  L.onScreen = "wb-3";
+  assert.equal(seam.studioSeam.keepBoardSlot(id, "Ab triangle par lautte hain: iske 7 corners?", [], {}), null);
+});
