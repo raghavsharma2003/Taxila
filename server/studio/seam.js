@@ -1183,10 +1183,14 @@ export const studioSeam = {
   },
 
   /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
-  onScreenSlot(lessonId, intentId, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
+  onScreenSlot(lessonId, intentId, withhold = null, move = {}, line = null) {   // withhold omitted: null, fail closed (main)
     const L = lessons.get(lessonId);
     const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
     if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    // QA on ac4e8e88 (c07175b4, a12e757b: triangle, then a rocket board still being drawn, then "Board par dekho: Ab triangle
+    // par lautte hain"): a late board her line has left is never shown or pointed at; the board up then goes by the keep
+    // rules (keepBoardSlot), which bring back the board her line is about
+    if (line != null && on.kind === "whiteboard" && !syncedWithLine(on.artifact.script, line)) { traceRecord("studio.late_board_dropped", { intentId, why: "unsynced" }); return null; }
     if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
     if (movedFrom(on, move)) return null;
     const g = gatedSlot(L, on, on.state, "on_screen");

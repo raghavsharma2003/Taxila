@@ -137,3 +137,22 @@ test("QA on be9b766a (897a7453): triangle board, then a rocket board, then her l
   L.onScreen = "wb-3";
   assert.equal(seam.studioSeam.keepBoardSlot(id, "Ab triangle par lautte hain: iske 7 corners?", [], {}), null);
 });
+
+test("QA on ac4e8e88 (c07175b4, a12e757b): a late rocket board under 'Ab triangle par lautte hain' is never shown; the triangle board comes back", () => {
+  const id = "r8-late-left";
+  seam.subscribe(id, () => {});
+  const L = seam._lesson(id);
+  const page = (texts) => ({ v: 1, scriptId: texts[0], line: { lessonId: id }, anchor: "line_audio_start", board: { w: 677, h: 423, ground: "chalk" }, mode: "fresh", durationMs: 2000,
+    ops: [{ id: "p", op: "polygon", startMs: 0, endMs: 800, points: [[200, 300], [340, 100], [480, 300]] }, ...texts.map((t, i) => ({ id: `t${i}`, op: "text", startMs: 800 + i * 300, endMs: 1100 + i * 300, at: [120 + i * 200, 360], text: t, size: "m" }))] });
+  L.pieces.set("wb-1", { intentId: "wb-1", slotId: "wb-1:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["triangle", "corners"]) }, revealedTurn: 1, lines: ["Triangle ke teen corners hote hain."] });
+  // t2's rocket board, asked over the triangle and still being drawn at the end of t2, has landed (late) before t3
+  L.pieces.set("wb-2", { intentId: "wb-2", slotId: "wb-2:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["rocket", "flame"]) }, revealedTurn: 2, prevBoard: "wb-1", lines: [] });
+  L.onScreen = "wb-2";
+  const t3 = "Ab triangle par lautte hain. Triangle ke corners gino.";
+  assert.equal(seam.studioSeam.onScreenSlot(id, "wb-2", [], {}, t3), null, "the late rocket board is not shown under a triangle line");
+  assert.equal(seam.studioSeam.keepBoardSlot(id, t3, [], {})?.intentId, "wb-1", "the triangle board comes back");
+  // a late board her line IS about is shown, as before
+  L.pieces.set("wb-3", { intentId: "wb-3", slotId: "wb-3:slot", kind: "whiteboard", state: "revealed", artifact: { kind: "whiteboard", script: page(["rocket", "flame"]) }, revealedTurn: 3, lines: [] });
+  L.onScreen = "wb-3";
+  assert.equal(seam.studioSeam.onScreenSlot(id, "wb-3", [], {}, "Rocket ki flame neeche hoti hai.")?.intentId, "wb-3");
+});
