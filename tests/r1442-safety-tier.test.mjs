@@ -63,3 +63,24 @@ describe("p30: a low mood the child sizes as small", () => {
     assert.equal(big.move.escalated, true);
   });
 });
+
+describe("release replay on c5a55681: safe, then telling family", () => {
+  test("'haan safe hoon... par ghar pe bata sakti hoon kya yeh sab?' after a check-in is released, not the script", () => {
+    const r = turn(checkOpened(), "haan safe hoon... par ghar pe bata sakti hoon kya yeh sab?", low());
+    assert.notEqual(r.move.kind, "safeguard", JSON.stringify(r.move));
+    assert.ok(!r.ui?.whiteboard || !/1098/.test(JSON.stringify(r.ui.whiteboard)));
+  });
+  test("... but a contrast that is a low mood still escalates", () => {
+    for (const t of ["theek hoon, par kuch accha nahi lagta", "main safe hoon lekin sab bekaar lagta hai"]) {
+      const r = turn(checkOpened(), t, low());
+      assert.equal(r.move.escalated, true, t);
+    }
+  });
+});
+
+test("safeAndTells: safe or okay, wanting to tell family, nothing low or heavy; never 'nobody talks to me' or a hitting word", async () => {
+  const { safeAndTells } = await import("../server/safety/fine.js");
+  for (const t of ["haan safe hoon... par ghar pe bata sakti hoon kya yeh sab?", "theek hoon, mummy ko bata dungi", "main okay hoon par papa ko bataun?", "I am safe, can I tell my mom?"]) assert.equal(safeAndTells(t), true, t);
+  for (const t of ["ghar pe koi baat nahi karta", "main safe hoon lekin sab bekaar lagta hai", "safe hoon par papa phir maarenge, mummy ko bataun?",
+    "haan okay hoon, par mummy ko bataungi ki main udaas hoon", "theek hoon, par kuch accha nahi lagta", "main safe hoon, papa ne pitai ki, mummy ko bataun?"]) assert.equal(safeAndTells(t), false, t);
+});
