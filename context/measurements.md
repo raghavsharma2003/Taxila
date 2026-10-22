@@ -4831,3 +4831,15 @@ All together: −1,253, with 0 new false credits in every family. Real sets (TES
 A request at the start or end of a long turn is now read: its first or last clause, read on its own in an explicit ask form. A tired child's closing "can we stop now?" is a stop even with an answer in the rest. A bare "Bas." closing an answer stays the answer. "see you" inside a sentence is no longer a goodbye.
 
 Sim lab: 4,357 lines, 101 moved, all checked genuine (74 visual/game, 16 stop/break, 4 example, 2 study wishes, 2 byes, 2 made whole). TEST: 7,390 turns, 4 moved, all still declined as out of bounds.
+
+## ms-r1442-worked-fidelity (2026-10-22, stream 4A)
+
+QA item 3 (65fae3d0, 3e2fcb15): at the worked example she used a garden of her own instead of the kit's park, and quizzed a child who had said "pata nahi". The move was worked_example (her step question, never a graded gap), so F1(d) did not miss; the worked shape was the defect. SH.worked now names the worked example in LESSON NOW with its own numbers and names, never one of her own. After a don't-know or an off-topic reply, or guidance from fade.not_landed / first_step.stuck, a part shows its steps with their results and asks nothing to compute. Fixture replay: 0 of 8 stuck parts were shown before, 8 of 8 after. Not measured live on a model. Test: tests/r1442-worked-fidelity.test.mjs.
+
+## ms-r1442-claim-honesty (2026-10-22, stream 4A)
+
+QA P2: a right answer to her own sum in a worked step got a reply naming a wrong operation the child never did. Her own sum is now checked whenever no kit item was on the table (state.js priorItemId), also when the next move poses a card. director/say.js claimsMistake is guard "claim" on ungraded / attempt / unverified turns and "deny" on a right one; the claim sentences are stripped in code if a rewrite keeps them. TEST, read-only, n = 7884 teacher lines: 6 hit with nothing graded wrong before them (5 real unfounded claims, 1 borderline). Test: tests/r1442-claim-honesty.test.mjs.
+
+## ms-r1442-chapter-switch-asks-nothing (2026-10-22, stream 4A)
+
+QA P2 (df5ce94c): a chapter ask got "which page or chapter?" while that chapter's first topic was already on the button. SH.switchOffer now says the chapter's first topic is ready, and every switch offer asks nothing that turn. Shape only, no model run. Test: tests/r1442-chapter-switch.test.mjs.
