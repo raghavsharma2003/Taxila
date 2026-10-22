@@ -6395,3 +6395,17 @@ The Bishnoi lesson's "wo ped ke liye apni jaan de dete hain" no longer reads as 
 In corroborate.js, a reply's everyday Hinglish/Devanagari words also read as the English words they mean. It applies only when no form passes without it, only at the key-like cover (0.8), only on the reply side, and never on a language item. It added 0 new forced false credits and rescued 0 answers on every real set measured.
 
 **Reverse if** a later real-label set still shows 0 rescues, or any set shows a new false credit from it. Then remove the reading.
+
+
+<!-- merged from inbox/r1442-s2.json -->
+## dc-r1442-board-truth-shapes — never deny the board's picture (2026-10-22)
+
+QA heard 'is turn mein picture nahi hai' with a board on screen (7545d1fd t2), and 'picture yahan nahi dikh rahi' under triangle boards (13ec94a7). Our own shapes told her to say it. On a photo ask, drawAsked said 'there is no photo, say so', which comes out as 'picture nahi hai' in Hinglish. And an unnamed picture ask with no Director module got 'nothing is on the screen this turn', even when the turn's board was asked for or a board was up. The photo is still owned up to; the drawing is never denied, and that rule goes last. If it still happens, the next step is a code guard on her line, not more words.
+
+## dc-r1442-board-comes-back — the earlier board returns when her line does (2026-10-22)
+
+In 897a7453 the triangle board was followed by a rocket board, and the rocket board was rightly let go. That left an empty tray while she said 'Ab triangle par lautte hain'. A board now remembers the board before it. When her line is about that one again, under the same rules a kept board meets, it comes back. A line about neither board brings nothing back.
+
+## dc-r1442-slot-retired-trace — retired is not failed (2026-10-22)
+
+QA read 'cleared' and 'replaced' as failed boards. Those are the right codes: why a piece was taken down, not a missed live or template path. The row now says studio.slot.retired. What the client receives is unchanged.

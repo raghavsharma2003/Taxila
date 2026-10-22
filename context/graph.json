@@ -23175,6 +23175,34 @@
    "at": "2026-10-22",
    "title": "14.4.2, QA on be9b766a. Item 2 (3a1d1e60 'mujhe koi aur topic padhna hai' ×3: chips only back / stop, and t1 'not in your class' with no topic named): requests.js read 'koi aur topic' as a SUBJECT ('switch: koi aur topic'). Now a switch whose subject only says 'some / another / other topic' (koi aur, kuch, doosra, alag, another, new … topic / chapter / cheez) is change_topic with topic:true, and state.js gives real topics of their class as buttons at once (SH.topicChoices first:true), never 'not in your class'. P2 ('chapter 1 se shuru karo' at the session's start got 'page ya chapter ka naam bataiye'): session/intake read it as 'taught' with no candidate; session/candidates.js now reads a chapter ask (requests.js chapterAskOf) as that chapter's first topic: p 0.9 with one subject in view (named, or the timetable's only one), else each subject's chapter N offered to choose (c5: maths / evs / english / hindi ch01). Tests: tests/r1442-qa-topic-asks.test.mjs (2, both fail on f74d1aae).",
    "source": "inbox/r1442-4a.json"
+  },
+  {
+   "id": "dc-r1442-board-truth-shapes",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "Her words never deny a picture the board is drawing or showing (02ae9217). drawAsked, on a photo ask the board sketches, still owns up to the photo (owner 14.2) and ends on 'never say there is no picture or nothing on the screen'. turn.js boardTruthShape replaces VISUAL_NOT_YET with VISUAL_DRAWING when the turn's board was asked for, or with VISUAL_ON_STAGE when a board is up. Reversal: if QA or the sim lab still count 'picture nahi hai' under a board, the next step is a code guard on her line (a say.js screen problem), not more prompt words.",
+   "source": "inbox/r1442-s2.json"
+  },
+  {
+   "id": "dc-r1442-board-comes-back",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "When the board up is let go as unsynced and her line is about the board before it, that board comes back on the response (0a009e25). It is kept, not revealed again, with no second notebook entry, and is traced as studio.board_back. It is held to the keep rules: not moved off its item, synced with her line, no number it never had, nothing withheld, certified. Main chose this over silencing her (choice A): it makes her words true. Reversal: if a returning board is ever wrong for her line (QA channel truth), narrow the rule to her line naming the earlier board's own words.",
+   "source": "inbox/r1442-s2.json"
+  },
+  {
+   "id": "dc-r1442-slot-retired-trace",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "A piece taken down (cleared, replaced, beat exit) is traced as studio.slot.retired with its reason. Before, its row said studio.slot.failed, because its wire status is {failed, voice} (e8149234); the wire is unchanged. A board that truly failed keeps studio.slot.failed with why 'live:… template:…'.",
+   "source": "inbox/r1442-s2.json"
+  },
+  {
+   "id": "open-r1442-board-truth-unmeasured",
+   "kind": "open",
+   "at": "2026-10-22",
+   "title": "Neither fix is measured on sim-lab. dc-r1442-board-truth-shapes is a prompt-shape change: counting 'picture nahi hai' under a board needs a sim-lab or QA re-run. dc-r1442-board-comes-back depends on board-to-board sequences, which the sim-lab records do not carry at slot level. The evidence so far is QA's lessons (7545d1fd, 13ec94a7, 897a7453) and tests that fail on base.",
+   "source": "inbox/r1442-s2.json"
   }
  ],
  "edges": [
