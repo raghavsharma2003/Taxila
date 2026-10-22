@@ -1172,7 +1172,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     const lateAsk = next.lateBoard && next.lateBoard.turn < next.turn ? next.lateBoard : null;
     if (next.lateBoard && (!lateAsk || next.turn - next.lateBoard.turn > 2)) delete next.lateBoard;
     if (lateAsk && !late && !itemMoved && !safetyWords && teacherReply && !studioSlot) {
-      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }) : null), null);
+      const slot = seamSafe("studio.onScreenSlot", () => (typeof studioSeam.onScreenSlot === "function" ? studioSeam.onScreenSlot(lesson.id, lateAsk.intentId, heldNow, { itemId: r.move?.itemId ?? null, skillId: r.move?.skillId ?? null }, teacherReply) : null), null);
       if (slot) {
         delete next.lateBoard;
         studioSlot = slot; studioReasons.push("studio.late_board_shown");
