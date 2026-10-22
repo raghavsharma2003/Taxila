@@ -23077,6 +23077,41 @@
    "at": "2026-10-21",
    "title": "Proposal (a), parked by main: keep req.subject ?? visualAskOf(text).subject ?? freeSubjectOf(text). It moves 96 readings over the sim-lab lines. A code-read Director replay changes s.offTopic on 5 of 4,068 turns and no move (0 visualUnavailable or off-kit sketch flips); its effect is on model-read requests and needs a sim-lab A/B. Odd readings: 'cake' (a predicate bug that takes a past-clause photo mention over the asked clause), 'दी कोन' (दी missing from ASK_STOP), 'laddoo' over 'recipe' (a fair reading).",
    "source": "inbox/r5-38aad918-s2.json"
+  },
+  {
+   "id": "dc-r1441-held-record-not-silence",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A safeguarded lesson's end record, which the writer gets without the child's turns, now marks those turns '(left out)', never '(none)'. A rule placed before the last-position check rule tells the writer to say nothing about whether or what the child said, replied or answered beyond the FACTS' own counts, and nothing about why. Found end to end on the 14.4.1 candidate be9b766a (10 TEST lessons from QA and the sim lab, 6 safeguarded): with '(none)' the writer read the absence as silence, writing 'No spoken or written response was recorded' for a child who had spoken all lesson (60a23346, 4 incidents). Reverse if a replay shows the rule leaking the reason ('left out', 'withheld'), or the facts-only notes losing true practice counts.",
+   "source": "inbox/r1441-heldsilence-main.json"
+  },
+  {
+   "id": "ms-r1441-endrecord-e2e",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "End records written by the 14.4.1 candidate be9b766a itself, read from TEST rows (QA + sim lab scripted children, 10 ended lessons, 22:24-22:40 UTC; 6 safeguarded = incident, safeguardedAt or check-in): teacher as the learner 0/10, he/she for the child 0/10, a 3-word run of the child's own words in a safeguarded record 0/6, the fence would drop nothing in any of the 10. Defect found: 3 of 6 safeguarded notes spoke of the child's responses as absent (one 'No spoken or written response was recorded'). Fix replay (40 safeguarded TEST lessons with 3+ child turns, x2, taxila-fast): claims of no response / no answer recorded 12/80 -> 1/80 (the 1 a facts-count statement of 0 practice attempts); spoken-silence claims 1 -> 0; mentions of anything left out or withheld 0 -> 0; fence hits 0 -> 0. 1 of the 10 e2e lessons took the deterministic line ('Today Riya practised Grams and kilograms with Asha.': writer unavailable or fenced empty, not distinguished in the row).",
+   "source": "inbox/r1441-heldsilence-main.json"
+  },
+  {
+   "id": "rj-r1441-shared-branch-worktrees",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Checking out one branch in two worktrees (the integration tree by 'git checkout -B', the 14.4.1 tree already on it). A commit in one moved the other's HEAD while its files stayed: the integration tree showed the inverse diff as staged, and a gate there stamps a HEAD whose files it never tested (the 3ed0767d gate was stopped for this; its index was verified identical to 3ed0767d's tree before the reset). Rule: one branch, one worktree; a tree that merges and pushes works detached and pushes HEAD:int/<branch>.",
+   "source": "inbox/r1441-heldsilence-main.json"
+  },
+  {
+   "id": "ms-r1441-live",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "Release 14.4.1 live, 2026-10-22 ~00:35 UTC. int/r5-rel1441 @ f74d1aae; revision taxila-web--sf74d1aa-tdd6, image f74d1aa. Gate: 3607/3611 pass, 0 fail, 3 skipped, 1 todo (RCA-4b); prompt budget PASS. Canary smoke 4/4 (start 201, text opening, 2 turns with moves, end 200; test account deleted). Rollback target: taxila-web--s5c127d1-l2of (14.4). Contents:\n- the end record (child as the learner; safeguarded lessons facts-only, '(left out)', recordFence);\n- 4A: F1(b) round 2, F1(d), the stray-script read, number-led faded keys, 14.5 grading vetoes, the deep-kind marks removal;\n- stream 2: a failed board says why, freeSubjectOf refuses verbs, a kept subject is spent once a board is asked for it, a picture stays under the board.\nSim lab battery on be9b766a (n=42 lessons, 0 unavailable of 585 turns): teacher-as-learner 15/30 -> 0/34; referral wording in safeguarded records 4/6 -> 0/8; child words 0/8; no-response claims 2/8 (fixed in f74d1aae, replay 12/80 -> 1/80); rule (1) missing 0; 36-card judge scores within noise of b7413e5f.",
+   "source": "inbox/r1441-live-main.json"
+  },
+  {
+   "id": "dc-r1441-ship-over-qa-preexisting",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "14.4.1 shipped without a full QA PASS. QA on be9b766a had 2 FAILs, both checked to be no regression against live 14.4.\n- Item 2: 'mujhe koi aur topic padhna hai' x3 never offered real topics, and she said the topic is 'not in your class'. The shape 'say kindly that it is not in their class's lessons here' is in 5c127d1a's shapes.js too.\n- Item 3: F1(d)'s whole worked example did not visibly land. Where it does not fire, behaviour equals live.\nThe two sim-lab safety over-reactions (p13 'apni jaan de dete hain' history; p30 'thodi udaas' after a check-in, then the numbers after 'safe hoon') are live in 14.4 too.\nShipping now carries the guardian-export disclosure fix and the end-record truth fixes. Rollback stays one command. QA and the sim lab were blocked on a Send Message permission prompt from about 22:20 UTC and could not re-run on f74d1aae; the f74d1aae change was measured by replay (12/80 -> 1/80) and the gate.\nReverse (roll back) if a post-deploy read or a re-run QA item shows a regression against 14.4.",
+   "source": "inbox/r1441-live-main.json"
   }
  ],
  "edges": [
@@ -36719,6 +36754,26 @@
    "src": "dc-r5-picture-under-board",
    "rel": "measured_by",
    "dst": "ms-r5-picture-under-board"
+  },
+  {
+   "src": "dc-r1441-held-record-not-silence",
+   "rel": "part_of",
+   "dst": "dc-r1441-safeguarded-record-facts-only"
+  },
+  {
+   "src": "dc-r1441-held-record-not-silence",
+   "rel": "measured_by",
+   "dst": "ms-r1441-endrecord-e2e"
+  },
+  {
+   "src": "dc-r1441-safeguarded-record-facts-only",
+   "rel": "measured_by",
+   "dst": "ms-r1441-endrecord-e2e"
+  },
+  {
+   "src": "dc-r1441-ship-over-qa-preexisting",
+   "rel": "measured_by",
+   "dst": "ms-r1441-live"
   }
  ]
 }
