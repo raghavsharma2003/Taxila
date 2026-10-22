@@ -498,10 +498,14 @@ export const visualUnavailable = ({ subject }) => join(
  */
 export const drawAsked = ({ subject, show, photo }) => join(
   photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
-    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead`
+    // QA on be9b766a (7545d1fd t2): "there is no photo, say so" came out as "is turn mein picture nahi hai" under the board's
+    // sketch; a sketch IS a picture, so the photo is owned up to and the drawing never denied
+    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead, a drawing, not a photo`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
   `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
+  // (last: the rule that must fire) the photo is owned up to, the board's drawing of it never denied
+  show === "picture" && photo !== "coming" ? "never say there is no picture or nothing on the screen" : "",
 );
 /** round 5 (owner decision 14.2): a real picture of what they asked for is being made (studio/picture.js) or cannot come now;
  *  it is never said to be there before it mounts. */

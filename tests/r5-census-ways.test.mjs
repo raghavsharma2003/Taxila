@@ -184,3 +184,36 @@ test("38aad918: a kept subject is spent once a board was asked for it; a later p
     assert.notEqual(m.see?.subject, "triangle", `turn ${i + 2} ("${text}") asked the board for the spent subject again`);
   }
 });
+
+test("(a) review: 'दी' (a spoken 'the') is never part of the thing ('दी कोन दिखाओ' asks for the cone)", async () => {
+  const { visualAskOf } = await import("../server/director/requests.js");
+  assert.equal(visualAskOf("पर आइसक्रीम कोन कुकिंग है। दी कोन दिखाओ।")?.subject, "कोन");
+});
+
+test("(a) review: a picture SEEN somewhere ('photo mein dekha tha') is not the ask; the ask's own clause names the thing", async () => {
+  const { visualAskOf } = await import("../server/director/requests.js");
+  assert.equal(visualAskOf("cylinder... gol hai na side se? lekin cake toh photo mein dekha tha book mein... cylinder dikhao")?.subject, "cylinder");
+  assert.equal(visualAskOf("maine photo mein dekha tha, aloo dikhao")?.subject, "aloo");
+  assert.equal(visualAskOf("par picture mein kya likha hai? Dikhao na")?.subject, undefined);
+  // a picture word that IS the ask still names its thing
+  assert.equal(visualAskOf("aloo ki photo dikhao")?.subject, "aloo");
+  assert.equal(visualAskOf("aloo photo mein dikhao")?.subject, "aloo");
+});
+
+test("QA on be9b766a (13ec94a7, 7545d1fd): her words never deny a picture the board is drawing or showing", async () => {
+  const { boardTruthShape } = await import("../server/brain/turn.js");
+  const { VISUAL_NOT_YET, VISUAL_DRAWING, VISUAL_ON_STAGE, drawAsked } = await import("../server/director/shapes.js");
+  // a picture ask naming nothing, no Director module: the move says nothing is on the screen (the precondition)
+  let r = step(initLessonState({ topicId: kit().topicId, kit: kit(), ctx: CTX, seed: 11, now: 0 }), { event: "start", kit: kit(), now: 0 });
+  r = step(r.state, { event: "turn", kit: kit(), cls: { ...cls("no_evidence"), request: { type: "visual", kind: "diagram", whole: true } }, text: "dikhao", now: 20000 });
+  const shape = String(r.move.shape);
+  if (shape.includes(VISUAL_NOT_YET)) {
+    assert.ok(boardTruthShape(shape, { askedBoard: true }).includes(VISUAL_DRAWING), "the board asked for this turn draws while she speaks");
+    assert.ok(boardTruthShape(shape, { boardUp: true }).includes(VISUAL_ON_STAGE), "a board already up is on the screen");
+    assert.ok(!boardTruthShape(shape, { boardUp: true }).includes(VISUAL_NOT_YET));
+  }
+  assert.equal(boardTruthShape(`x; ${VISUAL_NOT_YET}`, {}), `x; ${VISUAL_NOT_YET}`, "no board: unchanged");
+  assert.ok(boardTruthShape(`x; ${VISUAL_NOT_YET}`, { askedBoard: true }).includes(VISUAL_DRAWING));
+  // the photo the board sketches instead: owned up to, the drawing never denied (rule last)
+  for (const photo of [undefined, "busy"]) assert.match(drawAsked({ subject: "aloo", show: "picture", photo }), /never say there is no picture or nothing on the screen$/);
+});
