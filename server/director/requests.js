@@ -55,6 +55,7 @@ const STOP = new RegExp([
 ].join("|"), "i");
 const CONTINUE = /^(?:(?:no|nahi|nahin)[\s,]+)*(?:(?:let'?s|lets|chalo|ok(?:ay)?)\s+)?(?:keep\s+going|continue(?:\s+karte\s+hain|\s+karo|\s+please)?|carry\s+on|go\s+on|aage\s+(?:chalo|badho|karo|bado)|chalo\s+(?:padhte|aage|continue|shuru)\b.*|padhte\s+hain|nahi\s+rukna|don'?t\s+stop|continue\s+karte\s+hain|wapas\s+lesson|back\s+to\s+(?:the\s+)?lesson)\b/i;
 const BREAK = /\b(?:(?:short|small|quick|chhota|thoda|ek)\s+break|break\s+(?:chahiye|lena|le\s+sakte|le\s+lu|le\s+loon|please|lete\s+hain)|take\s+a\s+(?:short\s+)?break|need\s+a\s+break|can\s+i\s+(?:take\s+a\s+)?(?:short\s+)?break|i'?m\s+tired|thak\s+(?:gaya|gayi|gyi|gya)|thoda\s+aaram|rest\s+(?:karna|chahiye|please))\b/i;
+const OTHER_TOPIC = /^(?:(?:koi|kuch|ek|aur|doosra|dusra|doosri|dusri|alag|other|another|different|new|naya|nayi)\s+)+(?:topic|chapter|cheez|chiz|lesson|subject|vishay)?$|^(?:topic|chapter|subject)$/iu;
 const CHANGE_TOPIC = /\b(?:something\s+else|kuch\s+aur\s+(?:baat|padh\w*|karte|batao|karo|sikha\w*|seekh\w*|sikh\w*)|kuch\s+(?:alag|dusra|doosra)|dusri\s+baat|doosri\s+baat|(?:change|badlo|badal\s+do)\s+(?:the\s+)?topic|topic\s+(?:change|badlo|badal\s+do)|(?:dusra|doosra|another|different|new)\s+topic|talk\s+about\s+(?:something|anything)|is\s+(?:ke|ki)\s+(?:alawa|alava|siva))\b/i;
 // census 14.5 (F1, 310b8c82 / 3437b744: "Chapter 1 se shuru karo", "start from chapter 1" were no request at all): a chapter
 // of their book by number, to start (the Director offers its first topic: state.js "switch")
@@ -412,6 +413,9 @@ function requestOfLine(text) {
   if (!attemptLike(t) && EXPLAIN_FIRST.test(t)) return { type: "explain_first", whole };
   // round 3 fix (experience B8): a named subject to study instead (before the stop words it may carry: "yeh nahi padhna")
   const switchTo = !attemptLike(t) ? switchSubjectOf(t) : null;
+  // 14.4.2 (QA 3a1d1e60 "mujhe koi aur topic padhna hai" ×3): "some other topic" names no subject: an explicit ask for
+  // ANOTHER TOPIC (real topics of their class at once), never a subject to look for
+  if (switchTo && OTHER_TOPIC.test(switchTo)) return { type: "change_topic", topic: true, whole };
   if (switchTo) return { type: "switch", subject: switchTo, whole };
   // round 2 safety floor: the relational lexicon's anchored end_request reading too (en / hl / Devanagari; safety.js
   // wantsToStop reads the same), so "bas, aaj ke liye itna hi" is a stop in code with no model (stop-drill 4/8 → 8/8)

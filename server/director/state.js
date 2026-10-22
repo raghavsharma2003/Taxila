@@ -1018,8 +1018,9 @@ function requestMove(s, input, item, req, labels) {
         const again = (s.topicAsks ?? []).some((t) => s.turn - t <= TOPIC_ASK_WINDOW);
         s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
         // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
-        const choices = again && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
-        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title) }), {
+        // (an explicit ask for another TOPIC, "koi aur topic padhna hai", gets the topics at once: 14.4.2, QA 3a1d1e60)
+        const choices = (again || req.topic) && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
+        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title), first: !again }), {
           chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
         const can = waysCan(s, input);
         if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysOffer(labels, { ...can, picture: false }).chips, request: "change_topic" });

@@ -11,7 +11,7 @@ import { getTopic, topicSequence, SUBJECT_ORDER } from "../../content/curriculum
 import { conceptTokens, tokens } from "../../lesson/purpose.js";
 import { ACTIVITY_WORDS, contentWords } from "./intake.js";
 import { CONFIRM_MIN_P } from "./flags.js";
-import { romanLine } from "../requests.js";
+import { romanLine, chapterAskOf } from "../requests.js";
 
 /**
  * School vocabulary → syllabus words (a reviewed list, child-free, library-level: TUTOR-MODEL §2.3 point 3). Each entry is
@@ -241,6 +241,15 @@ export function intakeCandidates(frame, text, ctx = {}) {
   const subjects = named ? [named]
     : frame.kind !== "want" && ctx.subjects?.length ? ctx.subjects.map((s) => subjectInClass(s, cl)).filter(Boolean)
       : subjectsOfClass(cl);
+  // 14.4.2 (QA: "chapter 1 se shuru karo" got "page ya chapter ka naam bataiye"): a chapter of their book by number is that
+  // chapter's first topic: certain with one subject in view, else each subject's chapter N to choose from
+  const chapterN = chapterAskOf(text);
+  if (chapterN) {
+    const firsts = subjects.map((sub) => (index().get(cl)?.get(subjectInClass(sub, cl) ?? sub) ?? []).find((tp) => tp.chapterNumber === chapterN)).filter(Boolean)
+      .map((tp) => ({ topicId: tp.id, chapterId: tp.chapterId, subject: tp.subject, classLevel: cl, title: tp.titleText, score: W.minScore, via: "chapter" }));
+    if (firsts.length === 1) return { candidates: [{ ...firsts[0], p: 0.9 }], top: { ...firsts[0], p: 0.9 }, p: 0.9, abstain: false, ask: null };
+    if (firsts.length > 1) { const each = firsts.map((c) => ({ ...c, p: 1 / firsts.length })); return { candidates: each, top: each[0], p: each[0].p, abstain: false, ask: each.slice(0, 4) }; }
+  }
   const q = queryOf(text);
   const pointer = ctx.pointer ?? {};
   const scored = [];
