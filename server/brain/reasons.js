@@ -70,7 +70,7 @@ export const FAMILIES = Object.freeze({
   cls_source: ["model", "fallback", "error", "asr", "content_filter", "content_filter_context", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
     "relational", "speculative", "none"],
   verdict: ["correct", "partial", "not_yet", "ungraded"],
-  guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "claim", "quiz", "options", "corrects",
+  guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "claim", "quiz", "options", "invented", "corrects",
     "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "content_filter_nonharm", "content_filter_context", "content_filter_output", "unavailable", "harmtalk", "emptied"],
   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],

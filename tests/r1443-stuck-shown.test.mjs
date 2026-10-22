@@ -23,6 +23,9 @@ const say = (r, text) => {
 const replay = (seed) => {
   let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6 }, seed, now: 0 }), { event: "start", kit: K, now: 0 });
   for (const t of ["samajh nahi aaya, ek example se samjhao", "pata nahi", "pata nahi"]) r = say(r, t);
+  // since 14.4.3's QA fix the example itself is the kit's worked example (a shown reteach), so the worked step comes a
+  // turn later: one more don't-know reaches it
+  for (let i = 0; i < 3 && r.move.kind !== "worked_example"; i++) r = say(r, "pata nahi");
   return r;
 };
 const R2 = "Pehle 50 plus 30 kijiye, milta hai 80. Ab doosri same jodi bhi 80 hai—total kitna?";

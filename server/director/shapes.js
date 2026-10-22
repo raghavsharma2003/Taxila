@@ -401,14 +401,16 @@ export const CONFIRM = {
 // words reduced to letters and digits (≤ 60 characters), interpolated as data.
 const clean = (t, n = 60) => String(t ?? "").replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, n);
 /** A re-explanation of the idea being taught NOW (a teach-phase "story / example / another way / slower"): no new step. */
-export const teachAgain = ({ how }) => join(
+export const teachAgain = ({ how, kitExample = false }) => join(
   how === "story" ? "they asked for it as a story: the SAME idea told in story form — a named character, a moment (one day…), what happened — a few lines"
+    // 14.4.3 (QA 905a3e50 / b28d919f: a park of her own, 6 m by 4 m): the kit's worked example when the lesson has one
+    : how === "example" && kitExample ? "they asked for an example: the worked example in LESSON NOW is it, said as an example (jaise / for example) with its own numbers and names, never one of your own; show all its steps yourself, each with its result"
     : how === "example" ? "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example"
       : how === "slower" ? "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step"
         : how === "deeper" ? "they asked to go deeper: the SAME idea one layer further, the why behind it or where it shows up in real life or how it links to what comes next; correct and simple, never a new skill, never your earlier words"
         : "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words",
   "the idea in LESSON NOW is still the one on the table; no new step of the lesson yet",
-  "end with one small question about it",
+  how === "example" && kitExample ? "nothing for them to work out this turn; at most ask what they notice" : "end with one small question about it",
 );
 export const clarifyQuestion = () => join(
   "they asked what the question means: say what it asks in simpler words, and what a hard word in it means",
@@ -528,10 +530,14 @@ export const pictureNote = ({ subject, photo }) => photo === "coming"
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 // QA 14.4.1 (df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" with chapter 1 on the button): a
 // chapter ask is answered with what is ready; she asks them nothing, not even which page or chapter
-export const switchOffer = ({ title, chapter }) => join(
+// 14.4.3 (QA on ac4e8e88, f76aacd1: class 5 "geometry padhao" got "press the Geometry button" beside the only chip, "Start
+// Triangles and polygons"): what they asked for is named as the topic it found, and the button by its own words
+export const switchOffer = ({ title, chapter, asked, button }) => join(
   chapter ? `they asked for chapter ${chapter}: its first topic, ${clean(title) || "that chapter"}, is ready for them; say so warmly in a few words`
-    : `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
-  "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way",
+    : asked && clean(asked).toLowerCase() !== clean(title).toLowerCase()
+      ? `they asked for ${clean(asked)}: the topic of their class for it is ${clean(title) || "another topic"}; say yes warmly, naming that topic`
+      : `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
+  `they can start it now with the button${button ? ` that says "${clean(button)}"` : " on the screen"}, or carry on with today's work if they like; never name a button by any other words; no guilt either way`,
   "ask them nothing this turn: not which page or chapter, no lesson question",
 );
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */

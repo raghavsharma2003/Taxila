@@ -65,6 +65,13 @@ export const claimsMistake = (text) => DENY_ANY.test(String(text ?? "")) || sent
 /** The turn without its sentences that claim a mistake of theirs. */
 export const stripClaim = (text) => sentencesOf(text).filter((x) => !claimSentence(x) && !DENY_ANY.test(x)).map((x) => x.trim()).join(" ").replace(/\u2024/g, ".").trim();
 
+/**
+ * 14.4.3 (QA on ac4e8e88, 6f1323e8: a right "160" got "160 ko ek baar dobara check kijiye"): doubt cast on their answer —
+ * asking them to check it again, or whether they are sure. Only judged against a RIGHT answer (a check after a wrong one
+ * is a fair nudge).
+ */
+const DOUBT = /(?<![\p{L}])(?:(?:dobara|dubara|phir\s+se|fir\s+se|ek\s+baar\s+(?:aur|dobara|phir\s+se)|ek\s+baar)\s+(?:check|verify|gin|count)\s*(?:kijiye|kariye|karo|kar\s+lo|kar\s+lijiye|karke\s+dekh\p{L}*|kar\s+lein|karein)|(?:double[-\s]?check|re-?check|check\s+(?:it|that)\s+again)(?![\p{L}])|are\s+you\s+sure|(?:pakka|sure)(?:\s+(?:ho|hai|hain))?\s*\?|kya\s+(?:aap|tum)\s+(?:sure|pakka))/iu;
+
 /** A "not right" opening, after an answer the classifier marked correct. */
 const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incorrect", "nope", "oops", "almost", "lagbhag", "thoda\\s+(?:sa\\s+)?galat",
   "nahi,?\\s+(?:ye|yeh)\\s+(?:sahi|theek)", "गलत"].join("|"));
@@ -116,7 +123,7 @@ export function praiseProblem(text, verdict) {
   if (!t) return null;
   // QA 14.4.1: nothing graded wrong, so no mistake of theirs is named (an ungraded turn has no other constraint)
   if (verdict === "ungraded") return claimsMistake(t) ? "claims" : null;
-  if (verdict === "correct") return DENY_OPEN.test(t) || claimsMistake(t) ? "contradicts" : null;
+  if (verdict === "correct") return DENY_OPEN.test(t) || claimsMistake(t) || DOUBT.test(t) ? "contradicts" : null;
   // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
   if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : claimsMistake(t) ? "claims" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.

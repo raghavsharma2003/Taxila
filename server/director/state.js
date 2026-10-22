@@ -955,6 +955,10 @@ function helpMove(s, input, item, help) {
     // NEXT teach step with the request as a prefix, 5/16 not acted on): a request for the idea another way is answered on
     // THE idea being taught, and the teach step does not advance. Help menu chips (cls.help) keep moving on (below).
     // (also in practice before its first item: an explain turn poseNext gave a skill nobody had explained yet)
+    // 14.4.3 (QA on ac4e8e88, 905a3e50 / b28d919f: "ek example se samjhao" got a park of her own, 6 m by 4 m, then "Total
+    // kitna?"): an example asked for before the teaching starts is answered like one asked during it (teachAgainPlan: the
+    // kit's worked example when there is one), never the hook with "your own numbers"
+    if (p5Flag("STEER") && !input.cls?.help && help === "example" && kit.workedExample && s.phase === "warmup") { s.phase = "teach"; return teachAgainPlan(s, kit, help); }
     if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower", "deeper"].includes(help)
       && (s.phase === "teach" || (s.phase === "practice" && TEACH_KINDS.has(s.lastMove?.kind)))) return teachAgainPlan(s, kit, help);
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
@@ -1050,7 +1054,10 @@ function requestMove(s, input, item, req, labels) {
       // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
       if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
         return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
-      if (hit) return plan("break", SH.switchOffer({ title: hit.title, chapter: req.chapter }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
+      if (hit) {
+        const button = `Start ${hit.title}`.slice(0, 40);
+        return plan("break", SH.switchOffer({ title: hit.title, chapter: req.chapter, asked: req.chapter ? null : subject, button }), { chips: [{ id: `switch:${hit.id}`, label: button }, { id: "stop:continue", label: labels.back }], request: "switch" });
+      }
       // (no topic found for their words: never "not in your class"; real topics of their class on the buttons, as for a repeated ask)
       const near = nextTopics(s, 2);
       return plan("break", SH.switchElsewhere({ subject, titles: near.map((t) => t.title) }), { chips: [...near.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "switch" });
@@ -1201,6 +1208,9 @@ export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know",
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
   const skillId = currentSkillId(s, kit, null);
+  // 14.4.3: an example asked for is the kit's worked example (its verified numbers), whole and SHOWN (move.stuck: the reply
+  // guard holds her to showing, and to the example's own numbers)
+  if (how === "example" && kit.workedExample) return plan("reteach", SH.teachAgain({ how, kitExample: true }), { skillId, content: workedContent(kit.workedExample, 1, 1), request: how, stuck: true });
   const content = (s.lastContent ?? []).filter((l) => typeof l === "string").length ? s.lastContent
     : [`the idea being taught: ${kit.skills.find((k) => k.id === skillId)?.title ?? kit.skills[0]?.title ?? ""}`];
   return plan("reteach", SH.teachAgain({ how }), { skillId, content, request: how });
