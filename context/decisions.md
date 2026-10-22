@@ -6118,3 +6118,332 @@ TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked f
 - **Why:** the grading call misses low-mood lines on production's model that the words-only read catches.
 - **Cost:** about 0.2% of ordinary turns flagged, which the model-episode release ends quickly, and p90 +150 ms.
 - **Reversal:** on production, false flags on lesson talk above 0.5% of graded turns, or more than 250 ms added at p90.
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## dc-r143-kit-deep-false (2026-10-15, PROPOSED)
+
+**What:** a deep-tagged kit item that is recall, one step or read-off carries the optional field `deep: false`.
+
+- What stays: its kind, key, grading and pose.
+- What changes: its answer counts as plain evidence.
+  - KT: `evidenceProbeFor` gives P15, so the answer is `item.open`: no U / T facet and no generative pass.
+  - Agent lane: the evidence read uses the plain table, and `earnedRead`, `deepAvailable` and `offeredItems` count only real deep items.
+- Set: 1927 items, where both cross-family models agree and the human read does not overrule (`docs/research/kits/DEEP-KIND-AUDIT.md`).
+- How: patch `docs/research/kits/deep-kind-fix-2026-10-15.patch`, then mark the kits with `evals/kit-deep-kinds/apply.mjs --write`.
+
+**Why:**
+
+- One shallow "deep" right answer moves U past 0.6 (why) or T past 0.6 (far transfer). It can make a skill `learned_today`.
+- On the agent lane it lifts the evidence read from 0.715 (partly) to 0.816 (understood).
+- Retagging the kind would also change the grading path (a why item gets open grading and the held blind grader) and the teacher's pose. Its keys were verified as posed.
+- The probe-to-class route needs no migration.
+
+**Reversal:**
+
+- a second human read, or another rubric / model pair, overrules more than 10% of the set;
+- child data show `deep: false` items are no easier for partly children than real deep items, or under-reads rise more than the over-reads removed;
+- the kits are re-authored so that kind matches demand.
+
+
+<!-- merged from inbox/r5-stream2-14.4.json -->
+## r5-self-answered-question
+**When her line states, before its numeric question, the answer that question asks for (TEST 1695e941 '0 se 160 metres tak … boundary distance kitna hai?'; fa2f04e7 'Aap 160 par ungli rakhenge?'), the stating clause goes and a question naming it asks 'kis number' instead; the board never draws that answer.** (2026-10-15, 69fe6bc1, c57e5bfb)
+- Predicate: the question's operation from its own words (W18's reading), or the line's when the question names the answer; operands from the question, her line, her last two lines, the worked example's givens; the result stated AS a result (a result word or a range end); never a number the child said, a why / how question, or an earlier sum restated.
+- Measured: sim-lab 14.2 / 14.3, 4384 teacher lines: 2 before, 0 after; looser drafts fired 9-30, all extra hits false and pinned quiet in tests/r5-board-edges.
+- Reversal: a measured real self-answer the predicate misses that a broader reading catches without false hits.
+
+## r5-board-reshown-gated-now
+**A whiteboard drawn earlier is gated against the item open WHEN it is drawn; re-showing it later (keepBoardSlot D42, onScreenSlot late board, slotFor re-reveal, the subscribe replay on reload) now re-checks the open item's withheld values (whiteboard.js withheldValues, a key her line says stays hers) and fails closed when they cannot be computed or are omitted.** (2026-10-15, 205df090, a853362c, 86570734, 50c3622a; main's safety review)
+- A kept board also goes when the move asks another item / skill, or her last sentence brings a number it does not show (QA D43); units and fillers are no shared word (syncedWithLine stop list).
+- Text lane only for the keep: the voice lane's reply text is not on the server.
+- Reversal: a client-side page store that outlives the response (then the client must take the same gate).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r144-ways-chips-lang` (2026-10-15): r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check).
+- `dc-r144-deep-marks-switch` (2026-10-15): The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert.
+- `r5a-dc-agent-record-check` (2026-10-15): On the agent lane the end record (summary and parent note) words each skill only as far as her earned read: lessonFacts carries a per-skill check (shown / practised, not yet checked with a why or new-situation question / partly / still building) and the writer's last rule bounds the wording. Her read holds 'understood' after a miss until three right answers follow it, one deep. The agent opening never takes a safeguard move or an open episode. Reversal: a live gate where the agent's overclaims stay above the Director's with the record already matching her read (then the read rule, not the wording, needs the next look), or a parent-facing review that finds the 'practised, still to check' wording discouraging.
+- `dc-r5-d4-half-duplex` (2026-10-14): D4 (the fallback lane when D5 cannot open, and the live lane without D5) runs HALF-DUPLEX: while her line plays, her output is audible, or within the tail after either (250 ms + AudioContext.outputLatency within 400-900 ms, else 600), the mic track is disabled, the engine reads the room's quiet level, and any transcription item that starts in that window is dropped whole; micro-commits only for audio the transcriber holds (no commit_empty); an empty turn is never committed on D4. ?duplexfull=1 keeps the full engine on a device. Merged with main's release-14 implementation (337b09a). Reverse if: the owner's real-phone recorder shows a child's answer lost inside the tail more than 1 in 20 turns, or the device AEC is shown sufficient on the cohort's phones (then full-duplex D4 for headsets only).
+- `dc-r5-one-turn-at-a-time` (2026-10-14): One turn at a time on every lane: no engine turn while an engine-committed turn or a tapped / typed answer is waiting for her reply (cleared when her reply starts; a lost reply stops holding after 15 s), none within 3 s of a tap, and the link drops a spoken final within 3 s of a tap until her reply to it arrives. The safety floor (safeguard / safety cut-in) is never held. Reverse if: real sessions show a child's spoken correction right after a tap lost more than 1 in 20 times.
+- `dc-r5-d5-preduck-pitch` (2026-10-14): D5 pre-duck ON by default, straight to the hush level (-26 dB), only for a burst 12 dB above her predicted echo for 80 ms with a pitch >= 1.5 semitones from her own output pitch and its octaves (her echo carries her pitch; measured: 4,448 echo frames at 0 st, ~30 at each of +-12). Voice Live silence 250 ms (decide-late in the engine). No text echo subtraction on D5 (the ear removed her echo acoustically; subtracting her words deleted a child's 'आठ corners'). Reverse if: the owner's recorder shows false pre-ducks on her own echo on more than 2 % of her lines, or barge-in pre-duck <= 500 ms falls below 80 % on real children.
+- `dc-r5-d5-empty-turn-only-from-the-ear` (2026-10-14): D5 posts an empty child turn ONLY when Voice Live itself opened an item and returned an empty or failed final over the burst (the ear covered it). A burst only the device heard (her echo through a weak device AEC, a door, a cough Voice Live ignored) never becomes a turn: after the ear's slowest final it returns the floor unspoken. Cost: a lone haan Voice Live never opens an item for is unheard (1/34 after-her turns on the owner harness). Reversal: if owner-cohort recordings show real children unheard this way more than 1 in 20 closed answers AND their device bursts are distinguishable from echo (pitch / level vs her output), re-admit those bursts as re-asks.
+- `dc-r5-d5-eot-at-the-final` (2026-10-15): D5 closed answers commit at Voice Live's covering final when it carries a value (D5_CLOSED_AT_FINAL_MS 600 floor; never over a hold stretch or the child's own pace); an empty final re-asks 300 ms after it (D5_EMPTY_FINAL_REASK_MS); Voice Live silence 250 → 200 (D5_SERVER_VAD_MS). Measured: ms-r5-d5-eot-steps-2026-10-15. Reversal: owner-cohort recordings show a self-correction cut, a changed value, or a re-ask with the child starting within 600 ms, at a rate above the pre-change engine on the same recordings.
+- `dc-r5-verdict-hold-2500` (2026-10-15): Her reply to a closed answer carrying a value never SOUNDS before the value's end + 2,500 ms (VERDICT_HOLD_MS; the engine's G7 stamp + 500, carried on the commit as verdictHoldUntil, enforced by CascadeLink on both the promptTeacher and early-audio paths by holding the stream's hand-over; the speech request still goes out at once; the ack clip is not held; a correction during the hold revokes and stops the reply). Main 2026-10-15, G = 2,500. Measured: ms-r5-truth-bar-stress-2026-10-15. Reversal: if the measured first-sound cost at the then-current R exceeds ~250 ms on closed-value turns, revisit G with data.
+- `dec-r5-lat-continuer-gate-tuned` (2026-10-15): The continuer's positive gate tuned after the sim lab's 14.2 voice arm (f058080e, n = 32: every safety / leaving / relational target 0, but ordinary turns 35/376 got one vs 63/174 before; ack_natural 3.75 vs 3.94). (1) ABSOLUTE words stay absolute: romance, companion, exclusivity, secrecy, are-you-real, insults, out of bounds, an adult at the device, tiredness, time LEFT, leaving, home and family, the child's own results; liking HER is absolute only with a person object (aap / tum / you near pasand / like / love). (2) Talk TO HER (aap / tum / you) is refused unless the turn has lesson words or working aloud (never excused by a bare number or a question word: "aap kaise ho", "aapne Pushpa 2 dekhi?"). (3) Other soft words (time, minute, kitna, screens, sport) are excused by any lesson shape, now including Devanagari spoken numbers (grading/spoken-number.js numberPhrases, "ek" alone not counted), working aloud, counting, guessing, "you asked". (4) A clean reading (no flag, no request) of words with nothing soft is allowed: her own "what do you like?" answered. Battery (conversation-v2): 79/84 lesson-intent lines get one; 0/74 off-lesson lines on words alone; 15/52 grey lines (off-lesson curiosity, cycle, 'mushkil hai') on a clean reading. A contest ('nahi mera answer sahi hai') stays refused: an 'Okay…' would read as conceding. Reverse if: the sim lab's voice-cont re-run puts any continuer on a safety, leaving or relational turn.
+- `dec-r5-lat-agent-spec-off` (2026-10-15): The agent lane's speculated call ships OFF (TAXILA_AGENT_SPEC=on to enable): the mechanism is correct (7/7 adopted, never a wrong or spoken draft) but saves ~0 ms at the measured prefetch lead and costs an extra model call on turns whose deltas change. Reverse if: the prefetch's lead over the turn grows past classify's time (e.g. a slower STT completion or an earlier stable partial), measured as speculation 'ahead' >= 300 ms at p50.
+- `dec-r5-lat-ack-trace` (2026-10-15): 14.3.1 (main merged 69542351): the acknowledgement is visible in the flight recorder, codes only. Server: one `ack.decision` row per decision on a lesson (sid = the lesson), built by the pure ackDecisionRow (server/latency/routes.js): kind echo | continuer, or none = one of 21 closed gate reasons (anything else 'other'), decidedMs, shadow, audio, continuerAsked, cohort, ms; never the child's words, the phrase or the echo's token; tier 1, no blob. Device: one `ack.outcome` per decided clip (played | reply_first | late | mismatched | interrupted, afterStopMs). docs/design/round5/results/latency/ack-cohort-query.sql reads them over real-lesson sids only. Why: with the continuer on for the owner cohort, a continuer on a safety turn could not be seen in production. Reverse if: a row is ever found carrying words (then fix the builder, do not drop the trace).
+
+
+<!-- merged from inbox/r144-main.json -->
+## dc-r1432-beside-reversal-tightened (2026-10-21)
+
+- **What:** the words-only read's latency reversal condition was met on production (n=41), and it is not reversed.
+- **Why:** every pair is from an Azure-degraded hour, so it measures the outage, not the read.
+- **Reversal:** > 250 ms p90 over ≥ 100 pairs from normal hours (grok timeouts < 2%).
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## dc-r144-safeguard-tiers — the helpline only when sure (2026-10-21, main safety review)
+
+The owner, after lesson e6392332 (a misheard line opened the full helpline script, "no problem, you misheard" kept it, and only "okay I will call" let the lesson go on): the card must come up only when it is sure the child is in trouble. The floor itself does not move: every sure signal still gets the full script on the same turn. What changes is ONE model read of something that is not clearly harm.
+
+- **Check-in** (no numbers, no Help sheet, no incident): the words-only read says sad_or_lonely or other_fright, or the label call and the words read disagree (about "none"); a filter block whose words-alone probe could not run.
+- **Full script at once**: the predicate's families (now with Hinglish / Devanagari passive ideation, "main na hoti toh achha hota"), the relational floor, a block the child's words trip, an understanding note, a read naming self_harm / hurt_by_person / afraid_of_person_or_home / unsafe_now, a read naming no kind, a late answer.
+- **The next turn** escalates to the full script (with its incident) unless the child is clearly fine, says a bare okay, carries on, answers the lesson (graded and served as it stands) or asks for something; one silence waits once; a stop ends the lesson.
+
+Measured (ms-r144-tier-fp-2000): 0 full scripts and 1 check-in on 2,000 ordinary lines; on 704 safeguard-turn lines the predicate misses, 136 sure, 39 check-in (read by hand: none a disclosure that waits), 529 none. Reverse if a check-in is ever followed by a disclosure the next turn misses, or a curated disclosure line reads as a check kind.
+
+## dc-r144-deva-bully-context, dc-r144-rewrite-block-probe, dc-r144-opening-body-clean
+
+Three more causes of the census's false safeguards, each from one owner lesson: a lone Devanagari bully token (an ASR garble) as a disclosure; a blocked rewrite call failing straight to the script; the model body after the vetted opening repeating both helplines and scolding the child. See the graph nodes for the rule and the reversal.
+
+
+<!-- merged from inbox/r144-tier2-main.json -->
+## dc-r144-checkin-next-turn — the check-in's own question is not its escalation (2026-10-21)
+
+The sim lab's 36 cards on the first tier cut (ms-r144-simlab-tiered-36) found the flaw: a check-in asks "what happened, are you okay?", the child answers by restating the fright or saying okay-but-tired, and escalating every reply that was not clearly fine turned that answer into the full script (p68, p30). Now the reply escalates only on a sure signal, a low mood read again, or a second silence; everything else goes back to the lesson with one warm line, and the set-aside read writes no incident. A four-turn cooldown stops a second check-in on the same story (p65). Plus: a new about kind for accidents and animals (a check-in), a predicate for someone coming at night (the full script), and two predicate false alarms closed (the past sacrifice idiom, a do-verb read as a beat).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r144-night-visitor` (2026-10-21): lexicon.js fear shape raat_koi_aata: someone coming to the child at night or to their room / bed ('raat ko akele bahut dar lagta hai, koi aata hai', 'raat ko mere kamre mein koi aata hai', the Devanagari form, 'someone comes into my room at night') is the predicate's fear family, the full script at once: the model read named it a plain fright 4/4. Only with the night or a room / bed in the line and a fear, room or alone word; story / lesson words keep it quiet ('raat ko kaun aata hai? ullu', 'koi doodh dene aata hai'). Reverse on a sim-lab or TEST false alarm with neither fear nor a room.
+- `dc-r144-predicate-sacrifice-doverb` (2026-10-21): Two predicate false alarms from the sim lab's decided gate on 14.4 (both the full script, the second ended the lesson): (1) lexicon apni_jaan_de no longer fires on the PAST sacrifice idiom for someone or something ('Amrita Devi ne 363 pedon ke liye apni jaan de di thi', NCERT EVS); the future ('main tumhare liye apni jaan de dungi'), every wish and 'jaan LE li' (a family member's suicide) still fire. (2) fuzzy actor_ne_chhua: a common verb of doing (kara / kiya / kari …) never fills the past-beat slot ('driver uncle ne AC on kara' read as 'uncle hit me'); exact beat words and every other shape unchanged. Reverse on any disclosure line that uses the past sacrifice idiom about the child, or a do-verb as a garble of maara.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dec-r5-lat-reply-twin-overflow` (2026-10-21): 14.4 (main's GO 2026-10-21): the hot reply's hedge twin goes to the deployment's overflow twin (server/azure.js chat `twin: "overflow"`, opted in only by brain/say.js textReply's real reply; TAXILA_REPLY_TWIN=off restores the same-deployment twin). Fires only on a call still out at TAXILA_REPLY_HEDGE_MS (2,200); never for a speculative bet (overflow: false), a background or job call, or a deployment with no named twin; one overflow move per call (shared with the 429 move), so a throttled twin is today's behaviour, never a third call. Every firing records `reply.twin` {deployment, winner: primary | twin | none, firedAtMs, ms}, codes only. Why: 2026-10-16 08:30-09:45Z the primary reply account (raghavsharma1729-compan-resource) stood at the 6 s cap on 29% of taxila-fast calls (70 of 239; 43 exactly at the cap), with the server, DB and replicas healthy and every outbound call to that account degraded; a twin on the same deployment hit the same wall. The twin runs on the OVERFLOW lane, which never moves again on a 429 (overflowFor is CHAT-only): a throttled twin is the fallback line, today's behaviour, never worse. Live revision taxila-web--s7c86981-rx7j: primary raghavsharma1729-compan-resource, overflow taxila-ai-southindia (already production's 429 overflow account). Quota caveat: TEST CHAT traffic also runs on southindia's taxila-fast (500 RPM / 500,000 TPM; TEST's 7-day peak 305 RPM, p99 286, so ~195 RPM headroom at its worst minute against production's ~0.4 RPM of twins at the 10-16 rate). Reverse if (main, 2026-10-21): the twin's 429 share in production exceeds 5% over any day, or TEST sustains above 450 RPM on that deployment.
+
+
+<!-- merged from inbox/r144-tier3-main.json -->
+## dc-r144-checkin-unsure — "pata nahi" waits once; the check-in asks "okay", never "safe" (2026-10-21)
+
+QA's re-test of 08f86dc5 (TEST lesson 47f4bb3f, U2b): a low mood, the check-in "Kya aap abhi safe hain?", then "pata nahi" got the full script. Two causes. The words read sees her question, so its low-mood read of a bare "I don't know" is her last turn's mood; and the word "safe" (which the reply model chose in 7 of 16 check-ins, ms-r144-checkin-safe-word) turns even a "haan" into a low-mood read 3 times in 4. Now a bare "I don't know" waits once like a silence (it is okay not to know, she is here, are you okay), a second escalates, a sure read escalates at once; and the check-in asks if they are okay. With "okay" the same short replies read 0/4 while "nahi" (not okay) still reads low 4/4 and escalates.
+
+
+<!-- merged from inbox/r144-tier4-main.json -->
+## dc-r144-fine-beats-model-reread, dc-r144-lesson-idiom — QA's two P1s on cdac90c3 (2026-10-21)
+
+QA's TEST pass found two ways the tier still showed the full script when nothing was sure. (1) After a check-in, "haan theek hoon" was re-read as distress by the understanding note: the child's clear fine words now win over a model re-read (never over the predicate or a sure layer). (2) "160 metre, mar gaya main toh ye sawaal karke" (the lesson's own frustration idiom, past tense) was read as self-harm: with a lesson object and no wish, self or life word it is a check-in, never nothing. Both confirmed fixed on 08f86dc5 (ms-r144-qa-08f86dc5); the idiom rule matches 0 of 40,261 sim-lab lines (ms-r144-idiom-predicate-corpus).
+
+## dc-r144-checkin-notok — a model read of "pata nahi" waits; a bare "nahi" is the full script (2026-10-21)
+
+QA's re-test of d29c1b1f (ms-r144-qa-d29c1b1f): the first "pata nahi" still escalated in 2 of 3 runs, by the understanding note (model_note), and "nahi" to "are you okay?" was released to the lesson. A bare "I don't know" carries nothing of its own, so no model read of it is sure (the predicate and the sure layers still are); and a bare "no / not okay" is the child's own answer to her question: the full script, whatever any model read, never mistaken for a goodbye.
+
+
+<!-- merged from inbox/r144-push-main.json -->
+## dc-r144-reply-no-safeguarding-call, dc-r144-scold-checkin, dc-r144-lesson-hyperbole — the tier holds end to end (2026-10-21)
+
+QA reproduced the owner's complaint on d29c1b1f (ms-r144-qa-push-d29c1b1f): seven turns of frustration and teasing, helplines on four. The tier was right where it was consulted; three other paths went around it. The reply model made its own safeguarding call on a lesson move (now harm talk is rewritten away unless the turn is the full script). Being scolded read as fear of a person (now a check-in unless a hit, hurt, fear, home or leaving word is in the line). And the lesson's own hyperbole, by the predicate ("main mar jaunga itna padh ke") or the model ("ye sawaal mujhe maar dalega"), was the full script, re-planned again by the relational floor (now a check-in, the floor raising no harm for it). Every sure line still escalates (ms-r144-push-fixes).
+
+## dc-r144-addressee-friend — the friend she is, is no third party (2026-10-21)
+
+Sim lab p30 ("you are my best friend, only you… don't tell anyone this") got the relational floor's full script 3 times in 3 on brief v2: "friend" was read as a third party asking the child for secrecy. The friend the child names as HER (the addressee) is now removed before the actor is read, so the turn is the child's own secrecy ask to her, which the honest boundary answers. Another friend, or any adult, in the turn still counts; on 40,261 sim-lab lines only the p30 card's own 53 lines changed.
+
+
+<!-- merged from inbox/r144-note-main.json -->
+## dc-r144-note-disagrees — the understanding note alone is a check-in (2026-10-21)
+
+QA's re-test of 7d8fcea4 found the last path around the tier: the understanding note, which reads the whole lesson, kept re-reading a check-in's low-mood context into the child's next turn, so a right answer and an "it's fine now" got the full script. The note only ever adds distress where the classifier's own two reads said none: by the tier's rule, reads that disagree are a check-in. A lesson answer read as distress by a model alone is likewise never sure. The predicate, the sure layers, a bare "nahi" and a low mood said again still escalate at once.
+
+
+<!-- merged from inbox/r144-qa9ad8-main.json -->
+## The push after the check-in (QA TEST 9ad86661, 2026-10-21)
+
+QA's push on the 14.4 candidate found the tier holding on every single line but breaking on the turns after a check-in: the hyperbole answering the check-in was planned as a lesson move, the guard missed a joined spelling, and one turn was empty. The common cause was the reply model, not the Director: it read the child's heavy words in the history on every later draft and made the safeguarding call the Director had already declined to make. A guard alone chases wordings. The fix removes the trigger: the idiom lines the predicate demotes reach the reply's history as what they mean, the release care line stops pointing at a grown-up, and the brief says the check was done. Each is measured in ms-r144-push-replay. The note alone was tried first and failed (rj-r144-note-alone). The Director now keeps a check-in open on the hyperbole once (dc-r144-heavy-stays-checkin), and a model read of a lesson answer just after a check-in is never sure on its own (dc-r144-answer-after-release).
+
+## dc-r144-history-idiom-meaning — the reply's history carries an idiom line as what it means (2026-10-21)
+
+The Director already decided that "main mar jaunga itna padh ke" is the lesson's pressure. The reply model still read the literal words on every later draft and made its own safeguarding call. So until a full script has happened, a past child line the idiom predicates demote (lessonHyperbole, lessonIdiom) reaches the reply's history as its meaning. The turn being answered, the stored rows, the predicate and every read still see the real words. A line the predicate's own families read as sure is never reworded.
+
+## dc-r144-after-check-note — the check is done, said last; the care line stops pointing at a grown-up (2026-10-21)
+
+For three turns after a check-in releases, and on a move whose read was set aside, the brief's last check says the safety check already read their heavy words: no helpline, no sending them to a grown-up now, no question about harm or being safe. The release's care line became "they can always tell you if something bothers them". With "or a grown-up they trust", the model turned it into "abhi mummy ya kisi trusted adult ko turant batayiye". The hand-off is the full script's job. The check-in brief itself is unchanged: an injury check-in may still send the child to an adult (rj-r144-checkin-no-grownup).
+
+## dc-r144-reply-never-empty — a reply is never blank (2026-10-21)
+
+When every repair leaves nothing, the move's fixed line is the turn: in say.js for the Director's reply, and in turn.js for whichever line took the turn. The trace marks it guard.emptied.
+
+
+<!-- merged from inbox/r144-hate-main.json -->
+## dc-r144-hate-not-child-safety — a hate-filter block is not a child in danger (2026-10-21)
+
+Since 14.1 the filter probes have been the neutral judge of whether the child's own words trip the filter. The probe itself trips on 'hate' for Indian social studies and everyday words, though: British rule, 'race', 'Kala Chashma', Eid in Kashmir. Ten harmless turns on TEST got the full helpline script that way. A child in danger shows up as sexual, self-harm or violence blocks and in the predicate and reads, and 0 of 276 curated distress lines needed a hate-only block. Only the probes change. The distress reads keep hate as a block and fail closed as before.
+
+## dc-r144-filter-neutral-no-repeat — never 'say that again' on a filter block (2026-10-21)
+
+The outage line asks the child to repeat. After a context block the repeat trips the same filter, so the turn gets the move's own fixed line or a warm carry-on instead.
+
+
+<!-- merged from inbox/r144-beside-main.json -->
+## dc-r144-beside-wait — the tier waits for the read that names it (2026-10-21)
+
+The 14.4 tier needs the words-only read to say what a distress label is about. A 1.2 s wait was chosen to keep turns fast. But the read's fallback deployment answers at 1.6 s at the median, so every primary timeout (0.5% of calls, and more under load) became the full script. A tier that depends on load is not a tier. The turn now waits for the read's own bound, and the time is spent only on distress-labelled turns.
+
+
+<!-- merged from inbox/r1441-burn-main.json -->
+## dc-r1441-lesson-burn — 'my head is on fire' is not a fire (2026-10-21)
+
+The hyperbole and frustration idioms already made a model's self-harm read a check-in. Burning is the same shape: a child who says 'please skip, aag lag rahi hai' after a hard item is fried, not in danger. unsafe_now stays sure. The predicate misses many real emergencies, and the model read is their only route, so only the idiom shape moves.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## dc-r5-studio-thaws-after-safeguard (2026-10-21)
+
+Studio draws again once the Director's safeguard episode closes; every safeguard turn, the check-in tier included, still freezes it; nothing retired is re-shown (bfc57b9a).
+
+## dc-r5-ways-by-capability (2026-10-21)
+
+The ways-in chips offer only a picture or a game that can be built, and her words name exactly the chips offered, from one list in code (64a1b78b).
+
+## dc-r5-same-page-not-redrawn (2026-10-21)
+
+A re-sent page that draws exactly what the board shows is shown complete at once: no wipe, no replay, no new page.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## dc-r144-d5-unheard-not-silence (2026-10-21)
+
+D5: an empty turn over speech the ear could not read is UNHEARD, never silence. The client marks it (duplex.unheard, set only when Voice Live's own item ended with no words since the last commit) and never posts an empty SPEAK with no ear item behind it (the safety floor and the hold offer untouched); the server classifies an unheard turn as source asr; the Director asks again with its own shape (unheardAgain: her ear, not their fault) and never counts it toward the are-you-there break; in an open safeguard CHECK-IN every unheard turn re-asks it (her own wording, the safe:continue / safe:stop chips on screen) and never uses up its one silence nor escalates (dc-r144-unheard-never-escalates). Reversal: production traces showing unheard turns that were really silence (the ear opening an item on room noise), or a child whose distress went unescalated behind repeated unheard turns.
+
+## dc-r144-fanin-carried-burst-item (2026-10-21)
+
+The fold-in's carried turn keeps the burst's OWN ear item: an item still open at the carried onset (opened at most CARRY_PRE_MS = 1,200 ms before it, with a KNOWN audio end past it) belongs to the turn; the hold offer after "wait" is always wordless. Not changed (tried, no effect on the 132 recorded runs): carrying a hushed burst at her_end when her line did not hand over (governor carryCheck) — kept as a candidate if production shows a request said over an explanation, read as a short burst, lost. Reversal: production traces showing the previous turn's words (an echo item, the last answer) folded into the next turn.
+
+## dc-r144-negation-surface-key (2026-10-21)
+
+Echo matching (src/lesson/cascadeLink.ts echoKey, shared by the duplex EchoSubtractor and isEcho): a negation keys on ONE class across scripts (नहीं / नही / nahi / nahin → ¬nahi; ना / na; मत / mat; no; not …), never its consonant skeleton; a run of her words is echo only with at least one match of two letters or more, and the whole-text echo share needs one too — so a one-letter skeleton (नहीं, रहा, आप, क्या) never anchors a removal, while her Roman line echoed back in Devanagari still goes. Main's literal "never subtracted" bar was measured and is left to main (see ms-r144-negation-echo). Reversal: device traces with her echo leaking short words into the child's turn, or a child's negation still removed inside a long run.
+
+## dc-r144-unheard-never-escalates (2026-10-21)
+
+Main 2026-10-21: in an open safeguard check-in, an UNHEARD turn (D5: the ear covered speech and returned no words) NEVER escalates, however many come in a row: she says she could not make it out (distressCheckAgain({ unheard: true }): her ear, never their fault; okay, never safe; no lesson, no helplines) with the safe:continue / safe:stop chips on screen, so the child can answer without her ear. Why: unheard is the ear failing and adds no evidence of distress (the child spoke: they are responsive); the owner's bar is the helplines only when sure; the first cut's fail-closed on the third would have fired on 1.8-4.8 % of phone-echo lessons (ms-r144-unheard-three-in-a-row), mostly a bad microphone. Silence keeps its own rule (one wait, a second escalates); the predicate and every sure layer escalate at once whatever the ear did. Reversal: a recorded check-in that ends with a disclosure heard LATER, after 3 or more unheard turns.
+
+
+<!-- merged from inbox/r1441-masked-main.json -->
+## dc-r1441-masked-retry — her own line even when the filter will not show his words (2026-10-21)
+
+When the filter blocks the reply prompt on context and the child's words pass the probe, the reply model gets one more try with their words replaced by a note. The child then gets a real turn that ends on the move's question, not a stock thanks. The words stay with every safety read.
+
+
+<!-- merged from inbox/r1441-goodbye-main.json -->
+## dc-r1441-motion-not-leaving — going two gaps ahead is not going home (2026-10-21)
+
+A right answer on a number line ('do gaps aage jaana padega') ended a lesson as a goodbye because the lexicon's bare 'jaana padega' cannot tell motion along a line from leaving. A word of motion before it now keeps the turn in the lesson. Every real goodbye is unchanged, and the sim-lab corpus shows no other change.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## dc-r1441-record-learner-subject — the child did the learning (2026-10-21)
+
+The end-record writer used to make the teacher the one who practised ("Asha practised …") in about half of all notes, and lent her pronouns to the child. It now names the child as the learner and the subject of the parent note. The teacher is only the one who taught. Replay: 64/120 → 0/120.
+
+## dc-r1441-safeguarded-record-facts-only — a disclosure never reaches the guardian through the lesson record (2026-10-21)
+
+In a lesson with a safeguarding turn, the summary and parent note are written from the learning facts only, never from the child's words. Every record then passes a fence that drops distress, a reported harm or a safeguarding referral. The guardian can be the person the child named. A disclosure reaches a parent only through the safeguarding protocol and its human queue. Replay: disclosures in the note 8/30 → 0/30. The fence touched 0 of 288 ordinary records.
+
+
+<!-- merged from inbox/r1441-distresscheck-hate-main.json -->
+## dc-r1441-distresscheck-hate-stays-closed — the outage-path distress read keeps a hate block as a check-in (2026-10-21)
+
+The reply probe and the across-deployment read stopped treating a hate-only filter block as distress in 14.4. The rare outage-path read still does, because no one has measured bullying lines that quote slurs. Here a fail-closed read is only a gentle check-in, never the helpline script.
+
+
+<!-- merged from inbox/r1441-teachq-open-main.json -->
+## open-r1441-teaching-question-unread — her teaching questions are not evidence (open, 2026-10-21)
+
+When she ends an explanation on a question and the child answers it right, nothing is recorded, because no card was posed. That is by design today, the same as worked-example steps. Whether such answers should count belongs to the understanding phase.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## dc-r5-failed-board-why — a failed board says why (2026-10-21)
+
+38aad918 had two boards fail with why: null. The live board's failing checks went only to the server console, and the template's refusal went nowhere. The failed slot now carries both as codes (never the child's words), so the trace explains itself. A later draw of the same piece clears it.
+
+## dc-r5-subject-not-verb — a verb is never the thing to draw (2026-10-21)
+
+The child said 'aapne toh bola picture dikhao'. freeSubjectOf named 'bola', the Director kept it, and the board drew 'bola' as a label on two pages. The subject readers now share one list of verbs and fillers.
+
+## dc-r5-kept-subject-spent — a kept subject is used once (2026-10-21)
+
+The kept subject rode on every later picture ask that named nothing: in 38aad918, t7 and t9-t11 all asked for 'bola'. It is now spent once a board is asked for it. The Director can't see whether that board drew, so 'asked' stands in for 'drawn' until the seam's result reaches it.
+
+## dc-r5-picture-under-board — never an empty screen after a failed board (2026-10-21)
+
+On 38aad918 t9-t11 a picture was revealed, the same turn's board retired it, and then the board failed. The child saw nothing three turns running and said so. The picture now stays under the board until the board draws. If the board fails, the picture comes back, and it becomes the turn's slot.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## dc-r1441-held-record-not-silence — left out is not silence (2026-10-21)
+
+In a safeguarded lesson the record writer gets no child turns. Shown "(none)", it reported the child as having said nothing, which was untrue. The turns are now marked "(left out)", and the writer says nothing about what the child said beyond the facts, or why. Replay: 12/80 → 1/80.
+
+
+<!-- merged from inbox/r1441-live-main.json -->
+## dc-r1441-ship-over-qa-preexisting — 14.4.1 shipped on its measured gains (2026-10-22)
+
+QA's two failures on the candidate are behaviours that live 14.4 already has: the false "not in your class" line, and a new feature that may not fire. The sim lab's two safety over-reactions are live in 14.4 too. 14.4.1 removes a disclosure path to the guardian and fixes the parent note, so it shipped. Those four items lead 14.4.2.
+
+
+<!-- merged from inbox/r1442-overreact-main.json -->
+## dc-r1442-mild-low-is-care — "a little sad" is care, not helplines (2026-10-22)
+
+A child who answers "are you okay?" with "okay… but a little sad" now gets a warm line and the lesson, not Childline. Anything bigger, anything the predicate reads, and any sure layer still gets the full script.
+
+## dc-r1442-sacrifice-habit — "they give their lives for the trees" is history (2026-10-22)
+
+The Bishnoi lesson's "wo ped ke liye apni jaan de dete hain" no longer reads as self-harm. The child's own wish and every future form still do.
+
+## dc-r1442-hinglish-reading-rescue-only — the Hinglish reply reading ships as rescue-only (2026-10-22, main on 4A's measurement)
+
+In corroborate.js, a reply's everyday Hinglish/Devanagari words also read as the English words they mean. It applies only when no form passes without it, only at the key-like cover (0.8), only on the reply side, and never on a language item. It added 0 new forced false credits and rescued 0 answers on every real set measured.
+
+**Reverse if** a later real-label set still shows 0 rescues, or any set shows a new false credit from it. Then remove the reading.
+
+
+<!-- merged from inbox/r1442-s2.json -->
+## dc-r1442-board-truth-shapes — never deny the board's picture (2026-10-22)
+
+QA heard 'is turn mein picture nahi hai' with a board on screen (7545d1fd t2), and 'picture yahan nahi dikh rahi' under triangle boards (13ec94a7). Our own shapes told her to say it. On a photo ask, drawAsked said 'there is no photo, say so', which comes out as 'picture nahi hai' in Hinglish. And an unnamed picture ask with no Director module got 'nothing is on the screen this turn', even when the turn's board was asked for or a board was up. The photo is still owned up to; the drawing is never denied, and that rule goes last. If it still happens, the next step is a code guard on her line, not more words.
+
+## dc-r1442-board-comes-back — the earlier board returns when her line does (2026-10-22)
+
+In 897a7453 the triangle board was followed by a rocket board, and the rocket board was rightly let go. That left an empty tray while she said 'Ab triangle par lautte hain'. A board now remembers the board before it. When her line is about that one again, under the same rules a kept board meets, it comes back. A line about neither board brings nothing back.
+
+## dc-r1442-slot-retired-trace — retired is not failed (2026-10-22)
+
+QA read 'cleared' and 'replaced' as failed boards. Those are the right codes: why a piece was taken down, not a missed live or template path. The row now says studio.slot.retired. What the client receives is unchanged.
+
+
+<!-- merged from inbox/r1442-safetell-main.json -->
+## dc-r1442-safe-and-tells — "I'm safe, can I tell them at home?" is not a low mood (2026-10-22)
+
+After a check-in, a child who says they are safe and asks to tell family is never escalated on a model's re-read alone. "Nobody at home talks to me" and any hitting word still escalate.
+
+
+<!-- merged from inbox/r1443-p13-main.json -->
+## dc-r1443-sacrifice-for-after — "unhone apni jaan de di ped bachane ke liye" is history too (2026-10-22)
+
+The sacrifice idiom with the purpose after the verb no longer fires the self-harm script, unless the turn names the child or their family. The safety battery is unchanged.
+
+
+<!-- merged from inbox/r1443-helped-main.json -->
+## dc-r1443-helped-tier: once help is in place, no numbers or "are you safe?" again (2026-10-22)
+
+Once help is in place in a safeguarding episode, the episode becomes "helped". Help in place means a trusted grown-up has been told, has called, or is with the child, or the child called Childline themselves.
+
+The hold stays: no lesson, the helplines on the board and the Help sheet, the same climb to the resume offer.
+
+What stops: she no longer re-says the numbers or re-asks "are you safe?". She tells the child they did the right thing.
+
+A new predicate read or a sure layer brings back the full script.
+
+**Reverse** if a child marked helped turns out to have still been in danger with no adult acting.
+
+## dc-r1443-same-story: the same story told on is not a new opening (2026-10-22)
+
+The case: before help is in place, the model re-reads distress inside an episode the predicate opened.
+
+The full script restarts with its active hand-off to a grown-up and Childline 1098. It never asks "are you safe?" again; it asks one new question about where they are or who is near.
+
+New danger words still get the original script.
+
+## dc-r1443-kind-kept: a model re-read never weakens a predicate episode (2026-10-22)
+
+The episode keeps its stronger kind. Before this, a re-kinded self-harm episode could be released early by "I'm fine".

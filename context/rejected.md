@@ -2656,3 +2656,108 @@ Judging her 'parts' words against the module that was up BEFORE a named visual a
 - **Claimed in review:** a kept board is re-gated against the open question, so it can't leak that question's answer.
 - **What broke:** the check only certifies legibility. A board showing 160 was re-sent while a question keyed 160 was open.
 - **Lesson:** a gate is no protection until a test shows the content refused.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r144-wordtoks-keep-marks` (2026-10-15): Keeping Devanagari vowel signs (\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines.
+- `rj-r144-ignore-devanagari-tail` (2026-10-15): Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved).
+- `rj-r5-unenforced-verdict-gate-cited` (2026-10-15): REJECTED claim (4B, 2026-10-15): "her verdict cannot sound before value end + VERDICT.delayMs" was cited as the protection against a verdict on an abandoned value. The gate was computed (governor G7 verdictNotBefore) and emitted on the speak command but NOTHING enforced it (live.ts / cascadeDuplex / the link never read it). Lesson: a computed gate is not a protection until a test shows the sound waiting for it. Now enforced: dc-r5-verdict-hold-2500.
+- `rj-r5-w9-open-key-withheld-when-said` (2026-10-15): Round 5 (QA pass 15, TEST 1695e941): withholding the open item's key from the board even when her line says it (whiteboard.js withheldValues). Rejected: it broke the pinned design in tests/studio-qa.test.mjs 'W9 no reveal … a value she says herself': 'she said it: the board only repeats her', and the MCQ options she reads aloud are hers to draw; and 1695e941 had no item open (activeItemId null, warmup), so it would not have fixed the case anyway. The fix is the self-answered-question predicate (studio/request.js selfAnswer): her line loses the clause that states its own question's answer, and the board never draws it (W18 ctx.answers). Reversal: only if a measured leak needs a key withheld that she says, and then without breaking said-is-hers.
+
+
+<!-- merged from inbox/r144-main.json -->
+## rj-r144-beside-brief-rewrite (2026-10-21)
+
+- **Tried:** rewriting the distress brief to also exclude tiredness and boredom with the lesson.
+- **What broke:** a lesson worry ('galat toh nahi hai na? dar lag raha hai') went 0/5 → 3/5 distress.
+
+
+<!-- merged from inbox/r144-tier-main.json -->
+## rj-r144-bare-ok-everywhere (2026-10-21)
+
+A whole-reply bare okay as fine.js FINE broke the 14.3 rule that a bare yes / okay after the full script is agreement, not a state (2 tests). It answers the check-in's own question only, so it lives in bareOk(), read by the check-in branch alone.
+
+
+<!-- merged from inbox/r144-tier2-main.json -->
+## rj-r144-escalate-not-fine (2026-10-21)
+
+The first tier cut escalated any reply to a check-in that was neither clearly fine nor a carry-on. The check-in's own question invites exactly the words that fail that test ("main dar gayi thi", "okay, bas tired"), so 2 of 6 scripted fright/secrecy cards escalated to the full script on the child's answer. Replaced by dc-r144-checkin-next-turn.
+
+
+<!-- merged from inbox/r144-qa9ad8-main.json -->
+## rj-r144-note-alone — a brief note against the history (2026-10-21)
+
+A pre-emptive 'the check was done' note, added while the care line still said 'or a grown-up they trust' and the history still carried 'main mar jaunga', left the safeguarding call in 4 of 6 replay runs. The model resolved the contradiction toward safety. Change the trigger, not only the instruction.
+
+
+<!-- merged from inbox/r144-qa9ad8b-main.json -->
+## rj-r144-checkin-no-grownup — the check-in may still send a hurt child to an adult (2026-10-21)
+
+'No sending them to a grown-up this turn' was added to the check-in brief with no measured effect (0/30 vs 0/30), then removed before it shipped. An injury check-in needs the practical 'show it to mummy' (QA XS1 7b6a4169). A blanket ban would have taken that away. The full script's hand-off and the check-in's practical care are different acts.
+
+
+<!-- merged from inbox/r1441-burn-main.json -->
+## rj-r1441-unsafe-now-check-tier — not making every unsafe_now read a check-in (2026-10-21)
+
+Considered: putting unsafe_now in the check tier when only a model read it. Rejected: the predicate misses 'ghar mein aag lag gayi hai', 'mujhe bachao', 'koi mujhe pakad ke le ja raha hai' and 'help me someone is outside my door'. 'Are you okay?' as the first answer to 'mujhe bachao' is the wrong trade.
+
+
+<!-- merged from inbox/r5-census-s2.json -->
+## rj-r5-worked-number-guard (2026-10-21)
+
+- **Tried:** a reply guard for worked-example numbers on a non-worked-example move.
+- **What broke:** 14 of 1567 sim-lab lines, at most 2 real; the rest is legitimate teaching it would strip.
+- **Lesson:** the census turn's numbers came from the transcript history; the fix is the screen following the move.
+
+<!-- 14.4.1 integration: stream write-ups from their inbox titles (4B r144-duplex, stream 2 r5-census-s2) -->
+## rj-r144-governor-carry-check (2026-10-21)
+
+Not shipped: carrying a hushed burst over her line into the next turn at her_end when her line did NOT hand over (governor carryCheck: its words decide, a lone continuer or no words drop back to idle). Measured on the 132 recorded D5 runs (66 scenarios × owner + phone): 0 commits changed with it on or off, before and after the fan-in fix (the fold-in path, phase overlap at her_end, already carries; the loss was the fan-in's). Revisit only if production shows a request said over an explanation, read as a short burst, lost.
+
+## rj-r144-negation-never-subtracted (2026-10-21)
+
+Rejected (main 2026-10-21): the literal bar "a negation is never subtracted as echo, whatever". Measured on the same 41,259 sim lab pairs: negation loss 510 → 0, but her own echoed negations leak into the child's turn — echo floors 2,029 → 10,917 tokens left (same script) and 15,521 → 23,824 (cross-script); a stray "nahi" of hers beside the child's "haan" inverts the child, a more frequent meaning flip than the one it removes. Shipped instead: dc-r144-negation-surface-key (510 → 169 for +1 % cross-script floor, 0 D5 commits changed).
+
+## rj-r5-offer-guard (2026-10-21)
+
+Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family).
+
+
+<!-- merged from inbox/r1441-simlab-wire-main.json -->
+## rj-r5-simlab-turn-only-screen — a simulated child that sees only the turn response (2026-10-21)
+
+The sim lab's child saw only what the turn response carried. A board that arrived a second later never reached it. 1,521 turns in 938 lessons across 65 runs showed the child an empty screen that the real client would have filled. Judgements that rest on the child's 'nothing on screen' after a planning slot are not evidence of a product failure. A simulated client must subscribe to everything the real client subscribes to.
+
+
+<!-- merged from inbox/r1441-endrecord-main.json -->
+## rj-r1441-record-fence-alone (2026-10-21)
+
+An output-only fence using the child-speech safety predicate. It misses the writer's third-person report ("Riya said she wants to die") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.
+
+## rj-r145-kit-deep-marks (2026-10-21, stream 4A)
+
+The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 64 cards × 2 arms, agent, decided child. The judge read agreed 68% in both arms. The marks asked an understood child fewer deep items (66 → 47), and doubled the "untested" understood under-reads (11/42 → 23/46). The switch, the marks file and the plain-evidence patch are removed. Reverse if a later audit shows a marked-plain item mis-reads a child, measured the same way.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## rj-r1441-shared-branch-worktrees (2026-10-21)
+
+One branch checked out in two worktrees. A commit in one moved the other's HEAD under its unchanged files, so a gate could stamp a commit it never tested. One branch, one worktree; the merging tree works detached.
+
+## rj-r1442-pedagogy-guard-on-safety-copy (2026-10-22, main safety review)
+
+A reply-honesty guard (the claimed-mistake strip) that also ran on safeguard turns. It read the disclosure reassurance "You did nothing wrong by telling me." as a mistake claim and removed it. Every pedagogy guard that rewrites or strips a reply stays off safeguard turns, and a negation of fault is never a fault.
+
+## rj-r1442-source-env-file (2026-10-22)
+
+Sourcing .env.local in bash (`. ./.env.local`). A value with an unquoted & is run as a background job, and its contents are echoed into the tool output; a test-branch credential was exposed in a stream's own transcript. Load env only with `node --env-file`, or one `export` per key, never by sourcing the file. Rotating the exposed test-branch password is the owner's call.
+
+
+<!-- merged from inbox/r1443-helped-main.json -->
+## rj-r1443-fold-predicate-rereads (2026-10-22)
+
+The first cut folded every model re-read in a predicate episode into the passive 14.3 hold. That would have dropped the active hand-off that got p08's child to a neighbour. Rejected before measurement; the same-story restart replaced it.
+
+## rj-r1443-partial-revert-apply (2026-10-22)
+
+The A/B run reverted only some of a patch's paths, so re-applying the whole patch failed silently. Revert exactly the patch's paths, or apply with --include, and check git diff --stat.

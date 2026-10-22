@@ -27,7 +27,7 @@ import type { EngineContext, AnswerForm, ExchangeContext, FloorPhase, HerAct, Ms
 import type { Floor } from "../lesson/floor.ts";
 import { EngineHost, NEUTRAL_CONTEXT, type HostCommand, type HostSttEvent, type ShadowRow } from "./host.ts";
 import type { SttEvent } from "../../server/duplex/fanin.js";
-import { WT1_DEFAULT } from "./config.ts";
+import { WT1_DEFAULT, VERDICT, VERDICT_HOLD_MS } from "./config.ts";
 import { vt } from "../voice/trace.ts";
 
 /** What the bridge asks of the link (CascadeLink implements it; tests fake it). */
@@ -73,11 +73,18 @@ export interface DuplexTurn {
    * runtime supersedes the revoked turn while it is still in flight, else sends only the new words (never an answer twice).
    */
   revokeOf?: { turnId: number; text: string };
+  /**
+   * Round 5 truth bar: her reply to this turn must not sound before this (client clock). Set on a closed answer carrying
+   * a value (the G7 stamp + VERDICT_HOLD_MS − VERDICT.delayMs); absent otherwise. CascadeLink holds the reply's first sound.
+   */
+  verdictHoldUntil?: number;
   /** TurnRequest.duplex (shared/contracts.ts): hashes and codes only, never words. */
   duplex: {
     transcriptHash: string;
     safetyPending?: { kind: "self_harm" | "abuse" | "fear" | null; source: "predicate" | "model_note" | null } | null;
     cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
+    /** D5: an empty turn over speech the ear could not read (never silence; shared/contracts.ts TurnRequest.duplex.unheard). */
+    unheard?: boolean;
     engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
   };
 }
@@ -401,6 +408,12 @@ export class DuplexLive {
   private pendingTurn: number | null = null;
   /** The words of each commit not yet answered, and the revoked commit the next commit merges (ship5 fixer, B3). */
   private lastCommit: { turnId: number; text: string } | null = null;
+  /**
+   * Round 5 (the owner's failure census F5, main 2026-10-21): the ear's own item ended with NO words since the last commit.
+   * An empty D5 commit is the child's only when this is set (speech the ear could not read: posted `unheard`, a re-ask on
+   * the server, never silence); without it there was no item behind the empty turn and it is never posted.
+   */
+  private emptyFinalSince = false;
   private revoked: { turnId: number; text: string } | null = null;
   private ui: TurnUi = {};
   private overlapOnsetAt: number | null = null;
@@ -435,7 +448,7 @@ export class DuplexLive {
   /** The engine's own last duck level (a pre-duck release never undoes it). */
   private hostDuck = 1;
   /** D5 counters (content-blind): gated frames, pre-ducks, releases, re-asks. */
-  readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0, ackEchoItems: 0 };
+  readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0, ackEchoItems: 0, droppedEmpty: 0 };
   /** Release 14 half-duplex: transcription items that started over her line (her echo), dropped whole. */
   private echoItems = new Set<string>();
   /**
@@ -651,6 +664,7 @@ export class DuplexLive {
     if (!ev) return;
     this.stats.sttEvents++;
     if (ev.type === "final" || ev.type === "partial") this.lastItemId = ev.itemId;
+    if (ev.type === "final" && !String(ev.text ?? "").trim()) this.emptyFinalSince = true;
     this.guard(() => this.host.stt(ev));
   }
 
@@ -953,6 +967,15 @@ export class DuplexLive {
           vt("duplex.decision", { action: "SPEAK_HELD", reasons: ["empty_turn_half_duplex", `speak:${c.reason}`], phase: this.phase, mode: this.mode, acted: false });
           return;
         }
+        // round 5 (F5 phantom empty turns): an empty SPEAK with no empty ear item behind it was made by the engine alone
+        // (no child words, no unreadable speech): never a child turn — on the server it would read as SILENCE (14.4: a
+        // second silence in a safeguard check-in escalates to the full helpline script). The safety floor is never dropped;
+        // a cut-in (the hold offer) is the floor's own move and the server reads it as such.
+        if (c.op === "speak" && c.reason !== "safeguard" && this.o.vadGate === "server" && !String(c.text ?? "").trim() && !this.emptyFinalSince && !this.revoked) {
+          this.d5.droppedEmpty++;
+          vt("d5.decision", { op: "drop_empty", reason: "no_ear_item", speak: c.reason ?? null });
+          return;
+        }
         const held = this.turnHeld(c.t);
         if (held && !(c.op === "speak" && c.reason === "safeguard") && !(c.op === "cut_in" && c.reason === "safety")) {
           this.stats.held = (this.stats.held ?? 0) + 1;
@@ -968,10 +991,15 @@ export class DuplexLive {
         this.stats.commits++;
         this.pendingTurn = turnId;
         this.pendingAt = c.t;
-        const text = String(c.text ?? "").trim();
+        // the hold offer is the floor's own move after "wait": the request's words were acted on (the hold) and are never sent
+        // again as the child's words (the server reads a wordless hold offer as a check-in; "रुको" would read as a stop)
+        const text = c.op === "cut_in" && c.reason === "hold_offer" ? "" : String(c.text ?? "").trim();
         const revokeOf = this.revoked;
         this.revoked = null;
         this.lastCommit = { turnId, text };
+        // the ear covered the child's speech and returned no words: the server reads it as unreadable speech (a re-ask)
+        const unheard = !text && this.o.vadGate === "server" && c.op === "speak" && this.emptyFinalSince;
+        this.emptyFinalSince = false;
         if (!text && this.o.vadGate === "server") {
           // the child spoke and the ear returned no words (a lone 250 ms "haan" Voice Live did not hear, BAKEOFF §2.6): the
           // empty turn is the Director's repair move — she asks again; never treated as silence
@@ -982,10 +1010,12 @@ export class DuplexLive {
           turnId, text, startedAt: pk.firstOnsetAt ?? c.t, itemId: this.lastItemId,
           ...(revokeOf ? { revokeOf } : {}),
           ...(text ? {} : { asrConfidence: 0 }),
+          ...(c.op === "speak" && typeof c.verdictNotBefore === "number" ? { verdictHoldUntil: c.verdictNotBefore + VERDICT_HOLD_MS - VERDICT.delayMs } : {}),
           duplex: {
             transcriptHash: c.textHash,
             safetyPending: s.distress ? { kind: (s.kind as "self_harm" | "abuse" | "fear" | null) ?? null, source: (s.source as "predicate" | "model_note" | null) ?? null } : null,
             cutInReason: c.op === "cut_in" ? c.reason : null,
+            ...(unheard ? { unheard: true } : {}),
             engineSummary: { engine: "stage-a/live", reasons: [c.op === "speak" ? c.reason : `cut_in:${c.reason}`], pComplete: [], decidedAfterEndMs: lastVoice !== null ? Math.round(c.t - lastVoice) : null },
           },
         });

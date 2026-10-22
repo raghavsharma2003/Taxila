@@ -106,7 +106,7 @@ function rig(opts) {
   const acts = [];
   const port = {
     duck: (lv) => acts.push([clock, "duck", lv]), pause: () => { acts.push([clock, "pause"]); return true; }, resume: () => acts.push([clock, "resume"]),
-    stop: () => acts.push([clock, "stop"]), commit: (t) => acts.push([clock, "commit", t.text]), sttCommit: () => acts.push([clock, "probe"]),
+    stop: () => acts.push([clock, "stop"]), commit: (t) => acts.push([clock, "commit", t.text, t.duplex?.unheard ?? null]), sttCommit: () => acts.push([clock, "probe"]),
     dropReply: () => {}, fallback: (w) => acts.push([clock, "fallback", w]), state: () => {},
   };
   const live = new DuplexLive({ lessonId: "t", port, now: () => clock, setInterval: (fn) => { tick = fn; return 1; }, clearInterval: () => {}, band: "B2", ...opts });
@@ -209,6 +209,20 @@ test("D5 #6: a burst only the device heard (Voice Live opened no item) is never 
   assert.deepEqual(r.acts.filter((a) => a[1] === "commit").map((c) => c[2]), ["छप्पन"]);
 });
 
+test("census F5: the hold offer after 'wait' is the floor's own wordless move; the hold request's words are never re-sent", () => {
+  const r = afterQuestion();
+  const f = burst(3000, 3500);
+  r.run(3600, f);
+  r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "w1", audio_start_ms: 3000 - 210 });
+  r.run(3900, f);
+  r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "w1", audio_end_ms: 3500 + 340 });
+  r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "w1", transcript: "रुको" });
+  r.run(30000, f);
+  const c = r.acts.filter((a) => a[1] === "commit");
+  assert.ok(c.length >= 1, `the hold offer came: ${JSON.stringify(r.acts.filter((a) => a[1] !== "duck"))}`);
+  assert.deepEqual(c.map((x) => x[2]), c.map(() => ""), "no commit carries the hold request's words");
+});
+
 for (const ending of ["failed", "empty"]) {
   test(`D5 #6: Voice Live opened an item and its final was ${ending}: the ear covered the burst → the Director's re-ask (an empty turn)`, () => {
     const r = afterQuestion();
@@ -226,6 +240,8 @@ for (const ending of ["failed", "empty"]) {
     assert.equal(c[0][2], "");
     assert.ok(c[0][0] - 3260 <= 2500, `at the closed backstop: ${c[0][0] - 3260} ms after the burst`);
     assert.ok(r.live.d5.reasks >= 1);
+    // census F5: the child spoke and the ear found no words: the turn says so (the server reads it as a re-ask, not silence)
+    assert.equal(c[0][3], true, "an unheard turn, never silence");
   });
 }
 
@@ -482,4 +498,81 @@ test("D5 review follow-up: an idle-closed stream (no audio >30 s: phone locked) 
     assert.equal(listeners.size, 0, "the wait is cleared");
     assert.equal(link.duplex, engine, "the same lane: the engine is kept");
   } finally { link.close(); env.restore(); }
+});
+
+// ───────────────────────────── round 5 truth bar: the verdict hold ─────────────────────────────
+
+const audioBytes = () => new ReadableStream({ start(c) { c.enqueue(new Uint8Array(24000)); c.close(); } });
+async function firstSoundAfter(link, events, start) {
+  for (const t0 = Date.now(); Date.now() - t0 < 4000 && !events.some((e) => e.type === "teacher_audio_start");) await sleep(10);
+  const ev = events.some((e) => e.type === "teacher_audio_start");
+  return ev ? Date.now() - start : null;
+}
+
+for (const path of ["promptTeacher", "early audio"]) {
+  test(`truth bar: her reply to a closed-value turn does not sound before the verdict hold (${path}); with no hold it sounds at once`, async () => {
+    FakeWS.behaviour = FakeWS.up;
+    const { env, link, events } = await d5Link();
+    try {
+      link["speech"] = async () => audioBytes();
+      const play = () => (path === "promptTeacher" ? link.promptTeacher({ text: "दो बटा दो? चलो देखते हैं।", seq: 3 }) : link["playEarly"](audioBytes()));
+      // no hold: sounds at once
+      let t = Date.now();
+      play();
+      const free = await firstSoundAfter(link, events, t);
+      assert.ok(free !== null && free < 450, `no hold: ${free} ms`);
+      link.interrupt();
+      events.length = 0;
+      // a closed-value commit's hold 700 ms ahead
+      link.duplex["verdictHold"] = Date.now() + 700;
+      t = Date.now();
+      play();
+      const held = await firstSoundAfter(link, events, t);
+      assert.ok(held !== null && held >= 680, `held: ${held} ms`);
+    } finally { link.close(); env.restore(); }
+  });
+}
+
+test("truth bar: the child's correction during the hold stops her reply before any of it sounds", async () => {
+  FakeWS.behaviour = FakeWS.up;
+  const { env, link, events } = await d5Link();
+  try {
+    link["speech"] = async () => audioBytes();
+    link.duplex["verdictHold"] = Date.now() + 800;
+    link.promptTeacher({ text: "दो बटा दो, बहुत अच्छा!", seq: 4 });
+    await sleep(200);
+    // the engine revokes on the child's "नहीं…": its yield stops the reply (port.stop) inside the hold
+    link.duplex.live.o.port.stop();
+    await sleep(1200);
+    assert.ok(!events.some((e) => e.type === "teacher_audio_start"), "nothing of the reply sounded");
+  } finally { link.close(); env.restore(); }
+});
+
+test("truth bar: the engine's commit carries the verdict hold (value end + VERDICT_HOLD_MS or later) only on a closed answer with a value", async () => {
+  const { VERDICT_HOLD_MS } = await import("../src/duplex/config.ts");
+  const turns = [];
+  const say = (ui, from, to, text) => {
+    const r = rig({ source: "voicelive", vadGate: "server", supportsCommit: false });
+    r.live.o.port.commit = (t) => { turns.push({ ...t, at: r.t }); r.acts.push([r.t, "commit", t.text]); };
+    r.live.audioOrigin(0);
+    r.live.setUi(ui);
+    r.live.herStart("बताओ?");
+    r.run(2500, () => ({ rms: 0.001, f0: null, her: -20 }));
+    r.live.herEnd();
+    const f = burst(from, to);
+    r.run(from + 700, f);
+    r.live.stt({ type: "input_audio_buffer.speech_started", item_id: "v", audio_start_ms: from - 210 });
+    r.run(to + 500, f);
+    r.live.stt({ type: "input_audio_buffer.speech_stopped", item_id: "v", audio_end_ms: to + 340 });
+    r.live.stt({ type: "conversation.item.input_audio_transcription.completed", item_id: "v", transcript: text });
+    r.run(to + 9000, f);
+    return turns.at(-1);
+  };
+  const closed = say({ answerForm: "number", beat: "check" }, 3000, 3600, "छप्पन");
+  assert.ok(closed && typeof closed.verdictHoldUntil === "number", JSON.stringify(closed));
+  assert.ok(closed.verdictHoldUntil >= 3600 + VERDICT_HOLD_MS - 100, `hold ${closed.verdictHoldUntil - 3600} ms after the value's end`);
+  const empty = say({ answerForm: "number", beat: "check" }, 3000, 3260, "");
+  assert.equal(empty?.verdictHoldUntil, undefined, "no value (a re-ask): no hold");
+  const open = say({ answerForm: "explanation", beat: "explain" }, 3000, 4600, "क्योंकि दोनों में उतने ही हिस्से हैं");
+  assert.equal(open?.verdictHoldUntil, undefined, "an open answer: no hold");
 });

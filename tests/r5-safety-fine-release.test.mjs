@@ -58,12 +58,14 @@ describe("fine.js: clearly fine, and the vetoes", () => {
   });
 });
 
+// 14.4: a note-only read opens a check-in, never a full episode (state.js checkTier); the other model kinds still open one
+const OPENERS = [...MODEL_EPISODE_KINDS].filter((k) => k !== "model_note");
 describe("the Director: who steps back", () => {
   test("the model kinds are exactly the model reads", () => {
     assert.deepEqual([...MODEL_EPISODE_KINDS].sort(), ["content_filter", "model", "model_note"]);
   });
   test("a model-opened episode + a clearly fine reply → the gentle resume with carry-on / stop chips (one turn early)", () => {
-    for (const kind of MODEL_EPISODE_KINDS) {
+    for (const kind of OPENERS) {
       const r = reply(opened(kind), "haan… ab safe hoon… wo bhag gaya tha…");
       assert.equal(r.move.kind, "repair", kind);
       assert.deepEqual(r.ui.chips.map((c) => c.id), ["safe:continue", "safe:stop"], kind);

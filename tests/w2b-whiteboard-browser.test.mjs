@@ -64,6 +64,33 @@ const measure = (sel) => (s) => {
 };
 void measure;
 
+/** The board's clock on the first frame its SVG exists, read inside the page (or frame): no test round trip in between. */
+const firstClock = (ctx, sel) => ctx.evaluate((sel) => new Promise((res) => {
+  const tick = () => { const svg = document.querySelector(sel); if (!svg) return requestAnimationFrame(tick); res(Number(svg.getAttribute("data-wb-t"))); };
+  tick();
+}), sel);
+
+// 14.4 (main: absolute anchor bounds failed under load, stream 3's CI-env gate 1 of 3372; alone 5/5): the board clock is
+// compared with a SAME-RUN reference, the time elapsed since the anchor read in the same page right after it, so a loaded
+// machine slows both alike; best of 6 samples 60 ms apart absorbs a stalled frame. Anchored means: never ahead of the
+// elapsed time, and its best sample within 150 ms of it (half the 300 ms back-dated anchor the frame test checks; the grace
+// would trail by 1.2 s). WB_ANCHOR_LOG=1 prints the samples (measured spread in the commit that made this).
+async function anchorLag(readT, readNow, at) {
+  const lags = [];
+  for (let i = 0; i < 6; i++) {
+    const t = await readT();
+    const elapsed = (await readNow()) - at;
+    lags.push(t - elapsed);
+    await new Promise((r) => setTimeout(r, 60));
+  }
+  if (process.env.WB_ANCHOR_LOG) console.log(`[wb-anchor] t - elapsed: ${lags.map((x) => x.toFixed(0)).join(" ")}`);
+  return lags;
+}
+function assertAnchored(lags, what) {
+  assert.ok(Math.max(...lags) <= 50, `${what}: the clock ran ahead of the anchor (${lags.map((x) => x.toFixed(0)).join(", ")} ms)`);
+  assert.ok(Math.max(...lags) >= -150, `${what}: the clock trails the anchor (best ${Math.max(...lags).toFixed(0)} ms; all ${lags.map((x) => x.toFixed(0)).join(", ")})`);
+}
+
 test("the whiteboard renderer draws a template script inside the Studio box (360 x 800, 1280 x 800); nothing outside it", { skip: SKIP, timeout: 180_000 }, async () => {
   const fails = [];
   for (const [vp, call] of [[{ width: 360, height: 800 }, { template: "cycle@1", stages: ["evaporation", "condensation", "rain", "collection"], centre: "water cycle" }],
@@ -101,22 +128,32 @@ test("the drawing starts on her line's audio anchor, and on its own after the gr
   const x = expand({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }, { lessonId: "L-wb", scriptId: "s-anchor" });
   const page = await lessonWith({ width: 360, height: 800 }, { ui: studioUi(x.script) });
   try {
-    await page.waitForSelector('[data-testid="studio-box"] svg', { timeout: 30_000 });
-    // no anchor yet: within the grace nothing is drawn (the clock reads -1 until it starts)
-    const before = await page.$eval('[data-testid="studio-box"] svg', (s) => Number(s.getAttribute("data-wb-t")));
+    // no anchor yet: within the grace nothing is drawn (the clock reads -1 until it starts), read on the first frame the board
+    // exists, inside the page (under load the test's round trip outlived the 1.2 s grace)
+    const before = await firstClock(page, '[data-testid="studio-box"] svg');
     assert.ok(before <= 0, `drew before any anchor: t=${before}`);
     // the grace (1.2 s) passes: it starts on its own
     await page.waitForFunction(() => Number(document.querySelector('[data-testid="studio-box"] svg')?.getAttribute("data-wb-t")) > 200, null, { timeout: 5000 });
   } finally { await page.close(); }
   const page2 = await lessonWith({ width: 360, height: 800 }, { ui: studioUi({ ...x.script, scriptId: "s-anchor-2" }) });
   try {
-    await page2.waitForSelector('[data-testid="studio-box"] svg', { timeout: 30_000 });
-    // the line's first audio sample: the drawing's clock is measured from it
-    const sent = await page2.evaluate(() => { const at = performance.now(); window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at } })); return at; });
+    // the line's first audio sample: the drawing's clock is measured from it. Sent from INSIDE the page on the first frame the
+    // board exists (14.4: under load the test's own round trip took longer than the 1.2 s grace, the board started on its
+    // own, and the clock ran ~500 ms ahead of an anchor that came too late: the race was the test's, not the board's)
+    const { at: sent, t: atSend } = await page2.evaluate(() => new Promise((res) => {
+      const tick = () => {
+        const svg = document.querySelector('[data-testid="studio-box"] svg');
+        if (!svg) return requestAnimationFrame(tick);
+        const at = performance.now();
+        window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at } }));
+        res({ at, t: Number(svg.getAttribute("data-wb-t")) });
+      };
+      tick();
+    }));
+    assert.ok(atSend <= 0, `the board had started before its anchor (t=${atSend})`);
     await page2.waitForTimeout(400);
-    const t = await page2.$eval('[data-testid="studio-box"] svg', (s) => Number(s.getAttribute("data-wb-t")));
-    assert.ok(t >= 250 && t <= 1200, `clock follows the anchor (t=${t} ms, ~400 expected)`);
-    void sent;
+    const lag = await anchorLag(() => page2.$eval('[data-testid="studio-box"] svg', (s) => Number(s.getAttribute("data-wb-t"))), () => page2.evaluate(() => performance.now()), sent);
+    assertAnchored(lag, "clock follows the anchor");
   } finally { await page2.close(); }
 });
 
@@ -159,8 +196,7 @@ test("explainer@1 inside the sandboxed frame draws from her line's audio anchor 
   try {
     const iframe = await page.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
     const frame = await iframe.contentFrame();
-    await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
-    const t0 = await frame.$eval("svg", (s) => Number(s.getAttribute("data-wb-t")));
+    const t0 = await firstClock(frame, '[data-testid="explainer"] svg');
     assert.ok(t0 <= 0, `drew before any anchor or grace: t=${t0}`);
     await frame.waitForFunction(() => Number(document.querySelector("svg")?.getAttribute("data-wb-t")) > 200, null, { timeout: 6000 });
   } finally { await page.close(); }
@@ -170,11 +206,12 @@ test("explainer@1 inside the sandboxed frame draws from her line's audio anchor 
     const iframe = await page2.waitForSelector('[data-testid="tray"][data-kind="module"] iframe[data-engine="explainer@1"]', { timeout: 30_000 });
     const frame = await iframe.contentFrame();
     await frame.waitForSelector('[data-testid="explainer"] svg', { timeout: 30_000 });
-    await page2.evaluate(() => window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at: performance.now() - 300 } })));
+    const at = await page2.evaluate(() => { const at = performance.now() - 300; window.dispatchEvent(new CustomEvent("taxila:line-audio-start", { detail: { lessonId: "L-wb", at } })); return at; });
     await page2.waitForTimeout(250);
-    const t = await frame.$eval("svg", (s) => Number(s.getAttribute("data-wb-t")));
-    // the anchor was 300 ms before the event; ~250 ms later the clock reads ~550 (well before the 1.2 s grace)
-    assert.ok(t >= 400 && t <= 1100, `the frame's clock follows the forwarded anchor (t=${t} ms, ~550 expected)`);
+    // the anchor was 300 ms before the event: the frame's clock is measured from THAT instant (an event-time clock would
+    // trail it by 300 ms, the grace by 1.2 s)
+    const lag = await anchorLag(() => frame.$eval("svg", (s) => Number(s.getAttribute("data-wb-t"))), () => page2.evaluate(() => performance.now()), at);
+    assertAnchored(lag, "the frame's clock follows the forwarded anchor");
   } finally { await page2.close(); }
 });
 
@@ -198,4 +235,43 @@ test("the first mount adopts the pre-booted spare frame (no new document), and i
     // one module document in the tray, none created for m9 by URL
     assert.equal(await page.$$eval('iframe[src*="#m9"]', (fs) => fs.length), 0);
   } finally { await page.close(); }
+});
+
+// census 2026-10-21 F9 (3437b744, 310b8c82: every board drawn twice): the next turn re-sent the page already on the board
+// under a new script id (a kept continue board), and the client wiped and redrew it. The same picture is shown complete
+// at once (frozen at its end, no anchor wait, no replay); a different page still draws from her line's anchor.
+test("a re-sent page that draws exactly what the board shows is not wiped and redrawn; a different page still draws on its anchor", { skip: SKIP, timeout: 120_000 }, async () => {
+  const a = expand({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }, { lessonId: "L-wb", scriptId: "s-same-a" });
+  const slot = (script, n) => ({ ...studioUi(script), status: "your_turn", studioSlot: { slotId: `slot-${n}`, intentId: `i-${n}`, state: "revealed", artifact: { kind: "whiteboard", script } } });
+  // the board clock on the first frame the next page is mounted (its script id on the board's host), read inside the page
+  const firstOf = (page, id) => page.evaluate((id) => new Promise((res) => {
+    const tick = () => {
+      const host = document.querySelector(`[data-script="${id}"]`);
+      const svg = host?.querySelector("svg");
+      if (!svg) return requestAnimationFrame(tick);
+      res({ t: Number(svg.getAttribute("data-wb-t")), same: host.getAttribute("data-same") === "1" });
+    };
+    tick();
+  }), id);
+  for (const [what, next, frozen] of [["same page, new id", { ...a.script, scriptId: "s-same-b" }, true],
+    ["a different page", expand({ template: "flow@1", steps: ["rain", "river", "sea"] }, { lessonId: "L-wb", scriptId: "s-same-c" }).script, false]]) {
+    const page = await lessonWith({ width: 360, height: 800 }, { ui: slot(a.script, 1), turn: { ui: slot(next, 2) } });
+    try {
+      await page.waitForSelector('[data-testid="studio-box"] svg', { timeout: 30_000 });
+      // the first page has drawn to its end (the grace, then its own clock)
+      await page.waitForFunction((end) => Number(document.querySelector('[data-testid="studio-box"] svg')?.getAttribute("data-wb-t")) >= end, a.script.durationMs, { timeout: a.script.durationMs + 8000 });
+      const seen = firstOf(page, next.scriptId);
+      await typeTurn(page, "ok");
+      const { t: t0, same } = await seen;
+      if (process.env.WB_ANCHOR_LOG) console.log(`[wb-same] ${what}: t=${t0} same=${same}`);
+      assert.equal(same, frozen, what);
+      if (frozen) {
+        assert.equal(t0, next.durationMs, `${what}: shown complete on its first frame (t=${t0})`);
+        await page.waitForTimeout(300);
+        assert.equal(await page.$eval('[data-testid="studio-box"] svg', (s) => Number(s.getAttribute("data-wb-t"))), next.durationMs, `${what}: never replayed`);
+      } else {
+        assert.ok(t0 <= 0, `${what}: waits for her line's anchor (t=${t0})`);
+      }
+    } finally { await page.close(); }
+  }
 });

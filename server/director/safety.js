@@ -118,6 +118,12 @@ const FAMILIES = {
     // form already fired through the lexicon).
     /(?<![\p{L}\p{M}])(?:(?:mujhe|mereko|mujhko|main|mai|ab)\s+(?:ab\s+|aur\s+|bilkul\s+)?(?:nahi+n?|nhi|na)\s+jee?na|(?:nahi+n?|nhi)\s+jee?na\s+(?:hai|h|he|mujhe|ab)|(?:mujhe|mereko|mujhko|ab)\s+(?:ab\s+|aur\s+)?jee?na\s+nahi+n?|(?:main|mai)\s+(?:ab\s+|aur\s+|aise\s+|ab\s+aur\s+)?(?:zinda|jinda)\s+nahi+n?\s+(?:reh|rah)\s*(?:sakta|sakti|paunga|paungi|paaunga|paaungi|unga|ungi|na\s+chaht\w*))(?![\p{L}\p{M}])/iu,
     /((?:मुझे|मुझको|अब|मैं)\s+(?:अब\s+|और\s+)?(?:नहीं|ना|न)\s+जीना|नहीं\s+जीना\s+(?:है|मुझे|अब)|मैं\s+(?:अब\s+|और\s+|ऐसे\s+)?(?:जिंदा|जिन्दा)\s+नहीं\s+रह\s*(?:सकता|सकती|पाऊंगा|पाऊंगी|पाउंगा|पाउंगी|ूंगा|ूंगी))/,
+    // 14.4 (main safety review; sim lab card p19 "sab mujhe stupid bolte hain… kabhi kabhi lagta hai main na hoti toh achha
+    // hota", read only by the model; the English "better if I was not here" already fired): the Hinglish and Devanagari
+    // "it would be better if I were not (here)" and "I wish I had never been born", self-referential only ("mein" is also "in":
+    // "agar main school mein na hoti toh achha hota" stays quiet). Over 40,261 sim-lab child lines: 37 new hits, all p19's line.
+    /(?<![\p{L}\p{M}])(?:(?:main|mai)\s+(?:na|naa|nahi+n?|nhi)\s+(?:hoti|hota|hoon|hun|rahti|rahta|rehti|rehta)\s+(?:to|toh|tho)\s+(?:sab\s+(?:ke\s+liye\s+)?)?(?:acha|achha|accha|achcha|behtar|better|theek|thik)\s+(?:hota|hoti|rehta|rahta|hai)|(?:kaash|kash)\s+(?:main|mai)\s+(?:paida|janam|janm)\s+(?:hi\s+)?(?:na|naa|nahi+n?)\s+(?:hoti|hota|hui|hua|leti|leta))(?![\p{L}\p{M}])/iu,
+    /(?:मैं\s+(?:ना|न|नहीं)\s+(?:होती|होता|रहती|रहता)\s+तो\s+(?:सब\s+(?:के\s+लिए\s+)?)?(?:अच्छा|बेहतर|ठीक)\s+(?:होता|होती|रहता)|काश\s+मैं\s+(?:पैदा|जन्म)\s+(?:ही\s+)?(?:ना|न|नहीं)\s+(?:होती|होता|हुई|हुआ|लेती|लेता))/u,
     // round 5 (14.2, main safety review): "khud ko kaat" was carried, the other self-objects children use were not: "apne
     // aap ko cut kiya", "apne aapko hurt kiya", "myself ko scratch kiya", "khud ko blade se cut kiya", "अपने आप को काट लिया".
     // The self-object needs its "ko" ("apne aap cut ho gaya" = it got cut by itself), as in the khud shape above, and a
@@ -256,12 +262,17 @@ const FIRST_PERSON_OBJECT = /(?<![\p{L}\p{M}])(?:mujhe|mujhko|mereko|me|i)(?![\p
 // distress word anywhere in the turn (its own veto: "zinda", "kyunki", "really" are how the science is said, so the Day-0
 // veto would keep every Roman-letter science line firing). Food is not a necessity here: "bina khane ke" can be neglect.
 const NECESSITY_BINA = /(?<![\p{L}\p{M}])(?:bina|binaa|without|बिना)(?![\p{L}\p{M}])/iu;
-const NECESSITY_THING = /(?<![\p{L}\p{M}])(?:oxygen|oxijan|oxyjan|aksijan|o2|ऑक्सीजन|ऑक्सिजन|आक्सीजन|ऑक्सीज़न|ओक्सीजन|hawa|hava|air|हवा|vayu|वायु|paani|pani|water|jal|पानी|जल|dhoop|dhup|sunlight|light|roshni|prakash|धूप|रोशनी|प्रकाश|carbon\s*dioxide|co2|कार्बन|nutrients?|poshak|पोषक|energy|urja|ऊर्जा|saans|sans|सांस|साँस)(?![\p{L}\p{M}])/iu;
+const NECESSITY_THING = /(?<![\p{L}\p{M}])(?:oxygen|oxijan|oxyjan|aksijan|oksijan|oksigen|oxigen|oxyzen|o2|ऑक्सीजन|ऑक्सिजन|आक्सीजन|ऑक्सीज़न|ओक्सीजन|hawa|hava|air|हवा|vayu|वायु|paani|pani|water|jal|पानी|जल|dhoop|dhup|sunlight|light|roshni|prakash|धूप|रोशनी|प्रकाश|carbon\s*dioxide|co2|कार्बन|nutrients?|poshak|पोषक|energy|urja|ऊर्जा|saans|sans|सांस|साँस)(?![\p{L}\p{M}])/iu;
 const LIVING_SUBJECT = /(?<![\p{L}\p{M}])(?:animals?|janwar|jaanwar|janwaron|जानवर|जानवरों|एनिमल्स|एनिमल|plants?|paudhe|paudha|paudhon|पौधे|पौधा|पौधों|पेड़|पेड|ped|trees?|insaan|insan|इंसान|humans?|log|लोग|jeev|jeev\s+jantu|जीव|living\s+things?|organisms?|koi\s+bhi|कोई\s+भी|koi|कोई|fish|machhli|machli|मछली|cells?|कोशिका|hum|हम|we|everyone|sab|सब|birds?|पक्षी|chidiya|चिड़िया|चिडिया|they|ve|वे|वो)(?![\p{L}\p{M}])/iu;
 const FIRST_SINGULAR = /(?<![\p{L}\p{M}])(?:main|mai|i|i'm|im|mujhe|mujhko|mereko|मैं|मै|मुझे|मुझको)(?![\p{L}\p{M}])/iu;
 const NECESSITY_VETO = /(?<![\p{L}\p{M}])(?:khud\s+ko|myself|suicid\w*|pills?|zeher|zehar|poison|chhat|roof|jump\w*|blood|khoon|akela|akeli|alone|lonely|udaas|udas|sad|darr?|scared|afraid|marna\s+chaht\w*|mar\s+jaa?na|hurt\w*|dard|खुद\s+को|ज़हर|जहर|छत|ख़ून|खून|अकेला|अकेली|उदास|डर|दर्द|मरना\s+चाहत\w*|मर\s+जाना)(?![\p{L}\p{M}])/iu;
+// 14.4.1 (main safety review; sim lab r5-rel144-cdac90c-p13p16 p16 voice t1, "बिना ऑक्सीजन के जी नहीं सकते", a science
+// answer with its subject dropped, the full script at once): the PLURAL verb ("sakte", "सकते", "paate") is the generic
+// subject when none is said ("[they / we] cannot live without oxygen"); a child speaking of themself says sakta / sakti, and
+// FIRST_SINGULAR and the whole-turn veto still hold
+const GENERIC_PLURAL = /(?<![\p{L}\p{M}])(?:sakte|sakate|सकते|paate|pate|पाते)(?![\p{L}\p{M}])/iu;
 /** One sentence that says a living thing cannot live without a necessity of life (and is not about "I"). */
-const necessitySentence = (s) => NECESSITY_BINA.test(s) && NECESSITY_THING.test(s) && LIVING_SUBJECT.test(s) && !FIRST_SINGULAR.test(s);
+const necessitySentence = (s) => NECESSITY_BINA.test(s) && NECESSITY_THING.test(s) && (LIVING_SUBJECT.test(s) || GENERIC_PLURAL.test(s)) && !FIRST_SINGULAR.test(s);
 /** The sentence of `t` (marks . ! ? । ; and new lines, never a comma) that holds `span`, or null. */
 function sentenceOf(t, span) {
   const i = span ? t.indexOf(span) : -1;

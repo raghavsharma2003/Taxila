@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter, nonHarmFilter } from "../azure.js";
+import { chat, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -21,6 +21,7 @@ import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNo
 import { fallbackLead } from "../conversation/fallback-lead.js";
 // r4-latency: the TTS part split (part 0 = the first sentence the child hears)
 import { splitSentences } from "../voice/sentences.js";
+import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
@@ -91,7 +92,8 @@ export async function childWordsTrip(words, { trace } = {}) {
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, purpose: "filter_probe" });
     return "clear";
   } catch (e) {
-    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    // 14.4: a block by the hate detectors alone is no child-safety signal (azure.js notChildSafety)
+    if (isContentFilter(e)) return notChildSafety(e) ? "clear" : "harm";
     return "unknown";
   }
 }
@@ -148,12 +150,14 @@ export const FALLBACK = {
   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
     other: "Sorry, I lost my words for a second. Can you say that again?",
+    heard: "Thanks for telling me! Let's keep going.",
     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
     checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
     forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
+    heard: "Accha, batane ke liye thanks! Chalo, aage badhte hain.",
     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
     forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
@@ -211,6 +215,24 @@ const CHECK_Q = { en: "Are you safe right now?", hinglish: { tum: "Kya tum abhi 
  * Wording only: the predicate, the hold and the helplines are unchanged.
  */
 const CHECK_ONLY_KINDS = new Set(["model", "content_filter"]);
+/**
+ * 14.4 (main safety review; QA TEST bfb56c4f t1 "ye sawaal mujhe maar dalega": no detector read distress, yet the reteach
+ * line asked "kya aap khud ko nuksan pahunchane ki baat kar rahe hain?" and gave 1098 / 14416; f3ebe9b0 and e35b9ea0 the
+ * same shape, the second inside a check-in): the REPLY MODEL never makes the safeguarding call. The tier is the Director's
+ * (state.js checkTier on the predicate, the reads and the floor); a reply that names a helpline or asks about hurting
+ * themself on a turn that is not the full script, in a lesson with no full script yet, is a problem ("harmtalk"):
+ * rewritten, else the move's fixed line.
+ */
+const HARM_TALK = /(?<![\p{L}\p{M}\p{N}])(?:child ?line|tele[\s-]?manas|1098|14416|help ?line|चाइल्डलाइन|टेली[\s-]?मानस|हेल्पलाइन|suicid\w*|aatm ?hatya|atmhatya|आत्महत्या)(?![\p{L}\p{M}\p{N}])|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|apne|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:\S+\s+){0,1}(?:nuksan|nuksaan|nukasan|nuqsan|nuqsaan|harm|maar|maarne|kill|नुकसान|नुक़सान|मारने)|(?<![\p{L}\p{M}])(?:khud|apne ?(?:aap|ap)|खुद|अपने ?आप)\s*(?:ko|को)\s+(?:hurt|chot|चोट|हर्ट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)|(?<![\p{L}\p{M}])(?:apni|अपनी)\s+(?:jaan|जान)\s+(?:lene|dene|लेने|देने)|self[\s-]?harm|(?<![\p{L}\p{M}])(?:aap|tum|tu|आप|तुम)\s+(?:abhi\s+|ghar\s+(?:par|pe|mein|me)\s+|अभी\s+)?(?:safe|surakshit|सेफ|सुरक्षित)\s+(?:hain|ho|hai|hoon|mehsoos|feel|हैं|हो)|(?:are|do)\s+you\s+(?:feel(?:ing)?\s+)?safe\b|(?:want|wanting|wanted|thinking|thought|think|feel like|feeling like|plan\w*|try\w*)\s+(?:of\s+|about\s+|to\s+)?(?:hurt|harm|kill)(?:ing)?\s+yourself|(?:harm|kill)(?:ing)?\s+yourself|(?:marne|mar jaane|khatam karne|jaan dene)\s+(?:ka|ke|ki)\s+(?:khayal|khyal|vichar|soch|mann|man|baat|baatein|baaten)|(?<![\p{L}\p{M}])(?:nuksan|nuksaan|nukasan|nuqsan|nuqsaan|hurt|harm|chot|नुकसान|नुक़सान|चोट)\s+(?:pahunchane|pahuchane|pohnchane|karne|dene|पहुंचाने|पहुँचाने|करने)\s+(?:ka|ke|ki|का|के|की)\s+(?:khayal|khyal|vichar|soch|irada|ख़याल|खयाल|ख्याल|विचार)|(?:ghar|घर)\s+(?:mein|me|pe|par|में|पर)\s+(?:kisi|koi|किसी|कोई)\s+(?:se\s+|से\s+)?(?:dar|darr|hurt|maar|डर)/iu;
+export const harmTalk = (text) => HARM_TALK.test(String(text ?? ""));
+/** 14.4.1: the child's turn when their words could not be shown to the reply model (a context filter block): a note, never a line */
+const MASKED_TURN = "(their reply is not shown here: no guessing at it and no quoting it; a warm thanks in a few words, then carry on with the move)";
+/** A child line the predicate's idiom checks read as the lesson's own pressure, said as what it means (the reply's history only). */
+export const idiomMeaning = (text) => (lessonHyperbole(String(text ?? "")) ? "(they said the studying feels like too much for them)"
+  : lessonIdiom(String(text ?? "")) ? "(they said this question is too hard for them)" : null);
+/** May a reply on this (next) state carry safety talk of its own? Only the full script's turns, or once one has happened. */
+export const safetyTalkAllowed = (state) => state?.safeguardedAt != null
+  || (state?.lastMove?.kind === "safeguard" && state?.lastMove?.tier !== "check") || !!state?.safeguard?.carried;
 export function safeguardLine(ctx = {}, { kind = null } = {}) {
   const mode = safetyModeOf(ctx.lang);
   if (CHECK_ONLY_KINDS.has(kind) && mode !== "hi") {
@@ -256,9 +278,40 @@ export function safeguardStayLine(ctx = {}) {
   const mode = safetyModeOf(ctx.lang);
   return STAY[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
 }
+// 14.4.3: the fixed line for the helped tier (state.js: help is in place) when no model line could be written: she is here, they
+// did the right thing, the number is on their screen (not re-said), the door left open; no question about being safe
+const HELPED = {
+  en: { tum: "I'm right here, and there's no hurry. You did the right thing. Childline's number is on your screen whenever you need it. You can tell me whatever you want to.",
+    aap: "I'm right here, and there's no hurry. You did the right thing. Childline's number is on your screen whenever you need it. You can tell me whatever you want to." },
+  hinglish: { tum: "Main yahin hoon, koi jaldi nahi hai. Tumne bilkul sahi kiya. Childline ka number screen par hai, jab bhi zaroorat ho. Jo mann ho, mujhe bata sakte ho.",
+    aap: "Main yahin hoon, koi jaldi nahi hai. Aapne bilkul sahi kiya. Childline ka number screen par hai, jab bhi zaroorat ho. Jo mann ho, mujhe bata sakte hain." },
+  hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। तुमने बिल्कुल सही किया। चाइल्डलाइन का नंबर स्क्रीन पर है, जब भी ज़रूरत हो। जो मन हो, मुझे बता सकते हो।",
+    aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। आपने बिल्कुल सही किया। चाइल्डलाइन का नंबर स्क्रीन पर है, जब भी ज़रूरत हो। जो मन हो, मुझे बता सकते हैं।" },
+};
+/** The fixed line for the helped tier (help in place: no numbers re-said). Exported for tests. */
+export function safeguardHelpedLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return HELPED[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
+/** Safeguard tiers whose turns are not held to Childline's number: the check-in (none yet) and helped (on the board, not re-said). */
+export const UNNUMBERED_TIERS = new Set(["check", "helped"]);
+// 14.4: the fixed line for the check-in tier when no model line could be written: noticing and one open question, no numbers
+const CHECK_IN = {
+  en: { tum: "That sounds hard. Are you okay right now? You can tell me what happened.", aap: "That sounds hard. Are you okay right now? You can tell me what happened." },
+  hinglish: { tum: "Yeh sunke lag raha hai kuch mushkil hai. Kya tum abhi theek ho? Jo hua, mujhe bata sakte ho.", aap: "Yeh sunke lag raha hai kuch mushkil hai. Kya aap abhi theek hain? Jo hua, mujhe bata sakte hain." },
+  hi: { tum: "यह सुनकर लग रहा है कुछ मुश्किल है। क्या तुम अभी ठीक हो? जो हुआ, मुझे बता सकते हो।", aap: "यह सुनकर लग रहा है कुछ मुश्किल है। क्या आप अभी ठीक हैं? जो हुआ, मुझे बता सकते हैं।" },
+};
+/** The fixed check-in line (the check-in tier's fallback). Exported for tests. */
+export function distressCheckLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return CHECK_IN[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
 export function fallbackReply(state, item) {
+  if (state.lastMove?.kind === "safeguard" && state.lastMove?.tier === "check") return distressCheckLine(state.ctx);
+  if (state.lastMove?.kind === "safeguard" && state.lastMove?.tier === "helped") return safeguardHelpedLine(state.ctx);
   if (state.lastMove?.kind === "safeguard") {
-    return (state.safeguard?.calm ?? 0) >= 1 ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+    // (14.4.3: the same story told on, a restart, is never the opening's line again: its "are you safe?" was asked already)
+    return (state.safeguard?.calm ?? 0) >= 1 || state.lastMove?.sameStory ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   }
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
@@ -283,6 +336,20 @@ export function fallbackReply(state, item) {
   const line = lines[kind] ?? lines.other;
   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
   return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
+}
+/**
+ * 14.4 (live on the real filter: "humne race lagayi", two class 8 answers about British rule): a block of the CONTEXT whose
+ * child's words pass (or trip only a detector that is no child-safety signal) never gets "say that again": the same words
+ * would trip it again. The move's own fixed line when it has one (an item's question, a check-in, a wrap), else a warm
+ * carry-on. Exported for tests.
+ */
+export function filterNeutralReply(state, item) {
+  const line = fallbackReply(state, item);
+  const lang = state.ctx.lang;
+  const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
+  const aap = state.ctx.address === "aap" && lang !== "english";
+  if (line !== (aap ? toAap(lines.other) : lines.other)) return line;
+  return aap ? toAap(lines.heard) : lines.heard;
 }
 
 /**
@@ -360,7 +427,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const kindNow = state.lastMove?.kind;
   // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
   const floorContent = floorContentOf(item);
-  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard", goodbye: kindNow === "wrap" });
+  // 14.4: the check-in tier names no helpline yet (state.js checkTier); every other safeguard turn must
+  // ... nor the helped tier (14.4.3: help is in place, the numbers are on the board and not re-said)
+  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard" && !UNNUMBERED_TIERS.has(state.lastMove?.tier), goodbye: kindNow === "wrap" });
+  // 14.4: a turn that is not the full script, in a lesson with none yet, carries no safety talk of its own (harmTalk)
+  const talkOk = safetyTalkAllowed(state) || forgetSafety;
   // G-ASK parity: a turn with a pinned question (UiDirectives.ask for THIS item) ends on that question and asks no
   // other — a corrective move (hint, re-teach, repair) re-poses the same item, it never moves to a side question.
   // Any other handing-back turn asks one question at most (audit flows G4: "…14 times 14 karke batayiye. 9² kitna hota hai?").
@@ -378,7 +449,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const wordsVerdict = p5Flag("R3CONV") && verdict === "unverified" && NOT_ANSWERS.has(String(state.lastMove?.request ?? "")) ? "ungraded" : verdict;
   // round 3 fix (experience B6): her OWN closed sum ("2000 + 50 = ___?") answered with a bare number is checked in code for
   // her words ("Haan, 2000 g…" to a wrong 2000): never evidence, only what her line may agree with
-  const lastAsked = !item ? history.filter((x) => x.who === "teacher").at(-1)?.text ?? null : null;
+  // QA 14.4.1 ("nahi nahi, 160" to her own "2 × 80?" got a wrong operation named): also when the move after it poses the
+  // next card, as long as no kit item was on the table when they answered (state.js priorItemId)
+  const lastAsked = !item || state.priorItemId === null ? history.filter((x) => x.who === "teacher").at(-1)?.text ?? null : null;
   const selfV = lastAsked ? selfPosedVerdict(lastAsked, childText) : null;
   const praiseOf = (t) => praiseProblem(t, selfV === "incorrect" ? "not_yet" : selfV === "correct" ? "correct" : wordsVerdict);
   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
@@ -419,9 +492,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
   const problems = (t) => [
     floorOf(t).length && "floor",
+    !talkOk && harmTalk(t) && "harmtalk",
     forgetSafety && promisesForget(t) && "forget",
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
+    // QA 14.4.1: a mistake of theirs named when nothing graded their answer wrong (director/say.js claimsMistake)
+    // (never on a safeguard turn: its reassurance is no feedback on an answer, and no pedagogy guard rewrites safety copy)
+    kindNow !== "safeguard" && praiseOf(t) === "claims" && "claim",
     right && correctsRight(t, right) && "corrects",
     screenProblem(t, ui, module, { coming: !!state.lastMove?.visual && state.lastMove?.request === "visual" }) && "screen",
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
@@ -474,19 +551,42 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // Every turn reaches the reply model with direct identifiers masked (scrubPii), history and this turn alike.
     // Teacher turns too: on the voice lane her transcript came from a model that heard the child's audio unmasked,
     // so it can repeat a phone number, school or address back.
-    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: forModel(t.text) })),
+    // 14.4 (QA TEST d359423b / a9c3136d, 9ad86661; model-only replay 4 of 6 runs): a past child line the predicate's idiom checks
+    // read as the lesson's own pressure ("main mar jaunga itna padh ke", "ye sawaal mujhe maar dalega") reached every later
+    // draft word for word, and the reply made the safeguarding call on it turns after the Director had made its own ("turant
+    // batayiye… akele mat rahiye"; once "aap marne ki baat keh rahi hain", which the next turn's read took for the child's).
+    // Until a full script has happened it reaches the reply model as what it means. The turn being answered is never changed.
+    ...history.map((t) => ({ role: t.who === "teacher" ? "assistant" : "user", content: t.who !== "teacher" && !talkOk && idiomMeaning(t.text) || forModel(t.text) })),
     { role: "user", content: childText ? forModel(childText) : "(the child has joined the lesson and is listening)" },
   ];
   const replyT0 = performance.now();
   // Replies take ~1-2 s (measured in evals/director-sim.mjs); a stuck call is cut at 6 s and retried once.
   // r5-latency: hedged (azure.js hedged): a call still out at REPLY_HEDGE_MS gets an identical twin, the first answer wins
-  // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? {} : { overflow: false }) }).then((r) => r.text.trim());
+  // overflow: false for a speculative bet (brain/turn.js speculate): a throttled bet just loses, the real reply still moves;
+  // the real reply's hedge twin goes to the overflow account (azure.js chat twin, 14.4), a bet's never does
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => r.text.trim());
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
   // outage: the caller fails CLOSED to the safeguarding protocol (turn(): `filtered`).
-  const blocked = () => ({ reply: fallbackReply(state, item), filtered: true, guard: { caught: ["content_filter"], rewritten: false, replaced: true } });
+  // 14.4: `probe` is what the child's own words alone did (childWordsTrip); a probe that could not run is UNSURE: the caller
+  // opens a check-in (one gentle question, no helplines yet; the next turn escalates unless the child is clearly fine)
+  const blocked = (probe = "harm") => ({ reply: fallbackReply(state, item), filtered: true, ...(probe === "unknown" ? { unsure: true } : {}),
+    guard: { caught: ["content_filter"], rewritten: false, replaced: true } });
+  // 14.4 (main safety review; owner census dad0c9db t22: "pata nahi" got the helpline script with no disclosure anywhere in
+  // the lesson): a block on a REWRITE or REPAIR call (the brief, her draft and the child's words) is judged as every other
+  // reply-side block. A non-harm detector: a neutral line. Otherwise the child's own words alone decide: clear, a neutral
+  // line; a harm block, the safeguard; a probe that could not run, the check-in.
+  const blockedAfterDraft = async (e, code) => {
+    if (nonHarmFilter(e)) return { reply: filterNeutralReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    const probe = await childWordsTrip(probeWords(history, childText), { trace });
+    if (probe === "clear") {
+      console.warn(`[lesson] ${code} blocked but the child's own words pass: a neutral line`);
+      return { reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } };
+    }
+    console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
+    return blocked(probe);
+  };
   // round 2 (conversation): the LEAD SLOT. A turn that answers a request before the card question, or puts the same
   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
@@ -526,14 +626,22 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
     // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
     // still fail CLOSED below, exactly as before.
-    const neutral = (code) => ({ reply: fallbackReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
+    const neutral = (code) => ({ reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
     const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
+    // 14.4.1 (sim lab p26h on 5c127d1a, QA 4b3d875c: a class 8 answer about the British, blocked on hate on the prompt and on
+    // this turn alone, got only the fixed carry-on, with no question): one more try with their words NOT shown, so her line is
+    // the move's own; blocked or failed, the fixed line as before. Their words still reached every read and the probe.
+    const masked = () => ask([messages[0], { role: "user", content: MASKED_TURN }, ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])]).catch(() => null);
     let triedLone = false;
     if (isContentFilter(e) && nonHarmFilter(e)) {
       console.warn(`[lesson] reply blocked by a non-harm filter (${e.filterCats.join(",")}): one retry on this turn alone`);
       triedLone = true;
       try { again = await ask(lone); } catch (e2) { if (isContentFilter(e2) && !nonHarmFilter(e2)) e = e2; }
-      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) return neutral("content_filter_nonharm");
+      if (!again && !(isContentFilter(e) && !nonHarmFilter(e))) {
+        const m = await masked();
+        if (!m) return neutral("content_filter_nonharm");
+        again = m; guardSlot.masked = true;
+      }
     }
     // round 5 (sim lab p43, main safety review): a HARM (or unreadable) block on the PROMPT is the filter judging the whole
     // mix (the brief, her lines, the history, the child's words), not the child. The safeguard fires only when the CHILD'S
@@ -549,12 +657,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       ]);
       if (probe !== "clear") {
         console.warn(`[lesson] reply prompt blocked (${cats}); the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}: fail closed`);
-        return blocked();
+        return blocked(probe);
       }
       console.warn(`[lesson] reply prompt blocked (${cats}) but the child's own words pass: ${retry ? "the retry on this turn alone" : "a neutral line"}`);
-      if (!retry) return neutral("content_filter_context");
-      again = retry;
+      const got = retry ?? await masked();
+      if (!got) return neutral("content_filter_context");
+      again = got;
       guardSlot.filter = "context";
+      if (!retry) guardSlot.masked = true;
     }
     if (!again && isContentFilter(e) && e.status === 200 && !nonHarmFilter(e)) {
       console.warn("[lesson] reply completion blocked by the content filter: one fresh reply");
@@ -576,6 +686,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           console.warn("[lesson] her reply was blocked on completion but the child's own words pass: a neutral line");
           return neutral("content_filter_output");
         }
+        console.warn("[lesson] her reply was blocked on completion and the child's own words could not be cleared");
+        return blocked(probe);
       }
       if (isContentFilter(e)) { console.warn("[lesson] reply blocked by the content filter"); return blocked(); }
       console.warn("[lesson] reply unavailable, falling back:", e.message);
@@ -583,7 +695,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
   }
   let found = problems(reply);
-  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}) };
+  const guard = { caught: found, rewritten: false, replaced: false, ...(found.length ? { firstDraft: reply } : {}), ...(guardSlot.used ? { leadSlot: true } : {}), ...(guardSlot.filter ? { filter: guardSlot.filter } : {}), ...(guardSlot.masked ? { masked: true } : {}) };
   // r4-latency (TAXILA_TTS_FIRST_SENTENCE, SHADOW): can the draft's first TTS sentence be LOCKED now — could it start speaking
   // while the rest of the turn is still being guarded or rewritten? Locked only when it passes every per-sentence guard on its
   // own, names nothing on the screen (the child would still see the last turn's), asks nothing, and the minimal turn
@@ -626,6 +738,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("units") && "it asks which is bigger between two different kinds of quantity — compare like with like (two counts, or two lengths in one unit)",
       found.includes("math") && (() => { const x = arithmeticSlip(own(reply)); return x ? `it states a result that is not true (${x.claim}: the true value is ${x.value}) — say it correctly, or leave the sum out` : null; })(),
       found.includes("floor") && `it breaks the safety floor — ${floorOf(reply).map((k) => FLOOR_FIX[k]).filter(Boolean).join("; ")}`,
+      found.includes("harmtalk") && (state.lastMove?.kind === "safeguard"
+        ? "a check-in asks only if they are okay — no helpline yet, and never whether they are safe or want to hurt themself"
+        : "it brings up a helpline or asks whether they want to hurt themself, but nothing they said is about being unsafe (the safety check read their words) — no helpline and no question about harm: answer warmly, as their teacher, about what they actually said"),
       found.includes("forget") && "it promises to forget or keep secret what they told you about being unsafe — never promise that; say kindly that telling was right and that a grown-up they trust should know so they can help",
       // round 3: on a turn with no answer to judge (a filler, an unverified reply) "start from what they actually did" made the
       // rewrite echo the filler ("Tumne bas “haan” kaha", 4 of ~500 turns on the paired battery): there it says go straight on
@@ -633,10 +748,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         ? "it praises or agrees as if they answered, but there is no answer of theirs to judge this turn — no praise or agreement word; go straight on with the move, without commenting on what they said"
         : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
+      found.includes("claim") && "it says they made a mistake, but nothing checked their answer as wrong — say nothing about right or wrong or what they did; go straight on with the move",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
-      found.includes("screen") && "it tells them to tap or pick something on the screen, but nothing is on the screen to tap this turn — ask them to say it",
+      found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
-      found.includes("cantshow") && "it says you cannot show or draw — never say that; the board draws for you: talk about the idea itself",
+      found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -660,7 +776,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       guard.rewritten = true;
       found = problems(reply);
     } catch (e) {
-      if (isContentFilter(e)) { console.warn("[lesson] rewrite blocked by the content filter"); return blocked(); }
+      if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_rewrite");
       console.warn("[lesson] rewrite unavailable, guarding the draft:", e.message); // the draft's problems stand
     }
     guard.afterRewrite = found;
@@ -673,8 +789,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const line = FALLBACK[lang === "english" ? "english" : "hinglish"].forgetSafety;
       reply = address === "aap" && lang !== "english" ? toAap(line) : line;
       guard.replaced = true;
-    } else if (found.includes("floor")) {
-      // A teacher line that still breaks the floor is never sent: the fixed line for the move (or the question).
+    } else if (found.includes("floor") || found.includes("harmtalk")) {
+      // A teacher line that still breaks the floor, or still makes the safeguarding call itself, is never sent: the fixed
+      // line for the move (or the question).
       reply = fallbackReply(state, item);
       guard.replaced = true;
     } else if (found.includes("leak") && ahead) {
@@ -699,7 +816,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           let a = again;
           if (problems(a).includes("long")) a = trimToWords(a, max);
           if (!problems(a).filter((p) => !SOFT_FIX.has(p)).length && !problems(a).includes("long") && !isBare(a, askEnd, pinned)) { reply = a; guard.reasked = true; }
-        } catch (e) { if (isContentFilter(e)) return blocked(); }
+        } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
       }
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
@@ -711,8 +828,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // a false sum that survived the rewrite: its sentence goes (the rest of the turn stands, or the question / fixed line)
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
+      if (found.includes("claim")) { reply = keepOr(stripClaim(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
-      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply)); guard.replaced = true; }
+      if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply, { stageEmpty: emptyStage(ui, module) })); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
       if (found.includes("parts")) {
         // a requested example keeps its own sentences: only the ones about the screen are taken out
@@ -742,6 +860,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         guard.repaired = true;
       }
     }
+    // QA 14.4.1: a mistake of theirs nothing graded survives no branch above (the drift repair keeps the acknowledgement
+    // before the question, and a claim is usually that acknowledgement): its sentences go
+    if (kindNow !== "safeguard" && problems(reply).some((p) => p === "claim" || p === "deny") && claimsMistake(reply)) {
+      const left = stripClaim(reply);
+      reply = left && handsBack(left) ? left : item && !CLOSING_MOVES.has(kindNow) ? joinAsk(left, askEnd) : left || fallbackReply(state, item);
+      guard.replaced = true;
+    }
   }
   if (G) {
     // p5-interaction: a teaching turn the repairs above left gutted (owner-2 R6, 3 / 90: "What do you predict?" as a whole
@@ -767,7 +892,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
-      } catch (e) { if (isContentFilter(e)) return blocked(); }
+      } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
     }
     // a hint turn still only the question after the rewrite: the rung's own kit hint (verified content that never states
     // the key, never a teacher note) leads the question
@@ -796,7 +921,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
             const now = problems(again);
             if (!now.includes("bare") && !now.includes("same") && !now.includes("leak") && now.every((p) => was.has(p))) { reply = again; guard.leadRepair = true; } else slotState.on = prevOn;
           }
-        } catch (e) { if (isContentFilter(e)) return blocked(); }
+        } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
       }
     }
     // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
@@ -823,6 +948,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const spoken = speakNotWrite(reply, askEnd);
     if (spoken !== reply) { reply = spoken; guard.spoken = true; }
   }
+  // 14.4 (QA TEST a9c3136d t8, 9ad86661): the goodbye strip took her only sentence ("…padhai rok dete hain—…?"), the full-turn
+  // retry raised self-harm again and was refused, and the child got "" and a module tray. A turn is never empty: the fixed line.
+  if (!String(reply ?? "").trim()) { reply = fallbackReply(state, item); guard.replaced = true; guard.emptied = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;
@@ -929,7 +1057,7 @@ export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "forget", "praise", "deny", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**
@@ -959,4 +1087,37 @@ export function lockFirstSentence({ reply, askEnd, problems, closing, spoken, co
   const whole = problems(fallback);
   if (whole.length) return no(`min_${whole[0]}`);
   return { locked: true, s1, fallback, ms: Math.round(performance.now() - t0) };
+}
+
+// ───────────── round 5 (14.4, main; open-r143-affirm-on-no-answer): no affirmation that approves what nobody said ─────────────
+// Sim lab p30 @f444f064 #6: the child tapped "No — insects have six legs…" (graded right) and her reply opened "Yes, Pihu—
+// earthworm has no legs": a bare Yes before a negative fact agrees with the opposite of what the child said. And an
+// opener of agreement on a not-yet / partly-right answer, or on no input at all, approves an answer that was not given.
+// (a) not_yet / partial verdict, or truly empty input (no words, no tap): the leading affirmation goes, the rest stands.
+// (b) a right answer that itself opens with No / nahi / नहीं: a bare Yes / Haan opener becomes "Right" / "Sahi" / "सही"
+// (agreeing with the child), never a Yes before their No. Ungraded / unverified / attempt turns are left alone (main: 175
+// mostly-fine openers on 14.2 when they were in). PURE.
+const AFFIRM = "(?:ji\\s+haan|yes|yeah|yep|haa+n?|han|bilkul(?:\\s+sahi)?|ekdam\\s+sahi|sahi(?:\\s+(?:hai|kaha|jawab|baat))?|right|correct|exactly|sha+ba+sh|very\\s+good|well\\s+done|great|हाँ|हां|बिल्कुल(?:\\s+सही)?|सही|शाबाश)";
+const YES_ONLY = /^(?:ji\s+haan|yes|yeah|yep|haa+n?|han|हाँ|हां)$/iu;
+const NO_FIRST = /^\s*(?:no|nope|nahi|nahin|nhi|na|नहीं|ना)(?![\p{L}])/iu;
+const escapeRe = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+export function affirmOpenerFix(reply, { verdict = null, empty = false, answer = "", name = null, lang = "hinglish" } = {}) {
+  const text = String(reply ?? "");
+  const lead = name ? `(?:${escapeRe(name)}\\s*[,،—–-]?\\s*)?` : "";
+  if (verdict === "not_yet" || verdict === "partial" || empty) {
+    const m = text.match(new RegExp(`^\\s*(${lead})((?:${AFFIRM}(?![\\p{L}-])\\s*[,!.।—–-]*\\s*)+)`, "iu"));
+    if (!m) return { text, fix: null };
+    const rest = text.slice(m[0].length).trim();
+    if (!rest) return { text, fix: null };
+    const named = m[1] ? `${m[1].trim().replace(/[,،—–-]+$/, "")}, ` : "";
+    const body = named ? rest : rest[0].toUpperCase() + rest.slice(1);
+    return { text: `${named}${body}`, fix: "strip" };
+  }
+  if (verdict === "correct" && NO_FIRST.test(String(answer ?? ""))) {
+    const m = text.match(new RegExp(`^(\\s*)(${AFFIRM})(?![\\p{L}])`, "iu"));
+    if (!m || !YES_ONLY.test(m[2])) return { text, fix: null };
+    const word = /[ऀ-ॿ]/.test(m[2]) ? "सही" : lang === "english" ? "Right" : "Sahi";
+    return { text: `${m[1]}${word}${text.slice(m[0].length)}`, fix: "polarity" };
+  }
+  return { text, fix: null };
 }

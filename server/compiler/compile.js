@@ -66,6 +66,11 @@ const ESCAPE_VOICE = "unsafe, hurt or scared → no lesson now: calm care, a tru
 const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
+// 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
+const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
+// 14.4.3: the helped tier (state.js: help is in place): the hold and the board stay; the numbers and "are you safe?" are not re-said
+const SAFEGUARD_HELPED = "care first: no lesson content this turn; help is in place: no helpline numbers again unless they ask, never ask again if they are safe.";
+const AFTER_CHECK = "the safety check already read their earlier heavy words: no helpline, no telling them to go to a grown-up now, no question about harm or being safe; answer what they said now, as their teacher";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
@@ -202,7 +207,7 @@ function moveParts(move, voiced, rel) {
 }
 
 const LANGUAGE = {
-  hinglish: "mirror the child. Default natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. If they switch to English or to Hindi, follow them.",
+  hinglish: "natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. Their English words, even a whole English line, are still Hinglish to you: keep Hinglish. If they speak Hindi, follow them.",
   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written); the lesson's own idea-words in Hindi, an English term only as a short gloss after the Hindi word. If they switch to English or Hinglish, follow them.",
   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
 };
@@ -211,7 +216,7 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
 // round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
 // "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
 const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
-function languageRule(language, ageBand, pinned = false) {
+export function languageRule(language, ageBand, pinned = false) {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
   return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
@@ -252,11 +257,14 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
         : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead`;
   let check, shape;
   if (move.kind === "safeguard") {
-    check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
+    check = move.tier === "check" ? DISTRESS_CHECK : move.tier === "helped" ? SAFEGUARD_HELPED : voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     // W2-I R3 (P2: a spoken-planning preface on 18/18 heavy turns): the reply begins with the child, never with a sentence
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
-    shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+    shape = move.tier === "check" ? "at most 30 words, short warm sentences. End with your one gentle question, then stop."
+      : move.tier === "helped" ? "at most 35 words, short calm sentences. End warmly, with no question about being safe, then stop."
+      : move.sameStory ? "at most 35 words, short calm sentences. End with your one new question, never about being safe, then stop."
+      : "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (move.intake) {
     // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe
     // that is the kit question, pinned verbatim (content); never a lesson explanation or a quiz of her own here
@@ -293,6 +301,12 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   const pc = move.kind !== "safeguard" && move.kind !== "wrap" && s.playOn?.mode ? playCheck(s.playOn, language) : null;
   if (pc) check = pc;
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
+  // 14.4 (QA TEST d359423b / a9c3136d t7-t8, 9ad86661): the turns a check-in released, and a read the Director set aside, still
+  // carry the child's heavy words in the history, and the reply made the safeguarding call itself from them ("mar jaunga ko
+  // main seriously leta hoon… aap safe hain?", "turant batayiye… akele mat rahiye") on 4 of 4 drafts. The call is made: last.
+  if (move.kind !== "safeguard" && s.safeguardedAt == null && (move.setAside || (s.checkReleased != null && s.turn - s.checkReleased <= 3))) {
+    check = `${check}; ${AFTER_CHECK}`;
+  }
   // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
   // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
   // opener callback was voiced 0/3, and 0/3 again as a bare "FIRST" note under a hook shape that also says how to open). A note, never a line;
