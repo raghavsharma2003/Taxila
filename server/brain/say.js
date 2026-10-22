@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { praiseProblem, stripPraise, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -429,7 +429,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const wordsVerdict = p5Flag("R3CONV") && verdict === "unverified" && NOT_ANSWERS.has(String(state.lastMove?.request ?? "")) ? "ungraded" : verdict;
   // round 3 fix (experience B6): her OWN closed sum ("2000 + 50 = ___?") answered with a bare number is checked in code for
   // her words ("Haan, 2000 g…" to a wrong 2000): never evidence, only what her line may agree with
-  const lastAsked = !item ? history.filter((x) => x.who === "teacher").at(-1)?.text ?? null : null;
+  // QA 14.4.1 ("nahi nahi, 160" to her own "2 × 80?" got a wrong operation named): also when the move after it poses the
+  // next card, as long as no kit item was on the table when they answered (state.js priorItemId)
+  const lastAsked = !item || state.priorItemId === null ? history.filter((x) => x.who === "teacher").at(-1)?.text ?? null : null;
   const selfV = lastAsked ? selfPosedVerdict(lastAsked, childText) : null;
   const praiseOf = (t) => praiseProblem(t, selfV === "incorrect" ? "not_yet" : selfV === "correct" ? "correct" : wordsVerdict);
   // p5-interaction guards (conversation/guards.js): her earlier lines of this lesson (the repeat guard reads the last six)
@@ -474,6 +476,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     forgetSafety && promisesForget(t) && "forget",
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
+    // QA 14.4.1: a mistake of theirs named when nothing graded their answer wrong (director/say.js claimsMistake)
+    praiseOf(t) === "claims" && "claim",
     right && correctsRight(t, right) && "corrects",
     screenProblem(t, ui, module, { coming: !!state.lastMove?.visual && state.lastMove?.request === "visual" }) && "screen",
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
@@ -723,6 +727,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         ? "it praises or agrees as if they answered, but there is no answer of theirs to judge this turn — no praise or agreement word; go straight on with the move, without commenting on what they said"
         : `it agrees with or praises their answer, but their answer was not marked right — no agreement or praise word for it; ${R3 ? "start from what they actually did" : "name what is sensible in it"}, then the next step`),
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
+      found.includes("claim") && "it says they made a mistake, but nothing checked their answer as wrong — say nothing about right or wrong or what they did; go straight on with the move",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
       found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
@@ -802,6 +807,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // a false sum that survived the rewrite: its sentence goes (the rest of the turn stands, or the question / fixed line)
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
+      if (found.includes("claim")) { reply = keepOr(stripClaim(reply)); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply, { stageEmpty: emptyStage(ui, module) })); guard.replaced = true; }
       // W2-B fixer: a rewrite that still names part counts the screen does not show loses those sentences
@@ -832,6 +838,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         reply = alt && !isBare(alt, askEnd, pinned) ? alt : fixed;
         guard.repaired = true;
       }
+    }
+    // QA 14.4.1: a mistake of theirs nothing graded survives no branch above (the drift repair keeps the acknowledgement
+    // before the question, and a claim is usually that acknowledgement): its sentences go
+    if (problems(reply).some((p) => p === "claim" || p === "deny") && claimsMistake(reply)) {
+      const left = stripClaim(reply);
+      reply = left && handsBack(left) ? left : item && !CLOSING_MOVES.has(kindNow) ? joinAsk(left, askEnd) : left || fallbackReply(state, item);
+      guard.replaced = true;
     }
   }
   if (G) {
@@ -1023,7 +1036,7 @@ export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**

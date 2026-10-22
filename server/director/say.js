@@ -49,6 +49,20 @@ const PRAISE_ANY_WIDE = new RegExp([PRAISE_ANY.source,
  * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
  */
 const DENY_ANY = /\b(?:(?:yahan|yaha|isme|ismein|is\s+mein|thodi|chhoti|ek)\s+galti\s+(?:hui|ho\s+gayi|ho\s+gai|hai|kar\s+di)|galti\s+(?:ho\s+gayi|ho\s+gai|kar\s+di|kar\s+di\s+hai)|step\s+(?:toot|tut|chhoot|chhut|reh)\s+gaya|you\s+made\s+a\s+mistake|that'?s\s+(?:wrong|not\s+right|incorrect)|(?:aapka|tumhara|your)\s+(?:answer|jawab)\s+(?:galat|wrong|sahi\s+nahi))\b(?!\s+(?:nahi|nahin|not))/iu;
+/**
+ * QA 14.4.1 (P2: "nahi nahi, 160" got "Aapne jodne ki jagah kuch aur operation kiya", a reteach naming a wrong operation
+ * the child never did): a sentence that says THEY made a mistake (a second-person subject with a fault word, or what they
+ * did instead). A question, a negation ("koi galti nahi") and a general rule ("agar galti ho…") are not claims.
+ */
+const CLAIM_WHO = /(?<![\p{L}])(?:aapne|tumne|aapse|tumse|aapka|tumhara|aapki|tumhari|you|your)(?![\p{L}])/iu;
+const CLAIM_FAULT = /(?<![\p{L}])(?:galat|galti|mistake|wrong|incorrect)(?![\p{L}])|\p{L}+ne\s+ki\s+jagah(?![\p{L}])|(?<![\p{L}])ki\s+jagah\s+(?:badal|ulat|palat)|instead\s+of|(?<![\p{L}])(?:kuch\s+aur|koi\s+aur|doosr[aie]|dusr[aie]|alag|different|another)\s+operation/iu;
+const CLAIM_NOT = /(?<![\p{L}])(?:(?:galat|galti|mistake|wrong|incorrect)\s+(?:nahi|nahin|not|na)|(?:no|koi|not\s+a|kabhi)\s+(?:galti|mistake)|not\s+(?:wrong|incorrect)|isn'?t\s+wrong|(?:agar|if|whenever|even\s+if|chahe|kabhi\s+kabhi|sometimes|log|students|bachch?e|many|common))(?![\p{L}])/iu;
+const claimSentence = (x) => !/[?？]/.test(x) && CLAIM_WHO.test(x) && CLAIM_FAULT.test(x) && !CLAIM_NOT.test(x);
+/** Does the turn tell the child they made a mistake (G-PRAISE-1's other side: a fault nothing graded)? */
+export const claimsMistake = (text) => DENY_ANY.test(String(text ?? "")) || sentencesOf(text).some(claimSentence);
+/** The turn without its sentences that claim a mistake of theirs. */
+export const stripClaim = (text) => sentencesOf(text).filter((x) => !claimSentence(x) && !DENY_ANY.test(x)).map((x) => x.trim()).join(" ").replace(/\u2024/g, ".").trim();
+
 /** A "not right" opening, after an answer the classifier marked correct. */
 const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incorrect", "nope", "oops", "almost", "lagbhag", "thoda\\s+(?:sa\\s+)?galat",
   "nahi,?\\s+(?:ye|yeh)\\s+(?:sahi|theek)", "गलत"].join("|"));
@@ -97,13 +111,16 @@ export const withoutEffortPraise = (text) => String(text ?? "").replace(EFFORT, 
 
 export function praiseProblem(text, verdict) {
   const t = withoutEffortPraise(text).trim();
-  if (!t || verdict === "ungraded") return null;
-  if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
+  if (!t) return null;
+  // QA 14.4.1: nothing graded wrong, so no mistake of theirs is named (an ungraded turn has no other constraint)
+  if (verdict === "ungraded") return claimsMistake(t) ? "claims" : null;
+  if (verdict === "correct") return DENY_OPEN.test(t) || claimsMistake(t) ? "contradicts" : null;
   // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
-  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : null;
+  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : claimsMistake(t) ? "claims" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.
   if (PRAISE_OPEN.test(t) || (verdict === "partial" ? PRAISE_ANY : PRAISE_ANY_WIDE).test(t) || PRAISE_EMOJI.test(t)) return "praise";
   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
+  if (verdict === "unverified" && claimsMistake(t)) return "claims";
   return null;
 }
 

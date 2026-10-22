@@ -1768,6 +1768,9 @@ function capPlan(s, input, p) {
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
+  // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
+  // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
+  if (input.event === "turn") s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   // round 4 (conversation): a question tacked onto a graded answer ("yes, also why is the sky blue") is parked like the note's
   // alongside reading (code-first; the note runs only on non-answer turns). Screened in code like every parked topic.
   if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.alsoPark && ["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
