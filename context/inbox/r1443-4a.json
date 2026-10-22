@@ -5,6 +5,12 @@
    "kind": "measurement",
    "at": "2026-10-22",
    "title": "14.4.3. Main’s 14.4.2 release replay on c5a55681, r2 t3 (an example asked for, then two don’t-knows): the worked part handed the total back to the child. The Director’s shape already said show (fe59b5f1, reached on that turn). The reply guard’s hand-back check (handsBack: a question or a batao verb) read the showing turn as \"flat\", and its rewrite asked the sum. Now a worked part shown to a stuck child carries move.stuck. brain/say.js needs no hand-back there, and a sentence that asks the child to compute (a question or an instruction to them, with a working-out cue) is guard \"quiz\": rewritten, then those sentences dropped in code. Never on a safeguard turn: only worked_example moves carry stuck. TEST, read-only: 324 worked_example teacher lines, 82 hand the child a sum. Of the 5 that follow a don’t-know (code read of the child line), 3 hand the child a sum. Tests: tests/r1443-stuck-shown.test.mjs (4, fail on c4b6341f)."
+  },
+  {
+   "id": "ms-r1443-options-on-buttons",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.3. Sim lab 14.4.2 safety run (6da8f599, p30 r3, lesson 87b610b3 #7): her text-lane line read out the diagnostic card’s three choices, run together after \"…bade ko batao.\". No code path appends options: optionsSpoken is joined with ya / or, and endOnAsk, joinAsk, repairDrift and fallbackReply append only the prompt. The compile told her on every lane \"its choices (content — read them plainly, in this order)\", and she listed them, often as bullets that the whitespace and markup clean-up flattened. 14.4 sim-lab records (n = 448 lessons, 160 text-lane diagnostic turns): 12 lines had two or more choices; 9 of them are caught by the new guard reading chip labels. All were move=probe. The text lane now gets \"its choices are the buttons (for checking only; never list or read them in your words)\", and the voice lane still reads them. brain/say.js guard \"options\" (text lane, a diagnostic on the table, two or more option texts named; never on a safeguard turn): rewrite, then withoutOptions takes the option texts and their list scaffolding out in code. Tests: tests/r1443-options-on-buttons.test.mjs (3, fail on d035f3ec)."
   }
  ],
  "edges": []

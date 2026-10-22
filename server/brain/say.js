@@ -108,6 +108,23 @@ export const probeWords = (history, childText) =>
  */
 const COMPUTE_CUE = /(?<![\p{L}])(?:kitn[aeiā]|how\s+(?:many|much|far|long)|what\s+is|total|jod|jodo|jodiye|jodkar|plus|minus|guna|times|ghata|bhaag|divide|multiply|add|subtract|nikal\p{L}*|calculate|work\s+out|kya\s+(?:hoga|milega|aayega|aata))(?![\p{L}])|[+×÷=]|\d\s*[-x*]\s*\d/iu;
 const TO_THEM = /[?？]\s*$|(?<![\p{L}])(?:batao|bataao|bataiye|boliye|bolo|kijiye|karo|kariye|nikalo|nikaliye|socho|sochiye|tell\s+me|try)\s*[.!।]?\s*$/iu;
+/**
+ * 14.4.3 (sim lab 6da8f599 p30 r3 #7): the card's choices listed in her text-lane line, where they are the buttons. → how
+ * many of `item`'s option texts the reply names (its first 25 characters, the label a chip shows).
+ */
+const optionHead = (o) => String(o?.text ?? "").replace(/\s+/g, " ").trim().slice(0, 25).toLowerCase();
+export const optionsNamed = (text, item) => (item?.diagnostic ? item.options.filter((o) => optionHead(o).length >= 4 && String(text).replace(/\s+/g, " ").toLowerCase().includes(optionHead(o))).length : 0);
+/** The reply with each option text taken out, and the list scaffolding around it (a bullet, "1)", "A.", " ya ", " or "). */
+export function withoutOptions(text, item) {
+  let out = String(text ?? "").replace(/\s+/g, " ");
+  for (const o of item?.options ?? []) {
+    const t = String(o.text ?? "").replace(/\s+/g, " ").trim();
+    if (t.length < 4) continue;
+    const esc = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    out = out.replace(new RegExp(`(?:\\s*(?:[-•*]|\\(?[a-d1-4][).]))?\\s*${esc}[.,;]?(?:\\s+(?:ya|or)(?=\\s))?`, "giu"), " ");
+  }
+  return out.replace(/\s+(?:ya|or)\s+(?=[.?!]|$)/giu, " ").replace(/\s{2,}/g, " ").replace(/\s+([.,?!])/g, "$1").replace(/^[\s?.,;!—-]+/, "").trim();
+}
 export const asksToCompute = (x) => TO_THEM.test(String(x).trim()) && COMPUTE_CUE.test(String(x));
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
@@ -410,6 +427,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // hand-back check read a showing turn as "flat" and its rewrite put the sum back to the child.
   const showOnly = state.lastMove?.kind === "worked_example" && !!state.lastMove?.stuck;
   const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin && !restBreak && !showOnly;
+  // 14.4.3: on the text lane a diagnostic's choices are the buttons, never listed in her line (never on a safeguard turn)
+  const readsOptions = state.mode === "text" && !!item?.diagnostic && state.lastMove?.kind !== "safeguard";
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
@@ -511,6 +530,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // tukde se sabse chhote tak lagao." has no "?" and no listed verb: every pose of it was "flat" and rewritten)
     mustHandBack && !handsBack(t) && !(R3 && pinned && parityOf(t).endsOnAsk) && "flat",
     showOnly && sentences(t).some(asksToCompute) && "quiz",
+    readsOptions && optionsNamed(t, item) >= 2 && "options",
     !scriptOk(t, lang) && "script",
     words(t) > max && !slotLength(t) && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
@@ -756,6 +776,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("bare") && (rePose || helpAsk ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
+      found.includes("options") && "it lists the answer choices, but they are the buttons on the screen — do not list or read them; say your line, then ask the question",
       found.includes("quiz") && "they were stuck: say each step's result yourself and ask them to work out nothing — at most ask if they want to see the next step",
       found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
       found.includes("noconfirm") && "their answer was right — open by confirming it in a few words, naming what they got right, before anything else",
@@ -823,6 +844,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("claim")) { reply = keepOr(stripClaim(reply)); guard.replaced = true; }
+      if (found.includes("options")) { reply = keepOr(withoutOptions(reply, item)); guard.replaced = true; }
       if (found.includes("quiz")) { reply = sentences(reply).filter((x) => !asksToCompute(x)).join(" ").trim() || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
       if (found.includes("screen")) { reply = keepOr(stripScreenRefs(reply, { stageEmpty: emptyStage(ui, module) })); guard.replaced = true; }
