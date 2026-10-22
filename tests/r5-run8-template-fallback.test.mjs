@@ -98,3 +98,21 @@ test("38aad918: a board that draws over a picture still retires the picture (as 
     assert.equal(L.pieces.get(pic.intentId)?.retiredWhy, "replaced");
   } finally { if (prevSync === undefined) delete process.env.TAXILA_BOARD_SYNC_MS; else process.env.TAXILA_BOARD_SYNC_MS = prevSync; }
 });
+
+test("QA on be9b766a (459069d8 t5, 7461bc46 t2): a piece taken down is traced as studio.slot.retired with its reason, never as a failed slot", async () => {
+  const { flushTrace, _setTraceDeps, _resetTrace } = await import("../server/trace/writer.js");
+  const rows = [];
+  _setTraceDeps({ off: false, insert: async (rs) => { rows.push(...rs); return rs.length; } });
+  try {
+    const id = "r8-retired-trace";
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    const a = seam.studioSeam.showImage(id, { src: PNG, alt: "a", subject: "a", jobId: "ja" });
+    const b = seam.studioSeam.showImage(id, { src: PNG, alt: "b", subject: "b", jobId: "jb" });   // replaces a
+    seam.studioSeam.clearBoard(id);                                                            // clears b
+    await flushTrace();
+    const of = (intentId) => rows.filter((r) => r.data?.intentId === intentId && String(r.kind).startsWith("studio.slot."));
+    assert.deepEqual(of(a.intentId).map((r) => [r.kind, r.data.why]).filter(([k]) => k !== "studio.slot.revealed"), [["studio.slot.retired", "replaced"]]);
+    assert.deepEqual(of(b.intentId).map((r) => [r.kind, r.data.why]).filter(([k]) => k !== "studio.slot.revealed"), [["studio.slot.retired", "cleared"]]);
+  } finally { _setTraceDeps({ insert: null, off: null }); _resetTrace(); }
+});
+

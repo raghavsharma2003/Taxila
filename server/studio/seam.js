@@ -125,7 +125,10 @@ function push(L, msg) {
   // the piece's own reason when it has one). Outside the request too (builds finish later), so the lesson names the session.
   if (msg?.t === "status" && msg.status) {
     const st = msg.status, piece = st.intentId ? L.pieces?.get?.(st.intentId) : null;
-    traceRecord(`studio.slot.${String(st.state ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
+    // a piece taken down (cleared, replaced, beat exit) goes out as "failed" on the wire (the client's voice fallback), but
+    // it did not fail: the row says retired, with the reason (QA on be9b766a read "cleared" / "replaced" as failed boards)
+    const tracedState = piece?.state === "retired" && st.state === "failed" ? "retired" : st.state;
+    traceRecord(`studio.slot.${String(tracedState ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
       state: st.state ?? null, kind: piece?.kind ?? st.artifact?.kind ?? null, archetype: piece?.archetype ?? null, source: piece?.source ?? null,
       fallback: st.fallback ?? null, why: piece?.retiredWhy ?? piece?.failWhy ?? null, artifact: st.artifact?.kind ?? null, subscribers: L.subs?.size ?? 0 },
     { sid: L.lessonId, cid: L.childId ?? L.child?.id ?? undefined, turn: L.turn });
