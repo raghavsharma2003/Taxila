@@ -6447,3 +6447,9 @@ New danger words still get the original script.
 ## dc-r1443-kind-kept: a model re-read never weakens a predicate episode (2026-10-22)
 
 The episode keeps its stronger kind. Before this, a re-kinded self-harm episode could be released early by "I'm fine".
+
+
+<!-- merged from inbox/r1443-endfacts-main.json -->
+## dc-r1443-endfacts-honest (2026-10-22)
+
+The end record mentions a teach-back only if one was asked. A lesson where nothing was graded is "a lesson on" its topic, never "practised".

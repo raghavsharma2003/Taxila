@@ -23313,6 +23313,20 @@
    "at": "2026-10-22",
    "title": "14.4.2 live, 2026-10-22 ~04:25 UTC. ac4e8e88 (int/r5-rel1441) deployed by scripts/deploy-azure.mjs with the gate stamp. ACR build ch2h succeeded; revision taxila-web--sac4e8e8-3x6d took 0% canary and passed the canary smoke 4/4, then 100%. taxila-web--sf74d1aa-tdd6 (14.4.1) is kept as previous; taxila-web--s5c127d1-l2of (14.4) is deactivated. Migrations: every db/migrations file of ac4e8e8 was already applied. Total 260.6 s. Rollback: node scripts/deploy-azure.mjs --rollback. Shipped on ms-r1442-gate-evidence.",
    "source": "inbox/r1443-helped-main-b.json"
+  },
+  {
+   "id": "dc-r1443-endfacts-honest",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "End-record FACTS carry a teach-back only once one was asked ('asked and passed' / 'asked, not passed yet'); a lesson with nothing graded carries practised: 'nothing graded this lesson: the topic is only what it was about'. The fixed fallback lines then say 'a lesson on <topic>', never 'practised'. Why: QA TEST on ac4e8e88 (765d3c47, 54569fb1, 4aa87fed). teachbackPassed: false on every lesson became 'Teach-back was not passed / not completed' for a parent, and an all-safeguarding lesson's record said 'Kabir practised perimeter'. Reverse if parents need to see that a teach-back was skipped (then say 'not asked this lesson', never 'not passed').",
+   "source": "inbox/r1443-endfacts-main.json"
+  },
+  {
+   "id": "ms-r1443-endfacts-ab",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "End-record FACTS A/B, 2026-10-22. The real writer (DEPLOY.fast, endMessages, END_SCHEMA), model-only, scratchpad endfacts-ab.mjs, n=5 per cell. The arms: old facts (teachbackPassed always, no 'practised') vs new (28a323ec). Teach-back named when none was asked: ordinary lesson 4/5 -> 0/5; safeguarded lesson (held, nothing graded) 5/5 -> 0/5. 'practised perimeter' on the safeguarded lesson: 5/5 -> 0/5. Teach-back asked and passed: named 2/5 -> 4/5. Ordinary lessons still say practised 5/5, which is correct.",
+   "source": "inbox/r1443-endfacts-main.json"
   }
  ],
  "edges": [
@@ -37065,6 +37079,16 @@
    "src": "ms-r1442-live",
    "rel": "measured_by",
    "dst": "ms-r1442-gate-evidence"
+  },
+  {
+   "src": "dc-r1443-endfacts-honest",
+   "rel": "measured_by",
+   "dst": "ms-r1443-endfacts-ab"
+  },
+  {
+   "src": "dc-r1443-endfacts-honest",
+   "rel": "part_of",
+   "dst": "dc-r1441-safeguarded-record-facts-only"
   }
  ]
 }

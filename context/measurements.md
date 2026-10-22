@@ -4893,3 +4893,9 @@ Two non-deploy items failed and were routed: invented worked-example sides (4A),
 ## ms-r1442-live (2026-10-22)
 
 14.4.2 (ac4e8e88) is live as taxila-web--sac4e8e8-3x6d. Canary smoke passed 4/4; 14.4.1 is kept for rollback.
+
+
+<!-- merged from inbox/r1443-endfacts-main.json -->
+## ms-r1443-endfacts-ab (2026-10-22)
+
+With the real writer: a teach-back that was never asked is no longer mentioned (4/5 and 5/5 → 0/5). An all-safeguarding lesson no longer says "practised perimeter" (5/5 → 0/5).
