@@ -545,14 +545,16 @@ function teach(s, input, prefix) {
     if (s.teachPlan[s.teachIdx + 1] === "fade" && s.fadeItem) {
       s.teachIdx += 1;
       const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
-      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck: shown() })), {
+      const stuck = shown();
+      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck })), { ...(stuck ? { stuck } : {}),
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
-    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck: shown() })), {
+    const stuck = shown();
+    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
   }
@@ -1904,6 +1906,8 @@ export function step(prev, input) {
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
+  // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
+  if (p.stuck) move.stuck = true;
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {

@@ -1,0 +1,11 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r1443-stuck-shown-not-quizzed",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.3. Main’s 14.4.2 release replay on c5a55681, r2 t3 (an example asked for, then two don’t-knows): the worked part handed the total back to the child. The Director’s shape already said show (fe59b5f1, reached on that turn). The reply guard’s hand-back check (handsBack: a question or a batao verb) read the showing turn as \"flat\", and its rewrite asked the sum. Now a worked part shown to a stuck child carries move.stuck. brain/say.js needs no hand-back there, and a sentence that asks the child to compute (a question or an instruction to them, with a working-out cue) is guard \"quiz\": rewritten, then those sentences dropped in code. Never on a safeguard turn: only worked_example moves carry stuck. TEST, read-only: 324 worked_example teacher lines, 82 hand the child a sum. Of the 5 that follow a don’t-know (code read of the child line), 3 hand the child a sum. Tests: tests/r1443-stuck-shown.test.mjs (4, fail on c4b6341f)."
+  }
+ ],
+ "edges": []
+}

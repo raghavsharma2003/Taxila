@@ -4865,3 +4865,7 @@ The 14.4.2 candidate with the real models, before deploy:
 - no false mistake on a right answer.
 
 Two defects found: the p30 helplines, now 0/4 after the fix, and one stuck worked example still quizzing, routed to 4A.
+
+## ms-r1443-stuck-shown-not-quizzed (2026-10-22, stream 4A)
+
+14.4.2 release replay (c5a55681, r2 t3): after an example was asked for and two don't-knows, the worked part ended "…total kitna?". The Director's stuck shape reached that turn. The reply guard's hand-back check read the showing turn as "flat", and its rewrite handed the sum back. A worked part shown to a stuck child now carries move.stuck. It needs no hand-back, and a sentence asking the child to compute is guard "quiz" (rewrite, then drop). TEST, read-only: of 5 worked_example lines that follow a don't-know, 3 handed back a sum (324 worked lines in all, 82 with a sum for the child). Test: tests/r1443-stuck-shown.test.mjs.
