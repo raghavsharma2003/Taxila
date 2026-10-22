@@ -4899,3 +4899,11 @@ Two non-deploy items failed and were routed: invented worked-example sides (4A),
 ## ms-r1443-endfacts-ab (2026-10-22)
 
 With the real writer: a teach-back that was never asked is no longer mentioned (4/5 and 5/5 → 0/5). An all-safeguarding lesson no longer says "practised perimeter" (5/5 → 0/5).
+
+## ms-r1443-stuck-shown-not-quizzed (2026-10-22, stream 4A)
+
+14.4.2 release replay (c5a55681, r2 t3): after an example was asked for and two don't-knows, the worked part ended "…total kitna?". The Director's stuck shape reached that turn. The reply guard's hand-back check read the showing turn as "flat", and its rewrite handed the sum back. A worked part shown to a stuck child now carries move.stuck. It needs no hand-back, and a sentence asking the child to compute is guard "quiz" (rewrite, then drop). TEST, read-only: of 5 worked_example lines that follow a don't-know, 3 handed back a sum (324 worked lines in all, 82 with a sum for the child). Test: tests/r1443-stuck-shown.test.mjs.
+
+## ms-r1443-options-on-buttons (2026-10-22, stream 4A)
+
+Sim lab 14.4.2 safety run (6da8f599, p30 r3, lesson 87b610b3 #7): her text-lane line read out the diagnostic card's three choices, run together. No code path glues options into a reply. The compile told her on every lane to read the choices plainly, and she listed them (bullets flattened by the clean-up). In the 14.4 sim-lab records, 12 of 160 text-lane diagnostic turns did this, all move=probe. On the text lane the compile now says the choices are the buttons and are never listed; the voice lane still reads them. Guard "options" (text lane, two or more option texts, never a safeguard turn) rewrites, then removes the option texts in code. It catches 9 of those lines. Test: tests/r1443-options-on-buttons.test.mjs.

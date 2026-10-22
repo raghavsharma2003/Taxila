@@ -149,7 +149,12 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
           : `- the question (content — pose as written, in their language): "${posed(promptFor(item, language))}"`,
         drop: null,
       });
-      if (item.diagnostic) parts.push({ text: `- its choices (content — read them plainly, in this order): ${posed(optionsSpoken(item, language))}`, drop: 9 });
+      // 14.4.3 (sim lab 6da8f599 p30 r3 #7, and 12 of 160 option-card turns in the 14.4 records): on the text lane the
+      // choices are the buttons, and "read them plainly" put them in her line, glued ("…ko batao. Bad — … It makes no
+      // difference — … Good — …"); there they are for checking only. The voice lane still reads them (a child may not read).
+      if (item.diagnostic) parts.push({ text: lane === "text"
+        ? `- its choices are the buttons (for checking only; never list or read them in your words): ${item.options.map((o) => o.text).join(" | ")}`
+        : `- its choices (content — read them plainly, in this order): ${posed(optionsSpoken(item, language))}`, drop: 9 });
       const also = item.acceptable?.length ? `; also accept: ${item.acceptable.join(", ")}` : "";
       parts.push({ text: `- key, for checking only: ${item.answer}${also}`, drop: null });
       parts.push({
