@@ -47,6 +47,12 @@
    "kind": "measurement",
    "at": "2026-10-22",
    "title": "14.4.2, QA P2 on be9b766a: a child said 160, which was right, to her own \"2 × 80\" in a worked step. She replied that they had used another operation instead of adding: a mistake nothing graded. Two causes. (1) brain/say.js checked her own sum (selfPosedVerdict) only when the new move had no item, and here the next move posed a card. (2) No guard read a claimed mistake on a verdict that was not a graded wrong. Fix: state.js keeps priorItemId (null when no kit item was on the table), so her sum is checked whenever none was. selfPosedVerdict reads a number with a filler before it or hai / hoga after it. director/say.js claimsMistake flags a sentence with a second-person subject plus a fault word, an X-ne ki jagah, swapped places or another operation. Questions, negations and general rules are excluded, plus the old DENY_ANY. It is guard \"claim\" on ungraded / attempt / unverified and \"deny\" on a right answer. Repair is a rewrite, then the claim sentences are stripped in code, also after the drift repair. Graded wrong (not_yet / partial) is untouched. Measured on TEST (read-only, n = 7884 teacher lines): 6 lines hit with no graded-wrong child turn before them. 5 are real unfounded claims (\"step toot gaya\", \"galti is step mein hui\" after a don’t-know). 1 is borderline (\"Galti ko ek-ek clue se check kijiye\"). The first draft also hit \"1/2 ki jagah\" (a place), and the pattern was tightened. Tests: tests/r1442-claim-honesty.test.mjs (5, fail on fe59b5f1)."
+  },
+  {
+   "id": "ms-r1442-chapter-switch-asks-nothing",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2, QA P2 on be9b766a (df5ce94c): a chapter ask got \"Page ya chapter ka naam bataiye\" while that chapter’s first topic was already the button. The switch shape said only \"no lesson question\", and she filled the turn with a question of her own. SH.switchOffer now takes the chapter: \"they asked for chapter N: its first topic, X, is ready for them\". Every switch offer ends \"ask them nothing this turn: not which page or chapter, no lesson question\". Shape only, no model run. Tests: tests/r1442-chapter-switch.test.mjs (2, the chapter one fails on f81ef59a)."
   }
  ],
  "edges": [
