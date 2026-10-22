@@ -4815,3 +4815,19 @@ Over 324 (subject word, class) probes, a real chapter is found 107 → 167 times
 QA item 2: "mujhe koi aur topic padhna hai" had been read as a switch to the subject "koi aur topic". A switch whose subject only says another/some topic is now change_topic, with real topics of their class as buttons on the first ask.
 
 A chapter ask at the session's start is read as that chapter's first topic. Test: tests/r1442-qa-topic-asks.test.mjs, with QA's line; it fails on f74d1aae.
+
+## ms-r1442-corroborate-hinglish (2026-10-22, stream 4A)
+
+The corroborate.js 14.4.2 components, measured alone against base as forced-correct false credit over 9,462 word-key items:
+- the "<key>? ya phir <another answer>" veto: −1,101;
+- the band/khula and saaf/ganda opposite pairs: −153;
+- the "Any N:" strip: +1 alone, 0 with the veto;
+- the Hinglish reading: 0.
+
+All together: −1,253, with 0 new false credits in every family. Real sets (TEST 236, headeval 857, RCA 148): 0 rescued, 0 lost. Tests: tests/r1442-hinglish-cover.test.mjs.
+
+## ms-r145-f1b-round3 (2026-10-22, stream 4A)
+
+A request at the start or end of a long turn is now read: its first or last clause, read on its own in an explicit ask form. A tired child's closing "can we stop now?" is a stop even with an answer in the rest. A bare "Bas." closing an answer stays the answer. "see you" inside a sentence is no longer a goodbye.
+
+Sim lab: 4,357 lines, 101 moved, all checked genuine (74 visual/game, 16 stop/break, 4 example, 2 study wishes, 2 byes, 2 made whole). TEST: 7,390 turns, 4 moved, all still declined as out of bounds.
