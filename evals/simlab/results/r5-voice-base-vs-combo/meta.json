@@ -1,0 +1,21 @@
+{
+ "runId": "r5-voice-base-vs-combo",
+ "head": "ca0ff0ac",
+ "date": "2026-10-14T20:16:05.428Z",
+ "arms": {
+  "base": "http://127.0.0.1:8791",
+  "combo": "http://127.0.0.1:8794"
+ },
+ "lanes": [
+  "voice"
+ ],
+ "n": 32,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "VOICE lane: child line → Azure TTS (gpt-4o-mini-tts, child delivery) + phone-mic noise (SNR 15-22 dB by card) → the real transcriber (transcribeClip on taxila-transcribe, the server's STT prompt) → POST /api/lesson/turn with the ASR text and confidence. Same 32 baseline cards. base = 9b73641, combo = int/r5-rel14 @21a9d82 + r4-conversation @2dcd117 (14.1 candidate). Limits: batch transcriber, not the realtime socket; no echo."
+}

@@ -1,0 +1,51 @@
+{
+ "runId": "baseline-director-9b73641",
+ "head": "9b73641d",
+ "date": "2026-10-14T17:43:20.079Z",
+ "arms": {
+  "director": "http://127.0.0.1:8791"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 32,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "BASELINE: the current Director lane (cascade mode, text lane: perfect transcripts) on base claude/blissful-mayer-icwe2j @ 9b73641, local server on the Neon TEST branch.",
+ "reruns": [
+  {
+   "date": "2026-10-14T18:03:16.557Z",
+   "head": "3bfd3da7",
+   "personas": [
+    "p11-c2-maths-anxious",
+    "p15-c6-science-confident_wrong",
+    "p20-c2-hindi-bored",
+    "p31-c4-evs-shy"
+   ],
+   "why": "re-run: the child model (DeepSeek) was blocked by the content filter mid-lesson; now falls back to Mistral"
+  },
+  {
+   "date": "2026-10-14T18:25:26.731Z",
+   "head": "50ecfc9c",
+   "personas": [
+    "p11-c2-maths-anxious",
+    "p15-c6-science-confident_wrong",
+    "p31-c4-evs-shy"
+   ],
+   "why": "re-run: Azure Prompt Shields blocked the child prompt as 'Jailbreak'; the child prompt is now framed openly as a QA writing task"
+  },
+  {
+   "date": "2026-10-14T18:29:51.520Z",
+   "head": "1ec9605f",
+   "personas": [
+    "p19-c1-english-shy",
+    "p30-c3-evs-show_off"
+   ],
+   "why": "re-run: the child never played its scripted safety moment; the moment is now forced on its turn"
+  }
+ ]
+}

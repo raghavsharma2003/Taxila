@@ -1,0 +1,50 @@
+{
+ "runId": "r5-board-rep3-709b-vs-d71fb4",
+ "head": "c3c72359",
+ "date": "2026-10-15T07:18:12.933Z",
+ "arms": {
+  "c709b_1": "http://127.0.0.1:8822",
+  "c709b_2": "http://127.0.0.1:8822",
+  "c709b_3": "http://127.0.0.1:8822",
+  "cd71fb_1": "http://127.0.0.1:8819",
+  "cd71fb_2": "http://127.0.0.1:8819",
+  "cd71fb_3": "http://127.0.0.1:8819"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 15,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "child": "v1",
+ "note": "Board repeats for stream 2: claude/r4-content @709b6acb vs @d71fb40e, 3 runs per arm (arms _1.._3 pooled), 15 board cards: the 8 visual-ask cards + every card that drew a compare/flow/cycle library board in earlier runs (p25 p16 p24 p15 p29 p31 p07); text lane, 14 child turns. Lead with BOARDFACTS.json (code), then judge channel_truth against the A/A band.",
+ "reruns": [
+  {
+   "date": "2026-10-15T10:51:27.198Z",
+   "head": "aab6a01e",
+   "personas": [
+    "p07-c7-maths-shy",
+    "p15-c6-science-confident_wrong",
+    "p16-c7-science-chatty",
+    "p24-c6-sst-show_off",
+    "p25-c7-maths-shy",
+    "p29-c2-maths-anxious",
+    "p31-c4-evs-shy",
+    "p49-c4-evs-shy",
+    "p50-c5-evs-bored",
+    "p51-c6-sst-confident_wrong",
+    "p52-c7-science-chatty",
+    "p53-c8-sst-anxious",
+    "p54-c9-science-show_off",
+    "p55-c1-maths-shy",
+    "p56-c2-maths-bored"
+   ],
+   "why": "rep3 remainder resumed on the southindia account (the first 67 lessons ran on eastus2: verdicts comparable, latency not)"
+  }
+ ]
+}

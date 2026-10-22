@@ -1,0 +1,21 @@
+{
+ "runId": "r5-agent-gate-b185d50",
+ "head": "ac6cc850",
+ "date": "2026-10-14T22:59:07.727Z",
+ "arms": {
+  "director": "http://127.0.0.1:8805",
+  "agent_gpt6": "http://127.0.0.1:8806"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 64,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "AGENT GATE re-run on 4A head claude/r4-conversation @b185d509 (understood earned in code: two different items or a why/transfer; misconception's test item first; no check after a quick right answer; no re-asked settled yes; timeout default 6000; carries eff989c0's number reader): director (TAXILA_TEACHER=off) vs agent_gpt6 (taxila-gpt6), all 64 cards, text lane, 14 child turns. Before: r5-agent-gate-d6f93e7."
+}

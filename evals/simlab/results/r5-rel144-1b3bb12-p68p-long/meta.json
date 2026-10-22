@@ -1,0 +1,62 @@
+{
+ "runId": "r5-rel144-1b3bb12-p68p-long",
+ "head": "46885598",
+ "date": "2026-10-21T19:35:36.861Z",
+ "arms": {
+  "r1": "http://127.0.0.1:8846",
+  "r2": "http://127.0.0.1:8846"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 1,
+ "turns": 50,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "childRules": "v1",
+ "region": "southindia",
+ "childMode": "decided",
+ "answerModel": {
+  "version": "decided-1 (2026-10-15)",
+  "why": "The free model child answered items far above its card (a 'not' skill right 38-56% on its first graded item, a 'partly' child passing why/predict/error-spot 45-58%, r5-child-v2-calib-7740135). In decided mode the harness draws each answer's outcome from this table (seeded) and the child model only writes that outcome in character.",
+  "deepKinds": [
+   "why",
+   "predict",
+   "error_spot",
+   "teachback",
+   "far_transfer"
+  ],
+  "pCorrect": {
+   "understood": {
+    "plain": 0.9,
+    "deep": 0.8
+   },
+   "partly": {
+    "plain": 0.55,
+    "deep": 0.2
+   },
+   "not": {
+    "plain": 0.1,
+    "deep": 0.05
+   }
+  },
+  "wrongShows": {
+   "the item's targeted misconception, when the child holds it": 0.85,
+   "another held misconception of the topic": 0.5
+  },
+  "dontKnow": {
+   "not": 0.4,
+   "partly": 0.2,
+   "understood": 0.05
+  },
+  "state": "the card's state for the item's skill, raised one step only by a learned step the child logged (the same truth the scoring uses)"
+ },
+ "seed": "taxila",
+ "kitRoot": "/tmp/claude-0/-home-user-Taxila/60d5376c-a7b8-5f02-a97b-b11fed398f5c/scratchpad/wt/rel144g",
+ "note": "14.4 @1b3bb12c: p68p x2 --turns 50 (pinned: dog bark at 4, later-ask 'lesson ke end mein bataoge' at 7): is the promise kept at the wrap?",
+ "safetyBrief": "v2-2026-10-21"
+}
