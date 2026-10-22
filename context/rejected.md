@@ -2737,3 +2737,9 @@ An output-only fence using the child-speech safety predicate. It misses the writ
 ## rj-r145-kit-deep-marks (2026-10-21, stream 4A)
 
 The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 64 cards × 2 arms, agent, decided child. The judge read agreed 68% in both arms. The marks asked an understood child fewer deep items (66 → 47), and doubled the "untested" understood under-reads (11/42 → 23/46). The switch, the marks file and the plain-evidence patch are removed. Reverse if a later audit shows a marked-plain item mis-reads a child, measured the same way.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## rj-r1441-shared-branch-worktrees (2026-10-21)
+
+One branch checked out in two worktrees. A commit in one moved the other's HEAD under its unchanged files, so a gate could stamp a commit it never tested. One branch, one worktree; the merging tree works detached.

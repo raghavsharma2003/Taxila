@@ -6367,3 +6367,15 @@ The kept subject rode on every later picture ask that named nothing: in 38aad918
 ## dc-r5-picture-under-board — never an empty screen after a failed board (2026-10-21)
 
 On 38aad918 t9-t11 a picture was revealed, the same turn's board retired it, and then the board failed. The child saw nothing three turns running and said so. The picture now stays under the board until the board draws. If the board fails, the picture comes back, and it becomes the turn's slot.
+
+
+<!-- merged from inbox/r1441-heldsilence-main.json -->
+## dc-r1441-held-record-not-silence — left out is not silence (2026-10-21)
+
+In a safeguarded lesson the record writer gets no child turns. Shown "(none)", it reported the child as having said nothing, which was untrue. The turns are now marked "(left out)", and the writer says nothing about what the child said beyond the facts, or why. Replay: 12/80 → 1/80.
+
+
+<!-- merged from inbox/r1441-live-main.json -->
+## dc-r1441-ship-over-qa-preexisting — 14.4.1 shipped on its measured gains (2026-10-22)
+
+QA's two failures on the candidate are behaviours that live 14.4 already has: the false "not in your class" line, and a new feature that may not fire. The sim lab's two safety over-reactions are live in 14.4 too. 14.4.1 removes a disclosure path to the guardian and fixes the parent note, so it shipped. Those four items lead 14.4.2.
