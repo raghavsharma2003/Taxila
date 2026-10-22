@@ -4831,3 +4831,25 @@ All together: −1,253, with 0 new false credits in every family. Real sets (TES
 A request at the start or end of a long turn is now read: its first or last clause, read on its own in an explicit ask form. A tired child's closing "can we stop now?" is a stop even with an answer in the rest. A bare "Bas." closing an answer stays the answer. "see you" inside a sentence is no longer a goodbye.
 
 Sim lab: 4,357 lines, 101 moved, all checked genuine (74 visual/game, 16 stop/break, 4 example, 2 study wishes, 2 byes, 2 made whole). TEST: 7,390 turns, 4 moved, all still declined as out of bounds.
+
+## ms-r1442-worked-fidelity (2026-10-22, stream 4A)
+
+QA's 65fae3d0 / 3e2fcb15 were move=worked_example with invented numbers (garden 5/3/5/3, 6/4/6/4). After two "pata nahi", she was still asking the stuck child to add.
+
+SH.worked now names the kit's worked example, its own numbers and names. When the reply to the hook, explain or a worked part was don't-know or off-topic, or the guidance came from fade.not_landed / first_step.stuck, that part shows its steps with their results and leaves nothing to work out. An engaged child is still asked for the next step.
+
+Fixture replay: stuck parts shown 0/8 → 8/8. Not measured live on a model. Tests: tests/r1442-worked-fidelity (3).
+
+## ms-r1442-claim-honesty (2026-10-22, stream 4A, with main's safety review)
+
+QA 86339364: "nahi nahi, 160", a right answer to her own question with no card on the table, got "Aapne jodne ki jagah kuch aur operation kiya".
+- Her own sum is now checked whenever no kit item was on the table (state.priorItemId).
+- A guard (director/say.js claimsMistake) catches a claimed mistake on an ungraded / attempt / unverified turn: a rewrite first, then the claim sentences are stripped in code.
+
+TEST, 7,884 teacher lines: 6 hits with nothing graded wrong before them (5 real unfounded claims, 1 borderline).
+
+Main safety review: the first cut read "You did nothing wrong by telling me." as a claim and stripped it to "". Now negations ("nothing wrong", "kuch galat nahi kiya", "not your fault") are never claims, and the guard never touches a safeguard turn. tests/r1442-claim-safety (2) fails on 70df4067. Tests: tests/r1442-claim-honesty (5).
+
+## ms-r1442-chapter-switch-asks-nothing (2026-10-22, stream 4A)
+
+QA df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" while the chip already offered chapter 1. SH.switchOffer now says the chapter's first topic is ready, and every switch offer ends asking nothing (no page or chapter, no lesson question). Tests: tests/r1442-chapter-switch (2).

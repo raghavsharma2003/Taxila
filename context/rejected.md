@@ -2743,3 +2743,11 @@ The deep-kind audit's 1,927 "plain" marks were measured and rejected. Sim lab: 6
 ## rj-r1441-shared-branch-worktrees (2026-10-21)
 
 One branch checked out in two worktrees. A commit in one moved the other's HEAD under its unchanged files, so a gate could stamp a commit it never tested. One branch, one worktree; the merging tree works detached.
+
+## rj-r1442-pedagogy-guard-on-safety-copy (2026-10-22, main safety review)
+
+A reply-honesty guard (the claimed-mistake strip) that also ran on safeguard turns. It read the disclosure reassurance "You did nothing wrong by telling me." as a mistake claim and removed it. Every pedagogy guard that rewrites or strips a reply stays off safeguard turns, and a negation of fault is never a fault.
+
+## rj-r1442-source-env-file (2026-10-22)
+
+Sourcing .env.local in bash (`. ./.env.local`). A value with an unquoted & is run as a background job, and its contents are echoed into the tool output; a test-branch credential was exposed in a stream's own transcript. Load env only with `node --env-file`, or one `export` per key, never by sourcing the file. Rotating the exposed test-branch password is the owner's call.

@@ -477,7 +477,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     praiseOf(t) === "praise" && "praise",
     praiseOf(t) === "contradicts" && "deny",
     // QA 14.4.1: a mistake of theirs named when nothing graded their answer wrong (director/say.js claimsMistake)
-    praiseOf(t) === "claims" && "claim",
+    // (never on a safeguard turn: its reassurance is no feedback on an answer, and no pedagogy guard rewrites safety copy)
+    kindNow !== "safeguard" && praiseOf(t) === "claims" && "claim",
     right && correctsRight(t, right) && "corrects",
     screenProblem(t, ui, module, { coming: !!state.lastMove?.visual && state.lastMove?.request === "visual" }) && "screen",
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
@@ -841,7 +842,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     // QA 14.4.1: a mistake of theirs nothing graded survives no branch above (the drift repair keeps the acknowledgement
     // before the question, and a claim is usually that acknowledgement): its sentences go
-    if (problems(reply).some((p) => p === "claim" || p === "deny") && claimsMistake(reply)) {
+    if (kindNow !== "safeguard" && problems(reply).some((p) => p === "claim" || p === "deny") && claimsMistake(reply)) {
       const left = stripClaim(reply);
       reply = left && handsBack(left) ? left : item && !CLOSING_MOVES.has(kindNow) ? joinAsk(left, askEnd) : left || fallbackReply(state, item);
       guard.replaced = true;

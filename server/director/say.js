@@ -56,7 +56,9 @@ const DENY_ANY = /\b(?:(?:yahan|yaha|isme|ismein|is\s+mein|thodi|chhoti|ek)\s+ga
  */
 const CLAIM_WHO = /(?<![\p{L}])(?:aapne|tumne|aapse|tumse|aapka|tumhara|aapki|tumhari|you|your)(?![\p{L}])/iu;
 const CLAIM_FAULT = /(?<![\p{L}])(?:galat|galti|mistake|wrong|incorrect)(?![\p{L}])|\p{L}+ne\s+ki\s+jagah(?![\p{L}])|(?<![\p{L}])ki\s+jagah\s+(?:badal|ulat|palat)|instead\s+of|(?<![\p{L}])(?:kuch\s+aur|koi\s+aur|doosr[aie]|dusr[aie]|alag|different|another)\s+operation/iu;
-const CLAIM_NOT = /(?<![\p{L}])(?:(?:galat|galti|mistake|wrong|incorrect)\s+(?:nahi|nahin|not|na)|(?:no|koi|not\s+a|kabhi)\s+(?:galti|mistake)|not\s+(?:wrong|incorrect)|isn'?t\s+wrong|(?:agar|if|whenever|even\s+if|chahe|kabhi\s+kabhi|sometimes|log|students|bachch?e|many|common))(?![\p{L}])/iu;
+// main safety review (14.4.2): the reassurance after a disclosure ("you did nothing wrong by telling me", "tumne kuch galat nahi
+// kiya", "it's not your fault") is a negation, never a claim
+const CLAIM_NOT = /(?<![\p{L}])(?:nothing\s+(?:wrong|incorrect)|(?:kuch|koi)\s+(?:bhi\s+)?(?:galat|galti)\s+(?:nahi|nahin|na)|(?:not|n['’]t)\s+(?:your|tumhari|aapki)\s+(?:fault|galti)|(?:did|do)\s*(?:not|n['’]t)\s+do\s+anything\s+wrong|(?:galat|galti|mistake|wrong|incorrect)\s+(?:nahi|nahin|not|na)|(?:no|koi|not\s+a|kabhi)\s+(?:galti|mistake)|not\s+(?:wrong|incorrect)|isn'?t\s+wrong|(?:agar|if|whenever|even\s+if|chahe|kabhi\s+kabhi|sometimes|log|students|bachch?e|many|common))(?![\p{L}])/iu;
 const claimSentence = (x) => !/[?？]/.test(x) && CLAIM_WHO.test(x) && CLAIM_FAULT.test(x) && !CLAIM_NOT.test(x);
 /** Does the turn tell the child they made a mistake (G-PRAISE-1's other side: a fault nothing graded)? */
 export const claimsMistake = (text) => DENY_ANY.test(String(text ?? "")) || sentencesOf(text).some(claimSentence);
