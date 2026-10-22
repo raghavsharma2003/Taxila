@@ -513,15 +513,20 @@ export const switchOffer = ({ title }) => join(
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
 /** census 14.5 (F1, 310b8c82): they asked for the idea first, before any question (the card waits). */
 export const explainFirstAsked = () => "they asked for the idea first, before any question: yes, warmly, and teach it plainly now; the question waits";
-export const topicChoices = ({ titles }) => join(
-  "they have asked again for something else: say yes warmly and mean it, in your own words",
+/** 14.4.2 (d): an answer read right that the code could not verify, twice on one card: no third pose, no verdict either way. */
+export const unverifiedMoveOn = () => "thank them warmly for their idea in one short line of your own, never for the answer; say nothing about whether it was right or wrong (no sahi, no galat, no almost, no close); then go on to the next question";
+export const topicChoices = ({ titles, first = false }) => join(
+  first ? "they asked for another topic: say yes warmly and mean it, in your own words" : "they have asked again for something else: say yes warmly and mean it, in your own words",
   `offer these topics of their class as the buttons on screen: ${(titles ?? []).map((t) => clean(t)).filter(Boolean).join("; ")}; or they can tell you what they want, or go back to today's work`,
   "no lesson question this turn",
 );
 /** The subject they named is not a topic of their class (or not found): honest, and the choices. */
-export const switchElsewhere = ({ subject }) => join(
-  `they want to study ${clean(subject) || "something else"} instead: say kindly that it is not in their class's lessons here, in a few words`,
-  "offer to carry on with today's work in a new way, or to stop for today; no guilt, no lesson question this turn",
+// 14.4.2 (main: telling a child that a subject in their own book "is not in their class" is a false claim): no topic found
+// for their words is never "not here". She will look for it, and real topics of their class are on the buttons.
+export const switchElsewhere = ({ subject, titles = [] }) => join(
+  `they want to study ${clean(subject) || "something else"} instead: say warmly you will look for it for them, never that it is not in their class or not here`,
+  titles.length ? `for now they can pick one of these topics of their class on the buttons: ${titles.map(clean).join("; ")}; or go back to today's work` : "for now they can go back to today's work",
+  "no lesson question this turn",
 );
 /** They chose to start the other topic: a warm close of this lesson, the next one starts at once. */
 export const switchGo = ({ title }) => `they chose to start ${clean(title) || "the other topic"} now: one short warm line that you are starting it; no question, no hook`;

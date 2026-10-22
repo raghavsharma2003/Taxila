@@ -900,6 +900,18 @@ function leaveItem(s, input, item, prefix) {
  * with none, leaves the item); past that the item is left with no verdict and the lesson moves on (comprehension G11).
  */
 function unclear(s, input, item, v) {
+  // 14.4.2 (d; sim lab 1b3bb12c p66: a right answer the code could not verify, "Maine toh bola tha na", posed again and
+  // again): the model read the reply as right and corroboration could not check it against the verified forms
+  // (unsupported_credit). The second time on one item it is not posed a third time: one warm, verdict-neutral line and the
+  // next question. No verdict, no evidence, never marked stuck: the item stays due for another day.
+  if (String(input.cls?.corroboration ?? "").startsWith("unsupported_credit")) {
+    s.unverified = { ...(s.unverified ?? {}), [item.id]: (s.unverified?.[item.id] ?? 0) + 1 };
+    if (s.unverified[item.id] >= 2) {
+      if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+      s.unclear = 0;
+      return s.phase === "warmup" ? nextWarmup(s, input, SH.unverifiedMoveOn()) : poseNext(s, input, SH.unverifiedMoveOn());
+    }
+  }
   s.unclear += 1;
   const typed = !!input.typed;
   const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
@@ -1006,8 +1018,9 @@ function requestMove(s, input, item, req, labels) {
         const again = (s.topicAsks ?? []).some((t) => s.turn - t <= TOPIC_ASK_WINDOW);
         s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
         // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
-        const choices = again && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
-        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title) }), {
+        // (an explicit ask for another TOPIC, "koi aur topic padhna hai", gets the topics at once: 14.4.2, QA 3a1d1e60)
+        const choices = (again || req.topic) && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
+        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title), first: !again }), {
           chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
         const can = waysCan(s, input);
         if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysOffer(labels, { ...can, picture: false }).chips, request: "change_topic" });
@@ -1032,7 +1045,9 @@ function requestMove(s, input, item, req, labels) {
       if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
         return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
       if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
-      return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
+      // (no topic found for their words: never "not in your class"; real topics of their class on the buttons, as for a repeated ask)
+      const near = nextTopics(s, 2);
+      return plan("break", SH.switchElsewhere({ subject, titles: near.map((t) => t.title) }), { chips: [...near.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "switch" });
     }
     case "topic": {
       const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
