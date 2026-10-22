@@ -79,10 +79,12 @@ describe("(2) a model re-read inside a model-opened episode holds, never restart
     }
   });
   test("a predicate-opened episode: a model re-read restarts the full script (never folded into it)", () => {
+    // 14.4.3 (tests/r1443-helped.test.mjs): as the same story told on (no second "are you safe?"), the opener's kind kept
     for (const opener of ["self_harm", "abuse", "relational_floor", null]) {
       const r = reread(opened(opener), "model");
-      assert.equal(r.move.shape, SH.safeguard(), String(opener));
+      assert.equal(r.move.shape, SH.safeguard({ sameStory: true }), String(opener));
       assert.equal(r.state.safeguard.calm, 0, String(opener));
+      assert.equal(r.state.safeguard.kind, opener, String(opener));
     }
   });
   test("a carried check-in: a model distress read is the full safeguard", () => {

@@ -68,10 +68,13 @@ export interface Move {
   shape: string;
   itemId?: string; skillId?: string; probe?: ProbeId; hintLevel?: 0 | 1 | 2 | 3 | 4;
   format?: FormatFamily;
-  /** 14.4: "check" = a warm check-in after one model read of a low mood or a fright (no helpline, no Help sheet yet). */
-  tier?: "check";
+  /** 14.4: "check" = a warm check-in after one model read of a low mood or a fright (no helpline, no Help sheet yet).
+   *  14.4.3: "helped" = a held safeguard once help is in place (the Help sheet and the board keep the helplines; not re-said). */
+  tier?: "check" | "helped";
   /** 14.4: this safeguard escalated from a check-in. */
   escalated?: boolean;
+  /** 14.4.3: a model re-read restarted a predicate / sure episode: the same hand-off, never "are you safe?" again. */
+  sameStory?: boolean;
   /** 14.4: a check-kind distress read on this turn was set aside (the check-in released, or its cooldown): no incident. */
   setAside?: boolean;
 }

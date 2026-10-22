@@ -278,6 +278,23 @@ export function safeguardStayLine(ctx = {}) {
   const mode = safetyModeOf(ctx.lang);
   return STAY[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
 }
+// 14.4.3: the fixed line for the helped tier (state.js: help is in place) when no model line could be written: she is here, they
+// did the right thing, the number is on their screen (not re-said), the door left open; no question about being safe
+const HELPED = {
+  en: { tum: "I'm right here, and there's no hurry. You did the right thing. Childline's number is on your screen whenever you need it. You can tell me whatever you want to.",
+    aap: "I'm right here, and there's no hurry. You did the right thing. Childline's number is on your screen whenever you need it. You can tell me whatever you want to." },
+  hinglish: { tum: "Main yahin hoon, koi jaldi nahi hai. Tumne bilkul sahi kiya. Childline ka number screen par hai, jab bhi zaroorat ho. Jo mann ho, mujhe bata sakte ho.",
+    aap: "Main yahin hoon, koi jaldi nahi hai. Aapne bilkul sahi kiya. Childline ka number screen par hai, jab bhi zaroorat ho. Jo mann ho, mujhe bata sakte hain." },
+  hi: { tum: "मैं यहीं हूँ, कोई जल्दी नहीं है। तुमने बिल्कुल सही किया। चाइल्डलाइन का नंबर स्क्रीन पर है, जब भी ज़रूरत हो। जो मन हो, मुझे बता सकते हो।",
+    aap: "मैं यहीं हूँ, कोई जल्दी नहीं है। आपने बिल्कुल सही किया। चाइल्डलाइन का नंबर स्क्रीन पर है, जब भी ज़रूरत हो। जो मन हो, मुझे बता सकते हैं।" },
+};
+/** The fixed line for the helped tier (help in place: no numbers re-said). Exported for tests. */
+export function safeguardHelpedLine(ctx = {}) {
+  const mode = safetyModeOf(ctx.lang);
+  return HELPED[mode === "en" ? "en" : mode === "hi" ? "hi" : "hinglish"][ctx.address === "aap" ? "aap" : "tum"];
+}
+/** Safeguard tiers whose turns are not held to Childline's number: the check-in (none yet) and helped (on the board, not re-said). */
+export const UNNUMBERED_TIERS = new Set(["check", "helped"]);
 // 14.4: the fixed line for the check-in tier when no model line could be written: noticing and one open question, no numbers
 const CHECK_IN = {
   en: { tum: "That sounds hard. Are you okay right now? You can tell me what happened.", aap: "That sounds hard. Are you okay right now? You can tell me what happened." },
@@ -291,8 +308,10 @@ export function distressCheckLine(ctx = {}) {
 }
 export function fallbackReply(state, item) {
   if (state.lastMove?.kind === "safeguard" && state.lastMove?.tier === "check") return distressCheckLine(state.ctx);
+  if (state.lastMove?.kind === "safeguard" && state.lastMove?.tier === "helped") return safeguardHelpedLine(state.ctx);
   if (state.lastMove?.kind === "safeguard") {
-    return (state.safeguard?.calm ?? 0) >= 1 ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
+    // (14.4.3: the same story told on, a restart, is never the opening's line again: its "are you safe?" was asked already)
+    return (state.safeguard?.calm ?? 0) >= 1 || state.lastMove?.sameStory ? safeguardStayLine(state.ctx) : safeguardLine(state.ctx, { kind: state.safeguard?.kind ?? null });
   }
   const lang = state.ctx.lang;
   const kind = state.lastMove?.kind;
@@ -409,7 +428,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // The floor's NEVER rules on the teacher's own words (director/safety.js; verified kit content is not judged).
   const floorContent = floorContentOf(item);
   // 14.4: the check-in tier names no helpline yet (state.js checkTier); every other safeguard turn must
-  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard" && state.lastMove?.tier !== "check", goodbye: kindNow === "wrap" });
+  // ... nor the helped tier (14.4.3: help is in place, the numbers are on the board and not re-said)
+  const floorOf = (t) => floorViolations(t, { content: floorContent, requireHelpline: kindNow === "safeguard" && !UNNUMBERED_TIERS.has(state.lastMove?.tier), goodbye: kindNow === "wrap" });
   // 14.4: a turn that is not the full script, in a lesson with none yet, carries no safety talk of its own (harmTalk)
   const talkOk = safetyTalkAllowed(state) || forgetSafety;
   // G-ASK parity: a turn with a pinned question (UiDirectives.ask for THIS item) ends on that question and asks no

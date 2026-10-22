@@ -44,7 +44,7 @@ import { isBoardFirstRow } from "../stagecraft/board-first.js";
 import { stagecraftPointFor } from "../stagecraft/kernel-point.js";   // STAGECRAFT P4 (ship5 p4-content): null unless the lesson runs a host
 import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
-import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply } from "./say.js";
+import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
 import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
@@ -359,7 +359,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // The call-site recipe: the posed item's verified content is passed (floorContentOf); the turn being judged is the one
   // the last move asked for, so a safeguard turn must carry the helpline and a goodbye must not hook (NEVER MANIPULATE).
   const voiceFloor = teacherText ? [...floorViolations(teacherText, { content: floorContentOf(activeItem),
-    requireHelpline: state.lastMove?.kind === "safeguard" && state.lastMove?.tier !== "check", goodbye: state.lastMove?.kind === "wrap" }),
+    requireHelpline: state.lastMove?.kind === "safeguard" && !UNNUMBERED_TIERS.has(state.lastMove?.tier), goodbye: state.lastMove?.kind === "wrap" }),
     // W2-I R3: the realtime lane composes its own safeguarding words; a spoken-planning preface on a safeguard turn (P2:
     // 18/18) and the relational families correct on the next turn (the fixed opening is the client's, safetyStrings.ts)
     ...(state.lastMove?.kind === "safeguard" && safetyPreface(teacherText) ? ["meta_talk"] : []),

@@ -68,6 +68,8 @@ const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adul
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
 // 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
 const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
+// 14.4.3: the helped tier (state.js: help is in place): the hold and the board stay; the numbers and "are you safe?" are not re-said
+const SAFEGUARD_HELPED = "care first: no lesson content this turn; help is in place: no helpline numbers again unless they ask, never ask again if they are safe.";
 const AFTER_CHECK = "the safety check already read their earlier heavy words: no helpline, no telling them to go to a grown-up now, no question about harm or being safe; answer what they said now, as their teacher";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
@@ -255,11 +257,13 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
         : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead`;
   let check, shape;
   if (move.kind === "safeguard") {
-    check = move.tier === "check" ? DISTRESS_CHECK : voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
+    check = move.tier === "check" ? DISTRESS_CHECK : move.tier === "helped" ? SAFEGUARD_HELPED : voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     // W2-I R3 (P2: a spoken-planning preface on 18/18 heavy turns): the reply begins with the child, never with a sentence
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
     shape = move.tier === "check" ? "at most 30 words, short warm sentences. End with your one gentle question, then stop."
+      : move.tier === "helped" ? "at most 35 words, short calm sentences. End warmly, with no question about being safe, then stop."
+      : move.sameStory ? "at most 35 words, short calm sentences. End with your one new question, never about being safe, then stop."
       : "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (move.intake) {
     // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe

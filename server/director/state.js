@@ -46,7 +46,7 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow, safeAndTells } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow, safeAndTells, helpInPlace } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
@@ -1453,8 +1453,13 @@ function decide(s, input, item) {
   // (no lesson, the helplines on the board, a gentle are-you-okay) and never releases or offers the resume: a pending
   // offer is withdrawn, and the next turns climb back as after an opening. The predicate's families, the relational
   // floor and a carried check-in always restart the full script.
-  const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind)
-    && MODEL_EPISODE_KINDS.has(flags.distressKind ?? ""));
+  // 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14): once help is in place in an episode the predicate or a sure
+  // layer opened (`helpedAt`, below; fine.js helpInPlace), a MODEL-only read with no sure layer is the same story too: the
+  // helped hold, never the full opening again (that would clear the help and re-say the numbers). Before help is in place
+  // such a read still restarts the full script there: its active hand-off to a grown-up is what got p08's child to a neighbour.
+  const helpedEp = () => s.safeguard.helpedAt != null || (s.safeguard.tier !== "check" && helpInPlace(input.text ?? input.answer ?? ""));
+  const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(flags.distressKind ?? "")
+    && (MODEL_EPISODE_KINDS.has(s.safeguard.kind) || (!flags.sureBy && helpedEp())));
   // 14.4: an open CHECK-IN is decided by the next turn. It escalates to the full script (the vetted opening, the helplines
   // on the board, an incident: escalated) only on what would be sure on its own: a sure signal (the predicate, a sure kind,
   // the relational floor, a block the words trip, an unnamed read), a low mood read AGAIN after she asked, or a second
@@ -1570,7 +1575,17 @@ function decide(s, input, item) {
     s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null, tier: "check" };
     return plan("safeguard", SH.distressCheck(), { tier: "check" });
   }
-  if (flags.distress && !sameEpisode) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // 14.4.3 (main safety review; sim lab 6da8f599 p19 r3 #7 "thik hai... jaata hoon"): a MODEL read that restarts an episode the
+  // predicate, a sure layer or an unknown trigger opened never weakens it: the episode keeps the stronger kind (a "model" kind
+  // let a later "I'm fine" release a predicate episode early). A stronger read still takes the episode over.
+  if (flags.distress && !sameEpisode) {
+    const keep = !!s.safeguard && !s.safeguard.carried && s.safeguard.tier !== "check" && !MODEL_EPISODE_KINDS.has(s.safeguard.kind) && MODEL_EPISODE_KINDS.has(flags.distressKind ?? "");
+    s.safeguard = { calm: 0, asked: false, kind: keep ? s.safeguard.kind : flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
+    // ... and it is the same story told on, never a new opening: the same hand-off without "are you safe?" again (SH.safeguard)
+    // (a sure layer's read is never the same story: the full opening, its safety question and both numbers)
+    return keep && !flags.sureBy ? plan("safeguard", SH.safeguard({ sameStory: true }), { whiteboard: HELPLINES, sameStory: true })
+      : plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES });
+  }
   // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
   // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
   // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
@@ -1588,8 +1603,33 @@ function decide(s, input, item) {
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    // calm 1, not 0: the fixed fallback for this turn is the stay line, never the opening's again (say.js fallbackReply)
-    if (sameEpisode) { s.safeguard.calm = 1; s.safeguard.asked = false; return plan("safeguard", SH.safeguardAgain(), { whiteboard: HELPLINES }); }
+    // 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14, p19 r3 #8: "aunty ne call kar diya", "maine aunty ko bata
+    // diya" still got both helplines and "are you safe?" every turn): once help is IN PLACE (fine.js helpInPlace: a trusted
+    // grown-up told, calling or with them, a helpline called; nothing low, heavy, new or vetoed) the episode is HELPED. It
+    // keeps the hold (no lesson, the helplines on the board, the same climb to the resume offer) and her turns stop re-saying
+    // the numbers and re-asking if they are safe: tier "helped", which the floor does not hold to Childline's number. Read on
+    // a turn with no distress, or a MODEL re-read of the same story; the predicate's reads and every sure layer restarted the
+    // full script above, and a restart clears it. Never on the carried check-in, nor once the resume is offered.
+    const helpNow = s.safeguard.helpedAt == null && !s.safeguard.carried && (sameEpisode || (!flags.distress && !s.safeguard.asked))
+      && helpInPlace(input.text ?? input.answer ?? "");
+    if (helpNow) s.safeguard.helpedAt = s.turn;
+    const helped = s.safeguard.helpedAt != null;
+    const hold = () => plan("safeguard", SH.safeguardHelped(), { whiteboard: HELPLINES, tier: "helped" });
+    // calm 1, not 0: the fixed fallback for this turn is the stay line, never the opening's again (say.js fallbackReply). In an
+    // episode the predicate or a sure layer opened (helped: the only way a model re-read is the same episode there) calm goes
+    // back to 0, the climb the restart it replaces had: the hold lasts as long as shipped, only her words change.
+    if (sameEpisode) {
+      s.safeguard.calm = MODEL_EPISODE_KINDS.has(s.safeguard.kind) ? 1 : 0; s.safeguard.asked = false;
+      return helped ? hold() : plan("safeguard", SH.safeguardAgain(), { whiteboard: HELPLINES });
+    }
+    // the turn help is in place is answered as such (they did the right thing); the climb is the shipped one, so on the turn
+    // the resume offer is due it comes with that line, never a held turn more (p19: a class-1 child asked for a game)
+    if (helpNow) {
+      s.safeguard.calm += 1;
+      if (s.safeguard.calm < 2) return hold();
+      s.safeguard.asked = true;
+      return plan("repair", SH.resumeAfterHelp(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+    }
     // 14.3 (main safety review; sim lab 14.2 pet cards p66 "I am okay … It's just a scratch", p67 "ab safe hoon… wo bhag
     // gaya tha" held the helpline 2-3 more turns): an episode a MODEL read opened (the classifier or labeller, the content
     // filter, an understanding note; never the predicate's families, never the relational floor) steps back on a reply
@@ -1606,7 +1646,7 @@ function decide(s, input, item) {
       return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     s.safeguard.calm += 1;
-    if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
+    if (s.safeguard.calm < 2) return helped ? hold() : plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
     s.safeguard.asked = true;
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
@@ -1927,6 +1967,8 @@ export function step(prev, input) {
   // out of one (brain/turn.js writes its incident; brain/say.js, compile.js and the client read the tier)
   if (p.tier) move.tier = p.tier;
   if (p.escalated) move.escalated = true;
+  // 14.4.3: a model re-read restarted a predicate / sure episode (compile.js ends it on its one new question)
+  if (p.sameStory) move.sameStory = true;
   if (!input.branch && s.setAside === s.turn && p.kind !== "safeguard") move.setAside = true;
   if (!input.branch) delete s.setAside;
   // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
