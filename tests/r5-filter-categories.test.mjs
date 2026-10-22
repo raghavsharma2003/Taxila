@@ -4,8 +4,8 @@
 // helpline script twice (persona p43, "6 aur 5... 30... 3,00,000?"). Harm and unreadable blocks still fail CLOSED.
 import { test, describe, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { textReply, replyDeps } from "../server/brain/say.js";
-import { chat, AzureError, CONTENT_FILTER, filterCategories, nonHarmFilter } from "../server/azure.js";
+import { textReply, replyDeps, childWordsTrip } from "../server/brain/say.js";
+import { chat, AzureError, CONTENT_FILTER, filterCategories, nonHarmFilter, notChildSafety } from "../server/azure.js";
 import { initLessonState, step } from "../server/director/state.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 
@@ -150,5 +150,50 @@ describe("reply filter categories (round 5)", () => {
     replyDeps.chat = async (_d, _m, o) => { if (probeOf(o)) probes++; throw block(["sexual"], 200); };
     assert.equal((await run(r, hist)).filtered, true);
     assert.equal(probes, 1);
+  });
+});
+
+// 14.4 (main safety review; sim lab off-kit ok03 r1 "…humne race lagayi…", TEST 30 days: 10 of 10 hate-only fail-closed turns
+// harmless, 0 of 276 curated distress lines hate-only): the child's words blocked by the hate detectors alone are no
+// child-safety signal; the reply path gives a neutral line. Every other harm category and an unreadable block fail closed.
+describe("14.4: the hate detectors alone are no child-safety signal", () => {
+  afterEach(() => { replyDeps.chat = chat; });
+  const e = (cats) => Object.assign(new AzureError("x", 400, CONTENT_FILTER), cats ? { filterCats: cats } : {});
+  test("notChildSafety: hate and its score alone (with injection detectors) yes; any other harm, unknown or unreadable no", () => {
+    for (const c of [["hate"], ["multiseverity_hatespeechscore"], ["hate", "multiseverity_hatespeechscore"], ["jailbreak", "hate"], ["jailbreak"]]) assert.equal(notChildSafety(e(c)), true, JSON.stringify(c));
+    for (const c of [["hate", "violence"], ["hate", "self_harm"], ["sexual"], ["violence"], ["something_new"], [], null]) assert.equal(notChildSafety(e(c)), false, JSON.stringify(c));
+    assert.equal(nonHarmFilter(e(["hate"])), false, "the distress reads keep hate as a harm block");
+  });
+  test("the probe: hate only → clear; hate with another harm category → harm", async () => {
+    replyDeps.chat = async () => { throw block(["hate"]); };
+    assert.equal(await childWordsTrip("aur humne race lagayi"), "clear");
+    replyDeps.chat = async () => { throw block(["hate", "self_harm"]); };
+    assert.equal(await childWordsTrip("x"), "harm");
+  });
+  test("the reply prompt and the probe both blocked on hate only: a neutral line, never the helplines", async () => {
+    const r = lesson();
+    replyDeps.chat = async () => { throw block(["hate"]); };
+    const out = await run(r, [{ who: "teacher", text: "Screen par 6000 aur 50 dekhiye" }, { who: "child", text: "humne race lagayi" }]);
+    assert.notEqual(out.filtered, true, JSON.stringify(out.guard));
+    assert.deepEqual(out.guard.caught, ["content_filter_context"]);
+    assert.doesNotMatch(out.reply, /1098|14416|Childline|चाइल्डलाइन/);
+    // never "say that again": the same words would trip the filter again
+    assert.doesNotMatch(out.reply, /phir se bata|say that again/i, out.reply);
+  });
+  test("14.4.1: the blocked turn gets one more try with their words not shown, and her line is the move's own", async () => {
+    const r = lesson();
+    const said = "Thanks! Ab batao, is shape ke chaaron sides jodkar kya milega?";
+    const seen = [];
+    replyDeps.chat = async (_d, msgs, o) => {
+      if (o?.purpose === "filter_probe") throw block(["hate"]);
+      const u = msgs.filter((m) => m.role === "user").map((m) => m.content).join(" | ");
+      seen.push(u);
+      if (/not shown here/.test(u)) { assert.doesNotMatch(u, /race lagayi/, "the masked try never carries their words"); return { text: said }; }
+      throw block(["hate"]);
+    };
+    const out = await run(r, [{ who: "teacher", text: "Screen par 6000 aur 50 dekhiye" }, { who: "child", text: "humne race lagayi" }]);
+    assert.notEqual(out.filtered, true, JSON.stringify(out.guard));
+    assert.equal(out.reply, said);
+    assert.equal(out.guard.masked, true);
   });
 });

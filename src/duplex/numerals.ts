@@ -58,6 +58,17 @@ const QUARTER = new Set(["चौथाई", "quarter", "quarters", "chauthai"]);
 const HALF = new Set(["आधा", "आधी", "half", "aadha", "adha"]);
 /** A Hindi verb stem in "-ने" before "दो" makes "दो" the imperative "let/give", not 2 ("सोचने दो", "करने दो"). */
 const NE_STEM = /^[ऀ-ॿ]+ने$/u;
+/**
+ * Round 5 (tests/fixtures/spoken-fractions.json, one rule set for every reader): Devanagari "दो" right after one of these
+ * verb stems is the verb "give" ("बता दो", "समझा दो"), not 2 — never after घटा / जोड़, which are arithmetic.
+ */
+const VERB_DO_STEM = new Set(["बता", "समझा", "दिखा", "सुना", "कर", "दे", "लिख", "बोल", "सिखा", "बना"]);
+/** azure-speech's spelling of बटा: a fraction ONLY between two number words ("2 बता दो" = 2/2; "मुझे बता दो" is not). */
+const ASR_FRACTION_JOIN = "बता";
+/** An integer, or the romanised "do" (2) where a fraction claims it (alone, "do" is the English verb). */
+function readIntF(toks: string[], i: number): { v: number; end: number; open: boolean } | null {
+  return readInt(toks, i) ?? (toks[i] === "do" ? { v: 2, end: i, open: false } : null);
+}
 
 export type ValueKind = "integer" | "fraction" | "decimal";
 export interface ValueSpan {
@@ -136,14 +147,19 @@ export function valuesOf(toksIn: string[] | string): ValueSpan[] {
     if (isDigitFrac(w)) { out.push({ v: w, kind: "fraction", start: i, end: i, open: false }); continue; }
     if (isDigitDec(w)) { out.push({ v: w, kind: "decimal", start: i, end: i, open: false }); continue; }
     if (HALF.has(w)) { out.push({ v: "1/2", kind: "fraction", start: i, end: i, open: false }); continue; }
-    if (w === "दो" && i > 0 && NE_STEM.test(toks[i - 1])) continue;
-    const a = readInt(toks, i);
+    if (w === "दो" && i > 0 && (NE_STEM.test(toks[i - 1]) || VERB_DO_STEM.has(toks[i - 1]))) continue;
+    const a = readInt(toks, i) ?? (w === "do" && FRACTION_JOIN.has(toks[i + 1] ?? "") && readIntF(toks, i + 2) ? { v: 2, end: i, open: false } : null);
     if (!a) continue;
     const j = a.end;
     const nx = toks[j + 1];
+    // the ASR's "बता": a fraction only with a number on both sides (else the integer stands, and "बता दो" is a verb)
+    if (nx === ASR_FRACTION_JOIN) {
+      const b = readIntF(toks, j + 2);
+      if (b) { out.push({ v: `${a.v}/${b.v}`, kind: "fraction", start: i, end: b.end, open: b.open }); i = b.end; continue; }
+    }
     // fraction: a बटा b
     if (nx !== undefined && FRACTION_JOIN.has(nx)) {
-      const b = readInt(toks, j + 2);
+      const b = readIntF(toks, j + 2);
       if (b) { out.push({ v: `${a.v}/${b.v}`, kind: "fraction", start: i, end: b.end, open: b.open }); i = b.end; continue; }
       // "तीन बटा" with no denominator yet: an integer that is still growing
       out.push({ v: String(a.v), kind: "integer", start: i, end: j + 1, open: true });

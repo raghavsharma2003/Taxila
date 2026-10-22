@@ -507,12 +507,16 @@ describe("round3 fix: 'yeh nahi padhna, photosynthesis padhna hai' switches the 
     assert.equal(go.move.kind, "wrap");
     assert.equal(go.state.switchTo, "c7-science-ch10-t01");
   });
-  test("a subject not in their class gets an honest 'not here' and the choices (no Start button)", async () => {
+  // 14.4.2 (main: "not in your class" about a subject that IS in their book is a false claim, 38aad918 c4): a subject with no
+  // topic found is never "not here"; she will look for it, and the buttons are real topics of THEIR class, never the ask
+  test("a subject with no topic found: she will look for it, never 'not in their class'; the buttons are topics of their own class", async () => {
     const kit = await getKitFix("c7-maths-ch08-t01", { generate: false });
     let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: KABIR("c7-maths-ch08-t01"), seed: 3, now: 0 }), { event: "start", kit, now: 0 });
     r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "request", request: { type: "switch", subject: "quantum mechanics", whole: true }, flags: {} }, now: 20_000, text: "quantum mechanics padhna hai" });
-    assert.ok(!r.ui.chips.some((c) => String(c.id).startsWith("switch:")));
-    assert.match(r.move.shape, /not in their class's lessons/);
+    assert.doesNotMatch(r.move.shape, /say kindly that it is not in their class/);
+    assert.match(r.move.shape, /look for it/);
+    const offered = r.ui.chips.filter((c) => String(c.id).startsWith("switch:"));
+    assert.ok(offered.every((c) => c.id.slice("switch:".length).startsWith("c7-")), JSON.stringify(r.ui.chips));
   });
 });
 

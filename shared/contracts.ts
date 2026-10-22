@@ -68,6 +68,12 @@ export interface Move {
   shape: string;
   itemId?: string; skillId?: string; probe?: ProbeId; hintLevel?: 0 | 1 | 2 | 3 | 4;
   format?: FormatFamily;
+  /** 14.4: "check" = a warm check-in after one model read of a low mood or a fright (no helpline, no Help sheet yet). */
+  tier?: "check";
+  /** 14.4: this safeguard escalated from a check-in. */
+  escalated?: boolean;
+  /** 14.4: a check-kind distress read on this turn was set aside (the check-in released, or its cooldown): no incident. */
+  setAside?: boolean;
 }
 
 export type LessonPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap" | "done";
@@ -219,6 +225,11 @@ export interface TurnRequest {
     superseded?: string[];
     heardUpTo?: { chars: number; words: number; ms: number } | null;
     cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
+    /**
+     * D5 (round 5, census F5): the text is empty because the ear's item covered the child's speech and returned no words. The
+     * server reads the turn as an unreadable transcript (a re-ask, cls source "asr"), never as silence.
+     */
+    unheard?: boolean;
     engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
   };
 }

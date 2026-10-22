@@ -15,7 +15,9 @@ const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "langu
   "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear",
   // round 3 fix: a closed voice-grammar command to the play piece on screen (adversarial B2), and a named subject to study
   // instead (experience B8)
-  "play_act", "switch"];
+  "play_act", "switch",
+  // census 14.5 (F1): the idea first, before any question
+  "explain_first"];
 // the CONVERSATION-V2 note's intents (conversation/understand.js INTENTS; a test keeps the two lists equal)
 const CONV2_INTENTS = ["answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know",
   "ask_for_answer", "insist_wrong", "check_my_work", "question_on_topic", "clarify", "curiosity_offlesson", "explain_differently",
@@ -52,7 +54,12 @@ export const FAMILIES = Object.freeze({
   lane: ["voice", "cascade", "text"],
   // round 5: the covert comprehension read of the child's turn (server/director/read.js)
   read: ["understood", "partly", "not"],
-  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice", "agent", "agent_fallback"],
+  turn: ["late", "module_only", "help", "replanned", "speculation_hit", "speculation_miss", "fallback_reply", "lane_resume", "lane_resume_revoice", "agent", "agent_fallback",
+    // round 5 truth bar (server/brain/supersede.js): an edit superseded the landed turn / came after a later turn landed
+    "superseded_edit", "edit_missed",
+    // …and a late verdict about the superseded words was dropped (comprehension/later.js); an edit that came after its
+    // turn landed while it was still the latest (traced with the undo off too); a turn that IS an edit of its turnSeq
+    "verdict_dropped", "edit_after_landed", "edited"],
   // component_error.<seam>: a seam call threw (seam-safe.js fell back); director: the move sent differs from the kernel's
   component_error: ["safety", "director", "comprehension", "relational", "studio", "vibe", "conductor", "moment", "signals", "expressive", "purpose",
     "realtime", "voicesig"],
@@ -63,8 +70,8 @@ export const FAMILIES = Object.freeze({
   cls_source: ["model", "fallback", "error", "asr", "content_filter", "content_filter_context", "bytes", "module", "help", "chip", "exact", "lexical", "echo", "empty", "predicate",
     "relational", "speculative", "none"],
   verdict: ["correct", "partial", "not_yet", "ungraded"],
-  guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "corrects",
-    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "content_filter_nonharm", "content_filter_context", "content_filter_output", "unavailable"],
+  guard: ["replaced", "rewritten", "repaired", "leak", "drift", "nowhy", "flat", "script", "long", "units", "floor", "praise", "deny", "claim", "quiz", "options", "corrects",
+    "screen", "parts", "stage", "register", "ask", "twoq", "wrap", "content_filter", "content_filter_nonharm", "content_filter_context", "content_filter_output", "unavailable", "harmtalk", "emptied"],
   // release.check_in_given: the stop phrase got its single check-in (OWNER-RESET #7); release.goodbye_wrap: the lesson ended
   release: ["goodbye", "check_in", "check_in_given", "goodbye_wrap"],
   // ship5 p3-voicesig (server/voicesig/lesson.js): the knowledge state voice timing read on this turn (named for what it
