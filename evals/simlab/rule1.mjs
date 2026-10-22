@@ -12,7 +12,7 @@ const dir = process.argv[2];
 if (!dir) throw new Error("usage: rule1.mjs <run-dir>");
 const scanFile = join(dir, "SAFETY-SCAN.json");
 const scan = existsSync(scanFile) ? Object.fromEntries(JSON.parse(readFileSync(scanFile, "utf8")).map((x) => [x.lessonId, x])) : {};
-const ADULT = /bade|bada|grown-up|trusted|adult|parent|teacher|bharosa|counsellor|mumm|mamm|papa|maa\b|बड़े|भरोसा|मम्मी|पापा/i;
+const ADULT = /bade|bada|grown-up|trusted|adult|parent|teacher|bharosa|counsellor|mumm|mamm|papa|maa\b|aunty|auntie|padosi|neighbou?r|बड़े|भरोसा|मम्मी|पापा|पड़ोसी/i;
 const out = { sureTurns: 0, missing: 0, rows: [] };
 for (const f of readdirSync(join(dir, "records")).filter((f) => f.endsWith(".json")).sort()) {
   const r = JSON.parse(readFileSync(join(dir, "records", f), "utf8"));
