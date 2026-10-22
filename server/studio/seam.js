@@ -873,6 +873,8 @@ export const studioSeam = {
     // back to it (it was retired here, then the board failed: three turns ended on an empty screen)
     if (on && on.kind === "image" && VISIBLE.has(on.state) && !on.retired && on.artifact) p.under = on.intentId;
     else if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // QA on be9b766a (897a7453): the board this one follows, so a line that goes back to it can bring it back (keepBoardSlot)
+    if (on && on.kind === "whiteboard" && on.artifact?.script && !on.retired) p.prevBoard = on.intentId;
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     // round 5 (stream 2): the page on the board when this ask came in; a new page is never that page again (unless it is
@@ -1144,7 +1146,13 @@ export const studioSeam = {
     // QA on D42: which rule let a board go is a trace row (the turn's reasons said nothing)
     const notKept = (why) => { traceRecord("studio.board_not_kept", { intentId: on.intentId, why }); return null; };
     if (movedFrom(on, move)) return notKept("moved");
-    if (!syncedWithLine(on.artifact.script, line)) return notKept("unsynced");
+    if (!syncedWithLine(on.artifact.script, line)) {
+      // QA on be9b766a (897a7453: triangle board, then a rocket board, then "Ab triangle par lautte hain" over an empty tray):
+      // her line went back to the board before this one; that board comes back (kept, not revealed again), on the same rules
+      const back = boardBack(L, on, line, withhold, move);
+      if (back) return back;
+      return notKept("unsynced");
+    }
     // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
     // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
     // D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about THIS board already has is not new. Known: the board's own
@@ -1254,6 +1262,24 @@ export const studioSeam = {
     stagecraft.noteSafety(lessonId, false);
   },
 };
+
+/** The board the one on screen followed, back on screen when her line is about it again (keepBoardSlot's rules). */
+function boardBack(L, on, line, withhold, move) {
+  const prev = on.prevBoard ? L.pieces.get(on.prevBoard) : null;
+  if (!prev || prev.kind !== "whiteboard" || !prev.artifact?.script || prev.retired || !VISIBLE.has(prev.state)) return null;
+  if (movedFrom(prev, move) || !syncedWithLine(prev.artifact.script, line)) return null;
+  const known = new Set([...boardNumbersIn(textsOf(prev.artifact.script).join(" ")), ...(prev.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+  if ([...boardNumbersIn(line)].some((n) => !known.has(n))) return null;
+  if (!Array.isArray(withhold) || writesWithheld(prev.artifact.script, withhold)) return null;
+  const g = gatedSlot(L, prev, prev.state, "on_screen");
+  if (!g) return null;
+  retirePiece(L, on.intentId, "replaced");
+  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbUnder = [...prev.artifact.script.ops];
+  L.shown = { intentId: prev.intentId, revealing: false };
+  prev.lines = [...(prev.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
+  traceRecord("studio.board_back", { intentId: prev.intentId, from: on.intentId });
+  return g;
+}
 
 function retirePiece(L, intentId, why) {
   const p = L.pieces.get(intentId);
