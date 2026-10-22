@@ -4834,12 +4834,22 @@ Sim lab: 4,357 lines, 101 moved, all checked genuine (74 visual/game, 16 stop/br
 
 ## ms-r1442-worked-fidelity (2026-10-22, stream 4A)
 
-QA item 3 (65fae3d0, 3e2fcb15): at the worked example she used a garden of her own instead of the kit's park, and quizzed a child who had said "pata nahi". The move was worked_example (her step question, never a graded gap), so F1(d) did not miss; the worked shape was the defect. SH.worked now names the worked example in LESSON NOW with its own numbers and names, never one of her own. After a don't-know or an off-topic reply, or guidance from fade.not_landed / first_step.stuck, a part shows its steps with their results and asks nothing to compute. Fixture replay: 0 of 8 stuck parts were shown before, 8 of 8 after. Not measured live on a model. Test: tests/r1442-worked-fidelity.test.mjs.
+QA's 65fae3d0 / 3e2fcb15 were move=worked_example with invented numbers (garden 5/3/5/3, 6/4/6/4). After two "pata nahi", she was still asking the stuck child to add.
 
-## ms-r1442-claim-honesty (2026-10-22, stream 4A)
+SH.worked now names the kit's worked example, its own numbers and names. When the reply to the hook, explain or a worked part was don't-know or off-topic, or the guidance came from fade.not_landed / first_step.stuck, that part shows its steps with their results and leaves nothing to work out. An engaged child is still asked for the next step.
 
-QA P2: a right answer to her own sum in a worked step got a reply naming a wrong operation the child never did. Her own sum is now checked whenever no kit item was on the table (state.js priorItemId), also when the next move poses a card. director/say.js claimsMistake is guard "claim" on ungraded / attempt / unverified turns and "deny" on a right one; the claim sentences are stripped in code if a rewrite keeps them. TEST, read-only, n = 7884 teacher lines: 6 hit with nothing graded wrong before them (5 real unfounded claims, 1 borderline). Test: tests/r1442-claim-honesty.test.mjs.
+Fixture replay: stuck parts shown 0/8 → 8/8. Not measured live on a model. Tests: tests/r1442-worked-fidelity (3).
+
+## ms-r1442-claim-honesty (2026-10-22, stream 4A, with main's safety review)
+
+QA 86339364: "nahi nahi, 160", a right answer to her own question with no card on the table, got "Aapne jodne ki jagah kuch aur operation kiya".
+- Her own sum is now checked whenever no kit item was on the table (state.priorItemId).
+- A guard (director/say.js claimsMistake) catches a claimed mistake on an ungraded / attempt / unverified turn: a rewrite first, then the claim sentences are stripped in code.
+
+TEST, 7,884 teacher lines: 6 hits with nothing graded wrong before them (5 real unfounded claims, 1 borderline).
+
+Main safety review: the first cut read "You did nothing wrong by telling me." as a claim and stripped it to "". Now negations ("nothing wrong", "kuch galat nahi kiya", "not your fault") are never claims, and the guard never touches a safeguard turn. tests/r1442-claim-safety (2) fails on 70df4067. Tests: tests/r1442-claim-honesty (5).
 
 ## ms-r1442-chapter-switch-asks-nothing (2026-10-22, stream 4A)
 
-QA P2 (df5ce94c): a chapter ask got "which page or chapter?" while that chapter's first topic was already on the button. SH.switchOffer now says the chapter's first topic is ready, and every switch offer asks nothing that turn. Shape only, no model run. Test: tests/r1442-chapter-switch.test.mjs.
+QA df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" while the chip already offered chapter 1. SH.switchOffer now says the chapter's first topic is ready, and every switch offer ends asking nothing (no page or chapter, no lesson question). Tests: tests/r1442-chapter-switch (2).
