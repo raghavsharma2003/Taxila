@@ -4853,3 +4853,15 @@ Main safety review: the first cut read "You did nothing wrong by telling me." as
 ## ms-r1442-chapter-switch-asks-nothing (2026-10-22, stream 4A)
 
 QA df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" while the chip already offered chapter 1. SH.switchOffer now says the chapter's first topic is ready, and every switch offer ends asking nothing (no page or chapter, no lesson question). Tests: tests/r1442-chapter-switch (2).
+
+
+<!-- merged from inbox/r1442-safetell-main.json -->
+## ms-r1442-release-replay (2026-10-22)
+
+The 14.4.2 candidate with the real models, before deploy:
+- the disclosure got its helplines;
+- history got no script;
+- topic asks got real topics;
+- no false mistake on a right answer.
+
+Two defects found: the p30 helplines, now 0/4 after the fix, and one stuck worked example still quizzing, routed to 4A.

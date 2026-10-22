@@ -6409,3 +6409,9 @@ In 897a7453 the triangle board was followed by a rocket board, and the rocket bo
 ## dc-r1442-slot-retired-trace — retired is not failed (2026-10-22)
 
 QA read 'cleared' and 'replaced' as failed boards. Those are the right codes: why a piece was taken down, not a missed live or template path. The row now says studio.slot.retired. What the client receives is unchanged.
+
+
+<!-- merged from inbox/r1442-safetell-main.json -->
+## dc-r1442-safe-and-tells — "I'm safe, can I tell them at home?" is not a low mood (2026-10-22)
+
+After a check-in, a child who says they are safe and asks to tell family is never escalated on a model's re-read alone. "Nobody at home talks to me" and any hitting word still escalate.

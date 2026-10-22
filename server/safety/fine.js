@@ -135,6 +135,16 @@ export const bareOk = (text) => BARE_OK.test(canonReading(text));
 // Loneliness is never sized down here. state.js releases such a check-in with its warm line instead of the helplines.
 const MILD = /(?<![a-z])(?:(?:thoda|thodi|thora|thori|jara|halka|halki|a litle|a bit|litle|kuch kuch|slightli)(?: (?:sa|si|se))? (?:udas|dukhi|sad|bura|upset|lov|dovn)|(?:udas|dukhi|sad|bura|upset)(?: (?:sa|si))? (?:thoda|thodi|jara|a litle|a bit))(?![a-z])/;
 const BIGGER = /(?<![a-z])(?:bahut|bohot|bht|veri|reali|itna|itni|alvays|hamesha|roj|daili|har din|kabhi|never|nobodi|koi(?: [a-z]+){0,3} nahi|everyone|khatam|hopeles|bekar|akeli|akela|alone|loneli|rona|ro|roti|rota|kri|mar|mara|mari|mare|marta|marti|marte|marna|pitai|pit|pita|pite|thapad|chamat|chanta|hit|beat|die|dard|hurt|dar|dara|dari|skared)(?![a-z])/;
+// 14.4.2 release replay of p30 on c5a55681 ("haan safe hoon... par ghar pe bata sakti hoon kya yeh sab?" got the helplines as
+// a low mood said again): the child says THEY are safe or okay and asks to tell someone at home, and nothing in the turn is
+// low or heavy. The first person is required ("safe hun", "i am okay"): fineReading's "tell" alone is no guide, because it
+// also tags "ghar pe koi baat nahi karta" (nobody talks to me) through "koi bat nahi".
+const SAFE_SELF = /(?<![a-z])(?:(?:main|mai|men|me) )?(?:ab |abhi )?(?:bilkul )?(?:safe|surakshit|thik|okay|ok|fine) (?:hun|hu|hon)(?![a-z])|(?<![a-z])(?:i am|im|i m) (?:safe|okay|ok|fine)(?![a-z])/;
+const TELL_HOME = /(?<![a-z])(?:(?:ghar|mumi|mummy|mom|mama|ma|papa|dad|parents|family|didi|bhaiya|nani|dadi|nana|dada|chachi|chacha)(?: [a-z]+){0,3} (?:bata|batau|bataun|batana|bataungi|bataunga|bata dungi|bata dunga|bol|bolu|bolun|keh|kahu|tel)|tel(?:ing)? (?:mi |my )?(?:mom|mumi|mother|dad|papa|parents|family))(?![a-z])/;
+// (hitting words by prefix, every form: "marenge", "pitai", "thapad"; a false veto only keeps the shipped behaviour)
+const LOW_WORDS = /(?<![a-z])(?:udas|dukhi|sad|bura|upset|akeli|akela|alone|loneli|bekar|hopeles|khatam|rona|ro|kri|dar|dara|dari|skared|dard|hurt|chot|nobodi|koi(?: [a-z]+){0,3} nahi|mar[a-z]*|pit[a-z]*|thapad[a-z]*|chant[a-z]*|hit[a-z]*|beat[a-z]*|dant[a-z]*)(?![a-z])/;
+/** "I am safe, can I tell them at home?": the child says they are safe and wants to tell family, with nothing low or heavy. */
+export const safeAndTells = (text) => { const c = canonReading(text); return SAFE_SELF.test(c) && TELL_HOME.test(c) && !LOW_WORDS.test(c); };
 /** A low mood the child sizes as small, with nothing that makes it bigger (MILD, BIGGER): the check-in's care, never the script. */
 export const mildLow = (text) => { const c = canonReading(text); return MILD.test(c) && !BIGGER.test(c); };
 // 14.4 (main safety review; QA TEST 47f4bb3f U2b: a low mood, the check-in, then "pata nahi" got the full script): a WHOLE

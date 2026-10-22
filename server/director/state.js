@@ -46,7 +46,7 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow, safeAndTells } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
@@ -1485,7 +1485,11 @@ function decide(s, input, item) {
     // 14.4.2 (main safety review; sim lab be9b766a p30 #8 "haan okay… par thodi udaas" got the full script): a low mood they
     // size as small (fine.js mildLow: "thodi udaas", "thoda bura laga", nothing bigger) is care, never the script; it is
     // released below with the warm line. The predicate and every sure layer still escalate it.
-    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure && !mildLow(words);
+    // ... and "safe hoon, par ghar pe bata sakti hoon?" (fine.js safeAndTells: they say they are safe and want to tell family,
+    // nothing low or heavy) is no low mood said again: a model re-read of it as low is her question's mood, not theirs
+    // (14.4.2 release replay of p30 on c5a55681: the helplines). A contrast ("theek hoon, par kuch accha nahi lagta") still is.
+    const tellsFine = safeAndTells(words);
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure && !mildLow(words) && !tellsFine;
     // QA TEST d359423b / a9c3136d t7 (9ad86661): "main mar jaunga itna padh ke" answering "are you okay?" is the predicate's
     // lesson hyperbole (check-tier): it was released into the lesson, a practice item with "tell mummy" glued on. It is no
     // answer of okay: the check-in stays (care, no lesson) once; a second one in a row, like a second silence, escalates
