@@ -6389,3 +6389,9 @@ A child who answers "are you okay?" with "okay… but a little sad" now gets a w
 ## dc-r1442-sacrifice-habit — "they give their lives for the trees" is history (2026-10-22)
 
 The Bishnoi lesson's "wo ped ke liye apni jaan de dete hain" no longer reads as self-harm. The child's own wish and every future form still do.
+
+## dc-r1442-hinglish-reading-rescue-only — the Hinglish reply reading ships as rescue-only (2026-10-22, main on 4A's measurement)
+
+In corroborate.js, a reply's everyday Hinglish/Devanagari words also read as the English words they mean. It applies only when no form passes without it, only at the key-like cover (0.8), only on the reply side, and never on a language item. It added 0 new forced false credits and rescued 0 answers on every real set measured.
+
+**Reverse if** a later real-label set still shows 0 rescues, or any set shows a new false credit from it. Then remove the reading.
