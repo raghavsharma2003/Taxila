@@ -4782,3 +4782,12 @@ The 14.4.1 candidate's own end records, read from 10 TEST lessons (6 safeguarded
 - the child's words in a safeguarded record 0/6.
 
 One defect: 3 of 6 safeguarded notes called the child's responses absent. After the fix, replay on 40 lessons × 2: 12/80 → 1/80.
+
+
+<!-- merged from inbox/r1441-live-main.json -->
+## ms-r1441-live (2026-10-22)
+
+14.4.1 is live at f74d1aae (taxila-web--sf74d1aa-tdd6).
+- Gate: 3607/3611, 0 fail. Smoke: 4/4.
+- Sim lab on the candidate: teacher-as-learner 15/30 → 0/34; referral wording in safeguarded records 4/6 → 0/8.
+- Rollback: 14.4.
