@@ -60,8 +60,12 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
 
-export const worked = ({ part, parts }) => join(
-  `worked example, part ${part} of ${parts}: say one step, then ask them for the next step`,
+// QA 14.4.1 (65fae3d0, 3e2fcb15): a garden of 5 and 3 of her own instead of the kit's park, and a "pata nahi" answered with
+// "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
+export const worked = ({ part, parts, stuck = false }) => join(
+  `worked example, part ${part} of ${parts}: the one in LESSON NOW with its own numbers and names, never an example of your own`,
+  stuck ? "they were stuck: show this part's steps yourself, each with its result; nothing for them to work out this turn"
+    : "say one step, then ask them for the next step",
   "their thinking, your pace; no new idea",
 );
 
@@ -510,9 +514,13 @@ export const pictureNote = ({ subject, photo }) => photo === "coming"
   : photo === "failed" ? `the picture of ${clean(subject) || "it"} you said was coming could not come: say so in a few words`
   : `a photo of ${clean(subject) || "it"} cannot come right now: say so in a few plain words, then give it in words`;
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
-export const switchOffer = ({ title }) => join(
-  `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
-  "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way, no lesson question this turn",
+// QA 14.4.1 (df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" with chapter 1 on the button): a
+// chapter ask is answered with what is ready; she asks them nothing, not even which page or chapter
+export const switchOffer = ({ title, chapter }) => join(
+  chapter ? `they asked for chapter ${chapter}: its first topic, ${clean(title) || "that chapter"}, is ready for them; say so warmly in a few words`
+    : `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
+  "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way",
+  "ask them nothing this turn: not which page or chapter, no lesson question",
 );
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
 /** census 14.5 (F1, 310b8c82): they asked for the idea first, before any question (the card waits). */

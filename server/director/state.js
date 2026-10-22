@@ -476,6 +476,10 @@ function teach(s, input, prefix) {
     else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
     prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
   }
+  // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
+  // the worked steps, never asked to compute the next one (SH.worked stuck)
+  const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
+  const shown = () => replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "answer_question") {
@@ -541,14 +545,14 @@ function teach(s, input, prefix) {
     if (s.teachPlan[s.teachIdx + 1] === "fade" && s.fadeItem) {
       s.teachIdx += 1;
       const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
-      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2 })), {
+      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck: shown() })), {
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
-    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts })), {
+    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck: shown() })), {
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
   }
@@ -1044,7 +1048,7 @@ function requestMove(s, input, item, req, labels) {
       // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
       if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
         return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
-      if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
+      if (hit) return plan("break", SH.switchOffer({ title: hit.title, chapter: req.chapter }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
       // (no topic found for their words: never "not in your class"; real topics of their class on the buttons, as for a repeated ask)
       const near = nextTopics(s, 2);
       return plan("break", SH.switchElsewhere({ subject, titles: near.map((t) => t.title) }), { chips: [...near.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "switch" });
@@ -1764,6 +1768,9 @@ function capPlan(s, input, p) {
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
+  // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
+  // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
+  if (input.event === "turn") s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   // round 4 (conversation): a question tacked onto a graded answer ("yes, also why is the sky blue") is parked like the note's
   // alongside reading (code-first; the note runs only on non-answer turns). Screened in code like every parked topic.
   if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.alsoPark && ["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
