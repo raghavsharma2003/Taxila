@@ -4797,3 +4797,21 @@ One defect: 3 of 6 safeguarded notes called the child's responses absent. After 
 ## ms-r1442-overreact (2026-10-22)
 
 The safety-robust battery, 20 seeds, is identical before and after on every distress and false-positive set. mildLow passes 14/14 cases, and reaches 6 of 52,176 sim-lab lines. Not yet rerun in the sim lab.
+
+## ms-r1442-unverified-moveon (2026-10-22, stream 4A)
+
+After two unverified "correct" reads on one card, she no longer poses it a third time. She says one verdict-neutral line and moves to the next card. The skipped card writes no verdict and no evidence, and is due again another day.
+
+On the sim lab's 1b3bb12c records (4 stuck cards + 6 controls), children who got a card again after their 2nd unverified reply: 1 of 10 → 0. Limit: most stuck-probe repeats come from the wrong/partial hint path, which this does not touch. Test: tests/r1442-unverified-moveon.test.mjs.
+
+## ms-r1442-subject-chapter (2026-10-22, stream 4A)
+
+A named subject with no topic found never gets "not in your class". She says she'll look for it, and the next two real topics of their class are the buttons. findTopic now maps everyday subject words (geometry, shapes, triangle, आकार, plants, space…) to topic titles within the school subject.
+
+Over 324 (subject word, class) probes, a real chapter is found 107 → 167 times; all 60 new matches were checked. 38aad918's "geometry padhao, triangles" on class 5 now offers "Triangles and polygons". Test: tests/r1442-subject-chapter.test.mjs.
+
+## ms-r1442-qa-topic-asks (2026-10-22, stream 4A)
+
+QA item 2: "mujhe koi aur topic padhna hai" had been read as a switch to the subject "koi aur topic". A switch whose subject only says another/some topic is now change_topic, with real topics of their class as buttons on the first ask.
+
+A chapter ask at the session's start is read as that chapter's first topic. Test: tests/r1442-qa-topic-asks.test.mjs, with QA's line; it fails on f74d1aae.
