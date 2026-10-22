@@ -67,8 +67,11 @@ function writeCache(cid: string, c: Cached): void {
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
 
-/** The lesson route cannot reopen a lesson by id yet (src/child/screens/Practice.tsx LessonRoute → a new lesson). */
-export const RESUME_BY_ID = false;
+/** r5 QA D24: the lesson route reopens a lesson by id (POST /api/lesson/start {resumeLessonId}; the cascade and text lanes
+ *  every home start uses), so "Continue" is true now. */
+export const RESUME_BY_ID = true;
+/** The server's page-hide grace (TAXILA_PAGEHIDE_GRACE_MS, 120 s) plus a margin: when a "resume" Home re-reads its plan. */
+export const RESUME_RECHECK_MS = 125_000;
 
 /** Server response → the home's plan. Pure (unit-tested). */
 export function fromServer(r: ChildPlanResponse): HomePlan {
@@ -179,5 +182,22 @@ export function usePlan(cid: string): { plan: HomePlan; reload: () => void } {
       window.removeEventListener("offline", reload);
     };
   }, [reload]);
+  // r5 QA pass 12 (D37, client half): a Home left open kept offering "Continue" after the server's page-hide grace had
+  // ended that lesson, and Continue then opened a new one. The plan is read again when the page comes back into view,
+  // and once more after the grace while it says "resume" (a lesson parked just before this read ends by then).
+  useEffect(() => {
+    const onVisible = () => { if (document.visibilityState === "visible") reload(); };
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", reload);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", reload);
+    };
+  }, [reload]);
+  useEffect(() => {
+    if (plan.state !== "resume") return;
+    const t = setTimeout(reload, RESUME_RECHECK_MS);
+    return () => clearTimeout(t);
+  }, [plan.state, plan.resume?.lessonId, reload]);
   return { plan, reload };
 }

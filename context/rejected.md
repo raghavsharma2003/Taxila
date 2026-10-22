@@ -2550,3 +2550,89 @@ The replay proof first gated on the share of differing pixels (<= 2 %). A replay
 
 <!-- merged from inbox/r4-main-2225.json -->
 - `rj-r131-async-finally-before-assign` (2026-10-11). Tried: an in-flight guard written as `state.flushing = (async () => { …; finally { state.flushing = null } })()`. What broke: an async function runs synchronously until its first await. With an empty buffer there was none, so the finally cleared the guard before the assignment set it, and the guard held a settled promise forever. The production recorder wrote nothing and logged nothing (ms-r131-flush-wedge). Instead: start the body with `await null`, assign the promise to a const, and clear the guard only if it is still that promise. In-flight guards need a test of the empty case.
+
+
+<!-- merged from inbox/r5-qa.json -->
+## r5-qa-fake-mic-second-stream
+Tried (2026-10-14): finding the fake mic's loop position for QA spoken answers by opening a second getUserMedia stream in the page and timing speech onsets on it. What broke: Chromium plays the fake WAV loop per capture stream, so the second stream's onsets were unrelated to the app's; presses landed mid-phrase and ASR heard fragments ('किलो में क्या अंतर है?', 'करो'), which first looked like an app defect (clipped recording). The uploaded clip (4.56 s for a 4.3 s press, speech from 0 s) proved the app recorded everything. Replaced by dc-r5-qa-fake-mic-alignment (clone the app's own track). Reverse if: never; check uploaded clips whenever ASR looks truncated.
+
+
+<!-- round 5 stream entries (inbox r5-agent, r5-content, r5-latency, r5-qa), written up from their graph text at the 14.1 merge -->
+## rj-r5-strip-whole-pointing-sentences (2026-10-14)
+Taking pointing out of her line with director/say.js stripScreenRefs on request turns: it drops a sentence that is only pointing, and with it the number she explained ('Screen par number line dekhiye: 0 aur 1 ke beech 4 barabar hisse' → gone); the board drawn from her line then could not mark the child's 1/4 (W9 withheld it) and 3 of 6 number-line asks got no page. Replaced by studio/request.js unpointGently (only the pointing phrase goes)
+
+## rj-r5-parts-guard-on-named-asks (2026-10-14)
+Judging her 'parts' words against the module that was up BEFORE a named visual ask (brain/say.js screenContradiction): for 'number line pe 1/4 dikhao' she said '0 se 1 ke beech 4 barabar hisse' over the open question's 5-part engine and was cut to 'Woh 0 se kitna door hai?' (3 of 5 number-line asks). On a turn that answers a named ask the reply guards get no module (turn.js boardAnswersAsk); the board drawn for it is gated against her line (W8)
+
+
+<!-- merged from inbox/r142-main.json -->
+## Release 14.2 (main, 2026-10-15)
+
+- **rj-r142-harm-verb-raw** — gating khud_ko_khatam on a raw harm verb lost 11 red55 recall draws (the transcriber drops 'ko'); the TASK / ACCIDENT skip lost 0.
+- **rj-r142-distress-tired-clause** — a 'tired of the lesson is not distress' clause in both distress prompts: no gain (tired lines were already 0/14 false), +1 false alarm. Reverted.
+- **rj-r142-repro-with-prod-env** — a model-only repro run with .env.local as-is wrote 6 model.call rows into the production trace; such scripts run with DATABASE_URL= empty.
+
+
+<!-- merged from inbox/r142b-main.json -->
+## Release 14.2, second pass (main, 2026-10-15)
+
+- **rj-r142-toplevel-test-hooks** — top-level beforeEach / afterEach that stub fetch / env leak into other files under the gate's one-process npm test (the 14.2 gate failed three unrelated suites); scope them in describe().
+
+
+<!-- merged from inbox/r142d-main.json -->
+## rj-r142-fixed-wait-harness (2026-10-15)
+- Tried: a fixed 14 s wait between typed turns in r12-liveproof.
+- Broke: her 12.3 s reteach line, plus about 3 s to first sound, outlasted the wait. Type shows only on the child's turn, so turn 2 timed out (2/3) and read as a product failure.
+- Fix: wait (up to 45 s) for Type to be visible before each turn. Result 3/3.
+
+
+<!-- merged from inbox/r143-main.json -->
+## rj-r143-loose-fine (2026-10-15)
+
+- **Tried:** a fine reading with only negation / contrast / harm vetoes.
+- **What broke:** it released 77 of 189 replies, including home-avoidance replies ("थोड़ा ठीक हूँ, बस घर जाने का मन नहीं करता", "safe hu abhi… ghar pe nahi hoon") and "mujhe distract karna hai". It also matched across a sentence break.
+- **Fix:** qualified and time-bound vetoes, home and distraction tells, leftover negation, and matching one clause at a time. 44 of 189 now read as fine, all benign.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## rj-r143-test-region-twins (2026-10-15)
+
+- **Tried:** swedencentral twins of the chat deployments, so TEST traffic gets its own capacity.
+- **What broke:** the quota is one subscription-wide pool that is already allocated, so every hot twin was refused InsufficientQuota. The 8 low-use twins that succeeded were deleted again.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## rj-r143-gate-wrote-prod-trace (2026-10-15)
+
+- **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.
+- **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.
+- **Fix:** gateEnv runs the gate in CI's environment, with no database URL.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## rj-r143-reread-climbs-to-resume (2026-10-15)
+
+- **Tried:** the prepared patch treated a model re-read inside a model-opened episode like an ordinary turn: calm went up, and the second re-read offered the resume.
+- **What broke (review):** a child who keeps disclosing to the model alone would be offered the lesson while still being read as distressed.
+- **Fix:** a re-read holds (calm 1, offer withdrawn) and never releases or offers the resume on that turn.
+
+## rj-r143-bare-lesson-carry (2026-10-15)
+
+- **Tried:** fixing the carry-on spelling by adding a bare canonical "leson".
+- **What broke:** on the TEST trace it read "lesson band karein?" (shall we stop?), "lesson boring hai" and "kitna time aur hai lesson mein?" as asks to carry on. Straight back into the lesson after a stop request breaks NEVER MANIPULATE.
+- **Fix:** the English nouns count only inside an ask; stop, tiredness and time-left words keep the chips.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## rj-r143-mai-tx2-streaming (2026-10-15)
+
+- **Tried:** MAI-Transcribe-2-Streaming as the D5 speech recogniser. It is faster, with fewer empty finals.
+- **What broke:** it reads values wrong 9.1% of the time (6 of 66), vs 1.5% for today's azure-speech. A wrong value is a verdict on something the child never said.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## rj-r143-supersede-flag-column (2026-10-15)
+
+- **Tried (proposal):** a superseded_by flag on the evidence tables, filtered by every reader.
+- **What breaks:** about 10 readers today. Any one that misses the filter, now or later, silently brings back the abandoned grade.
+- **Instead:** move superseded rows to archive tables.

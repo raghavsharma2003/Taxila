@@ -182,6 +182,35 @@ export function partsVerdict(target, text, allowedNums) {
   return got.every(Boolean) ? "all" : got.some(Boolean) ? "some" : "none";
 }
 
+// round 5 (4A, main's conditions; sim lab e46a281c DECIDED truth: 40-48% of right answers earned no evidence on both
+// lanes, most of them a right answer followed by its working — "70! matlab sattar, kyunki 30 aur 70 milke 100") — the
+// ANSWER HEAD: the reply up to its first explanation marker (else its first sentence). It is checked ONLY when the whole
+// reply failed on a number the explanation brought (foreign / extra / unreadable), never on a why or a teach-back item, and
+// it must pass the full check on its own (negation, swapped and opposite words, cover). A correction after it ("…nahi,
+// 60", "wait", "sorry") or two choices in it ("70 ya 60?") means the head is not the child's answer: no rescue.
+const HEAD_RESCUES = new Set(["foreign_number", "extra_number", "unreadable_number"]);
+const HEAD_NEVER = new Set(["why", "teachback"]);
+const EXPLAIN = /(?:^|[^\p{L}])(?:kyunki|kyonki|kyuki|kyu\s+ki|because|cause|coz|matlab|yaani|yani|jaise|like|since|isliye|so|क्योंकि|मतलब|जैसे|यानी|इसलिए)(?![\p{L}])/iu;
+const CORRECTION = /(?:^|[^\p{L}])(?:nahi|nahin|nhi|no|nope|wait|sorry|galti|galat|actually|ruko|oops|नहीं|रुको|गलती|गलत)(?![\p{L}])/iu;
+const ALTERNATIVE = /(?:^|[^\p{L}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}])/iu;
+/** The reply's answer head and the rest, or null when the reply is all head. PURE. */
+export function answerHead(text) {
+  const t = String(text ?? "").trim();
+  const m = t.search(EXPLAIN);
+  const upTo = m > 0 ? t.slice(0, m) : t;
+  const head = (upTo.match(/^.*?[.!?।](?=\s|$)/u)?.[0] ?? upTo).trim();
+  const rest = t.slice(t.indexOf(head) + head.length).trim();
+  return head && rest ? { head, rest } : null;
+}
+/** Does the answer head alone carry a complete form (the conditions above)? PURE. */
+export function headSupports(target, text, forms, allowed, prompt, why) {
+  if (!HEAD_RESCUES.has(why) || HEAD_NEVER.has(target?.item?.kind)) return false;
+  const h = answerHead(text);
+  if (!h || CORRECTION.test(h.rest)) return false;
+  if (ALTERNATIVE.test(h.head) && (nums(h.head) ?? []).length >= 2) return false;
+  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok);
+}
+
 /**
  * Apply the rule to a model-labelled classification. Only an item turn the MODEL labelled is touched; every other
  * result (exact, number, chip, module, help, request, safety, error) passes through unchanged, flags included.
@@ -204,6 +233,7 @@ export function corroborate({ target, text, result }) {
   if (o === "correct") {
     if (reads.some((r) => r.ok)) return { ...result, corroboration: "supported" };
     const why = reads.map((r) => r.why).find((w) => w && w !== "low_cover") ?? reads[0]?.why ?? "low_cover";
+    if (headSupports(target, text, forms, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`, why)) return { ...result, corroboration: "supported_head" };
     const { misconceptionId: _m, reason: _r, reasonMisconceptionId: _rm, ...rest } = result;
     return { ...rest, outcome: "no_evidence", corroboration: `unsupported_credit:${why}` };
   }

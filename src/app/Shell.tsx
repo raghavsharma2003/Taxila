@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { Link, isRouteErrorResponse, useRouteError } from "react-router-dom";
 import { ButtonLink, Mark } from "../ui/index.ts";
+import { isChunkLoadError, reloadForStaleBuild } from "./staleBuild.ts";
 
 export function Brand({ to = "/" }: { to?: string }) {
   return <Link to={to} className="brand" aria-label="Taxila home"><Mark /><span>Taxila</span></Link>;
@@ -68,6 +69,9 @@ export function Loading({ label = "Loading" }: { label?: string }) {
 export function RouteError() {
   const err = useRouteError();
   const notFound = isRouteErrorResponse(err) && err.status === 404;
+  // a lazy chunk of an older build (the tab outlived a deploy): one reload fetches the new build
+  const stale = isChunkLoadError(err);
+  if (stale && reloadForStaleBuild()) return null;
   return (
     <div {...VOLT} style={voltGround}>
       <main className="col stack center-fill" style={{ textAlign: "center", padding: "0 16px" }}>
@@ -75,7 +79,8 @@ export function RouteError() {
         <h1 className="t-title" style={{ color: "var(--k-ink)", fontFamily: "var(--k-sans)" }}>{notFound ? "This page is not here" : "Something went wrong on this screen"}</h1>
         <p style={{ color: "var(--k-ink-2)" }}>{notFound ? "The link may be old." : "Your child's work is saved on our side. Try again, or go back home."}</p>
         <div className="row" style={{ justifyContent: "center" }}>
-          <ButtonLink to="/" variant="secondary">Home</ButtonLink>
+          {/* a full page load, never an in-app link: in-app, Home asked for the same missing chunk again */}
+          <ButtonLink to="/" variant="secondary" reloadDocument>Home</ButtonLink>
           <button type="button" className="btn btn-primary" onClick={() => location.reload()}>Try again</button>
         </div>
       </main>

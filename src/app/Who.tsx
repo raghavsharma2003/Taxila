@@ -44,7 +44,8 @@ export default function Who() {
   useEffect(() => {
     document.title = "Who is learning? · Taxila";
     loadMe().then((me) => {
-      if (!me) return nav("/start/lang", { replace: true });
+      // r5 QA D18: signed out on a phone that has had a learner here (a remembered last child) → Sign in, not a new account
+      if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/lang", { replace: true });
       if (!me.children.length) return nav("/start/child", { replace: true });
       setKids(me.children);
       // After a lesson finish the next tap must be a deliberate pick (§2.5.1): ?fresh=1 skips the pre-select.

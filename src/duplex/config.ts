@@ -277,6 +277,17 @@ export const OVERLAP = {
  */
 /** D5: the shortest voiced turn with no words that still ends on the backstop (a lone "haan" is ~250 ms; D4 keeps 300). */
 export const D5_UNHEARD_MIN_VOICED_MS = 150;
+/** Round 5 (D5): a closed answer with words but no readable value ends at this silence once Voice Live's final is in (else 1.5 s). */
+export const D5_CLOSED_NO_VALUE_BACKSTOP_MS = 900;
+/**
+ * Round 5 EOT step 1 (D5): a closed answer whose value Voice Live's covering final already carries commits at that final —
+ * the ear waited its own semantic-VAD silence (≈ 710 ms after the child's end before its final) — floored here, and never
+ * over a hold stretch (word search, filler, repair, a held floor) or the child's own within-turn pace. Replay-measured
+ * (evals/duplex-2026-10/arms-d5.mjs --replay) before it ships: self-corrections cut, values changed.
+ */
+export const D5_CLOSED_AT_FINAL_MS = 600;
+/** Round 5 EOT step 2 (D5): an empty / failed final on a closed question → the re-ask this long after that final (was 900 ms). */
+export const D5_EMPTY_FINAL_REASK_MS = 300;
 export const FIRST_TEXT_P90: Record<string, Ms> = { live_transcribe: 2048, mai_stream: 3200, nemotron: 800, voicelive: 2000, sim: 2000, other: 2500 };
 
 /** Fail patient (G10): no engine decision for this long → stage A rules; a stage A fault → today's silence policy. */

@@ -1,0 +1,699 @@
+{
+ "reader": "audit agent (one rater), 2026-10-15",
+ "rule": "mine = agree | borderline (counted as agree) | disagree, against the rubric in rubric.mjs; a disagree on an agreed-shallow item keeps it deep (apply false)",
+ "sets": {
+  "sample-shallow-60": "spot.mjs stratified round-robin over kinds, drawn from the items finished at 10:52 UTC (a hash-random subset of the run)",
+  "sample-deep-30": "same, agreed-deep",
+  "error_spot-shallow-census": "every agreed-shallow error_spot item (25), read after the sample showed 2 of its 3 error_spot items wrong"
+ },
+ "reads": [
+  {
+   "itemId": "c2-hindi-ch24-t01-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch04-t01-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-hindi-ch06-t01-i04",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-hindi-ch22-t01-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c7-science-ch10-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "chlorophyll masked by pigments: the leaf-colour twist needs the idea carried over (deep near_transfer)"
+  },
+  {
+   "itemId": "c4-english-ch02-t01-i14",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-maths-ch07-t02-i10",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-science-ch04-t01-i10",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a shown claim with a planted error; the fix is a counterexample (mercury, sodium): the error_spot move is there"
+  },
+  {
+   "itemId": "c7-science-ch02-t01-i04",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-english-ch02-t01-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-english-ch08-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch05-t02-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch08-t02-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c9-science-ch12-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch16-t01-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a shown sweeping claim to refute with examples: the error_spot move is there"
+  },
+  {
+   "itemId": "c9-maths-ch09-t02-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c8-english-ch02-t01-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c2-hindi-ch06-t01-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c8-hindi-ch01-t01-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-hindi-ch15-t01-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch05-t01-i06",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-maths-ch07-t02-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c3-english-ch06-t01-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-hindi-ch11-t01-rl-h2",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch12-t01-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-evs-ch09-t01-rl-h3",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch14-t01-i12",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch01-t03-i06",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-science-ch03-t03-i06",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch16-t01-rl-h3",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c3-english-ch06-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch05-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "osmosis: too concentrated a solution pulls water out of cells; a mechanism, not a fact"
+  },
+  {
+   "itemId": "c5-hindi-ch10-t01-i14",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c5-english-ch05-t01-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-english-ch05-t01-i06",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch04-t01-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-hindi-ch06-t01-rl-h2",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch01-t03-i12",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c4-english-ch02-t01-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch07-t03-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch10-t01-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch12-t01-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch08-t02-i10",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-science-ch05-t02-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch01-t03-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-science-ch05-t02-i05",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch03-t01-rl-h1",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-science-ch02-t01-i07",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c5-evs-ch03-t02-rl-o2",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c8-maths-ch08-t01-i10",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-science-ch02-t01-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c5-maths-ch11-t03-i14",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c7-science-ch04-t03-rl-h2",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch12-t01-rl-h3",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-maths-ch12-t02-i11",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch10-t02-i09",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-english-ch06-t01-i10",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch10-t02-i03",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch18-t01-i08",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-english-ch06-t01-i08",
+   "set": "sample-shallow-60",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-english-ch08-t01-i08",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c8-sst-ch13-t01-i07",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-evs-ch01-t02-i05",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c8-english-ch11-t01-i06",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-evs-ch01-t02-i07",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch02-t02-i10",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch04-t03-i11",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch04-t01-i07",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-evs-ch01-t02-i04",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "disagree",
+   "note": "asking for water by gesture: any child says it without the lesson (shallow)"
+  },
+  {
+   "itemId": "c6-maths-ch08-t01-i10",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c4-evs-ch01-t02-i06",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c8-sst-ch08-t01-i10",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-maths-ch07-t02-i11",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c6-science-ch04-t02-i10",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch02-t02-i12",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch13-t02-i02",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-science-ch10-t01-i08",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c8-sst-ch13-t01-i03",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-maths-ch05-t02-rl-o2",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "disagree",
+   "note": "sieve over 30-40 on the same chart: the procedure itself, no new case (shallow)"
+  },
+  {
+   "itemId": "c6-science-ch04-t02-i09",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch08-t04-i10",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-maths-ch06-t02-i06",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch05-t01-i11",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-sst-ch05-t01-i13",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-maths-ch06-t02-i03",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "borderline"
+  },
+  {
+   "itemId": "c9-maths-ch09-t02-i09",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c9-science-ch12-t01-i08",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch08-t03-i11",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-maths-ch07-t02-i09",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c6-science-ch04-t02-i04",
+   "set": "sample-deep-30",
+   "models": "deep",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-english-ch03-t01-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-english-ch04-t01-i09",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch03-t01-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch08-t02-i08",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch12-t01-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c1-maths-ch12-t02-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-english-ch09-t01-i06",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-maths-ch06-t02-i09",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c2-maths-ch09-t02-i09",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim refuted from a fact (monsoon onset)"
+  },
+  {
+   "itemId": "c2-maths-ch10-t02-i09",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c3-evs-ch04-t02-i11",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim refuted from a fact (grass is a plant)"
+  },
+  {
+   "itemId": "c4-evs-ch02-t01-i10",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated half-truth to complete (what a bank does)"
+  },
+  {
+   "itemId": "c4-maths-ch03-t02-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c5-evs-ch05-t02-i11",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated mix-up to untangle (national animal vs emblem)"
+  },
+  {
+   "itemId": "c5-evs-ch08-t01-i12",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim refuted from facts (fibre sources)"
+  },
+  {
+   "itemId": "c6-maths-ch04-t03-i07",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-maths-ch10-t01-i14",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "agree"
+  },
+  {
+   "itemId": "c7-science-ch04-t03-i10",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim refuted by examples (uses of non-metals)"
+  },
+  {
+   "itemId": "c7-sst-ch15-t01-i08",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim with two errors to fix (Pallavas, Tamil Nadu)"
+  },
+  {
+   "itemId": "c8-sst-ch14-t01-i08",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a stated false claim refuted (urban local bodies)"
+  },
+  {
+   "itemId": "c9-maths-ch05-t03-i08",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a claim refuted by a theorem (angles in the same segment)"
+  },
+  {
+   "itemId": "c9-science-ch03-t01-i08",
+   "set": "error_spot-shallow-census",
+   "models": "shallow",
+   "mine": "disagree",
+   "note": "a swapped claim to correct (xylem / phloem)"
+  }
+ ]
+}

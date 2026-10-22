@@ -56,6 +56,8 @@ export interface DeskContext {
   timing: number;
   variant: "lesson" | "practice" | "doubt";
   topicId?: string;
+  /** r5 QA D24: the open lesson this screen rejoins (the URL's /lesson/<id>); absent = a new lesson. */
+  resumeLessonId?: string;
   firstText?: string;
   /** Start as typed (practice / quiet mode / ?mode=text). */
   textOnly: boolean;
@@ -194,6 +196,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const [retryAt, setRetryAt] = useState<number | null>(null);
   const [audioSinceCommit, setAudioSinceCommit] = useState(false);
   const troubleShown = useRef<StripId | null>(null);
+  /** The dock's tap-to-talk state as of the last render (read by the link-event handler below). */
+  const tapToTalkNow = useRef(false);
 
   useEffect(() => {
     return runtime.events.on((e) => {
@@ -201,8 +205,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         const f = factOfLinkError(e.code);
         if (f === "tts") setFacts((x) => ({ ...x, tts: true }));
         else if (f === "stt_down") setFacts((x) => ({ ...x, sttDown: true }));
-        else if (f === "ptt") setFacts((x) => ({ ...x, ptt: true }));
+        // r5 QA D15: the note announces a fall-back FROM hands-free; a dock already on tap-to-talk has nothing to announce
+        else if (f === "ptt") { if (!tapToTalkNow.current) setFacts((x) => ({ ...x, ptt: true })); }
         else if (f === "no_mic") setFacts((x) => ({ ...x, noMic: true }));
+      } else if (e.type === "child_speech_start") {
+        // the child has just used the talk button: the "tap the mic, then Done" note has done its job
+        setFacts((x) => (x.ptt ? { ...x, ptt: false } : x));
       } else if (e.type === "teacher_audio_start") {
         setFacts((x) => (x.tts ? { ...x, tts: false } : x));
         setAudioSinceCommit(true);
@@ -335,6 +343,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // drop Type for "tap_in_tray" (W1-A item 4; flows G2: an unknown engine left an empty tray and no way to answer).
   const liveModule = modulesMounted.length > 0 && !moduleFailed;
   const chips = ui.chips ?? [];
+  // r5 QA pass 12 (main's review): a safeguard turn or the check-in (safe:* chips) offers no lesson help (Hint, Help).
+  const safeguardTurn = state.move?.kind === "safeguard" || chips.some((c) => /^safe:/.test(String(c.id ?? ""))) || (ui as { beat?: { type?: string } }).beat?.type === "safeguard";
   const wb = ui.whiteboard?.value ? ui.whiteboard : null;
   // The voice the child can use right now (no mic, or speech recognition down → tap and type only).
   const spoken = !ctx.textOnly && bs?.transport !== "typed" && !facts.noMic;
@@ -380,6 +390,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const openMic = ctx.openMic || !!bs?.duplexLive;
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
   const tapToTalk = spoken && (state.phase === "live" ? pttOn || !openMic : !openMic);
+  tapToTalkNow.current = tapToTalk;
   const paused = sheet !== null;
   const ptt = useTapToTalk({
     enabled: state.phase === "live" && tapToTalk && !paused,
@@ -532,13 +543,13 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     prewarmWhenIdle(enginesForTopic(ctx.topicId));
     setGate("starting");
     try {
-      await runtime.start(ctx.cid, m, ctx.topicId);
+      await runtime.start(ctx.cid, m, ctx.topicId, ctx.resumeLessonId);
     } catch {
       /* the failure lands in state.failure → T8 / T9 */
     } finally {
       setGate(null);
     }
-  }, [runtime, ctx.cid, ctx.textOnly, ctx.topicId]);
+  }, [runtime, ctx.cid, ctx.textOnly, ctx.topicId, ctx.resumeLessonId]);
   useEffect(() => {
     if (startedOnce.current || state.phase !== "idle") return;
     startedOnce.current = true;
@@ -549,6 +560,13 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     if (active || ctx.textOnly) void start();
     else setGate("locked");
   }, [state.phase, start, ctx.textOnly]);
+  // r5 QA D24: once the lesson has an id, the address bar names it (replaceState, not a router navigation: the route is
+  // keyed by its id and would remount), so a reload or a restored tab rejoins THIS lesson
+  useEffect(() => {
+    if (ctx.variant !== "lesson" || !state.lessonId || typeof window === "undefined") return;
+    const want = window.location.pathname.replace(/\/lesson\/[^/]+$/, `/lesson/${state.lessonId}`);
+    if (want !== window.location.pathname) window.history.replaceState(window.history.state, "", want + window.location.search);
+  }, [ctx.variant, state.lessonId]);
   const sentFirst = useRef(false);
   useEffect(() => {
     if (state.phase === "live" && ctx.firstText && !sentFirst.current) {
@@ -650,7 +668,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     ? {
         kind: trayKind,
         tiles: chips,
-        board: trayKind === "board" && wb ? {
+        // r5 QA pass 12: a text board beside choices (the safeguarding check-in: "Childline 1098 · Tele-MANAS 14416" with
+        // Carry on / Stop for today) lost its line, because the tiles take the tray and a board shows only in teach /
+        // practice. The tiles tray now carries the text line above the choices (AnswerTray). Main safety review (14.3): only
+        // beside the safeguarding choices (safe:continue / safe:stop), so no other text board lands above a practice item's tiles.
+        board: (trayKind === "board" || (trayKind === "tiles" && wb?.kind === "text" && chips.some((c) => /^safe:/.test(String(c.id ?? ""))))) && wb ? {
           lines: [{ text: wb.value, kind: wb.kind }],
           chalked: beats?.chalk || floor === "speaking" ? item.answer?.text ?? null : null,
           mark: item.answer?.verdict === "correct" ? "tick" : item.answer?.verdict === "not_yet" ? "underline" : null,
@@ -706,7 +728,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     thinkingSince: !young && commitAt !== null && (floor === "thinking" || floor === "heard") ? commitAt : null,
     thinkingLabel: !!beats?.thinkingLabel || (floor === "thinking" && commitAt === null),
     mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk },
-    showHelp: young && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
+    showHelp: young && !safeguardTurn && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
+    safeguard: safeguardTurn,
     // one Send on screen (flows G15): while the NumberPad (its own Send) is open in the tray, the type row is closed
     typing: (typing || (!spoken && !young)) && !(tray && geometryOut === "work" && tray.kind === "pad"),
     captionsOn,
@@ -716,6 +739,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     lights: ended && state.phase === "ended" ? "up" : "down",
     layout: finalLayout,
     helpBackVisible,
+    helpLead: state.helpLead ?? "grownup",
     reducedMotion: ctx.reducedMotion,
     faceForm: ctx.faceForm,
     lampBreath: floor === "your_turn" ? (young && yt.glowStrong ? 2 : 1) : 0,

@@ -277,7 +277,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
       {m.sheet === "end" && <EndConfirm young={young} onKeep={a.cancelEnd} onEnd={a.endLesson} />}
       {m.sheet === "hint" && <HintSheet onPick={a.hintPick} onClose={a.resume} />}
       {(m.sheet === "help" || m.sheet === "grownup") && (
-        <HelpSheet teacherId={m.teacher.id} band={m.band} childName={m.childName} backVisible={m.helpBackVisible} grownUp={m.sheet === "grownup"}
+        <HelpSheet teacherId={m.teacher.id} band={m.band} childName={m.childName} backVisible={m.helpBackVisible} lead={m.helpLead ?? "grownup"} grownUp={m.sheet === "grownup"}
           meters={media.meters} faceForm={m.faceForm} onGrownUp={a.openGrownUp} onGrownUpBack={a.closeGrownUp} onGrownUpHere={a.grownUpHere} onBack={a.closeHelp} />
       )}
       {liveRegions}

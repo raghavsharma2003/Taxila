@@ -1,0 +1,41 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r1431-completion-block-safeguards",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Safeguards from a content-filter block of HER reply, TEST trace, last 10 days: 41 turns where the reply guard caught content_filter and failed closed (no _context / _nonharm). Re-probing each turn's child words (say.js probeWords: the last 4 child turns + this one, with 14.3's 'teen' → 3 copy) under the reply probe brief on southindia: 38 clear, 3 harm, 0 unknown. All 38 clear ones read as ordinary lesson talk (sums with 'teen', graphite / nitrogen / chips packets, 'thak gayi', roti dough, Bishnoi, the British and prices); none is a disclosure. The 3 harm ones are benign too ('बिना ऑक्सीजन के कैसे जीएंगे … हाफने लगती हूँ', 'I like making rotis with my नानी. आटा everywhere.', a 'टिल्लू जी' song + 'मुझे भूख लगी है') and stay fail-closed under the rule. Sim lab 14.3 run (a) on 9a30285 (18 lessons): p11 'teen' 0/6 and p28 'thak gayi' 0/6 safeguards; p16 1/6 (TEST 955a17b7 t12: her reply blocked on completion, the classifier had read the answer correct, the turn failed closed; then 'Haan haan, main theek hoon! …' (> 40 tokens, a 'par' after the fine) did not release, so helplines held 2 more turns).",
+   "n": 41,
+   "method": "read-only TEST trace (director.turn reasons, srv.req childText); say.js childWordsTrip under TEST routing"
+  },
+  {
+   "id": "dc-r1431-completion-block-probe",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "say.js: when HER reply is blocked on completion (HTTP 200 content filter) and the one fresh reply is blocked too (or fails), the child's own words are probed (childWordsTrip on probeWords, the 14.2 prompt-side rule). Clear: a neutral fallback line, guard code content_filter_output, never the helplines and no safeguard episode. Harm or a probe that cannot run: fail CLOSED exactly as before. Supersedes 14.2's 'the completion block is unchanged: no probe' (tests/r5-filter-categories updated, its reason stated there). The predicate and the classifier's distress read still run on every turn's words.",
+   "reversal": "a disclosure whose only signal was the filter blocking HER reply while the child's words probed clear, the predicate missed it and the classifier read no distress"
+  },
+  {
+   "id": "open-r1431-child-words-filter-fp",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Three benign child lines on TEST trip Azure's filter on their own (Devanagari: breathing oxygen and panting, rotis with nani, a 'Tillu ji' song plus hunger), so the reply side still fails closed to the helpline script on them. The classifier path adds a second step (distressAcross: a clean distress read on any deployment decides, none able to read fails closed). Measure the same second step on the reply side over the red-team sets and these lines before adopting; until then they fail closed."
+  },
+  {
+   "id": "open-r1431-ack-trace-gap",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "Stream 3: release 14.3 records nothing about the continuer's decisions (no reason, no kind; only srv.req / srv.res of /api/lesson/turn-ack) and the device records nothing it played. So the owner cohort's continuer cannot be checked on production for a sound on a safety / leaving / relational / secrecy turn. Fix in 14.3.1: trace-only ack.decision (server, codes) and ack.outcome (device) rows plus read-only cohort queries joined to real lessons; until it is live the only evidence is the sim lab's out-of-sample set (0/9 safety, 0/18 leaving, 0 relational)."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r1431-completion-block-probe", "rel": "measured_by", "dst": "ms-r1431-completion-block-safeguards" },
+  { "src": "dc-r1431-completion-block-probe", "rel": "constrains", "dst": "dc-r142-classify-filter-context" },
+  { "src": "open-r1431-child-words-filter-fp", "rel": "caused_by", "dst": "ms-r1431-completion-block-safeguards" },
+  { "src": "open-r1431-ack-trace-gap", "rel": "constrains", "dst": "dc-r143-continuer-owner-cohort" }
+ ],
+ "md": {
+  "measurements": "## ms-r1431-completion-block-safeguards (2026-10-15)\n\n- On TEST over 10 days, 41 turns failed closed because Azure's filter blocked HER reply.\n- Re-probing the child's own words: 38 clear, 3 trip the filter. All 41 are ordinary lesson talk (sums, graphite and nitrogen, tired, roti dough).\n- The sim lab's 14.3 run: 'teen' 0/6 and 'thak gayi' 0/6 safeguards, p16 1/6 (her reply about chips packets was blocked).",
+  "decisions": "## dc-r1431-completion-block-probe (2026-10-15)\n\n- **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.\n- **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.\n- **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear."
+ }
+}

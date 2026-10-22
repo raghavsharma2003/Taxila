@@ -138,7 +138,8 @@ export function ChildStep() {
               type="password" autoComplete="off" value={password} onChange={(e) => setPassword(e.target.value)} />}
           </section>
         )}
-        <p className="t-note">{`${rec.name} starts with ${cl <= 2 ? 20 : cl <= 5 ? 30 : 45} minutes a day, 06:30 to 21:30. Change it any time in the Parent corner.`}</p>
+        {/* round 5: no class-time window by default, so no hours are promised here (limits live in the Parent corner) */}
+        <p className="t-note">{`Lessons open any time. You can set a daily limit in the Parent corner.`}</p>
         <ErrorNote>{err}</ErrorNote>
         <div className="onb-go">
           {!ready && <span className="t-note" id="child-why">{why}</span>}

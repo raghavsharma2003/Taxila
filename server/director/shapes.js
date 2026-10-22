@@ -230,7 +230,7 @@ export const topicAsked = ({ subject, teaching = false }) => join(
   `they asked to talk about ${subject}: say something real about ${subject} first (one or two lines, never 'later')`,
   teaching ? `then explain the same idea with a ${subject} example; end with one small question about it` : `then use ${subject} as the setting for the same question`,
 );
-const LANG_NAME = { hindi: "simple Hindi (Roman script when written)", english: "simple English", hinglish: "Hinglish" };
+const LANG_NAME = { hindi: "simple Hindi (Roman script when written; idea-words in Hindi, English only as a gloss)", english: "simple English", hinglish: "Hinglish" };
 /** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
 export const languageAsked = ({ lang, teaching = false }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
@@ -251,7 +251,7 @@ const MOVING_CLAUSE = "they asked to see it moving: name the movement in your fi
 const ASK_TRUTH = {
   game: {
     engine: "they asked for a game: no game is ready for this yet, say so honestly in a few words; the activity already on the screen is how to try it now (never call it a game)",
-    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things",
+    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things; never call what you try together a game",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
@@ -266,6 +266,17 @@ export function askTruth(shape, visual, onScreen) {
   if (visual === "animation" || visual === "simulation") return s.replace(MOVING_CLAUSE, ASK_TRUTH.moving[k]);
   return s;
 }
+// round 5 (stream 2, the board): a thing the child named is being drawn on the board for this ask: say what it shows, in
+// words, and never point at the screen before it is there (the after-board check unpoints a line that does)
+// (round 5, owner-5 on 14.2 a978ae27: "never send their eyes to the screen" left "picture dikhao" with no pointing word, V2.no_reference;
+// the asked board is drawn while she speaks, and turn.js unpoints her line when none answers the ask)
+export const VISUAL_DRAWING = "the board draws what they asked for while you speak: send their eyes to it once, in a few words, then say in plain words what it shows (its parts, its numbers); never say it is already finished, never that you cannot draw, never ask them to draw it";
+/** The same, for what they named: the thing, or the numbers on a number line (they asked for THOSE, not the question's). */
+export const visualDrawing = ({ subject, said, show } = {}) => join(
+  show === "number_line" && said?.length ? `they asked to see ${said.map((x) => String(x).replace(/[^0-9./+-]/g, "")).filter(Boolean).join(", ")} on a number line: say where ${said.length > 1 ? "they sit" : "it sits"} (between which whole numbers, how many equal parts)`
+    : subject ? `they asked to see ${clean(subject)}: say in plain words what it looks like` : "",
+  VISUAL_DRAWING,
+);
 export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
@@ -304,8 +315,12 @@ export const safeguard = () => join(
   "share Childline 1098 (free, 24x7, for children) and Tele-MANAS 14416",
   "never promise secrecy; stay with them",
 );
+export const carriedCheckIn = () => "a fresh start soon after a hard moment: greet them warmly and check calmly how they are today; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; they can start slowly or stop for today, either is fine; never name or hint at anything said before; no lesson content yet";
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
+/** A further model read of distress inside the same model-opened episode (state.js decide): hold, never the opening again. */
+export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
 export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";
 
 export const teachback = ({ protege }) => join(
   `${protege.name} (${protege.what}) wants to learn today's idea`,
@@ -374,6 +389,12 @@ export const breakYes = () => "they asked for a short break: agree warmly; the l
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 // r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
 export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";
+// round 5: a claim of understanding gets a light check, warm and quick, never "did you really understand?"
+export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
+// round 5 (owner 2026-10-14): silence is never a cue to move on
+export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
+export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
@@ -449,6 +470,23 @@ export const visualUnavailable = ({ subject }) => join(
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
+/**
+ * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
+ * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
+ */
+export const drawAsked = ({ subject, show, photo }) => join(
+  photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
+    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead`
+    : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
+  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
+  "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
+);
+/** round 5 (owner decision 14.2): a real picture of what they asked for is being made (studio/picture.js) or cannot come now;
+ *  it is never said to be there before it mounts. */
+export const pictureNote = ({ subject, photo }) => photo === "coming"
+  ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly, never that it is there`
+  : photo === "failed" ? `the picture of ${clean(subject) || "it"} you said was coming could not come: say so in a few words`
+  : `a photo of ${clean(subject) || "it"} cannot come right now: say so in a few plain words, then give it in words`;
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 export const switchOffer = ({ title }) => join(
   `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,

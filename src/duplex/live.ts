@@ -50,6 +50,8 @@ export interface DuplexPort {
   fallback(reason: DuplexFallbackReason): void;
   /** Floor phase changes, for the status word and the acceptance probes. */
   state?(s: DuplexStatus): void;
+  /** Round 5, half-duplex D4: true = the mic must send silence now (her voice is in the room), false = listen again. */
+  micGate?(gated: boolean): void;
   /**
    * Round 3: the EAGER END OF TURN (EngineTick prepare.eager): "start" = the covered words read as a finished turn: the
    * turn's model work may start on exactly `text` now (the commit, if it comes, carries the same words); "cancel" = the
@@ -111,6 +113,10 @@ export interface DuplexStats {
   dropped: number;
   safety: number;
   errors: number;
+  /** Round 5: engine turns held because a turn was in flight or a tap was recent (one turn at a time). */
+  held?: number;
+  /** Round 5 half-duplex: micro-commit probes skipped (the transcriber held nothing: no commit_empty). */
+  probesSkipped?: number;
 }
 
 /** The Director's turn context as the link sees it (turnModel.ts TurnContext + her line). Never the answer key. */
@@ -146,6 +152,14 @@ export interface DuplexLiveOptions {
    * D5_PREDUCK_RELEASE_MS if Voice Live never does. Off by default (measured in evals/duplex-2026-10/arms-d5.mjs).
    */
   preDuck?: boolean;
+  /** Round 5: the half-duplex tail (ms) after her line or audible output; default HALF_DUPLEX_TAIL_MS (CascadeDuplex: adaptive). */
+  halfTailMs?: number;
+  /** D5 (review #6): her echo tail (ms) after her line or ack; default D5_HER_TAIL_MS (CascadeDuplex: + the device's outputLatency). */
+  herTailMs?: number;
+  /** Evals only: override the pre-duck constants (D5_PREDUCK_MARGIN_DB / _MS / _PITCH_ST) to tune them offline. */
+  preDuckTune?: { marginDb?: number; ms?: number; pitchSt?: number };
+  /** D5: Voice Live's VAD silence (ms) — its audio_end_ms lands this much (+ ~90 ms) after the child's true end. */
+  serverVadMs?: number;
   /** The STT accepts client commits mid-stream (live_transcribe does: M-D2, n=58). */
   supportsCommit?: boolean;
   /** Wrap the host's emit (the face puppet: `withPuppet` from src/face-puppet/duplexBridge.ts). */
@@ -170,7 +184,11 @@ export interface DuplexLiveOptions {
 export type EngineHostSemantic = NonNullable<ConstructorParameters<typeof EngineHost>[0]["semantic"]>;
 
 const MS_PER_CHAR = 70;
-/** D5: her echo tail after her line ends (the room rings, the phone's output buffer drains): still gated. */
+/** Round 5: no engine turn within this long of a tap or typed answer (the owner's "Homework" chip race), and none while it is in flight. */
+export const TAP_GUARD_MS = 3000;
+/** Round 5: a turn whose reply has not started this long after it went out no longer holds the floor (a lost reply). */
+export const IN_FLIGHT_MAX_MS = 15000;
+/** D5: her echo tail after her line ends (the room rings): still gated. The device's output buffer adds outputLatency (herTailMs). */
 export const D5_HER_TAIL_MS = 300;
 /** Release 14, D4 half-duplex: her echo tail (the phone's output buffer plus the WebRTC uplink), still gated. */
 export const HALF_DUPLEX_TAIL_MS = 600;
@@ -179,6 +197,8 @@ export const HALF_DUPLEX_TAIL_MS = 600;
  * after a tap or typed answer no engine SPEAK commits until her reply to it starts, or this long if it never does.
  */
 export const SCREEN_REPLY_HOLD_MS = 15000;
+/** Round 5 half-duplex: her output this loud (dBFS at the player) counts as audible (the mic gate holds). */
+export const HALF_AUDIBLE_DB = -60;
 /** D5: device frames kept for the delayed replay, and the confirm delay assumed when Voice Live gives no audio time. */
 export const D5_RING_MS = 2000;
 export const D5_DEFAULT_SHIFT_MS = 600;
@@ -189,12 +209,18 @@ export const D5_DEFAULT_SHIFT_MS = 600;
  */
 export const D5_VAD_START_PAD_MS = 200;
 export const D5_VAD_END_PAD_MS = 590;
-/** D5: a burst Voice Live opened no item for this long after it ended is unheard (its speech_started lands ~0.6 s in). */
-export const D5_UNHEARD_AFTER_MS = 1000;
 /** D5 pre-duck: the device burst must stand this far above her predicted echo, for this long, with a pitch. */
-export const D5_PREDUCK_MARGIN_DB = 6;
-export const D5_PREDUCK_MS = 40;
-export const D5_PREDUCK_LEVEL = 0.2;
+/**
+ * Round 5, tuned offline (evals/duplex-2026-10/preduck-tune.mjs, 102 of her lines x 3 acoustic variants, IN-SAMPLE): margin
+ * 6 dB / 40 ms pre-ducked her on her own echo on 6/102 owner-phone lines; 12 dB / 80 ms gives 0/102 owner, 0/102 phone,
+ * 1/102 clean, with 11/12 barge-ins still pre-ducked within 500 ms of the child's onset on each.
+ */
+export const D5_PREDUCK_MARGIN_DB = 12;
+export const D5_PREDUCK_MS = 80;
+/** Round 5: a pre-duck frame's pitch must be this far (semitones) from her own output's pitch on the same hop. */
+export const D5_PREDUCK_PITCH_ST = 1.5;
+/** Round 5: the pre-duck goes straight to the hush level (−26 dB): her stop <= 500 ms (BRIEF.md). */
+export const D5_PREDUCK_LEVEL = 0.05;
 /** D5 pre-duck: Voice Live has not confirmed the burst this long after the duck → her gain comes back. */
 export const D5_PREDUCK_RELEASE_MS = 900;
 const EXPLAINING_BEATS = new Set(["teachback", "explain", "worked_example", "contrast", "explore_question", "reflect"]);
@@ -288,14 +314,27 @@ export class TranscriptionTap {
    * at that frame); unset (D4), the best-case-latency estimate below.
    */
   origin: number | null = null;
+  /** D5 review #5: the stream's own map (D5Stream.toClient: anchored across dropped frames); preferred over origin. */
+  clock: ((audioMs: number) => number | null) | null = null;
+  /**
+   * D5 (review #6): Voice Live's failed transcription of an item it opened is that item's EMPTY final over its audio — the
+   * ear covered the burst and found no words, the only empty turn D5 may post (D4: the engine handles failures itself).
+   */
+  failedAsEmpty = false;
   private readonly started = new Map<string, number>();
   private readonly stopped = new Map<string, number>();
   private toClient(audioMs: unknown, arrival: number): number | undefined {
     if (typeof audioMs !== "number" || !Number.isFinite(audioMs)) return undefined;
-    if (this.origin !== null) return audioMs + this.origin;
+    const c = this.fromAudio(audioMs);
+    if (c !== null) return c;
     const o = arrival - audioMs;
     this.offset = this.offset === null ? o : Math.min(this.offset, o);
     return audioMs + this.offset;
+  }
+  /** An audio time on the stream's clock → client ms when the stream's clock is known (D5), else null. */
+  fromAudio(audioMs: number): number | null {
+    if (this.clock) { try { const c = this.clock(audioMs); if (c !== null && Number.isFinite(c)) return c; } catch { /* fall back */ } }
+    return this.origin !== null ? audioMs + this.origin : null;
   }
   map(raw: unknown, now: number): HostSttEvent | null {
     const e = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
@@ -318,8 +357,10 @@ export class TranscriptionTap {
         if (s !== undefined) ev.audioStartMs = s;
         return ev;
       }
+      case "conversation.item.input_audio_transcription.failed":
       case "conversation.item.input_audio_transcription.completed": {
         if (!itemId) return null;
+        if (e.type === "conversation.item.input_audio_transcription.failed" && !this.failedAsEmpty) return null;
         const ev: SttEvent = { type: "final", itemId, text: typeof e.transcript === "string" ? e.transcript : "", t: now };
         const s = this.started.get(itemId), x = this.stopped.get(itemId);
         if (s !== undefined) ev.audioStartMs = s;
@@ -366,6 +407,13 @@ export class DuplexLive {
   private lastItemId: string | undefined;
   private phase: FloorPhase = "idle";
   private floor: Floor | null = null;
+  /** Round 5 half-duplex: gated until this time; the items that began while gated (dropped whole); the open real item. */
+  private halfUntil = -Infinity;
+  private halfGated = false;
+  private openItem: string | null = null;
+  /** Round 5 half-duplex: when the gate last opened, and when the transcriber last committed its buffer (client clock). */
+  private halfOpenedAt = -Infinity;
+  private lastServerCommitAt = -Infinity;
   /** D5: the Voice Live item whose speech is open (its speech_stopped closes the replay). */
   private serverSpeechItem: string | null = null;
   /**
@@ -381,12 +429,13 @@ export class DuplexLive {
   /** D5: the room's level when nobody speaks (10th percentile of ungated frames), fed while gated. */
   private quietDb: number[] = [];
   private preDuckRun = 0;
+  private herF0s: Array<[number, number]> = [];
   private preDuckF0 = false;
   private preDuckAt: number | null = null;
   /** The engine's own last duck level (a pre-duck release never undoes it). */
   private hostDuck = 1;
   /** D5 counters (content-blind): gated frames, pre-ducks, releases, re-asks. */
-  readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0 };
+  readonly d5 = { gatedFrames: 0, serverStarts: 0, preDucks: 0, preDuckReleases: 0, reasks: 0, ackEchoItems: 0 };
   /** Release 14 half-duplex: transcription items that started over her line (her echo), dropped whole. */
   private echoItems = new Set<string>();
   /**
@@ -395,6 +444,9 @@ export class DuplexLive {
    * and dropped her reply. The clip is now a gated window like her line (not her reply: no context, no hold release).
    */
   private ackSounding = false;
+  /** D5 review #4/#8: the ack clip's window on the client clock (its echo tail included once it ended). */
+  private ackFrom = -Infinity;
+  private ackUntil = -Infinity;
   /** Release 14: a tap or typed answer is waiting for her reply until this time (no engine SPEAK races it). */
   private screenHoldUntil = -Infinity;
   /** Release 14 counters (content-blind). */
@@ -403,11 +455,14 @@ export class DuplexLive {
   constructor(o: DuplexLiveOptions) {
     this.o = o;
     this.mode = o.mode ?? "on";
+    this.tap.failedAsEmpty = o.vadGate === "server";
     this.now = o.now ?? (() => Date.now());
     const emit = (c: HostCommand) => this.onCommand(c);
     this.host = new EngineHost({
       session: { lessonId: o.lessonId, band: o.band ?? "B3", startedAt: this.now(), flags: { shadow: this.mode === "shadow", semantic: !!o.semantic, trained: false, cutIn: false, audioBackchannel: false, lexicalBackchannel: false } },
       source: o.source ?? "live_transcribe",
+      // D5: the ear removed her echo acoustically; subtracting her words from the text only deletes the child's repeats
+      ...(o.vadGate === "server" ? { echoText: false } : {}),
       supportsCommit: o.supportsCommit ?? true,
       emit: o.wrapEmit ? o.wrapEmit(emit) : emit,
       ...(o.semantic ? { semantic: o.semantic } : {}),
@@ -424,7 +479,7 @@ export class DuplexLive {
     if (this.alive || this.dead) return;
     this.alive = true;
     const si = this.o.setInterval ?? ((fn: () => void, ms: number) => setInterval(fn, ms));
-    this.timer = si(() => this.guard(() => { if (this.o.vadGate === "server") this.checkUnheard(); this.host.timer(this.now()); }), 100);
+    this.timer = si(() => this.guard(() => this.host.timer(this.now())), 100);
     this.guard(() => this.host.context(contextFromUi(this.ui, "", this.o.band), this.now(), { handsOver: true }));
     this.pushState();
   }
@@ -452,7 +507,7 @@ export class DuplexLive {
   // ───────────────────────────── inputs ─────────────────────────────
 
   /** One 20 ms mic frame (linear RMS, f0 Hz or null) and her output level at the speaker (dBFS, null when silent). */
-  frame(t: number, rms: number, f0: number | null, herOutDb: number | null): void {
+  frame(t: number, rms: number, f0: number | null, herOutDb: number | null, herF0: number | null = null): void {
     if (!this.live) return;
     this.stats.frames++;
     const micDb = rms > 0 ? 20 * Math.log10(rms) : -100;
@@ -461,9 +516,21 @@ export class DuplexLive {
     // child talks over her. p1-duplex 2026-10-06 (AMI real speech, headset bleed -10..-22 dB): gating it on "the child is
     // not voicing" never learned a strong echo path, because her own echo above the -30 dB prior read as the child voicing
     if (herSounding) this.echo.push(micDb, herOutDb);
-    if (this.o.vadGate === "server") return this.gatedFrame(t, rms, f0, herOutDb, micDb);
+    if (this.o.vadGate === "server") return this.gatedFrame(t, rms, f0, herOutDb, micDb, herF0);
     if (this.o.halfDuplex) {
-      if (this.herActive(t)) {
+      // release 14 + round 5: while her line plays, or her output is audible, and HALF_DUPLEX_TAIL_MS after either, the mic is
+      // GATED (port.micGate: the link disables the track, so the transcriber never hears her) and the engine reads the
+      // room's quiet level
+      const tail = this.o.halfTailMs ?? HALF_DUPLEX_TAIL_MS;
+      if ((herOutDb !== null && herOutDb > HALF_AUDIBLE_DB) || (!!this.her && !this.herHalted)) this.halfUntil = t + tail;
+      const gated = t < this.halfUntil || this.herActive(t);
+      if (gated !== this.halfGated) {
+        this.halfGated = gated;
+        if (!gated) this.halfOpenedAt = t;
+        if (this.mode === "on") { try { this.o.port.micGate?.(gated); } catch { /* the link's own */ } }
+        vt("duplex.half", { op: gated ? "mic_gate" : "mic_open", reason: gated ? "her_voice_audible" : "her_voice_ended_plus_tail", tailMs: tail });
+      }
+      if (gated) {
         this.half.gatedFrames++;
         const q = this.quietLevelDb();
         this.guard(() => {
@@ -482,7 +549,7 @@ export class DuplexLive {
   }
 
   /** D5: the server-VAD gate (see DuplexLiveOptions.vadGate). */
-  private gatedFrame(t: number, rms: number, f0: number | null, herOutDb: number | null, micDb: number): void {
+  private gatedFrame(t: number, rms: number, f0: number | null, herOutDb: number | null, micDb: number, herF0: number | null = null): void {
     this.ring.push([t, rms, f0]);
     while (this.ring.length && this.ring[0][0] < t - D5_RING_MS) this.ring.shift();
     const herActive = this.herActive(t);
@@ -508,7 +575,7 @@ export class DuplexLive {
       this.replay = null;
     }
     this.d5.gatedFrames++;
-    if (this.o.preDuck) this.preDuckFrame(t, micDb, f0, herOutDb);
+    if (this.o.preDuck) this.preDuckFrame(t, micDb, f0, herOutDb, herF0);
     const q = this.quietLevelDb();
     this.guard(() => {
       if (this.her) this.host.herEvent({ kind: "level", t, db: herOutDb === null ? null : herOutDb + this.echo.db });
@@ -528,7 +595,7 @@ export class DuplexLive {
   }
 
   /** D5 pre-duck: a loud, pitched device burst above her predicted echo ducks her before Voice Live confirms it. */
-  private preDuckFrame(t: number, micDb: number, f0: number | null, herOutDb: number | null): void {
+  private preDuckFrame(t: number, micDb: number, f0: number | null, herOutDb: number | null, herF0: number | null = null): void {
     if (this.preDuckAt !== null) {
       if (t - this.preDuckAt >= D5_PREDUCK_RELEASE_MS) {
         this.preDuckAt = null;
@@ -539,11 +606,24 @@ export class DuplexLive {
       return;
     }
     const echoDb = herOutDb === null ? -100 : herOutDb + this.echo.db;
-    if (micDb >= echoDb + D5_PREDUCK_MARGIN_DB) {
+    // round 5 (the owner's phone: a weak device AEC re-converging at each of her lines lets her echo through 10 dB above the
+    // learned coupling): the level margin alone pre-ducked her on her own echo about once a second. Her echo carries HER
+    // pitch; a child over her does not: a pitched frame counts only when its f0 is D5_PREDUCK_PITCH_ST away from hers.
+    // her pitch over the echo path's delay (the speaker → mic path lags her output by 60-150 ms), octave-tolerant (a pitch
+    // tracker on a band-limited, clipped phone echo often locks to a harmonic)
+    if (herF0) this.herF0s.push([t, herF0]);
+    while (this.herF0s.length && this.herF0s[0][0] < t - 200) this.herF0s.shift();
+    // measured on the owner variant (bake set, echo-only frames: mic f0 vs her f0 within 200 ms): 4,448 frames at 0 st, ~30 at
+    // each of ±12, a few dozen spread over ±9..11; children's frames spread −22..+18 st. So her pitch and its octaves only.
+    const tune = this.o.preDuckTune ?? {};
+    const pitchSt = tune.pitchSt ?? D5_PREDUCK_PITCH_ST;
+    const near = (a: number, b: number): boolean => { const st = 12 * Math.log2(a / b); return [-12, 0, 12].some((k) => Math.abs(st - k) < pitchSt); };
+    const notHerPitch = !!f0 && !this.herF0s.some(([, h]) => near(f0, h));
+    if (micDb >= echoDb + (tune.marginDb ?? D5_PREDUCK_MARGIN_DB) && (f0 === null || notHerPitch)) {
       this.preDuckRun += 20;
-      if (f0) this.preDuckF0 = true;
+      if (notHerPitch) this.preDuckF0 = true;
     } else { this.preDuckRun = 0; this.preDuckF0 = false; }
-    if (this.preDuckRun >= D5_PREDUCK_MS && this.preDuckF0 && this.hostDuck >= 1) {
+    if (this.preDuckRun >= (tune.ms ?? D5_PREDUCK_MS) && this.preDuckF0 && this.hostDuck >= 1) {
       this.preDuckAt = t;
       this.preDuckRun = 0;
       this.preDuckF0 = false;
@@ -581,11 +661,39 @@ export class DuplexLive {
   ackStart(): void {
     if (!this.live) return;
     this.ackSounding = true;
+    this.ackFrom = this.now();
+    this.ackUntil = Infinity;
   }
   ackEnd(): void {
     if (!this.ackSounding) return;
     this.ackSounding = false;
-    this.herTailUntil = Math.max(this.herTailUntil, this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS));
+    this.herTailUntil = Math.max(this.herTailUntil, this.now() + this.tailMs());
+    this.ackUntil = this.now() + this.tailMs();
+  }
+
+  /**
+   * D5 review #4/#8 (release 14's ack gate, extended to D5): an item Voice Live opened on the ack clip's echo (its audio
+   * began inside the clip or its tail, her line silent) is dropped whole — its words never revoke the committed answer
+   * nor become a turn. Over her LINE an item stays (that is how a barge-in reaches the engine on D5).
+   */
+  private d5AckEcho(e: Record<string, unknown>, item: string): boolean {
+    if (e.type === "input_audio_buffer.speech_started") {
+      if (this.her && !this.herHalted) return false;
+      const st = typeof e.audio_start_ms === "number" && Number.isFinite(e.audio_start_ms) ? this.tap.fromAudio(e.audio_start_ms) : null;
+      const aud = st !== null ? st + D5_VAD_START_PAD_MS : null;
+      const now = this.now();
+      const inAck = aud !== null ? aud >= this.ackFrom - 100 && aud < this.ackUntil : this.ackSounding || now < this.ackUntil;
+      if (!inAck) return false;
+      if (!this.echoItems.has(item)) {
+        this.echoItems.add(item);
+        this.d5.ackEchoItems++;
+        vt("d5.decision", { op: "ack_echo_item", itemId: item });
+      }
+      return true;
+    }
+    if (!this.echoItems.has(item)) return false;
+    if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.echoItems.delete(item);
+    return true;
   }
 
   /**
@@ -594,12 +702,14 @@ export class DuplexLive {
    * caption or the Director. CascadeDuplex consumes the same events (isEcho).
    */
   echoOnly(raw: unknown): boolean {
-    if (!this.o.halfDuplex) return false;
+    if (!this.live || !(this.o.halfDuplex || this.o.vadGate === "server")) return false;
     const e = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
     const item = typeof e.item_id === "string" ? e.item_id : null;
     if (!item) return false;
+    if (!this.o.halfDuplex) return this.d5AckEcho(e, item);
     if (e.type === "input_audio_buffer.speech_started") {
-      if (!this.herActive(this.now())) return false;
+      // over her line, while her output is audible, or inside the tail after either (round 5: the mic gate's own window)
+      if (!(this.herActive(this.now()) || this.halfGated || this.now() < this.halfUntil)) { this.openItem = item; return false; }
       if (!this.echoItems.has(item)) {
         this.echoItems.add(item);
         this.half.echoItems++;
@@ -607,9 +717,14 @@ export class DuplexLive {
       }
       return true;
     }
-    if (!this.echoItems.has(item)) return false;
-    if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.echoItems.delete(item);
-    return true;
+    if (this.echoItems.has(item)) {
+      if (e.type === "conversation.item.input_audio_transcription.completed" || e.type === "conversation.item.input_audio_transcription.failed") this.echoItems.delete(item);
+      return true;
+    }
+    // round 5: what the transcriber is holding (a micro-commit goes out only for that: no input_audio_buffer_commit_empty)
+    if (e.type === "input_audio_buffer.committed") this.lastServerCommitAt = this.now();
+    if ((e.type === "conversation.item.input_audio_transcription.completed" || e.type === "input_audio_buffer.committed") && this.openItem === item) this.openItem = null;
+    return false;
   }
 
   /** D5: Voice Live's VAD edges open and close the gate (it hears the child after its echo canceller). */
@@ -622,13 +737,13 @@ export class DuplexLive {
       this.d5.serverStarts++;
       if (this.preDuckAt !== null) this.preDuckAt = null; // confirmed: the engine's own duck / hush / yield take over
       const startAt = ev && "audioStartMs" in ev && typeof ev.audioStartMs === "number" ? ev.audioStartMs + D5_VAD_START_PAD_MS : null;
-      this.serverStartAudioAt = startAt ?? now - D5_DEFAULT_SHIFT_MS;
       const shift = startAt !== null ? Math.max(0, Math.min(D5_RING_MS - 200, now - startAt)) : D5_DEFAULT_SHIFT_MS;
       this.replay = { shift, endAt: null };
       if (this.her && !this.herHalted) vt("d5.decision", { op: "server_speech", reason: "voicelive_vad_over_her", itemId: item, confirmMs: Math.round(shift) });
     } else if (e.type === "input_audio_buffer.speech_stopped") {
       if (!this.serverSpeechItem || !item || item === this.serverSpeechItem) {
-        const endAt = ev && "audioEndMs" in ev && typeof ev.audioEndMs === "number" ? ev.audioEndMs - D5_VAD_END_PAD_MS : now - (this.replay?.shift ?? 0) - D5_VAD_END_PAD_MS;
+        const pad = this.o.serverVadMs !== undefined ? this.o.serverVadMs + D5_VAD_END_PAD_MS - 500 : D5_VAD_END_PAD_MS;
+        const endAt = ev && "audioEndMs" in ev && typeof ev.audioEndMs === "number" ? ev.audioEndMs - pad : now - (this.replay?.shift ?? 0) - pad;
         if (this.replay) this.replay.endAt = endAt;
       }
     }
@@ -636,44 +751,20 @@ export class DuplexLive {
 
   /** D5: the client time of the stream's first audio frame (Voice Live's audio clock starts there); see TranscriptionTap. */
   audioOrigin(t: number | null): void { this.tap.origin = t; }
+  /** D5 review #5: the stream's anchored audio clock (D5Stream.toClient); null clears it. */
+  audioClock(fn: ((audioMs: number) => number | null) | null): void { this.tap.clock = fn; }
 
   /** duplex-real: the transcriber answered a probe with input_audio_buffer_commit_empty (see CascadeDuplex.onServerError). */
   commitEmpty(): void {
     if (!this.live) return;
+    // D5 review #6: never an injected empty final here. A burst only the device heard (her echo, a door) is not a child
+    // turn: an empty turn on D5 comes only from Voice Live's own item (an empty or failed final, TranscriptionTap)
     this.guard(() => this.host.commitEmpty());
-    // D5: Voice Live's VAD never opened an item for a burst the device heard (a lone 250 ms "haan", BAKEOFF §2.6), so the
-    // probe found nothing to transcribe and no final will ever come. Say so to the engine as an EMPTY final over the
-    // burst: it can end the turn, and the empty commit is the Director's repair move (she asks again).
-    if (this.o.vadGate === "server") this.unheard("probe_found_no_audio");
-  }
-  private unheardSeq = 0;
-  /** D5: the device burst already reported unheard (once per burst). */
-  private unheardFor: number | null = null;
-  /** D5: the latest audio time (client clock) Voice Live opened an item at. */
-  private serverStartAudioAt = -Infinity;
-
-  /** D5: tell the engine a voiced burst reached no words (an empty final over it), once per burst. */
-  private unheard(reason: string): void {
-    const pk = this.host.peek();
-    if (pk.firstOnsetAt === null || pk.voicing || this.unheardFor === pk.lastOffsetAt) return;
-    this.unheardFor = pk.lastOffsetAt;
-    const t = this.now();
-    const ev: SttEvent = { type: "final", itemId: `d5-unheard-${++this.unheardSeq}`, text: "", t, audioStartMs: pk.firstOnsetAt, audioEndMs: pk.lastOffsetAt ?? t };
-    vt("d5.decision", { op: "unheard_burst", reason, burstMs: pk.lastOffsetAt !== null ? Math.round(pk.lastOffsetAt - pk.firstOnsetAt) : null });
-    this.guard(() => this.host.stt(ev));
   }
 
-  /**
-   * D5 (no probes: a forced commit cuts Voice Live's open item and returns it EMPTY, bake-off f1-tail-0057): a voiced burst
-   * the device heard while she was silent, for which Voice Live opened no item by D5_UNHEARD_AFTER_MS after it ended, never
-   * will be transcribed (its VAD missed it). The engine hears that as an empty final.
-   */
-  private checkUnheard(): void {
-    const pk = this.host.peek();
-    if (pk.firstOnsetAt === null || pk.voicing || pk.lastOffsetAt === null) return;
-    if (this.now() - pk.lastOffsetAt < D5_UNHEARD_AFTER_MS || this.unheardFor === pk.lastOffsetAt) return;
-    if (this.serverStartAudioAt >= pk.firstOnsetAt - D5_VAD_START_PAD_MS - 300) return; // Voice Live has (or had) an item for it
-    this.unheard("no_voicelive_item");
+  /** Her echo tail: the half-duplex one, or D5's (room + the device's output latency). */
+  private tailMs(): number {
+    return this.o.halfDuplex ? (this.o.halfTailMs ?? HALF_DUPLEX_TAIL_MS) : (this.o.herTailMs ?? D5_HER_TAIL_MS);
   }
 
   /** The Director's turn ui (turnModel.ts setTurnContext carries the same fields): used at her next line. */
@@ -692,6 +783,7 @@ export class DuplexLive {
     const id = `h${++this.uttSeq}`;
     this.her = { id, text, startedAt: t, heardChars: 0, turnId: opts.turnId ?? null, act };
     this.herHalted = false;
+    this.screenTurnAt = null; // her reply to the tapped answer started: that turn is answered
     this.pendingTurn = null;
     this.screenHoldUntil = -Infinity;
     this.guard(() => {
@@ -701,12 +793,25 @@ export class DuplexLive {
     return true;
   }
 
+  /**
+   * Her line's full text, after herStart began it on its first clauses (the early turn-audio reply): the engine reads her
+   * act and hand-over from the whole line (a closing question decides handover vs idle at her end). Same utterance.
+   */
+  herText(text: string): void {
+    if (!this.live || !this.her || this.herHalted || text === this.her.text) return;
+    const act = herActOf(text, this.ui);
+    const handsOver = handsOverOf(text, this.ui);
+    this.her = { ...this.her, text, act };
+    const id = this.her.id;
+    this.guard(() => this.host.herEvent({ kind: "text", t: this.now(), utteranceId: id, text, act, handsOver, msPerChar: MS_PER_CHAR }));
+  }
+
   /** Her line played to the end. */
   herEnd(): void {
     if (!this.live || !this.her) return;
     const id = this.her.id;
     this.her = null;
-    this.herTailUntil = this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS);
+    this.herTailUntil = this.now() + this.tailMs();
     this.guard(() => this.host.herEvent({ kind: "end", t: this.now(), utteranceId: id }));
   }
 
@@ -715,13 +820,33 @@ export class DuplexLive {
     if (!this.live || !this.her) return;
     const id = this.her.id;
     this.herHalted = true;
-    this.herTailUntil = this.now() + (this.o.halfDuplex ? HALF_DUPLEX_TAIL_MS : D5_HER_TAIL_MS);
+    this.herTailUntil = this.now() + this.tailMs();
     this.guard(() => this.host.herEvent({ kind: "stopped", t: this.now(), utteranceId: id }));
   }
+
+  /**
+   * Round 5: why a commit must wait now, or null. "turn_in_flight": the engine committed a turn and her reply to it has not
+   * started; "tap_in_flight": a tapped / typed answer went to the Director and her reply has not started; "tap_recent":
+   * within TAP_GUARD_MS of a tap or typed answer.
+   */
+  private turnHeld(t: number): string | null {
+    // a reply that never comes (a network error, a dropped reply) must not freeze the floor: the hold expires
+    if (this.pendingTurn !== null && this.pendingAt !== null && t - this.pendingAt < IN_FLIGHT_MAX_MS) return "turn_in_flight";
+    if (this.screenTurnAt !== null) {
+      if (t - this.screenTurnAt < TAP_GUARD_MS) return "tap_recent";
+      if (t - this.screenTurnAt < IN_FLIGHT_MAX_MS) return "tap_in_flight";
+    }
+    return null;
+  }
+  private pendingAt: number | null = null;
+  /** Round 5: a tapped / typed answer is in flight since (cleared when her next line starts). */
+  private screenTurnAt: number | null = null;
 
   /** The child typed or tapped (a screen act): the engine's screen stream. */
   screen(kind: "submit" | "choice_pick" | "type"): void {
     if (!this.live) return;
+    // a submitted answer (a chip, a typed line) is a TURN the runtime posts itself: the engine must not post another over it
+    if (kind === "submit" || kind === "choice_pick") this.screenTurnAt = this.now();
     // a sent answer (not keystrokes): her reply to it is on its way, so the engine's silence backstop must not commit a
     // second turn over it (release 14)
     if (kind !== "type") this.screenHoldUntil = this.now() + SCREEN_REPLY_HOLD_MS;
@@ -761,7 +886,16 @@ export class DuplexLive {
     if (c.to === "safety") { this.stats.safety++; return; }
     if (c.to === "face" || c.to === "build") return; // the puppet took the face cues (wrapEmit); build intents: not wired
     if (this.mode === "shadow") return;
-    if (c.to === "stt") { port.sttCommit(); return; }
+    if (c.to === "stt") {
+      // round 5 half-duplex: commit only what the transcriber is actually holding (no input_audio_buffer_commit_empty)
+      // ...or what the device heard the child say since the gate opened that no commit has taken yet (a lone "haan" the
+      // server VAD never opened an item for: the transcriber still holds that audio, so this commit is never empty)
+      const pk = this.host.peek();
+      const heldAudio = pk.lastOffsetAt !== null && pk.firstOnsetAt !== null && pk.firstOnsetAt >= this.halfOpenedAt && pk.lastOffsetAt > this.lastServerCommitAt;
+      if (this.o.halfDuplex && this.openItem === null && !heldAudio) { this.stats.probesSkipped = (this.stats.probesSkipped ?? 0) + 1; return; }
+      port.sttCommit();
+      return;
+    }
     if (c.to === "think") {
       // round 3: the eager end of turn (the floor decision never waits on it)
       if (c.op === "prepare" && (c.hint.eager === "start" || c.hint.eager === "cancel")) {
@@ -797,7 +931,8 @@ export class DuplexLive {
       return;
     }
     // release 14: a tapped / typed answer is waiting for her reply: no engine turn races it
-    if (c.op === "speak" && this.now() < this.screenHoldUntil) {
+    // (round 5: the safety floor is never held)
+    if (c.op === "speak" && c.reason !== "safeguard" && this.now() < this.screenHoldUntil) {
       this.half.heldSpeaks++;
       vt("duplex.half", { op: "held_speak", reason: c.reason ?? null });
       return;
@@ -809,6 +944,21 @@ export class DuplexLive {
       case "cut_in": {
         // a nudge after her question with nothing said: the floor's own re-ask timers own silence; never a fake child turn
         if (c.op === "speak" && c.reason === "wt1_nudge") return;
+        // round 5 (the owner's lesson 56d898ce): ONE TURN AT A TIME. The silence backstop fired while the child's tapped answer
+        // was still in flight, and a second turn raced the first and cut her reply off. While a turn is in flight (an engine
+        // commit or a tap / typed answer her reply has not started for) and for TAP_GUARD_MS after a tap, the engine's
+        // turn never goes out; the child's words stay in the engine (a revoke still merges them). The safety floor is never held.
+        // round 5 half-duplex: an empty turn is never the child's (the owner's empty finals became turns)
+        if (this.o.halfDuplex && !String(c.text ?? "").trim() && !(c.op === "speak" && c.reason === "safeguard")) {
+          vt("duplex.decision", { action: "SPEAK_HELD", reasons: ["empty_turn_half_duplex", `speak:${c.reason}`], phase: this.phase, mode: this.mode, acted: false });
+          return;
+        }
+        const held = this.turnHeld(c.t);
+        if (held && !(c.op === "speak" && c.reason === "safeguard") && !(c.op === "cut_in" && c.reason === "safety")) {
+          this.stats.held = (this.stats.held ?? 0) + 1;
+          vt("duplex.decision", { action: "SPEAK_HELD", reasons: [held, `speak:${c.reason}`], phase: this.phase, mode: this.mode, acted: false });
+          return;
+        }
         const pk = this.host.peek();
         const s = pk.safety;
         const turnId = ++this.turnSeq;
@@ -817,6 +967,7 @@ export class DuplexLive {
         if (lastVoice !== null) this.stats.gaps.push(Math.max(0, Math.round(c.t - lastVoice)));
         this.stats.commits++;
         this.pendingTurn = turnId;
+        this.pendingAt = c.t;
         const text = String(c.text ?? "").trim();
         const revokeOf = this.revoked;
         this.revoked = null;
@@ -889,12 +1040,16 @@ function traceDuplex(c: HostCommand, mode: string): void {
     const acted = mode !== "shadow";
     if (c.to === "log") {
       const r = c.row as { action?: string; reasons?: string[]; phase?: string; detail?: unknown; t?: number };
-      if (r.action && TRACE_ACTIONS.has(r.action)) vt("duplex.decision", { action: r.action, reasons: r.reasons ?? [], phase: r.phase ?? null, detail: r.detail ?? null, mode, acted });
+      // ...and the continuer call (she keeps talking / resumes: the decision a "haan" over her line gets)
+      if (r.action && (TRACE_ACTIONS.has(r.action) || (r.action === "KEEP_TALKING" && String(r.detail ?? "") === "keep:continuer"))) vt("duplex.decision", { action: r.action, reasons: r.reasons ?? [], phase: r.phase ?? null, detail: r.detail ?? null, mode, acted });
     } else if (c.to === "think" && c.op === "revoke") vt("bargein", { step: "engine_revoke", mode, acted });
     else if (c.to === "voice") {
       if (c.op === "yield") vt("bargein", { step: "engine_yield", reason: c.reason ?? null, resumable: !!c.resumable, mode, acted });
       else if (c.op === "resume") vt("bargein", { step: "engine_resume", mode, acted });
       else if (c.op === "duck" && c.level <= 0.06) vt("bargein", { step: "engine_hush", level: c.level, mode, acted });
+      // D5 (2026-10-11): every gain change is auditable — the reflex duck at a burst's onset and its release
+      else if (c.op === "duck") vt("bargein", { step: "engine_duck", level: c.level, reason: "onset_over_her", mode, acted });
+      else if (c.op === "unduck") vt("bargein", { step: "engine_unduck", reason: "burst_released_or_continuer", mode, acted });
       else if (c.op === "speak" || c.op === "cut_in") vt("duplex.commit", { op: c.op, reason: c.reason ?? null, mode, acted });
     }
   } catch {
