@@ -46,7 +46,7 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
@@ -1463,7 +1463,10 @@ function decide(s, input, item) {
     // a lesson answer is the child back at the lesson: a model read of it is never sure on its own (the predicate, a sure
     // layer and a low mood said again still are: QA TEST 8a4ce363 X2c)
     const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure || answered) && modelOnly));
-    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure;
+    // 14.4.2 (main safety review; sim lab be9b766a p30 #8 "haan okay… par thodi udaas" got the full script): a low mood they
+    // size as small (fine.js mildLow: "thodi udaas", "thoda bura laga", nothing bigger) is care, never the script; it is
+    // released below with the warm line. The predicate and every sure layer still escalate it.
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure && !mildLow(words);
     // QA TEST d359423b / a9c3136d t7 (9ad86661): "main mar jaunga itna padh ke" answering "are you okay?" is the predicate's
     // lesson hyperbole (check-tier): it was released into the lesson, a practice item with "tell mummy" glued on. It is no
     // answer of okay: the check-in stays (care, no lesson) once; a second one in a row, like a second silence, escalates
@@ -1534,7 +1537,8 @@ function decide(s, input, item) {
   }
   if (flags.distress && !sameEpisode && !s.safeguard && checkTier(flags) && !input.late) {
     const recent = s.checkReleased != null && s.turn - s.checkReleased <= 4;
-    if (recent && flags.distressAbout === "sad_or_lonely") {
+    // (a low mood sized as small, fine.js mildLow, is care in this window too: set aside below, with the release's warm line)
+    if (recent && flags.distressAbout === "sad_or_lonely" && !mildLow(input.text ?? input.answer ?? "")) {
       s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
       return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
     }

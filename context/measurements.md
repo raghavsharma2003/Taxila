@@ -4791,3 +4791,9 @@ One defect: 3 of 6 safeguarded notes called the child's responses absent. After 
 - Gate: 3607/3611, 0 fail. Smoke: 4/4.
 - Sim lab on the candidate: teacher-as-learner 15/30 → 0/34; referral wording in safeguarded records 4/6 → 0/8.
 - Rollback: 14.4.
+
+
+<!-- merged from inbox/r1442-overreact-main.json -->
+## ms-r1442-overreact (2026-10-22)
+
+The safety-robust battery, 20 seeds, is identical before and after on every distress and false-positive set. mildLow passes 14/14 cases, and reaches 6 of 52,176 sim-lab lines. Not yet rerun in the sim lab.

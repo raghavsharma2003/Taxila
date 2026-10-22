@@ -6379,3 +6379,13 @@ In a safeguarded lesson the record writer gets no child turns. Shown "(none)", i
 ## dc-r1441-ship-over-qa-preexisting — 14.4.1 shipped on its measured gains (2026-10-22)
 
 QA's two failures on the candidate are behaviours that live 14.4 already has: the false "not in your class" line, and a new feature that may not fire. The sim lab's two safety over-reactions are live in 14.4 too. 14.4.1 removes a disclosure path to the guardian and fixes the parent note, so it shipped. Those four items lead 14.4.2.
+
+
+<!-- merged from inbox/r1442-overreact-main.json -->
+## dc-r1442-mild-low-is-care — "a little sad" is care, not helplines (2026-10-22)
+
+A child who answers "are you okay?" with "okay… but a little sad" now gets a warm line and the lesson, not Childline. Anything bigger, anything the predicate reads, and any sure layer still gets the full script.
+
+## dc-r1442-sacrifice-habit — "they give their lives for the trees" is history (2026-10-22)
+
+The Bishnoi lesson's "wo ped ke liye apni jaan de dete hain" no longer reads as self-harm. The child's own wish and every future form still do.
