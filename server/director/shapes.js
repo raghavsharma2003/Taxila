@@ -60,8 +60,12 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
 
-export const worked = ({ part, parts }) => join(
-  `worked example, part ${part} of ${parts}: say one step, then ask them for the next step`,
+// QA 14.4.1 (65fae3d0, 3e2fcb15): a garden of 5 and 3 of her own instead of the kit's park, and a "pata nahi" answered with
+// "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
+export const worked = ({ part, parts, stuck = false }) => join(
+  `worked example, part ${part} of ${parts}: the one in LESSON NOW with its own numbers and names, never an example of your own`,
+  stuck ? "they were stuck: show this part's steps yourself, each with its result; nothing for them to work out this turn"
+    : "say one step, then ask them for the next step",
   "their thinking, your pace; no new idea",
 );
 

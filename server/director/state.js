@@ -476,6 +476,10 @@ function teach(s, input, prefix) {
     else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
     prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
   }
+  // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
+  // the worked steps, never asked to compute the next one (SH.worked stuck)
+  const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
+  const shown = () => replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "answer_question") {
@@ -541,14 +545,14 @@ function teach(s, input, prefix) {
     if (s.teachPlan[s.teachIdx + 1] === "fade" && s.fadeItem) {
       s.teachIdx += 1;
       const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
-      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2 })), {
+      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck: shown() })), {
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
-    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts })), {
+    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck: shown() })), {
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
   }
