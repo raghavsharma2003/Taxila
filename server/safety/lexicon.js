@@ -47,6 +47,11 @@ const SACRIFICE_PAST = /(?<![a-z])(?:ke|ki) (?:liye|lie|khatir)(?: [a-z0-9]+){0,
 // script): the same idiom as a habit or a fact about others, "… ke liye apni jaan de dete hain / the / hai" (they give,
 // they gave). Never the first person: "de deti hun / deta hun" is not this shape and still fires, as does every future.
 const SACRIFICE_HABIT = /(?<![a-z])(?:ke|ki) (?:liye|lie|khatir)(?: [a-z0-9]+){0,2} apni jan de (?:dete|deti|deta) (?:hain|hai|the|thi|tha)(?![a-z])/;
+// 14.4.2 sim lab 6da8f599 p13 r3 #5 ("…toh unhone apni jaan de di ped bachane ke liye…": the full script): the same idiom
+// with the purpose AFTER the verb. Only with no first person and no family in the turn: a family member who "gave their
+// life" can be a death at home, and that is a disclosure ("main", "mere", "papa", "mummy", … keep it firing).
+const SACRIFICE_FOR = /(?<![a-z])apni jan de (?:di|diya|dia|de di|dete|deti|deta)(?: [a-z0-9]+){0,5} (?:ke|ki) (?:liye|lie|khatir)(?![a-z])/;
+const SELF_OR_FAMILY = /(?<![a-z])(?:main|mai|mujhe|maine|mene|mera|meri|mere|hum|humne|hamne|hamara|hamari|papa|mumi|mummy|mama|maa|ma|bhai|bhaiya|didi|behen|nana|nani|dada|dadi|chacha|chachi|mausi|uncle|aunty)(?![a-z])/;
 const SURPRISE = words("surprise birthday janamdin gift gifts tohfa party present");
 /** Words that make a turn a story or a show (patch request 12): a slap or a gaali in a retold story is the story's. */
 // ("kahani" is read "khani" by the garble rule when the turn has no other story word: "kahani mein ... thappad padte the")
@@ -81,7 +86,7 @@ const SHAPES = [
   ["self_harm", "mann_karta_mar_jaun", `(?:man|dil) (?:karta|karti|karte|hota|hoti) (?:hai |he |h )?(?:ki )?(?:main |mai )?(?:mar|marne) (?:jaun|jau|jaon|jan|ka)`],
   ["self_harm", "kaash_mar_jaun", `(?:kash|kas)(?: main| mai)? mar (?:jaun|jau|jaon|jata|jati|gaya hota|gayi hoti)`],
   ["self_harm", "khud_ko_khatam", `(?:khud|khudko|apne ap|apneap|apne apko|apneapko|apni jindagi|apni jindgi|apna jivan|jindagi|jindgi)(?: ko)? (?:khatam|khatm|khtm|mar|kat|jala|nuksan)`, (m, full) => /(?<![a-z])(?:jindagi|jindgi) (?:khatam|khatm)/.test(m) && LESSON.test(full)],
-  ["self_harm", "apni_jaan_de", `apni jan (?:de|le|dena|lena|dene|lene|de dun|de dunga|de dungi|le lun|le lunga|le lungi)|jan dene ka (?:man|khayal|soch)|${I_S} (?:apni )?jan de (?:dun|dunga|dungi|dena)`, (m, full) => LESSON.test(full) || SACRIFICE_PAST.test(full) || SACRIFICE_HABIT.test(full)],
+  ["self_harm", "apni_jaan_de", `apni jan (?:de|le|dena|lena|dene|lene|de dun|de dunga|de dungi|le lun|le lunga|le lungi)|jan dene ka (?:man|khayal|soch)|${I_S} (?:apni )?jan de (?:dun|dunga|dungi|dena)`, (m, full) => LESSON.test(full) || SACRIFICE_PAST.test(full) || SACRIFICE_HABIT.test(full) || (SACRIFICE_FOR.test(full) && !SELF_OR_FAMILY.test(full))],
   ["self_harm", "suicide_spellings", `${SUICIDE}`],
   ["self_harm", "kms_unalive", `(?:vant to|vana|gona|gonna|going to|il|vil|ima|imma|should|shud|just) (?:just )?kms|unalive ${SELFX}`],
   ["self_harm", "paida_na_hota", `(?:main|mai|kash|kas)${g(1)} paida (?:hi )?(?:na|nahi|nahin|nai) (?:hota|hoti|hua|hui|hue|hote)`],

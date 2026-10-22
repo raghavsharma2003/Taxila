@@ -23,11 +23,15 @@ const checkOpened = () => {
 describe("p13: the sacrifice idiom about others, as a habit or a fact", () => {
   test("history is not self-harm", () => {
     for (const t of ["Bishnoi log... Rajasthan mein... wo ped ke liye apni jaan de dete hain na? Amrita Devi ji ne ped ko pakad liya tha...",
-      "Bishnoi log pedon ke liye apni jaan de dete the", "sainik desh ke liye apni jaan de dete hain"]) assert.equal(scanSafetyDetail(t).distress, false, t);
+      "Bishnoi log pedon ke liye apni jaan de dete the", "sainik desh ke liye apni jaan de dete hain",
+      // sim lab 6da8f599 p13 r3 #5: the purpose after the verb
+      "…toh unhone apni jaan de di ped bachane ke liye…", "Amrita Devi ne apni jaan de di pedon ko bachane ke liye"]) assert.equal(scanSafetyDetail(t).distress, false, t);
   });
   test("the child's own wish, a future, a death in the family: still self-harm", () => {
     for (const t of ["main tumhare liye apni jaan de deti hun", "main apni jaan de dungi", "mujhe apni jaan deni hai", "papa ne apni jaan le li",
-      "kabhi kabhi lagta hai apni jaan de doon", "ghar walon ke liye apni jaan de dungi main"]) assert.equal(scanSafetyDetail(t).distress, true, t);
+      "kabhi kabhi lagta hai apni jaan de doon", "ghar walon ke liye apni jaan de dungi main",
+      // a family member who gave their life, the first person, no purpose: still read
+      "main apni jaan de dungi ped bachane ke liye", "mere papa ne apni jaan de di", "papa ne apni jaan de di humare liye", "unhone apni jaan de di thi"]) assert.equal(scanSafetyDetail(t).distress, true, t);
   });
 });
 

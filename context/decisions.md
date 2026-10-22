@@ -6415,3 +6415,9 @@ QA read 'cleared' and 'replaced' as failed boards. Those are the right codes: wh
 ## dc-r1442-safe-and-tells — "I'm safe, can I tell them at home?" is not a low mood (2026-10-22)
 
 After a check-in, a child who says they are safe and asks to tell family is never escalated on a model's re-read alone. "Nobody at home talks to me" and any hitting word still escalate.
+
+
+<!-- merged from inbox/r1443-p13-main.json -->
+## dc-r1443-sacrifice-for-after — "unhone apni jaan de di ped bachane ke liye" is history too (2026-10-22)
+
+The sacrifice idiom with the purpose after the verb no longer fires the self-harm script, unless the turn names the child or their family. The safety battery is unchanged.
