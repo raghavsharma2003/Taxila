@@ -561,8 +561,14 @@ function lessonFacts(state, evidence, kit) {
   }
   const misIds = [...new Set(evidence.map((e) => e.misconception_id).filter(Boolean))];
   const read = state.agent?.learner ?? {};
+  // 14.4.3 (QA TEST on ac4e8e88: 765d3c47, 54569fb1, 4aa87fed): a teach-back never asked is no fact at all ("teachbackPassed:
+  // false" was written as "Teach-back was not passed", a failure to a parent); a lesson with nothing graded says so, so its topic
+  // is what it was about, never what was practised (54569fb1, all safeguarding: "Kabir practised perimeter")
+  const graded = Object.keys(bySkill).length > 0;
   return {
-    topic: getTopic(state.topicId)?.title, minutes: state.minutes, teachbackPassed: state.teachbackPassed,
+    topic: getTopic(state.topicId)?.title, minutes: state.minutes,
+    ...(state.teachbackAsked ? { teachback: state.teachbackPassed ? "asked and passed" : "asked, not passed yet" } : {}),
+    ...(graded ? {} : { practised: "nothing graded this lesson: the topic is only what it was about" }),
     skills: Object.entries(bySkill).map(([id, s]) => ({ skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided,
       ...(checkOf(read[id]) ? { check: checkOf(read[id]) } : {}) })),
     misconceptions: misIds.map((m) => {
@@ -719,7 +725,7 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
     // content/next-topic.js schoolStartIndex already reads (migration patch 01 adds the column; never the start's error)
     ...schoolPointerStmts(child, state).map((st) => q(st.text, st.params).catch(() => null)),
   ]);
-  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(topicId)?.title, skills: [] };
+  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(topicId)?.title, practised: "nothing graded this lesson: the topic is only what it was about", skills: [] };
   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
   // W2-C #5: child talk share and the conversation mix (a monitor; never evidence, never shown to anyone as a score)
   try {
@@ -740,8 +746,9 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
   }
-  summary ||= `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
-  parentNote ||= `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
+  // (nothing graded: the lesson was ABOUT the topic, never "practised" it)
+  summary ||= facts.practised ? `A lesson on ${facts.topic}.` : `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
+  parentNote ||= facts.practised ? `Today ${child.first_name} had a lesson on ${facts.topic} with ${teacher.name}.` : `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
 
   // The writer's view of this child: its mode plus the memory consent (P3, personal details).
   const writerChild = { ...child, consent: { ...(child.consent ?? {}), P3: !!memoryOk } };
