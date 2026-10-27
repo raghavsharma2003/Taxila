@@ -75,6 +75,8 @@ export const EN = {
   "dock.ready": "Ready",
   "dock.finish": "Finish",
   "dock.type_label": "Type your answer",
+  // r5 QA: on a 393 px phone the field is ~160 px wide beside Send and Talk; the long label was cut to "Type your answ"
+  "dock.type_placeholder": "Your answer",
   "dock.numbers": "123",
   "dock.delete": "Delete",
   // top bar
@@ -124,7 +126,7 @@ export const EN = {
   // safety help sheet (§6.4.9). Helpline numbers re-verified at launch [M: re-verify].
   "help.title": "You're not in trouble.",
   "help.sub": "You can talk to someone.",
-  "help.grownup": "Talk to a grown-up at home",
+  "help.grownup": "Talk to a grown-up you trust",
   "help.childline": "Call Childline 1098",
   "help.telemanas": "Call Tele-MANAS 14416",
   "help.back": "Back to the lesson",

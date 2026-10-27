@@ -1,0 +1,98 @@
+== G-why
+{"lesson":"5476bc30-5d48-4261-a8fc-f819dc5b23be","lane":null,"hits":[],"steps":["Aap rectangles ya squares mein se kya pehle lenge? Hear → hook","Vegetable patch ke chaaron taraf fencing karni ho, toh aap kya naapeng → explain","Formula kya hoga? Hear → probe","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → hint","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → explain","Phir 56 cm se compare kijiye—kaunsa bada hai? Hear → probe","Ek rectangular kabaddi practice ground ka perimeter 146 m aur length 4 → probe","no type field | Ek rectangle garden 12 m lamba aur 7 m chauda hai. Iska peri","Ek rectangle garden 12 m lamba aur 7 m chauda hai. Iska perimeter kya  → probe","Ab bataiye, aapko yeh answer kaise mila? Hear → probe","Ek square ki side 5 cm hai. Side dugni kariye toh perimeter ka kya hog → practice"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+[server t4] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t4] classify no_evidence via model verdict=unverified
+[server t5] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t5] classify no_evidence via model verdict=unverified
+[server t6] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t6] classify no_evidence via model verdict=ungraded
+[server t7] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t7] classify no_evidence via model verdict=unverified
+[server t8] CHILD → "38 m" (POST /api/lesson/turn)
+[server t8] classify correct via chip verdict=correct
+[server t9] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t9] classify no_evidence via model verdict=unverified
+[server t10] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t10] classify no_evidence via model verdict=unverified
+== G-or
+{"lesson":"22451416-10ed-42f7-a157-36917de636fa","lane":null,"hits":[{"label":"or","asked":"Length 50 m, breadth 30 m: aap calculate kijiye. Hear","answered":"160 ya 130","move":"probe","verdict":null,"reply":"Dono possibilities ko check karne ke liye length aur breadth ko rule mein sahi jagah rakhiye. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli k","opens":"Dono possibilities"}],"steps":["Aap bataiye, rectangle ke around chalna kaisa hoga? Hear → hook","Vegetable patch ke chaaron taraf fencing karni ho, toh hum kis cheez k → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "160 ya 130" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== G-nahinahi
+{"lesson":"86339364-ea58-4864-a701-73b38e8949e9","lane":null,"hits":[{"label":"nahinahi","asked":"Aap 50 m aur 30 m se total nikaaliye. Hear","answered":"nahi nahi, 160","move":"probe","verdict":null,"reply":"Aapne jodne ki jagah kuch aur operation kiya. Ab do naye shapes ke perimeters compare karke dekhiye. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: ra","opens":"Aapne jodne"}],"steps":["Aap batayiye, perimeter word pehle suna hai? Hear → hook","Sochiye vegetable patch ke chaaron taraf fencing lagani ho—humein kis  → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "nahi nahi, 160" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== G-toh
+{"lesson":"fad7fcc6-40f8-4767-8f25-17e479ac5858","lane":null,"hits":[{"label":"toh","asked":"50 m aur 30 m par try kijiye. Hear","answered":"toh answer 160 hai","move":"probe","verdict":null,"reply":"Yahaan calculation theek direction mein hai. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya kisi ka bhi nahi?","opens":"Yahaan calculation"}],"steps":["Aapko rectangles, squares ya polygons mein kaunsa shape pasand hai? He → hook","toh aap kya naapenge: andar ka area ya bahar ki boundary? Hear → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "toh answer 160 hai" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== G-q
+{"lesson":"2e698f8c-330b-4a13-aed0-9a1aca3c0b5e","lane":null,"hits":[],"steps":["Aapko rectangles, squares ya polygons mein se kya pasand hai? Hear → hook","Sochiye, vegetable patch ke chaaron taraf fencing karni ho—fence kitni → explain","Total kitna? Hear → probe","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → hint","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → explain","Dono totals kya aate hain? Hear → probe","Ek rectangular kabaddi practice ground ka perimeter 146 m aur length 4 → probe","no type field | Ek rectangle garden 12 m lamba aur 7 m chauda hai. Iska peri","Ek rectangle garden 12 m lamba aur 7 m chauda hai. Iska perimeter kya  → probe","Kabir, aapne rectangle ka perimeter 38 m kaise nikala—kaun-si sides ki → probe","Ek square ki side 5 cm hai. Side dugni kariye toh perimeter ka kya hog → practice"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+[server t4] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t4] classify no_evidence via model verdict=unverified
+[server t5] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t5] classify no_evidence via model verdict=unverified
+[server t6] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t6] classify no_evidence via model verdict=ungraded
+[server t7] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t7] classify no_evidence via model verdict=unverified
+[server t8] CHILD → "38 m" (POST /api/lesson/turn)
+[server t8] classify correct via chip verdict=correct
+[server t9] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t9] classify no_evidence via model verdict=unverified
+[server t10] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t10] classify no_evidence via model verdict=unverified
+== G-FADE-1
+{"lesson":"df994d30-846c-447d-b1fb-5d4cf37d5970","lane":null,"hits":[],"steps":["Tum maths mein sabse zyada kya enjoy karte ho? Hear → hook","Yahan division poochta hai, har ek ko kitne? Hear → explain","Har group mein kitne aaye? Hear → worked_example","Ab 4 times 9 bolo. Hear → worked_example","Tum 4 groups banaakar dekho. Hear → explain","7 ko 7 se multiply karke subtract karo—remainder kitna? Hear → probe","School 3,450 notebooks mangata hai, har pack mein 25 notebooks hain. K → explain","Quotient ka pehla digit kya hoga? Hear → probe","Quotient × divisor + remainder se check karke sahi quotient aur remain → probe","no type field | 17 nariyal 5 boriyon mein barabar baante jaate hain. Jawab k","17 nariyal 5 boriyon mein barabar baante jaate hain. Jawab kya hai? He → hint","17 nariyal 5 boriyon mein barabar baante jaate hain. Jawab kya hai? He → practice","no type field | 475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni bo","475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni boriyan? Hea → undefined","no type field | 475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni bo","475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni boriyan? Hea → undefined","no type field | 475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni bo","475 nariyal 25-25 ki boriyon mein bhare jaate hain. Kitni boriyan? Hea → undefined"]}
+[server t1] CHILD → "samajh nahi aaya, ek example se samjhao" (POST /api/lesson/turn)
+[server t1] classify no_evidence via request verdict=ungraded
+[server t2] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+[server t4] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t4] classify no_evidence via model verdict=ungraded
+[server t5] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t5] classify no_evidence via model verdict=ungraded
+[server t6] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t6] TURN 6 move=probe beat=probe item=c5-maths-ch09-t01-rl-h2
+[server t6] classify no_evidence via model verdict=ungraded
+[server t7] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t7] classify no_evidence via model verdict=unverified
+[server t8] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t8] TURN 8 move=probe beat=probe item=c5-maths-ch09-t01-rl-h3 guard=math(rewritten)
+[server t8] classify no_evidence via model verdict=ungraded
+[server t9] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t9] TURN 9 move=probe beat=probe item=diag:c5-maths-ch09-t01-m-remainder-as-decimal
+[server t9] classify no_evidence via model verdict=unverified
+[server t10] CHILD → "4 in each sack" (POST /api/lesson/turn)
+[server t10] TURN 10 move=hint beat=probe item=diag:c5-maths-ch09-t01-m-remainder-as-decimal guard=ask
+[server t10] classify incorrect via chip verdict=not_yet
+[server t11] CHILD → "theek hai, aage" (POST /api/lesson/turn)
+[server t11] TURN 11 move=practice beat=practice_set item=c5-maths-ch09-t01-i04
+[server t11] classify no_evidence via model verdict=unverified
+== G-FADE-2

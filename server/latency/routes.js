@@ -7,7 +7,9 @@
 // The same gates as the turn, in the same order (loadTurnContext: auth, the child's guardian, core_tutoring consent): with
 // consent withdrawn the words never reach a model. An ended lesson, a typed lane, an empty text, or a rate-limited lesson
 // is a 204 and nothing runs. Always fire-and-forget for the client: any failure is a 204, never an error the child sees.
-import { loadTurnContext, specPlan, replyKey, speculate, carriedFrom, earlierExchanges, NOTE_WAIT_MS } from "../brain/turn.js";
+import { loadTurnContext, specPlan, replyKey, speculate, carriedFrom, earlierExchanges, NOTE_WAIT_MS, settleWithin } from "../brain/turn.js";
+import { agentSpeculate, eventOf } from "../agent/agent.js";
+import { startAgentSpec } from "./agentSpec.js";
 import { textReply, scrubbed } from "../brain/say.js";
 import { kitFor, stageTurns, childTurnRow, turnLane } from "../brain/rows.js";
 import { classify, classifyFast, targetFor } from "../director/classify.js";
@@ -18,7 +20,7 @@ import { conv2Mode, p5Flag } from "../conversation/flags.js";
 import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { loadLive } from "../learner/live.js";
 import { perceive, fingerprint, putPrefetch, allowPrefetch, exactSpecOn } from "./perceive.js";
-import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS } from "./ack.js";
+import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerCohortHas, lessonTurnOf } from "./ack.js";
 import { scanSafety } from "../director/safety.js";
 // round 3 (relational-human): the perception bus (the turn and the prefetch say "classify is running on these words") and
 // the played acknowledgement (POST /api/lesson/turn-ack below)
@@ -40,6 +42,8 @@ export const prefetchOn = (env = process.env) => !/^(off|0|false|no)$/i.test(Str
 // (the note, the answer's own words), so an EXACT reply started here has the key the turn will compute (perceive.js rule 5)
 export const PERCEIVE_DEPS = Object.freeze({ classifyFast, classify, understand, speculate, planTurn: specPlan, replyKey, textReply, conv2Mode,
   applyNote, withAnswerMods, steerOn: () => p5Flag("STEER"), noteWaitMs: NOTE_WAIT_MS });
+
+const AGENT_SPEC_DEPS = Object.freeze({ agentSpeculate, eventOf, settleWithin, noteWaitMs: NOTE_WAIT_MS });
 
 const none = (res, why) => { res.statusCode = 204; res.setHeader("x-prefetch", why); res.setHeader("cache-control", "no-store"); res.end(); };
 
@@ -84,10 +88,14 @@ async function turnPrefetch(req, res, body) {
   const live = loadLive(child);
   live.catch(() => {});
   x.planCtx.live = live;
-  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane, late: false, help: null, childText: text, exact: exactSpecOn() });
+  // an agent-lane lesson never speculates Director replies (turn.js does the same: they would be thrown away)
+  const agentLane = lesson.state?.ctx?.teacher === "agent";
+  const P = perceive(PERCEIVE_DEPS, { ...x, classified: true, textLane: textLane && !agentLane, late: false, help: null, childText: text, exact: exactSpecOn() });
   putPrefetch(lesson.id, { fp: fingerprint({ lessonId: lesson.id, state: lesson.state, clsArgs: x.clsArgs, bargeIn }), P, trace, text: text.length });
   // round 3: the ack route waits on THIS classify (no model call of its own)
   publishPerception(lesson.id, { text, clsP: P.clsP, source: "prefetch", turn: (lesson.state?.turn ?? 0) + 1, specs: P.specs });
+  // round 5: on the agent lane, her model call starts on these words once their classify settles clean (./agentSpec.js)
+  if (agentLane) startAgentSpec(AGENT_SPEC_DEPS, { lesson, state: x.state, kit, text, P }).catch(() => {});
   // the reply will need the speech socket within ~1-2 s: open it now if this replica has none (no-op when warm or not DragonHD)
   import("../voice/azureTtsWs.js").then((m) => m.prewarmDhdWs?.()).catch(() => {});
   // SHADOW ack (server/latency/ack.js): with { wantAck: true } the response waits for classify (its model distress read) and
@@ -137,6 +145,8 @@ export const ACK_AUDIO_WAIT_MS = 1500;
 const ACKS_PER_MIN = 30;
 /** lessonId → the turns that got an ack (the governor's history) */
 const ackHistory = new Map();
+/** lessonId → the continuer said last (never twice in a row) */
+const continuerLast = new Map();
 const ackRate = new Map();
 function allowAck(lessonId, nowMs = Date.now()) {
   const k = String(lessonId);
@@ -178,16 +188,26 @@ export async function ackDecision(d, x) {
     .filter((v) => v != null && String(v).trim().length >= 2).map(String))] : [];
   const names = [child?.first_name].filter(Boolean);
   const token = answerTokenOf(text);
-  if (!token) return { none: "no_token" };
-  if (!preludeTokenOk(token, { names, vocab })) return { none: "token_screen" };
-  const phrase = ackPhraseOf(text, token, itemWords);
+  const echoable = !!token && preludeTokenOk(token, { names, vocab });
+  // round 5: no echo, but the owner cohort's device asked for a continuer (server/latency/ack.js continuerPlanOf). Its
+  // positive gate's lexical half first: words that are not an ordinary lesson turn never get one (nor its clip started).
+  const lexical = x.continuer ? lessonTurnOf(text) : null;
+  if (lexical?.none) x = { ...x, continuer: false };
+  if (!echoable && !x.continuer) return { none: lexical?.none ?? (token ? "token_screen" : "no_token") };
+  const turn = (state?.turn ?? 0) + 1;
+  const hist0c = d.continuerLast ?? continuerLast;
+  const cPhrase = x.continuer ? continuerPhraseOf(continuerLangOf(child), turn, hist0c.get(String(lessonId)) ?? null) : null;
+  const phrase = echoable ? ackPhraseOf(text, token, itemWords) : cPhrase;
   // the clip starts now, from the words alone (same words → same bytes, whatever the verdict)
   const style = mode === "on" ? d.styleOf(child, state) : null;
   const audioP = style ? d.ackAudio(phrase, style) : Promise.resolve(null);
-  const turn = (state?.turn ?? 0) + 1;
+  // an echo the plan may refuse (not an answer) can still fall back to the continuer: its clip starts too (cached)
+  const cAudioP = style && echoable && cPhrase ? d.ackAudio(cPhrase, style) : null;
+  cAudioP?.catch?.(() => {});
   const per = await d.awaitPerception(lessonId, text, ACK_PERCEPTION_WAIT_MS, turn);
   if (!per) return { none: "no_perception" };
-  const at = d.ackAtMs !== undefined ? d.ackAtMs : ACK_AT_MS;
+  // a continuer carries no verdict, so it needs no fixed instant against a timing leak: the floor after classify only
+  const at = !echoable ? null : d.ackAtMs !== undefined ? d.ackAtMs : ACK_AT_MS;
   let cls;
   if (at != null) {
     // the FIXED instant: decided exactly at per.at + at, whatever the verdict; classify not settled by then → no ack
@@ -208,12 +228,20 @@ export async function ackDecision(d, x) {
   const filtered = () => !!per.filtered || d.perceptionsFor(lessonId, text, Date.now(), turn).some((e) => e.filtered);
   if (filtered()) return { none: "filtered" };
   const hist = hist0.get(String(lessonId)) ?? [];
-  const plan = ackPlanOf({ text, cls, predicateDistress: false, safeguardOpen: !!state?.safeguard, pendingSafety, turn, history: hist, names, vocab, itemWords });
+  const gates = { cls, predicateDistress: false, safeguardOpen: !!state?.safeguard, pendingSafety, turn, history: hist };
+  let plan = echoable ? ackPlanOf({ ...gates, text, names, vocab, itemWords }) : { none: "no_echo" };
+  let clip = audioP;
+  // round 5: no echo for this turn (a non-answer, the window) → the continuer, on the owner cohort's request only
+  if (!plan.phrase && x.continuer && !["safety", "leaving", "consecutive", "unclassified"].includes(plan.none)) {
+    plan = continuerPlanOf({ ...gates, text, lang: continuerLangOf(child), last: hist0c.get(String(lessonId)) ?? null });
+    if (plan.phrase && plan.phrase !== phrase) clip = cAudioP ?? (style ? d.ackAudio(plan.phrase, style) : Promise.resolve(null));
+  }
   if (!plan.phrase) return { none: plan.none ?? "refused" };
   if (!hist.includes(turn)) { hist0.set(String(lessonId), [...hist, turn].slice(-12)); if (hist0.size > 5000) hist0.delete(hist0.keys().next().value); }
+  if (plan.kind === "continuer") { hist0c.set(String(lessonId), plan.phrase); if (hist0c.size > 5000) hist0c.delete(hist0c.keys().next().value); }
   const ack = { kind: plan.kind, token: plan.token, phrase: plan.phrase, decidedMs: Math.round(now() - t0), source: per.source, turn };
   if (mode === "shadow") return { ack: { ...ack, shadow: true } };
-  const pcm = await Promise.race([Promise.resolve(audioP).catch(() => null), sleep(ACK_AUDIO_WAIT_MS).then(() => null)]);
+  const pcm = await Promise.race([Promise.resolve(clip).catch(() => null), sleep(ACK_AUDIO_WAIT_MS).then(() => null)]);
   if (!pcm) return { none: "no_audio" };
   if (filtered()) return { none: "filtered" };
   return { ack, pcm };
@@ -230,14 +258,16 @@ async function turnAck(req, res, body) {
   if (mode === "off") return none(res, "off");
   const text = String(body?.text ?? "").slice(0, 2000).trim();
   if (!text) return none(res, "empty");
-  const { lesson, child, core } = await loadTurnContext(req, body?.lessonId);
+  const { lesson, child, core, guardian } = await loadTurnContext(req, body?.lessonId);
   if (!core) return none(res, "consent");
   if (lesson.ended_at) return none(res, "ended");
   if (lesson.state?.mode !== "cascade") return none(res, "lane");
   if (!allowAck(lesson.id)) return none(res, "rate");
   const kit = await kitFor(lesson.topic_id, lesson.state).catch(() => null);
   const item = kit ? findItem(lesson.state, kit, lesson.state?.activeItemId) : null;
-  const r = await ackDecision(ACK_DEPS, { lessonId: lesson.id, text, state: lesson.state, child, item, mode });
+  // round 5: the continuer only for the owner cohort AND when the device asks (it does not on D5, typed or tapped turns)
+  const continuer = body?.continuer === true && continuerCohortHas(guardian?.email);
+  const r = await ackDecision(ACK_DEPS, { lessonId: lesson.id, text, state: lesson.state, child, item, mode, continuer });
   if (r.none) return none(res, r.none);
   if (!r.pcm) return json(res, 200, { ack: r.ack });
   json(res, 200, { ack: { ...r.ack, rate: PCM_RATE, ms: pcmMs(r.pcm), pcm: r.pcm.toString("base64"), readyMs: Math.round(performance.now() - t0) } });
@@ -251,7 +281,7 @@ function json(res, status, obj) {
 }
 
 /** Tests only. */
-export const __ack = { clear: () => { ackHistory.clear(); ackRate.clear(); }, history: ackHistory };
+export const __ack = { clear: () => { ackHistory.clear(); ackRate.clear(); continuerLast.clear(); }, history: ackHistory, continuerLast };
 
 export const routes = {
   "POST /api/lesson/turn-prefetch": async (req, res, body) => {

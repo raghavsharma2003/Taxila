@@ -17,10 +17,12 @@ import { lazy, Suspense, type ReactNode } from "react";
 import { Navigate, type RouteObject } from "react-router-dom";
 import { ChildShell, useChild } from "./ChildShell.tsx";
 import { kakshaEnabled } from "../ui-v3/kaksha/flag.ts";
+import { loadLessonRoute } from "./preload.ts";
 
 const Home = lazy(() => import("./screens/Home.tsx").then((m) => ({ default: m.Home })));
 const Hello = lazy(() => import("./screens/Hello.tsx").then((m) => ({ default: m.Hello })));
-const LessonRoute = lazy(() => import("./screens/Practice.tsx").then((m) => ({ default: m.LessonRoute })));
+// r5-latency: the same promise the home screen preloads (./preload.ts)
+const LessonRoute = lazy(() => loadLessonRoute().then((m) => ({ default: (m as typeof import("./screens/Practice.tsx")).LessonRoute })));
 const PracticeRoute = lazy(() => import("./screens/Practice.tsx").then((m) => ({ default: m.PracticeRoute })));
 const Ask = lazy(() => import("./screens/Ask.tsx").then((m) => ({ default: m.Ask })));
 const MapScreen = lazy(() => import("./screens/Map.tsx").then((m) => ({ default: m.MapScreen })));

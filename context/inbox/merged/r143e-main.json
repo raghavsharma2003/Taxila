@@ -1,0 +1,37 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r143-prod-trace-origin",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Production trace, model.call rows over 3 days (to 2026-10-15 11:00 UTC): 941. Of these, 933 have sid 'server' (no request context), 6 a real lesson's sid, 2 other; 639 of the 933 took ≤ 2 ms (test stubs). All 95 model.call 429s are sid 'server' and NONE is a real lesson's. The 06 UTC hour held 138 sid='server' taxila-fast chat calls with real latency, and its 49 429s ran 210-516 ms: the main loop's own real-model repro scripts run with .env.local, not children. The 10:48 UTC burst (17 429s, 400 / 500 / 503 / network at 0-1 ms) was this session's 14.3 gate: npm test inherited production's DATABASE_URL, so r5-overflow's stubbed calls were recorded into the production trace. So ms-r142-429-contention's '51 of 361 production taxila-fast calls throttled at 06 UTC while TEST ran' was not child traffic. No child's lesson was throttled in the window measured.",
+   "n": 941,
+   "method": "read-only SQL on production trace_event: sid vs lesson ids, status, ms"
+  },
+  {
+   "id": "rj-r143-gate-wrote-prod-trace",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Running the release gate (scripts/deploy-azure.mjs --gate, which loads .env.local) with production's DATABASE_URL in the environment of npm test. What broke: every stubbed model call a test made (fake 429 / 400 / 500 / network at 0-1 ms) was written into the PRODUCTION trace with sid 'server', 639 rows in 3 days. Those rows, and the main loop's own real-model scripts run with .env.local, were then read as production throttling (ms-r142-429-contention). Fix: infra/gate.mjs gateEnv: the gate's commands run in CI's environment, with no DATABASE_URL / DATABASE_URL_DIRECT / TAXILA_DB. The read-only migrations-applied test still reads its URL from .env.local, and the DB suites keep CONDUCTOR_TEST_DATABASE_URL. Rule: anything that runs with .env.local and is not the production server sets DATABASE_URL empty, or points at TEST."
+  },
+  {
+   "id": "dc-r143-prod-numbers-need-a-lesson-sid",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "A production number about children (429 rates, latency, failures) counts only trace rows whose sid is a real lesson, i.e. joined to lesson. sid 'server' rows are scripts, tests and background jobs, and are reported separately. The 14.2 overflow lane stands on stream 3's measured arm (+747 ms instead of a failure) and on the structural fact that TEST and production share deployment limits. The claim that production was throttled is withdrawn. TEST traffic still routes to southindia (dc-r143-test-chat-southindia) because the shared limits are real, even though no child was measured throttled.",
+   "reversal": "a background-job path that legitimately records child-facing model calls with sid 'server' (then it needs its own lesson attribution)"
+  }
+ ],
+ "edges": [
+  { "src": "ms-r143-prod-trace-origin", "rel": "supersedes", "dst": "ms-r142-429-contention" },
+  { "src": "rj-r143-gate-wrote-prod-trace", "rel": "caused_by", "dst": "ms-r143-prod-trace-origin" },
+  { "src": "dc-r143-prod-numbers-need-a-lesson-sid", "rel": "measured_by", "dst": "ms-r143-prod-trace-origin" },
+  { "src": "dc-r143-prod-numbers-need-a-lesson-sid", "rel": "constrains", "dst": "dc-r142-chat-429-overflow" },
+  { "src": "dc-r143-prod-numbers-need-a-lesson-sid", "rel": "constrains", "dst": "dc-r143-test-chat-southindia" }
+ ],
+ "md": {
+  "measurements": "## ms-r143-prod-trace-origin (2026-10-15), correcting ms-r142-429-contention\n\n- Production model.call rows over 3 days: 941. 933 have sid 'server', 6 are real lessons, 2 other.\n- Of the 933 server rows, 639 took ≤ 2 ms (test stubs).\n- All 95 429s are sid 'server'; none belongs to a child's lesson.\n- The 06 UTC 429s were the main loop's own repro scripts. The 10:48 burst was the 14.3 gate's tests, written to production.\n- **\"Production was throttled\" is withdrawn.**",
+  "rejected": "## rj-r143-gate-wrote-prod-trace (2026-10-15)\n\n- **Tried:** the release gate ran npm test with production's DATABASE_URL in its environment.\n- **What broke:** stubbed model calls were written into the production trace (639 rows in 3 days) and misread as production throttling.\n- **Fix:** gateEnv runs the gate in CI's environment, with no database URL.",
+  "decisions": "## dc-r143-prod-numbers-need-a-lesson-sid (2026-10-15)\n\n- **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.\n- **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.\n- **Reversal:** a background path that legitimately records child-facing calls with sid 'server'."
+ }
+}

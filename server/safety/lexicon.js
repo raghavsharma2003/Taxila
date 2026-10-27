@@ -366,6 +366,23 @@ function rawMasked(id, text) {
   return hit ? t : null;
 }
 
+// round 5 (14.2, main safety review; sim lab p26 "nawab ko hata ke khud satta mein aa gayi", and "maine khud bata diya" (I told
+// it myself), "main khud gaata hoon" on production): khud_ko_kaata let the garble rule fill its VERB slot with any word one
+// edit from a cutting verb (satta/bata/gaata → katta/kata). The shape now counts only when the RAW words carry the self-object
+// ("khud ko", "apne aap ko", "खुद को", "myself"), where a garbled verb still counts (a real disclosure the transcriber bent),
+// or a real cutting / scratching verb itself, unless the turn names a fruit, paper, nails or a slip (ACCIDENT_RAW below).
+const KHUD_SELF_RAW = /(?<![\p{L}\p{M}])(?:khud\s*ko|khudko|apne\s*aap\s*ko|apne\s*aapko|apne\s*ap\s*ko|apneapko|myself|खुद\s*को|ख़ुद\s*को|अपने\s*आप\s*को)(?![\p{L}\p{M}])/iu;
+// ... and khud_ko_khatam ("maine homework khud khatam kar diya" = I finished the homework myself, self_harm on production): with
+// "khud / apne aap" as its subject (never "jindagi / apni jindagi", which stays as it is), no self-object in the raw words
+// ("khud ko") and a TASK the turn names (homework, chapter, sum, food …), "khatam" is finishing the task.
+// The same for a fruit, paper or nails the turn names (ACCIDENT_RAW: "maine khud kaat liya apple"). Without either word
+// it still counts: the transcriber drops "ko" ("मैं खुद खत्म कर लूंगा", red-team red55's noisy draws).
+const TASK = words(`homework hw chapter kaam sum sums sawal sawaal question questions test exercise page book kitab kitaab padhai lesson answer
+  jawab worksheet project assignment khana paani doodh milk juice chocolate biscuit puzzle paper copy notes syllabus revision game level`);
+// raw, because the canonical reading bends "apple" into "apne"
+const ACCIDENT_RAW = /(?<![\p{L}\p{M}])(?:galti|mistake|accident\w*|ghadi|watch|sabzi|vegetables?|paper|kagaz|apple|seb|fruits?|nakhun|nails?|सब्ज़ी|सब्जी|सेब|कागज़|कागज|नाखून|गलती|ग़लती)(?![\p{L}\p{M}])/iu;
+const CUT_VERB_RAW = /(?<![\p{L}\p{M}])(?:kaat\w*|kat|kata|kati|katti|katta|kate|kaata|kaati|kaate|cut\w*|noch\w*|scratch\w*|काट\S*|कट|कटा|कटी|नोच\S*)(?![\p{L}\p{M}])/iu;
+
 export function lexiconScan(text) {
   const readings = readingsOf(text);
   if (!readings.length || !readings[0].text) return { distress: false, kind: null, shape: null };
@@ -374,6 +391,8 @@ export function lexiconScan(text) {
     const m = s.re.exec(full);
     if (!m) continue;
     if (s.guard && s.guard(m[0], full)) continue;
+    if (s.id === "khud_ko_kaata" && !KHUD_SELF_RAW.test(String(text)) && (!CUT_VERB_RAW.test(String(text)) || ACCIDENT_RAW.test(String(text)))) continue;
+    if (s.id === "khud_ko_khatam" && /^(?:khud|apne)/.test(m[0]) && !KHUD_SELF_RAW.test(String(text)) && (TASK.test(full) || ACCIDENT_RAW.test(String(text)))) continue;
     if (s.id === "suicide_spellings" && SUCCEED_RAW.test(String(text))) {
       SUCCEED_RAW.lastIndex = 0;
       masked ??= readingsOf(String(text).replace(SUCCEED_RAW, " "));

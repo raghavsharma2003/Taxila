@@ -9,6 +9,15 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { ROOT } from "./azure.mjs";
 
 export const REPO = "raghavsharma2003/Taxila";
+
+/**
+ * The environment the gate's commands run in: CI's. No database URL (14.3, main: the deploy scripts load .env.local, so the
+ * gate's npm test inherited PRODUCTION's DATABASE_URL and every stubbed model call a test made was written into the
+ * production trace: 639 of 933 sid='server' model.call rows in 3 days were ≤ 2 ms test stubs, 17 of them fake 429s, and
+ * they were read as production throttling; context rj-r143-gate-wrote-prod-trace). The read-only migrations-applied test
+ * still finds its URL itself (it reads .env.local), and the DB suites use CONDUCTOR_TEST_DATABASE_URL, as before.
+ */
+export const gateEnv = (env) => ({ ...env, CI: "1", DATABASE_URL: "", DATABASE_URL_DIRECT: "", TAXILA_DB: "" });
 export const STAMPS = ROOT + "node_modules/.cache/taxila-gate/";
 /** The gate commands, in order; each must exit 0 (CLAUDE.md "Gates"; BUILD-PLAN §1.1). */
 export const GATE_CMDS = ["npx tsc -b", "npx vite build", "npm test", "node scripts/check-prompt-budget.mjs"];
@@ -45,7 +54,7 @@ export function runGates(sha, { cmds = GATE_CMDS, allowDirty = false } = {}) {
     console.log(`gate: ${cmd}`);
     // 60 min per command (was 25): release 9's one-process npm test finished all 3,026 tests green at 1,520 s and was
     // SIGTERMed by the old 1,500 s cap twice (context ms-r4-gate-timeout). Still a cap, so a hung test cannot hold a release.
-    const r = spawnSync("bash", ["-lc", cmd], { cwd: ROOT, stdio: "inherit", timeout: 3_600_000, env: { ...process.env, CI: "1" } });
+    const r = spawnSync("bash", ["-lc", cmd], { cwd: ROOT, stdio: "inherit", timeout: 3_600_000, env: gateEnv(process.env) });
     results.push({ cmd, code: r.status, signal: r.signal, s: Math.round((Date.now() - s) / 1000) });
     if (r.status !== 0) {
       writeStamp(sha, { pass: false, dirty: !!dirty, results });

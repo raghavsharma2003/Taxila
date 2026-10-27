@@ -1,0 +1,34 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r143-teen-filter-collision",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Azure content filter vs the Roman Hindi number 'teen' (three). (a) The sim lab's p11 (class 2 maths, TEST 1bd3182c t12) safeguard was the REPLY call blocked `sexual` 13 times. The child's last five turns probed alone under the reply probe brief (childWordsTrip, southindia): harm 3/3; their t12 words alone: harm; t8-t11 alone: clear. (b) Probing variants (2 tries each): the full t12 line harm; with the digits 3 instead of 'teen': clear; without 'tircha ho ya seedha': clear; 'teen aur teen chhe', 'do aur teen paanch', 'teen guna teen nau', 'teen saal ka bhai', 'teen plus teen equals chhe': harm; 'teen', 'teen aur teen', 'uske teen sides hote hain', 'teen chauthai', 'ek do teen chaar', '3 aur 3 chhe hote hain', 'three and three make six': clear. (c) TEST trace, last 10 days: 52 safeguards the content filter opened (safety.scan kind content_filter, source content_filter); 13 of them (25%) were plain maths with 'teen' in the child's words; the other 39 were mostly context blocks (science non-metals 'graphite / pencil', SST 'shared value', tired / stop words), whose words probe clear alone (p16 0353dc41 t7: clear 3/3 and each line clear). (d) Distress corpora: 0 of 399 lines (red-team 225, taxilafdb 84, es3 80, cv2 10) contain 'teen'.",
+   "n": 52,
+   "method": "TEST trace read-only (safety.scan, srv.req childText, model.call status/filter); say.js childWordsTrip on TEST routing (southindia), 2-3 tries per string"
+  },
+  {
+   "id": "dc-r143-teen-as-digit",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "title": "safety.js filterSafe: in the copy of a text a SAFETY-RELEVANT model call reads, the Roman Hindi number 'teen' (also 'tteen', 'teeen') is written as '3'. Applied at: classify (the label call's whole user prompt incl. the item's Hinglish, the key and her last line; distressCheck; wordsTrip; distressAcross), say.js forModel (the reply prompt's history and this turn, and probeWords for childWordsTrip), understand.js (the note's user prompt). Kept as said after an English article or possessive (a / an / the / my / your / his / her / our / their / this / that / one / every + teen: a teenager), and in teens / teenage / canteen / fifteen. scrubPii is unchanged, because its text also feeds code checks (classify askedOther / revealsAnswer read `heard`). The predicate, the relational lexicon, corroborate and every code check read the raw words. Not applied to the reply's system brief (kit text): a block there is a context block, which the 14.2 probe answers with a neutral line, not the script.",
+   "reversal": "a disclosure in which 'teen' carried the harm signal the filter caught and the predicate and the distress reads both miss (then keep the raw word for the distress reads only), or a filter collision on a digit form"
+  },
+  {
+   "id": "open-r143-kit-filter-collisions",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The kits' Roman Hinglish (prompt_hi, hints, her pinned asks) can carry the same collisions ('teen' and others) into the reply's system brief, where filterSafe is not applied (her reply must keep the kit's wording). A block there is a context block (neutral line, not the script) but still costs the turn. To do: probe every kit string with 'teen' (and a list of other English-colliding Hinglish words) under the reply probe brief offline, and count the blocks; decide per string."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r143-teen-as-digit", "rel": "measured_by", "dst": "ms-r143-teen-filter-collision" },
+  { "src": "open-r143-kit-filter-collisions", "rel": "caused_by", "dst": "ms-r143-teen-filter-collision" },
+  { "src": "dc-r143-teen-as-digit", "rel": "constrains", "dst": "dc-r142-classify-filter-context" }
+ ],
+ "md": {
+  "measurements": "## ms-r143-teen-filter-collision (2026-10-15)\n\nAzure's content filter reads the Roman Hindi number \"teen\" (three) as the English word.\n\n- The sim lab's p11 safeguard (class 2 maths): the child's OWN words tripped `sexual` when probed alone (3/3).\n- Ordinary sums trip it on their own: \"teen guna teen nau\", \"do aur teen paanch\", \"teen aur teen chhe\", \"teen saal ka bhai\". The same words with the digit pass.\n- TEST trace, 10 days: 13 of 52 content-filter safeguards (25%) were plain maths with \"teen\". Most of the other 39 were context blocks whose words probe clear alone.\n- No line in the 399-line distress corpora contains the word.",
+  "decisions": "## dc-r143-teen-as-digit (2026-10-15)\n\n- **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number \"teen\" as \"3\". \"a teen\" / \"my teen sister\" stay as said. The predicate and every code check read the raw words.\n- **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.\n- **Reversal:** a disclosure where \"teen\" carried the only harm signal the predicate and the distress reads miss."
+ }
+}

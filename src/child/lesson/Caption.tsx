@@ -6,14 +6,21 @@
 import { useEffect, useRef, useState } from "react";
 import { clauseAt, clauses } from "./captions.ts";
 
+// The line being spoken and when it started, kept OUTSIDE the component: the Desk mounts a different Caption when its
+// geometry changes (the tray closing mid-line puts the face view's caption up), and a fresh clock replayed her line from
+// its first clause (QA pass 14, lessons 414955cb / a20930e5: the slot failed, the tray went, the caption restarted at "Kabir,")
+let speakingLine: { text: string; t0: number } | null = null;
+
 export function Caption({ text, speaking, visible, lang }: { text: string; speaking: boolean; visible: boolean; lang?: string }) {
   const list = clauses(text);
   const [ms, setMs] = useState(0);
   const t0 = useRef(0);
   useEffect(() => {
-    if (!speaking) return;
-    t0.current = performance.now();
-    setMs(0);
+    // (a line said again later starts again: the record goes when she stops)
+    if (!speaking) { if (speakingLine?.text === text) speakingLine = null; return; }
+    if (speakingLine?.text !== text) speakingLine = { text, t0: performance.now() };
+    t0.current = speakingLine.t0;
+    setMs(performance.now() - t0.current);
     const id = setInterval(() => setMs(performance.now() - t0.current), 200);
     return () => clearInterval(id);
   }, [speaking, text]);

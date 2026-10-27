@@ -5,6 +5,7 @@
  * Epoch-ms clock throughout (the tap's clock). Returns a stop function; never throws past `start` (the caller degrades).
  */
 import type { DuplexLive } from "./live.ts";
+import { yin } from "../voice/dsp.ts";
 
 export interface LiveTapOptions {
   live: DuplexLive;
@@ -33,15 +34,17 @@ export async function startLiveTap(o: LiveTapOptions): Promise<() => void> {
   } catch {
     analyser = null;
   }
-  const herDb = (): number | null => {
-    if (!analyser || !buf || !o.herSounding?.()) return null;
+  // her output on this hop: level, and (round 5, D5 pre-duck) her pitch — her echo carries HER pitch, a child over her does not
+  const her = (): { db: number | null; f0: number | null } => {
+    if (!analyser || !buf || !o.herSounding?.()) return { db: null, f0: null };
     analyser.getFloatTimeDomainData(buf as Float32Array<ArrayBuffer>);
     let s = 0;
     for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i];
-    return 10 * Math.log10(s / buf.length + 1e-12);
+    const db = 10 * Math.log10(s / buf.length + 1e-12);
+    return { db, f0: db > -50 ? yin(buf, o.ctx.sampleRate, 70, 600).f0 : null };
   };
   // DuplexLive.frame takes linear RMS (the host's ChildAudioTracker unit); its own 100 ms timer runs from live.start()
-  const off = fe.onFrame((f) => o.live.frame(f.t, Math.pow(10, f.rmsDb / 20), f.f0, herDb()));
+  const off = fe.onFrame((f) => { const h = her(); o.live.frame(f.t, Math.pow(10, f.rmsDb / 20), f.f0, h.db, h.f0); });
   // voicesig round 3: the thinking-pause cue (a filled pause just before the silence) reaches the engine as an acoustic
   // estimate on the same epoch clock; numbers only, and absent when the detector or the cue is switched off
   let offHold: () => void = () => {};

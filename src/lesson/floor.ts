@@ -51,6 +51,11 @@ export type FloorInput =
   | { type: "child_speech_end" }
   | { type: "child_silent" }
   | { type: "response_start" }
+  /**
+   * r5-latency (QA D30): her line's audio FAILED (no voice, the caption is on screen): the floor moves on as if she had
+   * finished speaking, to your_turn when her line hands over, else idle (seen: the floor stayed idle for 48 s).
+   */
+  | { type: "teacher_audio_failed" }
   /** A local commit: typed send, tile tap, number-pad send, module answer (after the outbox write). */
   | { type: "commit" }
   /** The Director's ui for the turn about to be spoken (arrives before her audio on every lane). */
@@ -113,6 +118,9 @@ export function reduceFloor(s: FloorState, e: FloorInput, now: number, timing: F
         return opensTurn(s) ? go(s, "your_turn", now, { pending: true }) : go(s, "idle", now, { pending: false });
       }
       return s;
+    case "teacher_audio_failed":
+      if (s.floor === "listening") return s; // the child already took the floor
+      return opensTurn(s) ? go(s, "your_turn", now, { pending: true }) : go(s, "idle", now, { pending: false });
     case "child_speech_start":
       // your_turn → listening; speaking/showing/yielding → listening is a barge-in (she stops).
       if (s.floor === "listening") return s;
@@ -220,6 +228,10 @@ export class FloorController {
       case "reset":
       case "commit":
         return this.feed({ type: e.type });
+      case "response_done":
+        // r5-latency (QA D30): her voice failed for this line (cascadeLink: playback "failed", the tts_failed error)
+        if (e.status === "failed") this.feed({ type: "teacher_audio_failed" });
+        return;
       case "child_final":
         // A typed or tapped turn arrives as child_final{typed}: the receipt (a spoken final follows speech_end).
         if (e.typed) this.feed({ type: "commit" });

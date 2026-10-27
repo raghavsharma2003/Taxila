@@ -76,7 +76,9 @@ for (const deployment of ["grok-4-1-fast-non-reasoning", "taxila-fast"]) {
       const out = await classify(argsFor(s));
       assert.equal(out.flags.distress, true, "a filter block is never read as safe");
       assert.equal(out.source, "content_filter");
-      assert.equal(calls, 1, "no second call on the same blocked words");
+      // round 5 (14.2): one probe of the child's words ALONE follows the block (the labels' prompt also carries the item and
+      // the lesson), and it is blocked here too, so the turn fails closed; never a third call
+      assert.equal(calls, 2, "one words-alone probe, no more");
       const plan = await planTurn(s, out, planCtxFor(s));
       assert.equal(plan.r.move.kind, "safeguard");
       assert.ok(plan.incident && plan.incident.source === "content_filter");

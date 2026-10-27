@@ -25,6 +25,18 @@ export function resolveAddress({ classLevel, lang, parent = null }) {
   return cl >= 5 ? "aap" : "tum";
 }
 
+/**
+ * r5 QA D38 (14.3): the address an ENGLISH lesson's code-switched line takes. An English lesson has no address (no note in
+ * the prompt, resolveAddress → null), but she mirrors a child who types Hinglish, and those lines came out in tum forms for a
+ * class 6 child whose parent set aap (TEST: 365 of 1569 English-lesson teacher lines carried tum marks). The reply guard
+ * holds a code-switched line to this: the parent's setting, else the class default. Never in the prompt.
+ * @param {{ classLevel: number, parent?: string | null }} a
+ * @returns {"aap" | "tum"}
+ */
+export function codeSwitchAddress({ classLevel, parent = null }) {
+  return resolveAddress({ classLevel, lang: "hinglish", parent }) ?? "tum";
+}
+
 /** The move-shape note (a note, never a line she could say). null when there is nothing to say (English). */
 export function registerNote(address) {
   if (address === "aap") return "address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu";

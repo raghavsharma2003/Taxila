@@ -16,6 +16,10 @@ import { ROOT, framesOf, runSession, to24k, s16, pool, loadEnv } from "../duplex
 const arg = (n, d) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : d; };
 const BAKE = arg("--bake"), ARM = arg("--arm"), VAR = arg("--variant", "clean"), CONC = Number(arg("--conc", 6));
 const ONLY = arg("--only") ? new Set(arg("--only").split(",")) : null;
+// round 5: --half runs the duplex engine as the HALF-DUPLEX D4 fallback (CascadeDuplex HALF_DUPLEX_D4: mic gated while she
+// plays + tail, items begun then dropped, probes only with an open item, no empty turn); --arm-name names the run
+const HALF = process.argv.includes("--half");
+const ARM_NAME = arg("--arm-name", null);
 const SR = 16000, HOP = 320;
 loadEnv();
 
@@ -56,22 +60,26 @@ async function runCascade(x) {
 
 async function one(id) {
   const meta = JSON.parse(fs.readFileSync(path.join(BAKE, `${id}.json`), "utf8"));
-  const x = readS16(path.join(BAKE, `${id}.${VAR}.s16`));
+  let x = readS16(path.join(BAKE, `${id}.${VAR}.s16`));
   const t0 = Date.now();
   if (ARM === "cascade") {
     const ev = await runCascade(x);
     return { id, arm: ARM, variant: VAR, events: ev, ms: Date.now() - t0 };
   }
   const { DuplexLive } = await import(ROOT + "src/duplex/live.ts");
+  // round 5: + 6 s of the room's own noise after the stream (as arms-d5.mjs): a patient engine must get to decide
+  if (HALF || ARM_NAME) { const tail = 6 * SR, y = new Float32Array(x.length + tail); y.set(x); const bed = x.subarray(Math.max(0, x.length - SR)); for (let i = x.length; i < y.length; i++) y[i] = bed[(i - x.length) % bed.length] ?? 0; x = y; }
   const herX = readS16(path.join(BAKE, `${id}.her.s16`));
   // her playback level per stream frame (the device knows what it played): -inf outside her line
   const nF = Math.floor(x.length / HOP), outDb = new Array(nF).fill(-120);
   const o = Math.round((meta.herAtMs * SR) / 1000);
   for (let f = 0; f < nF; f++) { let s = 0; for (let k = 0; k < HOP; k++) { const j = f * HOP + k - o; const v = j >= 0 && j < herX.length ? herX[j] : 0; s += v * v; } outDb[f] = 10 * Math.log10(s / HOP + 1e-12); }
   const fr = framesOf(x);
-  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, ui: meta.ctx ? { exchange: meta.ctx.exchange, expected: meta.ctx.expected } : {} }];
-  const r = await runSession({ id: `bake-${id}-${VAR}`, x, frames: fr, her, stt: { lane: "D4" }, band: "B2", DuplexLive, floorDb: null });
-  return { id, arm: ARM, variant: VAR, acts: r.acts, phases: r.phases, logs: r.logs.filter((l) => l[1] === "YIELD" || l[1] === "SPEAK" || l[1] === "HUSH"), stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null })), errors: r.errors, ms: Date.now() - t0 };
+  // round 5: the Director's turn ui (uiOf, as the D5 arm), not the {exchange, expected} shortcut (BAKEOFF §2.4 harness gap)
+  const { uiOf } = await import("./arms-d5.mjs");
+  const her = [{ start: meta.gold.herSpan.start, end: meta.gold.herSpan.end, text: meta.herText, outDb, ui: uiOf(meta.ctx) }];
+  const r = await runSession({ id: `bake-${id}-${VAR}`, x, frames: fr, her, stt: { lane: "D4" }, band: "B2", DuplexLive, floorDb: null, liveOptions: HALF ? { halfDuplex: true } : {} });
+  return { id, arm: ARM_NAME ?? ARM, variant: VAR, acts: r.acts, phases: r.phases, logs: r.logs.filter((l) => l[1] === "YIELD" || l[1] === "SPEAK" || l[1] === "HUSH"), stt: r.sttLog.map((s) => ({ t: s.t, type: s.raw.type, item: s.raw.item_id, text: s.raw.transcript ?? s.raw.delta ?? null })), errors: r.errors, ms: Date.now() - t0 };
 }
 
 const idx = JSON.parse(fs.readFileSync(path.join(BAKE, "index.json"), "utf8")).filter((r) => !ONLY || ONLY.has(r.id));
@@ -79,7 +87,7 @@ const outDir = path.join(BAKE, "runs");
 fs.mkdirSync(outDir, { recursive: true });
 let done = 0;
 await pool(idx.map((r) => async () => {
-  const file = path.join(outDir, `${ARM}.${VAR}.${r.id}.json`);
+  const file = path.join(outDir, `${ARM_NAME ?? ARM}.${VAR}.${r.id}.json`);
   if (fs.existsSync(file)) { done++; return; }
   try { fs.writeFileSync(file, JSON.stringify(await one(r.id))); } catch (e) { console.warn(r.id, String(e.message).slice(0, 160)); }
   if (++done % 10 === 0) console.log(`${ARM}/${VAR} ${done}/${idx.length}`);

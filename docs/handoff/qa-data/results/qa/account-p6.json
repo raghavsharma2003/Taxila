@@ -1,0 +1,833 @@
+{
+ "console": [
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+ ],
+ "pageerror": [
+  "401"
+ ],
+ "failed": [],
+ "http": [
+  "GET /api/me 401",
+  "GET /api/child/boot?childId=a83c9a53-6a37-4876-9820-e8518688868c 401",
+  "POST /api/parent/lock 401",
+  "GET /api/me 401"
+ ],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 1,
+   "t": 1792004072774,
+   "mono": 89,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/parent/data",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 2,
+   "t": 1792004072776,
+   "mono": 91,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.45,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 3,
+   "t": 1792004073099,
+   "mono": 414,
+   "kind": "net.req",
+   "rid": "9f056942-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 4,
+   "t": 1792004073001,
+   "mono": 610,
+   "kind": "net.req",
+   "rid": "9f056942-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 5,
+   "t": 1792004073002,
+   "mono": 611,
+   "kind": "net.res",
+   "rid": "9f056942-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 194,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T19:03:54.127Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 6,
+   "t": 1792004073002,
+   "mono": 689,
+   "kind": "net.res",
+   "rid": "9f056942-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 77,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 7,
+   "t": 1792004074485,
+   "mono": 2172,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 8,
+   "t": 1792004074530,
+   "mono": 2218,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 9,
+   "t": 1792004074580,
+   "mono": 2267,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 10,
+   "t": 1792004074630,
+   "mono": 2317,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 11,
+   "t": 1792004074679,
+   "mono": 2366,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 12,
+   "t": 1792004074680,
+   "mono": 2367,
+   "kind": "net.req",
+   "rid": "9f056942-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "body": {
+     "pin": "[masked]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 13,
+   "t": 1792004075003,
+   "mono": 2813,
+   "kind": "net.res",
+   "rid": "9f056942-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "status": 200,
+    "ms": 443,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T19:04:35.500Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 14,
+   "t": 1792004075040,
+   "mono": 2850,
+   "kind": "net.req",
+   "rid": "9f056942-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/memory?childId=a83c9a53-6a37-4876-9820-e[masked]c"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 15,
+   "t": 1792004076001,
+   "mono": 3574,
+   "kind": "net.res",
+   "rid": "9f056942-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/memory?childId=a83c9a53-6a37-4876-9820-e[masked]c",
+    "status": 200,
+    "ms": 722,
+    "bytes": 288,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "keeps": "Between lessons she keeps your child's learning (what was hard, what came good) and the interests you chose. You can see and delete each memory here.",
+     "consents": {
+      "learning_profile": true,
+      "memory": true
+     },
+     "remembered": [],
+     "fromLastLesson": [],
+     "interests": [],
+     "used": [],
+     "forgotten": []
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 16,
+   "t": 1792004077845,
+   "mono": 5418,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Download everything"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 17,
+   "t": 1792004077895,
+   "mono": 5468,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "input",
+    "label": "[masked]",
+    "type": "password",
+    "field": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 18,
+   "t": 1792004077945,
+   "mono": 5518,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Download"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 19,
+   "t": 1792004077946,
+   "mono": 5519,
+   "kind": "net.req",
+   "rid": "9f056942-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/export",
+    "body": {
+     "password": "[redacted]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 20,
+   "t": 1792004078517,
+   "mono": 6090,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 732,
+    "el": "h1.pa-h1"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 21,
+   "t": 1792004078002,
+   "mono": 6128,
+   "kind": "net.res",
+   "rid": "9f056942-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/export",
+    "status": 200,
+    "ms": 607,
+    "bytes": 1619,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "exportedAt": "2026-10-14T18:54:38.808Z",
+     "account": {
+      "email": "[masked]",
+      "name": "QA Parent",
+      "phone": "[masked]",
+      "locale": "en-IN",
+      "created_at": "2026-10-14T18:53:27.756Z"
+     },
+     "consents": [
+      {
+       "child_id": null,
+       "purpose": "core_tutoring",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "method": "checkbox_v1",
+       "created_at": "2026-10-14T18:53:29.556Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "learning_profile",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "method": "checkbox_v1",
+       "created_at": "2026-10-14T18:53:29.594Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "memory",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "method": "checkbox_v1",
+       "created_at": "2026-10-14T18:53:29.630Z"
+      }
+     ],
+     "children": [
+      {
+       "profile": {
+        "firstName": "Riya",
+        "classLevel": 4,
+        "board": "cbse",
+        "schoolMedium": "english",
+        "language": "hinglish",
+        "teacher": "asha",
+        "avatar": null,
+        "interests": [],
+        "createdAt": "2026-10-14T18:53:31.039Z"
+       },
+       "controls": {
+        "dailyMinutes": 30,
+        "hoursStart": "06:30",
+        "hoursEnd": "21:30",
+        "captionsAlways": false,
+        "comfortMode": false,
+        "address": "tum",
+        "reportChannel": "app",
+        "saved": true,
+        "textOnly": false,
+        "homeworkToday": false
+       },
+       "lessons": [],
+       "conversations": "included",
+       "evidence": [],
+       "remembered": []
+      }
+     ]
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 22,
+   "t": 1792004078003,
+   "mono": 6129,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "a",
+    "keyboard": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 23,
+   "t": 1792004078059,
+   "mono": 6185,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Delete my account"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 24,
+   "t": 1792004078590,
+   "mono": 6716,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "input",
+    "label": "[masked]",
+    "type": "password",
+    "field": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 25,
+   "t": 1792004078640,
+   "mono": 6767,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Continue"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 26,
+   "t": 1792004081887,
+   "mono": 10013,
+   "kind": "net.req",
+   "rid": "9f056942-6",
+   "tier": 1,
+   "data": {
+    "method": "DELETE",
+    "path": "/api/account",
+    "body": {
+     "password": "[redacted]",
+     "confirm": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 27,
+   "t": 1792004083001,
+   "mono": 10565,
+   "kind": "net.req",
+   "rid": "9f056942-7",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 28,
+   "t": 1792004083002,
+   "mono": 10565,
+   "kind": "net.res",
+   "rid": "9f056942-6",
+   "tier": 1,
+   "data": {
+    "method": "DELETE",
+    "path": "/api/account",
+    "status": 200,
+    "ms": 551,
+    "bytes": 132,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true,
+     "receipt": {
+      "code": "TX-AAE09572",
+      "at": "2026-10-14T18:54:43.093Z",
+      "children": 1,
+      "backupsGoneBy": "2026-10-21T18:54:43.093Z"
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "pid": "9f056942-4ef9-424b-a3b8-8dfb155a8e90",
+   "src": "client",
+   "seq": 29,
+   "t": 1792004083002,
+   "mono": 10570,
+   "kind": "net.res",
+   "rid": "9f056942-7",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 401,
+    "ms": 4,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 1,
+   "t": 1792004087180,
+   "mono": 33,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/a83c9a53-6a37-4876-9820-e[masked]c/",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 2,
+   "t": 1792004087182,
+   "mono": 35,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.45,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 3,
+   "t": 1792004087207,
+   "mono": 60,
+   "kind": "net.req",
+   "rid": "9bdf8261-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 4,
+   "t": 1792004087208,
+   "mono": 62,
+   "kind": "net.req",
+   "rid": "9bdf8261-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 5,
+   "t": 1792004087212,
+   "mono": 66,
+   "kind": "err.promise",
+   "tier": 1,
+   "data": {
+    "message": "401",
+    "stack": ""
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 6,
+   "t": 1792004087213,
+   "mono": 66,
+   "kind": "net.req",
+   "rid": "9bdf8261-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/client-error",
+    "body": {
+     "kind": "unhandledrejection",
+     "name": "Error",
+     "message": "non-error rejection",
+     "stack": "",
+     "path": "/c/a83c9a53-6a37-4876-9820-e[masked]c/",
+     "bundle": "main-C-5FjxdA.js",
+     "mobile": "[masked]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 7,
+   "t": 1792004087002,
+   "mono": 70,
+   "kind": "net.res",
+   "rid": "9bdf8261-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 401,
+    "ms": 8,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 8,
+   "t": 1792004087004,
+   "mono": 72,
+   "kind": "net.res",
+   "rid": "9bdf8261-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 401,
+    "ms": 6,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "pid": "9bdf8261-ede1-4449-8238-a502afb3d4eb",
+   "src": "client",
+   "seq": 9,
+   "t": 1792004087001,
+   "mono": 75,
+   "kind": "net.res",
+   "rid": "9bdf8261-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/client-error",
+    "status": 204,
+    "ms": 8,
+    "bytes": 0,
+    "type": "application/json; charset=utf-8"
+   }
+  }
+ ]
+}

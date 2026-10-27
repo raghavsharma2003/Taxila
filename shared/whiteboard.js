@@ -15,7 +15,7 @@
 // disagree about what a script means). Pure: no DOM, no I/O, deterministic (the hand-drawn jitter is seeded by op id).
 
 export const LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000,
-  maxNumRows: 8, maxNumCols: 12, maxCellChars: 6 });
+  maxNumRows: 8, maxNumCols: 12, maxCellChars: 6, maxWordCellChars: 12 });
 export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase"]);
 export const INKS = Object.freeze(["chalk", "accent", "ink", "mark", "good", "soft"]);
 export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
@@ -179,7 +179,11 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
       case "numwork": {
         const at = P(o.at, `${where}.at`);
         if (!at || !NUM_LAYOUTS.includes(o.layout) || !Array.isArray(o.rows) || !o.rows.length) { bad("numwork"); break; }
-        const rows = o.rows.slice(0, LIMITS.maxNumRows).map((r) => (Array.isArray(r) ? r.slice(0, LIMITS.maxNumCols).map((c) => String(c ?? "").trim().slice(0, LIMITS.maxCellChars)) : []));
+        // a cell over its cap is an error, never a silent cut (QA pass 13: library boards wrote "breadt", "warmt", "stomac"):
+        // equation / long_div rows are laid out as one line of text, so a word fits; column layouts keep short cells
+        const cap = o.layout === "equation" || o.layout === "long_div" ? LIMITS.maxWordCellChars : LIMITS.maxCellChars;
+        if (o.rows.some((r) => Array.isArray(r) && r.some((c) => String(c ?? "").trim().length > cap))) bad("numwork_cell_long");
+        const rows = o.rows.slice(0, LIMITS.maxNumRows).map((r) => (Array.isArray(r) ? r.slice(0, LIMITS.maxNumCols).map((c) => String(c ?? "").trim().slice(0, cap)) : []));
         if (rows.some((r) => r.some((c) => /[<>{}`]/.test(c)))) { bad("numwork_markup"); break; }
         op = { ...base, at, layout: o.layout, rows };
         if (Array.isArray(o.marks)) {

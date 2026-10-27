@@ -38,6 +38,19 @@ function cer(ref, hyp) {
   return Math.min(1, d[a.length][b.length] / a.length);
 }
 
+/** ASR finals with the time their speech began (the item's speech_started, else the final's own arrival). */
+function asrOf(list) {
+  const started = new Map();
+  const out = [];
+  for (const e of list) {
+    const type = e.type ?? "";
+    const item = e.item ?? e.item_id ?? null;
+    if (/speech_started$/.test(type) && item && !started.has(item)) started.set(item, e.t);
+    if (/transcription\.completed$/.test(type)) out.push({ text: e.text ?? "", startedAt: (item && started.get(item)) ?? e.t, t: e.t });
+  }
+  return out;
+}
+
 /** One run → { yields[], decisions[], transcripts[], firstAudio[], herSpan, shift, usage } on the run's own clock. */
 function normalise(run, meta) {
   const g = meta.gold;
@@ -48,16 +61,27 @@ function normalise(run, meta) {
       yields: ev.filter((e) => e.type.endsWith("speech_started")).map((e) => e.t),
       decisions: ev.filter((e) => e.type.endsWith("buffer.committed")).map((e) => e.t),
       transcripts: ev.filter((e) => e.type.endsWith("transcription.completed")).map((e) => ({ t: e.t, text: e.text ?? "" })),
+      asr: asrOf(ev),
       firstAudio: [], usage: null,
     };
   }
-  if (run.arm === "duplex" || run.arm.startsWith("d5")) {
+  if (Array.isArray(run.acts)) { // the engine arms: duplex (D4), d4h (D4 half-duplex), d5*
     return {
       shift: 0, herSpan: [g.herSpan.start, g.herSpan.end],
       yields: run.acts.filter((a) => a[1] === "pause" || a[1] === "stop").map((a) => a[0]),
+      // her voice effectively off: the hush (gain ≤ 0.05, −26 dB) or a pause / stop; and the first duck of any depth
+      silenced: run.acts.filter((a) => a[1] === "pause" || a[1] === "stop" || (a[1] === "duck" && a[2] <= 0.05)).map((a) => a[0]),
+      ducks: run.acts.filter((a) => a[1] === "duck" && a[2] < 1).map((a) => a[0]),
       decisions: run.acts.filter((a) => a[1] === "commit").map((a) => a[0]),
+      decisionText: run.acts.filter((a) => a[1] === "commit").map((a) => a[2] ?? ""),
+      asr: asrOf(run.stt ?? []),
       // what the Director receives: the engine's committed turn text (it strips her own echoed words), not the raw ASR
-      transcripts: run.acts.filter((a) => a[1] === "commit").map((a) => ({ t: a[0], text: a[2] ?? "" })),
+      // (a repeat of the same words is the open-loop harness re-committing when no reply of hers follows: counted once)
+      // D5: the ear's own finals (what Voice Live heard, the same basis as the speech-to-speech arms; a stop request is a
+      // yield, never a committed turn, so committed text would under-count what was heard)
+      transcripts: run.arm.startsWith("d5")
+        ? (run.stt ?? []).filter((e) => /transcription\.completed$/.test(e.type ?? "")).map((e) => ({ t: e.t, text: e.text ?? "" }))
+        : run.acts.filter((a) => a[1] === "commit").map((a) => ({ t: a[0], text: a[2] ?? "" })).filter((x, i, all) => !all.slice(0, i).some((y) => y.text === x.text)),
       firstAudio: [], usage: null,
     };
   }
@@ -89,7 +113,19 @@ function scoreOne(run, meta) {
   // echo-only window: her playback while no child voice
   const echoEnd = !meta.child ? n.herSpan[1] + 300 : after ? Math.min(n.herSpan[1] + 300, onset ?? Infinity) : (onset ?? n.herSpan[1]);
   r.echoFalseYield = n.yields.some((t) => t >= n.herSpan[0] + 100 && t < echoEnd);
-  if (fam === "F7" && onset !== null) { const y = n.yields.find((t) => t >= onset - 50 && t <= onset + 1500); r.bargeOk = y !== undefined; r.bargeMs = y !== undefined ? Math.max(0, Math.round(y - onset)) : null; }
+  // round 5: her voice cut to the hush (or stopped) on her own echo — what the owner heard as her cutting herself off
+  r.echoFalseHush = (n.silenced ?? n.yields).some((t) => t >= n.herSpan[0] + 100 && t < echoEnd);
+  // round 5: a PHANTOM child transcript = her own voice transcribed as the child: a non-empty ASR final for speech that began
+  // while only her voice was in the mic; a phantom TURN = a committed child turn with words in that window
+  const inEcho = (t) => t >= n.herSpan[0] + 100 && t < echoEnd;
+  r.phantomAsr = (n.asr ?? []).filter((x) => x.text.trim() && inEcho(x.startedAt)).map((x) => x.text.slice(0, 40));
+  r.phantomTurn = n.decisions.some((t, i) => inEcho(t) && (n.decisionText?.[i] ?? "x").trim() !== "");
+  if (fam === "F7" && onset !== null) {
+    const y = n.yields.find((t) => t >= onset - 50 && t <= onset + 1500); r.bargeOk = y !== undefined; r.bargeMs = y !== undefined ? Math.max(0, Math.round(y - onset)) : null;
+    // speech-to-speech arms stop playback at speech_started: their silencing IS the yield
+    const sl = (n.silenced ?? n.yields).find((t) => t >= onset - 50 && t <= onset + 1500); r.silencedMs = sl !== undefined ? Math.max(0, Math.round(sl - onset)) : null;
+    const dk = (n.ducks ?? n.yields).find((t) => t >= onset - 50 && t <= onset + 1500); r.duckMs = dk !== undefined ? Math.max(0, Math.round(dk - onset)) : null;
+  }
   if (fam === "F8" && onset !== null) r.contFalseYield = n.yields.some((t) => t >= onset - 50 && t <= onset + 1500);
   if (after && trueEnd !== null) {
     const pauses = (g.pauses ?? []).map((p) => ({ start: p.start + sh, end: p.end + sh, cls: p.cls ?? p.kind ?? p.class }));
@@ -102,6 +138,11 @@ function scoreOne(run, meta) {
   if (meta.child && onset !== null) {
     const hyp = n.transcripts.filter((x) => x.t >= onset - 200).map((x) => x.text).join(" ");
     r.cer = cer(meta.child.text, hyp);
+    // a LONE word (हाँ, रुको, छप्पन; continuers are F8's): transcribed = its words reached the turn-taker; noticed = it was
+    // transcribed, or acted on (a yield for a stop request, a turn — an empty one is the Director's re-ask)
+    if (fam !== "F8" && meta.child.text.trim().split(/\s+/).length === 1) {
+      r.lone = { transcribed: r.cer !== null && r.cer <= 0.5, noticed: (r.cer !== null && r.cer <= 0.5) || n.yields.some((t) => t >= onset - 50) || n.decisions.some((t) => t >= onset) };
+    }
     r.hyp = hyp.slice(0, 120); r.ref = meta.child.text.slice(0, 120);
   }
   r.usage = n.usage; r.herCut = n.herCut ?? null;
@@ -128,8 +169,14 @@ for (const [key, rows] of [...groups.entries()].sort()) {
   out[key] = {
     n: rows.length,
     echoFalseBargeIn: pct(rows.filter((r) => r.echoFalseYield).length, rows.length),
+    echoFalseHush: pct(rows.filter((r) => r.echoFalseHush).length, rows.length),
     trueBargeIn: pct(f7.filter((r) => r.bargeOk).length, f7.length), bargeP50Ms: q(f7.map((r) => r.bargeMs).filter((x) => x !== null), 0.5),
     continuerFalseYield: pct(f8.filter((r) => r.contFalseYield).length, f8.length),
+    bargeSilenced: { within1500: pct(f7.filter((r) => r.silencedMs !== null && r.silencedMs !== undefined).length, f7.length), within300: pct(f7.filter((r) => r.silencedMs !== null && r.silencedMs !== undefined && r.silencedMs <= 300).length, f7.length),
+      p50: q(f7.map((r) => r.silencedMs).filter((x) => x !== null && x !== undefined), 0.5), duckP50: q(f7.map((r) => r.duckMs).filter((x) => x !== null && x !== undefined), 0.5) },
+    phantom: { linesWithAsr: pct(rows.filter((r) => r.phantomAsr?.length).length, rows.length), turns: pct(rows.filter((r) => r.phantomTurn).length, rows.length),
+      examples: rows.flatMap((r) => r.phantomAsr ?? []).slice(0, 6) },
+    loneWords: (() => { const l = rows.filter((r) => r.lone); return { n: l.length, transcribed: pct(l.filter((r) => r.lone.transcribed).length, l.length), noticed: pct(l.filter((r) => r.lone.noticed).length, l.length) }; })(),
     eot: { n: eot.length, p50: q(eot.map((r) => r.eotMs).filter((x) => x !== null), 0.5), p90: q(eot.map((r) => r.eotMs).filter((x) => x !== null), 0.9), missed: pct(eot.filter((r) => r.eotMs === null).length, eot.length), cutoffs: pct(eot.filter((r) => r.cut).length, eot.length) },
     firstAudio: { n: fa.length, p50: q(fa, 0.5), p90: q(fa, 0.9) },
     skeletonCER: { n: cers.length, mean: cers.length ? +(cers.reduce((a, b) => a + b, 0) / cers.length).toFixed(3) : null, p50: cers.length ? +[...cers].sort((a, b) => a - b)[Math.floor(cers.length / 2)].toFixed(3) : null },

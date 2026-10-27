@@ -146,6 +146,7 @@ export async function planFor(child, guardian, now = new Date()) {
     controlsOf(child),
     hasConsent(guardian.id, child.id, "learning_profile"),
     one(`select l.id, l.topic_id, l.started_at, l.state->'lastUi'->'ask'->>'text' as ask,
+            coalesce(jsonb_typeof(l.state->'safeguard'), 'null') <> 'null' as safeguard_open,
             (select count(*)::int from turn t where t.lesson_id = l.id and t.speaker = 'child') as child_turns,
             greatest(l.started_at, coalesce((select max(t.at) from turn t where t.lesson_id = l.id), l.started_at)) as last_at
           from lesson l where l.child_id = $1 and l.ended_at is null order by l.started_at desc limit 1`, [child.id]),
@@ -170,7 +171,9 @@ export async function planFor(child, guardian, now = new Date()) {
   const capRemaining = Math.max(0, Math.round((capMin - usedMin) * 10) / 10);
   const lastAt = open ? new Date(open.last_at).getTime() : 0;
   // "Only this session" (learning_profile off): no Continue, no map, no notebook — hidden, not empty (§3.13).
-  const resumable = !!open && profile && open.child_turns > 0 && now.getTime() - lastAt < RESUME_HOURS * 3600_000;
+  // r5 QA D37 (14.3): never offer Continue for a lesson the server will not resume (lesson.js resumeLesson): one parked
+  // inside an open safeguarding episode is refused there, so the home said CONTINUE and a new lesson started instead
+  const resumable = !!open && profile && open.child_turns > 0 && !open.safeguard_open && now.getTime() - lastAt < RESUME_HOURS * 3600_000;
   const doneRows = todayRows.filter((r) => countsAsDone(r.state));
   const state = homeStateOf({ resumable, usedMin, capMin, doneToday: doneRows.length > 0, now: localTime(now, tz),
     from: controls.from, to: controls.to, anyLesson: !!anyRow?.any, openNow: !!controls.openUntil,
@@ -184,7 +187,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: dayLimitsOn() },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next

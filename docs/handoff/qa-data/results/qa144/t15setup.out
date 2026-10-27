@@ -1,0 +1,17 @@
+u1 {"email":"qa-r5-u1-1792639875753-a9gt@taxila.test","password":"[redacted]","cid":"9580a34e-9113-40d2-8622-34d4b47c1ff6","seen":["/start/class","/start/promises","/start/phone","/start/consent","/start/child"],"ms":13501}
+u1 {"console":["error: Failed to load resource: the server responded with a status of 401 (Unauthorized)"],"pageerror":[],"failed":[],"http":["GET /api/me 401"]}
+u2 {"email":"qa-r5-u2-1792639893846-cr0m@taxila.test","password":"[redacted]","cid":"70f22807-fddf-4611-8580-c090c0d30c54","seen":["/start/class","/start/promises","/start/phone","/start/consent","/start/child"],"ms":8722}
+u2 SETUP FAILED Error: page.waitForTimeout: Target page, context or browser has been closed http://127.0.0.1:8098/c/70f22807-fddf-4611-8580-c090c0d30c54/hello
+shot failed setup-u2-FAIL Error: page.screenshot: Target page, context or browser has been closed
+u2 {"console":["error: Failed to load resource: the server responded with a status of 401 (Unauthorized)"],"pageerror":[],"failed":[],"http":["GET /api/me 401"]}
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+browser.newContext: Target page, context or browser has been closed
+    at async open (/home/user/Taxila/tests/e2e/qa-lib.mjs:29:15)
+    at async file:///home/user/Taxila/tests/e2e/qa-setup.mjs:10:30 {
+  log: []
+}
+
+Node.js v22.22.0

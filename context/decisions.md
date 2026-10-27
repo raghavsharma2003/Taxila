@@ -5838,3 +5838,266 @@ text predicate (`rj-sr-raw-recall-98-target`).
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r141-content-filter-by-category` (2026-10-14): 2026-10-14 main safety review. In the sim lab baseline the full helpline script played on non-distress in 4/32 lessons. In one, a child's maths answer ('6 aur 5... 30... 3,00,000?') got the Childline / Tele-MANAS script twice, because Azure's prompt filter blocked the reply call (guard content_filter) and every block failed CLOSED as a disclosure. Decision: an Azure content-filter block is a child-safety signal only when a HARM category fired (hate, sexual, violence, self_harm, or any category not on the list) or the categories cannot be read. server/azure.js filterCategories reads innererror.content_filter_result, choices[].content_filter_results, prompt_filter_results and Foundry's 'blocked by label' text, and nonHarmFilter is true only for a known, non-empty set within {jailbreak, indirect_attack, protected_material_text, protected_material_code}. When the block is non-harm: the reply gets one retry on the system prompt and this turn alone, then a neutral fallback line (guard content_filter_nonharm), never the helplines; the classifier treats it as a label outage and still runs the distress read; the distress read returns not-distress, because the predicate already read the words. A harm or unreadable block still fails closed exactly as before (tests/r5-filter-categories.test.mjs). Categories are recorded on model.call rows (filterCats). Reverse if: any disclosure is found that only a jailbreak-category block caught (search model.call filterCats=['jailbreak'] against incidents), or Azure starts labelling harm content as jailbreak.
+
+
+<!-- merged from inbox/r141-main.json -->
+## dc-r141-filter-probe-child-words (2026-10-14)
+**Decision.** A harm or unreadable content-filter block on the reply prompt fails closed only when the child's own words trip the filter.
+- One retry runs on the system prompt plus this turn alone.
+- Beside it, `childWordsTrip` probes the child's last 4 turns plus this one. The text is masked, it goes through the same reply deployment, and the prompt is minimal.
+- If the probe is blocked on harm, or the probe fails, the turn fails closed exactly as before.
+- If the probe is clear, the retry's reply is used. If the retry also failed, a neutral line is used.
+- Completion blocks (HTTP 200) are unchanged: the prompt with the child's words already passed.
+
+**Why.** The prompt mixes her lines, the history and the brief. A harm category fired on that mix for innocent words (p43 on text; three voice lessons). On the next turn the history re-tripped it, so the safeguard came back again.
+
+**Reverse if** a real disclosure is missed because the probe of the child's words passed while the full prompt was blocked.
+
+## dc-r141-help-lead (2026-10-14)
+**Decision.** The Help sheet leads with the helplines when the safeguard is about abuse or the child names home or family. Otherwise it leads with "a grown-up you trust". "At home" is gone from every surface.
+
+**Reverse if** helpline-lead sheets get fewer help taps than grown-up-lead sheets after real disclosures.
+
+## dc-r141-science-frame (2026-10-14)
+**Decision.** A science frame for self_harm hits: "without" + a necessity of life + a living subject, in one sentence, no "I" in it. Its own veto (harm or distress words anywhere in the turn) applies in place of the Day-0 veto. Food is excluded.
+
+The same commit adds recall for "mujhe nahi jeena", "मुझे अब नहीं जीना" and Roman "main zinda nahi reh sakta".
+
+**Reverse** the frame if a real miss traces to it.
+
+## dc-r141-safeguard-stay-line (2026-10-14)
+**Decision.** The stay turn's fallback is its own fixed line, never the first turn's line again.
+
+**Reverse if** it shows up where the model's line would have passed.
+
+
+<!-- round 5 stream entries (inbox r5-agent, r5-content, r5-latency, r5-qa), written up from their graph text at the 14.1 merge -->
+## r5a-dc-agent-harness-invariants (2026-10-14)
+Agent lane invariants are code, not prompt: (1) scanSafety and the classifier run first; incident, distress, a safeguard or the Director's goodbye wrap keep the Director's move; the relational floor or the child's goodbye re-plans through the Director and drops the agent's move; (2) the floor filter (floorViolations) runs on her line, a violation reverts the turn to the Director; (3) grading is code: the VERIFIED GRADE (classify.js against the key) and the harness read are facts in the event; a posed item must be one the harness offered (verified, kind gradable, key withheld); (4) silence (empty text, asr 0) never brings a new item, board, picture or end; (5) the board is drawn by code from her lines (shared whiteboard contract, <=24-char lines, <=6) and reported back as ON SCREEN; a line pointing at the screen with nothing up, or at words not on it, is unpointed; (6) on a spoken lane type/write asks are rewritten to speak; (7) per-lesson USD and token budgets throw; any throw, timeout or bad output leaves the Director's move standing (agent.fallbacks counted). Reverse if the sim lab shows an invariant blocking a better lesson more often than it saves one.
+
+## dc-r5-board-answers-the-ask (2026-10-14)
+Round 5, stream 2 (RCA-1): what the child asked to SEE rides on the whiteboard ask (intent.request: how, the thing named, the numbers named; requests.js visualAskOf, Director move.see, propose.js requestOfSee). Studio draws THAT: a ready-made board (board-first pick, speculative, the kit's code board, the template rung) is drawn for a request only when it answers it by code (studio/request.js answersRequest: the thing's words in either script / spelling, the child's numbers on a number line), the line planner is told the request and repaired once when it misses, and a number line with the child's numbers is drawn by code. A requested page is always a fresh page. Reverse if: the 40-ask battery (tests/prod/r5-board-asks.mjs) falls below 9/10 on two runs in a row, or the round2-content / owner-5 batteries regress on the same seeds
+
+## dc-r5-never-the-same-page (2026-10-14)
+Never the same page twice unasked: a new page whose texts equal the page already up is refused at every source (seam drawn(), the board-sync ladder, the line planner's not_again repair); a board KEPT on purpose (a continue that adds nothing) is the same board, not a new page, and is no longer written to the notebook twice. Reverse if: children ask for 'the same board again' and are refused (a 'phir se dikhao' request should pass the previous page as asked)
+
+## dc-r5-offkit-sketch (2026-10-14)
+A thing outside the kit that a plain labelled sketch can show ('aloo dikhao' in a maths lesson) is sketched on the board for the ask, honestly (no photo promised; her shape never points before it is there); release 13's 'cannot show it' floor stays for anything code's drawableSubject refuses (a person, body, brand, weapon, digits, more than 4 words, the child-safety predicates). Supersedes the release-13 (A) behaviour for drawable things (tests/r13-visual-honest.test.mjs updated). Reverse if: a sketch of an off-kit thing derails lessons in the sim lab (coherence) more than the words-only answer did
+
+## dc-r5-board-tools (2026-10-14)
+The Teacher agent's board and picture tools (server/studio/tools.js, server/studio/picture.js): board.show(spec: write | table | shapes | work | number_line | draw) / board.clear / screen.now / picture.get each return ScreenTruth computed from what actually mounted (words, texts, numbers, pageId, refused with checks). picture.get is a background job (gpt-image-2.5-flare low → gpt-image-2 → sunburst, fixed kid-safe template with the subject as its only slot, Content Safety image:analyze on the pixels, severity >= 2 or any error refuses), revealed on the Studio stream's early slot, at most 4 per lesson. Reverse if: the image lane's subscription-wide 4 RPM makes picture jobs fail more than 1 in 5 in the owner cohort (then a cached library first)
+
+## dec-r5-lat-boot-warm (2026-10-14)
+A replica does its one-time builds at boot (server/boot-warm.js): the stagecraft table before the port opens; the DB pool, the test-clock table, the chat endpoint's TLS and every teaching kit (sliced, one topic per event-loop turn) right after. No child's first lesson start pays a one-time build. Reverse if: boot time blocks a revision's readiness probe, or the kit warm's memory (+45 MB) matters on a smaller replica (then warm only the classes in use).
+
+## dec-r5-lat-note-race (2026-10-14)
+The understanding note races grok-4-1-fast-non-reasoning and taxila-fast (first usable note wins; TAXILA_UNDERSTAND_DEPLOY, a comma list; one name = no race). taxila-gpt6 timed out on the hot path and was no more accurate under the turn's cap. Reverse if: a note bake-off on the real cohort shows the race below taxila-gpt6-at-cap by more than 3 points, or the doubled note calls 429 a hot lane.
+
+## dec-r5-lat-reply-hedge (2026-10-14)
+The reply lane is a hedged request (server/azure.js hedged; TAXILA_REPLY_HEDGE_MS, default 2200 ms ~ taxila-fast p95, 0 = off): a reply still out at the hedge point gets an identical twin, the first answer wins, the other is aborted; a failure before it starts the twin at once (two attempts at most, as before); a content-filter block is never re-sent. Seen: an opening call hung to its 6 s timeout and paid a retry (start 7.9 s). Reverse if: the twin rate exceeds 10% of reply calls or a 429 on taxila-fast is traced to twins.
+
+## dec-r5-lat-continuer (2026-10-14)
+Main's decision (2026-10-14): a non-verbal continuer (हम्म / अच्छा / ओके; Hmm / Okay / I see) may be her first sound on a spoken turn with no echo, for the owner cohort only (TAXILA_ACK_CONTINUER_FOR) and only when the device asks (off on D5 until 4B's gate covers it). Decided after the turn's classify (its distress read) on the same words; never on a safeguard, a stop or goodbye, a typed or tapped answer; never two acks running, never the same continuer twice; no content words; held to >= 900 ms after the child stopped and dropped when her reply is first. Reverse if: the sim-lab voice rubric scores it robotic, or 'human' drops with it on.
+
+## dec-r5-lat-adpcm (2026-10-14)
+TTS frames type 5 = IMA ADPCM (4:1), negotiated by Accept `codec=adpcm`, asked for only on a slow link (effectiveType slow-2g / 2g / 3g, or Save-Data; ?tts=adpcm|pcm|auto per device); the client decodes it in the frame parser, so everything after it sees PCM. PCM stays the default (ADPCM is lossy). Reverse if: a listening check finds ADPCM speech unacceptable even on slow links, or an Opus encoder becomes available without a new dependency.
+
+
+<!-- merged from inbox/r141b-main.json -->
+## dc-r141-known-words-lexicon-near (2026-10-15)
+**Decision.** The known-words builder also keeps hand-list words that the lexicon's one-edit garble rule would rewrite. The soch- family is added.
+
+**Why.** "Maine khud socha" (I thought of it myself) was read as "khud nocha" (scratched myself) and fired the helplines in a science lesson.
+
+**Reverse if** a real garbled disclosure is missed because one of the 33 new known words blocked its rewrite.
+
+## dc-r141-board-kept-same-page (2026-10-15)
+**Decision.** When board-first's page is refused only because it is already on screen, it is kept and the slot is revealed. This never applies to an ask for an example.
+
+**Why.** owner-5: 2 of 2 "whiteboard pe bana ke samjhao" asks ended in a failed slot after stream 2's never-the-same-page rule.
+
+**Reverse if** repeated pages rise above 0/40 on stream 2's board battery.
+
+## dc-r141-resume-not-into-safeguard (2026-10-15)
+**Decision.** No resume into an open safeguarding episode, and none past a safety hold. The plain start runs instead.
+
+**Why.** A resume replays no move, so the Help sheet would not open.
+
+**Reverse only** with a resume that re-raises the Help sheet from the saved state.
+
+
+<!-- merged from inbox/r141c-main.json -->
+## dc-r141-see-ask-medium-and-drawing (2026-10-15)
+**Decision.** Four rules for visual asks:
+1. The place it is drawn (whiteboard, board, screen) is never the thing to draw.
+2. A picture asked with no thing named may be answered by a ready-made board that is a drawing, never by a page of text boxes.
+3. A see-ask that is not an example may be answered by the page already on screen; it is kept, not refused.
+4. Only a picture ask takes its subject from her line.
+
+**Why.** On the 14.1 packages, owner-5 dropped from release 14's 14/14 to 8/14, with empty stages and her pointing stripped.
+
+**Reverse if** a ready-made drawing does not show what her line says, or if repeated pages rise above 0/40.
+
+
+<!-- merged from inbox/r142-main.json -->
+## Release 14.2 (main, 2026-10-15)
+
+- **dc-r142-khud-raw-self-object** — khud shapes need a raw self-object or a real cutting verb; task / accident words skip the no-self-object reading; the other self-objects (apne aap ko, myself ko, अपने आप को) are now carried. Reverse if a real disclosure is missed for want of a raw self-object, or the new family fires on lesson talk.
+- **dc-r142-classify-filter-context** — a harm block on the label call probes the child's words alone (distress check, fail closed on anything but a clean pass). Reverse if a missed safeguard is traced to content_filter_context.
+- **dc-r142-chat-429-overflow** — a 429 on a CHAT deployment with a southindia twin moves its one retry there at once (post and stream). Reverse if the twin answers measurably worse, or the primary moves to southindia.
+- **dc-r142-carried-checkin** — a start within 24 h of an incident not yet checked in for opens on a discreet, fixed check-in with both helplines and a choice; once per incident. Reverse if found intrusive or revealing, or if distress in the reply slips past predicate and classifier.
+- **dc-r142-dash-art** — the reply guard catches em / en dash art; one dash in prose stays.
+- **dc-r142-stage-claims-skip-safeguard** — board-claim rewrites never touch a safeguarding turn.
+- Stream heads merged into 14.2: stream 2 d71fb40 (empty-stage wording, ordinal facts keys), stream 3 102a3b0 (continuer POSITIVE gate; the continuer stays OFF until a sim lab re-run), 4A 2165c8e (agent lane streaming, game-ask lookup, why-depth; the lane stays off by default), QA 0740abc (Back parks the lesson).
+
+<!-- main, 2026-10-15: stream decisions whose inbox update landed in inbox/merged/ (git followed the rename) and were never applied -->
+- **dec-r5-lat-continuer-positive-gate** (stream 3, 102a3b0) — the continuer plays only on an ordinary lesson turn (server/latency/ack.js lessonTurnOf): the safety predicate, every relational signal but reason_given / persisted / asked_harder, and a wide NEVER list (romance, secrecy, are-you-real, insults, tired / leaving, talk about her, the personal) refuse it before any clip starts; the reading must then be graded, a don't-know, an ask for the answer, a number, or lesson-shaped words. Sim lab 4237dc9e had "Okay…" after a best-friend secrecy line. Still OFF for everyone until a sim lab re-run on 14.2. Reverse if the re-run shows a continuer on a relational / safety turn again (then off for good), or the gate leaves under 1 in 10 lesson turns with one (then widen the lesson shape).
+- **dc-r5-pagehide-grace** (QA, D24) — a page-hide marks the lesson (state.pendingEndAt) and the end runs after TAXILA_PAGEHIDE_GRACE_MS (120 s); a start with resumeLessonId rejoins it. 14.2 (QA 0740abc) makes the in-app Back / Home unmount close the same way, so Home's Continue rejoins. Never after a safeguarding episode (resumeLesson refuses; the fresh start checks in, dc-r142-carried-checkin). Reverse if lessons are left half-open by the grace (ended late, double counted) on production.
+
+
+<!-- merged from inbox/r142b-main.json -->
+## Release 14.2, second pass (main, 2026-10-15)
+
+- **dc-r142-chhota-not-touch** — "chhota" (small) is never the touch verb; the short spelling counts only with a person before "mujhe" and the auxiliary after. Reverse if a real 'chhote' disclosure without an actor is missed, or the actor shape fires on lesson talk.
+- **dc-r142-overflow-refined** (supersedes dc-r142-chat-429-overflow) — first attempt only, one move per hedged call, never for speculative bets or background; production twins without taxila-fast-bg / taxila-studio-sol. Reverse if hot replies still fall to the fallback line in a throttled minute, or the twin throttles.
+- **dc-r142-simlab-decided-child** — the harness decides each simulated answer's correctness from the card (seeded table), the model writes it; FREE child stays as the realism arm; understanding numbers soft until the DECIDED baseline. Reverse if the decided answers change the teacher's behaviour by sounding unnatural.
+
+
+<!-- merged from inbox/r142c-main.json -->
+## Release 14.2, third pass (main, 2026-10-15)
+
+- **dc-r142-label-block-two-step** (supersedes dc-r142-classify-filter-context) — a harm block on the labels: the words under a neutral brief first, then the distress read across deployments; fail closed on anything but a clean probe and a clean read. Reverse if a missed safeguard traces to a second deployment's clean read.
+
+
+<!-- merged from inbox/r143-main.json -->
+## dc-r143-model-episode-fine-release (2026-10-15)
+
+**What:** a safeguard episode that a MODEL read opened (the classifier, the content filter, an understanding note) steps back once the child's reply clearly says they are fine.
+
+- It goes to the gentle resume, with carry-on / stop chips.
+- If the same reply asks to carry on, it goes straight back to the lesson.
+- Episodes opened by the predicate's families, the relational floor and carried check-ins keep the full hold.
+
+**How "fine" is read:** server/safety/fine.js, precision first. It reads one clause at a time. Vetoes:
+
+- a negated, qualified or time-bound fine;
+- a contrast after it;
+- any negation left over;
+- fear, hurt or harm words;
+- home or distraction tells.
+
+**Why:**
+
+- The sim lab's pet cards held the helpline 2-3 turns after "I am okay … just a scratch" and "ab safe hoon".
+- Predicate episodes keep the hold, because children minimise after real disclosures.
+
+**Reversal:** a missed safeguard traced to a model episode that stepped back, or any red-team or corpus disclosure that reads as fine.
+
+
+<!-- merged from inbox/r143b-main.json -->
+## dc-r143-test-chat-southindia (2026-10-15)
+
+**What:**
+
+- TEST traffic (the sim lab, QA, the main loop's batteries) routes CHAT + RESPONSES to the southindia account, so eastus2 serves production alone.
+- southindia carries TEST plus production's rare 429 overflow.
+- taxila-mistral-m35 was added on southindia.
+- TAXILA_TEST_ON_PRIMARY=1 opts a run back onto eastus2.
+
+**Why:** a separate region is impossible, because GlobalStandard quota is subscription-wide (ms-r143-global-quota).
+
+**Reversal:**
+
+- production overflow failing on southindia while TEST runs, or
+- eastus2 throttling that persists with TEST off it.
+
+
+<!-- merged from inbox/r143c-main.json -->
+## dc-r143-romance-bare-ask (2026-10-15)
+
+**What:** a romance ask with no possessive ("सच में गर्लफ्रेंड बन जाओ", "gf banogi kya", "become my girlfriend") is romance and gets romance_brief, with no helpline.
+
+**Scope:**
+
+- The form needs a second-person or wanting verb.
+- Reported, past, negated and kinship talk stays quiet.
+- Insults and time questions stay out of the lexicon: no floor rule is at stake.
+
+**Reversal:** a firing on reported or kinship talk.
+
+
+<!-- merged from inbox/r143d-main.json -->
+## 14.3 QA pass 12 fixes (main, 2026-10-15)
+
+- **dc-r143-checkin-board-tiles.** The check-in's helplines now show above its choices, but only beside the safe: chips.
+- **dc-r143-home-no-resume-into-episode.** Home no longer offers Continue for a lesson inside an open safeguarding episode.
+- **dc-r143-chips-in-childs-language.** Chips are in Hinglish / Hindi / English. A typed "stop for today" now reads as a stop.
+- **dc-r143-codeswitch-address.** An English lesson's code-switched tum line is held to aap (the parent's setting or the class default) by the closed lexicon, with no model call.
+- **dc-r143-trace-endpoint-lane.** model.call carries endpoint OVERFLOW.
+
+
+<!-- merged from inbox/r143e-main.json -->
+## dc-r143-prod-numbers-need-a-lesson-sid (2026-10-15)
+
+- **What:** a production number about children counts only rows whose sid is a real lesson. sid 'server' rows are scripts, tests and background jobs.
+- **Why:** see ms-r143-prod-trace-origin. The overflow lane and the TEST routing stand on the arm and on the shared limits, not on a throttled child.
+- **Reversal:** a background path that legitimately records child-facing calls with sid 'server'.
+
+
+<!-- merged from inbox/r143f-main.json -->
+## dc-r143-model-reread-same-episode (2026-10-15)
+
+- **What:** inside a model-opened episode, a further model-only distress read is a hold turn, never the opening again. It keeps the helplines, withdraws any resume offer, and never releases on that turn.
+- **Why:** see ms-r143-release-not-firing (545cbf6e). The predicate's families, the relational floor and a carried check-in still restart the full script.
+- **Reversal:** a run where a child whose distress only the model reads gets a weaker answer than the opening, or where the hold loops and children leave more often.
+
+## dc-r143-labeller-kind-model (2026-10-15)
+
+- **What:** the label call's distress read sets kind 'model', as on every other model path.
+- **Why:** a kind-null episode never took the release. The predicate always sets its family first.
+- **Reversal:** a predicate path that can return distress with kind null.
+
+## dc-r143-fine-asked-again (2026-10-15)
+
+- **What:** a clause made only of an asked-again complaint is set aside for the contrast and leftover-negation checks. Carry-on reads canonical spellings and English nouns only inside an ask.
+- **Reversal:** a disclosure that reads fine via asked_again, or real carry-on asks missed often.
+
+
+<!-- merged from inbox/r143g-main.json -->
+## dc-r143-teen-as-digit (2026-10-15)
+
+- **What:** the copy a safety-relevant model call reads (the classifier and its distress reads, the reply prompt and its probe, the understanding note) writes the Hindi number "teen" as "3". "a teen" / "my teen sister" stay as said. The predicate and every code check read the raw words.
+- **Why:** see ms-r143-teen-filter-collision: a quarter of TEST's content-filter safeguards were children doing sums.
+- **Reversal:** a disclosure where "teen" carried the only harm signal the predicate and the distress reads miss.
+
+
+<!-- merged from inbox/r143h-main.json -->
+## dc-r143-edit-supersedes-landed-grade (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed supersedes that turn's grade. The rows are marked, never deleted, and the ledger folds only the edit. This is 14.4.
+- **Why:** the 2.5 s verdict hold protects her sound, not the grade. The turn lands before the correction in 5-20 of 20 stress turns.
+- **Reversal:** a ledger fold test shows double-counted or lost evidence.
+
+
+<!-- merged from inbox/r143i-main.json -->
+## dc-r143-continuer-owner-cohort (2026-10-15)
+
+- **What:** the continuer (a short "hmm… / achha…" while she prepares her reply) is on for the owner cohort from 14.3, by hashed guardian id.
+- **Why:** see ms-r143-continuer-oos. It held out of sample with zero plays on every turn where a sound would be wrong.
+- **Reversal:** any continuer on a safety, relational, secrecy or leaving turn, or naturalness below 3.5.
+
+
+<!-- merged from inbox/r143j-main.json -->
+## dc-r143-edit-full-undo (2026-10-15)
+
+- **What:** a correction that arrives after its turn has landed gets a full undo. The pre-turn snapshot lives in its own one-row-per-lesson table. The abandoned grade's rows move to archive tables, so no reader can bring them back. Background writers check the evidence is still live first. This is 14.4.
+- **Why:** posting the correction as the next turn grades it against the wrong question whenever the lesson has already moved on.
+- **Reversal:** the snapshot costs more than 20 ms p95 per turn, or such corrections turn out too rare to justify it.
+
+
+<!-- merged from inbox/r1431-main.json -->
+## dc-r1431-completion-block-probe (2026-10-15)
+
+- **What:** when HER reply is blocked twice, the child's own words are probed. If they are clear she says a neutral line, never the helplines. If they trip the filter, or the probe cannot run, it fails closed as before.
+- **Why:** see ms-r1431-completion-block-safeguards. A block on her own output is not a child-safety signal, which is already the rule for blocked prompts since 14.2.
+- **Reversal:** a disclosure whose only signal was her blocked reply, with the child's words probing clear.

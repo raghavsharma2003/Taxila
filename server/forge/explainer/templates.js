@@ -324,14 +324,15 @@ function flow(c, tl) {
   if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6 || !steps.every(fitsLabel)) return { error: "steps" };
   const n = steps.length;
   // Layout, first that fits every label: one row left to right (≤ 3 steps); one column top to bottom (≤ 3); two columns
-  // read top to bottom, then the next column (4-6). Boxes are sized to the board, never to the text.
+  // read top to bottom, then the next column (4-6). Boxes are sized to the board, never to the text. The last box ends 16
+  // units above the board's bottom (QA round 5 D09: at 300 its stroke was cut at the phone stage's bottom edge).
   const rowW = 340 / n - 18;
   const layout = n <= 3 && steps.every((t) => canFit(t, rowW - 10)) ? "row" : n <= 3 ? "col" : "two";
   const perCol = layout === "two" ? Math.ceil(n / 2) : n;
   const bw = layout === "row" ? rowW : layout === "col" ? 240 : 160;
   const bh = layout === "row" ? 64 : Math.min(58, 250 / perCol - 18);
   const pos = steps.map((_, i) => layout === "row" ? [30 + i * (bw + 18) + bw / 2, 150]
-    : [layout === "col" ? 200 : i < perCol ? 105 : 295, 30 + bh / 2 + (i % perCol) * ((270 - bh) / Math.max(1, perCol - 1))]);
+    : [layout === "col" ? 200 : i < perCol ? 105 : 295, 30 + bh / 2 + (i % perCol) * ((254 - bh) / Math.max(1, perCol - 1))]);
   for (let i = 0; i < n; i++) {
     const [x, y] = pos[i];
     if (i > 0) {
@@ -397,7 +398,18 @@ function compare(c, tl) {
       if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * 52, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
-  return { facts: { left: left.title, right: right.title, rows, ...Object.fromEntries(left.items.map((t, r) => [`left${r + 1}`, t])), ...Object.fromEntries(right.items.map((t, r) => [`right${r + 1}`, t])) } };
+  // each column as its title and its items (sim lab 4ae682b3 p29: keys "left1" / "left2" on the facts row were spoken to the
+  // child as names: "Screen par left1 standing line…", "Ab left2 ko imagine karo")
+  const lists = (side, items) => {
+    const out = {}; let k = 0, cur = "";
+    for (const t of items) {
+      if (cur && cur.length + 2 + t.length > 40) { out[`${side}${k ? "More" : "Items"}`] = cur; k++; cur = ""; }
+      cur = cur ? `${cur}, ${t}` : t;
+    }
+    if (cur && k < 2) out[`${side}${k ? "More" : "Items"}`] = cur;
+    return out;
+  };
+  return { facts: { left: left.title, right: right.title, rows, ...lists("left", left.items), ...lists("right", right.items) } };
 }
 
 function parts(c, tl) {

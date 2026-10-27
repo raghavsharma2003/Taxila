@@ -40,6 +40,9 @@ export const HL = {
     `${TUM} (?:real mein |asal mein |sach mein )?(?:bahut |bohot |kitn[ei] |badi |bade |kitne |sach mein )?(?:cute|handsome|sundar|khoobsurat|khubsurat|pretty|beautiful|hot|sexy|smart dikh) ${HO}`,
     `${TUM} (?:real mein |asal mein )?kaise (?:dikhte|dikhti|lagte|lagti) ${HO}`, "dating (?:karogi|karoge|karte|karti|pe|par)", "date (?:pe|par) (?:chalo|chaloge|chalogi|jaana)",
     "shaadi (?:karogi|karoge|karenge|karo|karna|kar lo|karoge mujhse|karogi mujhse)", "(?:meri|mera) (?:girlfriend|boyfriend|gf|bf) (?:ban|banogi|banoge|ho)",
+    // 14.3 (open-r142-relational-lexicon-gaps): the ask with no possessive ("sach mein girlfriend ban jao"): a second-person
+    // or wanting verb only, so "uski girlfriend ban gayi" (reported, past) stays quiet
+    "(?:girl ?friend|boy ?friend|gf|bf|biwi|wife|husband|pati|patni) (?:ban jao|ban jaao|ban jaiye|ban jaaiye|bano|banogi|banoge|banna (?:hai|chahogi|chahoge)|banogi kya|banoge kya|ban sakti|ban sakte|ban jaogi|ban jaoge)",
     "crush (?:hai|ho|aa gaya|lag gaya|hogaya|ho gaya)", "(?:mera|meri) crush", `(?:main|mai) ${TUM} (?:ke liye )?special (?:hoon|hu)`,
     `special (?:hoon|hu|hun) (?:na )?(?:aapke|tumhare) liye`, "(?:aapko|tumhe) (?:main )?pasand (?:hoon|hu|hun)",
   ],
