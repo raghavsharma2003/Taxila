@@ -592,7 +592,7 @@ export function gateWhiteboard(raw, ctx) {
   // the result of plain arithmetic on her own numbers (their total, 2 × (a + b), a product, a difference) that her line
   // does not already say. The open kit item's key stays W9's.
   const asks = !ctx.face && /\?/.test(String(ctx.reply ?? ""));
-  const herAnswers = asks ? answersOf(String(ctx.reply ?? "")) : new Set();
+  const herAnswers = asks ? new Set([...answersOf(String(ctx.reply ?? "")), ...(ctx.answers ?? []).map(String)]) : new Set();
   const told = [...herAnswers].filter((n) => boardNums.includes(n));
   add("W18.her_answer_unsaid", told.length === 0, told.slice(0, 3));
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a

@@ -99,7 +99,9 @@ const ASKED = new RegExp(String.raw`(${NUM})${UNIT}\s*(\+|plus|-|−|minus|×|x|
 export function selfPosedVerdict(asked, said) {
   const m = String(asked ?? "").trim().match(ASKED);
   if (!m) return null;
-  const s = String(said ?? "").trim().replace(/\s*(?:g|gm|grams?|kg|cm|m|ml|l|rs|₹|rupees?)\.?$/i, "");
+  // QA 14.4.1 ("nahi nahi, 160"): a bare number with a filler before it, or "hai / hoga" after it, is still a bare number
+  const s = String(said ?? "").trim().replace(/^(?:(?:nahi|nahin|no|haan|han|ha|yes|ji|toh|to|arre|are|umm*|hmm*|ok|okay)[\s,.!]+)+/i, "")
+    .replace(/(?:\s+(?:hai|hoga|hogi|hota\s+hai|aayega|ayega|is|it\s+is))+[\s.!]*$/i, "").replace(/\s*(?:g|gm|grams?|kg|cm|m|ml|l|rs|₹|rupees?)\.?$/i, "");
   const got = num(s);
   if (!got) return null;
   // groups: a(1) ua(2) op(3) b(4) ub(5)

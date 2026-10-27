@@ -273,10 +273,30 @@ export function skeleton(word: string): string {
  * Four or more words, at least 70% of them in her reply by skeleton. A child repeating a short phrase of
  * hers as an answer ("teen chauthai") stays a turn.
  */
+/**
+ * Census F5 #2 (main 2026-10-21: a fragment lost its negation): negation words never match by consonant skeleton. "नहीं"'s
+ * skeleton is "n", the same as her "हैं", her tag "ना" and "हाँ", so the child's negation read as one of her words: the
+ * duplex echo filter turned "मुझे नहीं पता कितने corners होते हैं" (over "…कितने corners होते हैं?") into "मुझे पता", and this
+ * lane's isEcho read the whole reply as echo. A negation keys on its own SURFACE: echo only when she said that very word.
+ */
+// One CLASS per negation across scripts: her Roman "nahi" and the ear's Devanagari "नहीं" for her echo are the same word
+// (skeletons exist for that cross-script match: keying on the surface broke her echo runs at every negation, measured), while
+// the child's "नहीं" can no longer collide with her "हैं" / "ना" / "हाँ".
+const NEGATION: Record<string, string> = {
+  "नहीं": "nahi", "नही": "nahi", "नहि": "nahi", "नहिं": "nahi", nahi: "nahi", nahin: "nahi", nahee: "nahi", nai: "nahi",
+  "ना": "na", "न": "na", na: "na", "मत": "mat", mat: "mat",
+  no: "no", nope: "no", not: "not", never: "never", dont: "dont", doesnt: "dont", didnt: "dont", cant: "cant", isnt: "isnt",
+};
+export function echoKey(word: string): string {
+  const bare = String(word ?? "").normalize("NFC").toLowerCase().replace(/[^\p{L}\p{M}\p{N}]+/gu, "");
+  const neg = NEGATION[bare];
+  return neg ? `¬${neg}` : skeleton(word);
+}
+
 export function isEcho(heard: string, spoken: string): boolean {
-  const h = tokens(heard).map(skeleton).filter((w) => w.length >= 1);
+  const h = tokens(heard).map(echoKey).filter((w) => w.length >= 1);
   if (h.length < 4) return false;
-  const said = new Set(tokens(spoken).map(skeleton).filter(Boolean));
+  const said = new Set(tokens(spoken).map(echoKey).filter(Boolean));
   return h.filter((w) => said.has(w)).length / h.length >= 0.7;
 }
 
@@ -553,7 +573,8 @@ export class CascadeLink implements TeacherLink {
     void this.ctx?.resume().catch(() => {});
     // round 3 integration: the speech request goes out synchronously, exactly as before, when no acknowledgement is sounding
     // (tests/voice-cascade.test.mjs pins it); only a sounding clip makes the reply's audio wait for it (ackGate)
-    const playback = this.player.play((signal, sink) => (this.ackNow
+    const hold = this.verdictHold();
+    const playback = this.player.play((signal, sink) => this.heldUntil(hold, signal, this.ackNow
       ? this.ackGate().then(() => this.speech({ lessonId: this.lessonId, seq }, signal, sink))
       : this.speech({ lessonId: this.lessonId, seq }, signal, sink)), { req: { lessonId: this.lessonId, seq } });
     const cur: CurrentReply = { id, text, playback, playing: false, paused: null };
@@ -578,6 +599,26 @@ export class CascadeLink implements TeacherLink {
       if (this.current !== cur) return;
       this.finishReply(cur, status);
     });
+  }
+
+  /** Round 5 truth bar: the hold on her reply's first sound for the engine's latest closed-value commit (null: none). */
+  private verdictHold(): number | null {
+    return this.duplexDeciding ? (this.duplex?.verdictHoldUntil() ?? null) : null;
+  }
+
+  /**
+   * Deliver her reply's audio no earlier than `until` (epoch ms). The speech request itself goes out at once (its latency
+   * is not added); only the stream's hand-over to the player waits. A child correction during the wait revokes the turn:
+   * the engine stops the reply (the signal aborts) and nothing of it sounds.
+   */
+  private heldUntil<T>(until: number | null, signal: AbortSignal | undefined, p: Promise<T>): Promise<T> {
+    const wait = until === null ? 0 : until - Date.now();
+    if (wait <= 0) return p;
+    this.vtrace.bargein("verdict_hold", { ms: Math.round(wait) });
+    return Promise.all([p, new Promise<void>((resolve, reject) => {
+      const t = setTimeout(resolve, wait);
+      signal?.addEventListener("abort", () => { clearTimeout(t); reject(new DOMException("aborted", "AbortError")); }, { once: true });
+    })]).then(([v]) => v);
   }
 
   /** Her line's audio ended: the error (when it failed), the duplex engine's view, then the reply's end events. */
@@ -607,7 +648,8 @@ export class CascadeLink implements TeacherLink {
     this.ack?.replyStarting();
     this.events.emit({ type: "response_start", responseId: id, at: Date.now() });
     void this.ctx?.resume().catch(() => {});
-    const playback = this.player.play(async () => stream, { req: { lessonId: this.lessonId, seq: -1 } });
+    const hold = this.verdictHold();
+    const playback = this.player.play((signal) => this.heldUntil(hold, signal, Promise.resolve(stream)), { req: { lessonId: this.lessonId, seq: -1 } });
     const cur: CurrentReply = { id, text: "", playback, playing: false, paused: null, early: { adopted: false, ended: null } };
     this.current = cur;
     playback.started.then(

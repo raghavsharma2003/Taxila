@@ -13,6 +13,7 @@
 // imported, never re-implemented.
 
 import { scanSafety } from "../safety.js";
+import { romanLine } from "../requests.js";
 
 const T = (s) => String(s ?? "").toLowerCase().normalize("NFKC").replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
 const wc = (t) => t.split(/\s+/).filter(Boolean).length;
@@ -54,7 +55,7 @@ const HW_WORD = /\b(?:home\s*work|homwork|hw|h\.w|grih\s*karya|griha\s*karya|ass
 const HW_NONE = /\b(?:home\s*work|hw)\s+(?:nahi|nahin|nhi)\s+(?:mila|diya|hai)\b|\bno\s+(?:home\s*work|hw)\b|\b(?:home\s*work|hw)\s+(?:check|checked|ho\s+gaya|done|finished|kar\s+liya|complete)\b|होमवर्क\s+नहीं/i;
 const CONFUSED = /\b(?:(?:kuch\s+(?:bhi\s+)?)?samajh?\s*(?:me|mein|mai)?\s*(?:nahi|nahin|nhi|na)\s*(?:aaya|aya|aaye|aaya|aa\s+raha|aa\s+rha|aa\s+rahe|aayi|aaraha)|(?:nahi|nahin|nhi)\s+samjh?(?:a|i|e)\b|samjh?(?:a|i)\s+(?:nahi|nahin|nhi)|i\s+(?:don'?t|do\s+not|didn'?t|did\s+not)\s+(?:get|understand)|(?:did\s+not|didn'?t|couldn'?t|could\s+not)\s+(?:get|understand)|i'?m\s+(?:confused|lost)|(?:not|wasn'?t|isn'?t)\s+clear|confusing|confused|samajh\s+(?:se\s+)?bahar|confuse\s+(?:ho\s+)?(?:gaya|gayi|gya|gyi|hai|hoon|hu)|samjh\s*(?:me|mein)?\s*(?:nahi|nhi|nahin)\s*(?:aaya|aya|aaye|aa\s+raha|aayi))\b|समझ\s*(?:में)?\s*(?:नहीं|नही)|(?:नहीं|नही)\s*समझ/i;
 // a wish to learn something of their own: "mujhe X ke baare mein jaanna hai", "X sikhao", "I want to learn X", "teach me X"
-const WANT = /\b(?:jaan(?:na|ni)\s+(?:hai|h|chahta|chahti)|seekh?(?:na|ni)\s+(?:hai|h|chahta|chahti)|sikh(?:na|ni)\s+(?:hai|h|chahta|chahti)|padhna\s+(?:chahta|chahti)|sikhao|sikhaiye|sikha\s+do|samjhao|samjhaiye|batao|bataiye|(?:i\s+)?(?:want|wanna|would\s+like)\s+to\s+(?:learn|know|study|understand)|teach\s+me|tell\s+me\s+about|can\s+(?:you|we)\s+(?:teach|learn|study|do)|i'?m\s+curious|curious\s+about|how\s+do(?:es)?\s+\w+)\b|जानना\s+है|सीखना\s+है|सिखाओ|बताओ|समझाओ/i;
+const WANT = /\b(?:padh(?:na|ni|ne)\s+(?:hai|h|hain|chahiye)|jaan(?:na|ni)\s+(?:hai|h|chahta|chahti)|seekh?(?:na|ni)\s+(?:hai|h|chahta|chahti)|sikh(?:na|ni)\s+(?:hai|h|chahta|chahti)|padhna\s+(?:chahta|chahti)|sikhao|sikhaiye|sikha\s+do|samjhao|samjhaiye|batao|bataiye|(?:i\s+)?(?:want|wanna|would\s+like)\s+to\s+(?:learn|know|study|understand)|teach\s+me|tell\s+me\s+about|can\s+(?:you|we)\s+(?:teach|learn|study|do)|i'?m\s+curious|curious\s+about|how\s+do(?:es)?\s+\w+)\b|जानना\s+है|सीखना\s+है|सिखाओ|बताओ|समझाओ/i;
 const ABOUT = /\b(?:ke|ki)\s+(?:baare|bare)\s+(?:mein|me|main)\b|\babout\b|के\s+बारे\s+में/i;
 const NOTHING = /\b(?:kuch\s+(?:bhi\s+)?(?:nahi|nahin|nhi|na)\s+(?:padhaya|padaya|padhaye|padha|sikhaya|hua|hui|kiya|khaas|special|naya|new)|kuch\s+(?:khaas|khas|special|naya)\s+(?:nahi|nahin|nhi)|nothing(?:\s+(?:much|special|new|happened|taught))?|not\s+much|no\s+(?:class|classes|school|teaching|period)|(?:school|class)\s+(?:band|bandh|off|closed)|chhutti|chutti|holiday|vacation|free\s+period|games?\s+period|pt\s+(?:period|tha|thi|hua)|sports?\s+day|annual\s+day|function\s+(?:tha|thi|hua)|teacher\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i))|(?:ma'?am|sir|maam|madam)\s+(?:nahi|nahin|nhi)\s+(?:aaye|aayi|aaya|aai|aa(?:e|i)|thi|the|tha)|(?:copy|copies|notebook|homework)\s+(?:check|checking)|check\s+(?:ki|kiya|kiye|hui|hua)\s+(?:copy|copies)|only\s+revision|bas\s+revision|revision\s+(?:hi|hua|kiya|karaya)|didn'?t\s+(?:teach|learn|do)\s+anything|did\s+not\s+(?:teach|learn|do)\s+anything)\b|कुछ\s+(?:भी\s+)?(?:नहीं|नही)\s+(?:पढ़ाया|हुआ|सिखाया)|छुट्टी|पीटी|खेल\s+(?:का|के)\s+पीरियड|गेम्स?\s+पीरियड|फ़?ंक्शन\s+की\s+(?:तैयारी|प्रैक्टिस)/i;
 const UNKNOWN = /^(?:(?:hmm+|umm+|uh+|haan|ha|ji|didi|ma'?am|ok)[\s,.]*)*(?:idk|dunno|pata\s+(?:nahi|nahin|nai|nhi)|pta\s+(?:nahi|nhi|nai)|(?:nahi|nai|nhi)\s+pata|maloom\s+nahi|yaad\s+(?:nahi|nahin|nhi)(?:\s+(?:hai|aa\s+raha|aaraha))?|kuch\s+yaad\s+(?:nahi|nahin|nhi)|bhool\s+(?:gaya|gayi|gya|gyi)|i\s+(?:don'?t|do\s+not)\s+(?:know|remember)|(?:i\s+)?forgot|(?:i\s+)?can'?t\s+remember|no\s+idea|not\s+sure|hmm+|umm+|पता\s+नहीं|याद\s+नहीं|भूल\s+गय[ाी])(?:[\s,.!?]+(?:didi|ma'?am|maam|mam|yaar|hai|h|kya|padhaya|hua|tha|thi))*[\s.!?]*$/i;
@@ -108,6 +109,15 @@ export function contentWords(text) {
  *   subject: string|null, when: string|null, words: string[], also: string[], src: "code" }}
  */
 export function intakeParse(text) {
+  // census 14.5 (F1, 2790c473 / 6c45a7ea: a Devanagari "X पढ़ना है" read as nothing and the planned topic kept): a Devanagari
+  // line whose own reading is a plain "taught" / nothing is read again in Roman letters (director/requests.js romanLine);
+  // a want, a test, homework or not-understood there wins
+  const own = intakeParseLine(text);
+  if (!/[\u0900-\u097F]/.test(String(text ?? "")) || !["taught", "unknown", "share", "nothing"].includes(own.kind)) return own;
+  const rom = intakeParseLine(romanLine(text));
+  return ["want", "test", "homework", "not_understood"].includes(rom.kind) ? { ...rom, words: [...new Set([...own.words, ...rom.words])] } : own;
+}
+function intakeParseLine(text) {
   const t = T(text);
   const frame = (kind, extra = {}) => ({ kind, subject: clauseSubject(t), when: whenOf(t), words: contentWords(t), also: [], src: "code", ...extra });
   if (!t) return frame("unknown");

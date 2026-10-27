@@ -1,0 +1,40 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r1441-record-learner-subject",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The end-record writer (routes/lesson.js endMessages) names the child as THE LEARNER, the subject of everything practised, tried, said or mixed up. The child is named by first name or 'they', never he/she. The teacher is the one who taught, never the learner, and her pronouns are hers alone. The parentNote is written to the child's parent with the child as its subject, and the summary is lines on what the child did, because the parent's export carries it. Before: 'lesson with Riya' followed by 'The teacher is Asha … name her by name' made the teacher the actor ('Asha practised splitting 0 to 1 …'). On TEST that was 379 of ~750 notes from 10-04 to 10-21, including all 8 of the sim lab's kept lessons. Her she/her also leaked onto the child ('she identified …'). Reverse if a replay shows the child named wrongly, or the teacher's part dropped where it is the fact (e.g. 'Asha worked an example first')."
+  },
+  {
+   "id": "dc-r1441-safeguarded-record-facts-only",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A lesson with a safeguarding turn writes its end record from the FACTS alone: the writer gets no child turns. A safeguarding turn means an incident row (the count read fails closed), state.safeguardedAt, an open check-in (state.safeguard) or a released one (state.checkReleased). Memories are dropped as before. On EVERY lesson a last fence (recordFence) then drops any parentNote sentence or summary line that trips the safety predicate, a third-person report of harm (REPORTED: 'said she wants to die', 'hits her', 'afraid to go home') or a safeguarding referral (REFERRAL: 'safeguarding', 'immediate safety', 'arrange support', 1098/14416, 'their wellbeing'). A record left empty takes the deterministic line. Why: the parent card never shows the model-written note (audit #20), but the account export ('Download everything') and the end response on the child's device both carry summary and parent_note verbatim. Before, the writer quoted the disclosure to the guardian ('Myra said that her father hits her when angry and that she is afraid to go home … Please check on Myra's immediate safety'). That bypasses safety-parent-notice-settle: abuse or family-implicated disclosures go to the human queue and are never auto-sent, because the guardian can be the adult the child named. Prod: 15 notes, 3 lessons with incidents, 0 carrying distress or referral words, so no repair was needed. Reverse if the safeguarding owner rules that a parent note may carry a released notice's content (then route that through safetyParentNotice, never the writer)."
+  },
+  {
+   "id": "ms-r1441-endrecord-replay",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "End-record replay on TEST (read-only rows, taxila-fast, the production call shape). Arms: old endMessages vs new. A swap means the teacher name followed by a learner verb (practised, tried, identified, answered …). Run 1: 40 lessons × 1 → swap 26/40 → 1/40; the 1 was 'Arjun worked through an example', a teaching verb, so the verb list was narrowed. Run 2: 60 lessons × 2 reps → swap 64/120 → 0/120, opens with the teacher 76 → 0, child named in the first sentence 81 → 120, summary swaps 3 → 0, ability-fenced sentences 15 → 27 (dropped, not shown), overclaim words 4 → 1, mean 67 → 68 words. Run 3, as production now runs (30 safeguarded + 30 ordinary lessons; new arm FACTS-only when held, then the fence): swap 30/60 → 0/60; disclosure in the raw note 8/30 → 0/30 safeguarded, 0 → 0 ordinary; disclosure shown 8 → 0; notes emptied 0. Fence on stored TEST records (60 days): ordinary lessons 0/288 notes and 0 summaries touched; incident lessons 134/455 notes and 58 summaries touched, 3 notes emptied. Prod (all time, booleans only): 15 notes, 3 with incidents, 0 flagged."
+  },
+  {
+   "id": "rj-r1441-record-fence-alone",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Fencing the end record's OUTPUT with the one safety predicate alone, keeping the child's turns in the writer's input. The predicate reads child speech in the first person and misses the writer's third-person report: 'Riya said she wants to die.' passes scanSafety. The referral line that tips off the guardian ('Please check on Myra's immediate safety and arrange support from a trusted safeguarding professional.') carries no distress words at all. Withholding the child's words from the writer in a safeguarded lesson is the mechanism. The widened fence (REPORTED + REFERRAL) is the backstop for lessons that wrote no incident."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r1441-safeguarded-record-facts-only", "rel": "part_of", "dst": "safety-parent-notice-settle" },
+  { "src": "dc-r1441-record-learner-subject", "rel": "part_of", "dst": "r5a-dc-agent-record-check" },
+  { "src": "ms-r1441-endrecord-replay", "rel": "measures", "dst": "dc-r1441-record-learner-subject" },
+  { "src": "ms-r1441-endrecord-replay", "rel": "measures", "dst": "dc-r1441-safeguarded-record-facts-only" },
+  { "src": "rj-r1441-record-fence-alone", "rel": "part_of", "dst": "dc-r1441-safeguarded-record-facts-only" }
+ ],
+ "md": {
+  "decisions": "## dc-r1441-record-learner-subject — the child did the learning (2026-10-21)\n\nThe end-record writer used to make the teacher the one who practised (\"Asha practised …\") in about half of all notes, and lent her pronouns to the child. It now names the child as the learner and the subject of the parent note. The teacher is only the one who taught. Replay: 64/120 → 0/120.\n\n## dc-r1441-safeguarded-record-facts-only — a disclosure never reaches the guardian through the lesson record (2026-10-21)\n\nIn a lesson with a safeguarding turn, the summary and parent note are written from the learning facts only, never from the child's words. Every record then passes a fence that drops distress, a reported harm or a safeguarding referral. The guardian can be the person the child named. A disclosure reaches a parent only through the safeguarding protocol and its human queue. Replay: disclosures in the note 8/30 → 0/30. The fence touched 0 of 288 ordinary records.\n",
+  "measurements": "## ms-r1441-endrecord-replay (2026-10-21)\n\nOld vs new end-record writer on TEST lessons, taxila-fast, production call shape:\n\n- Run 1 (40×1): teacher-as-learner 26 → 1. The 1 was a teaching verb, a false hit.\n- Run 2 (60×2): 64 → 0; child named in the first sentence 81 → 120.\n- Run 3, as production now runs (30 safeguarded + 30 ordinary): teacher-as-learner 30 → 0; disclosures 8 → 0.\n- Fence on stored records: 0/288 ordinary records touched.\n- Prod: 0 of 15 notes carry disclosure words.\n",
+  "rejected": "## rj-r1441-record-fence-alone (2026-10-21)\n\nAn output-only fence using the child-speech safety predicate. It misses the writer's third-person report (\"Riya said she wants to die\") and the referral sentence that tips off the guardian. Withholding the child's words from the writer is the mechanism. The fence is the backstop.\n"
+ }
+}

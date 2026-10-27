@@ -19,7 +19,8 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine, textsOf } from "./request.js";
+import { numbersIn as boardNumbersIn } from "./qa/whiteboard.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -38,7 +39,7 @@ import * as boardSync from "../stagecraft/board-sync.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
-import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+import { INTERACTIVE_ASKS, admitPlay } from "../forge3/compose.js";
 // round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): nothing reaches the tray uncertified at the
 // device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
@@ -99,7 +100,7 @@ function lessonState(lessonId, init) {
   if (!L && init) {
     L = { lessonId, startedAt: Date.now(), childId: null, child: null, kit: null, topicId: null, band: "B3", lang: "hinglish", mode: "text",
       purpose: "lesson", bondStage: null, pieces: new Map(), subs: new Set(), turn: 0, lastRevealTurn: -99, liveBuilds: 0, onScreen: null,
-      wbPrev: null, excluded: new Set(), redact: [], ...init };
+      wbPrev: null, excluded: new Set(), redact: [], held: [], ...init };   // held: no item is open when a lesson's Studio state is made
     lessons.set(lessonId, L);
     // LRU: the least recently used lesson goes; its open wrong items are closed as evidence first (closeLesson)
     if (lessons.size > STUDIO_LIMITS.lessonsInMemory) {
@@ -124,7 +125,10 @@ function push(L, msg) {
   // the piece's own reason when it has one). Outside the request too (builds finish later), so the lesson names the session.
   if (msg?.t === "status" && msg.status) {
     const st = msg.status, piece = st.intentId ? L.pieces?.get?.(st.intentId) : null;
-    traceRecord(`studio.slot.${String(st.state ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
+    // a piece taken down (cleared, replaced, beat exit) goes out as "failed" on the wire (the client's voice fallback), but
+    // it did not fail: the row says retired, with the reason (QA on be9b766a read "cleared" / "replaced" as failed boards)
+    const tracedState = piece?.state === "retired" && st.state === "failed" ? "retired" : st.state;
+    traceRecord(`studio.slot.${String(tracedState ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
       state: st.state ?? null, kind: piece?.kind ?? st.artifact?.kind ?? null, archetype: piece?.archetype ?? null, source: piece?.source ?? null,
       fallback: st.fallback ?? null, why: piece?.retiredWhy ?? piece?.failWhy ?? null, artifact: st.artifact?.kind ?? null, subscribers: L.subs?.size ?? 0 },
     { sid: L.lessonId, cid: L.childId ?? L.child?.id ?? undefined, turn: L.turn });
@@ -140,6 +144,8 @@ export function subscribe(lessonId, sub) {
     try {
       // the replay is gated like the turn: a board this device's box cannot show legibly is not sent
       if (p.artifact?.kind === "whiteboard" && !certifyForTray(p.artifact, gateCtx(L, p)).ok) continue;
+      // 14.4: ... and (a reload / reconnect mid-lesson) never one that writes the key of the item open now; unknown → not replayed
+      if (p.artifact?.kind === "whiteboard" && (!Array.isArray(L.held) || writesWithheld(p.artifact.script, L.held))) continue;
       sub.send({ t: "status", status: statusOf(p) });
       if (p.artifact?.kind === "whiteboard") sub.send({ t: "script", intentId: p.intentId, script: p.artifact.script });
     } catch { /* a dead stream is dropped on the next push */ }
@@ -264,6 +270,23 @@ export const gateRefusals = () => refusals.slice();
  * The slot of a piece IF its artifact is certified at the device's class, else null. A frame that is not judged at this
  * size falls back to its skeleton-as-activity when the skeleton is certified (the same params and words; host-graded).
  */
+/** 14.4 (main's release blocker on D42): a board re-sent on a LATER turn (kept, or the late asked board) was gated when drawn,
+ *  before the item now open existed: one that writes a value withheld now (the open item's key, whiteboard.js withheldValues)
+ *  is not sent again. */
+const writesWithheld = (script, withhold) => {
+  const vals = (withhold ?? []).map(String).filter(Boolean);
+  if (!vals.length) return false;
+  const on = new Set(boardNumbersIn(textsOf(script).join(" ")));
+  return vals.some((v) => on.has(v) || [...boardNumbersIn(v)].some((n) => on.has(n)));
+};
+/** main 14.4 (QA D43): a board is never kept across an item change: the item it was drawn for, or (drawn with no item) its
+ *  skill, must be what the move asks now. */
+const movedFrom = (p, move) => {
+  const item = move?.itemId ?? null, skill = move?.skillId ?? null;
+  if (p.itemId && item && p.itemId !== item) return true;
+  if (!p.itemId && p.skillId && skill && p.skillId !== skill) return true;
+  return false;
+};
 function gatedSlot(L, p, state = p.state, where = "slot") {
   const slot = slotOf(p, state);
   if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
@@ -629,6 +652,20 @@ export const studioSeam = {
    * @param {{ visual: string, skillId?: string|null, topicId?: string|null, child?: object, tray?: string|null, vp?: string|null }} x
    * @returns {Promise<{ kind: "play", intentId: string, family: string, mode: string, art: string|null, ms: number } | null>}
    */
+  /** Census F4 (a95d2ff1, 6c45a7ea: a picture / game chip offered that nothing could build): which ways in this lesson's
+   * Studio can answer now, read before the Director offers them. picture: Studio on and not frozen; game: play coverage
+   * admits the skill or topic (composeAsk's first rung), or a prepared piece the child can act on. null = no lesson state
+   * (the Director then offers as before). Synchronous, in memory; never builds anything. */
+  waysFor(lessonId, { skillId = null, topicId = null } = {}) {
+    const L = lessons.get(lessonId);
+    if (!L) return null;
+    if (L.safety || L.studioControl === "off") return { picture: false, game: false };
+    let play = false;
+    try { play = process.env.FORGE3_PLAY !== "0" && !!(skillId || topicId || L.topicId) && !!admitPlay(skillId, topicId ?? L.topicId ?? null); } catch { play = false; }
+    const piece = [...L.pieces.values()].some((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && (!skillId || !p.skillId || p.skillId === skillId));
+    return { picture: true, game: play || piece };
+  },
+
   async composeAsk(lessonId, x) {
     try {
       if (process.env.FORGE3_PLAY === "0") return null;
@@ -673,7 +710,7 @@ export const studioSeam = {
     if (!L) return null;
     L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
-    // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
+    // new is shown until the safeguard closes (STUDENT-FLOW §5.7; onSafetyClosed)
     if (hint?.safety) { if (L.pendingPlay?.early) push(L, { t: "retract", intentId: L.pendingPlay.intentId }); studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
     // round 3 forge: the play piece composeAsk built for the child's interactive ask this turn is shown now: the child's
     // own request takes the tray from the Director's show (the same rule as a requested Stagecraft piece), and whatever
@@ -714,6 +751,8 @@ export const studioSeam = {
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
       if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
+      else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
         const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "reveal");
         // round 4 content: not certified at this device's size → held (onReveal skips it; it never reaches the tray)
@@ -830,7 +869,12 @@ export const studioSeam = {
     const p = { intentId, slotId: `${intentId}:slot`, kind: "whiteboard", archetype: "whiteboard", source: "whiteboard", skillId: ask.intent.skillId ?? null, itemId: ask.intent.itemIds?.[0] ?? null,
       need: ask.intent.need, state: "planning", artifact: null, retired: false, createdAt: Date.now(), facts: null };
     L.pieces.set(intentId, p);
-    if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // 38aad918 t9-t11: a picture on screen stays under the board until the board draws; a board that fails gives the screen
+    // back to it (it was retired here, then the board failed: three turns ended on an empty screen)
+    if (on && on.kind === "image" && VISIBLE.has(on.state) && !on.retired && on.artifact) p.under = on.intentId;
+    else if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // QA on be9b766a (897a7453): the board this one follows, so a line that goes back to it can bring it back (keepBoardSlot)
+    if (on && on.kind === "whiteboard" && on.artifact?.script && !on.retired) p.prevBoard = on.intentId;
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     // round 5 (stream 2): the page on the board when this ask came in; a new page is never that page again (unless it is
@@ -849,15 +893,20 @@ export const studioSeam = {
     const fallbackScript = fb?.ok ? boardSync.retimeToLine(fb.script, ask.line?.text) : null;
     // ship5 review B3: the template is drawn only when it passes the same whiteboard gate (W0-W9: numbers from truth,
     // counts match her line, no answer reveal) against her REAL line; a refused template is never shown (voice instead).
+    let fbWhy = null;   // why no template was shown (codes only), for the failed slot's trace row
     const gatedFallback = () => {
-      if (!fb?.ok) return null;
+      if (!fb?.ok) { fbWhy = "invalid"; return null; }
       try {
         const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
         const t = boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
         // round 5 (stream 2): the template is the lesson's own board: shown for a request only when it shows what was asked,
         // and never as the same page again
-        return t && answersRequest(t, request) && !shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? t : null;
-      } catch { return null; }
+        // telemetry names the refusing step (QA run 8: a template refused here left no line saying why)
+        const why = !t ? "gate" : !answersRequest(t, request) ? `not_the_ask(${request?.kind ?? "-"})` : shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : null;
+        if (why) console.info(`[studio] template board refused: ${why}`);
+        fbWhy = why;
+        return why ? null : t;
+      } catch { fbWhy = "error"; return null; }
     };
     // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured
     // c7-science "screen par flow dekhiye: …" twice in 27 boards) keeps the board on screen, when it passes the full gate
@@ -874,7 +923,9 @@ export const studioSeam = {
         return r.ok ? r.script : null;
       } catch { return null; }
     };
-    const showFallbackOrFail = () => {
+    // `liveWhy`: why the live board was not drawn (check ids or a reason code); with the template's own reason it is the
+    // failed slot's `why` (38aad918: two boards failed with why null, the reason only in the server log)
+    const showFallbackOrFail = (liveWhy = null) => {
       const kept = keptPrevious();
       if (kept && drawn({ ok: true, script: kept, source: "kept", syncMs: null })) return;
       const shown0 = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
@@ -885,6 +936,7 @@ export const studioSeam = {
       // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
       const shown = tg?.ok && (ask?.requested || ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
       if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
+      if (!shown) fbWhy = !fallbackScript ? "none" : p.retired || L.onScreen !== intentId ? "off_screen" : tg && !tg.ok ? "tray" : tg?.ok ? "unsynced" : fbWhy;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -894,8 +946,18 @@ export const studioSeam = {
         push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts } });
         return;
       }
-      p.state = "failed"; p.fallback = "voice";
+      p.state = "failed"; p.fallback = "voice"; p.failWhy = `live:${liveWhy ?? "-"} template:${fbWhy ?? "-"}`.slice(0, 120);
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
+      restoreUnder();
+    };
+    // the picture this board was drawn over: back on screen when the board did not draw (never an empty screen)
+    const restoreUnder = () => {
+      const img = p.under ? L.pieces.get(p.under) : null;
+      p.under = undefined;
+      if (!img || img.retired || !VISIBLE.has(img.state) || L.onScreen !== intentId) return;
+      L.onScreen = img.intentId; p.restored = img.intentId;
+      push(L, { t: "slot", slot: slotOf(img, "revealed") });
+      push(L, { t: "status", status: statusOf(img) });
     };
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
     const drawn = (r0) => {
@@ -918,7 +980,10 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
       p.facts = r.script.facts ?? null;
-      p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
+      p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
+      p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
       // a KEPT board is the page already up, not a new one: the notebook (board_page) does not list it twice
@@ -986,13 +1051,15 @@ export const studioSeam = {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
           console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template re-gated)" : ""}`);
-          showFallbackOrFail();
+          showFallbackOrFail(r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40) || null);
         }
       })
-      .catch(() => { if (!keptNow) showFallbackOrFail(); });
+      .catch(() => { if (!keptNow) showFallbackOrFail("error"); });
     // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
     // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
-    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
+    // (a board that failed over a picture: the turn's slot is that picture, back on screen)
+    const restoredSlot = () => { const img = p.restored ? L.pieces.get(p.restored) : null; return img && !img.retired && L.onScreen === img.intentId ? { slotId: img.slotId, intentId: img.intentId, state: "revealed", artifact: img.artifact } : null; };
+    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : restoredSlot()), () => restoredSlot());
     if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
     return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
@@ -1066,6 +1133,71 @@ export const studioSeam = {
     return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
   },
 
+  /**
+   * 14.4 (QA D42, TEST c667c262 / ff19f258: the picture board was up, the next turn's response carried no slot (slotFor never
+   * re-sends a whiteboard) with the Director's tray "none", and the page closed while her line still talked about it,
+   * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
+   * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
+   */
+  keepBoardSlot(lessonId, line, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    // QA on D42: which rule let a board go is a trace row (the turn's reasons said nothing)
+    const notKept = (why) => { traceRecord("studio.board_not_kept", { intentId: on.intentId, why }); return null; };
+    if (movedFrom(on, move)) return notKept("moved");
+    if (!syncedWithLine(on.artifact.script, line)) {
+      // QA on be9b766a (897a7453: triangle board, then a rocket board, then "Ab triangle par lautte hain" over an empty tray):
+      // her line went back to the board before this one; that board comes back (kept, not revealed again), on the same rules
+      const back = boardBack(L, on, line, withhold, move);
+      if (back) return back;
+      return notKept("unsynced");
+    }
+    // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
+    // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
+    // D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about THIS board already has is not new. Known: the board's own
+    // numbers, the lines it was drawn and kept under (t1 "length 50 m aur breadth 30 m" over a rectangle with no numbers),
+    // and an earlier sentence of this line whose other numbers are all known ("160 m … 50 + 30 + 50 + 30"); a sentence
+    // that starts its own numbers ("Ab square ki har side 8 metre") adds nothing, so D43's new problem still drops the page
+    const sentences = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean);
+    const last = sentences.pop() ?? "";
+    const known = new Set([...boardNumbersIn(textsOf(on.artifact.script).join(" ")), ...(on.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+    for (const x of sentences) {
+      const ns = [...boardNumbersIn(x)];
+      if (ns.some((n) => known.has(n)) && ns.filter((n) => !known.has(n)).length <= 1) for (const n of ns) known.add(n);
+    }
+    if ([...boardNumbersIn(last)].some((n) => !known.has(n))) return notKept("new_number");
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return notKept("withheld");   // fail closed: unknown → not re-sent
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (!g) return notKept("uncertified");
+    L.shown = { intentId: on.intentId, revealing: false };
+    on.lines = [...(on.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
+    return g;
+  },
+
+  /** 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn (null when they could not be
+   *  computed). The stream replay and a re-reveal of a board already shown read them; null fails closed. */
+  noteWithheld(lessonId, values) {
+    const L = lessons.get(lessonId);
+    if (L) L.held = Array.isArray(values) ? values.map(String) : null;
+  },
+
+  /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
+  onScreenSlot(lessonId, intentId, withhold = null, move = {}, line = null) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
+    if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    // QA on ac4e8e88 (c07175b4, a12e757b: triangle, then a rocket board still being drawn, then "Board par dekho: Ab triangle
+    // par lautte hain"): a late board her line has left is never shown or pointed at; the board up then goes by the keep
+    // rules (keepBoardSlot), which bring back the board her line is about
+    if (line != null && on.kind === "whiteboard" && !syncedWithLine(on.artifact.script, line)) { traceRecord("studio.late_board_dropped", { intentId, why: "unsynced" }); return null; }
+    if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
+    if (movedFrom(on, move)) return null;
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
+  },
+
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
   boardUp(lessonId) {
     const L = lessons.get(lessonId);
@@ -1115,7 +1247,7 @@ export const studioSeam = {
     return true;
   },
 
-  /** A safeguarding turn: freeze and retire everything on screen; no new piece for the rest of the lesson. */
+  /** A safeguarding turn: freeze and retire everything on screen; no new piece while the safeguard is open (onSafetyClosed). */
   onSafety(lessonId) {
     const L = lessons.get(lessonId);
     if (!L) return;
@@ -1123,13 +1255,43 @@ export const studioSeam = {
     stagecraft.noteSafety(lessonId, true);
     if (L.onScreen) retirePiece(L, L.onScreen, "safety");
   },
+
+  /** Census 2026-10-21 F9 (one lesson: five theory asks after a safeguard, no visual): the Director's safeguard episode has
+   * closed (state.safeguard null, the move no safeguard), so Studio and Stagecraft draw again. What was retired stays
+   * retired; nothing from before the safeguard is re-shown. A check-in turn is a safeguard move and freezes as before. */
+  onSafetyClosed(lessonId) {
+    const L = lessons.get(lessonId);
+    if (!L?.safety) return;
+    L.safety = false;
+    stagecraft.noteSafety(lessonId, false);
+  },
 };
+
+/** The board the one on screen followed, back on screen when her line is about it again (keepBoardSlot's rules). */
+function boardBack(L, on, line, withhold, move) {
+  const prev = on.prevBoard ? L.pieces.get(on.prevBoard) : null;
+  if (!prev || prev.kind !== "whiteboard" || !prev.artifact?.script || prev.retired || !VISIBLE.has(prev.state)) return null;
+  if (movedFrom(prev, move) || !syncedWithLine(prev.artifact.script, line)) return null;
+  const known = new Set([...boardNumbersIn(textsOf(prev.artifact.script).join(" ")), ...(prev.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+  if ([...boardNumbersIn(line)].some((n) => !known.has(n))) return null;
+  if (!Array.isArray(withhold) || writesWithheld(prev.artifact.script, withhold)) return null;
+  const g = gatedSlot(L, prev, prev.state, "on_screen");
+  if (!g) return null;
+  retirePiece(L, on.intentId, "replaced");
+  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbUnder = [...prev.artifact.script.ops];
+  L.shown = { intentId: prev.intentId, revealing: false };
+  prev.lines = [...(prev.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
+  traceRecord("studio.board_back", { intentId: prev.intentId, from: on.intentId });
+  return g;
+}
 
 function retirePiece(L, intentId, why) {
   const p = L.pieces.get(intentId);
   if (!p || p.state === "retired") return;
   const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
+  // a board taken down before it drew takes the picture it was held over with it (never revealed off screen)
+  if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, why); }
   // round 4: the child declined a game: the practice beat goes back to Stagecraft / the boards for this lesson
   // (server/stagecraft/seam-bridge.js merge)
   if ((why === "not_this" || why === "declined") && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"))) L.playDeclined = true;

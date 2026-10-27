@@ -1,0 +1,155 @@
+{
+ "v": 1,
+ "qa": "forge3-qa@2",
+ "at": "2026-10-10T08:38:02.491Z",
+ "viewports": [
+  "p360",
+  "p412",
+  "l1366"
+ ],
+ "boxes": "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
+ "source": "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish",
+ "engines": {
+  "collections@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "serveByViewport": {
+       "p360": true,
+       "p412": true,
+       "l1366": true
+      },
+      "n": 1,
+      "fails": []
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 1,
+      "fails": [
+       "p360:Q2.whole",
+       "p412:Q2.whole",
+       "l1366:Q2.whole"
+      ]
+     }
+    }
+   }
+  }
+ },
+ "samples": [
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c1-maths-ch01-t02",
+   "params": {
+    "topicId": "c1-maths-ch01-t02",
+    "skillId": "c1-maths-ch01-t02-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     1
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": true,
+     "serve": true,
+     "fails": [],
+     "minPx": 18,
+     "detail": [],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "collections@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c6-maths-ch03-t04",
+   "params": {
+    "topicId": "c6-maths-ch03-t04",
+    "skillId": "c6-maths-ch03-t04-s1",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     487
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q2.whole"
+     ],
+     "minPx": 16.5,
+     "detail": [
+      "Q2.whole 12 text runs and 32 targets past the frame"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q2.whole"
+     ],
+     "minPx": 16.5,
+     "detail": [
+      "Q2.whole 12 text runs and 22 targets past the frame"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q2.whole"
+     ],
+     "minPx": 16.5,
+     "detail": [
+      "Q2.whole 12 text runs and 12 targets past the frame"
+     ],
+     "err": null
+    }
+   ]
+  }
+ ]
+}

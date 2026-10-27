@@ -55,6 +55,25 @@ function priorFor(raw: { scriptId?: unknown; mode?: unknown; line?: { lessonId?:
 const scoped = (script: WhiteboardScript, alias: Map<string, string>, own: Set<string>) => (id: string) =>
   own.has(id) ? `${script.scriptId}:${id}` : alias.get(id) ?? id;
 
+/** What an op draws, without its ids or timing (two scripts that draw the same picture compare equal). */
+const drawsOf = (ops: readonly WbOp[]) => JSON.stringify(ops.map((o) => {
+  const { id: _i, startMs: _s, endMs: _e, ...rest } = o as WbOp & { startMs?: number; endMs?: number };
+  const t = (rest as { target?: string }).target;
+  return t ? { ...rest, target: t.slice(t.indexOf(":") + 1) } : rest;
+}));
+/**
+ * Census 2026-10-21 F9 (3437b744, 310b8c82: every board drawn twice): a later turn re-sent the page already on the board
+ * under a new script id (a continued board that draws nothing new is kept: studio/seam.js keptPrevious), and the board
+ * was wiped and drawn again, a second notebook page. A fresh script that draws exactly what the board shows now is the
+ * same page: shown complete at once, no wipe, no replay, no new page.
+ */
+function sameAsBoard(script: WhiteboardScript | null): boolean {
+  if (!script || (script as { mode?: string }).mode === "continue") return false;
+  const b = boards.get(keyOf(script.line?.lessonId));
+  return !!b && b.scriptId !== script.scriptId && b.board.w === script.board.w && b.board.h === script.board.h && b.ops.length === script.ops.length
+    && drawsOf(b.ops) === drawsOf(script.ops);
+}
+
 function remember(script: WhiteboardScript, prior: WbOp[], alias: Map<string, string>) {
   const key = keyOf(script.line.lessonId);
   const cur = boards.get(key);
@@ -81,6 +100,8 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
     const fix = (id: string) => (own.has(id) ? id : before.alias.get(id) ?? id);
     return { ...n, ops: n.ops.map((o) => ("target" in o && o.target ? { ...o, target: fix(o.target) } as WbOp : o)) };
   }, [norm, before]);
+  // read before this script is remembered (the effect below): is it the page already on the board?
+  const same = useMemo(() => sameAsBoard(script), [script]);
   const [startAt, setStartAt] = useState<number | null>(null);
   const emitted = useRef(false);
   const page = useRef(0);
@@ -98,6 +119,8 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
     // the board this script leaves behind is what a later "continue" script draws on (kept now: the lesson may move on
     // before the drawing finishes)
     remember(script, prior, before.alias);
+    // the page already on the board: no new page, no replay (it is drawn complete at once, frozenAt below)
+    if (same) { latest.current({ type: "ready" }); latest.current({ type: "done" }); return; }
     // r12 flight recorder: this page reached the screen; CLEARED (fresh) or OVERLAID on the earlier page's ops
     page.current = traceBoardPage({ lessonId: script.line?.lessonId, scriptId: script.scriptId, mode: (script as { mode?: string }).mode, ops: script.ops.length, priorOps: prior.length, ground: script.board.ground,
       texts: script.ops.flatMap((o) => (o.op === "text" || o.op === "label" ? [o.text] : [])) });
@@ -118,8 +141,8 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   if (!script) return null;
   // display:contents: the recorder's handle on the drawn SVG, with no box of its own (layout and look unchanged)
   return (
-    <span ref={host} style={{ display: "contents" }}>
-      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
+    <span ref={host} style={{ display: "contents" }} data-script={script.scriptId} data-same={same ? "1" : undefined}>
+      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
         className="wb-svg" onDone={() => {
           if (emitted.current) return;
           emitted.current = true;

@@ -18,7 +18,7 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
-import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing } from "../studio/request.js";
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing, selfAnswer } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
@@ -96,7 +96,9 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   const withhold = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
-  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
+  // main 14.4: the answer her own question asks for, when her line already states it (selfAnswer): never drawn (W18)
+  const sa = selfAnswer(spoken, { worked: String(kit?.workedExample?.problem ?? "") });
+  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
     ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) };
 }
 
@@ -325,7 +327,8 @@ export async function plan(ask, o) {
   // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
   // QA pass 12 D35 (prod b8fb4ee2, TEST f10fcd57: "number line pe dikhao" named no numbers, so no code line; the line plan
   // failed ~1 in 2 and the slot went "failed" under her "… dikhaiye"): with none asked, the numbers HER line says are drawn
-  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i).slice(0, 4);
+  // (never the answer her own question asks for, when her line states it: TEST 1695e941 drew 0 … 160, 160 the answer)
+  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i && !(ctx.answers ?? []).includes(x)).slice(0, 4);
   const nlRequest = request?.kind === "number_line" && !request.said?.length && lineNumbers.length ? { ...request, said: lineNumbers } : request;
   const nl0 = request?.kind === "number_line" ? numberLineBoard(nlRequest, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
     : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;

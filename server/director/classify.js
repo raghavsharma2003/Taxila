@@ -3,19 +3,22 @@
 // listed option the reply matches; code turns that into an outcome). Deterministic paths run first
 // (chips, module answers, exact key match, low ASR, lexical don't-know), so the model is only asked
 // when the bytes cannot decide.
-import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter } from "../azure.js";
+import { chat, DEPLOY, isReasoningFamily, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { readUtterance } from "../learner/affect.js";
 import { scanSafety, wantsToStop, scrubPii, filterSafe, readability } from "./safety.js";
 import { whyKey, norm as normAnswer, posesItem, revealsAnswer } from "./items.js";
 import { INTEREST_IDS } from "../../shared/interests.js";
 import { partsOf } from "../content/parts.js";
-import { corroborate } from "../grading/corroborate.js";
+import { corroborate, reasonHead, reasonTakesBack } from "../grading/corroborate.js";
 import { plainNumberKey, numberPhrases, statedResults, selfCorrected, unitsAfterNumbers, tailAgrees, signConflict, bareOfDecisive } from "../grading/spoken-number.js";
-import { requestOf, FLOW_REQUESTS } from "./requests.js";
+import { requestOf, FLOW_REQUESTS, offerAgreed } from "./requests.js";
 import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
+import { canonReading } from "../safety/fine.js";
+import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
+export { lessonIdiom } from "../safety/idioms.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
 // Per-turn perception rides on the SAME classify call (no new model call on the turn): the dialogue act (with the IDK
@@ -363,6 +366,40 @@ function classifyChat(deployment, messages, opts) {
 }
 
 const DISTRESS_SCHEMA = { type: "object", additionalProperties: false, required: ["distress"], properties: { distress: { type: "boolean" } } };
+/**
+ * 14.4 (main safety review; the owner's lesson e6392332: a misheard line opened the full helpline script twice in a row): what
+ * the words-only read says the distress is about. SURE kinds always get the full script at once; a low mood or another
+ * fright gets a warm check-in first (state.js decide), which escalates on the next turn unless the child is clearly fine
+ * or carries on with the lesson. Measured on grok (n=4 per line, 23 lines): every self-harm / hurt-by-a-person / afraid-of-
+ * a-person-or-home line read SURE 4/4, including "main na hoti toh achha hota"; lonely lines read sad_or_lonely 4/4; an
+ * ambiguous "raat ko akele dar lagta hai, koi aata hai" read other_fright (a check-in that asks what happened first).
+ */
+export const DISTRESS_ABOUT = Object.freeze(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now", "sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"]);
+export const SURE_DISTRESS = Object.freeze(new Set(["self_harm", "hurt_by_person", "afraid_of_person_or_home", "unsafe_now"]));
+const BESIDE_SCHEMA = { type: "object", additionalProperties: false, required: ["distress", "about"],
+  properties: { distress: { type: "boolean" }, about: { type: "string", enum: [...DISTRESS_ABOUT] } } };
+// The lesson's idioms (the past / future frustration idiom, scolding, the hyperbole): server/safety/idioms.js
+const SCOLD_ABOUT = new Set(["afraid_of_person_or_home", "hurt_by_person", null, undefined]);
+const idiomCheck = (out, text) => {
+  if (!out?.flags?.distress || ["self_harm", "abuse", "fear"].includes(out.flags.distressKind ?? "")) return out;
+  if ((out.flags.distressAbout === "self_harm" || out.flags.distressAbout == null) && lessonIdiom(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_frustration" } };
+  if (SCOLD_ABOUT.has(out.flags.distressAbout) && scoldOnly(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "scolding" } };
+  // 14.4.1 (sim lab p16s r2, TEST 736f432e t13: "…पास करो प्लीज, आग लग रही है" read unsafe_now): the lesson's pressure said as
+  // burning (idioms.js lessonBurn) is a check-in kind, never the full script on a model read alone
+  if ((out.flags.distressAbout === "unsafe_now" || out.flags.distressAbout == null) && lessonBurn(text)) return { ...out, flags: { ...out.flags, distressAbout: "none", idiom: "lesson_burn" } };
+  return out;
+};
+/**
+ * How long a turn the labels already read as distress waits for the words-only read to name its kind (ms).
+ * 14.4 (QA TEST 1ebf31b4 t1 on 1b3bb12c, two lanes of load): the words read on grok timed out at 3 s, its fallback named
+ * sad_or_lonely 1.4 s later, and the 1.2 s wait had already left it unnamed: the full script on a low mood that 14 earlier
+ * runs met with a check-in. On TEST (7 days) grok's read timed out on 52 of 10,939 calls and taxila-fast takes 1.6 s at
+ * the median, so every such timeout became the full script. Now the wait covers the read's own bound (two deployments,
+ * 3 s each); only no reading at all is unnamed (still the full script). The extra seconds fall only on a turn the labels
+ * already read as distress. TAXILA_BESIDE_CAP_MS overrides it for tests.
+ */
+const besideNameCapMs = () => Number(process.env.TAXILA_BESIDE_CAP_MS ?? 6500);
+const ABOUT_NOTE = " about: what the distress is about — self_harm (wishing to die, not to exist, to hurt themself, even said lightly), hurt_by_person (someone hits, touches or harms them), afraid_of_person_or_home (afraid of a person, of someone who comes to them or does something to them, or of going home), unsafe_now (in danger right now), sad_or_lonely (low, lonely, nobody talks to them), other_fright (scared by an animal or pet, a dream, the dark, an accident or a film, with no person doing anything to them), hurt_by_accident_or_animal (hurt in a fall, a game or sport, or by a pet or animal, with no person hurting them), none (no distress).";
 
 /**
  * The model's distress read alone, for turns the full classifier does not see (a low-confidence transcript)
@@ -398,7 +435,7 @@ async function distressCheck(text, classLevel, trace, { failClosed = false } = {
 /**
  * 14.3: do the child's words ALONE trip the content filter? A neutral brief ("Answer with one word: ok") on the reply
  * deployment, the same probe the reply path runs (brain/say.js childWordsTrip). "harm": a harm or unreadable block;
- * "clear": passed, or only an injection / copyright detector fired; "unknown": the probe failed (the caller fails closed).
+ * "clear": passed, or only an injection / copyright / hate detector fired (14.4, azure.js notChildSafety); "unknown": the probe failed (the caller fails closed).
  * @returns {Promise<"harm"|"clear"|"unknown">}
  */
 async function wordsTrip(text, trace) {
@@ -407,7 +444,8 @@ async function wordsTrip(text, trace) {
       { maxTokens: 16, effort: "none", timeoutMs: 4000, retries: 1, trace, quotaLane: "hot" });
     return "clear";
   } catch (e) {
-    if (isContentFilter(e)) return nonHarmFilter(e) ? "clear" : "harm";
+    // 14.4: a block by the hate detectors alone is no child-safety signal (azure.js notChildSafety); the distress read still runs
+    if (isContentFilter(e)) return notChildSafety(e) ? "clear" : "harm";
     return "unknown";
   }
 }
@@ -427,14 +465,22 @@ async function distressAcross(text, classLevel, trace) {
     { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
     { role: "user", content: filterSafe(scrubPii(text).text) },
   ];
+  // 14.4 (QA TEST 7590e26d on f0cb84c8: "वो cotton shirt, British लोग control करते होंगे price… rule कर रहे थे", class 6):
+  // every deployment's read blocked by the hate detectors alone (grok `multiseverity_hatespeechscore`, taxila-fast `hate`)
+  // is no child-safety signal (azure.js notChildSafety): no distress. On 276 curated distress lines, 22 are blocked on both
+  // deployments and none hate-only; a failure, or any other category on any deployment, is still no reading (fail closed)
+  let tried = 0, hateOnly = 0;
   for (const d of distressDeployments()) {
+    tried++;
     try {
       const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress", effort: "none", maxTokens: 40, timeoutMs: 4000, retries: 0, trace, quotaLane: "hot" });
       return !!json?.distress;
     } catch (e) {
+      if (isContentFilter(e) && notChildSafety(e)) hateOnly++;
       console.warn(`[classify] distress read on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}: next deployment`);
     }
   }
+  if (tried > 0 && hateOnly === tried) { console.warn("[classify] every distress read blocked by the hate detectors alone: no child-safety signal"); return false; }
   return null;
 }
 
@@ -451,25 +497,34 @@ async function distressAcross(text, classLevel, trace) {
  * A failure is no reading. At most two deployments, 3 s each; it starts with the label call, so it costs no time unless it
  * is the slower of the two (measured on grok, n=30: added p50 0 ms, p90 150 ms). `trip`: the turn's one words-alone probe,
  * shared with the label path's.
- * @returns {Promise<boolean|null>} true / false: a reading; null: none
+ * @returns {Promise<{ distress: boolean, about: string|null }|null>} a reading (about null: a kind it could not name); null: none
  */
-async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace)) {
+async function distressBeside(text, classLevel, trace, trip = () => wordsTrip(text, trace), heard = "") {
+  // 14.4 (sim lab r5-rel144-c142e87-36card p67 #14, TEST e07e397b: "वो... वो डूबेगी..." answering "Kaanch ki goli ko paani
+  // mein daal kar kya hoga?" opened a fresh episode, the full helpline script as the lesson's last line; the words alone read
+  // as "she will drown"): her last words come first, framed as context only. Measured on grok, n=5 per line: that line 5/5 →
+  // 0/5; 5 true-distress lines (low mood, an answer then loneliness, abuse, a "doob jaungi" disclosure under a sinking
+  // question) 25/25 kept; ordinary sim-lab lines with their preceding teacher line 1/2000 (14.3.2: 4/2000). Without her words
+  // (none recorded) the read is the child's words alone, as before.
+  const said = String(heard ?? "").trim();
   const messages = [
-    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).` },
-    { role: "user", content: filterSafe(scrubPii(text).text) },
+    { role: "system", content: `A reply from an Indian school child (class ${classLevel}) in a lesson, in Hindi, English or Hinglish; the transcript may be misheard. distress: true ONLY for signs the child is unsafe, hurt, abused, frightened of a person, a place or what is happening to them, very sad, or may harm themself — never for ordinary frustration or worry about the lesson itself (scared of numbers, a question, a test or getting it wrong: the teacher reassures).${said ? " The teacher's last words come first only so you can tell an answer to the lesson's own question from a disclosure." : ""}${ABOUT_NOTE}` },
+    { role: "user", content: said ? `TEACHER: ${filterSafe(scrubPii(said).text).slice(-240)}\nCHILD: ${filterSafe(scrubPii(text).text)}` : filterSafe(scrubPii(text).text) },
   ];
   let blocked = false;
   for (const d of distressDeployments().slice(0, 2)) {
     try {
       // its own schema name: the same brief as distressCheck / distressAcross, told apart in model.call trace rows and tests
-      const { json } = await classifyChat(d, messages, { schema: DISTRESS_SCHEMA, schemaName: "distress_beside", effort: "none", maxTokens: 40, timeoutMs: 3000, retries: 0, trace, quotaLane: "hot" });
-      return !!json?.distress;
+      const { json } = await classifyChat(d, messages, { schema: BESIDE_SCHEMA, schemaName: "distress_beside", effort: "none", maxTokens: 60, timeoutMs: 3000, retries: 0, trace, quotaLane: "hot" });
+      const distress = !!json?.distress;
+      return { distress, about: distress ? (DISTRESS_ABOUT.includes(json?.about) ? json.about : null) : "none" };
     } catch (e) {
       if (isContentFilter(e) && !nonHarmFilter(e)) blocked = true;
       console.warn(`[classify] distress read beside the labels on ${d} ${isContentFilter(e) ? `blocked (${(e.filterCats ?? []).join(",") || "unreadable"})` : "failed"}`);
     }
   }
-  if (blocked && (await trip()) === "harm") return true;
+  // the child's words alone trip a harm category: distress of no known kind, so the full script (never a check-in)
+  if (blocked && (await trip()) === "harm") return { distress: true, about: null };
   return null;
 }
 
@@ -512,7 +567,11 @@ export const HELP_REQUESTS = Object.freeze({
 /** @returns {string | null} the help request a chip id names */
 export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(HELP_REQUESTS, chipId) ? HELP_REQUESTS[chipId] : null);
 
-export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang }) {
+/** The share of a turn's letter tokens in another script under which they are dropped as stray (6c45a7ea t26). */
+const STRAY_SHARE = 0.25;
+const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+
+export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
   // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
   // the words that came with it trip the safety predicate, which always decides first.
@@ -526,6 +585,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const flags = {
     dontKnow: read.dontKnow, asksForAnswer: read.asksForAnswer, minimal: read.minimal,
     offTopic: false, distress: safety.distress, distressKind: safety.kind, wantsToStop: wantsToStop(text),
+    // 14.4: the predicate's self_harm on the lesson's own hyperbole ("main mar jaunga itna padh ke"): still distress, a
+    // check-in tier (state.js checkTier), never cleared
+    ...(safety.distress && safety.kind === "self_harm" && lessonHyperbole(text) ? { idiom: "lesson_hyperbole" } : {}),
   };
   const done = (outcome, source, extra = {}) => ({ result: { outcome, confidence: 1, source, flags, ...extra }, flags, text });
 
@@ -534,7 +596,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const o = target.options[Number(chipId.slice(4))];
     if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, "chip", m); }
   }
-  // p5-interaction: a ways-in chip (state.js waysChips) is a request, never an answer and never read by a model
+  // p5-interaction: a ways-in chip (state.js WAYS) is a request, never an answer and never read by a model
   if (chipId && /^req:(visual|story|game)$/.test(chipId) && p5Flag("STEER")) {
     return done("no_evidence", "chip", { request: chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true } });
   }
@@ -577,6 +639,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   const reading = sexual ? { type: "oob", whole: true, src: "p5" } : !chipId && !moduleAnswer && p5Flag("STEER") ? readIntent(text) : null;
   let request = reading?.type === "oob" || reading?.type === "adult" ? requestFromReading(reading) : !chipId && !moduleAnswer ? requestOf(text) : null;
   if (!request && reading) request = requestFromReading(reading);
+  // census 14.5 (F1, 3437b744): a bare yes to her single offer is the request her offer named
+  if (!request && !chipId && !moduleAnswer) request = offerAgreed(heard, text);
   if (sexual) { flags.wantsToStop = false; return done("no_evidence", "request", { request }); }
   // Day-0 gates review (2026-10-05): a request word that is the ITEM's own answer content is an answer, never a request.
   // 244 of 44,103 kit answers / acceptables / options read as a whole request ("Good night, Mummy!" → goodbye ended the
@@ -596,7 +660,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // safety-robust (2026-10-05): a token in another script is the transcriber hallucinating (CRITIQUE §2 B1: 5/90 real
   // segments came back Japanese / Telugu / Korean / Bengali). It is never content: the turn is no evidence (the Director
   // re-asks, as for a low-confidence transcript) and the model distress read runs on the readable rest (classify lowAsr).
-  if (!typed && readability(text).unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
+  // 14.5 (6c45a7ea t26: ONE Bengali token made a whole readable turn no evidence): a stray token, under a quarter of the
+  // letter tokens with 3+ readable words left, is dropped and the readable rest is the turn; it still gets the model distress
+  // read the unreadable path gives (classify, `stray`). The predicate has already read the whole turn above. Once only
+  // (_stray): the rest is never re-read for stray tokens, whatever readability() becomes.
+  const rd = typed ? null : readability(text);
+  if (rd?.unreadable && !_stray && rd.share < STRAY_SHARE && letterWords(rd.readable) >= 3) {
+    const rest = classifyFast({ target, childText: rd.readable, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray: true });
+    return { ...rest, stray: true, flags: { ...rest.flags, distress: rest.flags.distress || flags.distress, wantsToStop: rest.flags.wantsToStop || flags.wantsToStop } };
+  }
+  if (rd?.unreadable) return { result: null, flags, text, lowAsr: true, unreadable: true, ...(request?.whole ? { request } : {}) };
   if (request?.whole) return { result: null, flags, text, request };
   const other = target.mode === "item" && askedOther(heard, target.item, lang);
   // An echo: the reply is only a number the teacher's OTHER question itself stated ("25" to "what comes after 25?").
@@ -674,7 +747,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const hit = working.results.some((v) => Math.abs(v - kv) < 1e-9);
     const last = working.results.at(-1) ?? working.all.at(-1);
     // (the words of the working — "sides", "times", "rows" — are not a counted thing; a different unit was refused above)
-    if (hit) return done("correct", "number_working");
+    // 14.5 (main): working that takes the answer back ("…wait, 5n", "…par shayad 12 hoga", "pata nahi") is not the answer
+    const promptN = [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])];
+    // (an explicit "answer / jawab <number>" that is not the key takes it back too)
+    const said = text.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|toh|to)\s+)?([\d.,\/]+)/iu)?.[1];
+    const saidV = said ? numberPhrases(said)?.[0] : null;
+    const back = !hit ? null : saidV != null && Math.abs(saidV - kv) >= 1e-9 ? "other_answer" : reasonTakesBack(text, "", [kv], new Set(), promptN, { negation: false, cues: false });
+    if (hit && (!back || back === "question")) return done("correct", "number_working");
+    if (hit) return done("no_evidence", "number_taken_back");
     if (last != null) return { result: null, flags, text, numericMismatch: true };
   }
   if (kv != null && !denies && /[\p{N}\p{L}]/u.test(text)) {
@@ -682,7 +762,15 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     if (ph && ph.length) {
       const vals = ph.filter((v, i) => ph.findIndex((u) => Math.abs(u - v) < 1e-9) === i);
       if (vals.length === 1 && Math.abs(vals[0] - kv) < 1e-9) return sameThing ? done("correct", "number") : { result: null, flags, text, nounMismatch: true };
-      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) return done("no_evidence", "number_hedge");
+      if (vals.length >= 2 && !/(?:^|[^\p{L}])(?:sorry|matlab|i mean)(?![\p{L}])/iu.test(text)) {
+        // round 5 (14.5, main's conditions; corroborate.js reasonHead): "saat! kyuki dus ungliyaan hain, teen mod do toh saat"
+        // is the key said first and its reason after, not two answers: the head before the reason marker is the one number,
+        // the key's value and thing, and nothing in the reason takes it back (correction, alternative, another answer)
+        const rh = !["why", "teachback"].includes(target.item?.kind) ? reasonHead(text) : null;
+        const hv = rh ? numberPhrases(rh.head) : null;
+        if (rh && hv?.length === 1 && Math.abs(hv[0] - kv) < 1e-9 && tailAgrees(target.key, rh.head) && !reasonTakesBack(rh.rest, rh.head, [kv], new Set(), [...(numberPhrases(target.item?.prompt_en ?? "") ?? []), ...(numberPhrases(target.item?.prompt_hi ?? "") ?? [])])) return done("correct", "number_reason_head");
+        return done("no_evidence", "number_hedge");
+      }
       if (vals.length >= 2) { const last = ph.at(-1); return Math.abs(last - kv) >= 1e-9 ? { result: null, flags, text, numericMismatch: true } : sameThing ? done("correct", "number_selfcorrect") : { result: null, flags, text, nounMismatch: true }; }
       // round3 truth: the reply is ONLY a number, and it is not the key's value: a wrong answer by value, whatever else the
       // model reads (bareWrongNumber, applied in classifyModel when the model abstains)
@@ -736,8 +824,15 @@ export function needsModelDistressRead(result, text) {
  *   flags: { dontKnow: boolean, asksForAnswer: boolean, minimal: boolean, offTopic: boolean, distress: boolean, distressKind: string|null, wantsToStop: boolean } }>}
  */
 export async function classify(args) {
-  const { target, classLevel, trace } = args;
   const fast = classifyFast(args);
+  if (!fast.stray) return classifyRead(args, fast);
+  // a turn with a stray token dropped: the model distress read of the readable rest always runs, as on the unreadable path
+  const [r, d] = await Promise.all([classifyRead(args, fast), distressCheck(fast.text, args.classLevel, args.trace)]);
+  return d && !r.flags?.distress ? { ...r, flags: { ...r.flags, distress: true, distressKind: r.flags?.distressKind ?? "model" } } : r;
+}
+
+async function classifyRead(args, fast) {
+  const { target, classLevel, trace } = args;
   if (fast.result) {
     if (!needsModelDistressRead(fast.result, fast.text)) return fast.result;
     const d = await distressCheck(fast.text, classLevel, trace);
@@ -818,16 +913,22 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
   // 14.3.2: the words-only distress read beside the labels (distressBeside), started with them so it costs no time; not
   // needed when the predicate already read distress
   let tripP = null; const tripOnce = () => (tripP ??= wordsTrip(text, trace));   // one words-alone probe per turn, shared
-  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce);
+  const beside = flags.distress ? null : distressBeside(text, classLevel, trace, tripOnce, heard);
   try {
     const { value: { json }, backup } = await hedgedFallback(() => classifyChat(DEPLOY.classify, messages, fb ? { ...opts, retries: 0 } : opts),
       fb ? () => classifyChat(fb, messages, { ...opts, timeoutMs: 6000, retries: 0 }) : null, classifyHedgeMs());
     const out = labelled(json, backup);
+    if (!beside) return idiomCheck(out, text);
+    // the labels already read distress: the words-only read names its kind, so it is waited for until it settles (it started
+    // with the labels; its two deployments' timeouts bound it); only a read with no answer at all is unnamed: the full script
+    const b = out.flags?.distress ? await Promise.race([beside, new Promise((r) => setTimeout(r, besideNameCapMs(), null))]) : await beside;
     // either read saying distress is distress; `distressBy` attributes it (turn.js: safety.scan source classify_words)
-    if (beside && !out.flags?.distress && (await beside) === true) {
-      return { ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model" } };
+    if (!out.flags?.distress) {
+      return b?.distress ? idiomCheck({ ...out, distressBy: "words", flags: { ...out.flags, distress: true, distressKind: out.flags?.distressKind ?? "model", distressAbout: b.about } }, text) : out;
     }
-    return out;
+    // 14.4: the labels read distress: the words-only read names what it is about ("none" when it read none: the two reads
+    // disagree, so a check-in first); no reading leaves it unnamed, which is the full script (state.js checkTier)
+    return idiomCheck(b ? { ...out, flags: { ...out.flags, distressAbout: b.distress ? b.about : "none" } } : out, text);
   } catch (e) {
     // The content filter blocked the child's turn: fail CLOSED to the safeguarding protocol (never "safe",
     // never a normal reply). No second model call — the same words would be blocked again.

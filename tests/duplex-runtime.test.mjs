@@ -14,6 +14,7 @@ import { createEngine, TrainedEngine, loadOnnxFloorModel } from "../src/duplex/a
 import { FEATURE_NAMES, FEATURE_SPEC, packFeatures } from "../src/duplex/features.ts";
 import { CONTEXT, VERDICT, OVERLAP, FIRST_TEXT_P90 } from "../src/duplex/config.ts";
 import { TurnTranscript } from "../server/duplex/fanin.js";
+import { isEcho } from "../src/lesson/cascadeLink.ts";
 import { EchoSubtractor } from "../server/duplex/echo.js";
 import { PartialSafety } from "../server/duplex/partialSafety.js";
 import { Speculator } from "../server/duplex/speculator.js";
@@ -514,6 +515,58 @@ test("fan-in: epochs drop the last turn's late final; a carried overlap folds in
   assert.equal(asked, 1500, "unseen voice counted from the carried onset");
   f.push({ type: "partial", itemId: "carry", text: "बारह", t: 3300, audioStartMs: 1520 });
   assert.equal(f.view(3300).text, "बारह");
+});
+
+test("census F5: the carried burst's OWN item joins the fold-in though the ear opened it before the device's late onset", () => {
+  // D5 over her playback: the device sees the child at 2620 (her echo masks the start), Voice Live's VAD opened the item at
+  // 1996; the final lands after her line ended. Those words are the fold-in's, never dropped with the old turn.
+  const f = new TurnTranscript({ source: "voicelive" });
+  f.begin(0);
+  f.begin(3340, { carryFrom: 2620 });
+  f.push({ type: "final", itemId: "burst", text: "8 corners", t: 3760, audioStartMs: 1996, audioEndMs: 3200 });
+  assert.equal(f.view(3760).text, "8 corners");
+  // an item that ENDED before the carried onset is the last turn's, and stays out; so does one opened far earlier
+  const g = new TurnTranscript({ source: "voicelive" });
+  g.begin(0);
+  g.begin(3340, { carryFrom: 2620 });
+  g.push({ type: "final", itemId: "before", text: "पुराना", t: 3400, audioStartMs: 1700, audioEndMs: 2400 });
+  g.push({ type: "final", itemId: "early", text: "बहुत पहले", t: 3500, audioStartMs: 900, audioEndMs: 3000 });
+  assert.equal(g.view(3500).text, "");
+});
+
+test("census F5 #2: a negation never matches her words by consonant skeleton (\"नहीं\" = \"n\" = her \"हैं\" / \"ना\")", () => {
+  const sub = (her, child) => {
+    const e = new EchoSubtractor();
+    e.heardText("u1", her, 0, 70);
+    const end = her.length * 70;
+    return e.subtract(child, end + 600, 0, { fromMs: end - 1500, toMs: end + 400 }).text;
+  };
+  // the meaning must not flip, and an answer must not vanish
+  assert.equal(sub("अब बताओ, कितने corners होते हैं?", "मुझे नहीं पता कितने corners होते हैं"), "मुझे नहीं पता");
+  assert.equal(sub("तो ये तीन होगा ना?", "नहीं तीन नहीं होगा"), "नहीं तीन नहीं");
+  assert.equal(sub("तुम्हें मज़ा आ रहा है ना?", "नहीं मज़ा नहीं आ रहा"), "नहीं मज़ा नहीं आ रहा");
+  // the cascade lane's whole-utterance test: a negated reply is not her echo; her own line still is
+  assert.equal(isEcho("मुझे नहीं पता कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), false);
+  assert.equal(isEcho("अब बताओ कितने corners होते हैं", "अब बताओ, कितने corners होते हैं?"), true);
+  // her OWN echoed negation goes with the run of her words it sits in (one class across scripts: her Roman "nahi" echoes
+  // back as the ear's "नहीं"); a lone negation of the child's never goes on a one-letter collision
+  const e = new EchoSubtractor();
+  e.heardText("u1", "Nahi nahi, ye teen nahi hai", 0, 70);
+  assert.equal(e.subtract("नहीं नहीं ये तीन नहीं है", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "है", "every negation of her echo goes (the trailing empty-skeleton word across scripts stays, as before)");
+  const lone = new EchoSubtractor();
+  lone.heardText("u1", "Kya ye teen hai na?", 0, 70);
+  assert.equal(lone.subtract("नहीं", 1400, 0, { fromMs: 0, toMs: 1600 }).text, "नहीं");
+  // the owner's lesson e6392332 shape (tokens only): every one-letter / empty skeleton (रहा→r, आप→p, क्या→k, है/हो/आ) was
+  // stripped. A one-letter skeleton now matches only her identical word; her echo of her own line is still removed
+  assert.equal(sub("Agar samajh nahi aa raha toh batao, aap kya soch rahe ho?", "मुझे कुछ समझ नहीं आ रहा सर आप क्या बोल रहे हो"),
+    "मुझे कुछ समझ नहीं आ रहा सर आप क्या बोल रहे हो", "her Roman \"aap kya\" never takes the child's own \"आप क्या\"");
+  // ...while her own Roman line, echoed back in Devanagari by the ear, is still removed (a run anchored by a long match)
+  const x = new EchoSubtractor();
+  x.heardText("u3", "Kya aap samajh rahe ho?", 0, 70);
+  assert.equal(x.subtract("क्या आप समझ रहे हो", 2000, 0, { fromMs: 0, toMs: 2200 }).text, "हो", "(a trailing empty-skeleton word across scripts stays, as before)");
+  const h = new EchoSubtractor();
+  h.heardText("u2", "अच्छा, अब ये बताओ कि ये पौधे कैसे बढ़ते हैं", 0, 70);
+  assert.equal(h.subtract("अच्छा अब ये बताओ कि ये पौधे कैसे बढ़ते हैं", 3000, 0, { fromMs: 0, toMs: 3200 }).text, "");
 });
 
 test("echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers", () => {

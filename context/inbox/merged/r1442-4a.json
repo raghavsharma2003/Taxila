@@ -1,0 +1,65 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r145-f1b-round3",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "Census F1 round 3 (TEST 38aad918 t1, sim lab p10 #8 and ok10 t4): a request that opens or closes a LONG turn was lost to the length rule ('Picture dikhao, maine kal ek peacock banaya tha, …'; '…, par main thak gayi hoon, can we stop now?'; 'didi, pehla gap… fractions boring hai, geometry padhao, triangles'), and the understanding note's share / hedge then took the empty slot (policy.js applyNote already keeps any code request). director/requests.js: when the whole turn reads as no request (or as a non-whole one of the same kind), its first or last clause (a leading 'didi / haan / umm' skipped), read on its own as a whole request in an explicit ask form, is the turn's request: visual / game needs a show / draw / play verb, stop an explicit stop ask ('can we stop', 'aaj ke liye bas'; never a bare 'bas.' or 'khatam' closing an answer), break 'break / aaram / ruk', example / slower an imperative, a topic switch only as the opening clause, and an explicit study wish ('X padhao', new; 'X padhna hai') from any clause when its subject is not generic. A non-flow request is never taken from a turn whose rest carries an answer attempt (the answer is graded as before); stop / goodbye ride along and the answer is still graded. Fixed on the way: 'see you' inside a sentence read as a goodbye ('then the monkeys see you and copy?' would have ended the lesson). Main's rule (14.4.2): the stop family (stop, goodbye, break) closing a long turn is that request even with an answer in the rest ('Thirteen? … bas, thak gayi. Can we stop now?' is a stop; '…game khelein please? bas, thak gayi' a break; a bare 'bas.' closing an answer stays the answer). Measured, old vs new requestOf: sim lab 4,357 lines, 101 moved, all checked: 74 visual / game asks ('photo dikhao', 'Game khelein?', 'whiteboard pe dog draw karo please'), 4 example asks, 2 study wishes, 16 stop / break / non-whole made whole from a tired child's closing clause, 2 byes, 2 non-whole visual made whole; TEST 7,390 child turns, 4 moved, all 'gaali sikhao', whose out-of-bounds read comes first in classify (declined, test). ok10 t4 now gets the honest 'not in your class here' offer instead of a reteach (findTopic does not map geometry / triangles to class 5's shapes: open). Tests: tests/r145-f1b-round3.test.mjs (fail on the base)."
+  },
+  {
+   "id": "ms-r1442-corroborate-hinglish",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "grading/corroborate.js, 14.4.2 (sim lab 1b3bb12c p66 / p68 stuck probes: a right Hinglish answer to an English-only key vetoed low_cover). Four components, forced-correct false credit over 9,462 word-key items in all kits, each alone vs base: (1) a whole-reply veto, '<the key>? ya phir <another answer>' is a choice between answers: −1,101 (F5 all parts + another answer); (2) decisive opposite pairs band / khula (close / open) and saaf / ganda (clean / dirty) in SIDES: −153 (F3 opposite 138, F6 8, F4 6, F5 1; hot / cold was tried and dropped: it raised credit on English replies); (3) an 'Any N:' count heading a list is no number the reply must say, the form as written kept too: +1 alone, 0 with (1); (4) a reply's everyday Hinglish / Devanagari words (45 curated groups) also read as the English they mean, reply side only, never on a Hindi / English language item, only when no form passes without it and only at the key-like cover (0.8): 0 removed, 0 new. All together: 0 new false credits in every family (F1 another answer, F2 negated, F3 opposite, F4 one part, F5 parts + taken back, F5 parts + another answer, F6 concept words in a wrong claim), −1,253 removed. Real-label sets: TEST 236 graded pairs, sim-lab decided-truth headeval 857, the 148 lost right answers of the 14.3 RCA: 0 rescued, 0 lost, 0 new false credits. The Hinglish reading rescued 0 on every real set and 0 of the 12 target no_evidence turns in p66 / p66 r1 / p68 / p10 (the key's English filler keeps the cover under 0.8; 'Any two: …' needs a per-element count; 'shower nahi' reads as negating the key). The stuck probe itself is not fixed here (Director (d), kits (e)). A parts-based credit ('every adjudicated part carried') was built and dropped: 203 new forced false credits. Tests: tests/r1442-hinglish-cover.test.mjs (fail on the base)."
+  },
+  {
+   "id": "dc-r1442-hinglish-reading-rescue-only",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The Hinglish reply reading in corroborate.js ships rescue-only (no form passes without it; key-like cover 0.8; reply side only; never on a language item), with 0 new forced false credits and 0 rescues on every real set measured. Main, 14.4.2. Reversal condition: remove the reading (HI_EN / hiContent and the hinglish path in corroborate) if a later real-label set (a sim-lab decided-truth run with EVS / science Hinglish answers, or TEST) shows it still rescues 0 right answers, or if any forced or real set shows a new false credit from it."
+  },
+  {
+   "id": "ms-r1442-unverified-moveon",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "14.4.2 (d), director/state.js unclear(): a reply the model read as right that corroboration could not verify against the item's verified forms (corroboration unsupported_credit:*), the second time on one card, means no third pose: one verdict-neutral line (SH.unverifiedMoveOn: thanks them for the idea, never for the answer; no sahi / galat / almost / close) and the next card. The card goes to s.skipped (lesson-local), never itemsDone, never noteStuck: no verdict, no evidence row, due again another day. Measured on the sim lab 1b3bb12c records (p66, p66 r1, p68, p10 + 6 control cards p01 / p07 / p14 / p20 / p26 / p43), re-classifying every no_evidence card reply with the real classifier: 1 of 10 children had a card posed again after its 2nd unverified reply today (p66 r1, c3-evs-ch07-t02-i02: 4 unverified replies, 2 re-poses), 0 with (d); the other repeats in these runs come from the wrong / partial path (hint rungs), which (d) does not touch (p66 r1 i13: 1 unverified, then 'incorrect', then 'partial'). The re-classification is a fresh model call, so labels can differ from the run's own. Tests: tests/r1442-unverified-moveon.test.mjs (the first fails on the base; a control keeps the plain unclear path)."
+  },
+  {
+   "id": "ms-r1442-subject-chapter",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "14.4.2 blocker (main, on F1(b) round 3): 38aad918 c4 'geometry padhao, triangles' on class 5 got 'not in their class's lessons here' while class 5 has 'Triangles and polygons': a false claim. (ii) the floor, director/state.js switch + shapes.js switchElsewhere: a named subject with no topic found is never 'not in your class / not here'; she says she will look for it, and real topics of their class (the next two in its book's order) are the buttons, plus back to today, as round 2's repeated-ask path. (i) content/curriculum.js findTopic: when the child's own words name no topic, their everyday subject word (curated: geometry / shapes / triangle / आकार / त्रिभुज / algebra / measurement / time / money / guna / division / graphs / paudhe / animals / body / space / planets / electricity / magnets / light / weather / history …) is tried as the words its TOPIC titles use, within its school subjects only (never a chapter's story title: 'Animal Jumps' is a maths chapter; never across subjects). Measured over 324 (subject word, class 1-9) probes: a real chapter found 107 before, 167 after; all 60 new matches checked (geometry → Triangles and polygons c5, Constructing triangles c7; space → The solar system c6; paudhe → Parts of a plant c3 …), the first draft's cross-subject and story-title matches (animals → 'Multiples' via 'Animal Jumps', electricity → 'ocean currents', planets → 'luni-solar calendars') removed; the other 157 get the floor. The sim-lab corpus has only 2 distinct named-subject asks, so the probe list is the measure. Tests: tests/r1442-subject-chapter.test.mjs (3, all fail on e7134453)."
+  },
+  {
+   "id": "ms-r1442-qa-topic-asks",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2, QA on be9b766a. Item 2 (3a1d1e60 'mujhe koi aur topic padhna hai' ×3: chips only back / stop, and t1 'not in your class' with no topic named): requests.js read 'koi aur topic' as a SUBJECT ('switch: koi aur topic'). Now a switch whose subject only says 'some / another / other topic' (koi aur, kuch, doosra, alag, another, new … topic / chapter / cheez) is change_topic with topic:true, and state.js gives real topics of their class as buttons at once (SH.topicChoices first:true), never 'not in your class'. P2 ('chapter 1 se shuru karo' at the session's start got 'page ya chapter ka naam bataiye'): session/intake read it as 'taught' with no candidate; session/candidates.js now reads a chapter ask (requests.js chapterAskOf) as that chapter's first topic: p 0.9 with one subject in view (named, or the timetable's only one), else each subject's chapter N offered to choose (c5: maths / evs / english / hindi ch01). Tests: tests/r1442-qa-topic-asks.test.mjs (2, both fail on f74d1aae)."
+  },
+  {
+   "id": "ms-r1442-worked-fidelity",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2, QA on be9b766a item 3 (65fae3d0 \"pata nahi\", 3e2fcb15 off-topic, at the worked example): she used a garden of her own (5 and 3, 6 and 4) instead of the kit’s park example, and quizzed the stuck child (\"Pehle 6 plus 4 kitna?\"). The move was worked_example (her step question, never a graded item), so F1(d) was not missed; the defect was the worked shape. (a) SH.worked now names the worked example in LESSON NOW with its own numbers and names, never an example of her own. (b) teach() passes stuck when the reply to the hook / explain / worked part was a don’t-know or off-topic, or the guidance came from fade.not_landed / first_step.stuck. A stuck part SHOWS its steps with their results and leaves nothing to work out; an engaged child is still asked for the next step. Method: director replay on the fixture kit, seeds 1-3, dontKnow and offTopic at the lead and after part 1. Before (af66bf13), 0 of 8 stuck worked moves (6 at the lead, 2 after part 1) were shown and no worked part named the kit example. After, 8 of 8 and every part. Not yet measured live on a model. Tests: tests/r1442-worked-fidelity.test.mjs (3, all fail on af66bf13)."
+  },
+  {
+   "id": "ms-r1442-claim-honesty",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2, QA P2 on be9b766a: a child said 160, which was right, to her own \"2 × 80\" in a worked step. She replied that they had used another operation instead of adding: a mistake nothing graded. Two causes. (1) brain/say.js checked her own sum (selfPosedVerdict) only when the new move had no item, and here the next move posed a card. (2) No guard read a claimed mistake on a verdict that was not a graded wrong. Fix: state.js keeps priorItemId (null when no kit item was on the table), so her sum is checked whenever none was. selfPosedVerdict reads a number with a filler before it or hai / hoga after it. director/say.js claimsMistake flags a sentence with a second-person subject plus a fault word, an X-ne ki jagah, swapped places or another operation. Questions, negations and general rules are excluded, plus the old DENY_ANY. It is guard \"claim\" on ungraded / attempt / unverified and \"deny\" on a right answer. Repair is a rewrite, then the claim sentences are stripped in code, also after the drift repair. Graded wrong (not_yet / partial) is untouched. Measured on TEST (read-only, n = 7884 teacher lines): 6 lines hit with no graded-wrong child turn before them. 5 are real unfounded claims (\"step toot gaya\", \"galti is step mein hui\" after a don’t-know). 1 is borderline (\"Galti ko ek-ek clue se check kijiye\"). The first draft also hit \"1/2 ki jagah\" (a place), and the pattern was tightened. Tests: tests/r1442-claim-honesty.test.mjs (5, fail on fe59b5f1)."
+  },
+  {
+   "id": "ms-r1442-chapter-switch-asks-nothing",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "14.4.2, QA P2 on be9b766a (df5ce94c): a chapter ask got \"Page ya chapter ka naam bataiye\" while that chapter’s first topic was already the button. The switch shape said only \"no lesson question\", and she filled the turn with a question of her own. SH.switchOffer now takes the chapter: \"they asked for chapter N: its first topic, X, is ready for them\". Every switch offer ends \"ask them nothing this turn: not which page or chapter, no lesson question\". Shape only, no model run. Tests: tests/r1442-chapter-switch.test.mjs (2, the chapter one fails on f81ef59a)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r1442-hinglish-reading-rescue-only",
+   "rel": "measured_by",
+   "dst": "ms-r1442-corroborate-hinglish"
+  }
+ ]
+}

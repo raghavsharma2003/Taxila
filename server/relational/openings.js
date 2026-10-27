@@ -91,8 +91,17 @@ export function safetyOpeningFor(lang, o = {}) {
  */
 export function withSafetyOpening(reply, lang, o = {}) {
   const open = safetyOpeningFor(lang, o);
-  const body = (o.stripPreface ? o.stripPreface(String(reply ?? "")) : String(reply ?? "")).trim();
-  if (!body) return open.text;
-  if (body.startsWith(open.text)) return body;
-  return `${open.text} ${body}`;
+  let body = (o.stripPreface ? o.stripPreface(String(reply ?? "")) : String(reply ?? "")).trim();
+  if (body.startsWith(open.text)) body = body.slice(open.text.length).trim();
+  body = afterOpening(body);
+  return body ? `${open.text} ${body}` : open.text;
 }
+
+// 14.4 (main safety review; owner census c85501ec t7: the trusted adult and both helplines said twice in one turn, and the
+// model reached back to an earlier swear word, "aapne gaali di hai—main lesson rok rahi hoon", to a child who had only
+// answered a riddle): after the vetted opening, a body sentence that names a helpline or the trusted adult again (the
+// opening names both) or scolds, blames or punishes the child is dropped. The opening itself is never touched.
+const AGAIN = /1098|14416|childline|tele-?\s?manas|चाइल्डलाइन|टेली-?\s?मानस|zero nine eight|shunya nau aath|शून्य नौ आठ|grown-?\s?up you trust|bharosa|भरोसा/iu;
+const SCOLD = /gaali|gali di|galiyan|गाली|bad words?\b|swear|aisa mat bol|aise mat bol|aisa nahi bolte|ganda bol|gande shabd|ऐसा मत बोल|गंदा बोल|गंदे शब्द|(?:lesson|padhai|class)\s+(?:rok|band\s+kar)|पढ़ाई\s+रोक|पाठ\s+रोक|rok rahi hoon|rok raha hoon|रोक रही हूँ|रोक रहा हूँ|shame on|sharam|शर्म|you should not (?:say|use)|don'?t say that|not allowed to say/iu;
+const afterOpening = (body) => (String(body ?? "").match(/[^.!?।]+[.!?।]*\s*/gu) ?? [])
+  .filter((x) => x.trim() && !AGAIN.test(x) && !SCOLD.test(x)).join("").trim();

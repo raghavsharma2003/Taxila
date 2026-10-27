@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "fd-r1441-motion-goodbye",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Root cause of the sim lab's early wrap (ok10 r1 on 9ad86661; reproduced 4 of 4 by ok10x on 47ba26c7: 377107ef, e3ef2513, b5ba2d6c, d493819c on TEST). The child's right answer on a number line, 'To do gaps aage jaana padega, na? Haan, do gaps!…', matched the bare goodbye entry '(?:jaana|jana) padega' in relational/lexicon/hl.js. stopKind read it as 'leaving', the stop check released the lesson at once (release.goodbye_wrap, shape 'they want to stop'), and the lesson ended on turn 3 at 0.3 minutes. The classifier's own reads said no stop (wantsToStop false; the note said thinking_aloud)."
+  },
+  {
+   "id": "dc-r1441-motion-not-leaving",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "The bare goodbye 'jaana padega' no longer fires after a word of motion in the lesson: aage, peeche, upar, neeche, left, right, daaye, baaye, gap(s), step(s), kadam, jump(s), tak, wapas, zero se. 'mujhe / abhi / ok didi … jaana padega' and 'mummy bula rahi hai, jaana padega' still release as goodbyes. Measured on 40,261 sim-lab child lines: 0 stopKind changes (92 leaving, 505 end_request before and after); the hand cases are 4 motion lines → none and 4 real goodbyes → leaving. Reverse if a real goodbye with one of those words before 'jaana padega' is missed in QA, the sim lab or production."
+  }
+ ],
+ "edges": [ { "src": "dc-r1441-motion-not-leaving", "rel": "caused_by", "dst": "fd-r1441-motion-goodbye" } ],
+ "md": {
+  "decisions": "## dc-r1441-motion-not-leaving — going two gaps ahead is not going home (2026-10-21)\n\nA right answer on a number line ('do gaps aage jaana padega') ended a lesson as a goodbye because the lexicon's bare 'jaana padega' cannot tell motion along a line from leaving. A word of motion before it now keeps the turn in the lesson. Every real goodbye is unchanged, and the sim-lab corpus shows no other change.\n",
+  "measurements": "", "rejected": ""
+ }
+}
