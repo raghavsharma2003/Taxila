@@ -1,0 +1,3896 @@
+{
+ "method": {
+  "date": "2026-10-11T14:36:51.045Z",
+  "label": "r12 T-server recorder budget",
+  "turns": 29,
+  "lessons": 3,
+  "classLevel": 4,
+  "base": "in-process",
+  "root": "/home/user/Taxila/",
+  "host": "vm",
+  "loadAvg": [
+   0.14,
+   0.2
+  ],
+  "wallS": 132,
+  "prefetch": true,
+  "ack": true,
+  "turnAudio": false,
+  "debounceMs": 250,
+  "script": "items",
+  "stt": "taxila-live-transcribe",
+  "env": {
+   "TAXILA_TURN_PREFETCH": "on",
+   "TAXILA_ACK": "(default on)",
+   "AZURE_SPEECH_REGION": "centralindia",
+   "TAXILA_DB": "test"
+  },
+  "note": "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated"
+ },
+ "summary": {
+  "endpoint": {
+   "n": 29,
+   "p50": 1053,
+   "p90": 1087,
+   "min": 1014,
+   "max": 1136
+  },
+  "stt": {
+   "n": 29,
+   "p50": 470,
+   "p90": 502,
+   "min": 439,
+   "max": 536
+  },
+  "lastDeltaAfterEnd": {
+   "n": 29,
+   "p50": 762,
+   "p90": 942,
+   "min": 664,
+   "max": 985
+  },
+  "finalAfterEnd": {
+   "n": 29,
+   "p50": 1523,
+   "p90": 1570,
+   "min": 1478,
+   "max": 1619
+  },
+  "turnAfterEnd": {
+   "n": 29,
+   "p50": 1523,
+   "p90": 1570,
+   "min": 1478,
+   "max": 1619
+  },
+  "prefetchAfterEnd": {
+   "n": 28,
+   "p50": 1011,
+   "p90": 1149,
+   "min": 913,
+   "max": 1234
+  },
+  "director": {
+   "n": 29,
+   "p50": 1784,
+   "p90": 2799,
+   "min": 674,
+   "max": 5261
+  },
+  "tts": {
+   "n": 29,
+   "p50": 395,
+   "p90": 451,
+   "min": 86,
+   "max": 1435
+  },
+  "replyFirstByte": {
+   "n": 29,
+   "p50": 3681,
+   "p90": 4786,
+   "min": 2574,
+   "max": 6889
+  },
+  "replySound": {
+   "n": 29,
+   "p50": 3791,
+   "p90": 4896,
+   "min": 2684,
+   "max": 6999
+  },
+  "ackSoundAfterEnd": {
+   "n": 2,
+   "p50": 2434,
+   "p90": 2434,
+   "min": 2375,
+   "max": 2434
+  },
+  "ackReadyAfterEnd": {
+   "n": 2,
+   "p50": 2324,
+   "p90": 2324,
+   "min": 2265,
+   "max": 2324
+  },
+  "firstSound": {
+   "n": 29,
+   "p50": 3729,
+   "p90": 4812,
+   "min": 2375,
+   "max": 6999
+  },
+  "serverMs": {
+   "n": 29,
+   "p50": 1776,
+   "p90": 2795,
+   "min": 670,
+   "max": 5250
+  },
+  "firstSoundGraded": {
+   "n": 6,
+   "p50": 2803,
+   "p90": 4812,
+   "min": 2375,
+   "max": 4812
+  },
+  "firstSoundNonAnswer": {
+   "n": 23,
+   "p50": 3845,
+   "p90": 4896,
+   "min": 2891,
+   "max": 6999
+  },
+  "ackReadyRight": null,
+  "ackReadyWrong": {
+   "n": 2,
+   "p50": 2324,
+   "p90": 2324,
+   "min": 2265,
+   "max": 2324
+  },
+  "ack": {
+   "played": 2,
+   "graded": 6,
+   "of": 29,
+   "reasons": {
+    "204:token_screen": 20,
+    "204:not_an_answer": 13,
+    "204:no_audio": 1,
+    "204:consecutive": 2,
+    "204:no_token": 8,
+    "played": 4
+   }
+  },
+  "speculation": {
+   "hit": 16,
+   "of": 24
+  },
+  "prefetchAdopted": {
+   "yes": 28,
+   "of": 29,
+   "sent": 47,
+   "accepted": 47,
+   "missingRoute": 0,
+   "failed": 0
+  },
+  "skippedTurns": [
+   {
+    "lesson": 0,
+    "turn": 5,
+    "why": "transcripts incomplete after 25 s"
+   }
+  ],
+  "rewrites": 6,
+  "azure": {
+   "calls": 375,
+   "byDep": {
+    "taxila-fast": {
+     "calls": 154,
+     "s429": 0,
+     "other": 0
+    },
+    "/openai/v1/realtime/client_secrets": {
+     "calls": 4,
+     "s429": 0,
+     "other": 0
+    },
+    "grok-4-1-fast-non-reasoning": {
+     "calls": 46,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-gpt6": {
+     "calls": 40,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-gpt6-luna": {
+     "calls": 12,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-fast-bg": {
+     "calls": 6,
+     "s429": 0,
+     "other": 0
+    },
+    "/contentsafety/text:analyze": {
+     "calls": 99,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-brain": {
+     "calls": 6,
+     "s429": 0,
+     "other": 0
+    },
+    "DeepSeek-V4-Pro": {
+     "calls": 8,
+     "s429": 0,
+     "other": 0
+    }
+   },
+   "status": {
+    "200": 375
+   }
+  }
+ },
+ "rows": [
+  {
+   "lesson": 0,
+   "turn": 1,
+   "said": "Haan didi, main ready hoon. Mujhe lagta hai dabbe mein zyada corners hote hain.",
+   "asked": null,
+   "heard": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "hook",
+   "reply": "Aarav, achchha guess! Tiffin box ko dekho—do milne wali flat surfaces ke beech wali line ko kya kahoge?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1030,
+   "stt": 455,
+   "turnAfterEnd": 1485,
+   "lastDeltaAfterEnd": 899,
+   "finalAfterEnd": 1485,
+   "prefetchAfterEnd": 1149,
+   "prefetchCount": 2,
+   "director": 1784,
+   "tts": 413,
+   "replyFirstByte": 3681,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3791,
+   "firstSound": 3791,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 342,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_hedged",
+    "waitedMs": 1044,
+    "parallel": null
+   },
+   "serverMs": 1776,
+   "marks": {
+    "ctx": 41,
+    "kit": 41,
+    "prefetch_adopted": 46,
+    "classified": 630,
+    "noted": 1674,
+    "planned": 1678,
+    "kernel": 1685,
+    "replied": 1708,
+    "stored": 1776
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 926,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 943,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 71,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+     "atAfterEnd": 1149
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 2,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "explain",
+   "reply": "Bilkul Aarav, dabbe ki flat surface ko face kehte hain. Ab uski do faces milne wali line ko kya kahoge?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1034,
+   "stt": 536,
+   "turnAfterEnd": 1570,
+   "lastDeltaAfterEnd": 753,
+   "finalAfterEnd": 1570,
+   "prefetchAfterEnd": 1002,
+   "prefetchCount": 2,
+   "director": 2646,
+   "tts": 1435,
+   "replyFirstByte": 5651,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 5761,
+   "firstSound": 5761,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 561,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_wrong",
+    "waitedMs": 884,
+    "parallel": null
+   },
+   "serverMs": 2642,
+   "marks": {
+    "ctx": 33,
+    "kit": 33,
+    "prefetch_adopted": 36,
+    "classified": 179,
+    "noted": 1063,
+    "planned": 1066,
+    "kernel": 1066,
+    "replied": 2559,
+    "stored": 2642
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 705,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1479,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 81,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस",
+     "atAfterEnd": 432
+    },
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1002
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 3,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया। दो फेसेस जहाँ मिलते हैं, वो एज है।",
+   "deltaEqualsFinal": true,
+   "move": "worked_example",
+   "reply": "Sahi, Aarav! Matchbox cuboid hai. Ab uske 8 corners ko maths mein kya kahenge?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1056,
+   "stt": 463,
+   "turnAfterEnd": 1518,
+   "lastDeltaAfterEnd": 951,
+   "finalAfterEnd": 1518,
+   "prefetchAfterEnd": 1201,
+   "prefetchCount": 2,
+   "director": 2836,
+   "tts": 431,
+   "replyFirstByte": 4786,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4896,
+   "firstSound": 4896,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 315,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 754,
+    "parallel": null
+   },
+   "serverMs": 2832,
+   "marks": {
+    "ctx": 35,
+    "kit": 35,
+    "prefetch_adopted": 38,
+    "classified": 532,
+    "noted": 1286,
+    "planned": 1291,
+    "kernel": 1292,
+    "replied": 2751,
+    "stored": 2832
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 809,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1444,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 74,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ, समझ गया। दो फेसेस जहाँ मिलते हैं, वो",
+     "atAfterEnd": 651
+    },
+    {
+     "text": "हाँ, समझ गया। दो फेसेस जहाँ मिलते हैं, वो एज है।",
+     "atAfterEnd": 1201
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 4,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "अच्छा, और corner waypoint है ना जहाँ edges मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Corner ko maths mein vertex kehte hain. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1081,
+   "stt": 498,
+   "turnAfterEnd": 1579,
+   "lastDeltaAfterEnd": 664,
+   "finalAfterEnd": 1578,
+   "prefetchAfterEnd": 913,
+   "prefetchCount": 1,
+   "director": 859,
+   "tts": 451,
+   "replyFirstByte": 2889,
+   "ackStatus": [
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 2999,
+   "firstSound": 2999,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 689,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_wrong",
+    "waitedMs": 679,
+    "parallel": null
+   },
+   "serverMs": 856,
+   "marks": {
+    "ctx": 62,
+    "kit": 62,
+    "prefetch_adopted": 65,
+    "classified": 130,
+    "noted": 809,
+    "planned": 812,
+    "kernel": 813,
+    "replied": 815,
+    "stored": 856
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 754,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1233,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 44,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, और corner waypoint है ना जहाँ edges मिलते हैं।",
+     "atAfterEnd": 913
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 6,
+   "said": "chhe faces.",
+   "asked": "fade:1",
+   "heard": "Chair faces.",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Chair ka flat part face ho sakta hai, par chair solid shape nahi hoti. Box jaise solid shape ke flat parts gino. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1049,
+   "stt": 459,
+   "turnAfterEnd": 1507,
+   "lastDeltaAfterEnd": 703,
+   "finalAfterEnd": 1507,
+   "prefetchAfterEnd": 952,
+   "prefetchCount": 2,
+   "director": 2263,
+   "tts": 395,
+   "replyFirstByte": 4166,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4276,
+   "firstSound": 4276,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+hintLevel+verdict [spec: - hint ladder: rung 1 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4 || real: - hint ladder: rung 0 of 4 used (pump → hint → prompt → assertion); the key may be said only at rung 4]",
+    "instructions+lastMove [spec: - shape (a note, not words to say): you did not catch it clearly: ask them to say it once more; no verdict on their repl || real: - shape (a note, not words to say): they said or asked something else: answer it for real first, in one or two warm line]",
+    "instructions+lastMove+upcoming+verdict [spec: - the question (content — pose as written, in their language): \"Cube shape ke stage prop par teen edges ek point par mil || real: - the question (content — pose as written, in their language): \"Khaali jagah bharo: Faces: top and bottom, front and bac]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 555,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_wrong",
+    "waitedMs": 595,
+    "parallel": null
+   },
+   "serverMs": 2261,
+   "marks": {
+    "ctx": 33,
+    "kit": 34,
+    "prefetch_adopted": 39,
+    "classified": 450,
+    "noted": 1046,
+    "planned": 1048,
+    "kernel": 1049,
+    "replied": 2215,
+    "stored": 2261
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 966,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1158,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 46,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "Chair",
+     "atAfterEnd": 557
+    },
+    {
+     "text": "Chair faces.",
+     "atAfterEnd": 952
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 7,
+   "said": "chhe faces.",
+   "asked": "fade:1",
+   "heard": "Six faces.",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Bilkul Aarav, tumne cube ke total six faces sahi gine. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+   "cls": "correct/model",
+   "verdict": "correct",
+   "endpoint": 1058,
+   "stt": 483,
+   "turnAfterEnd": 1541,
+   "lastDeltaAfterEnd": 664,
+   "finalAfterEnd": 1541,
+   "prefetchAfterEnd": 913,
+   "prefetchCount": 1,
+   "director": 794,
+   "tts": 358,
+   "replyFirstByte": 2693,
+   "ackStatus": [
+    "204:no_audio"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 2803,
+   "firstSound": 2803,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 624,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 791,
+   "marks": {
+    "ctx": 34,
+    "kit": 35,
+    "prefetch_adopted": 40,
+    "classified": 221,
+    "noted": 222,
+    "planned": 225,
+    "kernel": 225,
+    "replied": 720,
+    "stored": 791
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 805,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1258,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 73,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "Six faces.",
+     "atAfterEnd": 913
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 8,
+   "said": "Corner.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "Corner.",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Sahi, Aarav! Tumne pehchana ki jahan edges milti hain, woh corner hai. Ab batao, tumne kaise jaana?",
+   "cls": "correct/exact",
+   "verdict": "correct",
+   "endpoint": 1090,
+   "stt": 517,
+   "turnAfterEnd": 1606,
+   "lastDeltaAfterEnd": 867,
+   "finalAfterEnd": 1606,
+   "prefetchAfterEnd": 1116,
+   "prefetchCount": 1,
+   "director": 1214,
+   "tts": 391,
+   "replyFirstByte": 3212,
+   "ackStatus": [
+    "204:consecutive"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3322,
+   "firstSound": 3322,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 490,
+   "note": null,
+   "serverMs": 1211,
+   "marks": {
+    "ctx": 36,
+    "kit": 36,
+    "prefetch_adopted": 40,
+    "classified": 40,
+    "planned": 77,
+    "kernel": 77,
+    "replied": 1136,
+    "stored": 1211
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1056,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 77,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "Corner.",
+     "atAfterEnd": 1116
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 9,
+   "said": "Kyunki maine har taraf gina, upar neeche, aage peeche, daayen baayen.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "क्योंकि मैंने हर तरफ केना ऊपर नीचे आगे पीछे दाएँ बाएँ।",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Bilkul Aarav, tumne upar, neeche, aage, peeche, daayein, baayein sabhi six faces gini. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "correct/model",
+   "verdict": null,
+   "endpoint": 1039,
+   "stt": 473,
+   "turnAfterEnd": 1511,
+   "lastDeltaAfterEnd": 731,
+   "finalAfterEnd": 1511,
+   "prefetchAfterEnd": 980,
+   "prefetchCount": 2,
+   "director": 674,
+   "tts": 388,
+   "replyFirstByte": 2574,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 2684,
+   "firstSound": 2684,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 535,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 670,
+   "marks": {
+    "ctx": 63,
+    "kit": 63,
+    "prefetch_adopted": 73,
+    "classified": 242,
+    "noted": 243,
+    "planned": 247,
+    "kernel": 248,
+    "replied": 598,
+    "stored": 670
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 705,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1010,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 75,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "क्योंकि मैंने हर तरफ केना ऊपर नीचे आगे पीछे",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "क्योंकि मैंने हर तरफ केना ऊपर नीचे आगे पीछे दाएँ बाएँ।",
+     "atAfterEnd": 980
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 10,
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aarav, koi baat nahi. Cube ke ek corner ko dhyaan se dekho; us point se bahar jaati lines ko ungli se trace karo. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1036,
+   "stt": 462,
+   "turnAfterEnd": 1499,
+   "lastDeltaAfterEnd": 757,
+   "finalAfterEnd": 1499,
+   "prefetchAfterEnd": 1006,
+   "prefetchCount": 2,
+   "director": 1870,
+   "tts": 401,
+   "replyFirstByte": 3769,
+   "ackStatus": [
+    "204:no_token",
+    "204:no_token"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3879,
+   "firstSound": 3879,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 492,
+   "note": {
+    "nonAnswer": true,
+    "intent": null,
+    "waitedMs": 1444,
+    "parallel": null
+   },
+   "serverMs": 1867,
+   "marks": {
+    "ctx": 61,
+    "kit": 62,
+    "prefetch_adopted": 67,
+    "classified": 330,
+    "noted": 1773,
+    "settled": 1774,
+    "planned": 1778,
+    "kernel": 1779,
+    "replied": 1780,
+    "stored": 1867
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 754,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1258,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 89,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "बस ऐसे ही",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "बस ऐसे ही पता था।",
+     "atAfterEnd": 1006
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 1,
+   "said": "Haan didi, main ready hoon. Mujhe lagta hai dabbe mein zyada corners hote hain.",
+   "asked": null,
+   "heard": "हाँ, दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "hook",
+   "reply": "Aarav, tumne dabbe ke corners par dhyaan diya—ab sochkar batao, dabbe ke kitne corners hote hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1040,
+   "stt": 476,
+   "turnAfterEnd": 1516,
+   "lastDeltaAfterEnd": 768,
+   "finalAfterEnd": 1516,
+   "prefetchAfterEnd": 1017,
+   "prefetchCount": 1,
+   "director": 1636,
+   "tts": 392,
+   "replyFirstByte": 3544,
+   "ackStatus": [
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3654,
+   "firstSound": 3654,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 495,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_hedged",
+    "waitedMs": 748,
+    "parallel": null
+   },
+   "serverMs": 1631,
+   "marks": {
+    "ctx": 36,
+    "kit": 36,
+    "prefetch_adopted": 38,
+    "classified": 259,
+    "noted": 1008,
+    "planned": 1011,
+    "kernel": 1012,
+    "replied": 1589,
+    "stored": 1631
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 716,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 856,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1145,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 45,
+   "engine": "dhd",
+   "guard": "screen,rewritten",
+   "guardDetail": {
+    "firstDraft": "Aarav, tumne dabbe ke corners par dhyaan diya—dabbe ko haath se chhoo kar, kitne corners ginoge?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "हाँ, दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+     "atAfterEnd": 1017
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 2,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "explain",
+   "reply": "Bilkul Aarav, dabbe ki flat side ko face kehte hain; screen par “faces” ke saamne kya likhoge?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1087,
+   "stt": 466,
+   "turnAfterEnd": 1553,
+   "lastDeltaAfterEnd": 855,
+   "finalAfterEnd": 1552,
+   "prefetchAfterEnd": 1104,
+   "prefetchCount": 2,
+   "director": 2435,
+   "tts": 358,
+   "replyFirstByte": 4345,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4455,
+   "firstSound": 4455,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 446,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 781,
+    "parallel": null
+   },
+   "serverMs": 2432,
+   "marks": {
+    "ctx": 35,
+    "kit": 35,
+    "prefetch_adopted": 38,
+    "classified": 492,
+    "noted": 1274,
+    "planned": 1280,
+    "kernel": 1281,
+    "replied": 2346,
+    "stored": 2432
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 900,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1040,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 76,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस",
+     "atAfterEnd": 487
+    },
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1104
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 3,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ। समझ गया। दो फेसेस जहाँ मिलते हैं वो एज है।",
+   "deltaEqualsFinal": true,
+   "move": "worked_example",
+   "reply": "Sahi, Aarav—do faces jahan milte hain, woh edge hai. Ab matchbox mein aise kitne edges dikhte hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1030,
+   "stt": 481,
+   "turnAfterEnd": 1511,
+   "lastDeltaAfterEnd": 768,
+   "finalAfterEnd": 1511,
+   "prefetchAfterEnd": 1017,
+   "prefetchCount": 2,
+   "director": 2143,
+   "tts": 580,
+   "replyFirstByte": 4235,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4345,
+   "firstSound": 4345,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 492,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_wrong",
+    "waitedMs": 657,
+    "parallel": null
+   },
+   "serverMs": 2138,
+   "marks": {
+    "ctx": 35,
+    "kit": 36,
+    "prefetch_adopted": 39,
+    "classified": 219,
+    "noted": 877,
+    "planned": 880,
+    "kernel": 884,
+    "replied": 2050,
+    "stored": 2138
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 673,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1147,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 81,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ। समझ गया। दो फेसेस जहाँ मिलते हैं वो",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "हाँ। समझ गया। दो फेसेस जहाँ मिलते हैं वो एज है।",
+     "atAfterEnd": 1017
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 4,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "अच्छा, और corner viewport है न, जहाँ edges मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Corner ko hum vertex kehte hain, jahan edges milte hain. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1027,
+   "stt": 487,
+   "turnAfterEnd": 1514,
+   "lastDeltaAfterEnd": 797,
+   "finalAfterEnd": 1514,
+   "prefetchAfterEnd": 1046,
+   "prefetchCount": 2,
+   "director": 1265,
+   "tts": 400,
+   "replyFirstByte": 3180,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3290,
+   "firstSound": 3290,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 463,
+   "note": {
+    "nonAnswer": true,
+    "intent": "check_my_work",
+    "waitedMs": 840,
+    "parallel": null
+   },
+   "serverMs": 1262,
+   "marks": {
+    "ctx": 67,
+    "kit": 67,
+    "prefetch_adopted": 70,
+    "classified": 365,
+    "noted": 1205,
+    "planned": 1210,
+    "kernel": 1212,
+    "replied": 1216,
+    "stored": 1262
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 758,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1107,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 47,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, और corner viewport है न, जहाँ edges",
+     "atAfterEnd": 410
+    },
+    {
+     "text": "अच्छा, और corner viewport है न, जहाँ edges मिलते हैं।",
+     "atAfterEnd": 1046
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 5,
+   "said": "Mujhe nahi pata, ek baar aur batao na.",
+   "asked": "fade:1",
+   "heard": "मुझे नहीं पता, एक बार और बताओ ना।",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Aarav, ek cube ko haath mein socho: har face ke saamne ek aur face hota hai. Flat sides ko ek-ek karke count karo. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/request",
+   "verdict": null,
+   "endpoint": 1059,
+   "stt": 464,
+   "turnAfterEnd": 1523,
+   "lastDeltaAfterEnd": 984,
+   "finalAfterEnd": 1523,
+   "prefetchAfterEnd": 1234,
+   "prefetchCount": 2,
+   "director": 1360,
+   "tts": 387,
+   "replyFirstByte": 3271,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3381,
+   "firstSound": 3381,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 265,
+   "note": null,
+   "serverMs": 1356,
+   "marks": {
+    "ctx": 37,
+    "kit": 37,
+    "prefetch_adopted": 48,
+    "classified": 302,
+    "planned": 307,
+    "kernel": 308,
+    "replied": 1314,
+    "stored": 1356
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 519,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 995,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 45,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "मुझे नहीं पता, एक बार और",
+     "atAfterEnd": 424
+    },
+    {
+     "text": "मुझे नहीं पता, एक बार और बताओ ना।",
+     "atAfterEnd": 1234
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 6,
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Theek hai, Aarav. Cube ke kisi ek corner par ungli rakhkar, wahan se nikalti sticks ko dheere-dheere count karo. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1070,
+   "stt": 481,
+   "turnAfterEnd": 1551,
+   "lastDeltaAfterEnd": 721,
+   "finalAfterEnd": 1551,
+   "prefetchAfterEnd": 969,
+   "prefetchCount": 2,
+   "director": 1214,
+   "tts": 431,
+   "replyFirstByte": 3195,
+   "ackStatus": [
+    "204:no_token",
+    "204:no_token"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3305,
+   "firstSound": 3305,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 550,
+   "note": {
+    "nonAnswer": true,
+    "intent": "backchannel",
+    "waitedMs": 917,
+    "parallel": null
+   },
+   "serverMs": 1211,
+   "marks": {
+    "ctx": 35,
+    "kit": 35,
+    "prefetch_adopted": 41,
+    "classified": 250,
+    "noted": 1167,
+    "planned": 1169,
+    "kernel": 1170,
+    "replied": 1171,
+    "stored": 1211
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 757,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1122,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 42,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "बस ऐसे ही",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "बस ऐसे ही पता था।",
+     "atAfterEnd": 969
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 7,
+   "said": "Teen edges.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "Keen edges.",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aarav, tumne “edges” bola. Ab ek corner se nikalti sticks ko ungli se ek-ek karke gino. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1103,
+   "stt": 439,
+   "turnAfterEnd": 1542,
+   "lastDeltaAfterEnd": 711,
+   "finalAfterEnd": 1542,
+   "prefetchAfterEnd": 959,
+   "prefetchCount": 1,
+   "director": 1070,
+   "tts": 428,
+   "replyFirstByte": 3040,
+   "ackStatus": [
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3150,
+   "firstSound": 3150,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 562,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 717,
+    "parallel": null
+   },
+   "serverMs": 1068,
+   "marks": {
+    "ctx": 35,
+    "kit": 35,
+    "prefetch_adopted": 42,
+    "classified": 305,
+    "noted": 1022,
+    "planned": 1025,
+    "kernel": 1026,
+    "replied": 1028,
+    "stored": 1067
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 826,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 875,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 41,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "Keen edges.",
+     "atAfterEnd": 959
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 8,
+   "said": "Mujhe lagta hai ek edges.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "मुझे लगता है एक एजेस।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+   "cls": "incorrect/model",
+   "verdict": "not_yet",
+   "endpoint": 1072,
+   "stt": 466,
+   "turnAfterEnd": 1538,
+   "lastDeltaAfterEnd": 762,
+   "finalAfterEnd": 1538,
+   "prefetchAfterEnd": 1011,
+   "prefetchCount": 2,
+   "director": 3743,
+   "tts": 349,
+   "replyFirstByte": 5630,
+   "ackStatus": [
+    "ack:एक",
+    "ack:एक"
+   ],
+   "ackPhrase": "एक",
+   "ackReadyAfterEnd": 2265,
+   "ackDecidedMs": 1182,
+   "ackPlayed": true,
+   "ackSoundAfterEnd": 2375,
+   "ackClipMs": 970,
+   "replySound": 5740,
+   "firstSound": 2375,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 518,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 2,
+    "parallel": null
+   },
+   "serverMs": 3739,
+   "marks": {
+    "ctx": 34,
+    "kit": 35,
+    "prefetch_adopted": 40,
+    "classified": 451,
+    "noted": 453,
+    "planned": 458,
+    "kernel": 459,
+    "replied": 3655,
+    "stored": 3739
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 926,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1087,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 953,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 780,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1263,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 87,
+   "engine": "dhd",
+   "guard": "long,twoq,rewritten",
+   "guardDetail": {
+    "firstDraft": "Tumne ek edge gini; ab teen edges jahan milti hain, us point ko kya kahenge? Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+    "afterRewrite": [
+     "drift",
+     "ask"
+    ],
+    "rewritten": true,
+    "replaced": true,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "मुझे लगता है एक",
+     "atAfterEnd": 592
+    },
+    {
+     "text": "मुझे लगता है एक एजेस।",
+     "atAfterEnd": 1011
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 9,
+   "said": "Corner.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "Corner.",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Aarav, tumne corner kyun chuna—teen edges ka ek point par milna tumhe kaise pata chala?",
+   "cls": "correct/exact",
+   "verdict": "correct",
+   "endpoint": 1046,
+   "stt": 466,
+   "turnAfterEnd": 1512,
+   "lastDeltaAfterEnd": 856,
+   "finalAfterEnd": 1512,
+   "prefetchAfterEnd": 1106,
+   "prefetchCount": 1,
+   "director": 2799,
+   "tts": 391,
+   "replyFirstByte": 4702,
+   "ackStatus": [
+    "204:consecutive"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4812,
+   "firstSound": 4812,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 408,
+   "note": null,
+   "serverMs": 2795,
+   "marks": {
+    "ctx": 39,
+    "kit": 40,
+    "prefetch_adopted": 46,
+    "classified": 46,
+    "planned": 82,
+    "kernel": 83,
+    "replied": 2714,
+    "stored": 2795
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1092,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1532,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 83,
+   "engine": "dhd",
+   "guard": "nowhy,rewritten",
+   "guardDetail": {
+    "firstDraft": "Bilkul, Aarav—teen edges ka ek hi point par milna corner ki pehchaan hai. Faces, edges aur corners ko yaad rakhne ka tumhara tareeka kya hai?",
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "Corner.",
+     "atAfterEnd": 1106
+    }
+   ]
+  },
+  {
+   "lesson": 1,
+   "turn": 10,
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "move": "explain",
+   "reply": "Theek, Aarav. Cube ke ek corner par 3 edges milti hain; ab poore cube ke corners gino—kitne hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1034,
+   "stt": 473,
+   "turnAfterEnd": 1506,
+   "lastDeltaAfterEnd": 756,
+   "finalAfterEnd": 1506,
+   "prefetchAfterEnd": 1006,
+   "prefetchCount": 2,
+   "director": 2061,
+   "tts": 386,
+   "replyFirstByte": 3953,
+   "ackStatus": [
+    "204:no_token",
+    "204:no_token"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4063,
+   "firstSound": 4063,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+verdict [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]",
+    "instructions+verdict [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]",
+    "instructions+verdict [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 498,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_partial",
+    "waitedMs": 748,
+    "parallel": null
+   },
+   "serverMs": 2057,
+   "marks": {
+    "ctx": 61,
+    "kit": 61,
+    "prefetch_adopted": 66,
+    "classified": 356,
+    "noted": 1104,
+    "planned": 1106,
+    "kernel": 1107,
+    "replied": 1968,
+    "stored": 2057
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 787,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 837,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 78,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "बस ऐसे ही",
+     "atAfterEnd": 400
+    },
+    {
+     "text": "बस ऐसे ही पता था।",
+     "atAfterEnd": 1006
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 1,
+   "said": "Haan didi, main ready hoon. Mujhe lagta hai dabbe mein zyada corners hote hain.",
+   "asked": null,
+   "heard": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "hook",
+   "reply": "Aarav, tumne dabbe ke corners ka prediction kiya; dabbe ka ek flat surface dekhkar bolo—ye face hai?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1031,
+   "stt": 503,
+   "turnAfterEnd": 1534,
+   "lastDeltaAfterEnd": 802,
+   "finalAfterEnd": 1534,
+   "prefetchAfterEnd": 1052,
+   "prefetchCount": 2,
+   "director": 2569,
+   "tts": 409,
+   "replyFirstByte": 4512,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4622,
+   "firstSound": 4622,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 495,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_hedged",
+    "waitedMs": 568,
+    "parallel": null
+   },
+   "serverMs": 2565,
+   "marks": {
+    "ctx": 54,
+    "kit": 55,
+    "prefetch_adopted": 57,
+    "classified": 549,
+    "noted": 1116,
+    "planned": 1119,
+    "kernel": 1121,
+    "replied": 2524,
+    "stored": 2565
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 987,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1340,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1579,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 43,
+   "engine": "dhd",
+   "guard": "screen,rewritten",
+   "guardDetail": {
+    "firstDraft": "Aarav, tumne dabbe ke corners ka prediction kiya; ab dabbe ka ek flat surface chhoo kar batao—ye face hai?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "हाँ दीदी, मैं रेडी हूँ। मुझे लगता है डब्बे में ज़्यादा कॉर्नर्स होते हैं।",
+     "atAfterEnd": 1052
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 2,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "explain",
+   "reply": "Bilkul Aarav, dabbe ki har flat surface ek face hoti hai. Ab uski do faces milne wali line dhoondo—use kya kahenge?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1081,
+   "stt": 459,
+   "turnAfterEnd": 1540,
+   "lastDeltaAfterEnd": 716,
+   "finalAfterEnd": 1540,
+   "prefetchAfterEnd": 966,
+   "prefetchCount": 1,
+   "director": 2313,
+   "tts": 382,
+   "replyFirstByte": 4235,
+   "ackStatus": [
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4345,
+   "firstSound": 4345,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 561,
+   "note": {
+    "nonAnswer": true,
+    "intent": "backchannel",
+    "waitedMs": 881,
+    "parallel": null
+   },
+   "serverMs": 2308,
+   "marks": {
+    "ctx": 34,
+    "kit": 35,
+    "prefetch_adopted": 36,
+    "classified": 256,
+    "noted": 1137,
+    "planned": 1141,
+    "kernel": 1142,
+    "replied": 2217,
+    "stored": 2308
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 781,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1021,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 82,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 966
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 3,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया। दो फेसेस जहाँ मिलते हैं, वो एज है।",
+   "deltaEqualsFinal": true,
+   "move": "worked_example",
+   "reply": "Sahi, Aarav. Ab matchbox ke ekdum milne wale point ko dekho—use corner kehte hain; aise kitne points dikhte hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1053,
+   "stt": 470,
+   "turnAfterEnd": 1523,
+   "lastDeltaAfterEnd": 942,
+   "finalAfterEnd": 1523,
+   "prefetchAfterEnd": null,
+   "prefetchCount": 0,
+   "director": 2485,
+   "tts": 623,
+   "replyFirstByte": 4631,
+   "ackStatus": [
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4741,
+   "firstSound": 4741,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": false,
+   "prefetchMiss": "none",
+   "prefetchAheadMs": null,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 441,
+    "parallel": null
+   },
+   "serverMs": 2478,
+   "marks": {
+    "ctx": 37,
+    "kit": 38,
+    "classified": 959,
+    "noted": 1400,
+    "planned": 1404,
+    "kernel": 1406,
+    "replied": 2420,
+    "stored": 2478
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 914,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-gpt6",
+     "ms": 1357,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 998,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 51,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": []
+  },
+  {
+   "lesson": 2,
+   "turn": 4,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "হ্যাঁ, আর corner viewpoint है ना, जहाँ edges मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Corner woh point hai jahan edges milte hain. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+   "cls": "no_evidence/asr",
+   "verdict": null,
+   "endpoint": 1014,
+   "stt": 463,
+   "turnAfterEnd": 1478,
+   "lastDeltaAfterEnd": 745,
+   "finalAfterEnd": 1478,
+   "prefetchAfterEnd": 995,
+   "prefetchCount": 2,
+   "director": 1851,
+   "tts": 407,
+   "replyFirstByte": 3735,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3845,
+   "firstSound": 3845,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 483,
+   "note": null,
+   "serverMs": 1845,
+   "marks": {
+    "ctx": 63,
+    "kit": 63,
+    "prefetch_adopted": 67,
+    "classified": 161,
+    "planned": 165,
+    "kernel": 170,
+    "replied": 1803,
+    "stored": 1845
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 579,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 952,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1207,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 46,
+   "engine": "dhd",
+   "guard": "script,rewritten",
+   "guardDetail": {
+    "firstDraft": "Corner वह point है जहाँ edges मिलते हैं। Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "হ্যাঁ, আর corner viewpoint है ना, जहाँ edges",
+     "atAfterEnd": 400
+    },
+    {
+     "text": "হ্যাঁ, আর corner viewpoint है ना, जहाँ edges मिलते हैं।",
+     "atAfterEnd": 995
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 5,
+   "said": "Mujhe nahi pata, ek baar aur batao na.",
+   "asked": "fade:1",
+   "heard": "मुझे नहीं पता, एक बार और बताओ ना।",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Aarav, cube ke faces ko jodiyon mein socho: upar-neeche, aage-peeche, aur left-right. Har jodi mein do faces hote hain. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/request",
+   "verdict": null,
+   "endpoint": 1049,
+   "stt": 469,
+   "turnAfterEnd": 1519,
+   "lastDeltaAfterEnd": 985,
+   "finalAfterEnd": 1518,
+   "prefetchAfterEnd": 1234,
+   "prefetchCount": 2,
+   "director": 1685,
+   "tts": 415,
+   "replyFirstByte": 3619,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3729,
+   "firstSound": 3729,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 294,
+   "note": null,
+   "serverMs": 1682,
+   "marks": {
+    "ctx": 42,
+    "kit": 43,
+    "prefetch_adopted": 51,
+    "classified": 220,
+    "planned": 223,
+    "kernel": 224,
+    "replied": 1640,
+    "stored": 1682
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 464,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1407,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 44,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "मुझे नहीं पता, एक बार और",
+     "atAfterEnd": 426
+    },
+    {
+     "text": "मुझे नहीं पता, एक बार और बताओ ना।",
+     "atAfterEnd": 1234
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 6,
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "बस ऐसे ही पता था।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Theek hai, Aarav. Cube ke ek corner par milti hui sticks ko ungli se ek-ek karke count karna. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1068,
+   "stt": 455,
+   "turnAfterEnd": 1523,
+   "lastDeltaAfterEnd": 716,
+   "finalAfterEnd": 1523,
+   "prefetchAfterEnd": 966,
+   "prefetchCount": 2,
+   "director": 1419,
+   "tts": 394,
+   "replyFirstByte": 3337,
+   "ackStatus": [
+    "204:no_token",
+    "204:no_token"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3447,
+   "firstSound": 3447,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 549,
+   "note": {
+    "nonAnswer": true,
+    "intent": "backchannel",
+    "waitedMs": 1047,
+    "parallel": null
+   },
+   "serverMs": 1416,
+   "marks": {
+    "ctx": 60,
+    "kit": 60,
+    "prefetch_adopted": 64,
+    "classified": 321,
+    "noted": 1368,
+    "planned": 1372,
+    "kernel": 1373,
+    "replied": 1374,
+    "stored": 1416
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 807,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1085,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 46,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "बस ऐसे ही",
+     "atAfterEnd": 400
+    },
+    {
+     "text": "बस ऐसे ही पता था।",
+     "atAfterEnd": 966
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 7,
+   "said": "Teen edges.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "Keen edges.",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aarav, corner par milti sticks ko ek-ek karke finger se count karo. Tumhara count screen par bata do. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1067,
+   "stt": 460,
+   "turnAfterEnd": 1527,
+   "lastDeltaAfterEnd": 698,
+   "finalAfterEnd": 1527,
+   "prefetchAfterEnd": 948,
+   "prefetchCount": 1,
+   "director": 1449,
+   "tts": 420,
+   "replyFirstByte": 3396,
+   "ackStatus": [
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3506,
+   "firstSound": 3506,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 491,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 1023,
+    "parallel": null
+   },
+   "serverMs": 1446,
+   "marks": {
+    "ctx": 33,
+    "kit": 34,
+    "prefetch_adopted": 39,
+    "classified": 378,
+    "noted": 1401,
+    "planned": 1403,
+    "kernel": 1403,
+    "replied": 1404,
+    "stored": 1445
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 830,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 976,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 44,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "Keen edges.",
+     "atAfterEnd": 948
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 8,
+   "said": "Mujhe lagta hai ek edges.",
+   "asked": "c4-maths-ch01-t01-rl-h1",
+   "heard": "मुझे लगता है एक एजेस।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Aarav, tumne ek edge count ki, par point par teen edges milti hain. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+   "cls": "incorrect/model",
+   "verdict": "not_yet",
+   "endpoint": 1136,
+   "stt": 484,
+   "turnAfterEnd": 1619,
+   "lastDeltaAfterEnd": 781,
+   "finalAfterEnd": 1619,
+   "prefetchAfterEnd": 1031,
+   "prefetchCount": 2,
+   "director": 907,
+   "tts": 344,
+   "replyFirstByte": 2871,
+   "ackStatus": [
+    "ack:एक",
+    "ack:एक"
+   ],
+   "ackPhrase": "एक",
+   "ackReadyAfterEnd": 2324,
+   "ackDecidedMs": 1211,
+   "ackPlayed": true,
+   "ackSoundAfterEnd": 2434,
+   "ackClipMs": 970,
+   "replySound": 3644,
+   "firstSound": 2434,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 552,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 2,
+    "parallel": null
+   },
+   "serverMs": 904,
+   "marks": {
+    "ctx": 47,
+    "kit": 47,
+    "prefetch_adopted": 52,
+    "classified": 470,
+    "noted": 472,
+    "planned": 476,
+    "kernel": 477,
+    "replied": 820,
+    "stored": 904
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 968,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1273,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 87,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "मुझे लगता है एक",
+     "atAfterEnd": 399
+    },
+    {
+     "text": "मुझे लगता है एक एजेस।",
+     "atAfterEnd": 1031
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 9,
+   "said": "Corner.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "Horner.",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aarav, tumne “corner” kaha. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1044,
+   "stt": 475,
+   "turnAfterEnd": 1519,
+   "lastDeltaAfterEnd": 894,
+   "finalAfterEnd": 1519,
+   "prefetchAfterEnd": 1143,
+   "prefetchCount": 1,
+   "director": 5261,
+   "tts": 110,
+   "replyFirstByte": 6889,
+   "ackStatus": [
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 6999,
+   "firstSound": 6999,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 276,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 595,
+    "parallel": null
+   },
+   "serverMs": 5250,
+   "marks": {
+    "ctx": 35,
+    "kit": 35,
+    "prefetch_adopted": 43,
+    "classified": 555,
+    "noted": 1150,
+    "planned": 1152,
+    "kernel": 1153,
+    "replied": 5208,
+    "stored": 5250
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 787,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1479,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1845,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1023,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1020,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 52,
+   "engine": "dhd",
+   "guard": "leak,long,rewritten",
+   "guardDetail": {
+    "firstDraft": "Tumne “corner” kaha—yeh teen edges ke milne wale point ka naam hai. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+    "afterRewrite": [
+     "ask"
+    ],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": true
+   },
+   "partials": [
+    {
+     "text": "Horner.",
+     "atAfterEnd": 1143
+    }
+   ]
+  },
+  {
+   "lesson": 2,
+   "turn": 10,
+   "said": "Mujhe nahi pata, ek baar aur batao na.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "मुझे नहीं पता। एक बार और बताओ ना।",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Koi baat nahi, Aarav. Jahan teen edges milti hain, use corner kehte hain; face ek flat surface hota hai. Chalo sticks aur clay ki goliyon se cube ka dhaancha banate hain. Sticks edges hain aur goliyan corners. Kitni sticks aur kitni goliyan chahiye?",
+   "cls": "no_evidence/request",
+   "verdict": null,
+   "endpoint": 1056,
+   "stt": 502,
+   "turnAfterEnd": 1558,
+   "lastDeltaAfterEnd": 748,
+   "finalAfterEnd": 1558,
+   "prefetchAfterEnd": 998,
+   "prefetchCount": 2,
+   "director": 1137,
+   "tts": 86,
+   "replyFirstByte": 2781,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 2891,
+   "firstSound": 2891,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 557,
+   "note": null,
+   "serverMs": 1134,
+   "marks": {
+    "ctx": 60,
+    "kit": 61,
+    "prefetch_adopted": 68,
+    "classified": 68,
+    "planned": 107,
+    "kernel": 108,
+    "replied": 1091,
+    "stored": 1134
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 457,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 974,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 45,
+   "engine": "dhd",
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "मुझे नहीं पता। एक बार और",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "मुझे नहीं पता। एक बार और बताओ ना।",
+     "atAfterEnd": 998
+    }
+   ]
+  }
+ ],
+ "traceProfile": {
+  "byRid": [
+   {
+    "rid": "21db8f1c-ff59-49ff-b77b-624e12b31935",
+    "ms": 1.758649000000105,
+    "n": 2,
+    "route": "POST /api/auth/signup"
+   },
+   {
+    "rid": "a713624c-ecf5-48d1-8d15-50e60b8e140a",
+    "ms": 0.12089200000013989,
+    "n": 2,
+    "route": "POST /api/auth/signup"
+   },
+   {
+    "rid": "7dfd2b5a-b8a0-4e79-afbd-f95fc5b5e74b",
+    "ms": 0.10707499999989523,
+    "n": 2,
+    "route": "POST /api/auth/signup"
+   },
+   {
+    "rid": "fd8b3abb-f508-4cd1-86ca-6425231cf8f5",
+    "ms": 0.42419999999992797,
+    "n": 2,
+    "route": "POST /api/children"
+   },
+   {
+    "rid": "c92377d9-fb88-4510-acbc-df084b66dda7",
+    "ms": 0.15514499999994769,
+    "n": 2,
+    "route": "POST /api/children"
+   },
+   {
+    "rid": "9ce1cd79-ed32-4483-9c06-60d25281fe07",
+    "ms": 0.14367700000002515,
+    "n": 2,
+    "route": "POST /api/children"
+   },
+   {
+    "rid": "ede2ad34-f651-4c7b-93cc-2c22fc314da4",
+    "ms": 0.12410900000008951,
+    "n": 2,
+    "route": "POST /api/consent"
+   },
+   {
+    "rid": "c7a3c6fa-868c-46ee-8abd-859c55de5788",
+    "ms": 0.069758999999749,
+    "n": 2,
+    "route": "POST /api/consent"
+   },
+   {
+    "rid": "2b1c155f-ca89-46e7-a78c-5d7883ad9c8b",
+    "ms": 0.13332000000013977,
+    "n": 2,
+    "route": "POST /api/consent"
+   },
+   {
+    "rid": "86c44a4f-5d07-41e4-be9b-3fd18a3677c1",
+    "ms": 0.1617269999992459,
+    "n": 2,
+    "route": "POST /api/parent/controls"
+   },
+   {
+    "rid": "0a07601c-c291-45b0-8b9a-17a1db0ed2ad",
+    "ms": 0.08472500000016225,
+    "n": 2,
+    "route": "POST /api/parent/controls"
+   },
+   {
+    "rid": "21bf731b-925a-4a91-899d-ca7985236bc5",
+    "ms": 0.1542610000001332,
+    "n": 2,
+    "route": "POST /api/parent/controls"
+   },
+   {
+    "rid": "3cc49a8c-9e6f-48ce-a890-b4f1f9aa503d",
+    "ms": 1.1664669999581747,
+    "n": 7,
+    "route": "POST /api/lesson/start"
+   },
+   {
+    "rid": "fc37efd4-81d3-492d-b690-6a263a1e0b4f",
+    "ms": 0.9690779999991719,
+    "n": 7,
+    "route": "POST /api/lesson/start"
+   },
+   {
+    "rid": "2e455d03-da43-4915-9774-02f403577290",
+    "ms": 0.9087749999889638,
+    "n": 7,
+    "route": "POST /api/lesson/start"
+   },
+   {
+    "rid": "4e2afb16-1868-4feb-808a-28aedebdc610",
+    "ms": 0.08955000000059954,
+    "n": 2,
+    "route": "POST /api/voice/stt-token"
+   },
+   {
+    "rid": "83ffbb6f-b88a-4ccc-b122-cd09380a02a4",
+    "ms": 0.15685599999960687,
+    "n": 2,
+    "route": "POST /api/voice/stt-token"
+   },
+   {
+    "rid": "e90a9b1a-eae9-4dc1-aa51-1ddb54dce48f",
+    "ms": 0.08839400000033493,
+    "n": 2,
+    "route": "POST /api/voice/stt-token"
+   },
+   {
+    "rid": "c7dbcef7-6ef0-4d9c-b6b6-908d29b76428",
+    "ms": 0.44724099999803,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "1ff86b03-abbe-4606-b459-d0334352ff0f",
+    "ms": 0.1276930000003631,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "e607e3f3-e182-439f-867b-9d6a810f4604",
+    "ms": 0.43227699999988545,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "d1248991-bcd2-47e5-ad61-008b3e6cde01",
+    "ms": 0.15982199999962177,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "33c20ab4-ca3e-456b-8824-3cdb06f51a38",
+    "ms": 0.4135900000001129,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "772c2a5b-c7cc-4745-a233-a5e73e482a69",
+    "ms": 0.052803999999014195,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "9dd4b0ce-87c8-4aef-98db-2724cbf4d8d0",
+    "ms": 0.06964900000093621,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "1db7628e-cf0b-4f83-94c1-c7df46d9798c",
+    "ms": 0.4572540000008303,
+    "n": 6,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "d3535e74-65d7-4b54-8fd1-fc635c7efb49",
+    "ms": 0.5436610000015207,
+    "n": 6,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "2beb0d90-2d48-45fa-a6cc-f757bb3fbc45",
+    "ms": 0.05864099999962491,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "0e951781-1d50-487b-b686-f67c988dc28d",
+    "ms": 0.6862630000032368,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "6eb0a0c5-38cf-4f02-a7b8-045b783db236",
+    "ms": 0.6830809999955818,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "bb039444-90aa-4c99-ba73-89f519461067",
+    "ms": 0.7482989999989513,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "301b5bc4-97c8-4af4-946f-83b4ef79bd83",
+    "ms": 0.11297200000262819,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "f7a5964f-f08f-4124-ba6e-83bde0d7d77f",
+    "ms": 0.09519300000101794,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "60628358-2841-431e-b349-48c80f4b7f6a",
+    "ms": 0.1094970000012836,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "6e836aa0-9d4a-4715-8976-139c45681e78",
+    "ms": 0.3839909999987867,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "fc5f6af2-79e4-4d7f-bd29-13184df8be40",
+    "ms": 0.059118999997735955,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "3a2659a4-2b96-4735-96ba-8b8045102a2d",
+    "ms": 0.06244900000092457,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "d4591478-5d8c-43eb-a8de-4da30b9b101c",
+    "ms": 0.3646190000035858,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "2ececece-77cb-4ee4-9486-d46ee26b8765",
+    "ms": 0.34351799999785726,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "3cafa812-86ef-4d61-9ca0-e175c5db651c",
+    "ms": 0.13986000000295462,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "cdbeb479-4279-4a6b-9ddd-c4629dc4b48c",
+    "ms": 0.4208810000018275,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "6effec7b-6fd2-48c8-98ae-15ab4b1c7398",
+    "ms": 0.05176799999753712,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "a67523c0-911c-406d-924b-19e9bef07ef9",
+    "ms": 0.4302709999938088,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "575c4ea8-e063-44d4-a2a8-f9bab45c184a",
+    "ms": 0.05985099999816157,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "471e409a-ef47-40ba-8a1e-b220bb6b746c",
+    "ms": 1.6240730000063195,
+    "n": 12,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "abb34c21-0fa2-4410-87fb-8a43bda7c81d",
+    "ms": 1.3673340000095777,
+    "n": 13,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "e3bf90c2-0393-4f88-a405-3486a789144a",
+    "ms": 1.0330510000057984,
+    "n": 12,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "b3415a02-7e49-4f7d-8c78-20afeb354927",
+    "ms": 0.0998890000009851,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "64f95bf5-6689-4b27-a491-d0f8e133abd7",
+    "ms": 0.11868699999831733,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "43117db5-ab01-4671-a88a-814911c907ce",
+    "ms": 0.11966599999868777,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "c720f6e9-89b4-4f5f-9517-f3a7f36d686d",
+    "ms": 0.47629199999937555,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "9916a41f-b773-4e6b-b889-3c993ea25ebc",
+    "ms": 0.4297389999992447,
+    "n": 6,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "fc5d1856-9f4e-453a-81b5-1b24a3b0fc57",
+    "ms": 1.6150530000013532,
+    "n": 6,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "250cf5d9-0420-4404-b4c3-031fd66639e4",
+    "ms": 0.4082360000029439,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "8b2af201-9858-4431-9721-947ecf22f4a9",
+    "ms": 0.08926899999642046,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "f18c9a8b-3da0-41b8-8c6e-4a461d8b9b66",
+    "ms": 0.1142420000032871,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "5ff39e25-8afd-4acb-b875-d10ac361265e",
+    "ms": 0.11169599999993807,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "ef431a7a-a326-4e46-8c7e-4c75405e0ee9",
+    "ms": 1.5459739999714657,
+    "n": 15,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "e012b869-37b4-4bab-b2b0-b199fd8feff6",
+    "ms": 0.17569499999081017,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "f7c958fb-d62e-45af-8e13-b394e3b62123",
+    "ms": 0.19313400000100955,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "7839286a-6b26-417b-8333-83e20d56c912",
+    "ms": 1.4702349999788566,
+    "n": 13,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "4bc50585-a5f4-4654-8139-b451c7e01dd6",
+    "ms": 0.9949820000183536,
+    "n": 12,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "0a4ec54c-223e-4077-8b7a-5941c29b63e8",
+    "ms": 0.13133200000447687,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "9f8785b7-bed6-490e-9c74-cb006bf07095",
+    "ms": 0.19829700000263983,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "65b8bf3b-6751-416f-a624-9a95ea9394ec",
+    "ms": 0.12443400000483962,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "5486f1b1-fdca-4410-aa12-eaec4e934f98",
+    "ms": 0.28209000000788365,
+    "n": 4,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "294a3272-5a01-4a4f-b461-eba1c7eb0ec9",
+    "ms": 0.3793950000035693,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "d3fa13df-fd78-4942-bb5c-f1a152d4b691",
+    "ms": 0.06843900000239955,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "6f3ba996-fad2-4739-8b82-53fc0f72a4e4",
+    "ms": 0.10204700000031153,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "c5dd7cd4-e431-44cd-af0a-e81dc9e7274b",
+    "ms": 0.3660650000019814,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "48c7eee6-b691-4142-945c-bfd16f234012",
+    "ms": 0.061588999997184146,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "7c0180d0-9c76-4260-8286-2e603ce382ea",
+    "ms": 0.06328900000517024,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "35920544-3a49-4c19-a299-1f7d474570d5",
+    "ms": 0.414928999991389,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "bfd5fff9-5c8b-47d2-b066-ea0f5cf4b939",
+    "ms": 0.41623400000389665,
+    "n": 5,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "c7630059-6c2c-440b-8ee6-bb09c9a7aca9",
+    "ms": 0.06320900000719121,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "1fcd9291-2011-4e95-97c4-fde4f4d22fc1",
+    "ms": 0.758101000013994,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "c93157d4-332c-4d88-9ef7-1c0aae6fa9fe",
+    "ms": 0.5210789999837289,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "bcd18427-8358-48bb-8853-0926517c2f26",
+    "ms": 0.47662499999569263,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "4ca1dbb4-cdf1-41ac-9d68-38bd6ae40e55",
+    "ms": 0.16713299999537412,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "354e45bb-f5b9-440c-a874-6ca005a1ed8e",
+    "ms": 0.12493599999288563,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "7ff62596-6d58-47b5-b2ad-ced8a95a7f03",
+    "ms": 0.11355399999592919,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "eafe6d63-14a6-4809-9ce1-bb3063194b3e",
+    "ms": 0.9650050000054762,
+    "n": 8,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "e215e390-307a-4891-bcb2-53c741e638e6",
+    "ms": 0.2614480000047479,
+    "n": 3,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "17ce79ac-db65-4035-ac71-f76b0973f16d",
+    "ms": 0.6825880000105826,
+    "n": 8,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "9bfa5103-5880-41d5-b5ef-727398acb2ac",
+    "ms": 0.7839200000016717,
+    "n": 8,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "0b5aae22-11fc-4120-8123-3b4172c74162",
+    "ms": 0.10709900000074413,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "da76f54b-924a-44d9-8297-b9959d301f96",
+    "ms": 0.2032660000040778,
+    "n": 3,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "244e0f89-1a1b-4785-aef2-c981e113a936",
+    "ms": 0.666386999997485,
+    "n": 8,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "fc9e95b1-32d3-43c2-bd64-d5a441f063cf",
+    "ms": 0.13760900000488618,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "73fc4150-8369-4d16-b054-d25158514f98",
+    "ms": 0.1272539999918081,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "5b78309f-028c-4adf-84f3-285c2dac8e41",
+    "ms": 0.12365100001625251,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "129f19e8-24e2-49e0-ae25-068d4689d31c",
+    "ms": 0.15027899999404326,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "1a8a46a6-bda2-4115-ab5f-50951995f004",
+    "ms": 0.14002700000128243,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "35005a48-55d6-4356-8cbf-b6de89cba9bd",
+    "ms": 0.6870540000090841,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "655333b1-b6e9-4b76-b9fe-1ee64601a6aa",
+    "ms": 0.05374099999608006,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "51d7791b-6c3c-4154-9f2b-08c659d7ddf6",
+    "ms": 0.9042590000171913,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "3ab2cd7d-9e34-4c08-97b5-e101f7b3fab5",
+    "ms": 0.05827699998917524,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "35203ee5-093f-4d61-a435-6e3df7e8e49b",
+    "ms": 0.7958159999834606,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "408f33a6-0827-4d15-af44-53eea744d146",
+    "ms": 0.061199000003398396,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "fff24c60-b2f4-44b7-bde2-05dabb97c31e",
+    "ms": 0.13040700000419747,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "9cad0273-3e94-4bd7-8b42-0d525450a7f7",
+    "ms": 1.025517999951262,
+    "n": 10,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "2609d88a-cffa-469d-981a-9afc9dd956a4",
+    "ms": 0.5185330000094837,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "a0de4c39-ed82-444f-8a54-2c0e89940c00",
+    "ms": 0.43935200000123587,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "a4789b11-3238-4cc6-bdba-d3fd34cdedab",
+    "ms": 0.10779999999795109,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "e4d19f0e-2527-4fc8-9c81-08e7a7e73c91",
+    "ms": 0.13971499999752268,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "787aeca6-0b12-4554-b2ee-2b9f5acfa6c2",
+    "ms": 1.3225519999832613,
+    "n": 12,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "c8a4d282-aac2-4264-8dee-7dd5fd3ef786",
+    "ms": 0.5694420000072569,
+    "n": 7,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "e9d139a7-8c0b-47fb-a027-48d3dc88f9a4",
+    "ms": 0.4766799999924842,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "f0b89353-e968-4adb-80ac-95b44e5423f9",
+    "ms": 0.5719119999994291,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "1abc539c-98ca-4629-8ea2-6e4cbdb37bae",
+    "ms": 0.07930600001418497,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "2fc81548-ac7f-4d9c-8183-44194272e6d0",
+    "ms": 0.10949200001778081,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "ab4a8616-27f4-46d8-a5e5-78c7c0027a8e",
+    "ms": 0.11570200001006015,
+    "n": 2,
+    "route": "POST /api/voice/stt-token"
+   },
+   {
+    "rid": "b41d6519-8a53-4797-ad53-8828513e1b25",
+    "ms": 0.12133999998332001,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "dcec6481-4a2f-4a45-9348-307687861daa",
+    "ms": 0.0890019999933429,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "89043556-1690-4dbf-aff1-66b7f552255e",
+    "ms": 0.7271699999982957,
+    "n": 10,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "93dd121e-5d6e-4df0-b2f1-10c12ae01c9a",
+    "ms": 0.05039299999771174,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "fcc65178-423d-4215-b2a0-24a6e43443c9",
+    "ms": 0.8602719999908004,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "0618c94b-7043-43d2-a08c-75832bd30518",
+    "ms": 0.04054199998790864,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "a8fa9d90-e60b-4a11-b5a7-56723bbb848f",
+    "ms": 0.7291060000134166,
+    "n": 9,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "5ab7b68b-2d2a-4d5c-a1a2-c5b515d7594b",
+    "ms": 0.7364350000134436,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "76501bde-2eda-4144-9b6d-7fa661eab2c6",
+    "ms": 0.7299869999842485,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "8b3c5e62-a406-4787-9f92-e832b2b822fe",
+    "ms": 1.0002289999829372,
+    "n": 10,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "155f7467-8557-48de-9d48-a120d4b38178",
+    "ms": 0.6036979999917094,
+    "n": 7,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "e6956f46-319b-4fb3-86ce-35c8cce08d1c",
+    "ms": 0.09626099999877624,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "3ce455d2-cf04-481b-93ce-5158e1683857",
+    "ms": 0.11680099999648519,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "57164b47-e7a7-41da-b27d-67e16cda34c4",
+    "ms": 0.11935899998934474,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "6037de2a-474e-421f-922d-50a03409bb5a",
+    "ms": 0.15004499998758547,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "bd6194ce-6ff1-495f-b359-f7eef3565a25",
+    "ms": 0.5462119999865536,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "567514bb-57b7-4c6b-8c90-17ab76f38ef8",
+    "ms": 0.1420360000047367,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "ac78157b-6514-4d3c-9749-37bf4c9732c7",
+    "ms": 0.12976999998500105,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "6abae95c-510f-4ef8-b2d0-df7f635eac83",
+    "ms": 0.7416170000069542,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "fec5d1e9-d2db-42d6-8293-a95662f83e7f",
+    "ms": 0.16407699999399483,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "f3c447c8-cec0-41df-b0bd-b48ab18032fc",
+    "ms": 1.3631370000366587,
+    "n": 12,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "abb2eac3-e185-4cf5-bf21-04b306956538",
+    "ms": 0.07316700000956189,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "c6f67cb7-add5-4d22-b0a2-f8687718f2fb",
+    "ms": 0.6449530000099912,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "83aebd07-a3f7-4cbf-911c-f185d63bec6a",
+    "ms": 0.4550819999712985,
+    "n": 7,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "d95a46b8-f289-497a-ba83-91de5772ae95",
+    "ms": 0.06457000000227708,
+    "n": 2,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "1a72933b-3258-4f9e-8fc2-3ef27126848d",
+    "ms": 0.0965509999950882,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "7e522f3b-53c5-4291-b43f-40170dfcc86c",
+    "ms": 0.900456999996095,
+    "n": 9,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "d3432c89-a12d-4e95-9ba3-d1425bf98511",
+    "ms": 0.3997650000237627,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "88a77944-9aa3-45f0-84ea-53a5e33cebef",
+    "ms": 0.11729199999535922,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "41f2632b-c520-4add-b643-938864f8454b",
+    "ms": 0.14714300000923686,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "e7419bee-6e7e-492a-9e0d-905960ab4fb1",
+    "ms": 0.1762320000125328,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "02a8651c-fa0b-44b2-8a52-4c1436c5537f",
+    "ms": 0.09498799998254981,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "990ced9c-d09f-4c48-b21e-54b0bd9cb14d",
+    "ms": 0.1180610000010347,
+    "n": 2,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "75823813-35ab-49a0-9ae5-6f50f20989ba",
+    "ms": 0.3858299999992596,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "79f4b4a9-9dcf-4620-a2d2-84dc407a928d",
+    "ms": 0.6746879999700468,
+    "n": 7,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "dca87ed0-dc5c-42dd-9444-af3daf6dce76",
+    "ms": 0.9004969999950845,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "8edd9673-7a21-487f-aeaf-71742d5ce569",
+    "ms": 0.06559300000662915,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "e250f921-65b3-4c70-b6d7-1d7f7dbcabb6",
+    "ms": 0.6178349999972852,
+    "n": 8,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "94e32e8e-a18e-476b-abec-c6bdabd4d616",
+    "ms": 0.06900700001278892,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "2fd3bfbe-0d29-44bb-a220-ab0648316437",
+    "ms": 0.16308500000741333,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "f0ad0753-d89c-4ebc-930a-6c6deebccb2d",
+    "ms": 1.6466090000030817,
+    "n": 16,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "92c0fcfd-2128-42ae-bd80-4dae58dd6123",
+    "ms": 1.0199710000306368,
+    "n": 10,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "8843a586-da15-42a8-b79c-7319f702e87d",
+    "ms": 0.22218100001919083,
+    "n": 3,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "2c6d2dd7-165c-4c0a-bf36-b3fe9d3fac27",
+    "ms": 0.6007140000001527,
+    "n": 8,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "6879d42a-7be6-4828-b260-ceabcf022d94",
+    "ms": 0.09575299998687115,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "35e14a22-1f00-4757-bf2b-00014e0dd4cf",
+    "ms": 0.10677499999292195,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "f5ee6d03-6704-4306-a7ab-5752a1eeb07a",
+    "ms": 0.14024199999403208,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "af7219e9-c8b2-429b-aa4a-d1580077cd7d",
+    "ms": 0.17419900000095367,
+    "n": 2,
+    "route": "DELETE /api/account"
+   },
+   {
+    "rid": "ced218d2-6581-497c-bf14-387aa089db59",
+    "ms": 0.11722400000144262,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "a0324eda-6b81-49d0-b214-b4475eaa4e42",
+    "ms": 0.09364299998560455,
+    "n": 2,
+    "route": "DELETE /api/account"
+   },
+   {
+    "rid": "fe51caef-611f-437c-86f3-cbd2a1520f65",
+    "ms": 1.1486889999941923,
+    "n": 9,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "d0e8b44d-f35b-41a7-b3fd-53ada65c1516",
+    "ms": 0.047909000000800006,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "0780c25b-e923-4eeb-8acb-6dd4467a53f8",
+    "ms": 0.7151669999875594,
+    "n": 7,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "835c7835-ba37-4f55-b791-6adbd25e6066",
+    "ms": 0.07513300000573508,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "647a183d-5d24-4673-9108-d2bc42d26fcb",
+    "ms": 1.116381999992882,
+    "n": 11,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "2e9cb3d0-4a94-4387-aa08-11e973f25671",
+    "ms": 0.1404739999998128,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "51542f83-74a8-4b8a-b781-f259ca77231b",
+    "ms": 0.6914899999974295,
+    "n": 8,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "0e46f9c0-90e7-4e19-a4fb-266f8cbf53ba",
+    "ms": 0.05561899999156594,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "4aa1eac3-2ef6-48b8-b686-f4a977366661",
+    "ms": 0.6775209999759682,
+    "n": 8,
+    "route": "POST /api/lesson/turn-prefetch"
+   },
+   {
+    "rid": "677ac836-34d9-4b9f-8805-34b843092ee3",
+    "ms": 0.05097199999727309,
+    "n": 2,
+    "route": "POST /api/lesson/turn-ack"
+   },
+   {
+    "rid": "7103e8ce-8e64-4193-bebf-4855f0c0378b",
+    "ms": 0.39911600000050385,
+    "n": 6,
+    "route": "POST /api/lesson/turn"
+   },
+   {
+    "rid": "98efb26f-d5b1-42f8-b3e0-597e673086d1",
+    "ms": 0.35395799999241717,
+    "n": 2,
+    "route": "POST /api/voice/tts-stream"
+   },
+   {
+    "rid": "1defc1e7-96d9-42c1-9f94-918bfbafe01c",
+    "ms": 0.1607170000206679,
+    "n": 2,
+    "route": "DELETE /api/account"
+   }
+  ],
+  "flushMs": 0.35265700000036304,
+  "flushes": 2
+ }
+}
