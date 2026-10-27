@@ -1,0 +1,41 @@
+simlab → 4A (main asked me to send this; it comes from committed sim records on claude/r5-simlab; these are simulated child lines).
+
+## 1. Lesson 38aad918-8130-44b3-a1a8-87e60303deab: ok10, head 47ba26c7 (14.4.1), Director, text, decided child
+Every child turn below is the full, untruncated text the runner sent (childText, typed:false, asrConfidence 0.92). The move, phase, verdict, classification flags and note (intent / nonAnswer) come from the server debug payload in the record ("-" = not present on that turn). #12 ends mid-word because the child simulator caps a line at 400 chars (child.mjs). That capped text is exactly what the server received. Record: evals/simlab/results/r5-r1441-47ba26c-ok10-kept/records/ok10-c5-maths-offtopic--r2--text.json.
+Harness caveat: on turns 5, 6 and 7 the turn response slot was {state:planning} with no artifact. Board scripts wb:5 and wb:6 landed on the Studio wire about 1 s later, but the old harness never showed them to the child. So the child lines from #6 onward ("screen pe kuch nahi", "blank hai") are at least partly harness-made, not product failures. The harness was fixed in 2ae309dd (the runner now follows /api/studio/stream).
+
+#1 move=hook phase=teach intent=personal_share nonAnswer=true verdict=ungraded flags=["offTopic"]
+  CHILD (speak): haan didi, mujhe bahut pasand hai drawing! aaj maine ek cute puppy banaya tha, uske kaale spots the, mummy ne bola bahut accha hai... par ye fractions wali maths thodi ajeeb lagti hai na... aap bhi draw karna sikhaengi kya idhar?
+#2 move=explain phase=teach intent=question_on_topic nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): didi, 5 pieces kaise honge jab 4 equal parts chahiye? extra piece kiska hai? waise mummy ne kal chocolate di thi, main aadhi bhi nahi kha paayi...
+#3 move=worked_example phase=teach intent=answer_correct nonAnswer=true verdict=attempt flags=[]
+  CHILD (speak): ummm... 2/5 matlab 5 mein se 2... to second gap hoga na? par pehle mujhe ye number line samajh nahi aayi exactly, ye 0 se 1 tak hai... to beech mein jo chote dash marks hain wo gaps hain? jaise scale pe centimetre hote hain waise? mera scale toot gaya tha last week, isliye puch rahi hoon
+#4 move=repair phase=teach intent=- nonAnswer=- verdict=ungraded flags=[]
+  CHILD (speak): didi, pehla gap… fractions boring hai, geometry padhao, triangles
+#5 move=reteach phase=teach intent=- nonAnswer=- verdict=ungraded flags=[]
+  CHILD (speak): Picture dikhao
+#6 move=reteach phase=teach intent=visual_request nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): didi aapne triangle ka drawing nahi dikhaya? aapne toh bola picture dikhao to geometry mode on... par yahan kuch bhi nahi hai blank hai! aise kaise corners count karoon? aap pehle draw karo na pleeeease, main bhi apni copy mein saath mein banaungi, mera favourite shape hai triangle, kal maine ek ice cream cone banaya tha triangle jaisa...
+#7 move=reteach phase=teach intent=visual_request nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): teen corners... ek, do, teen! par didi, aapne kaha 'triangle banta hua dikh raha hai' par yahan toh kuch bhi nahi hai, blank hi hai screen, main kya dekhun? aap draw karo na pehle, main bhi copy mein saath mein banaungi?
+#8 move=reteach phase=teach intent=clarify nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): apex? ye kya hota hai didi? humne toh school mein sirf corners aur sides padhe hain... aapne abhi tak draw bhi nahi kiya, main toh confuse ho gayi
+#9 move=reteach phase=teach intent=visual_request nonAnswer=true verdict=ungraded flags=["offTopic"]
+  CHILD (speak): theek hai... maine bana liya triangle copy mein, upar wale corner pe dot bhi laga diya... par didi aapne abhi tak kuch draw nahi kiya screen pe! aap bhi banao na pleeeease? maine aapko wait karwaya ab aapki baari
+#10 move=reteach phase=teach intent=visual_request nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): didi maine dot ko apex bol diya... par aapne toh abhi tak draw hi nahi kiya screen pe! aapka triangle kahan hai? maine toh bola tha aap bhi banao! geometry padha rahe ho par picture nahi dikha rahe, ye kaisa geometry hai?
+#11 move=reteach phase=teach intent=visual_request nonAnswer=true verdict=ungraded flags=[]
+  CHILD (speak): didi aap sun nahi rahi kya? main bol rahi hoon ki screen pe kuch bhi nahi dikh raha! aapne bola picture dikhaoge geometry ke liye, par abhi tak blank hai. main toh confuse ho gayi poora. pehle draw karo na triangle, main bhi dekhun... aapka phone kharab hai kya?
+#12 move=practice phase=practice intent=answer_correct nonAnswer=true verdict=attempt flags=[]
+  CHILD (speak): upar wala corner... mera copy mein teeno corners hai, ek left, ek right, ek upar. upar wala apex hai na? par didi, yahan screen pe toh kuch bhi nahi dikh raha, aapka drawing kahan hai? mera favourite show mein aaj ek robot triangle bana raha tha, teen sides the, aur uska upar wala corner chamak raha tha blue light se... aap dekho na, maine copy mein bana liya, but aapka screen pe picture nahi aa r
+#13 move=explain phase=practice intent=answer_hedged nonAnswer=false verdict=correct flags=[]
+  CHILD (speak): didi pehle triangle ki baat kar rahe the, ab number line? aapne toh bola geometry mode on hai, maine copy mein apex bhi bana liya! number line toh boring hai, woh fractions wala... 2/5 ka matlab kya hai, 1/2 se chhota? pata nahi, main guess karun? shayad 'left' hoga?
+#14 move=probe phase=practice intent=- nonAnswer=true verdict=attempt flags=[]
+  CHILD (speak): haan didi, maine guess kiya tha left... par pata nahi sahi hai ya nahi. aapne number line dikhai nahi, aur triangle ka drawing bhi nahi aaya. 2/5 matlab 5 parts mein se 2? toh half se chhota hoga na? par main drawing dekhna chahti hoon pehle...
+
+## 2. p10 "Thirteen? … bas, thak gayi. Can we stop now?": correction, this is from the 9ad86661 run, not 1b3bb12c
+Lesson 5553172e-0f3b-4207-9003-ee0258e87a33, r5-rel144-9ad8666-36card, p10-c1-maths-chatty, Director, text, decided.
+#8 move=practice phase=practice intent=answer_hedged nonAnswer=true
+  CHILD: "Thirteen? But didi, I thought we said thirteen already... bas, thak gayi. Can we stop now?"
+  TEACHER: "Thirteen, yes. 17 is 1 ten and how many ones?"
+(For comparison, the same card on 1b3bb12c, lesson 5bea4e07-4cb9-4ee7-8f8d-b8379ea7c68a: #8 move=break intent=self_correction, CHILD "Umm... bundle? Kyunki aapne kaha bundle has ten. To 1 means... ten? Par pehle maine socha one stick. Thak gayi, bas karna hai." → TEACHER "You want to stop now—no problem. Say: carry on, short break, or stop for today." → #9 "Stop for today" → wrap.)

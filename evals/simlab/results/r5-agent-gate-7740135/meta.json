@@ -1,0 +1,22 @@
+{
+ "runId": "r5-agent-gate-7740135",
+ "head": "4237dc9e",
+ "date": "2026-10-15T05:08:06.042Z",
+ "arms": {
+  "director": "http://127.0.0.1:8817",
+  "agent_gpt6": "http://127.0.0.1:8818",
+  "agent_gpt6_none": "http://127.0.0.1:8823"
+ },
+ "lanes": [
+  "text"
+ ],
+ "n": 64,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "note": "AGENT GATE on 4A head claude/r4-conversation @7740135a (cc4b3d26 + e2f33f59 streamed say-first speech / per-clause gate / TAXILA_TEACHER_EFFORT; a why question graded against the item's verified reasoning counts as deep evidence and goes first for a skill with a right easy answer; a partly from easy answers only carries depth untested): director (off) vs agent_gpt6 (effort low, default) vs agent_gpt6_none (TAXILA_TEACHER_EFFORT=none), TAXILA_PICTURES=all, all 64 cards, text lane, 14 child turns, conc 6."
+}

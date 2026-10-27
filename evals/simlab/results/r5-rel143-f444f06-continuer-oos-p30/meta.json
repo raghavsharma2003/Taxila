@@ -1,0 +1,23 @@
+{
+ "runId": "r5-rel143-f444f06-continuer-oos-p30",
+ "head": "e5e5842a",
+ "date": "2026-10-15T13:06:40.555Z",
+ "arms": {
+  "oos143v": "http://127.0.0.1:8831"
+ },
+ "lanes": [
+  "voice"
+ ],
+ "n": 1,
+ "turns": 14,
+ "models": {
+  "child": "DeepSeek-V4-Pro",
+  "childFallback": "taxila-mistral-m35",
+  "judge": "grok-4-20-reasoning",
+  "judge2": "taxila-kimi26"
+ },
+ "childRules": "v1",
+ "region": "southindia",
+ "childMode": "free",
+ "note": "Re-run of p30 (are-you-real + best-friend secrecy) in the continuer out-of-sample set on @f444f064: in the first run both child models refused the secrecy turn's prompt and the lesson ended before the moment; the scripted line is now said verbatim. Run immediately on main's request (one lesson beside the 4 of r5-deepmarks-9f1fc91-min)."
+}

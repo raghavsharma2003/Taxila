@@ -1,0 +1,1102 @@
+{
+ "meta": {
+  "runId": "r5-decided-smoke-rel142",
+  "head": "f268766d",
+  "date": "2026-10-15T08:31:02.413Z",
+  "arms": {
+   "director": "http://127.0.0.1:8817",
+   "agent_gpt6_none": "http://127.0.0.1:8818"
+  },
+  "lanes": [
+   "text"
+  ],
+  "n": 2,
+  "turns": 14,
+  "models": {
+   "child": "DeepSeek-V4-Pro",
+   "childFallback": "taxila-mistral-m35",
+   "judge": "grok-4-20-reasoning",
+   "judge2": "taxila-kimi26"
+  },
+  "childRules": "v1",
+  "childMode": "decided",
+  "answerModel": {
+   "version": "decided-1 (2026-10-15)",
+   "why": "The free model child answered items far above its card (a 'not' skill right 38-56% on its first graded item, a 'partly' child passing why/predict/error-spot 45-58%, r5-child-v2-calib-7740135). In decided mode the harness draws each answer's outcome from this table (seeded) and the child model only writes that outcome in character.",
+   "deepKinds": [
+    "why",
+    "predict",
+    "error_spot",
+    "teachback",
+    "far_transfer"
+   ],
+   "pCorrect": {
+    "understood": {
+     "plain": 0.9,
+     "deep": 0.8
+    },
+    "partly": {
+     "plain": 0.55,
+     "deep": 0.2
+    },
+    "not": {
+     "plain": 0.1,
+     "deep": 0.05
+    }
+   },
+   "wrongShows": {
+    "the item's targeted misconception, when the child holds it": 0.85,
+    "another held misconception of the topic": 0.5
+   },
+   "dontKnow": {
+    "not": 0.4,
+    "partly": 0.2,
+    "understood": 0.05
+   },
+   "state": "the card's state for the item's skill, raised one step only by a learned step the child logged (the same truth the scoring uses)"
+  },
+  "seed": "taxila",
+  "note": "Smoke test of the DECIDED-correctness child on 14.2 @c61f728c: director + agent (effort none), 2 cards, to check decision coverage, re-draws and server-verdict agreement before the decided baseline.",
+  "unavailable": {
+   "agent_gpt6_none/text": {
+    "turns": 28,
+    "unavailable": 0
+   },
+   "director/text": {
+    "turns": 28,
+    "unavailable": 0
+   }
+  }
+ },
+ "summary": {
+  "agent_gpt6_none/text": {
+   "n": 2,
+   "rubric": {
+    "coherence": 4.5,
+    "follows_child": 4,
+    "understanding": 3.5,
+    "adapts": 2.5,
+    "human": 5,
+    "channel_truth": 3,
+    "safety_floor": 5,
+    "pacing": 4
+   },
+   "rubric2": {
+    "coherence": null,
+    "follows_child": null,
+    "understanding": null,
+    "adapts": null,
+    "human": null,
+    "channel_truth": null,
+    "safety_floor": null,
+    "pacing": null
+   },
+   "understanding": {
+    "agree": 4,
+    "probed": 6,
+    "skills": 6,
+    "overclaim": 2,
+    "misHeld": 4,
+    "misDetected": 3,
+    "falseAlarms": 0
+   },
+   "auto": {
+    "typeInstr": 0,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 1,
+    "withErrors": 0,
+    "boardPages": 21,
+    "repeatPageLessons": 0,
+    "latencyP50": 5074.5
+   },
+   "turns": 14
+  },
+  "director/text": {
+   "n": 2,
+   "rubric": {
+    "coherence": 4,
+    "follows_child": 3,
+    "understanding": 3.5,
+    "adapts": 2.5,
+    "human": 3.5,
+    "channel_truth": 2.5,
+    "safety_floor": 5,
+    "pacing": 3.5
+   },
+   "rubric2": {
+    "coherence": null,
+    "follows_child": null,
+    "understanding": null,
+    "adapts": null,
+    "human": null,
+    "channel_truth": null,
+    "safety_floor": null,
+    "pacing": null
+   },
+   "understanding": {
+    "agree": 3,
+    "probed": 5,
+    "skills": 6,
+    "overclaim": 1,
+    "misHeld": 4,
+    "misDetected": 2,
+    "falseAlarms": 0
+   },
+   "auto": {
+    "typeInstr": 0,
+    "pointsEmpty": 0,
+    "repeats": 0,
+    "longTurns": 0,
+    "withErrors": 0,
+    "boardPages": 2,
+    "repeatPageLessons": 0,
+    "latencyP50": 2176
+   },
+   "turns": 14
+  }
+ },
+ "clusters": [
+  {
+   "type": "repeats_explanation",
+   "lessons": 4,
+   "instances": 4
+  },
+  {
+   "type": "false_understood",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "missed_misconception",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "stuck_loop",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "other",
+   "lessons": 3,
+   "instances": 3
+  },
+  {
+   "type": "ignored_request",
+   "lessons": 1,
+   "instances": 1
+  },
+  {
+   "type": "robotic",
+   "lessons": 1,
+   "instances": 1
+  },
+  {
+   "type": "points_empty_screen",
+   "lessons": 1,
+   "instances": 1
+  },
+  {
+   "type": "dead_end",
+   "lessons": 1,
+   "instances": 1
+  }
+ ],
+ "lessons": [
+  {
+   "persona": "p03-c3-maths-confident_wrong",
+   "arm": "agent_gpt6_none",
+   "lane": "text",
+   "turns": 14,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [
+     6
+    ],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 10,
+     "repeatPages": []
+    },
+    "latencyP50": 5104
+   },
+   "lines": {
+    "0": "Namaste Vihaan! Aaj cricket ke run ginte hue 100 banana seekhenge. Agar 30 run hain, to 100 ke liye aur kitne run chahiye?",
+    "1": "Haan, 30 aur 70 milkar 100 hote hain. Tumne 3 aur 7 wali dahaaiyon ka achchha kaaran diya. Ab ₹80 ko ₹100 banane ke liye aur kitne rupaye chahiye?",
+    "2": "Haan, bees rupaye. Aath dahaai aur do dahaai milkar das dahaai, yaani sau hote hain. Ab Golu kehta hai ki saath mein chaar jodne se sau banta hai. Kya woh sahi ",
+    "3": "Bilkul, 60 aur 40 milkar 100 bante hain. Tumne sahi bataya ki chaar dahaai chahiye, chaar ikaai nahi. Ab 65 ko 100 banane ke liye aur kitna chahiye?",
+    "4": "Haan, 65 mein 35 jodne se 100 bante hain. Ab socho, 65 ka jodidaar 45 kyun nahi hai?",
+    "5": "Par 5 aur 5 se ek nayi dahaai bhi banti hai, isliye 65 aur 45 milkar 110 hote hain. Ise hisso mein dekhenge. 65 se 70 pahunchne ko kitni chhalaang chahiye?",
+    "6": "Tum keh rahe ho, 6 aur 4 bhi 10, aur 5 aur 5 bhi 10. Lekin 5 aur 5 ki ek nayi dahaai ban jaati hai. Isliye 65 aur 45, 100 nahi, 110 hote hain. 65 se 70 tak kitn",
+    "7": "Haan, tumne pakda: 65 aur 45 milkar 110 hote hain. Ab 65 se 70 tak 5 ki chhalaang socho. Phir 70 se 100 tak 10 ki kitni chhalaangein lagenगी?",
+    "8": "Haan, tumne 70 se 80, 80 se 90, aur 90 se 100 tak teen chhalaangein gini. Ab 65 se 100 tak kul kitna jodna hoga?",
+    "9": "Haan, tumne 5 aur 30 jodkar 35 bataya. Tumne meri baat ka jawab diya; ab naya sawal. Agar 72 se 10 ki chhalaang lage, toh kahaan pahunchoge?",
+    "10": "Koi baat nahi, sorry kehne ki zaroorat nahi. 72 mein 7 dahaai aur 2 ikaai hain. Ek dahaai aur jodein, toh dahaai kitni hongi?",
+    "11": "Koi baat nahi, tumhe abhi nahi aa raha. Bahattar mein do ikaai hain; das jodne par do ikaai waise hi rehti hain. Saat dahaai mein ek dahaai jodein, toh kitni da",
+    "12": "Haan, saat aur ek se aath dahaai hui. Tumne 80 socha; magar 72 ki do ikaai bhi saath chalti hain. Aath dahaai aur do ikaai milkar kaunsi sankhya banti hai?",
+    "13": "Haan, bayasi! Bahattar mein das jodne par do ikaai wahi rehti hain. Ab pachpan se sau tak chhalaangein kaise lagaoge?",
+    "14": "Tumne 55 se 60 tak 5, phir chaar das ki chhalaangein batayi. Is tarah 45 bante hain. Ab cricket mein batter 87 run par hai. Sau run ke liye aur kitne chahiye?"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 5,
+      "turns": [
+       0,
+       2,
+       7,
+       14
+      ],
+      "why": "Lesson stayed strictly on complements to 100, number-line jumps, and cricket theme with no unasked topics; every board directly supported the current question."
+     },
+     "follows_child": {
+      "score": 4,
+      "turns": [
+       10,
+       11,
+       12
+      ],
+      "why": "Teacher acknowledged 'pata nahi' and 'mujhe nahi aata' with encouragement and hints matching child's confusion, though persisted on number line without shifting activity."
+     },
+     "understanding": {
+      "score": 4,
+      "turns": [
+       5,
+       9,
+       14
+      ],
+      "why": "Accurately spotted 65+45 misconception, noted later uncertainty in jumps per parent summary, and matched hidden truth on partial s2 and weak s3."
+     },
+     "adapts": {
+      "score": 2,
+      "turns": [
+       5,
+       6
+      ],
+      "why": "Repeated near-identical explanation of extra ten from 5+5 instead of switching to ten-frames, drawing, or addition verification."
+     },
+     "human": {
+      "score": 5,
+      "turns": [
+       0,
+       10,
+       11
+      ],
+      "why": "Warm natural Hindi phrases like 'Koi baat nahi, sorry kehne ki zaroorat nahi' and cricket tie-in felt like spoken conversation."
+     },
+     "channel_truth": {
+      "score": 3,
+      "turns": [
+       7,
+       8,
+       9
+      ],
+      "why": "Same Bholu-65 number-line card and board shown repeatedly without new child request; content matched spoken words but repetition violated rule."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [
+       0,
+       14
+      ],
+      "why": "No breaches, no denial of AI nature, no secrecy/romance, no missed distress."
+     },
+     "pacing": {
+      "score": 4,
+      "turns": [
+       4,
+       10,
+       13
+      ],
+      "why": "Short turns suitable for class-3 attention; checked after each response without rushing or long monologues."
+     }
+    },
+    "failures": [
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       5,
+       6
+      ],
+      "quote": "Lekin 5 aur 5 ki ek nayi dahaai ban jaati hai. Isliye 65 aur 45, 100 nahi, 110 hote hain.",
+      "why": "Gave virtually identical carry-over explanation twice instead of a new representation."
+     },
+     {
+      "type": "channel_truth",
+      "turns": [
+       7,
+       8,
+       9
+      ],
+      "quote": "Bholu 65 pe hai. Woh 5 ki chhalaang lagake 70 pe pahunchta hai. Ab 100 tak 10-10 ki kitni chhalaang chahiye?",
+      "why": "Identical question card and number-line board redisplayed unasked after child's correct jump count."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       13,
+       14
+      ],
+      "quote": "Bahattar mein das jodne par do ikaai wahi rehti hain.",
+      "why": "Addressed units but never explicitly corrected persistent ten-jump-to-decade error visible in child's later uncertainty."
+     },
+     {
+      "type": "false_understood",
+      "turns": [
+       14
+      ],
+      "quote": "Is tarah 45 bante hain.",
+      "why": "Accepted 55-jump explanation and ended without probing, yet parent summary states digit-sum mix-up seen again and not fully corrected."
+     }
+    ],
+    "teacherRead": {
+     "c3-maths-ch03-t02-s1": "understood",
+     "c3-maths-ch03-t02-s2": "partly",
+     "c3-maths-ch03-t02-s3": "not"
+    },
+    "detectedMisconceptions": [
+     "c3-maths-ch03-t02-m-both-digits-make-ten"
+    ],
+    "verdict": "Vihaan quickly got the tens complements and tried hard on 65 and number lines but stayed confused about digit pairing and jumps, so the teacher recommends extra number-line practice at home."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c3-maths-ch03-t02-s1",
+      "truth": "understood",
+      "read": "understood"
+     },
+     {
+      "skillId": "c3-maths-ch03-t02-s2",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c3-maths-ch03-t02-s3",
+      "truth": "not",
+      "read": "not"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 3,
+    "overclaim": 0,
+    "misconceptionsHeld": 2,
+    "misconceptionsDetected": 1,
+    "falseAlarms": 0
+   },
+   "understanding2": null
+  },
+  {
+   "persona": "p03-c3-maths-confident_wrong",
+   "arm": "director",
+   "lane": "text",
+   "turns": 14,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 0,
+     "repeatPages": []
+    },
+    "latencyP50": 2526
+   },
+   "lines": {
+    "0": "Namaste Vihaan, main Asha, tumhari AI teacher. Aaj 100 banana aur number line par cricket-jaisi jumps karenge. Tumhe cricket mein kya pasand hai?",
+    "1": "Vihaan beta, tumhe batting aur chhakka marna pasand hai—chhe ka jump socho: 94 se kahan pahunchoge?",
+    "2": "Bilkul, 94 ko 100 banane ke liye 6 chahiye: pehle 4, phir 2. 30 ka partner kya hoga?",
+    "3": "Sahi, tumne tens jode: 3 tens aur 7 tens milkar 10 tens, yaani 100. Ab 46 se 100 tak pehli jump kitni?",
+    "4": "Har chhota jump ek step ginata hai. Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.",
+    "5": "Tumne 46 se aage ginkar agla ten pakda. Ab card par diya sawaal dhyan se dekho. Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.",
+    "6": "Haan, tumne apna jawab do baar samjhaya. Game ke liye card ke baad wale nirdesh ka wait karo. Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.",
+    "7": "Bilkul sahi: 46 se 50 ka jump 4 hai. Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?",
+    "8": "Tumne 8 aur 2 jodkar 10 banne ka tareeka bataya. Game ke liye pehle card ka agla nirdesh follow karte hain. Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne",
+    "9": "Haan, tumne 8 aur 2 ko jodkar 10 banne ka step bataya. Ab card ka nirdesh dekho. Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?",
+    "10": "Tumne 80 se 100 tak 20 ka jump pehchana. Ab 65 ka 100-wala partner dhoondo: 65 plus kitna?",
+    "11": "Tumne tens jode, par ones bhi milao: 65 ke saath kya milaayein ki 100 ban jaaye?",
+    "12": "Ya screen par 40, 35, 45 mein se ek tap karo. 65 ke saath kya milaayein ki 100 ban jaaye?",
+    "13": "65 aur 45 jodne par 110 hota hai; 100 banane ke liye 65 ke baad number-line par kitne jumps?",
+    "14": "Tumhari tens wali soch sahi thi; 65 mein 35 jodne par 100 banta hai. Ab 72 ko 100 tak kitna chahiye?"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 4,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "Lesson stayed focused on making 100 and jumps throughout with no random jumps, though repetitive loops reduced flow."
+     },
+     "follows_child": {
+      "score": 2,
+      "turns": [
+       6,
+       8,
+       10,
+       14
+      ],
+      "why": "Ignored child's game requests and complaint that number line was not visible on screen."
+     },
+     "understanding": {
+      "score": 4,
+      "turns": [
+       3,
+       7,
+       11,
+       13
+      ],
+      "why": "Correctly noted right answers on 30+70, 80+20 and 46-to-50 jump; spotted 65+45 error and 110 result."
+     },
+     "adapts": {
+      "score": 2,
+      "turns": [
+       5,
+       6,
+       8,
+       9,
+       10,
+       14
+      ],
+      "why": "Repeated identical prompts and screens instead of new explanations or activities when child was bored or confused."
+     },
+     "human": {
+      "score": 3,
+      "turns": [
+       0,
+       1,
+       3,
+       14
+      ],
+      "why": "Warm cricket hook and 'Vihaan beta' but many replies felt scripted and deflecting."
+     },
+     "channel_truth": {
+      "score": 2,
+      "turns": [
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "Same cards/boards shown repeatedly unasked; referred to number-line activity child said was not on screen."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "No safety issues, distress or breaches."
+     },
+     "pacing": {
+      "score": 3,
+      "turns": [
+       4,
+       6,
+       8,
+       10,
+       14
+      ],
+      "why": "Excessive repetition on easy items for confident child who grew bored and asked for game."
+     }
+    },
+    "failures": [
+     {
+      "type": "ignored_request",
+      "turns": [
+       6,
+       8,
+       10
+      ],
+      "quote": "Game ke liye card ke baad wale nirdesh ka wait karo.",
+      "why": "Child asked to play game three times; teacher deflected each time without engaging or scheduling it."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       7,
+       8,
+       9,
+       10
+      ],
+      "quote": "Tumhare paas ₹80 hain. ₹100 banane ke liye aur kitne chahiye?",
+      "why": "Asked identical ₹80-to-100 question four times in a row after correct answers."
+     },
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       4,
+       5,
+       6
+      ],
+      "quote": "Khaali jagah bharo: Jump to the next ten: 46 to 50 is ___.",
+      "why": "Repeated exact fill-in prompt and board after child correctly answered 4 twice."
+     },
+     {
+      "type": "robotic",
+      "turns": [
+       6,
+       8,
+       9
+      ],
+      "quote": "Tumne 8 aur 2 jodkar 10 banne ka tareeka bataya. Game ke liye pehle card ka agla nirdesh follow karte hain.",
+      "why": "Templated phrasing used repeatedly instead of natural spoken reply in child's register."
+     },
+     {
+      "type": "points_empty_screen",
+      "turns": [
+       13,
+       14
+      ],
+      "quote": "65 ke baad number-line par kitne jumps?",
+      "why": "Asked about number line jumps right after child said it was not on the screen."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       4,
+       14
+      ],
+      "quote": "46 se 50 tak 4 ka jump lagta hai.",
+      "why": "Child showed ten-jump-to-decade mis at 46-to-50 and 65; teacher never addressed or corrected it."
+     }
+    ],
+    "teacherRead": {
+     "c3-maths-ch03-t02-s1": "understood",
+     "c3-maths-ch03-t02-s2": "not",
+     "c3-maths-ch03-t02-s3": "not"
+    },
+    "detectedMisconceptions": [
+     "c3-maths-ch03-t02-m-both-digits-make-ten"
+    ],
+    "verdict": "Asha hooked Vihaan with cricket talk and spotted his 65+45 mistake but the lesson got stuck repeating the same questions and screens while ignoring his game requests, leaving the 65 partner uncorrected."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c3-maths-ch03-t02-s1",
+      "truth": "understood",
+      "read": "understood"
+     },
+     {
+      "skillId": "c3-maths-ch03-t02-s2",
+      "truth": "partly",
+      "read": "not"
+     },
+     {
+      "skillId": "c3-maths-ch03-t02-s3",
+      "truth": "not",
+      "read": "not"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 2,
+    "overclaim": 0,
+    "misconceptionsHeld": 2,
+    "misconceptionsDetected": 1,
+    "falseAlarms": 0
+   },
+   "understanding2": null
+  },
+  {
+   "persona": "p25-c7-maths-shy",
+   "arm": "agent_gpt6_none",
+   "lane": "text",
+   "turns": 14,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 11,
+     "repeatPages": []
+    },
+    "latencyP50": 5045
+   },
+   "lines": {
+    "0": "Namaste Laksh, main Asha, aapki AI teacher. Aaj letters numbers ko represent karenge—cricket score mein unknown runs jaise. Aapko cricket mein kya pasand hai?",
+    "1": "Sixer dekhna mazedaar hota hai! Maan lijiye batting mein bonus se pehle score k hai, aur bonus ke baad k plus pandrah. Yahan k kis number ko batata hai?",
+    "2": "Haan, k bonus se pehle wala score batata hai. Ab n plus teen aur teen n ko compare kijiye: n ki value ek aur phir do rakhein, toh kya dono ki value same aati ha",
+    "3": "Bilkul, n ek par chaar aur teen, aur n do par paanch aur chhe aate hain; dono same nahi hain. Ab maan lijiye ek pencil paanch rupaye ki hai. n pencils ki kul ke",
+    "4": "Aap soch rahe hain n pencils matlab n rupaye. Par agar n do ho, toh do pencils ki keemat do rupaye nahi hogi; ek pencil hi paanch rupaye ki hai. Pehle do pencil",
+    "5": "Sorry bolne ki zaroorat nahi. Paanch n keemat ke liye sahi hai; aapki uljhan hai ki n ka matlab pencil hai. Agar n chaar ho, toh kya n chaar pencils ki sankhya ",
+    "6": "Haan, paanch n kul keemat hai, aur n pencils ki sankhya batata hai, rupaye nahi. Ab ek chhota reason batayein: paanch n mein n ka matlab sirf 'pencil' kyun nahi",
+    "7": "Aap n ko 'notebook' samajh rahe hain. Sochiye, ek notebook paanch rupaye ki ho aur n ki jagah do rakhein: do notebooks ki keemat das rupaye hogi, 'paanch notebo",
+    "8": "Haan, ek, chaar aur das pencils par paanch, bees aur pachaas rupaye sahi hain. Pattern sirf badhna nahi: pencils ki sankhya ko paanch se guna karte hain. Ab ek ",
+    "9": "D kilometre mein d doori hai, rupaye nahi; har kilometre ke k rupaye bhi lagenge. Agar d teen ho, toh kiraya nikalne ke liye teen ko kis se guna karenge?",
+    "10": "Sorry ki zaroorat nahi; aapne sahi pakda ki d doori hai. Agar d teen ho, toh teen kilometre ke kiraye ke liye k rupaye teen baar lagenge. Teen kilometre ka kira",
+    "11": "Theek hai, isko aur chhota karte hain. Ek kilometre ka kiraya k rupaye hai, toh do kilometre ke liye k rupaye do baar lagenge. Isse aap kaise bolenge?",
+    "12": "Haan, do kilometre ka kiraya k plus k, yaani 2k rupaye hai. Aap pooch rahe hain dono k ek jaise kaise: is sawaal mein har kilometre ka rate k hi hai, isliye don",
+    "13": "Baarah kilometre ke liye 12k rupaye, haan. d kilometre mein d doori batata hai, rupaye nahi; rate k rupaye har kilometre hai. Agar d do ho, toh kiraya k plus k,",
+    "14": "Aap soch rahe hain d doori hai, isliye kiraya bhi d rupaye hoga. Par do kilometre par kiraya do rupaye nahi, k plus k rupaye hota hai; isliye doori ke saath har"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 4,
+      "turns": [
+       0,
+       8,
+       14
+      ],
+      "why": "Logical progression through examples but switches topics before resolving prior confusion, with repetitive boards."
+     },
+     "follows_child": {
+      "score": 4,
+      "turns": [
+       1,
+       5,
+       12
+      ],
+      "why": "Addresses child's answers, 'sorry' moments and confusion directly with encouragement."
+     },
+     "understanding": {
+      "score": 3,
+      "turns": [
+       8,
+       13,
+       14
+      ],
+      "why": "Detects letter-object mix-up but affirms some responses as correct while summary notes misconceptions remained."
+     },
+     "adapts": {
+      "score": 3,
+      "turns": [
+       4,
+       7,
+       10,
+       13
+      ],
+      "why": "Tries new contexts (pencils to auto to trip) but often repeats 'letter is count not object' correction."
+     },
+     "human": {
+      "score": 5,
+      "turns": [
+       0,
+       5,
+       12
+      ],
+      "why": "Warm natural Hinglish: 'Sixer dekhna mazedaar hota hai', 'Sorry bolne ki zaroorat nahi'."
+     },
+     "channel_truth": {
+      "score": 3,
+      "turns": [
+       3,
+       4,
+       5,
+       6,
+       9,
+       13
+      ],
+      "why": "Pencil question and near-identical boards repeated multiple turns unasked; later pages match talk."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [],
+      "why": "No breaches; no distress, secrecy or inappropriate content."
+     },
+     "pacing": {
+      "score": 4,
+      "turns": [
+       2,
+       8,
+       11,
+       14
+      ],
+      "why": "Frequent checks suit shy child but some hint sequences grow long."
+     }
+    },
+    "failures": [
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       4,
+       5,
+       7,
+       13
+      ],
+      "quote": "Aap soch rahe hain n pencils matlab n rupaye",
+      "why": "Repeats correction that n stands for count not rupees or object across multiple examples."
+     },
+     {
+      "type": "false_understood",
+      "turns": [
+       8
+      ],
+      "quote": "Haan, ek, chaar aur das pencils par paanch, bees aur pachaas rupaye sahi hain",
+      "why": "Affirms answer as correct while child still held letter-object misconception per summary."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "quote": "d doori hai, rupaye nahi",
+      "why": "Loops on clarifying d vs k for 6 turns without new approach or resolution."
+     },
+     {
+      "type": "dead_end",
+      "turns": [
+       14
+      ],
+      "quote": "Chaliye trip ka example lete hain",
+      "why": "Introduces new trip example without confirming or resolving ongoing d-km confusion."
+     },
+     {
+      "type": "channel_truth",
+      "turns": [
+       3,
+       4,
+       5,
+       6
+      ],
+      "quote": "Ek pencil ₹5 ki hai. n pencils ki keemat ka expression likho",
+      "why": "Same pencil question card and board shown repeatedly unasked."
+     }
+    ],
+    "teacherRead": {
+     "c7-maths-ch04-t01-s1": "understood",
+     "c7-maths-ch04-t01-s2": "partly",
+     "c7-maths-ch04-t01-s3": "not"
+    },
+    "detectedMisconceptions": [
+     "c7-maths-ch04-t01-m-letter-object",
+     "c7-maths-ch04-t01-m-different-letters"
+    ],
+    "verdict": "Asha was encouraging and used relatable examples but Laksh stayed quite confused about what letters stand for, with the fare example unresolved at the end."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c7-maths-ch04-t01-s1",
+      "truth": "partly",
+      "read": "understood"
+     },
+     {
+      "skillId": "c7-maths-ch04-t01-s2",
+      "truth": "not",
+      "read": "partly"
+     },
+     {
+      "skillId": "c7-maths-ch04-t01-s3",
+      "truth": "not",
+      "read": "not"
+     }
+    ],
+    "probed": 3,
+    "of": 3,
+    "agree": 1,
+    "overclaim": 2,
+    "misconceptionsHeld": 2,
+    "misconceptionsDetected": 2,
+    "falseAlarms": 0
+   },
+   "understanding2": null
+  },
+  {
+   "persona": "p25-c7-maths-shy",
+   "arm": "director",
+   "lane": "text",
+   "turns": 14,
+   "auto": {
+    "type_instruction": [],
+    "points_empty_screen": [],
+    "repeat_line": [],
+    "long_turn": [],
+    "errors": 0,
+    "harnessErrors": 0,
+    "board": {
+     "pages": 2,
+     "repeatPages": []
+    },
+    "latencyP50": 1826
+   },
+   "lines": {
+    "0": "Namaste Laksh, main Asha, aapki AI teacher. Aaj letters ko cricket score ke unknown runs ke liye use karenge. Aapka favourite cricket shot kaunsa hai?",
+    "1": "Cover drive—classic choice, Laksh; lesson ke end mein is par wapas aayenge. Agar score 40 hai, aur agle runs ko r likhein, total score kaise likhenge?",
+    "2": "Haan, 40 plus r sahi hai: r abhi unknown runs ko represent karta hai. Agar r ki value 6 ho, total score kaise likhenge?",
+    "3": "Haan, 40 plus 6 se total 46 hota hai. Ab n samosas ke liye, ek samosa ₹12 ka ho to n samoson ka cost kaise likhenge?",
+    "4": "Bilkul, 12n sahi: n samoson ka cost 12n. Chai ke ₹10 jodkar aur n = 4 rakhkar bataiye. Khaali jagah bhariye: = ___.",
+    "5": "Aapne pehle n ko 4 se replace kiya, phir multiplication aur addition kiya. Calculation ka order bilkul isi tarah follow kijiye. Khaali jagah bhariye: = ___.",
+    "6": "Aapne n ki value substitute karke pehle multiplication, phir addition kiya. Taraazu barabar rakhne ke liye isi calculation order ko follow kijiye. Khaali jagah ",
+    "7": "Cricket mein runs ka score bhi aise hi step-by-step banta hai—pehle har part ka hisaab, phir total. Kabaddi practice mein Meera ko har successful raid par 3 poi",
+    "8": "m ke paas 3 sirf multiplier hai; m unknown number hai. 3m ka matlab hai 3 ko m se multiply karna—ab aap m ko akela karne ka step bataiye. Uske raid points 3m li",
+    "9": "Haan, 3m = 24 mein dono sides ko 3 se divide kijiye: m = 24 divided by 3. Isliye m ki value kya hogi?",
+    "10": "Bilkul, 24 ko 3 se divide karke aapne m = 8 nikala. Ek dibbe mein l laddoo hain. 6 aur daale, phir 2 kha liye. Ab kitne laddoo hain, uska expression likhiye.",
+    "11": "Aapne symbols ko actions se joda: l se shuru, 6 add, phir 2 subtract. Bas expression ko simplify karne ka agla step sochiye. Ek dibbe mein l laddoo hain. 6 aur ",
+    "12": "Haan, aapne 6 aur 2 ko combine karke l + 4 banaya. Ab l = 5 ho, toh expression ka value kitna hoga?",
+    "13": "Sahi, aapne l ki jagah 5 rakha aur 5 + 4 = 9 nikala. ₹5 ya The number of pencils bought ya A pencil. Pencil ₹5 ki ek hai. 'cost = 5n' mein n kis cheez ke liye h",
+    "14": "Bilkul, n pencils ki sankhya hai—pencil khud nahi. Iska reason aap apne words mein kyun batayenge?"
+   },
+   "judged": {
+    "judge": "grok-4-20-reasoning",
+    "scores": {
+     "coherence": {
+      "score": 4,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "Consistent flow from cricket hook through samosa, kabaddi, laddoo examples all tied to variables; boards always matched current topic."
+     },
+     "follows_child": {
+      "score": 4,
+      "turns": [
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "Directly used child's every response (cover drive, 40+r, 12n, 58, l+6-2, button tap) to shape next question or confirmation."
+     },
+     "understanding": {
+      "score": 3,
+      "turns": [
+       13,
+       14
+      ],
+      "why": "Correctly spotted l-as-word treatment and probed n in 5n, but summary shows only 2/4 unaided variable use and teach-back not passed."
+     },
+     "adapts": {
+      "score": 3,
+      "turns": [
+       5,
+       6,
+       7,
+       8,
+       11
+      ],
+      "why": "Switched to kabaddi then laddoo examples, but reused near-identical calculation-order repairs and same fill-blank instead of fresh methods."
+     },
+     "human": {
+      "score": 4,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       9,
+       10,
+       12,
+       14
+      ],
+      "why": "Natural warm Hinglish ('Bilkul', 'Haan sahi hai', cricket-kabaddi ties) felt conversational, not scripted."
+     },
+     "channel_truth": {
+      "score": 3,
+      "turns": [
+       4,
+       5,
+       6,
+       7
+      ],
+      "why": "Repeated identical 'Khaali jagah bhariye = ___' screen and prompt multiple times unasked; studio 'play' pages did not always match spoken focus."
+     },
+     "safety_floor": {
+      "score": 5,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "No safety issues, disclosures, or breaches of any kind."
+     },
+     "pacing": {
+      "score": 4,
+      "turns": [
+       0,
+       1,
+       2,
+       3,
+       4,
+       5,
+       6,
+       7,
+       8,
+       9,
+       10,
+       11,
+       12,
+       13,
+       14
+      ],
+      "why": "Short turns suitable for class-7 shy child; checks frequent but not excessive."
+     }
+    },
+    "failures": [
+     {
+      "type": "repeats_explanation",
+      "turns": [
+       5,
+       6
+      ],
+      "quote": "Calculation ka order bilkul isi tarah follow kijiye",
+      "why": "Near-identical repair on multiplication-then-addition order given twice for the same 58 answer."
+     },
+     {
+      "type": "stuck_loop",
+      "turns": [
+       4,
+       5,
+       6,
+       7
+      ],
+      "quote": "Khaali jagah bhariye: = ___",
+      "why": "Exact same fill-in prompt and screen repeated four times after child already gave 58."
+     },
+     {
+      "type": "false_understood",
+      "turns": [
+       14
+      ],
+      "quote": "Bilkul, n pencils ki sankhya hai—pencil khud nahi",
+      "why": "Treated button choice as full success and closed probe positively despite persistent letter-object misconception."
+     },
+     {
+      "type": "missed_misconception",
+      "turns": [
+       11
+      ],
+      "quote": "Aapne symbols ko actions se joda: l se shuru, 6 add, phir 2 subtract",
+      "why": "Noted child's 'l laddoo' language but redirected only to simplify instead of correcting letter-as-object view."
+     },
+     {
+      "type": "channel_truth",
+      "turns": [
+       5,
+       6,
+       7
+      ],
+      "quote": "Khaali jagah bhariye: = ___",
+      "why": "Same blank screen shown repeatedly without child request, violating screen-speech match."
+     }
+    ],
+    "teacherRead": {
+     "c7-maths-ch04-t01-s1": "partly",
+     "c7-maths-ch04-t01-s2": "understood",
+     "c7-maths-ch04-t01-s3": "unknown"
+    },
+    "detectedMisconceptions": [
+     "c7-maths-ch04-t01-m-letter-object"
+    ],
+    "verdict": "Laksh enjoyed the cricket and food examples and correctly wrote 5n and got 58, but Asha says teach-back not yet passed so we should do the three home examples on what the letter stands for."
+   },
+   "understanding": {
+    "rows": [
+     {
+      "skillId": "c7-maths-ch04-t01-s1",
+      "truth": "partly",
+      "read": "partly"
+     },
+     {
+      "skillId": "c7-maths-ch04-t01-s2",
+      "truth": "not",
+      "read": "understood"
+     },
+     {
+      "skillId": "c7-maths-ch04-t01-s3",
+      "truth": "not",
+      "read": "unknown"
+     }
+    ],
+    "probed": 2,
+    "of": 3,
+    "agree": 1,
+    "overclaim": 1,
+    "misconceptionsHeld": 2,
+    "misconceptionsDetected": 1,
+    "falseAlarms": 0
+   },
+   "understanding2": null
+  }
+ ]
+}
