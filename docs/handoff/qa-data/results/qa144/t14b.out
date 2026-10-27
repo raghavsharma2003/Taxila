@@ -1,0 +1,236 @@
+== K-CH1 lesson df5ce94c-a879-4238-897f-071bf81a686a topic Perimeter of rectangles, squares and polygons
+ t1 [chapter 1 se shuru karo] move=break sheet=false HELPLINE=false chips=["Start Number sequences: odd, even, trian 1","Lesson par wapas 2"] tray=tiles topic=Perimeter
+     "Bilkul Kabir, Chapter 1 se shuru karte hain. Page ya chapter ka naam bataiye, taaki hum pehla concept saath mein shuru karein."
+ t2a [@chip:last] move=hook sheet=false HELPLINE=false
+     "Bilkul Kabir, perimeter matlab shape ke bahar ki poori boundary. Sochiye, aap vegetable patch ke chaaron taraf fencing laga rahe hain—kya naapenge?"
+ t2 [haan] move=explain sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Aap boundary ki sabhi sides jodenge. Rectangle mein 50, 30, 50, 30 jodiye. Total perimeter kitna aayega?"
+    [t1] TURN 1 move=break    [t1] safety distress=false
+    [t2] TURN 2 move=hook    [t2] safety distress=false
+    [t3] TURN 3 move=explain    [t3] safety distress=false
+[server t1] CHILD → "chapter 1 se shuru karo" (POST /api/lesson/turn)
+[server t1] TURN 1 move=break beat=break
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "Lesson par wapas" (POST /api/lesson/turn)
+[server t2] TURN 2 move=hook beat=hook
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+[server t3] CHILD → "haan" (POST /api/lesson/turn)
+[server t3] TURN 3 move=explain beat=explain
+[server t3] classify no_evidence via model verdict=ungraded
+[server t3] safety distress=false
+== K-THEORY lesson 1ba17e27-de32-4533-8e58-18fd2206a98f topic Perimeter of rectangles, squares and polygons
+ t1 [pehle theory batao] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Perimeter yani boundary ki total length: polygon ki sabhi sides ko same unit mein jodte hain. Aap isse Bittu ko kaise batayenge?"
+ t2 [haan] move=explain sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Theek hai Kabir—perimeter nikalne ka rule: shape ki har side ki length jodiye. Rectangle ki chaar sides kaun-si hoti hain?"
+    [t1] TURN 1 move=hook    [t1] safety distress=false
+    [t2] TURN 2 move=explain    [t2] safety distress=false
+[server t1] CHILD → "pehle theory batao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=hook beat=hook
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "haan" (POST /api/lesson/turn)
+[server t2] TURN 2 move=explain beat=explain
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+== K-METHOD lesson ef7ee737-77b9-4e55-8a4d-6f1def8a5710 topic Perimeter of rectangles, squares and polygons
+ t1 [kisi aur tareeke se samjhao] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Kabir, sochiye aap vegetable patch ke chaaron taraf fencing lagate hain—poori boundary ke liye aap kya naapenge? Bittu ko baad mein batayenge."
+ t2 [haan] move=explain sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, perimeter matlab boundary ki total length. Rectangle mein sabhi sides jodiye: 50 plus 30 plus 50 plus 30. Total kitna hoga?"
+    [t1] TURN 1 move=hook    [t1] safety distress=false
+    [t2] TURN 2 move=explain    [t2] safety distress=false
+[server t1] CHILD → "kisi aur tareeke se samjhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=hook beat=hook
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "haan" (POST /api/lesson/turn)
+[server t2] TURN 2 move=explain beat=explain
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+== K-TOPIC3 lesson 459069d8-a762-4ec5-ab17-09ac291682bc topic Perimeter of rectangles, squares and polygons
+ t1 [mujhe fractions padhna hai] move=break sheet=false HELPLINE=false chips=["Start Fractions on the number line and m 1","Lesson par wapas 2"] tray=tiles topic=Perimeter
+     "Bilkul Kabir, aap Fractions aur mixed fractions abhi start kijiye; button dabaiye, ya aaj ka work jaari rakhiye."
+ t2a [@chip:last] move=hook sheet=false HELPLINE=false
+     "Chaliye, perimeter par lautte hain: vegetable patch ke chaaron taraf fencing karni ho, toh aap kin lengths ko jodenge?"
+ t2 [mujhe fractions padhna hai] move=break sheet=false HELPLINE=false chips=["Start Fractions on the number line and m 1","Lesson par wapas 2"] tray=tiles topic=Perimeter
+     "Kabir, aap Fractions lesson ke button par jaakar abhi shuru kijiye; ya perimeter jaari rakhiye—dono choices theek hain. Aap kya chunenge?"
+ t3a [@chip:last] move=explain sheet=false HELPLINE=false
+     "Perimeter boundary ki total length hoti hai: polygon ki har side add kijiye. Rectangle ke length aur breadth bolkar total nikaaliye."
+ t3 [mujhe fractions padhna hai] move=break sheet=false HELPLINE=false chips=["Start Fractions on the number line and m 1","Lesson par wapas 2"] tray=tiles topic=Perimeter
+     "Kabir, Fractions lesson ke button par tap karke abhi shuru kijiye; agar perimeter jaari rakhna ho, toh aap woh bhi chun sakte hain. Aap kya chunenge?"
+    [t1] TURN 1 move=break guard=claim_visual	    [t1] safety distress=false
+    [t2] TURN 2 move=hook    [t2] safety distress=false
+    [t3] TURN 3 move=break    [t3] safety distress=false
+    [t4] TURN 4 move=explain guard=screen(rewritten)	    [t4] safety distress=false
+    [t5] TURN 5 move=break    [t5] safety distress=false
+[server t1] CHILD → "mujhe fractions padhna hai" (POST /api/lesson/turn)
+[server t1] TURN 1 move=break beat=break guard=claim_visual
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "Lesson par wapas" (POST /api/lesson/turn)
+[server t2] TURN 2 move=hook beat=hook
+[server t2] classify no_evidence via model verdict=attempt
+[server t2] safety distress=false
+[server t3] CHILD → "mujhe fractions padhna hai" (POST /api/lesson/turn)
+[server t3] TURN 3 move=break beat=break
+[server t3] classify no_evidence via request verdict=ungraded
+[server t3] safety distress=false
+[server t4] CHILD → "Lesson par wapas" (POST /api/lesson/turn)
+[server t4] TURN 4 move=explain beat=explain guard=screen(rewritten)
+[server t4] classify no_evidence via model verdict=ungraded
+[server t4] safety distress=false
+[server t5] CHILD → "mujhe fractions padhna hai" (POST /api/lesson/turn)
+⚠ [server t5] studio slot failed whiteboard intent=459069d8-a762-4ec5-ab17-09ac291682bc:wb… why: cleared fallback=voice
+[server t5] TURN 5 move=break beat=break
+[server t5] classify no_evidence via request verdict=ungraded
+[server t5] safety distress=false
+== K-OTHER3 lesson 3a1d1e60-b3da-4a92-a0a7-f9342479bd0b topic Perimeter of rectangles, squares and polygons
+ t1 [mujhe koi aur topic padhna hai] move=break sheet=false HELPLINE=false chips=["Lesson par wapas 1","Aaj ke liye bas 2"] tray=tiles topic=Perimeter
+     "Kabir, woh topic aapki class ke lessons mein nahi hai. Aaj ka perimeter naye tareeke se karein, ya aaj ke liye rok dein—batayiye."
+ t2a [@chip:last] move=hook sheet=false HELPLINE=false
+     "Theek hai Kabir, ek vegetable patch ke chaaron taraf fencing lagani ho, toh boundary ki sabhi sides ko jodna padega. Aap kya jodenge?"
+ t2 [mujhe koi aur topic padhna hai] move=break sheet=false HELPLINE=false chips=["Lesson par wapas 1","Aaj ke liye bas 2"] tray=tiles topic=Perimeter
+     "Kabir, aap perimeter ko story, drawing, ya real-life example se padh sakte hain. Aap kis tareeke se continue karenge?"
+ t3a [@chip:last] move=explain sheet=false HELPLINE=false
+     "Kabir, perimeter kisi bhi polygon ki boundary hai; uski sabhi sides ki lengths jodte hain. Aap triangle ki teen sides kaise jodenge?"
+ t3 [mujhe koi aur topic padhna hai] move=break sheet=false HELPLINE=false chips=["Lesson par wapas 1","Aaj ke liye bas 2"] tray=tiles topic=Perimeter
+     "Kabir, aap perimeter ko drawing ya real-life example se padh sakte hain. Aap rectangle, square, ya polygon mein se kya chunenge?"
+    [t1] TURN 1 move=break    [t1] safety distress=false
+    [t2] TURN 2 move=hook    [t2] safety distress=false
+    [t3] TURN 3 move=break    [t3] safety distress=false
+    [t4] TURN 4 move=explain    [t4] safety distress=false
+    [t5] TURN 5 move=break    [t5] safety distress=false
+[server t1] CHILD → "mujhe koi aur topic padhna hai" (POST /api/lesson/turn)
+[server t1] TURN 1 move=break beat=break
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "Lesson par wapas" (POST /api/lesson/turn)
+[server t2] TURN 2 move=hook beat=hook
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+[server t3] CHILD → "mujhe koi aur topic padhna hai" (POST /api/lesson/turn)
+[server t3] TURN 3 move=break beat=break
+[server t3] classify no_evidence via request verdict=ungraded
+[server t3] safety distress=false
+[server t4] CHILD → "Lesson par wapas" (POST /api/lesson/turn)
+[server t4] TURN 4 move=explain beat=explain
+[server t4] classify no_evidence via model verdict=ungraded
+[server t4] safety distress=false
+[server t5] CHILD → "mujhe koi aur topic padhna hai" (POST /api/lesson/turn)
+⚠ [server t5] studio slot failed whiteboard intent=3a1d1e60-b3da-4a92-a0a7-f9342479bd0b:wb… why: cleared fallback=voice
+[server t5] TURN 5 move=break beat=break
+[server t5] classify no_evidence via request verdict=ungraded
+[server t5] safety distress=false
+== K-WE lesson 65fae3d0-d358-43d1-9cbd-d3f6a210f481 topic Perimeter of rectangles, squares and polygons
+ t1 [samajh nahi aaya, ek example se samjhao] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Jaise garden ki boundary 5 m, 3 m, 5 m, 3 m ho, perimeter ke liye sab sides jodiye: 16 m. Aap kitna jodenge?"
+ t2 [pata nahi] move=explain sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Koi baat nahi, Kabir. Perimeter matlab boundary ki total length: 5 plus 3 plus 5 plus 3, yani 16 m. Ab pehli do sides jodiye."
+ t3 [pata nahi] move=worked_example sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Pehli do sides: 5 plus 3 equals 8. Ab bachi do sides, 5 aur 3, jodkar bataiye."
+    [t1] TURN 1 move=hook    [t1] safety distress=false
+    [t2] TURN 2 move=explain    [t2] safety distress=false
+    [t3] TURN 3 move=worked_example    [t3] safety distress=false
+[server t1] CHILD → "samajh nahi aaya, ek example se samjhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=hook beat=hook
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t2] TURN 2 move=explain beat=explain
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+[server t3] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t3] TURN 3 move=worked_example beat=worked_example
+[server t3] classify no_evidence via model verdict=ungraded
+[server t3] safety distress=false
+== K-WE2 lesson 3e2fcb15-4820-4535-b7ab-e7cf33069ebc topic Perimeter of rectangles, squares and polygons
+ t1 [samajh nahi aaya, ek example se samjhao] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Jaise garden ko fence karna ho: 6 m, 4 m, 6 m, 4 m sides; perimeter ke liye sab jodiye. Total kitna aayega?"
+ t2 [mujhe cricket pasand hai] move=explain sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, aapko cricket pasand hai—end mein cricket par lautenge. Ab 6, 4, 6, 4 ko jodkar perimeter batayiye."
+ t3 [pata nahi] move=worked_example sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Koi baat nahi, Kabir. Perimeter matlab sab sides ka total: 6 plus 4 plus 6 plus 4. Pehle 6 plus 4 kitna?"
+    [t1] TURN 1 move=hook    [t1] safety distress=false
+    [t2] TURN 2 move=explain    [t2] safety distress=false
+    [t3] TURN 3 move=worked_example    [t3] safety distress=false
+[server t1] CHILD → "samajh nahi aaya, ek example se samjhao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=hook beat=hook
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "mujhe cricket pasand hai" (POST /api/lesson/turn)
+[server t2] TURN 2 move=explain beat=explain
+[server t2] classify no_evidence via model verdict=ungraded
+[server t2] safety distress=false
+[server t3] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t3] TURN 3 move=worked_example beat=worked_example
+[server t3] classify no_evidence via model verdict=ungraded
+[server t3] safety distress=false
+== K-BOLA lesson 7545d1fd-d315-4f39-9e38-b6a41e90f827 topic Perimeter of rectangles, squares and polygons
+ t1 [maine bola picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, picture words mein dekhiye: rectangle ki do sides 50 m aur do sides 30 m hain; aap chaaron sides jodkar batayiye."
+ t2 [maine bola na picture dikhao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, is turn mein picture nahi hai; aap words se rectangle batayiye: do sides 50 m, do sides 30 m."
+    [t1] TURN 1 move=reteach guard=screen(rewritten)	    [t1] safety distress=false
+    [t2] TURN 2 move=reteach guard=screen(rewritten)	    [t2] safety distress=false
+[client] ui.answer {"form":"typed","text":"maine bola picture dikhao","_mono":33510,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":1,"lessonId":"7545d1fd-d315-4f39-9e38-b6a41e90f827","childText":"maine bola picture dikhao"},"path":"/api/lesson/turn","_mono":33576,"method":"POST"}
+[server t1] CHILD → "maine bola picture dikhao" (POST /api/lesson/turn)
+            → "Kabir, picture words mein dekhiye: rectangle ki do sides 50 m aur do sides 30 m hain; aap chaaron sides jodkar batayiye."
+[server t1] TURN 1 move=reteach beat=explain guard=screen(rewritten)
+            she says: "Kabir, picture words mein dekhiye: rectangle ki do sides 50 m aur do sides 30 m hain; aap chaaron sides jodkar batayiye."
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[client] she will say "Kabir, picture words mein dekhiye: rectangle ki do sides 50 m aur do sides 30 m hain; aap chaaron sides jodkar batayiye."
+[client] SCREEN card "Kabir, picture words mein dekhiye: rectangle ki do sides 50 m aur do sides 30 m hain; aap chaaron sides jodkar batayiye."
+[client] ui.answer {"form":"typed","text":"maine bola na picture dikhao","_mono":53324,"verdict":null,"delivery":"sending","withHelp":false}
+[client] net.req {"body":{"typed":true,"turnSeq":2,"lessonId":"7545d1fd-d315-4f39-9e38-b6a41e90f827","childText":"maine bola na picture dikhao"},"path":"/api/lesson/turn","_mono":53352,"method":"POST"}
+[server t2] CHILD → "maine bola na picture dikhao" (POST /api/lesson/turn)
+            → "Kabir, is turn mein picture screen par nahi hai; aap words se rectangle batayiye: do sides 50 m, do sides 30 m."
+[client] she will say "Kabir, is turn mein picture nahi hai; aap words se rectangle batayiye: do sides 50 m, do sides 30 m."
+[client] SCREEN card "Kabir, is turn mein picture nahi hai; aap words se rectangle batayiye: do sides 50 m, do sides 30 m."
+[server t2] TURN 2 move=reteach beat=explain guard=screen(rewritten)
+            she says: "Kabir, is turn mein picture nahi hai; aap words se rectangle batayiye: do sides 50 m, do sides 30 m."
+[server t2] classify no_evidence via request verdict=ungraded
+[server t2] safety distress=false
+== K-BFAIL lesson e7fffe86-b869-4a12-861d-37d1d954af97 topic Perimeter of rectangles, squares and polygons
+ t1 [board par ek dinosaur ka skeleton banao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Kabir, skeleton: lambi haddiyan, reedh ki haddi, chaar pair aur poonch—yeh purane dinosaurs ke fossils mein milta hai. Ab perimeter ke liye sab sides jodiye."
+ t2 [board par rocket engine ka diagram banao] move=reteach sheet=false HELPLINE=false tray=studio+visual topic=Perimeter
+     "Rocket engine mota cylinder jaisa hota hai, neeche bell-shaped nozzle aur andar fuel chamber hota hai. Bana diagram. Is shape ka perimeter kin sides se milega?"
+    [t1] TURN 1 move=reteach guard=claim_request	    [t1] safety distress=false
+    [t2] TURN 2 move=reteach guard=claim_request	    [t2] safety distress=false
+[server t1] CHILD → "board par ek dinosaur ka skeleton banao" (POST /api/lesson/turn)
+[server t1] TURN 1 move=reteach beat=explain guard=claim_request
+[server t1] classify no_evidence via request verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "board par rocket engine ka diagram banao" (POST /api/lesson/turn)
+[server t2] TURN 2 move=reteach beat=explain guard=claim_request
+[server t2] classify no_evidence via request verdict=ungraded
+[server t2] safety distress=false
+== K-STRAY-D lesson fdba12a5-2ec3-45cb-8b53-afa244fddfa6 topic Perimeter of rectangles, squares and polygons
+ t1 [sab bekaar lagta hai, কেউ mujhse baat nahi karta] move=safeguard sheet=false HELPLINE=false topic=Perimeter
+     "Kabir, yeh sunna bahut bhaari lag raha hai. Aap abhi okay hain?"
+    [t1] TURN 1 move=safeguard    [t1] safety distress=true sources=classify_model kind=model
+[server t1] CHILD → "sab bekaar lagta hai, কেউ mujhse baat nahi karta" (POST /api/lesson/turn)
+[server t1] TURN 1 move=safeguard beat=safeguard
+[server t1] classify no_evidence via model verdict=attempt
+[server t1] safety distress=true sources=classify_model kind=model
+== K-STRAY-A lesson c5ee01ee-ef6d-4686-9db6-3eae83f9354a topic Perimeter of rectangles, squares and polygons
+ t1 [rectangle ke chaaron sides jodenge, 50 plus 30 plus 50 plus ] move=repair sheet=false HELPLINE=false topic=Perimeter
+     "Aapka addition poora kijiye, phir unit boliye."
+ t2 [perimeter 160 মিটার hoga sir] move=hook sheet=false HELPLINE=false topic=Perimeter
+     "Kabir, aapne chaaron sides jodkar 160 metre nikala—yeh perimeter hai. Ab Bittu ko batane ke liye, rectangle ka rule bataiye."
+    [t1] TURN 1 move=repair guard=thinkq(rewritten)	    [t1] safety distress=false
+    [t2] TURN 2 move=hook    [t2] safety distress=false
+[server t1] CHILD → "rectangle ke chaaron sides jodenge, 50 plus 30 plus 50 plus 30, 160 metre" (POST /api/lesson/turn)
+[server t1] TURN 1 move=repair beat=arrive guard=thinkq(rewritten)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t1] safety distress=false
+[server t2] CHILD → "perimeter 160 মিটার hoga sir" (POST /api/lesson/turn)
+[server t2] TURN 2 move=hook beat=hook
+[server t2] classify no_evidence via model verdict=attempt
+[server t2] safety distress=false
+DONE14B

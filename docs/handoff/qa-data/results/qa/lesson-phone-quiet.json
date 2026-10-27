@@ -1,0 +1,954 @@
+{
+ "console": [
+  "warning: [.WebGL-0x2fc00112200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x2fc00112200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x2fc00112200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x2fc00112200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+ ],
+ "pageerror": [],
+ "failed": [],
+ "http": [],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 1,
+   "t": 1792005391565,
+   "mono": 169,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/ee2558c1-9215-4970-8738-5e81ee108bda/lesson/new",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 2,
+   "t": 1792005391567,
+   "mono": 171,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 3,
+   "t": 1792005391603,
+   "mono": 208,
+   "kind": "net.req",
+   "rid": "aa37ef75-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 4,
+   "t": 1792005391003,
+   "mono": 311,
+   "kind": "net.res",
+   "rid": "aa37ef75-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 101,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 5,
+   "t": 1792005391336,
+   "mono": 645,
+   "kind": "net.req",
+   "rid": "aa37ef75-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 6,
+   "t": 1792005392012,
+   "mono": 672,
+   "kind": "net.res",
+   "rid": "aa37ef75-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 17,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 7,
+   "t": 1792005392131,
+   "mono": 792,
+   "kind": "net.req",
+   "rid": "aa37ef75-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=ee2558c1-9215-4970-8738-5e81ee108bda"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 8,
+   "t": 1792005392309,
+   "mono": 970,
+   "kind": "net.req",
+   "rid": "aa37ef75-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 9,
+   "t": 1792005392315,
+   "mono": 976,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "not_older_family",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_not_resolved_yet"
+    ],
+    "older": false,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplexSource": null,
+    "sttLane": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 10,
+   "t": 1792005392414,
+   "mono": 1075,
+   "kind": "net.req",
+   "rid": "aa37ef75-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "body": {
+     "childId": "ee2558c1-9215-4970-8738-5e81ee108bda",
+     "mode": "text",
+     "purpose": "lesson"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 11,
+   "t": 1792005392416,
+   "mono": 1077,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 12,
+   "t": 1792005392416,
+   "mono": 1077,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 13,
+   "t": 1792005392416,
+   "mono": 1077,
+   "kind": "ui.render.tray",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 14,
+   "t": 1792005392420,
+   "mono": 1081,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 15,
+   "t": 1792005392007,
+   "mono": 1095,
+   "kind": "net.res",
+   "rid": "aa37ef75-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 118,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 16,
+   "t": 1792005392016,
+   "mono": 1104,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "iframe",
+    "w": 2,
+    "h": 2,
+    "src": "/modules.html"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 17,
+   "t": 1792005392104,
+   "mono": 1192,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 359,
+    "h": 405,
+    "zone": "teacher",
+    "testid": "teacher-window"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 18,
+   "t": 1792005392092,
+   "mono": 1664,
+   "kind": "net.res",
+   "rid": "aa37ef75-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=ee2558c1-9215-4970-8738-5e81ee108bda",
+    "status": 200,
+    "ms": 780,
+    "bytes": 189492,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "bytes": 181754
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 19,
+   "t": 1792005395227,
+   "mono": 6262,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 4004,
+    "at": 2028
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 20,
+   "t": 1792005395227,
+   "mono": 6262,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 226,
+    "at": 6035
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 21,
+   "t": 1792005395237,
+   "mono": 6272,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 1228,
+    "el": "img.teacher-ground-art",
+    "url": "/assets/art/bg/[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 22,
+   "t": 1792005395597,
+   "mono": 6632,
+   "kind": "net.sse",
+   "rid": "aa37ef75-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open-request"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 23,
+   "t": 1792005395597,
+   "mono": 6632,
+   "kind": "trace.session",
+   "tier": 1,
+   "data": {
+    "from": "aa37ef75-71c8-424f-b190-131278b51e16",
+    "to": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+    "lesson": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 24,
+   "t": 1792005395604,
+   "mono": 6639,
+   "kind": "net.req",
+   "rid": "aa37ef75-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+     "seq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 25,
+   "t": 1792005395627,
+   "mono": 6662,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 26,
+   "t": 1792005395627,
+   "mono": 6662,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "Tumne ghar mein kaun-si cheez kilograms mein dekhi hai?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 27,
+   "t": 1792005395631,
+   "mono": 6666,
+   "kind": "net.res",
+   "rid": "aa37ef75-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "status": 201,
+    "ms": 4960,
+    "bytes": 1446,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "lessonId": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+     "topic": {
+      "id": "c4-maths-ch08-t01",
+      "title": "Grams and kilograms",
+      "chapter": "Weigh it, Pour it"
+     },
+     "teacher": {
+      "id": "asha",
+      "name": "Asha",
+      "characterName": "Asha",
+      "addressedAs": "Asha didi",
+      "pronouns": {
+       "subject": "she",
+       "object": "her",
+       "possessive": "her"
+      },
+      "voice": "marin",
+      "role": "AI teacher",
+      "lookRev": 1,
+      "signatureColor": "#3E7C74"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Grams and kilograms",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Tumne ghar mein kaun-si cheez kilograms mein dekhi hai?"
+      }
+     },
+     "address": "tum",
+     "moment": {
+      "move": "greet",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 0
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B2",
+      "lang": "hinglish"
+     },
+     "teacherOpening": "Namaste Riya! Aaj hum grams aur kilograms seekhenge. Tumne ghar mein kaun-si cheez kilograms mein dekhi hai?",
+     "teacherOpeningSeq": 1,
+     "debug": {
+      "move": {
+       "kind": "greet",
+       "shape": "greet Riya by name, warm and unhurried; one line on today's topic (Grams and kilograms); then one easy question about them; address them with tum forms (tum, tumhara, tumne), never tu"
+      },
+      "kitVerified": true,
+      "timings": [
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1719,
+        "attempt": 0,
+        "tokens": "[masked]"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 28,
+   "t": 1792005395770,
+   "mono": 6805,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 343,
+    "at": 6272
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 29,
+   "t": 1792005395776,
+   "mono": 6811,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 30,
+   "t": 1792005398268,
+   "mono": 7082,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 31,
+   "t": 1792005398282,
+   "mono": 7096,
+   "kind": "net.req",
+   "rid": "aa37ef75-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+     "box": {
+      "w": 361,
+      "h": 457
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 32,
+   "t": 1792005398285,
+   "mono": 7099,
+   "kind": "net.sse",
+   "rid": "aa37ef75-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 33,
+   "t": 1792005398287,
+   "mono": 7101,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 245,
+    "at": 6816
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 34,
+   "t": 1792005398434,
+   "mono": 7248,
+   "kind": "net.res",
+   "rid": "aa37ef75-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 175,
+    "bytes": 483529,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 483529
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 35,
+   "t": 1792005398359,
+   "mono": 7610,
+   "kind": "net.res",
+   "rid": "aa37ef75-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 154,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 36,
+   "t": 1792005408142,
+   "mono": 17393,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": false,
+     "tapToTalk": false,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 37,
+   "t": 1792005408142,
+   "mono": 17393,
+   "kind": "ui.chips",
+   "tier": 1,
+   "data": {
+    "phase": "shown",
+    "tiles": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 38,
+   "t": 1792005408142,
+   "mono": 17393,
+   "kind": "ui.render.tray",
+   "tier": 1,
+   "data": {
+    "kind": "tiles",
+    "overlay": "help_menu"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 39,
+   "t": 1792005408145,
+   "mono": 17396,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 78,
+    "h": 78,
+    "zone": "teacher",
+    "testid": "speech-row"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 40,
+   "t": 1792005408145,
+   "mono": 17396,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 78,
+    "h": 78,
+    "zone": "teacher",
+    "testid": "speech-row"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 41,
+   "t": 1792005408331,
+   "mono": 17582,
+   "kind": "net.req",
+   "rid": "aa37ef75-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+     "box": {
+      "w": 361,
+      "h": 468
+     },
+     "young": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "6fffb4f2-ed33-464e-a077-c6803acbe56f",
+   "pid": "aa37ef75-71c8-424f-b190-131278b51e16",
+   "src": "client",
+   "seq": 42,
+   "t": 1792005409080,
+   "mono": 17723,
+   "kind": "net.res",
+   "rid": "aa37ef75-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 61,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  }
+ ]
+}

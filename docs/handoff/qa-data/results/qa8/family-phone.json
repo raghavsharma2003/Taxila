@@ -1,0 +1,2187 @@
+{
+ "console": [
+  "warning: [.WebGL-0x23cc00118800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x23cc00118800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x23cc00118800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0x23cc00118800]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)",
+  "error: Failed to load resource: the server responded with a status of 400 (Bad Request)"
+ ],
+ "pageerror": [],
+ "failed": [
+  "GET /api/child/plan?childId=52e51d08-6adb-42bb-a9cc-dea7e487c6c0 net::ERR_ABORTED"
+ ],
+ "http": [
+  "GET /api/me 401",
+  "POST /api/parent/lock 401",
+  "POST /api/parent/lock 401",
+  "GET /api/parent/pin 401",
+  "GET /api/me 401",
+  "GET /api/me 401",
+  "POST /api/parent/lock 401",
+  "GET /api/me 401",
+  "GET /api/me 401",
+  "POST /api/auth/login 400"
+ ],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 1,
+   "t": 1792016983633,
+   "mono": 94,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/parent/children",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 2,
+   "t": 1792016983634,
+   "mono": 95,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 3,
+   "t": 1792016983957,
+   "mono": 418,
+   "kind": "net.req",
+   "rid": "f852b1a7-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 4,
+   "t": 1792016984002,
+   "mono": 633,
+   "kind": "net.req",
+   "rid": "f852b1a7-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 5,
+   "t": 1792016984002,
+   "mono": 633,
+   "kind": "net.res",
+   "rid": "f852b1a7-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 213,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:39:24.713Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 6,
+   "t": 1792016984002,
+   "mono": 719,
+   "kind": "net.res",
+   "rid": "f852b1a7-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 85,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 7,
+   "t": 1792016984985,
+   "mono": 1702,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 8,
+   "t": 1792016985030,
+   "mono": 1747,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 9,
+   "t": 1792016985081,
+   "mono": 1798,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 10,
+   "t": 1792016985131,
+   "mono": 1848,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 11,
+   "t": 1792016985179,
+   "mono": 1896,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 12,
+   "t": 1792016985179,
+   "mono": 1896,
+   "kind": "net.req",
+   "rid": "f852b1a7-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "body": {
+     "pin": "[masked]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 13,
+   "t": 1792016985002,
+   "mono": 2366,
+   "kind": "net.res",
+   "rid": "f852b1a7-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "status": 200,
+    "ms": 468,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:39:46.068Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 14,
+   "t": 1792016987932,
+   "mono": 5296,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Add a child"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 15,
+   "t": 1792016987935,
+   "mono": 5299,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/start/class",
+    "query": "?add=1",
+    "how": "push",
+    "title": "Children · Parent corner · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 16,
+   "t": 1792016988731,
+   "mono": 6095,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 736,
+    "el": "h1.pa-h1"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 17,
+   "t": 1792016989882,
+   "mono": 7246,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "role": "radio",
+    "label": "Class 7"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 18,
+   "t": 1792016989931,
+   "mono": 7296,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "role": "radio",
+    "label": "CBSE"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 19,
+   "t": 1792016989983,
+   "mono": 7347,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "role": "radio",
+    "label": "Hindi and English mix"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 20,
+   "t": 1792016990033,
+   "mono": 7397,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Continue"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 21,
+   "t": 1792016990035,
+   "mono": 7399,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/start/child",
+    "query": "?add=1",
+    "how": "push",
+    "title": "Add a child: which class are they in? · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 22,
+   "t": 1792016990048,
+   "mono": 7412,
+   "kind": "net.req",
+   "rid": "f852b1a7-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 23,
+   "t": 1792016991001,
+   "mono": 7626,
+   "kind": "net.res",
+   "rid": "f852b1a7-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 213,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:39:46.068Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 24,
+   "t": 1792016991002,
+   "mono": 7627,
+   "kind": "net.req",
+   "rid": "f852b1a7-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 25,
+   "t": 1792016991001,
+   "mono": 7843,
+   "kind": "net.res",
+   "rid": "f852b1a7-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 215,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:39:46.068Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 26,
+   "t": 1792016991011,
+   "mono": 7853,
+   "kind": "net.req",
+   "rid": "f852b1a7-6",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 27,
+   "t": 1792016991001,
+   "mono": 8085,
+   "kind": "net.res",
+   "rid": "f852b1a7-6",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 231,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:39:46.068Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 28,
+   "t": 1792016994453,
+   "mono": 11537,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Give the phone to Aarav"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 29,
+   "t": 1792016994454,
+   "mono": 11538,
+   "kind": "net.req",
+   "rid": "f852b1a7-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/children",
+    "body": {
+     "firstName": "Aarav",
+     "classLevel": 7,
+     "board": "cbse",
+     "schoolMedium": "english",
+     "languagePref": "hinglish",
+     "interests": []
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 30,
+   "t": 1792016995002,
+   "mono": 11845,
+   "kind": "net.req",
+   "rid": "f852b1a7-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/controls",
+    "body": {
+     "childId": "52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+     "dailyMinutes": 45,
+     "hoursStart": "06:30",
+     "hoursEnd": "21:30",
+     "address": "aap",
+     "comfortMode": false,
+     "captionsAlways": false,
+     "reportChannel": "whatsapp"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 31,
+   "t": 1792016995003,
+   "mono": 11846,
+   "kind": "net.res",
+   "rid": "f852b1a7-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/children",
+    "status": 201,
+    "ms": 305,
+    "bytes": 426,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "child": {
+      "id": "52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+      "guardian_id": "57d3a751-d3ef-4d32-bdf5-ed90326b6b4e",
+      "first_name": "Aarav",
+      "class_level": 7,
+      "board": "cbse",
+      "school_medium": "english",
+      "language_pref": "hinglish",
+      "birth_year": null,
+      "avatar": null,
+      "teacher_id": "asha",
+      "interests": [],
+      "created_at": "2026-10-14T22:29:55.582Z",
+      "legal_mode": "M1",
+      "tutor_chosen_at": null,
+      "teacher_name": null,
+      "teacher_name_at": null,
+      "school_chapter": null
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 32,
+   "t": 1792016995001,
+   "mono": 12236,
+   "kind": "net.req",
+   "rid": "f852b1a7-9",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 33,
+   "t": 1792016995001,
+   "mono": 12236,
+   "kind": "net.res",
+   "rid": "f852b1a7-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/controls",
+    "status": 200,
+    "ms": 390,
+    "bytes": 210,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "controls": {
+      "dailyMinutes": 45,
+      "hoursStart": "06:30",
+      "hoursEnd": "21:30",
+      "captionsAlways": false,
+      "comfortMode": false,
+      "address": "aap",
+      "reportChannel": "whatsapp",
+      "saved": true,
+      "textOnly": false,
+      "homeworkToday": false
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 34,
+   "t": 1792016995001,
+   "mono": 12376,
+   "kind": "net.req",
+   "rid": "f852b1a7-a",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 35,
+   "t": 1792016995003,
+   "mono": 12378,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/52e51d08-6adb-42bb-a9cc-dea7e487c6c0/hello",
+    "how": "push",
+    "title": "Who is this for? · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 36,
+   "t": 1792016995003,
+   "mono": 12378,
+   "kind": "net.res",
+   "rid": "f852b1a7-9",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 200,
+    "ms": 139,
+    "bytes": 1040,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "guardian": {
+      "id": "57d3a751-d3ef-4d32-bdf5-ed90326b6b4e",
+      "email": "[masked]",
+      "name": "QA Parent",
+      "locale": "en-IN"
+     },
+     "children": [
+      {
+       "id": "d3772bfe-4668-4dad-8902-4ac35d1e3185",
+       "first_name": "Riya",
+       "class_level": 4,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": "red-panda",
+       "interests": [
+        "Cricket"
+       ]
+      },
+      {
+       "id": "52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+       "first_name": "Aarav",
+       "class_level": 7,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": null,
+       "interests": []
+      }
+     ],
+     "consents": [
+      {
+       "child_id": null,
+       "purpose": "core_tutoring",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.626Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "learning_profile",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.666Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "memory",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.705Z"
+      }
+     ],
+     "ui": {
+      "kaksha": false
+     },
+     "trace": {
+      "tier": 1
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 37,
+   "t": 1792016995007,
+   "mono": 12382,
+   "kind": "net.req",
+   "rid": "f852b1a7-b",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 38,
+   "t": 1792016995008,
+   "mono": 12383,
+   "kind": "net.req",
+   "rid": "f852b1a7-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 39,
+   "t": 1792016995009,
+   "mono": 12384,
+   "kind": "net.req",
+   "rid": "f852b1a7-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 40,
+   "t": 1792016996001,
+   "mono": 12470,
+   "kind": "net.res",
+   "rid": "f852b1a7-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 84,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 41,
+   "t": 1792016996000,
+   "mono": 12470,
+   "kind": "net.res",
+   "rid": "f852b1a7-a",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 93,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 42,
+   "t": 1792016996001,
+   "mono": 12471,
+   "kind": "net.res",
+   "rid": "f852b1a7-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 87,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 43,
+   "t": 1792016996002,
+   "mono": 12513,
+   "kind": "net.req",
+   "rid": "f852b1a7-e",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 44,
+   "t": 1792016996003,
+   "mono": 12514,
+   "kind": "net.res",
+   "rid": "f852b1a7-b",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 200,
+    "ms": 129,
+    "bytes": 1040,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "guardian": {
+      "id": "57d3a751-d3ef-4d32-bdf5-ed90326b6b4e",
+      "email": "[masked]",
+      "name": "QA Parent",
+      "locale": "en-IN"
+     },
+     "children": [
+      {
+       "id": "d3772bfe-4668-4dad-8902-4ac35d1e3185",
+       "first_name": "Riya",
+       "class_level": 4,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": "red-panda",
+       "interests": [
+        "Cricket"
+       ]
+      },
+      {
+       "id": "52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+       "first_name": "Aarav",
+       "class_level": 7,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": null,
+       "interests": []
+      }
+     ],
+     "consents": [
+      {
+       "child_id": null,
+       "purpose": "core_tutoring",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.626Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "learning_profile",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.666Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "memory",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.705Z"
+      }
+     ],
+     "ui": {
+      "kaksha": false
+     },
+     "trace": {
+      "tier": 1
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 45,
+   "t": 1792016996002,
+   "mono": 12520,
+   "kind": "net.res",
+   "rid": "f852b1a7-e",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 5,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 46,
+   "t": 1792016996300,
+   "mono": 12818,
+   "kind": "net.req",
+   "rid": "f852b1a7-f",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 47,
+   "t": 1792016996006,
+   "mono": 12892,
+   "kind": "net.res",
+   "rid": "f852b1a7-f",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 68,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 48,
+   "t": 1792016996043,
+   "mono": 12929,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 361,
+    "h": 334,
+    "testid": "hello"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "pid": "f852b1a7-7d0f-4926-8baa-27e33e435528",
+   "src": "client",
+   "seq": 49,
+   "t": 1792016998285,
+   "mono": 15171,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 1742,
+    "at": 13355
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 1,
+   "t": 1792016999219,
+   "mono": 85,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/who",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 2,
+   "t": 1792016999221,
+   "mono": 87,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 3,
+   "t": 1792016999239,
+   "mono": 105,
+   "kind": "net.req",
+   "rid": "fb77c51e-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 4,
+   "t": 1792016999240,
+   "mono": 107,
+   "kind": "net.req",
+   "rid": "fb77c51e-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 5,
+   "t": 1792016999001,
+   "mono": 197,
+   "kind": "net.res",
+   "rid": "fb77c51e-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 91,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 6,
+   "t": 1792016999002,
+   "mono": 323,
+   "kind": "net.res",
+   "rid": "fb77c51e-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 214,
+    "bytes": 124,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": false,
+     "unlockedUntil": null,
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 7,
+   "t": 1792017000680,
+   "mono": 2001,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "AAarav"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 8,
+   "t": 1792017003164,
+   "mono": 4485,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Yes, I am Aarav",
+    "xy": {
+     "x": 260,
+     "y": 378,
+     "vw": 393,
+     "vh": 876
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 9,
+   "t": 1792017003165,
+   "mono": 4487,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+    "how": "push",
+    "title": "Who is learning? · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 10,
+   "t": 1792017003179,
+   "mono": 4500,
+   "kind": "net.req",
+   "rid": "fb77c51e-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 11,
+   "t": 1792017003180,
+   "mono": 4501,
+   "kind": "net.req",
+   "rid": "fb77c51e-4",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 12,
+   "t": 1792017003001,
+   "mono": 4593,
+   "kind": "net.res",
+   "rid": "fb77c51e-4",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 90,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 13,
+   "t": 1792017003001,
+   "mono": 4632,
+   "kind": "net.req",
+   "rid": "fb77c51e-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 14,
+   "t": 1792017003002,
+   "mono": 4633,
+   "kind": "net.res",
+   "rid": "fb77c51e-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 200,
+    "ms": 131,
+    "bytes": 1040,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "guardian": {
+      "id": "57d3a751-d3ef-4d32-bdf5-ed90326b6b4e",
+      "email": "[masked]",
+      "name": "QA Parent",
+      "locale": "en-IN"
+     },
+     "children": [
+      {
+       "id": "d3772bfe-4668-4dad-8902-4ac35d1e3185",
+       "first_name": "Riya",
+       "class_level": 4,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": "red-panda",
+       "interests": [
+        "Cricket"
+       ]
+      },
+      {
+       "id": "52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+       "first_name": "Aarav",
+       "class_level": 7,
+       "board": "cbse",
+       "school_medium": "english",
+       "language_pref": "hinglish",
+       "teacher_id": "asha",
+       "teacher_name": null,
+       "avatar": null,
+       "interests": []
+      }
+     ],
+     "consents": [
+      {
+       "child_id": null,
+       "purpose": "core_tutoring",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.626Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "learning_profile",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.666Z"
+      },
+      {
+       "child_id": null,
+       "purpose": "memory",
+       "granted": true,
+       "version": "2026-10-02.v1",
+       "created_at": "2026-10-14T22:27:05.705Z"
+      }
+     ],
+     "ui": {
+      "kaksha": false
+     },
+     "trace": {
+      "tier": 1
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 15,
+   "t": 1792017003002,
+   "mono": 4642,
+   "kind": "net.res",
+   "rid": "fb77c51e-5",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 8,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 16,
+   "t": 1792017003300,
+   "mono": 4940,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/52e51d08-6adb-42bb-a9cc-dea7e487c6c0/hello",
+    "how": "replace",
+    "title": "Who is learning? · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 17,
+   "t": 1792017003309,
+   "mono": 4949,
+   "kind": "net.req",
+   "rid": "fb77c51e-6",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/plan?childId=52e51d08-6adb-42bb-a9cc-dea7e487c6c0"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 18,
+   "t": 1792017003324,
+   "mono": 4965,
+   "kind": "net.req",
+   "rid": "fb77c51e-7",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 19,
+   "t": 1792017003327,
+   "mono": 4968,
+   "kind": "net.err",
+   "rid": "fb77c51e-6",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/plan?childId=52e51d08-6adb-42bb-a9cc-dea7e487c6c0",
+    "ms": 18,
+    "error": "aborted"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 20,
+   "t": 1792016996017,
+   "mono": 4987,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 361,
+    "h": 334,
+    "testid": "hello"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 21,
+   "t": 1792016996017,
+   "mono": 4988,
+   "kind": "net.res",
+   "rid": "fb77c51e-7",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 5,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "pid": "fb77c51e-85d1-48ac-abf0-a7642117a7b7",
+   "src": "client",
+   "seq": 22,
+   "t": 1792016998191,
+   "mono": 7161,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 1661,
+    "at": 5430
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 1,
+   "t": 1792017006709,
+   "mono": 94,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/parent/more",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 2,
+   "t": 1792017006710,
+   "mono": 95,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 3,
+   "t": 1792017007017,
+   "mono": 402,
+   "kind": "net.req",
+   "rid": "9b2e0310-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 4,
+   "t": 1792017007001,
+   "mono": 605,
+   "kind": "net.res",
+   "rid": "9b2e0310-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/parent/pin",
+    "status": 200,
+    "ms": 202,
+    "bytes": 124,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": false,
+     "unlockedUntil": null,
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 5,
+   "t": 1792017008048,
+   "mono": 1651,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 6,
+   "t": 1792017008080,
+   "mono": 1684,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 7,
+   "t": 1792017008114,
+   "mono": 1718,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 8,
+   "t": 1792017008148,
+   "mono": 1751,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 9,
+   "t": 1792017008198,
+   "mono": 1801,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "masked",
+    "label": "[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 10,
+   "t": 1792017008198,
+   "mono": 1801,
+   "kind": "net.req",
+   "rid": "9b2e0310-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "body": {
+     "pin": "[masked]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 11,
+   "t": 1792017008001,
+   "mono": 2255,
+   "kind": "net.res",
+   "rid": "9b2e0310-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/unlock",
+    "status": 200,
+    "ms": 452,
+    "bytes": 145,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "hasPin": "[masked]",
+     "unlocked": true,
+     "unlockedUntil": "2026-10-14T22:40:09.035Z",
+     "lockedUntil": null,
+     "firstSetNeedsPassword": "[masked]",
+     "pendingResetAt": null
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 12,
+   "t": 1792017010297,
+   "mono": 4551,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Sign out"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 13,
+   "t": 1792017010298,
+   "mono": 4551,
+   "kind": "net.req",
+   "rid": "9b2e0310-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/auth/logout",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 14,
+   "t": 1792017011002,
+   "mono": 4597,
+   "kind": "net.req",
+   "rid": "9b2e0310-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 15,
+   "t": 1792017011003,
+   "mono": 4597,
+   "kind": "net.res",
+   "rid": "9b2e0310-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/auth/logout",
+    "status": 200,
+    "ms": 44,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 16,
+   "t": 1792017011002,
+   "mono": 4602,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/",
+    "how": "push",
+    "title": "More · Parent corner · Taxila"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 17,
+   "t": 1792017011003,
+   "mono": 4602,
+   "kind": "net.res",
+   "rid": "9b2e0310-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 401,
+    "ms": 3,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 18,
+   "t": 1792017011051,
+   "mono": 4651,
+   "kind": "net.req",
+   "rid": "9b2e0310-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "pid": "9b2e0310-3d0e-4093-a51d-5bfaa90ced02",
+   "src": "client",
+   "seq": 19,
+   "t": 1792017011001,
+   "mono": 4658,
+   "kind": "net.res",
+   "rid": "9b2e0310-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 401,
+    "ms": 7,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 1,
+   "t": 1792017016940,
+   "mono": 25,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/start/phone",
+    "query": "?login=1",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 2,
+   "t": 1792017016942,
+   "mono": 27,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.5,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 3,
+   "t": 1792017017255,
+   "mono": 340,
+   "kind": "net.req",
+   "rid": "7fb85ca4-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 4,
+   "t": 1792017017001,
+   "mono": 348,
+   "kind": "net.res",
+   "rid": "7fb85ca4-1",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/me",
+    "status": 401,
+    "ms": 7,
+    "bytes": 25,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "not signed in"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 5,
+   "t": 1792017018640,
+   "mono": 1988,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Sign in"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 6,
+   "t": 1792017018642,
+   "mono": 1989,
+   "kind": "net.req",
+   "rid": "7fb85ca4-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/auth/login",
+    "body": {
+     "email": "[masked]",
+     "password": "[redacted]"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 7,
+   "t": 1792017019001,
+   "mono": 2187,
+   "kind": "net.res",
+   "rid": "7fb85ca4-2",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/auth/login",
+    "status": 400,
+    "ms": 197,
+    "bytes": 42,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "error": "email or password is incorrect"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 8,
+   "t": 1792017020749,
+   "mono": 3935,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Sign in"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "pid": "7fb85ca4-fe28-4a53-8143-7b855290d741",
+   "src": "client",
+   "seq": 9,
+   "t": 1792017020749,
+   "mono": 3935,
+   "kind": "net.req",
+   "rid": "7fb85ca4-3",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/auth/login",
+    "body": {
+     "email": "[masked]",
+     "password": "[redacted]"
+    }
+   }
+  }
+ ]
+}
