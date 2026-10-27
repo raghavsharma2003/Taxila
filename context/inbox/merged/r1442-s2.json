@@ -1,0 +1,36 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r1442-board-truth-shapes",
+      "kind": "decision",
+      "at": "2026-10-22",
+      "title": "Her words never deny a picture the board is drawing or showing (02ae9217). drawAsked, on a photo ask the board sketches, still owns up to the photo (owner 14.2) and ends on 'never say there is no picture or nothing on the screen'. turn.js boardTruthShape replaces VISUAL_NOT_YET with VISUAL_DRAWING when the turn's board was asked for, or with VISUAL_ON_STAGE when a board is up. Reversal: if QA or the sim lab still count 'picture nahi hai' under a board, the next step is a code guard on her line (a say.js screen problem), not more prompt words."
+    },
+    {
+      "id": "dc-r1442-board-comes-back",
+      "kind": "decision",
+      "at": "2026-10-22",
+      "title": "When the board up is let go as unsynced and her line is about the board before it, that board comes back on the response (0a009e25). It is kept, not revealed again, with no second notebook entry, and is traced as studio.board_back. It is held to the keep rules: not moved off its item, synced with her line, no number it never had, nothing withheld, certified. Main chose this over silencing her (choice A): it makes her words true. Reversal: if a returning board is ever wrong for her line (QA channel truth), narrow the rule to her line naming the earlier board's own words."
+    },
+    {
+      "id": "dc-r1442-slot-retired-trace",
+      "kind": "decision",
+      "at": "2026-10-22",
+      "title": "A piece taken down (cleared, replaced, beat exit) is traced as studio.slot.retired with its reason. Before, its row said studio.slot.failed, because its wire status is {failed, voice} (e8149234); the wire is unchanged. A board that truly failed keeps studio.slot.failed with why 'live:… template:…'."
+    },
+    {
+      "id": "open-r1442-board-truth-unmeasured",
+      "kind": "open",
+      "at": "2026-10-22",
+      "title": "Neither fix is measured on sim-lab. dc-r1442-board-truth-shapes is a prompt-shape change: counting 'picture nahi hai' under a board needs a sim-lab or QA re-run. dc-r1442-board-comes-back depends on board-to-board sequences, which the sim-lab records do not carry at slot level. The evidence so far is QA's lessons (7545d1fd, 13ec94a7, 897a7453) and tests that fail on base."
+    }
+  ],
+  "edges": [
+    { "src": "open-r1442-board-truth-unmeasured", "rel": "about", "dst": "dc-r1442-board-truth-shapes" },
+    { "src": "open-r1442-board-truth-unmeasured", "rel": "about", "dst": "dc-r1442-board-comes-back" }
+  ],
+  "md": {
+    "decisions": "## dc-r1442-board-truth-shapes — never deny the board's picture (2026-10-22)\n\nQA heard 'is turn mein picture nahi hai' with a board on screen (7545d1fd t2), and 'picture yahan nahi dikh rahi' under triangle boards (13ec94a7). Our own shapes told her to say it. On a photo ask, drawAsked said 'there is no photo, say so', which comes out as 'picture nahi hai' in Hinglish. And an unnamed picture ask with no Director module got 'nothing is on the screen this turn', even when the turn's board was asked for or a board was up. The photo is still owned up to; the drawing is never denied, and that rule goes last. If it still happens, the next step is a code guard on her line, not more words.\n\n## dc-r1442-board-comes-back — the earlier board returns when her line does (2026-10-22)\n\nIn 897a7453 the triangle board was followed by a rocket board, and the rocket board was rightly let go. That left an empty tray while she said 'Ab triangle par lautte hain'. A board now remembers the board before it. When her line is about that one again, under the same rules a kept board meets, it comes back. A line about neither board brings nothing back.\n\n## dc-r1442-slot-retired-trace — retired is not failed (2026-10-22)\n\nQA read 'cleared' and 'replaced' as failed boards. Those are the right codes: why a piece was taken down, not a missed live or template path. The row now says studio.slot.retired. What the client receives is unchanged.\n",
+    "open": "## open-r1442-board-truth-unmeasured — not measured on sim-lab (2026-10-22)\n\nThe two board-truth fixes rest on QA's three lessons and tests that fail on base. Sim-lab cannot measure them as it stands. The shape fix needs a re-run to count 'picture nahi hai' under a board, and the sim-lab records do not carry the board-to-board sequences at slot level. A QA re-run of 7545d1fd, 13ec94a7 and 897a7453's shapes is the measurement.\n"
+  }
+}

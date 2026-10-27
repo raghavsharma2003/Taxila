@@ -59,7 +59,10 @@ export const HL = {
     "alvida", "phir milte(?: hain)?", "bye bye",
     // "Jamsetji Tata" is history: only bare or after a closing word
     "(?:^|(?:ok|okay|bye|acha|achha|accha|chalo|didi|bhaiya) )tata(?: bye)?",
-    "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)", "(?:jaana|jana) padega", "khana lag gaya",
+    "good night", "kal milte(?: hain)?", "abhi jaana (?:hai|padega)",
+    // 14.4.1 (sim lab ok10x on 47ba26c7, 4/4: "To do gaps aage jaana padega, na?", the child's own right answer on a number line,
+    // released the lesson at once as a goodbye): moving along a line, a step or a jump is the lesson, never leaving
+    "(?<!(?:aage|age|peeche|piche|pichhe|upar|neeche|niche|left|right|daaye|baaye|daayein|baayein|daayen|baayen|gap|gaps|step|steps|kadam|jump|jumps|tak|wapas|zero se|0 se) )(?:jaana|jana) padega", "khana lag gaya",
   ],
   end_request: [
     // round 2 safety floor (2026-10-07, stop-drill with the models hung): "haan bas" (a yes to the check-in), and

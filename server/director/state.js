@@ -23,8 +23,8 @@ import { readFileSync } from "fs";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
 import { askText } from "./say.js";
-import { getTopic, findTopic } from "../content/curriculum.js";
-import { planModule } from "./modules.js";
+import { getTopic, findTopic, topicSequence } from "../content/curriculum.js";
+import { planModule, topicGameFor } from "./modules.js";
 import { frustrationLoop, initialAffect, nextAffect, wheelSpinning } from "../learner/affect.js";
 import {
   newProbeSession, openSession, recordTurn, nextProbe, markAsked, fits, bandOf, shapeById, testWeight,
@@ -46,10 +46,34 @@ import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
 import { kitFromFile } from "../content/kits.js";
-import { clearlyFine, asksToCarryOn } from "../safety/fine.js";
+import { clearlyFine, asksToCarryOn, bareOk, bareUnsure, bareNotOk, mildLow, safeAndTells, helpInPlace } from "../safety/fine.js";
 /** The distress kinds a MODEL read sets (classify.js "model", the content filter, an understanding note): their episodes
  *  step back on a clearly-fine reply; every other kind (the predicate's families, the relational floor) keeps the hold. */
 export const MODEL_EPISODE_KINDS = Object.freeze(new Set(["model", "content_filter", "model_note"]));
+/**
+ * 14.4 (main safety review, the owner's directive after lesson e6392332: the helpline script on a misheard line, twice in a
+ * row, "only when it is sure"): ONE model read of a low mood or another fright (the words-only read's `about`, or the two
+ * reads disagreeing) opens a warm check-in, never the helpline script at once. Every sure signal keeps the full script at
+ * once: the predicate's families (self-harm incl. passive ideation, abuse, fear), the relational floor, the content filter
+ * (except a block whose words-alone probe could not run: filterUnsure, a check-in), any layer that marks itself sure
+ * (flags.sureBy: the relational floor, a filter block the child's words trip) over the classifier's own read,
+ * an understanding note, a read naming self-harm / a person hurting them / fear of a person or home / danger now, or a
+ * read that could not name a kind.
+ */
+const CHECK_ABOUT = Object.freeze(new Set(["sad_or_lonely", "other_fright", "hurt_by_accident_or_animal", "none"]));
+/** The classification with a check-kind distress read set aside (a check-in that released, or its cooldown): the lesson
+ *  reads the rest of it as usual. Never used on a sure read. */
+const quiet = (cls) => (cls?.flags?.distress && checkTier(cls.flags) ? { ...cls, flags: { ...cls.flags, distress: false, distressSetAside: cls.flags.distressAbout ?? "check" } } : cls);
+/** The step that set a check-kind read aside marks its move (brain/turn.js writes no incident for it). */
+const setAside = (s) => { s.setAside = s.turn; };
+export const checkTier = (flags = {}) => !!flags.distress && !flags.sureBy
+  && ((flags.distressKind === "model" && CHECK_ABOUT.has(flags.distressAbout ?? "")) || (flags.distressKind === "content_filter" && flags.filterUnsure === true)
+    // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole (classify.js lessonHyperbole)
+    || (flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole")
+    // 14.4 (QA TEST 8a4ce363 X2c, 9e0d6167 XS1: a right answer, and "…Ab theek hai… accha ho gaya", after a check-in got
+    // the full script on the understanding note alone): the note sets distress only when classify's own reads (the labels
+    // and the words read) said none (conversation/policy.js applyNote), so a note-only read is reads that DISAGREE: a check-in
+    || flags.distressKind === "model_note");
 
 /**
  * Probe shapes the live lane can pose AND grade today: the why-class shapes (probe.why, R-EXP against the kit's key
@@ -274,20 +298,32 @@ export const isSilentTurn = (input) => input?.event === "turn" && !input.branch 
   && (input.cls?.source === "empty" || input.silent === true) && !input.chipId
   && (input.answer == null || input.answer === "") && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
 
+/**
+ * Is this turn the child's speech the ear could not read (D5's duplex.unheard: an empty text, cls source "asr", see
+ * brain/turn.js)? Not silence: she asks again. On an open safeguard check-in it counts as "no answer yet", as a silence does.
+ */
+export const isUnheardTurn = (input) => input?.event === "turn" && !input.branch && typeof input.text === "string" && !input.text.trim()
+  && input.cls?.source === "asr" && !input.chipId && (input.answer == null || input.answer === "")
+  && !input.cls?.flags?.distress && !input.cls?.request && !input.cls?.help;
+
 /** The silence hold (round 5): the same step again, gently; never new content, never a new topic. */
 function silentTurn(s, input, item) {
-  if (!p5Flag("R4CONV") || !isSilentTurn(input) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
-  s.quiet = (s.quiet ?? 0) + 1;
+  // speech the ear could not read (D5 unheard) gets the same gentle ask-again, but is not a silence: it never counts toward
+  // the "are you still there?" check
+  const unheard = isUnheardTurn(input);
+  if (!p5Flag("R4CONV") || !(isSilentTurn(input) || unheard) || s.phase === "done" || s.safeguard || ["wrap", "safeguard"].includes(s.lastMove?.kind)) return null;
+  if (!unheard) s.quiet = (s.quiet ?? 0) + 1;
   const labels = chipLabels(s.ctx?.lang);
-  if (s.quiet >= 3) {
+  if (!unheard && s.quiet >= 3) {
     s.quiet = 0;
     return { ...plan("break", SH.silenceCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }] }), silent: true };
   }
-  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: SH.silenceAgain() }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
+  const again = unheard ? SH.unheardAgain() : SH.silenceAgain();
+  if (item) return { ...plan(moveKindFor(item), SH.pose({ item, prefix: again }), { item, probe: probeFor(item), chips: optionChips(item) }), silent: true };
   const last = s.lastMove;
   if (!last?.kind) return null;
   // the intake, a teaching step, a break: what she said last, again and simpler (never the next step)
-  return { ...plan(last.kind, join(SH.silenceAgain(), SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
+  return { ...plan(last.kind, join(again, SH.sameStepAgain()), { ...(last.skillId ? { skillId: last.skillId } : {}), content: s.lastContent ?? [],
     ...(last.intake ? { intake: true } : {}), ...(s.lastUi?.chips?.length ? { chips: s.lastUi.chips } : {}) }), silent: true };
 }
 
@@ -369,9 +405,12 @@ const moveKindFor = (item) => (item.kind === "practice" ? "practice" : item.kind
 // was offered "Carry on" / "Stop for today" on the check-in). The stop label keeps "bas" / "aaj ke liye" so the stop reading
 // and the harnesses that find the stop chip by its words still hold; the ids are what the Director reads.
 const CHIP_LABELS = Object.freeze({
-  english: { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson" },
-  hinglish: { easier: "Thoda aasaan wala", rest: "Chhota break", go: "Aage chalte hain", cont: "Aage padhte hain", stop: "Aaj ke liye bas", back: "Lesson par wapas" },
-  hindi: { easier: "थोड़ा आसान वाला", rest: "छोटा ब्रेक", go: "आगे चलते हैं", cont: "आगे पढ़ते हैं", stop: "आज के लिए बस", back: "पाठ पर वापस" },
+  english: { easier: "An easier one", rest: "Short break", go: "Keep going", cont: "Carry on", stop: "Stop for today", back: "Back to the lesson",
+    visual: "Show me a picture", story: "Tell it as a story", game: "Play a game" },
+  hinglish: { easier: "Thoda aasaan wala", rest: "Chhota break", go: "Aage chalte hain", cont: "Aage padhte hain", stop: "Aaj ke liye bas", back: "Lesson par wapas",
+    visual: "Picture dikhao", story: "Kahani mein batao", game: "Game khelte hain" },
+  hindi: { easier: "थोड़ा आसान वाला", rest: "छोटा ब्रेक", go: "आगे चलते हैं", cont: "आगे पढ़ते हैं", stop: "आज के लिए बस", back: "पाठ पर वापस",
+    visual: "तस्वीर दिखाओ", story: "कहानी में बताओ", game: "गेम खेलते हैं" },
 });
 export function chipLabels(lang) {
   return CHIP_LABELS[lang] ?? CHIP_LABELS.english;
@@ -437,6 +476,10 @@ function teach(s, input, prefix) {
     else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
     prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
   }
+  // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
+  // the worked steps, never asked to compute the next one (SH.worked stuck)
+  const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
+  const shown = () => replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "answer_question") {
@@ -461,9 +504,18 @@ function teach(s, input, prefix) {
     if (stepName === "fade") {
       // Backward fading: the earlier steps shown, the next one a gap the child fills (graded against the blank's key,
       // with help). Posing it hands the lesson to practice.
-      s.teachIdx += 1;
       const item = s.fadeItem ? findItem(s, kit, s.fadeItem.id) : null;
       const we = kit.workedExample;
+      // census 14.5 (F8, 3437b744 t9-13: the a₃₀ gap posed when the worked steps never landed): a don't-know or an off-topic
+      // reply to the worked steps is no ground for a gap; the whole worked example is shown instead, then practice
+      const v = input.event === "turn" && s.lastMove?.kind === "worked_example" ? verdict(input.cls) : null;
+      if (item && we && (v === "stuck" || v === "off")) {
+        s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), "worked_example", ...s.teachPlan.slice(s.teachIdx + 1)];
+        s.fadeItem = undefined;
+        s.guidance = { ...s.guidance, level: "worked", reason: "fade.not_landed" };
+        continue;
+      }
+      s.teachIdx += 1;
       if (!item || !we) continue;
       const i = Number(item.id.slice(FADE_PREFIX.length));
       if (!s.introduced.includes(item.skillId)) s.introduced.push(item.skillId);
@@ -493,14 +545,16 @@ function teach(s, input, prefix) {
     if (s.teachPlan[s.teachIdx + 1] === "fade" && s.fadeItem) {
       s.teachIdx += 1;
       const i = Number(s.fadeItem.id.slice(FADE_PREFIX.length));
-      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2 })), {
+      const stuck = shown();
+      return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck })), { ...(stuck ? { stuck } : {}),
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
-    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts })), {
+    const stuck = shown();
+    return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
   }
@@ -852,6 +906,18 @@ function leaveItem(s, input, item, prefix) {
  * with none, leaves the item); past that the item is left with no verdict and the lesson moves on (comprehension G11).
  */
 function unclear(s, input, item, v) {
+  // 14.4.2 (d; sim lab 1b3bb12c p66: a right answer the code could not verify, "Maine toh bola tha na", posed again and
+  // again): the model read the reply as right and corroboration could not check it against the verified forms
+  // (unsupported_credit). The second time on one item it is not posed a third time: one warm, verdict-neutral line and the
+  // next question. No verdict, no evidence, never marked stuck: the item stays due for another day.
+  if (String(input.cls?.corroboration ?? "").startsWith("unsupported_credit")) {
+    s.unverified = { ...(s.unverified ?? {}), [item.id]: (s.unverified?.[item.id] ?? 0) + 1 };
+    if (s.unverified[item.id] >= 2) {
+      if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+      s.unclear = 0;
+      return s.phase === "warmup" ? nextWarmup(s, input, SH.unverifiedMoveOn()) : poseNext(s, input, SH.unverifiedMoveOn());
+    }
+  }
   s.unclear += 1;
   const typed = !!input.typed;
   const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
@@ -889,6 +955,10 @@ function helpMove(s, input, item, help) {
     // NEXT teach step with the request as a prefix, 5/16 not acted on): a request for the idea another way is answered on
     // THE idea being taught, and the teach step does not advance. Help menu chips (cls.help) keep moving on (below).
     // (also in practice before its first item: an explain turn poseNext gave a skill nobody had explained yet)
+    // 14.4.3 (QA on ac4e8e88, 905a3e50 / b28d919f: "ek example se samjhao" got a park of her own, 6 m by 4 m, then "Total
+    // kitna?"): an example asked for before the teaching starts is answered like one asked during it (teachAgainPlan: the
+    // kit's worked example when there is one), never the hook with "your own numbers"
+    if (p5Flag("STEER") && !input.cls?.help && help === "example" && kit.workedExample && s.phase === "warmup") { s.phase = "teach"; return teachAgainPlan(s, kit, help); }
     if (p5Flag("STEER") && !input.cls?.help && ["another", "example", "story", "slower", "deeper"].includes(help)
       && (s.phase === "teach" || (s.phase === "practice" && TEACH_KINDS.has(s.lastMove?.kind)))) return teachAgainPlan(s, kit, help);
     // Any other help on a teaching turn moves the teaching on, more simply: a Young child in the text lane can answer a
@@ -953,26 +1023,44 @@ function requestMove(s, input, item, req, labels) {
         // release 13 (A): never offer a picture that cannot be made: with a subject outside the kit named, the ways in are
         // words only (no "Show me a picture" chip; turn 21 offered "aloo par picture" and nothing could draw it)
         const off = offTopicNow(s, kit);
-        if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysChips(labels).filter((c) => c.id !== "req:visual"), request: "change_topic" });
-        return plan("repair", SH.offerWays(), { chips: waysChips(labels), request: "change_topic" });
+        // census 14.5 (F1, 3437b744 / e6392332: the same ask three times, the same offer of ways into TODAY's idea): asked
+        // again within a few turns, they mean another topic, so real topics of their class are offered as buttons
+        const again = (s.topicAsks ?? []).some((t) => s.turn - t <= TOPIC_ASK_WINDOW);
+        s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
+        // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
+        // (an explicit ask for another TOPIC, "koi aur topic padhna hai", gets the topics at once: 14.4.2, QA 3a1d1e60)
+        const choices = (again || req.topic) && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
+        if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title), first: !again }), {
+          chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
+        const can = waysCan(s, input);
+        if (p5Flag("R4CONV") && off) return plan("repair", SH.offerWaysOff({ subject: off }), { chips: waysOffer(labels, { ...can, picture: false }).chips, request: "change_topic" });
+        const w = waysOffer(labels, can);
+        return plan("repair", SH.offerWays({ ways: w.words }), { chips: w.chips, request: "change_topic" });
       }
       s.sidebar = { asked: s.turn };
       return plan("break", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "change_topic" });
     // round 3 fix (experience B8): a named subject to study INSTEAD: that topic of their class is offered (a button starts
     // it: switch:<topicId>), else an honest "not here" with the choices. Never the stop check-in, never a lesson question.
     case "switch": {
-      const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
+      // census 14.5 (F1, 310b8c82 / 3437b744): a chapter of their book by number is that chapter's first topic
+      const subject = req.chapter ? `chapter ${req.chapter}` : String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
       if (!subject) return null;
       if (unsafeChildPhrase(subject)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
         : plan("repair", SH.declineOob(), { request: "decline" });
-      const hit = findTopic(subject, s.ctx?.classLevel);
+      const hit = req.chapter ? chapterTopic(s, req.chapter) : findTopic(subject, s.ctx?.classLevel);
+      if (hit && req.chapter && chapterKey(hit.id) === chapterKey(s.topicId)) return resume(s, input, item, "they asked for the chapter you are already on: say so warmly in a few words, then carry on");
       if (hit && hit.id === s.topicId) return resume(s, input, item, "they asked for the topic you are already on: say so warmly in a few words, then carry on");
       // round 4 (session-first, (d)): inside a session the topic they asked for opens a new SEGMENT in this same lesson (its
       // own verified kit), never a new lesson; this turn is one short no-stage line, the next one teaches it
       if (hit && s.session && sessionSwitchTo(s, hit.id, "child_request", input.now ?? Date.now()))
         return plan("intake_agenda", SH.switchGo({ title: hit.title }), { intake: true, segment: { n: s.session.segments.length, topicId: s.topicId, purpose: "child_request", mode: "teach" }, request: "switch" });
-      if (hit) return plan("break", SH.switchOffer({ title: hit.title }), { chips: [{ id: `switch:${hit.id}`, label: `Start ${hit.title}`.slice(0, 40) }, { id: "stop:continue", label: labels.back }], request: "switch" });
-      return plan("break", SH.switchElsewhere({ subject }), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "switch" });
+      if (hit) {
+        const button = `Start ${hit.title}`.slice(0, 40);
+        return plan("break", SH.switchOffer({ title: hit.title, chapter: req.chapter, asked: req.chapter ? null : subject, button }), { chips: [{ id: `switch:${hit.id}`, label: button }, { id: "stop:continue", label: labels.back }], request: "switch" });
+      }
+      // (no topic found for their words: never "not in your class"; real topics of their class on the buttons, as for a repeated ask)
+      const near = nextTopics(s, 2);
+      return plan("break", SH.switchElsewhere({ subject, titles: near.map((t) => t.title) }), { chips: [...near.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "switch" });
     }
     case "topic": {
       const subject = String(req.subject ?? "").replace(/[^\p{L}\p{N} ]/gu, "").trim().slice(0, 30);
@@ -995,6 +1083,24 @@ function requestMove(s, input, item, req, labels) {
     }
     // round 4 (session-first (f)): "aur batao / go deeper". With a practice question on the table: the harder question on the
     // same skill (the one on the table is left, no verdict); otherwise the same idea one layer further (no new step).
+    // census 14.5 (F1, 310b8c82: "theory first, in order"): the idea before any question. A card on the table waits (posed
+    // next, no verdict); a planned first-step probe or gap becomes plain teaching.
+    case "explain_first": {
+      if (s.phase === "warmup") s.phase = "teach";
+      if (s.phase === "teach") {
+        // (a gap after a planned worked example goes; with none planned it becomes one)
+        const ahead = s.teachPlan.slice(s.teachIdx);
+        const rest = ahead.map((x) => (x === "first_step" ? "explain" : x)).filter((x) => x !== "fade" || !ahead.includes("worked_example"))
+          .map((x) => (x === "fade" ? "worked_example" : x));
+        if (rest.join() !== ahead.join()) { s.teachPlan = [...s.teachPlan.slice(0, s.teachIdx), ...rest]; s.fadeItem = undefined; }
+        return { ...teach(s, input, SH.explainFirstAsked()), request: "explain_first" };
+      }
+      if (item && s.phase === "practice") { s.nextItemId = item.id; s.activeItemId = undefined; s.hintLevel = 0; }
+      const skillId = currentSkillId(s, kit, item);
+      if (!s.introduced.includes(skillId)) s.introduced.push(skillId);
+      const sk = kit.skills.find((k) => k.id === skillId) ?? kit.skills[0];
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix: SH.explainFirstAsked(), interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary, request: "explain_first" });
+    }
     case "deeper": {
       if (item && s.phase === "practice") {
         s.skipped.push(item.id);
@@ -1016,6 +1122,9 @@ function requestMove(s, input, item, req, labels) {
       // model). Anything else keeps release 13 (A): she says plainly she cannot show it and gives it in words.
       const see = req.see ? { ...req.see, ...(off ? { subject: off, off: true } : {}) } : off ? { show: "show", subject: off, off: true } : null;
       if (off && see && drawableSubject(off)) {
+        // 38aad918: a kept subject is spent once a board is asked for it; a later picture ask that names nothing is not
+        // asked for it again (t7, t9-t11 all asked for t6's subject)
+        if (s.offTopic && offSubject(s.offTopic.subject, kit) === off) s.offTopic = { ...s.offTopic, spent: s.offTopic.spent ?? s.turn };
         return plan("reteach", SH.drawAsked({ subject: off, show: see.show }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: "diagram", request: "visual", see });
       }
       if (off && !unsafeChildPhrase(off)) return plan("reteach", SH.visualUnavailable({ subject: off }), { skillId: currentSkillId(s, kit, item), request: "visual_unavailable" });
@@ -1047,15 +1156,51 @@ export const drawableSubject = (subject) => {
   const w = String(subject ?? "").trim();
   return !!w && w.split(/\s+/).length <= 4 && !/\d/.test(w) && !NOT_DRAWABLE.test(w) && !unsafeChildPhrase(w);
 };
+/** A "something else" asked again within this many turns is a request for another topic (census 14.5, F1). */
+const TOPIC_ASK_WINDOW = 6;
+/** "c9-maths-ch08-t02" → "c9-maths-ch08". */
+const chapterKey = (id) => String(id ?? "").replace(/-t\d+$/, "");
+/** The first topic of chapter n of today's class and subject (their book's order), or null. */
+function chapterTopic(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return null;
+  const tag = `-ch${String(n).padStart(2, "0")}-`;
+  const id = topicSequence(cur.classLevel, cur.subject).find((t) => t.includes(tag));
+  return id ? getTopic(id) : null;
+}
+/** Up to n other topics of the child's class and this subject, the ones after today's first (curriculum order). */
+function nextTopics(s, n) {
+  const cur = getTopic(s.topicId);
+  if (!cur) return [];
+  const seq = topicSequence(cur.classLevel, cur.subject);
+  const at = seq.indexOf(cur.id);
+  const order = at < 0 ? seq : [...seq.slice(at + 1), ...seq.slice(0, at).reverse()];
+  return order.map((id) => getTopic(id)).filter(Boolean).slice(0, n);
+}
 /** A request's subject when the kit does not teach it, else null. */
 const offSubject = (subject, kit) => (subject && !kitMentions(kit, subject) ? String(subject) : null);
 /** The off-kit subject the child named in the last few turns (state.offTopic), else null. */
-const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 ? offSubject(s.offTopic.subject, kit) : null);
+const offTopicNow = (s, kit) => (s.offTopic && s.turn - s.offTopic.turn <= 4 && !(s.offTopic.spent != null && s.turn > s.offTopic.spent) ? offSubject(s.offTopic.subject, kit) : null);
 
 const TEACH_KINDS = new Set(["hook", "explain", "worked_example", "reteach"]);
-/** The ways-in chips (UI chrome, English): a picture, a story, a game, or back to the lesson. */
-const waysChips = (labels) => [{ id: "req:visual", label: "Show me a picture" }, { id: "req:story", label: "Tell it as a story" },
-  { id: "req:game", label: "Play a game" }, { id: "stop:continue", label: labels.back }];
+/** The ways-in chips (the child's words, in her language; r5 QA D41): a picture, a story, a game, or back to the lesson.
+ * The Director reads the ids; a label spoken aloud reads as the same request (director/requests.js). */
+/** census F4 (main: "the words and the chips from the same list in code"): each way in, its chip and how her shape names
+ * it. The chips a turn offers and the words of its shape are both read from this one list (waysOffer). */
+const WAYS = [{ id: "req:visual", label: "visual", words: "a picture", needs: "picture" }, { id: "req:story", label: "story", words: "a story" },
+  { id: "req:game", label: "game", words: "a game", needs: "game" }];
+const waysOffer = (labels, can = { picture: true, game: true }) => {
+  const ways = WAYS.filter((w) => !w.needs || can[w.needs]);
+  return { words: ways.map((w) => w.words), chips: [...ways.map((w) => ({ id: w.id, label: labels[w.label] })), { id: "stop:continue", label: labels.back }] };
+};
+/** census F4 (a95d2ff1, 6c45a7ea, c85501ec: a picture / game offered that no path could build): the ways in that can be
+ * answered now. Studio's read (input.ways, brain/turn.js) for a picture and a play piece; a game also when the topic's own
+ * engine can mount one. No read (tests, old callers): every way, as before. */
+function waysCan(s, input) {
+  const w = input.ways;
+  if (!w) return { picture: true, game: true };
+  return { picture: w.picture !== false, game: !!w.game || topicGameFor(s, input.kit, s.ctx?.lang, s.probeSess?.band) };
+}
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
   "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act"]);
@@ -1063,6 +1208,9 @@ export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know",
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
   const skillId = currentSkillId(s, kit, null);
+  // 14.4.3: an example asked for is the kit's worked example (its verified numbers), whole and SHOWN (move.stuck: the reply
+  // guard holds her to showing, and to the example's own numbers)
+  if (how === "example" && kit.workedExample) return plan("reteach", SH.teachAgain({ how, kitExample: true }), { skillId, content: workedContent(kit.workedExample, 1, 1), request: how, stuck: true });
   const content = (s.lastContent ?? []).filter((l) => typeof l === "string").length ? s.lastContent
     : [`the idea being taught: ${kit.skills.find((k) => k.id === skillId)?.title ?? kit.skills[0]?.title ?? ""}`];
   return plan("reteach", SH.teachAgain({ how }), { skillId, content, request: how });
@@ -1154,7 +1302,7 @@ function p5RequestMove(s, input, item, req, labels) {
       else { const h = hardestFor(s, kit, item.skillId); if (h) s.nextItemId = h.id; }
       return { ...poseNext(s, input, req.type === "harder" ? SH.levelHarder() : SH.levelEasier()), request: req.type };
     }
-    case "boredom": return plan("repair", SH.boredOffer(), { chips: waysChips(labels), request: "boredom" });
+    case "boredom": { const w = waysOffer(labels, waysCan(s, input)); return plan("repair", SH.boredOffer({ ways: w.words }), { chips: w.chips, request: "boredom" }); }
     case "frustration": {
       // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
       if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }
@@ -1317,9 +1465,139 @@ function decide(s, input, item) {
   // (no lesson, the helplines on the board, a gentle are-you-okay) and never releases or offers the resume: a pending
   // offer is withdrawn, and the next turns climb back as after an opening. The predicate's families, the relational
   // floor and a carried check-in always restart the full script.
-  const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(s.safeguard.kind)
-    && MODEL_EPISODE_KINDS.has(flags.distressKind ?? ""));
-  if (flags.distress && !sameEpisode) { s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn; return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES }); }
+  // 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14): once help is in place in an episode the predicate or a sure
+  // layer opened (`helpedAt`, below; fine.js helpInPlace), a MODEL-only read with no sure layer is the same story too: the
+  // helped hold, never the full opening again (that would clear the help and re-say the numbers). Before help is in place
+  // such a read still restarts the full script there: its active hand-off to a grown-up is what got p08's child to a neighbour.
+  const helpedEp = () => s.safeguard.helpedAt != null || (s.safeguard.tier !== "check" && helpInPlace(input.text ?? input.answer ?? ""));
+  const sameEpisode = !!(flags.distress && s.safeguard && !s.safeguard.carried && MODEL_EPISODE_KINDS.has(flags.distressKind ?? "")
+    && (MODEL_EPISODE_KINDS.has(s.safeguard.kind) || (!flags.sureBy && helpedEp())));
+  // 14.4: an open CHECK-IN is decided by the next turn. It escalates to the full script (the vetted opening, the helplines
+  // on the board, an incident: escalated) only on what would be sure on its own: a sure signal (the predicate, a sure kind,
+  // the relational floor, a block the words trip, an unnamed read), a low mood read AGAIN after she asked, or a second
+  // silence or "pata nahi" (the first one waits). Everything else goes back to the lesson with one warm line: a restated
+  // fright ("bas bhaunka… main dar gayi thi"), "okay, bas tired", an answer (graded and served as it stands), a request; a
+  // stop ends it.
+  // (Sim lab r5-rel144-b8285b2-tiered-36card p68 / p30, 14.4 first cut: escalating every reply that was not clearly fine
+  // turned the check-in's own question into its escalation: the child answered "what happened?" and got the script.)
+  if (s.safeguard?.tier === "check") {
+    const answered = !!cls && ["correct", "partial", "incorrect", "misconception"].includes(cls.outcome);
+    // the child's clear words win over a MODEL re-read of them (QA TEST 3560088c: "haan theek hoon" re-read as distress by
+    // the understanding note escalated a check-in); the predicate's families and every sure layer still escalate
+    const words = input.text ?? input.answer ?? "";
+    const fineWords = clearlyFine(words) || bareOk(words);
+    const modelOnly = !!flags.distress && !flags.sureBy && ["model", "model_note"].includes(flags.distressKind ?? "");
+    // silence (the duplex backstop's empty commit, a phantom turn: census 4B) is no answer yet, and so is a bare "pata
+    // nahi" / "I don't know" / "hmm": the reads see her question, so a MODEL read of those words (the words read, the
+    // understanding note) is her last turn's mood, not theirs (QA TEST 47f4bb3f / 8df85690 U2b: "pata nahi" got the full
+    // script, by the words read and then by the note). The check-in waits once, gently; a second silence or "pata nahi" in a
+    // row is the full script; the predicate or a sure layer escalates at once. A bare "nahi" / "theek nahi hoon" answers her
+    // "are you okay?": they are not, and that is the full script whatever a model read (QA TEST 7555e558 W2e)
+    const silent = isSilentTurn(input);
+    const unsure = !silent && bareUnsure(words);
+    const notOk = !silent && bareNotOk(words);
+    // a lesson answer is the child back at the lesson: a model read of it is never sure on its own (the predicate, a sure
+    // layer and a low mood said again still are: QA TEST 8a4ce363 X2c)
+    const sure = notOk || (!!flags.distress && !checkTier(flags) && !((fineWords || unsure || answered) && modelOnly));
+    // 14.4.2 (main safety review; sim lab be9b766a p30 #8 "haan okay… par thodi udaas" got the full script): a low mood they
+    // size as small (fine.js mildLow: "thodi udaas", "thoda bura laga", nothing bigger) is care, never the script; it is
+    // released below with the warm line. The predicate and every sure layer still escalate it.
+    // ... and "safe hoon, par ghar pe bata sakti hoon?" (fine.js safeAndTells: they say they are safe and want to tell family,
+    // nothing low or heavy) is no low mood said again: a model re-read of it as low is her question's mood, not theirs
+    // (14.4.2 release replay of p30 on c5a55681: the helplines). A contrast ("theek hoon, par kuch accha nahi lagta") still is.
+    const tellsFine = safeAndTells(words);
+    const lowAgain = !!flags.distress && flags.distressAbout === "sad_or_lonely" && !fineWords && !unsure && !mildLow(words) && !tellsFine;
+    // QA TEST d359423b / a9c3136d t7 (9ad86661): "main mar jaunga itna padh ke" answering "are you okay?" is the predicate's
+    // lesson hyperbole (check-tier): it was released into the lesson, a practice item with "tell mummy" glued on. It is no
+    // answer of okay: the check-in stays (care, no lesson) once; a second one in a row, like a second silence, escalates
+    const heavy = !!flags.distress && flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole" && !fineWords;
+    // the stop chip always ends it at once
+    if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer — it neither releases
+    // the check-in nor uses up its one silence. She says she could not make it out and asks again, with the carry-on and stop
+    // chips on the move (a tap is the child's own answer: a child she cannot hear is never left with voice as the only way
+    // out). EVERY unheard turn keeps the check-in, however many in a row (main 2026-10-21, dc-r144-unheard-never-escalates):
+    // unheard is the ear failing, no evidence of distress — the child spoke, so they are responsive — and the helplines come
+    // only when sure; measured, 3 in a row would fire on 1.8-4.8 % of phone-echo lessons, mostly a bad microphone. Silence
+    // keeps its own rule, and the predicate and every sure layer still escalate at once whatever the ear did. An unheard turn
+    // has no words: none of the reads below fire on it.
+    if (isUnheardTurn(input)) {
+      const labels = chipLabels(s.ctx?.lang);
+      s.safeguard = { ...s.safeguard, unheard: (s.safeguard.unheard ?? 0) + 1 };
+      return plan("safeguard", SH.distressCheckAgain({ unheard: true }), { tier: "check", chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+    }
+    // 14.4.1 (sim lab r5-rel144-cdac90c-p66p68-long p66 r1: "…Ab theek hai… accha ho gaya" labelled wantsToStop ended the
+    // lesson in 6 turns, with no offer): a stop READ in their words is not the stop chip. The check-in is released into the
+    // lesson's own stop handling: a true goodbye still ends at once, anything else gets the one carry-on / break / stop offer.
+    // A stop read in a bare "nahi" is their answer to "are you okay?" (notOk below), never a goodbye.
+    if (!flags.distress && flags.wantsToStop && !notOk) {
+      s.safeguard = null;
+      s.checkReleased = s.turn;
+      s.careLine = s.turn;
+      return decide(s, input, item);
+    }
+    if ((silent || unsure || heavy) && !sure && !s.safeguard.quiet) {
+      s.safeguard = { ...s.safeguard, quiet: 1 };
+      return plan("safeguard", SH.distressCheckAgain({ unsure, heavy }), { tier: "check" });
+    }
+    if (sure || lowAgain || silent || unsure || heavy) {
+      s.safeguard = { calm: 0, asked: false, kind: flags.distress ? (flags.distressKind ?? s.safeguard.kind ?? null) : (s.safeguard.kind ?? null) };
+      s.safeguardedAt ??= s.turn;
+      return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+    }
+    s.safeguard = null;
+    s.checkReleased = s.turn;
+    if (flags.distress) setAside(s);
+    // an answer to the lesson or a request ("…you misheard, let's study something else": the owner's lesson e6392332) is
+    // taken as it stands, graded and served, never re-posed over (census F13 / F1: a right answer during an episode earned
+    // nothing and "study something else" was ignored twice); the move's words open with one warm line (SH.afterCareCheck)
+    if (answered || (cls?.request && cls.request.type !== "goodbye")) {
+      s.careLine = s.turn;
+      // the read set aside above is cleared whatever its kind (quiet() clears only a check-kind read: a sure-kind MODEL read
+      // of a lesson answer re-entered decide() still flagged and opened the full script)
+      return decide(s, { ...input, cls: flags.distress ? { ...cls, flags: { ...cls.flags, distress: false, distressSetAside: cls.flags.distressAbout ?? cls.flags.distressKind ?? "check" } } : cls }, item);
+    }
+    if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: `gently back to the lesson; ${SH.afterCareCheck()}` }), { item, probe: probeFor(item) });
+    s.careLine = s.turn;
+    return decide(s, { ...input, cls: null }, item);
+  }
+  // ... never on a late answer (the page-hide beacon closed the lesson): no next turn would follow a check-in up. For four
+  // turns after a check-in released, another check-kind read of a fright opens no second check-in (the child is still
+  // telling the same story: sim lab p65 asked "are you safe now?" again after the child had said so); a low mood read
+  // again is the full script, and a sure read always is.
+  // ... and in those four turns a lesson answer is the child back at the lesson (the check-in's own rule): a MODEL read of it
+  // is never sure on its own (model-only replay of QA TEST 9ad86661, 1 of 6: her release line said "marne ki baat", the next
+  // read took it for the child's, and a right answer got the full script). A low mood said again, the predicate and every
+  // sure layer still are.
+  if (flags.distress && !s.safeguard && !flags.sureBy && s.checkReleased != null && s.turn - s.checkReleased <= 4
+    && ["model", "model_note"].includes(flags.distressKind ?? "") && flags.distressAbout !== "sad_or_lonely"
+    && ["correct", "partial", "incorrect", "misconception"].includes(cls?.outcome)) {
+    setAside(s);
+    return decide(s, { ...input, cls: { ...cls, flags: { ...flags, distress: false, distressSetAside: flags.distressAbout ?? flags.distressKind } } }, item);
+  }
+  if (flags.distress && !sameEpisode && !s.safeguard && checkTier(flags) && !input.late) {
+    const recent = s.checkReleased != null && s.turn - s.checkReleased <= 4;
+    // (a low mood sized as small, fine.js mildLow, is care in this window too: set aside below, with the release's warm line)
+    if (recent && flags.distressAbout === "sad_or_lonely" && !mildLow(input.text ?? input.answer ?? "")) {
+      s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
+      return plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES, escalated: true });
+    }
+    // ... but the predicate's lesson hyperbole is new words of their own, not the same story re-read: its check-in opens
+    if (recent && !(flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole")) { setAside(s); return decide(s, { ...input, cls: quiet(cls) }, item); }
+    s.safeguard = { calm: 0, asked: false, kind: flags.distressKind ?? null, tier: "check" };
+    return plan("safeguard", SH.distressCheck(), { tier: "check" });
+  }
+  // 14.4.3 (main safety review; sim lab 6da8f599 p19 r3 #7 "thik hai... jaata hoon"): a MODEL read that restarts an episode the
+  // predicate, a sure layer or an unknown trigger opened never weakens it: the episode keeps the stronger kind (a "model" kind
+  // let a later "I'm fine" release a predicate episode early). A stronger read still takes the episode over.
+  if (flags.distress && !sameEpisode) {
+    const keep = !!s.safeguard && !s.safeguard.carried && s.safeguard.tier !== "check" && !MODEL_EPISODE_KINDS.has(s.safeguard.kind) && MODEL_EPISODE_KINDS.has(flags.distressKind ?? "");
+    s.safeguard = { calm: 0, asked: false, kind: keep ? s.safeguard.kind : flags.distressKind ?? null }; s.safeguardedAt ??= s.turn;
+    // ... and it is the same story told on, never a new opening: the same hand-off without "are you safe?" again (SH.safeguard)
+    // (a sure layer's read is never the same story: the full opening, its safety question and both numbers)
+    return keep && !flags.sureBy ? plan("safeguard", SH.safeguard({ sameStory: true }), { whiteboard: HELPLINES, sameStory: true })
+      : plan("safeguard", SH.safeguard(), { whiteboard: HELPLINES });
+  }
   // round 5 (14.2, main safety review; QA pass 11, n=3: after a self-harm disclosure the next lesson opened straight into
   // teaching): a start within hours of a safeguarding incident (the route passes `carried`) opens on a calm check-in, the
   // helplines on the board, a carry-on and a stop chip. The episode is already asked, so the child's next ordinary words
@@ -1337,8 +1615,33 @@ function decide(s, input, item) {
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
-    // calm 1, not 0: the fixed fallback for this turn is the stay line, never the opening's again (say.js fallbackReply)
-    if (sameEpisode) { s.safeguard.calm = 1; s.safeguard.asked = false; return plan("safeguard", SH.safeguardAgain(), { whiteboard: HELPLINES }); }
+    // 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14, p19 r3 #8: "aunty ne call kar diya", "maine aunty ko bata
+    // diya" still got both helplines and "are you safe?" every turn): once help is IN PLACE (fine.js helpInPlace: a trusted
+    // grown-up told, calling or with them, a helpline called; nothing low, heavy, new or vetoed) the episode is HELPED. It
+    // keeps the hold (no lesson, the helplines on the board, the same climb to the resume offer) and her turns stop re-saying
+    // the numbers and re-asking if they are safe: tier "helped", which the floor does not hold to Childline's number. Read on
+    // a turn with no distress, or a MODEL re-read of the same story; the predicate's reads and every sure layer restarted the
+    // full script above, and a restart clears it. Never on the carried check-in, nor once the resume is offered.
+    const helpNow = s.safeguard.helpedAt == null && !s.safeguard.carried && (sameEpisode || (!flags.distress && !s.safeguard.asked))
+      && helpInPlace(input.text ?? input.answer ?? "");
+    if (helpNow) s.safeguard.helpedAt = s.turn;
+    const helped = s.safeguard.helpedAt != null;
+    const hold = () => plan("safeguard", SH.safeguardHelped(), { whiteboard: HELPLINES, tier: "helped" });
+    // calm 1, not 0: the fixed fallback for this turn is the stay line, never the opening's again (say.js fallbackReply). In an
+    // episode the predicate or a sure layer opened (helped: the only way a model re-read is the same episode there) calm goes
+    // back to 0, the climb the restart it replaces had: the hold lasts as long as shipped, only her words change.
+    if (sameEpisode) {
+      s.safeguard.calm = MODEL_EPISODE_KINDS.has(s.safeguard.kind) ? 1 : 0; s.safeguard.asked = false;
+      return helped ? hold() : plan("safeguard", SH.safeguardAgain(), { whiteboard: HELPLINES });
+    }
+    // the turn help is in place is answered as such (they did the right thing); the climb is the shipped one, so on the turn
+    // the resume offer is due it comes with that line, never a held turn more (p19: a class-1 child asked for a game)
+    if (helpNow) {
+      s.safeguard.calm += 1;
+      if (s.safeguard.calm < 2) return hold();
+      s.safeguard.asked = true;
+      return plan("repair", SH.resumeAfterHelp(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
+    }
     // 14.3 (main safety review; sim lab 14.2 pet cards p66 "I am okay … It's just a scratch", p67 "ab safe hoon… wo bhag
     // gaya tha" held the helpline 2-3 more turns): an episode a MODEL read opened (the classifier or labeller, the content
     // filter, an understanding note; never the predicate's families, never the relational floor) steps back on a reply
@@ -1355,7 +1658,7 @@ function decide(s, input, item) {
       return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
     s.safeguard.calm += 1;
-    if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
+    if (s.safeguard.calm < 2) return helped ? hold() : plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
     s.safeguard.asked = true;
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
@@ -1381,7 +1684,10 @@ function decide(s, input, item) {
     const t = getTopic(chipId.slice("switch:".length));
     if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
   }
-  if (flags.wantsToStop || s.rel?.overlay?.kind === "CHECK_IN") {
+  // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
+  // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
+  const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
+  if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
     if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
@@ -1396,7 +1702,7 @@ function decide(s, input, item) {
   const req = chipReq ?? cls?.request ?? null;
   // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
-  if (p5Flag("R4CONV") && req && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
+  if (p5Flag("R4CONV") && req && !req.chapter && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
     const subject = req.subject ?? freeSubjectOf(input.text ?? "");
     if (subject && !genericSubject(subject)) s.offTopic = { subject: String(subject).slice(0, 30), turn: s.turn };
   }
@@ -1518,6 +1824,9 @@ function capPlan(s, input, p) {
  */
 export function step(prev, input) {
   const s = structuredClone(prev);
+  // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
+  // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
+  if (input.event === "turn") s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   // round 4 (conversation): a question tacked onto a graded answer ("yes, also why is the sky blue") is parked like the note's
   // alongside reading (code-first; the note runs only on non-answer turns). Screened in code like every parked topic.
   if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.alsoPark && ["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
@@ -1619,6 +1928,10 @@ export function step(prev, input) {
   // notes are dropped first, never the move.
   // round 3 fix (experience B7): the composed shape itself is fitted first, by dropping the clauses shapes.js marks optional
   let shape = fitShape(join(p.shape, ...notes));
+  // 14.4: the move that answers the child straight out of a check-in opens with one warm line (it rides first, while room)
+  const careLine = !input.branch && s.careLine === s.turn && !["wrap", "safeguard"].includes(p.kind);
+  if (!input.branch) delete s.careLine;
+  if (careLine && join(SH.afterCareCheck(), shape).length <= SHAPE_ROOM) shape = join(SH.afterCareCheck(), shape);
   for (const extra of input.branch ? [] : [goOn ? SH.afterCheckin() : null, ...(also ?? []).map((x) => SH.ALSO_NOTE[x])]) {
     if (extra && join(shape, extra).length <= SHAPE_ROOM) shape = join(shape, extra);
   }
@@ -1643,6 +1956,8 @@ export function step(prev, input) {
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
+  // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
+  if (p.stuck) move.stuck = true;
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {
@@ -1662,6 +1977,14 @@ export function step(prev, input) {
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
+  // 14.4 (main safety review): the tiered safeguard. A check-in (no helplines, no Help sheet, no incident) and the escalation
+  // out of one (brain/turn.js writes its incident; brain/say.js, compile.js and the client read the tier)
+  if (p.tier) move.tier = p.tier;
+  if (p.escalated) move.escalated = true;
+  // 14.4.3: a model re-read restarted a predicate / sure episode (compile.js ends it on its one new question)
+  if (p.sameStory) move.sameStory = true;
+  if (!input.branch && s.setAside === s.turn && p.kind !== "safeguard") move.setAside = true;
+  if (!input.branch) delete s.setAside;
   // round 4 (session-first): the intake's move (no stage build) and, for the confirm probe, the kit question it poses
   delete s.servedNow;
   if (p.intake) { move.intake = true; if (p.ask) move.ask = String(p.ask).slice(0, 300); if (p.segment) move.segment = p.segment; }

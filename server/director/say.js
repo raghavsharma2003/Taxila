@@ -49,6 +49,29 @@ const PRAISE_ANY_WIDE = new RegExp([PRAISE_ANY.source,
  * "step toot gaya" after a correct pick). Negations ("galti nahi", "no mistake") are not denials.
  */
 const DENY_ANY = /\b(?:(?:yahan|yaha|isme|ismein|is\s+mein|thodi|chhoti|ek)\s+galti\s+(?:hui|ho\s+gayi|ho\s+gai|hai|kar\s+di)|galti\s+(?:ho\s+gayi|ho\s+gai|kar\s+di|kar\s+di\s+hai)|step\s+(?:toot|tut|chhoot|chhut|reh)\s+gaya|you\s+made\s+a\s+mistake|that'?s\s+(?:wrong|not\s+right|incorrect)|(?:aapka|tumhara|your)\s+(?:answer|jawab)\s+(?:galat|wrong|sahi\s+nahi))\b(?!\s+(?:nahi|nahin|not))/iu;
+/**
+ * QA 14.4.1 (P2: "nahi nahi, 160" got "Aapne jodne ki jagah kuch aur operation kiya", a reteach naming a wrong operation
+ * the child never did): a sentence that says THEY made a mistake (a second-person subject with a fault word, or what they
+ * did instead). A question, a negation ("koi galti nahi") and a general rule ("agar galti ho…") are not claims.
+ */
+const CLAIM_WHO = /(?<![\p{L}])(?:aapne|tumne|aapse|tumse|aapka|tumhara|aapki|tumhari|you|your)(?![\p{L}])/iu;
+const CLAIM_FAULT = /(?<![\p{L}])(?:galat|galti|mistake|wrong|incorrect)(?![\p{L}])|\p{L}+ne\s+ki\s+jagah(?![\p{L}])|(?<![\p{L}])ki\s+jagah\s+(?:badal|ulat|palat)|instead\s+of|(?<![\p{L}])(?:kuch\s+aur|koi\s+aur|doosr[aie]|dusr[aie]|alag|different|another)\s+operation/iu;
+// main safety review (14.4.2): the reassurance after a disclosure ("you did nothing wrong by telling me", "tumne kuch galat nahi
+// kiya", "it's not your fault") is a negation, never a claim
+const CLAIM_NOT = /(?<![\p{L}])(?:nothing\s+(?:wrong|incorrect)|(?:kuch|koi)\s+(?:bhi\s+)?(?:galat|galti)\s+(?:nahi|nahin|na)|(?:not|n['’]t)\s+(?:your|tumhari|aapki)\s+(?:fault|galti)|(?:did|do)\s*(?:not|n['’]t)\s+do\s+anything\s+wrong|(?:galat|galti|mistake|wrong|incorrect)\s+(?:nahi|nahin|not|na)|(?:no|koi|not\s+a|kabhi)\s+(?:galti|mistake)|not\s+(?:wrong|incorrect)|isn'?t\s+wrong|(?:agar|if|whenever|even\s+if|chahe|kabhi\s+kabhi|sometimes|log|students|bachch?e|many|common))(?![\p{L}])/iu;
+const claimSentence = (x) => !/[?？]/.test(x) && CLAIM_WHO.test(x) && CLAIM_FAULT.test(x) && !CLAIM_NOT.test(x);
+/** Does the turn tell the child they made a mistake (G-PRAISE-1's other side: a fault nothing graded)? */
+export const claimsMistake = (text) => DENY_ANY.test(String(text ?? "")) || sentencesOf(text).some(claimSentence);
+/** The turn without its sentences that claim a mistake of theirs. */
+export const stripClaim = (text) => sentencesOf(text).filter((x) => !claimSentence(x) && !DENY_ANY.test(x)).map((x) => x.trim()).join(" ").replace(/\u2024/g, ".").trim();
+
+/**
+ * 14.4.3 (QA on ac4e8e88, 6f1323e8: a right "160" got "160 ko ek baar dobara check kijiye"): doubt cast on their answer —
+ * asking them to check it again, or whether they are sure. Only judged against a RIGHT answer (a check after a wrong one
+ * is a fair nudge).
+ */
+const DOUBT = /(?<![\p{L}])(?:(?:dobara|dubara|phir\s+se|fir\s+se|ek\s+baar\s+(?:aur|dobara|phir\s+se)|ek\s+baar)\s+(?:check|verify|gin|count)\s*(?:kijiye|kariye|karo|kar\s+lo|kar\s+lijiye|karke\s+dekh\p{L}*|kar\s+lein|karein)|(?:double[-\s]?check|re-?check|check\s+(?:it|that)\s+again)(?![\p{L}])|are\s+you\s+sure|(?:pakka|sure)(?:\s+(?:ho|hai|hain))?\s*\?|kya\s+(?:aap|tum)\s+(?:sure|pakka))/iu;
+
 /** A "not right" opening, after an answer the classifier marked correct. */
 const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incorrect", "nope", "oops", "almost", "lagbhag", "thoda\\s+(?:sa\\s+)?galat",
   "nahi,?\\s+(?:ye|yeh)\\s+(?:sahi|theek)", "गलत"].join("|"));
@@ -97,13 +120,16 @@ export const withoutEffortPraise = (text) => String(text ?? "").replace(EFFORT, 
 
 export function praiseProblem(text, verdict) {
   const t = withoutEffortPraise(text).trim();
-  if (!t || verdict === "ungraded") return null;
-  if (verdict === "correct") return DENY_OPEN.test(t) || DENY_ANY.test(t) ? "contradicts" : null;
+  if (!t) return null;
+  // QA 14.4.1: nothing graded wrong, so no mistake of theirs is named (an ungraded turn has no other constraint)
+  if (verdict === "ungraded") return claimsMistake(t) ? "claims" : null;
+  if (verdict === "correct") return DENY_OPEN.test(t) || claimsMistake(t) || DOUBT.test(t) ? "contradicts" : null;
   // F5: a turn with nothing graded may still not tell an attempt it is right ("aapne sahi likha" on an ungraded reply)
-  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : null;
+  if (verdict === "attempt") return PRAISE_ANY_WIDE.test(t) ? "praise" : claimsMistake(t) ? "claims" : null;
   // partial: "nearly" is honest; "bilkul / sahi" is not.
   if (PRAISE_OPEN.test(t) || (verdict === "partial" ? PRAISE_ANY : PRAISE_ANY_WIDE).test(t) || PRAISE_EMOJI.test(t)) return "praise";
   if (verdict === "not_yet" && AGREE_OPEN.test(t)) return "praise";
+  if (verdict === "unverified" && claimsMistake(t)) return "claims";
   return null;
 }
 
@@ -148,6 +174,21 @@ const ACT_WORDS = new RegExp([
 /** A module drawn to be watched (W2-B fixer, minor 8): the explainer@1 board takes no tap; "look at the board" is fine. */
 const watchOnly = (module) => module?.engine === "explainer@1";
 
+// census 2026-10-21 F3 (b08fe8a7 t7: "is diagram mein …" with no diagram ever on screen): a sentence that points at a
+// diagram / picture / chart. Only the pointing forms (a deictic before the word, the word + mein/par + a look verb, "look
+// at the …"): the bare words are mostly not pointing ("tumhe drawing pasand hai?", "picture the next row", the ways offer
+// itself), measured on sim-lab 14.2-14.4 (4384 lines): the bare words 31 lines on an empty stage, all false; this form
+// 6 lines, all with something on stage, 0 on an empty one.
+const DIAG = "(?:diagrams?|charts?|chitra|tasveer|pictures?|figures?|drawings?|sketch|डायग्राम|चित्र|तस्वीर|चार्ट)";
+export const POINT_DIAG = new RegExp([
+  `(?:\\b(?:is|iss|us|uss|yeh|ye|yah|this|that)\\s+${DIAG}(?![\\p{L}]))`,
+  `(?:\\b${DIAG}\\s+(?:mein|me|par|pe|in|on)\\s+(?:\\S+\\s+){0,3}(?:dekh\\w*|look\\w*|see|notice|dikh\\w*))`,
+  `(?:\\b(?:look|dekh\\w*)\\s+(?:at\\s+)?(?:the\\s+|is\\s+|iss\\s+)?${DIAG}(?![\\p{L}]))`,
+  `(?:(?:इस|यह|ये|उस)\\s+${DIAG})`,
+].join("|"), "iu");
+/** Nothing on the stage at all: no Studio piece, no module in the tray. */
+export const emptyStage = (ui, module) => !ui?.studioSlot?.artifact && !module?.id;
+
 /**
  * G-SAY-1 → true when the line refers to the screen and nothing on it can be acted on, or when it asks the child to tap
  * / pick something while the only thing on screen is a board drawn to be watched.
@@ -161,6 +202,8 @@ export function screenProblem(text, ui, module, { coming = false } = {}) {
     // r12 RCA failure 5: LOOKING needs only something to look at — a whiteboard counts; what it shows is checked below
     if (!act && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
   }
+  // census F3: she points at a diagram / picture and nothing is on the stage (and nothing is coming this turn)
+  if (!coming && emptyStage(ui, module) && POINT_DIAG.test(t)) return true;
   // release 13 integration (ms-r13-claims-in-flight): a piece this very turn brings (the child asked for a picture / game /
   // animation and the move answers with one) is drawn in sync with her line or lands a moment later, so it is not on the
   // stage yet when her words are checked; pointing at it is the point. A piece that then fails is the slot-failure path's.
@@ -266,9 +309,12 @@ export function unpointScreen(sentence) {
  * that only points keeps its content in words (unpointScreen); one that asks the child to act on the screen goes. */
 /** Does the line point at the screen / board at all (agent lane: nothing is up, so any pointing is a false claim)? */
 export const pointsAtScreen = (text) => POINT_AT.test(String(text ?? ""));
-export function stripScreenRefs(text) {
+export function stripScreenRefs(text, { stageEmpty = false } = {}) {
   const sentences = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [];
-  return sentences.map((s) => (refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();
+  // census F3: on a stage the caller knows is empty, a sentence pointing at a diagram / picture goes too (nothing to
+  // unpoint it to); a caller that does not pass the stage strips exactly as before
+  const diag = (s) => stageEmpty && POINT_DIAG.test(s);
+  return sentences.map((s) => (diag(s) ? "" : refersToScreen(s) || POINT_AT.test(s) ? (unpointScreen(s) ? `${unpointScreen(s)} ` : "") : s)).join("").trim();
 }
 
 // ── the Question card ──

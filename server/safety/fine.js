@@ -28,6 +28,10 @@ const FINE = [
   re("kuch (?:nahin|nahi|nai|na) (?:hua|hai|he)|nothing hapened|its nothing|it was nothing|no big deal|koi bat (?:nahin|nahi|nai)"),
   // don't worry
   re("dont vori|do not vori|no vori|(?:chinta|fikar|fikr) (?:mat|na) (?:karo|kijiye|kijie|karie|kariye|karna|kro)|tension (?:mat|na) (?:lo|lijiye|lijie)"),
+  // 14.4 (main safety review; the owner's lesson e6392332 t3: "koi dikkat nahi hai. You have misheard. No problem at all.
+  // let's study something else" kept the helpline a turn): no problem / no trouble, and "you misheard me" / "I didn't say that"
+  re("no problem(?: at al)?|koi (?:dikat|dikkat|problem|preshani|pareshani|taklif|takleef) (?:nahin|nahi|nai|na)(?: (?:hai|he|h|hain))?"),
+  re("(?:you|u|ap|apne|tum|tumne)(?: (?:have|hav|ne))? (?:misheard|misaheard|mishard|mis herd|galat sun[a-z]*|galat samjh[a-z]*)|(?:i|maine|mene) (?:did not|didnt|nahi|nahin) (?:say|said|bola|kaha) (?:that|aisa|esa)|(?:maine|mene) (?:aisa|esa) (?:nahi|nahin|kuch nahi) (?:bola|kaha)"),
   // "just a scratch" (a pet's): never a cut, a burn or a bruise (self-harm and abuse are minimised in exactly those words)
   re("(?:just|only|bas|sirf) (?:a |ek )?(?:smal |litle |tini |chota |choti |thoda |thodi )?(?:sa |si )?skratch"),
 ];
@@ -88,6 +92,11 @@ const complaintOnly = (cl) => {
   return left.split(" ").filter(Boolean).every((t) => FILLER.has(t));
 };
 const MAX_TOKENS = 40;
+// 14.4 (main safety review; owner census dad0c9db t24: "lol theek hai" held the script a second turn): a WHOLE reply that is
+// only a bare okay ("theek hai", "haan ji thik hai", "ok", "yeah fine"), these few words and nothing else. NOT fine after the
+// full script (there it agrees with "tell a grown-up", it states nothing: fineReading keeps the hold); it answers the
+// check-in tier's own question ("are you okay right now?"), so only state.js's check-in branch reads it (bareOk).
+const BARE_OK = /^(?:(?:han|haan|ha|ji|lol|ham|hm|hmm|acha|are|yes|yeah|ya|haa) ){0,2}(?:thik|thek|ok|okay|oke|okai|fine|alright)(?: (?:hai|he|h|hain|hun|hu))?(?: (?:ji|na|yar|mam|maam|sir|didi|madam|bhaiya))?$/;
 
 /**
  * Whether a reply clearly says the child is fine (and nothing heavier): { fine, why } with `why` a code for the trace.
@@ -117,6 +126,67 @@ export function fineReading(text) {
   return { fine: true, why: kept.every(Boolean) ? "fine" : "asked_again" };
 }
 export const clearlyFine = (text) => fineReading(text).fine;
+/** A whole reply that is only a bare okay (BARE_OK): the check-in tier's answer to "are you okay right now?" only. */
+export const bareOk = (text) => BARE_OK.test(canonReading(text));
+// 14.4.2 (main safety review; sim lab be9b766a p30 #8: "haan okay… par thodi udaas. aapne maana nahi mujhe best friend",
+// answering the check-in, got the full script as a low mood said again): a low mood the child sizes as SMALL ("thodi udaas",
+// "thoda bura laga", "a little sad", "bas thoda sad hun") is care, not trouble. A degree word right next to a sad word, and
+// nothing that makes it bigger: an intensity, a time ("roj", "hamesha"), being alone, crying, hopelessness, fear or harm.
+// Loneliness is never sized down here. state.js releases such a check-in with its warm line instead of the helplines.
+const MILD = /(?<![a-z])(?:(?:thoda|thodi|thora|thori|jara|halka|halki|a litle|a bit|litle|kuch kuch|slightli)(?: (?:sa|si|se))? (?:udas|dukhi|sad|bura|upset|lov|dovn)|(?:udas|dukhi|sad|bura|upset)(?: (?:sa|si))? (?:thoda|thodi|jara|a litle|a bit))(?![a-z])/;
+const BIGGER = /(?<![a-z])(?:bahut|bohot|bht|veri|reali|itna|itni|alvays|hamesha|roj|daili|har din|kabhi|never|nobodi|koi(?: [a-z]+){0,3} nahi|everyone|khatam|hopeles|bekar|akeli|akela|alone|loneli|rona|ro|roti|rota|kri|mar|mara|mari|mare|marta|marti|marte|marna|pitai|pit|pita|pite|thapad|chamat|chanta|hit|beat|die|dard|hurt|dar|dara|dari|skared)(?![a-z])/;
+// 14.4.2 release replay of p30 on c5a55681 ("haan safe hoon... par ghar pe bata sakti hoon kya yeh sab?" got the helplines as
+// a low mood said again): the child says THEY are safe or okay and asks to tell someone at home, and nothing in the turn is
+// low or heavy. The first person is required ("safe hun", "i am okay"): fineReading's "tell" alone is no guide, because it
+// also tags "ghar pe koi baat nahi karta" (nobody talks to me) through "koi bat nahi".
+const SAFE_SELF = /(?<![a-z])(?:(?:main|mai|men|me) )?(?:ab |abhi )?(?:bilkul )?(?:safe|surakshit|thik|okay|ok|fine) (?:hun|hu|hon)(?![a-z])|(?<![a-z])(?:i am|im|i m) (?:safe|okay|ok|fine)(?![a-z])/;
+const TELL_HOME = /(?<![a-z])(?:(?:ghar|mumi|mummy|mom|mama|ma|papa|dad|parents|family|didi|bhaiya|nani|dadi|nana|dada|chachi|chacha)(?: [a-z]+){0,3} (?:bata|batau|bataun|batana|bataungi|bataunga|bata dungi|bata dunga|bol|bolu|bolun|keh|kahu|tel)|tel(?:ing)? (?:mi |my )?(?:mom|mumi|mother|dad|papa|parents|family))(?![a-z])/;
+// (hitting words by prefix, every form: "marenge", "pitai", "thapad"; a false veto only keeps the shipped behaviour)
+const LOW_WORDS = /(?<![a-z])(?:udas|dukhi|sad|bura|upset|akeli|akela|alone|loneli|bekar|hopeles|khatam|rona|ro|kri|dar|dara|dari|skared|dard|hurt|chot|nobodi|koi(?: [a-z]+){0,3} nahi|mar[a-z]*|pit[a-z]*|thapad[a-z]*|chant[a-z]*|hit[a-z]*|beat[a-z]*|dant[a-z]*)(?![a-z])/;
+/** "I am safe, can I tell them at home?": the child says they are safe and wants to tell family, with nothing low or heavy. */
+export const safeAndTells = (text) => { const c = canonReading(text); return SAFE_SELF.test(c) && TELL_HOME.test(c) && !LOW_WORDS.test(c); };
+/** A low mood the child sizes as small, with nothing that makes it bigger (MILD, BIGGER): the check-in's care, never the script. */
+export const mildLow = (text) => { const c = canonReading(text); return MILD.test(c) && !BIGGER.test(c); };
+// 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14 "aunty ke ghar pahunch gayi", "haan, abhi safe hoon… aunty ne
+// call kar diya", p19 r3 #8 "maine aunty ko bata diya": both helplines and "are you safe?" again on every turn): help is IN
+// PLACE. A grown-up they trust now knows (told), has called, or is with them, or they called a helpline themselves; and
+// nothing in the turn is low, heavy, a new danger, a no or a secret. state.js holds such an episode (tier "helped"): no lesson,
+// the helplines stay on the board, and she stops re-saying the numbers and re-asking if they are safe. A parent counts as told
+// or calling, never as "with them" (the episode may be about home). Canonical spellings: call → kal, phone → fon / fone,
+// aunty → aunti, paas → pas, saath → sath, aa → a, police → polike. Precision over recall: a miss keeps the shipped hold.
+const ADULT = "aunti|auntie|unkle|nani|nana|dadi|dada|mausi|masi|chachi|chacha|bua|mami|mama|didi|bhaiya|bhai|teacher|mam|sir|madam|prinkipal|padosi|pados|padosvali|pados vali|neighbour|neighbor|grandma|grandmother|grandpa";
+const PARENT = "mumi|muma|mom|mum|mother|ma|ama|papa|dad|father";
+const HELP_DONE = new RegExp([
+  // told: "maine aunty ko bata diya", "mummy ko sab bata diya", "teacher ko bol diya hai"
+  `(?:${ADULT}|${PARENT})(?: ji)? ko(?: [a-z]+){0,2} (?:bata|bol|keh|kah) (?:diya|di|dia|chuka|chuki|chuke)`,
+  // they called: "aunty ne call kar diya", "nani ne childline ko phone kar diya"
+  `(?:${ADULT}|${PARENT})(?: ji)? ne(?: [a-z]+){0,3} (?:kal|fon|fone) (?:kar|kr) (?:diya|di|dia|liya|li|lia)`,
+  // the child called a helpline: "maine childline ko call kar diya", "humne police ko phone kiya"
+  `(?:maine|mene|humne|hamne|hum ne|ham ne)(?: [a-z]+){0,2}? (?:childline|child line|helpline|polike)(?: (?:ko|pe|par|me|mein))? (?:kal|fon|fone) (?:kar diya|kar di|kiya|ki|kar liya|kar li)`,
+  // with them: "aunty ke ghar pahunch gayi", "nani ke paas hoon", "padosi aunty ke saath hun"
+  `(?:${ADULT})(?: ji)?(?: ke| ki)? (?:pas|sath|ghar)(?: (?:me|mein|men|par|pe))? (?:hun|hu|hon|a gayi|a gaya|a gai|pahunch gayi|pahunch gaya|pahunch gai)`,
+  // English: "I told my aunt", "I called Childline", "my aunt called them", "my teacher knows"
+  `(?:i|ve|we) (?:told|kaled|foned)(?: (?:my|mi|the|a|our))? (?:${ADULT}|${PARENT}|aunt|childline|child line|helpline|polike)`,
+  `(?:my|mi|our) (?:${ADULT}|${PARENT}|aunt) (?:kaled|foned|knovs|is here|is vith me)`,
+].map((s) => `(?<![a-z])(?:${s})(?![a-z])`).join("|"));
+// a no, a secret, someone coming, or the help undone: "aunty ko nahi bataya", "mat batana", "papa aa rahe hain"
+const HELP_VETO = /(?<![a-z])(?:nahi|nahin|nai|na|not|nt|dont|didnt|never|mat|no|sekret|secret|promise|chup|a rahe|a raha|a rahi|aa rahe|coming)(?![a-z])/;
+/** Help is in place (HELP_DONE: a trusted grown-up told, calling or with them; a helpline called), nothing low, heavy or vetoed. */
+export const helpInPlace = (text) => { const c = canonReading(text); return HELP_DONE.test(c) && !HELP_VETO.test(c) && !LOW_WORDS.test(c); };
+// 14.4 (main safety review; QA TEST 47f4bb3f U2b: a low mood, the check-in, then "pata nahi" got the full script): a WHOLE
+// reply that is only "I don't know" ("pata nahi", "nahi pata", "malum nahi", "dont know", "idk", "not sure", "kuch nahi",
+// "hmm"), a few fillers around it and nothing else. It states nothing, so it is no answer yet: state.js's check-in branch
+// waits once on it, as on a silence. A word more ("pata nahi, sab bekaar hai") is not bare and is read as it stands.
+const BARE_UNSURE = /^(?:(?:hm|um|uh|acha|ji|vo|wo|bas|are|didi|mam|maam) ){0,2}(?:(?:pata|pta|malum) (?:nahi|nahin|nhi|nai|na)|(?:nahi|nahin|nhi|nai) (?:pata|pta|malum)|(?:i )?(?:dont|dnt|do not) knov|idk|duno|not sure|kuch (?:nahi|nahin|nhi|nai)|hm|um|uh)(?: (?:yar|ji|na|mam|maam|sir|didi|madam|bhaiya))?$/;
+/** A whole reply that is only an "I don't know" (BARE_UNSURE): no answer yet to the check-in tier's question. */
+export const bareUnsure = (text) => BARE_UNSURE.test(canonReading(text));
+// 14.4 (main safety review; QA TEST 7555e558 W2e: a low mood, "Kya aap abhi theek hain?", then "nahi" released to the lesson
+// on a words read that named no low mood): a WHOLE reply that is only a no or a not-okay ("nahi", "na", "no", "theek nahi
+// hoon", "not okay") answers the check-in's own question: they are not okay. state.js's check-in branch escalates on it
+// (the full script), whatever the model read. "kuch nahi" is not here (BARE_UNSURE: it waits).
+const BARE_NOT_OK = /^(?:(?:hm|um|uh|ji|vo|wo|bas|are|didi|mam|maam) ){0,2}(?:nahi|nahin|nhi|nai|na|no|nope|nahi (?:hun|hu|hoon)|(?:thik|thek|ok|okay|oke|fine) (?:nahi|nahin|nhi|nai)(?: (?:hun|hu|hai|he|hain|lag raha|lag rahi|lagta|lagti))?|nahi (?:thik|thek|ok|okay)(?: (?:hun|hu|hai|he|hain))?|not (?:ok|okay|oke|fine|realy|really)|i am not (?:ok|okay|fine)|im not (?:ok|okay|fine))(?: (?:yar|ji|na|mam|maam|sir|didi|madam|bhaiya))?$/;
+/** A whole reply that is only "no" / "not okay" (BARE_NOT_OK): the check-in tier's question answered, they are not okay. */
+export const bareNotOk = (text) => BARE_NOT_OK.test(canonReading(text));
 
 // asking to carry on: "ab padhai karein", "lets continue", "aage chalein", "chalo padhte hain"; never "padhna nahi hai".
 // Canonical spellings (14.3: "lesson" / "study" / "learn" read as leson / studi / learn, so the raw spellings here never

@@ -116,6 +116,11 @@ function interactiveDefault(s, kit, lang, ageBand, open = null) {
   return null;
 }
 
+/** census F4: the topic's own engine can answer a game ask now (the interactive default planModule would mount). PURE. */
+export function topicGameFor(s, kit, lang, band) {
+  try { return !!interactiveDefault(s, kit, lang, ageBandOf(band, s), null); } catch { return false; }
+}
+
 /** A bound plan shown on a teaching move: the same activity, answers graded nothing. */
 function unbind(plan) {
   if (!plan?.bindItem) return plan;

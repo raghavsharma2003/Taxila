@@ -22,7 +22,8 @@ export const WRITES = Object.freeze({
  * the academic record.
  */
 export const LAYER_TABLES = Object.freeze({
-  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state", "rel_state"],
+  // *_superseded (030_lesson_undo.sql): a superseded turn's rows, moved out of the live tables by the child's own edit
+  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state", "rel_state", "kt_evidence_superseded", "evidence_superseded"],
   mis: ["kt_misconception", "misconception_state"],
   ability: ["kt_ability", "kt_ability_epoch"],
   eta: ["kt_child"],
@@ -45,6 +46,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "student_event", "conductor_state", "decision_log", "brief_snapshot", "day_plan",
   // comprehension engine (007_comprehension.sql): academic record derived from answers
   "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
+  // 030_lesson_undo.sql: the same rows of a turn the child's own edit superseded
+  "weave_queue_superseded", "probe_log_superseded", "grade_audit_superseded",
   // 008_tutor_choice.sql: the child's tutor-switch analytics (choice history + time to choose) — history, not a layer
   "tutor_switch",
   // 010_parent_report.sql: rendered parent reports, derived from the academic evidence (claims cite ledger rows)

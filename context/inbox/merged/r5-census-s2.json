@@ -1,0 +1,114 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r5-studio-thaws-after-safeguard",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "Studio draws again once the Director's safeguard episode closes (bfc57b9a, main safety review passed): studioSeam.onSafetyClosed clears L.safety and Stagecraft's quarantine when brain/turn.js safeguardClosed(next, move, incident) holds (no open state.safeguard, no safeguard move, no incident). Opening, stay, resume offer and the check-in tier still freeze; a content-filter re-plan freezes again; nothing retired is re-shown. Census F9 (66407a56, e6392332): Studio stayed frozen for the rest of the lesson after any safeguard. Reverse if a board drawn after release ever shows on a turn whose plan is a safeguard."
+    },
+    {
+      "id": "dc-r5-ways-by-capability",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "The ways-in chips (change topic, boredom) offer only what can be built, and her shape names exactly the chips offered (64a1b78b): director/state.js WAYS is the single list (chip id, label, words); studioSeam.waysFor gives picture (Studio on, not frozen) and game (play coverage admits the skill / topic, or a prepared doable piece), the Director adds the topic engine (modules.js topicGameFor). Census F4 (a95d2ff1 P0, 6c45a7ea, c85501ec). Reverse if a game chip is ever tapped and no game, engine or prepared piece answers it, or a story / challenge alone proves too thin a choice in a census."
+    },
+    {
+      "id": "ms-r5-game-coverage-830",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 830,
+      "method": "scratchpad gamecov.mjs: forge3 admitPlay(null, topicId) and modules.js topicGameFor over every kit topic (kitFromFile), no lesson pieces",
+      "title": "Game paths per topic: play coverage 59, topic engine 189, either 219 of 830; 611 topics have neither and were offered the game chip before 64a1b78b. By subject (either / topics): maths 156/304, science 49/146, evs 14/64, english 0/118, hindi 0/133, sst 0/65."
+    },
+    {
+      "id": "ms-r5-diagram-pointing",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 4384,
+      "method": "scratchpad diagpoint*.mjs / diagmeasure.mjs: sim-lab 14.2-14.4 teacher lines, the turn's recorded screen (whiteboard / module / studio) as the stage",
+      "title": "Diagram / picture words in teacher lines: the bare words (diagram, chart, chitra, tasveer, picture, figure, drawing, sketch + Devanagari) in 124 lines with no screen word, 31 on an empty stage, all false pointers ('tumhe drawing pasand hai?', 'picture the next row', the ways offer). The pointing forms shipped in 384ba4be (POINT_DIAG): 5 lines, all with something on stage, 0 on an empty one: 0 moved lines. Census F3 b08fe8a7."
+    },
+    {
+      "id": "ms-r5-choice-shape",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 4640,
+      "method": "scratchpad choices*.mjs: items.js choicesFor over every kit item with a non-numeric, non-fraction key (seed 1), a chip set 'stands out' when a distractor differs from the key in digits, money, working / notes, sentence form or length (> 2x+1 words)",
+      "title": "Choice chips for non-numeric keys: before bf4b070c, 4511 sets offered and 2572 had a key that stood out (a sentence key beside one-word answers, the key's own working beside bare answers, other questions' answers as distractors); after, 3421 offered, all alike, 1090 fall to the hint rung. Census F3 6c45a7ea t33."
+    },
+    {
+      "id": "rj-r5-worked-number-guard",
+      "kind": "rejection",
+      "at": "2026-10-21",
+      "title": "Tried by measurement (census F3 P0 310b8c82, main #4 option b): a reply guard flagging a non-worked-example reply that uses the kit worked example's numbers and not the open item's. Sim-lab 14.2-14.4: 252 of 1902 lines naive; refined (fade items skipped, numbers >= 11 and not multiples of 10) 14 of 1567, of which at most 2 look like the census mix; the rest are explain / reteach turns continuing a worked example just posed, a screen showing it, or a repair restating the child's working. A rewrite trigger at that precision strips legitimate teaching. The worked example already reaches the prompt only as a move's content (describe(): the item and that content); the census turn's numbers came from the transcript history."
+    },
+    {
+      "id": "open-r5-reply-off-screen-numbers",
+      "kind": "open",
+      "at": "2026-10-21",
+      "title": "Census F3 P0 310b8c82 t12-14: on probe / celebrate / repair moves on an item whose module and boards showed its numbers, the reply talked the earlier worked example's numbers. No predicate cleared the bar: option b (worked-example numbers) 14 of 1567 lines, at most 2 real (rj-r5-worked-number-guard); option c (a probe / practice reply whose numbers share none with the open item while the screen shows it) fires 11 of 328 sim-lab candidates, all 11 legitimate by hand (confirming the child's last answer, then the item posed with its numbers in words). The broader fix is the screen following the move (census F3), not a number guard."
+    },
+    {
+      "id": "open-r5-resume-checkin-patch",
+      "kind": "open",
+      "at": "2026-10-21",
+      "title": "Census F4 P2 dad0c9db t25-27 (the resume after a safeguard asked a rule never taught; its fallback posed the item): a safety-lane patch for main, not applied: docs/design/round5/content/patches/census-f4-resume-checkin.diff (ad9057e3). The resume plans carry checkin 'resume' (checkInProblems: hold / nostop), and its fixed line is the carry-on-or-stop offer (new FALLBACK.checkinResume, to check against the vetted strings). Its test fails on base; the 1061 existing tests that touch safeguard / checkin / fallbackReply pass with it."
+    },
+    {
+      "id": "dc-r5-same-page-not-redrawn",
+      "kind": "decision",
+      "at": "2026-10-21",
+      "title": "A fresh board script that draws exactly what the board shows now is the same page (StudioWhiteboard sameAsBoard: same lesson board, size and ops, ids and timing ignored): drawn complete at once (the player frozen at its end), no wipe, no replay, no new page in the client's page count. Census F9 (3437b744, 310b8c82; main's production read of ui.render.board): every board was drawn twice, the next turn's kept continue board re-sent under a new intent id and the client cleared and redrew it. Client-side so it holds whatever path re-sends the page. Reverse if a teacher line ever needs the same picture re-drawn in step with a new line (it then needs a new page, not a replay)."
+    },
+    {
+      "id": "open-r5-cross-lesson-repeat",
+      "kind": "open",
+      "at": "2026-10-21",
+      "title": "The same board page in one child's next lesson on the same topic (310b8c82 seq2 = 3437b744 seq2, 10 minutes apart): studio shownBefore is lesson-scoped. Production cannot size it yet (13 board.page rows in 5 real lessons, 2 children since the page trace began: 1 repeat inside a lesson, 1 across lessons). Held as acceptable (a recap); re-count when production has >= 100 lessons with boards, and build a per-child recent-pages memory only if it is common."
+    },
+    {
+      "id": "ms-r5-board-follows-kit",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "n": 4384,
+      "method": "scratchpad boardspeech / rungspeech / offboard / offkit .mjs over sim-lab 14.2-14.4 records: a board page (boardPages, wb:N = record turn n, alignment checked at offsets -1/0/+1) or explainer@1 rung mount against her line that turn (studio/request.js syncedWithLine), her line >= 6 content words; an off-kit line = no content word in kitWordsOf",
+      "title": "Census F3 'board on the kit, speech on the child' on sim-lab: Studio pages sharing nothing with her line 129 of 746 (recent builds: 2183c32 1/75, rel143 2/46; one real case p52 voice, two cross-script misses पत्ता/patta); explainer@1 rungs 12 of 33, mostly legitimate by hand (the topic's template board through the teach steps under another example of the same skill or a paraphrase); an off-kit-line detector fired on 113 lines, none a real departure (numeric work, safeguard turns, Devanagari). Sim personas do not pull the reply off the kit, so the census shape is not measurable here; in both census lessons (6c45a7ea, 310b8c82) the Director never registered the child's departure (F1 upstream)."
+    },
+    {
+      "id": "rj-r5-offer-guard",
+      "kind": "rejection",
+      "at": "2026-10-21",
+      "title": "Not built (census F4 P0 3437b744, main): a reply guard for an offer the turn has no path for. Sim-lab 14.2-14.4: 26 of 4384 lines name a game in a question, 11 in topics with no game path, of which most are interest questions, 2 the ways offer (fixed by 64a1b78b) and 1 a free-text offer: about 1 line in 4384. The census case was a topic-switch offer answered while the reply model was unavailable; its causes are an agreement to her own offer not read as that request (4A, requests.js) and the unavailable fallback ignoring a pending request (F10 family)."
+    },
+    {
+      "id": "ms-r5-rect-is-drawing",
+      "kind": "measurement",
+      "at": "2026-10-21",
+      "title": "QA 14.4.1 run 8 (aadae80b t1): a subject-less picture ask failed its slot when the live board failed (W6.timing, W2.text_clear_of_lines). The gated template was refused by answersRequest because isDrawing did not count a rect (the c6-maths-ch06-t01 field: rect + outside side labels + arrows + numwork), and nothing was logged. Fixed in cf25ca72 (a rect with no text inside it is a shape; gatedFallback logs the refusing step). Library templates: 0 of 316 change. Director rungs on a picture ask: 670, drawing 514 -> 516.",
+      "n": 670,
+      "method": "isDrawing before/after over every library template (316) and every Director board rung for a picture ask (kitFromFile), plus run 8 reproduced through answersRequest"
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r5-ways-by-capability",
+      "rel": "measured_by",
+      "dst": "ms-r5-game-coverage-830"
+    },
+    {
+      "src": "rj-r5-worked-number-guard",
+      "rel": "part_of",
+      "dst": "open-r5-reply-off-screen-numbers"
+    },
+    {
+      "src": "dc-r5-studio-thaws-after-safeguard",
+      "rel": "related",
+      "dst": "dc-r144-safeguard-tiers"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r5-studio-thaws-after-safeguard (2026-10-21)\n\nStudio draws again once the Director's safeguard episode closes; every safeguard turn, the check-in tier included, still freezes it; nothing retired is re-shown (bfc57b9a).\n\n## dc-r5-ways-by-capability (2026-10-21)\n\nThe ways-in chips offer only a picture or a game that can be built, and her words name exactly the chips offered, from one list in code (64a1b78b).\n\n## dc-r5-same-page-not-redrawn (2026-10-21)\n\nA re-sent page that draws exactly what the board shows is shown complete at once: no wipe, no replay, no new page.",
+    "measurements": "## ms-r5-game-coverage-830 (2026-10-21, n = 830 topics)\n\n219 topics have a game path (play coverage or the topic engine); 611 have none (all English, Hindi and SST topics).\n\n## ms-r5-diagram-pointing (2026-10-21, n = 4384 sim-lab lines)\n\nBare diagram / picture words on an empty stage: 31 lines, all false. The narrow pointing form: 5 lines, all with a stage, 0 moved.\n\n## ms-r5-choice-shape (2026-10-21, n = 4640 non-numeric keys)\n\n2572 of 4511 chip sets had a key that stood out; after bf4b070c, 3421 offered, all alike.",
+    "rejected": "## rj-r5-worked-number-guard (2026-10-21)\n\n- **Tried:** a reply guard for worked-example numbers on a non-worked-example move.\n- **What broke:** 14 of 1567 sim-lab lines, at most 2 real; the rest is legitimate teaching it would strip.\n- **Lesson:** the census turn's numbers came from the transcript history; the fix is the screen following the move."
+  }
+}

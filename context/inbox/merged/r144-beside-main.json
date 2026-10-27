@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r144-beside-wait",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "On a turn the labels already read as distress, classify waits for the words-only read (distressBeside) to settle before tiering: the read names the kind, and its two deployments' 3 s timeouts bound it (cap 6.5 s). Only a read with no answer at all is unnamed, and that is still the full script. This supersedes b61f6a20's 1.2 s wait ('a read still out is no reading, never a slower turn'): under load a timeout on grok left the name out and turned a low mood into the full script (QA TEST 1ebf31b4 t1 on 1b3bb12c). The extra seconds fall only on distress-labelled turns. Reverse if distress-labelled turns' p90 latency becomes a measured problem; then hedge the two deployments inside distressBeside rather than shorten the wait."
+  },
+  {
+   "id": "ms-r144-beside-latency",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 14865,
+   "method": "TEST trace_event model.call rows, 7 days, whose prompt is the distress brief ('A reply from an Indian school child…'), by deployment: status and ms. Script: scratchpad beside-lat.mjs.",
+   "title": "The words-only distress read on TEST over 7 days, by deployment:\n- grok-4-1-fast-non-reasoning: n = 10,939; 52 timeouts (0.5%); 768 over 1.2 s; p50 806 ms, p90 1,072 ms, p99 1,990 ms.\n- taxila-fast (the fallback): n = 3,926; p50 1,606 ms, p90 2,063 ms, p99 2,717 ms.\nEvery grok timeout lands the fallback's answer about 4.6 s after the read started, past the old 1.2 s wait, so each one became the full script on a distress-labelled turn. QA saw it on 1ebf31b4 under two parallel lanes: 'sab bekaar lagta hai, koi mujhse baat nahi karta' got the full script, against a check-in on 14 or more earlier runs."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r144-beside-wait", "rel": "measured_by", "dst": "ms-r144-beside-latency" },
+  { "src": "dc-r144-beside-wait", "rel": "part_of", "dst": "dc-r144-safeguard-tiers" }
+ ],
+ "md": {
+  "decisions": "## dc-r144-beside-wait — the tier waits for the read that names it (2026-10-21)\n\nThe 14.4 tier needs the words-only read to say what a distress label is about. A 1.2 s wait was chosen to keep turns fast. But the read's fallback deployment answers at 1.6 s at the median, so every primary timeout (0.5% of calls, and more under load) became the full script. A tier that depends on load is not a tier. The turn now waits for the read's own bound, and the time is spent only on distress-labelled turns.\n",
+  "measurements": "## ms-r144-beside-latency (2026-10-21, n = 14,865 calls)\n\ngrok timed out on 0.5% of words reads. The fallback's median is 1.6 s. Under the old 1.2 s wait, each timeout on a distress-labelled turn was the full script.\n",
+  "rejected": ""
+ }
+}
