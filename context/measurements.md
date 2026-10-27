@@ -4907,3 +4907,9 @@ With the real writer: a teach-back that was never asked is no longer mentioned (
 ## ms-r1443-options-on-buttons (2026-10-22, stream 4A)
 
 Sim lab 14.4.2 safety run (6da8f599, p30 r3, lesson 87b610b3 #7): her text-lane line read out the diagnostic card's three choices, run together. No code path glues options into a reply. The compile told her on every lane to read the choices plainly, and she listed them (bullets flattened by the clean-up). In the 14.4 sim-lab records, 12 of 160 text-lane diagnostic turns did this, all move=probe. On the text lane the compile now says the choices are the buttons and are never listed; the voice lane still reads them. Guard "options" (text lane, two or more option texts, never a safeguard turn) rewrites, then removes the option texts in code. It catches 9 of those lines. Test: tests/r1443-options-on-buttons.test.mjs.
+
+
+<!-- merged from inbox/r1443-handoff-main.json -->
+## ms-azure-spend-2026-10-24
+
+About $2,797 of the $5,000 grant is used. It was almost all our own test batteries' model calls on a few burst days. The fixed cost is about ₹1,500/day, of which ₹602 is the unused India Postgres.

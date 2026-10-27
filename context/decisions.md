@@ -6453,3 +6453,11 @@ The episode keeps its stronger kind. Before this, a re-kinded self-harm episode 
 ## dc-r1443-endfacts-honest (2026-10-22)
 
 The end record mentions a teach-back only if one was asked. A lesson where nothing was graded is "a lesson on" its topic, never "practised".
+
+
+<!-- merged from inbox/r1443-handoff-main.json -->
+## Owner directives, 2026-10-27 (handoff)
+
+- **dc-owner-2026-10-27-build-first:** build the whole product first. Then test it ourselves and iterate. Safety, security and compliance come only before real users. Existing safety code stays, frozen.
+- **dc-owner-2026-10-27-azure-soft:** Azure usage should stay sensible. Ask before anything heavy. This is guidance, not a hard rule.
+- **dc-owner-2026-10-27-claude-judges:** judges and evaluation run on Claude, not on Foundry models.

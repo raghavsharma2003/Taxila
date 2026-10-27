@@ -14,8 +14,16 @@ child's whole learning day and reports deeply to parents.
   APIs (ElevenLabs, Sarvam, Simli, HeyGen, Suno, …) — research may cite them, builds may not call them.
   Neon Postgres is allowed (owner's separate Neon grant). Hosting moves from Vercel to Azure Container Apps.
 - **Model policy:** main loop and every build/review agent on the top model at high effort; no downgrades.
-- **Compliance is deprioritised** for now — but the child-safety floor (never deny being an AI, Childline 1098 /
-  Tele-MANAS 14416, no romance/companion register, safeguarding hand-off) is product, not compliance, and stays.
+- **Build first; test, safety and compliance later (owner, 2026-10-27).** The product (architecture, stack, UI/UX,
+  backend) is not final, so do not spend effort on safety batteries, compliance or large test runs now. Order: build
+  the full product with all features → test it ourselves and iterate on internal feedback until it fully works → only
+  before real users, do security / safety / compliance. Existing safety code stays as it is (don't remove it, don't
+  extend or measure it). Unit tests and the build gates still run on code changes.
+- **Azure usage (2026-10-27):** keep it from being unnecessarily high; ask the owner before anything that needs high
+  usage (big batteries, bulk generation). Guidance, not a ban.
+- **Judges and evaluation use Claude (2026-10-27):** rubric scoring, sim-lab judging and blind judging are done by the
+  Claude Code session itself, not by Foundry models on Azure.
+- Start here after the 2026-10-27 handoff: `HANDOFF.md`.
 
 ## Read before changing anything
 `context/` is the project memory: `graph.json` (index), `decisions.md` (with reversal conditions),
