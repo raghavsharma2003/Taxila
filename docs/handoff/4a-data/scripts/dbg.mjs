@@ -1,0 +1,12 @@
+import { initLessonState, step } from "/home/user/Taxila/server/director/state.js";
+import { findItem } from "/home/user/Taxila/server/director/items.js";
+import { classifyFast, targetFor } from "/home/user/Taxila/server/director/classify.js";
+import { kit, CTX, cls } from "/home/user/Taxila/tests/fixtures/kit.mjs";
+const K = kit(); const NE = cls("no_evidence");
+const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
+let r = turn(step(initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0 }), { event: "start", kit: K, now: 0 }), NE);
+const L = "मेरे को कुछ और पढ़ना है, मेरे को आलू के बारे में पढ़ना है। कुछ और पढ़ना है मेरे को। बहुत हो गया आपका अब";
+const f = classifyFast({ target: targetFor(r.state, K, findItem(r.state, K, r.state.activeItemId)), childText: L, typed: false });
+console.log("fast", JSON.stringify(f.result), JSON.stringify(f.request), f.result?.request);
+const c = f.result ?? { outcome: "no_evidence", confidence: 1, source: "model", flags: f.flags, request: f.request };
+const t = turn(r, c, { text: L }); console.log(r.state.phase, t.move.kind, t.move.request, JSON.stringify(t.state.offTopic));

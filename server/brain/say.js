@@ -125,6 +125,26 @@ export function withoutOptions(text, item) {
   }
   return out.replace(/\s+(?:ya|or)\s+(?=[.?!]|$)/giu, " ").replace(/\s{2,}/g, " ").replace(/\s+([.,?!])/g, "$1").replace(/^[\s?.,;!—-]+/, "").trim();
 }
+/**
+ * 14.4.3 (QA on ac4e8e88, 905a3e50 / b28d919f: the worked example shown whole but with a park of her own, 6 m by 4 m): on a
+ * worked-example move every number she states is the kit's worked example's, the move's content's or the child's own
+ * (0-2 are words like "do baar"). → the numbers of `text` that none of those carry.
+ */
+const NUMS = /\d+(?:[.,]\d+)*(?!\d|(?:d|st|nd|rd|th)\b)/giu;
+const numsOf = (t) => new Set((String(t ?? "").match(NUMS) ?? []).map((n) => n.replace(/,/g, "")));
+export function foreignNumbers(text, { kit, content = [], childText = "" } = {}) {
+  const we = kit?.workedExample;
+  const base = numsOf([we?.problem, ...(we?.steps ?? []), ...content.filter((l) => typeof l === "string"), childText].join(" "));
+  // a number worked out from two of them (2 kg → 2000 g, 50 + 30), a unit's 10 / 100 / 1000, and a 0-led group read out
+  // of one of them ("1 lakh, 07 thousand, 040") are the example's own too
+  // (two DIFFERENT numbers of the example, each 3 or more: "6 m by 4 m" is never 3 + 3 or 2 + 2)
+  const vals = [...base].map(Number).filter(Number.isFinite).slice(0, 40);
+  const ok = new Set([...base, "0", "1", "2", "10", "100", "1000"]);
+  const add = (v) => { if (Number.isFinite(v) && v >= 0) ok.add(String(Math.round(v * 1000) / 1000)); };
+  for (const a of vals) for (const k of [10, 100, 1000]) { add(a * k); add(a / k); }
+  for (const a of vals) for (const b of vals) if (a !== b && a >= 3 && b >= 3) { add(a + b); add(a - b); add(a * b); add(a / b); }
+  return [...numsOf(text)].filter((n) => !ok.has(String(Number(n))) && !(n.startsWith("0") && [...base].some((x) => x.includes(n))));
+}
 export const asksToCompute = (x) => TO_THEM.test(String(x).trim()) && COMPUTE_CUE.test(String(x));
 
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
@@ -444,10 +464,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // 14.4.3 (release replay on c5a55681, r2 t3: "…milta hai 80. Ab doosri same jodi bhi 80 hai—total kitna?" after two
   // don't-knows): a worked part SHOWN to a stuck child (state.js move.stuck) asks them to work out nothing. Before this the
   // hand-back check read a showing turn as "flat" and its rewrite put the sum back to the child.
-  const showOnly = state.lastMove?.kind === "worked_example" && !!state.lastMove?.stuck;
+  const showOnly = ["worked_example", "reteach"].includes(state.lastMove?.kind) && !!state.lastMove?.stuck;
   const mustHandBack = !CLOSING_MOVES.has(state.lastMove.kind) && !thinkingWait && !checkin && !restBreak && !showOnly;
   // 14.4.3: on the text lane a diagnostic's choices are the buttons, never listed in her line (never on a safeguard turn)
   const readsOptions = state.mode === "text" && !!item?.diagnostic && state.lastMove?.kind !== "safeguard";
+  // 14.4.3: a worked-example move uses the kit's numbers only (foreignNumbers); never a safeguard turn (it is a worked move)
+  const workedNums = (state.lastMove?.kind === "worked_example" || (state.lastMove?.kind === "reteach" && !!state.lastMove?.stuck)) && !!kit?.workedExample;
+  const foreignOf = (t) => (workedNums ? foreignNumbers(t, { kit, content: state.lastContent ?? [], childText }) : []);
   const whyProbe = !!item && state.pendingWhy === item.id;
   // A comparison across kinds of quantity (45,000 fans vs 4,500 km) in the teacher's OWN words; the kit's posed
   // question is verified content and is not judged here.
@@ -551,6 +574,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     mustHandBack && !handsBack(t) && !(R3 && pinned && parityOf(t).endsOnAsk) && "flat",
     showOnly && sentences(t).some(asksToCompute) && "quiz",
     readsOptions && optionsNamed(t, item) >= 2 && "options",
+    foreignOf(t).length > 0 && "invented",
     !scriptOk(t, lang) && "script",
     words(t) > max && !slotLength(t) && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
@@ -796,6 +820,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("bare") && (rePose || helpAsk ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
+      found.includes("invented") && `it uses numbers that are not in the worked example (${foreignOf(reply).join(", ")}) — use only the worked example in LESSON NOW, with its own numbers`,
       found.includes("options") && "it lists the answer choices, but they are the buttons on the screen — do not list or read them; say your line, then ask the question",
       found.includes("quiz") && "they were stuck: say each step's result yourself and ask them to work out nothing — at most ask if they want to see the next step",
       found.includes("thinkq") && "they are in the middle of a thought — ask nothing at all; only a few words that let them go on and finish it",
@@ -864,6 +889,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("math")) { reply = keepOr(sentences(reply).filter((x) => !arithmeticSlip(own(x))).join(" ").trim()); guard.replaced = true; }
       if (found.includes("praise")) { reply = keepOr(stripPraise(reply)); guard.replaced = true; }
       if (found.includes("claim")) { reply = keepOr(stripClaim(reply)); guard.replaced = true; }
+      if (found.includes("invented")) { reply = sentences(reply).filter((x) => !foreignOf(x).length).join(" ").trim() || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("options")) { reply = keepOr(withoutOptions(reply, item)); guard.replaced = true; }
       if (found.includes("quiz")) { reply = sentences(reply).filter((x) => !asksToCompute(x)).join(" ").trim() || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("corrects")) { reply = keepOr(stripCorrection(reply, right)); guard.replaced = true; }
@@ -1094,7 +1120,7 @@ export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "invented", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**

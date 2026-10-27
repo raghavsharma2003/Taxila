@@ -1,0 +1,8 @@
+import fs from "node:fs";
+const p = "/home/user/Taxila/context/inbox/r145-4a.json";
+const j = JSON.parse(fs.readFileSync(p, "utf8"));
+if (!j.nodes.some((n) => n.id === "ms-r145-f1b-topic-asks")) j.nodes.push({
+  id: "ms-r145-f1b-topic-asks", kind: "measurement", at: "2026-10-21",
+  title: "Census F1 (topic not followed), cause (b), in director/state.js and director/session/{intake,candidates}.js. (1) An explicit topic / switch / change_topic request that the classifier also read as a stop is the topic ask, never the stop check-in (a real goodbye still ends). (2) A change_topic asked again within 6 turns gets real topics of the child's class (topicSequence after today's, then earlier ones) as switch chips plus back-to-today, with SH.topicChoices, instead of today's ways-in once more (production 3437b744, e6392332; 6c45a7ea t12); not while an off-kit subject is pending (r13-visual-honest). (3) The intake reads 'X padhna / padhni hai' as a wish (Roman and Devanagari); a Devanagari line read as taught / unknown / share / nothing is read again through requests.js romanLine; Devanagari query words drop Hindi function words (में की के का …) and a transliterated loanword finds its vocab word by a consonant skeleton (5+ letters, 4+ consonants, unique match): प्रोग्रेशन -> c9-maths-ch08-t02 (2790c473 kept the planned topic). Measured over 4,338 (class, sim-lab line) pairs, old vs new intakeParse + intakeCandidates top: 156 moved; 94+ were junk Hindi-chapter matches on function words, removed ('में' meeting a Hindi title); 20 new matches, mostly plausible; the rest are kind changes to want. Tests that fail on the base: tests/r145-topic-asks.test.mjs (4).",
+});
+fs.writeFileSync(p, JSON.stringify(j, null, 2) + "\n");
