@@ -1,0 +1,2223 @@
+{
+ "console": [
+  "warning: [.WebGL-0xe340011f200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0xe340011f200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0xe340011f200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+  "warning: [.WebGL-0xe340011f200]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)",
+  "warning: cascade: transcription call unavailable, falling back to push-to-talk Error: transcription channel did not open\n    at http://127.0.0.1:8090/assets/LessonScreen-DjH5ngyn.js:2:33830"
+ ],
+ "pageerror": [],
+ "failed": [],
+ "http": [],
+ "trace": [
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 1,
+   "t": 1792010989752,
+   "mono": 119,
+   "kind": "ui.route",
+   "tier": 1,
+   "data": {
+    "path": "/c/527bf70c-eb95-4a14-90f9-c7b5710a3d32/lesson/new",
+    "how": "load",
+    "title": "Taxila · a personal AI teacher"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 2,
+   "t": 1792010989754,
+   "mono": 121,
+   "kind": "dev.info",
+   "tier": 1,
+   "data": {
+    "ua": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/154.0.0.0 Mobile Safari/537.36",
+    "lang": "en-IN",
+    "viewport": {
+     "w": 393,
+     "h": 876
+    },
+    "dpr": 2.75,
+    "screen": {
+     "w": 393,
+     "h": 876
+    },
+    "touch": 1,
+    "memoryGB": 8,
+    "cores": 4,
+    "connection": {
+     "type": "4g",
+     "down": 1.55,
+     "rtt": 100,
+     "saveData": false
+    },
+    "reducedMotion": false,
+    "standalone": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 3,
+   "t": 1792010989780,
+   "mono": 147,
+   "kind": "net.req",
+   "rid": "f3b4566f-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "body": {}
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 4,
+   "t": 1792010989855,
+   "mono": 222,
+   "kind": "net.req",
+   "rid": "f3b4566f-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 5,
+   "t": 1792010989003,
+   "mono": 236,
+   "kind": "net.res",
+   "rid": "f3b4566f-2",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/duplex/config",
+    "status": 200,
+    "ms": 11,
+    "bytes": 19,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "duplex": "shadow"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 6,
+   "t": 1792010989005,
+   "mono": 241,
+   "kind": "net.res",
+   "rid": "f3b4566f-1",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/parent/lock",
+    "status": 200,
+    "ms": 90,
+    "bytes": 11,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "ok": true
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 7,
+   "t": 1792010989094,
+   "mono": 330,
+   "kind": "net.req",
+   "rid": "f3b4566f-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=527bf70c-eb95-4a14-90f9-c7b5710a3d32"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 8,
+   "t": 1792010989298,
+   "mono": 534,
+   "kind": "net.req",
+   "rid": "f3b4566f-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 9,
+   "t": 1792010989304,
+   "mono": 540,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_not_resolved_yet"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplexSource": null,
+    "sttLane": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 10,
+   "t": 1792010989396,
+   "mono": 632,
+   "kind": "net.req",
+   "rid": "f3b4566f-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "body": {
+     "childId": "527bf70c-eb95-4a14-90f9-c7b5710a3d32",
+     "mode": "cascade",
+     "purpose": "lesson"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 11,
+   "t": 1792010989400,
+   "mono": 636,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 12,
+   "t": 1792010989400,
+   "mono": 636,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 13,
+   "t": 1792010989400,
+   "mono": 636,
+   "kind": "ui.render.tray",
+   "tier": 1,
+   "data": {
+    "empty": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 14,
+   "t": 1792010989406,
+   "mono": 642,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": null,
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 15,
+   "t": 1792010990009,
+   "mono": 655,
+   "kind": "net.res",
+   "rid": "f3b4566f-4",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/face/config",
+    "status": 200,
+    "ms": 112,
+    "bytes": 55,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "puppet2d": true,
+     "visemes": true,
+     "rev": "r8",
+     "look": "r8"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 16,
+   "t": 1792010990030,
+   "mono": 676,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "iframe",
+    "w": 2,
+    "h": 2,
+    "src": "/modules.html"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 17,
+   "t": 1792010990074,
+   "mono": 720,
+   "kind": "ui.media",
+   "tier": 1,
+   "data": {
+    "phase": "mount",
+    "tag": "canvas",
+    "w": 359,
+    "h": 408,
+    "zone": "teacher",
+    "testid": "teacher-window"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 18,
+   "t": 1792010990141,
+   "mono": 4113,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 2551,
+    "at": 1417
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 19,
+   "t": 1792010990252,
+   "mono": 4224,
+   "kind": "net.res",
+   "rid": "f3b4566f-3",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/child/map?childId=527bf70c-eb95-4a14-90f9-c7b5710a3d32",
+    "status": 200,
+    "ms": 3642,
+    "bytes": 286312,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "bytes": 278478
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 20,
+   "t": 1792010992515,
+   "mono": 6487,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 332,
+    "at": 5862
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 21,
+   "t": 1792010992515,
+   "mono": 6487,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 286,
+    "at": 6200
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 22,
+   "t": 1792010992516,
+   "mono": 6488,
+   "kind": "perf.lcp",
+   "tier": 1,
+   "data": {
+    "t": 784,
+    "el": "img.teacher-ground-art",
+    "url": "/assets/art/bg/[masked]"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 23,
+   "t": 1792010996005,
+   "mono": 6498,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "webrtc",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 24,
+   "t": 1792010996014,
+   "mono": 6506,
+   "kind": "net.sse",
+   "rid": "f3b4566f-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open-request"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 25,
+   "t": 1792010996014,
+   "mono": 6507,
+   "kind": "trace.session",
+   "tier": 1,
+   "data": {
+    "from": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+    "to": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+    "lesson": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 26,
+   "t": 1792010996019,
+   "mono": 6512,
+   "kind": "mic.duplex",
+   "tier": 1,
+   "data": {
+    "mode": "shadow",
+    "source": "server_shadow",
+    "device": null,
+    "server": "shadow",
+    "build": "on",
+    "asks": [
+     {
+      "status": 200,
+      "ms": 14,
+      "duplex": "shadow",
+      "retry": false,
+      "cohort": null,
+      "lane": null
+     }
+    ]
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 27,
+   "t": 1792010996019,
+   "mono": 6512,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 28,
+   "t": 1792010996019,
+   "mono": 6512,
+   "kind": "mic.lane",
+   "tier": 1,
+   "data": {
+    "lane": "d4",
+    "serverLane": "d4",
+    "device": null
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 29,
+   "t": 1792010996019,
+   "mono": 6512,
+   "kind": "net.res",
+   "rid": "f3b4566f-5",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/start",
+    "status": 201,
+    "ms": 5861,
+    "bytes": 1591,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "topic": {
+      "id": "c6-maths-ch06-t01",
+      "title": "Perimeter of rectangles, squares and polygons",
+      "chapter": "Perimeter and Area"
+     },
+     "teacher": {
+      "id": "asha",
+      "name": "Asha",
+      "characterName": "Asha",
+      "addressedAs": "Asha didi",
+      "pronouns": {
+       "subject": "she",
+       "object": "her",
+       "possessive": "her"
+      },
+      "voice": "marin",
+      "role": "AI teacher",
+      "lookRev": 1,
+      "signatureColor": "#3E7C74"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "warmup",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Perimeter",
+      "beat": {
+       "beatId": "b1-arrive",
+       "type": "arrive",
+       "index": 1
+      },
+      "ask": {
+       "text": "Aapko kaunsa shape pasand hai?"
+      }
+     },
+     "address": "aap",
+     "moment": {
+      "move": "greet",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 0
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B3",
+      "lang": "hinglish"
+     },
+     "teacherOpening": "Namaste Ishaan, main Asha, aapki AI teacher hoon. Aaj hum rectangles, squares aur polygons ka perimeter nikaalenge. Aapko kaunsa shape pasand hai?",
+     "teacherOpeningSeq": 1,
+     "debug": {
+      "move": {
+       "kind": "greet",
+       "shape": "greet Ishaan by name, warm and unhurried; first meeting: name yourself — Asha, their AI teacher; one line on today's topic (Perimeter of rectangles, squares and polygons); then one easy question about them; address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu"
+      },
+      "kitVerified": true,
+      "timings": [
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1505,
+        "attempt": 0,
+        "tokens": "[masked]"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 30,
+   "t": 1792010996385,
+   "mono": 6878,
+   "kind": "net.req",
+   "rid": "f3b4566f-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "box": {
+      "w": 361,
+      "h": 492
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 31,
+   "t": 1792010996392,
+   "mono": 6885,
+   "kind": "net.sse",
+   "rid": "f3b4566f-6",
+   "tier": 1,
+   "data": {
+    "path": "/api/studio/stream",
+    "phase": "open"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 32,
+   "t": 1792010996175,
+   "mono": 7268,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 205,
+    "at": 6886
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 33,
+   "t": 1792010996339,
+   "mono": 7432,
+   "kind": "net.res",
+   "rid": "f3b4566f-7",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 215,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 34,
+   "t": 1792010996480,
+   "mono": 7573,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "open",
+    "lane": "cascade",
+    "label": "Fake Default Audio Input",
+    "echoCancellation": true,
+    "noiseSuppression": true,
+    "autoGainControl": true,
+    "sampleRate": 48000,
+    "ctxRate": 44100
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 35,
+   "t": 1792010996485,
+   "mono": 7578,
+   "kind": "mic.lane",
+   "tier": 1,
+   "data": {
+    "lane": "d4",
+    "why": null,
+    "opened": true
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 36,
+   "t": 1792010996485,
+   "mono": 7578,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": null,
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": "d4"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 37,
+   "t": 1792010996486,
+   "mono": 7578,
+   "kind": "net.req",
+   "rid": "f3b4566f-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 38,
+   "t": 1792010996499,
+   "mono": 7592,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "text": "Namaste Ishaan, main Asha, aapki AI teacher hoon. Aaj hum rectangles, squares aur polygons ka perimeter nikaalenge. Aapko kaunsa shape pasand hai?",
+    "chars": 146,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 39,
+   "t": 1792010996550,
+   "mono": 7643,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": "starting",
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 40,
+   "t": 1792010996550,
+   "mono": 7643,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "Aapko kaunsa shape pasand hai?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 41,
+   "t": 1792010996555,
+   "mono": 7648,
+   "kind": "net.req",
+   "rid": "f3b4566f-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "seq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 42,
+   "t": 1792010996756,
+   "mono": 7849,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "idle",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 43,
+   "t": 1792010997127,
+   "mono": 8093,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "msFromRequest": 561
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 44,
+   "t": 1792010997135,
+   "mono": 8101,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 45,
+   "t": 1792010997272,
+   "mono": 8403,
+   "kind": "asr.config",
+   "tier": 1,
+   "data": {
+    "lane": "cascade",
+    "model": "taxila-live-transcribe",
+    "language": null,
+    "promptChars": 183,
+    "turnDetection": "server_vad"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 46,
+   "t": 1792010997280,
+   "mono": 8412,
+   "kind": "net.res",
+   "rid": "f3b4566f-8",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/stt-token",
+    "status": 200,
+    "ms": 554,
+    "bytes": 647,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "token": "[masked]",
+     "expiresAt": 1792011117,
+     "base": "https://raghavsharma1729-compan-resource.openai.azure.com/openai/v1",
+     "session": {
+      "type": "transcription",
+      "include": [
+       "item.input_audio_transcription.logprobs"
+      ],
+      "audio": {
+       "input": {
+        "noise_reduction": {
+         "type": "near_field"
+        },
+        "transcription": {
+         "model": "taxila-live-transcribe",
+         "prompt": "A child aged 10 to 15 in India answers a teacher aloud in Hindi, English, or a Hindi-English mix. Write Hindi words in Devanagari and English words in Latin script, exactly as spoken."
+        },
+        "turn_detection": {
+         "type": "server_vad",
+         "threshold": 0.6,
+         "prefix_padding_ms": 300,
+         "silence_duration_ms": 900
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 47,
+   "t": 1792010997441,
+   "mono": 8572,
+   "kind": "net.res",
+   "rid": "f3b4566f-9",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 318,
+    "bytes": 652667,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 652667
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 48,
+   "t": 1792010997590,
+   "mono": 8721,
+   "kind": "net.req",
+   "rid": "f3b4566f-a",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 49,
+   "t": 1792010998271,
+   "mono": 9135,
+   "kind": "net.res",
+   "rid": "f3b4566f-a",
+   "tier": 1,
+   "data": {
+    "method": "GET",
+    "path": "/api/voicesig/config",
+    "status": 200,
+    "ms": 143,
+    "bytes": 67,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "mode": "shadow",
+     "frontend": true,
+     "detector": true,
+     "ver": "vs-seam/1"
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 50,
+   "t": 1792010999393,
+   "mono": 10257,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 232,
+    "at": 10017
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 51,
+   "t": 1792011001851,
+   "mono": 12715,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 204,
+    "at": 12510
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 52,
+   "t": 1792011002861,
+   "mono": 13725,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 219,
+    "at": 13322
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 53,
+   "t": 1792011003657,
+   "mono": 14521,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 283,
+    "at": 14232
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 54,
+   "t": 1792011006551,
+   "mono": 17415,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 217,
+    "at": 17002
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 55,
+   "t": 1792011007014,
+   "mono": 17878,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 278,
+    "at": 17423
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 56,
+   "t": 1792011007583,
+   "mono": 18447,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 202,
+    "at": 18104
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 57,
+   "t": 1792011007748,
+   "mono": 18612,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "transport",
+    "transport": "recording",
+    "why": "transcription channel did not open",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 58,
+   "t": 1792011007751,
+   "mono": 18615,
+   "kind": "mic.state",
+   "tier": 1,
+   "data": {
+    "state": "tap",
+    "pushToTalk": true,
+    "transport": "recording",
+    "lane": "cascade"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 59,
+   "t": 1792011007753,
+   "mono": 18617,
+   "kind": "mic.mode",
+   "tier": 1,
+   "data": {
+    "mode": "tap",
+    "reasons": [
+     "transcription_call_unavailable",
+     "talk_pref_tap",
+     "no_headset_detected",
+     "echo_probe_not_built",
+     "duplex_shadow_only"
+    ],
+    "older": true,
+    "wanted": "tap",
+    "headset": false,
+    "echoDemoted": false,
+    "duplexLive": false,
+    "duplexFallback": null,
+    "transport": "recording",
+    "pushToTalk": true,
+    "ui": "child-desk",
+    "duplex": "shadow",
+    "duplexSource": "server_shadow",
+    "sttLane": "d4"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 60,
+   "t": 1792011008701,
+   "mono": 19565,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 238,
+    "at": 19125
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 61,
+   "t": 1792011009860,
+   "mono": 20723,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 220,
+    "at": 20334
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 62,
+   "t": 1792011011209,
+   "mono": 22073,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-1",
+    "seq": 1,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 13920
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 63,
+   "t": 1792011011214,
+   "mono": 22078,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 64,
+   "t": 1792011012712,
+   "mono": 23576,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Type",
+    "testid": "type",
+    "zone": "dock",
+    "xy": {
+     "x": 328,
+     "y": 774,
+     "vw": 393,
+     "vh": 876
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 65,
+   "t": 1792011012721,
+   "mono": 23585,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": true,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 66,
+   "t": 1792011012893,
+   "mono": 23757,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 218,
+    "at": 23352
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 67,
+   "t": 1792011013498,
+   "mono": 24362,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 211,
+    "at": 24116
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 68,
+   "t": 1792011018322,
+   "mono": 29186,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 259,
+    "at": 28808
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 69,
+   "t": 1792011021265,
+   "mono": 32129,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 251,
+    "at": 31717
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 70,
+   "t": 1792011022104,
+   "mono": 32968,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 213,
+    "at": 32755
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 71,
+   "t": 1792011022796,
+   "mono": 33659,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 228,
+    "at": 33427
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 72,
+   "t": 1792011024057,
+   "mono": 34921,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 211,
+    "at": 34560
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 73,
+   "t": 1792011025451,
+   "mono": 36315,
+   "kind": "ui.tap",
+   "tier": 1,
+   "data": {
+    "tag": "button",
+    "label": "Send",
+    "testid": "send",
+    "zone": "dock"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 74,
+   "t": 1792011025458,
+   "mono": 36322,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "heard",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 75,
+   "t": 1792011025458,
+   "mono": 36322,
+   "kind": "ui.answer",
+   "tier": 1,
+   "data": {
+    "text": "pata nahi yaar",
+    "form": "typed",
+    "delivery": "sending",
+    "verdict": null,
+    "withHelp": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 76,
+   "t": 1792011025496,
+   "mono": 36360,
+   "kind": "net.req",
+   "rid": "f3b4566f-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/turn",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "childText": "pata nahi yaar",
+     "typed": true,
+     "turnSeq": 1
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 77,
+   "t": 1792011025611,
+   "mono": 36475,
+   "kind": "net.req",
+   "rid": "f3b4566f-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "box": {
+      "w": 361,
+      "h": 488
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 78,
+   "t": 1792011026002,
+   "mono": 36577,
+   "kind": "net.res",
+   "rid": "f3b4566f-c",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 100,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 79,
+   "t": 1792011026281,
+   "mono": 36856,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "thinking",
+    "phase": "warmup",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 80,
+   "t": 1792011027062,
+   "mono": 37637,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 205,
+    "at": 37282
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 81,
+   "t": 1792011028455,
+   "mono": 39026,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 228,
+    "at": 38577
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 82,
+   "t": 1792011028455,
+   "mono": 39026,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 215,
+    "at": 38810
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 83,
+   "t": 1792011028457,
+   "mono": 39028,
+   "kind": "net.res",
+   "rid": "f3b4566f-b",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/lesson/turn",
+    "status": 200,
+    "ms": 2210,
+    "bytes": 3130,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "move": {
+      "kind": "hook",
+      "shape": "open with one concrete everyday situation — kit contexts: fencing a vegetable patch, running rounds of a park, lace on a dupatta; ask what they think will happen or which they would pick — a prediction, no right answer yet; any bigger/more comparison: two quantities of one kind, in one unit — a count against a count, a distance against a distance; never across kinds; mention once: at the end they will teach this to Bittu (a pretend new student who missed this class); address them with aap forms only (aap, aapka, aapne; verbs -iye / -enge), never tum or tu",
+      "format": "F4"
+     },
+     "moduleCommands": [],
+     "ui": {
+      "status": "your_turn",
+      "phase": "teach",
+      "handover": "answer",
+      "answerForm": "words",
+      "tray": "none",
+      "shortTitle": "Perimeter",
+      "beat": {
+       "beatId": "b2-hook",
+       "type": "hook",
+       "index": 2
+      },
+      "ask": {
+       "text": "Aap boundary naapenge ya andar ka area?"
+      }
+     },
+     "teacherReply": "Theek hai, Ishaan. Sochiye vegetable patch ke chaaron taraf fencing karni ho—fence ki total lambai ko perimeter kehte hain. Aap boundary naapenge ya andar ka area?",
+     "teacherReplySeq": 3,
+     "moment": {
+      "move": "hook",
+      "verdict": "ungraded",
+      "engagement": "warming",
+      "teacherAffect": {
+       "display": "neutral_warm",
+       "intensity": 1,
+       "cause": "none",
+       "turn": 1
+      },
+      "bondStage": "meeting",
+      "safety": false,
+      "childLaughed": false,
+      "thinkAloud": false,
+      "band": "B3",
+      "lang": "hinglish"
+     },
+     "pace": {
+      "waitNudgeSec": 4,
+      "endpointSilenceMs": 700
+     },
+     "debug": {
+      "phase": "teach",
+      "turn": 1,
+      "teachIdx": 1,
+      "hintLevel": 0,
+      "unclear": 0,
+      "moduleOnly": false,
+      "hold": false,
+      "classification": {
+       "outcome": "no_evidence",
+       "confidence": 1,
+       "source": "model",
+       "flags": {
+        "dontKnow": true,
+        "asksForAnswer": false,
+        "minimal": false,
+        "offTopic": true,
+        "distress": false,
+        "distressKind": null,
+        "wantsToStop": false
+       }
+      },
+      "evidence": [],
+      "kt": [],
+      "probe": null,
+      "vibe": {
+       "waitNudgeSec": 4,
+       "endpointSilenceMs": 700,
+       "turnWords": [
+        14,
+        25
+       ],
+       "humour": "light",
+       "register": "warm",
+       "address": {
+        "childCallsTeacher": "teacher",
+        "teacherCallsChild": "name"
+       },
+       "exampleDomain": null,
+       "challenge": "standard",
+       "energy": "warm",
+       "probeSkin": "new_classmate",
+       "languageMix": 0.3,
+       "suppressed": false
+      },
+      "held": [],
+      "carried": [],
+      "skills": {},
+      "flagged": {},
+      "guard": {
+       "caught": [],
+       "rewritten": false,
+       "replaced": false
+      },
+      "verdict": "attempt",
+      "spoiled": [],
+      "speculation": {
+       "tried": 1,
+       "hit": true
+      },
+      "ttsPrewarmed": true,
+      "prefetch": {
+       "adopted": false,
+       "miss": "none"
+      },
+      "note": {
+       "nonAnswer": true,
+       "intent": "dont_know",
+       "waitedMs": 1177,
+       "parallel": null
+      },
+      "item": null,
+      "kitVerified": true,
+      "ms": 2113,
+      "timings": [
+       {
+        "kind": "@ctx",
+        "ms": 59
+       },
+       {
+        "kind": "@kit",
+        "ms": 59
+       },
+       {
+        "kind": "chat",
+        "deployment": "grok-4-1-fast-non-reasoning",
+        "status": 200,
+        "ms": 728,
+        "attempt": 0,
+        "tokens": "[masked]"
+       },
+       {
+        "kind": "@classified",
+        "ms": 853
+       },
+       {
+        "kind": "chat",
+        "deployment": "taxila-gpt6",
+        "status": 200,
+        "ms": 1906,
+        "attempt": 0,
+        "tokens": "[masked]"
+       },
+       {
+        "kind": "@noted",
+        "ms": 2030
+       },
+       {
+        "kind": "@planned",
+        "ms": 2057
+       },
+       {
+        "kind": "@kernel",
+        "ms": 2061
+       },
+       {
+        "kind": "chat",
+        "deployment": "taxila-fast",
+        "status": 200,
+        "ms": 1360,
+        "attempt": 0,
+        "tokens": "[masked]",
+        "speculative": true
+       },
+       {
+        "kind": "@replied",
+        "ms": 2064
+       },
+       {
+        "kind": "@stored",
+        "ms": 2113
+       }
+      ],
+      "stage": {
+       "accepted": [
+        "move",
+        "knobs"
+       ],
+       "rejected": [],
+       "wb": null,
+       "studioPropose": null,
+       "point": {
+        "want": null,
+        "request": null
+       },
+       "slot": null,
+       "tray": "none"
+      }
+     }
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 84,
+   "t": 1792011028855,
+   "mono": 39426,
+   "kind": "perf.longtask",
+   "tier": 1,
+   "data": {
+    "ms": 222,
+    "at": 39203
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 85,
+   "t": 1792011028858,
+   "mono": 39429,
+   "kind": "tts.request",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "text": "Theek hai, Ishaan. Sochiye vegetable patch ke chaaron taraf fencing karni ho—fence ki total lambai ko perimeter kehte hain. Aap boundary naapenge ya andar ka area?",
+    "chars": 163,
+    "lane": "cascade",
+    "voice": null,
+    "voiceNote": "chosen server-side (see srv tts events)"
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 86,
+   "t": 1792011028862,
+   "mono": 39433,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "thinking",
+    "phase": "teach",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 87,
+   "t": 1792011028862,
+   "mono": 39433,
+   "kind": "ui.render.card",
+   "tier": 1,
+   "data": {
+    "text": "Aap boundary naapenge ya andar ka area?",
+    "source": "server",
+    "lines": []
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 88,
+   "t": 1792011028863,
+   "mono": 39434,
+   "kind": "net.req",
+   "rid": "f3b4566f-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "seq": 3
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 89,
+   "t": 1792011029157,
+   "mono": 39750,
+   "kind": "net.req",
+   "rid": "f3b4566f-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "body": {
+     "lessonId": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+     "box": {
+      "w": 361,
+      "h": 492
+     },
+     "young": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 90,
+   "t": 1792011029166,
+   "mono": 39759,
+   "kind": "tts.start",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "msFromRequest": 390
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 91,
+   "t": 1792011029169,
+   "mono": 39762,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "speaking",
+    "phase": "teach",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 92,
+   "t": 1792011029225,
+   "mono": 40137,
+   "kind": "net.res",
+   "rid": "f3b4566f-e",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/studio/viewport",
+    "status": 200,
+    "ms": 162,
+    "bytes": 27,
+    "type": "application/json; charset=utf-8",
+    "body": {
+     "vp": "p360",
+     "tight": false
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 93,
+   "t": 1792011029585,
+   "mono": 40498,
+   "kind": "net.res",
+   "rid": "f3b4566f-d",
+   "tier": 1,
+   "data": {
+    "method": "POST",
+    "path": "/api/voice/tts-stream",
+    "status": 200,
+    "ms": 159,
+    "bytes": 621791,
+    "type": "application/x-taxila-pcm-frames;v=2",
+    "body": {
+     "bytes": 621791
+    }
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 94,
+   "t": 1792011042064,
+   "mono": 52976,
+   "kind": "tts.end",
+   "tier": 1,
+   "data": {
+    "replyId": "cascade-2",
+    "seq": 3,
+    "status": "completed",
+    "playedFully": true,
+    "msUnplayed": 0,
+    "msFromStart": 13158
+   }
+  },
+  {
+   "v": 1,
+   "sid": "a54fdd7f-2932-4e91-b63d-88400899b91e",
+   "pid": "f3b4566f-982f-49ca-9ba8-5056e2801c6e",
+   "src": "client",
+   "seq": 95,
+   "t": 1792011042068,
+   "mono": 52981,
+   "kind": "ui.state",
+   "tier": 1,
+   "data": {
+    "floor": "your_turn",
+    "phase": "teach",
+    "sheet": null,
+    "strip": null,
+    "gate": null,
+    "answerForm": "words",
+    "typing": false,
+    "mic": {
+     "available": true,
+     "tapToTalk": true,
+     "talking": false
+    },
+    "offline": false,
+    "layout": "phone",
+    "summary": false
+   }
+  }
+ ]
+}

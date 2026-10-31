@@ -1,0 +1,152 @@
+{
+ "lesson": "a9af936f-3702-4653-b7d0-9babb5c4a713",
+ "ask": "number line pe dikhao",
+ "net": [
+  {
+   "ms": null,
+   "k": "req",
+   "u": "/api/studio/stream"
+  },
+  {
+   "ms": null,
+   "k": "req",
+   "u": "/api/studio/viewport"
+  },
+  {
+   "ms": null,
+   "k": "res",
+   "u": "/api/studio/viewport",
+   "status": 200,
+   "seq": null,
+   "tray": null,
+   "slot": null,
+   "wb": null,
+   "reply": ""
+  },
+  {
+   "ms": null,
+   "k": "req",
+   "u": "/api/voice/stt-token"
+  },
+  {
+   "ms": null,
+   "k": "req",
+   "u": "/api/voice/tts-stream"
+  },
+  {
+   "ms": 1222,
+   "k": "req",
+   "u": "/api/lesson/turn"
+  },
+  {
+   "ms": 1341,
+   "k": "req",
+   "u": "/api/studio/viewport"
+  },
+  {
+   "ms": 1395,
+   "k": "res",
+   "u": "/api/studio/viewport",
+   "status": 200,
+   "seq": null,
+   "tray": null,
+   "slot": null,
+   "wb": null,
+   "reply": ""
+  },
+  {
+   "ms": 9657,
+   "k": "res",
+   "u": "/api/lesson/turn",
+   "status": 200,
+   "seq": 3,
+   "tray": "studio",
+   "slot": {
+    "slotId": "a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1:slot",
+    "intentId": "a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1",
+    "state": "planning",
+    "kind": null
+   },
+   "wb": null,
+   "reply": "Kabir, number line par 0 se 160 metre tak dekho; 50 metre ke baad kitna distance bachta hai? Bolo."
+  },
+  {
+   "ms": 9899,
+   "k": "req",
+   "u": "/api/studio/slot"
+  },
+  {
+   "ms": 9899,
+   "k": "req",
+   "u": "/api/voice/tts-stream"
+  },
+  {
+   "ms": 10056,
+   "k": "res",
+   "u": "/api/studio/slot",
+   "status": 200,
+   "seq": null,
+   "tray": null,
+   "slot": null,
+   "wb": null,
+   "reply": ""
+  },
+  {
+   "ms": 10538,
+   "k": "req",
+   "u": "/api/studio/wb-timing"
+  },
+  {
+   "ms": 10724,
+   "k": "res",
+   "u": "/api/studio/wb-timing",
+   "status": 200,
+   "seq": null,
+   "tray": null,
+   "slot": null,
+   "wb": null,
+   "reply": ""
+  }
+ ],
+ "studioStream": [
+  {
+   "ms": 10319,
+   "url": "/api/studio/stream",
+   "t": "script",
+   "intentId": "a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1",
+   "state": null,
+   "raw": "{\"t\":\"script\",\"intentId\":\"a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1\",\"script\":{\"v\":1,\"scriptId\":\"a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1\",\"line\":{\"lessonId\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"teacherReplySeq\":3},\"anchor\":\"line_audio_start\",\"board\":{\"w\":400,\"h\":300,\"ground\":\"chalk\"},\"mode\":\"fresh\",\"durationMs\":8500,\"ops\":[{\"id\":\"line\",\"op\":\"numwork\",\"startMs\":800,\"endMs\":4200,\"at\":[200,155],\"layout\":\"number_line\",\"rows\":[[\"0\",\"50\",\"160\"]],\"range\":[0,160]},{\"id\":\"question\",\"op\":\"text\",\"startMs\":4917,\"endMs\":8500,\"at\":[200,245],\"text\":\"? metre bachta\",\"size\":\"m\"}],\"facts\":{\"kind\":\"diagram\",\"archetype\":\"whiteboard\",\"onScreen\":{\"labels\":\"? metre bachta\",\"numbers\":\"0 50 160\"}}}}"
+  },
+  {
+   "ms": 10319,
+   "url": "/api/studio/stream",
+   "t": "status",
+   "intentId": null,
+   "state": null,
+   "raw": "{\"t\":\"status\",\"status\":{\"state\":\"revealed\",\"intentId\":\"a9af936f-3702-4653-b7d0-9babb5c4a713:wb:1\",\"buildSha\":\"whiteboard\",\"facts\":{\"kind\":\"diagram\",\"archetype\":\"whiteboard\",\"onScreen\":{\"labels\":\"? metre bachta\",\"numbers\":\"0 50 160\"}}}}"
+  }
+ ],
+ "dom": [
+  "1223 {\"tray\":null,\"visual\":false,\"cap\":\"\",\"word\":\"Got it\"}",
+  "1831 {\"tray\":null,\"visual\":false,\"cap\":\"\",\"word\":\"\"}",
+  "2066 {\"tray\":null,\"visual\":false,\"cap\":\"\",\"word\":\"Asha is thinking\"}",
+  "9955 {\"tray\":\"studio\",\"visual\":false,\"cap\":\"\",\"word\":\"Asha is thinking\"}",
+  "10131 {\"tray\":\"studio\",\"visual\":false,\"cap\":\"Kabir,\",\"word\":\"Asha is talking\"}",
+  "10645 {\"tray\":\"studio\",\"visual\":true,\"cap\":\"Kabir,\",\"word\":\"Asha is talking\"}",
+  "10816 {\"tray\":\"studio\",\"visual\":true,\"cap\":\"number line par 0 se 160 metre tak dekho;\",\"word\":\"Asha is talking\"}",
+  "14462 {\"tray\":\"studio\",\"visual\":true,\"cap\":\"50 metre ke baad kitna distance bachta hai?\",\"word\":\"Asha is talking\"}",
+  "17651 {\"tray\":\"studio\",\"visual\":true,\"cap\":\"Bolo.\",\"word\":\"Asha is talking\"}",
+  "19543 {\"tray\":\"studio\",\"visual\":true,\"cap\":\"\",\"word\":\"Your turn\"}"
+ ],
+ "trace": [
+  "{\"v\":1,\"sid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":13,\"t\":1792067163380,\"mono\":619,\"kind\":\"ui.render.tray\",\"tier\":1,\"data\":{\"empty\":t",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":35,\"t\":1792067167335,\"mono\":4907,\"kind\":\"tts.request\",\"tier\":1,\"data\":{\"replyId\":\"",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":40,\"t\":1792067167109,\"mono\":5278,\"kind\":\"tts.start\",\"tier\":1,\"data\":{\"replyId\":\"ca",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":48,\"t\":1792067176582,\"mono\":14460,\"kind\":\"tts.end\",\"tier\":1,\"data\":{\"replyId\":\"cas",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":64,\"t\":1792067189476,\"mono\":27389,\"kind\":\"tts.request\",\"tier\":1,\"data\":{\"replyId\":",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":69,\"t\":1792067189496,\"mono\":27409,\"kind\":\"ui.render.tray\",\"tier\":1,\"data\":{\"kind\":",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":74,\"t\":1792067190041,\"mono\":27512,\"kind\":\"tts.start\",\"tier\":1,\"data\":{\"replyId\":\"c",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":83,\"t\":1792067197938,\"mono\":36104,\"kind\":\"ui.render.board\",\"tier\":1,\"data\":{\"scrip",
+  "{\"v\":1,\"sid\":\"a9af936f-3702-4653-b7d0-9babb5c4a713\",\"pid\":\"3a15d860-8ad7-4084-917f-c5664b638a1f\",\"src\":\"client\",\"seq\":85,\"t\":1792067198729,\"mono\":36896,\"kind\":\"tts.end\",\"tier\":1,\"data\":{\"replyId\":\"cas"
+ ]
+}
