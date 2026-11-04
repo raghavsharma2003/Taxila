@@ -1,12 +1,22 @@
 // ship5 p2-face: the face's switches on the client. face.puppet2d ships ON; the device switch (?puppet / localStorage)
 // and the server's RUNTIME kill switch (GET /api/face/config ← TAXILA_FACE_PUPPET2D) both land on the old face, and an
 // unreachable / missing route fails OPEN (the route 404s until patch 03 is applied, and the puppet must still ship).
-import test from "node:test";
+import test, { after, before } from "node:test";
 import assert from "node:assert/strict";
 
+// npm test runs every file in ONE process: the fake storage is installed for this file's tests and the previous global is
+// put back after them (round 7 isolation ratchet), never left behind at module level. flag.ts reads storage per call.
 const store = new Map();
-globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
 const F = await import("../src/face-puppet/flag.ts");
+const had = Object.prototype.hasOwnProperty.call(globalThis, "localStorage");
+const saved = globalThis.localStorage;
+before(() => {
+  globalThis.localStorage = { getItem: (k) => (store.has(k) ? store.get(k) : null), setItem: (k, v) => store.set(k, String(v)), removeItem: (k) => store.delete(k) };
+});
+after(() => {
+  if (had) globalThis.localStorage = saved;
+  else delete globalThis.localStorage;
+});
 
 const answer = (status, body) => async () => ({ ok: status >= 200 && status < 300, status, json: async () => body });
 

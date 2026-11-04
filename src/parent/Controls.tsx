@@ -76,6 +76,44 @@ function TapAndType({ childId, name, T, on0, onRelock }: { childId: string; name
   );
 }
 
+/**
+ * "The children share one phone" (round 7 F, household v1; CONDUCTOR §4.4): shown only to a family with two or more
+ * children (D5: wired or hidden). On: each child's lesson gets its own time on the phone, younger first, with a few
+ * minutes to hand over. The children never see each other's times.
+ */
+function SharedPhone({ onRelock }: { onRelock: () => void }) {
+  const [state, setState] = useState<{ eligible: boolean; shared: boolean } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    getJson<{ eligible: boolean; shared: boolean }>("/api/parent/household").then((r) => { if (live) setState(r); }).catch((e) => { if (isRelock(e)) onRelock(); });
+    return () => { live = false; };
+  }, [onRelock]);
+  if (!state?.eligible) return null;
+  const set = async (next: boolean) => {
+    setErr(null);
+    const was = state.shared;
+    setState({ ...state, shared: next });
+    try { setState(await postJson<{ eligible: boolean; shared: boolean }>("/api/parent/household", { shared: next })); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setState({ ...state, shared: was }); setErr(parentError(e));
+    }
+  };
+  return (
+    <section className="pa-card pa-group" aria-labelledby="pa-g-household" data-group="household" data-testid="shared-phone">
+      <h2 id="pa-g-household" className="pa-h2">One phone for the children</h2>
+      <div className="pa-control">
+        <TileGroup label="The children share one phone for lessons" columns={2} value={state.shared ? "on" : "off"} onChange={(v) => void set(v === "on")}
+          options={[{ value: "off", label: "Each has a phone" }, { value: "on", label: "They share one" }]} />
+        <p className="pa-effect">{state.shared
+          ? "Each child gets a lesson time of their own on the phone, younger child first, with a few minutes to hand over. They never see each other's times."
+          : "Each child's lesson time is planned on its own."} This applies to all your children.</p>
+        {err && <p className="pa-form-err" role="alert">{err}</p>}
+      </div>
+    </section>
+  );
+}
+
 /** "Homework help today" (STUDENT-FLOW §4.2 `homework`): the child's home leads with Homework help until the day ends. */
 function HomeworkToday({ childId, name, on0, onRelock }: { childId: string; name: string; on0: boolean; onRelock: () => void }) {
   const [on, setOn] = useState(on0);
@@ -292,6 +330,7 @@ export default function Controls() {
           {/* the name the child gave the teacher: view and reset (child-names-teacher; lesson-safety-naming workstream) */}
           <ParentTeacherName childId={current.id} childName={name} className="pa-card" onGateError={relock} />
           <TapAndType childId={current.id} name={name} T={T} on0={!!c.textOnly} onRelock={relock} />
+          <SharedPhone onRelock={relock} />
           <section className="pa-card pa-group" aria-labelledby="pa-g-school" data-group="school">
             <h2 id="pa-g-school" className="pa-h2">School</h2>
             <HomeworkToday childId={current.id} name={name} on0={!!c.homeworkToday} onRelock={relock} />

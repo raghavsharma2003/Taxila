@@ -8,10 +8,11 @@ const SKETCHES = {
   plant: { thing: /\bplants?\b/, need: ["stem", "root"], parts: { root: ["root", "roots"], stem: ["stem", "stems"], leaf: ["leaf", "leaves"], flower: ["flower", "flowers"], fruit: ["fruit", "fruits"], soil: ["soil"] } },
   flower: { thing: /\bflowers?\b/, need: [], parts: { petal: ["petal", "petals"], sepal: ["sepal", "sepals"], stamen: ["stamen", "stamens"], pistil: ["pistil", "pistils", "carpel", "carpels"] } },
   leaf: { thing: /\bleaf\b|\bleaves\b/, need: [], parts: { midrib: ["midrib"], vein: ["vein", "veins"], stalk: ["petiole", "stalk"], blade: ["lamina", "leaf blade", "blade"], margin: ["margin"], tip: ["leaf tip", "apex"] } },
+  circuit: { thing: /\bcircuits?\b/, need: ["bulb"], parts: { cell: ["cell", "cells", "battery", "batteries"], bulb: ["bulb", "bulbs"], switch: ["switch", "switches"], wire: ["wire", "wires", "connecting wire"] } },
   insect: { thing: /\binsects?\b/, need: [], parts: { head: ["head"], thorax: ["thorax"], abdomen: ["abdomen"], antenna: ["antenna", "antennae"], leg: ["legs", "leg"], eye: ["compound eye", "eyes"] } },
 };
 // the order labels are drawn in (root up, as a teacher draws a plant)
-const ORDER = { plant: ["root", "stem", "leaf", "flower", "fruit", "soil"], flower: ["petal", "sepal", "stamen", "pistil"], leaf: ["stalk", "midrib", "vein", "blade", "margin", "tip"], insect: ["head", "thorax", "abdomen", "antenna", "leg", "eye"] };
+const ORDER = { plant: ["root", "stem", "leaf", "flower", "fruit", "soil"], flower: ["petal", "sepal", "stamen", "pistil"], leaf: ["stalk", "midrib", "vein", "blade", "margin", "tip"], insect: ["head", "thorax", "abdomen", "antenna", "leg", "eye"], circuit: ["cell", "wire", "bulb", "switch"] };
 
 const kitText = (kit) => { try { return JSON.stringify([kit?.expectations, kit?.workedExample, kit?.items]).toLowerCase(); } catch { return ""; } };
 const said = (t, w) => new RegExp(`\\b${w.replace(/ /g, "\\s+")}\\b`).test(t);
