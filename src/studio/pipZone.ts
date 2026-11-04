@@ -1,17 +1,19 @@
-// round 7 (D7 stage-first): where the teacher's PiP sits INSIDE the slot (a phone, or a phone turned on its side), the
-// bottom-right square it covers: the box contract's stageFirst.pipZone (26 % of the slot's short side, 84-128 px, inset 8),
-// the same rule as src/ui-v3/kaksha/lesson/stageLayout.ts pipFor. StudioStage keeps every piece clear of it.
-// A phone is read from the VIEWPORT, never the slot: a desk's tray can be short too (l1366: 752 x 408) and has no PiP in it.
+// round 7 (D7 stage-first): the teacher's PiP keep-clear zone, LIVE from App's slot element (src/ui-v3/kaksha/lesson/
+// StageBody.tsx: [data-stage-slot] carries data-pip-zone="bottom-right" while the PiP shows, "none" otherwise, and
+// --pip-zone-w / -h / -right / -bottom, its box in px relative to the slot). StudioStage keeps every piece clear of it.
+// No slot element, or "none": nothing is reserved (a wide screen, her face holding the stage, the keyboard up).
 
-/** A viewport this narrow is a phone held upright; this short, a phone turned on its side. */
-const PHONE_MAX_W = 600;
-const PHONE_MAX_H = 500;
+/** The zone as a rect in the slot's own coordinates, or null. `slot` is the [data-stage-slot] element (or a stand-in). */
+export function readPipZone(slot: { getAttribute(n: string): string | null; style: { getPropertyValue(n: string): string } } | null,
+  slotSize: { w: number; h: number }): { x: number; y: number; w: number; h: number } | null {
+  if (!slot || slot.getAttribute("data-pip-zone") !== "bottom-right") return null;
+  const px = (n: string) => { const v = parseFloat(slot.style.getPropertyValue(n)); return Number.isFinite(v) ? v : NaN; };
+  const w = px("--pip-zone-w"), h = px("--pip-zone-h"), right = px("--pip-zone-right"), bottom = px("--pip-zone-bottom");
+  if (![w, h, right, bottom].every(Number.isFinite) || w <= 0 || h <= 0) return null;
+  return { x: slotSize.w - right - w, y: slotSize.h - bottom - h, w, h };
+}
 
-const viewportNow = (): { w: number; h: number } | null =>
-  typeof window !== "undefined" && Number.isFinite(window.innerWidth) ? { w: window.innerWidth, h: window.innerHeight } : null;
-
-/** The PiP's square plus its inset (px), or 0 where the PiP is outside the slot (a wide screen: her tile is beside it). */
-export function pipZoneFor(avail: { w: number; h: number }, viewport: { w: number; h: number } | null = viewportNow()): number {
-  if (!viewport || (viewport.w > PHONE_MAX_W && viewport.h > PHONE_MAX_H)) return 0;
-  return Math.round(Math.min(128, Math.max(84, Math.min(avail.w, avail.h) * 0.26))) + 8;
+/** A rect moved from the slot's coordinates into the stage's (both measured on screen). */
+export function intoStage(zone: { x: number; y: number; w: number; h: number }, slotAt: { left: number; top: number }, stageAt: { left: number; top: number }) {
+  return { x: zone.x + slotAt.left - stageAt.left, y: zone.y + slotAt.top - stageAt.top, w: zone.w, h: zone.h };
 }

@@ -26,7 +26,7 @@ import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
-import { pipZoneFor } from "./pipZone.ts";
+import { intoStage, readPipZone } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
@@ -117,14 +117,16 @@ function useStageArea() {
 const insetFor = (w: number) => (w <= PHONE_TRAY_MAX_W ? STAGE_INSET_PHONE : STAGE_INSET);
 
 /** The stage box for a design in the measured area; with the rail band, the box grows by the band above the world. */
-function boxFor(avail: { w: number; h: number }, design: { w: number; h: number }, railPx: number): StageFit {
+type Rect = { x: number; y: number; w: number; h: number };
+function boxFor(avail: { w: number; h: number }, design: { w: number; h: number }, railPx: number, pip: Rect | null = null): StageFit {
   const inset = insetFor(avail.w);
   let next = fitStage({ w: avail.w, h: avail.h - railPx }, design, { inset, maxScale: MAX_SCALE });
   if (railPx > 0 && next.w > 0) next = { ...next, h: next.h + railPx, y: Math.max(inset, Math.floor((avail.h - next.h - railPx) / 2)) };
-  // the piece never sits under her PiP: lifted clear of it where there is room above, else fitted into the room above
-  const pz = pipZoneFor(avail);
-  if (pz && next.w > 0 && next.x + next.w > avail.w - pz && next.y + next.h > avail.h - pz) {
-    const room = avail.h - pz;
+  // the piece never sits under her PiP (App's live zone, pipZone.ts): lifted above it where there is room, else fitted into
+  // the room above it
+  const hits = (b: StageFit) => !!pip && b.x < pip.x + pip.w && pip.x < b.x + b.w && b.y < pip.y + pip.h && pip.y < b.y + b.h;
+  if (pip && next.w > 0 && hits(next)) {
+    const room = pip.y;
     if (next.h <= room - inset) next = { ...next, y: Math.max(inset, Math.floor(room - next.h)) };
     else {
       const fitted = fitStage({ w: avail.w, h: room }, design, { inset, maxScale: MAX_SCALE });
@@ -243,7 +245,24 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     [artifact, frame, playFill, avail]);
   // the rail band for a Studio v2 world on a phone-width tray
   const railPx = !!avail && avail.w <= PHONE_TRAY_MAX_W && artifact?.kind === "stagecraft" ? (young ? RAIL_PX_YOUNG : RAIL_PX) : 0;
-  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx) : null), [avail, design, railPx, boardPending]);
+  // round 7 (D7): her PiP's live keep-clear zone, read from App's slot element and re-read whenever it changes
+  const [pip, setPip] = useState<Rect | null>(null);
+  useEffect(() => {
+    const stage = ref.current;
+    const slotEl = stage?.closest("[data-stage-slot]") as HTMLElement | null;
+    if (!stage || !slotEl || typeof MutationObserver === "undefined") { setPip(null); return; }
+    const read = () => {
+      const sr = slotEl.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+      const z = readPipZone(slotEl, { w: sr.width, h: sr.height });
+      const next = z ? intoStage(z, sr, tr) : null;
+      setPip((cur) => (cur && next && Math.abs(cur.x - next.x) < 1 && Math.abs(cur.y - next.y) < 1 && cur.w === next.w && cur.h === next.h) || (!cur && !next) ? cur : next);
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(slotEl, { attributes: true, attributeFilter: ["data-pip-zone", "style"] });
+    return () => mo.disconnect();
+  }, [avail]);
+  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx, pip) : null), [avail, design, railPx, boardPending, pip]);
   // the device check: decided from the box the piece actually got (never from a viewport guess)
   useEffect(() => {
     if (!fit || !given0 || given0.kind !== "stagecraft" || twinFor === slot.slotId) return;
