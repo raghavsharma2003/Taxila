@@ -9,16 +9,21 @@
 //                   due reviews, least-recently-taught; round 7 F item 1). Late key: older snapshots replay as null.
 //   usage.voiceSecMonth  voice seconds per lane used so far this calendar month (conductor_usage.voice_sec,
 //                   learning days from the 1st through today): V3 compares against the REMAINING tier budget
+//   kt.wheelSpin    round 7 F (R5): skills with ≥ 10 opportunities without 3 in a row, each with the prerequisite topic
+//                   (depth ≤ 3, pL < .4) a check would start from (conductor/adapt.js wheelSpinView). Late key.
+//   learner.placementGap  round 7 F (R9): { [subject]: grade levels below the class's expected level } from the
+//                   child's latest finished placement, to .5; only subjects placed below. Late key.
 import { addDays, learningDay, zonedToUtc } from "./clock.js";
 
 /** Declared fallbacks: a missing or stale key returns these and never fires a rule (V25). */
-const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {}, "school.subjects": null };
+const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {}, "school.subjects": null,
+  "kt.wheelSpin": [], "learner.placementGap": {} };
 /**
  * Keys added after decision logs were already being written. A snapshot recorded before a key existed was
  * decided by code that did not read it, so replay serves the declared fallback (which reproduces that code's
  * behaviour exactly: usage.voiceSecMonth {} = the full tier budget, as V3 then assumed). Any other miss throws.
  */
-const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects"]);
+const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects", "kt.wheelSpin", "learner.placementGap"]);
 
 export class ReplayMiss extends Error {}
 
@@ -64,7 +69,18 @@ export async function loadView(db, childId, tz, now) {
     const r = await subjectsToday(c, { now, q: (t, p) => db.q(t, p) });
     return { subjects: r.subjects, why: r.why, timetable: r.timetable };
   })().catch(() => null);
-  const [due, usage, logged, cal, voice, subjects] = await Promise.all([
+  // round 7 F (R5): the child's KT skill rows → the wheel-spin view (pure; adapt.js)
+  const wheelP = (async () => {
+    const [{ wheelSpinView }, { getTopic }] = await Promise.all([import("./adapt.js"), import("../content/curriculum.js")]);
+    const rows = await db.q("select skill_id, p_l, opp from kt_skill_state where child_id = $1", [childId]);
+    return wheelSpinView(rows, getTopic);
+  })().catch(() => null);
+  // round 7 F (R9): placed below the class's expected level, per subject (placement/store.js)
+  const gapP = (async () => {
+    const { placementResultsOf, placementGapOf } = await import("../placement/store.js");
+    return placementGapOf(await placementResultsOf(childId, { q_: (t, p) => db.q(t, p) }));
+  })().catch(() => null);
+  const [due, usage, logged, cal, voice, subjects, wheel, gap] = await Promise.all([
     db.q("select count(*)::int as n from skill_state where child_id = $1 and next_review is not null and next_review <= $2", [childId, asOf]),
     db.q("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [childId, day]),
     db.q(`select coalesce(sum((body->>'minutes')::real), 0) as m from student_event
@@ -74,6 +90,7 @@ export async function loadView(db, childId, tz, now) {
     db.q(`select l.key as lane, coalesce(sum(case when jsonb_typeof(l.value) = 'number' then (l.value)::text::real end), 0) as sec
             from conductor_usage u, jsonb_each(u.voice_sec) l
            where u.child_id = $1 and u.learning_day between $2::date and $3::date group by l.key`, [childId, monthStart, day]),
+    subjectsP, wheelP, gapP,
   ]);
   return {
     "kt.dueCount": { value: due[0]?.n ?? 0, asOf, src: "skill_state", stale: false },
@@ -83,5 +100,7 @@ export async function loadView(db, childId, tz, now) {
     "cal.days": { value: Object.fromEntries(cal.map((r) => [r.day, r.kind])), asOf, src: "calendar", stale: false },
     "usage.voiceSecMonth": { value: Object.fromEntries(voice.map((r) => [r.lane, Math.floor(Number(r.sec) || 0)])), asOf, src: "conductor_usage", stale: false },
     "school.subjects": subjects ? { value: subjects, asOf, src: "rotation", stale: false } : { value: null, asOf, src: "fallback", stale: true },
+    "kt.wheelSpin": wheel ? { value: wheel, asOf, src: "kt_skill_state", stale: false } : { value: [], asOf, src: "fallback", stale: true },
+    "learner.placementGap": gap ? { value: gap, asOf, src: "placement", stale: false } : { value: {}, asOf, src: "fallback", stale: true },
   };
 }

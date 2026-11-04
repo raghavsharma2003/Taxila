@@ -2,9 +2,11 @@
 // reader, clock, I/O or randomness, so equal inputs give byte-equal plans (I-A4) and inputsHash identifies a
 // plan (X43). buildPlannerInputs is the only place state/ctx are read, and it quantises what it reads.
 // M0 implements R0 (band template + priority stack), the R1 "one bad close → success-first only" (X45),
-// R8's re-anchor opener, R10 (voice rung) and the frozen-slot rule V10. R2-R7, R9, R11-R14 need the
-// ConductorChildView keys from the learner workstream and are not built yet.
+// R8's re-anchor opener, R10 (voice rung) and the frozen-slot rule V10. Round 7 F adds R2 (late sittings get the
+// minimum segment set), R5 (a prerequisite check for a wheel-spinning skill) and R9 (the foundation share for a child
+// placed below her class): conductor/adapt.js. R4, R6, R7 and R11-R14 are not built yet.
 import { BAND, PLAN, PLANNER_V, TIER, cfgDigest } from "./config.js";
+import { R5, foundationShare, prereqPick } from "./adapt.js";
 import { addMin, dayMin, daysBetween, fromDayMin, learningWindow, localTime, minTime, weekday } from "./clock.js";
 import { jcs, sha256hex } from "./ids.js";
 
@@ -47,6 +49,14 @@ export function buildPlannerInputs(state, ctx) {
     .map((w) => ({ subject: w.subject, from: w.from, to: w.to, chapters: [...w.chapters].sort() }))
     .sort((a, b2) => (a.subject + a.to < b2.subject + b2.to ? -1 : 1));
   const gapDays = state.counters.lastActiveDay ? Math.min(30, daysBetween(state.counters.lastActiveDay, day)) : null;
+  // round 7 F (R2, R5, R9): present only when they can fire, so a plan that reads none of them hashes as before
+  const wheel = ctx.view.get("kt.wheelSpin"), placeGap = ctx.view.get("learner.placementGap");
+  const checked = Object.entries(state.adapt.prereqChecked ?? {}).filter(([, d]) => daysBetween(d, day) < R5.recheckDays).map(([k]) => k).sort();
+  const adaptAdd = { ...(state.adapt.lateMinSet ? { lateMinSet: true } : {}), ...(checked.length ? { prereqChecked: checked } : {}) };
+  const viewAdd = {
+    ...(!wheel.stale && wheel.value?.length ? { "kt.wheelSpin": { value: wheel.value, src: wheel.src, stale: false } } : {}),
+    ...(!placeGap.stale && placeGap.value && Object.keys(placeGap.value).length ? { "learner.placementGap": { value: placeGap.value, src: placeGap.src, stale: false } } : {}),
+  };
   return {
     v: 1,
     build: { plannerSha: PLANNER_V, cfgDigest: cfgDigest() },
@@ -61,9 +71,9 @@ export function buildPlannerInputs(state, ctx) {
     frozen: { slots: frozen, startedIds },              // no plan version: a re-plan of an unchanged day must hash equal
     usage: { usedMin: Math.floor(Number(used.value) || 0) },
     voice: { budgetLow: !!state.budget.low, voiceBudgetSec: remainingVoice(TIER[state.tier].voiceSecMonth, ctx.view.get("usage.voiceSecMonth")) },
-    adapt: { successFirst: !!state.adapt.successFirstNext, gapDays },
+    adapt: { successFirst: !!state.adapt.successFirstNext, gapDays, ...adaptAdd },
     view: { "kt.dueCount": { value: qCount(due.value), src: due.src, stale: due.stale },
-            "usage.usedMin": { value: Math.floor(Number(used.value) || 0), src: used.src, stale: used.stale } },
+            "usage.usedMin": { value: Math.floor(Number(used.value) || 0), src: used.src, stale: used.stale }, ...viewAdd },
     household: null,
   };
 }
@@ -110,6 +120,9 @@ export function fitSegments(template, budget) {
   return segs.filter((s) => s.minutes > 0).map(({ kind, minutes, laneWanted }) => ({ kind, minutes, laneWanted }));
 }
 
+/** R2's late sitting starts here (local time; the learning day runs 04:00 → 04:00). */
+export const LATE_SITTING_FROM = "20:00";
+
 const RT_LANES = new Set(["realtime", "realtime_mini"]);
 const voiceOf = (segments) => {
   const v = {};
@@ -148,7 +161,11 @@ export function planDay(inputs) {
 
   if (!lessonToday && timeLeft > 0) {
     const aim = Math.max(b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0), Math.floor(PLAN.capShare * limits.capMin));
-    const budget = Math.min(b.sessionMin, aim, remaining, timeLeft);
+    let budget = Math.min(b.sessionMin, aim, remaining, timeLeft);
+    // R2: a sitting at or after 20:00, latched on this child's own late-vs-early closes, gets the minimum segment set
+    const minSetMin = b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0);
+    const lateSitting = !!adapt.lateMinSet && startDM >= dayMin(LATE_SITTING_FROM);
+    if (lateSitting && budget > minSetMin) budget = minSetMin;
     let segments = fitSegments(b.segments, budget);
     if (segments) {
       fire("R0", "kt", "sessionMin", segments.reduce((a, s) => a + s.minutes, 0), ["band", "limits.capMin", "usage.usedMin"]);
@@ -165,6 +182,7 @@ export function planDay(inputs) {
       const opener = adapt.gapDays !== null && adapt.gapDays >= PLAN.reanchorGapDays ? "reanchor_light" : "standard_retrieval";
       if (opener !== "standard_retrieval") fire("R8", "kt", "opener", opener, ["counters.lastActiveDay"]);
       if (adapt.successFirst) fire("R1", "vibe", "successFirst", true, ["adapt.closes"]);
+      if (lateSitting && segments.reduce((a, s) => a + s.minutes, 0) === minSetMin) fire("R2", "vibe", "sessionMin", minSetMin, ["adapt.closes"]);
       const why = [testWindow ? { code: "test_window", ref: testWindow.subject } : { code: "level_path", ref: "next_topic" }];
       if (dueCount > 0) why.push({ code: "due_review", ref: `n${Math.min(dueCount, 4)}` });
       const promise = inputs.promises[0];
@@ -172,7 +190,18 @@ export function planDay(inputs) {
       const targetMin = segments.reduce((a, s) => a + s.minutes, 0);
       const subj = slotSubject(school);
       if (subj && subj.why !== "test_window") why.push({ code: subj.why, ref: subj.subject });
+      // R5: a wheel-spinning skill with a weak prerequisite → this lesson checks that prerequisite first
+      const pick = prereqPick(inputs.view["kt.wheelSpin"]?.value, adapt.prereqChecked);
+      if (pick) {
+        why.push({ code: "prereq_gap", ref: pick.prereq.topicId });
+        fire("R5", "kt", "prereqCheck", pick.prereq.topicId, ["kt.wheelSpin"]);
+      }
+      // R9: a child placed below her class gets a foundation share of the lesson (halved in a test window)
+      const fshare = subj ? foundationShare(inputs.view["learner.placementGap"]?.value?.[subj.subject], !!testWindow) : null;
+      if (fshare !== null) fire("R9", "kt", "foundationShare", fshare, ["learner.placementGap"]);
       slots.push({ id: `${day.learningDay}:L1`, kind: "live_lesson", targetMin, window: slotWindow, segments,
+        ...(pick ? { prereqCheck: { skillId: pick.skillId, forTopicId: pick.topicId, prereqTopicId: pick.prereq.topicId } } : {}),
+        ...(fshare !== null ? { foundationShare: fshare } : {}),
         ...(subj ? { subject: subj.subject } : {}),
         // round 7 F item 8: her open promises (teacher.promise, e.g. a Question-jar revisit) this lesson keeps
         ...(inputs.promises.length ? { promisesDue: inputs.promises.slice(0, 2).map((p) => p.id) } : {}),
