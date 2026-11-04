@@ -1453,6 +1453,16 @@ export class CascadeLink implements TeacherLink {
   private duplexSurface(): import("../duplex/cascadeDuplex.ts").CascadeSurface {
     return {
       lessonId: this.lessonId,
+      // round 7 (B4): the second ear — the D5 stream's own copy of a burst the ear finalised empty, transcribed once
+      secondEar: async (a0, a1) => {
+        const st = this.d5;
+        if (!st || this.closed || this.laneUsed !== "d5") return null;
+        const pcm = st.clip(a0, a1);
+        if (!pcm || pcm.length < 16000 * 0.15) return null;
+        const { wavOf } = await import("../duplex/d5Stream.ts");
+        const r = await this.transcribeClip(this.lessonId, new Blob([wavOf(pcm)], { type: "audio/wav" }));
+        return r?.text ? { text: r.text, ...(typeof r.asrConfidence === "number" ? { confidence: r.asrConfidence } : {}) } : null;
+      },
       audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
       micGate: (gated) => {
         if (this.micGated === gated) return;

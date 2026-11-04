@@ -8,6 +8,7 @@ import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Rea
 import { ease } from "../../core/juice.ts";
 import { withAlpha, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
+import { word } from "../../engines/words.ts";
 import { lineHelpers as H, type LineParams, type LineState } from "./line.logic.ts";
 
 export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
@@ -173,7 +174,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const X = toPx(p.hop.a), by = Math.min(ly + 104, Hh - 30);
       P.circle(c, X, ly, 9, { role: "ink", width: 3 });
       P.stroke(c, [[X, ly + 10], [X, by]], { role: "ink3", width: 1.5, dash: [3, 4] });
-      P.text(c, say(lang, "line.start"), X, ly - 22, { size: 14, weight: 700, role: "ink2" });
+      P.text(c, word(lang, "nishana.start"), X, ly - 22, { size: 14, weight: 700, role: "ink2" });
       const mk = markOf(0);
       if (mk !== null && mk !== undefined && Math.abs(toPx(mk) - X) > 6) {
         const xa = X, xb = toPx(mk), hgt = Math.min(36, 10 + Math.abs(xb - xa) * 0.12);
@@ -240,7 +241,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     if (roundGoal) return st().landed ? say(lang, "line.goal.round2", { t: unitWord(p.to ?? 100) }) : say(lang, "line.goal.round", { v: p.values[0].text });
     if (cmpGoal) return say(lang, "line.goal.cmp");
-    if (p.hop) return say(lang, "line.goal.hop", { a: H.fmt(p.hop.a).replace("-", "−"), v: p.values[0].text });
+    if (p.hop) return word(lang, "nishana.goal.hop", { a: H.fmt(p.hop.a).replace("-", "−"), v: p.values[0].text });
     return say(lang, "line.goal", { v: p.values[0].text });
   }
   function readouts(): Readout[] { return []; }

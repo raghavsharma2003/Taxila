@@ -103,3 +103,19 @@ export function resetPuppetServerFlag(): void {
   serverAsk = null;
   serverKnown = null;
 }
+
+/** Route (b) prototype (round 7): the key rig's 2.5D jaw layer, opt-in per device with ?jaw=1 (?jaw=0 / default clear it).
+ *  Off by default until the owner's rig verdict. */
+export const FACE_JAW_KEY = "tx.flag.face.jaw";
+export function faceJawEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("jaw");
+      if (v === "1") localStorage.setItem(FACE_JAW_KEY, "1");
+      else if (v === "0" || v === "default") localStorage.removeItem(FACE_JAW_KEY);
+    }
+    return typeof localStorage !== "undefined" && localStorage.getItem(FACE_JAW_KEY) === "1";
+  } catch {
+    return false;
+  }
+}

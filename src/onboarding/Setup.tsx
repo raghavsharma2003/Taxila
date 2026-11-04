@@ -11,6 +11,7 @@ import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 import { HoursPicker } from "../ui-v3/Scheduler.tsx";
+import { teacherBandFor } from "./teacherBand.ts";
 
 interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
 export const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
@@ -104,7 +105,7 @@ export function ControlsStep() {
 
   if (!child || !c || hasPin === null) return <StepFrame step="controls" title="Set a parent PIN">{err ? <ErrorNote>{err}</ErrorNote> : <div className="spinner" />}</StepFrame>;
   const needPin = !hasPin && (!pinOk || (needPw && !password));
-  const tname = teacherRecord(child.teacher_id, child.class_level <= 4 ? "b2" : "b3").name;
+  const tname = teacherRecord(child.teacher_id, teacherBandFor(child.class_level)).name;
 
   return (
     <StepFrame step="controls" title={hasPin ? "Daily limit" : "Set a parent PIN"} why={hasPin ? `For ${child.first_name}, Class ${child.class_level}. You can change this any time.` : "Only grown-ups should know it."}
@@ -157,7 +158,7 @@ export function HandoverStep() {
   }, [d.childId, nav]);
   if (!child) return <StepFrame step="handover" title="Ready"><div className="spinner" /></StepFrame>;
   const done = (to: string) => { lockBeacon(); clearDraft(); nav(to); };
-  const band = child.class_level <= 4 ? "b2" : "b3";
+  const band = teacherBandFor(child.class_level);
   const rec = teacherRecord(child.teacher_id, band);
   return (
     <StepFrame step="handover" title={`Ready for ${child.first_name}?`} back={false}>
