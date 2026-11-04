@@ -15,6 +15,9 @@ import { makePendulumView } from "./yantra/pendulum.view.ts";
 import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
 import { makeArenaView } from "./arena/arena.view.ts";
 import { makeCircuitView } from "./yantra/circuit.view.ts";
+import { makeKaalView } from "./kaal/kaal.view.ts";
+import { makeVakyaView } from "./vakya/vakya.view.ts";
+import { makeKilaView } from "./kila/kila.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -44,5 +47,11 @@ export const VIEWS: Record<string, MakeView> = {
   "yantra/beam": makeBeamView,
   "yantra/pendulum": makePendulumView,
   "yantra/circuit": makeCircuitView,
+  "kaal/place": makeKaalView,
+  "kaal/order": makeKaalView,
+  "vakya/rail": makeVakyaView,
+  "kila/multiples": makeKilaView,
+  "kila/factors": makeKilaView,
+  "kila/lcm": makeKilaView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

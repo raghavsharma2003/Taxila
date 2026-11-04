@@ -25,6 +25,9 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
   "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
   "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
+  "kaal",       // round 7: SST time — Kaal-nadi, events placed on a river of time (BCE left, CE right, no year 0)
+  "vakya",      // round 7: English / Hindi grammar, a sentence built as a train of word wagons (one verified kit item per level)
+  "kila",       // round 7 E4: turn-based tower defence on a numbered path (multiples, factors, LCM); a beat moves only on a press
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -38,6 +41,9 @@ export const MODES = {
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
+  kaal: ["place", "order"],
+  vakya: ["rail"],
+  kila: ["multiples", "factors", "lcm"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -215,7 +221,28 @@ export type YantraAct =
   | { kind: "run" }                                                     // run the machine: the law answers
   | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | WeighAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
+// Kaal (round 7, SST time): the boat carries a stone along the river of time; `year` is a real year (negative = BCE, never 0)
+export type KaalAct =
+  | { kind: "place"; which: number; year: number }      // bring the boat with stone `which` to `year` (the law refuses year 0)
+  | { kind: "check" }                                   // RUN: drop the stone; the law compares it with the event's verified year
+  | { kind: "undo" };
+// Vakya (round 7, grammar): word wagons coupled into a sentence train; a form wagon turns on its turntable; RUN checks it
+export type VakyaAct =
+  | { kind: "couple"; wagon: string; at: number }       // couple wagon `wagon` onto the track at position `at` (0 = right behind the engine); a coupled wagon moves
+  | { kind: "uncouple"; wagon: string }                 // send a coupled wagon back to the yard
+  | { kind: "turn"; wagon: string; form: number }       // turn a form wagon's turntable to its form `form` (an index into the wagon's forms)
+  | { kind: "run" }                                     // the train rolls through the signal: the law compares it with the verified key
+  | { kind: "undo" };
+// Kila (round 7 E4, turn-based tower defence): a numbered path 1..n; a tower standing on square p fires on p, 2p, 3p, …; the
+// wave moves one square per "next" (or to the end on "run") and never on a clock; the law judges the wave at its end
+export type KilaAct =
+  | { kind: "place"; at: number }                       // a tower onto square `at` (its period is `at`)
+  | { kind: "remove"; at: number }                      // take the tower on square `at` down
+  | { kind: "mark"; at: number }                        // a net on square `at` (toggle) / the trap moved to square `at`
+  | { kind: "next" }                                    // the wave moves one square
+  | { kind: "run" }                                     // the wave runs to the end of the path
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -369,6 +396,9 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   arena: ["raat", "blueprint", "kagaz", "chalk"],
   stambh: ["kagaz", "chalk", "blueprint", "raat"],
   yantra: ["blueprint", "raat", "chalk", "kagaz"],
+  kaal: ["kagaz", "chalk", "blueprint", "raat"],
+  vakya: ["kagaz", "chalk", "blueprint", "raat"],
+  kila: ["kagaz", "blueprint", "chalk", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
