@@ -182,6 +182,17 @@ const OFF_SCRIPT = { hinglish: /[^\p{Script=Latin}\p{Script=Common}\p{Script=Inh
   hindi: /[^\p{Script=Latin}\p{Script=Devanagari}\p{Script=Common}\p{Script=Inherited}]/gu };
 /** Is a written reply in the scripts its language allows? Exported for tests. */
 export const scriptOk = (t, lang) => (SCRIPT_OK[lang] ?? LATIN).test(String(t ?? ""));
+/**
+ * round 7 (PIPELINE §A Brain "rewrite, never strip"; open-e2e-gutted-replies: a reply stripped to "ने?"): the turn without
+ * its sentences in a script the language does not allow. Whole sentences go, never single letters out of a word. Exported.
+ */
+export const withoutOffScript = (t, lang) => (p5Flag("GUARDS") ? sentences(t) : String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? [])
+  .map((x) => String(x).trim()).filter((x) => x && scriptOk(x, lang)).join(" ").trim();
+/** A reply the repairs left as a fragment (fewer than four words), unless it is exactly the pinned question. Exported. */
+export const isFragment = (t, askEnd = null) => {
+  const r = String(t ?? "").trim();
+  return !(askEnd && r === String(askEnd).trim()) && words(r) < 4;
+};
 
 /**
  * What the child reads when no reply could be written (the model failed twice): content where there is
@@ -194,14 +205,15 @@ const HELPLINE_LINE_HI = HELPLINES.map((h) => `${h.name} ${h.number}`).join(" ya
 export const FALLBACK = {
   english: { wrap: "That's all for today. See you next time!", safeguard: `What you said matters. Please tell a grown-up you trust, or call ${HELPLINE_LINE}. Are you okay right now?`,
     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
-    other: "Sorry, I lost my words for a second. Can you say that again?",
+    // round 7 (PIPELINE §A Brain "zero spoken failure"): a plain re-ask, never "I lost my words"
+    other: "Tell me that once more? I'm listening.",
     heard: "Thanks for telling me! Let's keep going.",
     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
     checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
     forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
-    other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
+    other: "Ek baar phir se batao, kya kaha tumne?",
     heard: "Accha, batane ke liye thanks! Chalo, aage badhte hain.",
     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
@@ -598,7 +610,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     let out = f.includes("wrap") ? stripWrap(t) : t;
     if (pinned) out = endOnAsk(out, askEnd);
     else if (f.includes("drift")) out = repairDrift(out, item, lang);
-    else if (f.includes("twoq")) out = lastQuestionOnly(out, { keepContent: R3 });
+    // round 7 ("rewrite, never strip"): a check-in's offer is never cut to its last question ("Aap kya chunenge?")
+    else if (f.includes("twoq") && !checkin) out = lastQuestionOnly(out, { keepContent: R3 });
     return out;
   };
   const SHAPE = new Set(["drift", "flat", "ask", "twoq", "wrap"]);
@@ -880,7 +893,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       }
     } else {
       if (found.includes("units")) { reply = withoutMixedUnits(reply) || fallbackReply(state, item); guard.replaced = true; }
-      if (found.includes("script")) reply = reply.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
+      if (found.includes("script")) reply = withoutOffScript(reply, lang);
       // What is left of a turn whose words contradicted the verdict or the screen: those sentences go; if nothing
       // that hands the floor back is left, the item's question (or the move's fixed line) is the turn.
       const keepOr = (t) => (t && handsBack(t) ? t : item && !CLOSING_MOVES.has(kindNow) && state.pendingWhy !== item.id
@@ -947,7 +960,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           let a = again;
           const soft = problems(a);
           if (soft.includes("wrap")) a = stripWrap(a) || a;
-          if (soft.includes("script")) a = a.replace(OFF_SCRIPT[lang] ?? OFF_SCRIPT.english, "").replace(/\s{2,}/g, " ").trim();
+          if (soft.includes("script")) a = withoutOffScript(a, lang);
           if (soft.includes("register") && address === "aap") a = toAap(a);
           if (soft.includes("stage")) a = stripStage(a) || a;
           if (soft.includes("uiword")) a = plainUiWords(a, lang);
@@ -956,6 +969,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
       } catch (e) { if (isContentFilter(e)) return await blockedAfterDraft(e, "content_filter_repair"); }
+    }
+    // round 7 (PIPELINE §A Brain "rewrite, never strip"): a turn the repairs left as a fragment ("ने?", "Aap kya chunenge?")
+    // is never sent: the move's own full line (a check-in's fixed offer of the choices; with a card, its lead and question)
+    if (!CLOSING_MOVES.has(kindNow) && (guard.replaced || guard.repaired) && isFragment(reply, askEnd)) {
+      reply = fallbackReply(state, item);
+      guard.unfragmented = true;
     }
     // a hint turn still only the question after the rewrite: the rung's own kit hint (verified content that never states
     // the key, never a teacher note) leads the question
