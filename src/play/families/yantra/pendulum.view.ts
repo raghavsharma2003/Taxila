@@ -217,7 +217,8 @@ export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string { return match ? W("goal.match", { t: beat.toFixed(2) }) : W("goal.oscillation", { n }); }
   const readouts = (): Readout[] => {
     const s = st();
-    return [{ k: W("length"), v: `${lenNow()} cm` }, { k: W("mass"), v: `${s.k.mass} g` }, { k: W("swing"), v: `${s.k.swing}°` }];
+    // two readouts: three squeezed the goal line on phones (forge3 Q2/Q3 at p360 / p412); the pull is seen on the bob itself
+    return [{ k: W("length"), v: `${lenNow()} cm` }, { k: W("mass"), v: `${s.k.mass} g` }];
   };
   function step<T extends number>(xs: readonly T[], cur: number, d: number): number | null { const i = xs.indexOf(cur as T) + d; return i >= 0 && i < xs.length ? xs[i] : null; }
   function controls(): ControlSpec[] {
