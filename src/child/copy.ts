@@ -100,6 +100,7 @@ const S = {
   soundsOlder: "Sound effects",
   talkMode: "Talk mode",
   tapToTalk: "Tap to talk",
+  handsFree: "Hands-free",
   openMic: "Open mic (headphones only)",
   openMicNeeds: "Plug in headphones to use open mic.",
   teacherFace: "Teacher's face",

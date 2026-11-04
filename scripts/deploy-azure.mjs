@@ -386,6 +386,8 @@ async function deploy() {
   const prev = cfg.activeRevisionsMode === "Multiple" ? trafficRoles(app, await listRevs()).current : app.properties.latestReadyRevisionName;
   const tpl = JSON.parse(JSON.stringify(app.properties.template));
   tpl.revisionSuffix = `s${sha}-${Date.now().toString(36).slice(-4)}`;   // unique per revision
+  // round 7 (platform-graceful-shutdown): SIGTERM → 20 s drain in server/shutdown.js, + flush; SIGKILL only after 30 s
+  tpl.terminationGracePeriodSeconds = 30;
   const newRev = `${APP}--${tpl.revisionSuffix}`;
   const c0 = tpl.containers[0];
   c0.image = image;

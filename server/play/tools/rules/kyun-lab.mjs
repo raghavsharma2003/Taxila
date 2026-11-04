@@ -47,7 +47,9 @@ export const ACTS = {
   "c7-science-ch01-t01|golu": ["s3"],
   "c7-science-ch04-t02|predict": ["s2", "s3"],          // air AND water; paint as prevention (the coat factor)
   "c7-science-ch07-t03|predict": ["s2", "s3"],
-  "c7-science-ch08-t01|predict": ["s3", "s2"],          // length / mass / swing vs period; timing 10 swings
+  // r7: the pendulum's skills go to yantra/pendulum (the same experiment in real time: set the thread so the swing keeps
+  // a beat, count full oscillations; all three kit beliefs). This lab stays authored, not admitted; restore to re-admit.
+  "c7-science-ch08-t01|predict": [],
   "c7-science-ch11-t02|predict": ["s2"],
 };
 

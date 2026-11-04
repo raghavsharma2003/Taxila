@@ -116,7 +116,7 @@ export const spokenForm = (t) => String(t).toLowerCase().replace(/[?!.,;:"“”
 // Every pattern here is written against the defects of the owner's 0/100 session (evals/owner-truth/ROOT-CAUSES.md,
 // F1-F21) and the 394 transcribed turns of evals/owner-truth/results/2026-10-04T18-30-08.
 export const RX = {
-  fallback: /lost my words for a second|meri baat atak gayi|meri baat atak|can you say that again\?$/i,
+  fallback: /lost my words for a second|meri baat atak gayi|meri baat atak|can you say that again\?$|tell me that once more\? i.m listening|ek baar phir se batao, kya kaha tumne/i,
   // the fixed disclosure line (F10): only correct after a disclosure
   disclosure: /what you said matters|tumne jo bataya,? woh zaroori hai|aapne jo bataya,? woh zaroori hai/i,
   stage: /(?:^|[\s(—-])(?:whiteboard(?:\s+anchor)?|board|shape|move|note|key|ladder|rung|lesson now|turn shape|your move)\s*:|\bTURN SHAPE\b|\bLESSON NOW\b|\[[^\]]+\]/i,

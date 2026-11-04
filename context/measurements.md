@@ -4953,3 +4953,61 @@ The board-first rung already picks a board before her line on 98% of first expla
 ## ms-r7-migrate-tooling-local-2026-11-04 (2026-11-04, round 7)
 
 Migrate tooling on a throwaway local PostgreSQL 16 (TLS on, verify-full with a self-signed CA; no Neon, no Azure): migrate.mjs (pg driver) --dry-run 30 pending, apply 30 applied, rerun 0 applied; db-copy.sh MODE=apply 30 applied each in one psql -1 transaction, rerun 0, missingMigrations empty; a planted 999_bad.sql (create table, then 1/0) failed at 'apply 999_bad.sql (rolled back)' with the table absent and no schema_migrations row. Refusals exit 2 with one line: TAXILA_DB=prod without --prod, --prod with TAXILA_DB=test, --prod without --backup/--no-backup. Unit tests: tests/migrate-tooling.test.mjs (10, no DB). Not yet run live: --dry-run on the stream's Neon branch (HTTP transaction path), the Neon backup-branch API, the ACA job apply (MIGRATIONS_TGZ ~35 KB as a container env var).
+
+
+<!-- merged from inbox/r7-brain-remerge.json -->
+## ms-r7-brain-skill-arc (2026-11-04, stream A Brain)
+
+Every skill gets explain, then a worked example from its own verified kit item (never posed afterwards), then a practice block; then mixed practice. The hook has kinds (a puzzle on the kit’s own problem, or the prediction). Director replay over 830 kits: practice skill hops 38% → 23%; 68% of later skills have a kit-anchored worked example. Kill switch TAXILA_R7_SKILL_ARC=off. Test: tests/r7-brain-arc.test.mjs.
+
+
+<!-- merged from inbox/r7-face-remerge.json -->
+- `ms-r4-lamp2-judges-2026-10-10` (2026-10-10): lamp2 blind judges, lamp1 judge-live.mjs prompt verbatim, desk window 375x405 at 412, 8 moments + 6 consecutive 15 fps frames, n = 5 per run (3 gpt-5.6-sol reasoning medium + 2 Kimi K2.6), r8 calibration in the same run: J1 uncanny 3/5 premium 2.6 (r8 1/5, 3.4); J2 2/5, 2.8 (r8 0/5, 3.0); J3 0/5, 2.6 (r8 0/5, 3.6); J4 2/5, 2.4 (r8 0/5, 3.4); J3b (J3's identical images) 2/5, 2.8 (r8 0/5, 3.4); Jfinal 2/5, 2.8 (r8 1/5, 3.2). Same person 5/5 and childish 0/5 in all. Model judges, advisory. docs/design/round4/asha/rig2/evidence/judge-*.json.
+- `ms-r4-lamp2-bilabial-battery-2026-10-10` (2026-10-10): offline, the stored 24-line Diya battery (evals/face-puppet/out/diya), VisemeScheduler timing + resolveVisemes + weightsAt into the lamp2 MouthKeys at 60 fps; a bilabial word is sealed when the mbp key is up at >= 0.9 within [word - 80 ms, word end]: 132/132 with scripts/character/puppet2d/lamp2/bilabial2.js, 121/132 with lamp1's rule, 82/132 Azure alone. evidence/battery-24.json.
+- `ms-r4-lamp2-lipsync-offset-2026-10-10` (2026-10-10): E3 estimator (evals/face-puppet/lipsync-offset.mjs), 21 lines: drawn key openness minus the wav2vec2 forced-alignment track, same audio: no lead +55 ms median (38% within 50); KEY_LEAD_MS 20 / 35 / 50: +30 / +15 / 0 ms, 57% within 50 each; the continuous viseme jaw on the same path +10 ms, 95%. evidence/battery-24.json.
+- `ms-r4-lamp2-rig-cost-2026-10-10` (2026-10-10): KeyRig, headless Chromium (Canvas 2D), CDP CPU throttle, real-time scene: 80 px speech row (160x160 canvas, dpr 2) 60.0 fps at 1x and 4x; desk 375x405 (750x810) 60.0 at 1x, 49.3 at 4x. Pack 133.0 KB (19 WebP + geom), poster 21.8 KB. Rest SSIM 0.9893 on the head crop; every key SSIM outside its region 1.0000. Not a phone. evidence/fps-*.json, rest-ssim.json, keys.json.
+- `ms-r4-lamp2-v3-judges-2026-10-10` (2026-10-10): lamp2 v3 (all open mouths painted from the aa master key; breathing 0.005; head translation nod/sway 3.5 px shared 40% with the body; glance lean; +-0.8 px drift; roll cap 1.2 deg; 30 ms crossfade), same harness and panel, r8 in the same run: K1 uncanny 1/5 premium 2.6 (r8 0/5, 3.4); K2 1/5, 2.8 (r8 1/5, 3.0); K3 0/5, 2.8 (r8 1/5, 3.2); moving photo 1, 3, 3 /5. Lip-sync on the 24-line battery: median +5 ms, 67% of lines within +-50 ms (+-150 ms lag search: 76%); bilabials 132/132. docs/design/round4/asha/rig2/evidence/judge-K*.json, battery-24.json.
+
+
+<!-- merged from inbox/r7-studio-remerge.json -->
+## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)
+
+Under D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.
+
+## ms-r7-board-first-coverage (2026-11-04, n = 250 class 4-7 topics)
+
+The board-first rung already picks a board before her line on 98% of first explain moves and 88.8% of subject-less picture asks (the maths misses are kit boards that are text, not a drawing). What remains is live: a picked board refused against her real line. GET /api/studio/timing now counts those outcomes per replica.
+
+## ms-r7-board-motion-coverage (2026-11-04, n = 250)
+
+4 first-explain boards move (all fraction-parts boards). Coverage of board-first unchanged (245/250). Number-line jumps are not yet generated.
+
+
+## ms-r7-face-route-b-battery-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Route (b) lip timing, the 24-line Diya battery offline on the product timing path (scripts/character/puppet2d/route-b/battery.mjs, JAW_W 0.6, 21 lines with a CTC track): bilabial words sealed 132/132 (lamp2 132/132); lines within ±50 ms 100% (lamp2 67%, r8 continuous jaw 86%); median -20 ms (IQR -30..-5). Sweep: JAW_W 0.4 → 90%, 0.8 → 100%. An uncoupled jaw lost seals (91/132), hence the seal coupling. A simulation of the drawn opening, not a camera measurement of pixels.
+
+
+## jd-r7-face-route-b-sheet-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Claude judge pass on docs/design/round7/face/route-b-vs-r8-sheet.png (Diya line 03, 8 instants, close framing): lamp2+jaw is the same person as lamp2 (5/5), with a visibly larger continuous opening than lamp2's keys and no warp or tearing. Pass 1 found a hard dark band on large drops (fixed: soft-edged interior); remaining nit: at the largest drops the gap reads slightly smeared. Against r8: r8's chibi mouth is more expressive (tongue, wide vowels) but childish (OWNER-RESET #1); lamp2+jaw is the grown-up look with better timing. Not a blind panel (deferred to the test phase).
+
+
+## ms-r7-face-start-latency-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Start → first 'speaking' on /dev/desk?live=1, headless Chromium SwiftShader, CPU x6, n=8 per arm interleaved (evals/face-puppet/start-latency.mjs): p50 delta vs ?puppet=0 was +112 ms (n=6) before; after: forced live +44 ms, auto (gate → lite) +54 ms; long tasks in the first 6 s p50: off 976 ms, auto 1008 ms, live 2017 ms. A weak-phone proxy, not a phone; noise about ±100 ms at this n.
+
+
+## ms-r7-face-clip-seals-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Hello clip bilabial seals (evals/face-puppet/clip-seals.mjs: real Hello screen, prod build + App patch 003, live r8 puppet forced on, headless SwiftShader; a seal = min rendered lip gap within ±60 ms of each sidecar bilabial at most 15% of the open p75): meter path 12/34 (en 2/6, hi 5/15, hinglish 5/13) → sidecar 33/34 (6/6, 15/15, 12/13); open-mouth gap p75 9-13.5 → 18-20 rig px. n = one play per clip per arm; the sidecar's own bilabial timing is the reference (CTC-derived, not hand-labelled).
+
+
+## ms-r7-gate-shards-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Gate sharding. One-process npm test in the 4-core container: 1,711 s (3,688 tests). The same 379 suites as one process each, 4 at a time: 578 s wall, 0 failing in isolation (tests/shard-weights.json; kit-budget 442 s is the longest single suite, so it sets the critical path). First CI matrix run (PR #28 @ 1bd8c68f, count-split shards): build + 6 shards all green, ~8 min from start to the aggregate `gates` job, slowest shard unit 2/4 ~7 min; the old single job took 17-24 min.
+
+
+## ms-r7-migrate-live-neon-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+migrate.mjs on the stream's own Neon branch (host sha256 f47b22100116a310) over Neon's HTTP transaction API: --dry-run listed 040 pending (1 statement), the apply ran it in one transaction, and a rerun applied 0. That is the live check of the Neon path that was outstanding in ms-r7-migrate-tooling-local-2026-11-04.

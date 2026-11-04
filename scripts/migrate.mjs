@@ -7,13 +7,14 @@
 //                                            production (DATABASE_URL_DIRECT, else DATABASE_URL). A Neon target gets a
 //                                            backup branch NAME first (NEON_API_KEY + NEON_PROJECT_ID); --no-backup says
 //                                            the caller took one (scripts/release.mjs) or accepts none, on the record
+//   node scripts/migrate.mjs --sha REV ...     apply the db/migrations of commit REV (scripts/release.mjs), not the working tree
 //   node scripts/migrate.mjs --job [--prod]  a database reachable only inside the ACA VNet (Azure PG): runs the apply in a
 //                                            one-off ACA job (scripts/region/db-copy.mjs --apply-migrations); with
 //                                            --dry-run prints that job's plan only
 //
 // Driver: Neon hosts go over Neon's HTTP transaction API (the sandbox cannot reach 5432); any other host, or DB_DRIVER=pg,
 // uses the pg driver with server/db.js's TLS-enforcing pool config. Never prints a connection string.
-import { spawnSync } from "child_process";
+import { execFileSync, spawnSync } from "child_process";
 import { neon } from "@neondatabase/serverless";
 import pg from "pg";
 import { ROOT, loadEnv } from "../infra/azure.mjs";
@@ -32,6 +33,14 @@ if (JOB) {
   console.log(`migrate --job: node ${args.join(" ")}`);
   const r = spawnSync(process.execPath, args, { cwd: ROOT, stdio: "inherit", env: process.env });
   process.exit(r.status ?? 1);
+}
+
+/** db/migrations/*.sql as committed at `rev` (name order), read with git, never the working tree. */
+function filesAt(rev) {
+  const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8", maxBuffer: 1 << 26 });
+  const sha = git("rev-parse", "--verify", `${rev}^{commit}`).trim();
+  return git("ls-tree", "--name-only", sha, "db/migrations/").split("\n").filter((f) => f.endsWith(".sql")).sort()
+    .map((f) => ({ name: f.split("/").pop(), body: git("show", `${sha}:${f}`) }));
 }
 
 let target;
@@ -70,7 +79,7 @@ try {
     const b = await neonBackupBranch({ apiKey: NEON_API_KEY, projectId: NEON_PROJECT_ID, host: target.host, name: opt("--backup") });
     console.log(`backup branch ${b.name} (${b.branchId}) from ${b.parentId}`);
   }
-  const r = await migrate({ client, files: migrationFiles(ROOT + "db/migrations"), dryRun: DRY, log: (s) => console.log(s) });
+  const r = await migrate({ client, files: opt("--sha") ? filesAt(opt("--sha")) : migrationFiles(ROOT + "db/migrations"), dryRun: DRY, log: (s) => console.log(s) });
   console.log(DRY ? `${r.pending.length} pending` : `${r.applied.length} applied, ${r.pending.length - r.applied.length} left`);
 } catch (e) {
   console.error(`migrate failed: ${e.message}`);

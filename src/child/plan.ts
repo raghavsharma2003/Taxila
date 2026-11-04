@@ -67,6 +67,12 @@ function writeCache(cid: string, c: Cached): void {
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
 
+/** r7 app-nav-unified: the parent's hidden surfaces as last seen on this device (the dock on screens that do not read the
+ *  plan). Everything shows until a plan read says otherwise. */
+export function cachedSurfaces(cid: string): HomePlan["surfaces"] {
+  return { ...ALL_SURFACES, ...(readCache(cid)?.surfaces ?? {}) };
+}
+
 /** r5 QA D24: the lesson route reopens a lesson by id (POST /api/lesson/start {resumeLessonId}; the cascade and text lanes
  *  every home start uses), so "Continue" is true now. */
 export const RESUME_BY_ID = true;

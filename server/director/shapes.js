@@ -28,6 +28,17 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 
+/**
+ * round 7 A4 (PIPELINE §A Brain item 2: open-r3rv-interest-hook-template — one interest template in 12/12 lessons produced
+ * "cricket cake", "bat sunlight se energy leta hai"): the hook has kinds. "puzzle": the kit's own worked problem (in LESSON
+ * NOW) as a quick guess, no method yet; "predict": the everyday prediction (below, the interest only where the kit says the
+ * idea lives). state.js hookKindFor picks one per lesson.
+ */
+export const hookPuzzle = ({ protege }) => join(
+  "open with the problem in LESSON NOW as a quick puzzle, in its own numbers and names: ask for their first guess or how they would start; no method and no answer yet",
+  "a guess is welcome whatever it is; never a verdict on it",
+  `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
+);
 export const hook = ({ interest, contexts, protege }) => join(
   `open with one concrete everyday situation${interest ? ` built on their interest (${interest})` : ""}${contexts.length ? ` — kit contexts: ${contexts.slice(0, 3).join(", ")}` : ""}`,
   "ask what they think will happen or which they would pick — a prediction, no right answer yet",
@@ -254,12 +265,13 @@ const GAME_CLAUSE = "they want to play: the activity is the way in now";
 const MOVING_CLAUSE = "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have)";
 const ASK_TRUTH = {
   game: {
-    engine: "they asked for a game: no game is ready for this yet, say so honestly in a few words; the activity already on the screen is how to try it now (never call it a game)",
-    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things; never call what you try together a game",
+    // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she offers what exists, never narrates what does not
+    engine: "they asked for a game: the activity already on the screen is the way to try it now; in one line, what to do in it (never call it a game; never say a game is not ready)",
+    none: "they asked for a game: a quick spoken game on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available)",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
-    none: "they asked to see it moving: nothing moves on the screen this turn, say so in a few words; then show it in words with everyday things (never ask them to drag or tap)",
+    none: "they asked to see it moving: show the movement in words with everyday things, step by step, as if it moves in front of them (never ask them to drag or tap; never say nothing moves or that you cannot show it)",
   },
 };
 /** PURE. The visual ask's first clause for what the turn really put on the screen ("engine" kept, or "none" / a picture). */
@@ -502,7 +514,8 @@ export const offerWaysOff = ({ subject }) => join(
 );
 /** release 13 (A): a picture of something no piece can show: honest, then in words, then back. */
 export const visualUnavailable = ({ subject }) => join(
-  `they asked to see ${clean(subject) || "it"}: you cannot show a picture of it right now — say so plainly in a few words, never point at the screen or the board`,
+  // round 7 (zero spoken failure): no "I cannot show it"; it is given in words, and nothing on the screen is claimed
+  `they asked to see ${clean(subject) || "it"}: show it in words now (never say you cannot show it; never point at the screen or the board)`,
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
@@ -511,22 +524,21 @@ export const visualUnavailable = ({ subject }) => join(
  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
  */
 export const drawAsked = ({ subject, show, photo }) => join(
-  photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
-    // QA on be9b766a (7545d1fd t2): "there is no photo, say so" came out as "is turn mein picture nahi hai" under the board's
-    // sketch; a sketch IS a picture, so the photo is owned up to and the drawing never denied
-    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead, a drawing, not a photo`
+  // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): a photo being made, a busy lane or no photo is never
+  // narrated; the board's sketch is what she talks about, and a photo that arrives simply appears (it is never promised)
+  show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: the board draws a simple sketch of it now; talk about it as a sketch, never as a photo (never say a photo is coming, being made, or cannot come)`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
   `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
-  // (last: the rule that must fire) the photo is owned up to, the board's drawing of it never denied
-  show === "picture" && photo !== "coming" ? "never say there is no picture or nothing on the screen" : "",
+  // (last: the rule that must fire) the board's drawing of it is never denied
+  show === "picture" ? "never say there is no picture or nothing on the screen" : "",
 );
 /** round 5 (owner decision 14.2): a real picture of what they asked for is being made (studio/picture.js) or cannot come now;
- *  it is never said to be there before it mounts. */
+ *  it is never said to be there before it mounts. round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she
+ *  never narrates it being made, failing or not coming; she gives it in words, and a picture that arrives simply appears. */
 export const pictureNote = ({ subject, photo }) => photo === "coming"
-  ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly, never that it is there`
-  : photo === "failed" ? `the picture of ${clean(subject) || "it"} you said was coming could not come: say so in a few words`
-  : `a photo of ${clean(subject) || "it"} cannot come right now: say so in a few plain words, then give it in words`;
+  ? `give ${clean(subject) || "it"} in words now; never say a picture is coming or being made, and never that it is there`
+  : `give ${clean(subject) || "it"} in words now; never mention a picture of it (that it is coming, could not come or failed)`;
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
 // QA 14.4.1 (df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" with chapter 1 on the button): a
 // chapter ask is answered with what is ready; she asks them nothing, not even which page or chapter

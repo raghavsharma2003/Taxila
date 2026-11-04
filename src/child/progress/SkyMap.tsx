@@ -5,7 +5,7 @@
 // never a collectible. Star targets are ≥ 48 px HTML buttons over the SVG (audit: 41 px stars).
 import { useEffect, useMemo, useState } from "react";
 import type { ChildMapSkill } from "../../../shared/contracts.ts";
-import type { MapSubject } from "../api.ts";
+import { classHereOf, type MapSubject } from "../api.ts";
 import { Scene, Spot } from "../art.tsx";
 import { t } from "../copy.ts";
 import { loadPrereqs, visibleEdges } from "./prereqs.ts";
@@ -51,7 +51,7 @@ export function SkyMap({ subject, classLevel, onSelect, selected, cols = 2 }:
               <text x={c.cx} y={c.labelY} textAnchor="middle" className="sky-label">
                 {chapterLines(c.chapter.title).map((ln, k) => <tspan key={k} x={c.cx} dy={k ? 16 : 0}>{ln}</tspan>)}
               </text>
-              {c.chapter.here && (
+              {classHereOf(c.chapter) && (
                 <g transform={`translate(${c.cx} ${c.labelY + (c.lines - 1) * 16 + 22})`}>
                   <rect x="-58" y="-11" width="116" height="22" rx="11" fill="var(--sky-label)" />
                   <text textAnchor="middle" y="4.5" className="sky-here">{t("classHere")}</text>
