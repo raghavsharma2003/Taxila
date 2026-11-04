@@ -127,11 +127,19 @@ function sendFile(res, file, headers, req) {
 
 // r5-latency: the one-time synchronous builds (the stagecraft table, ~1.6 s) run BEFORE the port opens, so the replica
 // takes no traffic until they are done and no child's first lesson start waits behind them (server/boot-warm.js)
-const warmed = await warmSync();
+// round 7 (platform-d5-relay-in-india): TAXILA_ROLE=d5relay is the India D5 relay (taxila-d5-sin), the same image with
+// only /api/health and the /api/duplex/voicelive upgrade: no lesson routes, no static files, no boot warm-up
+const RELAY = process.env.TAXILA_ROLE === "d5relay";
+const warmed = RELAY ? {} : await warmSync();
 if (Object.keys(warmed).length) console.log(`[serve] boot warm ${JSON.stringify(warmed)}`);
 
 const server = http.createServer((req, res) => {
   const path = decodeURIComponent((req.url || "/").split("?")[0]);
+  if (RELAY) {
+    if (path === "/api/health") return handle(req, res);
+    res.writeHead(404, { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" });
+    return res.end("d5 relay: not here");
+  }
   if (path.startsWith("/api/")) return handle(req, res);
   if (path === "/" || path === "/index.html") return sendLanding(res, req);
   const file = normalize(join(ROOT, path));
@@ -164,6 +172,7 @@ process.once("SIGTERM", () => void drain("SIGTERM"));
 process.once("SIGINT", () => void drain("SIGINT"));
 server.listen(PORT, () => {
   console.log(`taxila on :${PORT}`);
+  if (RELAY) return;
   void warmAsync().then((w) => Object.keys(w).length && console.log(`[serve] warm connections ${JSON.stringify(w)}`));
   if (process.env.TAXILA_PREWARM_BR !== "0") setTimeout(() => void prewarmBrotli().then((n) => n && console.log(`[serve] brotli q11 ready for ${n} files`)), 50);
 });
