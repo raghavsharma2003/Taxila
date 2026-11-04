@@ -25,7 +25,7 @@ import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
-import { scriptFacts } from "../../shared/whiteboard.js";
+import { scriptFacts, isMotionOp } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
@@ -201,8 +201,8 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     const s = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
     let r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     // a split that her real line refuses: the still board (motion never costs the board)
-    if (!r.ok && s.ops.some((o) => o.op === "move")) {
-      const still = { ...s, ops: s.ops.filter((o) => o.op !== "move") };
+    if (!r.ok && s.ops.some(isMotionOp)) {
+      const still = { ...s, ops: s.ops.filter((o) => !isMotionOp(o)) };
       // (refused still too: the still board's reasons are recorded, W19.settled only repeats them)
       r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
     }

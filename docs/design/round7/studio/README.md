@@ -116,3 +116,19 @@ Places are pinned at their true latitude and longitude on a labelled 5° grid wi
 - **Names:** the lesson's own word ("Bombay" stays Bombay). A name sits beside its pin, or further out on a leader line that crosses nothing. A grid cross where a name needs the room is left out.
 - **Reach:** 33 lessons name 3 or more places, and all 33 boards pass every W gate. The map is the board drawn in 29 of them. 138 of the 147 named places are pinned; the rest are too close to a neighbour to label (Delhi and Panipat, Ajanta and Ellora). Her line names only what is drawn.
 - **Gate change:** W4 counts 3 or more evenly spaced degree labels ("15°N", "20°N", "25°N") as the grid's axis, like a number line's ticks. A single "23.5°N" is still checked against her line and the kit.
+
+## Motion ops (C1 item 6, M1: the motion family)
+
+Board motion used to be `move` only (a slide or a hop). M1 adds five more motions. Each acts on an earlier op of the same board, is judged where it ends (W19), and has a reduced-motion form that jumps to the end state.
+
+| op | what it does | may act on |
+|---|---|---|
+| `rotate` | turns `deg` about a point | stroke, line, arrow, polygon, circle, sector |
+| `scale` | scales by `k = [kx, ky]` about a point; a negative k mirrors (a fold) | stroke, line, arrow, polygon, rect, ellipse, circle (uniform) |
+| `follow` | travels a path of offsets, at even speed along its length | anything, words included (only ever translated) |
+| `sweep` | a filled shape's fill comes in from one side | a filled rect, circle, ellipse, polygon or sector |
+| `morph` | a stroke's or polygon's points move to new ones | stroke, polygon |
+
+- **Never off the board:** a motion that would carry its target off the board is refused, not clamped.
+- **Composition:** motions on one op compose in script order. The Player draws the target under one `matrix(...)`, with stroke width held steady under a scale.
+- **Recordings:** `motion-angle-*` shows a protractor arm turning to 60°, then the arc and "60°". `motion-area-*` shows a 5 × 3 area whose rows sweep in one by one, then "5 × 3 = 15". `motion-cycle-*` shows a droplet travelling sea → evaporation → cloud → rain → sea. These are hand-built demo boards (`evals/studio-timing/motion-demos.mjs`). M2 puts the same motion into the code templates children get.

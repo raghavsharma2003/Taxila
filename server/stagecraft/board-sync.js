@@ -20,6 +20,7 @@
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
 import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing, selfAnswer } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
+import { isMotionOp } from "../../shared/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
@@ -134,7 +135,7 @@ export function withSectors(script, lineText) {
  */
 export function withSplit(script) {
   const ops = script?.ops ?? [];
-  if (ops.some((o) => o.op === "move")) return script;
+  if (ops.some(isMotionOp)) return script;
   const groups = new Map();
   for (const o of ops) if (o.op === "sector" && Array.isArray(o.c)) { const k = `${o.c[0]},${o.c[1]},${o.r}`; (groups.get(k) ?? groups.set(k, []).get(k)).push(o); }
   const moves = [];

@@ -28,7 +28,7 @@
 //   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
-import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp } from "../../../shared/whiteboard.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
@@ -625,7 +625,7 @@ export function gateWhiteboard(raw, ctx) {
   const advisories = off.length ? [{ id: "W14.about_her_line", detail: off[0] }] : [];
   // W19 (round 7, motion ops): a board that MOVES is also judged as it ends (every moved op at its final place): a part
   // that slides onto a word, a label left behind by its part, a jump that lands off the line is refused where it lands
-  if (ops.some((o) => o.op === "move")) {
+  if (ops.some(isMotionOp)) {
     const end = gateWhiteboard(settledScript(script), ctx);
     add("W19.settled", end.pass, end.checks.filter((c) => !c.pass).map((c) => c.id).slice(0, 6));
   }
