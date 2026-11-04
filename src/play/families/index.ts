@@ -4,12 +4,16 @@ import { atomsLogic } from "./todo-jodo/atoms.logic.ts";
 import { stripsLogic } from "./todo-jodo/strips.logic.ts";
 import { bundlesLogic } from "./todo-jodo/bundles.logic.ts";
 import { balanceLogic } from "./taraazu/balance.logic.ts";
+import { weighLogic } from "./taraazu/weigh.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
+import { beamLogic } from "./yantra/beam.logic.ts";
+import { pendulumLogic } from "./yantra/pendulum.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
+import { circuitLogic } from "./yantra/circuit.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -19,6 +23,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "todo-jodo/bundles": asAny(bundlesLogic),
   "taraazu/equation": asAny(balanceLogic),
   "taraazu/equality": asAny(balanceLogic),
+  // round 7: measurement on the balance (kg / g) and with jugs (l / ml)
+  "taraazu/weigh": asAny(weighLogic),
+  "taraazu/fill": asAny(weighLogic),
   "nishana/place": asAny(lineLogic),
   "nishana/compare": asAny(lineLogic),
   "nishana/hop": asAny(lineLogic),
@@ -38,5 +45,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7: Stambh, bar graphs and pictographs
   "stambh/bars": asAny(stambhLogic),
   "stambh/picto": asAny(stambhLogic),
+  // round 7 E6: Yantra
+  "yantra/beam": asAny(beamLogic),
+  "yantra/pendulum": asAny(pendulumLogic),
+  "yantra/circuit": asAny(circuitLogic),   // round 7 E6: wire a cell, a bulb and a switch; RUN closes the loop or not
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

@@ -12,10 +12,10 @@
 // (default: the machine's parallelism). `npm test` (tests/index.js, one process) is unchanged and remains the local
 // all-in-one run. The planner is PURE and deterministic (scripts/test-shard-core.mjs), so every CI job computes the
 // same partition from the same commit, and together the shards cover every suite exactly once (tested).
-import { spawnSync } from "child_process";
+import { spawn, spawnSync } from "child_process";
 import { readdirSync, readFileSync, writeFileSync } from "fs";
 import { availableParallelism } from "os";
-import { GROUPS, groupOf, parseShard, planShards, tapFileDurations } from "./test-shard-core.mjs";
+import { GROUPS, groupOf, parseShard, planShards } from "./test-shard-core.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const TESTS = ROOT + "tests/";
@@ -29,20 +29,28 @@ const groups = Object.fromEntries(GROUPS.map((g) => [g, []]));
 for (const f of files) groups[groupOf(f, readFileSync(TESTS + f, "utf8"))].push(f);
 const concurrency = Number(opt("--concurrency", Math.max(1, availableParallelism())));
 
-const run = (list, { reporter } = {}) => spawnSync(process.execPath,
-  ["--test", `--test-concurrency=${concurrency}`, ...(reporter ? [`--test-reporter=${reporter}`] : []), ...list.map((f) => "tests/" + f)],
-  { cwd: ROOT, stdio: reporter ? ["ignore", "pipe", "inherit"] : "inherit", env: process.env, encoding: "utf8", maxBuffer: 1 << 28 });
+const run = (list) => spawnSync(process.execPath, ["--test", `--test-concurrency=${concurrency}`, ...list.map((f) => "tests/" + f)],
+  { cwd: ROOT, stdio: "inherit", env: process.env });
 
 if (flag("--measure")) {
-  const t0 = Date.now();
-  const r = run(files, { reporter: "tap" });
-  const secs = tapFileDurations(r.stdout || "");
-  const failed = Object.entries(secs).filter(([, v]) => !v.ok).map(([k]) => k);
-  const out = { at: new Date().toISOString(), method: `node --test, one process per file, concurrency ${concurrency}, ${availableParallelism()} cores; wall ${Math.round((Date.now() - t0) / 1000)} s`,
-    seconds: Object.fromEntries(Object.entries(secs).map(([k, v]) => [k, +v.s.toFixed(1)]).sort()) };
+  // one `node --test <file>` process per suite, `concurrency` at a time, each timed by wall clock (node 22's isolated
+  // runner flattens files into one TAP stream, so per-file durations are not in its output)
+  const t0 = Date.now(), seconds = {}, failed = [];
+  const queue = [...files];
+  const worker = async () => {
+    for (let f = queue.shift(); f; f = queue.shift()) {
+      const s0 = Date.now();
+      const code = await new Promise((res) => spawn(process.execPath, ["--test", "tests/" + f], { cwd: ROOT, stdio: "ignore", env: process.env }).on("exit", (c, sig) => res(c ?? sig)));
+      seconds[f] = +((Date.now() - s0) / 1000).toFixed(1);
+      if (code !== 0) failed.push(f);
+    }
+  };
+  await Promise.all(Array.from({ length: concurrency }, worker));
+  const out = { at: new Date().toISOString(), method: `one node --test process per file, ${concurrency} at a time, ${availableParallelism()} cores; wall ${Math.round((Date.now() - t0) / 1000)} s`,
+    seconds: Object.fromEntries(Object.entries(seconds).sort(([a], [b]) => (a < b ? -1 : 1))) };
   writeFileSync(opt("--out", WEIGHTS), JSON.stringify(out, null, 1) + "\n");
-  console.log(`measured ${Object.keys(secs).length} of ${files.length} files in ${out.method}; failed in isolation: [${failed.join(", ")}]`);
-  process.exit(r.status ?? 1);
+  console.log(`measured ${Object.keys(seconds).length} files: ${out.method}; failed in isolation: [${failed.join(", ")}]`);
+  process.exit(failed.length ? 1 : 0);
 }
 
 let weights = {};

@@ -7,6 +7,7 @@ import { createHash } from "node:crypto";
 import { record } from "./writer.js";
 import { traceCtx } from "./context.js";
 import { putTraceBlob, traceBlobPath, traceBlobConfigured } from "./blob.js";
+import { usdChat, usdTts } from "../cost/prices.js";
 
 let blobSeq = 0;
 const sha = (s) => createHash("sha256").update(s).digest("hex").slice(0, 16);
@@ -38,7 +39,13 @@ export function outputTextOf(out) {
  */
 export function recordModelCall(m) {
   try {
-    if (m.kind === "tts" || m.kind === "realtime_secret") return; // speech and key minting are not model calls (T-voice records TTS)
+    if (m.kind === "realtime_secret") return; // key minting is not a model call
+    if (m.kind === "tts") {
+      // round 7 cost ledger: speech is billed per character, so it is its own event (speech.tts), never a model.call
+      const chars = typeof m.body?.input === "string" ? m.body.input.length : 0;
+      record("speech.tts", { engine: m.deployment, chars, usd: usdTts(m.deployment, chars), status: m.status, ms: m.ms, ...(m.error ? { error: m.error } : {}) });
+      return;
+    }
     const msgs = promptOf(m.body);
     const json = msgs ? JSON.stringify(msgs) : "";
     const text = m.text ?? outputTextOf(m.out);
@@ -46,7 +53,7 @@ export function recordModelCall(m) {
       // 14.3 (stream 3's prod query): the ACCOUNT lane when it is not the default CHAT one, so a call the 429 overflow moved
       // reads `endpoint = 'OVERFLOW'` directly instead of being inferred (lane above is the quota lane: "hot" either way)
       ...(m.lane && m.lane !== "CHAT" ? { endpoint: m.lane } : {}),
-      ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
+      ...(m.attempt ? { attempt: m.attempt } : {}), ...(m.tokens ? { tokens: m.tokens, usd: usdChat(m.deployment, m.tokens) } : {}), ...(m.ttftMs != null ? { ttftMs: m.ttftMs } : {}),
       promptId: promptId(msgs), promptSha: json ? sha(json) : null, promptMsgs: Array.isArray(msgs) ? msgs.length : null,
       output: text ?? null, ...(m.error ? { error: m.error } : {}), ...(Array.isArray(m.filterCats) ? { filterCats: m.filterCats } : {}) };
     const c = traceCtx();

@@ -6,6 +6,9 @@ import { brotliCompress, brotliCompressSync, gzipSync, constants as Z } from "zl
 import { extname, join, normalize, resolve } from "path";
 import { handle } from "./index.js";
 import { warmSync, warmAsync } from "./boot-warm.js";
+import { createDrain, trackRequests } from "./shutdown.js";
+import { drainWebSockets } from "./ws.js";
+import { flushTrace } from "./trace/writer.js";
 
 // TAXILA_DIST serves another build (the production e2e builds with dev routes into a temp dir).
 const ROOT = process.env.TAXILA_DIST ? resolve(process.env.TAXILA_DIST) + "/" : new URL("../dist/", import.meta.url).pathname;
@@ -154,6 +157,11 @@ server.on("upgrade", (req, socket, head) => {
   socket.on("error", () => {});
   import("./duplex/d5route.js").then((m) => m.handleD5Upgrade(req, socket, head)).catch(() => socket.destroy());
 });
+// round 7 (platform-graceful-shutdown): SIGTERM drains (server/shutdown.js) instead of cutting lessons mid-turn
+const requests = trackRequests(server);
+const drain = createDrain({ server, requests, drainSockets: drainWebSockets, flush: flushTrace });
+process.once("SIGTERM", () => void drain("SIGTERM"));
+process.once("SIGINT", () => void drain("SIGINT"));
 server.listen(PORT, () => {
   console.log(`taxila on :${PORT}`);
   void warmAsync().then((w) => Object.keys(w).length && console.log(`[serve] warm connections ${JSON.stringify(w)}`));

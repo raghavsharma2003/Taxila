@@ -2,8 +2,8 @@
 // The REAL lesson runtime on /dev/desk?live=1 (scripted Director + clock link, no models), production build with dev
 // routes, headless Chromium with software GL (SwiftShader: the raster cost lands on the CPU, like a low-end phone's
 // weak GPU path) and a CDP CPU throttle. Per page: navigation start → the Desk's floor first reads "speaking" (her first
-// sound, as the runtime schedules it), and long tasks in the first 6 s. Arms, interleaved: the live face (puppet on)
-// vs ?puppet=0 (her still). Target (PIPELINE §D): live within ~300 ms of puppet off at p50.
+// sound, as the runtime schedules it), and long tasks in the first 6 s. Arms, interleaved: off (?puppet=0, her still),
+// live (?puppet=1: forced past the weak-device gate) and auto (no flag: the gate decides; SwiftShader → the lite path). Target (PIPELINE §D): live within ~300 ms of puppet off at p50.
 //   node evals/face-puppet/start-latency.mjs [--n 10] [--cpu 6] [--look r8|lamp2] [--dist <dir>] [--out <file.json>]
 import http from "node:http";
 import fs from "node:fs";
@@ -34,7 +34,7 @@ for (let i = 0; i < 100; i++) {
 const q = (a, p) => { if (!a.length) return null; const s = [...a].sort((x, y) => x - y); return Math.round(s[Math.min(s.length - 1, Math.floor(p * s.length))]); };
 const sum = (a) => ({ n: a.length, p50: q(a, 0.5), p90: q(a, 0.9), max: a.length ? Math.round(Math.max(...a)) : null });
 
-async function one(browser, puppet) {
+async function one(browser, armName) {
   const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true, serviceWorkers: "block" });
   const page = await ctx.newPage();
   await page.route("**/api/face/config*", (r) => r.fulfill({ json: { puppet2d: true, visemes: true, rev: "r8", look: LOOK, ...(LOOK === "lamp2" ? { cohort: "owner" } : {}) } }));
@@ -48,13 +48,13 @@ async function one(browser, puppet) {
   });
   const cdp = await ctx.newCDPSession(page);
   if (CPU > 1) await cdp.send("Emulation.setCPUThrottlingRate", { rate: CPU });
-  await page.goto(`${BASE}/dev/desk?live=1&band=b3&face=live&puppet=${puppet ? 1 : 0}`, { waitUntil: "domcontentloaded" });
+  await page.goto(`${BASE}/dev/desk?live=1&band=b3&face=live${armName === "auto" ? "" : `&puppet=${armName === "live" ? 1 : 0}`}`, { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => window.__r7.speakingAt != null, null, { timeout: 60_000 });
   await page.waitForTimeout(6000);
   const r = await page.evaluate(() => {
     const h = document.querySelector("[data-face]");
     const long = window.__r7.long.filter(([s]) => s < 6000 + window.__r7.speakingAt);
-    return { speakingAt: window.__r7.speakingAt, phase: h?.getAttribute("data-phase"), canvas: !!document.querySelector(".fp-host canvas"),
+    return { speakingAt: window.__r7.speakingAt, phase: h?.getAttribute("data-phase"), canvas: !!document.querySelector(".fp-host canvas"), lite: !!document.querySelector('[data-lite="mouth"]'),
       longN: long.length, longTotal: long.reduce((a, [, d]) => a + d, 0), longMax: long.reduce((a, [, d]) => Math.max(a, d), 0),
       stage: window.__puppet?.snapshot?.() ?? null };
   });
@@ -63,12 +63,14 @@ async function one(browser, puppet) {
 }
 
 const browser = await chromium.launch({ args: ["--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"] });
-const runs = { off: [], live: [] };
+const ARMS = ["off", "live", "auto"];
+const runs = { off: [], live: [], auto: [] };
 try {
-  for (let i = 0; i < N; i++) for (const puppet of i % 2 ? [true, false] : [false, true]) {
-    const r = await one(browser, puppet);
-    runs[puppet ? "live" : "off"].push(r);
-    console.log(JSON.stringify({ i, arm: puppet ? "live" : "off", speakingAt: Math.round(r.speakingAt), phase: r.phase, longTotal: Math.round(r.longTotal), longMax: Math.round(r.longMax) }));
+  for (let i = 0; i < N; i++) for (let j = 0; j < ARMS.length; j++) {
+    const a = ARMS[(i + j) % ARMS.length];
+    const r = await one(browser, a);
+    runs[a].push(r);
+    console.log(JSON.stringify({ i, arm: a, speakingAt: Math.round(r.speakingAt), phase: r.phase, lite: r.lite, longTotal: Math.round(r.longTotal), longMax: Math.round(r.longMax) }));
   }
 } finally {
   await browser.close();
@@ -76,7 +78,7 @@ try {
 }
 const arm = (rs) => ({ firstSpeaking: sum(rs.map((r) => r.speakingAt)), longTotal: sum(rs.map((r) => r.longTotal)), longMax: sum(rs.map((r) => r.longMax)), phases: [...new Set(rs.map((r) => r.phase))] });
 const res = { date: new Date().toISOString(), cpu: CPU, look: LOOK, n: N, method: "evals/face-puppet/start-latency.mjs (headless Chromium, SwiftShader GL, CDP CPU throttle; a weak-phone proxy, not a phone)",
-  off: arm(runs.off), live: arm(runs.live) };
-res.deltaP50 = res.live.firstSpeaking.p50 - res.off.firstSpeaking.p50;
+  off: arm(runs.off), live: arm(runs.live), auto: arm(runs.auto) };
+res.deltaP50 = { live: res.live.firstSpeaking.p50 - res.off.firstSpeaking.p50, auto: res.auto.firstSpeaking.p50 - res.off.firstSpeaking.p50 };
 console.log(JSON.stringify(res, null, 1));
 if (OUT) fs.writeFileSync(OUT, JSON.stringify(res, null, 1));

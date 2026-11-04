@@ -1,0 +1,134 @@
+/* The stage-first lesson body (StageBody.tsx). Zones are absolute rects from stageLayout.ts; this file only dresses them.
+   Tokens only; text ≥ 14 px; the lamp stays on the dock alone. Loaded with the Kaksha lesson chunk. */
+.dk[data-body="stage"] { height: 100dvh; overflow: hidden; }
+.dk[data-body="stage"] > .ks { position: absolute; inset: 0; }
+.ks > * { position: absolute; box-sizing: border-box; }
+.ks[data-overflow="1"] { overflow-y: auto; }
+.ks-top > * { height: 100%; }
+
+/* the stage: one letterboxed slot on the deep ground, the HUD rail under it */
+.ks-stage { display: flex; flex-direction: column; background: var(--k-deep); border: 1px solid var(--k-line-2);
+  clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px); }
+.ks-slot { position: relative; flex: none; overflow: hidden;
+  background: radial-gradient(80% 70% at 50% 40%, color-mix(in srgb, var(--k-ion) 9%, transparent), transparent 70%); }
+.ks-piece { position: absolute; inset: 0; display: flex; animation: ks-in .42s var(--k-e-out) both; }
+.ks-piece > * { flex: 1; min-width: 0; }
+.ks-piece .dk-tray { border-radius: 0; height: 100%; background: transparent; clip-path: none !important; }
+/* opacity only: a piece's box never changes size while it arrives (certified boxes are measured; studio-stage-states) */
+@keyframes ks-in { from { opacity: 0; } to { opacity: 1; } }
+.dk[data-motion="reduce"] .ks-piece { animation: none; }
+
+/* the HUD rail: the question as a strip under the piece (QuestionCard, compact) */
+.ks-rail { flex: none; overflow: hidden; border-top: 1px solid var(--k-line); background: var(--k-panel-solid); }
+.ks-rail .dk-card { height: 100%; border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 8px 12px; clip-path: none !important; }
+.ks-rail .dk-card--empty { display: none; }
+.ks-rail .dk-ask { font-size: 18px; line-height: 1.3; }
+.ks[data-kind="wide"] .ks-rail .dk-ask { font-size: 20px; }
+
+/* captions: under her when she holds the stage; a two-line subtitle over the piece's foot while she speaks */
+.ks-hero-cap { position: absolute; left: 12px; right: 12px; bottom: 10px; text-align: center; }
+.ks-subtitle { position: absolute; left: 10px; right: 10px; bottom: 8px; z-index: 3; padding: 6px 10px; text-align: center;
+  background: color-mix(in srgb, var(--k-void) 78%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid var(--k-line); }
+.ks-subtitle .dk-caption, .ks-subtitle p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; font-size: 16px; }
+.ks-caption { overflow: hidden; padding: 4px 4px 0; display: flex; align-items: flex-start; }
+
+/* her face: one element; it glides between the stage, the PiP and the tile */
+.ks-face { z-index: 4; transition: left .42s var(--k-e-out), top .42s var(--k-e-out), width .42s var(--k-e-out), height .42s var(--k-e-out); }
+.dk[data-motion="reduce"] .ks-face { transition: none; }
+.ks-face--pip { border: 1px solid var(--k-line-2); background: var(--k-deep); overflow: hidden;
+  box-shadow: 0 10px 28px -12px color-mix(in srgb, var(--k-void) 90%, transparent); }
+.ks-face--pip[data-speaking] { border-color: var(--k-her); box-shadow: 0 0 0 1px var(--k-her), 0 10px 28px -12px color-mix(in srgb, var(--k-void) 90%, transparent); }
+.ks-face--tile, .ks-face--stage { overflow: hidden; }
+.ks-face--tile[data-speaking] .teacher-window, .ks-face--stage[data-speaking] .teacher-window { border-color: var(--k-her); }
+.ks-face > * { width: 100%; height: 100%; }
+
+.ks-answer > * { height: 100%; }
+.ks-chips { display: flex; align-items: center; }
+.ks-dock > * { height: 100%; }
+.ks-strip > * { height: 100%; }
+
+/* the PiP is a square comms window (the round mask cut the AI tag) and its AI tag sits fully inside */
+.ks-face--pip :is(.teacher-window, .teacher-face-host, .teacher-ground-paper) { border-radius: 0 !important; }
+.ks-face--pip .teacher-aitag { left: 3px; bottom: 3px; font-size: 14px; line-height: 1; padding: 3px 5px; }
+
+/* steer chips: the child's own words, one row of equal columns (all four always visible at 360 px); labels may take two
+   lines; the icon shows only where there is room. ≥ 44 px targets. */
+.ks-chips { container-type: inline-size; }
+.ks-steer { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; width: 100%; height: 100%; }
+.ks-chip { min-width: 0; display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 6px;
+  border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink); font: 600 14px/1.1 var(--k-sans); text-align: center;
+  clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); cursor: pointer;
+  transition: border-color .2s, background-color .2s, transform .12s; }
+.ks-chip svg { flex: none; color: var(--k-ion); }
+@container (max-width: 420px) { .ks-chip svg { display: none; } }
+.ks-chip:hover { border-color: var(--k-ion); }
+.ks-chip:active { transform: scale(.96); }
+.ks-chip:focus-visible { outline: 2px solid var(--k-move); outline-offset: 2px; }
+
+/* moment cards: glass over the slot's upper area (clear of the PiP on the right); the stop check-in is wider and holds
+   the floor's one plasma action (its first choice) */
+.ks-moment { position: absolute; z-index: 6; left: 10px; right: 10px; top: 10px; display: flex; gap: 10px; padding: 12px 14px;
+  background: color-mix(in srgb, var(--k-panel-solid) 92%, transparent); border: 1px solid var(--k-line-2); color: var(--k-ink);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  animation: ks-rise .5s var(--k-e-out) both; transition: transform .6s var(--k-e-out), opacity .6s; }
+/* the PiP holds the slot's bottom-right corner: whatever sits at the slot's foot keeps clear of it (--pip from StageBody) */
+.ks[data-face="pip"] .ks-moment--stop, .ks[data-face="pip"] .ks-subtitle { right: calc(10px + var(--pip, 0px)); }
+.ks-face--pip { pointer-events: none; }
+.ks-moment--park { border-color: color-mix(in srgb, var(--k-look) 60%, transparent); }
+.ks-moment--detour { border-color: color-mix(in srgb, var(--k-her) 60%, transparent); }
+.ks-moment--decline { border-color: var(--k-line-2); }
+.ks-moment--stop { top: auto; bottom: 10px; border-color: var(--k-move); }
+.ks-moment.is-tucking { transform: translate(-30%, 140%) scale(.3); opacity: 0; }
+.ks-moment-ic { flex: none; width: 32px; height: 32px; display: grid; place-items: center; color: var(--k-ion); border: 1px solid var(--k-line-2); }
+.ks-moment--detour .ks-moment-ic { color: var(--k-her); }
+.ks-moment-body { min-width: 0; display: grid; gap: 4px; }
+.ks-moment-k { font: 600 14px/1.2 var(--k-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--k-ink-3); }
+.ks-moment-q { font: 600 17px/1.3 var(--k-sans); overflow-wrap: anywhere; }
+.ks-moment-w { font: 400 15px/1.4 var(--k-sans); color: var(--k-ink-2); }
+.ks-moment-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.ks-moment-btn { min-height: 48px; padding: 0 16px; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink);
+  font: 600 16px/1 var(--k-sans); clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); cursor: pointer; }
+/* the first choice leads by weight, not plasma: the dock's lamp is the screen's one "your move" */
+.ks-moment-btn.is-primary { border: 2px solid var(--k-ink); background: var(--k-raise); }
+@keyframes ks-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.dk[data-motion="reduce"] .ks-moment { animation: none; transition: none; }
+
+/* the Later pill: bottom-left of the slot (never the PiP corner or the label zone), and its list */
+.ks-later { position: absolute; z-index: 5; left: 10px; bottom: 10px; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px;
+  border: 1px solid color-mix(in srgb, var(--k-look) 60%, transparent); background: color-mix(in srgb, var(--k-panel-solid) 90%, transparent);
+  color: var(--k-ink); font: 600 15px/1 var(--k-sans); cursor: pointer; }
+.ks-later b { font-family: var(--k-mono); color: var(--k-look); }
+.ks:has(.ks-subtitle) .ks-later { bottom: 64px; }
+/* the overlay layer over the slot: click-through except its own controls */
+.ks-over { z-index: 5; pointer-events: none; }
+.ks-over > * { pointer-events: auto; }
+/* with her on the stage, a card sits low (clear of her face); above the Later pill when there is one */
+.ks[data-face="stage"] .ks-moment { top: auto; bottom: 10px; }
+.ks[data-face="pip"] .ks-over[data-later] .ks-moment:not(.ks-moment--stop) { bottom: auto; }
+.ks-over[data-later] .ks-moment:not(.ks-moment--stop) { bottom: 62px; }
+.ks-later-sheet { position: absolute; z-index: 7; left: 10px; right: 10px; bottom: 10px; max-height: calc(100% - 20px); overflow: auto; padding: 12px 14px;
+  background: var(--k-panel-solid); border: 1px solid var(--k-line-2); outline: none; }
+.ks-later-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 600 14px/1.2 var(--k-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--k-ink-3); }
+.ks-later-x { min-width: 44px; min-height: 44px; color: var(--k-ink-2); font-size: 22px; background: none; border: 0; cursor: pointer; }
+.ks-later-sheet ul { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 8px; }
+.ks-later-sheet li { display: flex; gap: 8px; align-items: flex-start; font: 500 16px/1.35 var(--k-sans); color: var(--k-ink); }
+.ks-later-sheet li svg { flex: none; margin-top: 2px; color: var(--k-look); }
+
+/* Me → "Voice only": a calm voice mark in her place, her name and "AI teacher" always printed */
+.ks-voice { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; height: 100%; border: 1px solid var(--k-line); background: var(--k-deep); }
+.ks-voice-orb { width: 44%; max-width: 120px; aspect-ratio: 1; border-radius: 50%; border: 2px solid color-mix(in srgb, var(--k-her) 70%, transparent);
+  background: radial-gradient(circle, color-mix(in srgb, var(--k-her) 30%, transparent), transparent 70%); }
+.ks-face[data-speaking] .ks-voice-orb { border-color: var(--k-her); box-shadow: 0 0 24px color-mix(in srgb, var(--k-her) 45%, transparent); }
+.ks-voice-name { font: 500 14px/1.2 var(--k-sans); color: var(--k-ink-2); text-align: center; }
+.ks-voice-name b { color: var(--k-ink); }
+.ks-face--pip .ks-voice-name { font-size: 14px; }
+.ks-face--pip .ks-voice { gap: 4px; padding: 4px; }
+.ks-later-item { display: flex; gap: 8px; align-items: flex-start; width: 100%; min-height: 44px; padding: 6px 0; text-align: left; background: none; border: 0; color: inherit; font: inherit; }
+button.ks-later-item { cursor: pointer; }
+button.ks-later-item:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.ks-later-sheet li[data-status="returned"] .ks-later-item span { text-decoration: line-through; color: var(--k-ink-3); }
+.ks-later-due { margin-left: auto; font: 600 14px/1 var(--k-mono); color: var(--k-her); }
+.ks-moment--returned { border-color: color-mix(in srgb, var(--k-secure) 60%, transparent); }
+.ks-moment--returned .ks-moment-ic { color: var(--k-secure); }

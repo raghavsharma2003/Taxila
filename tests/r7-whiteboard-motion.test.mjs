@@ -43,3 +43,38 @@ test("the gate: a fraction split passes, and a board is judged where it ends (W1
   const still = gateWhiteboard(base(halves), { reply: LINE, speechMs: 3000 });
   assert.equal(still.checks.some((c) => c.id === "W19.settled"), false, "a still board has no settled check");
 });
+
+test("withSplit: a whole cut into equal sectors splits outward after it is drawn; a whole with a word inside stays still", async () => {
+  const { withSplit } = await import("../server/stagecraft/board-sync.js");
+  const s = withSplit(base(halves));
+  const moves = s.ops.filter((o) => o.op === "move");
+  assert.deepEqual(moves.map((m) => m.target), ["a", "b"]);
+  assert.ok(moves[0].by[0] > 0 && moves[1].by[0] < 0, "each half slides away from the other");
+  assert.ok(moves.every((m) => m.startMs >= 600), "after the parts are drawn");
+  assert.ok(s.durationMs >= Math.max(...moves.map((m) => m.endMs)));
+  assert.equal(normalizeScript(s, { strict: true }).ok, true);
+  const worded = base([...halves.slice(0, 2), { id: "w", op: "text", at: [200, 140], text: "1/2", size: "m", startMs: 700, endMs: 900 }]);
+  assert.equal(withSplit(worded), worded);
+  assert.equal(withSplit(s), s, "never twice");
+  // the whole's outline fades as the parts split (no ring left behind them), unless something points at it
+  const ring = { id: "o", op: "circle", c: [200, 150], r: 80, startMs: 0, endMs: 300 };
+  const er = withSplit(base([ring, ...halves])).ops.filter((o) => o.op === "erase");
+  assert.deepEqual(er.map((o) => [o.target, o.startMs]), [["o", moves[0].startMs]]);
+  assert.equal(withSplit(base([ring, ...halves, { id: "h", op: "highlight", target: "o", style: "pulse", startMs: 1200, endMs: 1500 }])).ops.some((o) => o.op === "erase"), false);
+});
+
+test("the day-4 board that moves: the fraction-parts board for 'fractions' is preselected SPLITTING (its answer masked as before)", async () => {
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const cur = await import("../server/content/curriculum.js");
+  const { CTX, cls } = await import("./fixtures/kit.mjs");
+  const { whiteboardIntentOf } = await import("../server/brain/propose.js");
+  const bf = await import("../server/stagecraft/board-first.js");
+  const kit = kitFromFile(cur.getTopic("c5-maths-ch02-t02"));
+  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: { ...CTX }, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  for (let i = 0; i < 4 && !["explain", "worked_example", "reteach"].includes(r.move.kind); i++) r = step(r.state, { event: "turn", kit, cls: cls("no_evidence"), text: "haan", now: 20000 * (i + 1) });
+  const ask = whiteboardIntentOf({ lessonId: "r7-split", turn: r.state.turn, beat: { id: "b", type: "explain" }, next: r.state, kit, item: null, line: { text: "" } });
+  const p = bf.preselect(ask, { kit });
+  assert.ok(p, "a board is preselected");
+  assert.ok(p.script.ops.filter((o) => o.op === "move").length >= 2, "and it moves");
+});

@@ -20,6 +20,7 @@ import { clearDraft, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
 import { ChapterPicker } from "../parent/SchoolPlan.tsx";
 import { parentApi, type ChapterRef } from "../parent/api.ts";
+import { teacherBandFor } from "./teacherBand.ts";
 
 /** The defaults the cut no longer asks for (owner-approved 2026-10-10). */
 export const childDefaults = (classLevel: number, languagePref: string) => ({
@@ -44,7 +45,7 @@ export function ChildStep() {
   const [pinOk, setPinOk] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const cl = c.classLevel;
-  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), (cl ?? 5) <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), teacherBandFor(cl));
   const first = c.firstName?.trim() ?? "";
   // round 7 F item 2: "which maths chapter is school on?" (optional; the next maths lesson starts there)
   const [mathsChapters, setMathsChapters] = useState<ChapterRef[] | null>(null);

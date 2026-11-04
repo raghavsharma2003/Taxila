@@ -92,7 +92,11 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     pttNoteSeen: prefs.pttNoteSeen,
     markPttNoteSeen: () => setPrefs({ pttNoteSeen: true }),
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),
-    faceForm: "live",
+    // r7 app-me-settings: Me's rows reach the lesson. Teacher's face: Moving → the live face, Still picture → the plate,
+    // Voice only → no face. Talk mode: Tap to talk starts muted (D2: hands-free otherwise).
+    faceForm: prefs.face === "face" ? "live" : "plate",
+    faceHidden: family === "older" && prefs.face === "voice",
+    startMuted: prefs.handsFree === false,
     setCaptionsAlways: (on) => setPrefs({ captionsAlways: on }),
     // No finished lesson saved on this device yet (the T6 heuristic runs in the first lesson only).
     firstLesson: firstLesson,

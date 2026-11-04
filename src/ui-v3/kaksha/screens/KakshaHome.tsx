@@ -12,6 +12,7 @@ import { Home as ClassicHome, faceFormOf } from "../../../child/screens/Home.tsx
 import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
+import { useChildNav } from "./useNav.ts";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
   const h = d.getHours();
@@ -24,6 +25,7 @@ export function KakshaHome() {
   const { plan } = usePlan(cid);
   const nav = useNavigate();
   const rec = useTeacher(child.teacher_id, band);
+  const kn = useChildNav(plan.source === "loading" ? null : plan.surfaces);
   useEffect(() => preloadLessonRoute(), []); // r5-latency: the lesson's code loads while the home is idle
   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
   if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) return <ClassicHome />;
@@ -41,7 +43,8 @@ export function KakshaHome() {
       <div data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
-          startTo={continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)} />
+          startTo={continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)}
+          dock={kn.dock} meTo={kn.meTo} />
       </div>
     </KakshaRoot>
   );

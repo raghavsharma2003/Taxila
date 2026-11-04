@@ -9,7 +9,9 @@
 // The worker gets taxila-web's model / storage env (report.daily's writer and Forge read them) and its secrets by
 // value, never printed. forge.g2.nightly stays paused (server/conductor/handlers.js) unless FORGE_G2_NIGHTLY=on.
 //
-//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only] [--from-tree [--branch B]]
+//   node scripts/deploy-worker.mjs [--dry-run] [--force] [--jobs] [--jobs-only] [--from-tree [--branch B]] [--image-tag TAG]
+//   --image-tag TAG: deploy taxila-worker:TAG already in ACR (scripts/release.mjs builds web + worker once at one sha);
+//                  TAG must be a commit sha prefix, and the gate and migrations checks run for THAT commit, not HEAD
 //   test targets:  --app NAME (default taxila-worker; jobs are prefixed by it) --db test (the Neon TEST branch,
 //                  CONDUCTOR_TEST_DATABASE_URL) --local (build the WORKING TREE, uploaded; only with --db test)
 //                  --manual (jobs are MANUAL-trigger, never scheduled: a proof run starts them by hand, so a scratch
@@ -19,7 +21,7 @@
 // AND every migration of HEAD applied on the target database (migrationsGate; --local test builds skip it).
 // Freeze: deploys that touch the Conductor are refused 18:00-21:30 IST (X37); --force overrides.
 import { ROOT, acrBuild, arm, loadEnv, sleep } from "../infra/azure.mjs";
-import { REPO, branchName, gateEvidence, headSha, migrationsGate } from "../infra/gate.mjs";
+import { REPO, branchName, gateEvidence, headSha, migrationsGate, shaOfTag } from "../infra/gate.mjs";
 import { directUrl } from "../server/conductor/pg.js";
 import { createRequire } from "module";
 const require_ = createRequire(import.meta.url);
@@ -45,9 +47,15 @@ const istMin = (() => { const d = new Date(Date.now() + 330 * 60_000); return d.
 if (PROD && istMin >= 18 * 60 && istMin < 21 * 60 + 30 && !FORCE && !DRY) throw new Error("deploy freeze 18:00-21:30 IST (X37): peak lessons; re-run after 21:30 or pass --force");
 
 const branch = branchName();
-const full = headSha(), sha = full.slice(0, 7);
-const tag = LOCAL ? `${sha}-local-${Date.now().toString(36).slice(-5)}` : sha;
-if (FROM_TREE && !DRY) {
+const IMAGE_TAG = opt("--image-tag", null);
+if (IMAGE_TAG && (LOCAL || FROM_TREE)) throw new Error("--image-tag deploys an existing image: not with --local or --from-tree");
+const full = IMAGE_TAG ? shaOfTag(IMAGE_TAG) : headSha();
+if (!full) throw new Error(`--image-tag ${IMAGE_TAG} does not name a commit (a sha prefix): its gate cannot be checked`);
+const sha = full.slice(0, 7);
+const tag = IMAGE_TAG || (LOCAL ? `${sha}-local-${Date.now().toString(36).slice(-5)}` : sha);
+if (IMAGE_TAG) {
+  /* the image exists (release.mjs built it from the pushed commit); nothing to push or build here */
+} else if (FROM_TREE && !DRY) {
   const { execSync } = await import("child_process");
   if (execSync("git status --porcelain -- server shared data db/migrations package.json package-lock.json Dockerfile.worker", { cwd: ROOT }).toString().trim()) throw new Error("--from-tree needs the worker context (server, shared, data, db/migrations, package files, Dockerfile.worker) clean");
   const onto = opt("--branch", "claude/blissful-mayer-icwe2j");
@@ -73,7 +81,7 @@ function localContext() {
 }
 // ── 1. image ──
 const image = `${ACR}.azurecr.io/taxila-worker:${tag}`;
-if (!DRY) {
+if (!DRY && !IMAGE_TAG) {
   const TREE = LOCAL || FROM_TREE;
   console.log(`building taxila-worker:${tag} from ${TREE ? `the checked-out tree (${sha})` : branch}…`);
   await acrBuild({ images: [`taxila-worker:${tag}`, ...(LOCAL ? [] : ["taxila-worker:latest"])], dockerfile: "Dockerfile.worker",

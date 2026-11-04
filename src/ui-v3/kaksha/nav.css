@@ -1,0 +1,57 @@
+/* The one Kaksha navigation (nav.tsx): the HUD dock and the top bar. Self-contained: it renders inside Kaksha's own
+   screens (.kx) and inside ChildShell's Kaksha-looked root (.tx-child[data-klook]) for the screens Kaksha does not draw
+   yet, and reads only the k tokens. Targets ≥ 48 px, text ≥ 14 px (K-FLOOR). */
+/* nav.kx-nav.kx-nav: beats `.kx-screen > :not(.kx-sky) { position: relative }` (kaksha.css) */
+nav.kx-nav.kx-nav {
+  position: fixed; z-index: 20; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: stretch; height: calc(64px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: color-mix(in srgb, var(--k-void) 82%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-top: 1px solid var(--k-line-2);
+}
+.kx-nav-item {
+  position: relative; flex: 1 1 0; min-width: 0; min-height: 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  color: var(--k-ink-3); font: 500 14px/1 var(--k-sans); letter-spacing: .01em; text-decoration: none;
+  transition: color .2s;
+}
+.kx-nav-item span { max-width: 100%; overflow: hidden; text-overflow: clip; white-space: nowrap; }
+.kx-nav-item:hover { color: var(--k-ink); }
+.kx-nav-item[aria-current="page"] { color: var(--k-move); font-weight: 700; }
+.kx-nav-item[aria-current="page"]::before {
+  content: ""; position: absolute; top: -1px; left: 50%; width: 28px; height: 3px; transform: translateX(-50%);
+  background: var(--k-move); box-shadow: 0 0 12px color-mix(in srgb, var(--k-move) 70%, transparent);
+}
+.kx-nav-item:focus-visible { outline: 2px solid var(--k-move); outline-offset: -4px; }
+
+/* the screen under a dock keeps its last row clear of it */
+.kx-hasdock { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)) !important; }
+
+@media (min-width: 1024px) {
+  nav.kx-nav.kx-nav {
+    top: 0; right: auto; width: 96px; height: auto; flex-direction: column; justify-content: center; gap: 6px; padding: 16px 0;
+    border-top: 0; border-right: 1px solid var(--k-line-2);
+  }
+  .kx-nav-item { flex: none; height: 76px; }
+  .kx-nav-item[aria-current="page"]::before { top: 50%; left: -1px; width: 3px; height: 30px; transform: translateY(-50%); }
+  .kx-hasdock { padding-bottom: 28px !important; padding-left: calc(96px + 24px) !important; }
+}
+
+/* the top bar */
+.kx-bar { display: flex; align-items: center; gap: 10px; min-height: 64px; padding-top: env(safe-area-inset-top, 0px); }
+.kx-bar .kx-sp { flex: 1; }
+.kx-bar-title { flex: 1; min-width: 0; margin: 0; font: 700 22px/1.15 var(--k-sans); letter-spacing: -.01em; color: var(--k-ink);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.kx-bar-title:focus { outline: none; }
+.kx-bar-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.kx-bar .kx-ib {
+  --k-cut: 8px; min-width: 48px; height: 48px; display: inline-grid; place-items: center;
+  border: 1px solid var(--k-line-2); color: var(--k-ink-2); background: var(--k-panel); text-decoration: none;
+  clip-path: polygon(var(--k-cut) 0, 100% 0, 100% calc(100% - var(--k-cut)), calc(100% - var(--k-cut)) 100%, 0 100%, 0 var(--k-cut));
+}
+.kx-bar .kx-ib:hover { color: var(--k-ink); border-color: var(--k-move); }
+.kx-bar .kx-me[aria-current="page"] { color: var(--k-move); border-color: var(--k-move); }
+.kx-parentdoor { min-height: 48px; display: inline-flex; align-items: center; padding: 0 6px; color: var(--k-ink-3); font: 500 14px/1 var(--k-sans); text-decoration: none; }
+.kx-parentdoor:hover { color: var(--k-ink); text-decoration: underline; text-underline-offset: 4px; }
+
+/* the classic chrome under Kaksha (ChildScreen's Kaksha frame): the bar spans the column */
+.cs--kx .cs-main { padding-top: 0; }
+.cs--kx .kx-bar { flex: none; }

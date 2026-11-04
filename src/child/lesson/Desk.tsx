@@ -18,7 +18,7 @@ import type { DeskActions, DeskModel } from "./model.ts";
 import { PhaseLine } from "./PhaseLine.tsx";
 import { tw2 } from "../../copy/en.ts";
 import { QuestionCard } from "./QuestionCard.tsx";
-import { EndConfirm } from "./sheets/EndConfirm.tsx";
+import { BreakSheet, EndConfirm } from "./sheets/EndConfirm.tsx";
 import { HelpSheet } from "./sheets/HelpSheet.tsx";
 import { HintSheet } from "./sheets/HintSheet.tsx";
 import { PauseSheet } from "./sheets/Pause.tsx";
@@ -87,10 +87,30 @@ export interface DeskProps {
   renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
   /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
   renderIntake?: (m: DeskModel) => ReactNode;
+  /** r7 app-lesson-stage-first: a skin's own body in place of the Desk's phone / wide grids. The Desk still owns the
+   *  root, the sheets, the live regions, the trouble screens and the Summary; it hands the body the very nodes it would
+   *  have placed (top bar, card, dock, strip) and a renderer for any tray, so behaviour is identical. */
+  renderBody?: (p: DeskBodyParts) => ReactNode;
+}
+
+/** r7: what the Desk hands a skin's body (renderBody). */
+export interface DeskBodyParts {
+  m: DeskModel;
+  a: DeskProps["a"];
+  media: DeskMedia;
+  topBar: ReactNode;
+  card: ReactNode;
+  dock: ReactNode;
+  strip: ReactNode;
+  /** Any tray model → the node the Desk would render for it (answer surfaces via AnswerTray, the rest via WorkTray). */
+  renderTray: (tray: NonNullable<DeskModel["tray"]>) => ReactNode;
+  isAnswerTray: (tray: NonNullable<DeskModel["tray"]>) => boolean;
+  floor: Floor;
+  lit: boolean;
 }
 
 /** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
-export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake">;
+export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake" | "renderBody">;
 
 /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
 function trayNeedOf(el: Element | null): number {
@@ -100,7 +120,7 @@ function trayNeedOf(el: Element | null): number {
   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
 }
 
-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake }: DeskProps) {
+export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake, renderBody }: DeskProps) {
   const root = useRef<HTMLDivElement>(null);
   const measureRef = useRef<() => void>(() => {});
   const ro = useRef<ResizeObserver | null>(null);
@@ -181,6 +201,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     "data-motion": m.reducedMotion ? "reduce" : undefined,
     "data-overflow": L.overflow ? "1" : undefined,
     "data-skin": skin || undefined,
+    "data-body": renderBody ? "stage" : undefined,
     "data-testid": "lesson",
     lang: "en-IN",
   } as const;
@@ -217,7 +238,13 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   const faceMedia = { meters: media.meters, mic: media.mic };
 
   let body: ReactNode;
-  if (L.kind === "wide" && L.wide) {
+  if (renderBody) {
+    const isAnswer = (tr: NonNullable<DeskModel["tray"]>) => tr.kind === "tiles" || tr.kind === "pad" || !!tr.overlay;
+    const renderTray = (tr: NonNullable<DeskModel["tray"]>) => isAnswer(tr)
+      ? <AnswerTray tray={tr} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
+      : <WorkTray tray={tr} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />;
+    body = renderBody({ m, a, media, topBar, card, dock, strip, renderTray, isAnswerTray: isAnswer, floor, lit });
+  } else if (L.kind === "wide" && L.wide) {
     const W = L.wide;
     const style = {
       gridTemplateColumns: `${W.gutter}px ${W.leftW}px ${W.gap}px ${W.rightW}px 1fr`,
@@ -274,7 +301,8 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     <div {...rootAttrs}>
       {body}
       {m.sheet === "pause" && <PauseSheet onContinue={a.resume} onEnd={a.askEnd} />}
-      {m.sheet === "end" && <EndConfirm young={young} onKeep={a.cancelEnd} onEnd={a.endLesson} />}
+      {m.sheet === "end" && <EndConfirm young={young} onKeep={a.cancelEnd} onEnd={a.endLesson} onBreak={a.takeBreak} />}
+      {m.sheet === "break" && <BreakSheet since={m.breakSince ?? null} teacher={m.teacher.name} onBack={a.resume} onEnd={a.endLesson} />}
       {m.sheet === "hint" && <HintSheet onPick={a.hintPick} onClose={a.resume} />}
       {(m.sheet === "help" || m.sheet === "grownup") && (
         <HelpSheet teacherId={m.teacher.id} band={m.band} childName={m.childName} backVisible={m.helpBackVisible} lead={m.helpLead ?? "grownup"} grownUp={m.sheet === "grownup"}

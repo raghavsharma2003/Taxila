@@ -401,10 +401,11 @@ describe("round3 fix: the engine on screen is one the item can use, and one the 
 describe("round3 fix: her words name what is really on the screen (experience B2, B3, B10)", () => {
   test("a game ask that got no play piece is said honestly: the engine kept is 'the activity', never 'game mode'", () => {
     const shape = "they want to play: the activity is the way in now; one idea; let the picture do the work";
-    assert.match(askTruth(shape, "game", "engine"), /no game is ready for this yet.*the activity already on the screen/);
-    assert.match(askTruth(shape, "game", "none"), /no game is ready for this yet.*in words/);
+    // round 7 (zero spoken build state or failure): what exists is offered, a missing game is never narrated
+    assert.match(askTruth(shape, "game", "engine"), /the activity already on the screen is the way to try it now.*never say a game is not ready/);
+    assert.match(askTruth(shape, "game", "none"), /a quick spoken game on this idea now.*never say a game is not ready/);
     const moving = "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have); one idea";
-    assert.match(askTruth(moving, "animation", "none"), /nothing moves on the screen this turn.*never ask them to drag or tap/);
+    assert.match(askTruth(moving, "animation", "none"), /show the movement in words.*never ask them to drag or tap; never say nothing moves/);
     assert.equal(askTruth("a picture of the same idea", "diagram", "none"), "a picture of the same idea");
   });
   test("the strips are A and B in her facts as on the screen (never bar1 / bar2), and a lab's run button is named as printed", async () => {

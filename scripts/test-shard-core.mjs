@@ -44,27 +44,3 @@ export function planShards(files, weights = {}, n = 1) {
   }
   return shards.map((s) => s.files.sort());
 }
-
-/**
- * Per-file results from `node --test --test-reporter=tap <files…>` (process isolation): the top-level test points are
- * the files themselves, with a duration_ms in their YAML block. → { "x.test.mjs": { s, ok } }
- * @param {string} tap
- */
-export function tapFileDurations(tap) {
-  const out = {};
-  const lines = String(tap ?? "").split("\n");
-  for (let k = 0; k < lines.length; k++) {
-    const m = /^(not ok|ok) \d+ - (.*?)(\s+#.*)?$/.exec(lines[k]);   // top level: no indentation
-    if (!m) continue;
-    const name = m[2].trim().split("/").pop();
-    if (!name.endsWith(".test.mjs")) continue;
-    let ms = 0;
-    for (let j = k + 1; j < Math.min(lines.length, k + 12); j++) {
-      const d = /^\s+duration_ms:\s*([\d.]+)/.exec(lines[j]);
-      if (d) { ms = Number(d[1]); break; }
-      if (/^(ok|not ok) \d+/.test(lines[j])) break;
-    }
-    out[name] = { s: ms / 1000, ok: m[1] === "ok" };
-  }
-  return out;
-}
