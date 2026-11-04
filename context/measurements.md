@@ -4920,3 +4920,14 @@ About $2,797 of the $5,000 grant is used. It was almost all our own test batteri
 ## ms-r1443-qa-ac4e8e88 (2026-10-22, stream 4A)
 
 QA on ac4e8e88. (1) "Ek example se samjhao" got a park of her own (6 m by 4 m), then "Total kitna?". An example asked for is now the kit's worked example: a reteach that does not advance the teach step, whole and marked shown. A new guard "invented" flags numbers on worked moves that are not the kit example's (unit scaling and arithmetic on two of its numbers are allowed). Replay over 830 kits: kit example carried 0/830 before, 830/830 after. TEST: 5 of 324 worked lines flagged, 4 real. (2) A right 160 got "check it again": doubt on a right answer is now a deny; TEST 0 of 1276 lines after a correct answer. (4) The switch offer names the button by its own label. Test: tests/r1443-qa-ac4e8e88.test.mjs.
+
+
+<!-- merged from inbox/r7-main-decisions.json -->
+## ms-r7-gap-map (2026-11-04)
+
+Seven read-only pillar readers (workflow wf_f8ed24e3-497, 9 agents) mapped 180 product gaps against the vision.
+- Brain 21, voice 27, Studio 33, face 16, app 30, learning 29, platform 24.
+- About 17 broken, 63 missing, 85 partial, 4 built-unmerged.
+- Plus an 8-stream pipeline and a completeness critique.
+
+In short: a child can tap and talk through one graded maths lesson. That is far from the OWNER-RESET bar.

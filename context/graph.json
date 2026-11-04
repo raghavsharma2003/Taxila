@@ -23376,6 +23376,90 @@
    "at": "2026-10-22",
    "title": "14.4.3, QA on ac4e8e88, three of four findings. (1) 905a3e50 / b28d919f: after \"ek example se samjhao\" she gave a park of her own, 6 m by 4 m, and then \"Total kitna?\". The example request’s shapes said \"your own numbers\", and fe59b5f1’s worked-shape wording alone did not stop invented numbers. An example asked for now carries the kit’s worked example: a reteach that does not advance the teach step (owner-4 contract kept), whole, marked shown (move.stuck). Before the teaching starts it routes to the same plan. brain/say.js adds guard \"invented\" on worked moves and on shown reteaches: a number that is not the kit example’s is flagged, unless it is a unit scaling (× or ÷ 10/100/1000) or arithmetic on two different numbers of 3 or more, with 0-2 free and 3D / ordinals skipped. It gets a rewrite, then its sentences are dropped. Replay across 830 kits with a worked example: the example request carries the kit example 0/830 before, 830/830 after. TEST, read-only: 5 of 324 worked_example lines flagged, 4 of them real invented numbers. QA’s 6 m / 4 m line is caught. (2) 6f1323e8: a right 160 got \"160 ko ek baar dobara check kijiye\". Doubt on a right answer (check it again, are you sure, pakka?) is now a deny, and selfPosedVerdict reads \"160?\" as an answer. TEST: 0 of 1276 teacher lines after a correct answer hit, before and after. (4) f76aacd1: the switch offer named a \"Geometry button\". The shape now names the topic found for what they asked, and the button by its exact label. Finding 3 (\"160?\" praised, then a new item) waits on the trace. Tests: tests/r1443-qa-ac4e8e88.test.mjs (6, fail on 12c0e480).",
    "source": "inbox/r1443b-4a.json"
+  },
+  {
+   "id": "dc-r7-hybrid-brain",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: one teacher brain, hybrid. The strong LLM plans, chooses and words moves with tools; code keeps the invariants as tools/post-checks (verified grading, level-calibrated item offer, Later list, stop protocol, parent limits, screen truth, frozen safety floor). A Claude-judged side-by-side at end of week 1 (about 12 lessons per lane) picks the default lane; the losing paths are then deleted. Why: owner 2026-10-14 (AGENT.md); 128-lesson gate (agent better on coherence/follows/adapts/human, worse on read accuracy and 6.0 vs 3.4 s turn p50). Reverse: the side-by-side favours the Director, or the agent lane cannot reach about 3.5 s p50.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-handsfree-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: hands-free D5 duplex is the default for every child; tap stays a visible fallback. Why: OWNER-RESET #10/#16; no real users yet, so the per-hour cost is test-only. Reverse: owner says otherwise, or the cost per child-hour at launch is unacceptable.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-age-bands",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: age bands classes 1-3 young, 4-6 preteen, 7-9 teen; class 4 moves to the older look. Brain owns the one band table (shared/learner.ts BANDS, shared/bands.ts); every other copy derives from it. Why: OWNER-RESET #1 (class 4 looked babyish). Reverse: the owner prefers class 4 in the young look.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-turn-length",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: explanation and worked-example turns may run 40-50 words for classes 5-9 when the board carries the detail. Why: 18-25-word caps make explanations thin (gap map brain-explanation-plans). Reverse: the owner or a Claude-judged review finds the turns too long to listen to.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-stop-limits",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: stop and limits. Add 'wrap up in 2' and a real timed break (mic paused, resume in place). 'Stop for today' ends the lesson. At a parent limit mid-lesson she finishes the current question, then wraps. No parent control stays inert: each is wired or hidden. Why: OWNER-RESET #7, #11. Reverse: the owner prefers another behaviour.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-session-first-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: session-first start is the default for everyone, with a Start-only Home. Daily subject comes from the parent timetable, then the child's intake, then Conductor rotation. Why: one-subject-forever today, plus the owner's 'just start'. Reverse: the owner prefers a chooser.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-stage-first-shell",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: stage-first lesson shell (content is the hero, face as PiP, steer chips, Later tray). Supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP'). App writes the 360/412/1280 geometry; Studio applies it to box-contract.json. Why: OWNER-RESET #12 (presentation). Reverse: the owner's review prefers the Desk layout.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-studio-v2-serving",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: Studio v2 is served wherever certified (412-px phones, laptops); the board twin stays on 360 px until the portrait relayout. Amends dc-r4c-studio-v2-off-child-path. Why: 41 engines and 385 authored topics never reach children. Reverse: a certified piece renders badly on a real device.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-games-revive",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: revive ITEM-ARENA and Khand MEASURE. The first wave-3 real-time engine is E6 Yantra (science physics). Timed or fast mechanics only on secure skills. Why: build-first replaces the 2026-10-10 stop; OWNER-RESET #3. Reverse: the owner picks another engine.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-personalisation-persist",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: 'how this child learns' (format/representation responsiveness, interests, pace) persists across lessons. Consent handling is part of the later compliance pass. Why: build-first. Reverse: the compliance pass requires a different consent step.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-scope",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: depth first for CBSE classes 4-7 (Studio, games, kits); classes 1-3 and 8-9 keep working. Parked: RBSE, Hindi-medium, the explore tier, teacher choice, child-named teacher. Why: OWNER-RESET target band 9-13. Reverse: the owner widens scope.",
+   "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-no-branch-merges",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.",
+   "source": "inbox/r7-main-decisions.json"
   }
  ],
  "edges": [
@@ -37148,6 +37232,11 @@
    "src": "dc-owner-2026-10-27-claude-judges",
    "rel": "caused_by",
    "dst": "ms-azure-spend-2026-10-24"
+  },
+  {
+   "src": "dc-r7-hybrid-brain",
+   "rel": "constrains",
+   "dst": "dc-owner-2026-10-27-build-first"
   }
  ]
 }

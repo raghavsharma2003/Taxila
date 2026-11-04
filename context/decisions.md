@@ -6461,3 +6461,22 @@ The end record mentions a teach-back only if one was asked. A lesson where nothi
 - **dc-owner-2026-10-27-build-first:** build the whole product first. Then test it ourselves and iterate. Safety, security and compliance come only before real users. Existing safety code stays, frozen.
 - **dc-owner-2026-10-27-azure-soft:** Azure usage should stay sensible. Ask before anything heavy. This is guidance, not a hard rule.
 - **dc-owner-2026-10-27-claude-judges:** judges and evaluation run on Claude, not on Foundry models.
+
+
+<!-- merged from inbox/r7-main-decisions.json -->
+## Round 7 main-loop decisions (2026-11-04)
+
+Twelve reversible decisions that start round 7. Full text: docs/design/round7/PIPELINE.md §D.
+
+- One hybrid teacher brain.
+- Hands-free for every child.
+- Age bands 1-3 / 4-6 / 7-9.
+- Longer explanation turns with the board.
+- Wrap-up and break, and no inert parent controls.
+- Session-first start.
+- Stage-first lesson shell.
+- Studio v2 served wherever certified.
+- Games revived, with Yantra first.
+- Personalisation persists.
+- Classes 4-7 first.
+- Salvage branches by path.
