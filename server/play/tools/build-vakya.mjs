@@ -78,10 +78,13 @@ const EN_GRAMMAR = [
  *  skills (पर्यायवाची, अनेकार्थी, विलोम, muhavare, spelling) have one-word keys and are not built as trains. */
 const HI_GRAMMAR = /वचन|लिंग|भूतकाल|(^|[\s(])काल|सर्वनाम|singular-plural|plural forms|plurals of|gender|पुल्लिंग|first-person verbs|question words|feminine of/i;
 const HI_NOT = /पर्यायवाची|अनेकार्थी|विलोम|muhavare|spells?\b/i;
-export function grammarOf(subject, title) {
-  if (subject === "hindi") return HI_GRAMMAR.test(title) && !HI_NOT.test(title) ? { sets: [] } : null;
+/** whether a kit skill is grammar: its title matches (the regexes below), or the kit workflow tagged it `kind: "grammar"`
+ *  (Learning, KIT-WORKFLOW.md; titles that the regexes miss, e.g. c6 Hindi, become visible through the tag) */
+export function grammarOf(subject, title, kind = null) {
+  const tagged = kind === "grammar";
+  if (subject === "hindi") return tagged || (HI_GRAMMAR.test(title) && !HI_NOT.test(title)) ? { sets: [] } : null;
   const hit = EN_GRAMMAR.filter(([re]) => re.test(title));
-  return hit.length ? { sets: [...new Set(hit.flatMap(([, s]) => s))] } : null;
+  return hit.length ? { sets: [...new Set(hit.flatMap(([, s]) => s))] } : tagged ? { sets: [] } : null;
 }
 
 // ── which items: production tasks with one right sentence
@@ -361,7 +364,7 @@ export function build() {
     for (const t of kit.topics ?? []) {
       const got = [];
       for (const sk of t.skills ?? []) {
-        const g = grammarOf(subject, sk.title);
+        const g = grammarOf(subject, sk.title, sk.kind ?? null);
         if (!g) continue;
         const items = (t.items ?? []).filter((i) => i.skillId === sk.id);
         const ok = [];

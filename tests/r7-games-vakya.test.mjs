@@ -369,3 +369,11 @@ test("vakya: engine words appended at the end under vakya.*; the logic draws no 
   const view = readFileSync(`${ROOT}src/play/families/vakya/vakya.view.ts`, "utf8").replace(/\/\/.*$/gm, "");
   assert.doesNotMatch(view, /Math\.random|Date\.now|#[0-9a-fA-F]{3,8}\b|rgba?\(/);
 });
+
+test("vakya builder: a skill the kit workflow tags kind 'grammar' counts as grammar even when its title matches no regex", async () => {
+  const { grammarOf } = await import("../server/play/tools/build-vakya.mjs");
+  assert.equal(grammarOf("hindi", "Uses lesson vocabulary in sentences", null), null);
+  assert.ok(grammarOf("hindi", "Uses lesson vocabulary in sentences", "grammar"));
+  assert.ok(grammarOf("english", "Talks about the poem", "grammar"));
+  assert.equal(grammarOf("english", "Talks about the poem", null), null);
+});
