@@ -17,6 +17,7 @@ import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
 import { vakyaLogic } from "./vakya/vakya.logic.ts";
 import { kilaLogic } from "./kila/kila.logic.ts";
+import { nakshaLogic } from "./naksha/naksha.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -61,5 +62,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kila/multiples": asAny(kilaLogic),
   "kila/factors": asAny(kilaLogic),
   "kila/lcm": asAny(kilaLogic),
+  // round 7: Naksha, maps and grids (latitude / longitude, routes and directions, map scale, shapes on a dot grid)
+  "naksha/locate": asAny(nakshaLogic),
+  "naksha/route": asAny(nakshaLogic),
+  "naksha/scale": asAny(nakshaLogic),
+  "naksha/shape": asAny(nakshaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

@@ -40,7 +40,8 @@ function lesson() {
   return r;
 }
 const block = (cats, status = 400) => Object.assign(new AzureError("chat taxila-fast HTTP 400: content_filter", status, CONTENT_FILTER), { filterCats: cats });
-const said = "Sahi socha: 6 guna 5 tees, aur zero jodne par teen lakh. Ab 7000 guna 30 bataiye?";
+// (round 7: a neutral opener: "Sahi socha" on an ungraded turn is a verdict the affirms guard now edits)
+const said = "Achha socha: 6 guna 5 tees, aur zero jodne par teen lakh. Ab 7000 guna 30 bataiye?";
 const run = (r, history = []) => textReply({ instructions: "x", state: r.state, kit: K, childText: "6 aur 5... 30... 3,00,000?", history, ui: r.ui, module: r.state.module });
 
 describe("reply filter categories (round 5)", () => {
