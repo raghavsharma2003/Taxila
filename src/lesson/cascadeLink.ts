@@ -778,8 +778,9 @@ export class CascadeLink implements TeacherLink {
   }
 
   /**
-   * Round 7 (B2 ↔ App): the child's mute. Muted: push-to-talk underneath (the engine stands aside and never reads the
-   * quiet as silence), the mic tracks off, no tap opens it. A setPushToTalk while muted is remembered for the unmute.
+   * Round 7 (B2 ↔ App): the child's mute = push-to-talk FORCED (the engine stands aside and never reads the quiet as
+   * silence; the mic sends nothing between taps). A tap still opens the mic for that one turn (App: "Unmute plus the tap
+   * button"). A setPushToTalk while muted is remembered for the unmute, so a Desk re-assert never unmutes.
    */
   setMuted(on: boolean): void {
     if (on === this.muted) return;
@@ -819,7 +820,7 @@ export class CascadeLink implements TeacherLink {
   }
 
   talkStart(): void {
-    if (this.muted || !this.pushToTalk || this.talking || this.transportKind === "typed") return;
+    if (!this.pushToTalk || this.talking || this.transportKind === "typed") return;
     this.clearPttTail();
     this.talking = true;
     this.vtrace.tap("start");
@@ -1672,7 +1673,7 @@ export class CascadeLink implements TeacherLink {
   private micWanted = true;
   private micGated = false;
   private applyMic(): void {
-    const on = this.micWanted && !this.micGated && !this.muted;
+    const on = this.micWanted && !this.micGated;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
 }
