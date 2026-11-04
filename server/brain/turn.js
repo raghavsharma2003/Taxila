@@ -563,8 +563,10 @@ export async function lessonTurn(req, body, hooks = {}) {
   // a speculated call (stream 3, hooks.agentSpec: her call started on the prefetched turn) the agent lane does not take this
   // turn (a safeguard, a distress read, an incident, a wrap, the Director lane) is aborted unspoken
   const dropSpec = (why) => { try { if (hooks?.agentSpec && !hooks.agentSpec.aborted) hooks.agentSpec.abort?.(why); } catch { /* never fails a turn */ } };
+  // round 7 (main's hybrid-pilot judgement #3): the stop check-in is the Director's on both lanes (the agent wrapped on "bas ho
+  // gaya" with no check-in), so the agent never takes a check-in turn
   if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
-    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
+    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end && !r.move.checkin) {
     const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
     const silentNow = !String(childText ?? "").trim() && !body.chipId && body.duplex?.unheard !== true && (cls?.source === "empty" || body.asrConfidence === 0);
     const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
@@ -579,9 +581,17 @@ export async function lessonTurn(req, body, hooks = {}) {
       const agentNext = structuredClone(next);
       agentNext.activeItemId = state.activeItemId; agentNext.hintLevel = state.hintLevel; agentNext.phase = state.phase; agentNext.itemsDone = state.itemsDone;
       agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
-      next = agentNext;
-      r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
-      mark("agent");
+      // round 7 (judgement #3): the agent never ends a lesson the Director did not end: the end goes through the stop check-in,
+      // so the Director's move and line take this turn
+      if (agentApplied.end && !dirR.end) {
+        agentFallback = "agent_end_without_checkin";
+        agentOut = null; agentApplied = null;
+        next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
+      } else {
+        next = agentNext;
+        r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
+        mark("agent");
+      }
     } catch (e) {
       agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);
       console.warn(`[agent] turn fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);

@@ -185,15 +185,16 @@ export function fadeItem(kit, { band = "B3", index } = {}) {
   // when the pad or the choices took it, so the child saw "a₁ = ___, add ___" with no sequence. The question itself now
   // carries the problem, shortened so the whole card fits (ASK_MAX: askText keeps the tail, which would drop it); what is
   // said, shown and graded stays one text. Measured over every kit: 2 of 1895 fade cards carried their problem before.
-  const withProblem = (ask) => {
-    const room = FADE_CARD_MAX - ask.length - 1;
-    const problem = room >= 16 && we.problem ? clip(we.problem, room) : "";
-    return problem ? `${problem} ${ask}` : ask;
-  };
+  // round 7 (main's hybrid-pilot judgement, defect 1: "Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How
+  // far does… Khaali jagah bharo: 3 × 160 = ___ m" was SPOKEN in a Hinglish lesson, cut, in English, and again as the hint):
+  // what she speaks from a card is the whole item in the lesson language, never cut. The problem rides on the card only
+  // whole (never clipped), and only on the English card: the kits' problems are English, so a Hindi / Hinglish card is the
+  // gap line alone and she says the problem in her own words from the content lines (fadedContent: the problem is there).
+  const withProblem = (ask, english) => (english && we.problem && we.problem.length + ask.length + 1 <= FADE_CARD_MAX ? `${we.problem} ${ask}` : ask);
   const item = {
     id: `${FADE_PREFIX}${i}`, kind: "practice", skillId, fade: true, difficulty: 1,
-    prompt_en: withProblem(process ? `What do we do next? ${line}` : `Fill the gap: ${line}`),
-    prompt_hi: withProblem(process ? `Ab aage kya karenge? ${line}` : `Khaali jagah bharo: ${line}`),
+    prompt_en: withProblem(process ? `What do we do next? ${line}` : `Fill the gap: ${line}`, true),
+    prompt_hi: withProblem(process ? `Ab aage kya karenge? ${line}` : `Khaali jagah bharo: ${line}`, false),
     answer, acceptable: [we.steps[i]],
     hints: [
       "pump: look at the step just before; what does it give us",

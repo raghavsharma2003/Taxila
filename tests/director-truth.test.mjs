@@ -16,6 +16,9 @@ import { getTopic } from "../server/content/curriculum.js";
 import { __test as L, replyDeps, startRefusal, refusalControl } from "../server/routes/lesson.js";
 import { homeStateOf } from "../server/routes/child.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_BYE_CHECKIN = "off";
 
 const SQ = kitFromFile(getTopic("c8-maths-ch01-t01"));   // class 8 squares (the audit's Kabir lesson)
 const SK = kitFromFile(getTopic("c2-maths-ch01-t01"));   // class 2 skip counting (the audit's Aarav lesson)

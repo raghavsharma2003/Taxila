@@ -7,6 +7,10 @@ import { initLessonState, step, LIMITS } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { findItem } from "../server/director/items.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_BYE_CHECKIN = "off";
+process.env.TAXILA_R7_PARK_TOPIC = "off"; // and the earlier ways-in offer on "something else" (judgement #2)
 
 const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });

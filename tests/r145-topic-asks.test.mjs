@@ -47,6 +47,9 @@ describe("census F1: topic asks", () => {
 import { intakeParse } from "../server/director/session/intake.js";
 import { intakeCandidates } from "../server/director/session/candidates.js";
 import * as SH from "../server/director/shapes.js";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_PARK_TOPIC = "off";
 const topOf = (t, cl) => { const f = intakeParse(t); const c = intakeCandidates(f, t, { classLevel: cl }); return { kind: f.kind, top: c.top?.topicId ?? null }; };
 test("the intake reads 'X padhna hai' as a wish and finds X, in Roman and in Devanagari", () => {
   assert.deepEqual(topOf("school ki baat chhodo, mujhe progression padhna hai", 9), { kind: "want", top: "c9-maths-ch08-t02" });

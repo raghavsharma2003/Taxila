@@ -463,6 +463,11 @@ const STEP_KEY = /=\s*₹?\s*([-−]?\d[\d,]*(?:\.\d+)?)\s*(?:°|%|₹|rs\.?|rup
  * after its last "="). Its prompt is the kit's faded line for that step when there is one, else the step with its result
  * blanked. null when the step has no result in code (then she asks in her own words, unkeyed, as before).
  */
+/** round 7 (main's hybrid-pilot judgement #3): a goodbye gets the stop check-in first (TAXILA_R7_BYE_CHECKIN=off: ends at once). */
+export const byeCheckInOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_BYE_CHECKIN ?? ""));
+/** round 7 (main's hybrid-pilot judgement #2): change_topic parks and comes back (TAXILA_R7_PARK_TOPIC=off: the ways-in offer). */
+export const parkTopicOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_PARK_TOPIC ?? ""));
+
 export function stepCheckItem(kit, skillId, we, i) {
   const step = String(we?.steps?.[i] ?? "").trim();
   const m = [...step.matchAll(STEP_KEY)].at(-1);
@@ -1125,6 +1130,26 @@ function requestMove(s, input, item, req, labels) {
         s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
         // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
         // (an explicit ask for another TOPIC, "koi aur topic padhna hai", gets the topics at once: 14.4.2, QA 3a1d1e60)
+        // round 7 (main's hybrid-pilot judgement #2, OWNER-RESET #6/#8): a plain "kuch aur baat karte hain" (spoken, or the
+        // steer:else chip) is noticed, parked with a promise and come back to; a push again engages briefly (detour). Only an
+        // explicit ask for another study TOPIC gets the topic buttons. TAXILA_R7_PARK_TOPIC=off: the ways-in offer as before.
+        if (parkTopicOn()) {
+          const back = (lead) => (item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
+            : { ...resume(s, input, item, lead), request: "park" });
+          const pushed = again ? recentParked(s.later ?? [], s.turn, null) : null;
+          if (pushed && !pushed.share && !req.topic) { s.later = serveLater(s.later, pushed.id, s.turn); return { ...back(SH.detourTo({ topic: pushed.topic })), request: "detour" }; }
+          const named = !req.topic ? off : null;
+          if (named && !unsafeChildPhrase(named)) {
+            const e = parkEntry({ topic: named, learning: false, turn: s.turn, itemOnTable: !!item });
+            s.later = pushLater(s.later ?? [], e);
+            return back(SH.parkIt({ topic: e.topic, promise: e.promise }));
+          }
+          if (!req.topic) {
+            s.sidebar = { asked: s.turn, park: true };
+            // (steering, never a break: OWNER-RESET #7)
+            return plan("repair", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }], request: "change_topic" });
+          }
+        }
         const choices = (again || req.topic) && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
         if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title), first: !again }), {
           chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
@@ -1559,6 +1584,8 @@ function toWrap(s, { prefix, stopping = false }) {
 
 function decide(s, input, item) {
   const { cls, chipId } = input;
+  // round 7 (judgement #3): was a safeguarding episode (any tier) open when this turn began? A goodbye then is let go at once
+  const prevSafe = !!s.safeguard;
   const flags = cls?.flags ?? {};
   const labels = chipLabels(s.ctx?.lang);
   // 1. Safety before anything else — the predicate or the classifier, either one.
@@ -1794,7 +1821,12 @@ function decide(s, input, item) {
   const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
   if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
-    if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
+    // round 7 (main's hybrid-pilot judgement #3, dc-r7-stop-limits): "bye" and every other goodbye or leaving phrase gets the ONE
+    // stop check-in first, like "bas ho gaya"; a second stop within two turns, "stop for today" (the stop chip) or Pause → End
+    // ends it. TAXILA_R7_BYE_CHECKIN=off: a goodbye ends at once, as before.
+    // (never inside or after a safeguarding episode: there a goodbye is let go at once, the frozen safety behaviour)
+    const goodbyeNow = (!byeCheckInOn() || !!s.safeguard || s.safeguardedAt != null || (s.checkReleased != null && s.turn - s.checkReleased <= 3) || !!prevSafe) && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye");
+    if (!checkIn && (goodbyeNow || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
     s.stopAsked = s.turn;
     return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], checkin: checkIn ? "rel" : "stop" });
@@ -1829,7 +1861,24 @@ function decide(s, input, item) {
   }
   // a side chat the child asked for (change_topic → what they want to talk about): one real turn on it, then the lesson
   if (s.sidebar && s.turn - s.sidebar.asked === 1 && !cls?.help && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    const parkIt = s.sidebar.park;
     s.sidebar = undefined;
+    // round 7 (main's hybrid-pilot judgement #2): what they want to talk about is parked with a promise, and the lesson goes
+    // on; a filler ("achha theek hai") parks nothing and goes back warmly. Screened in code like every parked topic.
+    if (parkIt) {
+      const said = String(input.text ?? "").replace(/\s+/g, " ").trim();
+      const filler = !said || cls?.flags?.minimal || /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ok|okay|hmm+|ji|chalo|sahi|nahi|kuch\s+nahi|pata\s+nahi)[\s,.!?]*)+$/i.test(said);
+      if (!filler && !unsafeChildPhrase(said)) {
+        const e = parkEntry({ topic: said, learning: false, turn: s.turn, itemOnTable: !!item });
+        s.later = pushLater(s.later ?? [], e);
+        const lead = SH.parkIt({ topic: e.topic, promise: e.promise });
+        return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
+          : { ...resume(s, input, item, lead), request: "park" };
+      }
+      if (unsafeChildPhrase(said)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
+        : plan("repair", SH.declineOob(), { request: "decline" });
+      return { ...resume(s, input, item, "they did not name anything else: back to the work warmly in a few words"), request: "back" };
+    }
     return plan("break", SH.sideChat(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "side_chat" });
   }
   s.sidebar = undefined;
