@@ -86,11 +86,12 @@ export const KX = {
   lineNumbers: K("Numbers on a line from {lo} to {hi}", "Numbers, {lo} se {hi} tak", "संख्याएँ, {lo} से {hi} तक"),
   lineRound: K("Round to the nearest {to}", "Nazdeeki {to} tak round karo", "निकटतम {to} तक"),
   // engine, wrapper, mode, theme and pace names (data ids → words; proper nouns: Antariksh, Khand)
-  engAntariksh: K("Antariksh", "Antariksh", "अंतरिक्ष"), engKhand: K("Khand", "Khand", "खंड"),
+  engAntariksh: K("Antariksh", "Antariksh", "अंतरिक्ष"), engKhand: K("Khand", "Khand", "खंड"), engYantra: K("Yantra", "Yantra", "यंत्र"),
   wrapBeacon: K("Beacon rescue", "Beacon bachao", "बीकन बचाओ"), wrapMines: K("Mine sweep", "Mine safai", "माइन सफ़ाई"), wrapComet: K("Comet catch", "Comet pakdo", "धूमकेतु पकड़ो"),
   modeLine: K("number line", "number line", "संख्या रेखा"), modeCompare: K("compare on a line", "line par tulna", "रेखा पर तुलना"),
   themeBlue: K("blue nebula", "neela nebula", "नीला नेबुला"), themeRed: K("red planet", "laal grah", "लाल ग्रह"), themeGreen: K("green storm", "hara toofan", "हरा तूफ़ान"),
   themeClay: K("clay", "mitti", "मिट्टी"), themeSnow: K("snow", "barf", "बर्फ़"), themeJungle: K("jungle", "jungle", "जंगल"),
+  themeLab: K("science lab", "science lab", "विज्ञान प्रयोगशाला"), themeRooftop: K("rooftop at dusk", "shaam ki chhat", "शाम की छत"), themeBench: K("workbench", "kaam ki mez", "काम की मेज़"),
   paceSteady: K("steady", "aaram se", "आराम से"), paceBrisk: K("brisk", "tez", "तेज़"),
   // what a level is built to tell apart (the family's mal-rule ids → plain words; never "your mistake")
   malWholeBias: K("is a bigger bottom number a bigger fraction?", "bada neeche wala number, bada fraction?", "बड़ा हर, बड़ी भिन्न?"),
