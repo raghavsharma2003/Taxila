@@ -110,6 +110,9 @@ export interface StudioSlot {
   intentId?: string;
   state: StudioState | "fallback_shown";
   artifact?: StudioArtifact;
+  /** round 7: a board still planning that WILL be on the stage within this many ms (a passing code board bounds the wait);
+   *  absent when nothing bounds it. The client may hold her first clause for it (src/studio/boardHold.ts). */
+  etaMs?: number;
 }
 
 /** Anything the StudioStage can render. Each kind is drawn by a renderer registered in src/studio/renderers.ts. */
@@ -165,7 +168,7 @@ export type WbOp =
   | (WbBase & { op: "label"; at: WbPoint; text: string; to?: WbPoint; target?: string })
   /** Number work laid out by code: column sums, fractions, equations, a number line. Cells are tokens, not prose. */
   | (WbBase & { op: "numwork"; at: WbPoint; layout: "column_add" | "column_sub" | "column_mul" | "long_div" | "fraction" | "equation" | "number_line";
-      rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number] })
+      rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number]; /** number_line: the line's own length (board units) */ w?: number })
   /** Draw attention to an earlier op (circle, underline, pulse) without redrawing it. */
   | (WbBase & { op: "highlight"; target: string; style: "circle" | "underline" | "pulse" })
   | (WbBase & { op: "erase"; target: string })

@@ -103,12 +103,20 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
   const capRect = L.caption && L.tile && faceAt === "stage" ? { ...L.caption, y: L.tile.y, h: L.caption.h + L.tile.h + 8 } : L.caption;
   const faceRect = faceAt === "tile" ? L.tile : faceAt === "pip" ? L.pip : faceAt === "stage" ? heroRect(L.slot) : null;
   const capOn = m.captionsOn && captionVisible(floor);
+  // the PiP's box relative to the slot (only while she is the PiP): the stage's truth for pieces that must keep it clear
+  const pipZone = faceAt === "pip" && L.pip
+    ? { w: L.pip.w, h: L.pip.h, right: L.slot.x + L.slot.w - (L.pip.x + L.pip.w), bottom: L.slot.y + L.slot.h - (L.pip.y + L.pip.h) }
+    : null;
 
   return (
     <div className="ks" ref={root} style={{ ["--pip" as string]: `${faceAt === "pip" && L.pip ? L.pip.w + 16 : 0}px` }} data-kind={L.kind} data-face={faceAt} data-work={work ? work.kind : "none"} data-overflow={L.overflow ? "1" : undefined}>
       <div className="ks-top" style={px(L.top)}>{topBar}</div>
       <section className="ks-stage" style={px(L.stage)} data-testid="stage" aria-label={work ? "The stage" : `${m.teacher.name}, AI teacher`}>
-        <div className="ks-slot" style={{ height: L.slot.h }} data-stage-slot="" data-testid="stage-slot">
+        {/* the live PiP keep-clear zone, relative to the slot, for Studio (C1, src/studio/pipZone.ts reads it): data-pip-zone
+            is the corner while the PiP shows ("none" otherwise), --pip-zone-w / -h / -right / -bottom its box in px */}
+        <div className="ks-slot" data-stage-slot="" data-testid="stage-slot" data-pip-zone={pipZone ? "bottom-right" : "none"}
+          style={{ height: L.slot.h, ...(pipZone ? { ["--pip-zone-w" as string]: `${pipZone.w}px`, ["--pip-zone-h" as string]: `${pipZone.h}px`,
+            ["--pip-zone-right" as string]: `${pipZone.right}px`, ["--pip-zone-bottom" as string]: `${pipZone.bottom}px` } : {}) }}>
           {work && <div className="ks-piece" key={pieceKey(work)}>{renderTray(work)}</div>}
           {!work && capOn && !L.caption && <div className="ks-hero-cap">{<Caption text={m.caption.text} speaking={m.caption.speaking} visible lang={m.caption.lang} />}</div>}
           {work && faceAt !== "tile" && capOn && (

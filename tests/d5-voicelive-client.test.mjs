@@ -337,9 +337,9 @@ test("CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; t
     assert.ok(events.some((e) => e.type === "child_partial" && e.text === "बारह"), "the caption shows");
     link.duplex.live.o.port.sttCommit();
     assert.equal(ws.sent.at(-1), '{"type":"commit"}');
-    // round 5: no continuer on D5 until its gate covers it
+    // round 7 (B5): the continuer on every lane, D5 included (it plays through her output, the D5 reference)
     assert.ok(link.ack, "the ack client is on");
-    assert.equal(link.ack.o.continuer(), false, "no continuer on D5");
+    assert.equal(link.ack.o.continuer(), true, "the continuer on D5 too (round 7, B5)");
   } finally { link.close(); env.restore(); }
 });
 

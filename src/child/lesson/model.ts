@@ -158,6 +158,8 @@ export interface DeskModel {
   variant?: "lesson" | "practice" | "doubt";
   /** r7: the Later list (parked questions), oldest first; the Debrief shows it again. */
   later?: LaterItem[];
+  /** r7: every entry parked in this lesson that never came back (the Debrief's "next time" list). */
+  laterUnserved?: LaterItem[];
   /** r7: this turn's moment card, if any. */
   moment?: StageMoment | null;
   /** r7: the stop check-in's choices (the turn's stop:* / break:* chips), shown on the moment card, not as tiles. */

@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-rest-ack",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (E App): a short break (chipId break:rest, sent by Pause → Short break) gets a tiny acknowledgement, a few warm words with no instruction and no question. The client holds her speech until the child taps I am back. The next ungraded turn welcomes them back and resumes where they were: the card again, or the next teaching step. A graded answer right after the break is graded normally."
+  },
+  {
+   "id": "dc-r7-brain-cost-rollup",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Platform patch from-platform/001): endLesson calls rollupLesson(q, lessonId) fire-and-forget after the end transaction, so lesson.cost is written from the lesson trace spend events."
+  },
+  {
+   "id": "ms-r7-brain-hybrid-pilot",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 hybrid side-by-side pilot (evals/hybrid-side-by-side.mjs; main approved it with a 150-call cap). Same scripted child lines through the Director and the agent lane, no DB, production deployments (reply taxila-fast, classify grok-4-1-fast-non-reasoning, agent taxila-gpt6), c6-maths-ch06-t01, class 6, Hinglish. Two of three scenarios were written (steady, offtopic; 10 child turns per lane each). The cap was reached in stuck (about 60 calls a scenario, about $0.26 estimated). Reply-ready p50 (classifier + her whole line), n = 10 turns per lane per scenario: steady, Director 2033 ms vs agent 3818 ms; offtopic, Director 2569 vs agent 3183. One agent turn timed out (6 s) and fell back. Transcripts are in evals/hybrid-side-by-side/results/2026-11-04/ and are judged by main; not scored here."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-brain-steer-else (2026-11-04, stream A Brain)\n\nApp asked for a chip that means \"talk about something else\". It is steer:else (\"Kuch aur\"), the 17th SteerId, and it maps to the same change_topic request the words \"kuch aur baat karte hain\" make. It parks the lesson and offers a side chat, never a stop. Main had separately suggested the name steer:change; steer:else shipped first and App codes against it.\n\n## dc-r7-brain-play-verbs-data (2026-11-04, stream A Brain)\n\nGames ships game modes faster than the Brain table can follow. play-verbs.js now reads the Games-owned data/play/verbs.json ({family: {mode: {act, hi, en}}}) for anything its own table does not list. The code table wins on a clash, and an incomplete entry is skipped (no verb note rather than a guessed verb). The play-verbs test checks the file: no choosing verb on a non-choose act. Reversal: if Games moves every verb into the file, the code table shrinks to nothing.\n\n## dc-r7-brain-learner-view-wired (2026-11-04, stream A Brain)\n\nLearning patches 001-003 are wired at lesson start. learnerViewOf runs alongside history, brief and stuck (a failure means no view), and its theta and weak flag choose the practice queue level through buildPracticeQueue. With no view the queue keeps the on-track default. The family minutes left is stored on the state when limits are on, for the mid-lesson limit. startRefusal sees the plan limits flag. Also applied in the same batch: Games 001 (words a game grammar consumed are never graded) and Studio 001 (board-pointing truth).\n\n## dc-r7-brain-clause-stream (2026-11-04, stream A Brain)\n\nVoice needs her first sound before the whole reply is guarded. With Accept: text/event-stream, POST /api/lesson/turn sends one event: clause per guarded clause and the full TurnResponse last as event: turn. Headers: no-store, no proxy buffering, a flush per event. Without the header the response is plain JSON. The reply draft streams. Its first closed sentence goes out early only when lockFirstSentence passes: every per-sentence guard alone, the pinned question appended passes every whole-turn guard, and the route post-fixes would not change it. Everything else leaves after the whole guard. A sent clause is never withdrawn: if the final reply does not start with it, the reply becomes that sentence + the question. The single exception is a fail-closed safety turn, flagged clausesKept:false, and the client speaks the turn. Reversal: TAXILA_R7_CLAUSE_STREAM=off.\n\n## dc-r7-brain-rest-ack (2026-11-04, stream A Brain)\n\nApp holds her speech during a short break and plays it on I am back, so a stretch instruction (\"say ready when back\") arrived after the child was already back. break:rest now gets a few warm words, and the next ungraded turn resumes where they were.\n\n## dc-r7-brain-cost-rollup (2026-11-04, stream A Brain)\n\nPlatform cost ledger: the lesson-end rollup line is in endLesson, fire-and-forget, after the end transaction.\n",
+  "measurements": "## ms-r7-brain-hybrid-pilot (2026-11-04, stream A Brain)\n\nMain approved a pilot of the hybrid side-by-side with a hard cap of 150 model calls and $2. The harness counts every Azure fetch, estimates spend, and stops at the cap or at the first 401/403. Two scenarios completed (steady, offtopic); the third (stuck) hit the cap mid-run and was not written (about 60 calls a scenario, about $0.26 estimated, no auth error). The agent lane was slower to have a whole line ready (p50 3818 vs 2033 ms on steady, 3183 vs 2569 on offtopic; n = 10 turns a lane), with one 6 s agent timeout. Quality is for main to judge from the transcripts; nothing was scored here.\n"
+ }
+}

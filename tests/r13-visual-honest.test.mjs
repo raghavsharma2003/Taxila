@@ -10,6 +10,9 @@ import { classifyFast, targetFor } from "../server/director/classify.js";
 import { requestOf, freeSubjectOf } from "../server/director/requests.js";
 import { whiteboardAskOf } from "../server/brain/propose.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_PARK_TOPIC = "off";
 
 const K = kit();
 const NE = cls("no_evidence");

@@ -14,6 +14,12 @@ import { compile } from "../server/compiler/compile.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { whiteboardAskOf } from "../server/brain/propose.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_BYE_CHECKIN = "off";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_PARK_TOPIC = "off";
 
 const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });

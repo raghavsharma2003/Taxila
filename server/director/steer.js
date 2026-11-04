@@ -19,6 +19,7 @@ const STEER = Object.freeze({
   "steer:harder": { type: "harder" },
   "steer:easier": { type: "easier" },
   "steer:skip": { type: "skip" },
+  "steer:else": { type: "change_topic" },
   "steer:break": { type: "break" },
   "steer:stop": { type: "stop" },
   // decision D5 "wrap up in 2": the move is not built yet (PIPELINE A9); until it is, an ordinary turn

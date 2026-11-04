@@ -1,4 +1,4 @@
-# Round 7 C1 Studio: the board that moves (fraction split)
+# Round 7 C1 Studio: the boards that move (fraction split, number-line jump)
 
 Local recordings: headless Chromium, the real child lesson route, API mocked, no model calls. The board is the real board-first pick for c5-maths-ch02-t02 "Comparing fractions" (her first explain move).
 
@@ -21,4 +21,56 @@ The board then writes 1/8 < 1/4 and highlights it (in the mp4s).
   - the moving board fails any gate as it ends; the still board is shown instead.
 - **Owner check:** taste of the motion (the distance and the 0.7 s duration).
 
-Re-record with `node evals/studio-timing/record-split.mjs <split.json> <outdir>`.
+## The number-line jump
+
+| file | what |
+|---|---|
+| `jump-p412.mp4` / `jump-p412-strip.png` | 412×915 phone |
+| `jump-w1280.mp4` / `jump-w1280-strip.png` | 1280×800 wide |
+
+The board is c1-maths-ch06-t02 "Subtracting within 20", from the item "start at 18 and jump back 5". The strips show three frames:
+1. just before the hop: the dot on 18;
+2. mid-hop: the dot in the air on the −5 arc;
+3. landed on 13.
+
+Each hop of a `number-line-hop@1` board moves its dot as the arrow draws, and the hops add up. Code picks this template for 80 maths items and worked examples (31 kits, classes 1-9).
+
+The recording also caught a still-board bug, fixed in the same commit. The number line was drawn as long as its label count gave (about 180 units) while the dots and hops were placed on a 340-unit line, so the start dot sat off the end and the labels ran together ("1213"). A number line now carries its own length (`w`).
+
+Re-record with `node evals/studio-timing/record-split.mjs <board.json> <outdir> [name]`.
+
+## Beat cards on (C1 item 5)
+
+`beat-card-p412-strip.png`, `beat-card-w1280-strip.png`: a fresh board now carries its beat card, a header saying what kind of board it is (picture, formula, steps, example, takeaway), dots for the beats done so far, and "Checkpoint ahead" before a check. On by default; `TAXILA_BEAT_BOARD=0` turns it off.
+
+## Timelines (C1 item 5, true scale)
+
+| file | what |
+|---|---|
+| `timeline-across-*.mp4 / -strip.png` | c8-sst-ch09-t01 "India's Long Road to Freedom": 1905 Partition of Bengal, 1919 Jallianwala Bagh, 1930 Dandi March, 1942 Quit India |
+| `timeline-down-*.mp4 / -strip.png` | c7-sst-ch16-t01 "Turning Tides": 1010 Brihadeeswara completed … 1206 Delhi Sultanate founded |
+
+- **Source:** each event is the kit's own words and year, from the chains its authors wrote ("X (year) → Y (year)", or "X (9 December 1946); Y (…)"), so nothing is invented.
+- **Scale:** each tick sits at its year's true place, so the long gap from 1025 to 1191 shows as a long gap.
+- **Layout:** with up to 4 events, labels alternate above and below a left-to-right axis. With 5 or 6, the axis runs down and each event gets its own row. Labels are spread so they never touch, with a leader line back to the tick.
+- **Reach:** 7 topics today (c7-c9 social science, plus the history of cell theory in c9 science). It is picked before the library's model-written flowchart for those topics.
+
+## Tables (C1 item 5; every cell computed)
+
+`table-*.mp4 / -strip.png`: c9-maths-ch02-t02 "Linear patterns and relationships", y = 3x + 5 with x 0-4 → y 5, 8, 11, 14, 17, the rows appearing one by one.
+
+- **Sources:** the kit names "the table of N", or a linear rule y = ax + b in a linear-pattern, relationship or graph lesson. Units ("h = 20 m") and proof steps ("p = 2k") are never read as rules.
+- **Reach:** 5 kits (c3 times tables, c6 multiples of 7, c9 linear patterns and graphs). The table is the board in 2 of them; in the other 3 a code pick comes first.
+
+## The teacher's picture-in-picture never covers a piece (phones)
+
+The table recording showed that with App's stage-first layout (D7) the teacher's picture-in-picture, in the slot's bottom-right, covered the board's last row on a phone. Every piece now stays clear of that square (`src/studio/pipZone.ts`, the box contract's pipZone): it is lifted above it when there is room, and fitted into the space above it when there isn't. `timeline-down-*` was re-recorded with the fix.
+
+## Labelled diagrams (C1 item 5, science)
+
+`label-plant-*.mp4 / -strip.png`: c3-evs-ch04-t01 "Parts of a plant". The plant is drawn as a teacher draws it, then each part gets its label on a leader line: fruit, flower, leaf, stem, root, soil.
+
+- **Who gets one:** a kit that is about a thing's parts (`label-pick.js`): it names the thing and at least 3 of its parts. A plant also needs both stem and root, so "Kinds of waste: flowers, leaves, soil" is not a plant diagram. Each label is the kit's own word.
+- **Reach:** 15 science and EVS kits (14 plant, 1 flower), all drawn by the explain rung and all passing every W gate (timed to her line). Before, they showed a key-terms bubble board.
+- **Truth fix:** the old plant sketch drew no fruit, and its "fruit" anchor sat on a leaf. It is redrawn with a real fruit, leaves with midribs, a five-petal flower and branching roots, and a test now checks every label points at a drawn part.
+- **Known flaw:** the soil leader runs along the soil line. To be refined.

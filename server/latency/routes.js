@@ -20,7 +20,7 @@ import { conv2Mode, p5Flag } from "../conversation/flags.js";
 import { applyNote, withAnswerMods } from "../conversation/policy.js";
 import { loadLive } from "../learner/live.js";
 import { perceive, fingerprint, putPrefetch, allowPrefetch, exactSpecOn } from "./perceive.js";
-import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerCohortHas, lessonTurnOf } from "./ack.js";
+import { ackOf, ackPlanOf, answerTokenOf, ackPhraseOf, ACK_FLOOR_MS, ACK_AT_MS, continuerPlanOf, continuerPhraseOf, continuerLangOf, continuerAllowed, lessonTurnOf } from "./ack.js";
 import { scanSafety } from "../director/safety.js";
 import { record } from "../trace/writer.js";
 // round 3 (relational-human): the perception bus (the turn and the prefetch say "classify is running on these words") and
@@ -290,8 +290,9 @@ async function turnAck(req, res, body) {
   if (!allowAck(lesson.id)) return refuse("rate");
   const kit = await kitFor(lesson.topic_id, lesson.state).catch(() => null);
   const item = kit ? findItem(lesson.state, kit, lesson.state?.activeItemId) : null;
-  // round 5: the continuer only for the owner cohort AND when the device asks (it does not on D5, typed or tapped turns)
-  const continuer = body?.continuer === true && continuerCohortHas(guardian?.email);
+  // round 7 (B5): the continuer for every child when the device asks (it does not on typed or tapped turns);
+  // TAXILA_ACK_CONTINUER=cohort|off narrows it (continuerAllowed)
+  const continuer = body?.continuer === true && continuerAllowed(guardian?.email);
   const r = await ackDecision(ACK_DEPS, { lessonId: lesson.id, text, state: lesson.state, child, item, mode, continuer });
   const asked = { continuerAsked: body?.continuer === true, cohort: continuer };
   if (r.none) return refuse(r.none, asked);

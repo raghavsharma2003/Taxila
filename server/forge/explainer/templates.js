@@ -16,10 +16,10 @@ import { normalizeScript, lintScript, textBox, textProblem } from "../../../shar
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
-  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1"];
+  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -214,11 +214,13 @@ function numberLineHop(c, tl) {
   const x0 = 30, W = 340, y = 170;
   const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
   const labels = [...new Set([a, ...all, b])].sort((p, q) => p - q).map(String);
-  tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], weight: 2 }, 1100);
-  tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
+  tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], w: W, weight: 2 }, 1100);
+  const dot = tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
   all.slice(1).forEach((e, i) => {
     const from = xOf(all[i]), to = xOf(e);
     tl.add({ op: "arrow", from: [from, y - 10], to: [to, y - 10], bend: hops[i] > 0 ? -0.6 : 0.6, ink: "accent" }, 800, { gap: 220 });
+    // round 7 (C1 motion ops): the dot JUMPS along the hop as its arrow draws (reduced motion: it lands at once)
+    tl.add({ op: "move", target: dot, by: [Math.round((to - from) * 10) / 10, 0], arc: Math.round(Math.min(50, 8 + Math.abs(to - from) * 0.25)) }, 800, { with: true });
     tl.add({ op: "text", at: [(from + to) / 2, y - 22 - Math.min(60, Math.abs(to - from) * 0.3), ], text: `${hops[i] > 0 ? "+" : "-"}${Math.abs(hops[i])}`, size: "s", ink: "accent" }, 300, { with: true });
   });
   tl.add({ op: "circle", c: [xOf(pos), y], r: 7, fill: "good", ink: "good" }, 300);
@@ -436,17 +438,30 @@ function parts(c, tl) {
 /** Vetted sketches: code-drawn strokes plus named anchor points a label may point at (left / right label columns). */
 const SKETCH = {
   plant: {
+    // round 7 (C1 board richness): drawn as a teacher draws it: soil, roots branching under it, a curved stem, two real
+    // leaves with midribs, a hanging fruit on its own stalk and a five-petal flower; every anchor ON the part it names
     strokes: [
-      { op: "line", from: [200, 268], to: [200, 120], weight: 3, ink: "good" },                              // stem
-      { op: "stroke", points: [[200, 268], [182, 285], [168, 292]], ink: "soft" },                          // roots
-      { op: "stroke", points: [[200, 268], [214, 287], [230, 294]], ink: "soft" },
-      { op: "stroke", points: [[200, 270], [198, 292]], ink: "soft" },
-      { op: "ellipse", c: [172, 180], rx: 26, ry: 11, fill: "good", ink: "good" },                         // leaves
-      { op: "ellipse", c: [228, 150], rx: 26, ry: 11, fill: "good", ink: "good" },
-      { op: "circle", c: [200, 104], r: 18, fill: "accent", ink: "accent" },                               // flower
-      { op: "line", from: [120, 262], to: [280, 262], ink: "soft", weight: 1 },                            // soil line
+      { op: "line", from: [128, 250], to: [272, 250], ink: "soft", weight: 2 },                             // soil
+      { op: "stroke", points: [[140, 256], [134, 262]], ink: "soft", weight: 1 },
+      { op: "stroke", points: [[260, 256], [254, 262]], ink: "soft", weight: 1 },
+      { op: "stroke", points: [[200, 250], [199, 268], [201, 286]], ink: "chalk", weight: 2 },               // tap root
+      { op: "stroke", points: [[200, 258], [186, 268], [176, 280]], ink: "chalk", weight: 1 },               // side roots
+      { op: "stroke", points: [[200, 262], [214, 272], [224, 284]], ink: "chalk", weight: 1 },
+      { op: "stroke", points: [[200, 250], [203, 210], [199, 160], [200, 104]], ink: "good", weight: 3 },     // stem
+      { op: "polygon", points: [[201, 196], [184, 184], [164, 180], [148, 186], [164, 198], [184, 200]], fill: "good", ink: "good" }, // leaf (left)
+      { op: "line", from: [199, 194], to: [154, 187], ink: "chalk", weight: 1 },                             // its midrib
+      { op: "polygon", points: [[200, 164], [217, 152], [237, 148], [253, 154], [237, 166], [217, 168]], fill: "good", ink: "good" }, // leaf (right)
+      { op: "line", from: [202, 162], to: [247, 155], ink: "chalk", weight: 1 },
+      { op: "stroke", points: [[200, 140], [190, 144], [184, 150]], ink: "good", weight: 1 },               // fruit stalk
+      { op: "circle", c: [180, 158], r: 8, fill: "mark", ink: "mark" },                                      // fruit
+      { op: "circle", c: [200, 74], r: 8, fill: "accent", ink: "accent" },                                   // petals
+      { op: "circle", c: [212, 83], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [207, 97], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [193, 97], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [188, 83], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [200, 87], r: 5, fill: "mark", ink: "mark" },                                       // its centre
     ],
-    anchors: { flower: [200, 104], leaf: [228, 150], stem: [200, 215], root: [200, 285], soil: [140, 262], fruit: [172, 180] },
+    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [150, 250], fruit: [176, 160] },
   },
   flower: {
     strokes: [
@@ -693,10 +708,101 @@ function barChart(c, tl) {
   return { facts: { bars: n, scale: `steps of ${step}`, ...Object.fromEntries(bars.map((b, i) => [`bar${i + 1}`, `${b.label} ${b.value}`])) } };
 }
 
+/**
+ * round 7 (C1 studio-board-richness): a TRUE-SCALE timeline (timeline.js: the kit's own "label (year)" chains). Time runs
+ * right along an arrow; each event is a dot at its year's true place, then its year and label, alternately above and below,
+ * spread apart so no two labels touch and joined to their dot by a leader line. Events appear in time order.
+ */
+function timelineBoard(c, tl) {
+  const ev = Array.isArray(c.events) ? c.events.filter((e) => isInt(e?.year, 100, 2100) && fitsLabel(e?.label)) : [];
+  if (ev.length < 3 || ev.length > 6 || new Set(ev.map((e) => e.year)).size !== ev.length) return { error: "events" };
+  ev.sort((a, b) => a.year - b.year);
+  const lo = ev[0].year, hi = ev.at(-1).year;
+  // one fact per event (a value is ≤ 40 chars): her line names what is on the board, year by year
+  const facts = { ...Object.fromEntries(ev.map((e, i) => [`event${i + 1}`, `${e.year} ${e.label}`])), span: `${lo} to ${hi}` };
+  // an event is a TICK across the axis (a dot would read as a count to W8: "3 dots" is a number, a year is not)
+  const tick = (x, y, across) => tl.add({ op: "line", from: across === "v" ? [x, y - 9] : [x - 9, y], to: across === "v" ? [x, y + 9] : [x + 9, y], weight: 3, ink: "accent" }, 220, { gap: 220 });
+  // spread label centres along one axis: inside [a, b], each at least its half-size + 8 from the next (forward, then back)
+  const spread = (list, a, b) => {
+    list.forEach((q, i) => { q.p = Math.max(q.p, a + q.h / 2, i ? list[i - 1].p + (list[i - 1].h + q.h) / 2 + 8 : -Infinity); });
+    for (let i = list.length - 1; i >= 0; i--) { const q = list[i]; q.p = Math.min(q.p, b - q.h / 2, i < list.length - 1 ? list[i + 1].p - (list[i + 1].h + q.h) / 2 - 8 : Infinity); }
+    return list.every((q) => q.p - q.h / 2 >= a - 0.5);
+  };
+  const twoLine = (t, maxW) => { const w = fitWidth(t, maxW); return w && w <= maxW ? w : null; };
+  // 1. across: time runs right; labels alternate above and below, each over its year's true place where it fits
+  {
+    const y = 150, x0 = 44, W = 296, LW = ev.length <= 4 ? 160 : 118;   // the last tick stays clear of the arrowhead (380)
+    const xOf = (yr) => x0 + ((yr - lo) / (hi - lo)) * W;
+    const sides = [[], []];
+    ev.forEach((e, i) => { const w = twoLine(e.label, LW); sides[i % 2].push({ e, p: xOf(e.year), h: w ?? Infinity }); });
+    if (sides.every((sd) => sd.every((q) => Number.isFinite(q.h)) && spread(sd, 8, 392))) {
+      tl.add({ op: "arrow", from: [24, y], to: [380, y], weight: 2 }, 700);
+      const at = new Map(sides.flatMap((sd, k) => sd.map((q) => [q.e.year, { ...q, up: k === 0 }])));
+      for (const e of ev) {
+        const q = at.get(e.year), tx = xOf(e.year);
+        tick(tx, y, "v");
+        const yy = q.up ? y - 34 : y + 30, ly = q.up ? y - 78 : y + 78;
+        tl.add({ op: "line", from: [tx, q.up ? y - 12 : y + 12], to: [q.p, q.up ? yy + 12 : yy - 22], weight: 1, ink: "soft" }, 220, { gap: 40 });
+        tl.add({ op: "text", at: [q.p, yy], text: String(e.year), size: "s", ink: "accent" }, 260, { gap: 20 });
+        if (!writeFit(tl, e.label, q.p, ly, LW, {}, { ms: 480, gap: 30, size: "s" })) return { error: "label_too_wide" };   // one size for every label
+      }
+      return { facts };
+    }
+  }
+  // 2. down: time runs down a true-scale axis; each event's year and label on one row to its right (5-6 events)
+  {
+    const x = 56, y0 = 30, H = 240, LX = 132, LW = 400 - LX - 10;
+    const yOf = (yr) => y0 + ((yr - lo) / (hi - lo)) * H;
+    const rows = ev.map((e) => ({ e, p: yOf(e.year), one: textBox(e.label, "s").w <= LW }));
+    for (const r of rows) { r.h = r.one ? 18 : 40; if (!r.one && !twoLine(r.e.label, LW)) return { error: "label_too_wide" }; }
+    if (!spread(rows, 14, 290)) return { error: "timeline_crowded" };
+    tl.add({ op: "arrow", from: [x, 12], to: [x, 292], weight: 2 }, 700);
+    for (const r of rows) {
+      const ty = yOf(r.e.year);
+      tick(x, ty, "h");
+      tl.add({ op: "line", from: [x + 12, ty], to: [x + 22, r.p], weight: 1, ink: "soft" }, 200, { gap: 40 });
+      tl.add({ op: "text", at: [x + 26, r.p + 5], text: String(r.e.year), size: "s", ink: "accent", align: "start" }, 240, { gap: 20 });
+      if (r.one) tl.add({ op: "text", at: [LX, r.p + 5], text: r.e.label, size: "s", align: "start" }, 420, { gap: 30 });
+      else {
+        const ws = r.e.label.split(/\s+/); let k = 1, best = null;
+        for (; k < ws.length; k++) { const a = ws.slice(0, k).join(" "), b = ws.slice(k).join(" "); const w = Math.max(textBox(a, "s").w, textBox(b, "s").w); if (w <= LW && (!best || w < best.w)) best = { a, b, w }; }
+        tl.add({ op: "text", at: [LX, r.p - 6], text: best.a, size: "s", align: "start" }, 260, { gap: 30 });
+        tl.add({ op: "text", at: [LX, r.p + 16], text: best.b, size: "s", align: "start" }, 260, { gap: 0 });
+      }
+    }
+    return { facts };
+  }
+}
+
+/**
+ * round 7 (C1 studio-board-richness): a table (table.js: every cell computed). 2-4 columns, 1-10 rows; the rule it comes
+ * from on top, the header in accent, then the rows one by one so the pattern is seen growing.
+ */
+function tableBoard(c, tl) {
+  const head = Array.isArray(c.head) ? c.head.map(String) : [];
+  const rows = Array.isArray(c.rows) ? c.rows.map((r) => (Array.isArray(r) ? r.map(String) : [])) : [];
+  const cols = head.length;
+  if (cols < 2 || cols > 4 || rows.length < 1 || rows.length > 10 || rows.some((r) => r.length !== cols)) return { error: "table_shape" };
+  if ([...head, ...rows.flat()].some((t) => !t || [...t].length > 10 || textProblem(t))) return { error: "table_cell" };
+  const rule = typeof c.rule === "string" && fitsLabel(c.rule) ? c.rule : null;
+  const top = rule ? 52 : 22, rh = Math.min(34, (286 - top) / (rows.length + 1)), cw = Math.min(110, 340 / cols);
+  const x0 = 200 - (cw * cols) / 2, w = cw * cols, h = rh * (rows.length + 1);
+  const size = rh >= 28 ? "m" : "s";
+  if ([...head, ...rows.flat()].some((t) => textBox(t, size).w > cw - 10)) return { error: "table_cell_wide" };
+  if (rule) tl.add({ op: "text", at: [200, 30], text: rule, size: "m", ink: "accent" }, 500);
+  tl.add({ op: "rect", at: [x0, top], w, h, weight: 2 }, 600, { gap: 120 });
+  for (let j = 1; j < cols; j++) tl.add({ op: "line", from: [x0 + j * cw, top], to: [x0 + j * cw, top + h], weight: 1 }, 220, { gap: 40 });
+  tl.add({ op: "line", from: [x0, top + rh], to: [x0 + w, top + rh], weight: 2 }, 260, { gap: 40 });
+  const cy = (i) => top + rh * i + rh / 2 + (size === "m" ? 7 : 5);
+  head.forEach((t, j) => tl.add({ op: "text", at: [x0 + cw * (j + 0.5), cy(0)], text: t, size, ink: "accent" }, 260, { gap: j ? 20 : 120 }));
+  rows.forEach((r, i) => r.forEach((t, j) => tl.add({ op: "text", at: [x0 + cw * (j + 0.5), cy(i + 1)], text: t, size }, 200, { gap: j ? 20 : 160 })));
+  return { facts: { ...(rule ? { rule } : {}), ...Object.fromEntries(rows.slice(0, 10).map((r, i) => [`row${i + 1}`, r.join(" | ")])) } };
+}
+
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };

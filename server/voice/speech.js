@@ -14,6 +14,8 @@ import { dhdStreamWs } from "./azureTtsWs.js";
 export const dhdVisemesOn = (env = process.env) => env.TAXILA_DHD_VISEMES !== "0";
 import { plainSsml } from "./expressive/compile/dhd.js";
 import { count } from "./expressive/telemetry.js";
+// round 7 (Platform cost ledger, docs/patches/from-platform/001): one meter call where the spend happens; never throws
+import { ttsSpent } from "../cost/meter.js";
 
 export const PCM_RATE = 24_000;
 /** Bytes per second of PCM16 mono at PCM_RATE. */
@@ -184,6 +186,8 @@ async function speechStreamOnce(text, { voice, instructions, signal, timeoutMs =
     log("tts_stream", DEPLOY.tts, res.status, Math.round(performance.now() - t0));
     throw new AzureError(`tts_stream ${DEPLOY.tts} HTTP ${res.status}: ${msg}`, res.status);
   }
+  // the synthesis is billed once it is accepted (a later abort does not refund the characters sent)
+  ttsSpent({ engine: DEPLOY.tts, chars: body.input.length, ms: Math.round(performance.now() - t0), status: res.status });
   const reader = res.body.getReader();
   let first = 0;
   const chunks = {
@@ -448,6 +452,7 @@ function speakDhd(written, style, signal, render, lane) {
             catch (e) { if (signal?.aborted || e?.code === "aborted") throw e; console.warn(`[voice] dhd ws failed (${e?.code || e?.status || "error"}), REST: ${String(e?.message || e).slice(0, 100)}`); ({ chunks } = await dhdStream(ssml, { signal, ...env })); }
           } else ({ chunks } = await dhdStream(ssml, { signal, ...env }));
           dhdSucceeded(voice, r.id);
+          ttsSpent({ engine: voice, chars: ssml.length, status: 200 });
           if (r.id !== "r1") { self.region = r.id; count("region_failover"); }
           if (lane) { lane.engine = "dhd"; lane.region = r.id; }
           lastErr = null;

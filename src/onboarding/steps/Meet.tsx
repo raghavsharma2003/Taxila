@@ -9,7 +9,8 @@ import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import type { TeacherCard } from "../../../shared/contracts.ts";
 import { defaultTutorFor } from "../../../shared/tutors.js";
-import { Button, Icon, TeacherFace, useClip, type Lang } from "../../ui/index.ts";
+import { Button, Icon, useClip, type Lang } from "../../ui/index.ts";
+import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { getJson } from "../../app/api.ts";
 import { helloClip } from "../../child/voice.ts";
@@ -100,7 +101,8 @@ export function MeetStep() {
       }>
       <div className="onb-meet">
         <figure className="onb-teacher" data-teacher-id={o.teacher.id}>
-          <TeacherFace teacherId={o.teacher.id} band={band} size={220} />
+          {/* round 7 Face: her LIVE face (the same one the lesson shows), not the retired TeacherFace shim's plate */}
+          <Teacher teacherId={o.teacher.id} band={band} form="live" floor="idle" framing="medium" label="below" lights="up" style={{ width: 220, height: 248 }} />
         </figure>
       </div>
       <fieldset className="fs">

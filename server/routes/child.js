@@ -30,6 +30,7 @@ import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
 import { routes as placementRoutes } from "./placement.js";
+import { openJar, jarSummary } from "../learner/jar.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -181,9 +182,10 @@ export async function planFor(child, guardian, now = new Date()) {
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
-  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor] = await Promise.all([
+  const profile0 = hasConsent(guardian.id, child.id, "learning_profile");
+  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor, jarItems] = await Promise.all([
     controlsOf(child),
-    hasConsent(guardian.id, child.id, "learning_profile"),
+    profile0,
     one(`select l.id, l.topic_id, l.started_at, l.state->'lastUi'->'ask'->>'text' as ask,
             coalesce(jsonb_typeof(l.state->'safeguard'), 'null') <> 'null' as safeguard_open,
             (select count(*)::int from turn t where t.lesson_id = l.id and t.speaker = 'child') as child_turns,
@@ -203,6 +205,8 @@ export async function planFor(child, guardian, now = new Date()) {
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
+    // round 7 F item 8: the Question jar (037): what she promised to come back to
+    profile0.then((p) => (p ? openJar(child.id, { limit: 10 }) : [])).catch(() => []),
   ]);
   const loggedMin = todayRows.reduce((a, r) => a + (Number(r.state?.minutes) || 0), 0);
   const usedMin = Math.round(Math.max(Number(usage?.used_min) || 0, loggedMin) * 10) / 10;
@@ -236,7 +240,7 @@ export async function planFor(child, guardian, now = new Date()) {
     surfaces: { map: !!profile, notebook: !!profile, resume: !!profile },
     source: { dayPlan: dayPlan?.version ?? null },
     madeFor: profile && state !== "safety_hold" ? madeFor : [],
-    jar: null,
+    jar: state === "safety_hold" ? null : jarSummary(jarItems),
     testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null,
     homework: controls.homeworkUntil ? { until: controls.homeworkUntil } : null,
     textOnly: controls.textOnly,
