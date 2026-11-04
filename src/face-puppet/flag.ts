@@ -119,3 +119,19 @@ export function faceJawEnabled(): boolean {
     return false;
   }
 }
+
+/** Round 7: the rig draws in an OffscreenCanvas worker where supported (default on). ?rigworker=0 keeps it on the main
+ *  thread on this device (the A/B for start latency, and a field escape hatch); ?rigworker=1 / default clears it. */
+export const RIG_WORKER_KEY = "tx.flag.face.rigworker";
+export function rigWorkerEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("rigworker");
+      if (v === "0") localStorage.setItem(RIG_WORKER_KEY, "0");
+      else if (v === "1" || v === "default") localStorage.removeItem(RIG_WORKER_KEY);
+    }
+    return !(typeof localStorage !== "undefined" && localStorage.getItem(RIG_WORKER_KEY) === "0");
+  } catch {
+    return true;
+  }
+}

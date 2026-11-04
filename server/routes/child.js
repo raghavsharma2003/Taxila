@@ -30,6 +30,7 @@ import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
 import { routes as placementRoutes } from "./placement.js";
+import { openJar, jarSummary } from "../learner/jar.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -175,15 +176,41 @@ async function plan(req, res) {
   send(res, 200, await planFor(child, guardian));
 }
 
+/**
+ * Round 7 F (learning-conductor-day-plan): the child home starts the Conductor's planToday IN THE BACKGROUND, so day_plan
+ * (and its slot.subject from the rotation) exists after the first visit of a learning day. It never adds latency and
+ * never fails the home: at most once per child per PLAN_KICK_MS on this replica, errors only logged. OPT-IN until checked
+ * live on staging (TAXILA_CONDUCTOR_PLAN=on): the DB-backed suites drive the plan route against a test database, and a
+ * background Conductor step there is unverified. Off, the home reads whatever day_plan exists, as before.
+ */
+export const PLAN_KICK_MS = 10 * 60_000;
+const planKicks = new Map();
+/** PURE. Should this replica start planToday for the child now? */
+export function shouldKickPlan(childId, now, kicks = planKicks, env = process.env) {
+  if (env.TAXILA_CONDUCTOR_PLAN !== "on" || !env.DATABASE_URL) return false;
+  if (kicks.has(childId) && now - kicks.get(childId) < PLAN_KICK_MS) return false;
+  kicks.set(childId, now);
+  if (kicks.size > 5000) for (const [k, t] of kicks) if (now - t > PLAN_KICK_MS) kicks.delete(k);
+  return true;
+}
+function kickPlanToday(childId, now) {
+  if (!shouldKickPlan(childId, now.getTime())) return;
+  import("../conductor/index.js")
+    .then((m) => m.planToday(childId, { device: "web", now }))
+    .catch((e) => console.warn(`[child] planToday ${String(childId).slice(0, 8)}: ${String(e?.message ?? e).slice(0, 160)}`));
+}
+
 /** @returns {Promise<import("../../shared/contracts").ChildPlanResponse>} */
 export async function planFor(child, guardian, now = new Date()) {
+  kickPlanToday(child.id, now);
   const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
-  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor] = await Promise.all([
+  const profile0 = hasConsent(guardian.id, child.id, "learning_profile");
+  const [controls, profile, open, todayRows, anyRow, usage, dayPlan, , hold, test, madeFor, jarItems] = await Promise.all([
     controlsOf(child),
-    hasConsent(guardian.id, child.id, "learning_profile"),
+    profile0,
     one(`select l.id, l.topic_id, l.started_at, l.state->'lastUi'->'ask'->>'text' as ask,
             coalesce(jsonb_typeof(l.state->'safeguard'), 'null') <> 'null' as safeguard_open,
             (select count(*)::int from turn t where t.lesson_id = l.id and t.speaker = 'child') as child_turns,
@@ -203,6 +230,8 @@ export async function planFor(child, guardian, now = new Date()) {
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
+    // round 7 F item 8: the Question jar (037): what she promised to come back to
+    profile0.then((p) => (p ? openJar(child.id, { limit: 10 }) : [])).catch(() => []),
   ]);
   const loggedMin = todayRows.reduce((a, r) => a + (Number(r.state?.minutes) || 0), 0);
   const usedMin = Math.round(Math.max(Number(usage?.used_min) || 0, loggedMin) * 10) / 10;
@@ -236,7 +265,7 @@ export async function planFor(child, guardian, now = new Date()) {
     surfaces: { map: !!profile, notebook: !!profile, resume: !!profile },
     source: { dayPlan: dayPlan?.version ?? null },
     madeFor: profile && state !== "safety_hold" ? madeFor : [],
-    jar: null,
+    jar: state === "safety_hold" ? null : jarSummary(jarItems),
     testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null,
     homework: controls.homeworkUntil ? { until: controls.homeworkUntil } : null,
     textOnly: controls.textOnly,
@@ -414,6 +443,45 @@ async function skillLineAudio(req, res) {
   res.end(audio);
 }
 
+// ───────────────────────────── name preview (round 7 F; PRODUCT-DESIGN-V2 §6.2 step 6) ─────────────────────────────
+
+/** PURE. The fixed line her preview speaks: the spoken spelling when given, else the name as written. Never free text. */
+export const nameLineOf = (name) => `Namaste, ${name}!`;
+
+/**
+ * GET /api/child/name-audio?childId=&spoken=  |  ?classLevel=&name=&spoken=  → audio/mpeg: "Hear how {T} says it".
+ * The child's teacher (or, before the child exists, the class's) says one fixed greeting with the name; `spoken` is the
+ * parent's "Spell it how it sounds" (account.js spokenNameOf rules), so a spelling can be heard before it is saved.
+ */
+async function nameAudio(req, res) {
+  const sp = query(req);
+  const { spokenNameOf } = await import("./account.js");
+  let guardian, who;
+  if (sp.get("childId")) {
+    const r = await requireChild(req, childIdOf(sp.get("childId")));
+    guardian = r.guardian; who = r.child;
+  } else {
+    const { requireGuardian } = await import("../auth.js");
+    guardian = await requireGuardian(req);
+    const cl = Number(sp.get("classLevel"));
+    if (!(cl >= 1 && cl <= 9)) throw bad("childId or classLevel (1-9) is required");
+    who = { id: `class-${cl}`, class_level: cl, teacher_id: null, first_name: spokenNameOf(sp.get("name")) };
+  }
+  const name = spokenNameOf(sp.get("spoken")) ?? who.name_spoken ?? spokenNameOf(who.first_name);
+  if (!name) throw bad("a name is required");
+  if (!allowSpeech(guardian.id)) throw new HttpError(429, "too many speech requests");
+  let audio;
+  try { audio = await tts(nameLineOf(name), teacherFor(who).voice); } catch (e) {
+    if (e instanceof AzureError) throw new HttpError(502, "speech service unavailable");
+    throw e;
+  }
+  res.statusCode = 200;
+  res.setHeader("content-type", "audio/mpeg");
+  res.setHeader("content-length", String(audio.length));
+  res.setHeader("cache-control", "private, max-age=600");
+  res.end(audio);
+}
+
 // ───────────────────────────── teacher ─────────────────────────────
 
 /** GET /api/child/teacher?childId= | ?classLevel= */
@@ -450,6 +518,7 @@ export const routes = {
   "POST /api/lesson/request": request,
   "GET /api/child/skill-line": skillLine,
   "GET /api/child/skill-line/audio": skillLineAudio,
+  "GET /api/child/name-audio": nameAudio,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };

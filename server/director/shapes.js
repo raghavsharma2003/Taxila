@@ -75,6 +75,10 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
 // "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
 export const worked = ({ part, parts, stuck = false }) => join(
   `worked example, part ${part} of ${parts}: the one in LESSON NOW with its own numbers and names, never an example of your own`,
+  // round 7 (main's hybrid-pilot judgement #5: "2 times 50 plus 30" before the park was ever stated): its givens first, and a
+  // bracket said so it cannot be misheard
+  ...(part === 1 ? ["first say the problem and its givens (what each number is), then the step"] : []),
+  "a bracket is said sum first: 2 × (50 + 30) is '50 plus 30, that is 80, times 2'",
   stuck ? "they were stuck: show this part's steps yourself, each with its result; nothing for them to work out this turn"
     : "say one step, then ask them for the next step",
   "their thinking, your pace; no new idea",
@@ -267,7 +271,8 @@ const ASK_TRUTH = {
   game: {
     // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she offers what exists, never narrates what does not
     engine: "they asked for a game: the activity already on the screen is the way to try it now; in one line, what to do in it (never call it a game; never say a game is not ready)",
-    none: "they asked for a game: a quick spoken game on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available)",
+    // round 7 (main's hybrid-pilot judgement #11: "Game ne 3 ko pehli side maana" with no game on the screen)
+    none: "they asked for a game: a quick spoken game between you two on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available; nothing is on the screen, so never say the game did, showed or counted anything)",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
@@ -323,6 +328,10 @@ export const stopCheck = () => (p5Flag("R3CONV")
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
+// round 7 (E App: Pause → "Short break" sends chipId break:rest; the client holds her speech for the whole break and plays a
+// held reply only when the child taps "I'm back"): so the reply is a tiny acknowledgement, never an instruction or question
+export const restAck = () => "they are taking a short break now: at most a few warm words that a break is fine and you will be right here; no lesson, no question, nothing for them to do";
+export const backFromRest = "they are back from their short break: welcome them back in a few words, then carry on exactly where you were";
 
 // 14.4.3 `sameStory` (state.js: a MODEL re-read restarted an episode the predicate or a sure layer opened; sim lab 6da8f599 p08
 // r1-r3 #7-11 "Kya aap abhi safe hain?" five turns running after "abhi theek hai"): the same active hand-off to a grown-up, but
@@ -393,8 +402,8 @@ export const VERDICT_NOTE = {
   // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
   // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
   get not_yet() {
-    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
-      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
+    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step, curious and slower"
+      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step, curious and slower";
   },
   partial: "their answer was partly right: name the right part, no full agreement",
   unverified: "no verdict on their reply: neither praise nor 'wrong'",
@@ -499,6 +508,13 @@ export const answerTheirQuestion = () => "they asked a real question about today
 export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
 export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
 /** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
+// round 7 (main's hybrid-pilot judgement #4: "8" to a perimeter-or-area question got "tumhara answer mujhe clearly sunai nahi
+// diya"): words that were heard and do not fit the question are never met with a hearing claim; she says what they said and
+// asks which it is
+// round 7 (main's hybrid-pilot judgement #10: "picture puzzle, cricket story, ya speed game" offered, "haan", then plain practice):
+// a yes to an offered choice is answered by asking which one, never by dropping the offer
+export const whichOne = ({ choices = [] } = {}) => `they said yes without picking one: ask which one they want, naming the choices again in a few words${choices.length ? ` (${choices.map((c) => clean(c, 30)).join(", ")})` : ""}; nothing else this turn`;
+export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); say back what they said in a few words, then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
 export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
@@ -523,12 +539,17 @@ export const visualUnavailable = ({ subject }) => join(
  * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
  */
+/** round 7 (C1 studio-board-pointing-truth, owner answer to the drawAsked vs VISUAL_DRAWING question): the board drawn for
+ *  the ask is pointed at once ONLY when it is certified to land before her clause (the board-first page, turn.js); else
+ *  she describes it in words and never sends their eyes to it. */
+export const DRAW_NO_POINT = "never send their eyes to the screen or the board";
+export const DRAW_POINT_ONCE = "the board shows it as you speak: send their eyes to it once, in a few words, then say what it shows";
 export const drawAsked = ({ subject, show, photo }) => join(
   // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): a photo being made, a busy lane or no photo is never
   // narrated; the board's sketch is what she talks about, and a photo that arrives simply appears (it is never promised)
   show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: the board draws a simple sketch of it now; talk about it as a sketch, never as a photo (never say a photo is coming, being made, or cannot come)`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
-  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
+  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; ${DRAW_NO_POINT}`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
   // (last: the rule that must fire) the board's drawing of it is never denied
   show === "picture" ? "never say there is no picture or nothing on the screen" : "",
@@ -646,6 +667,10 @@ export const MUST_NOTE = Object.freeze({
 export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
 /** Round 4 (lever 5, TAXILA_ACK_CLOSE): the child only acknowledged her teaching question; the step is held for this turn.
  *  `asked` is the teacher's own last question (never the child's words). */
+/** round 7 A6 (teaching-question evidence): her worked step's question was answered right (the key in code): confirm it. */
+export const stepCheckRight = () => "they worked out that step right: confirm it plainly in a few words, naming the step, then go on";
+/** round 7 A6: the step's question got a wrong answer: no verdict words; the step is shown with its result next. */
+export const stepCheckMissed = () => "that step is not there yet: no verdict words; show it yourself with its result, calmly";
 export const ackCloseMove = ({ asked }) => `they only said okay to your question "${clean(asked).slice(0, 90)}": answer it yourself now, plainly, in one or two short sentences, and link it to the idea in a few words; no new example and no new step; end with one small question that checks they followed`;
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local

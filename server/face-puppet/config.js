@@ -1,7 +1,7 @@
 // The face's RUNTIME kill switches (ship5 p2-face). Both ship ON; an operator turns either off on the running Container
 // App with an env change (no rebuild, no client deploy):
-//   TAXILA_FACE_PUPPET2D=0  → every client that has not yet revealed a puppet shows TutorFace (the pre-puppet face),
-//                             the automatic fallback path (src/face-puppet/flag.ts puppetServerAllows, PuppetFace.tsx);
+//   TAXILA_FACE_PUPPET2D=0  → every client that has not yet revealed a puppet holds her own rest still (round 7: never
+//                             another face; src/face-puppet/flag.ts puppetServerAllows, PuppetFace.tsx);
 //   TAXILA_DHD_VISEMES=0    → Diya's synthesis goes back to REST exactly as before (server/voice/speech.js, patch 01): no
 //                             viseme frames, and the puppet lip-syncs from the audio tap (the judged live path).
 // The build-time VITE_FACE_PUPPET2D=0 and the per-device ?puppet=0 remain. No auth: the answer holds no child data.

@@ -1,0 +1,309 @@
+{
+ "v": 1,
+ "source": "data/kits/c5-english.json",
+ "items": [
+  {
+   "id": "c5-english-ch01-t01-i07",
+   "topicId": "c5-english-ch01-t01",
+   "skillId": "c5-english-ch01-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'is' or 'are': Papa's spectacles ___ on his head.",
+    "hi": "'Is' lagega ya 'are'? Papa's spectacles ___ on his head."
+   },
+   "keyFrom": "acceptable",
+   "engine": "Papa's",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "his"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is",
+      "are"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "head"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "on"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "spectacles"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "papa's",
+     "spectacles",
+     "are",
+     "on",
+     "his",
+     "head"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch01-t01-m-pair-noun",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "548c2086"
+  },
+  {
+   "id": "c5-english-ch02-t01-rl-g2",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Complete this account of yesterday’s cricket match using the simple past: “The ball ___ (fly) over the boundary, and the crowd ___ (cheer).” Give both missing words in order.",
+    "hi": "Kal ke cricket match ka account simple past mein poora karo: ‘The ball ___ (fly) over the boundary, and the crowd ___ (cheer).’ Dono missing words order mein batao."
+   },
+   "keyFrom": "acceptable",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "crowd"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "cheered",
+      "cheer"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "fly",
+      "flew"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "ball"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "ball",
+     "flew",
+     "and",
+     "the",
+     "crowd",
+     "cheered"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5503d0fa"
+  },
+  {
+   "id": "c5-english-ch09-t01-i06",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'My mother is teacher in a school.'",
+    "hi": "Galti dhoondo: 'My mother is teacher in a school.'"
+   },
+   "keyFrom": "answer",
+   "engine": "My",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "teacher"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "school"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "an",
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "in"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "mother"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "my",
+     "mother",
+     "is",
+     "a",
+     "teacher",
+     "in",
+     "a",
+     "school"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "missing-wagon",
+     "train": [
+      "my",
+      "mother",
+      "is",
+      "teacher",
+      "in",
+      "a",
+      "school"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "malKit": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "21aa0efc"
+  },
+  {
+   "id": "c5-english-ch09-t01-i07",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'a' or 'an': He is ___ electrician.",
+    "hi": "'A' ya 'an' — kaunsa aayega? 'He is ___ electrician.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "He",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "electrician"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "he",
+     "is",
+     "an",
+     "electrician"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "1ba99d96"
+  }
+ ]
+}

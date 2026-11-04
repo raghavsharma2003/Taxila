@@ -19,6 +19,7 @@
 //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
+import { methodsLine, SHORT_TURN_WORDS } from "../conversation/methods.js";
 import { playCheck } from "../director/play-verbs.js";
 import { SHAPES as REL_SHAPES } from "../relational/policy.js";
 import { floorText, FLOOR_HEADING } from "./floor.js";
@@ -221,10 +222,12 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
 // round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
 // "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
 const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
-export function languageRule(language, ageBand, pinned = false) {
+/** Voice lane only (TALKING-RULES §1, docs/research/voice/v4): her words are heard. A shape, never a line; sized to the cap. */
+export const SPOKEN_NOTE = " Said aloud: short chunks, key word last, feeling held to the end.";
+export function languageRule(language, ageBand, pinned = false, lane = "text") {
   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
-  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
+  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.${lane === "voice" ? SPOKEN_NOTE : ""}`;
 }
 
 const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
@@ -250,7 +253,8 @@ function branchClause(branches, posed = (t) => t) {
  * against a question nobody asked). Voice lane: the check is the branch for the reply being answered.
  */
 function lastParts({ lessonState: s, move, item, branches, ageBand, language, protegeName, lane, writtenAsk = false }) {
-  const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
+  // round 7 A8: "chhota bolo" (the short method) caps her turn for the rest of the lesson
+  const n = move.methods?.includes("short") ? Math.min(SHORT_TURN_WORDS, TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"]) : TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
   const voice = lane === "voice";
   const lvl = s.hintLevel;
   const fix = [...Object.keys(FLOOR_FIX).filter((k) => s.correction?.includes(k)), ...Object.keys(REL_FLOOR_FIX).filter((k) => s.correction?.includes(k))]
@@ -327,6 +331,9 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     ...lead,
     ...must,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
+    // round 7 A8 (brain-steering-persistence): how they asked to be taught, last and never shed (position is mechanism);
+    // not on a safeguard or a wrap (move.methods is not set there)
+    ...(methodsLine(move.methods) ? [{ text: `- ${methodsLine(move.methods)}`, drop: null }] : []),
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];
 }
@@ -358,7 +365,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
     { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
-    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned), drop: null }] },
+    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned, lane), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is

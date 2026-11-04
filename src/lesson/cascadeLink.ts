@@ -38,7 +38,7 @@ import { puppetBus } from "../face-puppet/bus.ts";
 // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
-import { VoiceLinkTrace } from "../voice/trace.ts";
+import { VoiceLinkTrace, vt } from "../voice/trace.ts";
 
 /** Round 5: a spoken final this soon after a tapped / typed answer is never a second turn (the owner's chip race). */
 export const LINK_TAP_GUARD_MS = 3000;
@@ -455,8 +455,10 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    // round 5: no continuer on D5 until its gate covers it (Voice Live's own turn detection has not been measured with one)
-    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => this.laneUsed !== "d5" }) : null;
+    // round 7 (B5): the continuer on every lane, D5 included: it plays through her output (the D5 stereo reference, so Voice
+    // Live's echo canceller removes it) and counts as her sounding for the engine (herSounding: ackNow). Round 5 had it off
+    // on D5 until measured; needs-live-check: Voice Live's turn detection with a continuer playing
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => true }) : null;
     this.prefetcher = opts.prefetch ?? prefetchEnabled()
       ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
     this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
@@ -778,8 +780,9 @@ export class CascadeLink implements TeacherLink {
   }
 
   /**
-   * Round 7 (B2 ↔ App): the child's mute. Muted: push-to-talk underneath (the engine stands aside and never reads the
-   * quiet as silence), the mic tracks off, no tap opens it. A setPushToTalk while muted is remembered for the unmute.
+   * Round 7 (B2 ↔ App): the child's mute = push-to-talk FORCED (the engine stands aside and never reads the quiet as
+   * silence; the mic sends nothing between taps). A tap still opens the mic for that one turn (App: "Unmute plus the tap
+   * button"). A setPushToTalk while muted is remembered for the unmute, so a Desk re-assert never unmutes.
    */
   setMuted(on: boolean): void {
     if (on === this.muted) return;
@@ -819,7 +822,7 @@ export class CascadeLink implements TeacherLink {
   }
 
   talkStart(): void {
-    if (this.muted || !this.pushToTalk || this.talking || this.transportKind === "typed") return;
+    if (!this.pushToTalk || this.talking || this.transportKind === "typed") return;
     this.clearPttTail();
     this.talking = true;
     this.vtrace.tap("start");
@@ -1284,6 +1287,8 @@ export class CascadeLink implements TeacherLink {
     this.abandonOpen = null;
     if (this.pc !== pc) throw new Error("the transcription call was replaced");
     this.callUp = true;
+    // round 7 (Platform cost ledger, option a): the D4 call runs browser ↔ Azure, so its seconds are reported from here
+    this.d4Up = { at: Date.now(), model: String(obj(this.audioInput.transcription).model ?? "") };
     if (this.pushToTalk) this.sendSession(null);
     else if (this.merger) this.sendSession(this.audioInput.turn_detection);
     // ship5 p1-duplex: a reconnect keeps the engine; the first call brings it up (off by default)
@@ -1587,7 +1592,18 @@ export class CascadeLink implements TeacherLink {
     if (this.dc?.readyState === "open") this.dc.send(JSON.stringify(event));
   }
 
+  /** The D4 transcription call that is up now (cost ledger): when it came up and its model. */
+  private d4Up: { at: number; model: string } | null = null;
+  /** One `stt.session` trace event per D4 call ({ model, sec }; never usd: the server prices it, capped). */
+  private reportD4Session(): void {
+    const up = this.d4Up;
+    this.d4Up = null;
+    if (!up) return;
+    vt("stt.session", { model: up.model, sec: Math.max(0, Math.round((Date.now() - up.at) / 100) / 10) });
+  }
+
   private teardownPeer(): void {
+    this.reportD4Session();
     const d5 = this.d5;
     this.d5 = null;
     d5?.close();
@@ -1672,7 +1688,7 @@ export class CascadeLink implements TeacherLink {
   private micWanted = true;
   private micGated = false;
   private applyMic(): void {
-    const on = this.micWanted && !this.micGated && !this.muted;
+    const on = this.micWanted && !this.micGated;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
 }

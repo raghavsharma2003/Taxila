@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe } from "../server/compiler/compile.js";
+import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe, SPOKEN_NOTE } from "../server/compiler/compile.js";
 import { FLOOR_HEADING } from "../server/compiler/floor.js";
 import { CHARACTERS } from "../server/compiler/characters/index.js";
 import * as SH from "../server/director/shapes.js";
@@ -85,7 +85,9 @@ test("lanes share every byte except the voice-only branch lines", () => {
   const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
   const written = promptFor(input.item, input.language);
   const spoken = toSpoken(written, { mode: input.language, ageBand: input.brief.ageBand });
-  assert.equal(strip(voice), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
+  // ... and its language line carries the spoken-register note (TALKING-RULES §1), the text lane's never does.
+  assert.ok(voice.includes(SPOKEN_NOTE.trim()) && !text.includes(SPOKEN_NOTE.trim()));
+  assert.equal(strip(voice).replace(SPOKEN_NOTE, ""), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
 });
 
 test("voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form", () => {

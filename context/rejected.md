@@ -2769,3 +2769,9 @@ The A/B run reverted only some of a patch's paths, so re-applying the whole patc
 
 ## rj-r4-image-model-turn-keys
 **Tried (2026-10-10, lamp2 v3):** two head-turn keys (prompted 'about 3 degrees') as gpt-image-2 edits of the approved front, to give the head motion without bending the painting. **Broke:** registered on the shoulders, the head moved and rescaled ~40 px and its features were redrawn (a 50% mix shows two bindis and doubled brows), so neither a cut nor a dissolve can hide the change (docs/design/round4/asha/rig2/evidence/v3-turnkeys-dissolve.webp). Also tried: the option-4 front flattened automatically into a 'flat vector' base (mean-shift + Lab k-means, 16 / 28 colours): blotchy posterised planes, cheaper than the painting (evidence/armD-flat-probe.webp); not built. **Reverse if:** an image model holds identity and framing to < 3 px on a 3-degree turn edit, or the turn keys are artist-drawn on one model sheet.
+
+
+<!-- merged from inbox/r7-main-2.json -->
+## rj-r7-inbox-file-reedited-after-merge (2026-11-04, main loop, round 7 integration 2)
+
+What was tried: streams kept appending to their one inbox file (context/inbox/r7-<stream>.json) across batches. What broke: the main loop's merge moves each merged file to context/inbox/merged/, which git records as a rename. A later edit to the old path follows the rename on merge, so the new entries landed in merged/ and were never read into the graph. Integration 2 found 28 such nodes (Brain 3, Face 15, Platform 6, Studio 2, Voice 2), moved them back as *-remerge.json and merged them. Rule since: a new file per batch, never re-edit a pushed inbox file (docs/design/round7/PIPELINE.md §O). A check that would catch it: after each integration, every node id in context/inbox/merged/*.json must exist in graph.json.

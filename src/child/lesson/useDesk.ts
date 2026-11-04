@@ -102,9 +102,9 @@ const REQUESTS: Record<string, [string, string, string]> = {
 /** r7 app-lesson-steer-chips: the DEFAULT steer row, used while the server sends no ui.steer (absent; [] = no row). Brain's
  *  contract (shared/contracts.ts SteerId): a tap sends chipId = the steer id, and server/director/steer.js reads it as
  *  the request the words would make. STEER_CHIP: the short label, STEER_SAID: the words shown as what the child said,
- *  one per lesson language (hinglish, hindi, english; DESIGN-V3 §5). "Something else" has no steer id (asked of Brain),
- *  so it goes as words the lexicon's change_topic reads ("kuch aur baat karte hain"). */
-export const STEER_ID: Record<SteerKey, SteerId | null> = { diagram: "steer:picture", game: "steer:game", another: "steer:another", else: null };
+ *  one per lesson language (hinglish, hindi, english; DESIGN-V3 §5). "Something else" (Kuch aur) sends
+ *  (Brain 178c73a8): steer:else, the change_topic request, never a stop. */
+export const STEER_ID: Record<SteerKey, SteerId | null> = { diagram: "steer:picture", game: "steer:game", another: "steer:another", else: "steer:else" };
 export const STEER_CHIP: Record<SteerKey, [string, string, string]> = {
   diagram: ["Diagram", "चित्र", "Diagram"],
   game: ["Game", "खेल", "A game"],
@@ -387,12 +387,16 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // list (absent = unchanged since the last turn, [] = empty), ui.moment this turn's moment card. Kept as last sent, so
   // the Debrief still has the list after the wrap.
   const uiLater = ui.later;
-  const laterSeen = useRef<NonNullable<DeskModel["later"]>>([]);
+  // Brain (39a1fa87): the server sends the whole list every turn it has one; absent = empty. The Debrief's own record keeps
+  // every entry parked in this lesson that never came back (open/due when last seen), so the wrap never loses one.
+  const unserved = useRef(new Map<string, NonNullable<DeskModel["later"]>[number]>());
   const later = useMemo(() => {
-    if (!Array.isArray(uiLater)) return laterSeen.current;
-    const list = uiLater.filter((x) => x && typeof x.text === "string" && x.text.trim())
+    const list = (Array.isArray(uiLater) ? uiLater : []).filter((x) => x && typeof x.text === "string" && x.text.trim())
       .map((x) => ({ id: String(x.id), text: String(x.text).slice(0, 60), status: x.status, when: x.when, learning: !!x.learning }));
-    laterSeen.current = list;
+    for (const l of list) {
+      if (l.status === "returned") unserved.current.delete(l.id);
+      else unserved.current.set(l.id, l);
+    }
     return list;
   }, [uiLater]);
   const uiMoment = ui.moment;
@@ -458,8 +462,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const engineOpen = ctx.openMic || !!bs?.duplexLive;
   const openMic = engineOpen || (handsFree !== null && handsFree !== "fallback");
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
-  // the hands-free dock (starting / listening / … / muted) never shows the talk button; the fallback dock is today's
-  const tapToTalk = spoken && (handsFree !== null && handsFree !== "fallback" ? false : state.phase === "live" ? pttOn || !openMic : !openMic);
+  // the hands-free dock (starting / listening / … / waiting) never shows the talk button; the fallback dock is today's. Muted
+  // (Voice 446ca383): push-to-talk is forced, and a tap opens the mic for that one turn, so the Talk button is back.
+  const tapToTalk = spoken && (handsFree !== null && handsFree !== "fallback" && handsFree !== "muted" ? false : state.phase === "live" ? pttOn || !openMic : !openMic);
   tapToTalkNow.current = tapToTalk;
   const paused = sheet !== null;
   const ptt = useTapToTalk({
@@ -831,6 +836,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     padSlash: !young && fractionQuestion(askText, state.topic?.title ?? ""),
     padComma: !!(ui as { padComma?: boolean }).padComma,
     later,
+    laterUnserved: [...unserved.current.values()],
     moment,
     breakSince: sheet === "break" ? breakSince : null,
     // the server's row when it sends one (ui.steer; [] = none this turn), else the default row; only when steering is offered
@@ -957,7 +963,14 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     askEnd: () => setSheet("end"),
     // r7 (D5): a real break from Pause → End: speech stays held (pause held it), the mic is off, Back resumes here
-    takeBreak: () => { ptt.stop(); setBreakSince(Date.now()); setSheet("break"); },
+    // Brain (A, 2026-11-04): the client's break is told to the Director with the check-in's own chip id, no words, so she
+    // resumes "where we were" when the child is back
+    takeBreak: () => {
+      ptt.stop();
+      setBreakSince(Date.now());
+      setSheet("break");
+      if (state.phase === "live") runtime.tapChip({ id: "break:rest", label: "" });
+    },
     pickStop: (c) => { bridge?.stopReplay(); runtime.tapChip(c); },
     cancelEnd: () => setSheet(null),
     endLesson: () => {

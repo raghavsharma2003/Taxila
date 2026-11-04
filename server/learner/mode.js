@@ -60,6 +60,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "play_build",
   // 036_placement.sql (round 7 F item 6): placement rounds (items asked, graded answers, the result) — academic record, deleted on M0
   "placement",
+  // 037_question_jar.sql (round 7 F item 8): the questions she parked and promised to come back to — history, deleted on M0
+  "question_jar",
 ]);
 
 /**

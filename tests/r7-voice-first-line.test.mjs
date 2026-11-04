@@ -147,7 +147,7 @@ test("B2 runtime.setMuted: uses the link's mute, else push-to-talk; state.muted 
   assert.deepEqual(plain.l.ptt, [true], "no link mute: push-to-talk");
 });
 
-test("B2 CascadeLink.setMuted: push-to-talk underneath, no tap opens the mic, a setPushToTalk meanwhile lands on unmute", () => {
+test("B2 CascadeLink.setMuted: push-to-talk forced, a tap opens the mic for one turn, a setPushToTalk meanwhile lands on unmute", () => {
   const link = new CascadeLink({ lessonId: "L1", levels: { mic: new LevelMeter(), teacher: new LevelMeter() } });
   const tracks = [{ enabled: true, stop() {} }];
   link.mic = { getAudioTracks: () => tracks, getTracks: () => tracks };
@@ -157,10 +157,14 @@ test("B2 CascadeLink.setMuted: push-to-talk underneath, no tap opens the mic, a 
   assert.equal(link.pushToTalk, true, "muted: push-to-talk underneath (the engine stands aside)");
   assert.equal(tracks[0].enabled, false, "no audio leaves the device");
   link.talkStart();
-  assert.equal(link.talking, false, "a tap does not open a muted mic");
+  assert.equal(link.talking, true, "a tap opens the mic for that one turn (App: Unmute plus the tap button)");
+  assert.equal(tracks[0].enabled, true);
+  link.talkEnd();
+  assert.equal(link.pushToTalk, true, "still muted after the tap");
+  assert.equal(link.talking, false);
   link.setPushToTalk(false); // the Desk re-asserts hands-free while muted (useDesk effect): remembered, not applied
   assert.equal(link.pushToTalk, true);
-  assert.equal(tracks[0].enabled, false);
+  // (the tap's own push-to-talk tail closes the mic a moment after release: today's tap behaviour, unchanged)
   link.setMuted(false);
   assert.equal(link.pushToTalk, false, "unmute: hands-free again");
   assert.equal(tracks[0].enabled, true);

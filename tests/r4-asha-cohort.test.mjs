@@ -114,7 +114,8 @@ test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, t
 
 test("lamp2: the key rig runs on the stage (no WebGL needed), calm in a safety turn, and never falls back to the vector", () => {
   const stage = readFileSync(new URL("../src/face-puppet/stage.ts", import.meta.url), "utf8");
-  assert.match(stage, /if \(rig instanceof KeyRig\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
+  // round 7: the calm face reaches the key rig on the main thread AND in its worker (RemoteRig kind "keys")
+  assert.match(stage, /if \(rig instanceof KeyRig \|\| \(rig instanceof RemoteRig && rig\.kind === "keys"\)\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
   assert.match(stage, /if \(pack\.rig !== "keys" && typeof WebGL2RenderingContext === "undefined"\) throw/);
   assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) \{ this\.driver\.visemes\.lead \+= KEY_LEAD_MS; this\.driver\.visemes\.extendedBilabials = true; \}/);
   const face = readFileSync(new URL("../src/face-puppet/PuppetFace.tsx", import.meta.url), "utf8");

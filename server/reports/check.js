@@ -4,6 +4,7 @@
 // the outcome names it needs are written out here from LEARNER-MODEL §6.1, so a generator bug cannot be "confirmed"
 // by the same bug. It also checks COMPLETENESS (a count claim must cite every row that counts, not a convenient
 // subset) and that every rendered line maps to an admitted claim or registered fixed copy.
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 const ITEM = { "item.open": ["C0", "C1", "C2", "C3", "C4", "IDK", "NA"], "item.mcq2": ["first_correct", "wrong"], "item.mcq3": ["first_correct", "wrong"],
   "item.mcq4": ["first_correct", "wrong"], solo: ["C0", "C1", "fail"] };
@@ -58,7 +59,7 @@ export async function checkReport(db, report, lookup) {
     const onSkill = (r) => (r.skill_ids || []).includes(c.skillId);
     if (ev.some((r) => c.skillId && !onSkill(r) && !c.shapeId.startsWith("header"))) why.push("a cited row is on another skill");
     // completeness reads: every row in the window on this skill
-    const all0 = c.skillId ? await db.q("select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 order by seq", [report.child_id, c.skillId, report.window_to]) : [];
+    const all0 = c.skillId ? await db.q(`select * from kt_evidence where child_id = $1 and $2 = any(skill_ids) and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, c.skillId, report.window_to]) : [];
     // a row with a late correction (`<id>:late`) is replaced by it: the correction is the row that counts
     const corrected = new Set(all0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
     const all = all0.filter((r) => !corrected.has(String(r.id)));
@@ -105,13 +106,13 @@ export async function checkReport(db, report, lookup) {
         if (c.shapeId === "header.zero") { if (win.length) why.push("zero header but lessons exist"); break; }
         if (c.shapeId === "header.nolesson") {
           if (win.length) why.push("no-lesson header but lessons exist");
-          const inside = await db.q("select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3", [report.child_id, report.window_from, report.window_to]);
+          const inside = await db.q(`select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT}`, [report.child_id, report.window_from, report.window_to]);
           if (!inside.length || inside.map((r) => r.id).sort().join(",") !== ev.map((r) => r.id).sort().join(",")) why.push("no-lesson header does not cite exactly the window's evidence");
           break;
         }
         if (s.lessons !== win.length) why.push("lessons slot ≠ lesson rows");
         // an open lesson (ended_at null) runs to its last evidence row in the window (session_id = lesson id), else 0 min
-        const winEv = await db.q("select id, session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq", [report.child_id, report.window_from, report.window_to]);
+        const winEv = await db.q(`select id, session_id, occurred_at from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_from, report.window_to]);
         const endOf = (l) => { if (l.ended_at) return ms(l.ended_at); const es = winEv.filter((r) => r.session_id === String(l.id)); return es.length ? Math.max(...es.map((r) => ms(r.occurred_at))) : ms(l.started_at); };
         const min = Math.round(win.reduce((a, l) => a + endOf(l) - ms(l.started_at), 0) / 60_000);
         if (s.min !== min) why.push(`min slot ${s.min} ≠ ${min}`);

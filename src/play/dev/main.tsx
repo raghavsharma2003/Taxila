@@ -15,6 +15,7 @@ import bankJson from "../../../data/play/reactions.json";
 import antJson from "../../../data/play/reactions/antariksh.json";
 import { dressFor, validateDelta } from "../engines/core3d/api.ts";
 import { baseDress } from "../engines/core3d/dress.ts";
+import { engineFor } from "../engines/registry.ts";
 import nazariyaBank from "../../../data/play/reactions/nazariya.json";
 
 const q = new URLSearchParams(location.search);
@@ -38,7 +39,9 @@ const harder = q.get("harder") === "1";
 const engine = (q.get("engine") ?? "auto") as "auto" | "2d" | "3d";
 const verb = (q.get("verb") === "scan" ? "scan" : "fire") as "fire" | "scan";
 // a dress from the query (validated field by field exactly as the server validates a model's delta)
-const devDelta = validateDelta("antariksh", Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
+// the dress is the engine that renders this law (Antariksh when none does, as before)
+const devEngine = engineFor(family, mode, goal)?.id ?? "antariksh";
+const devDelta = validateDelta(devEngine, Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
 const devSecure = q.get("secure") === "1";
 const devSound = q.get("sound") === "1";   // harness: the music duck check needs an unmuted bus
 
@@ -71,7 +74,7 @@ function App() {
   const engineOnScreen = useRef<string | null>(null);
   const art = useMemo(() => artParam ?? pickArt({ family, subject: family === "kyun-lab" ? "science" : "maths", topicId, classLevel }).art, []);
   useEffect(() => { setSolved(false); }, [levels]);
-  const dress = useMemo(() => dressFor({ engine: "antariksh", base: baseDress({ engine: "antariksh", key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
+  const dress = useMemo(() => dressFor({ engine: devEngine, base: baseDress({ engine: devEngine, key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
   if (!levels) return <p style={{ color: "#fff" }}>no level</p>;
   const level = levels.garam;
   const next = makeLevel(seed + 101);

@@ -10,6 +10,7 @@ import { acceptWebSocket, refuseUpgrade, upgradeProblem } from "../ws.js";
 import { modeFor } from "./config.js";
 import { VoiceLiveRelay, voiceLiveConfig, d5AsrModel } from "./voicelive.js";
 import { lessonPhrases } from "./phrases.js";
+import { d5Session } from "../cost/meter.js";
 
 /** How long the phrase list may wait on the kit before the stream opens without its answers (names + core only). */
 export const D5_PHRASES_MS = 300;
@@ -98,6 +99,8 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
         live.set(who.guardian.id, Math.max(0, (live.get(who.guardian.id) ?? 1) - 1));
         // numbers only: never words, never audio, never the key
         console.log(`[d5] stream ended ${s.reason} ms=${s.ms} frames=${s.framesIn} appends=${s.appends} events=${s.eventsOut} dropped=${s.dropped}`);
+        // round 7 (Platform cost ledger): the Voice Live session's seconds, at the relay's close (never throws)
+        d5Session({ sec: (Number(s.ms) || 0) / 1000, reason: s.reason });
       },
     });
   } catch {

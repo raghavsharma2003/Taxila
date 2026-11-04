@@ -1,7 +1,7 @@
 // OWNER TEST 2026-10-04 items 3-5 (evals/owner-truth/ROOT-CAUSES.md F6, F8, F9, F11-F16): the child's requests in their
 // own words (server/director/requests.js) and what the Director does with them (state.js decide → requestMove). Pure:
 // no network, no model. The phrases are the owner's verbatim and the ones tests/prod/owner-3/4/5-*.mjs send.
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { requestOf } from "../server/director/requests.js";
 import { wantsToStop } from "../server/director/safety.js";
@@ -14,6 +14,16 @@ import { compile } from "../server/compiler/compile.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { whiteboardAskOf } from "../server/brain/propose.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_BYE_CHECKIN: "off", TAXILA_R7_PARK_TOPIC: "off" };
+const R7_SAVED = {};
+describe("owner-requests.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
 
 const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });
@@ -283,4 +293,5 @@ test("an answer in request words is graded: good night, stop, kahani, Hindi", ()
   assert.equal(s.result?.request?.type, "example");
   const g = classifyFast({ target: item("47"), childText: "bye, mujhe jaana hai", typed: true, heard: "" });
   assert.equal(g.request?.type, "goodbye");
+});
 });

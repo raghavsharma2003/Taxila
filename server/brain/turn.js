@@ -73,7 +73,7 @@ import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
-import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, drawAsked, pictureNote } from "../director/shapes.js";
+import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, DRAW_NO_POINT, DRAW_POINT_ONCE, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
 /** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
 const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
@@ -85,6 +85,8 @@ async function askedBoard(ack, asked) {
 }
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
+import { keepPromise, laterUi } from "../director/later.js";
+import { agentBreach, noteAgentTurn, resetAgentRuns } from "../agent/invariants.js";
 import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts, trackedForUndo, editUndoOn } from "./supersede.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
@@ -509,6 +511,10 @@ export async function lessonTurn(req, body, hooks = {}) {
   }
   // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
   if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
+  // r7 Games (studio-game-utterance-double-turn): the play piece on screen took this utterance as a game command
+  // (TurnRequest.gameAct, acked by the client's closed grammar). Rewritten HERE, before both lanes read cls: the agent lane's
+  // verdict is computed from this cls, and planTurn's own guard (asPlayAct below) only ever saw its local copy.
+  if (cls) cls = asPlayAct(cls, { state, childText, chipId: body.chipId, moduleOnly, gameAct: gameActOf(body) });
   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
   // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
   // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
@@ -558,8 +564,10 @@ export async function lessonTurn(req, body, hooks = {}) {
   // a speculated call (stream 3, hooks.agentSpec: her call started on the prefetched turn) the agent lane does not take this
   // turn (a safeguard, a distress read, an incident, a wrap, the Director lane) is aborted unspoken
   const dropSpec = (why) => { try { if (hooks?.agentSpec && !hooks.agentSpec.aborted) hooks.agentSpec.abort?.(why); } catch { /* never fails a turn */ } };
+  // round 7 (main's hybrid-pilot judgement #3): the stop check-in is the Director's on both lanes (the agent wrapped on "bas ho
+  // gaya" with no check-in), so the agent never takes a check-in turn
   if (state.ctx?.teacher === "agent" && textLane && !late && !moduleOnly && !laneResume && !help && !incident && !cls?.flags?.distress
-    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end) {
+    && !["safeguard", "wrap"].includes(r.move.kind) && !r.end && !r.move.checkin) {
     const card = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
     const silentNow = !String(childText ?? "").trim() && !body.chipId && body.duplex?.unheard !== true && (cls?.source === "empty" || body.asrConfidence === 0);
     const chipLabel = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? null : null;
@@ -574,9 +582,23 @@ export async function lessonTurn(req, body, hooks = {}) {
       const agentNext = structuredClone(next);
       agentNext.activeItemId = state.activeItemId; agentNext.hintLevel = state.hintLevel; agentNext.phase = state.phase; agentNext.itemsDone = state.itemsDone;
       agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
-      next = agentNext;
-      r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
-      mark("agent");
+      // round 7 (judgement #3): the agent never ends a lesson the Director did not end: the end goes through the stop check-in,
+      // so the Director's move and line take this turn
+      // round 7 (judgement #8, #9): the agent's line keeps the class level and comes back from a diversion (agent/invariants.js);
+      // a line that breaks one is not sent, the Director takes this turn and the runs restart
+      const invCtx = { classLevel: child.class_level ?? state.ctx?.classLevel, kitText: (kit.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " "), phase: state.phase, cardOnTable: !!card,
+        agent: state.agent ?? {}, cls };
+      const breach = agentApplied.end && !dirR.end ? "agent_end_without_checkin" : agentBreach(agentOut, invCtx);
+      if (breach) {
+        agentFallback = breach;
+        agentOut = null; agentApplied = null;
+        next.agent = resetAgentRuns({ ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 });
+      } else {
+        agentNext.agent = noteAgentTurn(agentNext.agent, agentOut, invCtx);
+        next = agentNext;
+        r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
+        mark("agent");
+      }
     } catch (e) {
       agentFallback = String(e?.code ?? e?.message ?? e).slice(0, 80);
       console.warn(`[agent] turn fell back to the Director: ${String(e?.message ?? e).slice(0, 160)}`);
@@ -691,6 +713,12 @@ export async function lessonTurn(req, body, hooks = {}) {
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
       item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
+  // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
+  // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
+  if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
+    next.lastMove = { ...next.lastMove, shape: pointShapeFor(next.lastMove.shape, { boardFirst: true }) };
+    try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] pointing truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+  }
   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
   // ids (later.js gradeLater is idempotent per event id).
@@ -859,6 +887,21 @@ export async function lessonTurn(req, body, hooks = {}) {
   };
   // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
   const verdict = next.lastVerdict ?? "ungraded";
+  // round 7 A5: a client that asked for the streamed reply (routes/lesson.js, Accept: text/event-stream) gets her first guarded
+  // clause while the rest is written (say.js streamAsk). The clause carries the seq her turn is about to be stored under, and
+  // s1 is sent only when the post-fixes below (self-gender, the affirmation opener) would leave it unchanged.
+  const clauseHook = typeof hooks?.onClause === "function" ? (st) => ({
+    onClause: ({ i, text }) => hooks.onClause({ lessonId: lesson.id, seq: st.seq + 1, i, text, final: false }),
+    clauseFix: (s1) => {
+      const g = characterForState(st)?.pronouns?.subject === "he" ? "m" : "f";
+      if (repairSelfGender(s1, g) !== s1) return null;
+      const tapped = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? "" : "";
+      const af = affirmOpenerFix(`${s1} Aage.`, { verdict: cls ? uiVerdictOf(cls, target, state).verdict ?? null : null,
+        empty: !String(childText ?? "").trim() && !body.chipId && !moduleOnly, answer: String(childText ?? "").trim() || tapped,
+        name: st.ctx?.firstName ?? null, lang: st.ctx?.lang ?? "hinglish" });
+      return af.fix ? null : s1;
+    },
+  }) : null;
   if (textLane && (!r.hold || revoice) && !late) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
@@ -879,7 +922,8 @@ export async function lessonTurn(req, body, hooks = {}) {
       ? { reply: agentOut.say, guard: { caught: [], rewritten: false, replaced: false, agent: agentOut.notes }, filtered: false, floor: [] }
       : hit
       ? hit.result
-      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module }));
+      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module,
+        ...(clauseHook ? clauseHook(next) : {}) }));
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
@@ -958,6 +1002,19 @@ export async function lessonTurn(req, body, hooks = {}) {
     const relFloor = [...new Set([...relHitsNow.filter((h) => h.family !== "memory_claim" || h.rule === "memory_claim.promise" || memUnbacked).map((h) => h.family),
       ...(memUnbacked ? ["memory_claim"] : [])])];
     if (relFloor.length) next.correction = [...new Set([...(next.correction ?? []), ...relFloor])];
+    // round 7 A7 (brain-parked-promise-tracking): a promise in her own final line to come back to something later is kept
+    // (s.later), so it comes back before the wrap; and the Later list on the screen follows s.later on both lanes (the
+    // agent lane builds its own ui). Never on a safeguard turn.
+    if (r.move.kind !== "safeguard" && !filteredSafeguard && teacherReply) {
+      const before = next.later ?? [];
+      next.later = keepPromise(before, { reply: teacherReply, turn: next.turn, topic: cls?.request?.topic ?? null, childText: moduleOnly ? "" : childText,
+        itemOnTable: !!r.ui?.ask, safeguard: !!next.safeguard });
+      const rows = laterUi(next.later, { turn: next.turn, wrapping: r.move.kind === "wrap", itemOnTable: !!r.ui?.ask });
+      const added = next.later !== before ? next.later.at(-1) : null;
+      const { later: _l, ...rest } = r.ui ?? {};
+      r = { ...r, ui: { ...rest, ...(rows ? { later: rows } : {}), ...(added ? { moment: { kind: "park", laterId: added.id, topic: added.topic } } : {}) } };
+      next.lastUi = r.ui;
+    }
     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];
@@ -1007,7 +1064,7 @@ export async function lessonTurn(req, body, hooks = {}) {
         // with nothing to point at): on a turn answering the CHILD's ask the turn waits a moment for the board being drawn, so
         // it rides THIS response, drawn before her line refers to it (a slow line plan still lands on the stream, as before)
         const ack2 = await askedBoard(ack, !!ask.payload?.requested && r.move?.request === "visual");
-        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) };
+        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
@@ -1236,7 +1293,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
-      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) }; wbAcked = true; moment = null; }
+      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) }; wbAcked = true; moment = null; }
     }
   }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed
@@ -1462,6 +1519,15 @@ export async function lessonTurn(req, body, hooks = {}) {
         ...(vsShadow?.record ? { shadow: { ...vsShadow.record, ms: vsShadow.ms } } : {}) } } : {}),
     };
   }
+  // round 7 (C1 studio-board-timing; Studio's patch to Brain): the beat lookahead prewarms the NEXT turn's board after this
+  // response, off the critical path, so that turn's preselect finds it ready (board-first.js prewarm). Until planBeat's
+  // 1-2 beat lookahead ships, the predicted ask is this beat teaching the item on deck; swap in planBeat's beat and item
+  // when it lands. A wrong guess costs nothing: Studio serves it only to the ask it was picked for, and her line re-gates it.
+  if (!late && !moduleOnly && typeof studioSeam.prewarmWhiteboard === "function" && ["explain", "worked_example", "recap"].includes(next.beat?.type)) {
+    const aheadItem = upcomingItem(next, kit) ?? null;
+    setImmediate(() => seamSafe("studio.prewarmWhiteboard", () => studioSeam.prewarmWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: (next.turn ?? 0) + 1,
+      beat: next.beat, next, kit, item: aheadItem, line: { text: "" } })), false));
+  }
   return out;
 }
 
@@ -1538,10 +1604,7 @@ export async function planTurn(base, cls, c) {
   // card question the Desk folds away in play mode: no grade (an exact "1/3" was credited and the lesson moved on mid-game;
   // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
   // chip or an engine's machine answer are never touched.
-  if (cls && !moduleOnly && !c.chipId && c.childText && playIsUp(state) && !cls.flags?.distress && !cls.request && !cls.help
-    && !["module", "chip", "predicate"].includes(cls.source) && parseVoice(String(c.childText)) !== null) {
-    cls = { ...cls, outcome: "no_evidence", confidence: 1, source: "play_act", request: { type: "play_act", whole: true } };
-  }
+  if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
@@ -1865,6 +1928,12 @@ const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn:
  */
 /** PURE. "nothing is on the screen this turn" made true for the board: the board asked for draws while she speaks; a board
  * already up is on the screen; otherwise unchanged (QA on be9b766a, 13ec94a7). */
+/** PURE. drawAsked's pointing clause made true: point once when a certified board-first page lands before her clause, else
+ *  describe in words (C1 studio-board-pointing-truth). */
+export const pointShapeFor = (shape, { boardFirst = false } = {}) => {
+  const s = String(shape ?? "");
+  return boardFirst && s.includes(DRAW_NO_POINT) ? s.replace(DRAW_NO_POINT, DRAW_POINT_ONCE) : shape;
+};
 export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } = {}) => {
   const s = String(shape ?? "");
   const truth = askedBoard ? VISUAL_DRAWING : boardUp ? VISUAL_ON_STAGE : null;
@@ -1872,6 +1941,26 @@ export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } =
 };
 export const boardAnswersAsk = (move) => !!(move?.request === "visual" && move.see && (move.see.subject || move.see.show === "number_line" || move.see.show === "picture"));
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
+
+/** TurnRequest.gameAct, validated: the play piece's grammar consumed these words (consumed: true), or null. */
+export function gameActOf(body) {
+  const g = body?.gameAct;
+  if (!g || typeof g !== "object" || g.consumed !== true) return null;
+  return { consumed: true, ...(typeof g.game === "string" ? { game: g.game.slice(0, 40) } : {}), ...(typeof g.act === "string" ? { act: g.act.slice(0, 24) } : {}) };
+}
+
+/**
+ * PURE. A game command is the GAME's act, never an answer to the card the Desk folds away in play mode. True when the
+ * client acked it (gameAct), or, for clients without the ack, when a piece is up and the server's copy of the closed
+ * grammar parses it. Distress, a request the bytes read, a help ask, a chip, a module or predicate verdict are never touched.
+ */
+export function asPlayAct(cls, { state, childText, chipId, moduleOnly, gameAct }) {
+  if (!cls || moduleOnly || chipId || !childText || cls.flags?.distress || cls.request || cls.help) return cls;
+  if (["module", "chip", "predicate"].includes(cls.source)) return cls;
+  if (cls.source === "play_act") return cls;
+  const isAct = !!gameAct || (playIsUp(state) && parseVoice(String(childText)) !== null);
+  return isAct ? { ...cls, outcome: "no_evidence", confidence: 1, source: "play_act", request: { type: "play_act", whole: true } } : cls;
+}
 
 /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
 export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);

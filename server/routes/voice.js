@@ -382,7 +382,9 @@ async function turnAudio(req, res, body) {
   // on identical inputs, aborted when the turn is done either way (a no-op once adopted and finished)
   // the take may wait for the same classify the turn adopts: the turn never waits on it (the spec lands on `hooks` when it is
   // handed over; turn.js reads hooks.agentSpec only after its own classify, so a late hand-over is simply unused and aborted)
-  const hooks = { onAgentSay: early.onAgentSay };
+  // round 7 (B5 ↔ Brain A5): the Director's locked first clause (brain/say.js streamAsk) is spoken HERE the moment it is
+  // guarded, while the rest of the reply is written: the fold opens at that clause, exactly as for the agent lane
+  const hooks = { onAgentSay: early.onAgentSay, onClause: (ev) => early.onDirectorClause(ev) };
   const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
   const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
@@ -456,18 +458,39 @@ function streamingSay(req, res, body, t0) {
     get w() { return w; },
     onAgentSay(deltas, gate) {
       if (spoke || ctl.signal.aborted) return;
+      self.directorSaid = null;
       open();
       // the agent lane is reached only when the predicate, the classifier and the distress read were clean (4A)
       spoke = speakStreamed({ deltas, gate, before: Promise.resolve({ ok: true }), synth, signal: ctl.signal,
         emit: (e) => (e.type === "clause" ? w.json(FRAME.event, { t: "say", i: e.i, text: e.text }) : (w.pcm(e.chunk) ? undefined : writable(res))) });
       spoke.catch((err) => console.warn("[voice] streamed say failed:", String(err?.message ?? err).slice(0, 120)));
     },
+    /** Round 7 (B5): a guarded Director clause, before the turn has committed: spoken now, in order. */
+    onDirectorClause(ev) {
+      const text = String(ev?.text ?? "").trim();
+      if (!text || ctl.signal.aborted || self.directorSaid === null) return;
+      open();
+      self.directorSaid = [...self.directorSaid, text];
+      const prev = spoke ?? Promise.resolve(null);
+      spoke = prev.catch(() => null).then(() => say([text], ctl.signal));
+      spoke.catch((err) => console.warn("[voice] early clause failed:", String(err?.message ?? err).slice(0, 120)));
+    },
+    /** The Director clauses already spoken this turn (null once the agent lane spoke instead). */
+    directorSaid: [],
     done: () => spoke ?? Promise.resolve(null),
     async finish(out) {
       const r = await self.done().catch(() => null);
       w.json(FRAME.turn, out);
       try {
-        if (out?.agentStream) {
+        const said = (self.directorSaid ?? []).join(" ").replace(/\s+/g, " ").trim();
+        const reply = String(out?.teacherReply ?? "").replace(/\s+/g, " ").trim();
+        if (said && !out?.agentStream) {
+          // the rest of the Director's reply after what was already said; a reply that no longer starts with it (a turn that
+          // failed closed to safeguarding after the first clause went out) is said in full: a sent clause is never withdrawn,
+          // and the safeguarding words are never skipped
+          const rest = reply === said ? "" : reply.startsWith(`${said} `) ? reply.slice(said.length).trim() : reply;
+          if (rest && !ctl.signal.aborted) await say([rest], ctl.signal);
+        } else if (out?.agentStream) {
           const tail = String(out.agentStream.tail ?? "").trim();
           if (tail && !ctl.signal.aborted) await say([tail], ctl.signal);
         } else if (out?.teacherReply && !ctl.signal.aborted) {

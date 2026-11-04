@@ -19,6 +19,7 @@ import { kidLook, StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
 import { ChapterPicker } from "../parent/SchoolPlan.tsx";
+import { NamePreview } from "./NamePreview.tsx";
 import { parentApi, type ChapterRef } from "../parent/api.ts";
 import { teacherBandFor } from "./teacherBand.ts";
 
@@ -84,7 +85,8 @@ export function ChildStep() {
     let pinSaved = !!hasPin;
     let stage: "child" | "pin" | "controls" = "child";
     try {
-      const body = { firstName: first, classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? def.schoolMedium, languagePref, interests: c.interests ?? [] };
+      const body = { firstName: first, classLevel: cl, board: c.board ?? "cbse", schoolMedium: c.schoolMedium ?? def.schoolMedium, languagePref, interests: c.interests ?? [],
+        nameSpoken: c.nameSpoken?.trim() || null };
       // Coming back to this step edits the profile made a moment ago instead of creating a second one.
       // Only a "not your child" refusal (deleted since) falls back to creating; a gate refusal must not make a twin.
       let child: { id: string } | null = null;
@@ -138,6 +140,7 @@ export function ChildStep() {
           <p className="onb-kid-tag" aria-hidden="true">{`What ${rec.name} calls them`}</p>
           <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
             value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
+          <NamePreview name={first} classLevel={cl} teacherName={rec.name} spoken={c.nameSpoken ?? null} onSpoken={(v) => setC({ nameSpoken: v })} />
         </section>
         {mathsChapters && mathsChapters.length > 0 && (
           <section className="card card-flat stack-sm" aria-labelledby="onb-school-h">

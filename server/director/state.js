@@ -38,6 +38,8 @@ import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
+import { laterUi, momentOf, tappedEntry } from "./later.js";
+import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js";
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
@@ -137,7 +139,7 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null }) {
   const ctx = protegeNotChild(ctx0);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
@@ -172,7 +174,11 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     purpose: practiceSet ? "practice" : asking ? "doubt" : "lesson",
     practiceSet: practiceSet ? { ids: practiceSet, of: Math.min(practiceSet.length, ctx.practice?.count ?? practiceSet.length), posed: [], firstTry: 0 } : undefined,
     talk: newTalk(),
-    queue: practiceSet ?? buildPracticeQueue(kit, { activeMisconceptionIds }),
+    // round 7 (F Learning's learner view, patch to-brain/001; PIPELINE §A Brain item 4): items at this child's level, θ on the
+    // GE scale (null until 2 scored answers → the class default) and the weak flag; absent → today's on-track default
+    queue: practiceSet ?? buildPracticeQueue(kit, { activeMisconceptionIds, ...(level ? { classLevel: ctx.classLevel, theta: level.theta ?? undefined, weak: !!level.weak } : {}) }),
+    // the family's minutes left at the start (D5 mid-lesson limit: the wrap after deadlineAt), or null when limits are off
+    ...(level?.minutesLeft?.today != null ? { minutesLeft: level.minutesLeft } : {}),
     // Experienced learners attempt before any explanation, so their skills count as introduced.
     // Attempt-first learners have the skills they have met introduced; a skill they have never met still gets one short
     // explain turn before its first item (poseNext). A practice set is retrieval: every skill counts as introduced.
@@ -226,11 +232,12 @@ export function protegeNotChild(ctx) {
  * top cause of J.confused (12 of 30 judged turns) is a teaching question answered only with "haan" / "ok" / "hmm", after which
  * the next teach step opens a NEW example as if nothing had been asked. A must-note asking the reply to close the question
  * moved nothing (J 40 -> 40 of 270; rejected, context inbox), because the step itself is the new example. With
- * TAXILA_ACK_CLOSE=on (default off) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
+ * TAXILA_ACK_CLOSE (default on since round 7; "off" restores the old flow) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
  * line linking it to the idea), and the next turn advances. Once per teach step: a second bare okay on the same step moves on,
  * so the lesson never stalls on acknowledgements.
  */
-export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "off").trim().toLowerCase() === "on";
+// round 7 A6 (PIPELINE §A Brain item 3): on by default; TAXILA_ACK_CLOSE=off restores the old flow
+export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "on").trim().toLowerCase() !== "off";
 function ackHold(s, input) {
   if (!ackCloseOn() || input.event !== "turn" || input.cls?.outcome !== "no_evidence" || input.cls?.request || input.cls?.help) return null;
   if (!bareAck(input.text ?? "") || !TEACH_KINDS.has(s.lastMove?.kind) || s.lastMove?.itemId || s.ackHeldAt === s.teachIdx) return null;
@@ -446,6 +453,33 @@ export function skillWorkedExample(s, kit, skillId, exceptId) {
   const c = cands[0];
   return c ? { itemId: c.i.id, problem: c.i.prompt_en || c.i.prompt_hi, steps: c.steps, answer: String(c.i.answer) } : null;
 }
+// ───────────── round 7 A6: teaching-question evidence (PIPELINE §A Brain item 3; kill switch TAXILA_R7_STEP_CHECK=off) ─────────────
+export const stepCheckOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_STEP_CHECK ?? ""));
+// the LAST "= N" with a known unit (or none), then punctuation, a clause break or the end ("= 13, so…", "= ₹300", "= 120°");
+// never algebra ("= 50C"), a power ("= 3⁶") or a Roman numeral
+const STEP_KEY = /=\s*₹?\s*([-−]?\d[\d,]*(?:\.\d+)?)\s*(?:°|%|₹|rs\.?|rupees?|paise|mm|cm|km|m|kg|g|mg|ml|l|litres?|liters?|minutes?|mins?|hours?|hrs?|seconds?|secs?|days?|weeks?|months?|years?|cm²|m²|km²|units?|degrees?|metres?|meters?)?(?=\s*(?:[,;:.!।)]|$|\s(?:so|and|which|the|is|hai|toh)\b))/giu;
+/**
+ * The question that ends a worked part, as a code-chosen keyed micro-item: the NEXT kit step, its result the key (the number
+ * after its last "="). Its prompt is the kit's faded line for that step when there is one, else the step with its result
+ * blanked. null when the step has no result in code (then she asks in her own words, unkeyed, as before).
+ */
+/** round 7 A8 part 2: frustration on a card changes the approach (TAXILA_R7_FRUSTRATION=off: a hint on the same question). */
+export const frustrationNewWayOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_FRUSTRATION ?? ""));
+/** round 7 (main's hybrid-pilot judgement #3): a goodbye gets the stop check-in first (TAXILA_R7_BYE_CHECKIN=off: ends at once). */
+export const byeCheckInOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_BYE_CHECKIN ?? ""));
+/** round 7 (main's hybrid-pilot judgement #2): change_topic parks and comes back (TAXILA_R7_PARK_TOPIC=off: the ways-in offer). */
+export const parkTopicOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_PARK_TOPIC ?? ""));
+
+export function stepCheckItem(kit, skillId, we, i) {
+  const step = String(we?.steps?.[i] ?? "").trim();
+  const m = [...step.matchAll(STEP_KEY)].at(-1);
+  if (!m) return null;
+  const key = m[1].replace(/,/g, "").replace("−", "-");
+  const faded = we.fadedVersion?.[i];
+  const prompt = faded && /_{2,}/.test(faded) ? faded : `${step.slice(0, m.index)}= ___`.replace(/\s{2,}/g, " ");
+  return { id: `check:${skillId}:${i}`, skillId, kind: "practice", difficulty: 1, prompt_en: prompt, prompt_hi: prompt, answer: key, acceptable: [], hints: [], stepCheck: true };
+}
+
 /** The hook's kind for this lesson: the kit's worked problem as a puzzle (classes 4-9, alternate lessons) or the prediction. */
 export function hookKindFor(s, kit) {
   if (!kit?.workedExample?.problem) return "predict";
@@ -502,10 +536,19 @@ function teach(s, input, prefix) {
     else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
     prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
   }
+  // round 7 A6: the reply to her keyed step question (stepCheckItem) is graded like any card (the classifier, its key); a right
+  // one is confirmed and counted, a wrong or stuck one is shown with its result in the next worked part
+  let stepMissed = false;
+  if (s.stepCheck && input.event === "turn" && s.activeItemId === s.stepCheck.id) {
+    const v = verdict(input.cls), sc = s.stepCheck;
+    s.stepCheck = undefined; s.activeItemId = undefined; s.hintLevel = 0;
+    if (v === "right") { s.itemsDone.push(sc.id); prefix = join(prefix, SH.stepCheckRight()); }
+    else if (v === "wrong" || v === "stuck") { stepMissed = true; if (v === "wrong") prefix = join(prefix, SH.stepCheckMissed()); }
+  }
   // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
   // the worked steps, never asked to compute the next one (SH.worked stuck)
   const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
-  const shown = () => replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
+  const shown = () => stepMissed || replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "answer_question") {
@@ -585,6 +628,17 @@ function teach(s, input, prefix) {
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
     const stuck = shown();
+    // round 7 A6: a part that hands the next step to them asks it as a keyed micro-item (the card), never a free question
+    const per = Math.ceil(we.steps.length / parts);
+    // (the first step from the next part on that has a result in code)
+    let check = null;
+    for (let i = s.workedPart * per; stepCheckOn() && !stuck && s.workedPart < parts && !check && i < we.steps.length; i++) check = stepCheckItem(kit, kit.skills[0].id, we, i);
+    if (check) {
+      s.stepCheck = check; activate(s, check);
+      return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), {
+        item: check, probe: "P15", skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+      });
+    }
     return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
@@ -660,7 +714,8 @@ function poseNext(s, input, prefix, preferred) {
   if (item.skillId) s.arcCount = { ...(s.arcCount ?? {}), [item.skillId]: ((s.arcCount ?? {})[item.skillId] ?? 0) + 1 };
   // (the first skill is taught in teach(), not here: its block starts at its first posed item)
   if (skillArcOn() && !s.arcSkill && item.skillId && !String(item.id).startsWith("diag:")) s.arcSkill = item.skillId;
-  const attemptFirst = !s.novice && s.practiced === 0;
+  // round 7 A8: "khud try karne do" (try_first) asks for the attempt-first format whatever the guidance says
+  const attemptFirst = (!s.novice && s.practiced === 0) || !!s.methods?.includes("try_first");
   if (s.practiceSet && !s.practiceSet.posed.includes(item.id) && s.practiceSet.posed.length < s.practiceSet.of) {
     s.practiceSet = { ...s.practiceSet, posed: [...s.practiceSet.posed, item.id] };
     // the first item of a practice set opens the lesson: no greeting, no hook (W2-C #7)
@@ -966,6 +1021,15 @@ function unclear(s, input, item, v) {
       return s.phase === "warmup" ? nextWarmup(s, input, SH.unverifiedMoveOn()) : poseNext(s, input, SH.unverifiedMoveOn());
     }
   }
+  // round 7 (main's hybrid-pilot judgement #7: hint, then "ek aur example do", then "theek hai" left the triangle question for a
+  // new probe): an okay right after she taught on THIS card (a hint, a re-teach, an example) is "go on", not a failed try:
+  // the card again, plainly, once per card. The stall guard below still leaves an item that gets nothing but non-answers.
+  const said = String(input.text ?? "").toLowerCase().replace(/[^\p{L} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const ack = !!said && /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ha|ok|okay|ji|hmm+|samajh\s+gay[ai]|samjh\s+gay[ai]|got\s+it|right|sure|chalo)\s*)+$/.test(said);
+  if (ack && s.lastMove?.itemId === item.id && ["hint", "reteach", "worked_example", "repair"].includes(s.lastMove?.kind) && !(s.ackReposed ?? []).includes(item.id)) {
+    s.ackReposed = [...(s.ackReposed ?? []), item.id];
+    return plan(moveKindFor(item), SH.pose({ item, prefix: "they said okay: now this same question again, plainly, for them to try" }), { item, probe: probeFor(item), chips: optionChips(item) });
+  }
   s.unclear += 1;
   const typed = !!input.typed;
   const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
@@ -1077,6 +1141,26 @@ function requestMove(s, input, item, req, labels) {
         s.topicAsks = [...(s.topicAsks ?? []), s.turn].slice(-4);
         // (a subject they named outside the kit keeps release 13's own path below: words-only ways in about it)
         // (an explicit ask for another TOPIC, "koi aur topic padhna hai", gets the topics at once: 14.4.2, QA 3a1d1e60)
+        // round 7 (main's hybrid-pilot judgement #2, OWNER-RESET #6/#8): a plain "kuch aur baat karte hain" (spoken, or the
+        // steer:else chip) is noticed, parked with a promise and come back to; a push again engages briefly (detour). Only an
+        // explicit ask for another study TOPIC gets the topic buttons. TAXILA_R7_PARK_TOPIC=off: the ways-in offer as before.
+        if (parkTopicOn()) {
+          const back = (lead) => (item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
+            : { ...resume(s, input, item, lead), request: "park" });
+          const pushed = again ? recentParked(s.later ?? [], s.turn, null) : null;
+          if (pushed && !pushed.share && !req.topic) { s.later = serveLater(s.later, pushed.id, s.turn); return { ...back(SH.detourTo({ topic: pushed.topic })), request: "detour" }; }
+          const named = !req.topic ? off : null;
+          if (named && !unsafeChildPhrase(named)) {
+            const e = parkEntry({ topic: named, learning: false, turn: s.turn, itemOnTable: !!item });
+            s.later = pushLater(s.later ?? [], e);
+            return back(SH.parkIt({ topic: e.topic, promise: e.promise }));
+          }
+          if (!req.topic) {
+            s.sidebar = { asked: s.turn, park: true };
+            // (steering, never a break: OWNER-RESET #7)
+            return plan("repair", SH.changeTopic(), { chips: [{ id: "stop:continue", label: labels.back }], request: "change_topic" });
+          }
+        }
         const choices = (again || req.topic) && !(p5Flag("R4CONV") && off) ? nextTopics(s, 2) : [];
         if (choices.length) return plan("break", SH.topicChoices({ titles: choices.map((t) => t.title), first: !again }), {
           chips: [...choices.map((t) => ({ id: `switch:${t.id}`, label: `${t.title}`.slice(0, 40) })), { id: "stop:continue", label: labels.back }], request: "change_topic" });
@@ -1354,6 +1438,15 @@ function p5RequestMove(s, input, item, req, labels) {
     case "frustration": {
       // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
       if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }
+      // round 7 A8 part 2 (PIPELINE §A Brain item 7, product policy: frustration changes the approach, never re-poses): the
+      // card is left for later (no verdict; the card cap's "leave"), and the idea is taught again another way, with the
+      // empathy line first. TAXILA_R7_FRUSTRATION=off: a hint rung on the same question, as before.
+      if (frustrationNewWayOn()) {
+        if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+        s.activeItemId = undefined; s.hintLevel = 0; s.unclear = 0;
+        const t = teachAgainPlan(s, kit, "another");
+        return { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" };
+      }
       const p = decideAs(s, input, item, "stuck");
       return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
     }
@@ -1388,6 +1481,7 @@ function p5RequestMove(s, input, item, req, labels) {
       // round 2 safety floor (adversarial B1): the method is the child's words as a model lifted them; it is written into
       // her instructions (this move, and s.prefs on EVERY later move) only when it passes the code screen. A failing one
       // is declined like an out-of-bounds ask, and never stored.
+      if (req.methodId) return withLead(SH.adaptTo({ method: METHOD_NOTE[req.methodId] }));
       if (req.method && unsafeChildPhrase(req.method)) return withLead(SH.declineOob());
       if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
       return withLead(SH.adaptTo({ method: req.method }));
@@ -1396,7 +1490,21 @@ function p5RequestMove(s, input, item, req, labels) {
     // Typed input never gets "say it again" (they typed it; audit G4, unclear() above): no move of its own, so the phase
     // decides (a typed non-answer on an item gets the typed nudge). Round 2 integration: the note read a typed bare "7" as
     // noise and the lesson answered "aapne 7 kaha, poori baat dobara kahiye" (w1a-battery: repair moves on typed input 1+1).
-    case "unclear": if (input.typed) return null; return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    case "unclear": {
+      if (input.typed) return null;
+      // round 7 (judgement #4): a heard word or number on a question is off-format, never "say it again" (no hearing claim)
+      const heard = String(input.text ?? "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+      if (item && heard && heard.split(" ").length <= 6) return { ...withLead(SH.offFormat({ said: heard })), request: "off_format" };
+      return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    }
+    // round 7 A7: a tap on a Later entry (chipId later:<id>) is "talk about it now": served here, the lesson carries on
+    case "later": {
+      const e = tappedEntry(s.later, req.id);
+      if (!e) return null;
+      s.later = serveLater(s.later, e.id, s.turn);
+      s.servedNow = { topic: e.topic, share: !!e.share };
+      return withLead(SH.returnParked({ topic: e.topic, share: !!e.share }));
+    }
     case "park": {
       // round 2 safety floor (adversarial B3): a parked topic is promised back later ("we'll come back to X"): screened too
       if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
@@ -1502,6 +1610,8 @@ function toWrap(s, { prefix, stopping = false }) {
 
 function decide(s, input, item) {
   const { cls, chipId } = input;
+  // round 7 (judgement #3): was a safeguarding episode (any tier) open when this turn began? A goodbye then is let go at once
+  const prevSafe = !!s.safeguard;
   const flags = cls?.flags ?? {};
   const labels = chipLabels(s.ctx?.lang);
   // 1. Safety before anything else — the predicate or the classifier, either one.
@@ -1737,7 +1847,12 @@ function decide(s, input, item) {
   const topicAsk = ["switch", "topic", "change_topic"].includes(cls?.request?.type) && stopKind(input.text) !== "leaving";
   if ((flags.wantsToStop && !topicAsk) || s.rel?.overlay?.kind === "CHECK_IN") {
     const checkIn = s.rel?.overlay?.kind === "CHECK_IN";
-    if (!checkIn && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye" || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
+    // round 7 (main's hybrid-pilot judgement #3, dc-r7-stop-limits): "bye" and every other goodbye or leaving phrase gets the ONE
+    // stop check-in first, like "bas ho gaya"; a second stop within two turns, "stop for today" (the stop chip) or Pause → End
+    // ends it. TAXILA_R7_BYE_CHECKIN=off: a goodbye ends at once, as before.
+    // (never inside or after a safeguarding episode: there a goodbye is let go at once, the frozen safety behaviour)
+    const goodbyeNow = (!byeCheckInOn() || !!s.safeguard || s.safeguardedAt != null || (s.checkReleased != null && s.turn - s.checkReleased <= 3) || !!prevSafe) && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye");
+    if (!checkIn && (goodbyeNow || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
     s.stopAsked = s.turn;
     return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], checkin: checkIn ? "rel" : "stop" });
@@ -1748,6 +1863,13 @@ function decide(s, input, item) {
   const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
     ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
   const req = chipReq ?? cls?.request ?? null;
+  // round 7 (judgement #10): a yes to the choices she just offered (the ways-in chips on the screen) asks which one; naming one is
+  // its request (requests.js), the chip is its request (chipReq above)
+  const offered = (s.lastUi?.chips ?? []).filter((c) => /^req:(visual|story|game)$/.test(c.id));
+  if (!req && offered.length && !chipId && /^(?:(?:haan|han|ha|haa|ok|okay|theek\s+hai|thik\s+hai|achha|acha|yes|yeah|sure|chalo|ji)[\s,.!]*)+$/i.test(String(input.text ?? "").trim())
+    && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    return plan("repair", SH.whichOne({ choices: offered.map((c) => c.label) }), { chips: s.lastUi.chips, request: "which_one" });
+  }
   // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
   if (p5Flag("R4CONV") && req && !req.chapter && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
@@ -1772,14 +1894,36 @@ function decide(s, input, item) {
   }
   // a side chat the child asked for (change_topic → what they want to talk about): one real turn on it, then the lesson
   if (s.sidebar && s.turn - s.sidebar.asked === 1 && !cls?.help && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    const parkIt = s.sidebar.park;
     s.sidebar = undefined;
+    // round 7 (main's hybrid-pilot judgement #2): what they want to talk about is parked with a promise, and the lesson goes
+    // on; a filler ("achha theek hai") parks nothing and goes back warmly. Screened in code like every parked topic.
+    if (parkIt) {
+      const said = String(input.text ?? "").replace(/\s+/g, " ").trim();
+      const filler = !said || cls?.flags?.minimal || /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ok|okay|hmm+|ji|chalo|sahi|nahi|kuch\s+nahi|pata\s+nahi)[\s,.!?]*)+$/i.test(said);
+      if (!filler && !unsafeChildPhrase(said)) {
+        const e = parkEntry({ topic: said, learning: false, turn: s.turn, itemOnTable: !!item });
+        s.later = pushLater(s.later ?? [], e);
+        const lead = SH.parkIt({ topic: e.topic, promise: e.promise });
+        return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), request: "park" })
+          : { ...resume(s, input, item, lead), request: "park" };
+      }
+      if (unsafeChildPhrase(said)) return item ? plan(moveKindFor(item), SH.leadThenPose({ item, lead: SH.declineOob() }), { item, probe: probeFor(item), chips: optionChips(item), request: "decline" })
+        : plan("repair", SH.declineOob(), { request: "decline" });
+      return { ...resume(s, input, item, "they did not name anything else: back to the work warmly in a few words"), request: "back" };
+    }
     return plan("break", SH.sideChat(), { chips: [{ id: "stop:continue", label: labels.back }, { id: "stop:end", label: labels.stop }], request: "side_chat" });
   }
   s.sidebar = undefined;
   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
   // 3. Choices offered by a break.
-  if (chipId === "break:rest") return plan("break", SH.stretch());
+  // round 7 (E App): a short break is acknowledged in a few words; the next turn picks up where they were (below)
+  if (chipId === "break:rest") { s.resting = s.turn; return plan("break", SH.restAck(), { request: "break" }); }
+  if (s.resting != null) {
+    s.resting = undefined;
+    if (!(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) && !chipId?.startsWith("break:")) return resume(s, input, item, SH.backFromRest);
+  }
   if (chipId === "break:easier" && s.phase === "practice") {
     if (s.activeItemId) { noteStuck(s, item); s.skipped.push(s.activeItemId); }
     s.easier = true;
@@ -1887,6 +2031,15 @@ export function step(prev, input) {
   if (input.event === "turn" && p5Flag("R4CONV") && input.cls && !input.cls.request && !input.cls.help && !input.cls.flags?.distress
     && input.cls.outcome === "no_evidence" && !s.activeItemId && ["teach", "warmup"].includes(s.phase) && questionShaped(input.text ?? "")) {
     input = { ...input, cls: { ...input.cls, request: { type: "answer_q", whole: true, src: "r4" } } };
+  }
+  // round 7 A8 (brain-steering-persistence): how they asked to be taught, read in code, is kept for the lesson (s.methods:
+  // rendered last on every compile, mapped to knobs); a turn that is only that ask is the adopt request
+  if (input.event === "turn" && input.cls && !input.cls.flags?.distress && !["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
+    const m = readMethod(input.text ?? "");
+    if (m) {
+      s.methods = keepMethod(s.methods, m);
+      if (!input.cls.request) input = { ...input, cls: { ...input.cls, request: { type: "adopt", methodId: m, whole: true, src: "method" } } };
+    }
   }
   const now = input.now ?? Date.now();
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
@@ -2000,10 +2153,14 @@ export function step(prev, input) {
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
+  // round 7 A8: the kept methods ride on every later move (compile.js renders them in the last section, never shed)
+  if (s.methods?.length && !["safeguard", "wrap"].includes(p.kind)) move.methods = [...s.methods];
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
+  // round 7 A8: "khud try karne do" (try_first): a question they have had no help on yet is posed attempt-first
+  if (item && s.methods?.includes("try_first") && ["practice", "probe", "retrieval"].includes(move.kind) && !s.hintLevel) move.format = "F8";
   // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
   if (p.stuck) move.stuck = true;
   s.lastMove = move;
@@ -2055,10 +2212,18 @@ export function step(prev, input) {
     s.lastMove = move;
   }
   const ui = uiFor(s, p, move, item, input.kit);
+  // round 7 A7: the Later list on the screen and the turn's conversational moment (director/later.js)
+  const laterRows = laterUi(s.later, { turn: s.turn, wrapping: move.kind === "wrap", itemOnTable: !!ui.ask });
+  if (laterRows) ui.later = laterRows;
+  const moment = input.event === "turn" ? momentOf(prev.later, s.later, move, { turn: s.turn }) : null;
+  if (moment) ui.moment = moment;
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question
-  if (!input.branch && ui.ask?.itemId) {
+  // round 7 (main's hybrid-pilot judgement #7): a turn spent on the child's OWN ask to have it again another way ("ek aur example
+  // do", read in code) is not a try on the card: it never brings the card cap closer, so they get a fresh try after it
+  const ownAsk = RE_PRESENT.has(move.request) && input.cls?.request?.src !== "note";
+  if (!input.branch && ui.ask?.itemId && !(ownAsk && s.pinItem === ui.ask.itemId)) {
     if (s.pinItem === ui.ask.itemId) s.pinRun = (s.pinRun ?? 0) + 1;
     else { s.pinItem = ui.ask.itemId; s.pinRun = 1; }
   }
