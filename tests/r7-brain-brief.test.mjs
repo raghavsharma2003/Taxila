@@ -59,3 +59,20 @@ test("wrapAt passed: practice ends at the next natural stop (after an item), nev
   r = turn(r, cls("correct"), 2 * 60_000);
   assert.notEqual(r.state.phase, "practice", `still practising after wrapAt: ${r.move.kind} ${asked}`);
 });
+
+// integration 4 (main): with server/conductor/slot.js on this base, the start's read is a real plan, and planPrior reads the
+// slot's knobs from it (the bug was a plan with no slots, so planPrior always fell back to its defaults)
+import { lessonBriefFor } from "../server/conductor/slot.js";
+test("lessonBriefFor on this base: a non-null plan and brief, and planPrior takes the slot's knobs from that plan", async () => {
+  const pre = "c5-maths-ch01-t01", topic = "c6-maths-ch01-t01";
+  const day = { band: "B3", slots: [{ kind: "live_lesson", id: "slot-1", subject: "maths", targetMin: 20, window: ["16:00", "21:00"],
+    opener: "reanchor_light", successFirst: true, pace: { newSkillBudget: 0 }, prereqCheck: { skillId: "s1", forTopicId: topic, prereqTopicId: pre },
+    foundationShare: 0.5 }] };
+  const q = async (t) => (/child_routine/.test(t) ? [{ tz: "Asia/Kolkata" }] : /day_plan/.test(t) ? [{ version: 1, plan: day }] : []);
+  const r = await lessonBriefFor("child-1", { now: new Date("2026-10-05T10:50:00Z"), q });
+  assert.ok(r && r.plan && r.brief, "non-null plan and brief");
+  assert.ok(Date.parse(r.brief.wrapAt) <= Date.parse(r.brief.hardStopAt));
+  const p = planPrior(r.plan, {});
+  assert.deepEqual([p.opener, p.successFirst, p.newSkillBudget, p.foundationShare], ["reanchor_light", true, 0, 0.5]);
+  assert.equal(p.prereqCheck?.prereqTopicId, pre);
+});

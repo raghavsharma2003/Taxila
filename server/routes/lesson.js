@@ -41,7 +41,7 @@ import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
-const CONDUCTOR_SLOT = "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
+import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
@@ -220,10 +220,8 @@ export async function lessonStart(req, body) {
   // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
   const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
   // round 7 (Learning patch 006): today's Conductor plan and its LessonBrief (server/conductor/slot.js). null when there is no
-  // plan or on any read error, and until slot.js reaches this branch (then the start runs exactly as before)
-  // (the specifier is a constant while slot.js is not on this branch, so tests/ image-import check, which needs every literal
-  // import to resolve, stays green; a missing module is a caught null here, never a crash. Make it a static import once it lands.)
-  const lessonBriefP = early(import(CONDUCTOR_SLOT).then((m) => m.lessonBriefFor(child.id, { now: new Date() })).catch(() => null));
+  // plan or on any read error (then the start runs exactly as before)
+  const lessonBriefP = early(lessonBriefFor(child.id, { now: new Date() }).catch(() => null));
   const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
   // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
   // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
