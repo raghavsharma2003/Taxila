@@ -10,6 +10,7 @@ import { Spot } from "../art.tsx";
 import { ChildScreen, useKx } from "../chrome.tsx";
 import { Comms } from "../../ui-v3/kaksha/Shell.tsx";
 import { Panel } from "../../ui-v3/kaksha/kit.tsx";
+import { Remembers } from "./Remembers.tsx";
 import { faceFormOf } from "./Home.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
@@ -41,6 +42,7 @@ export function TeacherScreen() {
           <p className="kx-teacher-name" data-teacher-id={rec.id}><b>{rec.name}</b><span className="kx-ai">{t("aiTeacher")}</span></p>
           <p className="kx-sub">{t("teacherOne", { T: rec.name })}</p>
         </Panel>
+        <Remembers cid={cid} name={rec.name} />
       </ChildScreen>
     );
   }
@@ -55,3 +57,4 @@ export function TeacherScreen() {
     </ChildScreen>
   );
 }
+

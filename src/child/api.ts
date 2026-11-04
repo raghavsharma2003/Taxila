@@ -160,3 +160,24 @@ export const classHereOf = (c: { here?: boolean; classHere?: boolean }): boolean
 export function schoolChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ title: string; school?: boolean }> }> } | null): Array<{ subject: string; title: string }> {
   return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.school).map((c) => ({ subject: s.subject, title: c.title })));
 }
+
+/** r7 app-me-settings: What {T} remembers (GET/DELETE /api/child/memory, Brain to-brain/008). null: the route is not
+ *  there yet or the read failed (the section is then not shown at all, never an empty promise). */
+export interface ChildMemory { keeps: boolean; items: { id: string; text: string; at: string }[] }
+export async function getChildMemory(cid: string, signal?: AbortSignal): Promise<ChildMemory | null> {
+  try {
+    const r = await getJson<ChildMemory>(`/api/child/memory?childId=${encodeURIComponent(cid)}`, signal);
+    return r && typeof r.keeps === "boolean" && Array.isArray(r.items) ? r : null;
+  } catch {
+    return null;
+  }
+}
+/** Forget one item (a hard delete on the server). true when it is gone. */
+export async function forgetChildMemory(cid: string, id: string): Promise<boolean> {
+  try {
+    const res = await fetch("/api/child/memory", { method: "DELETE", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ childId: cid, id }) });
+    return res.ok;
+  } catch {
+    return false;
+  }
+}

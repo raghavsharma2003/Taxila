@@ -15,7 +15,7 @@ import { ChoiceRow, LinkRow, Panel, Rows, Sheet as KxSheet, SwitchRow } from "..
 import { kt } from "../../ui-v3/kaksha/copy.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
-import { tw } from "../../copy/en.ts";
+import { tr7, tw } from "../../copy/en.ts";
 import { useHeadset } from "../lesson/headset.ts";
 import { AVATARS, Avatar, avatarName, Icon, Picto, type IconName } from "../pictos.tsx";
 import { usePlan } from "../plan.ts";
@@ -117,6 +117,7 @@ export function Me() {
           <Rows>
             <LinkRow onClick={() => setPicking(true)} label={t("myPicture")} lead={<Avatar id={child.avatar} size={36} />} testid="change-picture"
               tail={<span className="kx-tagline">{kt("change")}</span>} />
+            <LinkRow to={`/c/${cid}/teacher`} label={tr7("mem.row", { T: rec.name })} glyph="memory" testid="me-remembers" />
             <LinkRow to="/who" label={t("switchLearner")} glyph="switch" testid="switch-learner" />
           </Rows>
         </Panel>
