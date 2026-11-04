@@ -1,0 +1,1105 @@
+{
+ "v": 1,
+ "source": "data/kits/c5-english.json",
+ "items": [
+  {
+   "id": "c5-english-ch01-t01-i07",
+   "topicId": "c5-english-ch01-t01",
+   "skillId": "c5-english-ch01-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'is' or 'are': Papa's spectacles ___ on his head.",
+    "hi": "'Is' lagega ya 'are'? Papa's spectacles ___ on his head."
+   },
+   "keyFrom": "acceptable",
+   "engine": "Papa's",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "his"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is",
+      "are"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "head"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "on"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "spectacles"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "papa's",
+     "spectacles",
+     "are",
+     "on",
+     "his",
+     "head"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch01-t01-m-pair-noun",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "548c2086"
+  },
+  {
+   "id": "c5-english-ch02-t01-i04",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Change to the past: 'The scooter (roll) down the slope.'",
+    "hi": "Kahani ho chuki hai — 'roll' ko past mein badlo."
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "down"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "rolled",
+      "roll"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "slope"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "scooter"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "scooter",
+     "rolled",
+     "down",
+     "the",
+     "slope"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "03f6fd7e"
+  },
+  {
+   "id": "c5-english-ch02-t01-i06",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Yesterday Chintu run after the scooter.'",
+    "hi": "Is sentence mein galti dhoondo: 'Yesterday Chintu run after the scooter.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Yesterday",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "after"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "scooter"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "run",
+      "ran"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "Chintu"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "yesterday",
+     "chintu",
+     "ran",
+     "after",
+     "the",
+     "scooter"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "yesterday",
+      "chintu",
+      "run",
+      "after",
+      "the",
+      "scooter"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch02-t01-m-past-tense",
+   "malKit": "c5-english-ch02-t01-m-past-tense",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "23271dc2"
+  },
+  {
+   "id": "c5-english-ch02-t01-rl-g2",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Complete this account of yesterday’s cricket match using the simple past: “The ball ___ (fly) over the boundary, and the crowd ___ (cheer).” Give both missing words in order.",
+    "hi": "Kal ke cricket match ka account simple past mein poora karo: ‘The ball ___ (fly) over the boundary, and the crowd ___ (cheer).’ Dono missing words order mein batao."
+   },
+   "keyFrom": "acceptable",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "crowd"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "cheered",
+      "cheer"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "fly",
+      "flew"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "ball"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "ball",
+     "flew",
+     "and",
+     "the",
+     "crowd",
+     "cheered"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5503d0fa"
+  },
+  {
+   "id": "c5-english-ch02-t01-rl-h1",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "near_transfer",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Change both verbs to the simple past: “Riya goes to the sports shop and buys a helmet.” Say the whole sentence.",
+    "hi": "Dono verbs ko simple past mein badlo: “Riya goes to the sports shop and buys a helmet.” Poora sentence bolo."
+   },
+   "keyFrom": "answer",
+   "engine": "Riya",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "buys",
+      "bought"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "went"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "shop"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "helmet"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "sports"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "riya",
+     "went",
+     "to",
+     "the",
+     "sports",
+     "shop",
+     "and",
+     "bought",
+     "a",
+     "helmet"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "71b2243f"
+  },
+  {
+   "id": "c5-english-ch04-t01-i06",
+   "topicId": "c5-english-ch04-t01",
+   "skillId": "c5-english-ch04-t01-s3",
+   "kind": "contrast",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'said' or 'told': 'The trader ___ the parrot about the forest.'",
+    "hi": "'Said' ya 'told' — kaunsa aayega? 'The trader ___ the parrot about the forest.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "told",
+      "said"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "forest"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "trader"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "parrot"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "about"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "trader",
+     "told",
+     "the",
+     "parrot",
+     "about",
+     "the",
+     "forest"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch04-t01-m-said-me",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "67d02ede"
+  },
+  {
+   "id": "c5-english-ch04-t01-i07",
+   "topicId": "c5-english-ch04-t01",
+   "skillId": "c5-english-ch04-t01-s3",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'The parrot said me to give a message.'",
+    "hi": "Galti dhoondo: 'The parrot said me to give a message.'"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "message"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "parrot"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "me"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "give"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "said",
+      "told"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "parrot",
+     "told",
+     "me",
+     "to",
+     "give",
+     "a",
+     "message"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "the",
+      "parrot",
+      "said",
+      "me",
+      "to",
+      "give",
+      "a",
+      "message"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch04-t01-m-said-me",
+   "malKit": "c5-english-ch04-t01-m-said-me",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "e5767065"
+  },
+  {
+   "id": "c5-english-ch05-t01-i06",
+   "topicId": "c5-english-ch05-t01",
+   "skillId": "c5-english-ch05-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'I saw five frog in the pond.'",
+    "hi": "Is sentence mein galti dhoondo: 'I saw five frog in the pond.'"
+   },
+   "keyFrom": "answer",
+   "engine": "I",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "frogs",
+      "frog"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "five"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "pond"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "in"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "saw"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "i",
+     "saw",
+     "five",
+     "frogs",
+     "in",
+     "the",
+     "pond"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "i",
+      "saw",
+      "five",
+      "frog",
+      "in",
+      "the",
+      "pond"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch05-t01-m-plural-after-number",
+   "malKit": "c5-english-ch05-t01-m-plural-after-number",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "53f45fae"
+  },
+  {
+   "id": "c5-english-ch08-t01-i08",
+   "topicId": "c5-english-ch08-t01",
+   "skillId": "c5-english-ch08-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Join with 'because': 'Jeevan was angry. Moti decided against him.'",
+    "hi": "'Because' lagakar dono sentences jodo."
+   },
+   "keyFrom": "answer",
+   "engine": "Jeevan",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "was"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "him"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "against"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "so",
+      "because"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "Moti"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "decided"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "angry"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "jeevan",
+     "was",
+     "angry",
+     "because",
+     "moti",
+     "decided",
+     "against",
+     "him"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5000142f"
+  },
+  {
+   "id": "c5-english-ch08-t01-i10",
+   "topicId": "c5-english-ch08-t01",
+   "skillId": "c5-english-ch08-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Join with 'so': 'Moti was fair. Everyone trusted him.'",
+    "hi": "'So' lagakar jodo."
+   },
+   "keyFrom": "answer",
+   "engine": "Moti",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "him"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "was"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "everyone"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "so",
+      "because"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "trusted"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "fair"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "moti",
+     "was",
+     "fair",
+     "so",
+     "everyone",
+     "trusted",
+     "him"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch08-t01-m-because-so",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "7b906081"
+  },
+  {
+   "id": "c5-english-ch08-t01-rl-h3",
+   "topicId": "c5-english-ch08-t01",
+   "skillId": "c5-english-ch08-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Combine these into one sentence using ‘so’ only once: ‘The metro was delayed. Kabir reached the debate late.’",
+    "hi": "In do sentences ko ‘so’ sirf ek baar use karke jodo: ‘The metro was delayed. Kabir reached the debate late.’"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "Kabir"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "late"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "reached"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "debate"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "delayed"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "so",
+      "because"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "metro"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "was"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "metro",
+     "was",
+     "delayed",
+     "so",
+     "kabir",
+     "reached",
+     "the",
+     "debate",
+     "late"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "595ea091"
+  },
+  {
+   "id": "c5-english-ch09-t01-i06",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'My mother is teacher in a school.'",
+    "hi": "Galti dhoondo: 'My mother is teacher in a school.'"
+   },
+   "keyFrom": "answer",
+   "engine": "My",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "teacher"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "school"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "an",
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "in"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "mother"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "my",
+     "mother",
+     "is",
+     "a",
+     "teacher",
+     "in",
+     "a",
+     "school"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "missing-wagon",
+     "train": [
+      "my",
+      "mother",
+      "is",
+      "teacher",
+      "in",
+      "a",
+      "school"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "malKit": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "21aa0efc"
+  },
+  {
+   "id": "c5-english-ch09-t01-i07",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'a' or 'an': He is ___ electrician.",
+    "hi": "'A' ya 'an' — kaunsa aayega? 'He is ___ electrician.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "He",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "electrician"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "he",
+     "is",
+     "an",
+     "electrician"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "1ba99d96"
+  }
+ ]
+}

@@ -50,8 +50,16 @@ export function arenaItems(bank, topicId) {
   if (!BANKS.has(bank)) { try { BANKS.set(bank, JSON.parse(readFileSync(join(ROOT, "data/arena", `${bank}.json`), "utf8")).challenges ?? []); } catch { BANKS.set(bank, []); } }
   return BANKS.get(bank).filter((c) => c.topicId === topicId);
 }
-/** The arena's challenges ride the request (grammar.items); the client never loads the bank. */
-const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) } : entry.grammar);
+/** VAKYA (r7, English / Hindi grammar): data/play/vakya/<bank>.json, built from verified kit items by tools/build-vakya.mjs. */
+const VAKYA = new Map();
+export function vakyaItems(bank, topicId) {
+  if (!/^c\d-(english|hindi)$/.test(String(bank))) return [];
+  if (!VAKYA.has(bank)) { try { VAKYA.set(bank, JSON.parse(readFileSync(join(ROOT, "data/play/vakya", `${bank}.json`), "utf8")).items ?? []); } catch { VAKYA.set(bank, []); } }
+  return VAKYA.get(bank).filter((c) => c.topicId === topicId);
+}
+/** The arena's challenges and vakya's sentence trains ride the request (grammar.items); the client never loads a bank. */
+const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) }
+  : entry.family === "vakya" && entry.grammar?.bank ? { ...entry.grammar, items: vakyaItems(entry.grammar.bank, entry.topicId) } : entry.grammar);
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {
   return {

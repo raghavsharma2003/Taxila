@@ -25,6 +25,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
   "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
   "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
+  "vakya",      // round 7: English / Hindi grammar, a sentence built as a train of word wagons (one verified kit item per level)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -38,6 +39,7 @@ export const MODES = {
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
+  vakya: ["rail"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -207,7 +209,14 @@ export type YantraAct =
   | { kind: "run" }                                                     // run the machine: the law answers
   | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
+// Vakya (round 7, grammar): word wagons coupled into a sentence train; a form wagon turns on its turntable; RUN checks it
+export type VakyaAct =
+  | { kind: "couple"; wagon: string; at: number }       // couple wagon `wagon` onto the track at position `at` (0 = right behind the engine); a coupled wagon moves
+  | { kind: "uncouple"; wagon: string }                 // send a coupled wagon back to the yard
+  | { kind: "turn"; wagon: string; form: number }       // turn a form wagon's turntable to its form `form` (an index into the wagon's forms)
+  | { kind: "run" }                                     // the train rolls through the signal: the law compares it with the verified key
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | VakyaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -361,6 +370,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   arena: ["raat", "blueprint", "kagaz", "chalk"],
   stambh: ["kagaz", "chalk", "blueprint", "raat"],
   yantra: ["blueprint", "raat", "chalk", "kagaz"],
+  vakya: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

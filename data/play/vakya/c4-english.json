@@ -1,0 +1,808 @@
+{
+ "v": 1,
+ "source": "data/kits/c4-english.json",
+ "items": [
+  {
+   "id": "c4-english-ch07-t01-rl-h3",
+   "topicId": "c4-english-ch07-t01",
+   "skillId": "c4-english-ch07-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Nisha plays kho-kho every morning at 7 o’clock. She writes, “I am playing kho-kho every morning at 7 o’clock.” Say the sentence correctly for a daily routine.",
+    "hi": "Nisha roz subah 7 baje kho-kho khelti hai. Woh likhti hai, “I am playing kho-kho every morning at 7 o’clock.” Daily routine batane ke liye sentence sahi karke bolo."
+   },
+   "keyFrom": "answer",
+   "engine": "I",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "every"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "at"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "morning"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "kho-kho"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "7"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "play"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "o'clock"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "i",
+     "play",
+     "kho-kho",
+     "every",
+     "morning",
+     "at",
+     "7",
+     "o'clock"
+    ],
+    [
+     "i",
+     "play",
+     "kho-kho",
+     "at",
+     "7",
+     "o'clock",
+     "every",
+     "morning"
+    ]
+   ],
+   "mals": [],
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "3d478401"
+  },
+  {
+   "id": "c4-english-ch08-t01-i06",
+   "topicId": "c4-english-ch08-t01",
+   "skillId": "c4-english-ch08-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Let's to play lagori after school!'",
+    "hi": "Galti dhoondo: 'Let's to play lagori after school!'"
+   },
+   "keyFrom": "answer",
+   "engine": "Let's",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "school"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "play"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "lagori"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "after"
+     ],
+     "init": 0
+    },
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "let's",
+     "play",
+     "lagori",
+     "after",
+     "school"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "let's",
+      "to",
+      "play",
+      "lagori",
+      "after",
+      "school"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch08-t01-m-lets-verb",
+   "malKit": "c4-english-ch08-t01-m-lets-verb",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "4e963b0e"
+  },
+  {
+   "id": "c4-english-ch08-t01-i07",
+   "topicId": "c4-english-ch08-t01",
+   "skillId": "c4-english-ch08-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Kabir asks Anu, 'What you are doing?' Fix his question.",
+    "hi": "Kabir Anu se poochhta hai, 'What you are doing?' Iska sawaal theek karo."
+   },
+   "keyFrom": "answer",
+   "engine": "What",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "is",
+      "are"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "doing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "what",
+     "are",
+     "you",
+     "doing"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "word-order",
+     "train": [
+      "what",
+      "you",
+      "are",
+      "doing"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch08-t01-m-question-order",
+   "malKit": "c4-english-ch08-t01-m-question-order",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "fd40d69f"
+  },
+  {
+   "id": "c4-english-ch08-t01-rl-h5",
+   "topicId": "c4-english-ch08-t01",
+   "skillId": "c4-english-ch08-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "The stones have fallen, and your team needs someone to stack them. Turn “Rohan will rebuild the pile” into a question beginning with “Who will”.",
+    "hi": "Stones gir gaye hain aur team ko unhe stack karne ke liye kisi ki zaroorat hai. “Rohan will rebuild the pile” ko “Who will” se shuru hone wale question mein badlo."
+   },
+   "keyFrom": "answer",
+   "engine": "Who",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "pile"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "would",
+      "will"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "rebuild"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "who",
+     "will",
+     "rebuild",
+     "the",
+     "pile"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "8615bcd2"
+  },
+  {
+   "id": "c4-english-ch09-t01-i08",
+   "topicId": "c4-english-ch09-t01",
+   "skillId": "c4-english-ch09-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'The Aakho must to push the Aami out.'",
+    "hi": "Galti dhoondo: 'The Aakho must to push the Aami out.'"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "out"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "Aami"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "Aakho"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "must"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "push"
+     ],
+     "init": 0
+    },
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "aakho",
+     "must",
+     "push",
+     "the",
+     "aami",
+     "out"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "the",
+      "aakho",
+      "must",
+      "to",
+      "push",
+      "the",
+      "aami",
+      "out"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch09-t01-m-must-to",
+   "malKit": "c4-english-ch09-t01-m-must-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "0302118e"
+  },
+  {
+   "id": "c4-english-ch09-t01-i09",
+   "topicId": "c4-english-ch09-t01",
+   "skillId": "c4-english-ch09-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Two tiger stepped into the circle.'",
+    "hi": "Galti dhoondo: 'Two tiger stepped into the circle.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Two",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "tigers",
+      "tiger"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "circle"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "stepped"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "into"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "two",
+     "tigers",
+     "stepped",
+     "into",
+     "the",
+     "circle"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "two",
+      "tiger",
+      "stepped",
+      "into",
+      "the",
+      "circle"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch09-t01-m-plural-s-drop",
+   "malKit": "c4-english-ch09-t01-m-plural-s-drop",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "07d61aa3"
+  },
+  {
+   "id": "c4-english-ch12-t01-i07",
+   "topicId": "c4-english-ch12-t01",
+   "skillId": "c4-english-ch12-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Choose the question word: '___ do weavers make the famous Maheshwari sarees?' The answer is 'in Maheshwar'.",
+    "hi": "Sawaal ka word chuno: '___ do weavers make the famous Maheshwari sarees?' Jawaab hai 'in Maheshwar'."
+   },
+   "keyFrom": "acceptable",
+   "engine": "Where",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "does",
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "weavers"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "Maheshwari"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "famous"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "make"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "sarees"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "where",
+     "do",
+     "weavers",
+     "make",
+     "the",
+     "famous",
+     "maheshwari",
+     "sarees"
+    ]
+   ],
+   "mals": [],
+   "mis": "c4-english-ch12-t01-m-wh-word-mix",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "1a69a689"
+  },
+  {
+   "id": "c4-english-ch12-t01-i08",
+   "topicId": "c4-english-ch12-t01",
+   "skillId": "c4-english-ch12-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Sahil asks, 'Where lived in the fort?' He wants to know about a person. Fix the question.",
+    "hi": "Sahil poochhta hai, 'Where lived in the fort?' Use ek insaan ke baare mein jaanna hai. Sawaal theek karo."
+   },
+   "keyFrom": "answer",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "Where",
+      "Who"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "lived"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "fort"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "in"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "who",
+     "lived",
+     "in",
+     "the",
+     "fort"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "where",
+      "lived",
+      "in",
+      "the",
+      "fort"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch12-t01-m-wh-word-mix",
+   "malKit": "c4-english-ch12-t01-m-wh-word-mix",
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "28c3bb60"
+  },
+  {
+   "id": "c4-english-ch12-t01-i09",
+   "topicId": "c4-english-ch12-t01",
+   "skillId": "c4-english-ch12-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Why you came to Maheshwar?'",
+    "hi": "Galti dhoondo: 'Why you came to Maheshwar?'"
+   },
+   "keyFrom": "answer",
+   "engine": "Why",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "Maheshwar"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "did",
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "come",
+      "came"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "why",
+     "did",
+     "you",
+     "come",
+     "to",
+     "maheshwar"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "missing-wagon",
+     "train": [
+      "why",
+      "you",
+      "came",
+      "to",
+      "maheshwar"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch12-t01-m-did-support",
+   "malKit": "c4-english-ch12-t01-m-did-support",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "38e7a394"
+  },
+  {
+   "id": "c4-english-ch12-t01-rl-h2",
+   "topicId": "c4-english-ch12-t01",
+   "skillId": "c4-english-ch12-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "A guide answers, “The weavers make cloth on looms.” You want to ask about the place where they make cloth. Complete the question: “Where ___ the weavers ___ cloth?”",
+    "hi": "Guide jawab deta hai, “The weavers make cloth on looms.” Tum poochna chahte ho ki woh cloth kahaan banate hain. Question complete karo: “Where ___ the weavers ___ cloth?”"
+   },
+   "keyFrom": "answer",
+   "engine": "Where",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "make"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "cloth"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "do",
+      "does"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "weavers"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "where",
+     "do",
+     "the",
+     "weavers",
+     "make",
+     "cloth"
+    ]
+   ],
+   "mals": [],
+   "decides": "one-choice",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5ba29f94"
+  }
+ ]
+}

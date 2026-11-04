@@ -28,6 +28,8 @@ export const PLAY_ACTS = Object.freeze({
   yantra: { beam: { act: "build", hi: "sheesha lagao aur chalao", en: "place the mirrors and run it" },
     circuit: { act: "build", hi: "taar jodo aur chalao", en: "wire it up and run it" },
     pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
+  // r7 games: Vakya (English / Hindi grammar): couple the word wagons into a sentence train, then run it
+  vakya: { rail: { act: "build", hi: "dibbe jodo aur train chalao", en: "couple the wagons and run the train" } },
 });
 
 /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */
