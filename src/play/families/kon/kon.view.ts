@@ -36,7 +36,8 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (triGoal) {
       // B (the turning vertex) right of centre, A on the base line to its left
       R = clamp(Math.min(w * 0.3, h * 0.3), 80, 190);
-      cx = clamp(w * 0.66, R + 30, w - R - 20); cy = clamp(h * 0.72, R + 40, h - 50); ax = clamp(cx - R * 1.6, 24, cx - R);
+      // the protractor's end labels sit R + 18 out: keep "180" inside the box
+      cx = clamp(w * 0.64, R + 30, w - R - 40); cy = clamp(h * 0.72, R + 40, h - 50); ax = clamp(cx - R * 1.6, 24, cx - R);
     }
     if (p.goal === "match") {
       // the reference angle above with long arms and a big arc; the child's dial below with short arms
@@ -85,11 +86,14 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (triGoal) {
       // base AB, and ∠A drawn at A (iso by apex: ∠A is not given, so A's arm is drawn without a number)
       const aAng = p.goal === "tri" || p.isoBy !== "apex" ? (p.given ?? 0) : (180 - (p.apex ?? 0)) / 2;
-      const aLen = (cx - ax) * 1.6, aEnd: [number, number] = [ax + Math.cos(rad(aAng)) * aLen, cy - Math.sin(rad(aAng)) * aLen];
+      // A's arm runs long (the apex can sit far up) but never leaves the box: cut at 8 px from the left and top edges
+      const cA = Math.cos(rad(aAng)), sA = Math.sin(rad(aAng));
+      const aLen = Math.min((cx - ax) * 1.6, sA > 0 ? (cy - 8) / sA : Infinity, cA < 0 ? (ax - 8) / -cA : Infinity), aEnd: [number, number] = [ax + cA * aLen, cy - sA * aLen];
       P.stroke(c, [[ax, cy], [cx, cy]], { role: "ink", width: 4 });
       P.stroke(c, [[ax, cy], aEnd], { role: "ink2", width: 3 });
       arc(c, ax, cy, 28, 0, aAng, 1, "ink2", 2);
-      if (p.goal === "tri" || p.isoBy !== "apex") P.text(c, `${p.given}°`, ax + 46, cy - 16, { size: 14, weight: 700, font: "mono", role: "ink2" });
+      // ∠A's number inside its arc, on the bisector (never on the base line, where B's protractor writes its 0)
+      if (p.goal === "tri" || p.isoBy !== "apex") P.text(c, `${p.given}°`, ax + Math.cos(rad(aAng / 2)) * 52, cy - Math.sin(rad(aAng / 2)) * 52, { size: 14, weight: 700, font: "mono", role: "ink2" });
       P.text(c, "A", ax - 4, cy + 20, { size: 16, weight: 700, role: "ink2" });
       P.text(c, "B", cx + 4, cy + 20, { size: 16, weight: 700, role: "ink2" });
       // where the child's arm meets A's arm: the triangle closes there (no number on the top angle: that is the goal)

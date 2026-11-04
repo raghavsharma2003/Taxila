@@ -167,17 +167,19 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, now = api.t, s = st();
     drawLine(c);
-    // hop: the start flag on its integer, and the hop from it to where the pod is now (an arc over the line)
+    // hop: the start on its integer (a ring on the line, "start" under the numbers) and the hop from it to where the pod is
+    // now, an arc UNDER the number labels (above the line the pods ride and would hide it)
     if (p.hop) {
-      const X = toPx(p.hop.a);
-      P.stroke(c, [[X, ly], [X, ly - 34]], { role: "ink", width: 3 });
-      P.stroke(c, [[X, ly - 34], [X - 18, ly - 28], [X, ly - 22]], { role: "ink", width: 2.5, closed: true });
-      P.text(c, say(lang, "line.start"), X, ly - 46, { size: 14, weight: 700, role: "ink2" });
+      const X = toPx(p.hop.a), by = Math.min(ly + 104, Hh - 30);
+      P.circle(c, X, ly, 9, { role: "ink", width: 3 });
+      P.stroke(c, [[X, ly + 10], [X, by]], { role: "ink3", width: 1.5, dash: [3, 4] });
+      P.text(c, say(lang, "line.start"), X, ly - 22, { size: 14, weight: 700, role: "ink2" });
       const mk = markOf(0);
       if (mk !== null && mk !== undefined && Math.abs(toPx(mk) - X) > 6) {
-        const xa = X, xb = toPx(mk), hgt = Math.min(90, 20 + Math.abs(xb - xa) * 0.35);
+        const xa = X, xb = toPx(mk), hgt = Math.min(36, 10 + Math.abs(xb - xa) * 0.12);
         c.save(); c.beginPath(); c.strokeStyle = P.color(ROLE[0]); c.lineWidth = 2.5; c.setLineDash([6, 5]);
-        c.moveTo(xa, ly - 4); c.quadraticCurveTo((xa + xb) / 2, ly - 4 - 2 * hgt, xb, ly - 4); c.stroke(); c.restore();
+        c.moveTo(xa, by); c.quadraticCurveTo((xa + xb) / 2, by + 2 * hgt, xb, by); c.stroke(); c.restore();
+        P.stroke(c, [[xb - 6, by - 7], [xb, by], [xb + 6, by - 7]], { role: ROLE[0], width: 2.5 });
       }
     }
     api.target("line", x0 - 20, ly - 60, x1 - x0 + 40, 120);
