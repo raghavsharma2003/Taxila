@@ -8,7 +8,10 @@ import { preloadLessonRoute } from "../../../child/preload.ts";
 import { useChild } from "../../../child/ChildShell.tsx";
 import { usePlan } from "../../../child/plan.ts";
 import { artTierD } from "../../../child/art.tsx";
-import { Home as ClassicHome, faceFormOf } from "../../../child/screens/Home.tsx";
+import { faceFormOf } from "../../../child/screens/Home.tsx";
+import { HelpSheet } from "../../../child/lesson/sheets/HelpSheet.tsx";
+import { KxPage } from "../kit.tsx";
+import { HomeStateView } from "./HomeState.tsx";
 import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
 import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
 import { KakshaRoot } from "../Shell.tsx";
@@ -27,7 +30,7 @@ export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
 
 export function KakshaHome() {
   const { cid, child, band, family, prefs, reducedMotion, me } = useChild();
-  const { plan } = usePlan(cid);
+  const { plan, reload } = usePlan(cid);
   const nav = useNavigate();
   const rec = useTeacher(child.teacher_id, band);
   // her once-a-day greeting (Face to-app/004): spoken after the child's first tap, then a glance at Start
@@ -35,7 +38,24 @@ export function KakshaHome() {
   const kn = useChildNav(plan.source === "loading" ? null : plan.surfaces);
   useEffect(() => preloadLessonRoute(), []); // r5-latency: the lesson's code loads while the home is idle
   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
-  if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) return <ClassicHome />;
+  // r7 app-secondary-screens-kaksha: the hold, offline and signed-out states are Kaksha screens too (the hold keeps its
+  // copy and the lesson's own Help sheet with the helplines, unchanged)
+  if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) {
+    const kind = plan.signedOut ? "signedout" : plan.state === "safety_hold" ? "hold" : "offline";
+    return (
+      <KxPage family={family} reducedMotion={reducedMotion} screen="home" testid="home" title={null} backTo={null} meTo={kn.meTo} parentTo="/parent"
+        dock={kind === "hold" ? kn.dock.filter((d) => d.key !== "ask" && d.key !== "practice") : kind === "offline" ? kn.dock.filter((d) => d.key !== "ask") : kn.dock} active="home" go={(to) => nav(to)}>
+        <div data-plan-state={kind === "signedout" ? "signedout" : plan.state} data-plan-source={plan.source} className="kx-home-state">
+          <HomeStateView kind={kind} packReady={plan.packReady} practiceTo={`/c/${cid}/practice`} signInTo={`/start/phone?login=1&next=${encodeURIComponent(`/c/${cid}`)}`}
+            onRetry={reload} go={(to) => nav(to)}
+            help={(close, grownUp, setGrownUp) => (
+              <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
+                onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); close(); }} onBack={close} />
+            )} />
+        </div>
+      </KxPage>
+    );
+  }
   const face = artTierD() ? { form: "plate" as const, tier: "D" as const } : faceFormOf(prefs.face);
   const state: HomeViewProps["state"] =
     plan.source === "loading" ? "loading" : plan.state === "capped" ? "capped" : plan.state === "resting" ? "resting" : plan.state === "done" ? "done"

@@ -51,6 +51,18 @@ export const KX = {
   reviseCta: K("Revise", "Revise", "दोहराओ"),
   anotherCta: K("One more", "Ek aur", "एक और"),
   didToday: K("Today you did", "Aaj tumne kiya", "आज तुमने किया"),
+  // r7 app-secondary-screens-kaksha: the Me screen's sections and the picture sheet
+  meLessons: K("Lessons", "Lessons", "पाठ"),
+  meScreen: K("Screen and sound", "Screen aur awaaz", "स्क्रीन और आवाज़"),
+  meYou: K("You", "Tum", "तुम"),
+  meSees: K("Who sees what", "Kaun kya dekhta hai", "कौन क्या देखता है"),
+  change: K("Change", "Badlo", "बदलो"),
+  // Hello as a boot sequence: one log line per step (what this step sets up), never a count
+  bootHello: K("Teacher online", "Teacher online", "टीचर ऑनलाइन"),
+  bootAi: K("AI teacher, not a person", "AI teacher, insaan nahi", "AI टीचर, इंसान नहीं"),
+  bootPicture: K("Your picture", "Tumhari picture", "तुम्हारी तस्वीर"),
+  bootLikes: K("What you like", "Tumhe kya pasand hai", "तुम्हें क्या पसंद है"),
+  bootHi: K("Voice check", "Awaaz check", "आवाज़ जाँच"),
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   jarWaiting: K("Your questions from last time are waiting. She brings them back in the next lesson.", "Pichhli baar ke sawaal intezaar mein hain.", "पिछली बार के सवाल इंतज़ार में हैं।"),
   // r7 app-nav-unified: the one dock (nav.tsx)

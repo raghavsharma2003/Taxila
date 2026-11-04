@@ -56,6 +56,10 @@ const API = {
   "/api/tutors": { tutors: [], current: "asha" },
   "/api/lesson/list": { lessons: [] },
   "/api/notebook": { items: [] },
+  "/api/studio/notebook": arg("notebook", "1") === "0" ? { hidden: false, pages: [] } : { hidden: false, pages: [
+    { lessonId: "l2", topicId: `c${CLS}-maths-ch07-t03`, title: "Equivalent fractions", startedAt: "2026-11-04T10:00:00Z", ended: true, boards: 3, first: null },
+    { lessonId: "l1", topicId: `c${CLS}-maths-ch07-t01`, title: "Fractional units", startedAt: "2026-11-03T10:00:00Z", ended: true, boards: 1, first: null },
+  ] },
 };
 
 export const SCREENS = {
@@ -67,6 +71,8 @@ export const SCREENS = {
   me: `/c/${CID}/me`,
   practice: `/c/${CID}/practice`,
   teacher: `/c/${CID}/teacher`,
+  hello: `/c/${CID}/hello`,
+  who: `/who`,
 };
 
 async function main() {

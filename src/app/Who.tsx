@@ -14,6 +14,7 @@ import { readStore, writeStore } from "./storage.ts";
 // Release 11 (dc-r4-volt-everywhere): the picker wears the child app's Volt look (the same tx-child[data-v2] scope as
 // ChildShell, so childshell.css re-points the v2 tokens); nothing on a ?ui=classic device
 import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
+import { Cta, Ghost, Glyph, KxPage } from "../ui-v3/kaksha/kit.tsx";
 
 export const LAST_CHILD_KEY = "tx.lastChild";
 
@@ -67,6 +68,51 @@ export default function Who() {
   if (!kids) return scope(<Loading />);
   const chosen = kids.find((c) => c.id === picked) ?? null;
 
+  const resetNote = pendingReset && (
+    <>
+      For grown-ups: someone asked to reset the parent PIN. It changes on{" "}
+      {new Date(pendingReset).toLocaleString("en-IN", { weekday: "short", hour: "numeric", minute: "2-digit" })}.
+      If that was not you, open the Parent corner and enter the current PIN: that cancels it.
+    </>
+  );
+  if (Object.keys(look).length) {
+    // Kaksha (r7 app-secondary-screens-kaksha): a profile select. Each learner a chamfered tile; the confirm a HUD strip
+    // with No and the one plasma Yes. Same steps and wording as before; the parent door is the plain top-right link.
+    const reduced = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    return scope(
+      <KxPage family={young ? "young" : "older"} reducedMotion={reduced} screen="who" bare meTo="/who" className="kx-whosel">
+        <header className="kx-top">
+          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+          <span className="kx-sp" />
+          <Link to="/parent" className="kx-ib kx-cut parent-door" aria-label="Parent corner, for grown-ups"><Glyph name="door" size={22} /></Link>
+        </header>
+        <h1 className="kx-h2 kx-whosel-title">Who is learning?</h1>
+        <ul className="kx-profiles" aria-label="Children">
+          {kids.map((c) => (
+            <li key={c.id}>
+              <button type="button" className="kx-profile kx-cut profile-tile" aria-pressed={c.id === picked} onClick={() => setPicked(c.id)} data-tile-band={bandForClass(c.class_level)}>
+                <span className="kx-profile-pic"><Avatar c={c} /></span>
+                <span className="kx-profile-name profile-name">{c.first_name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="kx-whosel-confirm" aria-live="polite">
+          {chosen && (
+            <div className="kx-panel kx-cut kx-whosel-ask">
+              <p className="kx-whosel-q">Continue as <strong>{chosen.first_name}</strong>?</p>
+              <div className="kx-hello-pair">
+                <Ghost onClick={() => setPicked(null)} label={`No, I am not ${chosen.first_name}`} className="pair-no"><Glyph name="cross" size={22} /> No</Ghost>
+                <Cta onClick={() => go(chosen)} label={`Yes, I am ${chosen.first_name}`}><Glyph name="tick" size={22} /> Yes</Cta>
+              </div>
+            </div>
+          )}
+        </div>
+        {resetNote && <p className="kx-sub kx-whosel-note" role="status">{resetNote}</p>}
+        <Link to="/start/child?add=1" className="kx-textlink kx-whosel-add"><Glyph name="plus" size={18} /> Add a child (parent)</Link>
+      </KxPage>
+    );
+  }
   return scope(
     <main className={`who ${young ? "who-young" : "who-older"}`}>
       <header className="topbar">
@@ -101,13 +147,7 @@ export default function Who() {
             </>
           )}
         </div>
-        {pendingReset && (
-          <p className="note who-reset t-note" role="status">
-            For grown-ups: someone asked to reset the parent PIN. It changes on{" "}
-            {new Date(pendingReset).toLocaleString("en-IN", { weekday: "short", hour: "numeric", minute: "2-digit" })}.
-            If that was not you, open the Parent corner and enter the current PIN: that cancels it.
-          </p>
-        )}
+        {resetNote && <p className="note who-reset t-note" role="status">{resetNote}</p>}
         {/* Behind the gate: /start/child?add=1 sits under GateIfPin, so a child tapping it meets the PIN pad. */}
         <Link to="/start/child?add=1" className="who-add t-note"><Icon name="lock" size={16} /> Add a child (parent)</Link>
       </div>
