@@ -1,4 +1,4 @@
-// Yantra (E6) · the beam law in 3D (core3d@1: docs/design/round4/build/games-core/CORE-API.md). A VIEW over the EXISTING
+// Yantra (E6) · the beam law in 3D (the circuit and pendulum laws: circuit.ts, pendulum.ts; create() picks by mode) (core3d@1: docs/design/round4/build/games-core/CORE-API.md). A VIEW over the EXISTING
 // beam law (src/play/families/yantra/beam.logic.ts): an optics bench seen at a 3/4 angle, the board's cells as tiles on
 // it, the walls as blocks, the lamp a laser pointer on the board's edge, the target a photocell drum that spins a fan.
 //
@@ -24,10 +24,20 @@ import { BEAM_Y, cellAt, dragTurn, freeCell, headingOf, toWorld } from "./geom.t
 import { THEMES, themeOf, type YantraTheme } from "./palette.ts";
 import { BenchScene } from "./scene.ts";
 import { hint, LANGTAG, type HintKey } from "./words.ts";
+import { createCircuit } from "./circuit.ts";
+import { createPendulum } from "./pendulum.ts";
 
 const TAP = 8;                       // px a finger may wander and still be a tap
 
+/** One engine id ("yantra") for the three laws it renders: the level's mode picks the bench (r7). */
 export function create(core: Core3D, deps: EngineDeps): EngineView {
+  const mode = deps.level.mode;
+  if (mode === "circuit") return createCircuit(core, deps);
+  if (mode === "pendulum") return createPendulum(core, deps);
+  return createBeam(core, deps);
+}
+
+function createBeam(core: Core3D, deps: EngineDeps): EngineView {
   const { level, lang } = deps;
   const ctl = deps.ctl as unknown as PlayController<BeamParams, BeamState, YantraAct>;
   const p = level.params as BeamParams;

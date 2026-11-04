@@ -1,5 +1,9 @@
-// r7 games · Yantra (E6), the core3d@1 engine over the beam law (src/play/engines/yantra). What this pins:
-//   - the registry mounts it for (yantra, beam) only, and the 2D beam view stays the board twin (viewFor still answers);
+// r7 games · Yantra (E6), the core3d@1 engine over the beam, circuit and pendulum laws (src/play/engines/yantra). What this
+// pins:
+//   - the registry mounts the one engine id for (yantra, beam / circuit / pendulum), create() picks the bench by the level's
+//     mode, and the 2D views stay the board twins;
+//   - the circuit kit animates the law's own loop (currentLoop) and the pendulum swings with the law's own period
+//     (periodOf); neither shows a formula;
 //   - the engine module exports `create` (loaded through Vite's module graph, as the app's dynamic import loads it);
 //   - its themes are the art pack the dress validator, the base dress and the kaksha recipe all know;
 //   - the economy lint holds over its files (no Math.random, no clock, no timers, no storage, traced progress writes);
@@ -21,20 +25,47 @@ const DIR = join(ROOT, "src/play/engines/yantra");
 const FILES = readdirSync(DIR).filter((f) => /\.(ts|tsx)$/.test(f)).map((f) => join(DIR, f));
 const code = (f) => readFileSync(f, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").split("\n").map((l) => l.replace(/\/\/.*$/, "")).join("\n");
 
-test("registry · engineFor(yantra, beam) is the Yantra entry; circuit and pendulum stay 2D; the 2D beam view stays the twin", async () => {
+test("registry · one Yantra entry renders beam, circuit and pendulum; create() dispatches by mode; the 2D views stay the twins", async () => {
   const e = engineFor("yantra", "beam");
   assert.ok(e, "an engine renders the beam law");
   assert.equal(e.id, "yantra");
-  assert.deepEqual(e.renders, [{ family: "yantra", mode: "beam" }]);
+  assert.deepEqual(e.renders, [{ family: "yantra", mode: "beam" }, { family: "yantra", mode: "circuit" }, { family: "yantra", mode: "pendulum" }]);
   assert.equal(engineFor("yantra", "beam", "route"), e);
   assert.equal(engineFor("yantra", "beam", "periscope"), e);
-  assert.equal(engineFor("yantra", "circuit"), null);
-  assert.equal(engineFor("yantra", "pendulum"), null);
+  for (const [mode, goals] of [["circuit", ["light", "switch"]], ["pendulum", ["match", "oscillation"]]]) {
+    assert.equal(engineFor("yantra", mode), e, `${mode} renders in the Yantra engine`);
+    for (const g of goals) assert.equal(engineFor("yantra", mode, g), e);
+  }
   assert.equal(ENGINE_ENTRIES.filter((x) => x.id === "yantra").length, 1);
   assert.ok(ENGINES.includes("yantra"));
   assert.match(readFileSync(join(ROOT, "src/play/engines/registry.ts"), "utf8"), /load: \(\) => import\("\.\/yantra\/index\.ts"\)/);
-  // the board twin: the family index still has the 2D beam view
-  assert.match(readFileSync(join(ROOT, "src/play/families/index.ts"), "utf8"), /beam/);
+  // one create(), the mode picks the bench
+  const engine = code(join(DIR, "engine.ts"));
+  assert.match(engine, /if \(mode === "circuit"\) return createCircuit\(core, deps\)/);
+  assert.match(engine, /if \(mode === "pendulum"\) return createPendulum\(core, deps\)/);
+  assert.match(engine, /return createBeam\(core, deps\)/);
+  // the board twins: the family index still has the 2D views of all three laws
+  const idx = readFileSync(join(ROOT, "src/play/families/index.ts"), "utf8");
+  for (const m of ["beam", "circuit", "pendulum"]) assert.match(idx, new RegExp(m));
+});
+
+test("circuit and pendulum · the law decides: the kit draws the law's loop, the stand swings with the law's period, the acts are the 2D twin's", () => {
+  const circuit = code(join(DIR, "circuit.ts")), kit = code(join(DIR, "kit.ts")), pend = code(join(DIR, "pendulum.ts")), stand = code(join(DIR, "stand.ts"));
+  assert.match(circuit, /currentLoop\(p, s\.wires, s\.sw\)/, "the glowing loop is the law's");
+  assert.doesNotMatch(circuit + kit, /function (judge|rootsOf|glows)\b/, "no circuit law of its own");
+  for (const k of ["wire", "unwire", "toggle", "run", "undo"]) assert.match(circuit, new RegExp(`kind: "${k}"`), `circuit dispatches ${k}`);
+  assert.match(circuit, /yantra\.circuit\.why\.\$\{why\}/, "the why is the law's, in the shared words");
+  assert.match(pend, /runT = periodOf\(runLen\)/, "the swing's period is the law's periodOf");
+  assert.doesNotMatch(pend + stand, /Math\.sqrt|9\.8|\bG\b/, "no period maths in the engine");
+  for (const k of ["set", "run", "count", "undo"]) assert.match(pend, new RegExp(`kind: "${k}"`), `pendulum dispatches ${k}`);
+  // no formula on screen (class 7): no 2π, no root, no T = …
+  for (const [f, c] of [["pendulum.ts", pend], ["stand.ts", stand]]) for (const m of c.matchAll(/(["'`])((?:\\.|(?!\1)[^\\])*)\1/g)) assert.doesNotMatch(m[2], /π|√|2\s*pi|T\s*=/i, `${f}: a formula in "${m[2]}"`);
+  // the controls keep the 2D twins' ids (the voice grammar presses them)
+  for (const id of ["len-down", "len-up", "mass-down", "mass-up", "swing-down", "swing-up", "undo", "run", "count"]) assert.match(pend, new RegExp(`"${id}"`));
+  for (const id of ["toggle", "undo", "run"]) assert.match(circuit, new RegExp(`id: "${id}"`));
+  // every child-facing word is a shared engine word or the engine's own hint (never an inline sentence)
+  const hints = JSON.parse(readFileSync(join(DIR, "copy.json"), "utf8")).hint;
+  for (const k of ["wire", "cut", "length", "count"]) for (const l of ["en", "hinglish", "hi"]) assert.ok(hints[k]?.[l], `hint ${k} ${l}`);
 });
 
 test("engine module · index.ts exports create (through Vite's module graph, as the app loads the chunk)", async () => {
