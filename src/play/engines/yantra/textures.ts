@@ -136,6 +136,20 @@ export function turnRingTexture(you: number): Texture {
   return tex(c);
 }
 
+/** The pendulum's scale: a wooden strip with a tick every 10 cm from the pivot (0) down `cm`, a long tick every 50;
+ *  `ticks` false = a plain strip (fade 3). Its numbers are DOM labels (crisp, measured), never pixels here. */
+export function rulerTexture(T: ThemePack, cm: number, ticks: boolean): Texture {
+  const W = 64, H = 1024, { c, g } = canvas(W, H), k = T.kit;
+  g.fillStyle = css(k.ruler); g.fillRect(0, 0, W, H);
+  g.fillStyle = css(shade(k.ruler, 0.86)); for (let y = 0; y < H; y += 9) g.fillRect(0, y, W, 1);
+  g.fillStyle = css(shade(k.ruler, 0.7)); g.fillRect(0, 0, 3, H); g.fillRect(W - 3, 0, 3, H);
+  if (ticks) {
+    g.fillStyle = css(k.tick);
+    for (let x = 0; x <= cm; x += 10) { const y = Math.min(H - 4, Math.round((x / cm) * (H - 4))), big = x % 50 === 0; g.fillRect(big ? 0 : W * 0.45, y, big ? W : W * 0.55, big ? 6 : 4); }
+  }
+  return tex(c);
+}
+
 /** The background (screen space): the theme's sky, and what stands on its horizon at `hy` (0..1 from the top). */
 export function backdropTexture(T: ThemePack, w: number, h: number, hy: number, rnd: Rnd): Texture {
   const W = Math.max(64, Math.round(w / 2)), H = Math.max(64, Math.round(h / 2)), { c, g } = canvas(W, H), Y = Math.max(0.08, Math.min(0.9, hy)) * H;
