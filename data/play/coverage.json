@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 85,
-  "entries": 330,
-  "withMisconceptionMap": 85,
-  "mappedMisconceptions": 143,
+  "topicsCovered": 89,
+  "entries": 339,
+  "withMisconceptionMap": 90,
+  "mappedMisconceptions": 155,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 66
+    "covered": 70
    },
    "science": {
     "inScope": 146,
@@ -36,11 +36,11 @@
    },
    "4": {
     "inScope": 50,
-    "covered": 16
+    "covered": 18
    },
    "5": {
     "inScope": 52,
-    "covered": 19
+    "covered": 21
    },
    "6": {
     "inScope": 69,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 97,
+  "topicsCoveredAll": 102,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 66
+    "covered": 70
    },
    "science": {
     "topics": 146,
@@ -84,11 +84,11 @@
    },
    "sst": {
     "topics": 65,
-    "covered": 6
+    "covered": 7
    }
   },
-  "arenaOnly": 149,
-  "arenaOnlyClass4to7": 62,
+  "arenaOnly": 148,
+  "arenaOnlyClass4to7": 61,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 8,
@@ -97,6 +97,7 @@
    "kaal": 6,
    "kila": 5,
    "kon": 9,
+   "naksha": 5,
    "nazariya": 11,
    "stambh": 6,
    "vakya": 6,
@@ -113,7 +114,7 @@
     "covered": 0
    }
   },
-  "skillsAdmitted": 657,
+  "skillsAdmitted": 666,
   "rulesNotAdmitted": 2
  },
  "skills": {
@@ -2213,6 +2214,246 @@
    },
    "contexts": [],
    "why": "RULES c7-maths-ch09-t03 kon/close/iso · ACTS"
+  },
+  "c4-maths-ch01-t03-s1": {
+   "topicId": "c4-maths-ch01-t03",
+   "family": "naksha",
+   "mode": "shape",
+   "goal": "copy",
+   "grammar": {
+    "shapes": [
+     "rect",
+     "L"
+    ]
+   },
+   "misMap": {
+    "count-dots": "c4-maths-ch01-t03-m-count-dots"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch01-t03 naksha/shape/copy · ACTS"
+  },
+  "c4-maths-ch02-t02-s1": {
+   "topicId": "c4-maths-ch02-t02",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "steps",
+   "grammar": {
+    "cols": [
+     5,
+     6
+    ],
+    "rows": [
+     5,
+     5
+    ]
+   },
+   "misMap": {
+    "order-swap": "c4-maths-ch02-t02-m-order-swap",
+    "counts-start": "c4-maths-ch02-t02-m-counts-start"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch02-t02 naksha/route/steps · ACTS"
+  },
+  "c4-maths-ch02-t02-s2": {
+   "topicId": "c4-maths-ch02-t02",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "steps",
+   "grammar": {
+    "cols": [
+     5,
+     6
+    ],
+    "rows": [
+     5,
+     5
+    ]
+   },
+   "misMap": {
+    "order-swap": "c4-maths-ch02-t02-m-order-swap",
+    "counts-start": "c4-maths-ch02-t02-m-counts-start"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch02-t02 naksha/route/steps · ACTS"
+  },
+  "c4-maths-ch02-t02-s3": {
+   "topicId": "c4-maths-ch02-t02",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "turns",
+   "grammar": {
+    "cols": [
+     4,
+     5
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "own-left-right": "c4-maths-ch02-t02-m-left-right-facing"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch02-t02 naksha/route/turns · ACTS"
+  },
+  "c5-maths-ch14-t01-s1": {
+   "topicId": "c5-maths-ch14-t01",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "compass",
+   "grammar": {
+    "cols": [
+     5,
+     7
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "east-west-swap": "c5-maths-ch14-t01-m-east-west-swap",
+    "north-is-up": "c5-maths-ch14-t01-m-north-is-up"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch14-t01 naksha/route/compass · ACTS"
+  },
+  "c5-maths-ch14-t01-s2": {
+   "topicId": "c5-maths-ch14-t01",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "turns",
+   "grammar": {
+    "cols": [
+     5,
+     6
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "own-left-right": "c5-maths-ch14-t01-m-left-right-fixed"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch14-t01 naksha/route/turns · ACTS"
+  },
+  "c5-maths-ch14-t02-s2": {
+   "topicId": "c5-maths-ch14-t02",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "fuel",
+   "grammar": {
+    "ks": [
+     2,
+     5,
+     10
+    ],
+    "unit": "km",
+    "cap": 150
+   },
+   "misMap": {
+    "map-is-real": "c5-maths-ch14-t02-m-map-is-real",
+    "add-scale": "c5-maths-ch14-t02-m-add-scale",
+    "straight-line": "c5-maths-ch14-t02-m-straight-line-route"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch14-t02 naksha/scale/fuel · ACTS"
+  },
+  "c5-maths-ch14-t02-s1": {
+   "topicId": "c5-maths-ch14-t02",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "fuel",
+   "grammar": {
+    "ks": [
+     2,
+     5,
+     10
+    ],
+    "unit": "km",
+    "cap": 150
+   },
+   "misMap": {
+    "map-is-real": "c5-maths-ch14-t02-m-map-is-real",
+    "add-scale": "c5-maths-ch14-t02-m-add-scale",
+    "straight-line": "c5-maths-ch14-t02-m-straight-line-route"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch14-t02 naksha/scale/fuel · ACTS"
+  },
+  "c5-maths-ch14-t02-s3": {
+   "topicId": "c5-maths-ch14-t02",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "reach",
+   "grammar": {
+    "ks": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "unit": "m",
+    "cap": 60
+   },
+   "misMap": {
+    "map-is-real": "c5-maths-ch14-t02-m-map-is-real",
+    "add-scale": "c5-maths-ch14-t02-m-add-scale"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch14-t02 naksha/scale/reach · ACTS"
+  },
+  "c6-sst-ch01-t01-s3": {
+   "topicId": "c6-sst-ch01-t01",
+   "family": "naksha",
+   "mode": "locate",
+   "goal": "fix",
+   "grammar": {
+    "step": 10
+   },
+   "misMap": {
+    "swap-latlong": "c6-sst-ch01-t01-m1"
+   },
+   "contexts": [],
+   "why": "RULES c6-sst-ch01-t01 naksha/locate/fix · ACTS"
+  },
+  "c6-sst-ch01-t01-s2": {
+   "topicId": "c6-sst-ch01-t01",
+   "family": "naksha",
+   "mode": "locate",
+   "goal": "fix",
+   "grammar": {
+    "step": 10
+   },
+   "misMap": {
+    "swap-latlong": "c6-sst-ch01-t01-m1"
+   },
+   "contexts": [],
+   "why": "RULES c6-sst-ch01-t01 naksha/locate/fix · ACTS"
+  },
+  "c6-sst-ch01-t01-s1": {
+   "topicId": "c6-sst-ch01-t01",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "fuel",
+   "grammar": {
+    "ks": [
+     4,
+     5,
+     10,
+     20
+    ],
+    "unit": "km",
+    "cap": 200
+   },
+   "misMap": {
+    "map-is-real": "c6-sst-ch01-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c6-sst-ch01-t01 naksha/scale/fuel · ACTS"
   },
   "c4-maths-ch02-t01-s2": {
    "topicId": "c4-maths-ch02-t01",
@@ -6017,42 +6258,6 @@
    "contexts": [],
    "why": "RULES c5-maths-ch12-t02 arena/pick/pick · ACTS"
   },
-  "c5-maths-ch14-t02-s1": {
-   "topicId": "c5-maths-ch14-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch14-t02 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch14-t02-s2": {
-   "topicId": "c5-maths-ch14-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch14-t02 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch14-t02-s3": {
-   "topicId": "c5-maths-ch14-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch14-t02 arena/pick/pick · ACTS"
-  },
   "c5-maths-ch15-t02-s3": {
    "topicId": "c5-maths-ch15-t02",
    "family": "arena",
@@ -8980,7 +9185,6 @@
   "c5-maths-ch10-t01",
   "c5-maths-ch12-t01",
   "c5-maths-ch12-t02",
-  "c5-maths-ch14-t02",
   "c6-maths-ch01-t02",
   "c6-maths-ch01-t03",
   "c6-maths-ch01-t04",
@@ -11063,6 +11267,236 @@
    },
    "misMap": {
     "wrong-pair": "c7-maths-ch09-t03-m-wrong-pair"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch01-t03",
+   "title": "Shapes on a grid",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "shape",
+   "goal": "copy",
+   "skillId": "c4-maths-ch01-t03-s1",
+   "skillIds": [
+    "c4-maths-ch01-t03-s1"
+   ],
+   "grammar": {
+    "shapes": [
+     "rect",
+     "L"
+    ]
+   },
+   "misMap": {
+    "count-dots": "c4-maths-ch01-t03-m-count-dots"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch02-t02",
+   "title": "Reading simple grids and maps",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "steps",
+   "skillId": "c4-maths-ch02-t02-s1",
+   "skillIds": [
+    "c4-maths-ch02-t02-s1",
+    "c4-maths-ch02-t02-s2"
+   ],
+   "grammar": {
+    "cols": [
+     5,
+     6
+    ],
+    "rows": [
+     5,
+     5
+    ]
+   },
+   "misMap": {
+    "order-swap": "c4-maths-ch02-t02-m-order-swap",
+    "counts-start": "c4-maths-ch02-t02-m-counts-start"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch02-t02",
+   "title": "Reading simple grids and maps",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "turns",
+   "skillId": "c4-maths-ch02-t02-s3",
+   "skillIds": [
+    "c4-maths-ch02-t02-s3"
+   ],
+   "grammar": {
+    "cols": [
+     4,
+     5
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "own-left-right": "c4-maths-ch02-t02-m-left-right-facing"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch14-t01",
+   "title": "Directions and routes",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "compass",
+   "skillId": "c5-maths-ch14-t01-s1",
+   "skillIds": [
+    "c5-maths-ch14-t01-s1"
+   ],
+   "grammar": {
+    "cols": [
+     5,
+     7
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "east-west-swap": "c5-maths-ch14-t01-m-east-west-swap",
+    "north-is-up": "c5-maths-ch14-t01-m-north-is-up"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch14-t01",
+   "title": "Directions and routes",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "route",
+   "goal": "turns",
+   "skillId": "c5-maths-ch14-t01-s2",
+   "skillIds": [
+    "c5-maths-ch14-t01-s2"
+   ],
+   "grammar": {
+    "cols": [
+     5,
+     6
+    ],
+    "rows": [
+     5,
+     6
+    ]
+   },
+   "misMap": {
+    "own-left-right": "c5-maths-ch14-t01-m-left-right-fixed"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch14-t02",
+   "title": "Reading distances on a map",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "fuel",
+   "skillId": "c5-maths-ch14-t02-s2",
+   "skillIds": [
+    "c5-maths-ch14-t02-s2",
+    "c5-maths-ch14-t02-s1"
+   ],
+   "grammar": {
+    "ks": [
+     2,
+     5,
+     10
+    ],
+    "unit": "km",
+    "cap": 150
+   },
+   "misMap": {
+    "map-is-real": "c5-maths-ch14-t02-m-map-is-real",
+    "add-scale": "c5-maths-ch14-t02-m-add-scale",
+    "straight-line": "c5-maths-ch14-t02-m-straight-line-route"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch14-t02",
+   "title": "Reading distances on a map",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "reach",
+   "skillId": "c5-maths-ch14-t02-s3",
+   "skillIds": [
+    "c5-maths-ch14-t02-s3"
+   ],
+   "grammar": {
+    "ks": [
+     2,
+     3,
+     4,
+     5
+    ],
+    "unit": "m",
+    "cap": 60
+   },
+   "misMap": {
+    "map-is-real": "c5-maths-ch14-t02-m-map-is-real",
+    "add-scale": "c5-maths-ch14-t02-m-add-scale"
+   }
+  },
+  {
+   "topicId": "c6-sst-ch01-t01",
+   "title": "Locating Places on the Earth",
+   "classLevel": 6,
+   "subject": "sst",
+   "family": "naksha",
+   "mode": "locate",
+   "goal": "fix",
+   "skillId": "c6-sst-ch01-t01-s3",
+   "skillIds": [
+    "c6-sst-ch01-t01-s3",
+    "c6-sst-ch01-t01-s2"
+   ],
+   "grammar": {
+    "step": 10
+   },
+   "misMap": {
+    "swap-latlong": "c6-sst-ch01-t01-m1"
+   }
+  },
+  {
+   "topicId": "c6-sst-ch01-t01",
+   "title": "Locating Places on the Earth",
+   "classLevel": 6,
+   "subject": "sst",
+   "family": "naksha",
+   "mode": "scale",
+   "goal": "fuel",
+   "skillId": "c6-sst-ch01-t01-s1",
+   "skillIds": [
+    "c6-sst-ch01-t01-s1"
+   ],
+   "grammar": {
+    "ks": [
+     4,
+     5,
+     10,
+     20
+    ],
+    "unit": "km",
+    "cap": 200
+   },
+   "misMap": {
+    "map-is-real": "c6-sst-ch01-t01-m3"
    }
   },
   {
