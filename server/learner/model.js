@@ -1,6 +1,7 @@
 // Learner-model persistence: skill_state, misconception_state, evidence, and the child brief.
 // Every writer asserts its row count (inherited rejection: dead writers / UPDATE-only writers).
 import { q, one } from "../db.js";
+import { BANDS } from "./bands.js";
 import { withDue } from "./bkt.js";
 import { fitBrief, cleanRows } from "./brief.js";
 import { misconceptionById, skillById } from "../content/index.js";
@@ -96,7 +97,12 @@ export async function loadRecentStuck(childId, skillIds) {
 }
 
 /** Classes 1-4 → "6-9", classes 5-9 → "10-15" (the two design bands of learning-science §3.8). */
-export const ageBandFor = (classLevel) => (classLevel <= 4 ? "6-9" : "10-15");
+// round 7 (decision D3): the legacy age band is the band table's (class 4 is "10-15" now); out of range → the nearest end
+// (no class known: "10-15", as before)
+export const ageBandFor = (classLevel) => {
+  const c = Math.round(Number(classLevel));
+  return Number.isFinite(c) ? BANDS[Math.min(9, Math.max(1, c))].contract : "10-15";
+};
 
 /**
  * Vibe defaults by band. The old vibeFrom() inferred pace and verbosity from the child's raw transcripts
