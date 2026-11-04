@@ -24465,6 +24465,20 @@
    "at": "2026-11-04",
    "title": "Stop patching the Director line by line; next block is structural. S1 guards enforce (regenerate once with the constraint, else a code line; no flagged line ships). S2 worked examples code-rendered from the kit; questions templated so the answer cannot be inside. S3 one live item; arc follows the kit's skill order with bridges. S4 steering real (picture→Studio board, game→play family; harness records the screen). S5 remove sentence-shaped prompt text. S6 reply-model A/B (taxila-gpt6 vs taxila-fast). Reverse: a re-run after S1-S5 shows the same defects (then the plan and wording architecture is the problem, not enforcement).",
    "source": "inbox/r7-main-6.json"
+  },
+  {
+   "id": "jd-r7-reply-model-ab-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Director reply-model A/B: taxila-fast (director2, cb999f79) vs taxila-gpt6 (fb995233), the same 12 scripted lessons (c4/c5/c6 × 4 scenarios), classify on fast in both. One Claude judge read all 240 turns; not blind; the arms are on slightly different heads. Lesson wins: fast 4, gpt6 4, even 4. Defects ≈ 22 (fast) vs ≈ 21 (gpt6) plus 8 gpt6 guard fallbacks. Real worked examples fast 3 + 5 partial vs gpt6 1 + 3. gpt6 better at handling the child's words and in real Hindi; worse at worked examples, repetition and missed wrong answers. Reply-ready p50 2.52 vs 3.21 s (+0.69), p90 3.56 vs 4.54 s (+0.98); ~6× cost.",
+   "source": "inbox/r7-main-7.json"
+  },
+  {
+   "id": "dc-r7-reply-model-fast",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Keep taxila-fast as the Director reply model on every turn, teaching turns included. Why: jd-r7-reply-model-ab-2026-11-04 shows no teaching gain for taxila-gpt6 (it is worse on worked examples and repetition) at +0.7 s p50 and ~6× cost; the shared defects are upstream (Director and kit) and are addressed by S2/S3. Reverse: after S2-S5, an A/B on the same head shows the stronger model clearly better at teaching for ≤ 0.5 s.",
+   "source": "inbox/r7-main-7.json"
   }
  ],
  "edges": [
@@ -38492,6 +38506,16 @@
    "src": "dc-r7-brain-structural-block",
    "rel": "part_of",
    "dst": "dc-r7-hybrid-director-default"
+  },
+  {
+   "src": "dc-r7-reply-model-fast",
+   "rel": "measured_by",
+   "dst": "jd-r7-reply-model-ab-2026-11-04"
+  },
+  {
+   "src": "dc-r7-reply-model-fast",
+   "rel": "part_of",
+   "dst": "dc-r7-brain-structural-block"
   }
  ]
 }

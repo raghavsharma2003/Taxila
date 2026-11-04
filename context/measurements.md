@@ -5127,3 +5127,9 @@ Method: stream A's harness. Director half run on f2c55d0d (results/2026-11-04-fu
 ## jd-r7-director2-2026-11-04 (main loop judge, 2026-11-04)
 
 Method: stream A's harness, Director-only re-run at cb999f79 (fix block 2), results/2026-11-04-director2; n = 12 lessons (c4/c5/c6 × steady/offtopic/stuck/steering), ~10 child turns each, same scripted Hinglish child as 2026-11-04-full. Three Claude judges, one per class, read every teacher turn of each NEW lesson and its BEFORE twin; the main loop combined their verdicts; not blind. Per-item table and root causes: docs/design/round7/judgements/director2-2026-11-04.md.
+
+
+<!-- merged from inbox/r7-main-7.json -->
+## jd-r7-reply-model-ab-2026-11-04 (main loop, 2026-11-04)
+
+Method: stream A's harness, Director-only. Arm A taxila-fast (results/2026-11-04-director2, cb999f79); arm B taxila-gpt6 (results/2026-11-04-gpt6-ab, fb995233). Classify on taxila-fast in both. n = 12 lessons per arm (c4/c5/c6 × steady/offtopic/stuck/steering), the same scripted Hinglish child. One Claude judge read all 240 teacher turns; not blind; the arms differ slightly in code repairs. Wins 4/4/4. Worked examples: A 3 real + 5 partial, B 1 + 3. B had 8 guard fallbacks. Latency from the json: p50 2.52 vs 3.21 s, p90 3.56 vs 4.54 s. Cost ~$0.21 vs ~$1.26.

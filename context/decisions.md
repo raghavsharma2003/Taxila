@@ -7076,3 +7076,9 @@ App now publishes where the teacher's picture sits. Studio reads that live, inst
 ## dc-r7-brain-structural-block (2026-11-04, main loop)
 
 After two fix blocks the surface defects moved but the owner's core complaints stayed: quiz in costume, steering not real, the answer inside the question, abandoned items, no real worked example. The guards detected the bad turns but did not stop them. So the next Brain block is structural (S1-S6): enforcing guards, code-rendered worked examples and question templates, one live item, real steering through Studio and the play family with the harness recording the screen, de-recited prompts, and a reply-model A/B. Reversal: if a re-run after S1-S5 shows the same defects, the plan and wording architecture is the problem and gets redesigned.
+
+
+<!-- merged from inbox/r7-main-7.json -->
+## dc-r7-reply-model-fast (2026-11-04, main loop)
+
+The Director's reply model stays taxila-fast on every turn. The stronger taxila-gpt6 gave no teaching gain (fewer real worked examples, more repetition, missed wrong answers), though it handled the child's words and Hindi a little better, at +0.7 s p50 and ~6× cost. The shared defects come from the Director and the kits, and S2/S3 address them. Reversal: after S2-S5, a same-head A/B shows the stronger model clearly better at teaching for ≤ 0.5 s extra.

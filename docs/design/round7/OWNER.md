@@ -14,6 +14,7 @@ tsc + build + 4265 unit tests green, single process). Live model calls so far: o
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
 | 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
+| 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
 | 7 | The Founders Hub Milestone-3 usage plan; whether the subscription spending limit is back on | From the cost work on 2026-10-24. |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
@@ -70,7 +71,14 @@ in parts, start with tiers 1 and 2 (~$21).
   - The agent dropped class-6 children to counting drills.
   - Neither met the bar, and the worst defect was praising a wrong answer.
   - Write-up: `judgements/hybrid-full-2026-11-04.md`.
-- Brain then fixed all 11 defects as code rules. A 12-lesson re-run is being judged now.
+- Brain then fixed the 11 defects. The re-run showed the fixes were shallow, because the guards detected bad lines but didn't stop them. The next block is structural:
+  - guards enforce;
+  - worked examples are rendered from the kit;
+  - one question is live at a time;
+  - picture and game requests are real.
+  
+  Write-up: `judgements/director2-2026-11-04.md`.
+- A stronger reply model (taxila-gpt6) was tried: no teaching gain, +0.7 s, about 6× the cost. Kept the fast model (`dc-r7-reply-model-fast`).
 
 ## 4. Calls the main loop took that you may want to reverse
 
