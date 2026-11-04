@@ -15,25 +15,28 @@ tsc + build + 3932 unit tests green). Nothing in round 7 has run live yet: the A
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
 | 7 | The Founders Hub Milestone-3 usage plan; whether the subscription spending limit is back on | From the cost work on 2026-10-24. |
 
-## 2. Spend batch (Azure Foundry, Direct; judging is done by Claude in-session, so it costs nothing)
+## 2. Spend batch (Azure Foundry, Direct): Azure only authors
 
-Every run has a hard call cap and a `--dry-run` that prints the plan without making calls.
+Claude does all checking in-session, so the checks cost nothing on Azure: the blind-solve of every key, the form
+equivalence check, adjudication and level rating. Figures come from the scripts' own dry runs
+(`node scripts/kits/run.mjs all`). Dry run is the default. Spending needs `--run --cap N`, and runs are resumable.
+(Corrected 2026-11-04: the first estimate of ~$127 had counted Azure checkers.)
 
-| Tier | Work | Calls | ~Cost | Unblocks |
+| Tier | Work | Azure calls | ~Cost | Unblocks |
 |---|---|---|---|---|
-| 1 | G1 sentence-train grammar items (55 skills, 284 items short) | 540 | $5 | English and Hindi grammar games (Games) |
-| 1 | W1a Hinglish/Devanagari answer forms (293 items) | 325 | $3 | Hinglish answers graded correctly |
-| 2 | W2a relevel class 4-7 (4,695 items with no measured level) | 470 | $10 | Questions matched to the child's level (OWNER-RESET #2) |
-| 3 | W1b Hindi worked-example steps, class 4-7 maths | 280 | $3 | Worked examples in Hindi |
-| 3 | W1c explain plans per skill, class 4-7 maths (424 skills) | 850 | $30 | Richer explanations (Brain) |
-| 4 | W3 language kits on real texts, class 4-7 English/Hindi | 3,500 | $60 | English/Hindi lessons on real passages |
-| 4 | W2b relevel classes 1-3 and 8-9 | 575 | $12 | Level match outside 4-7 |
-| 4 | W4 placement banks, class 9 maths/science | 300 | $4 | Placement for class 9 |
+| 1 | G1 sentence-train grammar items (55 skills) | 83 | $2.66 | English and Hindi grammar games (Games) |
+| 1 | W1a Hinglish/Devanagari answer forms | 30 | $0.60 | Hinglish answers graded correctly |
+| 2 | W1b Hindi worked-example steps, class 4-7 maths | 141 | $2.62 | Worked examples in Hindi |
+| 2 | W1c explain plans per skill, class 4-7 maths (424 skills) | 424 | $15.26 | Richer explanations (Brain) |
+| 3 | W3 language kits on real texts, class 4-7 English/Hindi (101 topics) | 101 | $4.85 | English/Hindi lessons on real passages |
+| 3 | W4 placement banks, class 9 maths/science | 8 | $0.36 | Placement for class 9 |
+| — | W2 relevel, all classes | 0 | $0 | Level match (OWNER-RESET #2): rated by Claude in-session, no approval needed |
 | — | Face: the 27 daily-greeting clips (DragonHD) | 27 | cents | Her spoken home greeting |
 | — | Face: painted pose stills (wave, reading, …) via Azure images | tbd | small | Replaces stand-in stills |
-| **All** | | **~6,870** | **~$127 (≈ ₹10,700)** | |
+| **All** | | **~815** | **~$26 (≈ ₹2,200)** | |
 
-Recommendation: tiers 1 and 2 first (~$18), then tier 3 (~$33). Tier 4 waits until the lessons themselves are judged good.
+Recommendation: approve it all. At ~$26 it is less than one test-battery day was in October. If you'd rather approve
+in parts, start with tiers 1 and 2 (~$21).
 
 ## 3. What you can look at now (all in `docs/design/round7/`)
 
