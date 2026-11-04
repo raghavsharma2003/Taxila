@@ -69,3 +69,9 @@ test("the geometry spec is generated from the solver and current", async () => {
   const { execFileSync } = await import("node:child_process");
   execFileSync(process.execPath, [new URL("../src/child/dev/stage-geometry.mjs", import.meta.url).pathname, "--check"]);
 });
+
+test("the stage slot publishes the live PiP keep-clear zone for Studio (data-pip-zone, --pip-zone-*)", () => {
+  const body = fs.readFileSync(new URL("../src/ui-v3/kaksha/lesson/StageBody.tsx", import.meta.url), "utf8");
+  assert.match(body, /data-pip-zone=\{pipZone \? "bottom-right" : "none"\}/);
+  for (const v of ["--pip-zone-w", "--pip-zone-h", "--pip-zone-right", "--pip-zone-bottom"]) assert.ok(body.includes(v), v);
+});
