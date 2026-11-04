@@ -31,29 +31,10 @@ export function moduleLevelWrites(src) {
   return [...new Set(out)];
 }
 
-// present at int/r6 5a5b2f45 (2026-11-04). Brain is removing the TAXILA_R7_* ones; FORGE_* and the globals belong to
-// their suites' owners. Do not add to this list: fix the new suite instead.
+// present at int/r6 07185e93 (2026-11-04, after integration 3b: Brain, Forge, Studio, Games and Face moved theirs into
+// hooks). Do not add to this list: fix the new suite instead.
 const KNOWN_DEBT = new Set([
-  "brain-turn.test.mjs env.TAXILA_R7_BYE_CHECKIN",
-  "director-truth.test.mjs env.TAXILA_R7_BYE_CHECKIN",
-  "owner-requests.test.mjs env.TAXILA_R7_BYE_CHECKIN",
-  "owner-requests.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "p5-interaction-director.test.mjs env.TAXILA_R7_BYE_CHECKIN",
-  "p5-interaction-director.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "p5-interaction-director.test.mjs env.TAXILA_R7_FRUSTRATION",
-  "r13-visual-honest.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "r144-ways-chips-lang.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "r145-topic-asks.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "r5-census-ways.test.mjs env.TAXILA_R7_PARK_TOPIC",
-  "forge-g1-serve.test.mjs env.FORGE_DB_CACHE",
-  "forge-g1-serve.test.mjs env.FORGE_BLOB",
-  "forge-g1-serve.test.mjs env.AZURE_OPENAI_ENDPOINT",
-  "forge-g1-serve.test.mjs env.AZURE_OPENAI_API_KEY",
-  "forge-g1.test.mjs env.FORGE_DB_CACHE",
-  "forge-g1.test.mjs env.FORGE_BLOB",
-  "forge-g2.test.mjs env.FORGE_PUBLIC_BASE",
   "p2-face-flag.test.mjs globalThis.localStorage",
-  "p4-content-unit.test.mjs globalThis.__kits",
   "r4-asha-blink.test.mjs globalThis.performance",
 ]);
 
