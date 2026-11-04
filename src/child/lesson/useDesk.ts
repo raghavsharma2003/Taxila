@@ -102,9 +102,9 @@ const REQUESTS: Record<string, [string, string, string]> = {
 /** r7 app-lesson-steer-chips: the DEFAULT steer row, used while the server sends no ui.steer (absent; [] = no row). Brain's
  *  contract (shared/contracts.ts SteerId): a tap sends chipId = the steer id, and server/director/steer.js reads it as
  *  the request the words would make. STEER_CHIP: the short label, STEER_SAID: the words shown as what the child said,
- *  one per lesson language (hinglish, hindi, english; DESIGN-V3 §5). "Something else" has no steer id (asked of Brain),
- *  so it goes as words the lexicon's change_topic reads ("kuch aur baat karte hain"). */
-export const STEER_ID: Record<SteerKey, SteerId | null> = { diagram: "steer:picture", game: "steer:game", another: "steer:another", else: null };
+ *  one per lesson language (hinglish, hindi, english; DESIGN-V3 §5). "Something else" (Kuch aur) sends
+ *  (Brain 178c73a8): steer:else, the change_topic request, never a stop. */
+export const STEER_ID: Record<SteerKey, SteerId | null> = { diagram: "steer:picture", game: "steer:game", another: "steer:another", else: "steer:else" };
 export const STEER_CHIP: Record<SteerKey, [string, string, string]> = {
   diagram: ["Diagram", "चित्र", "Diagram"],
   game: ["Game", "खेल", "A game"],
@@ -462,8 +462,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const engineOpen = ctx.openMic || !!bs?.duplexLive;
   const openMic = engineOpen || (handsFree !== null && handsFree !== "fallback");
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
-  // the hands-free dock (starting / listening / … / muted) never shows the talk button; the fallback dock is today's
-  const tapToTalk = spoken && (handsFree !== null && handsFree !== "fallback" ? false : state.phase === "live" ? pttOn || !openMic : !openMic);
+  // the hands-free dock (starting / listening / … / waiting) never shows the talk button; the fallback dock is today's. Muted
+  // (Voice 446ca383): push-to-talk is forced, and a tap opens the mic for that one turn, so the Talk button is back.
+  const tapToTalk = spoken && (handsFree !== null && handsFree !== "fallback" && handsFree !== "muted" ? false : state.phase === "live" ? pttOn || !openMic : !openMic);
   tapToTalkNow.current = tapToTalk;
   const paused = sheet !== null;
   const ptt = useTapToTalk({
