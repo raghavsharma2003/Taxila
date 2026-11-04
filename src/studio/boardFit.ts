@@ -74,6 +74,7 @@ function scaleOp(o: Op, f: number, dx: number, dy: number): Op {
   if ("c" in o) r.c = P(o.c);
   if (Array.isArray(o.points)) r.points = (o.points as unknown[]).map(P);
   if (o.op === "rect") { r.w = S(o.w); r.h = S(o.h); }
+  if (o.op === "numwork" && typeof o.w === "number") r.w = S(o.w);   // a number line's own length (round 7)
   if (o.op === "circle" || o.op === "sector") r.r = S(o.r);
   if (o.op === "ellipse") { r.rx = S(o.rx); r.ry = S(o.ry); }
   // round 7 (motion ops): a move's shift and hop are lengths: scaled, never shifted

@@ -1,4 +1,4 @@
-# Round 7 C1 Studio: the board that moves (fraction split)
+# Round 7 C1 Studio: the boards that move (fraction split, number-line jump)
 
 Local recordings: headless Chromium, the real child lesson route, API mocked, no model calls. The board is the real board-first pick for c5-maths-ch02-t02 "Comparing fractions" (her first explain move).
 
@@ -21,4 +21,20 @@ The board then writes 1/8 < 1/4 and highlights it (in the mp4s).
   - the moving board fails any gate as it ends; the still board is shown instead.
 - **Owner check:** taste of the motion (the distance and the 0.7 s duration).
 
-Re-record with `node evals/studio-timing/record-split.mjs <split.json> <outdir>`.
+## The number-line jump
+
+| file | what |
+|---|---|
+| `jump-p412.mp4` / `jump-p412-strip.png` | 412×915 phone |
+| `jump-w1280.mp4` / `jump-w1280-strip.png` | 1280×800 wide |
+
+The board is c1-maths-ch06-t02 "Subtracting within 20", from the item "start at 18 and jump back 5". The strips show three frames:
+1. just before the hop: the dot on 18;
+2. mid-hop: the dot in the air on the −5 arc;
+3. landed on 13.
+
+Each hop of a `number-line-hop@1` board moves its dot as the arrow draws, and the hops add up. Code picks this template for 80 maths items and worked examples (31 kits, classes 1-9).
+
+The recording also caught a still-board bug, fixed in the same commit. The number line was drawn as long as its label count gave (about 180 units) while the dots and hops were placed on a 340-unit line, so the start dot sat off the end and the labels ran together ("1213"). A number line now carries its own length (`w`).
+
+Re-record with `node evals/studio-timing/record-split.mjs <board.json> <outdir> [name]`.

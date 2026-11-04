@@ -214,11 +214,13 @@ function numberLineHop(c, tl) {
   const x0 = 30, W = 340, y = 170;
   const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
   const labels = [...new Set([a, ...all, b])].sort((p, q) => p - q).map(String);
-  tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], weight: 2 }, 1100);
-  tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
+  tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], w: W, weight: 2 }, 1100);
+  const dot = tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
   all.slice(1).forEach((e, i) => {
     const from = xOf(all[i]), to = xOf(e);
     tl.add({ op: "arrow", from: [from, y - 10], to: [to, y - 10], bend: hops[i] > 0 ? -0.6 : 0.6, ink: "accent" }, 800, { gap: 220 });
+    // round 7 (C1 motion ops): the dot JUMPS along the hop as its arrow draws (reduced motion: it lands at once)
+    tl.add({ op: "move", target: dot, by: [Math.round((to - from) * 10) / 10, 0], arc: Math.round(Math.min(50, 8 + Math.abs(to - from) * 0.25)) }, 800, { with: true });
     tl.add({ op: "text", at: [(from + to) / 2, y - 22 - Math.min(60, Math.abs(to - from) * 0.3), ], text: `${hops[i] > 0 ? "+" : "-"}${Math.abs(hops[i])}`, size: "s", ink: "accent" }, 300, { with: true });
   });
   tl.add({ op: "circle", c: [xOf(pos), y], r: 7, fill: "good", ink: "good" }, 300);
