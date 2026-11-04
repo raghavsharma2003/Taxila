@@ -21,6 +21,8 @@ export interface ControlsT {
   address: "tum" | "aap" | null; reportChannel: "whatsapp" | "app"; saved?: boolean;
   /** W2-A: per-child "Tap and type only" (server truth) and "Homework help today". */
   textOnly?: boolean; homeworkToday?: boolean;
+  /** round 7 F (dc-r7 D5): the family's own daily-limit opt-in; Extra time to answer; Data saver. */
+  limitsOn?: boolean; extraTime?: "normal" | "more" | "most"; dataSaver?: boolean;
 }
 export interface ChildOut { id: string; firstName: string; classLevel: number; board: string; schoolMedium: string; languagePref: string; avatar: string | null }
 export interface TopicRef { id: string; title: string; shortTitle?: string | null; chapter?: string; subject?: string }
@@ -119,7 +121,19 @@ export interface ParentMemory {
 }
 
 const qs = (o: Record<string, string>) => new URLSearchParams(o).toString();
+/** Round 7 F items 1-2: the school's position per subject and the weekly school timetable (weekday 0 = Sunday). */
+export interface ChapterRef { number: number; title: string }
+export interface SchoolOut { chapters: Record<string, ChapterRef[]>; pointer: Record<string, number>; timetable: Record<string, string[]> }
+
+export interface PlacementSummary { subject: string; level: "behind" | "on_track" | "ahead"; startGE: number; skipAhead: boolean; chapter: ChapterRef | null }
+
 export const parentApi = {
+  placement: (childId: string) => getJson<{ results: Record<string, PlacementSummary> }>(`/api/placement/result?${qs({ childId })}`),
+  school: (childId: string) => getJson<SchoolOut>(`/api/parent/school?${qs({ childId })}`),
+  chapters: (classLevel: number) => getJson<{ chapters: Record<string, ChapterRef[]> }>(`/api/parent/chapters?${qs({ classLevel: String(classLevel) })}`),
+  setSchoolChapter: (childId: string, subject: string, chapter: number | null) =>
+    postJson<{ pointer: Record<string, number> }>("/api/parent/school-chapter", { childId, subject, chapter }),
+  setTimetable: (childId: string, days: Record<string, string[]>) => postJson<{ timetable: Record<string, string[]> }>("/api/parent/timetable", { childId, days }),
   memory: (childId: string) => getJson<ParentMemory>(`/api/parent/memory?${qs({ childId })}`),
   /** id "all" deletes every memory row of the child */
   deleteMemory: (childId: string, id: string) => request<{ deleted: number }>("DELETE", "/api/parent/memory", { childId, id }),
@@ -133,7 +147,7 @@ export const parentApi = {
   lessons: (childId: string) => getJson<{ lessons: LessonLine[] }>(`/api/parent/lessons?${qs({ childId })}`),
   lesson: (childId: string, lessonId: string) => getJson<LessonCardOut>(`/api/parent/lesson?${qs({ childId, lessonId })}`),
   syllabus: (childId: string) => getJson<SyllabusOut>(`/api/parent/syllabus?${qs({ childId })}`),
-  controls: (childId: string) => getJson<{ controls: ControlsT; dayLimits?: boolean }>(`/api/parent/controls?${qs({ childId })}`),
+  controls: (childId: string) => getJson<{ controls: ControlsT; dayLimits?: boolean; dayLimitsMode?: "on" | "off" | "child"; reportChannels?: ("whatsapp" | "app")[] }>(`/api/parent/controls?${qs({ childId })}`),
   setControls: (childId: string, c: Partial<ControlsT>) => postJson<{ controls: ControlsT }>("/api/parent/controls", { childId, ...c }),
   madeFor: (childId: string) => getJson<{ items: import("../../shared/contracts.ts").MadeForItem[] }>(`/api/parent/made-for?${qs({ childId })}`),
   homeTask: (childId: string, at: { period: string } | { lessonId: string }, done: boolean) => postJson("/api/parent/hometask", { childId, ...at, done }),

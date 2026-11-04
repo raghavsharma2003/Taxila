@@ -264,7 +264,13 @@ import { build as buildCoverage, ACTS, RULES } from "../server/play/tools/build-
 
 describe("round3 fix: play is admitted by the skill its act exercises (adversarial B1)", () => {
   test("skills a game does not exercise are not admitted (the review's five)", () => {
-    for (const sk of ["c4-maths-ch07-t01-s1", "c5-maths-ch04-t01-s1", "c4-maths-ch10-t02-s1", "c7-maths-ch15-t01-s1", "c6-science-ch01-t02-s1"]) assert.equal(hasPlay(sk), false, sk);
+    // r7: ITEM-ARENA (the broad net, after every law family) may serve these skills, but only with their OWN verified items;
+    // no law family whose act exercises another skill is ever admitted for them
+    for (const sk of ["c4-maths-ch07-t01-s1", "c5-maths-ch04-t01-s1", "c4-maths-ch10-t02-s1", "c7-maths-ch15-t01-s1", "c6-science-ch01-t02-s1"]) {
+      const e = entryFor({ skillId: sk });
+      assert.ok(e === null || e.family === "arena", sk);
+      assert.equal(hasPlay(sk), e !== null, sk);
+    }
     for (const sk of ["c4-maths-ch07-t01-s2", "c5-maths-ch04-t01-s2", "c6-maths-ch07-t03-s1", "c7-science-ch10-t01-s3"]) assert.equal(hasPlay(sk), true, sk);
   });
   test("every rule has an authored ACTS entry, every entry's skills are exactly its ACTS, and the file on disk is the build", () => {
@@ -284,7 +290,8 @@ describe("round3 fix: play is admitted by the skill its act exercises (adversari
     assert.deepEqual([...new Set(lessonEvidence(g.grade, r.level).map((e) => e.skillId))], ["c4-maths-ch07-t01-s2"]);
   });
   test("an addition lesson's 'game khelna hai' is never answered with the subtraction game (no topic fallback for a named skill)", async () => {
-    assert.equal(entryFor({ skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" }), null);
+    const e = entryFor({ skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" });
+    assert.ok(e === null || e.family === "arena", "only the arena, with the addition skill's own items");
     const live = await buildLive({ ask: "game", lessonId: "11111111-1111-1111-1111-111111111111", child: { id: "00000000-0000-0000-0000-0000000000cc", class_level: 4, language_pref: "hinglish" },
       skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" }, { q: undefined });
     assert.ok(!live || live.artifact.play.mode !== "bundles");

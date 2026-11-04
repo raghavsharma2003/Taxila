@@ -1,0 +1,6028 @@
+{
+ "v": 1,
+ "tier": "A",
+ "source": "data/kits/c1-maths.json",
+ "challenges": [
+  {
+   "id": "c1-maths-ch01-t01-i01",
+   "topicId": "c1-maths-ch01-t01",
+   "skillId": "c1-maths-ch01-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The cat is sitting on top of the almirah. Is the cat up or down?",
+    "hi": "Billi almari ke upar baithi hai. Billi upar hai ya neeche?"
+   },
+   "hint": "Is the cat on the almirah or under it?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "up"
+    },
+    {
+     "id": "o2",
+     "text": "down"
+    }
+   ],
+   "keyText": "up"
+  },
+  {
+   "id": "c1-maths-ch01-t01-i02",
+   "topicId": "c1-maths-ch01-t01",
+   "skillId": "c1-maths-ch01-t01-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The ball is in the basket. Is the ball inside or outside?",
+    "hi": "Ball tokri mein hai. Ball andar hai ya bahar?"
+   },
+   "hint": "If you look into the basket, will you see the ball?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "inside"
+    },
+    {
+     "id": "o2",
+     "text": "outside"
+    }
+   ],
+   "keyText": "inside"
+  },
+  {
+   "id": "c1-maths-ch01-t01-i05",
+   "topicId": "c1-maths-ch01-t01",
+   "skillId": "c1-maths-ch01-t01-s2",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "I put a laddoo on top of a closed dabba lid. Guess first: if I open the dabba, will the laddoo be inside?",
+    "hi": "Main ek laddoo band dabbe ke dhakkan ke upar rakhti hoon. Pehle guess karo: dabba kholenge to laddoo andar milega?"
+   },
+   "hint": "The lid was closed. Could the laddoo get in?",
+   "mis": "c1-maths-ch01-t01-mc-on-in",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch01-t02-i05",
+   "topicId": "c1-maths-ch01-t02",
+   "skillId": "c1-maths-ch01-t02-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Two rows with 4 laddoos each. I will spread one row out wide. Guess first: will it have more, fewer, or the same?",
+    "hi": "Do line hain, dono mein 4-4 laddoo. Main ek line ko door-door phaila doongi. Pehle guess karo: zyada honge, kam, ya utne hi?"
+   },
+   "hint": "Will I take any away?",
+   "mis": "c1-maths-ch01-t02-mc-spread-more",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "fewer"
+    },
+    {
+     "id": "o2",
+     "text": "the same"
+    }
+   ],
+   "keyText": "the same"
+  },
+  {
+   "id": "c1-maths-ch01-t02-i09",
+   "topicId": "c1-maths-ch01-t02",
+   "skillId": "c1-maths-ch01-t02-s2",
+   "difficulty": 2,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "Each child gets one roti. There are 4 children and 3 rotis. Are there enough rotis?",
+    "hi": "Har bachche ko ek roti milegi. 4 bachche hain aur 3 rotiyaan. Kya rotiyaan kaafi hain?"
+   },
+   "hint": "After 3 children get a roti, how many children are still waiting?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch01-t02-i10",
+   "topicId": "c1-maths-ch01-t02",
+   "skillId": "c1-maths-ch01-t02-s3",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu puts 5 marbles close together and 5 marbles far apart. He says the far-apart ones are more. Is he right?",
+    "hi": "Bholu 5 kanche paas-paas rakhta hai aur 5 kanche door-door. Woh kehta hai door wale zyada hain. Kya woh sahi hai?"
+   },
+   "hint": "Does spreading them add a marble?",
+   "mis": "c1-maths-ch01-t02-mc-spread-more",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch01-t02-i12",
+   "topicId": "c1-maths-ch01-t02",
+   "skillId": "c1-maths-ch01-t02-s3",
+   "difficulty": 3,
+   "itemKind": "teachback",
+   "prompt": {
+    "en": "Teach Chintu: if he spreads out his laddoos on the plate, does he get more laddoos?",
+    "hi": "Chintu ko samjhao: agar woh plate pe apne laddoo phaila de, to kya laddoo zyada ho jaayenge?"
+   },
+   "hint": "What would he have to do to really get more laddoos?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch01-t03-i07",
+   "topicId": "c1-maths-ch01-t03",
+   "skillId": "c1-maths-ch01-t03-s1",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Rajma, chana and moong are mixed in a katori. How many groups will you make?",
+    "hi": "Ek katori mein rajma, chana aur moong mix hain. Kitne group banaoge?"
+   },
+   "hint": "Name them one by one.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4 groups"
+    },
+    {
+     "id": "o2",
+     "text": "3 groups"
+    },
+    {
+     "id": "o3",
+     "text": "8 groups"
+    },
+    {
+     "id": "o4",
+     "text": "2 groups"
+    }
+   ],
+   "keyText": "3 groups"
+  },
+  {
+   "id": "c1-maths-ch02-t01-i05",
+   "topicId": "c1-maths-ch02-t01",
+   "skillId": "c1-maths-ch02-t01-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A long pencil is lying down. I stand it up. Guess first: is it still long?",
+    "hi": "Ek lambi pencil leti hui hai. Main use khada kar deti hoon. Pehle guess karo: kya ab bhi lambi hai?"
+   },
+   "hint": "Are the two ends still the same distance apart?",
+   "mis": "c1-maths-ch02-t01-mc-turn-changes",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch02-t01-i12",
+   "topicId": "c1-maths-ch02-t01",
+   "skillId": "c1-maths-ch02-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Is a one-rupee coin round or long?",
+    "hi": "Ek rupaye ka sikka gol hai ya lamba?"
+   },
+   "hint": "Trace its edge — any corners?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "round"
+    },
+    {
+     "id": "o2",
+     "text": "long"
+    }
+   ],
+   "keyText": "round"
+  },
+  {
+   "id": "c1-maths-ch02-t01-i13",
+   "topicId": "c1-maths-ch02-t01",
+   "skillId": "c1-maths-ch02-t01-s1",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A water bottle: is it long, round, or both?",
+    "hi": "Paani ki bottle: lambi hai, gol hai, ya dono?"
+   },
+   "hint": "Now look at it from the top. What shape is the cap?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "round"
+    },
+    {
+     "id": "o2",
+     "text": "both"
+    }
+   ],
+   "keyText": "both"
+  },
+  {
+   "id": "c1-maths-ch02-t02-i02",
+   "topicId": "c1-maths-ch02-t02",
+   "skillId": "c1-maths-ch02-t02-s3",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Can you make a tower with matchboxes?",
+    "hi": "Kya maachis ki dibbiyon se tower bana sakte ho?"
+   },
+   "hint": "Are they flat or curved?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch02-t02-i03",
+   "topicId": "c1-maths-ch02-t02",
+   "skillId": "c1-maths-ch02-t02-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A matchbox is on a slanting notebook. Will it roll or slide?",
+    "hi": "Maachis ki dibbi tedhi copy pe rakhi hai. Woh lurhkegi ya phisalegi?"
+   },
+   "hint": "Is that part flat or curved?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "roll"
+    },
+    {
+     "id": "o2",
+     "text": "slide"
+    }
+   ],
+   "keyText": "slide"
+  },
+  {
+   "id": "c1-maths-ch02-t02-i04",
+   "topicId": "c1-maths-ch02-t02",
+   "skillId": "c1-maths-ch02-t02-s1",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "I lay a water bottle on its side on a slope. Guess first: will it roll?",
+    "hi": "Main paani ki bottle ko karvat se dhalaan pe rakhti hoon. Pehle guess karo: lurhkegi?"
+   },
+   "hint": "Is that part curved?",
+   "mis": "c1-maths-ch02-t02-mc-only-balls",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch02-t02-i09",
+   "topicId": "c1-maths-ch02-t02",
+   "skillId": "c1-maths-ch02-t02-s3",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu says ghee tins cannot be stacked because they are round. Is he right?",
+    "hi": "Bholu kehta hai ghee ke dibbe upar-neeche nahi rakh sakte kyunki woh gol hain. Kya woh sahi hai?"
+   },
+   "hint": "Is the bottom flat too?",
+   "mis": "c1-maths-ch02-t02-mc-round-no-stack",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch02-t02-i13",
+   "topicId": "c1-maths-ch02-t02",
+   "skillId": "c1-maths-ch02-t02-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Will an orange roll or slide?",
+    "hi": "Santra lurhkega ya phisalega?"
+   },
+   "hint": "Is it curved all over?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "roll"
+    },
+    {
+     "id": "o2",
+     "text": "slide"
+    }
+   ],
+   "keyText": "roll"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i01",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count with me from 1. What comes after 4?",
+    "hi": "Mere saath 1 se gino. 4 ke baad kya aata hai?"
+   },
+   "hint": "1, 2, 3, 4...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "5"
+    },
+    {
+     "id": "o2",
+     "text": "15"
+    },
+    {
+     "id": "o3",
+     "text": "10"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i02",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s3",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "1 mango, 2 mangoes, 3 mangoes. How many mangoes in all?",
+    "hi": "1 aam, 2 aam, 3 aam. Kul kitne aam?"
+   },
+   "hint": "We stopped at which number?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i03",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count the fingers on one of your hands. How many?",
+    "hi": "Apne ek haath ki ungliyaan gino. Kitni hain?"
+   },
+   "hint": "Start with your thumb: 1...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "10"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i04",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s4",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "There are lots of rotis. Give 4 rotis to Dadi. When do you stop counting?",
+    "hi": "Bahut saari rotiyaan hain. Dadi ko 4 rotiyaan do. Ginna kab rokoge?"
+   },
+   "hint": "Count as you give: 1, 2...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "40 pe"
+    },
+    {
+     "id": "o2",
+     "text": "14 pe"
+    },
+    {
+     "id": "o3",
+     "text": "5 pe"
+    },
+    {
+     "id": "o4",
+     "text": "4 pe"
+    }
+   ],
+   "keyText": "4 pe"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i07",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu counts 4 mangoes but touches one mango two times. He says 5. What went wrong?",
+    "hi": "Bholu 4 aam ginta hai par ek aam ko do baar chhoo leta hai. Woh kehta hai 5. Kya galat hua?"
+   },
+   "hint": "Bholu touched one mango how many times?",
+   "mis": "c1-maths-ch03-t01-mc-one-to-one",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "2"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i09",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s3",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Count my claps: clap, clap, clap, clap. How many claps?",
+    "hi": "Meri taaliyaan gino: taali, taali, taali, taali. Kitni taaliyaan?"
+   },
+   "hint": "Clap... 1. Clap... 2...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "40"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i11",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s4",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "4 cousins are coming over. Each one gets 1 mango. How many mangoes should you take out of the basket?",
+    "hi": "4 cousins aa rahe hain. Har ek ko 1 aam milega. Tokri se kitne aam nikaaloge?"
+   },
+   "hint": "Take one mango for each cousin as you count.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "14"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch03-t01-i13",
+   "topicId": "c1-maths-ch03-t01",
+   "skillId": "c1-maths-ch03-t01-s3",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "1 kite, 2 kites, 3 kites, 4 kites, 5 kites, 6 kites. How many kites?",
+    "hi": "1 patang, 2 patang, 3, 4, 5, 6 patang. Kitni patang?"
+   },
+   "hint": "The last number tells...",
+   "mis": "c1-maths-ch03-t01-mc-last-is-label",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "11"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "6"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i01",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Clap, clap, clap, clap. Which number is that?",
+    "hi": "Taali, taali, taali, taali. Yeh kaun sa number hua?"
+   },
+   "hint": "Clap 1, clap 2...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i02",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Which number is called \"seven\"? Say it in Hindi too.",
+    "hi": "\"Seven\" kaun sa number hai? Hindi mein bhi bolo."
+   },
+   "hint": null,
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8 saat"
+    },
+    {
+     "id": "o2",
+     "text": "9 saat"
+    },
+    {
+     "id": "o3",
+     "text": "7 saat"
+    },
+    {
+     "id": "o4",
+     "text": "70 saat"
+    }
+   ],
+   "keyText": "7 saat"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i03",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s4",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "There were 2 rotis. You ate both. How many rotis are left?",
+    "hi": "2 rotiyaan thi. Tumne dono kha li. Kitni bachi?"
+   },
+   "hint": "You ate both. Is any roti left on the plate?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "1"
+    },
+    {
+     "id": "o4",
+     "text": "0"
+    }
+   ],
+   "keyText": "0"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i06",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s3",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu wrote his house number, 6, upside down. He says it is still six. Is he right?",
+    "hi": "Bholu ne apna ghar ka number 6 ulta likh diya. Woh kehta hai yeh ab bhi chhah hai. Kya woh sahi hai?"
+   },
+   "hint": "Which number does it look like now?",
+   "mis": "c1-maths-ch03-t02-mc-reversal-ok",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i09",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Your house number is 7. How many claps will you clap for it?",
+    "hi": "Tumhare ghar ka number 7 hai. Uske liye kitni taaliyaan bajaoge?"
+   },
+   "hint": "What is the house number?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7 claps"
+    },
+    {
+     "id": "o2",
+     "text": "70 claps"
+    },
+    {
+     "id": "o3",
+     "text": "8 claps"
+    },
+    {
+     "id": "o4",
+     "text": "9 claps"
+    }
+   ],
+   "keyText": "7 claps"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i10",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s4",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "In cricket, a batter got out without scoring a single run. What is his score?",
+    "hi": "Cricket mein ek batsman bina ek bhi run banaye out ho gaya. Uska score kya hai?"
+   },
+   "hint": "Not even one. What number is that?",
+   "mis": "c1-maths-ch03-t02-mc-zero-not-number",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "0"
+    },
+    {
+     "id": "o2",
+     "text": "1"
+    },
+    {
+     "id": "o3",
+     "text": "10"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "0"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i11",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "What number is \"nau\"?",
+    "hi": "\"Nau\" kaun sa number hai?"
+   },
+   "hint": "Count in Hindi: ek, do, teen...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "10"
+    },
+    {
+     "id": "o3",
+     "text": "90"
+    },
+    {
+     "id": "o4",
+     "text": "9"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch03-t02-i13",
+   "topicId": "c1-maths-ch03-t02",
+   "skillId": "c1-maths-ch03-t02-s4",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count backwards: 3, 2, 1, ___. What comes next?",
+    "hi": "Ulta gino: 3, 2, 1, ___. Aage kya aayega?"
+   },
+   "hint": "One less than 1 is...?",
+   "mis": "c1-maths-ch03-t02-mc-zero-after-nine",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "0"
+    }
+   ],
+   "keyText": "0"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i01",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "5 or 2 — which number is more?",
+    "hi": "5 ya 2 — kaun sa number zyada hai?"
+   },
+   "hint": "Which one do you reach later when counting?",
+   "mis": "c1-maths-ch03-t03-mc-later-greater",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "15"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i02",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "3 or 6 — which number is less?",
+    "hi": "3 ya 6 — kaun sa number kam hai?"
+   },
+   "hint": "Which comes first when counting?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i03",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s3",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "What is one more than 4?",
+    "hi": "4 se ek zyada kitna?"
+   },
+   "hint": "After 4 comes...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "50"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "6"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i04",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "What is one less than 7?",
+    "hi": "7 se ek kam kitna?"
+   },
+   "hint": "What comes just before 7?",
+   "mis": "c1-maths-ch03-t03-mc-more-less-direction",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "6"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i05",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s4",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "7 small mangoes or 4 big mangoes — which has more mangoes?",
+    "hi": "7 chhote aam ya 4 bade aam — kismein zyada aam hain?"
+   },
+   "hint": "Count each group.",
+   "mis": "c1-maths-ch03-t03-mc-big-objects",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6 small"
+    },
+    {
+     "id": "o2",
+     "text": "8 small"
+    },
+    {
+     "id": "o3",
+     "text": "7 small"
+    },
+    {
+     "id": "o4",
+     "text": "17 small"
+    }
+   ],
+   "keyText": "7 small"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i10",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s4",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Tenzin has 3 big footballs. Meenu has 5 small marbles. Who has more things?",
+    "hi": "Tenzin ke paas 3 badi footballs hain. Meenu ke paas 5 chhote kanche. Zyada cheezein kiske paas hain?"
+   },
+   "hint": "Forget the size. How many does each have?",
+   "mis": "c1-maths-ch03-t03-mc-big-objects",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "50 marbles"
+    },
+    {
+     "id": "o2",
+     "text": "5 marbles"
+    },
+    {
+     "id": "o3",
+     "text": "6 marbles"
+    },
+    {
+     "id": "o4",
+     "text": "10 marbles"
+    }
+   ],
+   "keyText": "5 marbles"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i12",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "You have ₹5. A toffee packet costs ₹8. Is your money enough?",
+    "hi": "Tumhare paas ₹5 hain. Toffee ka packet ₹8 ka hai. Kya paise kaafi hain?"
+   },
+   "hint": "Is what you have more or less than the price?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch03-t03-i14",
+   "topicId": "c1-maths-ch03-t03",
+   "skillId": "c1-maths-ch03-t03-s3",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "What comes just before 9?",
+    "hi": "9 se theek pehle kya aata hai?"
+   },
+   "hint": "Count backwards from 9, one step.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "80"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i01",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Show 10 fingers. Fold 3 fingers down. How many are still up?",
+    "hi": "10 ungliyaan dikhao. 3 ungliyaan mod lo. Kitni khadi hain?"
+   },
+   "hint": "Count the fingers still standing.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "17"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "9"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i02",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "8 and how many more make 10?",
+    "hi": "8 mein kitne aur milaayein to 10 banega?"
+   },
+   "hint": "8... 9, 10. How many steps?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7"
+    },
+    {
+     "id": "o2",
+     "text": "2"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i03",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "4 and how many more make 10?",
+    "hi": "4 mein kitne aur milaayein to 10 banega?"
+   },
+   "hint": "Count the folded fingers.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i08",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu says 6 and 3 make 10. Check with your fingers. Is he right?",
+    "hi": "Bholu kehta hai 6 aur 3 se 10 banta hai. Ungliyon se check karo. Kya woh sahi hai?"
+   },
+   "hint": "Count all the fingers up.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "18"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "10"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i09",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A ten-frame has 10 boxes. 7 boxes have beads. How many boxes are empty?",
+    "hi": "Ten-frame mein 10 khaane hain. 7 khaanon mein moti hain. Kitne khaane khaali hain?"
+   },
+   "hint": "7 are full. Count on from 7 to 10.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i11",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s2",
+   "difficulty": 2,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "On a string of 10 beads, 4 are red and the rest are blue. How many are blue?",
+    "hi": "10 motiyon ki maala mein 4 laal hain, baaki neele. Kitne neele hain?"
+   },
+   "hint": "Count on from 4 up to 10.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "16"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i12",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "A box had 10 laddoos. Didi ate some and 4 are left. How many did she eat?",
+    "hi": "Dabbe mein 10 laddoo the. Didi ne kuch kha liye aur 4 bache. Didi ne kitne khaaye?"
+   },
+   "hint": "What goes with 4 to make 10?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "5"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "6"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch04-t01-i14",
+   "topicId": "c1-maths-ch04-t01",
+   "skillId": "c1-maths-ch04-t01-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Quick one: 9 and how many make 10?",
+    "hi": "Jaldi batao: 9 aur kitne se 10 banta hai?"
+   },
+   "hint": "How many steps from 9 to 10?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1"
+    },
+    {
+     "id": "o2",
+     "text": "11"
+    },
+    {
+     "id": "o3",
+     "text": "6"
+    },
+    {
+     "id": "o4",
+     "text": "2"
+    }
+   ],
+   "keyText": "1"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i01",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "One bundle of 10 sticks and 2 loose sticks. How many sticks?",
+    "hi": "10 teeliyon ka ek bandal aur 2 khuli teeliyaan. Kitni teeliyaan?"
+   },
+   "hint": "Start at 10 and count the loose ones.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "13"
+    },
+    {
+     "id": "o2",
+     "text": "120"
+    },
+    {
+     "id": "o3",
+     "text": "21"
+    },
+    {
+     "id": "o4",
+     "text": "12"
+    }
+   ],
+   "keyText": "12"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i02",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "17 is 1 ten and how many ones?",
+    "hi": "17 mein 1 das aur kitni ekaai?"
+   },
+   "hint": "10 and how many more make 17?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "9"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "12"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i04",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s2",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "For fourteen, Riya writes 14 and Sonu writes 41. Who is right?",
+    "hi": "Fourteen ke liye Riya likhti hai 14 aur Sonu likhta hai 41. Kaun sahi hai?"
+   },
+   "hint": "Which digit shows the ten, and where does it go?",
+   "mis": "c1-maths-ch04-t02-mc-teen-reversal",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "16"
+    },
+    {
+     "id": "o2",
+     "text": "14"
+    },
+    {
+     "id": "o3",
+     "text": "15"
+    },
+    {
+     "id": "o4",
+     "text": "41"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i07",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "An egg tray holds 10 eggs and it is full. 4 more eggs are in a bowl. How many eggs?",
+    "hi": "Ande ki tray mein 10 ande aate hain aur woh bhari hai. 4 ande katori mein bhi hain. Kul kitne ande?"
+   },
+   "hint": "Count on from 10 with the bowl eggs.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "41"
+    },
+    {
+     "id": "o2",
+     "text": "28"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "15"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i08",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 2,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "Show 18 using one full ten-frame and some extra counters. How many extra counters?",
+    "hi": "18 ko ek bhare ten-frame aur kuch extra counters se dikhao. Kitne extra counters?"
+   },
+   "hint": "10 and how many more make 18?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "16"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "9"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i09",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s3",
+   "difficulty": 4,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu says 19 means 1 stick and 9 sticks, so 10 sticks in all. What is wrong?",
+    "hi": "Bholu kehta hai 19 matlab 1 teeli aur 9 teeli, yaani kul 10 teeliyaan. Kya galat hai?"
+   },
+   "hint": null,
+   "mis": "c1-maths-ch04-t02-mc-one-means-one",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "91 sticks"
+    },
+    {
+     "id": "o2",
+     "text": "19 sticks"
+    },
+    {
+     "id": "o3",
+     "text": "9 sticks"
+    },
+    {
+     "id": "o4",
+     "text": "20 sticks"
+    }
+   ],
+   "keyText": "19 sticks"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i10",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s4",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Which is more: 13 or 18?",
+    "hi": "Kaun zyada hai: 13 ya 18?"
+   },
+   "hint": "So compare the ones: 3 or 8?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "81"
+    },
+    {
+     "id": "o2",
+     "text": "18"
+    },
+    {
+     "id": "o3",
+     "text": "19"
+    },
+    {
+     "id": "o4",
+     "text": "17"
+    }
+   ],
+   "keyText": "18"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i11",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s4",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "20 is how many tens?",
+    "hi": "20 mein kitne das hain?"
+   },
+   "hint": "How many bundles make 20?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i12",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Papa brought a box of 10 laddoos and 6 loose laddoos. How many laddoos in all?",
+    "hi": "Papa 10 laddoo ka ek dabba aur 6 khule laddoo laaye. Kul kitne laddoo?"
+   },
+   "hint": "Count on from 10 with the loose laddoos.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "16"
+    },
+    {
+     "id": "o2",
+     "text": "26"
+    },
+    {
+     "id": "o3",
+     "text": "61"
+    },
+    {
+     "id": "o4",
+     "text": "17"
+    }
+   ],
+   "keyText": "16"
+  },
+  {
+   "id": "c1-maths-ch04-t02-i14",
+   "topicId": "c1-maths-ch04-t02",
+   "skillId": "c1-maths-ch04-t02-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "1 ten and 1 one make which number?",
+    "hi": "1 das aur 1 ekaai milkar kaun sa number?"
+   },
+   "hint": "One more than 10 is...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "11"
+    },
+    {
+     "id": "o2",
+     "text": "110"
+    },
+    {
+     "id": "o3",
+     "text": "16"
+    },
+    {
+     "id": "o4",
+     "text": "12"
+    }
+   ],
+   "keyText": "11"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i01",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "3 parrots are on a guava tree. 2 more come. How many parrots now?",
+    "hi": "Amrood ke ped pe 3 tote hain. 2 aur aa gaye. Ab kitne tote?"
+   },
+   "hint": "Start at 3 and count the 2 new ones.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "15"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i02",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "2 and 2 more make how many?",
+    "hi": "2 aur 2 milkar kitne?"
+   },
+   "hint": "Count all the fingers up.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "40"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i03",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Start at 6 and count on 2 more. Where do you land?",
+    "hi": "6 se shuru karo aur 2 aage gino. Kahan pahunche?"
+   },
+   "hint": "The first new number after 6 is 7.",
+   "mis": "c1-maths-ch05-t01-mc-count-on-start",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10"
+    },
+    {
+     "id": "o2",
+     "text": "9"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i04",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "4 + 3 = ___. What goes in the blank?",
+    "hi": "4 + 3 = ___. Khaali jagah mein kya aayega?"
+   },
+   "hint": "Count on 3: 5...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "70"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i07",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Which one is true: 5 = 2 + 3, or 5 = 2 + 2?",
+    "hi": "Kaun sa sahi hai: 5 = 2 + 3, ya 5 = 2 + 2?"
+   },
+   "hint": "= means both sides are the same amount.",
+   "mis": "c1-maths-ch05-t01-mc-equals-answer",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "5 = 2 + 3"
+    },
+    {
+     "id": "o2",
+     "text": "5 = 2 + 2"
+    }
+   ],
+   "keyText": "5 = 2 + 3"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i08",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu does 5 + 3 by counting \"5, 6, 7\" and says 7. What went wrong?",
+    "hi": "Bholu 5 + 3 karta hai, ginta hai \"5, 6, 7\" aur kehta hai 7. Kya galat hua?"
+   },
+   "hint": "Did \"5\" count as one of the 3?",
+   "mis": "c1-maths-ch05-t01-mc-count-on-start",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "16"
+    },
+    {
+     "id": "o3",
+     "text": "13"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i09",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "3 people are sitting in an auto-rickshaw. 1 more gets in. How many people?",
+    "hi": "Auto-rickshaw mein 3 log baithe hain. 1 aur baith gaya. Kitne log?"
+   },
+   "hint": "One more joins. What is one more than 3?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "40"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i11",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "In cricket you hit a 4, then you run 3 more runs. What is your score?",
+    "hi": "Cricket mein tumne ek chauka maara, phir 3 run aur bhaage. Tumhara score kya hai?"
+   },
+   "hint": "Then 3 more runs. Count on from 4.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7"
+    },
+    {
+     "id": "o2",
+     "text": "17"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i12",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s3",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "6 = 4 + ___. What number is missing?",
+    "hi": "6 = 4 + ___. Kaun sa number chhoot gaya?"
+   },
+   "hint": "4 and how many more make 6?",
+   "mis": "c1-maths-ch05-t01-mc-equals-answer",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "20"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "1"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch05-t01-i14",
+   "topicId": "c1-maths-ch05-t01",
+   "skillId": "c1-maths-ch05-t01-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "1 mango and 5 more mangoes. How many mangoes?",
+    "hi": "1 aam aur 5 aam aur. Kitne aam?"
+   },
+   "hint": "Start at 5 and count on 1.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "12"
+    },
+    {
+     "id": "o2",
+     "text": "6"
+    },
+    {
+     "id": "o3",
+     "text": "11"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i01",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "5 rotis are on the plate. Bhaiya eats 2. How many rotis are left?",
+    "hi": "Plate pe 5 rotiyaan hain. Bhaiya 2 kha leta hai. Kitni bachi?"
+   },
+   "hint": "Fold 2 fingers from 5. How many are up?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "30"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i02",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "You have 4 balloons. 1 pops. How many are left?",
+    "hi": "Tumhare paas 4 gubbare hain. 1 phoot gaya. Kitne bache?"
+   },
+   "hint": "Count back one step from 4.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i03",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Start at 7. Count back 3. Where are you now?",
+    "hi": "7 se shuru karo. 3 peeche gino. Ab kahan ho?"
+   },
+   "hint": "The first number back from 7 is 6.",
+   "mis": "c1-maths-ch05-t02-mc-countback-start",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "14"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i04",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Riya has 5 bangles. Zoya has 3 bangles. How many more does Riya have?",
+    "hi": "Riya ke paas 5 choodiyaan hain. Zoya ke paas 3. Riya ke paas kitni zyada hain?"
+   },
+   "hint": "How many of Riya's have no partner?",
+   "mis": "c1-maths-ch05-t02-mc-compare-adds",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "2"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i06",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s4",
+   "difficulty": 2,
+   "itemKind": "why",
+   "prompt": {
+    "en": "2 + 3 = 5. So what is 5 − 3? How do you know without counting?",
+    "hi": "2 + 3 = 5. To 5 − 3 kitna? Bina gine kaise pata?"
+   },
+   "hint": "If you take one part away, what is left?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "1"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i08",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s4",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu says 3 − 5 = 2, just like 5 − 3. Is he right?",
+    "hi": "Bholu kehta hai 3 − 5 = 2, bilkul 5 − 3 jaisa. Kya woh sahi hai?"
+   },
+   "hint": "Can you do it?",
+   "mis": "c1-maths-ch05-t02-mc-any-order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i09",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "9 children are on the school bus. 4 get off at the first stop. How many are still on the bus?",
+    "hi": "School bus mein 9 bachche hain. Pehle stop pe 4 utar gaye. Bus mein kitne bache?"
+   },
+   "hint": "Count back 4 from 9.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "10"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i10",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s3",
+   "difficulty": 3,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "Show 8 − 3 on a number line: start at 8 and jump back 3. Where do you land?",
+    "hi": "8 − 3 ko number line pe dikhao: 8 se shuru karo aur 3 jump peeche. Kahan pahunche?"
+   },
+   "hint": "Jump back one at a time: first jump lands on 7.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "5"
+    },
+    {
+     "id": "o3",
+     "text": "50"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "5"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i11",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s2",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Your team needs 7 runs to win. You have scored 4. How many more runs do you need?",
+    "hi": "Team ko jeetne ke liye 7 run chahiye. Tumne 4 bana liye. Aur kitne run chahiye?"
+   },
+   "hint": "4... 5, 6, 7. How many steps?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "30"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch05-t02-i13",
+   "topicId": "c1-maths-ch05-t02",
+   "skillId": "c1-maths-ch05-t02-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "4 mangoes. You eat 1. How many are left?",
+    "hi": "4 aam hain. Tumne 1 kha liya. Kitne bache?"
+   },
+   "hint": "Count back one step.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "13"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i01",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "10 + 4 = ?",
+    "hi": "10 + 4 kitna?"
+   },
+   "hint": "Count on from 10: 11...",
+   "mis": "c1-maths-ch06-t01-mc-teen-write",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "15"
+    },
+    {
+     "id": "o2",
+     "text": "24"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "41"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i03",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "8 tomatoes and 5 tomatoes. Fill the 10-crate first. How many in all?",
+    "hi": "8 tamatar aur 5 tamatar. Pehle 10 ka crate bharo. Kul kitne?"
+   },
+   "hint": "Move 2 from the 5. How many are left?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "13"
+    },
+    {
+     "id": "o2",
+     "text": "14"
+    },
+    {
+     "id": "o3",
+     "text": "15"
+    },
+    {
+     "id": "o4",
+     "text": "31"
+    }
+   ],
+   "keyText": "13"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i04",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "7 + 6 = ?",
+    "hi": "7 + 6 kitna?"
+   },
+   "hint": "Take 3 from the 6. What is left?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "14"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "13"
+    },
+    {
+     "id": "o4",
+     "text": "31"
+    }
+   ],
+   "keyText": "13"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i08",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s3",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "10 + 6 and 6 + 10 — same or different?",
+    "hi": "10 + 6 aur 6 + 10 — ek jaise ya alag?"
+   },
+   "hint": "Work out 10 + 6.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "32"
+    },
+    {
+     "id": "o2",
+     "text": "61"
+    },
+    {
+     "id": "o3",
+     "text": "17"
+    },
+    {
+     "id": "o4",
+     "text": "16"
+    }
+   ],
+   "keyText": "16"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i09",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s1",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A train has 9 coaches. 5 more coaches are joined. How many coaches now?",
+    "hi": "Ek train mein 9 dibbe hain. 5 aur dibbe jode gaye. Ab kitne dibbe?"
+   },
+   "hint": "Take 1 from the 5. What is left?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "13"
+    },
+    {
+     "id": "o2",
+     "text": "14"
+    },
+    {
+     "id": "o3",
+     "text": "41"
+    },
+    {
+     "id": "o4",
+     "text": "15"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i11",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "You have ₹9 and Nani gives you ₹7. How much money do you have now?",
+    "hi": "Tumhare paas ₹9 hain aur Nani ₹7 deti hain. Ab tumhare paas kitne paise hain?"
+   },
+   "hint": "Take 1 from the 7. What is left?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹17"
+    },
+    {
+     "id": "o2",
+     "text": "₹16"
+    },
+    {
+     "id": "o3",
+     "text": "₹21"
+    },
+    {
+     "id": "o4",
+     "text": "₹61"
+    }
+   ],
+   "keyText": "₹16"
+  },
+  {
+   "id": "c1-maths-ch06-t01-i13",
+   "topicId": "c1-maths-ch06-t01",
+   "skillId": "c1-maths-ch06-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "10 and 7 more make?",
+    "hi": "10 aur 7 milkar kitne?"
+   },
+   "hint": "How many ones?",
+   "mis": "c1-maths-ch06-t01-mc-teen-write",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7"
+    },
+    {
+     "id": "o2",
+     "text": "71"
+    },
+    {
+     "id": "o3",
+     "text": "17"
+    },
+    {
+     "id": "o4",
+     "text": "18"
+    }
+   ],
+   "keyText": "17"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i01",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The sabziwala has 15 brinjals. He sells 1. How many are left?",
+    "hi": "Sabziwale ke paas 15 baingan hain. Usne 1 becha. Kitne bache?"
+   },
+   "hint": "Count back one step from 15.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "140"
+    },
+    {
+     "id": "o2",
+     "text": "41"
+    },
+    {
+     "id": "o3",
+     "text": "15"
+    },
+    {
+     "id": "o4",
+     "text": "14"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i02",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s4",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "16 − 6 = ?",
+    "hi": "16 − 6 kitna?"
+   },
+   "hint": "Take away the 6 ones. What is still there?",
+   "mis": "c1-maths-ch06-t02-mc-drop-ten",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1"
+    },
+    {
+     "id": "o2",
+     "text": "100"
+    },
+    {
+     "id": "o3",
+     "text": "10"
+    },
+    {
+     "id": "o4",
+     "text": "11"
+    }
+   ],
+   "keyText": "10"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i03",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s3",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "13 − 5: first take 3 to reach 10, then take 2 more. What is the answer?",
+    "hi": "13 − 5: pehle 3 hatao taaki 10 ho jaaye, phir 2 aur hatao. Jawaab kya?"
+   },
+   "hint": "Then take 2 more from 10.",
+   "mis": "c1-maths-ch06-t02-mc-smaller-from-larger",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "18"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i04",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "8 + ___ = 15. So what is 15 − 8?",
+    "hi": "8 + ___ = 15. To 15 − 8 kitna?"
+   },
+   "hint": "8 needs 2 to make 10, then 5 more.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "8"
+    },
+    {
+     "id": "o4",
+     "text": "70"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i05",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count back 3 from 12. Where do you land?",
+    "hi": "12 se 3 peeche gino. Kahan pahunche?"
+   },
+   "hint": "The first number back is 11.",
+   "mis": "c1-maths-ch06-t02-mc-countback-start",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "90"
+    },
+    {
+     "id": "o2",
+     "text": "9"
+    },
+    {
+     "id": "o3",
+     "text": "8"
+    },
+    {
+     "id": "o4",
+     "text": "10"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i08",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s3",
+   "difficulty": 4,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu says 14 − 6 = 12 because 6 − 4 = 2. Check his answer.",
+    "hi": "Bholu kehta hai 14 − 6 = 12, kyunki 6 − 4 = 2. Uska jawaab check karo."
+   },
+   "hint": "Go back to 10 first: 14 − 4.",
+   "mis": "c1-maths-ch06-t02-mc-smaller-from-larger",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "18"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "9"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i09",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "17 − 4 and 14 − 7: same answer or different?",
+    "hi": "17 − 4 aur 14 − 7: jawaab same hai ya alag?"
+   },
+   "hint": "Now 14 − 7: back to 10, then 3 more.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "same answer"
+    },
+    {
+     "id": "o2",
+     "text": "different"
+    }
+   ],
+   "keyText": "different"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i10",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s3",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "The sabziwala had 15 brinjals and sold 6. How many are left?",
+    "hi": "Sabziwale ke paas 15 baingan the, usne 6 beche. Kitne bache?"
+   },
+   "hint": "Then 1 more.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10"
+    },
+    {
+     "id": "o2",
+     "text": "90"
+    },
+    {
+     "id": "o3",
+     "text": "19"
+    },
+    {
+     "id": "o4",
+     "text": "9"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i11",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s1",
+   "difficulty": 3,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "On a number line, start at 18 and jump back 5. Where do you land?",
+    "hi": "Number line pe 18 se shuru karo aur 5 jump peeche. Kahan pahunche?"
+   },
+   "hint": "Keep going: 16, 15...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "14"
+    },
+    {
+     "id": "o2",
+     "text": "31"
+    },
+    {
+     "id": "o3",
+     "text": "130"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "13"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i12",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s2",
+   "difficulty": 4,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "A bus has 20 seats. 12 people are sitting. How many seats are empty?",
+    "hi": "Bus mein 20 seats hain. 12 log baithe hain. Kitni seats khaali hain?"
+   },
+   "hint": "12 to 20: how many steps?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "9"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch06-t02-i14",
+   "topicId": "c1-maths-ch06-t02",
+   "skillId": "c1-maths-ch06-t02-s4",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "19 − 9 = ?",
+    "hi": "19 − 9 kitna?"
+   },
+   "hint": "Take away the 9 ones.",
+   "mis": "c1-maths-ch06-t02-mc-drop-ten",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10"
+    },
+    {
+     "id": "o2",
+     "text": "0"
+    },
+    {
+     "id": "o3",
+     "text": "1"
+    },
+    {
+     "id": "o4",
+     "text": "11"
+    }
+   ],
+   "keyText": "10"
+  },
+  {
+   "id": "c1-maths-ch07-t01-i04",
+   "topicId": "c1-maths-ch07-t01",
+   "skillId": "c1-maths-ch07-t01-s1",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Two pencils are exactly the same. I push one forward a little. Guess: is one longer now?",
+    "hi": "Do pencil bilkul ek jaisi hain. Main ek ko thoda aage khiska deti hoon. Guess karo: kya ab ek lambi hai?"
+   },
+   "hint": "What happens if we line up their ends again?",
+   "mis": "c1-maths-ch07-t01-mc-stick-out",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch07-t01-i08",
+   "topicId": "c1-maths-ch07-t01",
+   "skillId": "c1-maths-ch07-t01-s1",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu put one stick on a step and a longer stick on the floor. He says the one on the step is taller. Is that fair?",
+    "hi": "Bholu ne ek lakdi seedhi pe rakhi aur ek lambi lakdi zameen pe. Woh kehta hai seedhi wali lambi hai. Kya yeh theek tareeka hai?"
+   },
+   "hint": "The step lifts one stick up.",
+   "mis": "c1-maths-ch07-t01-mc-stick-out",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch07-t02-i01",
+   "topicId": "c1-maths-ch07-t02",
+   "skillId": "c1-maths-ch07-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A book is as long as 3 crayons laid end to end. How long is the book in crayons?",
+    "hi": "Ek kitaab 3 crayon ek ke baad ek rakhne jitni lambi hai. Kitaab kitne crayon lambi hai?"
+   },
+   "hint": "Count them.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2 crayons"
+    },
+    {
+     "id": "o2",
+     "text": "4 crayons"
+    },
+    {
+     "id": "o3",
+     "text": "5 crayons"
+    },
+    {
+     "id": "o4",
+     "text": "3 crayons"
+    }
+   ],
+   "keyText": "3 crayons"
+  },
+  {
+   "id": "c1-maths-ch07-t02-i02",
+   "topicId": "c1-maths-ch07-t02",
+   "skillId": "c1-maths-ch07-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "You walk from the door to the bed: 1, 2, 3, 4, 5 footsteps, heel touching toe. How long is it?",
+    "hi": "Tum darwaaze se bistar tak chalte ho: 1, 2, 3, 4, 5 kadam, aedi se panja milaakar. Kitni doori hai?"
+   },
+   "hint": "What was the last number?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "50 footsteps"
+    },
+    {
+     "id": "o2",
+     "text": "6 footsteps"
+    },
+    {
+     "id": "o3",
+     "text": "5 footsteps"
+    },
+    {
+     "id": "o4",
+     "text": "15 footsteps"
+    }
+   ],
+   "keyText": "5 footsteps"
+  },
+  {
+   "id": "c1-maths-ch07-t02-i08",
+   "topicId": "c1-maths-ch07-t02",
+   "skillId": "c1-maths-ch07-t02-s3",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "The corridor is 8 of your footsteps. The room is 6 of your footsteps. How many more steps is the corridor?",
+    "hi": "Gali tumhare 8 kadam ki hai. Kamra tumhare 6 kadam ka. Gali kitne kadam zyada hai?"
+   },
+   "hint": "Count up from 6 to 8.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch07-t02-i10",
+   "topicId": "c1-maths-ch07-t02",
+   "skillId": "c1-maths-ch07-t02-s3",
+   "difficulty": 4,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Riya says her room is 10 footsteps. Arjun says his room is 8 footsteps. Can we be sure Riya's room is longer?",
+    "hi": "Riya kehti hai uska kamra 10 kadam ka hai. Arjun kehta hai uska 8 kadam ka. Kya pakka hai ki Riya ka kamra lamba hai?"
+   },
+   "hint": "Are their feet the same size?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch07-t03-i02",
+   "topicId": "c1-maths-ch07-t03",
+   "skillId": "c1-maths-ch07-t03-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "On the balance, the mango side goes down. Which is heavier: the mango or the leaf on the other side?",
+    "hi": "Taraazu mein aam wala palda neeche gaya. Bhaari kaun hai: aam ya doosri taraf ka patta?"
+   },
+   "hint": "The heavier thing pulls its side...?",
+   "mis": "c1-maths-ch07-t03-mc-up-heavier",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "the mango"
+    },
+    {
+     "id": "o2",
+     "text": "the leaf on the other side"
+    }
+   ],
+   "keyText": "the mango"
+  },
+  {
+   "id": "c1-maths-ch07-t03-i07",
+   "topicId": "c1-maths-ch07-t03",
+   "skillId": "c1-maths-ch07-t03-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu sees the onion side go up and says the onion is heavier. Is he right?",
+    "hi": "Bholu dekhta hai pyaaz wala palda upar gaya aur kehta hai pyaaz bhaari hai. Kya woh sahi hai?"
+   },
+   "hint": "The onion side went up. What does up mean?",
+   "mis": "c1-maths-ch07-t03-mc-up-heavier",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch07-t03-i13",
+   "topicId": "c1-maths-ch07-t03",
+   "skillId": "c1-maths-ch07-t03-s3",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Remember the pillow and the brick? Is the bigger thing always heavier?",
+    "hi": "Takiya aur eent yaad hai? Kya badi cheez hamesha bhaari hoti hai?"
+   },
+   "hint": "Which was heavier?",
+   "mis": "c1-maths-ch07-t03-mc-bigger-heavier",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i01",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "3 bundles of 10 bangles. How many bangles?",
+    "hi": "10-10 choodiyon ke 3 bandal. Kitni choodiyaan?"
+   },
+   "hint": "10, 20...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "30"
+    },
+    {
+     "id": "o2",
+     "text": "31"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "35"
+    }
+   ],
+   "keyText": "30"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i02",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "7 bundles of ten and 2 loose sticks. What number is that?",
+    "hi": "10 ke 7 bandal aur 2 khuli teeliyaan. Yeh kaun sa number hai?"
+   },
+   "hint": "7 tens is 70. Then the loose ones.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "27"
+    },
+    {
+     "id": "o2",
+     "text": "77"
+    },
+    {
+     "id": "o3",
+     "text": "73"
+    },
+    {
+     "id": "o4",
+     "text": "72"
+    }
+   ],
+   "keyText": "72"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i03",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "4 tens and 6 ones. Write the number.",
+    "hi": "4 das aur 6 ekaai. Number likho."
+   },
+   "hint": "Tens digit on the left, ones digit on the right.",
+   "mis": "c1-maths-ch08-t01-mc-expanded-write",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "51"
+    },
+    {
+     "id": "o2",
+     "text": "47"
+    },
+    {
+     "id": "o3",
+     "text": "64"
+    },
+    {
+     "id": "o4",
+     "text": "46"
+    }
+   ],
+   "keyText": "46"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i05",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s4",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count by tens: 10, 20, 30, ___?",
+    "hi": "Das-das karke gino: 10, 20, 30, ___?"
+   },
+   "hint": "After 3 tens comes 4 tens.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "40"
+    },
+    {
+     "id": "o2",
+     "text": "30"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "41"
+    }
+   ],
+   "keyText": "40"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i09",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu wrote sixty-two as 602. What is wrong?",
+    "hi": "Bholu ne sixty-two (baasath) ko 602 likha. Kya galat hai?"
+   },
+   "hint": "How many digits does a tens-and-ones number need?",
+   "mis": "c1-maths-ch08-t01-mc-expanded-write",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "26"
+    },
+    {
+     "id": "o2",
+     "text": "62"
+    },
+    {
+     "id": "o3",
+     "text": "61"
+    },
+    {
+     "id": "o4",
+     "text": "63"
+    }
+   ],
+   "keyText": "62"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i11",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "There are 6 trays of 10 eggs and 7 more eggs. How many eggs?",
+    "hi": "10-10 ande ki 6 trays aur 7 ande alag. Kul kitne ande?"
+   },
+   "hint": "6 tens is 60. Then the extra eggs.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "76"
+    },
+    {
+     "id": "o2",
+     "text": "67"
+    },
+    {
+     "id": "o3",
+     "text": "68"
+    },
+    {
+     "id": "o4",
+     "text": "77"
+    }
+   ],
+   "keyText": "67"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i12",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s1",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Papa has 4 notes of ₹10 and 5 coins of ₹1. How much money is that?",
+    "hi": "Papa ke paas ₹10 ke 4 note aur ₹1 ke 5 sikke hain. Kul kitne paise?"
+   },
+   "hint": "4 tens is 40, then the ₹1 coins.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹46"
+    },
+    {
+     "id": "o2",
+     "text": "₹44"
+    },
+    {
+     "id": "o3",
+     "text": "₹45"
+    },
+    {
+     "id": "o4",
+     "text": "₹54"
+    }
+   ],
+   "keyText": "₹45"
+  },
+  {
+   "id": "c1-maths-ch08-t01-i13",
+   "topicId": "c1-maths-ch08-t01",
+   "skillId": "c1-maths-ch08-t01-s2",
+   "difficulty": 3,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "\"Chhiyaalees\" means 4 tens and 6 ones. Write it in numbers.",
+    "hi": "\"Chhiyaalees\" matlab 4 das aur 6 ekaai. Isse number mein likho."
+   },
+   "hint": "The tens always go first.",
+   "mis": "c1-maths-ch08-t01-mc-name-order-swap",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "46"
+    },
+    {
+     "id": "o2",
+     "text": "45"
+    },
+    {
+     "id": "o3",
+     "text": "64"
+    },
+    {
+     "id": "o4",
+     "text": "47"
+    }
+   ],
+   "keyText": "46"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i01",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Two tens and five ones — say its name.",
+    "hi": "Do das aur paanch ekaai — iska naam bolo."
+   },
+   "hint": "Twenty and five more...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "52"
+    },
+    {
+     "id": "o2",
+     "text": "26"
+    },
+    {
+     "id": "o3",
+     "text": "24"
+    },
+    {
+     "id": "o4",
+     "text": "25"
+    }
+   ],
+   "keyText": "25"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i02",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "What comes just after 39?",
+    "hi": "39 ke theek baad kya aata hai?"
+   },
+   "hint": "9 ones and 1 more make a new ten.",
+   "mis": "c1-maths-ch08-t02-mc-decade-cross",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "40"
+    },
+    {
+     "id": "o3",
+     "text": "39"
+    },
+    {
+     "id": "o4",
+     "text": "41"
+    }
+   ],
+   "keyText": "40"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i03",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "What number comes between 56 and 58?",
+    "hi": "56 aur 58 ke beech mein kaun sa number hai?"
+   },
+   "hint": "56, then...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "58"
+    },
+    {
+     "id": "o2",
+     "text": "57"
+    },
+    {
+     "id": "o3",
+     "text": "75"
+    },
+    {
+     "id": "o4",
+     "text": "56"
+    }
+   ],
+   "keyText": "57"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i07",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "20 and 29: which comes first when counting?",
+    "hi": "20 aur 29: ginte waqt pehle kaun aata hai?"
+   },
+   "hint": "Which one did you say first?",
+   "mis": "c1-maths-ch08-t02-mc-nine-first",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "19"
+    },
+    {
+     "id": "o2",
+     "text": "20"
+    },
+    {
+     "id": "o3",
+     "text": "21"
+    },
+    {
+     "id": "o4",
+     "text": "2"
+    }
+   ],
+   "keyText": "20"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i08",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu counts: 27, 28, 29, twenty-ten. What should come after 29?",
+    "hi": "Bholu ginta hai: 27, 28, 29, twenty-ten. 29 ke baad kya aana chahiye?"
+   },
+   "hint": "Ten ones make a new ten.",
+   "mis": "c1-maths-ch08-t02-mc-decade-cross",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "20"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "30"
+    },
+    {
+     "id": "o4",
+     "text": "31"
+    }
+   ],
+   "keyText": "30"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i09",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s2",
+   "difficulty": 2,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "Write \"sixty-eight\" in numbers.",
+    "hi": "\"Sixty-eight\" (adsath) ko number mein likho."
+   },
+   "hint": "Eight is the ones.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "69"
+    },
+    {
+     "id": "o2",
+     "text": "68"
+    },
+    {
+     "id": "o3",
+     "text": "86"
+    },
+    {
+     "id": "o4",
+     "text": "73"
+    }
+   ],
+   "keyText": "68"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i10",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s4",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Your counter is on 45 on the 100-grid. You move one row down. Where are you now?",
+    "hi": "100-grid pe tumhaari goti 45 pe hai. Tum ek row neeche jaate ho. Ab kahan ho?"
+   },
+   "hint": "The ones digit stays 5.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "55"
+    },
+    {
+     "id": "o2",
+     "text": "56"
+    },
+    {
+     "id": "o3",
+     "text": "57"
+    },
+    {
+     "id": "o4",
+     "text": "65"
+    }
+   ],
+   "keyText": "55"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i11",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "At the clinic, token 59 is being called. Your token is the next one. What is your token number?",
+    "hi": "Clinic mein token 59 bulaaya ja raha hai. Tumhara token agla hai. Tumhara token number kya hai?"
+   },
+   "hint": "59 and one more makes a new ten.",
+   "mis": "c1-maths-ch08-t02-mc-decade-cross",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "61"
+    },
+    {
+     "id": "o2",
+     "text": "60"
+    },
+    {
+     "id": "o3",
+     "text": "30"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "60"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i13",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s3",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "What comes just before 70?",
+    "hi": "70 se theek pehle kya aata hai?"
+   },
+   "hint": "70 is 7 tens. One less breaks a ten.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "96"
+    },
+    {
+     "id": "o2",
+     "text": "79"
+    },
+    {
+     "id": "o3",
+     "text": "70"
+    },
+    {
+     "id": "o4",
+     "text": "69"
+    }
+   ],
+   "keyText": "69"
+  },
+  {
+   "id": "c1-maths-ch08-t02-i14",
+   "topicId": "c1-maths-ch08-t02",
+   "skillId": "c1-maths-ch08-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "\"Pachaas\" is which number?",
+    "hi": "\"Pachaas\" kaun sa number hai?"
+   },
+   "hint": "Count in tens in Hindi: das, bees, tees...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "55"
+    },
+    {
+     "id": "o2",
+     "text": "51"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "50"
+    }
+   ],
+   "keyText": "50"
+  },
+  {
+   "id": "c1-maths-ch09-t01-i07",
+   "topicId": "c1-maths-ch09-t01",
+   "skillId": "c1-maths-ch09-t01-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Red-blue-red-blue and clap-jump-clap-jump: are they the same kind of pattern?",
+    "hi": "Laal-neela-laal-neela aur taali-kood-taali-kood: kya yeh ek hi tarah ke pattern hain?"
+   },
+   "hint": "Do both go \"this, that, this, that\"?",
+   "mis": "c1-maths-ch09-t01-mc-no-abstract",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch09-t02-i03",
+   "topicId": "c1-maths-ch09-t02",
+   "skillId": "c1-maths-ch09-t02-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Is this a pattern: red, red, blue, green, blue, red?",
+    "hi": "Kya yeh pattern hai: laal, laal, neela, hara, neela, laal?"
+   },
+   "hint": "Does red, red, blue come again?",
+   "mis": "c1-maths-ch09-t02-mc-random-is-pattern",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch09-t02-i07",
+   "topicId": "c1-maths-ch09-t02",
+   "skillId": "c1-maths-ch09-t02-s1",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Riya's mala: red, blue, red, blue, red, blue, blue, blue. She says it is a pattern all the way. Is it?",
+    "hi": "Riya ki maala: laal, neela, laal, neela, laal, neela, neela, neela. Woh kehti hai poori maala pattern hai. Kya sahi hai?"
+   },
+   "hint": "Check the end: after blue, what should come?",
+   "mis": "c1-maths-ch09-t02-mc-core-drift",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch09-t02-i12",
+   "topicId": "c1-maths-ch09-t02",
+   "skillId": "c1-maths-ch09-t02-s3",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Is \"clap, jump, clap, jump\" a pattern?",
+    "hi": "Kya \"taali, kood, taali, kood\" ek pattern hai?"
+   },
+   "hint": "Clap, jump... then?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch10-t01-i02",
+   "topicId": "c1-maths-ch10-t01",
+   "skillId": "c1-maths-ch10-t01-s3",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "When do we sleep: in the morning or at night?",
+    "hi": "Hum kab sote hain: subah ya raat ko?"
+   },
+   "hint": "When do you go to bed?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "in the morning"
+    },
+    {
+     "id": "o2",
+     "text": "at night"
+    }
+   ],
+   "keyText": "at night"
+  },
+  {
+   "id": "c1-maths-ch10-t01-i05",
+   "topicId": "c1-maths-ch10-t01",
+   "skillId": "c1-maths-ch10-t01-s2",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "\"Take a bath after you play.\" Which comes first, the bath or playing?",
+    "hi": "\"Khelne ke baad naha lena.\" Pehle kya hoga, nahaana ya khelna?"
+   },
+   "hint": "Bath is after what?",
+   "mis": "c1-maths-ch10-t01-mc-order-of-mention",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "bath"
+    },
+    {
+     "id": "o2",
+     "text": "playing"
+    }
+   ],
+   "keyText": "playing"
+  },
+  {
+   "id": "c1-maths-ch10-t01-i06",
+   "topicId": "c1-maths-ch10-t01",
+   "skillId": "c1-maths-ch10-t01-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "The sun is going down and the sky is orange. Guess what comes next: night or morning?",
+    "hi": "Sooraj doob raha hai aur aasmaan naarangi hai. Guess karo aage kya aayega: raat ya subah?"
+   },
+   "hint": "After evening comes...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "night"
+    },
+    {
+     "id": "o2",
+     "text": "morning"
+    }
+   ],
+   "keyText": "night"
+  },
+  {
+   "id": "c1-maths-ch10-t01-i14",
+   "topicId": "c1-maths-ch10-t01",
+   "skillId": "c1-maths-ch10-t01-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "What comes first: taking a bath or getting dressed?",
+    "hi": "Pehle kya aata hai: nahaana ya kapde pehenna?"
+   },
+   "hint": "Which one comes earlier?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "taking a bath"
+    },
+    {
+     "id": "o2",
+     "text": "getting dressed"
+    }
+   ],
+   "keyText": "taking a bath"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i01",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Three plates have 2, 2 and 2 laddoos. Is there the same number on each plate?",
+    "hi": "Teen plates pe 2, 2 aur 2 laddoo hain. Kya har plate pe barabar hain?"
+   },
+   "hint": "Are all the numbers the same?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i02",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "2 plates, 2 laddoos on each. How many laddoos?",
+    "hi": "2 plates, har plate pe 2 laddoo. Kitne laddoo?"
+   },
+   "hint": "2 and 2 more...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "40"
+    },
+    {
+     "id": "o2",
+     "text": "4"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "4"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i03",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "3 auto-rickshaws, 3 wheels on each. How many wheels?",
+    "hi": "3 auto-rickshaw, har ek mein 3 pahiye. Kitne pahiye?"
+   },
+   "hint": "Add 3 for each auto.",
+   "mis": "c1-maths-ch11-t01-mc-count-groups",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "10"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i04",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "4 + 4 + 4. How many groups of 4 is that?",
+    "hi": "4 + 4 + 4. Isme 4 ke kitne group hain?"
+   },
+   "hint": "Point to each 4.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "30"
+    },
+    {
+     "id": "o2",
+     "text": "2"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i08",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu has 3 plates with 4 laddoos each. He says 3 + 4 = 7 laddoos. What is wrong?",
+    "hi": "Bholu ke paas 3 plates hain, har ek pe 4 laddoo. Woh kehta hai 3 + 4 = 7 laddoo. Kya galat hai?"
+   },
+   "hint": "Each plate gives 4 laddoos.",
+   "mis": "c1-maths-ch11-t01-mc-add-both",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "12"
+    },
+    {
+     "id": "o2",
+     "text": "21"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "12"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i10",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "2 cows, each has 4 legs. How many legs?",
+    "hi": "2 gaayein, har ek ki 4 taangein. Kitni taangein?"
+   },
+   "hint": "Add 4 for each cow.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "18"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "9"
+    },
+    {
+     "id": "o4",
+     "text": "80"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i11",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Each child eats 2 rotis. 4 children eat. How many rotis must be made?",
+    "hi": "Har bachcha 2 roti khaata hai. 4 bachche khaate hain. Kitni rotiyaan banani padengi?"
+   },
+   "hint": "Add 2 for each child.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "8"
+    },
+    {
+     "id": "o2",
+     "text": "9"
+    },
+    {
+     "id": "o3",
+     "text": "18"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch11-t01-i13",
+   "topicId": "c1-maths-ch11-t01",
+   "skillId": "c1-maths-ch11-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "3 plates, 2 bananas on each. How many bananas?",
+    "hi": "3 plates, har plate pe 2 kele. Kitne kele?"
+   },
+   "hint": "Add 2 for each plate.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "12"
+    },
+    {
+     "id": "o3",
+     "text": "5"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i01",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count in twos: 2, 4, 6, ___?",
+    "hi": "Do-do karke gino: 2, 4, 6, ___?"
+   },
+   "hint": "Two more than 6 is...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "9"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "10"
+    },
+    {
+     "id": "o4",
+     "text": "7"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i02",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Count in fives: 5, 10, 15, ___?",
+    "hi": "Paanch-paanch karke gino: 5, 10, 15, ___?"
+   },
+   "hint": "Five more than 15 is...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "21"
+    },
+    {
+     "id": "o2",
+     "text": "40"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "20"
+    }
+   ],
+   "keyText": "20"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i03",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "There are 4 pairs of chappals outside the temple. Count in twos. How many chappals?",
+    "hi": "Mandir ke bahar chappal ke 4 jode hain. Do-do karke gino. Kitni chappal?"
+   },
+   "hint": "2, 4...",
+   "mis": "c1-maths-ch11-t02-mc-words-as-total",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10"
+    },
+    {
+     "id": "o2",
+     "text": "8"
+    },
+    {
+     "id": "o3",
+     "text": "16"
+    },
+    {
+     "id": "o4",
+     "text": "9"
+    }
+   ],
+   "keyText": "8"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i04",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Riya and Sonu hold up both hands — that is 4 hands. Count in fives. How many fingers?",
+    "hi": "Riya aur Sonu dono haath upar karte hain — 4 haath. Paanch-paanch karke gino. Kitni ungliyaan?"
+   },
+   "hint": "Say one number per hand: 5, 10...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "20"
+    },
+    {
+     "id": "o3",
+     "text": "19"
+    },
+    {
+     "id": "o4",
+     "text": "21"
+    }
+   ],
+   "keyText": "20"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i07",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s3",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "\"Three twos\" and \"2 + 2 + 2\" — same or different?",
+    "hi": "\"Teen do\" aur \"2 + 2 + 2\" — ek jaise ya alag?"
+   },
+   "hint": "How many 2s are in 2 + 2 + 2?",
+   "mis": "c1-maths-ch11-t02-mc-names-differ",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "11"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i08",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s1",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu counts in twos: 2, 4, 6, 7, 8. Which number is wrong?",
+    "hi": "Bholu do-do karke ginta hai: 2, 4, 6, 7, 8. Kaun sa number galat hai?"
+   },
+   "hint": "From 6, two more is...?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "70"
+    },
+    {
+     "id": "o2",
+     "text": "7"
+    },
+    {
+     "id": "o3",
+     "text": "8"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "7"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i10",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s1",
+   "difficulty": 2,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "5 children, 2 eyes each. Count in twos. How many eyes?",
+    "hi": "5 bachche, har ek ki 2 aankhein. Do-do karke gino. Kitni aankhein?"
+   },
+   "hint": "2, 4...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "20"
+    },
+    {
+     "id": "o2",
+     "text": "1"
+    },
+    {
+     "id": "o3",
+     "text": "11"
+    },
+    {
+     "id": "o4",
+     "text": "10"
+    }
+   ],
+   "keyText": "10"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i11",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s2",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "Toffees cost ₹5 each. You buy 4. Count in fives: how much do you pay?",
+    "hi": "Ek toffee ₹5 ki hai. Tum 4 kharidte ho. Paanch-paanch karke gino: kitne paise doge?"
+   },
+   "hint": "5, 10...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹2"
+    },
+    {
+     "id": "o2",
+     "text": "₹20"
+    },
+    {
+     "id": "o3",
+     "text": "₹10"
+    },
+    {
+     "id": "o4",
+     "text": "₹21"
+    }
+   ],
+   "keyText": "₹20"
+  },
+  {
+   "id": "c1-maths-ch11-t02-i12",
+   "topicId": "c1-maths-ch11-t02",
+   "skillId": "c1-maths-ch11-t02-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Counting chappals: \"2, 4, 6\". Arjun says there are 3 chappals. Fatima says there are 6. Who is right?",
+    "hi": "Chappal gin rahe hain: \"2, 4, 6\". Arjun kehta hai 3 chappal hain. Fatima kehti hai 6. Kaun sahi hai?"
+   },
+   "hint": "The last number said was...?",
+   "mis": "c1-maths-ch11-t02-mc-words-as-total",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "7"
+    },
+    {
+     "id": "o2",
+     "text": "6"
+    },
+    {
+     "id": "o3",
+     "text": "8"
+    },
+    {
+     "id": "o4",
+     "text": "5"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i01",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Which coin is worth more: ₹2 or ₹5?",
+    "hi": "Kaun sa sikka zyada keemat ka hai: ₹2 ya ₹5?"
+   },
+   "hint": "Look at the number on each coin.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹15"
+    },
+    {
+     "id": "o2",
+     "text": "₹10"
+    },
+    {
+     "id": "o3",
+     "text": "₹6"
+    },
+    {
+     "id": "o4",
+     "text": "₹5"
+    }
+   ],
+   "keyText": "₹5"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i03",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "₹5 + ₹2 + ₹1 = ?",
+    "hi": "₹5 + ₹2 + ₹1 kitna?"
+   },
+   "hint": "Add ₹2: 6, 7. Then ₹1.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹9"
+    },
+    {
+     "id": "o2",
+     "text": "₹8"
+    },
+    {
+     "id": "o3",
+     "text": "₹4"
+    },
+    {
+     "id": "o4",
+     "text": "₹18"
+    }
+   ],
+   "keyText": "₹8"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i04",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s3",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Three ₹1 coins or one ₹5 coin — which is more money?",
+    "hi": "₹1 ke teen sikke ya ₹5 ka ek sikka — zyada paise kaun se hain?"
+   },
+   "hint": "Add the three ₹1 coins.",
+   "mis": "c1-maths-ch12-t01-mc-more-coins",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹6"
+    },
+    {
+     "id": "o2",
+     "text": "₹7"
+    },
+    {
+     "id": "o3",
+     "text": "₹5"
+    },
+    {
+     "id": "o4",
+     "text": "₹10"
+    }
+   ],
+   "keyText": "₹5"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i08",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Make ₹10 using only ₹5 coins. How many coins do you need?",
+    "hi": "Sirf ₹5 ke sikkon se ₹10 banao. Kitne sikke chahiye?"
+   },
+   "hint": "5, 10 — how many fives?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1"
+    },
+    {
+     "id": "o2",
+     "text": "20"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "3"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i10",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s2",
+   "difficulty": 3,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "A pencil costs ₹5. You have two ₹2 coins and one ₹1 coin. Is that enough?",
+    "hi": "Pencil ₹5 ki hai. Tumhare paas ₹2 ke do sikke aur ₹1 ka ek sikka hai. Kya kaafi hai?"
+   },
+   "hint": "Then the ₹1.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i11",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A ₹10 note or a ₹2 coin: which buys more?",
+    "hi": "₹10 ka note ya ₹2 ka sikka: kisse zyada khareed sakte ho?"
+   },
+   "hint": "Read the number on each.",
+   "mis": "c1-maths-ch12-t01-mc-looks-not-value",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹11"
+    },
+    {
+     "id": "o2",
+     "text": "₹1"
+    },
+    {
+     "id": "o3",
+     "text": "₹0"
+    },
+    {
+     "id": "o4",
+     "text": "₹10"
+    }
+   ],
+   "keyText": "₹10"
+  },
+  {
+   "id": "c1-maths-ch12-t01-i13",
+   "topicId": "c1-maths-ch12-t01",
+   "skillId": "c1-maths-ch12-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "₹5 and ₹5 make how much?",
+    "hi": "₹5 aur ₹5 milkar kitne?"
+   },
+   "hint": "5, ___.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹1"
+    },
+    {
+     "id": "o2",
+     "text": "₹10"
+    },
+    {
+     "id": "o3",
+     "text": "₹11"
+    },
+    {
+     "id": "o4",
+     "text": "₹5"
+    }
+   ],
+   "keyText": "₹10"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i01",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A balloon costs ₹5. You have ₹10. Can you buy it?",
+    "hi": "Gubbara ₹5 ka hai. Tumhare paas ₹10 hain. Kya le sakte ho?"
+   },
+   "hint": "If you have more than the price...",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i02",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s2",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "You have ₹10. The balloon costs ₹5. How much money is left?",
+    "hi": "Tumhare paas ₹10 hain. Gubbara ₹5 ka hai. Kitne paise bachenge?"
+   },
+   "hint": null,
+   "mis": "c1-maths-ch12-t02-mc-leftover-lost",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹15"
+    },
+    {
+     "id": "o2",
+     "text": "₹6"
+    },
+    {
+     "id": "o3",
+     "text": "₹7"
+    },
+    {
+     "id": "o4",
+     "text": "₹5"
+    }
+   ],
+   "keyText": "₹5"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i03",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A toffee costs ₹3 and you have ₹5. Can you buy it?",
+    "hi": "Toffee ₹3 ki hai aur tumhare paas ₹5 hain. Kya khareed sakte ho?"
+   },
+   "hint": "If you pay more, what does the shopkeeper give back?",
+   "mis": "c1-maths-ch12-t02-mc-exact-only",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i04",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "You have ₹10 at the mela. You buy a ₹5 balloon. What else can you buy: a ₹4 whistle or a ₹7 car?",
+    "hi": "Mele mein tumhare paas ₹10 hain. Tum ₹5 ka gubbara lete ho. Aur kya le sakte ho: ₹4 ki seeti ya ₹7 ki gaadi?"
+   },
+   "hint": "₹10 − ₹5 = ₹5. Which price fits in ₹5?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹4 whistle"
+    },
+    {
+     "id": "o2",
+     "text": "₹6 whistle"
+    },
+    {
+     "id": "o3",
+     "text": "₹5 whistle"
+    },
+    {
+     "id": "o4",
+     "text": "₹40 whistle"
+    }
+   ],
+   "keyText": "₹4 whistle"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i05",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s3",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "You have ₹10. A balloon is ₹6 and a whistle is ₹5. Guess: can you buy both?",
+    "hi": "Tumhare paas ₹10 hain. Gubbara ₹6 ka aur seeti ₹5 ki. Guess karo: kya dono le sakte ho?"
+   },
+   "hint": "₹6 + ₹5 is how much?",
+   "mis": "c1-maths-ch12-t02-mc-each-not-total",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i07",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu had ₹10 and bought a ₹7 kite. He says he has no money left. Is he right?",
+    "hi": "Bholu ke paas ₹10 the aur usne ₹7 ki patang li. Woh kehta hai ab koi paise nahi bache. Kya woh sahi hai?"
+   },
+   "hint": "₹10 − ₹7 = ?",
+   "mis": "c1-maths-ch12-t02-mc-leftover-lost",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "13"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i09",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "At the sabzi shop you have ₹20. Tomatoes cost ₹12. How much change do you get?",
+    "hi": "Sabzi ki dukaan pe tumhare paas ₹20 hain. Tamatar ₹12 ke hain. Kitne paise wapas milenge?"
+   },
+   "hint": "12 to 20 is how many?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹10"
+    },
+    {
+     "id": "o2",
+     "text": "₹13"
+    },
+    {
+     "id": "o3",
+     "text": "₹8"
+    },
+    {
+     "id": "o4",
+     "text": "₹9"
+    }
+   ],
+   "keyText": "₹8"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i10",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s2",
+   "difficulty": 3,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "You have ₹9 and spend ₹4. Show what is left using coins.",
+    "hi": "Tumhare paas ₹9 hain aur tum ₹4 kharch karte ho. Bache hue paise sikkon se dikhao."
+   },
+   "hint": "Which coin is worth that much?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹4 left"
+    },
+    {
+     "id": "o2",
+     "text": "₹5 left"
+    },
+    {
+     "id": "o3",
+     "text": "₹15 left"
+    },
+    {
+     "id": "o4",
+     "text": "₹6 left"
+    }
+   ],
+   "keyText": "₹5 left"
+  },
+  {
+   "id": "c1-maths-ch12-t02-i13",
+   "topicId": "c1-maths-ch12-t02",
+   "skillId": "c1-maths-ch12-t02-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "You have ₹10 and spend ₹3. How much is left?",
+    "hi": "Tumhare paas ₹10 hain aur tum ₹3 kharch karte ho. Kitne bache?"
+   },
+   "hint": "Count back 3 from 10.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "₹8"
+    },
+    {
+     "id": "o2",
+     "text": "₹7"
+    },
+    {
+     "id": "o3",
+     "text": "₹70"
+    },
+    {
+     "id": "o4",
+     "text": "₹9"
+    }
+   ],
+   "keyText": "₹7"
+  },
+  {
+   "id": "c1-maths-ch13-t01-i01",
+   "topicId": "c1-maths-ch13-t01",
+   "skillId": "c1-maths-ch13-t01-s2",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The toy box has: car, doll, car, ball, doll, car. How many cars?",
+    "hi": "Khilone ke dabbe mein hai: gaadi, gudiya, gaadi, ball, gudiya, gaadi. Kitni gaadiyaan?"
+   },
+   "hint": "Count only the cars.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "2"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch13-t01-i02",
+   "topicId": "c1-maths-ch13-t01",
+   "skillId": "c1-maths-ch13-t01-s1",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "We are sorting toys by type: cars, dolls, balls. A red ball goes in the balls group. Should we count it again in a red-toys group too?",
+    "hi": "Hum khilonon ko type se alag kar rahe hain: gaadi, gudiya, ball. Laal ball, ball wale group mein gayi. Kya use ek laal-khilonon wale group mein dobara bhi ginein?"
+   },
+   "hint": "Is there a red-toys group in a sort by type?",
+   "mis": "c1-maths-ch13-t01-mc-double-count",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c1-maths-ch13-t01-i08",
+   "topicId": "c1-maths-ch13-t01",
+   "skillId": "c1-maths-ch13-t01-s2",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Bholu counted 4 cars, 2 dolls and 3 balls. He says there are 8 toys in all. Is he right?",
+    "hi": "Bholu ne gini 4 gaadiyaan, 2 gudiyaan aur 3 ball. Woh kehta hai kul 8 khilone hain. Kya woh sahi hai?"
+   },
+   "hint": "Then add 3 more.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10"
+    },
+    {
+     "id": "o2",
+     "text": "9"
+    },
+    {
+     "id": "o3",
+     "text": "14"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "9"
+  },
+  {
+   "id": "c1-maths-ch13-t01-i09",
+   "topicId": "c1-maths-ch13-t01",
+   "skillId": "c1-maths-ch13-t01-s3",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "4 cars and 2 dolls. How many more cars than dolls?",
+    "hi": "4 gaadiyaan aur 2 gudiyaan. Gudiyon se kitni zyada gaadiyaan hain?"
+   },
+   "hint": "How many cars have no partner?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "3"
+    },
+    {
+     "id": "o2",
+     "text": "12"
+    },
+    {
+     "id": "o3",
+     "text": "20"
+    },
+    {
+     "id": "o4",
+     "text": "2"
+    }
+   ],
+   "keyText": "2"
+  },
+  {
+   "id": "c1-maths-ch13-t01-i14",
+   "topicId": "c1-maths-ch13-t01",
+   "skillId": "c1-maths-ch13-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "A basket has: mango, apple, mango, mango, apple. How many mangoes?",
+    "hi": "Ek tokri mein hai: aam, seb, aam, aam, seb. Kitne aam?"
+   },
+   "hint": "Count only mangoes.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4"
+    },
+    {
+     "id": "o2",
+     "text": "13"
+    },
+    {
+     "id": "o3",
+     "text": "3"
+    },
+    {
+     "id": "o4",
+     "text": "6"
+    }
+   ],
+   "keyText": "3"
+  },
+  {
+   "id": "c1-maths-ch13-t02-i04",
+   "topicId": "c1-maths-ch13-t02",
+   "skillId": "c1-maths-ch13-t02-s2",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A row of 4 big car pictures is longer than a row of 5 small doll pictures. Which has more?",
+    "hi": "4 badi gaadi ki tasveeron wali line, 5 chhoti gudiya wali line se lambi hai. Kismein zyada hain?"
+   },
+   "hint": "Count each row instead of looking at length.",
+   "mis": "c1-maths-ch13-t02-mc-row-length",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10 dolls"
+    },
+    {
+     "id": "o2",
+     "text": "15 dolls"
+    },
+    {
+     "id": "o3",
+     "text": "6 dolls"
+    },
+    {
+     "id": "o4",
+     "text": "5 dolls"
+    }
+   ],
+   "keyText": "5 dolls"
+  },
+  {
+   "id": "c1-maths-ch13-t02-i07",
+   "topicId": "c1-maths-ch13-t02",
+   "skillId": "c1-maths-ch13-t02-s1",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "There are 6 balls in the box. Bholu drew 3 balls on the chart. What is wrong?",
+    "hi": "Dabbe mein 6 ball hain. Bholu ne chart pe 3 ball banayi. Kya galat hai?"
+   },
+   "hint": "How many pictures should there be?",
+   "mis": "c1-maths-ch13-t02-mc-not-one-to-one",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "6"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "7"
+    },
+    {
+     "id": "o4",
+     "text": "8"
+    }
+   ],
+   "keyText": "6"
+  },
+  {
+   "id": "c1-maths-ch13-t02-i08",
+   "topicId": "c1-maths-ch13-t02",
+   "skillId": "c1-maths-ch13-t02-s1",
+   "difficulty": 2,
+   "itemKind": "translate_rep",
+   "prompt": {
+    "en": "Stack one block for each car. There are 4 cars. How many blocks tall is the stack?",
+    "hi": "Har gaadi ke liye ek block rakho. 4 gaadiyaan hain. Stack kitne block ooncha hoga?"
+   },
+   "hint": "How many cars?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "40 blocks"
+    },
+    {
+     "id": "o2",
+     "text": "3 blocks"
+    },
+    {
+     "id": "o3",
+     "text": "5 blocks"
+    },
+    {
+     "id": "o4",
+     "text": "4 blocks"
+    }
+   ],
+   "keyText": "4 blocks"
+  },
+  {
+   "id": "c1-maths-ch13-t02-i13",
+   "topicId": "c1-maths-ch13-t02",
+   "skillId": "c1-maths-ch13-t02-s3",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Chart: cars 4, dolls 2, balls 3. How many more cars than dolls?",
+    "hi": "Chart: gaadiyaan 4, gudiyaan 2, ball 3. Gudiyon se kitni zyada gaadiyaan?"
+   },
+   "hint": "Match each doll picture with a car picture.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "20"
+    },
+    {
+     "id": "o2",
+     "text": "3"
+    },
+    {
+     "id": "o3",
+     "text": "2"
+    },
+    {
+     "id": "o4",
+     "text": "4"
+    }
+   ],
+   "keyText": "2"
+  }
+ ]
+}

@@ -18,6 +18,9 @@ import { isGateError } from "../parent/api.ts";
 import { kidLook, StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
+import { ChapterPicker } from "../parent/SchoolPlan.tsx";
+import { parentApi, type ChapterRef } from "../parent/api.ts";
+import { teacherBandFor } from "./teacherBand.ts";
 
 /** The defaults the cut no longer asks for (owner-approved 2026-10-10). */
 export const childDefaults = (classLevel: number, languagePref: string) => ({
@@ -42,8 +45,14 @@ export function ChildStep() {
   const [pinOk, setPinOk] = useState(false);
   const [resetKey, setResetKey] = useState(0);
   const cl = c.classLevel;
-  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), (cl ?? 5) <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl ?? 5 }), teacherBandFor(cl));
   const first = c.firstName?.trim() ?? "";
+  // round 7 F item 2: "which maths chapter is school on?" (optional; the next maths lesson starts there)
+  const [mathsChapters, setMathsChapters] = useState<ChapterRef[] | null>(null);
+  useEffect(() => {
+    if (!cl) return;
+    parentApi.chapters(cl).then((r) => setMathsChapters(r.chapters.maths ?? []), () => setMathsChapters([]));
+  }, [cl]);
 
   useEffect(() => {
     getJson<{ hasPin: boolean; firstSetNeedsPassword?: boolean }>("/api/parent/pin").then((g) => {
@@ -91,8 +100,12 @@ export function ChildStep() {
       stage = "controls";
       await postJson("/api/parent/controls", {
         childId: child.id, ...defaultsFor(cl), address: c.address ?? def.address, comfortMode: !!c.comfort, captionsAlways: !!c.hardToHear,
-        reportChannel: d.reportChannel ?? "whatsapp",
+        reportChannel: d.reportChannel ?? "app",
       });
+      // the school's position goes before the PIN (the corner locks once the PIN is set); a miss never stops set-up
+      for (const [subject, chapter] of Object.entries(d.schoolChapter ?? {})) {
+        await parentApi.setSchoolChapter(child.id, subject, chapter).catch((e3) => { if (isGateError(e3)) throw e3; });
+      }
       if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
       await refreshMe();
       // the hand-over: the tap is her audio unlock; the corner is locked behind her. "Later": the Parent corner.
@@ -126,6 +139,18 @@ export function ChildStep() {
           <Field label="Child's first name" hint="Just the name they are called at home is fine." autoComplete="off" maxLength={40}
             value={c.firstName ?? ""} onChange={(e) => setC({ firstName: e.target.value })} required />
         </section>
+        {mathsChapters && mathsChapters.length > 0 && (
+          <section className="card card-flat stack-sm" aria-labelledby="onb-school-h">
+            <h2 id="onb-school-h" className="t-h3" style={{ fontFamily: "var(--font-text)" }}>Which maths chapter is school on?</h2>
+            <ChapterPicker subject="maths" chapters={mathsChapters} value={d.schoolChapter?.maths ?? null}
+              onChange={(n) => set((cur) => {
+                const sc = { ...(cur.schoolChapter ?? {}) };
+                if (n == null) delete sc.maths; else sc.maths = n;
+                return { schoolChapter: sc };
+              })} />
+            <p className="t-note">Optional. Other subjects and the school timetable are in the Parent corner, under Progress.</p>
+          </section>
+        )}
         {hasPin === false && (
           <section className="card card-flat stack-sm" aria-label="Parent PIN">
             <h2 className="t-h3 row" style={{ fontFamily: "var(--font-text)" }}><Icon name="lock" /> Parent PIN</h2>

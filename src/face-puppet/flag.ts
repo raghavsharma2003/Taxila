@@ -8,7 +8,7 @@
 //   4. on.
 // Plus the RUNTIME kill switch (ship5 p2-face): the server's TAXILA_FACE_PUPPET2D=0, read from GET /api/face/config
 // (server/face-puppet/config.js) by puppetServerAllows(). PuppetFace awaits it (in parallel with the stage chunk) before
-// it builds a stage, so a kill reaches every face not yet revealed and lands on the old face, the automatic fallback.
+// it builds a stage, so a kill reaches every face not yet revealed and holds her own rest still, the automatic fallback.
 // Fail-open: an unreachable or absent route (404 before patch 03, the server seam, is applied) means "allowed". A device forced
 // on with ?puppet=1 (the owner's test) is not overridden by the server.
 export const PUPPET_FLAG_KEY = "tx.flag.face.puppet2d";
@@ -102,4 +102,20 @@ export const puppetServerKnownOff = (): boolean => serverKnown?.puppet2d === fal
 export function resetPuppetServerFlag(): void {
   serverAsk = null;
   serverKnown = null;
+}
+
+/** Route (b) prototype (round 7): the key rig's 2.5D jaw layer, opt-in per device with ?jaw=1 (?jaw=0 / default clear it).
+ *  Off by default until the owner's rig verdict. */
+export const FACE_JAW_KEY = "tx.flag.face.jaw";
+export function faceJawEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("jaw");
+      if (v === "1") localStorage.setItem(FACE_JAW_KEY, "1");
+      else if (v === "0" || v === "default") localStorage.removeItem(FACE_JAW_KEY);
+    }
+    return typeof localStorage !== "undefined" && localStorage.getItem(FACE_JAW_KEY) === "1";
+  } catch {
+    return false;
+  }
 }

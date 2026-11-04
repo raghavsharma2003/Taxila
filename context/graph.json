@@ -23460,6 +23460,425 @@
    "at": "2026-11-04",
    "title": "Round 7: do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.",
    "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-brain-contracts",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 contracts (Brain owns shared/contracts.ts): UiDirectives.steer (SteerChip[], SteerId union of 16 ids), UiDirectives.later (LaterEntryUi: id, text ≤ 60, learning, status open/due/returned, when after_question/at_end), UiDirectives.moment (UiMoment: park/detour/decline/stop_check/returned, laterId, topic), TurnRequest.gameAct ({consumed, game, act}: words a game grammar consumed are never graded), TurnRequest.heardUpTo (any lane; duplex.heardUpTo read second), ReplyClauseEvent (one guarded clause of a streamed reply, never withdrawn once sent). A steer tap is the request its words make (server/director/steer.js); steer:wrap2 is read but has no move until PIPELINE A9. Reversal: if App or Voice need a different shape, Brain changes the contract and messages every stream the sha.",
+   "source": "inbox/r7-brain.json"
+  },
+  {
+   "id": "dc-r7-face-one-fallback-own-still",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Asha's only fallback is her own look's rest still, under every look (r8 included): PuppetFace has no TutorFace path (phases poster/live/held), LessonFace reaches TutorFace only for a non-puppet tutor or the voice-only presentation, and the FaceSlot adapter is always installed (puppet off on the device → her still, not the in-house Plate2D). Evidence: docs/design/round7/face/r7-face-fallback-sheet.png (int/r6 showed a different vector face on puppet-off, no WebGL2, kill switch and pack failure; r7-face shows her still on all five paths). Supersedes holdsOwnStill (lamp1/lamp2 only). Reverse only if a look ships without rest stills (tests/r7-face-fallback.test.mjs blocks that).",
+   "source": "inbox/r7-face.json"
+  },
+  {
+   "id": "dc-r7-games-gameact-sync-ack",
+   "kind": "decision",
+   "title": "A game command is acked synchronously on the PLAY_HEARD detail and sent as TurnRequest.gameAct; the server gives it no card evidence on both lanes (asPlayAct before the agent verdict)",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-games-new-law-modes",
+   "kind": "decision",
+   "title": "Week-1 coverage by real mechanics: kon zone/pair/close, nishana hop, new family stambh (bars, picto); class 4-7 maths topics with a law game 44 → 59",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-games-arena-net",
+   "kind": "decision",
+   "title": "ITEM-ARENA revived as the broad net after every law family (bank rebuilt from today's kits, 2,922 challenges); evidence as recognition; maths only",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "ms-r7-games-khand-3d-cert",
+   "kind": "measurement",
+   "title": "Khand 3D: 96/96 3D samples pass at p360/p412/l1366 (21 new cells), play-cert --only nazariya",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "open-r7-games-arena-is-mcq",
+   "kind": "decision",
+   "title": "Open: ITEM-ARENA is 'aim at one of 4 options' over kit items, close to OWNER-RESET #3's 'not a game'; covers no English/Hindi/SST; owner/main to decide whether children see it",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-limits-family-optin",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the daily limit, lesson hours and 'done for today' are the family's own opt-in (child_controls.limits_on, migration 035, off by default). TAXILA_DAY_LIMITS=on|off forces every child on or off; unset leaves it to each family. Controls shows the limit and hours only once the parent turns them on, so nothing on the screen is inert. Supersedes dc-r14-no-clock-gates's global off, by its own reversal condition (an opt-in parent control, off by default, never blocking the owner's test family). Reverse if: the owner wants limits on by default for real families.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-report-channel-hidden",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the 'WhatsApp / only in the app' report-channel choice is hidden in set-up and Controls until a second channel really sends (GET /api/parent/controls reportChannels; TAXILA_REPORT_WHATSAPP=on once Platform's Notifier delivers). New rows default to 'app'. Reverse if: the Notifier ships WhatsApp delivery (then set the flag; the row reappears).",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-subject-rotation",
+   "kind": "decision",
+   "title": "Round 7 F item 1: the day's subject is ranked by server/conductor/rotation.js (the parent's school timetable for the weekday, else the intake's; a test window inside the timetable, or alone with no timetable; subjects with due reviews; then least-recently-taught, never-taught first; a subject already taught today goes last). reports/truth.js nextTopicForPlan (home, lesson start, parent 'next lesson') tries the ranked subjects in turn; the planner writes slot.subject from the same ranking (view key school.subjects). Kill switch TAXILA_ROTATION=off; TAXILA_ROTATION_SUBJECTS narrows the set. Reverse if: owner wants a single-subject day (set the env) or the Conductor day plan (item 9) takes over the choice.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-learner-view-export",
+   "kind": "decision",
+   "title": "Round 7 F item 4: server/learner/view.js is the one learner read Brain consumes at a lesson start: strand θ (kt ability epoch, value only after 2 scored observations), the weak flag (topic or prerequisite skill with n>=3 and pL<0.4, or θ more than 1 GE under the class start) and minutesLeft (null when the family's limits are off; else min(cap left, hours left) with a deadlineAt for the mid-lesson wrap). learnerViewOf(child, {topicId, ledger, kit}) never throws.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-migrate-test-default-file-tx",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "scripts/migrate.mjs targets the TEST branch by default (server/db.js dbUrl with TAXILA_DB=test: CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL, never a fallback to production); production only with --prod on the command line (TAXILA_DB=prod alone and --prod with TAXILA_DB=test are refused), plus --backup NAME (a Neon backup branch of the target's branch first) or --no-backup on the record. Each migration FILE runs in ONE transaction together with its schema_migrations row (Neon HTTP transaction, or pg begin/commit when DB_DRIVER=pg or the host is not Neon), so a failure leaves the file unapplied and unrecorded; statements are split with string / quoted-name / $tag$ / comment awareness (scripts/migrate-core.mjs splitSql, identical output to the old splitter on all 30 shipped files). --dry-run lists what is pending and writes nothing. --job applies inside the ACA VNet through scripts/region/db-copy.mjs --apply-migrations (psql -1 per file + its row; the sha's migrations ride as a git-archive env var). Reverse if a migration needs a non-transactional statement (create index concurrently): then that file gets an explicit opt-out marker, not a return to statement-by-statement.",
+   "source": "inbox/r7-platform.json"
+  },
+  {
+   "id": "ms-r7-migrate-tooling-local-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Migrate tooling on a throwaway local PostgreSQL 16 (TLS on, verify-full with a self-signed CA; no Neon, no Azure): migrate.mjs (pg driver) --dry-run 30 pending, apply 30 applied, rerun 0 applied; db-copy.sh MODE=apply 30 applied each in one psql -1 transaction, rerun 0, missingMigrations empty; a planted 999_bad.sql (create table, then 1/0) failed at 'apply 999_bad.sql (rolled back)' with the table absent and no schema_migrations row. Refusals exit 2 with one line: TAXILA_DB=prod without --prod, --prod with TAXILA_DB=test, --prod without --backup/--no-backup. Unit tests: tests/migrate-tooling.test.mjs (10, no DB). Not yet run live: --dry-run on the stream's Neon branch (HTTP transaction path), the Neon backup-branch API, the ACA job apply (MIGRATIONS_TGZ ~35 KB as a container env var).",
+   "source": "inbox/r7-platform.json"
+  },
+  {
+   "id": "dc-r7-studio-no-build-state",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The child never sees a piece being made (171d1db6). StudioStage has no 'making' phase: no '{T} is making this' chip, no pencil skeleton of the unfinished piece, no streamed-partial veil, no sparkle. While a slot is planning / building / ready, the stage keeps the last finished piece (inert) or the calm ground. Reversal: if the owner wants a visible 'coming' cue, it is a calm one-line cue in her words, never on the stage.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "dc-r7-studio-v2-device-class-serving",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 D8 amends dc-r4c-studio-v2-off-child-path: a Studio v2 piece is served wherever its certificate passes AT THE DEVICE'S CLASS (p412, l1366). On the 360 phone, where its 1000-unit world is too small to play, it is served as its board twin, or not at all (tray-gate.js certifyForTray, cert 'catalogue-twin'). Reversal: per-device owner sign-off finds a certified class unusable; that class goes back to off (serveByViewport false) without code.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "ms-r7-studio-v2-servable",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 1142,
+   "method": "server/forge3/certs/catalogue.json topic x piece rows, serveByViewport per class (the existing certification, not re-rendered)",
+   "title": "Studio v2 cells servable under D8: p412 1007, l1366 1071, p360 1062 (board twin only when the piece carries one); 1 row serves nowhere. Under the round-4 rule (playable at all three sizes) it was 0.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "ms-r7-board-first-coverage",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 250,
+   "method": "evals/studio-timing/board-first-coverage*.mjs: classes 4-7 maths/science/evs kits, the Director's first explain move (and a 'picture dikhao' request), whiteboardIntentOf + board-first preselect with the p412 tray certification; code only, no model call",
+   "title": "Board-first preselects a board BEFORE her line on 245/250 first explain moves (98%); on a subject-less picture ask 222/250 (88.8%; maths 119/141, science 63/69, evs 40/40). The ask misses are kit boards that are not drawings for a picture ask (they fall to the live ladder). Live misses are the real-line re-gate, read now from GET /api/studio/timing.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "dc-r7-voice-handsfree-everyone",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B1 (voice-handsfree-default, D2). server/duplex/config.js: with the global mode on (unset/1/on), every /api/duplex/config answer is {duplex:on}, plus lane d5 whenever Voice Live is configured (duplexLane; TAXILA_DUPLEX_LANE=d4 pins D4). No cohort lookup runs. The cohort (TAXILA_DUPLEX_LIVE_FOR) is now only the override while the global mode is shadow. The kill switch TAXILA_DUPLEX=off still wins. d5route authorizeD5 drops the cohort gate and needs only duplex on + lane d5. Client flags.ts: an unreadable or missing switch runs hands-free on lane D4 (no definite answer never asks for D5), not shadow. App patch docs/patches/to-app/001-handsfree-default.patch: prefs.talk defaults to open (hands-free), Me shows the talk choice to every child with no headset rule, tap-to-talk stays the child's choice. Tests: tests/r7-voice-handsfree.test.mjs; the old cohort-only expectations in d5-voicelive-server and p1-duplex-live were updated. Needs a live check: owner phone lesson on a build with TAXILA_DUPLEX=on (production is shadow today, a deploy setting for main/Platform) and Voice Live configured. Reverse if the live owner-phone lessons on D5 show the hands-free floor worse than tap for a measured share of children (e.g. echo-made turns or cut-offs above the round-7 bar); then return to cohort-only by setting TAXILA_DUPLEX=shadow, no code change.",
+   "source": "inbox/r7-voice.json"
+  },
+  {
+   "id": "dc-r7-voice-first-line-held-mic",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B2 (voice-handsfree-from-first-line). The runtime asks for the microphone beside POST /api/lesson/start, inside the start tap, and hands it to the cascade link. The bridge knows at the first frame whether hands-free is expected (flags.duplexExpected: a device key, else a settled server answer, else on). The dock renders hands-free from that first frame (handsFreeDock: starting until the engine is live). The LINK stays on push-to-talk, with the mic held, until the engine itself is live: hands-free on the screen does not mean hands-free on the wire, so her opening line on a loudspeaker can never come back as a child turn through today's server-VAD path before the engine's gates run. The mute (runtime.setMuted) holds push-to-talk underneath for the same reason: the engine never reads a muted child as silence. Reverse the held mic if live lessons show children answering her opening line before the engine is live (the words are lost): then open the D5 ear before the engine and let the engine adopt what it heard.",
+   "source": "inbox/r7-voice.json"
+  },
+  {
+   "id": "dc-r7-app-stage-geometry",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Stage-first lesson geometry (r7 app): one pure solver, src/ui-v3/kaksha/lesson/stageLayout.ts. Phone: top 48 · stage (slot + 64 HUD rail; her face a PiP top-right, 26% of the slot's short side, 84-128 px, only while a piece holds the slot) · answer surface when up · chips 48 · dock 112/128. Wide (≥900, ≥520 tall): stage column + a 320-400 side column (her tile, caption, answer surface, chips, dock). Slot 344×508 at 360×800, 396×623 at 412×915, 850×656 at 1280×800; play mode folds the chips (344×556). Every slot ≥ the certified tray/play box (grow, never shrink); 'with answer' is a new smaller box. Spec generated: docs/design/round7/app/STAGE-GEOMETRY.md. Reverse: the owner's review prefers the Desk, or a real phone shows the PiP covering pieces.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-nav-unified",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "One Kaksha navigation (r7 app-nav-unified): a HUD dock (Home · World · Practice · Ask · Notebook; bottom bar on phones, left rail from 1024 px) and one top bar (back one level up, title, Me/settings at the right; Home carries the plain 'For parents' door) on every child screen outside the lesson. Parent-hidden surfaces are absent, Ask is older-family only. The classic OlderNav / HomeButton / Me avatar render only under ?ui=classic. Reverse: the owner wants a Home with no dock (D6 says a small dock).",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-class4-older",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Class 4 has the older look (r7 D3, OWNER-RESET #1): src/child/band.ts YOUNG_MAX_CLASS = 3, so classes 1-3 are the young family (dawn, tiles, no Ask) and 4-9 the older one (night, typing, Ask, Hint, steer chips). src/app/band.ts re-exports the same function (no second table). The age-band table stays Brain's (shared/learner.ts); YOUNG_MAX_CLASS is read from it once it carries D3's 1-3 / 4-6 / 7-9. Reverse: the owner wants class 4 young again.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-stop-checkin-ui",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Stop and break UI (r7 D5): Pause → End is a check-in (Keep going · Short break · End lesson), never an instant end; Short break is a sheet that holds her speech and the mic with a count-up clock and 'I'm back'. The server's own stop check-in (chips stop:continue / break:rest / stop:end, plus stop:wrap2 when Brain adds it) renders as a moment card on the stage, not as answer tiles. Later list (ui.later) and moment cards (ui.moment: park / detour / decline / stop) render from Brain's directives, typed structurally until the contract lands; the Debrief lists the parked questions. Reverse: the owner wants End to end at once.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-handsfree-dock",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Hands-free dock (r7 D2): while the duplex engine holds the floor the dock shows no talk button but a live mic-level ring and one line on what she is doing (Speak any time · Cut in any time · Take your time · {T} is thinking), plus a Mute switch. Mute uses the pause sheet's mic switch (push-to-talk on → the cascade link turns the mic off), so tap to talk is the visible fallback while muted. A proper runtime mute is Voice's (src/lesson/runtime.ts). Reverse: Voice ships a mute that keeps the engine listening for its own wake rules.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-steer-chips",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Steer chips (r7 app-lesson-steer-chips, OWNER-RESET #8): four chips under the stage in the lesson's language (Diagram · Game · Alag tarah se · Kuch aur), Older only, on a talking floor, never on a safeguard turn, in Quick practice or during the stop check-in. diagram → chip req:visual, game → req:game, explain differently → the 'another' help request; 'something else' goes as the child's words the change_topic lexicon reads, until Brain accepts a chip id for it. On a number item the pad's 'abc' key opens typing (open-e2e-number-pad-no-words). Reverse: Brain's contract renames the steer ids.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "cp-r7-face-route-b-jaw-layer",
+   "kind": "component",
+   "at": "2026-11-04",
+   "title": "Route (b) prototype: lamp2's KeyRig gains an opt-in (?jaw=1) 2.5D jaw layer. The face is composed in a head-space buffer; a feathered jaw-shaped region under the lip line (measured from the pack's own pixels) is rigidly translated down by the continuous viseme jaw (max 7 native px, closed with the mbp key on a seal), and the gap is filled with the soft-edged mouth interior (sampled from the aa key). Painted keys still give every shape; no warp. Off by default until the owner's rig verdict.",
+   "source": "inbox/r7-face-2.json"
+  },
+  {
+   "id": "ms-r7-face-route-b-battery-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Route (b) lip timing, the 24-line Diya battery offline on the product timing path (scripts/character/puppet2d/route-b/battery.mjs, JAW_W 0.6, 21 lines with a CTC track): bilabial words sealed 132/132 (lamp2 132/132); lines within ±50 ms 100% (lamp2 67%, r8 continuous jaw 86%); median -20 ms (IQR -30..-5). Sweep: JAW_W 0.4 → 90%, 0.8 → 100%. An uncoupled jaw lost seals (91/132), hence the seal coupling. A simulation of the drawn opening, not a camera measurement of pixels.",
+   "source": "inbox/r7-face-2.json"
+  },
+  {
+   "id": "jd-r7-face-route-b-sheet-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Claude judge pass on docs/design/round7/face/route-b-vs-r8-sheet.png (Diya line 03, 8 instants, close framing): lamp2+jaw is the same person as lamp2 (5/5), with a visibly larger continuous opening than lamp2's keys and no warp or tearing. Pass 1 found a hard dark band on large drops (fixed: soft-edged interior); remaining nit: at the largest drops the gap reads slightly smeared. Against r8: r8's chibi mouth is more expressive (tongue, wide vowels) but childish (OWNER-RESET #1); lamp2+jaw is the grown-up look with better timing. Not a blind panel (deferred to the test phase).",
+   "source": "inbox/r7-face-2.json"
+  },
+  {
+   "id": "dc-r7-games-measure-to-taraazu",
+   "kind": "decision",
+   "title": "Khand MEASURE (grams/kg) is not shipped: its 2D twin is a number pad and a left/right choice; grams/kg and l/ml go to taraazu weigh/fill (a real pan balance and jugs)",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games-2.json"
+  },
+  {
+   "id": "dc-r7-games-pendulum-over-jhoola",
+   "kind": "decision",
+   "title": "c7-science-ch08-t01 goes to yantra/pendulum (real-time swing vs a beat, all three kit beliefs); kyun-lab's jhoola lab stays authored but not admitted",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games-2.json"
+  },
+  {
+   "id": "dc-r7-games-yantra-e6",
+   "kind": "decision",
+   "title": "E6 Yantra built as law modes beam (mirrors), circuit (closed loop), pendulum (length sets the beat); no physics engine decides, the law does",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games-2.json"
+  },
+  {
+   "id": "dc-r7-brain-one-band-table",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Decision D3 is built as ONE band table. shared/learner.ts BANDS (Brain-owned) carries register young (1-3) / preteen (4-6) / teen (7-9), and class 4 contract \"10-15\". shared/bands.ts exports registerOf / contractBandOf / classesOf. server/learner/bands.js re-exports the table, and ageBandFor reads it (applied here so the gate stays green; patch docs/patches/to-learning/001). Asha’s persona sheets take their class ranges from it (young 1-3, older 4-9), and the agent lane’s register line reads registerOf. A class-4 child now gets the older sheet (peer protégé Bittu, not the baby elephant), the older turn lengths, and the older probe / why shapes. Reversal: if the class-4 talk-share or owner judgement on a live class-4 lesson is worse than the young register, move class 4 back in BANDS (one row). Needs a live check: Asha’s older notes were talk-gated on class 6 only.",
+   "source": "inbox/r7-brain-remerge.json"
+  },
+  {
+   "id": "dc-r7-brain-rewrite-never-strip",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "PIPELINE §A Brain, week 1. (1) Zero spoken build state or failure. A game ask with no game gets the activity on the screen or a quick spoken game, never \"no game is ready\". \"Show it moving\" with nothing moving gets the motion in words, never \"nothing moves\". A photo coming, busy or failed is never narrated: she talks about the board’s sketch or gives it in words, and a photo that arrives simply appears. The fixed fallback re-asks plainly, never \"I lost my words\". (2) Rewrite, never strip. The script repair drops whole off-script sentences, never letters from a word (\"ने?\"). A check-in’s offer is never cut to its last question (\"Aap kya chunenge?\"). Any non-closing turn the repairs leave under four words (unless it is exactly the pinned question) becomes the move’s full fixed line (a check-in’s fixed offer; with a card, its lead and question). Reversal: if a live replay shows the fixed lines replacing turns a second rewrite would have saved, add that rewrite before the fixed line.",
+   "source": "inbox/r7-brain-remerge.json"
+  },
+  {
+   "id": "ms-r7-brain-skill-arc",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 A4, brain-teach-every-skill (kill switch TAXILA_R7_SKILL_ARC=off). Every skill 2..n is explained, then shown with a worked example built from ITS OWN verified kit item: the easiest practice item with two or more statement hint steps, its key included. That item is never posed. Then its practice block (3 items, or until it settles). After every skill, mixed practice. The hook has kinds: the kit’s worked problem as a guess-first puzzle on alternate lessons for classes 4-9, otherwise the everyday prediction (open-r3rv-interest-hook-template). Director replay over all 830 multi-skill kits (all-right child, 40 turns, no model): practice items that hop skill 0.380 → 0.232 (n = 11,409 / 11,197 posed). The rest are mostly the intended final mixed practice. 1,470 of 2,161 later skills (68%) have a kit-anchored worked example; the other 32% get the explain alone until Learning’s per-skill explain plans land. Not yet: resuming at the first non-solid skill, and the older \"explain it for a friend\" teach-back. Needs a live check: the worked turn is spoken from kit text with English hint steps in a Hinglish lesson.",
+   "source": "inbox/r7-brain-remerge.json"
+  },
+  {
+   "id": "rj-r4-lamp2-painted-keys-premium",
+   "kind": "rejection",
+   "title": "lamp2 (painted mouth/eye/brow keys swapped, rigid head motion only) failed premium in every blind run over two passes: v3 (one mouth model sheet, breathing/translation life) passed uncanny 1, 1, 0 /5 but premium 2.6-2.8 vs r8 3.0-3.4 in the same runs; v2 uncanny 2/10 pooled; same person 5/5, childish 0/5; time box spent, held",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r4-lamp2-judges-2026-10-10",
+   "kind": "measurement",
+   "title": "lamp2 blind judges, 6 runs x n=5 (3 gpt-5.6-sol + 2 Kimi K2.6), lamp1 prompt, r8 in every run: uncanny 3,2,0,2,2,2 /5; premium 2.6,2.8,2.6,2.4,2.8,2.8; r8 uncanny 1,0,0,0,0,1 /5, premium 3.0-3.6; identical images scored 0/5 then 2/5",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r4-lamp2-bilabial-battery-2026-10-10",
+   "kind": "measurement",
+   "title": "24-line Diya battery, product timing path into the lamp2 mouth keys: bilabial words sealed 132/132 with the lamp2 text rule (every b/m/p letter Azure left unsealed), 121/132 with lamp1's rule, 82/132 from Azure visemes alone",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r4-lamp2-lipsync-offset-2026-10-10",
+   "kind": "measurement",
+   "title": "lamp2 key mouth vs the forced-alignment timing (E3, 21 lines): +55 ms median without a lead; with KEY_LEAD_MS 35: median +15 ms, IQR -10..+50, 57% within +-50 ms (continuous viseme jaw +10 ms, 95%)",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r4-lamp2-rig-cost-2026-10-10",
+   "kind": "measurement",
+   "title": "lamp2 KeyRig (Canvas 2D, prescaled layer caches): 80 px row 60 fps at 4x CPU throttle, desk 375x405 49.3 fps at 4x (lamp1 10.5), headless Chromium; pack 133 KB wire; rest SSIM 0.989; keys SSIM outside region 1.0",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "cp-r4-lamp2-keyrig",
+   "kind": "component",
+   "title": "src/face-puppet/rig-keys: KeyRig (a RigLike the unchanged PuppetDriver drives) + schedule.ts (viseme->painted mouth, 45 ms crossfade, 70 ms hold, own blink schedule, gaze key swaps, rigid motion caps); pack art/character/puppet2d/lamp2",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "cn-r4-painted-head-rigid-motion-cap",
+   "kind": "constraint",
+   "title": "A painted semi-realistic head may roll at most ~1.2 deg rigidly: at a 2 deg cap (J1-J2) and 1.5 deg + glance sway (J4) blind judges read 'proportions swim' / features sliding; at 1.2 deg (J3) uncanny 0/5",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "op-r4-asha-mouth-model-sheet",
+   "kind": "open",
+   "title": "After v3 the premium gap is head motion: image-model 3-degree turn keys are different paintings (~40 px head move, redrawn features), so the next method is artist-drawn turn keys on one model sheet (cut-swapped on a blink) or a 2.5D/3D head in the option-4 look, not another polish of the key rig",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r4-lamp2-v3-judges-2026-10-10",
+   "kind": "measurement",
+   "title": "lamp2 v3 blind judges K1-K3, n=5 each (3 gpt-5.6-sol + 2 Kimi K2.6), lamp1 prompt, r8 in the same run: uncanny 1, 1, 0 /5; premium 2.6, 2.8, 2.8 vs r8 3.4, 3.0, 3.2; moving photo 1, 3, 3 /5; same person 5/5, childish 0/5",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "rj-r4-image-model-turn-keys",
+   "kind": "rejection",
+   "title": "Painted 3-degree head-turn keys from gpt-image-2 edits of the front: the repaint moves and rescales the head ~40 px and redraws the features (two bindis in a 50% mix), so no swap or dissolve can hide it; the flat-vector arm by automatic flattening (mean-shift + k-means) read blotchy and cheaper, not built",
+   "at": "2026-10-10",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "dc-r7-face-lite-path",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Weak devices and the start (face-puppet-raster-cost-main-thread): a static gate (src/face-puppet/lite.ts liteGate: tier.ts staticTier D, i.e. no WebGL2, software raster/failIfMajorPerformanceCaveat, known-bad GPU) never builds the r8 mesh stage and shows her rest still with a LIGHT MOUTH (4 pre-rendered mouth sprites from the live rig, public/face-puppet/r8/lite/, 15 Hz opacity swaps from her output meter); the live stage is ARMED only at her first audio (or an idle page outside a lesson, or 6 s); the governor is raster-aware (rAF interval p95 > 66 ms or >= 3 long tasks per window count as over budget; at the floor it falls back to the still + light mouth). TURN_HOLD_MS stays until the OffscreenCanvas worker (week 2). Reverse if the real-phone lab shows the gate sends capable GPUs to the lite path.",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r7-face-start-latency-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Start → first 'speaking' on /dev/desk?live=1, headless Chromium SwiftShader, CPU x6, n=8 per arm interleaved (evals/face-puppet/start-latency.mjs): p50 delta vs ?puppet=0 was +112 ms (n=6) before; after: forced live +44 ms, auto (gate → lite) +54 ms; long tasks in the first 6 s p50: off 976 ms, auto 1008 ms, live 2017 ms. A weak-phone proxy, not a phone; noise about ±100 ms at this n.",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "dc-r7-face-stills-from-rig",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Asha's stills are rendered from each look's live rig (evals/face-puppet/stills.mjs: portrait, smile, resting, listening, thinking, curious, proud; eyes-open frame picked) into public/assets/teacher/asha-stills/1/<look>-<pose>.webp (NOT public/assets/gen/: the build's artMasters plugin drops gen/**), ledger public/assets/teacher/asha-stills/1/index.json with look-free aliases; teacherRecord ids stay teacher/asha/<pose> and the art loaders (App patch docs/patches/to-app/001) map them to the look the page paints, so the owner's lamp2 cohort sees lamp2 stills. Wave/reading/watering/telescope are stand-ins until painted pose stills (Azure image generation, needs keys). shared/tutors.js carries Asha's pronouns and stills record.",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "dc-r7-face-clip-sidecars",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Her pre-rendered clips (public/audio/hello-{en,hi,hinglish}.mp3) ship viseme + word sidecars (<clip>.visemes.json) written offline from the clip's own audio by scripts/character/clip-visemes.py (greedy letter CTC, facebook/wav2vec2-base-960h on CPU, no transcript, no Azure; letters → the Azure viseme ids of the live path). src/face-puppet/clipBridge.ts puts them on the puppet bus anchored to the moment the clip's first sample sounds (re-anchored on play/seek, cut on pause); App applies docs/patches/to-app/003 (one call in src/child/voice.ts). Re-run the script whenever a clip is re-recorded.",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "ms-r7-face-clip-seals-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Hello clip bilabial seals (evals/face-puppet/clip-seals.mjs: real Hello screen, prod build + App patch 003, live r8 puppet forced on, headless SwiftShader; a seal = min rendered lip gap within ±60 ms of each sidecar bilabial at most 15% of the open p75): meter path 12/34 (en 2/6, hi 5/15, hinglish 5/13) → sidecar 33/34 (6/6, 15/15, 12/13); open-mouth gap p75 9-13.5 → 18-20 rig px. n = one play per clip per arm; the sidecar's own bilabial timing is the reference (CTC-derived, not hand-labelled).",
+   "source": "inbox/r7-face-remerge.json"
+  },
+  {
+   "id": "dc-r7-release-one-command",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Production releases go through scripts/release.mjs <commit>. The steps are: gate evidence (CI build + every shard, or a clean local stamp); the X37 freeze; capture what is live (web revision + env names, worker image); ACR builds taxila-web:<sha7> and taxila-worker:<sha7> from GitHub AT the commit; migrate.mjs --prod --sha with a Neon backup branch; deploy-azure --image-tag (canary + smoke); a cohort check that every env name the previous web revision carried is still on the new one; deploy-worker --image-tag --jobs, so the worker and both Conductor jobs run the web's commit; a context entry. Progress is saved per commit, and a re-run resumes at the first unfinished step. --rollback moves the web to `previous` and the worker + jobs to the captured image together. ARM calls retry transient failures (network, 408/429/5xx) for idempotent methods only, never a POST that starts something. Reverse if ACR's git context cannot build at a commit sha (then build from a clean worktree upload).",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "dc-r7-cost-ledger",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "One price book (server/cost/prices.js, MODEL-STACK meter ids, estimates flagged) prices every meter: chat tokens, TTS chars, STT hours, Voice Live minutes, images. Every spend event carries its own usd: model.call, speech.tts (azure.js tts() records it), and stt.session / d5.session / image.call via server/cost/meter.js. A lesson's events (sid = lesson id) roll up into lesson.cost jsonb (migration 040) by meter and lane. scripts/cost.mjs reads by lesson, day or child and reconciles with Cost Management. The bill, not the book, is the truth: change a price only with its meter id. Until the five call sites in docs/patches/from-platform/001 land, lesson.cost covers chat + azure.js TTS only.",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "dc-r7-graceful-shutdown",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "taxila-web drains on SIGTERM (server/shutdown.js). It stops accepting new connections, readiness answers 503 'draining', open WebSockets get d5.closed {reason: server_restart} then close 1012 so the D5 client reconnects, and in-flight requests get 20 s before being cut. The trace writer is flushed with a 5 s deadline, then the process exits 0. deploy-azure sets terminationGracePeriodSeconds 30. Reverse if a lesson turn regularly exceeds 20 s (then raise both together).",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "dc-r7-ops-page",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The owner ops page is GET /api/ops (HTML) + /api/ops/summary. It shows live lessons, lesson-turn p50/p90, 5xx by route, and $ per lesson-minute and per hour from lesson.cost. It answers only a signed-in guardian whose email or sha256 is in TAXILA_OPS_FOR (env, so the owner's account is keyed without a code change, main 2026-11-04); anyone else gets 404. Counts and timings only, and a lesson shows as an 8-char id prefix.",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "ms-r7-gate-shards-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Gate sharding. One-process npm test in the 4-core container: 1,711 s (3,688 tests). The same 379 suites as one process each, 4 at a time: 578 s wall, 0 failing in isolation (tests/shard-weights.json; kit-budget 442 s is the longest single suite, so it sets the critical path). First CI matrix run (PR #28 @ 1bd8c68f, count-split shards): build + 6 shards all green, ~8 min from start to the aggregate `gates` job, slowest shard unit 2/4 ~7 min; the old single job took 17-24 min.",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "ms-r7-migrate-live-neon-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "migrate.mjs on the stream's own Neon branch (host sha256 f47b22100116a310) over Neon's HTTP transaction API: --dry-run listed 040 pending (1 statement), the apply ran it in one transaction, and a rerun applied 0. That is the live check of the Neon path that was outstanding in ms-r7-migrate-tooling-local-2026-11-04.",
+   "source": "inbox/r7-platform-remerge.json"
+  },
+  {
+   "id": "dc-r7-board-split",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The day-4 board that moves: a whole cut into 2-12 equal sectors SPLITS (each part slides outward along its middle, 700 ms, after it is drawn) on the board-first and code-board paths (board-sync.js withSplit / splitOrStill, board-first.js preselect). Only through the full gate including W19.settled, never with a word inside the whole, and the still board whenever the split is refused (motion never costs a board). Regate masks an answer on a moving board as it does on a still one. Reversal: the owner finds the motion distracting; withSplit returns the script unchanged.",
+   "source": "inbox/r7-studio-remerge.json"
+  },
+  {
+   "id": "ms-r7-board-motion-coverage",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 250,
+   "method": "evals/studio-timing/board-motion-coverage.mjs: the ms-r7-board-first-coverage set (classes 4-7, the first explain move, p412 tray certification), counting preselected boards carrying move ops; code only",
+   "title": "4/250 first-explain boards move (c5-maths-ch02-t02, c6-maths-ch07-t02, c6-maths-ch07-t04, c7-maths-ch08-t02: fraction-parts boards); board-first coverage unchanged at 245/250. Before the regate W19 mask fix: 0 (the split's W19.settled echo of W9 blocked the answer mask).",
+   "source": "inbox/r7-studio-remerge.json"
+  },
+  {
+   "id": "dc-r7-voice-same-voice-failover",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B3 (same-voice TTS failover, QA D30). DragonHD's breaker is per voice PER SPEECH REGION (server/voice/speech.js). A second Speech resource (AZURE_SPEECH_REGION_2 / AZURE_SPEECH_KEY_2, optional AZURE_SPEECH_ENDPOINT_2) speaks the SAME voice and SSML before any identity change: primary fails → region 2 → only when both fail does the reply move to the character's mini-tts voice. A reply keeps the region that spoke its first part; a lesson stuck on mini-tts returns when either region's breaker closes. Counter: voice.expr.region_failover. Platform patch docs/patches/to-platform/001 makes today's Speech resource region 2 once production speaks from centralindia. The whole-document 'Hear' path (routes/tts.js, dhdBreaker) still uses the primary only. Reverse if region 2's DragonHD voice measurably differs from the primary's (another model version in that region): then the region hop is itself an identity change and the order becomes primary → mini-tts again.",
+   "source": "inbox/r7-voice-remerge.json"
+  },
+  {
+   "id": "dc-r7-voice-d5-ear",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B4 (voice-d5-ear-asr). Three layers against the D5 ear's empty finals (5/14 short Hinglish answers on the owner harness). (1) Phrase list: each D5 session sends azure-speech a per-lesson phrase_list (server/duplex/phrases.js): the child's and teacher's names, this topic's short kit answers (≤3 words), a Hinglish core (हाँ/नहीं/पता नहीं/दीदी…) and Hindi number words. Terms only, never sentences. The kit lookup is bounded at 300 ms. Because all of the topic's answers and every number are in the list, the bias is toward the lesson's vocabulary, not toward one item's key. (2) Second ear: a turn the engine commits as unheard is held (≤2.5 s) while the device's own clip of that span (the mic channel the D5 stream sent, kept 12 s on Voice Live's audio clock) goes to /api/voice/transcribe. Words found → a real turn with that confidence; none → the unheard re-ask as before. Turns stay in order. (3) Model: TAXILA_D5_ASR=gpt-4o-transcribe|gpt-4o-mini-transcribe switches the ear to a delta-streaming model. Deltas already feed the engine host (live.ts). The default stays azure-speech until a live arm. D4 keywords are not wired (no structured field on the live-transcribe session). Reverse the phrase list if a live arm shows it pulls wrong answers onto listed ones (false-correct grading). Reverse the second ear if its median hold pushes R p90 past the latency bar on unheard turns.",
+   "source": "inbox/r7-voice-remerge.json"
   }
  ],
  "edges": [
@@ -37237,6 +37656,161 @@
    "src": "dc-r7-hybrid-brain",
    "rel": "constrains",
    "dst": "dc-owner-2026-10-27-build-first"
+  },
+  {
+   "src": "dc-r7-games-gameact-sync-ack",
+   "rel": "supersedes",
+   "dst": "open-r3adv-game-command-graded"
+  },
+  {
+   "src": "ms-r7-games-khand-3d-cert",
+   "rel": "part_of",
+   "dst": "dc-r7-games-new-law-modes"
+  },
+  {
+   "src": "open-r7-games-arena-is-mcq",
+   "rel": "constrains",
+   "dst": "dc-r7-games-arena-net"
+  },
+  {
+   "src": "dc-r7-limits-family-optin",
+   "rel": "supersedes",
+   "dst": "dc-r14-no-clock-gates"
+  },
+  {
+   "src": "dc-r7-migrate-test-default-file-tx",
+   "rel": "measured_by",
+   "dst": "ms-r7-migrate-tooling-local-2026-11-04"
+  },
+  {
+   "src": "dc-r7-studio-v2-device-class-serving",
+   "rel": "measured_by",
+   "dst": "ms-r7-studio-v2-servable"
+  },
+  {
+   "src": "dc-r7-voice-handsfree-everyone",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-first-line-held-mic",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-app-stage-geometry",
+   "rel": "supersedes",
+   "dst": "design-v2-desk-layout"
+  },
+  {
+   "src": "dc-r7-app-stage-geometry",
+   "rel": "part_of",
+   "dst": "dc-r7-stage-first-shell"
+  },
+  {
+   "src": "dc-r7-app-nav-unified",
+   "rel": "supersedes",
+   "dst": "design-v2-desk-layout"
+  },
+  {
+   "src": "dc-r7-app-class4-older",
+   "rel": "part_of",
+   "dst": "dc-r7-stage-first-shell"
+  },
+  {
+   "src": "dc-r7-games-measure-to-taraazu",
+   "rel": "supersedes",
+   "dst": "dc-r7-games-revive"
+  },
+  {
+   "src": "dc-r7-games-yantra-e6",
+   "rel": "part_of",
+   "dst": "dc-r7-games-new-law-modes"
+  },
+  {
+   "src": "rj-r4-lamp2-painted-keys-premium",
+   "rel": "constrains",
+   "dst": "dc-r4-face-lamplight-flat"
+  },
+  {
+   "src": "rj-r4-lamp2-painted-keys-premium",
+   "rel": "inherits",
+   "dst": "rj-r4-lamp1-mesh-warp-uncanny"
+  },
+  {
+   "src": "rj-r4-lamp2-painted-keys-premium",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-judges-2026-10-10"
+  },
+  {
+   "src": "cp-r4-lamp2-keyrig",
+   "rel": "part_of",
+   "dst": "dc-r4-face-lamplight-flat"
+  },
+  {
+   "src": "cp-r4-lamp2-keyrig",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-rig-cost-2026-10-10"
+  },
+  {
+   "src": "cp-r4-lamp2-keyrig",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-bilabial-battery-2026-10-10"
+  },
+  {
+   "src": "cp-r4-lamp2-keyrig",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-lipsync-offset-2026-10-10"
+  },
+  {
+   "src": "cn-r4-painted-head-rigid-motion-cap",
+   "rel": "constrains",
+   "dst": "cp-r4-lamp2-keyrig"
+  },
+  {
+   "src": "cn-r4-painted-head-rigid-motion-cap",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-judges-2026-10-10"
+  },
+  {
+   "src": "op-r4-asha-mouth-model-sheet",
+   "rel": "caused_by",
+   "dst": "rj-r4-lamp2-painted-keys-premium"
+  },
+  {
+   "src": "rj-r4-lamp2-painted-keys-premium",
+   "rel": "measured_by",
+   "dst": "ms-r4-lamp2-v3-judges-2026-10-10"
+  },
+  {
+   "src": "rj-r4-image-model-turn-keys",
+   "rel": "constrains",
+   "dst": "cp-r4-lamp2-keyrig"
+  },
+  {
+   "src": "op-r4-asha-mouth-model-sheet",
+   "rel": "caused_by",
+   "dst": "rj-r4-image-model-turn-keys"
+  },
+  {
+   "src": "dc-r7-migrate-test-default-file-tx",
+   "rel": "measured_by",
+   "dst": "ms-r7-migrate-live-neon-2026-11-04"
+  },
+  {
+   "src": "dc-r7-board-split",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-motion-coverage"
+  },
+  {
+   "src": "dc-r7-voice-same-voice-failover",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-d5-ear",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
   }
  ]
 }

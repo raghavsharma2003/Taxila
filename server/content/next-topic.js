@@ -104,8 +104,10 @@ export async function nextTopicFor(child, { subject, chapter, startGE, date } = 
     if (!byTopic.has(tid)) byTopic.set(tid, []);
     byTopic.get(tid).push({ status: r.status, pKnown: r.p_known, attempts: r.attempts });
   }
-  const skillCounts = new Map();
-  for (const tid of byTopic.keys()) skillCounts.set(tid, (await getKit(tid, { generate: false }))?.skills.length ?? 0);
+  // in parallel (QA D22: one awaited kit read per topic made the parent's reads slow)
+  const tids = [...byTopic.keys()];
+  const counts = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).then((k) => k?.skills.length ?? 0, () => 0)));
+  const skillCounts = new Map(tids.map((tid, i) => [tid, counts[i]]));
   const statusOf = (tid) => topicStatus(byTopic.get(tid) ?? [], skillCounts.get(tid));
   // Prerequisite ids can point outside the seed; only known topics are candidates.
   const prereqsOf = (tid) => (getTopic(tid)?.prerequisites ?? []).filter((p) => getTopic(p));

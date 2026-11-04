@@ -48,6 +48,8 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
     subject: String(s?.subject ?? ""), book: String(s?.book ?? ""),
     chapters: (Array.isArray(s?.chapters) ? s.chapters : []).map((c) => ({
       id: String(c?.id ?? ""), number: Number(c?.number) || 0, title: String(c?.title ?? ""), sealed: c?.sealed === true, here: c?.here === true,
+      // r7 F Learning (to-app/001): the chapter the parent said school is on (Progress → School, or set-up's maths question)
+      school: (c as { school?: unknown } | undefined)?.school === true,
       secure: Number(c?.secure) || 0, total: Number(c?.total) || 0,
       topics: (Array.isArray(c?.topics) ? c.topics : []).map((t) => ({
         id: String(t?.id ?? ""), title: String(t?.title ?? ""),
@@ -55,6 +57,9 @@ export function normaliseMap(data: unknown, mode: "garden" | "sky"): ChildMapRes
       })),
     })).filter((c) => c.id),
   })).filter((s) => s.chapters.length);
+  // "Your class is here" marks the school's chapter when the parent has told us one; until then, the plan's chapter (`here`)
+  const anySchool = subjects.some((s) => s.chapters.some((c) => c.school));
+  for (const s of subjects) for (const c of s.chapters) (c as { classHere?: boolean }).classHere = anySchool ? c.school : c.here;
   const skills = subjects.flatMap((s) => s.chapters.flatMap((c) => c.topics.flatMap((t) => t.skills)));
   const touched = skills.some((k) => k.state !== "not_started");
   return { mode: r.mode === "garden" || r.mode === "sky" ? r.mode : mode, hidden: false, subjects, skills, empty: r.empty === true || !touched };
@@ -147,3 +152,11 @@ export function offerOf(r: TutorsResponse | null): string[] {
 }
 
 export { ApiError, postJson };
+
+/** r7: the chapter that carries "Your class is here" (the school's chapter, else the plan's; normaliseMap decides). */
+export const classHereOf = (c: { here?: boolean; classHere?: boolean }): boolean => (c.classHere ?? c.here) === true;
+
+/** r7: the school's chapters as "Subject · Chapter" lines for the Kaksha World (empty when the parent set none). */
+export function schoolChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ title: string; school?: boolean }> }> } | null): Array<{ subject: string; title: string }> {
+  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.school).map((c) => ({ subject: s.subject, title: c.title })));
+}

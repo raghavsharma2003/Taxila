@@ -15,7 +15,7 @@
 // the sideways scroll (§5.2).
 import { useId, useRef } from "react";
 import type { ChildMapSkill } from "../../../shared/contracts.ts";
-import type { MapChapter } from "../api.ts";
+import { classHereOf, type MapChapter } from "../api.ts";
 import { Scene, Spot, useTopicArt } from "../art.tsx";
 import { t } from "../copy.ts";
 import { Picto } from "../pictos.tsx";
@@ -124,12 +124,12 @@ export function Garden({ chapters, onSelect }: { chapters: MapChapter[]; onSelec
             const skills = ch.topics.flatMap((tp) => tp.skills);
             const kind = PLANT_KINDS[bi % PLANT_KINDS.length];
             return (
-              <section key={ch.id} className="bed" aria-label={ch.here ? `${ch.title}. ${t("classHere")}` : ch.title} data-chapter={ch.id}
+              <section key={ch.id} className="bed" aria-label={classHereOf(ch) ? `${ch.title}. ${t("classHere")}` : ch.title} data-chapter={ch.id}
                 data-sealed={ch.sealed || undefined} data-here={ch.here || undefined}>
                 <div className="bed-head">
                   <BedSign chapter={ch} tint={BED_TINTS[bi % BED_TINTS.length]} />
                   <span className="bed-marks">
-                    {ch.here && <HereFlag />}
+                    {classHereOf(ch) && <HereFlag />}
                     {ch.sealed && <span className="bed-seal" role="img" aria-label={t("chapterDone")}><GardenSeal size={72} /></span>}
                   </span>
                 </div>

@@ -22,16 +22,22 @@ export const PLAY_VERSION = "play@1" as const;
 export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
+  "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
+  "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
+  "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
-  taraazu: ["equation", "equality"],
-  nishana: ["place", "compare"],
+  taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
+  nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
-  kon: ["turn", "set"],
+  kon: ["turn", "set", "zone", "pair", "close"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  arena: ["pick"],
+  stambh: ["bars", "picto"],
+  yantra: ["beam", "circuit", "pendulum"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -148,6 +154,14 @@ export type BalanceAct =
   | { kind: "drop"; n: number }                         // equality mode: put n cubes in the box (replaces its content)
   | { kind: "name"; x: number }                         // name the bag's value
   | { kind: "undo" };
+// Taraazu weigh / fill (round 7, measurement): real weights onto the right pan, real jugs into the vessel; the beam stays
+// locked while loading and only "weigh" (Tolo / Dekho) lets the law answer
+export type WeighAct =
+  | { kind: "load"; weight: number }                    // one weight of `weight` g from the box onto the right pan
+  | { kind: "unload"; weight: number }                  // one weight of `weight` g off the pan, back into the box
+  | { kind: "pour"; jug: number }                       // fill: one full jug of `jug` ml into the vessel
+  | { kind: "weigh" }                                   // unlock the beam (weigh) / check the water (fill)
+  | { kind: "undo" };
 // Nishana
 export type LineAct =
   | { kind: "place"; which: number; x: number }         // put marker `which` at line coordinate x (a number in [lo, hi])
@@ -177,7 +191,31 @@ export type NazariyaAct =
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct;
+// ITEM-ARENA (round 4 G1)
+export type ArenaAct =
+  | { kind: "aim"; option: string }                     // point at a target (an option id)
+  | { kind: "fire" }                                    // the shot: graded against the verified key
+  | { kind: "undo" };
+// Stambh (round 7, bar graphs and pictographs): one crate / icon at a time on a column (bars) or a row (picto)
+export type StambhAct =
+  | { kind: "drop"; col: number; half?: boolean }       // a crate (or, where the level allows, a half crate) onto column `col`
+  | { kind: "lift"; col: number }                       // the top crate off column `col`
+  | { kind: "check" }                                   // the law compares every bar with the data
+  | { kind: "undo" };
+// Yantra (round 7 E6, science puzzle-physics). Parts sit on a board; the child places and turns them, wires terminals or sets
+// knobs, then RUNs: the law (never a physics engine) decides what happens, and the view animates it.
+export type YantraAct =
+  | { kind: "place"; part: string; x: number; y: number; rot?: number }   // beam: a part (a mirror) onto a board cell, at `rot` degrees
+  | { kind: "rotate"; id: string; rot: number }                         // beam: turn a placed part to `rot` degrees
+  | { kind: "remove"; id: string }                                      // beam: take a placed part off
+  | { kind: "wire"; a: string; b: string }                              // circuit: join terminal `a` to terminal `b`
+  | { kind: "unwire"; a: string; b: string }                            // circuit: cut that wire
+  | { kind: "toggle"; id: string }                                      // circuit: open / close a switch
+  | { kind: "set"; knob: string; value: number }                        // pendulum: a knob (length, mass, swing) to a value
+  | { kind: "run" }                                                     // run the machine: the law answers
+  | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | WeighAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -328,6 +366,9 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
   kon: ["blueprint", "raat", "kagaz", "chalk"],
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
+  arena: ["raat", "blueprint", "kagaz", "chalk"],
+  stambh: ["kagaz", "chalk", "blueprint", "raat"],
+  yantra: ["blueprint", "raat", "chalk", "kagaz"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

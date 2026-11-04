@@ -28,6 +28,8 @@ import { world, type Catalog } from "../world.ts";
 import "../play/play.kaksha.css";
 import { Debrief } from "./Debrief.tsx";
 import { IntakeCard } from "./IntakeCard.tsx";
+import { StageBody } from "./StageBody.tsx";
+import type { DeskBodyParts } from "../../../child/lesson/Desk.tsx";
 import type { MapLike } from "./debrief.ts";
 
 export type LoadMap = (cid: string) => Promise<MapLike | null>;
@@ -72,9 +74,20 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
     [before, loadMap, cid],
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
+  // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison
+  const renderBody = useMemo(() => (stageFirst() ? (p: DeskBodyParts) => <StageBody {...p} /> : undefined), []);
   return (
     <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
-      <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake })}</PlayBriefingContext.Provider>
+      <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake, renderBody })}</PlayBriefingContext.Provider>
     </div>
   );
+}
+
+/** The stage-first body is the Kaksha lesson; `?desk=v2` (per page) shows the V2 Desk grid for side-by-side review. */
+export function stageFirst(): boolean {
+  try {
+    return new URLSearchParams(location.search).get("desk") !== "v2";
+  } catch {
+    return true;
+  }
 }

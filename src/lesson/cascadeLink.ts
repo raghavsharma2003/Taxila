@@ -53,6 +53,8 @@ export interface TranscribeResult {
 export interface CascadeLinkOptions {
   lessonId: string;
   levels: LinkLevels;
+  /** Round 7 (B2): the microphone the runtime already asked for beside the lesson start (else connect() asks). */
+  micStream?: Promise<MediaStream>;
   /** Defaults to POST /api/voice/stt-token. */
   fetchToken?: (lessonId: string) => Promise<RealtimeTokenResponse>;
   /** Defaults to POST /api/voice/tts-stream. */
@@ -439,6 +441,7 @@ export class CascadeLink implements TeacherLink {
 
   constructor(opts: CascadeLinkOptions) {
     this.lessonId = opts.lessonId;
+    this.micStream = opts.micStream ?? null;
     // r5-latency: play the agent's streamed words the moment a turn-audio response starts them (adopted at promptTeacher)
     this.unEarly = registerEarlyAudio(opts.lessonId, (stream) => this.playEarly(stream));
     this.levels = opts.levels;
@@ -500,9 +503,11 @@ export class CascadeLink implements TeacherLink {
     this.setupAudio(); // before any await: still inside the start tap when the runtime calls straight through
     let mic: MediaStream;
     try {
-      mic = await navigator.mediaDevices.getUserMedia({
+      const early = this.micStream;
+      this.micStream = null;
+      mic = await (early ?? navigator.mediaDevices.getUserMedia({
         audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
-      });
+      }));
     } catch (err) {
       if (this.closed) throw new Error("the voice lesson was closed");
       console.warn("cascade: no microphone, continuing typed", err);
@@ -772,7 +777,32 @@ export class CascadeLink implements TeacherLink {
     return Promise.race([a.ended, new Promise<void>((r) => setTimeout(r, HOLD_MAX_MS))]).then(() => new Promise<void>((r) => setTimeout(r, REPLY_GAP_MS)));
   }
 
+  /**
+   * Round 7 (B2 ↔ App): the child's mute. Muted: push-to-talk underneath (the engine stands aside and never reads the
+   * quiet as silence), the mic tracks off, no tap opens it. A setPushToTalk while muted is remembered for the unmute.
+   */
+  setMuted(on: boolean): void {
+    if (on === this.muted) return;
+    if (on) {
+      const want = this.pushToTalk;
+      this.talkEnd();
+      this.setPushToTalk(true);
+      this.muted = true;
+      this.mutedWant = want;
+    } else {
+      this.muted = false;
+      const want = this.mutedWant;
+      this.mutedWant = null;
+      if (want !== null) this.setPushToTalk(want);
+    }
+    this.applyMic();
+  }
+  private muted = false;
+  private mutedWant: boolean | null = null;
+  private micStream: Promise<MediaStream> | null = null;
+
   setPushToTalk(on: boolean): void {
+    if (this.muted) { this.mutedWant = on; return; }
     if (this.transportKind === "typed") return;
     if (this.transportKind === "recording") on = true; // no hands-free without the transcription call
     if (on === this.pushToTalk) return;
@@ -789,7 +819,7 @@ export class CascadeLink implements TeacherLink {
   }
 
   talkStart(): void {
-    if (!this.pushToTalk || this.talking || this.transportKind === "typed") return;
+    if (this.muted || !this.pushToTalk || this.talking || this.transportKind === "typed") return;
     this.clearPttTail();
     this.talking = true;
     this.vtrace.tap("start");
@@ -852,6 +882,8 @@ export class CascadeLink implements TeacherLink {
 
   close(): void {
     if (this.closed) return;
+    // round 7 (B2): an early microphone connect() never took is released with the link
+    if (this.micStream) { void this.micStream.then((m) => { for (const t of m.getTracks()) t.stop(); }, () => {}); this.micStream = null; }
     this.unEarly?.();
     this.vtrace.close();
     // turn.predictive: a held fragment is delivered before teardown, never dropped (it can be a disclosure)
@@ -1421,6 +1453,16 @@ export class CascadeLink implements TeacherLink {
   private duplexSurface(): import("../duplex/cascadeDuplex.ts").CascadeSurface {
     return {
       lessonId: this.lessonId,
+      // round 7 (B4): the second ear — the D5 stream's own copy of a burst the ear finalised empty, transcribed once
+      secondEar: async (a0, a1) => {
+        const st = this.d5;
+        if (!st || this.closed || this.laneUsed !== "d5") return null;
+        const pcm = st.clip(a0, a1);
+        if (!pcm || pcm.length < 16000 * 0.15) return null;
+        const { wavOf } = await import("../duplex/d5Stream.ts");
+        const r = await this.transcribeClip(this.lessonId, new Blob([wavOf(pcm)], { type: "audio/wav" }));
+        return r?.text ? { text: r.text, ...(typeof r.asrConfidence === "number" ? { confidence: r.asrConfidence } : {}) } : null;
+      },
       audio: () => (this.mic && this.ctx && !this.closed ? { ctx: this.ctx, stream: this.mic, herOutput: this.player?.output ?? null } : null),
       micGate: (gated) => {
         if (this.micGated === gated) return;
@@ -1630,7 +1672,7 @@ export class CascadeLink implements TeacherLink {
   private micWanted = true;
   private micGated = false;
   private applyMic(): void {
-    const on = this.micWanted && !this.micGated;
+    const on = this.micWanted && !this.micGated && !this.muted;
     for (const t of this.mic?.getAudioTracks() ?? []) t.enabled = on;
   }
 }

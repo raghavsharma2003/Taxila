@@ -25,3 +25,6 @@ export function scriptFacts(script: WhiteboardScript, base?: Partial<StudioFacts
 export function seeded(str: string): () => number;
 export function opGeometry(op: WbOp, byId?: Map<string, WbOp>): OpGeometry;
 export function lintScript(script: WhiteboardScript): { id: string; check: string; detail?: unknown }[];
+export function moveShift(ops: readonly WbOp[], id: string, t: number, reducedMotion?: boolean): [number, number];
+export function shiftOp<T extends WbOp>(op: T, dx: number, dy: number): T;
+export function settledScript(script: WhiteboardScript): WhiteboardScript;

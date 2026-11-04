@@ -15,6 +15,7 @@ import { getJson } from "../../app/api.ts";
 import { helloClip } from "../../child/voice.ts";
 import { nextStep, StepFrame } from "../Layout.tsx";
 import { setLangPref, useDraft } from "../draft.ts";
+import { teacherBandFor } from "../teacherBand.ts";
 
 export type Speak = "english" | "hindi" | "hinglish";
 export const LANGS: { id: Speak; ui: Lang; label: string }[] = [
@@ -34,7 +35,7 @@ const TRANSCRIPT: Partial<Record<string, Record<Speak, string>>> = {
 interface Offer { teacher: { id: string; name: string; subject: string } }
 
 function local(classLevel: number): Offer {
-  const rec = teacherRecord(defaultTutorFor({ class_level: classLevel }), classLevel <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: classLevel }), teacherBandFor(classLevel));
   return { teacher: { id: rec.id, name: rec.name, subject: rec.pronouns.subject } };
 }
 
@@ -85,7 +86,7 @@ export function MeetStep() {
     setLangPref(l.ui);
   };
   const they = cap(o.teacher.subject === "they" ? "they" : o.teacher.subject);
-  const band = cl <= 4 ? "b2" : "b3";
+  const band = teacherBandFor(cl);
   const transcript = speak ? TRANSCRIPT[o.teacher.id]?.[speak] : undefined;
   const title = `Meet ${o.teacher.name}`;
 

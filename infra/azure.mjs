@@ -39,7 +39,34 @@ export const RG_PATH = () => `/subscriptions/${sub()}/resourceGroups/${rgName()}
  * allow404 → null on 404. Returns the parsed body (or {} for an empty 2xx). Follows nothing: async operations are
  * polled by the caller through the resource's own provisioningState.
  */
+/**
+ * Is a failed ARM call safe and worth repeating? (PURE; round 7 platform-release-pipeline: deploys died on transient
+ * "fetch failed" / 5xx, ms-r9 / ms-r13.) Network errors, 408 / 429 / 5xx only, and only for idempotent calls: GET, PUT,
+ * PATCH, DELETE, and the read-only POST actions (list*). A POST that starts something (an ACR run, a job execution, a
+ * revision activation) is never repeated: a lost response may mean it ran.
+ * @param {string} method @param {string} path @param {{ status?: number }} err
+ */
+export function armRetryable(method, path, err) {
+  const idempotent = method !== "POST" || /\/list[A-Za-z]*(\?|$)/.test(path);
+  if (!idempotent) return false;
+  const st = err?.status;
+  return st === undefined || st === 408 || st === 429 || st >= 500;
+}
+/** Delays between ARM attempts (ms); 4 attempts in all. */
+export const ARM_RETRY_MS = [2000, 6000, 15000];
+
 export async function arm(method, path, body, { allow404 = false, raw = false } = {}) {
+  for (let attempt = 0; ; attempt++) {
+    try { return await armOnce(method, path, body, { allow404, raw }); }
+    catch (e) {
+      if (attempt >= ARM_RETRY_MS.length || !armRetryable(method, path, e)) throw e;
+      console.warn(`  arm ${method} ${path.split("?")[0].split("/").slice(-2).join("/")}: ${String(e.message).slice(0, 120)}; retry ${attempt + 1}/${ARM_RETRY_MS.length} in ${ARM_RETRY_MS[attempt] / 1000} s`);
+      await sleep(ARM_RETRY_MS[attempt]);
+    }
+  }
+}
+
+async function armOnce(method, path, body, { allow404 = false, raw = false } = {}) {
   const full = path.startsWith("/subscriptions/") ? path : RG_PATH() + path;
   const r = await fetch("https://management.azure.com" + full, { method,
     headers: { authorization: `Bearer ${await token()}`, "content-type": "application/json", ...(body ? {} : { "content-length": "0" }) },

@@ -9,7 +9,7 @@
 // PLAY facts row) goes up as an `interaction` named play_evidence / play_seam with the token in `data`; WorkTray turns them
 // into module events (goal_met at a level end, stuck at an impasse or a misconception) and the lesson turn verifies them.
 // Committed child utterances arrive as a window event (PLAY_HEARD) the lesson runtime dispatches: the closed voice grammar
-// maps commands to presses.
+// maps commands to presses, synchronously, and the listener acks a taken command on the event detail (gameAct).
 import { useEffect, useMemo, useState } from "react";
 import type { ArtId, PlayArtifact, PlayDressResponse, PlayLevel } from "../../shared/play.ts";
 import type { ArtifactRendererProps } from "../studio/renderers.ts";
@@ -17,6 +17,7 @@ import { PlaySession } from "./PlaySession.tsx";
 import { playApi } from "./client.ts";
 
 import { MIN_BOX, PLAY_HEARD } from "./core/box.ts";
+import { probeVoice, type PlayHeardDetail } from "./core/voiceSink.ts";
 import { playLangOf } from "./lessonLang.ts";
 import type { DressedSpec } from "./engines/core3d/api.ts";
 import { engineFor, prefetchEngine } from "./engines/registry.ts";
@@ -36,7 +37,6 @@ const certForce = (): CertForce | null => {
 export default function PlayStudioRenderer(props: ArtifactRendererProps) {
   const art = (props.artifact as unknown as PlayArtifact).play;
   const [state, setState] = useState<{ sid: string; level: PlayLevel; art: ArtId; dress: DressedSpec | null; render2d: boolean } | null>(null);
-  const [heard, setHeard] = useState<{ id: number; text: string } | null>(null);
   const small = props.px.w < MIN_BOX.w || props.px.h < MIN_BOX.h;
   // r4 K-P3: a shell's Briefing in front of a real-game engine (src/play/briefing.ts). The model's dress is fetched while
   // the card is up and handed to PlaySession (no second fetch at mount), so the look the card names is the look that plays.
@@ -64,10 +64,16 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
     return () => ac.abort();
     // a new session is a new piece
   }, [art.sessionId, small]);
+  // r7: the mounted stage takes the utterance synchronously (core/voiceSink.ts) and the ack goes back on the event detail,
+  // which the runtime reads as soon as dispatchEvent returns: a game command becomes a game act, never a card answer
   useEffect(() => {
     if (typeof window === "undefined") return;
-    let n = 0;
-    const on = (e: Event) => { const t = (e as CustomEvent<{ text?: string }>).detail?.text; if (typeof t === "string" && t.trim()) setHeard({ id: ++n, text: t.slice(0, 120) }); };
+    const on = (e: Event) => {
+      const d = (e as CustomEvent<PlayHeardDetail>).detail;
+      if (!d || typeof d.text !== "string" || !d.text.trim()) return;
+      const act = probeVoice(d.text);
+      if (act) d.gameAct = act;
+    };
     window.addEventListener(PLAY_HEARD, on);
     return () => window.removeEventListener(PLAY_HEARD, on);
   }, []);
@@ -88,7 +94,7 @@ export default function PlayStudioRenderer(props: ArtifactRendererProps) {
         level: state.level, engine: engineId, dress: shownDress, dressFinal: !!pre?.final, young: !!props.young, reducedMotion: !!props.reducedMotion,
         px: props.px, launched: phase === "warp", launch: () => setPhase("warp"), done: () => setPhase("play"),
       })}
-      {(!briefed || phase === "warp") && <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} dressReply={pre?.reply} cosmetics={briefing?.cosmetics ?? null} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded heard={heard}
+      {(!briefed || phase === "warp") && <PlaySession sessionId={state.sid} level={state.level} art={state.art} dress={forcedDress ?? state.dress} dressReply={pre?.reply} cosmetics={briefing?.cosmetics ?? null} engine={force?.render ?? (state.render2d ? "2d" : undefined)} preserveDrawing={!!force} lang={lang} classLevel={props.young ? 4 : 6} reducedMotion={props.reducedMotion} embedded
         onActivity={(name, data) => props.onEvent({ type: "interaction", name, data })}
         onToken={(kind, token, seamKind) => props.onEvent({ type: "interaction", name: kind === "evidence" ? "play_evidence" : "play_seam", data: { token, ...(seamKind ? { seam: seamKind } : {}) } })}
         onLevelEnd={(r) => { props.onEvent({ type: "interaction", name: "play_level_end", data: { verdict: r.grade?.verdict ?? null, levelId: r.levelId } }); props.onEvent({ type: "done" }); }}
