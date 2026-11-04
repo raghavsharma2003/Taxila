@@ -106,3 +106,14 @@ test("meter: stt.session, d5.session and image.call carry their usd; bad inputs 
     assert.equal(by("speech.tts")[0].usd, 0);
   } finally { _setTraceDeps({ insert: null, off: null }); _resetTrace(); }
 });
+
+test("lessonCost: a stt.session is priced from its model and seconds, never from a sent usd; seconds capped at 4 h", () => {
+  const c = lessonCost([
+    { kind: "stt.session", data: { model: "gpt-live-transcribe", sec: 1800, usd: 999 } },
+    { kind: "stt.session", data: { model: "gpt-live-transcribe", sec: 1e9 } },
+    { kind: "stt.session", data: { model: "gpt-live-transcribe", sec: "junk" } },
+  ]);
+  assert.equal(c.meters.stt.sec, 1800 + 4 * 3600);
+  assert.equal(c.meters.stt.usd, 0.51 + 4.08);
+  assert.equal(c.unpriced, 0);
+});

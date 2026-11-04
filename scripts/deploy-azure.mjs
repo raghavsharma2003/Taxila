@@ -169,6 +169,12 @@ function placementEnv() {
     if (process.env.AZURE_SPEECH_REGION_SIN && process.env.AZURE_SPEECH_KEY_SIN) {
       plain.AZURE_SPEECH_REGION = process.env.AZURE_SPEECH_REGION_SIN;
       secrets.AZURE_SPEECH_KEY = { ref: "azure-speech-key-sin", value: process.env.AZURE_SPEECH_KEY_SIN };
+      // round 7 (B3, same-voice TTS failover): today's Speech resource becomes region 2, so DragonHD (the same voice)
+      // answers from it when centralindia fails, before any change to the mini-tts voice (server/voice/speech.js dhdRegions)
+      if (process.env.AZURE_SPEECH_REGION && process.env.AZURE_SPEECH_KEY && process.env.AZURE_SPEECH_REGION !== process.env.AZURE_SPEECH_REGION_SIN) {
+        plain.AZURE_SPEECH_REGION_2 = process.env.AZURE_SPEECH_REGION;
+        secrets.AZURE_SPEECH_KEY_2 = { ref: "azure-speech-key", value: process.env.AZURE_SPEECH_KEY };
+      }
     }
     plain.TAXILA_REGION = REGION || "southindia";
   }
