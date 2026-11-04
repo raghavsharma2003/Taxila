@@ -1,0 +1,31 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-handsfree-everyone",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B1 (voice-handsfree-default, D2). server/duplex/config.js: with the global mode on (unset/1/on), every /api/duplex/config answer is {duplex:on}, plus lane d5 whenever Voice Live is configured (duplexLane; TAXILA_DUPLEX_LANE=d4 pins D4). No cohort lookup runs. The cohort (TAXILA_DUPLEX_LIVE_FOR) is now only the override while the global mode is shadow. The kill switch TAXILA_DUPLEX=off still wins. d5route authorizeD5 drops the cohort gate and needs only duplex on + lane d5. Client flags.ts: an unreadable or missing switch runs hands-free on lane D4 (no definite answer never asks for D5), not shadow. App patch docs/patches/to-app/001-handsfree-default.patch: prefs.talk defaults to open (hands-free), Me shows the talk choice to every child with no headset rule, tap-to-talk stays the child's choice. Tests: tests/r7-voice-handsfree.test.mjs; the old cohort-only expectations in d5-voicelive-server and p1-duplex-live were updated. Needs a live check: owner phone lesson on a build with TAXILA_DUPLEX=on (production is shadow today, a deploy setting for main/Platform) and Voice Live configured. Reverse if the live owner-phone lessons on D5 show the hands-free floor worse than tap for a measured share of children (e.g. echo-made turns or cut-offs above the round-7 bar); then return to cohort-only by setting TAXILA_DUPLEX=shadow, no code change."
+  },
+  {
+   "id": "dc-r7-voice-first-line-held-mic",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B2 (voice-handsfree-from-first-line). The runtime asks for the microphone beside POST /api/lesson/start, inside the start tap, and hands it to the cascade link. The bridge knows at the first frame whether hands-free is expected (flags.duplexExpected: a device key, else a settled server answer, else on). The dock renders hands-free from that first frame (handsFreeDock: starting until the engine is live). The LINK stays on push-to-talk, with the mic held, until the engine itself is live: hands-free on the screen does not mean hands-free on the wire, so her opening line on a loudspeaker can never come back as a child turn through today's server-VAD path before the engine's gates run. The mute (runtime.setMuted) holds push-to-talk underneath for the same reason: the engine never reads a muted child as silence. Reverse the held mic if live lessons show children answering her opening line before the engine is live (the words are lost): then open the D5 ear before the engine and let the engine adopt what it heard."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-handsfree-everyone",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-first-line-held-mic",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-handsfree-everyone — hands-free is every child's default, the cohort only an override (2026-11-04)\n\nThe duplex switch no longer gates on the owner cohort. With TAXILA_DUPLEX unset/on, `/api/duplex/config` answers `{duplex:\"on\", lane:\"d5\"}` for every request when Voice Live is configured, `{duplex:\"on\"}` (D4) otherwise or when `TAXILA_DUPLEX_LANE=d4`. There is no sign-in lookup on that path. `shadow` stays as a staging/incident mode where the cohort still turns hands-free on for its guardians. `off` wins over everything. `authorizeD5` opens the Voice Live stream for any consented child whose answer is on + d5. On the client, an unreadable switch now runs hands-free on D4, never shadow or tap. The invisible fallback order stays D5 → D4 → push-to-talk → typed, and tap-to-talk stays a visible choice (App patch 001: prefs default `talk: \"open\"`, no headset-only rule).\n\nNeeds a live check: production env `TAXILA_DUPLEX` is `shadow` today. Hands-free reaches children only after main/Platform sets it to `on` (or unset) on the deploy, with Voice Live configured.\n\nReversal: if live owner-phone lessons on D5 show the hands-free floor doing worse than tap for a measured share of children, set `TAXILA_DUPLEX=shadow` (cohort-only again). No code change is needed.\n\n## dc-r7-voice-first-line-held-mic — hands-free on the screen from the first frame, mic held until the engine is live (2026-11-04)\n\nThe microphone is requested beside the lesson start, so the permission prompt and device open overlap the server's opening line. The dock shows the hands-free state `starting` at once, instead of a tap button that later flips. The link itself stays on push-to-talk until the duplex engine is live. Opening it earlier would hand turn-taking to the server VAD while her opening line plays on a loudspeaker, the echo path the engine exists to gate. Mute uses the same hold, so a muted child is never read as silent. App renders this through patch 002 (useDesk). Reversal: if live lessons show children answering the opening line before the engine is up and losing those words, open the D5 ear first and let the engine adopt what it heard.\n"
+ }
+}

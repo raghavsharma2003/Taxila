@@ -364,7 +364,7 @@ test("CascadeDuplex: her pause / stop reach the host as 'stopped' at the word bo
 
 // ───────────────────────────── the switch ─────────────────────────────
 
-test("kill switch: server env → /api/duplex/config; device override beats it; an unreadable switch runs shadow", async () => {
+test("kill switch: server env → /api/duplex/config; device override beats it; an unreadable switch runs HANDS-FREE (round 7, D2)", async () => {
   assert.equal(duplexMode({}), "on");
   assert.equal(duplexMode({ TAXILA_DUPLEX: "0" }), "off");
   assert.equal(duplexMode({ TAXILA_DUPLEX: "off" }), "off");
@@ -391,10 +391,11 @@ test("kill switch: server env → /api/duplex/config; device override beats it; 
     resetDuplexFlagCache();
     assert.equal(await resolveDuplexMode(srv("shadow")), "shadow");
     resetDuplexFlagCache();
-    // round 3 (duplex): production is shadow; a switch that cannot be read never turns the unproven floor on for a child
-    assert.equal(await resolveDuplexMode(async () => { throw new Error("offline"); }), "shadow", "an unreadable switch runs shadow");
+    // round 7 (D2, dc-r7-handsfree-default): hands-free is every child's default; a switch that cannot be read runs ON (lane
+    // D4: no definite answer ever names d5), never tap. Round 3's "unreadable runs shadow" is superseded
+    assert.equal(await resolveDuplexMode(async () => { throw new Error("offline"); }), "on", "an unreadable switch runs hands-free");
     resetDuplexFlagCache();
-    assert.equal(await resolveDuplexMode(srv(null, false)), "shadow", "a missing route runs shadow");
+    assert.equal(await resolveDuplexMode(srv(null, false)), "on", "a missing route runs hands-free");
     store.set(DUPLEX_KEY, "0");
     resetDuplexFlagCache();
     assert.equal(await resolveDuplexMode(srv("on")), "off", "a device forced off always wins");
