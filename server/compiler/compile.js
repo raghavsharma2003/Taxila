@@ -19,6 +19,7 @@
 //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
+import { methodsLine, SHORT_TURN_WORDS } from "../conversation/methods.js";
 import { playCheck } from "../director/play-verbs.js";
 import { SHAPES as REL_SHAPES } from "../relational/policy.js";
 import { floorText, FLOOR_HEADING } from "./floor.js";
@@ -250,7 +251,8 @@ function branchClause(branches, posed = (t) => t) {
  * against a question nobody asked). Voice lane: the check is the branch for the reply being answered.
  */
 function lastParts({ lessonState: s, move, item, branches, ageBand, language, protegeName, lane, writtenAsk = false }) {
-  const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
+  // round 7 A8: "chhota bolo" (the short method) caps her turn for the rest of the lesson
+  const n = move.methods?.includes("short") ? Math.min(SHORT_TURN_WORDS, TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"]) : TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
   const voice = lane === "voice";
   const lvl = s.hintLevel;
   const fix = [...Object.keys(FLOOR_FIX).filter((k) => s.correction?.includes(k)), ...Object.keys(REL_FLOOR_FIX).filter((k) => s.correction?.includes(k))]
@@ -327,6 +329,9 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
     ...lead,
     ...must,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
+    // round 7 A8 (brain-steering-persistence): how they asked to be taught, last and never shed (position is mechanism);
+    // not on a safeguard or a wrap (move.methods is not set there)
+    ...(methodsLine(move.methods) ? [{ text: `- ${methodsLine(move.methods)}`, drop: null }] : []),
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];
 }

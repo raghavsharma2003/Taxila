@@ -39,6 +39,7 @@ import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
 import { laterUi, momentOf, tappedEntry } from "./later.js";
+import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js";
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
@@ -706,7 +707,8 @@ function poseNext(s, input, prefix, preferred) {
   if (item.skillId) s.arcCount = { ...(s.arcCount ?? {}), [item.skillId]: ((s.arcCount ?? {})[item.skillId] ?? 0) + 1 };
   // (the first skill is taught in teach(), not here: its block starts at its first posed item)
   if (skillArcOn() && !s.arcSkill && item.skillId && !String(item.id).startsWith("diag:")) s.arcSkill = item.skillId;
-  const attemptFirst = !s.novice && s.practiced === 0;
+  // round 7 A8: "khud try karne do" (try_first) asks for the attempt-first format whatever the guidance says
+  const attemptFirst = (!s.novice && s.practiced === 0) || !!s.methods?.includes("try_first");
   if (s.practiceSet && !s.practiceSet.posed.includes(item.id) && s.practiceSet.posed.length < s.practiceSet.of) {
     s.practiceSet = { ...s.practiceSet, posed: [...s.practiceSet.posed, item.id] };
     // the first item of a practice set opens the lesson: no greeting, no hook (W2-C #7)
@@ -1434,6 +1436,7 @@ function p5RequestMove(s, input, item, req, labels) {
       // round 2 safety floor (adversarial B1): the method is the child's words as a model lifted them; it is written into
       // her instructions (this move, and s.prefs on EVERY later move) only when it passes the code screen. A failing one
       // is declined like an out-of-bounds ask, and never stored.
+      if (req.methodId) return withLead(SH.adaptTo({ method: METHOD_NOTE[req.methodId] }));
       if (req.method && unsafeChildPhrase(req.method)) return withLead(SH.declineOob());
       if (req.method) s.prefs = [...new Set([...(s.prefs ?? []), String(req.method).slice(0, 40)])].slice(-4);
       return withLead(SH.adaptTo({ method: req.method }));
@@ -1947,6 +1950,15 @@ export function step(prev, input) {
     && input.cls.outcome === "no_evidence" && !s.activeItemId && ["teach", "warmup"].includes(s.phase) && questionShaped(input.text ?? "")) {
     input = { ...input, cls: { ...input.cls, request: { type: "answer_q", whole: true, src: "r4" } } };
   }
+  // round 7 A8 (brain-steering-persistence): how they asked to be taught, read in code, is kept for the lesson (s.methods:
+  // rendered last on every compile, mapped to knobs); a turn that is only that ask is the adopt request
+  if (input.event === "turn" && input.cls && !input.cls.flags?.distress && !["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
+    const m = readMethod(input.text ?? "");
+    if (m) {
+      s.methods = keepMethod(s.methods, m);
+      if (!input.cls.request) input = { ...input, cls: { ...input.cls, request: { type: "adopt", methodId: m, whole: true, src: "method" } } };
+    }
+  }
   const now = input.now ?? Date.now();
   if (input.event !== "start") s.turn += 1; // every call bumps the turn: the route's optimistic state check keys on it
   s.minutes = Math.round((now - s.startedAt) / 6000) / 10;
@@ -2059,10 +2071,14 @@ export function step(prev, input) {
   // round 2 (conversation): how the child asked to be taught ("step by step", "picture first") rides on every later move
   // (compile.js renders it, droppable): before this, s.prefs was written and never read, so a method request lasted one turn
   if (p5Flag("STEER") && s.prefs?.length && !["safeguard", "wrap"].includes(p.kind)) move.prefs = s.prefs.slice(-2);
+  // round 7 A8: the kept methods ride on every later move (compile.js renders them in the last section, never shed)
+  if (s.methods?.length && !["safeguard", "wrap"].includes(p.kind)) move.methods = [...s.methods];
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
+  // round 7 A8: "khud try karne do" (try_first): a question they have had no help on yet is posed attempt-first
+  if (item && s.methods?.includes("try_first") && ["practice", "probe", "retrieval"].includes(move.kind) && !s.hintLevel) move.format = "F8";
   // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
   if (p.stuck) move.stuck = true;
   s.lastMove = move;

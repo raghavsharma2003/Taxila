@@ -460,7 +460,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const ahead = next && !statementKey(next) ? next : null;
   const lang = state.ctx.lang;
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
-  const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
+  // round 7 A8: "chhota bolo" (the short method) lowers the long-reply cap for the rest of the lesson
+  const max = (state.methods?.includes("short") ? Math.min(25, REPLY_MAX_WORDS[state.ctx.ageBand]) : REPLY_MAX_WORDS[state.ctx.ageBand])
+    + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
   const posingTurn = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
