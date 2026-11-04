@@ -29,7 +29,8 @@ test("codeSwitchAddress: the parent's setting, else the class default", () => {
 
 test("an English lesson with mixAddress aap: a code-switched tum line becomes aap, with one model call (no rewrite)", async () => {
   const r = englishLesson("aap");
-  const line = "Bilkul, Kabir—tumne khud perimeter ka meaning bata diya. Tum batao, fence ke liye kya measure karenge?";
+  // (round 7: a neutral opener: "Bilkul" on an ungraded turn is a verdict the affirms guard now edits)
+  const line = "Achha, Kabir—tumne khud perimeter ka meaning bata diya. Tum batao, fence ke liye kya measure karenge?";
   const { out, calls } = await withReplies([line], () => L.textReply({ instructions: "x", state: r.state, kit: K, childText: "maine khud bata diya", verdict: "ungraded", ui: r.ui, module: null }));
   assert.ok(!registerBroken(out.reply, "aap"), out.reply);
   assert.match(out.reply, /aapne|Aap bataiye/);
@@ -39,7 +40,7 @@ test("an English lesson with mixAddress aap: a code-switched tum line becomes aa
 test("no mixAddress, or a tum one: the line is left as it is (no enforcement, no extra call)", async () => {
   for (const mix of [null, "tum"]) {
     const r = englishLesson(mix);
-    const line = "Bilkul, tumne khud perimeter ka meaning bata diya. Fence ke liye kya measure karenge?";
+    const line = "Achha, tumne khud perimeter ka meaning bata diya. Fence ke liye kya measure karenge?";
     const { out, calls } = await withReplies([line], () => L.textReply({ instructions: "x", state: r.state, kit: K, childText: "maine khud bata diya", verdict: "ungraded", ui: r.ui, module: null }));
     assert.match(out.reply, /tumne/, String(mix));
     assert.equal(calls, 1, String(mix));

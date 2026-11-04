@@ -52,8 +52,11 @@ export const tappedEntry = (later = [], id) => (later ?? []).find((p) => p.id ==
 
 // her own promise to come back to something: "baad mein … baat karenge", "end mein … dekhenge", "we'll talk about … later"
 const PROMISE = /\b(baad\s+mein|baad\s+me|end\s+mein|aakhir\s+mein|lesson\s+ke\s+baad|thodi\s+der\s+(?:mein|baad)|later|at\s+the\s+end|after\s+this\s+(?:question|one))\b[^.!?।]{0,60}\b((?:baat\s+)?kar(?:enge|ein|te\s+hain)|bata(?:ungi|unga|enge|ti\s+hoon)|samjha(?:ungi|unga|enge|ti\s+hoon)|dekh(?:enge|te\s+hain)|talk\s+about|come\s+back|get\s+back|look\s+at)\b|\b(come\s+back\s+to|get\s+back\s+to|talk\s+about)\b[^.!?।]{0,60}\b(later|at\s+the\s+end|after\s+this)\b/i;
+// round 7 (main's full-run judgement #8: "cricket" got "is baat ko yaad rakhenge" and never came back; "cricket examples
+// banaungi" was promised and never kept): a promise to remember, or to make examples of their thing, is a promise too
+const PROMISE_MORE = /\b(?:yaad\s+rakh(?:enge|ungi|unga|ti\s+hoon|ta\s+hoon)|(?:\p{L}+\s+){0,2}examples?\s+(?:banaungi|banaunga|banayenge|dungi|dunga|denge|launga|laungi|sunaungi|sunaunga)|I'?ll\s+remember|(?:I'?ll|we'?ll)\s+(?:make|do)\s+(?:a\s+|some\s+)?(?:\p{L}+\s+)?examples?)\b/iu;
 /** Does her line promise to come back to something later? */
-export const promisesLater = (text) => PROMISE.test(String(text ?? ""));
+export const promisesLater = (text) => PROMISE.test(String(text ?? "")) || PROMISE_MORE.test(String(text ?? ""));
 
 /**
  * Her own promise kept (brain-parked-promise-tracking): when her final line promises "later" and the Director parked

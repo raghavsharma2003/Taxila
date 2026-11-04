@@ -47,6 +47,12 @@
 
 .pl-controls { grid-area: controls; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px 12px; min-width: 0; }
 .pl-controls:empty { display: none; }
+/* r7: the teacher's PiP may overlap the play box's bottom-right corner on a phone (StudioStage keeps the box ≥ MIN_BOX and
+   names the corner: --pip-keep-w / --pip-keep-h on the closest [data-pip-keep], read live by PlayStage into --pl-keep-*).
+   The controls stand clear of it on the right and are at least as tall as it, so no button and no part of the world sits
+   under her tile. Absent = nothing reserved. */
+.pl-root[data-keep] .pl-controls { padding-right: max(12px, var(--pl-keep-w, 0px)); min-height: var(--pl-keep-h, 0px); box-sizing: border-box; }
+.pl-root[data-keep] .pl-controls:empty { display: flex; }
 .pl-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pl-row--pad { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 6px; }
 .pl-btn { min-height: 48px; min-width: 48px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--pl-line); background: var(--pl-btn); color: var(--pl-btn-ink);

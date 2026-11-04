@@ -5,7 +5,7 @@
 // The host owns nothing about truth: the family's pure law runs in the PlayController for instant consequences; the
 // raw acts go up through onAct / onLevelEnd and the server re-grades them. Her micro-lines arrive as `caption` (the
 // server's bank pick) and are shown only at a play turn-point (never while a finger is down).
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import type { ArtId, Door, Lang, Moment, PlayActEnvelope, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
 import { FLOORS } from "../../shared/play.ts";
 import { shellLook, voltArt } from "./core/volt-art.ts";
@@ -79,6 +79,7 @@ export function PlayStage(props: PlayStageProps) {
   const { level, lang } = props;
   const art = useMemo(() => voltArt(props.art, level.family, shellLook()), [props.art, level.family]);
   const rootRef = useRef<HTMLDivElement>(null);
+  const keep = usePipKeep(rootRef);
   const worldRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<FamilyView | EngineView | null>(null);
   const stageRef = useRef<StageHandle | null>(null);
@@ -277,7 +278,8 @@ export function PlayStage(props: PlayStageProps) {
   const solved = ctlRef.current?.solved ?? false;
 
   return (
-    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}>
+    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}
+      data-keep={keep ? "bottom-right" : undefined} style={keep ? ({ "--pl-keep-w": `${keep.w}px`, "--pl-keep-h": `${keep.h}px` } as CSSProperties) : undefined}>
       <header className="pl-top">
         <span className="pl-mark" aria-hidden="true" />
         <span className="pl-title">{props.title ?? familyTitle(level.family, lang)}</span>
@@ -322,6 +324,36 @@ export function PlayStage(props: PlayStageProps) {
       {showMap && props.world && <PlayMap world={props.world} art={art} lang={lang} onClose={() => setShowMap(false)} />}
     </div>
   );
+}
+
+/**
+ * r7: the bottom-right corner of the play box the teacher's PiP covers on a phone, as StudioStage names it on the closest
+ * [data-pip-keep] (CSS vars --pip-keep-w / --pip-keep-h, px, in the box's own coordinates). Read live, never recomputed:
+ * the attribute and vars follow App's slot; null when nothing is reserved (a wide screen, a standalone stage).
+ */
+export function usePipKeep(rootRef: RefObject<HTMLElement | null>): { w: number; h: number } | null {
+  const [keep, setKeep] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof window === "undefined") return;
+    // the box element that carries (or will carry) the keep: the closest one now, else the Studio box the stage sits in
+    const host = (root.parentElement?.closest("[data-pip-keep]") ?? root.parentElement?.closest(".st-box")) as HTMLElement | null;
+    if (!host) return;
+    const read = () => {
+      if (!host.hasAttribute("data-pip-keep")) { setKeep((k) => (k ? null : k)); return; }
+      const cs = getComputedStyle(host);
+      const w = parseFloat(cs.getPropertyValue("--pip-keep-w")) || 0, h = parseFloat(cs.getPropertyValue("--pip-keep-h")) || 0;
+      const next = w > 0 && h > 0 ? { w: Math.ceil(w), h: Math.ceil(h) } : null;
+      setKeep((k) => (k?.w === next?.w && k?.h === next?.h ? k : next));
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(host, { attributes: true, attributeFilter: ["data-pip-keep", "style", "class"] });
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(read);
+    ro?.observe(host);
+    return () => { mo.disconnect(); ro?.disconnect(); };
+  }, [rootRef]);
+  return keep;
 }
 
 /** The family's title: the round-3 four from this table; any later family (kon, G2's nazariya, …) from its
