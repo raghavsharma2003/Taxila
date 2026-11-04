@@ -21,7 +21,7 @@ import { currentLoop, wireEnds, type CircuitParams, type CircuitState } from "..
 import type { Vector3 } from "three";
 import { THEMES, themeOf, type YantraTheme } from "./palette.ts";
 import { KitScene, POST_TOP } from "./kit.ts";
-import { nearest } from "./rig.ts";
+import { nearest } from "./bench.ts";
 import { hint, LANGTAG } from "./words.ts";
 
 const TAP = 8;

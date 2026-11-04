@@ -11,7 +11,7 @@ import {
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { LEN, type PendulumParams } from "../../families/yantra/pendulum.logic.ts";
 import { BOB_LOOK, shade, type ThemePack } from "./palette.ts";
-import { Rig, type Reserve, type Rnd } from "./rig.ts";
+import { Rig, type Reserve, type Rnd } from "./bench.ts";
 import { rulerTexture, spotTexture } from "./textures.ts";
 
 export const K = 0.04;                       // world units per cm of thread

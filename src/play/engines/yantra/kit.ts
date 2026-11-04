@@ -14,7 +14,7 @@ import {
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { TERMS, wireEnds, wireKey, type CircuitParams, type CircuitPart, type PartKind } from "../../families/yantra/circuit.logic.ts";
 import { shade, type ThemePack } from "./palette.ts";
-import { Rig, type Reserve, type Rnd } from "./rig.ts";
+import { Rig, type Reserve, type Rnd } from "./bench.ts";
 import { flareTexture, spotTexture } from "./textures.ts";
 
 const SX = 3.3, SZ = 2.55;            // slot spacing (world units); rows spread up to SZ_MAX where the box has height to spare
