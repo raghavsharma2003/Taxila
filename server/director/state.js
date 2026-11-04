@@ -666,7 +666,14 @@ function leavePractice(s, kit) {
   // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
   const P = s.pace;
   const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
-  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
+  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand]
+    || pastBrief(s, "wrapAt"); // round 7 (Learning patch 006): the slot's target length reached → the next natural stop
+}
+
+/** Learning patch 006: has the lesson clock passed the Conductor brief's wrapAt / hardStopAt (ISO time, on ctx.lessonBrief)? */
+function pastBrief(s, key) {
+  const at = Date.parse(s.ctx?.lessonBrief?.[key] ?? "");
+  return Number.isFinite(at) && s.startedAt + Math.round((s.minutes ?? 0) * 60_000) >= at;
 }
 
 function poseNext(s, input, prefix, preferred) {
@@ -1821,6 +1828,8 @@ function decide(s, input, item) {
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
   if (s.phase === "done") return toWrap(s, { stopping: true });
+  // round 7 (Learning patch 006): the Conductor's lesson slot ends at its window (≤ bedtime − 60): never past hardStopAt
+  if (pastBrief(s, "hardStopAt")) return toWrap(s, {});
   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
   // diagnostic next (fusion rule 2: a detector triggers a verifying probe, it never decides alone).
   if (cls?.voiced) {
