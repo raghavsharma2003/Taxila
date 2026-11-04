@@ -35,6 +35,7 @@ const VERB: Record<string, VoiceIntent["verb"]> = {
   kaato: "cut", kaat: "cut", kato: "cut", cut: "cut", "काटो": "cut",
   yahan: "here", yaha: "here", yahin: "here", here: "here", "यहाँ": "here", "यहां": "here",
   chalao: "run", chala: "run", run: "run", start: "run", "चलाओ": "run",
+  tolo: "run", tol: "run", weigh: "run", "तोलो": "run",               // r7 taraazu/weigh: "Tolo" unlocks the beam  // lint-ui: speech
   kholo: "open", khol: "open", open: "open", "खोलो": "open",
   wapas: "undo", undo: "undo", "वापस": "undo",
   left: "left", baayein: "left", right: "right", daayein: "right",

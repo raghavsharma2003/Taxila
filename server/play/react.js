@@ -13,6 +13,7 @@ import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
 import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts";
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
+import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -52,6 +53,7 @@ export function hiddenOf(level) {
     case "pair": case "close": return [openingOf(p)];        // ∠COB = 180 − ∠AOC; ∠B from the angle sum / isosceles
     case "hop": return p.hop ? [hopValue(p.hop)] : [];        // where the hop lands
     case "pendulum": return pendulumHidden(level);           // the thread lengths that keep the beat
+    case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
     default: return [];
   }
 }

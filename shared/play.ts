@@ -30,7 +30,7 @@ export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
 export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
-  taraazu: ["equation", "equality"],
+  taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close"],
@@ -154,6 +154,14 @@ export type BalanceAct =
   | { kind: "drop"; n: number }                         // equality mode: put n cubes in the box (replaces its content)
   | { kind: "name"; x: number }                         // name the bag's value
   | { kind: "undo" };
+// Taraazu weigh / fill (round 7, measurement): real weights onto the right pan, real jugs into the vessel; the beam stays
+// locked while loading and only "weigh" (Tolo / Dekho) lets the law answer
+export type WeighAct =
+  | { kind: "load"; weight: number }                    // one weight of `weight` g from the box onto the right pan
+  | { kind: "unload"; weight: number }                  // one weight of `weight` g off the pan, back into the box
+  | { kind: "pour"; jug: number }                       // fill: one full jug of `jug` ml into the vessel
+  | { kind: "weigh" }                                   // unlock the beam (weigh) / check the water (fill)
+  | { kind: "undo" };
 // Nishana
 export type LineAct =
   | { kind: "place"; which: number; x: number }         // put marker `which` at line coordinate x (a number in [lo, hi])
@@ -207,7 +215,7 @@ export type YantraAct =
   | { kind: "run" }                                                     // run the machine: the law answers
   | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | WeighAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
