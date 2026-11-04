@@ -168,6 +168,8 @@ function enqueueReports(s, day, H, active) {
     // Forge G2 end-of-day (server/forge/g2/conductor-job.js): ingest finished builds, deliver approved ones, ask for
     // tomorrow's. One per child per learning day; same window as the daily note.
     H.enqueue("forge.g2.nightly", `forge.g2.nightly:${s.childId}:${day}`, { day }, { runAfter }); H.rule("forge_g2_nightly");
+    // round 7 F: the day's explain-format outcomes into the population posterior (server/learner/formatJobs.js)
+    H.enqueue("format.join", `format.join:${s.childId}:${day}`, { day }, { runAfter }); H.rule("format_join");
   }
   if (weekday(day) === 0) {
     const wk = isoWeek(day);

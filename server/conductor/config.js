@@ -55,6 +55,9 @@ export const JOB_KINDS = {
   // Not allowed in safety_hold (the protocol decides what reaches the family); allowed while paused or in a lesson.
   "report.daily": { lane: "fast", priority: 3, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.daily, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
   "parent.letter": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.weekly, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
+  // round 7 F: format.join:{child}:{day}, the explain-format outcomes of an active day into the POPULATION posterior
+  // (server/learner/formats.js; no model call, no child id written). Never in a lesson or safety_hold.
+  "format.join": { lane: "fast", priority: 4, purpose: "core_tutoring", budgetMicroUsd: 0, maxAttempts: 4, leaseSec: 60, allowedIn: ["paused"] },
   // round 7 F: parent.monthly:{child}:{YYYY-MM}, the monthly report (app; PARENT-REPORT §9.2), enqueued on the month's last night fold
   "parent.monthly": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.monthly, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
   // Forge G2 end-of-day (server/forge/g2/conductor-job.js; enqueued by the night fold): deliver approved agent-built
