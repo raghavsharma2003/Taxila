@@ -23879,6 +23879,536 @@
    "at": "2026-11-04",
    "title": "Round 7 B4 (voice-d5-ear-asr). Three layers against the D5 ear's empty finals (5/14 short Hinglish answers on the owner harness). (1) Phrase list: each D5 session sends azure-speech a per-lesson phrase_list (server/duplex/phrases.js): the child's and teacher's names, this topic's short kit answers (≤3 words), a Hinglish core (हाँ/नहीं/पता नहीं/दीदी…) and Hindi number words. Terms only, never sentences. The kit lookup is bounded at 300 ms. Because all of the topic's answers and every number are in the list, the bias is toward the lesson's vocabulary, not toward one item's key. (2) Second ear: a turn the engine commits as unheard is held (≤2.5 s) while the device's own clip of that span (the mic channel the D5 stream sent, kept 12 s on Voice Live's audio clock) goes to /api/voice/transcribe. Words found → a real turn with that confidence; none → the unheard re-ask as before. Turns stay in order. (3) Model: TAXILA_D5_ASR=gpt-4o-transcribe|gpt-4o-mini-transcribe switches the ear to a delta-streaming model. Deltas already feed the engine host (live.ts). The default stays azure-speech until a live arm. D4 keywords are not wired (no structured field on the live-transcribe session). Reverse the phrase list if a live arm shows it pulls wrong answers onto listed ones (false-correct grading). Reverse the second ear if its median hold pushes R p90 past the latency bar on unheard turns.",
    "source": "inbox/r7-voice-remerge.json"
+  },
+  {
+   "id": "rj-r7-inbox-file-reedited-after-merge",
+   "kind": "rejection",
+   "at": "2026-11-04",
+   "title": "Streams re-editing a context inbox file after the main loop merged it. merge-inbox moves the file to context/inbox/merged/; git records a rename, so a stream's later edits to the same path merge into merged/<f>.json and are never read. Integration 2 found 28 nodes from Brain, Face, Platform, Studio and Voice hidden this way (recovered by moving them back and re-merging). Fix: one new inbox file per batch (r7-<stream>-<n>.json); PIPELINE.md §O.",
+   "source": "inbox/r7-main-2.json"
+  },
+  {
+   "id": "r5a-ms-agent-vs-director-571b301",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Sim lab (session_012H8HYZhSzPwAoXPMsKERUb, evals/simlab/results/r5-agent-vs-director-571b301 on claude/r5-simlab @20ba103a): agent lane (taxila-gpt6) vs Director, same sha, n=64 cards per arm, text lane, 14 child turns, two judges. Agent beats Director on 57/64 cards paired. Judge-1 means Director -> agent: coherence 3.17->4.27, follows_child 2.89->3.64, adapts 2.28->3.70, human 3.86->4.45, channel_truth 2.55->3.27, pacing 2.83->3.39, safety 4.94->5.00, understanding 2.80->3.25. Clusters (lessons/64) Director->agent: repeats_explanation 58->30, stuck_loop 46->22, topic_jump 14->2, ignores_child 22->10, type/write 5->0. Still high on agent: missed_misconception 35, ignored_request 34, over_checks 31, points_empty_screen 17, false_understood 21; own skill reads 82/164 right with 61 overclaims; boards drawn 2 (Director 164); turn p50 5.9 s / p90 8.1 s (Director 2.9/5.0), 20 Director takeovers (9 s timeouts), $0.070 per lesson.",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-dc-understood-is-earned",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "status": "proposed",
+   "title": "Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.",
+   "reversal": "the sim lab shows underclaims (understood withheld from a child who has it) outnumbering the overclaims it removes",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-ms-agent-tools-smoke-748ddff8",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Agent lane with stream 2's tools (748ddff8): local server, TEST branch, battery-r5 6 personas x 10 turns, conc 6: 19 board pages drawn through boardShow (571b301 sim run: 2 in 64 lessons), 0 HTTP errors, battery D 92%, A/O/B/S/T/F/C 100%. Agent call (taxila-gpt6, strict json_schema, non-streamed) p50 4281 ms / p90 5279 ms, mean 273 output tokens; 10/66 turns hit the 6 s timeout and fell back to the Director. Effort none vs low: no difference (n=5 each, ~3.7 s). Latency needs streaming (stream 3 sayDeltasOf + speakStreamed).",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-ms-spoken-numbers-eff989c0",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Spoken Hindi numbers (eff989c0): comprehension/grade/numbers.js now reads with grading/spoken-number.js (one reader), Devanagari 1-99 with nukta/candrabindu folded, ASR fused hundreds (छेसो, पाँचसो, chheso), split mode for working aloud (last stated result) in numbersIn/matchNumber, rKey and classifyFast (number_working). tests/r5-spoken-numbers.test.mjs 4/4 fail on int/r5-rel141, pass on eff989c0; 66 related test files 844/844. Voice-arm before: sim lab 29de42f9 correct verdicts 77 -> 51; re-run requested.",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-instructed-nonverbals",
+   "kind": "rejection",
+   "title": "Asking gpt-4o-mini-tts or gpt-realtime-2.1 in prose for a laugh/chuckle/breath: 0 audible events in 18 judged clips",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-paralinguistic-tags-en-IN-dragonhd",
+   "kind": "rejection",
+   "title": "[laughter]/[breathing]/[sighing] on en-IN DragonHD are spoken as words (12/12), despite Learn saying all voices/all languages",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-llm-planner-serial",
+   "kind": "rejection",
+   "title": "LLM delivery planner on the serial live path: +0.9-2.4 s p50 (n=10/arm)",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-full-text-planner",
+   "kind": "rejection",
+   "title": "Planner that rewrites the line as segments: grok dropped words 2/10; annotate clause indices instead",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "dc-r5-picture-on-director-lane",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "Owner decision 14.2: a REAL picture on the Director lane for the picture cohort (studio/picture.js picturesFor: TAXILA_PICTURES = off | all | unset → TAXILA_PICTURES_FOR, guardian emails or their sha256, the duplex cohort pattern). A photo ask, or a thing outside the kit the board sketches, starts startPicture; the board sketch and her 'a real picture is being made, it comes in a few seconds' (shapes drawAsked photo:'coming' / pictureNote) go up at once and the picture reveals on the Studio stream after Content Safety passes (~15 s), replacing the sketch; it stays into the next turn (the tray gate now certifies a picture-lane image: inline JPEG / PNG, contain-fit, no text) and is taken down on the board's rules (turn.js leftBoard). The lane's limits: 4 per lesson, at most TAXILA_PICTURES_IN_FLIGHT (3) being made at once, a deployment that answers 429 rests 15-20 s while the chain moves on; a full lesson or a busy lane is said honestly ('a photo cannot come right now'), a picture is never said to be there before it mounts. Reverse if: picture jobs fail more than 1 in 5 in the cohort, or a revealed picture is judged off-subject by the owner more than 1 in 10",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "dc-r5-persistent-misses-14-2",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "Owner decision 14.2, the battery's persistent misses: (1) a drawing whose face IS numbers ('ghadi draw karo': 1-12; a ruler 0-15) may write them (studio/request.js askedNumbers FACE_NUMBERS → W4 extraNumbers); (2) a game asked for with no game to mount: her line never announces one (turn.js claim_game: studio/request.js ungame turns 'game' into 'activity' when the line does not say there is none; the shape ends 'never call what you try together a game'); the battery counts an honest no-game turn as answered, apart (got.honest); (3) 'ek example do' is answered only by a WORKED page (3+ things written, 2+ with numbers: studio/request.js workedPage), so a ready-made bare fact ('1/2 = 2/4 | same amount') or number-less steps go to the line planner, which draws her example. Reverse if: the line planner's example pages fail the board gate more often than the ready-made pages they replace",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "corr-face3d-nc-deps",
+   "kind": "finding",
+   "title": "face3d-nc-deps-rejected said no face-specific model passes commercial use; GNM Head (Apache-2.0, 2026-07) does. Harvest ws-19's 'adult identities unusable' note is wrong: the tutor is an adult",
+   "at": "2026-10-03",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "jd-r7-hybrid-pilot-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Hybrid pilot (Director vs agent lane), judged in-session by the main loop (Claude), not blind. n = 2 scenarios × 2 lanes × 10 child turns, c6 perimeter, Hinglish, production deployments, no DB, ~$0.26. Reply-ready p50: steady Director 2033 ms / agent 3818 ms; offtopic 2569 / 3183; one agent turn 9533 ms (6 s timeout then fallback). Director better at lesson arc, steering and the stop check-in; agent better at honouring 'talk about something else' and natural acknowledgement. 11 defects found, most lane-independent: truncated English kit text spoken in a Hinglish lesson, change_topic read as 'explain differently', 'bye' ending without check-in, a false 'didn't hear', a worked example with no setup, an open question graded numerically, an open item abandoned, level collapse to counting-on for class 6 (agent), no return from diversion (agent), an offered choice ignored, a game described that the screen doesn't show. Full write-up: docs/design/round7/judgements/hybrid-pilot-2026-11-04.md.",
+   "source": "inbox/r7-main-4.json"
+  },
+  {
+   "id": "dc-r7-hybrid-pilot-no-lane-yet",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "No lane is picked from the hybrid pilot. Brain fixes the pilot's defects as code invariants that hold for both lanes: the stop check-in on every goodbye, park-and-return on change_topic, card text spoken whole and in the lesson language, a level floor on remediation, never claiming not to have heard. Then the full 12-per-lane side-by-side runs. Reverse: the fixes cannot be made lane-independent, or the full run shows one lane clearly better.",
+   "source": "inbox/r7-main-4.json"
+  },
+  {
+   "id": "dc-r7-app-contracts-adopted",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "App renders Brain's round-7 contracts (shared/contracts.ts): ui.steer replaces the default steer row when present ([] = no row); the default row uses steer:picture / steer:game / steer:another; ui.later entries carry open/due/returned and an open one is tapped as chipId later:<id>; ui.moment park/detour/decline/stop_check/returned maps onto the stage's moment cards. Reverse: Brain changes the contract shapes.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-mute-runtime",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The hands-free dock follows Voice's handsFreeDock() states and mute is runtime.setMuted (Voice to-app/002); the interim push-to-talk mute is gone. The link follows engineOpen (the live engine), so hands-free on screen never opens the mic before the engine is live. Me → Tap to talk starts the lesson muted. Reverse: Voice changes the dock contract.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-one-studiostage",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The stage-first body keeps ONE StudioStage mounted across Studio slots (its React key is the tray kind, not the slot's intent id): a new slot had remounted it and lost the finished piece it holds while the next one is built (tests/studio-stage-states 'a piece still being made never replaces the finished piece'). Reverse: Studio moves the hand-over out of StudioStage.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-break-told",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Pause → End → Short break sends one turn with chipId break:rest and no words (Brain's answer, 2026-11-04), so the Director knows the child is on a break and resumes where they were; the client holds her speech and the mic for the whole break. Reverse: Brain's A9 server-side break state replaces the chip.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-brain-steer-else",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 steer row gains steer:else (\"Kuch aur\": talk about something else), the 17th SteerId, asked for by E App. The server maps it to the change_topic request, the same one the words \"kuch aur baat karte hain\" make, and it is never a stop. The check-in chips stay stop:continue / break:rest / stop:end; the client Pause is chipId break:rest.",
+   "source": "inbox/r7-brain-2.json"
+  },
+  {
+   "id": "dc-r7-brain-play-verbs-data",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: the play-verb table (server/director/play-verbs.js) falls back to the Games-owned data/play/verbs.json for families / modes it does not list, shape { family: { mode: { act, hi, en } } }. The code table wins where both have an entry. An entry missing act, hi or en is skipped (no verb note, never a guessed verb), and a missing file is an empty table. Games can ship a mode without a Brain edit; tests/r4-conversation-play-verbs checks the file entries (a non-choose act never gets a choosing verb). Reversal: if Games moves every verb into the file, the code table becomes the file.",
+   "source": "inbox/r7-brain-2.json"
+  },
+  {
+   "id": "dc-r7-brain-learner-view-wired",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (F Learning patches to-brain/001-003 applied): lesson start reads learnerViewOf (in parallel with history / brief / stuck, failure → null) and passes { theta, weak, minutesLeft } to initLessonState. The practice queue is built at the child level (buildPracticeQueue classLevel / theta / weak); no view keeps the on-track default. The family minutes left is stored on the state when limits are on, for the mid-lesson limit (A9). startRefusal gets the plan limits flag. Also applied: Games to-brain/001 gameAct (words a game grammar consumed are not graded) and Studio to-brain/001 board pointing. Needs a live check: theta-chosen items on a child with 2+ scored answers.",
+   "source": "inbox/r7-brain-2.json"
+  },
+  {
+   "id": "dc-r7-brain-clause-stream",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A5 (PIPELINE §A Brain item 10, with Voice): the streamed, clause-guarded Director reply. Transport (main, 2026-11-04): POST /api/lesson/turn with Accept: text/event-stream sends event: clause (ReplyClauseEvent) per guarded clause and event: turn (the full TurnResponse) last. Headers: cache-control no-store, x-accel-buffering no, and a flush per event. Without the header the response is plain JSON, unchanged. Nothing is written before the first clause, so a refusal stays the plain JSON error with its status; an error after a clause is event: turn { error, status }. Brain side (say.js streamAsk): the one-call draft (and the lead-slot draft) streams. Its first closed sentence goes through lockFirstSentence: every per-sentence guard alone, and s1 + the pinned question passes every whole-turn guard. The turn.js post-fixes (self-gender, the affirmation opener) must also leave s1 unchanged. A locked s1 is sent while the rest is written. The whole draft then takes every guard as before. A final reply that no longer starts with s1 becomes the lock fallback (s1 + the question), so a sent clause is never withdrawn; a stream that dies after s1 also ends on that fallback. The only exception is a turn that failed closed to safeguarding after s1: an empty final clause, and the turn event carries clausesKept: false. The rest of the reply leaves as clauses after the guard (the TTS split, server/voice/sentences.js). Not early: closing, check-in, why, thinking, break and diagnostic turns, and turns with no pinned question. The streamed call has no hedge twin (the stall cut is 3 s, and a failure before s1 retries on the hedged one-call path). Kill switch TAXILA_R7_CLAUSE_STREAM=off. Needs a live check: first-clause time vs whole-reply time on the reply deployment, and the share of turns that lock (only pinned-question turns can today).",
+   "source": "inbox/r7-brain-2.json"
+  },
+  {
+   "id": "dc-r7-brain-rest-ack",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (E App): a short break (chipId break:rest, sent by Pause → Short break) gets a tiny acknowledgement, a few warm words with no instruction and no question. The client holds her speech until the child taps I am back. The next ungraded turn welcomes them back and resumes where they were: the card again, or the next teaching step. A graded answer right after the break is graded normally.",
+   "source": "inbox/r7-brain-3.json"
+  },
+  {
+   "id": "dc-r7-brain-cost-rollup",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Platform patch from-platform/001): endLesson calls rollupLesson(q, lessonId) fire-and-forget after the end transaction, so lesson.cost is written from the lesson trace spend events.",
+   "source": "inbox/r7-brain-3.json"
+  },
+  {
+   "id": "ms-r7-brain-hybrid-pilot",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 hybrid side-by-side pilot (evals/hybrid-side-by-side.mjs; main approved it with a 150-call cap). Same scripted child lines through the Director and the agent lane, no DB, production deployments (reply taxila-fast, classify grok-4-1-fast-non-reasoning, agent taxila-gpt6), c6-maths-ch06-t01, class 6, Hinglish. Two of three scenarios were written (steady, offtopic; 10 child turns per lane each). The cap was reached in stuck (about 60 calls a scenario, about $0.26 estimated). Reply-ready p50 (classifier + her whole line), n = 10 turns per lane per scenario: steady, Director 2033 ms vs agent 3818 ms; offtopic, Director 2569 vs agent 3183. One agent turn timed out (6 s) and fell back. Transcripts are in evals/hybrid-side-by-side/results/2026-11-04/ and are judged by main; not scored here.",
+   "source": "inbox/r7-brain-3.json"
+  },
+  {
+   "id": "dc-r7-brain-later-visible",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A7 (PIPELINE §A Brain item 6, brain-later-list-visible + brain-parked-promise-tracking). The Director's existing Later list (s.later) is now on the screen. ui.later lists entries as LaterEntryUi: open, due (at its boundary or the wrap), or returned (for 2 turns once served). ui.moment carries the turn's moment: park, detour, decline, stop_check or returned. A tap on an entry (chipId later:<id>) is a request to talk about it now: never graded, the entry is served with the returnParked shape, and the lesson carries on. Her own promise is kept: when her final line promises later (baad mein … karenge / dekhenge / samjhaungi, come back to … later) and the Director parked nothing that turn, the child's topic (the request topic, else their words ≤ 60 chars, screened in code) is parked, so it comes back before the wrap. Never on a safeguard turn, and never twice. The agent lane's ui gets the same ui.later. Code: server/director/later.js.",
+   "source": "inbox/r7-brain-4.json"
+  },
+  {
+   "id": "dc-r7-brain-methods-kept",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A8, part 1 (PIPELINE §A Brain item 7, brain-steering-persistence). A code-first method lexicon (server/conversation/methods.js) reads how the child asked to be taught: steps (step by step, ek ek karke), short (chhota bolo, kam bolo), picture (pehle picture), try_first (khud try karne do, let me try) and slow (dheere bolo). It is request-shaped (whole turn, no digits, ≤ 12 words), and a graded answer is never read as a method. A method is kept for the lesson (s.methods, newest 3) and rides on every later move except safeguard and wrap. The compile renders it in the LAST section, just before the turn shape and never shed. Knobs: short caps her turn at 15 words (compile) and lowers the long-reply cap to 25 (say.js). try_first poses every no-help-yet question in the attempt-first format F8. picture and steps are notes for now. A turn that is only the ask gets the adapt move. The weak-intent policy fixes (multi-intent, frustration, skip-ahead, personal share) are the second part.",
+   "source": "inbox/r7-brain-5.json"
+  },
+  {
+   "id": "dc-r7-brain-card-whole-lesson-lang",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (main's hybrid-pilot judgement, defect 1): what she speaks from a card is the whole item in the lesson language, never cut. The faded-step card no longer prepends the worked-example problem clipped with an ellipsis. The English card carries the problem only when it fits whole; the Hindi/Hinglish card is the gap line alone (the kits' problems are English). She says the problem in her own words from the content lines, and the board (fadeBoard) keeps it. This supersedes census F3's problem-on-every-card for non-English lessons.",
+   "source": "inbox/r7-brain-6.json"
+  },
+  {
+   "id": "dc-r7-brain-change-topic-parks",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 2, OWNER-RESET #6/#8): talk about something else (spoken, or the steer:else chip) is noticed, parked with a promise and come back to. It no longer gets the ways-in offer. With an off-kit subject already named, it is parked at once. Otherwise a warm yes and \"what about?\" (steering, never a break), and the next turn parks what they name; a filler goes back warmly. Asked again within the window, she engages briefly with the parked topic (detour). An explicit ask for another study topic keeps the topic buttons. Kill switch TAXILA_R7_PARK_TOPIC=off restores the ways-in offer.",
+   "source": "inbox/r7-brain-6.json"
+  },
+  {
+   "id": "dc-r7-brain-bye-checkin",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 3, dc-r7-stop-limits): bye and every other goodbye or leaving phrase gets the one stop check-in first, like bas ho gaya. It ends on a second stop within two turns, on the stop chip, or on Pause → End. Inside or right after a safeguarding episode a goodbye is let go at once (the frozen safety behaviour). On the agent lane, the stop check-in is the Director's: the agent never takes a check-in turn and never ends a lesson the Director did not end. Kill switch TAXILA_R7_BYE_CHECKIN=off.",
+   "source": "inbox/r7-brain-6.json"
+  },
+  {
+   "id": "dc-r7-brain-no-false-not-heard",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (main's hybrid-pilot judgement, defect 4): she never claims she did not hear words that were heard. A heard word or number the note reads as unclear on a card gets an off-format nudge (say back what they said, ask which it is). A reply line claiming not to have heard (sunai nahi diya, couldn't hear you) is caught on any turn with heard words and not marked unclear: rewritten, or the sentence is dropped.",
+   "source": "inbox/r7-brain-7.json"
+  },
+  {
+   "id": "dc-r7-brain-bracket-givens",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 5): a worked example states its problem and givens first (part 1), and says a bracket sum first. A spoken N times A plus B for the content's N × (A + B) is rewritten in code to A plus B, yani A+B, ka N guna (server/brain/brackets.js).",
+   "source": "inbox/r7-brain-7.json"
+  },
+  {
+   "id": "dc-r7-brain-no-verdict-ungraded",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 6): on an ungraded turn (her own how-question, no key) a negation of the child's short answer (4 nahi) is caught: rewritten to credit what fits or ask, else the negation is taken out in code.",
+   "source": "inbox/r7-brain-7.json"
+  },
+  {
+   "id": "dc-r7-brain-card-stays",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 7): an unanswered card stays the card. A turn spent on the child's own ask to have it again another way (example, story, slower …, read in code) does not bring the card cap closer. An okay right after she taught on that card (hint, re-teach, example) re-poses it plainly, once per card. The card cap and the stall guard still retire a card that gets nothing but non-answers.",
+   "source": "inbox/r7-brain-7.json"
+  },
+  {
+   "id": "dc-r7-brain-agent-invariants",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (main's hybrid-pilot judgement, defects 8 and 9): code invariants on the agent lane's line (server/agent/invariants.js). From class 4 up: no counting-on or finger counting, no bare single-digit sum of her own, and at most 2 agent turns in a row in practice without a kit card. At most one engaged off-lesson turn in a row, and never a line that sets the lesson aside (maths abhi side mein). A line that breaks one is not sent: the Director's move and line take that turn and the runs restart. An agent end the Director did not make is the same (judgement #3).",
+   "source": "inbox/r7-brain-8.json"
+  },
+  {
+   "id": "dc-r7-brain-which-one",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 10): a yes (haan, ok, theek hai) to the ways-in choices she just offered is answered by asking which one, with the same chips, never by dropping the offer. Naming one, or the chip, is its request as before.",
+   "source": "inbox/r7-brain-8.json"
+  },
+  {
+   "id": "dc-r7-brain-game-screen-truth",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (judgement defect 11): with no game on the screen (no play piece, no mounted activity), a game never acts in her line (game ne, the game counted). The spoken-game shape says it is a game between the two of them, and a line that has a game act is caught (gameclaim): rewritten, or the sentence dropped.",
+   "source": "inbox/r7-brain-8.json"
+  },
+  {
+   "id": "dc-r7-brain-frustration-new-way",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A8 part 2 (PIPELINE §A Brain item 7, product policy): frustration on a card (mujhse nahi hoga, too hard) changes the approach and never re-poses. The card is left for later with no verdict, and the idea is taught again another way, empathy line first. Without a card, the re-explanation with the empathy line runs as before. Kill switch TAXILA_R7_FRUSTRATION=off: a hint rung on the same question.",
+   "source": "inbox/r7-brain-9.json"
+  },
+  {
+   "id": "dc-r7-face-home-daily-greeting",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Her once-a-day home greeting is a PRE-RENDERED clip, never live TTS (PRODUCT-DESIGN-V2 §3.3: no name in it): a fixed pool of 27 short lines (3 per part of day per language, grown-up register, no gendered Hindi verb about the child) in server/face-puppet/greetings.js; GET /api/tutors/greeting picks one per child per IST day (stable all day); clips are rendered once by scripts/character/render-greetings.mjs (Diya DragonHD, needs keys) with viseme sidecars; until rendered the response has clip:null and she only glances. Client: src/face-puppet/useDailyGreeting.ts plays it after the first tap (never at page load), lip-synced via clipBridge, then emits a faceCues gaze 'start' (new target, [data-testid=start-lesson]); App applies docs/patches/to-app/004 (KakshaHome → HomeView → Comms → Teacher meters/floor). Verified headless (evals/face-puppet/greeting-shots.mjs): silent before the tap, speaks after it, silent on a same-day reload.",
+   "source": "inbox/r7-face-3.json"
+  },
+  {
+   "id": "dc-r7-face-teachback-protege",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Young-band teach-back staging (PRODUCT-DESIGN-V2 §8): in the teachback phase, for the young family only (classes 1-3 since the dc-r7 band split), <Teacher protege> shows one of three fictional creatures (stable per child) at her lower right, sized by the window height so it stands beside her, never over her face. Its mood follows the child's last teach-back verdict (correct → happy, not_yet/partial → puzzled, never sad); while she listens or speaks she glances at it every 3.6 s (faceCues gaze 'protege'). Sprites re-encoded from public/assets/gen/protege (dropped from builds) to public/assets/teacher/protege/1/ (9 WebP, 108 KB, a shared crop per creature, provenance kept). Older bands keep Brain's 'Bittu' framing with no sprite. App applies docs/patches/to-app/005 (TeacherWindow).",
+   "source": "inbox/r7-face-4.json"
+  },
+  {
+   "id": "dc-r7-face-legacy-cleanup",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Face legacy cleanup: the rejected bake-off candidate heads leave public/ for art/character/candidates-built (22 MB out of dist); the TeacherFace/TeacherStage shims retire by patch (Learning 002 → App 006); the generated GLB looks under public/assets/teacher stay until a build step drops them (main loop / Platform).",
+   "source": "inbox/r7-face-6.json"
+  },
+  {
+   "id": "dc-r7-face-rig-glbs-out-of-dist",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Build plugin rigGlbs() (vite.config.ts) drops the owner-rejected generated rig GLBs from dist unless VITE_FACE_RIG=1; plates, runtime.json, the look index, publish-look.mjs and rig tests unchanged; dist 35 → 28 MB.",
+   "source": "inbox/r7-face-7.json"
+  },
+  {
+   "id": "ms-r7-face-r8-lead-sweep-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "r8 in-app lip-sync lead sweep (24 Diya lines, 21 with a CTC reference, 2 runs per arm): baseline median −30 ms, within ±50 ms 15/21 and 19/21; lead −20 ms 18/21 and 14/21; lead −30 ms 14/21. Run-to-run noise exceeds the trim effect; no lead change ships (r8 is inside the E-P8 bar).",
+   "source": "inbox/r7-face-8.json"
+  },
+  {
+   "id": "dc-r7-question-jar",
+   "kind": "decision",
+   "title": "Round 7 F item 8: the Question jar (migration 037 question_jar). Brain's unserved s.later entries with a real topic (questions before shares, at most 5) are written at lesson end (learner/jar.js jarWriteStmts, idempotent per lesson + entry), with one teacher.promise (kind revisit) each. The next start's learner view carries jar: at most 2, the oldest learning question first, the same subject preferred. Serving it writes answerStmts and teacher.promise_kept (a new event; the Conductor drops the promise). The child home shows plan.jar {waiting}, and planner slots list promisesDue. Reverse if: the jar's hook makes openings stale (then cap it to learning questions under 7 days old).",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning-2.json"
+  },
+  {
+   "id": "dc-r7-kit-grammar-target",
+   "kind": "decision",
+   "title": "Round 7 F, kit workflow acceptance (spend-gated): every class 4-7 English and Hindi grammar skill gets at least 6 verified, blind-solved sentence-train items that C2's build-vakya builds; grammar skills are tagged skill.kind 'grammar'. Today: 55 skills, 46 built, 284 short; about 540 calls, about $5 per full run, capped at 700. docs/design/round7/learning/KIT-WORKFLOW.md.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning-2.json"
+  },
+  {
+   "id": "ms-r7-relevel-c4-7-claude",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F W2a: class 4-7 kit items with no measured ge were rated by Claude with rubric v2 (sha 6ef389e48b5d5752). n = 4,695 items in 118 packets, 8 parallel in-session raters plus an independent second rater on 8 packets (n = 320). ge = mean grade - 0.5. Mean grade - class = -0.32. Overlap agreement: MAE 0.27 grade, 96.6% within 0.5, 99.7% within 1, Pearson 0.96, mean offset 0.02. Both raters are the same model, so this measures consistency, not validity against human teachers.",
+   "source": "inbox/r7-learning-3.json"
+  },
+  {
+   "id": "dc-r7-w5-teen-numerals",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F W5 (open-r143-kit-filter-collisions, kit text only): a counting 'teen' in her Hinglish kit text becomes the numeral 3 (339 strings by rule, 25 by per-string decision). Kept: number names that are the exercise, counting in Hindi as content, the English 'teen'. Ambiguous and left for the owner or Brain: 'teen-chauthai' (c5-maths x4) and a spoken pictograph option. Answers, acceptable forms, ids and misconceptions are never rewritten. Reverse if: an offline filter probe shows numerals change how she reads the line.",
+   "source": "inbox/r7-learning-3.json"
+  },
+  {
+   "id": "dc-r7-kit-checks-on-claude",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04): the spend-gated kit workflows author on Azure (taxila-gpt6, about 815 calls, about $26 in all) and every check runs on Claude in session: the blind solve of new keys, the equivalence of new forms, adjudication and the level rating. This keeps author and checker independent and follows the owner's 2026-10-27 directive. scripts/kits/run.mjs (dry run by default, --run, --cap, resumable). Reverse if: Claude's in-session checking cannot keep pace with a run.",
+   "source": "inbox/r7-learning-3.json"
+  },
+  {
+   "id": "ms-r7-gap-items-end-of-class",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F: after the relevel, 6 class 4-7 topics had no end-of-class item (ge >= C-0.75; tests/rs6-merged-kits 379/385, baseline before relevel 380/385). 18 new items (3 per topic) were authored, blind-solved and level-rated, each by a separate Claude agent: solver agreed with the key on 18/18 (2 by equivalent wording, added to acceptable); rated end-of-class in 5 of 6 topics. Result: 384/385 (gap left: c7-english-ch01-t01, also a gap before the relevel); harder chip strictly above item 1 in 325/385 (was 283).",
+   "source": "inbox/r7-learning-3.json"
+  },
+  {
+   "id": "dc-r7-stt-cost-client-reported",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "STT spend is reported by the client and priced by the server. D4 transcription runs browser ↔ Azure over WebRTC, so the server only mints the token and never sees the session close. B Voice's cascade link emits one `stt.session {model, sec}` trace event per torn-down transcription call (close, reconnect, lane fallback), through the lesson's trace bus, and never a usd. server/cost/rollup.js always prices stt.session itself from {model, sec}, capped at 4 h per event, so a client can neither inflate nor zero the ledger. We chose this over estimating from lesson length × D4 share because it measures. Reverse if the client and the Cost Management STT meter disagree by more than 20% over a day (scripts/cost.mjs --reconcile): then estimate server-side instead.",
+   "source": "inbox/r7-platform-2.json"
+  },
+  {
+   "id": "ms-r7-drain-test-race-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "tests/graceful-shutdown.test.mjs raced on a loaded CI runner: 'a request still open after the grace is cut' expected leftOpen 1 and got 0 once on PR #38 (C2 Games' report). The test slept a fixed 50 ms after sending a never-answered request, so the server had not accepted it yet when the drain ran. Both drain tests now poll requests.active() until the request is in flight, up to 5 s (Games' patch 001). Checked 3/3 green, then 3/3 green with six busy-loop processes on the 4-core container. The other new platform suites (ops, release, cost, shard, migrate) have no fixed sleeps.",
+   "source": "inbox/r7-platform-2.json"
+  },
+  {
+   "id": "dc-r7-number-line-jump",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "number-line-hop@1 boards JUMP: the start dot hops along each arrow as it draws (a move op with an arc; successive moves on one target add up and are clamped against where the earlier ones left it). A number_line numwork now carries its own length w (the template's 340), fixing the still board where the dot sat off the end of a label-count-sized line. Recordings: docs/design/round7/studio/jump-*. Reversal: the owner finds the hop distracting; drop the move from the template.",
+   "source": "inbox/r7-studio-2.json"
+  },
+  {
+   "id": "ms-r7-number-line-jump-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 4967,
+   "method": "codePick over every class 1-9 maths kit item plus its worked example (304 kits); code only",
+   "title": "number-line-hop@1 is code-picked for 80/4967 item boards in 31 kits (all single hops); every one now jumps. 0 of the 250 first-explain board-first picks are number lines (those stay 4/250 moving, all fraction splits).",
+   "source": "inbox/r7-studio-2.json"
+  },
+  {
+   "id": "dc-r7-board-prewarm",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Board-first lookahead (C1 studio-board-timing): studioSeam.prewarmWhiteboard(askAhead) picks the next turn's board after this turn's response (board-first.js prewarm), stored under that turn's intentId with the ask's signature (skill, need, misconception, items, request, mode, beat). The next turn's preselect serves it at once only to an ask with the same signature and never as a page shown since; her real line still re-gates it. Code only. Brain calls it from turn.js (docs/patches/to-brain/002-board-prewarm-lookahead.patch) with this beat + the item on deck until planBeat's lookahead lands. Counters: GET /api/studio/timing boardFirst.prewarm {made, hit, used, stale}. The live planner (planWhiteboard) is not prewarmed: that is a model call per predicted beat (spend; main's call). Reversal: stale >> hit live (the prediction is wrong more than right) once Brain's planner feeds it.",
+   "source": "inbox/r7-studio-3.json"
+  },
+  {
+   "id": "ms-r7-board-first-pick-ms",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 250,
+   "method": "board-first preselect wall time per first explain move (classes 4-7, p412 certification), local, measured while the test suite ran in parallel (upper bound)",
+   "title": "Board-first pick: p50 15 ms, p90 42 ms, max 1.9 s per ask, on the turn's critical path before her line is written; the lookahead moves it off that path when the prediction holds.",
+   "source": "inbox/r7-studio-3.json"
+  },
+  {
+   "id": "dc-r7-first-clause-board-hold",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "First-clause hold (C1 studio-board-timing): when a board is still planning but a code board that passes every stage check (W gates, not a page shown, shares a word with her line, fits the device) bounds the wait, the seam's planning ack carries etaMs (the ladder's sync deadline); turn.js copies it onto ui.studioSlot (patch to-brain/003); the client holds her FIRST sample by boardHoldMs(slot) = etaMs when 0 < etaMs <= 300 ms, else 0 (src/studio/boardHold.ts; patch to-voice/001 on the folded turn-audio path). Never a hold for a board that may not come, a board already on the response, or a resume. Reversal: live recordings show the pause is heard as a stall, or holds rarely fire (then lower the sync deadline instead).",
+   "source": "inbox/r7-studio-4.json"
+  },
+  {
+   "id": "dc-r7-beat-cards-on",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Beat cards are on by default (C1 item 5): every fresh board carries its card (picture / formula / steps / example / takeaway, beats-done dots, 'checkpoint ahead' before a check) and a skill's first board prefers a picture. TAXILA_BEAT_BOARD=0 turns it off. Recording: docs/design/round7/studio/beat-card-*. Reversal: the owner finds the header noisy on phones.",
+   "source": "inbox/r7-studio-5.json"
+  },
+  {
+   "id": "dc-r7-board-timeline",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "timeline@1 (C1 item 5, the first of the truth primitives): a true-scale timeline from the kit's own 'label (year)' chains (server/forge/explainer/timeline.js), across for <= 4 events (labels alternate above/below) or down for 5-6 (one row each), labels spread clear and leader-lined to their year's tick, ticks not dots (W8 reads dots as a count). Facts: event1..eventN 'year label', span. Picked by explainerFor after the code pick, before the library's model-written flow. Recordings: docs/design/round7/studio/timeline-*. Reversal: a kit chain's labels read badly on the board (then that kit's library entry wins).",
+   "source": "inbox/r7-studio-5.json"
+  },
+  {
+   "id": "ms-r7-board-timeline-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 830,
+   "method": "timelineCall over every class 1-9 kit in maths, science, evs, sst, english and hindi (830 kits); expand + gateWhiteboard against a line that says each year and label; code only",
+   "title": "7 kits get a timeline (c7-sst-ch16, c8-sst-ch02/03/04/09, c9-sst-ch12, c9-science-ch02-t03); 7/7 expand and pass every W gate; all 7 were a model-written flow/parts board before.",
+   "source": "inbox/r7-studio-5.json"
+  },
+  {
+   "id": "dc-r7-board-table",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "table@1 (C1 item 5): a table whose every cell is computed (server/forge/explainer/table.js): 'the table of N' / 'N times table' / 'N ka pahada' (n | N x n, n = 1..10) and a linear rule y = ax + b in a linear-pattern / relationship / graph kit (x 0..4 | y). Units ('h = 20 m'), proof steps ('p = 2k') and 'a table FOR x' are never rules. Header in accent, rows appear one by one; facts rule + row1..rowN. explainerFor tries it after the code pick and the timeline. Recording docs/design/round7/studio/table-*.",
+   "source": "inbox/r7-studio-6.json"
+  },
+  {
+   "id": "dc-r7-piece-clear-of-pip",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "On a phone (and a phone turned on its side) every Studio piece stays clear of the teacher's PiP in the slot's bottom-right (src/studio/pipZone.ts: box contract stageFirst.pipZone, the same rule as stageLayout.ts pipFor; a phone is read from the viewport, never the slot: a desk tray can be short too): StudioStage lifts the box above it when there is room, else fits it into the room above. Found by the table recording (the last row was under the PiP at 412). Reversal: App exposes the live PiP rect to the stage; then use it instead of the mirrored rule.",
+   "source": "inbox/r7-studio-6.json"
+  },
+  {
+   "id": "ms-r7-board-table-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 304,
+   "method": "tableCall over every class 1-9 maths kit (304), expand + gateWhiteboard against a line saying the rule and rows, and which template explainerFor returns; code only",
+   "title": "5 kits get a computed table (c3-maths-ch07-t02, c6-maths-ch05-t01, c9-maths-ch02-t02/t03, c9-maths-ch13-t01); 5/5 pass every W gate; the table is the drawn board in 2 (c6, c9-ch02-t02), a code pick comes first in 3.",
+   "source": "inbox/r7-studio-6.json"
+  },
+  {
+   "id": "dc-r7-board-label-diagrams",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Labelled diagrams are code-picked (C1 item 5): label-pick.js gives label@1 to a kit ABOUT a thing's parts (names the thing and >= 3 of its parts; a plant also needs stem and root), each label the kit's own word on a leader to its anchor; explainerFor tries it before the library and the key-terms board. The plant sketch is redrawn (soil, branching roots, curved stem, two leaves with midribs, a fruit on a stalk, a five-petal flower) and every anchor is on a drawn part: the old sketch pointed 'fruit' at a leaf. Recording docs/design/round7/studio/label-plant-*. Next: more sketches (circuit 9 kits, cell 3, atom 3).",
+   "source": "inbox/r7-studio-7.json"
+  },
+  {
+   "id": "ms-r7-board-label-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 210,
+   "method": "labelCall over every class 1-9 science/evs kit (210), expand + retime to a 7 s line + gateWhiteboard, and the template explainerFor returns; code only",
+   "title": "15 kits get a labelled diagram (14 plant, 1 flower); 15/15 pass every W gate when timed to her line; 15/15 are drawn by the explain rung (before: a key-terms parts board). Candidate sketches by kits naming >= 3 parts: circuit 9, cell 3, atom 3.",
+   "source": "inbox/r7-studio-7.json"
+  },
+  {
+   "id": "dc-r7-voice-first-sound",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B5 (voice-first-sound-latency b, c; verdict hold). (b) The turn-audio fold is the default: src/lesson/ttsStream.ts turnAudioEnabled is on unless VITE_TURN_AUDIO=0 or the device key says 0, so the turn and her audio share one response. (c) The continuer is for every child, on every lane, D5 included. server/latency/ack.js continuerAllowed is on by default; TAXILA_ACK_CONTINUER=cohort keeps round 5's owner cohort and =off turns it off. The client no longer turns it off on D5: it plays through her output, which is the D5 stereo reference, and the engine counts it as her sounding. Brain A5 joint: lessonTurn's hooks.onClause (the Director's locked first clause, brain/say.js streamAsk) is synthesised inside the turn-audio fold as soon as it is guarded; the rest follows the turn. A reply that no longer starts with what was said (failed closed to safeguarding) is said in full, never skipped. So the client needs no separate SSE player while the fold is on; the SSE route stays the path for a client with the fold off. Verdict hold: it already applies only to her reply, never to the ack or continuer (a separate player). With the continuer on every lane, her first sound is no longer held; the reply, which can carry the verdict, still waits for VERDICT_HOLD_MS (2500, unchanged until D5 EOT data from live lessons). (e) Perceive on D5 deltas waits on the delta-streaming ear model (B4, TAXILA_D5_ASR) and its live arm. Reverse the D5 continuer if Voice Live's turn detection is shown to open items on it (phantom child turns) in a live arm; reverse the fold default if its error rate on phones exceeds plain /api/lesson/turn plus tts-stream.",
+   "source": "inbox/r7-voice-2.json"
+  },
+  {
+   "id": "dc-r7-voice-talked",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B6 (voice-talked-not-read). The voice v4 TALKING-RULES patch (docs/research/voice/v4, 2026-10-04) is ported in two halves. Voice half, in this branch, on DragonHD as measured by the v4 caps probe: brisk is no longer a rate speed-up (PACE_DELTA.brisk 0: a clause speed-up came out no faster, n=3-4), so brisk is carried by the words; the calm/reassuring pitch is -8% (-6% and -4% moved nothing measurable); a planned pause P is written as a break of max(50, P-200) ms and one under 250 ms is not written (break X yields ~max(300, X+200) ms); the think_aloud moment drops its comma pauses and starts sentence pauses at 300 ms; the Hindi think fillers are अच्छा/चलो (हम्म was swallowed in 2 of 3 renders, उम्म unmeasured). Brain half, docs/patches/to-brain/001-talking-rules-spoken-register.patch, re-ported onto today's compiler/director files: SPOKEN_NOTE on the voice lane's language rule (a shape, never a line; prompt budget passes); isUptakeQuestion, so a short echo question at the start of a turn survives one-question-per-turn; a 'when the child jokes' character note; the not_yet verdict note ends 'curious and slower'. compiler, director-truth, kit-budget and every suite touching the question logic pass with it applied. Reverse any of the DragonHD numbers if an owner ear check on live lines hears them as worse; the probe was n=3-4 per cell.",
+   "source": "inbox/r7-voice-3.json"
+  },
+  {
+   "id": "ms-r7-brain-step-check",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 A6, brain-teaching-question-evidence (kill switch TAXILA_R7_STEP_CHECK=off). A worked part that hands the next step to the child asks it as a code-chosen keyed micro-item: the next kit step whose result is the number after its last \"=\" (a known unit or none; never algebra, powers or Roman numerals). It is pinned as the card (the kit’s faded line, or the step with its result blanked) and graded by the classifier like any card, while the lesson stays in teach. A right answer (QA’s \"160?\" case: \"480?\" here) is confirmed and counted. A wrong or stuck one is shown with its result in the next part. TAXILA_ACK_CLOSE defaults to on (\"off\" restores the old flow). Coverage, all 830 kit worked examples: a keyed step after part 1 in 157 (19%): maths 135/304 (44%), science 13/146, sst 7/65, hindi 2/133, english 0/118, evs 0/64. Non-numeric worked examples keep her own-words question until a non-numeric key kind exists. Needs a live check: the card shows the kit’s English line in a Hinglish lesson.",
+   "source": "inbox/r7-brain-remerge2.json"
+  },
+  {
+   "id": "jd-r7-hybrid-full-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Full hybrid side-by-side: 23 lessons (Director 12, agent 11), c4/c5/c6 × steady/offtopic/stuck/steering, Hinglish, production deployments, no DB, ~$2.72. Judged by three Claude judges (one per class), synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Per-scenario wins: Director c6 4/4 and c4 2/3; agent c5 4/4 (2 narrow). Still present after the pilot fixes: English card text, missing givens, abandoned items (most frequent), level collapse, ignored choices, game claims. New: a wrong answer affirmed ('5?' → 'haan, wahi sahi hai'). Fixed: stop check-in, change_topic misread, mostly false 'didn't hear'. Write-up: docs/design/round7/judgements/hybrid-full-2026-11-04.md.",
+   "source": "inbox/r7-main-5.json"
+  },
+  {
+   "id": "dc-r7-hybrid-director-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The Director is the default lesson lane. The agent lane is frozen behind its flag. Its strengths (listening, honest grading, honouring requests, engaging with the child's topic) are ported into the Director's wording, then the lane is deleted. Why: the agent's p50 is 3.9 s against the ~3.5 s bar; quality is split by class and the agent collapses to counting lessons. Reverse: a later side-by-side after the port shows the agent ≥ the Director with p50 ≤ 3.5 s.",
+   "source": "inbox/r7-main-5.json"
+  },
+  {
+   "id": "dc-r7-face-rig-worker",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The puppet rig draws in an OffscreenCanvas worker (both rig kinds), the driver stays on the main thread and sends blendshapes (latest wins); fallback to the main-thread path where unsupported; TURN_HOLD_MS only on that path. CPU x6 n=8: long tasks in the first 6 s 2.28 s (main-thread rig) → 1.30 s (worker; puppet off 1.04 s); start → first sound −35 ms vs puppet off.",
+   "source": "inbox/r7-face-9.json"
+  },
+  {
+   "id": "dc-r7-name-spoken",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (PRODUCT-DESIGN-V2 §6.2 step 6): the parent hears how the teacher says the child's name in set-up (GET /api/child/name-audio: the fixed line 'Namaste, {name}!' in her voice, rate-limited) and can store 'Spell it how it sounds' as child.name_spoken (migration 038; letters, marks, spaces, ' and - only, at most 40). Voice uses name_spoken ?? first_name on every lane; captions keep first_name. Reverse if: Voice's own name lexicon makes a per-child spelling unnecessary.",
+   "source": "inbox/r7-learning-4.json"
+  },
+  {
+   "id": "dc-r7-home-kicks-plantoday",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-conductor-day-plan, first step): the child home's plan read starts conductor planToday in the background (no added latency, at most once per child per 10 minutes per replica, errors logged), so day_plan and its rotation slot.subject exist after a learning day's first visit. Opt-in, TAXILA_CONDUCTOR_PLAN=on, until checked live on staging: the DB-backed suites drive the plan route against a test database. Reverse if: the background step adds Conductor load or day_plan churn in staging.",
+   "source": "inbox/r7-learning-4.json"
+  },
+  {
+   "id": "dc-r7-placement-prior",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04, option (a)): a finished placement round seeds the KT θ prior as one kt_evidence row per strand (via 'placement', migration 039; site in item_key 'site|<strand>|<mu>|<sd>'). The ledger records the site and folds it into the subject's next epoch base once (initialBase, or the next opened epoch); it never makes a skill state, session, θ observation or facet. Every kt_evidence reader that counts or claims skips it by ONE predicate (isPlacementRow / notPlacement), guarded by tests/r7-learning-placement-prior.test.mjs. Weight: the site is a likelihood N(mu, sd²) with sd floored at 1.0 GE. Reverse (widen the floor) if: on staging or pilot data, placed children's θ after their first two sessions still differs from an unplaced replay by more than 0.5 GE for more than 1 in 5 children whose answers disagree with the placement; tighten it if placement predicts first-session accuracy better than the class prior.",
+   "source": "inbox/r7-learning-5.json"
+  },
+  {
+   "id": "ms-r7-placement-prior-weight",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F: placement site weight in the real fold (kt/ledger.js; class 5 maths:core; class prior mu 4.5 sd 1.3; site mu 2.0; class-level item.open answers, distinct skills, one session). Floor 0.6/0.8/1.0 GE → θ after 4 correct 3.11/3.50/3.80 (no placement 5.22), after 6 correct 3.43/3.84/4.14 (5.51); wrong answers agree with the site at every floor. Chosen 1.0: after 2 correct θ is 1.3 GE past the site, after 4 1.8 GE past it. Site at 5.5 (ahead) with 6 wrong: θ 3.01 (no placement 1.41). n = 1 deterministic fold per cell (no randomness); method: scratch script folding placementEvents + item events through fold(), currentTheta.",
+   "source": "inbox/r7-learning-5.json"
   }
  ],
  "edges": [
@@ -37811,6 +38341,86 @@
    "src": "dc-r7-voice-d5-ear",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-hybrid-pilot-no-lane-yet",
+   "rel": "measured_by",
+   "dst": "jd-r7-hybrid-pilot-2026-11-04"
+  },
+  {
+   "src": "dc-r7-hybrid-pilot-no-lane-yet",
+   "rel": "part_of",
+   "dst": "dc-r7-hybrid-brain"
+  },
+  {
+   "src": "dc-r7-app-contracts-adopted",
+   "rel": "part_of",
+   "dst": "dc-r7-stage-first-shell"
+  },
+  {
+   "src": "dc-r7-app-mute-runtime",
+   "rel": "supersedes",
+   "dst": "dc-r7-app-handsfree-dock"
+  },
+  {
+   "src": "dc-r7-app-one-studiostage",
+   "rel": "part_of",
+   "dst": "dc-r7-app-stage-geometry"
+  },
+  {
+   "src": "dc-r7-app-break-told",
+   "rel": "part_of",
+   "dst": "dc-r7-app-stop-checkin-ui"
+  },
+  {
+   "src": "dc-r7-number-line-jump",
+   "rel": "measured_by",
+   "dst": "ms-r7-number-line-jump-reach"
+  },
+  {
+   "src": "dc-r7-board-prewarm",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-first-pick-ms"
+  },
+  {
+   "src": "dc-r7-board-timeline",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-timeline-reach"
+  },
+  {
+   "src": "dc-r7-board-table",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-table-reach"
+  },
+  {
+   "src": "dc-r7-board-label-diagrams",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-label-reach"
+  },
+  {
+   "src": "dc-r7-voice-first-sound",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-talked",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "measured_by",
+   "dst": "jd-r7-hybrid-full-2026-11-04"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "supersedes",
+   "dst": "dc-r7-hybrid-pilot-no-lane-yet"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "part_of",
+   "dst": "dc-r7-hybrid-brain"
   }
  ]
 }

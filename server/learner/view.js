@@ -13,6 +13,7 @@
 
 import { thetaView, readSkill } from "./kt/ledger.js";
 import { strandOfSkill, subjectOfSkill } from "./kt/ability.js";
+import { jarHook, openJar } from "./jar.js";
 
 /** A strand estimate is used for item selection only once it rests on this many scored observations. */
 export const THETA_MIN_OBS = 2;
@@ -103,9 +104,9 @@ export function minutesLeft({ limitsOn, capMin, usedMin, to = null, localNow = n
  * @returns {LearnerView}
  *
  * @typedef {{ topicId: string, subject: string, theta: ReturnType<typeof strandTheta>, thetas: Record<string, any>,
- *   weak: ReturnType<typeof weakOn>, minutesLeft: ReturnType<typeof minutesLeft> }} LearnerView
+ *   weak: ReturnType<typeof weakOn>, minutesLeft: ReturnType<typeof minutesLeft>, jar: ReturnType<typeof jarHook> }} LearnerView
  */
-export function learnerView({ ledger, topicId, classLevel, skillIds, prereqSkillIds = [], limits, now = Date.now() }) {
+export function learnerView({ ledger, topicId, classLevel, skillIds, prereqSkillIds = [], limits, jar = [], now = Date.now() }) {
   const subject = /^c\d-([a-z]+)-/.exec(String(topicId))?.[1] ?? (skillIds[0] ? subjectOfSkill(skillIds[0]) : "other");
   return {
     topicId, subject,
@@ -113,6 +114,9 @@ export function learnerView({ ledger, topicId, classLevel, skillIds, prereqSkill
     thetas: allThetas(ledger),
     weak: weakOn(ledger, skillIds, prereqSkillIds, { classLevel, now }),
     minutesLeft: minutesLeft({ ...limits, now }),
+    // round 7 F item 8: what she promised to come back to (the Question jar), the next lesson's hook; answer with
+    // learner/jar.js answerStmts once served
+    jar: jarHook(jar, { subject }),
   };
 }
 
@@ -135,8 +139,8 @@ export async function learnerViewOf(child, { topicId, ledger, kit, now = new Dat
     const k = kit ?? kitOf(topicId);
     const skillIds = (k?.skills ?? []).map((s) => s.id);
     const prereqSkillIds = (getTopic(topicId)?.prerequisites ?? []).flatMap((p) => (kitOf(p)?.skills ?? []).map((s) => s.id));
-    const limits = await limitsFor(child, now);
-    return learnerView({ ledger: L, topicId, classLevel: child.class_level, skillIds, prereqSkillIds, limits, now });
+    const [limits, jar] = await Promise.all([limitsFor(child, now), openJar(child.id, { limit: 10 })]);
+    return learnerView({ ledger: L, topicId, classLevel: child.class_level, skillIds, prereqSkillIds, limits, jar, now });
   } catch {
     return null;
   }

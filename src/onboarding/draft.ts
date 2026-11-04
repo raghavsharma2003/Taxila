@@ -12,6 +12,8 @@ export interface Draft {
   child?: {
     firstName?: string; classLevel?: number; board?: string; schoolMedium?: string; languagePref?: string;
     address?: "tum" | "aap"; interests?: string[]; comfort?: boolean; hardToHear?: boolean;
+    /** round 7 F: "Spell it how it sounds" (child.name_spoken, 038) */
+    nameSpoken?: string | null;
   };
   childId?: string;                                             // the profile created at P6
   /** round 7 F item 2: "which chapter is school on?" ({ subject: chapter number }), written after the child exists */

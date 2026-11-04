@@ -87,6 +87,9 @@ export function build() {
     arenaOnly: netOnly.length,
     arenaOnlyClass4to7: netOnly.filter((id) => /^c[4-7]-/.test(id)).length,
     byFamily: Object.fromEntries(FAMILY_RULES.map((m) => m.family).map((f) => [f, new Set(entries.filter((e) => e.family === f).map((e) => e.topicId)).size])),
+    // r7 vakya: the class 4-7 English and Hindi topics, counted apart from the maths / science / EVS scope above (a law game
+    // there is a grammar game; ITEM-ARENA still never counts)
+    languages4to7: Object.fromEntries(["english", "hindi"].map((s) => { const ts = [...cur.values()].filter((t) => t.subject === s && t.classLevel >= 4 && t.classLevel <= 7); return [s, { topics: ts.length, covered: ts.filter((t) => covered.has(t.id)).length }]; })),
   };
   // GRAMMAR.md §10: `skills` (skill id → its admitted game; the topic's FIRST rule wins) and `excluded` (topic id → why)
   const excluded = Object.fromEntries(inScope.filter((t) => EXCLUDED.some((e) => t.id.startsWith(e.prefix))).map((t) => [t.id, EXCLUDED.find((e) => t.id.startsWith(e.prefix)).why]));

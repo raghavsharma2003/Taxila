@@ -33,6 +33,15 @@ export const PLAY_ACTS = Object.freeze({
   yantra: { beam: { act: "build", hi: "sheesha lagao aur chalao", en: "place the mirrors and run it" },
     circuit: { act: "build", hi: "taar jodo aur chalao", en: "wire it up and run it" },
     pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
+  // r7 games: Kaal-nadi (SST time): the boat is brought to a year on the river of time and the stone dropped there
+  kaal: { place: { act: "place", hi: "naav us saal tak le jao aur patthar giraao", en: "take the boat to the year and drop the stone" },
+    order: { act: "place", hi: "har patthar ko uske saal par giraao", en: "drop each stone at its year" } },
+  // r7 games: Vakya (English / Hindi grammar): couple the word wagons into a sentence train, then run it
+  vakya: { rail: { act: "build", hi: "dibbe jodo aur train chalao", en: "couple the wagons and run the train" } },
+  // r7 games: E4 Kila (turn-based tower defence): set up towers / nets / the trap on the numbered path, then run the wave
+  kila: { multiples: { act: "place", hi: "burj ya jaal lagao aur lehar chalao", en: "set the towers or nets and run the wave" },
+    factors: { act: "build", hi: "burj banao aur lehar chalao", en: "build the towers and run the wave" },
+    lcm: { act: "place", hi: "jaal rakho aur lehar chalao", en: "set the trap and run the wave" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

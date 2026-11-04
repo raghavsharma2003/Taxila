@@ -10,6 +10,7 @@ import { usePlan } from "../../../child/plan.ts";
 import { artTierD } from "../../../child/art.tsx";
 import { Home as ClassicHome, faceFormOf } from "../../../child/screens/Home.tsx";
 import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
+import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
 import { useChildNav } from "./useNav.ts";
@@ -25,6 +26,8 @@ export function KakshaHome() {
   const { plan } = usePlan(cid);
   const nav = useNavigate();
   const rec = useTeacher(child.teacher_id, band);
+  // her once-a-day greeting (Face to-app/004): spoken after the child's first tap, then a glance at Start
+  const hello = useDailyGreeting(cid, { enabled: prefs.face !== "voice" });
   const kn = useChildNav(plan.source === "loading" ? null : plan.surfaces);
   useEffect(() => preloadLessonRoute(), []); // r5-latency: the lesson's code loads while the home is idle
   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
@@ -43,6 +46,7 @@ export function KakshaHome() {
       <div data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
+          floor={hello.floor ?? undefined} meters={hello.meters}
           startTo={continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)}
           dock={kn.dock} meTo={kn.meTo} />
       </div>

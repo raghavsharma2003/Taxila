@@ -11,6 +11,7 @@ import { settleHeld } from "./later.js";
 import { resolveAttempts, clusterOf } from "./resolve.js";
 import { UNSEEN_PREREQ_PL } from "./reteach.js";
 import { bandOf } from "./params.js";
+import { notPlacement } from "../learner/kt/placement.js";
 
 /**
  * @typedef {{
@@ -82,7 +83,7 @@ export async function readContext(childId, { skillIds = [], now = Date.now() } =
       from reteach_attempts where child_id = $1 and at > $2::timestamptz - interval '60 days' order by at, id limit 400`, [childId, new Date(now).toISOString()]),
     // the evidence after the oldest OPEN attempt, on the skills of open attempts (one round trip: the attempts are a subquery)
     query(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, teach, via, target, misconception_id, contaminated, assisted
-      from kt_evidence k where k.child_id = $1
+      from kt_evidence k where k.child_id = $1 and ${notPlacement("k")}
         and k.occurred_at > (select min(at) from reteach_attempts r where r.child_id = $1 and r.rewarded_at is null)
         and k.skill_ids && (select array_agg(distinct skill_id) from reteach_attempts r where r.child_id = $1 and r.rewarded_at is null)
       order by k.seq limit 2000`, [childId]),

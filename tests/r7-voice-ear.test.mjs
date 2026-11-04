@@ -121,3 +121,26 @@ test("B4 second ear: nothing found (or no surface) → the unheard turn as befor
   heard.d.commit(turn({ text: "haan", duplex: { transcriptHash: null, safetyPending: null, cutInReason: null, engineSummary: {} } }));
   assert.equal(heard.out.length, 1, "a heard turn is never held");
 });
+
+test("cost ledger (Platform option a): a D4 transcription call reports stt.session { model, sec } once, at its end", async () => {
+  const { CascadeLink } = await import("../src/lesson/cascadeLink.ts");
+  const { LevelMeter } = await import("../src/lesson/level.ts");
+  const { setVoiceTraceSink } = await import("../src/voice/trace.ts");
+  const seen = [];
+  setVoiceTraceSink({ emit: (kind, data) => { if (kind === "stt.session") seen.push(data); } });
+  try {
+    const link = new CascadeLink({ lessonId: "L1", levels: { mic: new LevelMeter(), teacher: new LevelMeter() } });
+    link.d4Up = { at: Date.now() - 2500, model: "taxila-live-transcribe" };
+    link.close();
+    link.close();
+    assert.equal(seen.length, 1, "once");
+    assert.equal(seen[0].model, "taxila-live-transcribe");
+    assert.ok(seen[0].sec >= 2.4 && seen[0].sec <= 3, String(seen[0].sec));
+    assert.equal(seen[0].usd, undefined, "never usd: the server prices it");
+    const d5only = new CascadeLink({ lessonId: "L2", levels: { mic: new LevelMeter(), teacher: new LevelMeter() } });
+    d5only.close();
+    assert.equal(seen.length, 1, "no D4 call: nothing reported");
+  } finally {
+    setVoiceTraceSink(null);
+  }
+});

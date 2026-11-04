@@ -11,6 +11,9 @@
 //
 // Like lesson-fills.js: imports nothing heavy at load (the model call is a registered warmer), so Director tests stay pure;
 // process memory only.
+import { timelineCall } from "./timeline.js";
+import { tableCall } from "./table.js";
+import { labelCall } from "./label-pick.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -84,6 +87,17 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   if (code) tries.push([open ? { ...code, hideResult: true } : code, "code"]);
   // the open item's parallel: the worked example (a different problem, the same method)
   if (open) { const we = codePick({ kit, item: null, representation, interest }); if (we) tries.push([we, "code"]); }
+  // round 7 (C1 studio-board-richness): the kit's own dated chain as a true-scale timeline (timeline.js), before the
+  // library's model-written flow for the same topic
+  const tlc = timelineCall(kit, { text });
+  if (tlc) tries.push([tlc, "code"]);
+  // round 7: a computed table (the kit's "table of N" or its linear rule's values)
+  const tbc = tableCall(kit, { text });
+  if (tbc) tries.push([tbc, "code"]);
+  // round 7: a labelled diagram of the thing the kit is about (label-pick.js: a plant, flower, leaf or insect it names ≥ 3
+  // parts of), before the library's flow and the key-terms board
+  const lbc = labelCall(kit, { text });
+  if (lbc) tries.push([lbc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

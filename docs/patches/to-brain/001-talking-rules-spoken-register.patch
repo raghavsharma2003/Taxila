@@ -1,0 +1,191 @@
+diff --git a/server/compiler/characters/arjun.js b/server/compiler/characters/arjun.js
+index da86717c..80afd080 100644
+--- a/server/compiler/characters/arjun.js
++++ b/server/compiler/characters/arjun.js
+@@ -16,6 +16,7 @@ export default {
+     "praise: names the exact step or method, never ability; no comparisons with other children",
+     "mistakes: say plainly which step broke, with no softening, then the next nudge",
+     "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
++    "when the child jokes: play along one beat (echo, push the picture further), then the fact, still smiling",
+     "address: the child's first name; no nicknames",
+     "pace: brisk but patient; waits for a full answer",
+   ],
+diff --git a/server/compiler/characters/asha.js b/server/compiler/characters/asha.js
+index 2ad656c2..f39af0fa 100644
+--- a/server/compiler/characters/asha.js
++++ b/server/compiler/characters/asha.js
+@@ -12,6 +12,8 @@ const shared = {
+   warmth: "warmth: steady, calm, never gushing; delight is short and specific",
+   praise: "praise: names the exact step or method, never the child's ability",
+   humour: "humour: light and situational, about things in the problem; never about the child; none while they struggle",
++  // voice v4 TALKING-RULES (round 7 B6 port): a shape, never a line
++  joke: "when the child jokes: play along one beat (echo, push the picture further), then the fact, still smiling",
+   address: "address: the child's first name; no pet names or endearments",
+ };
+ 
+@@ -29,6 +31,7 @@ const young = {
+     shared.praise,
+     "mistakes: normal and interesting; name the wrong step plainly, then the next small nudge",
+     shared.humour,
++    shared.joke,
+     shared.address,
+     "pace: unhurried, waits for the child; short simple words",
+   ],
+@@ -54,6 +57,7 @@ const older = {
+     "praise: names the exact step or method, never ability; no comparisons with other children",
+     "mistakes: say plainly which step broke, with no softening, then the next nudge",
+     "humour: dry and light, about the problem or everyday life; never about the child; none while they struggle",
++    shared.joke,
+     "address: the child's first name; no nicknames",
+     "pace: brisk but patient; waits for a full answer",
+   ],
+diff --git a/server/compiler/compile.js b/server/compiler/compile.js
+index e425c083..34c4a35f 100644
+--- a/server/compiler/compile.js
++++ b/server/compiler/compile.js
+@@ -221,10 +221,12 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
+ // round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
+ // "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
+ const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
+-export function languageRule(language, ageBand, pinned = false) {
++/** Voice lane only (TALKING-RULES §1, docs/research/voice/v4): her words are heard. A shape, never a line; sized to the cap. */
++export const SPOKEN_NOTE = " Said aloud: short chunks, key word last, feeling held to the end.";
++export function languageRule(language, ageBand, pinned = false, lane = "text") {
+   const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
+-  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
++  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.${lane === "voice" ? SPOKEN_NOTE : ""}`;
+ }
+ 
+ const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
+@@ -358,7 +360,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } =
+     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
+     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
+     { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
+-    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned), drop: null }] },
++    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned, lane), drop: null }] },
+     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
+   ];
+   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is
+diff --git a/server/director/say.js b/server/director/say.js
+index dc8228e0..909357f0 100644
+--- a/server/director/say.js
++++ b/server/director/say.js
+@@ -406,7 +406,33 @@ const normQ = (t) => String(t ?? "").toLowerCase().replace(/…/g, " ").replace(
+ // the text is split, then is put back)
+ const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").replace(/(\d)\.(\d)/g, "$1\u2024$2").match(/[^.!?।？]+[.!?।？]*/g) ?? [])
+   .map((x) => x.replaceAll("\u2024", ".").trim()).filter(Boolean);
++/**
++ * TALKING-RULES §1.2 (docs/research/voice/v4): a short echo of the child's words with a rising tune at the START of
++ * a turn ("<their words>?", a disbelief echo) is spoken-register uptake, not a second question put to the child.
++ * Exempt: only the FIRST question sentence, beginning within the turn's first UPTAKE_LEAD_WORDS words, at most
++ * UPTAKE_MAX_WORDS words, with no question word and no imperative ending (bataiye / batao / socho …), and never
++ * the turn's last sentence. Without this, lastQuestionOnly / endOnAsk delete the echo that carries the reaction.
++ */
++export const UPTAKE_MAX_WORDS = 4;
++export const UPTAKE_LEAD_WORDS = 6;
++const WH = /(?:^|[^\p{L}])(?:kya|kaun|kaunsa|kaunsi|kitna|kitne|kitni|kaise|kyun|kyon|kyu|kab|kahan|kidhar|why|how|what|which|who|when|where|क्या|कौन|कौनसा|कितना|कितने|कितनी|कैसे|क्यों|कब|कहाँ|कहां)(?![\p{L}\p{M}])/iu;
++const IMPERATIVE_END = /(?:[a-z]{2,}(?:iye|iyega|ao|o)|[\p{Script=Devanagari}]+(?:िए|िये|ो|ाओ))$/iu;
++const wordsIn = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w));
++export const isUptakeQuestion = (x) => {
++  const t = String(x ?? "").trim();
++  if (!/[?？]\s*$/.test(t)) return false;
++  const w = wordsIn(t.replace(/[?？!.,।]+/g, " "));
++  return w.length > 0 && w.length <= UPTAKE_MAX_WORDS && !WH.test(t) && !IMPERATIVE_END.test(w.at(-1));
++};
+ const isQuestion = (x) => /[?？]/.test(x);
++/** The index of the one exempt uptake echo in a turn's sentences, or -1. */
++const uptakeIndex = (ss) => {
++  const i = ss.findIndex(isQuestion);
++  if (i < 0 || i === ss.length - 1 || !isUptakeQuestion(ss[i])) return -1;
++  return wordsIn(ss.slice(0, i).join(" ")).length <= UPTAKE_LEAD_WORDS ? i : -1;
++};
++/** The turn's sentences that put a question to the child (the exempt uptake echo does not). */
++const askingIdx = (ss) => { const u = uptakeIndex(ss); return ss.map((x, i) => isQuestion(x) && i !== u); };
+ 
+ /**
+  * How a reply stands against the pinned question (UiDirectives.ask.text): does it END on that question (its last words
+@@ -421,7 +447,7 @@ export function askParity(reply, ask) {
+   // A card ask cut with "…" (askText: no sentence fits 120 characters) is a prefix of the question: contained is enough.
+   const endsOnAsk = !a || (!!r && (/…\s*$/.test(String(ask)) ? r.includes(a) : r.endsWith(a)));
+   const rest = a && r.includes(a) ? String(reply).split(new RegExp(escapeRe(String(ask).replace(/…$/, "").trim()), "i")).join(" ") : String(reply ?? "");
+-  const others = sentencesOf(rest).filter(isQuestion).length;
++  const others = askingIdx(sentencesOf(rest)).filter(Boolean).length;
+   const askIn = a && r.includes(a) ? 1 : 0;
+   const finalQuestion = [...sentencesOf(reply)].reverse().find(isQuestion) ?? null;
+   return { endsOnAsk, questions: others + askIn, finalQuestion };
+@@ -435,7 +461,8 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  */
+ export function endOnAsk(reply, askFull) {
+   const a = normQ(askFull);
+-  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
++  const ss = sentencesOf(reply), asking = askingIdx(ss);
++  const kept = ss.filter((x, i) => !asking[i] && !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
+   return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
+ }
+ 
+@@ -466,7 +493,7 @@ export function joinAsk(lead, askFull) {
+ /** Keep only the LAST question of a turn with no pinned item (one question per turn). */
+ export function lastQuestionOnly(reply, { keepContent = false } = {}) {
+   const ss = sentencesOf(reply);
+-  const qs = ss.map(isQuestion);
++  const qs = askingIdx(ss);
+   let keep = qs.lastIndexOf(true);
+   // round 3 (conversation; battery boredom-02, boredom-05: "…chalo tareeka badlein: game, picture, ya quick challenge? Kaunsa
+   // chunogi?" was cut to "Kaunsa chunogi?", the offer gone): when the last question is a short tag after a question that
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index bceb610c..42a63134 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -393,8 +393,8 @@ export const VERDICT_NOTE = {
+   // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
+   // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
+   get not_yet() {
+-    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
+-      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
++    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step, curious and slower"
++      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step, curious and slower";
+   },
+   partial: "their answer was partly right: name the right part, no full agreement",
+   unverified: "no verdict on their reply: neither praise nor 'wrong'",
+diff --git a/tests/compiler.test.mjs b/tests/compiler.test.mjs
+index d0eb78dc..c2544b33 100644
+--- a/tests/compiler.test.mjs
++++ b/tests/compiler.test.mjs
+@@ -1,6 +1,6 @@
+ import { test } from "node:test";
+ import assert from "node:assert/strict";
+-import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe } from "../server/compiler/compile.js";
++import { compile, compileWithReport, BudgetError, TURN_WORDS, TURN_SHAPE_PREFIX, voiceSafe, SPOKEN_NOTE } from "../server/compiler/compile.js";
+ import { FLOOR_HEADING } from "../server/compiler/floor.js";
+ import { CHARACTERS } from "../server/compiler/characters/index.js";
+ import * as SH from "../server/director/shapes.js";
+@@ -85,7 +85,9 @@ test("lanes share every byte except the voice-only branch lines", () => {
+   const strip = (t) => t.split("\n").filter((l) => !l.startsWith("ONE MORE CHECK") && !l.startsWith("- for your next turn")).join("\n");
+   const written = promptFor(input.item, input.language);
+   const spoken = toSpoken(written, { mode: input.language, ageBand: input.brief.ageBand });
+-  assert.equal(strip(voice), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
++  // ... and its language line carries the spoken-register note (TALKING-RULES §1), the text lane's never does.
++  assert.ok(voice.includes(SPOKEN_NOTE.trim()) && !text.includes(SPOKEN_NOTE.trim()));
++  assert.equal(strip(voice).replace(SPOKEN_NOTE, ""), voiceSafe(strip(text).split(`"${written}"`).join(`"${spoken}"`), input.language));
+ });
+ 
+ test("voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form", () => {
+diff --git a/tests/director-truth.test.mjs b/tests/director-truth.test.mjs
+index edc99c1e..dacf654f 100644
+--- a/tests/director-truth.test.mjs
++++ b/tests/director-truth.test.mjs
+@@ -87,6 +87,13 @@ test("G-ASK parity predicates: ends-on-ask, one question, and the code repairs",
+   assert.equal(fixed, "Achha. Socho. 13 ka square kitna hai?");
+   assert.deepEqual(askParity(fixed, ask), { endsOnAsk: true, questions: 1, finalQuestion: "13 ka square kitna hai?" });
+   assert.equal(lastQuestionOnly("Kya socha? Kaunsa bada hai?"), "Kaunsa bada hai?");
++  // TALKING-RULES §1.2: a turn-initial echo of the child's words is uptake, not a second question — kept, not counted
++  assert.equal(lastQuestionOnly("Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?"), "Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?");
++  assert.equal(askParity("Arre! Pehli baar mein hi? Ab 13 ka square kitna hai?", ask).questions, 1);
++  assert.equal(endOnAsk("Arre! Pehli baar mein hi? Socho.", ask), "Arre! Pehli baar mein hi? Socho. 13 ka square kitna hai?");
++  // ... but never a real ask: a question word, an imperative, a second short question, or one deep in the turn
++  assert.equal(askParity("Kitna hua? 13 ka square kitna hai?", ask).questions, 2);
++  assert.equal(askParity("Achha, ek kaam karte hain, ab is wale ko dekhte hain. Pizza dekha? 13 ka square kitna hai?", ask).questions, 2);
+   // an ask the card cut with "…" is a prefix of the full question
+   assert.ok(askParity("Hmm. Ek bahut lambi baat, phir yeh poora sawaal hai?", "Ek bahut lambi baat…").endsOnAsk);
+ });

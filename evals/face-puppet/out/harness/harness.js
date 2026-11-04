@@ -4744,7 +4744,9 @@ var Sn = {
 		"[data-testid=\"board\"]",
 		"[data-testid=\"studio-stage\"]",
 		"[data-testid=\"tray\"]"
-	]
+	],
+	start: ["[data-testid=\"start-lesson\"]"],
+	protege: ["[data-protege]"]
 };
 function Cn(e, t) {
 	for (let n of Sn[e]) {
@@ -5267,7 +5269,7 @@ async function zn() {
 			e.type !== "stats" && i.push(e);
 		}
 	});
-	await a.init(), a.start();
+	await a.init(), $.get("lead") && (a.driver.visemes.lead += Number($.get("lead"))), a.start();
 	let o = ($.get("line") || "00").split(","), s = [];
 	window.H = {
 		ready: !0,

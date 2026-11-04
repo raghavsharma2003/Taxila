@@ -384,6 +384,10 @@ export async function plan(ask, o) {
   // ship5 fixer (experience B1, V3.3 "a child's request is answered on stage within 3 s p90"): when the CHILD asked for
   // the board and a code board already passes against her line, the line plan gets a short head start only
   const deadlineAt = t0 + (ask?.requested && code ? Math.min(BOARD_SYNC_MS(), REQUESTED_SYNC_MS) : BOARD_SYNC_MS());
+  // round 7 (C1 studio-board-timing): with a code board that already passes, the board is on the stage by the deadline at
+  // the latest (the ladder takes the first of line / spec / code); the seam tells the client so her first clause can wait
+  // for a board milliseconds away. Without one, no promise (null).
+  try { o?.onDeadline?.(code ? deadlineAt : null, code); } catch { /* telemetry never breaks the ladder */ }
   const specE = specs.get(String(ask?.intent?.intentId ?? ""));
   let line = null;
   for (;;) {

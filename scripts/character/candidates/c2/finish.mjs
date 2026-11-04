@@ -1,6 +1,6 @@
 // c2 stage 3 (fork of scripts/character/finish.mjs): raw tier GLB + PNG maps -> shipped GLB (KTX2, meshopt) + budgets.
 //
-//   node scripts/character/candidates/c2/finish.mjs <buildDir> c2 public/assets/teacher-candidates/c2
+//   node scripts/character/candidates/c2/finish.mjs <buildDir> c2 art/character/candidates-built/c2
 // Differences from the in-house finish: c2 ships no wrinkle / mask / stretch maps (Rocketbox has none; the rig skips
 // those paths when the slots are empty), and the hair mesh samples a 1024 copy of the recoloured head atlas.
 //

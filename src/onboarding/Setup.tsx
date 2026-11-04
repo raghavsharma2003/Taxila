@@ -2,7 +2,8 @@
 // edge screens: /start/student, /start/summary, /start/verify (VPC is off at launch: it forwards).
 import { useEffect, useState } from "react";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad, TeacherFace } from "../ui/index.ts";
+import { Button, ButtonLink, ErrorNote, Field, Icon, PinPad } from "../ui/index.ts";
+import { Teacher } from "../ui/teacher/Teacher.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { Spot } from "../child/art.tsx";
 import { ApiError, errText, getJson, loadMe, lockBeacon, postJson, type ChildRow } from "../app/api.ts";
@@ -162,7 +163,7 @@ export function HandoverStep() {
   const rec = teacherRecord(child.teacher_id, band);
   return (
     <StepFrame step="handover" title={`Ready for ${child.first_name}?`} back={false}>
-      <div className="meet"><TeacherFace size={180} teacherId={rec.id} band={band} /></div>
+      <div className="meet"><Teacher teacherId={rec.id} band={band} form="plate" floor="idle" label="below" lights="down" style={{ width: 180, height: 208 }} /></div>
       <div className="tiles tiles-2 onb-hand">
         <button type="button" className="tile handover-tile" onClick={() => done(`/c/${child.id}/hello`)} data-testid="handover-now">
           <Spot id="onboarding/handover-now" size={96} fallback={<Icon name="phone" size={40} />} />
@@ -182,7 +183,7 @@ export function HandoverStep() {
 export function StudentStep() {
   return (
     <StepFrame step={null} title="Hi. A parent sets this up first">
-      <div className="meet"><TeacherFace size={140} /></div>
+      <div className="meet"><Teacher teacherId={null} band="b3" form="plate" floor="idle" label="below" lights="down" style={{ width: 140, height: 168 }} /></div>
       <p className="t-lead">Taxila needs a parent or guardian to create the account and say yes to how it works. Show them this screen, or send them the link to this page.</p>
       <ButtonLink to="/" variant="secondary">What is Taxila</ButtonLink>
     </StepFrame>

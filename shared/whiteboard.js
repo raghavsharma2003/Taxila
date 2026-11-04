@@ -86,6 +86,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const seen = new Set();
   const isTarget = (id) => seen.has(id) || prior.has(id);
   const drawnById = new Map();   // this script's own ops so far (a move targets one of them)
+  const shifted = new Map();     // target id → [dx, dy] of the moves so far (moves add up: a dot hops twice)
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -194,6 +195,9 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (o.layout === "number_line") {
           if (!Array.isArray(o.range) || !isNum(o.range[0]) || !isNum(o.range[1]) || o.range[1] <= o.range[0]) { bad("number_line_range"); op = null; break; }
           op.range = [o.range[0], o.range[1]];
+          // round 7: the line's own length, when the board places marks on it (number-line-hop's dots and hops are placed
+          // on a line W long; a line sized by its label count put the start dot off the end of a short line)
+          if (isNum(o.w)) op.w = round1(clamp(o.w, 160, Math.max(160, bw - at[0])));
         }
         break;
       }
@@ -204,10 +208,13 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
         if (!tgt || !Array.isArray(o.by) || o.by.length !== 2 || !isNum(o.by[0]) || !isNum(o.by[1])) { bad("move"); break; }
         let box; try { box = opGeometry(tgt, drawnById).box; } catch { bad("move_target"); break; }
+        const [sx, sy] = shifted.get(o.target) ?? [0, 0];
+        box = { ...box, x: box.x + sx, y: box.y + sy };
         const dx = clamp(o.by[0], -box.x, bw - box.x - box.w), dy = clamp(o.by[1], -box.y, bh - box.y - box.h);
         if (dx !== o.by[0] || dy !== o.by[1]) bad("move:clamped");
         if (!dx && !dy) { bad("move_nothing"); break; }
         op = { ...base, target: o.target, by: [round1(dx), round1(dy)] };
+        shifted.set(o.target, [sx + op.by[0], sy + op.by[1]]);
         if (isNum(o.arc) && o.arc > 0) op.arc = round1(Math.min(o.arc, box.y + Math.min(0, dy)));
         if (tgt.startMs > op.startMs) bad("move_before_target");
         break;
@@ -510,7 +517,7 @@ function numworkGeometry(op, rnd, amp) {
   }
   if (op.layout === "number_line") {
     const [a, b] = op.range;
-    const W = Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
+    const W = Number.isFinite(op.w) ? op.w : Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
     const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
     paths.push(polyPath([[x0, y0], [x0 + W, y0]], rnd, amp * 0.4));
     const span = b - a, step = span <= 20 ? 1 : span <= 100 ? 10 : Math.pow(10, Math.floor(Math.log10(span)) - 1) * 5;

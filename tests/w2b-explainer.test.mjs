@@ -82,6 +82,8 @@ describe("explainer templates (rungs 4-5)", () => {
       "symmetry@1": { line: "mirror line", dot: 3 },
       "area-grid@1": { w: 5, h: 3, mode: "area", unit: "cm" },
       "bar-chart@1": { bars: [{ label: "June", value: 140 }, { label: "July", value: 250 }, { label: "Aug", value: 230 }] },
+      "timeline@1": { events: [{ year: 1905, label: "Partition of Bengal" }, { year: 1919, label: "Jallianwala Bagh" }, { year: 1942, label: "Quit India" }] },
+      "table@1": { head: ["x", "y"], rows: [["0", "5"], ["1", "8"], ["2", "11"]], rule: "y = 3x + 5" },
     };
     for (const t of TEMPLATES) {
       const x = expand({ template: t, ...calls[t] });

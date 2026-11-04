@@ -1,0 +1,428 @@
+{
+ "v": 1,
+ "source": "data/kits/c4-english.json",
+ "items": [
+  {
+   "id": "c4-english-ch07-t01-rl-h3",
+   "topicId": "c4-english-ch07-t01",
+   "skillId": "c4-english-ch07-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Nisha plays kho-kho every morning at 7 o’clock. She writes, “I am playing kho-kho every morning at 7 o’clock.” Say the sentence correctly for a daily routine.",
+    "hi": "Nisha roz subah 7 baje kho-kho khelti hai. Woh likhti hai, “I am playing kho-kho every morning at 7 o’clock.” Daily routine batane ke liye sentence sahi karke bolo."
+   },
+   "keyFrom": "answer",
+   "engine": "I",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "every"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "at"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "morning"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "kho-kho"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "7"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "play"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "o'clock"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "i",
+     "play",
+     "kho-kho",
+     "every",
+     "morning",
+     "at",
+     "7",
+     "o'clock"
+    ],
+    [
+     "i",
+     "play",
+     "kho-kho",
+     "at",
+     "7",
+     "o'clock",
+     "every",
+     "morning"
+    ]
+   ],
+   "mals": [],
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "3d478401"
+  },
+  {
+   "id": "c4-english-ch08-t01-i06",
+   "topicId": "c4-english-ch08-t01",
+   "skillId": "c4-english-ch08-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Let's to play lagori after school!'",
+    "hi": "Galti dhoondo: 'Let's to play lagori after school!'"
+   },
+   "keyFrom": "answer",
+   "engine": "Let's",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "school"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "play"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "lagori"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "after"
+     ],
+     "init": 0
+    },
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "let's",
+     "play",
+     "lagori",
+     "after",
+     "school"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "let's",
+      "to",
+      "play",
+      "lagori",
+      "after",
+      "school"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch08-t01-m-lets-verb",
+   "malKit": "c4-english-ch08-t01-m-lets-verb",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "4e963b0e"
+  },
+  {
+   "id": "c4-english-ch08-t01-i07",
+   "topicId": "c4-english-ch08-t01",
+   "skillId": "c4-english-ch08-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Kabir asks Anu, 'What you are doing?' Fix his question.",
+    "hi": "Kabir Anu se poochhta hai, 'What you are doing?' Iska sawaal theek karo."
+   },
+   "keyFrom": "answer",
+   "engine": "What",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "is",
+      "are"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "doing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "what",
+     "are",
+     "you",
+     "doing"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "word-order",
+     "train": [
+      "what",
+      "you",
+      "are",
+      "doing"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch08-t01-m-question-order",
+   "malKit": "c4-english-ch08-t01-m-question-order",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "fd40d69f"
+  },
+  {
+   "id": "c4-english-ch09-t01-i08",
+   "topicId": "c4-english-ch09-t01",
+   "skillId": "c4-english-ch09-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'The Aakho must to push the Aami out.'",
+    "hi": "Galti dhoondo: 'The Aakho must to push the Aami out.'"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "out"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "Aami"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "Aakho"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "must"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "push"
+     ],
+     "init": 0
+    },
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "aakho",
+     "must",
+     "push",
+     "the",
+     "aami",
+     "out"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "the",
+      "aakho",
+      "must",
+      "to",
+      "push",
+      "the",
+      "aami",
+      "out"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch09-t01-m-must-to",
+   "malKit": "c4-english-ch09-t01-m-must-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "0302118e"
+  },
+  {
+   "id": "c4-english-ch12-t01-i09",
+   "topicId": "c4-english-ch12-t01",
+   "skillId": "c4-english-ch12-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Why you came to Maheshwar?'",
+    "hi": "Galti dhoondo: 'Why you came to Maheshwar?'"
+   },
+   "keyFrom": "answer",
+   "engine": "Why",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "Maheshwar"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "did",
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "come",
+      "came"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "why",
+     "did",
+     "you",
+     "come",
+     "to",
+     "maheshwar"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "missing-wagon",
+     "train": [
+      "why",
+      "you",
+      "came",
+      "to",
+      "maheshwar"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch12-t01-m-did-support",
+   "malKit": "c4-english-ch12-t01-m-did-support",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "38e7a394"
+  }
+ ]
+}

@@ -5011,3 +5011,113 @@ Gate sharding. One-process npm test in the 4-core container: 1,711 s (3,688 test
 ## ms-r7-migrate-live-neon-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
 
 migrate.mjs on the stream's own Neon branch (host sha256 f47b22100116a310) over Neon's HTTP transaction API: --dry-run listed 040 pending (1 statement), the apply ran it in one transaction, and a rerun applied 0. That is the live check of the Neon path that was outstanding in ms-r7-migrate-tooling-local-2026-11-04.
+
+
+## r5a-ms-agent-vs-director-571b301 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Sim lab (session_012H8HYZhSzPwAoXPMsKERUb, evals/simlab/results/r5-agent-vs-director-571b301 on claude/r5-simlab @20ba103a): agent lane (taxila-gpt6) vs Director, same sha, n=64 cards per arm, text lane, 14 child turns, two judges. Agent beats Director on 57/64 cards paired. Judge-1 means Director -> agent: coherence 3.17->4.27, follows_child 2.89->3.64, adapts 2.28->3.70, human 3.86->4.45, channel_truth 2.55->3.27, pacing 2.83->3.39, safety 4.94->5.00, understanding 2.80->3.25. Clusters (lessons/64) Director->agent: repeats_explanation 58->30, stuck_loop 46->22, topic_jump 14->2, ignores_child 22->10, type/write 5->0. Still high on agent: missed_misconception 35, ignored_request 34, over_checks 31, points_empty_screen 17, false_understood 21; own skill reads 82/164 right with 61 overclaims; boards drawn 2 (Director 164); turn p50 5.9 s / p90 8.1 s (Director 2.9/5.0), 20 Director takeovers (9 s timeouts), $0.070 per lesson.
+
+
+## r5a-ms-agent-tools-smoke-748ddff8 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Agent lane with stream 2's tools (748ddff8): local server, TEST branch, battery-r5 6 personas x 10 turns, conc 6: 19 board pages drawn through boardShow (571b301 sim run: 2 in 64 lessons), 0 HTTP errors, battery D 92%, A/O/B/S/T/F/C 100%. Agent call (taxila-gpt6, strict json_schema, non-streamed) p50 4281 ms / p90 5279 ms, mean 273 output tokens; 10/66 turns hit the 6 s timeout and fell back to the Director. Effort none vs low: no difference (n=5 each, ~3.7 s). Latency needs streaming (stream 3 sayDeltasOf + speakStreamed).
+
+
+## r5a-ms-spoken-numbers-eff989c0 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Spoken Hindi numbers (eff989c0): comprehension/grade/numbers.js now reads with grading/spoken-number.js (one reader), Devanagari 1-99 with nukta/candrabindu folded, ASR fused hundreds (छेसो, पाँचसो, chheso), split mode for working aloud (last stated result) in numbersIn/matchNumber, rKey and classifyFast (number_working). tests/r5-spoken-numbers.test.mjs 4/4 fail on int/r5-rel141, pass on eff989c0; 66 related test files 844/844. Voice-arm before: sim lab 29de42f9 correct verdicts 77 -> 51; re-run requested.
+
+
+<!-- merged from inbox/r7-main-4.json -->
+## jd-r7-hybrid-pilot-2026-11-04 (main loop judge, 2026-11-04)
+
+Method: stream A's evals/hybrid-side-by-side.mjs at 8c42d580, production deployments (taxila-fast reply, grok-4-1-fast-non-reasoning classify, taxila-gpt6 agent), no DB, scripted Hinglish class-6 child on c6-maths-ch06-t01. n = 2 scenarios (steady, offtopic) × 2 lanes × 10 child turns; stuck not run (150-call cap). Judged by Claude in the main loop against OWNER-RESET-2026-10-04, reading every turn; not blind. Reply-ready p50: steady Director 2033 / agent 3818 ms; offtopic 2569 / 3183 ms; one agent turn 9533 ms. Findings and the 11 defects: docs/design/round7/judgements/hybrid-pilot-2026-11-04.md. Small n: a defect hunt, not a verdict.
+
+
+<!-- merged from inbox/r7-brain-3.json -->
+## ms-r7-brain-hybrid-pilot (2026-11-04, stream A Brain)
+
+Main approved a pilot of the hybrid side-by-side with a hard cap of 150 model calls and $2. The harness counts every Azure fetch, estimates spend, and stops at the cap or at the first 401/403. Two scenarios completed (steady, offtopic); the third (stuck) hit the cap mid-run and was not written (about 60 calls a scenario, about $0.26 estimated, no auth error). The agent lane was slower to have a whole line ready (p50 3818 vs 2033 ms on steady, 3183 vs 2569 on offtopic; n = 10 turns a lane), with one 6 s agent timeout. Quality is for main to judge from the transcripts; nothing was scored here.
+
+
+<!-- merged from inbox/r7-face-8.json -->
+## ms-r7-face-r8-lead-sweep-2026-11-04 (2026-11-04)
+The r8 lip-sync polish (main loop: inside the r8 rig only, lamp2/jaw untouched). Before tuning, the scheduler lead was swept on the in-app harness: evals/face-puppet/run.mjs lipsync with LEAD=<ms> → lipsync-inapp.mjs; 24 Diya lines, realtime, real AudioContext, headless SwiftShader; 21 lines carry a CTC reference.
+- **Baseline** (lead +0), two runs: median −30 / −30 ms, IQR −40..0 / −45..−10, within ±50 ms 15/21 and 19/21.
+- **Lead −20 ms**, two runs: median −30 / −20 ms, within ±50 ms 18/21 and 14/21.
+- **Lead −30 ms**, one run: median −20 ms, within ±50 ms 14/21.
+- **Noise:** the run-to-run spread (15 vs 19 of 21 at the same setting; single lines swinging ±100-200 ms when the envelope estimator locks onto a neighbouring syllable) is larger than any trim effect.
+- **Decision:** no lead change ships. r8's median is already inside the E-P8 bar (−125..+45 ms).
+
+**Reverse if** a lower-variance estimator (bilabial-closure E2 timing, or more repeats per arm) shows a consistent offset. The sweep stays available: the harness takes ?lead=, and run.mjs takes LEAD=.
+
+
+<!-- merged from inbox/r7-learning-3.json -->
+## ms-r7-relevel-c4-7-claude
+2026-11-04. Method: evals/kit-runs/w2-relevel/RATER.md (frozen rubric v2, sha 6ef389e48b5d5752). Raters see the question, its key and the class, never the chapter. They use the 2025-26 NCERT scope of classes C-2..C+1 from data/curriculum. n = 4,695 class 4-7 items (all items without a ge), 118 packets of at most 40, 8 Claude subagents. Second rater: 8 packets (n = 320), independent. Agreement: MAE 0.27, within 0.5 = 96.6%, within 1 = 99.7%, Pearson r = 0.96, offset +0.02. Mean (grade - class) = -0.32. Lowest: class-7 English and Hindi (-1.1 to -1.5: rhymes, opposites, plurals, spelling). Highest: class-6 astronomy (+0.3). Caveat: both raters are the same model, so this is consistency, not validity; a human-teacher spot check is for the test phase. Merged into data/kits by scripts/kits/w2-merge.mjs (ge = mean grade - 0.5, geSource claude-v2).
+
+## ms-r7-gap-items-end-of-class
+2026-11-04. Author, blind solver and level rater were 3 separate Claude agents (evals/kit-runs/gap-items/). n = 18 items in 6 topics: c5-evs-ch04-t02, c5-hindi-ch01-t01, c7-english-ch01-t01, c7-english-ch05-t01, c7-hindi-ch04-t01, c7-hindi-ch05-t01. Agreement 18/18. Rated grades: class 5 items 4.5-5.5, class 7 items 5.5-7. End-of-class coverage went from 379 to 384 of 385. c7-english-ch01-t01 is still a gap: its best new item rated 6.5 (needs 6.75). It goes to W3 (real-text language kits).
+
+
+<!-- merged from inbox/r7-studio-2.json -->
+## ms-r7-number-line-jump-reach (2026-11-04, n = 4,967 item boards)
+
+80 maths item boards in 31 kits pick the number-line template; all of them now jump. None of the first-explain picks is a number line.
+
+
+<!-- merged from inbox/r7-studio-3.json -->
+## ms-r7-board-first-pick-ms (2026-11-04, n = 250)
+
+The board-first pick takes 15 ms at the median, 42 ms at p90, 1.9 s at worst (measured under load, so an upper bound). It runs before her line is written; prewarming takes it off that path when the guess is right.
+
+
+<!-- merged from inbox/r7-studio-5.json -->
+## ms-r7-board-timeline-reach (2026-11-04, n = 830 kits)
+
+7 topics get a timeline today, all c7-c9 social science plus the history of cell theory. All 7 pass every board gate. Before, each showed a model-written flowchart.
+
+
+<!-- merged from inbox/r7-studio-6.json -->
+## ms-r7-board-table-reach (2026-11-04, n = 304 maths kits)
+
+5 kits get a computed table; all pass the board gates. In 2 it is the board shown; in 3 another code board is picked first.
+
+
+<!-- merged from inbox/r7-studio-7.json -->
+## ms-r7-board-label-reach (2026-11-04, n = 210 science/EVS kits)
+
+15 kits get a labelled diagram (14 plant, 1 flower); all pass the board gates. Next sketches by reach: electric circuit (9 kits), cell (3), atom (3).
+
+
+<!-- merged from inbox/r7-brain-remerge2.json -->
+## ms-r7-brain-skill-arc (2026-11-04, stream A Brain)
+
+Every skill gets explain, then a worked example from its own verified kit item (never posed afterwards), then a practice block; then mixed practice. The hook has kinds (a puzzle on the kit’s own problem, or the prediction). Director replay over 830 kits: practice skill hops 38% → 23%; 68% of later skills have a kit-anchored worked example. Kill switch TAXILA_R7_SKILL_ARC=off. Test: tests/r7-brain-arc.test.mjs.
+
+## ms-r7-brain-step-check (2026-11-04, stream A Brain)
+
+Her worked-example question is a keyed micro-item (the next kit step’s result), pinned as the card and graded like any card; "160?" is credited and counted, a miss is shown. ACK_CLOSE defaults to on. Coverage: 19% of kit worked examples (maths 44%). Kill switch TAXILA_R7_STEP_CHECK=off. Test: tests/r7-brain-step-check.test.mjs.
+
+
+## ms-r7-drain-test-race-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+tests/graceful-shutdown.test.mjs raced on a loaded CI runner: 'a request still open after the grace is cut' expected leftOpen 1 and got 0 once on PR #38 (C2 Games' report). The test slept a fixed 50 ms after sending a never-answered request, so the server had not accepted it yet when the drain ran. Both drain tests now poll requests.active() until the request is in flight, up to 5 s (Games' patch 001). Checked 3/3 green, then 3/3 green with six busy-loop processes on the 4-core container. The other new platform suites (ops, release, cost, shard, migrate) have no fixed sleeps.
+
+
+<!-- merged from inbox/r7-main-5.json -->
+## jd-r7-hybrid-full-2026-11-04 (main loop judge, 2026-11-04)
+
+Method: stream A's harness. Director half run on f2c55d0d (results/2026-11-04-full); agent half rerun on b022df8a with production agent invariants (results/2026-11-04-full-agent2). Production deployments, no DB, scripted Hinglish child, c4/c5/c6 × 4 scenarios; n = 23 lessons (12 + 11), ~10 child turns each. Judged by three Claude judges (one per class) reading every turn against OWNER-RESET-2026-10-04 and the 11 pilot defects; synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Findings: docs/design/round7/judgements/hybrid-full-2026-11-04.md.
+
+
+<!-- merged from inbox/r7-learning-5.json -->
+## ms-r7-placement-prior-weight
+| floor | 2 correct | 4 correct | 6 correct | 6 wrong |
+|---|---|---|---|---|
+| none (class prior) | 4.77 | 5.22 | 5.51 | 1.41 |
+| 0.6 | 2.70 | 3.11 | 3.43 | 1.88 |
+| 0.8 | 3.03 | 3.50 | 3.84 | 1.81 |
+| 1.0 (chosen) | 3.30 | 3.80 | 4.14 | 1.75 |
+
+θ mean (GE), class 5, site at 2.0. One session's θ evidence is capped (THETA_STRAND_CAP), so later sessions keep moving it; the epoch's Glicko inflation also weakens the site with days.

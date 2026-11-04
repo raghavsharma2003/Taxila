@@ -46,6 +46,8 @@ async function realtime() {
   const stats: unknown[] = [];
   const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], jaw: Q.get("jaw") === "1", budgetMs: Q.get("budget") ? +Q.get("budget")! : undefined, onEvent: (e) => { if (e.type !== "stats") stats.push(e); } });
   await stage.init();
+  // ?lead=<ms>: shift the viseme scheduler's lead (an eval sweep for the r8 timing polish, round 7)
+  if (Q.get("lead")) stage.driver.visemes.lead += Number(Q.get("lead"));
   stage.start();
   const lines = (Q.get("line") || "00").split(",");
   const out: Array<{ line: string; frames: Array<[number, number, number]>; startDelayMs: number; outLatMs: number }> = [];

@@ -18,7 +18,8 @@ import type { TapSource } from "../../avatar/tap.ts";
 import { Art } from "../Art.tsx";
 import { t } from "../copy.ts";
 import { useTeacher } from "./useTeacher.ts";
-import "./teacher.css";
+import "./teacher.css";import { Protege, type ProtegeKind, type ProtegeMood } from "./Protege.tsx";
+
 
 /** The eight floor states of PRODUCT-DESIGN-V2 §4.1. */
 export type TeacherFloor = "idle" | "speaking" | "showing" | "yielding" | "your_turn" | "listening" | "heard" | "thinking";
@@ -68,6 +69,8 @@ export interface TeacherProps {
   className?: string;
   style?: CSSProperties;
   noProbe?: boolean;
+  /** The young band's teach-back protégé beside her (./Protege.tsx), or null. */
+  protege?: { kind: ProtegeKind; mood: ProtegeMood } | null;
 }
 
 export function Teacher(p: TeacherProps) {
@@ -102,6 +105,10 @@ export function Teacher(p: TeacherProps) {
           lang="english"
           className="teacher-face-host"
         />
+        {p.protege && (
+          <Protege kind={p.protege.kind} mood={p.protege.mood} reducedMotion={p.reducedMotion}
+            glance={p.floor === "listening" || p.floor === "speaking" || p.floor === "your_turn"} />
+        )}
         {p.aiPicto && (
           <span className="teacher-aipicto" aria-hidden="true">
             <Art id="picto/ai-teacher" fallback={<AiPicto />} />

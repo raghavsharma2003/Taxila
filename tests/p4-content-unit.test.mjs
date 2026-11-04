@@ -1,7 +1,7 @@
 // ship5 p4-content unit tests: the catalogue rung, the production catalog, the host grade session, the rest rule and
 // the 3-minute floor, the seam-bridge merge (Stagecraft + Wave 2 on one stage), board sync, the lesson lifecycle and the
 // stage's busy share. Pure: no network, no DB, no model (every model call is a fake).
-import { test } from "node:test";
+import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { entryFromRecord, checkSpec, unknownKitIds, loadCatalogue, catalogueEntry, catalogueTopicsByArchetype, kitTopicAny, EXPLAINER } from "../server/stagecraft/catalogue.js";
 import { createBuilders, boardTwinFor, stringsOfSpec } from "../server/stagecraft/builders.js";
@@ -23,7 +23,10 @@ import { ENGINE_SPECS } from "../shared/studio-spec.ts";
 const T = "c6-maths-ch05-t02";        // a catalogue topic with a checked game (sieve-storm@1) and a checked explainer
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
-globalThis.__kits = Object.fromEntries(["c5-maths-ch02-t01"].map((t) => [t, kitFromFile(getTopic(t))]));
+// npm test runs every file in one process: the kits this file injects are set for its tests only, and put back after
+const KITS0 = globalThis.__kits;
+before(() => { globalThis.__kits = Object.fromEntries(["c5-maths-ch02-t01"].map((t) => [t, kitFromFile(getTopic(t))])); });
+after(() => { if (KITS0 === undefined) delete globalThis.__kits; else globalThis.__kits = KITS0; });
 const kit = kitTopicAny(T);
 const clone = (x) => structuredClone(x);
 

@@ -37,7 +37,40 @@ export const LINE_BOUND = new Set(["W6.timing"]);
 /** The row head: distinct from every Studio archetype so isStudioRow never confuses it with a piece. */
 export const ROW_HEAD = "board";
 const TTL_MS = 60_000;
-const picks = new Map(); // intentId → { at, script, facts, by, template, row, predicted }
+const picks = new Map(); // intentId → { at, script, facts, by, template, row, predicted, ahead? }
+
+/**
+ * round 7 (C1 studio-board-timing): what an ask is FOR, as one string: a board picked ahead for one ask is used only for an
+ * ask with the same signature (the Director's next turn can take another move than the one its lookahead predicted).
+ */
+export function askSignature(ask) {
+  const i = ask?.intent ?? {};
+  const r = i.request ?? null;
+  return JSON.stringify([i.skillId ?? null, i.need ?? null, i.misconceptionId ?? null, [...(i.itemIds ?? [])].sort(), ask?.kit?.item?.id ?? null,
+    r ? [r.kind ?? null, r.subject ?? null] : null, ask?.mode ?? "fresh", i.beat ?? null]);
+}
+const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · served to the real turn's pick · shown · dropped (another move)
+/** Board-first lookahead counters for this replica (GET /api/studio/timing). */
+export const prewarmStats = () => ({ ...prewarmed });
+/** Tests only. */
+export function _resetPrewarm() { prewarmed.made = prewarmed.hit = prewarmed.used = prewarmed.stale = 0; }
+
+/**
+ * round 7 (C1 studio-board-timing, "prewarm on the beat lookahead"): pick the board for an ask the lesson WILL make (Brain's
+ * lookahead: the next turn's predicted whiteboard ask, its intentId already that turn's), off the turn's critical path. The
+ * pick is stored under that intentId with the ask's signature; when the real ask arrives, preselect returns it at once if the
+ * ask is the one predicted, and picks afresh if not. Her real line still re-gates it (takePreselected), so a wrong
+ * prediction costs nothing. Code only, no model call. → the pick, or null.
+ */
+export function prewarm(askAhead, o = {}) {
+  const id = String(askAhead?.intent?.intentId ?? "");
+  if (!id || picks.has(id)) return null;
+  const p = preselect(askAhead, o);
+  if (!p) return null;
+  p.ahead = askSignature(askAhead);
+  prewarmed.made++;
+  return p;
+}
 
 /** A content line is this module's row (the turn strips last turn's before adding this turn's). */
 export function isBoardFirstRow(line) {
@@ -102,7 +135,13 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     if (!id) return null;
     if (ask?.mode === "continue") return null;              // a continued board builds on the last one: the line plan's job
     for (const [k, v] of picks) if (now - v.at > TTL_MS) picks.delete(k);
-    if (picks.has(id)) return picks.get(id);
+    if (picks.has(id)) {
+      const p = picks.get(id);
+      if (!p.ahead) return p;
+      // the board shown since it was picked ahead may be this very page: a repeat is never served (round 5, RCA-1)
+      if (p.ahead === askSignature(ask) && !shownBefore(p.script, { avoid, seen })) { if (!p.hit) { p.hit = true; prewarmed.hit++; } return p; }
+      picks.delete(id); prewarmed.stale++;             // picked ahead for another move: pick for this one
+    }
     const predicted = predictedLineOf(ask, kit);
     if (predicted.length < 12) return null;
     const a2 = { ...ask, line: { ...(ask.line ?? {}), text: predicted } };
@@ -156,7 +195,9 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     const id = String(ask?.intent?.intentId ?? "");
     const p = picks.get(id);
     if (!p || p.used) return null;
+    if (p.ahead && p.ahead !== askSignature(ask)) { picks.delete(String(ask?.intent?.intentId ?? "")); prewarmed.stale++; return null; }
     p.used = true;
+    if (p.ahead) prewarmed.used++;
     const s = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
     let r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     // a split that her real line refuses: the still board (motion never costs the board)

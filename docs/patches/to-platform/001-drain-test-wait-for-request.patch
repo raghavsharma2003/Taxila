@@ -1,0 +1,14 @@
+diff --git a/tests/graceful-shutdown.test.mjs b/tests/graceful-shutdown.test.mjs
+index 09a1375ce..6e08329b5 100644
+--- a/tests/graceful-shutdown.test.mjs
++++ b/tests/graceful-shutdown.test.mjs
+@@ -56,7 +56,8 @@ test("drain: a request still open after the grace is cut, and the drain still fl
+   const port = server.address().port;
+   const requests = trackRequests(server);
+   const hung = get(port, "/hang").catch((e) => e);
+-  await new Promise((r) => setTimeout(r, 50));
++  // wait until the server has really accepted the request (a fixed sleep raced on a loaded CI runner: leftOpen 0)
++  for (let i = 0; i < 250 && requests.active() < 1; i++) await new Promise((r) => setTimeout(r, 20));
+   let flushed = false, exitCode = null;
+   const r = await createDrain({ server, requests, flush: async () => { flushed = true; }, exit: (c) => { exitCode = c; }, log: () => {}, graceMs: 200, pollMs: 20 })();
+   assert.equal(r.leftOpen, 1);
