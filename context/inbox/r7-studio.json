@@ -19,14 +19,30 @@
       "n": 1142,
       "method": "server/forge3/certs/catalogue.json topic x piece rows, serveByViewport per class (the existing certification, not re-rendered)",
       "title": "Studio v2 cells servable under D8: p412 1007, l1366 1071, p360 1062 (board twin only when the piece carries one); 1 row serves nowhere. Under the round-4 rule (playable at all three sizes) it was 0."
+    },
+    {
+      "id": "ms-r7-board-first-coverage",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 250,
+      "method": "evals/studio-timing/board-first-coverage*.mjs: classes 4-7 maths/science/evs kits, the Director's first explain move (and a 'picture dikhao' request), whiteboardIntentOf + board-first preselect with the p412 tray certification; code only, no model call",
+      "title": "Board-first preselects a board BEFORE her line on 245/250 first explain moves (98%); on a subject-less picture ask 222/250 (88.8%; maths 119/141, science 63/69, evs 40/40). The ask misses are kit boards that are not drawings for a picture ask (they fall to the live ladder). Live misses are the real-line re-gate, read now from GET /api/studio/timing."
     }
   ],
   "edges": [
-    { "src": "dc-r7-studio-v2-device-class-serving", "rel": "amends", "dst": "dc-r4c-studio-v2-off-child-path" },
-    { "src": "dc-r7-studio-v2-device-class-serving", "rel": "measured_by", "dst": "ms-r7-studio-v2-servable" }
+    {
+      "src": "dc-r7-studio-v2-device-class-serving",
+      "rel": "amends",
+      "dst": "dc-r4c-studio-v2-off-child-path"
+    },
+    {
+      "src": "dc-r7-studio-v2-device-class-serving",
+      "rel": "measured_by",
+      "dst": "ms-r7-studio-v2-servable"
+    }
   ],
   "md": {
     "decisions": "## dc-r7-studio-no-build-state — no build state on the child's screen (2026-11-04)\n\nOWNER-RESET: the child never sees 'Asha is making this', skeletons or veils. The stage shows only finished pieces. While the next one is made, the last finished piece stays up, inert, or the calm ground does.\n\n## dc-r7-studio-v2-device-class-serving — serve Studio v2 where certified (2026-11-04)\n\nRound 4 kept Studio v2 off the child path unless a piece was playable and certified at all three sizes. No piece was, so the authored explainers and games never reached a child. Round 7 decision D8 serves a piece wherever it is certified at the device's own class. On the 360 phone it is served as its board twin until the portrait relayout (C1 item 13). This amends dc-r4c-studio-v2-off-child-path.\n",
-    "measurements": "## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)\n\nUnder D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.\n"
+    "measurements": "## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)\n\nUnder D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.\n\n## ms-r7-board-first-coverage (2026-11-04, n = 250 class 4-7 topics)\n\nThe board-first rung already picks a board before her line on 98% of first explain moves and 88.8% of subject-less picture asks (the maths misses are kit boards that are text, not a drawing). What remains is live: a picked board refused against her real line. GET /api/studio/timing now counts those outcomes per replica.\n"
   }
 }
