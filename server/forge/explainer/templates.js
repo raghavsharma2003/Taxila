@@ -16,10 +16,10 @@ import { normalizeScript, lintScript, textBox, textProblem } from "../../../shar
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
-  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1"];
+  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -695,10 +695,76 @@ function barChart(c, tl) {
   return { facts: { bars: n, scale: `steps of ${step}`, ...Object.fromEntries(bars.map((b, i) => [`bar${i + 1}`, `${b.label} ${b.value}`])) } };
 }
 
+/**
+ * round 7 (C1 studio-board-richness): a TRUE-SCALE timeline (timeline.js: the kit's own "label (year)" chains). Time runs
+ * right along an arrow; each event is a dot at its year's true place, then its year and label, alternately above and below,
+ * spread apart so no two labels touch and joined to their dot by a leader line. Events appear in time order.
+ */
+function timelineBoard(c, tl) {
+  const ev = Array.isArray(c.events) ? c.events.filter((e) => isInt(e?.year, 100, 2100) && fitsLabel(e?.label)) : [];
+  if (ev.length < 3 || ev.length > 6 || new Set(ev.map((e) => e.year)).size !== ev.length) return { error: "events" };
+  ev.sort((a, b) => a.year - b.year);
+  const lo = ev[0].year, hi = ev.at(-1).year;
+  // one fact per event (a value is ≤ 40 chars): her line names what is on the board, year by year
+  const facts = { ...Object.fromEntries(ev.map((e, i) => [`event${i + 1}`, `${e.year} ${e.label}`])), span: `${lo} to ${hi}` };
+  // an event is a TICK across the axis (a dot would read as a count to W8: "3 dots" is a number, a year is not)
+  const tick = (x, y, across) => tl.add({ op: "line", from: across === "v" ? [x, y - 9] : [x - 9, y], to: across === "v" ? [x, y + 9] : [x + 9, y], weight: 3, ink: "accent" }, 220, { gap: 220 });
+  // spread label centres along one axis: inside [a, b], each at least its half-size + 8 from the next (forward, then back)
+  const spread = (list, a, b) => {
+    list.forEach((q, i) => { q.p = Math.max(q.p, a + q.h / 2, i ? list[i - 1].p + (list[i - 1].h + q.h) / 2 + 8 : -Infinity); });
+    for (let i = list.length - 1; i >= 0; i--) { const q = list[i]; q.p = Math.min(q.p, b - q.h / 2, i < list.length - 1 ? list[i + 1].p - (list[i + 1].h + q.h) / 2 - 8 : Infinity); }
+    return list.every((q) => q.p - q.h / 2 >= a - 0.5);
+  };
+  const twoLine = (t, maxW) => { const w = fitWidth(t, maxW); return w && w <= maxW ? w : null; };
+  // 1. across: time runs right; labels alternate above and below, each over its year's true place where it fits
+  {
+    const y = 150, x0 = 44, W = 296, LW = ev.length <= 4 ? 160 : 118;   // the last tick stays clear of the arrowhead (380)
+    const xOf = (yr) => x0 + ((yr - lo) / (hi - lo)) * W;
+    const sides = [[], []];
+    ev.forEach((e, i) => { const w = twoLine(e.label, LW); sides[i % 2].push({ e, p: xOf(e.year), h: w ?? Infinity }); });
+    if (sides.every((sd) => sd.every((q) => Number.isFinite(q.h)) && spread(sd, 8, 392))) {
+      tl.add({ op: "arrow", from: [24, y], to: [380, y], weight: 2 }, 700);
+      const at = new Map(sides.flatMap((sd, k) => sd.map((q) => [q.e.year, { ...q, up: k === 0 }])));
+      for (const e of ev) {
+        const q = at.get(e.year), tx = xOf(e.year);
+        tick(tx, y, "v");
+        const yy = q.up ? y - 34 : y + 30, ly = q.up ? y - 78 : y + 78;
+        tl.add({ op: "line", from: [tx, q.up ? y - 12 : y + 12], to: [q.p, q.up ? yy + 12 : yy - 22], weight: 1, ink: "soft" }, 220, { gap: 40 });
+        tl.add({ op: "text", at: [q.p, yy], text: String(e.year), size: "s", ink: "accent" }, 260, { gap: 20 });
+        if (!writeFit(tl, e.label, q.p, ly, LW, {}, { ms: 480, gap: 30, size: "s" })) return { error: "label_too_wide" };   // one size for every label
+      }
+      return { facts };
+    }
+  }
+  // 2. down: time runs down a true-scale axis; each event's year and label on one row to its right (5-6 events)
+  {
+    const x = 56, y0 = 30, H = 240, LX = 132, LW = 400 - LX - 10;
+    const yOf = (yr) => y0 + ((yr - lo) / (hi - lo)) * H;
+    const rows = ev.map((e) => ({ e, p: yOf(e.year), one: textBox(e.label, "s").w <= LW }));
+    for (const r of rows) { r.h = r.one ? 18 : 40; if (!r.one && !twoLine(r.e.label, LW)) return { error: "label_too_wide" }; }
+    if (!spread(rows, 14, 290)) return { error: "timeline_crowded" };
+    tl.add({ op: "arrow", from: [x, 12], to: [x, 292], weight: 2 }, 700);
+    for (const r of rows) {
+      const ty = yOf(r.e.year);
+      tick(x, ty, "h");
+      tl.add({ op: "line", from: [x + 12, ty], to: [x + 22, r.p], weight: 1, ink: "soft" }, 200, { gap: 40 });
+      tl.add({ op: "text", at: [x + 26, r.p + 5], text: String(r.e.year), size: "s", ink: "accent", align: "start" }, 240, { gap: 20 });
+      if (r.one) tl.add({ op: "text", at: [LX, r.p + 5], text: r.e.label, size: "s", align: "start" }, 420, { gap: 30 });
+      else {
+        const ws = r.e.label.split(/\s+/); let k = 1, best = null;
+        for (; k < ws.length; k++) { const a = ws.slice(0, k).join(" "), b = ws.slice(k).join(" "); const w = Math.max(textBox(a, "s").w, textBox(b, "s").w); if (w <= LW && (!best || w < best.w)) best = { a, b, w }; }
+        tl.add({ op: "text", at: [LX, r.p - 6], text: best.a, size: "s", align: "start" }, 260, { gap: 30 });
+        tl.add({ op: "text", at: [LX, r.p + 16], text: best.b, size: "s", align: "start" }, 260, { gap: 0 });
+      }
+    }
+    return { facts };
+  }
+}
+
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };

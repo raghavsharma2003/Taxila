@@ -11,6 +11,7 @@
 //
 // Like lesson-fills.js: imports nothing heavy at load (the model call is a registered warmer), so Director tests stay pure;
 // process memory only.
+import { timelineCall } from "./timeline.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -84,6 +85,10 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   if (code) tries.push([open ? { ...code, hideResult: true } : code, "code"]);
   // the open item's parallel: the worked example (a different problem, the same method)
   if (open) { const we = codePick({ kit, item: null, representation, interest }); if (we) tries.push([we, "code"]); }
+  // round 7 (C1 studio-board-richness): the kit's own dated chain as a true-scale timeline (timeline.js), before the
+  // library's model-written flow for the same topic
+  const tlc = timelineCall(kit, { text });
+  if (tlc) tries.push([tlc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

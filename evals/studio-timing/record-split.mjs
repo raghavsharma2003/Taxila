@@ -1,5 +1,5 @@
 // Local recording of a moving board (C1 motion ops: the fraction split, the number-line jump) on the real child route,
-// API mocked. No model calls. Frames: just before, during and just after the board's first move.
+// API mocked. No model calls. Frames: just before, during and just after the board's first move (a still board: as it draws).
 // node evals/studio-timing/record-split.mjs <board.json> <outdir> [name]   (board.json: { script, predicted, title?, topicId? })
 import { readFileSync, mkdirSync, readdirSync, renameSync, rmSync } from "fs";
 import { execFileSync } from "child_process";
@@ -21,7 +21,9 @@ const KID = { id: "kid-wb", first_name: "Kabir", class_level: 5, language_pref: 
 const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio",
   studioSlot: { slotId: "slot1", intentId: "i1", state: "revealed", artifact: { kind: "whiteboard", script } } };
 const m0 = script.ops.find((o) => o.op === "move");
-const AT = [m0.startMs - 200, Math.round((m0.startMs + m0.endMs) / 2), m0.endMs + 500];   // ms after her line starts
+// ms after her line starts: around the first move (before, during, after), else through a still board's drawing
+const AT = m0 ? [m0.startMs - 200, Math.round((m0.startMs + m0.endMs) / 2), m0.endMs + 500]
+  : [Math.round(script.durationMs * 0.35), Math.round(script.durationMs * 0.65), script.durationMs + 300];
 for (const [name, viewport] of [["p412", { width: 412, height: 915 }], ["w1280", { width: 1280, height: 800 }]]) {
   const mobile = viewport.width < 600;
   const vdir = `${OUT}/_v-${name}`;
