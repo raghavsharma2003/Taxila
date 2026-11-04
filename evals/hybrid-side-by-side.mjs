@@ -184,7 +184,9 @@ for (const { topicId, classLevel, name: scenario } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   const name = MATRIX ? `${scenario}-c${classLevel}` : scenario;
   // one lane after the other, so neither lane's latency is measured while the other is calling
-  const A = await lesson("director", kit, classLevel, SCENARIOS[scenario]);
+  // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
+  const AGENT_ONLY = process.argv.includes("--agent-only");
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario]);
   const B = await lesson("agent", kit, classLevel, SCENARIOS[scenario]);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");

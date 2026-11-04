@@ -126,7 +126,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
     // r7: hands-free fixtures (hf / hf-speaking / hf-muted): the duplex engine holds the floor
-    mic: name.startsWith("hf") ? { available: true, talking: false, drain: 0, tapToTalk: false, handsFree: name !== "hf-muted", muted: name === "hf-muted",
+    mic: name.startsWith("hf") ? { available: true, talking: false, drain: 0, tapToTalk: name === "hf-muted", handsFree: name !== "hf-muted", muted: name === "hf-muted",
         dock: name === "hf-muted" ? "muted" : name === "hf-speaking" ? "speaking" : "listening" }
       : { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },
     showHelp: young && name === "help-menu", typing: !young && (keyboard || name === "T3"), captionsOn: band !== "b1",

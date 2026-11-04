@@ -1,10 +1,17 @@
 // round 7 (E App, 2026-11-04): Pause → "Short break" sends chipId break:rest. The client holds her speech for the whole
 // break and plays a held reply when the child taps "I'm back", so the reply is a tiny acknowledgement (no stretch
 // instruction, no question) and the next turn picks up where they were. Pure.
-import { test } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main 2026-11-04): these tests are the NEW behaviour, so they clear the kill switches they depend on and restore them
+// after (`npm test` runs every file in one process; an earlier file must never decide which path they test)
+const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
+const R7_KEEP = {};
+describe("r7-brain-rest.test.mjs: round 7 behaviour (kill switches cleared)", () => {
+beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
+afterEach(() => { for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -33,4 +40,5 @@ test("a graded answer right after the break is graded, not re-posed", () => {
   r = turn(r, { chipId: "break:rest" });
   const back = turn(r, { cls: cls("correct"), text: "x" });
   assert.doesNotMatch(back.move.shape ?? "", /back from their short break/);
+});
 });

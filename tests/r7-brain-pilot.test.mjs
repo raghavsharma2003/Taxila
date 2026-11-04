@@ -1,6 +1,6 @@
 // round 7: main's hybrid-pilot judgement (docs/design/round7/judgements/hybrid-pilot-2026-11-04.md), one test per defect on the
 // exact transcript turn (evals/hybrid-side-by-side/results/2026-11-04/, c6-maths-ch06-t01, class 6, Hinglish). Pure.
-import { test } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { fadeItem } from "../server/director/fading.js";
@@ -9,6 +9,13 @@ import { requestOf } from "../server/director/requests.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main 2026-11-04): these tests are the NEW behaviour, so they clear the kill switches they depend on and restore them
+// after (`npm test` runs every file in one process; an earlier file must never decide which path they test)
+const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
+const R7_KEEP = {};
+describe("r7-brain-pilot.test.mjs: round 7 behaviour (kill switches cleared)", () => {
+beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
+afterEach(() => { for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
 
 const RANI = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const NE = cls("no_evidence");
@@ -193,4 +200,5 @@ test("#11 (offtopic t5-t6): with no game on the screen, she never says the game 
     const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text", playOn: null, module: null }, kit: RANI, childText: "3", verdict: "ungraded", history: [], ui: r.ui, module: null });
     assert.equal(gameActs(out.reply), false, out.reply);
   } finally { replyDeps.chat = chat; }
+});
 });

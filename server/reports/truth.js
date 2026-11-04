@@ -23,6 +23,7 @@ import { learningDay, weekday as weekdayOf } from "../conductor/clock.js";
 import { rankSubjects, rotationOn, rotationSubjects, timetableToday } from "../conductor/rotation.js";
 import { SUBJECT_ORDER, topicSequence } from "../content/curriculum.js";
 import { placementResultsOf, startGEOf } from "../placement/store.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 /** A lesson that ran this long (start → end) counts even with nothing graded (V2 §3.13: shorter is an accidental start). */
 export const COUNTED_MIN_MS = 5 * 60_000;
@@ -222,7 +223,7 @@ const KT_COLS = "id, seq, session_id, occurred_at, skill_ids, cls, outcome, grad
  */
 export async function loadTruth(child, { skillIds = null, q = dbq } = {}) {
   const [kt, proj] = await Promise.all([
-    q(`select ${KT_COLS} from kt_evidence where child_id = $1 and ($2::text[] is null or skill_ids && $2::text[]) order by seq`, [child.id, skillIds]).catch((e) => {
+    q(`select ${KT_COLS} from kt_evidence where child_id = $1 and ($2::text[] is null or skill_ids && $2::text[]) and ${NOT_PLACEMENT} order by seq`, [child.id, skillIds]).catch((e) => {
       if (e?.code === "42P01") return [];
       throw e;
     }),

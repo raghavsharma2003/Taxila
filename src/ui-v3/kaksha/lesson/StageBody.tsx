@@ -17,6 +17,7 @@ import type { TrayModel } from "../../../child/lesson/model.ts";
 import { Caption } from "../../../child/lesson/Caption.tsx";
 import { captionVisible } from "../../../child/lesson/TeacherWindow.tsx";
 import { Teacher } from "../../../ui/teacher/Teacher.tsx";
+import { protegeStaging } from "../../../ui/teacher/Protege.tsx";
 import { solveStage, type Rect } from "./stageLayout.ts";
 import { LaterPill, MomentCard, stopChoicesOf } from "./Moments.tsx";
 import "./stage.css";
@@ -133,7 +134,10 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
           ) : (
             <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
               reducedMotion={m.reducedMotion} label={faceAt === "pip" ? "tag" : "below"} ground={faceAt !== "pip"} framing={faceAt === "pip" ? "close" : "medium"}
-              lights={m.lights} aiPicto={young} affect={m.affect ?? null} />
+              lights={m.lights} aiPicto={young} affect={m.affect ?? null}
+              // Face to-app/005: the teach-back companion stands at her shoulder only while she holds the stage (in an 84-128 px PiP
+              // it would crowd her); with no sprite there are no glances at it either
+              protege={faceAt === "stage" ? protegeStaging(m) : null} />
           )}
         </div>
       )}

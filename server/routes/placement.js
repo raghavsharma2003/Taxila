@@ -14,6 +14,7 @@ import { requireChild } from "../auth.js";
 import { q, one } from "../db.js";
 import { startPlacement, answerPlacement, publicItem, loadBank, poolFor } from "../placement/index.js";
 import { summaryOf, placementResultsOf } from "../placement/store.js";
+import { writePlacementPrior } from "../placement/kt.js";
 
 const SUBJECTS = new Set(["maths", "evs", "science"]);
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -54,6 +55,8 @@ async function answer(req, res, body) {
   if (repeat) return send(res, 200, { done: false, item });
   await q("update placement set state = $2, result = $3, completed_at = case when $3::jsonb is null then null else now() end where id = $1",
     [row.id, JSON.stringify(state), result ? JSON.stringify(result) : null]);
+  // round 7 F: the finished round seeds the KT θ prior (one kt_evidence row per strand, via 'placement'; never throws)
+  if (result) await writePlacementPrior(child, { placementId: row.id, completedAt: new Date(), result });
   // Never the verdict for a single item: placement must not feel like a test (RS-6 step 6).
   send(res, 200, result ? { done: true, summary: summaryOf(result, child.class_level, state.subject) } : { done: false, item });
 }

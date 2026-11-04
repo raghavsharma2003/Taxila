@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-name-spoken",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (PRODUCT-DESIGN-V2 §6.2 step 6): the parent hears how the teacher says the child's name in set-up (GET /api/child/name-audio: the fixed line 'Namaste, {name}!' in her voice, rate-limited) and can store 'Spell it how it sounds' as child.name_spoken (migration 038; letters, marks, spaces, ' and - only, at most 40). Voice uses name_spoken ?? first_name on every lane; captions keep first_name. Reverse if: Voice's own name lexicon makes a per-child spelling unnecessary."
+  },
+  {
+   "id": "dc-r7-home-kicks-plantoday",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-conductor-day-plan, first step): the child home's plan read starts conductor planToday in the background (no added latency, at most once per child per 10 minutes per replica, errors logged), so day_plan and its rotation slot.subject exist after a learning day's first visit. Opt-in, TAXILA_CONDUCTOR_PLAN=on, until checked live on staging: the DB-backed suites drive the plan route against a test database. Reverse if: the background step adds Conductor load or day_plan churn in staging."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-name-spoken\nThe name preview PRODUCT-DESIGN-V2 asked for had no field and no preview. Now: server/routes/account.js spokenNameOf and setSpokenName (tolerant without 038), /api/me children carry name_spoken, POST/PATCH /api/children accept nameSpoken, src/onboarding/NamePreview.tsx on the child step.\n\n## dc-r7-home-kicks-plantoday\nNothing in the product called planToday (hooks.js says so), so day_plan existed only when a test or job made one. server/routes/child.js kickPlanToday (pure gate shouldKickPlan) is fire-and-forget from planFor.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

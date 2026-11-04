@@ -6,6 +6,7 @@ import { createHash } from "crypto";
 import { addDays, isoWeek, localParts, zonedToUtc } from "../conductor/clock.js";
 import { HISTORY_DAYS } from "./config.js";
 import { COUNTED_LESSON_SQL, supersede } from "./truth.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 export const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WEEK_RE = /^(\d{4})-W(\d{2})$/;
@@ -64,7 +65,7 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
         and ${COUNTED_LESSON_SQL("l")} order by l.started_at, l.id`, [childId, w.from, w.to]),
     db.q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung, misconception_id,
         discriminates, via, contaminated, assisted
-      from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq`, [childId, histFrom, w.to]),
+      from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [childId, histFrom, w.to]),
     db.q(`select skill_id, display, next_review_at, refresh from kt_skill_state where child_id = $1`, [childId]),
     db.q(`select misconception_id, hits, resolved_at from kt_misconception where child_id = $1`, [childId]),
   ]);

@@ -169,18 +169,27 @@ export function initialBase({ strands, classLevel, openedAt, epochId, placement 
   const m = pri.map((p) => p.mu);
   const S = [];
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) S.push(rho(ss[i], ss[j]) * pri[i].sd * pri[j].sd);
-  let base = { epochId, openedAt: new Date(openedAt).toISOString(), strands: ss, m, S, sd0: pri.map((p) => p.sd0) };
-  // Placement as Gaussian sites against the class prior (own evidence only; borrowing via S).
-  if (Object.keys(placement).length) {
-    base = { ...base, ...combineSites(base, ss.map((s, i) => {
-      const p = placement[s];
-      if (!p) return { tau: 0, h: 0 };
-      const pv = pri[i].sd ** 2, v = Math.min(p.sd ** 2, pv * 0.999);
-      const tau = Math.max(0, 1 / v - 1 / pv);
-      return { tau, h: tau === 0 ? 0 : p.mu / v - m[i] / pv };
-    })) };
-  }
-  return base;
+  const base = { epochId, openedAt: new Date(openedAt).toISOString(), strands: ss, m, S, sd0: pri.map((p) => p.sd0) };
+  return withPlacement(base, placement);
+}
+
+/**
+ * Placement as Gaussian sites against a base's marginals (own evidence only; borrowing via S). Pure: a new base, or the
+ * same one when no strand has a site. initialBase applies it to the class prior; the ledger (round 7 F, kt/placement.js)
+ * applies a placement row that arrives after the epoch exists to the next opened epoch's base.
+ * @param {{ strands: string[], m: number[], S: number[] }} base @param {Record<string, { mu: number, sd: number }>} [placement]
+ */
+export function withPlacement(base, placement = {}) {
+  if (!base.strands.some((s) => placement[s])) return base;
+  const n = base.strands.length;
+  return { ...base, ...combineSites(base, base.strands.map((s, i) => {
+    const p = placement[s];
+    if (!p || !(p.sd > 0)) return { tau: 0, h: 0 };
+    // cat.js ownEvidence is a likelihood summary (flat prior), so the site is exactly N(mu, sd²): precision 1/sd², never
+    // more. (Round 7 F: it was read as a posterior, 1/v − 1/pv, which pulled the mean all the way to mu however wide sd was.)
+    const v = p.sd ** 2;
+    return { tau: 1 / v, h: p.mu / v };
+  })) };
 }
 
 // ───────────── epochs ─────────────
