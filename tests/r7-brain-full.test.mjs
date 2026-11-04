@@ -63,4 +63,26 @@ test("#10 (c5 offtopic T6): with a game mounted, a spoken '3' is not a game even
   assert.equal(gameActs(out.reply), false, out.reply);
   assert.ok(out.guard.caught.includes("gameclaim"));
 });
+
+test("#2/#3 (c4 steady, c4 steering after 'hindi mein batao'): an English card is shown, never read: she asks it in the lesson's language", async () => {
+  const { readsCard, looksEnglish, fallbackReply } = await import("../server/brain/say.js");
+  const { promptFor } = await import("../server/director/items.js");
+  const { fadeItem } = await import("../server/director/fading.js");
+  const card = promptFor(fadeItem(C4, { index: 0 }), "hinglish");
+  assert.equal(card, "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.");
+  assert.equal(looksEnglish(card), true);
+  for (const lang of ["hinglish", "hindi"]) {
+    let r = start(C4, 4);
+    for (let i = 0; i < 2; i++) r = turn(C4, r, "haan");
+    const st = { ...r.state, mode: "text", ctx: { ...r.state.ctx, lang, ...(lang === "hindi" ? { langPinned: true } : {}) },
+      activeItemId: "fade:0", lastMove: { kind: "practice", itemId: "fade:0", skillId: C4.skills[0].id } };
+    const calls = [];
+    replyDeps.chat = async (_d, msgs) => { calls.push(msgs.at(-1).content); return { text: calls.length === 1 ? `Chalo dekhte hain. ${card}` : "Chalo, 1/3 ka matlab: kul kitne barabar group mein se ek? Batao, kitne group?" }; };
+    const out = await textReply({ instructions: "x", state: st, kit: C4, childText: "haan", verdict: "ungraded", history: [], ui: { ask: { text: card, itemId: "fade:0" } }, module: null });
+    assert.equal(readsCard(out.reply, card), false, `${lang}: ${out.reply}`);
+    assert.match(calls[0], /never read it out; ask the same question in your own words/, "the first call already says so");
+    // and the fixed fallback line points to the screen instead of reading it
+    assert.doesNotMatch(fallbackReply(st, fadeItem(C4, { index: 0 })), /means 1 of/);
+  }
+});
 });
