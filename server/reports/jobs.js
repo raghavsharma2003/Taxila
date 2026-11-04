@@ -5,7 +5,7 @@
 // call's cost is added to spent_micro_usd (fenced by attempt). runJob() has already re-checked consent at claim.
 import { FinalJobError, registerHandler } from "../conductor/jobs.js";
 import { q } from "../conductor/pg.js";
-import { DAY_RE, WEEK_RE } from "./facts.js";
+import { DAY_RE, MONTH_RE, WEEK_RE } from "./facts.js";
 import { ReportGateError, generateReport } from "./index.js";
 
 export class JobCancelled extends Error { constructor() { super("cancel requested"); this.code = "cancelled"; } }
@@ -17,8 +17,8 @@ export class JobCancelled extends Error { constructor() { super("cancel requeste
  * @param {{ db?: { q: Function }, llm?: any, k7?: boolean, lookup?: any }} [deps] tests inject these
  */
 export async function runReportJob(job, ctx, cadence, deps = {}) {
-  const period = cadence === "daily" ? job.input?.day : job.input?.isoWeek;
-  if (!(cadence === "daily" ? DAY_RE : WEEK_RE).test(String(period ?? ""))) throw new FinalJobError(`report job ${job.id}: bad period ${period}`);
+  const period = cadence === "daily" ? job.input?.day : cadence === "monthly" ? job.input?.month : job.input?.isoWeek;
+  if (!({ daily: DAY_RE, weekly: WEEK_RE, monthly: MONTH_RE }[cadence]).test(String(period ?? ""))) throw new FinalJobError(`report job ${job.id}: bad period ${period}`);
   const db = deps.db ?? { q };
   const budget = Math.max(0, Number(job.budget_micro_usd ?? 0) - Number(job.spent_micro_usd ?? 0));
   let out;
@@ -43,3 +43,4 @@ export async function runReportJob(job, ctx, cadence, deps = {}) {
 
 registerHandler("report.daily", (job, ctx) => runReportJob(job, ctx, "daily"));
 registerHandler("parent.letter", (job, ctx) => runReportJob(job, ctx, "weekly"));
+registerHandler("parent.monthly", (job, ctx) => runReportJob(job, ctx, "monthly"));

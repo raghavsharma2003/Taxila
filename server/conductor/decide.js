@@ -174,6 +174,12 @@ function enqueueReports(s, day, H, active) {
     H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });
     H.rule("parent_letter");
   }
+  // round 7 F: the monthly report (PARENT-REPORT §2), on the fold of the month's last learning day; one per child and month
+  if (addDays(day, 1).endsWith("-01")) {
+    const month = day.slice(0, 7);
+    H.enqueue("parent.monthly", `parent.monthly:${s.childId}:${month}`, { month }, { runAfter });
+    H.rule("parent_monthly");
+  }
 }
 
 const markActive = (s, day, H) => {

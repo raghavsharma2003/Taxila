@@ -83,12 +83,12 @@ export interface SyllabusOut {
 export type ReportLang = "en" | "hinglish" | "hi";
 export interface ReportLine { key: string; kind: "claim" | "fixed"; claimId: string | null; section: string; text: string }
 export interface ReportOut {
-  id: string; cadence: "daily" | "weekly"; period: string; window: { from: string; to: string }; days: { first: string; last: string };
+  id: string; cadence: "daily" | "weekly" | "monthly"; period: string; window: { from: string; to: string }; days: { first: string; last: string };
   k7: boolean; preview: boolean; createdAt: string | null; held?: boolean;
   claims: { id: string; section: string; shapeId: string; facts: number }[];
   renders: Record<ReportLang, { title: string; lines: ReportLine[]; voice: string | null }>;
 }
-export interface ReportList { reports: { id: string; cadence: "daily" | "weekly"; period: string; createdAt: string }[]; today: string; thisWeek: string; lang: ReportLang; langs: ReportLang[]; held: boolean }
+export interface ReportList { reports: { id: string; cadence: "daily" | "weekly" | "monthly"; period: string; createdAt: string }[]; today: string; thisWeek: string; lang: ReportLang; langs: ReportLang[]; held: boolean }
 export interface ReportEvidence {
   /** `how`: reviewed "how this line is counted" copy per language (server/reports/templates.js HOW), never an internal rule. */
   claim: { id: string; section: string; shapeId: string; how: Record<ReportLang, string> | null };
@@ -153,7 +153,7 @@ export const parentApi = {
   homeTask: (childId: string, at: { period: string } | { lessonId: string }, done: boolean) => postJson("/api/parent/hometask", { childId, ...at, done }),
   reports: (childId: string) => getJson<ReportList>(`/api/parent/reports?${qs({ childId })}`),
   report: (childId: string, id: string) => getJson<{ report: ReportOut }>(`/api/parent/report?${qs({ childId, id })}`),
-  reportPreview: (childId: string, cadence: "daily" | "weekly") =>
+  reportPreview: (childId: string, cadence: "daily" | "weekly" | "monthly") =>
     getJson<{ report: ReportOut | null; skipped?: string; period?: string; held?: boolean }>(`/api/parent/report?${qs({ childId, cadence, preview: "1" })}`),
   reportEvidence: (childId: string, claimId: string, at: { id: string } | { cadence: string; period: string }) =>
     getJson<ReportEvidence>(`/api/parent/report/evidence?${qs({ childId, claimId, ...at })}`),
