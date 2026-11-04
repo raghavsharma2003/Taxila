@@ -21,13 +21,13 @@ export { RULES, ACTS };
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../../..");
 const OUT = join(ROOT, "data/play/coverage.json");
 
-/** Topics deliberately NOT given a game, with the reason (a game would trivialise or mis-frame them). */
-export const EXCLUDED = [
-  { prefix: "c7-science-ch06", why: "adolescence and reproductive health: taught in dialogue with care, never gamified" },
-  { prefix: "c8-science-ch07", why: "adolescence (class 8): out of the class 4-7 scope and never gamified" },
-];
+// the never-gamified topics live in rules/never.mjs (the ITEM-ARENA rules read them too)
+import { EXCLUDED } from "./rules/never.mjs";
+export { EXCLUDED };
 
-const SCOPE = /^c[4-7]-(maths|science|evs)\.json$/;
+// round 4 G1 (ITEM-ARENA): every class 1-9 kit loads (the arena admits any eligible topic); the in-scope counts stay the
+// planner's maths / science / EVS topics, and the all-topics counts sit beside them
+const SCOPE = /^c[1-9]-[a-z]+\.json$/;
 
 function load() {
   const kits = new Map(), cur = new Map();
@@ -71,12 +71,15 @@ export function build() {
   const by = (pred) => inScope.filter(pred);
   const counts = {
     topicsInScope: inScope.length,
-    topicsCovered: covered.size,
+    topicsCovered: inScope.filter((t) => covered.has(t.id)).length,
     entries: entries.length,
     withMisconceptionMap: new Set(entries.filter((e) => Object.keys(e.misMap).length).map((e) => e.topicId)).size,
     mappedMisconceptions: new Set(entries.flatMap((e) => Object.values(e.misMap))).size,
     bySubject: Object.fromEntries(["maths", "science", "evs"].map((s) => [s, { inScope: by((t) => t.id.includes(`-${s}-`)).length, covered: by((t) => t.id.includes(`-${s}-`) && covered.has(t.id)).length }])),
-    byClass: Object.fromEntries([4, 5, 6, 7].map((k) => [k, { inScope: by((t) => t.classLevel === k).length, covered: by((t) => t.classLevel === k && covered.has(t.id)).length }])),
+    byClass: Object.fromEntries([1, 2, 3, 4, 5, 6, 7, 8, 9].map((k) => [k, { inScope: by((t) => t.classLevel === k).length, covered: by((t) => t.classLevel === k && covered.has(t.id)).length }])),
+    topicsAll: cur.size,
+    topicsCoveredAll: [...cur.keys()].filter((id) => covered.has(id)).length,
+    bySubjectAll: Object.fromEntries([...new Set([...cur.values()].map((t) => t.subject))].sort().map((s) => [s, { topics: [...cur.values()].filter((t) => t.subject === s).length, covered: [...cur.values()].filter((t) => t.subject === s && covered.has(t.id)).length }])),
     byFamily: Object.fromEntries(FAMILY_RULES.map((m) => m.family).map((f) => [f, new Set(entries.filter((e) => e.family === f).map((e) => e.topicId)).size])),
   };
   // GRAMMAR.md §10: `skills` (skill id → its admitted game; the topic's FIRST rule wins) and `excluded` (topic id → why)

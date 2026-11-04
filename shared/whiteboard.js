@@ -16,7 +16,7 @@
 
 export const LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000,
   maxNumRows: 8, maxNumCols: 12, maxCellChars: 6, maxWordCellChars: 12 });
-export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase"]);
+export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase", "move"]);
 export const INKS = Object.freeze(["chalk", "accent", "ink", "mark", "good", "soft"]);
 export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
 export const NUM_LAYOUTS = Object.freeze(["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", "number_line"]);
@@ -85,6 +85,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const prior = new Set(priorIds ?? []);
   const seen = new Set();
   const isTarget = (id) => seen.has(id) || prior.has(id);
+  const drawnById = new Map();   // this script's own ops so far (a move targets one of them)
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -196,6 +197,21 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         }
         break;
       }
+      case "move": {
+        // round 7 (C1 studio-whiteboard-motion-ops): an earlier op slides by `by` (board units) over [startMs, endMs],
+        // optionally hopping along an arc `arc` units high (a number-line jump); a fraction split is its parts moving
+        // apart. The target's FINAL box is kept on the board (the shift is clamped), so nothing ever leaves the board.
+        const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
+        if (!tgt || !Array.isArray(o.by) || o.by.length !== 2 || !isNum(o.by[0]) || !isNum(o.by[1])) { bad("move"); break; }
+        let box; try { box = opGeometry(tgt, drawnById).box; } catch { bad("move_target"); break; }
+        const dx = clamp(o.by[0], -box.x, bw - box.x - box.w), dy = clamp(o.by[1], -box.y, bh - box.y - box.h);
+        if (dx !== o.by[0] || dy !== o.by[1]) bad("move:clamped");
+        if (!dx && !dy) { bad("move_nothing"); break; }
+        op = { ...base, target: o.target, by: [round1(dx), round1(dy)] };
+        if (isNum(o.arc) && o.arc > 0) op.arc = round1(Math.min(o.arc, box.y + Math.min(0, dy)));
+        if (tgt.startMs > op.startMs) bad("move_before_target");
+        break;
+      }
       case "highlight":
       case "erase": {
         if (typeof o.target !== "string" || !isTarget(o.target)) { bad("target"); break; }
@@ -204,7 +220,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         break;
       }
     }
-    if (op) { ops.push(op); seen.add(op.id); }
+    if (op) { ops.push(op); seen.add(op.id); drawnById.set(op.id, op); }
   }
   if (!ops.length) errors.push("nothing_to_draw");
   const lastEnd = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
@@ -361,6 +377,8 @@ const bbox = (pts) => {
  * @returns {{ paths: string[], texts: { x: number, y: number, text: string, size: number, align: string, small?: boolean }[], fill?: string, box: { x: number, y: number, w: number, h: number } }}
  */
 export function opGeometry(op, byId = new Map()) {
+  // a move draws nothing of its own (the Player shifts its target)
+  if (op.op === "move") return { paths: [], texts: [], box: { x: 0, y: 0, w: 0, h: 0 } };
   const rnd = seeded(op.id);
   const amp = 2.2 * (op.weight ?? 2);
   switch (op.op) {
@@ -548,4 +566,38 @@ export function lintScript(script) {
     }
   }
   return issues;
+}
+
+// ───────────────────────────── motion (round 7, C1 studio-whiteboard-motion-ops) ─────────────────────────────
+
+/** The eased progress (0..1) of a move at t (smoothstep: starts and lands softly, like a hand sliding a cut-out). */
+const ease = (p) => p * p * (3 - 2 * p);
+/** The shift [dx, dy] of op `id` at time t from every move targeting it (reducedMotion: a started move is complete). */
+export function moveShift(ops, id, t, reducedMotion = false) {
+  let x = 0, y = 0;
+  for (const m of ops) {
+    if (m.op !== "move" || m.target !== id) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    const p = reducedMotion ? 1 : ease(p0);
+    x += m.by[0] * p;
+    y += m.by[1] * p - (reducedMotion || !m.arc ? 0 : m.arc * 4 * p0 * (1 - p0));
+  }
+  return [x, y];
+}
+/** An op translated by [dx, dy] (every coordinate it carries). */
+export function shiftOp(op, dx, dy) {
+  const P = (p) => [round1(p[0] + dx), round1(p[1] + dy)];
+  const o = { ...op };
+  if (Array.isArray(o.points)) o.points = o.points.map(P);
+  for (const k of ["from", "to", "at", "c"]) if (Array.isArray(o[k])) o[k] = P(o[k]);
+  return o;
+}
+/** The script as it ENDS: every moved op at its final place, the moves themselves gone. The gates judge this too (a piece
+ *  that slides onto another, or a label that ends off its part, is caught where it lands). */
+export function settledScript(script) {
+  const ops = script?.ops ?? [];
+  if (!ops.some((o) => o.op === "move")) return script;
+  const end = Number.MAX_SAFE_INTEGER;
+  return { ...script, ops: ops.filter((o) => o.op !== "move").map((o) => { const [dx, dy] = moveShift(ops, o.id, end, true); return dx || dy ? shiftOp(o, dx, dy) : o; }) };
 }

@@ -99,7 +99,9 @@ test("her sheet: classes [1, 9], a register per band, notes and shapes only, a c
   assert.doesNotMatch(older.protege.what, /baby|elephant|animal/i);
   assert.match(older.protege.what, /student/);
   assert.ok(older.notes.some((n) => /^competence before warmth: diagnose what they tried/.test(n)), "Arjun's competence note carried over");
-  assert.ok(older.notes.some((n) => /classes 5-9/.test(n)));
+  // round 7 (decision D3, dc-r7-age-bands): the older register is classes 4-9; class 4 is no longer young
+  assert.ok(older.notes.some((n) => /classes 4-9/.test(n)));
+  assert.equal(sheetFor(asha, 4).protege.name, older.protege.name);
   assert.ok(young.notes.some((n) => /young Indian children/.test(n)));
   // identity, voice and pronouns never change with the band
   for (const k of ["id", "name", "addressedAs", "voice", "pronouns"]) assert.deepEqual(older[k], young[k], k);
@@ -115,7 +117,7 @@ test("her sheet: classes [1, 9], a register per band, notes and shapes only, a c
   assert.equal(characterForState({ ctx: { teacherId: "asha", teacherName: "Asha", ageBand: "10-15" } }).protege.name, "Bittu");
   assert.equal(characterForState({ ctx: { teacherId: "asha", teacherName: "Asha", classLevel: 2 } }).protege.name, "Golu");
   assert.equal(teacherFor({ id: "p", class_level: 5 }).protege.name, "Bittu", "lesson start pins the band protégé (lesson.js ctx.protege)");
-  assert.deepEqual(SHEETS.map((s) => s.sheetBand), ["asha:1-4", "asha:5-9", "arjun"]);
+  assert.deepEqual(SHEETS.map((s) => s.sheetBand), ["asha:1-3", "asha:4-9", "arjun"]);
 });
 
 // ───────────── the scan: no surface offers a teacher choice or names Arjun or Uma ─────────────

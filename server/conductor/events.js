@@ -78,6 +78,9 @@ export const StudentEvent = z.discriminatedUnion("type", [
   // school
   ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]) }),
   ev("school.day_override", { date: Day, kind: z.enum(["off", "holiday", "school_day"]) }),
+  // round 7 F: where the school is in a subject (child.school_chapter), and the school timetable for a weekday (034)
+  ev("school.pointer_set", { subject: Id, chapter: z.number().int().min(1).max(40), on: Day, via: z.enum(["parent", "child", "intake"]) }),
+  ev("school.timetable_set", { weekday: z.number().int().min(0).max(6), subjects: z.array(Id).max(8), rev: z.number().int().min(0), via: z.enum(["parent", "intake"]) }),
   // clock
   ev("clock.wakeup", { reason: z.enum(WAKE_REASONS), wakeupId: Id }),
   // agents
@@ -134,6 +137,8 @@ export function idemKeyFor(e) {
     case "parent.consent_changed": return `consent:${e.purpose}:${e.consentVersion}:${e.granted ? 1 : 0}`;
     case "school.test_announced": return `test:${e.subject}:${e.on}`;
     case "school.day_override": return `dayoverride:${e.date}:${e.kind}`;
+    case "school.pointer_set": return `pointer:${e.subject}:${e.chapter}:${e.on}:${e.via}`;
+    case "school.timetable_set": return `timetable:${e.via}:${e.weekday}:${e.rev}`;
     case "safety.incident": return `safety.incident:${e.incidentId}`;
     case "safety.incident_updated": return `safety.updated:${e.incidentId}:${e.familyImplicated}:${e.category}`;
     case "safety.cleared": return `safety.cleared:${e.incidentId}`;

@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
 import { getJson, postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
 import { HoursFields } from "../onboarding/Setup.tsx";
+import { ChoiceChips, DateRange } from "../ui-v3/Scheduler.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
 import { isRelock, parentApi, type ControlsT } from "./api.ts";
@@ -141,17 +142,11 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
         <>
           <p className="pa-effect">{tw2("controls.test.none")}</p>
           <div className="pa-test-row">
-            <label className="pa-field"><span>{tw2("controls.test.subject")}</span>
-              <select className="input" value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })}>
-                {subjects.map((x) => <option key={x} value={x}>{subjectWords(x).replace(/^./, (c) => c.toUpperCase())}</option>)}
-              </select>
-            </label>
-            <label className="pa-field"><span>{tw2("controls.test.from")}</span>
-              <input className="input" type="date" value={draft.from} min={today()} onChange={(e) => setDraft({ ...draft, from: e.target.value, to: e.target.value > draft.to ? e.target.value : draft.to })} />
-            </label>
-            <label className="pa-field"><span>{tw2("controls.test.to")}</span>
-              <input className="input" type="date" value={draft.to} min={draft.from} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
-            </label>
+            <span className="pa-h3" id="pa-test-subj">{tw2("controls.test.subject")}</span>
+            <ChoiceChips label={tw2("controls.test.subject")} value={draft.subject} onChange={(subject) => setDraft({ ...draft, subject })}
+              options={subjects.map((x) => ({ value: x, label: subjectWords(x).replace(/^./, (c) => c.toUpperCase()) }))} />
+            <DateRange today={today()} from={draft.from} to={draft.to} maxSpanDays={21}
+              fromLabel={tw2("controls.test.from")} toLabel={tw2("controls.test.to")} onChange={(from, to) => setDraft({ ...draft, from, to })} />
           </div>
           <Button onClick={() => void save()} disabled={busy} aria-label={`${tw2("controls.test.save")} for ${name}`}>{tw2("controls.test.save")}</Button>
         </>
@@ -161,7 +156,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
   );
 }
 
-type Group = "time" | "voice" | "screen" | "reports";
+type Group = "time" | "voice" | "screen" | "reports" | "pace";
 
 function GroupCard({ id, title, children, dirty, busy, saved, err, onSave }:
   { id: Group; title: string; children: ReactNode; dirty: boolean; busy: boolean; saved: boolean; err: string | null; onSave: () => void }) {
@@ -200,7 +195,8 @@ export default function Controls() {
   const name = current.first_name;
   const dirtyOf = (g: Group) => {
     if (!c || !base) return false;
-    if (g === "time") return c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
+    if (g === "time") return !!c.limitsOn !== !!base.limitsOn || c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
+    if (g === "pace") return (c.extraTime ?? "normal") !== (base.extraTime ?? "normal") || !!c.dataSaver !== !!base.dataSaver;
     if (g === "voice") return c.address !== base.address || (lang ?? current.language_pref) !== current.language_pref;
     if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode;
     return c.reportChannel !== base.reportChannel;
@@ -210,7 +206,8 @@ export default function Controls() {
     if (g === "time" && c.hoursStart >= c.hoursEnd) { setGErr({ g, msg: "Lesson hours must end after they start." }); return; }
     setBusy(g); setGErr(null);
     try {
-      const fields: Partial<ControlsT> = g === "time" ? { dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
+      const fields: Partial<ControlsT> = g === "time" ? { limitsOn: !!c.limitsOn, dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
+        : g === "pace" ? { extraTime: c.extraTime ?? "normal", dataSaver: !!c.dataSaver }
         : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode } : { reportChannel: c.reportChannel };
       const out = await parentApi.setControls(current.id, fields);
       if (g === "voice" && lang && lang !== current.language_pref) {
@@ -235,21 +232,48 @@ export default function Controls() {
       {c && (
         <div className="pa-stack">
           <GroupCard id="time" title="Time" {...props("time")}>
-            <div className="pa-control">
-              <h3 className="pa-h3">Daily limit</h3>
-              <TileGroup label="Daily limit" columns={3} value={c.dailyMinutes} onChange={(v) => patch({ dailyMinutes: Number(v) })}
-                options={limitOpts.sort((a, b) => a - b).map((m) => ({ value: m, label: `${m} min` }))} />
-              <p className="pa-effect">At the limit {T} finishes at the next natural stop. {T} never shows {name} a countdown.</p>
-            </div>
-            {data?.dayLimits === false && (
-              <p className="pa-effect" data-testid="limits-off">{`The daily limit and lesson hours are off for now: ${name} can start a lesson at any time. What you choose here is kept for when they come back.`}</p>
+            {/* round 7 (dc-r7 D5): the limits are the family's own choice, off until the parent turns them on; nothing here is inert */}
+            {data?.dayLimitsMode !== "on" && data?.dayLimitsMode !== "off" && (
+              <div className="pa-control">
+                <h3 className="pa-h3">Daily limit and lesson hours</h3>
+                <TileGroup label="Daily limit and lesson hours" columns={2} value={c.limitsOn ? "on" : "off"} onChange={(v) => patch({ limitsOn: v === "on" })}
+                  options={[{ value: "off", label: "Off" }, { value: "on", label: "On" }]} />
+                <p className="pa-effect" data-testid={c.limitsOn ? "limits-on" : "limits-off"}>{c.limitsOn
+                  ? `${name}'s lessons follow the limit and hours below. At the limit ${T} finishes the question, then wraps up.`
+                  : `${name} can start a lesson at any time. Turn this on to set a daily limit and lesson hours.`}</p>
+              </div>
             )}
+            {(c.limitsOn || data?.dayLimitsMode === "on") && data?.dayLimitsMode !== "off" && (
+              <>
+                <div className="pa-control">
+                  <h3 className="pa-h3">Daily limit</h3>
+                  <TileGroup label="Daily limit" columns={3} value={c.dailyMinutes} onChange={(v) => patch({ dailyMinutes: Number(v) })}
+                    options={limitOpts.sort((a, b) => a - b).map((m) => ({ value: m, label: `${m} min` }))} />
+                  <p className="pa-effect">At the limit {T} finishes the question {name} is on, then wraps up. {T} never shows {name} a countdown.</p>
+                </div>
+                <div className="pa-control">
+                  <h3 className="pa-h3">Lesson hours</h3>
+                  <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
+                  <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>
+                </div>
+                {base?.limitsOn && <OpenNow childId={current.id} name={name} onRelock={relock} />}
+              </>
+            )}
+            {data?.dayLimitsMode === "off" && <p className="pa-effect" data-testid="limits-off">{`${name} can start a lesson at any time.`}</p>}
+          </GroupCard>
+          <GroupCard id="pace" title="Pace" {...props("pace")}>
             <div className="pa-control">
-              <h3 className="pa-h3">Lesson hours</h3>
-              <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
-              {data?.dayLimits !== false && <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>}
+              <h3 className="pa-h3">Extra time to answer</h3>
+              <TileGroup label="Extra time to answer" columns={3} value={c.extraTime ?? "normal"} onChange={(v) => patch({ extraTime: v as "normal" | "more" | "most" })}
+                options={[{ value: "normal", label: "Normal" }, { value: "more", label: "More" }, { value: "most", label: "Most" }]} />
+              <p className="pa-effect">{c.extraTime === "most" ? `${T} waits longest before speaking again, for a child who thinks aloud slowly.` : c.extraTime === "more" ? `${T} waits a little longer for ${name} to answer.` : `${T} waits the usual time for an answer.`}</p>
             </div>
-            {data?.dayLimits !== false && <OpenNow childId={current.id} name={name} onRelock={relock} />}
+            <div className="pa-control">
+              <h3 className="pa-h3">Data saver</h3>
+              <TileGroup label="Data saver" columns={2} value={c.dataSaver ? "on" : "off"} onChange={(v) => patch({ dataSaver: v === "on" })}
+                options={[{ value: "off", label: "Off" }, { value: "on", label: "On" }]} />
+              <p className="pa-effect">{c.dataSaver ? "Lighter sound and pictures, for slow or costly mobile data." : "Full sound and pictures."}</p>
+            </div>
           </GroupCard>
           <GroupCard id="voice" title={`How ${T} speaks`} {...props("voice")}>
             <div className="pa-control">
@@ -287,14 +311,17 @@ export default function Controls() {
               <p className="pa-effect">Bigger words and less movement on {name}'s screens.</p>
             </div>
           </GroupCard>
+          {/* dc-r7 D5: the channel choice shows only once a second channel really sends (Platform's Notifier) */}
+          {(data?.reportChannels?.length ?? 1) > 1 && (
           <GroupCard id="reports" title="Weekly letter" {...props("reports")}>
             <div className="pa-control">
               <h3 className="pa-h3">Where the weekly letter goes</h3>
               <TileGroup label="Where the weekly letter goes" columns={2} value={c.reportChannel} onChange={(v) => patch({ reportChannel: v as "whatsapp" | "app" })}
                 options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
-              <p className="pa-effect">It is always in Notes here. WhatsApp sending starts once Taxila's WhatsApp number is connected.</p>
+              <p className="pa-effect">It is always in Notes here too.</p>
             </div>
           </GroupCard>
+          )}
         </div>
       )}
     </ParentShell>

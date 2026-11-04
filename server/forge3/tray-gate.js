@@ -176,7 +176,6 @@ export function studioV2Certified(topicId, piece, { young = false, certs = null 
 }
 
 const serveAt = (row, vp) => !!(row?.serveByViewport ?? row?.byViewport)?.[vp];
-const allThree = (row) => VP_CLASSES.every((v) => serveAt(row, v));
 
 /**
  * May this Studio artifact be shown in the tray of a device of class `vp`?
@@ -212,10 +211,14 @@ export function certifyForTray(artifact, ctx = {}) {
         const row = (ctx.certs ?? certificates())?.topics?.[ctx.topicId]?.[piece];
         if (!row) return out(false, "catalogue", `no certificate for ${ctx.topicId} ${piece}`);
         if (studioV2Test) return out(true, "catalogue", "tests: Studio v2 certified");
-        const twinAt = VP_CLASSES.filter((v) => !studioV2PlayableAt(v, { young }));
-        if (twinAt.length) return out(false, "catalogue", `Studio v2 ${piece} is only its board twin at ${twinAt.join(",")} (a 1000-unit world in that box): not the game at all three sizes`);
-        if (!allThree(row)) return out(false, "catalogue", `Studio v2 ${piece} not certified at all three sizes (${VP_CLASSES.filter((v) => !serveAt(row, v)).join(",")} fail)`);
-        return out(serveAt(row, vp), "catalogue", "certified at all three sizes");
+        // round 7 decision D8 (amends dc-r4c-studio-v2-off-child-path): served wherever it is certified AT THE DEVICE'S
+        // CLASS (p412 phones, l1366 laptops), no longer only when certified at all three; where its 1000-unit world is too
+        // small to play (the 360 phone) it is served as its board twin (the stage draws the twin), or not at all
+        if (!serveAt(row, vp)) return out(false, "catalogue", `Studio v2 ${piece} not certified at ${vp}`);
+        if (studioV2PlayableAt(vp, { young })) return out(true, "catalogue", `certified at ${vp}`);
+        const twin = sc.boardTwin?.board ?? sc.board?.board ?? null;
+        return twin ? out(true, "catalogue-twin", `served as its board twin at ${vp} (a 1000-unit world in that box)`)
+          : out(false, "catalogue", `Studio v2 ${piece} is only its board twin at ${vp}, and it carries none`);
       }
       case "play": {
         const p = artifact.play ?? {};

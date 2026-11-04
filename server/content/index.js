@@ -47,10 +47,17 @@ export async function getKit(topicId, { generate = true, trace } = {}) {
   const fileKit = kitFromFile(topic);
   if (fileKit) return fileKit;
   if (miniKits.has(topicId)) return miniKits.get(topicId);
+  // round 7 F (QA D22): a read-only miss is remembered briefly, so a parent page that names many skills of a topic with
+  // no kit does not ask the cache table once per skill (each a database round trip)
+  if (!generate && (miniKitMiss.get(topicId) ?? 0) > Date.now()) return null;
   const kit = (await cachedMiniKit(topic)) ?? (generate ? await buildMiniKit(topic, { trace }) : null);
-  if (kit) miniKits.set(topicId, kit);
+  if (kit) { miniKits.set(topicId, kit); miniKitMiss.delete(topicId); }
+  else if (!generate) miniKitMiss.set(topicId, Date.now() + MINIKIT_MISS_MS);
   return kit;
 }
+/** How long a read-only mini-kit miss is remembered (a kit built meanwhile is found by the next read after this). */
+export const MINIKIT_MISS_MS = 60_000;
+const miniKitMiss = new Map();
 
 /** Pin the kit a lesson starts on: kept in memory and written once to asset_cache, keyed by content hash. */
 export async function pinKit(kit) {
