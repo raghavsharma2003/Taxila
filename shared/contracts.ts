@@ -171,7 +171,8 @@ export interface UiDirectives {
    * The Later list as the child's screen shows it (PIPELINE A6 brain-later-list-visible): every parked question or share
    * of THIS lesson, open ones first. A tap on an open entry sends `chipId = "later:<id>"` (the child asks for it now).
    * `text` is the parked topic (≤ 60 characters, server-written; never the child's off-task words beyond the topic).
-   * Absent = unchanged since the last turn; [] = empty.
+   * Sent on every turn that has entries to show: open and due ones, and a returned one for 2 turns after it came back.
+   * Absent = nothing to show (clear the list). It is never "unchanged since the last turn" (round 7, E App 2026-11-04).
    */
   later?: LaterEntryUi[];
   /**
@@ -198,12 +199,13 @@ export type SteerId =
   | "steer:harder"      // a harder one
   | "steer:easier"      // an easier one
   | "steer:skip"        // skip this question
+  | "steer:else"        // talk about something else ("Kuch aur"): the change-topic request
   | "steer:wrap2"       // wrap up in 2 minutes (decision D5)
   | "steer:break"       // a short break (mic paused, resume where we were; D5)
   | "steer:stop";       // stop for today (ends the lesson, not the day; D5)
 export const STEER_IDS: readonly SteerId[] = ["steer:replay", "steer:slower", "steer:another", "steer:example", "steer:story",
   "steer:picture", "steer:animation", "steer:game", "steer:hindi", "steer:english", "steer:harder", "steer:easier", "steer:skip",
-  "steer:wrap2", "steer:break", "steer:stop"];
+  "steer:else", "steer:wrap2", "steer:break", "steer:stop"];
 /** One steer chip. `label` is server-written in the lesson language (≤ 24 chars); `icon` is a hint the App may map. */
 export interface SteerChip { id: SteerId; label: string; icon?: string }
 /** One Later entry on screen (the server's s.later, conversation/policy.js parkEntry). */
@@ -545,7 +547,7 @@ export interface ChildMapSkill {
 }
 export interface ChildMapResponse {
   mode: "garden" | "sky"; hidden: boolean;
-  subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean;
+  subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean; school?: boolean;
     secure: number; total: number; topics: { id: string; title: string; skills: ChildMapSkill[] }[] }[] }[];
   /** Flat list (src/child/api.ts reads `skills`). */
   skills: ChildMapSkill[];
@@ -613,3 +615,31 @@ export type HostToModule =
   | { type: "reset" };
 
 export interface ModuleEvent { moduleId: string; engine: string; type: ModuleToHost["type"]; name?: string; data?: unknown; at: number }
+
+// ───────────────────────────── learner view (round 7 F item 4; server/learner/view.js; F Learning patch to-brain/003) ─────────────────────────────
+/** The child's ability on a subject's core strand, GE scale (class C runs GE C-1 .. C). */
+export interface StrandTheta {
+  strand: string; mu: number; sd: number; nObs: number;
+  /** what item selection uses: mu once nObs >= 2, else null (keep the class default C - 0.5) */
+  value: number | null;
+}
+export interface WeakFlag { weak: boolean; skills: string[]; reasons: ("topic" | "prereq" | "theta")[] }
+export interface MinutesLeft {
+  /** the family's daily limit / lesson hours apply (child_controls.limits_on, or TAXILA_DAY_LIMITS=on) */
+  limitsOn: boolean;
+  /** minutes left today under the limits; null when limits are off */
+  today: number | null;
+  /** today's planned live-lesson slot length (Conductor), or null */
+  slot: number | null;
+  by: "cap" | "hours" | null;
+  /** when `today` runs out (ISO); the mid-lesson wrap (D5) finishes the question after this, then wraps */
+  deadlineAt: string | null;
+}
+export interface LearnerView {
+  topicId: string; subject: string;
+  theta: StrandTheta | null;
+  thetas: Record<string, StrandTheta>;
+  weak: WeakFlag;
+  minutesLeft: MinutesLeft;
+}
+/** GET /api/child/map chapters also carry `school?: boolean`: the chapter the parent said school is on (round 7 F item 2). */

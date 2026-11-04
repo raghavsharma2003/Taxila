@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
+import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -21,11 +21,12 @@ import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNo
 import { fallbackLead } from "../conversation/fallback-lead.js";
 // r4-latency: the TTS part split (part 0 = the first sentence the child hears)
 import { splitSentences } from "../voice/sentences.js";
+import { bracketSlip, sayBrackets } from "./brackets.js";
 import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
-const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword"]);
+const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword", "notheard", "bracket", "negates", "gameclaim"]);
 // round 3 fix (experience B10 / B2): her words never name a screen part by its internal name. The review heard "Chips mein
 // chuno: keep going, short break, ya stop for today" (c4-10) and "bar1 ke 4 parts", "bar2 ko … kijiye" over strips labelled
 // A and B (3 times): the child sees buttons and strips A / B, never "chips" or "bar1". PURE.
@@ -69,11 +70,39 @@ export function floorContentOf(item) {
 
 /** A child's words on their way to a model: direct identifiers masked (scrubPii; decision scrub-pii-cued). */
 export const scrubbed = (t) => scrubPii(t).text;
+
+// round 7 (main's hybrid-pilot judgement #4): "tumhara answer mujhe clearly sunai nahi diya" said to a heard "8"
+const NOT_HEARD = /\b(?:(?:clearly|theek\s+se|sahi\s+se|thik\s+se)\s+)?(?:sunai\s+nahi\s+(?:diya|di|de\s+raha|aaya)|nahi\s+sun(?:a|i|\s+paayi|\s+paaya|\s+payi)|awaaz\s+nahi\s+aayi|(?:i\s+)?(?:couldn'?t|could\s+not|didn'?t|did\s+not)\s+(?:hear|catch)\s+(?:you|that|it|your)|(?:couldn'?t|could\s+not)\s+make\s+(?:it|that)\s+out)\b|सुनाई\s+नहीं/i;
+/** Does her line claim she did not hear them? */
+export const claimsNotHeard = (t) => NOT_HEARD.test(String(t ?? ""));
+/** Her line with every sentence that claims she did not hear them dropped (whole sentences, never letters). */
+// round 7 (main's hybrid-pilot judgement #6): "Rectangle ki sides kaise jodogi?" (her own how-question, no key) then "4" got
+// "4 nahi—": a verdict on an answer nothing graded. Their short answer negated in her line is caught on an ungraded turn.
+const escRe = (x) => String(x).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const negationOf = (said) => new RegExp(`(?<![\\p{L}\\p{N}])${escRe(said)}\\s+(?:nahi|nahin|nhi|not|galat|wrong)(?![\\p{L}])\\s*[—–,.:;-]?\\s*`, "iu");
+/** Does her line negate the child's short answer ("4 nahi")? */
+export function negatesAnswer(text, childText) {
+  const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  if (!said || said.split(" ").length > 3) return false;
+  return negationOf(said).test(String(text ?? ""));
+}
+/** Her line with the negation of their answer taken out ("Riya, 4 nahi—rectangle mein…" → "Riya, rectangle mein…"). */
+export function withoutNegation(text, childText) {
+  const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  if (!said) return String(text ?? "");
+  return String(text ?? "").replace(negationOf(said), "").replace(/^\s*([,—–-]\s*)/, "").trim();
+}
+// round 7 (main's hybrid-pilot judgement #11): with no game on the screen, a game never acts ("Game ne 3 ko pehli side maana")
+const GAME_ACTS = /\b(?:game|khel)\s+ne\b|\b(?:game|khel)\s+(?:mein|me|par|pe)\s+(?:dekho|dekhiye|tap|click|drag)\b|\bthe\s+game\s+(?:shows?|showed|counted|counts|took|says|said|marked|gave)\b|\bin\s+the\s+game\s+on\s+the\s+screen\b/i;
+/** Does her line say a game did or showed something? */
+export const gameActs = (t) => GAME_ACTS.test(String(t ?? ""));
+export const withoutGameActs = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !gameActs(x)).join("").trim();
+export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
 
 /** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
-export const replyDeps = { chat };
+export const replyDeps = { chat, chatStream };
 
 /**
  * round 5 (sim lab p43, main safety review): do the CHILD'S OWN WORDS trip the content filter? The reply prompt carries the
@@ -454,17 +483,24 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
  */
 /** r5-latency: the reply lane's hedge point (~p95 of taxila-fast replies, n = 86, 2026-10-14); 0 turns it off. */
 export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
-export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true }) {
+export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
   const lang = state.ctx.lang;
   // A diagnostic's options are content read aloud, so they do not count against the turn length.
-  const max = REPLY_MAX_WORDS[state.ctx.ageBand] + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
+  // round 7 A8: "chhota bolo" (the short method) lowers the long-reply cap for the rest of the lesson
+  const max = (state.methods?.includes("short") ? Math.min(25, REPLY_MAX_WORDS[state.ctx.ageBand]) : REPLY_MAX_WORDS[state.ctx.ageBand])
+    + (item?.diagnostic ? words(item.options.map((o) => o.text).join(" ")) : 0);
   const guardable = item && state.hintLevel < 4 && state.pendingWhy !== item.id;
   const posingTurn = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
   const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
+  // round 7 (judgement #4): words were heard this turn (a letter or a digit), and the move is not the unclear-line repair
+  const heardWords = /[\p{L}\p{N}]/u.test(String(childText ?? "")) && state.lastMove?.request !== "unclear";
+  // round 7 (judgement #11): is a game really up (a play piece or a mounted activity)? Only then may a game act
+  // (the move's visual "game" is what was ASKED for, not what is up: turn.js's askTruth says which)
+  const gameUp = !!(state.playOn || module?.id || state.module?.id);
   // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
   const checkin = state.lastMove?.checkin ?? null;
   const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
@@ -575,6 +611,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     leaksStage(t) && "stage",
     namesUiPart(own(t)) && "uiword",
     saysCantShow(t) && "cantshow",
+    // round 7 (main's hybrid-pilot judgement #4): never a claim that she did not hear words that were heard
+    heardWords && claimsNotHeard(t) && "notheard",
+    // round 7 (judgement #6): no verdict on what nothing graded
+    ["ungraded", "unverified", "attempt"].includes(verdict) && negatesAnswer(t, childText) && "negates",
+    // round 7 (judgement #5): a bracketed step of the lesson's content said so it is misheard ("2 times 50 plus 30")
+    bracketSlip(t, state.lastContent ?? []) && "bracket",
+    !gameUp && gameActs(t) && "gameclaim",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
@@ -657,6 +700,41 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
     return blocked(probe);
   };
+  // round 7 A5 (PIPELINE §A Brain item 10, joint with Voice): the STREAMED reply. The one-call draft streams; the moment its
+  // first sentence is complete it is put through lockFirstSentence (every per-sentence guard on its own, and `s1 + the
+  // pinned question` passes every guard of the whole turn) and, locked, handed to onClause: TTS starts while the rest is
+  // written. The whole draft then takes every guard as before; a final reply that no longer starts with s1 becomes the
+  // lock's own fallback (s1 + the question), so a sent clause is never withdrawn. The lead-slot draft streams the same way
+  // (its lead's first sentence). Never early on a closing, check-in, why, thinking, break or diagnostic turn, or a turn with
+  // no pinned question (those send their clauses after the whole guard). Kill switch TAXILA_R7_CLAUSE_STREAM=off.
+  const clauseOn = typeof onClause === "function" && clauseStreamOn();
+  const clause = { sent: null, why: null };
+  const streamAsk = async (msgs) => {
+    let tried = false;
+    const onDelta = (_d, text) => {
+      if (tried) return;
+      const s1 = firstClosedSentence(text);
+      if (!s1) return;
+      tried = true;
+      const lock = lockFirstSentence({ reply: text, s1, askEnd: pinned ? askEnd : null, problems, spoken: true, confirmNeeded: G && verdict === "correct", t0: replyT0,
+        closing: CLOSING_MOVES.has(kindNow) || !!checkin || forgetSafety || whyProbe || thinkingWait || restBreak || !!item?.diagnostic });
+      if (!lock.locked) { clause.why = lock.why; return; }
+      // a post-fix the caller makes to her whole line (turn.js: self-gender, the affirmation opener) must leave s1 as it is
+      if (clauseFix && clauseFix(lock.s1) !== lock.s1) { clause.why = "s1_postfix"; return; }
+      clause.sent = lock;
+      try { onClause({ i: 0, text: lock.s1 }); } catch (e) { console.warn("[lesson] onClause threw:", e?.message); }
+    };
+    try {
+      return (await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
+        ...(overflow ? {} : { overflow: false }) })).text.trim();
+    } catch (e) {
+      // a content-filter block is the safeguarding path below, exactly as on the one-call path
+      if (isContentFilter(e)) throw e;
+      // a stream that died after s1 was sent: the lock's fallback (s1 + the question) passes every guard
+      if (clause.sent) return clause.sent.fallback;
+      return ask(msgs);
+    }
+  };
   // round 2 (conversation): the LEAD SLOT. A turn that answers a request before the card question, or puts the same
   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
@@ -669,7 +747,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const leadCall = async (why = null, draft = null) => {
     const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
       first: bridge, confirm: R3 && verdict === "correct" && !checkin, noAnswer: R3 && bridge && (wordsVerdict === "unverified" || wordsVerdict === "attempt") }) }];
-    const raw = await ask([...messages, ...extra]);
+    const raw = clauseOn && !draft ? await streamAsk([...messages, ...extra]) : await ask([...messages, ...extra]);
     const lead = cleanLead(raw, askEnd, leadMax);
     return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])], shortLead ? { min: LEAD_MIN_FIRST } : undefined) ? composeTurn(lead, askEnd) : null;
   };
@@ -683,7 +761,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
-    reply ??= await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages);
+    const oneCall = lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages;
+    reply ??= clauseOn ? await streamAsk(oneCall) : await ask(oneCall);
   } catch (e) {
     // round 4 (stream 4A, 2026-10-10): a block on the COMPLETION (HTTP 200, finish_reason content_filter: the filter judged
     // the model's own words, not the child's) gets ONE fresh reply before the turn fails closed. In context, "explain it
@@ -823,6 +902,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
+      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict: credit what fits ('haan, 4 sides') or ask what they mean",
+      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",
+      found.includes("gameclaim") && "it says a game did or showed something, but no game is on the screen — it is a spoken game between you two: say what YOU and THEY do",
+      found.includes("bracket") && "it says a bracketed step so it is misheard (like '2 times 50 plus 30' for 2 × (50 + 30)) — say the bracket first, then the multiple ('50 plus 30, that is 80, times 2')",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -919,6 +1002,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("uiword")) { reply = plainUiWords(reply, lang); guard.repaired = true; }
       if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
+      if (found.includes("notheard")) { reply = keepOr(withoutNotHeard(reply)); guard.replaced = true; }
+      if (found.includes("negates")) { reply = keepOr(withoutNegation(reply, childText)); guard.repaired = true; }
+      if (found.includes("bracket")) { reply = sayBrackets(reply, state.lastContent ?? [], lang); guard.repaired = true; }
+      if (found.includes("gameclaim")) { reply = keepOr(withoutGameActs(reply)); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -965,6 +1052,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (soft.includes("stage")) a = stripStage(a) || a;
           if (soft.includes("uiword")) a = plainUiWords(a, lang);
           if (soft.includes("cantshow")) a = stripCantShow(a) || a;
+          if (soft.includes("notheard")) a = withoutNotHeard(a) || a;
+          if (soft.includes("negates")) a = withoutNegation(a, childText) || a;
+          if (soft.includes("bracket")) a = sayBrackets(a, state.lastContent ?? [], lang);
+          if (soft.includes("gameclaim")) a = withoutGameActs(a) || a;
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
@@ -1033,9 +1124,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // 14.4 (QA TEST a9c3136d t8, 9ad86661): the goodbye strip took her only sentence ("…padhai rok dete hain—…?"), the full-turn
   // retry raised self-harm again and was refused, and the child got "" and a module tray. A turn is never empty: the fixed line.
   if (!String(reply ?? "").trim()) { reply = fallbackReply(state, item); guard.replaced = true; guard.emptied = true; }
+  // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
+  if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;
+  if (clauseOn) guard.clause = clause.sent ? { sent: true, s1Ms: clause.sent.ms } : { sent: false, ...(clause.why ? { why: clause.why } : {}) };
   if (early) {
     const kept = early.locked ? String(reply).trim().startsWith(early.s1) : false;
     guard.early = { mode: firstSentenceMode(), locked: early.locked, ...(early.why ? { why: early.why } : {}), ...(early.locked ? { kept, lockedMs: early.ms } : {}),
@@ -1134,12 +1228,27 @@ export function speakNotWrite(reply, askEnd = null) {
 
 // ───────────── r4-latency: the first TTS sentence, locked early (TAXILA_TTS_FIRST_SENTENCE) ─────────────
 
+/**
+ * PURE. round 7 A5: the first sentence of a draft still being streamed, once it is closed: an end mark (. ! ? । …) followed by
+ * a space and more text, the same ends server/voice/sentences.js splits on (never "3.5", "Rs. 5", an initial). null until then.
+ */
+export function firstClosedSentence(text) {
+  const t = String(text ?? "").replace(/\s+/g, " ").replace(/^ /, "");
+  for (const m of t.matchAll(/([.!?।॥…]+["'”’)\]]*) (?=\S)/g)) {
+    const word = t.slice(0, m.index).split(" ").pop() ?? "";
+    if (m[1] === "." && (/^(rs|dr|mr|mrs|ms|no|st|vs|etc|e\.g|i\.e)$/i.test(word) || /^[A-Z]$/.test(word))) continue;
+    return t.slice(0, m.index + m[1].length).trim();
+  }
+  return null;
+}
+/** round 7 A5: the streamed, clause-guarded reply (on unless TAXILA_R7_CLAUSE_STREAM=off; only a client that asks streams). */
+export const clauseStreamOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_CLAUSE_STREAM ?? ""));
 /** off (default) | shadow (lock decided and logged on guard.early; behaviour unchanged). The live mode is not built yet. */
 export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String(env.TAXILA_TTS_FIRST_SENTENCE ?? "")) ? "shadow" : "off");
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "invented", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "invented", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow", "notheard", "bracket", "negates", "gameclaim",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**
@@ -1150,13 +1259,14 @@ export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "d
  * minimal turn joinAsk(s1, question) fails no guard at all (so a final reply that starts with s1 always exists).
  * @returns {{ locked: true, s1: string, fallback: string, ms: number } | { locked: false, why: string }}
  */
-export function lockFirstSentence({ reply, askEnd, problems, closing, spoken, confirmNeeded, t0 = performance.now() }) {
+export function lockFirstSentence({ reply, s1: closed = null, askEnd, problems, closing, spoken, confirmNeeded, t0 = performance.now() }) {
   const no = (why) => ({ locked: false, why });
   if (!spoken) return no("text_lane");
   if (closing) return no("turn_kind");
   if (!askEnd) return no("no_pinned_question");
-  const parts = splitSentences(String(reply ?? "").trim());
-  if (parts.length < 2) return no("one_sentence");
+  // round 7 A5: a streamed draft hands its first CLOSED sentence (firstClosedSentence), the rest still being written
+  const parts = closed ? [closed] : splitSentences(String(reply ?? "").trim());
+  if (!closed && parts.length < 2) return no("one_sentence");
   const s1 = parts[0].trim();
   if (/[?？]/.test(s1)) return no("s1_asks");
   if (SCREEN_SENTENCE.test(s1) || namesUiPart(s1)) return no("s1_screen");

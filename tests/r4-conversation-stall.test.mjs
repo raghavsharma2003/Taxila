@@ -72,9 +72,10 @@ test("bareAck: a bare acknowledgement, never content (lever 5's trigger)", async
   for (const t of ["haan ready hoon", "liquid", "haan, evaporation", "pata nahi", "samajh nahi aaya", "ok 4", "ek min... haan bolo"]) assert.equal(bareAck(t), false, t);
 });
 
-test("lever 5 (TAXILA_ACK_CLOSE): off by default; on, a bare okay to a teaching question holds the step ONCE, then it advances", async () => {
+test("lever 5 (TAXILA_ACK_CLOSE): on by default since round 7; a bare okay to a teaching question holds the step ONCE, then it advances; off restores the old flow", async () => {
   const { ackCloseOn } = await import("../server/director/state.js");
-  assert.equal(ackCloseOn({}), false, "default off");
+  assert.equal(ackCloseOn({}), true, "default on (round 7 A6, PIPELINE §A Brain item 3)");
+  assert.equal(ackCloseOn({ TAXILA_ACK_CLOSE: "off" }), false);
   const was = process.env.TAXILA_ACK_CLOSE;
   try {
     const s0 = initLessonState({ topicId: EVS.topicId, kit: EVS, ctx: { ...CTX, lang: "hinglish", classLevel: 5, ageBand: "10-15" }, seed: 7, now: 0 });
@@ -83,7 +84,7 @@ test("lever 5 (TAXILA_ACK_CLOSE): off by default; on, a bare okay to a teaching 
     assert.equal(r.move.kind, "hook");
     const withAsk = (rr, q) => ({ ...rr, state: { ...rr.state, recent: [...(rr.state.recent ?? []), { who: "teacher", text: q }] } });
     const hookQ = "Kitchen mein garam chai se bhaap uthti hai. Aapke hisaab se woh bhaap thandi hokar kis form mein badlegi?";
-    delete process.env.TAXILA_ACK_CLOSE;
+    process.env.TAXILA_ACK_CLOSE = "off";
     const off = turn(withAsk(r, hookQ), NE, "ok");
     assert.notEqual(off.move.kind, "reteach", "off: the next teach step as before");
     process.env.TAXILA_ACK_CLOSE = "on";

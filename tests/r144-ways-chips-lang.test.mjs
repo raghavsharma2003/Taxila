@@ -11,6 +11,9 @@ import { findItem } from "../server/director/items.js";
 import { requestOf } from "../server/director/requests.js";
 import { languageRule } from "../server/compiler/compile.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks; the ways-in chips this file checks stay
+// behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_PARK_TOPIC = "off";
 
 const K = kit();
 const NE = cls("no_evidence");

@@ -5,6 +5,9 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_PARK_TOPIC = "off";
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -106,11 +109,20 @@ test("F3 (census 3437b744 t9/13/14): a faded step's question card carries the pr
   const kit = kitFromFile(getTopic("c9-maths-ch08-t01"));
   const its = kit.workedExample.steps.map((_, i) => fadeItem(kit, { index: i })).filter(Boolean);
   assert.ok(its.length, "the census topic's faded steps");
-  for (const it of its) for (const p of [it.prompt_en, it.prompt_hi]) {
-    assert.match(p, /7, 11, 15/, p);
-    assert.match(p, /_{3}/, "the gap");
-    assert.ok(p.length <= ASK_MAX, p);
-    assert.equal(askText(p), p, "the card shows it whole (askText keeps the tail, which would drop a leading problem)");
+  // round 7 (main's hybrid-pilot judgement, defect 1): what she speaks from a card is whole and in the lesson language. The
+  // kits' problems are English, so the English card carries the problem whole when it fits, never clipped; the Hindi /
+  // Hinglish card is the gap line alone (she says the problem in her own words; the board keeps it: fadeBoard)
+  const { fadeBoard } = await import("../server/director/fading.js");
+  for (const it of its) {
+    for (const p of [it.prompt_en, it.prompt_hi]) {
+      assert.match(p, /_{3}/, "the gap");
+      assert.ok(p.length <= ASK_MAX, p);
+      assert.equal(askText(p), p, "the card shows it whole (askText keeps the tail, which would drop a leading problem)");
+      assert.doesNotMatch(p, /\p{L}…/u, "never cut mid-sentence (a sequence's own \", …\" stays)");
+    }
+    assert.match(it.prompt_en, /7, 11, 15/, it.prompt_en);
+    assert.doesNotMatch(it.prompt_hi, /Find recursive/, "no English problem sentence on the Hinglish card");
+    assert.match(fadeBoard(kit.workedExample, Number(it.id.split(":")[1])).value, /7, 11, 15/, "the board keeps the problem");
   }
 });
 

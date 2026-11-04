@@ -1,0 +1,321 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj number line par fractions dekhenge—cricket pitch ke parts jaise. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 875
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ko 1 poora distance socho; agar use 2 barabar parts mein baantein, har part kya hoga? End mein tum Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1423,
+   "replyReadyMs": 2298
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 775
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 ko 5 equal gaps mein baantoge, har gap ek-fifth hoga. Cricket pitch ka one-fifth mark kahan aayega?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1901,
+   "replyReadyMs": 2676,
+   "guard": [
+    "screen",
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 934
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, one-fifth ka pehla mark 0 ke baad hota hai; 2/5 ke liye 0 se do equal gaps count karte hain. Agla step dikhau?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2982,
+   "replyReadyMs": 3916,
+   "guard": [
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 650
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, question hai: 0 se 1 tak 2/5 mark karna hai. Neeche ka 5 batata hai 5 equal gaps; upar ka 2, do gaps count karwata hai.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1173,
+   "replyReadyMs": 1823
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 686
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Ab ek quick practice karte hain—number line par pehle total equal parts count karna, phir required parts count karna. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "practice",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3024,
+   "replyReadyMs": 3710
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1199
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 6 likha, lekin yahan road ko 2 barabar parts mein baanta gaya hai. Pehle total equal parts dobara count karo. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 842,
+   "replyReadyMs": 2041
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 810
+  },
+  {
+   "who": "teacher",
+   "text": "Example: cricket pitch ko 4 barabar parts mein baanto; beech ka mark 2 parts hota hai. Ab ghar se dukaan wale number line ka answer try karo. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2389,
+   "replyReadyMs": 3199,
+   "guard": [
+    "long"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1223
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak total kitne barabar parts bane hain, pehle sirf unhe count karo. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "practice",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1091,
+   "replyReadyMs": 2314
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 799
+  },
+  {
+   "who": "teacher",
+   "text": "Is baar tumne 8 count kiya; galti total gaps ko count karne mein hui. 0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "move": "practice",
+   "card": "0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "replyMs": 1025,
+   "replyReadyMs": 1824
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1205
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum keh rahi ho ki ab rukna hai. Hum continue kar sakte hain, chhota break le sakte hain, ya aaj ke liye stop kar sakte hain—kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2056,
+   "replyReadyMs": 3261,
+   "guard": [
+    "praise"
+   ]
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket pitch jaisi line par fractions ki jagah dhoondhenge. Ghar se chai ki dukaan tak aadhi doori par kaunsa number hoga?",
+   "move": "hook",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1467
+  },
+  {
+   "who": "teacher",
+   "text": "Haan! Ab ghar se chai ki dukaan tak do barabar hisson mein socho. Beech wale mark par kaunsa number hoga?",
+   "move": "probe",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2169,
+   "replyReadyMs": 3636
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Ghar se dukaan tak do barabar kadam socho: ek kadam beech tak, doosra dukaan tak. Do kadmon mein se ek kadam chalne par aadhi doori hui; aadhe ko fraction mein kya bolte hain?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3047,
+   "replyReadyMs": 3048
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1394
+  },
+  {
+   "who": "teacher",
+   "text": "4 nahi; do barabar kadmon mein pehla kadam aadhi doori hai, jise one by two kehte hain. Cricket pitch ko do barabar hisson mein socho: ek hissa chalne par poori pitch ka kitna hissa chala?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2924,
+   "replyReadyMs": 4318
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1114
+  },
+  {
+   "who": "teacher",
+   "text": "Kyunki poori pitch ko do barabar gaps mein baanta hai. Beech tak tum ek gap chale, isliye poori pitch ka aadha, ya one by two, chale. Agar chaar barabar gaps hote, toh ek gap ka hissa kya hota?",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2501,
+   "replyReadyMs": 3615
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1004
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahe ho samajh gaya. Chalo ek halka sa check: line mein aath barabar gaps hon, toh ek gap wala mark zero ke paas hoga ya one ke paas?",
+   "move": "probe",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 4014,
+   "replyReadyMs": 5018
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1510
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 6 kaha; yahan jagah batani hai, number nahi. Cricket pitch ko aath barabar gaps mein socho: pehla gap chalne par tum shuru se bas thoda aage hoge. Kya tum zero ke paas hoge ya one ke paas?",
+   "move": "reteach",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 2991,
+   "replyReadyMs": 4501
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 569
+  },
+  {
+   "who": "teacher",
+   "text": "Example: 10 toffees mein 1 toffee lo, toh woh 10 ke paas nahi, 0 ke paas hogi. Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "move": "reteach",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 7474,
+   "replyReadyMs": 8043,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1488
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai. Abhi usi chhote sawaal par hain: aath barabar gaps mein pehla gap chalne par tum zero ke paas hoge ya one ke paas?",
+   "move": "probe",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 2120,
+   "replyReadyMs": 3608
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1144
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 kaha; yeh gaps ki ginti hai, jagah nahi. Socho, cricket pitch par aath barabar kadmon mein sirf pehla kadam chale: shuru ke paas hoge, ya pitch ke end ke paas?",
+   "move": "reteach",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 2927,
+   "replyReadyMs": 4071
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 747
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, aaj yahin rukte hain. Humne zero aur one ke beech fraction ki jagah dhoondhne ki practice ki; gaps aur jagah ka fark abhi aur practice maangta hai. Bye!",
+   "move": "wrap",
+   "card": "Andaaza lagao: 0 se 1 ki line par 1/8, 0 ke paas hoga ya 1 ke paas?",
+   "replyMs": 2125,
+   "replyReadyMs": 2872
+  }
+ ]
+}

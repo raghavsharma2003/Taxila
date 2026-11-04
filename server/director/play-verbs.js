@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+
 // The verb her words use while a play piece is on the stage, derived from the piece's MODE in code, never left to the reply
 // model's free text (G2 Khand finding, 2026-10-10: in the class-5 "views" lesson the stage carried a BUILD task and she
 // said "top view chuniye": "choose" is the card question's verb, and the card is folded away in play mode). One entry per
@@ -33,8 +35,29 @@ export const PLAY_ACTS = Object.freeze({
     pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
 });
 
-/** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */
-export const playActOf = (family, mode) => PLAY_ACTS[family]?.[mode] ?? null;
+// Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
+// { "<family>": { "<mode>": { "act": "<closed act kind>", "hi": "<Hinglish task verb>", "en": "<English task verb>" } } }.
+// So Games can ship a new mode without a Brain edit. The code table wins where both have an entry; an entry missing any of
+// act / hi / en is skipped (no verb note then, never a guessed verb); a missing or broken file is an empty table.
+const VERBS_FILE = new URL("../../data/play/verbs.json", import.meta.url);
+/** PURE. The valid entries of a parsed verbs file. */
+export function verbsFrom(raw) {
+  const out = {};
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return out;
+  for (const [family, modes] of Object.entries(raw)) {
+    if (!modes || typeof modes !== "object" || Array.isArray(modes)) continue;
+    for (const [mode, a] of Object.entries(modes)) {
+      if (![a?.act, a?.hi, a?.en].every((x) => typeof x === "string" && x.trim())) continue;
+      (out[family] ??= {})[mode] = Object.freeze({ act: a.act, hi: a.hi, en: a.en });
+    }
+  }
+  return out;
+}
+const fileVerbs = () => { try { return verbsFrom(JSON.parse(readFileSync(VERBS_FILE, "utf8"))); } catch { return {}; } };
+export const PLAY_ACTS_DATA = Object.freeze(fileVerbs());
+
+/** The act of a family / mode, or null when neither table has one (then no verb note is given: never a guessed verb). */
+export const playActOf = (family, mode) => PLAY_ACTS[family]?.[mode] ?? PLAY_ACTS_DATA[family]?.[mode] ?? null;
 
 /**
  * PURE. The last-section check while a play piece is up (compile.js lastParts): the card is folded away, so no card

@@ -12,6 +12,9 @@ import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+process.env.TAXILA_R7_BYE_CHECKIN = "off";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const RUN = join(ROOT, "evals/teacher-brain/replay/run.mjs");
