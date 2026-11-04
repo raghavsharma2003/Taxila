@@ -1,0 +1,176 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj rectangles, squares aur polygons ka perimeter padhenge—cricket ground ki boundary jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1023
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya! Cricket ground ki boundary ke chaaron taraf chalna perimeter, yani poori outer distance, hoti hai. Tum boundary naapogi ya area?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 989,
+   "replyReadyMs": 2012
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 746
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, dheere chalenge. Rectangle ki 4 sides hoti hain: 2 length aur 2 breadth. Ab batao, sabhi sides jodne par kya milega?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1925,
+   "replyReadyMs": 2671,
+   "guard": [
+    "level"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1095
+  },
+  {
+   "who": "teacher",
+   "text": "Rectangle mein do length aur do breadth hoti hain. Ab in chaaron ko jodne ka rule bolo?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1669,
+   "replyReadyMs": 2764,
+   "guard": [
+    "affirms"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 790
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, picture ko words mein dekho: rectangle ki do lambi sides 50 m aur do chhoti sides 30 m hain.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1938,
+   "replyReadyMs": 2728,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1099
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Park ki ek round boundary hi perimeter hai. 50 m aur 30 m jodne se pehle, kaunsa number length hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 984,
+   "replyReadyMs": 2083
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 953
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Is part ke baad perimeter par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1290,
+   "replyReadyMs": 2243
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 917
+  },
+  {
+   "who": "teacher",
+   "text": "Ek round ka perimeter 2 × (50 + 30) = 160 m bana. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2561,
+   "replyReadyMs": 3478,
+   "guard": [
+    "underived"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1139
+  },
+  {
+   "who": "teacher",
+   "text": "50 aur 30 ko jodne par 80, aur do baar lene par 160 m bana. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1855,
+   "replyReadyMs": 2994,
+   "guard": [
+    "affirms",
+    "underived"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1572
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, pehle tum khud karo. 160 ko 3 se guna karke khaali jagah bharo: 3 guna 160 kitna?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 927,
+   "replyReadyMs": 2499
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1463
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho. Tum jaari rakh sakti ho, chhota break le sakti ho, ya aaj ke liye band kar sakti ho.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1170,
+   "replyReadyMs": 2633
+  }
+ ],
+ "agent": []
+}
