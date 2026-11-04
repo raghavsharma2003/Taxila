@@ -18,12 +18,13 @@ import type { AvatarVoiceEvent, UiDirectives } from "../../shared/contracts.ts";
 import type { Display, TeacherAffectUi } from "../../shared/relational.ts";
 import type { BandKey, Emotion } from "./behaviour.ts";
 
-export type GazeTarget = "tray" | "board" | "child";
+/** "start": the home's Start button (round 7 face-home-daily-greeting: she glances at it once after greeting). */
+export type GazeTarget = "tray" | "board" | "child" | "start";
 
 export type FaceCue =
   /** A display for her next onset; the face maps it at its own band (faceAffectOf). */
   | { kind: "affect"; display: Display; seq: number }
-  | { kind: "gaze"; target: GazeTarget; holdMs: number; reason: "studio_reveal" | "cue" | "board"; seq: number }
+  | { kind: "gaze"; target: GazeTarget; holdMs: number; reason: "studio_reveal" | "cue" | "board" | "greeting"; seq: number }
   | { kind: "voice"; event: AvatarVoiceEvent; seq: number };
 
 /** RELATIONAL-OS §7.2: display → the face's emotion and intensity. null = no expression (the warm rest pose). */
@@ -79,7 +80,7 @@ export function faceUiOf(ui: UiDirectives | Record<string, unknown> | null | und
 const SHOWN_STATES: ReadonlySet<string> = new Set(["revealed", "in_use", "fallback_shown"]);
 
 /** How long her eyes stay on the work before they come back to the child (a look, not a stare). */
-export const GAZE_HOLD_MS = { studio_reveal: 1600, cue: 1200, board: 900 } as const;
+export const GAZE_HOLD_MS = { studio_reveal: 1600, cue: 1200, board: 900, greeting: 1100 } as const;
 
 /**
  * The per-lesson producer: one turn's face program from that turn's face fields. Deterministic for a given history,
@@ -167,6 +168,7 @@ export function gazeAngles(face: { x: number; y: number; w: number; h: number },
 export const GAZE_SELECTOR: Record<Exclude<GazeTarget, "child">, readonly string[]> = {
   tray: ['[data-testid="studio-stage"]', '[data-testid="tray"]'],
   board: ['[data-testid="studio-stage"][data-kind="whiteboard"]', '[data-testid="board"]', '[data-testid="studio-stage"]', '[data-testid="tray"]'],
+  start: ['[data-testid="start-lesson"]'],
 };
 
 /** The element a gaze target names: the first selector in priority order with a laid-out match, or null. */
