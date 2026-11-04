@@ -42,7 +42,23 @@ test("the owner-2 stall: the same card is never pinned past the cap, and a back 
   assert.ok(laddered, `the back moved down the ladder (kind ${r.move.kind}, chips ${r.ui?.chips?.length ?? 0})`);
   // the model's guess ("slower") on "ek min... haan bolo" never holds the card past the cap
   r = turn(r, withReq("slower", "note"), "ek min... haan bolo");
-  assert.ok(!(r.move.itemId === item && askOf(r) === ask0 && (r.state.pinRun ?? 0) > LIMITS.cardMax), `pinned ${r.state.pinRun} turns`);
+  // round 7 S3 (main's director2 decision: a posed card stays live until answered, two misses plus help, or skip): non-answers
+  // alone no longer take the card at the cap; the stall guard lets it go at twice the cap. TAXILA_R7_ONE_LIVE=off: the cap.
+  const cap = /^(off|0|false)$/i.test(String(process.env.TAXILA_R7_ONE_LIVE ?? "")) ? LIMITS.cardMax : LIMITS.cardMax * 2;
+  assert.ok(!(r.move.itemId === item && askOf(r) === ask0 && (r.state.pinRun ?? 0) > cap), `pinned ${r.state.pinRun} turns`);
+  assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= cap, `card cap held (pin ${r.state.pinItem} × ${r.state.pinRun})`);
+  for (let i = 0; i < 3; i++) r = turn(r, withReq("slower", "note"), "ek min... haan bolo");
+  assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= cap, `the stall guard let it go (pin ${r.state.pinItem} × ${r.state.pinRun})`);
+});
+test("TAXILA_R7_ONE_LIVE=off: the owner-2 stall's card cap as before", (t) => {
+  const was = process.env.TAXILA_R7_ONE_LIVE;
+  process.env.TAXILA_R7_ONE_LIVE = "off";
+  t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_ONE_LIVE; else process.env.TAXILA_R7_ONE_LIVE = was; });
+  let r = toPractice();
+  const item = r.move.itemId;
+  r = turn(r, withReq("confused", "p5"), "sorry kya bola? samajh nahi aaya");
+  r = turn(r, withReq("back", "p5"), "mummy bula rahi thi, haan");
+  r = turn(r, withReq("slower", "note"), "ek min... haan bolo");
   assert.ok((r.state.pinItem !== item) || (r.state.pinRun ?? 0) <= LIMITS.cardMax, `card cap held (pin ${r.state.pinItem} × ${r.state.pinRun})`);
 });
 

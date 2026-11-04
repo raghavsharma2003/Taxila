@@ -33,8 +33,17 @@ import {
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
-import { renderWorked } from "./worked.js";
+import { renderWorked, chainOf as chainOfStep } from "./worked.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
+/** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
+export const oneLiveOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_ONE_LIVE ?? ""));
+/** The why of a card's answer, language-free: a faded step's own calculation from the worked example, else null. */
+function whyOf(kit, item) {
+  const we = kit?.workedExample;
+  if (!we || !item?.fade) return null;
+  const i = Number(String(item.id).slice(FADE_PREFIX.length));
+  return chainOfStep(we.steps?.[i]) ?? null;
+}
 export const workedCodeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_WORKED_CODE ?? ""));
 const rendered = (we, o, s) => { if (!workedCodeOn()) return {}; const r = renderWorked(we, { ...o, lang: s.ctx.lang }); return r ? { rendered: r } : {}; };
 import { newTalk, noteChildTurn } from "./talk.js";
@@ -850,6 +859,8 @@ function afterWhy(s, input, item) {
 }
 
 function afterMiss(s, input, item) {
+  // round 7 S3: misses per card (the card stays live until two misses plus help)
+  if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
   const { kit, cls } = input;
   notePace(s, item, false);
   // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
@@ -2015,7 +2026,12 @@ function capPlan(s, input, p) {
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   if (!pins || item.id !== s.activeItemId || s.pinItem !== item.id || (s.pinRun ?? 0) < LIMITS.cardMax) return p;
-  const assert = s.hintLevel >= 2;
+  // round 7 S3 (main's director2 decision: "one live item at a time"): a posed card stays live until it is answered, until two
+  // misses plus help (then its answer and why), or a skip; turns alone never take it away (the 3-turn cap left a card after ONE
+  // miss). A card that gets nothing but non-answers for twice the cap is still let go (the stall guard).
+  const misses = s.misses?.[item.id] ?? 0;
+  if (oneLiveOn() && !(misses >= 2 && s.hintLevel >= 1) && (s.pinRun ?? 0) < LIMITS.cardMax * 2) return p;
+  const assert = oneLiveOn() ? s.hintLevel >= 1 && misses >= 1 : s.hintLevel >= 2;
   if (assert) {
     if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item);
     // ship5 integration (p5 card cap x W1-C re-teach): under the cap the help ladder ends at rung 2-3, so the post-rung-3
@@ -2029,7 +2045,9 @@ function capPlan(s, input, p) {
   const prefix = join(p.lead, assert ? SH.assertAndMove() : SH.leaveForLater());
   const next = s.phase === "warmup" ? nextWarmup(s, input, prefix) : poseNext(s, input, prefix, assert ? isomorphicFor(s, kit, item) ?? undefined : undefined);
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
-  return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave" };
+  return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
+    // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
+    ...(assert && oneLiveOn() ? { gave: { answer: String(item.answer ?? ""), why: whyOf(kit, item) } } : {}) };
 }
 
 /**
@@ -2183,6 +2201,15 @@ export function step(prev, input) {
   // round 7 A8: the kept methods ride on every later move (compile.js renders them in the last section, never shed)
   if (s.methods?.length && !["safeguard", "wrap"].includes(p.kind)) move.methods = [...s.methods];
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
+  // round 7 S3 (director2: "15 pencils" came after the fraction cards with no word between): a card of a new kit skill gets a
+  // bridge first, so the arc reads in the kit's order
+  if (oneLiveOn() && item && !["safeguard", "wrap", "break"].includes(move.kind)) {
+    if (s.lastCardSkill && item.skillId && item.skillId !== s.lastCardSkill && s.lastCardId !== item.id) {
+      move.shape = join("a new kind of question after the last one: first one short line on how it builds on what they just did", move.shape);
+      move.bridge = true;
+    }
+    s.lastCardSkill = item.skillId ?? s.lastCardSkill; s.lastCardId = item.id;
+  }
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
@@ -2192,6 +2219,8 @@ export function step(prev, input) {
   if (p.stuck) move.stuck = true;
   // round 7 S2: the worked part rendered in code (worked.js); brain/say.js speaks these lines after one framing sentence
   if (p.rendered?.length) move.rendered = [...p.rendered];
+  // round 7 S3: the answer of a card let go after two misses plus help, said in code (brain/say.js)
+  if (p.gave?.answer) move.gave = { ...p.gave };
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {

@@ -30,6 +30,10 @@ const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "
 const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.", "Ek udaharan dekho, kadam se kadam.", "Isko ek baar poora karke dekhte hain."],
   english: ["Let's solve one together.", "Here is one, step by step.", "Let's work through one."] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
+const GAVE_LINE = {
+  hinglish: [(a, w) => `Pichhle sawaal ka jawab ${a} tha${w ? `, kyunki ${w}` : ""}.`, (a, w) => `Woh wala: jawab ${a}${w ? `; ${w}` : ""}.`, (a, w) => `Pichhla sawaal: ${w ? `${w}, ` : ""}yaani jawab ${a}.`],
+  english: [(a, w) => `The last one's answer was ${a}${w ? `, because ${w}` : ""}.`, (a, w) => `That one: the answer is ${a}${w ? `; ${w}` : ""}.`, (a, w) => `The last question: ${w ? `${w}, ` : ""}so the answer is ${a}.`],
+};
 const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Hindi mein? Zaroor."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
 const PARK_ACK = { hinglish: [(t) => `${t}: iski baat is part ke baad karenge.`, (t) => `${t} yaad hai, yeh part khatam karke uspar aate hain.`, (t) => `${t}: pakka, thodi der mein uski baat.`],
   english: [(t) => `${t}: we'll talk about it after this part.`, (t) => `${t} — I'll come back to it once this part is done.`, (t) => `${t}: yes, right after this part.`] };
@@ -1359,6 +1363,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (problems(reply).includes("bracket")) reply = sayBrackets(reply, state.lastContent ?? [], lang); // spoken: "50 plus 30, that is 80, times 2"
     if (problems(reply).includes("ignored") && bareNumberSaid != null) reply = `${ignoredLead(bareNumberSaid, lang, state)} ${reply}`;
     guard.workedCode = true;
+  }
+  // round 7 S3: a card let go after two misses plus help has its answer and why said, in code, when her line left them out
+  const gave = state.lastMove?.gave;
+  if (gave?.answer && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
+    reply = `${pickOf(GAVE_LINE[lang === "english" ? "english" : "hinglish"], state)(gave.answer, gave.why)} ${reply}`.trim();
+    guard.gaveAnswer = true;
   }
   // round 7 S1 (main's director2 decision: "guards ENFORCE, a flagged draft never ships"): after the rewrite and every code
   // repair, a line still carrying a truth or teaching problem is replaced by the move's fixed code line (built from the item's

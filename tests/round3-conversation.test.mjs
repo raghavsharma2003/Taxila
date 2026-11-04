@@ -336,7 +336,11 @@ describe("round3 conversation", () => {
     assert.equal(readIntent("ye wala skip karo"), null);
   });
 
-  test("card cap: an ask to hear THIS question again is honoured on the capped turn; their next answer turn leaves it", () => {
+  test("card cap: an ask to hear THIS question again is honoured on the capped turn; their next answer turn leaves it", (t) => {
+    // (round 7 S3 replaced the turn-count cap with "two misses plus help"; this is the earlier cap, behind its kill switch)
+    const was = process.env.TAXILA_R7_ONE_LIVE;
+    process.env.TAXILA_R7_ONE_LIVE = "off";
+    t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_ONE_LIVE; else process.env.TAXILA_R7_ONE_LIVE = was; });
     const capped = (m) => /on the table long enough/.test(m.shape ?? "");
     let r = toPractice();
     while (!capped(r.state.lastMove) && (r.state.pinRun ?? 0) < 3) r = turn(r, cls("no_evidence"));
