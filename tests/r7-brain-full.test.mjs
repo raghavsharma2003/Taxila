@@ -120,4 +120,35 @@ test("#7/#8 (c5 offtopic, c4 steering): no 'button' park; her promises ('yaad ra
   await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: C4, childText: "story", verdict: "ungraded", history: [], ui: r.ui, module: null });
   assert.ok(n >= 1);
 });
+
+test("#5/#6 (c6 steady, c5 stuck, c4 steady): class level held; no answer inside her question; a card's derived number is derived first", async () => {
+  const { belowLevel, answerInQuestion, underived } = await import("../server/brain/say.js");
+  assert.equal(belowLevel("Rectangle mein kitni sides hoti hain?", 6), true);
+  assert.equal(belowLevel("Rectangle mein kitni sides hoti hain?", 3), false, "fine for class 3");
+  assert.equal(belowLevel("Aage teen gino, kitna hua?", 5), true);
+  assert.equal(belowLevel("Teenon sides jodo: 5 + 6 + 9, kitna hua?", 6, "5 + 6 + 9"), false, "the kit's own sum");
+  assert.equal(answerInQuestion("Line ko 5 barabar gaps mein baanto. Kitne gaps?"), true);
+  assert.equal(answerInQuestion("Line ko barabar gaps mein baanto. Kitne gaps banenge?"), false);
+  const it = { fade: true, prompt_en: "Fill the gap: 3 × 160 = ___ m." };
+  const pr = "Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How far does she run?";
+  assert.equal(underived("Ab batao: 3 × 160 = ___ m.", it, pr), "160");
+  assert.equal(underived("Ek round 2 × (50 + 30) = 160 m. Ab 3 × 160 = ___ m.", it, pr), null);
+});
+
+test("#11 (c4/c5): a card her last line already read is asked again in fresh words; 'show it in words' is never said for a picture", async () => {
+  const SH = await import("../server/director/shapes.js");
+  assert.doesNotMatch(SH.VISUAL_NOT_YET, /show it in words/);
+  const { readsCard } = await import("../server/brain/say.js");
+  let r = start(C4, 4);
+  for (let i = 0; i < 14 && !(r.state.activeItemId && !String(r.state.activeItemId).includes(":")); i++) r = turn(C4, r, "haan");
+  const card = r.ui.ask?.text;
+  assert.ok(card);
+  r = turn(C4, r, "8", cls("incorrect"));
+  const st = { ...r.state, mode: "text", pinItem: r.state.activeItemId, pinRun: 2 };
+  const calls = [];
+  replyDeps.chat = async (_d, msgs) => { calls.push(msgs.at(-1).content); return { text: calls.length === 1 ? `Dekho dhyaan se. ${card}` : "Roti ke chaar barabar hisse socho: unmein se ek hissa kya kehlata hai?" }; };
+  const out = await textReply({ instructions: "x", state: st, kit: C4, childText: "8", verdict: "incorrect", history: [{ who: "teacher", text: `Chalo. ${card}` }], ui: r.ui, module: null });
+  assert.match(calls[0], /already read the question on the screen word for word/);
+  assert.equal(readsCard(out.reply, card), false, out.reply);
+});
 });

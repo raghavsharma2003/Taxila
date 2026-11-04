@@ -299,7 +299,8 @@ export const visualDrawing = ({ subject, said, show } = {}) => join(
     : subject ? `they asked to see ${clean(subject)}: say in plain words what it looks like` : "",
   VISUAL_DRAWING,
 );
-export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
+// round 7 (main's full-run judgement #11: "picture ko words mein dekho"): help them imagine it; never name words, screens or a lack
+export const VISUAL_NOT_YET = "nothing is on the screen this turn: help them imagine it, with everyday things they can picture ('socho …'); never say 'in words', never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
@@ -532,7 +533,7 @@ export const offerWaysOff = ({ subject }) => join(
 /** release 13 (A): a picture of something no piece can show: honest, then in words, then back. */
 export const visualUnavailable = ({ subject }) => join(
   // round 7 (zero spoken failure): no "I cannot show it"; it is given in words, and nothing on the screen is claimed
-  `they asked to see ${clean(subject) || "it"}: show it in words now (never say you cannot show it; never point at the screen or the board)`,
+  `they asked to see ${clean(subject) || "it"}: help them imagine it now, as a picture they can see in their head ('socho …'); never say 'in words', never say you cannot show it, never point at the screen or the board`,
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );

@@ -133,6 +133,44 @@ export function readsCard(t, card) {
   for (let i = 0; i + 5 <= c.length; i++) if (said.includes(` ${c.slice(i, i + 5).join(" ")} `)) return true;
   return false;
 }
+// round 7 (main's full-run judgement #6: at class 6, "Rectangle mein kitni sides hoti hain?" and "count the sides" four times):
+// remediation stays at the class's level. From class 4 up: no counting-on and no bare single-digit sum of her own; from
+// class 5 up: no asking how many sides a shape has.
+const LEVEL_COUNT_ON = /\b(?:kadam\s+aage|aage\s+(?:teen|do|ek|chaar|paanch|\d+)?\s*gin|ungli(?:yon)?\s+(?:pe|par|se|ke\s+baad)|on\s+your\s+fingers|count\s+(?:on|up)\s+(?:from|by)|ek\s+ek\s+karke\s+gin)/i;
+const LEVEL_TINY_SUM = /(?<![\p{N}.])(?<!(?:\+|plus|jama|aur)\s*)[1-9]\s*(?:\+|plus|jama)\s*[1-9](?![\p{N}.])(?!\s*(?:\+|plus|jama)\s*\d)[^.?!।]*\?/iu;
+const LEVEL_SIDES = /\b(?:kitni|kitne)\s+(?:sides|bhuja(?:yein|en)?|kinare|kone|corners)\s+(?:hoti|hote|hai|hain)|\bhow\s+many\s+(?:sides|corners)\b|\bcount\s+the\s+(?:sides|corners)\b|\b(?:sides|bhujaayein)\s+gino\b/i;
+/** Is her line below the class's level? */
+export function belowLevel(t, classLevel, kitText = "") {
+  const c = Number(classLevel);
+  if (!(c >= 4)) return false;
+  if (LEVEL_COUNT_ON.test(t)) return true;
+  const m = String(t).match(LEVEL_TINY_SUM);
+  if (m && !String(kitText).includes(m[0].replace(/\s+/g, " ").slice(0, 5))) return true;
+  return c >= 5 && LEVEL_SIDES.test(t);
+}
+// round 7 (full-run judgement #5: "5 barabar gaps mein baanto. Kitne gaps?"): her closing question never asks for what her line
+// just said
+export function answerInQuestion(t) {
+  const sents = String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? [];
+  const q = sents.at(-1) ?? "";
+  if (!/[?？]/.test(q)) return false;
+  const m = q.match(/(?:kitne|kitni|kitna|how\s+many)\s+(?:barabar\s+)?(\p{L}{3,})/iu);
+  if (!m) return false;
+  const noun = m[1].toLowerCase().replace(/(?:on|en|ein|s)$/, "");
+  return sents.slice(0, -1).some((x) => new RegExp(`(?<![\\p{L}])\\d+\\s+(?:barabar\\s+|equal\\s+)?${noun}`, "iu").test(x));
+}
+// round 7 (full-run judgement #5: "3 × 160 = ___" when 160 was never derived): on a faded or step-check card, a number of the
+// card that the problem never gave is one an earlier step made: her line says where it came from before the card
+export function underived(t, item, problem) {
+  if (!item || !(item.fade || item.stepCheck)) return null;
+  const card = String(item.prompt_en ?? "");
+  const given = new Set(String(problem ?? "").match(/\d+(?:\.\d+)?/g) ?? []);
+  const nums = (card.match(/\d+(?:\.\d+)?/g) ?? []).filter((n) => !given.has(n) && Number(n) >= 10);
+  if (!nums.length) return null;
+  // (her line without the gap sentence itself: the card carries the number, so it proves nothing)
+  const lead = (String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? []).filter((x) => !/_{2,}/.test(x)).join(" ");
+  return nums.find((n) => !new RegExp(`(?<![\\d.])${n.replace(".", "\\.")}(?![\\d])`).test(lead)) ?? null;
+}
 export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
@@ -549,6 +587,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const gameUp = !!(state.playOn || module?.id || state.module?.id);
   // round 7 (full-run judgement #1): the child said something this turn (an answer to be graded, or not)
   const answeredNow = /[\p{L}\p{N}]/u.test(String(childText ?? ""));
+  const kitText = (kit?.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " ");
   // round 7 (main's full-run judgement #4: her own question "kitne groups?" got "4", and her next line asked something new):
   // with no card on the table, a short answer to the question her last line asked is answered first, never skipped
   const herLastQ = [...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
@@ -598,7 +637,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // language, and a line that reads the English card is caught (readscard).
   const cardText = item ? promptFor(item, lang) : null;
   const englishCard = !!cardText && lang !== "english" && looksEnglish(cardText);
-  const pinned = englishCard ? null : item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
+  // round 7 (main's full-run judgement #11: the same card read word for word three or four turns running): when her last line
+  // already read the card, a re-pose asks it in fresh words (the card stays on the screen), never the same sentence again
+  const herLast = [...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
+  const cardRepeat = !englishCard && !!item && ui?.ask?.itemId === item.id && !!ui.ask.text && readsCard(herLast, ui.ask.text)
+    && (state.pinItem === item.id && (state.pinRun ?? 0) > 1);
+  const pinned = englishCard || cardRepeat ? null : item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
   const parityOf = (t) => askParity(t, pinned);
   // a check-in that SAYS goodbye ("aaj ke liye yahin rok dete hain") while the child has not chosen yet is a mixed signal
   // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
@@ -623,7 +667,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // p5-interaction (owner-2 R4: a 40-word question re-read in full on every hint turn): once the question has been posed,
   // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
   const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
-  const askEnd = englishCard ? null : item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
+  const askEnd = englishCard || cardRepeat ? null : item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
   // Round 3 (conversation stream; kill switch TAXILA_P5_R3CONV=off): the question was posed on the last turn (a re-pose),
   // so a turn that ends on the card's form of it has posed it; the "drift" check (half the full prompt's content words)
   // asks only for a FIRST pose. Before this, a re-pose at rung 0 (a request answered, a question of theirs, small talk)
@@ -685,11 +729,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
     // (full-run judgement #4) their number answer to her own question is answered, never ignored
     ownQAnswered && bareNumberSaid && !String(t).includes(bareNumberSaid) && "ignored",
+    // (full-run judgement #6, #5)
+    kindNow !== "safeguard" && belowLevel(t, state.ctx?.classLevel, kitText) && "level",
+    !CLOSING_MOVES.has(kindNow) && answerInQuestion(t) && "answerinq",
+    !CLOSING_MOVES.has(kindNow) && underived(t, item, kit?.workedExample?.problem) && "underived",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
     !!arithmeticSlip(own(t)) && "math",
-    mustPose && !englishCard && !posesItem(t, item, lang) && "drift",
+    mustPose && !englishCard && !cardRepeat && !posesItem(t, item, lang) && "drift",
+    cardRepeat && readsCard(t, ui.ask.text) && "samecard",
     englishCard && readsCard(t, cardText) && "readscard",
     whyProbe && !asksWhy(t) && "nowhy",
     // round 3: a turn that ends on the pinned kit question has handed the floor back, whatever its verb ("…sabse bade
@@ -808,7 +857,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
   // (full-run judgement #8: "story" got a fill-in-the-blank: the lead slot's word cap squeezed the story out; a story turn takes
   // the one-call path, with its own room)
-  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && state.lastMove?.request !== "story" && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
+  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && !cardRepeat && state.lastMove?.request !== "story" && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
     whyProbe, closing: CLOSING_MOVES.has(kindNow), firstPose: firstPose && !checkin });
   // round 3: a first pose with no request is a bridge into a new question (shorter lead, a right answer confirmed first)
   const bridge = firstPose && !state.lastMove?.request;
@@ -828,8 +877,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const shapeNote = R3 && !CLOSING_MOVES.has(kindNow) && !checkin && !restBreak && !thinkingWait && !whyProbe && !item?.diagnostic && mustHandBack
     ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
   const cardNote = englishCard && !CLOSING_MOVES.has(kindNow) ? `The question on the screen is in English: never read it out; ask the same question in your own words in their language (${lang === "hindi" ? "simple Hindi" : "Hinglish"}), keeping its numbers, and never its answer.` : null;
+  const repeatNote = cardRepeat && !CLOSING_MOVES.has(kindNow) ? "Your last turn already read the question on the screen word for word: ask it again in fresh words (shorter, or from another side), keeping its numbers, never the same sentence and never its answer." : null;
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it; then the move.` : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, ownQNote].filter(Boolean).join(" ");
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -975,7 +1025,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
       found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: say back what they said and what part of it fits, or ask what they mean",
+      found.includes("level") && `it is below class ${state.ctx?.classLevel} (counting on, a tiny sum of your own, or how many sides a shape has) — help at their class's level: show the step itself, then back to the question`,
+      found.includes("answerinq") && "its question asks for what your line just said (the answer is inside the question) — ask for the next thing they work out, not what you told them",
+      found.includes("underived") && `it puts a number on the card (${underived(reply, item, kit?.workedExample?.problem)}) that they never saw come from anywhere — first say in one line the step that made it, then the card`,
       found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — say it back and respond to it first (what fits, what does not, the right one if it is not), then go on`,
+      found.includes("samecard") && "it reads the question on the screen word for word again, as your last turn did — ask it in fresh words, keeping its numbers",
       found.includes("readscard") && `it reads the English question card aloud — ask that question in your own words in their language instead, keeping its numbers`,
       found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: say back what they said, then the next step",
       found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",
@@ -1187,6 +1241,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         const now = problems(joined);
         if (!now.includes("bare") && now.every((p) => was.has(p))) { reply = joined; guard.codeLead = true; } else slotState.on = prevOn;
       }
+    }
+    // round 7 (main's block 2 #11): a card she already read word for word, and the model STILL gave back only the card after
+    // the samecard repair: never a bare re-read. The fixed code lead she has not said yet goes before it (as above).
+    if (R3 && cardRepeat && item && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
+      && isBare(reply, promptFor(item, lang), ui.ask.text)) {
+      const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
+      if (fixedLead) { reply = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, ui.ask.text); guard.codeLead = true; }
     }
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
     const tidied = tidyAround(reply, pinned ? askEnd : null);
