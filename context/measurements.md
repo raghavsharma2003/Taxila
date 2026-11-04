@@ -5011,3 +5011,18 @@ Gate sharding. One-process npm test in the 4-core container: 1,711 s (3,688 test
 ## ms-r7-migrate-live-neon-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
 
 migrate.mjs on the stream's own Neon branch (host sha256 f47b22100116a310) over Neon's HTTP transaction API: --dry-run listed 040 pending (1 statement), the apply ran it in one transaction, and a rerun applied 0. That is the live check of the Neon path that was outstanding in ms-r7-migrate-tooling-local-2026-11-04.
+
+
+## r5a-ms-agent-vs-director-571b301 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Sim lab (session_012H8HYZhSzPwAoXPMsKERUb, evals/simlab/results/r5-agent-vs-director-571b301 on claude/r5-simlab @20ba103a): agent lane (taxila-gpt6) vs Director, same sha, n=64 cards per arm, text lane, 14 child turns, two judges. Agent beats Director on 57/64 cards paired. Judge-1 means Director -> agent: coherence 3.17->4.27, follows_child 2.89->3.64, adapts 2.28->3.70, human 3.86->4.45, channel_truth 2.55->3.27, pacing 2.83->3.39, safety 4.94->5.00, understanding 2.80->3.25. Clusters (lessons/64) Director->agent: repeats_explanation 58->30, stuck_loop 46->22, topic_jump 14->2, ignores_child 22->10, type/write 5->0. Still high on agent: missed_misconception 35, ignored_request 34, over_checks 31, points_empty_screen 17, false_understood 21; own skill reads 82/164 right with 61 overclaims; boards drawn 2 (Director 164); turn p50 5.9 s / p90 8.1 s (Director 2.9/5.0), 20 Director takeovers (9 s timeouts), $0.070 per lesson.
+
+
+## r5a-ms-agent-tools-smoke-748ddff8 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Agent lane with stream 2's tools (748ddff8): local server, TEST branch, battery-r5 6 personas x 10 turns, conc 6: 19 board pages drawn through boardShow (571b301 sim run: 2 in 64 lessons), 0 HTTP errors, battery D 92%, A/O/B/S/T/F/C 100%. Agent call (taxila-gpt6, strict json_schema, non-streamed) p50 4281 ms / p90 5279 ms, mean 273 output tokens; 10/66 turns hit the 6 s timeout and fell back to the Director. Effort none vs low: no difference (n=5 each, ~3.7 s). Latency needs streaming (stream 3 sayDeltasOf + speakStreamed).
+
+
+## r5a-ms-spoken-numbers-eff989c0 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Spoken Hindi numbers (eff989c0): comprehension/grade/numbers.js now reads with grading/spoken-number.js (one reader), Devanagari 1-99 with nukta/candrabindu folded, ASR fused hundreds (छेसो, पाँचसो, chheso), split mode for working aloud (last stated result) in numbersIn/matchNumber, rKey and classifyFast (number_working). tests/r5-spoken-numbers.test.mjs 4/4 fail on int/r5-rel141, pass on eff989c0; 66 related test files 844/844. Voice-arm before: sim lab 29de42f9 correct verdicts 77 -> 51; re-run requested.

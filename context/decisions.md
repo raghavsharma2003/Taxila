@@ -6736,3 +6736,18 @@ taxila-web drains on SIGTERM (server/shutdown.js). It stops accepting new connec
 ## dc-r7-ops-page (2026-11-04, round 7; written up by main loop from the stream entry)
 
 The owner ops page is GET /api/ops (HTML) + /api/ops/summary. It shows live lessons, lesson-turn p50/p90, 5xx by route, and $ per lesson-minute and per hour from lesson.cost. It answers only a signed-in guardian whose email or sha256 is in TAXILA_OPS_FOR (env, so the owner's account is keyed without a code change, main 2026-11-04); anyone else gets 404. Counts and timings only, and a lesson shows as an 8-char id prefix.
+
+
+## r5a-dc-understood-is-earned (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.
+
+
+## dc-r5-picture-on-director-lane (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Owner decision 14.2: a REAL picture on the Director lane for the picture cohort (studio/picture.js picturesFor: TAXILA_PICTURES = off | all | unset → TAXILA_PICTURES_FOR, guardian emails or their sha256, the duplex cohort pattern). A photo ask, or a thing outside the kit the board sketches, starts startPicture; the board sketch and her 'a real picture is being made, it comes in a few seconds' (shapes drawAsked photo:'coming' / pictureNote) go up at once and the picture reveals on the Studio stream after Content Safety passes (~15 s), replacing the sketch; it stays into the next turn (the tray gate now certifies a picture-lane image: inline JPEG / PNG, contain-fit, no text) and is taken down on the board's rules (turn.js leftBoard). The lane's limits: 4 per lesson, at most TAXILA_PICTURES_IN_FLIGHT (3) being made at once, a deployment that answers 429 rests 15-20 s while the chain moves on; a full lesson or a busy lane is said honestly ('a photo cannot come right now'), a picture is never said to be there before it mounts. Reverse if: picture jobs fail more than 1 in 5 in the cohort, or a revealed picture is judged off-subject by the owner more than 1 in 10
+
+
+## dc-r5-persistent-misses-14-2 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
+
+Owner decision 14.2, the battery's persistent misses: (1) a drawing whose face IS numbers ('ghadi draw karo': 1-12; a ruler 0-15) may write them (studio/request.js askedNumbers FACE_NUMBERS → W4 extraNumbers); (2) a game asked for with no game to mount: her line never announces one (turn.js claim_game: studio/request.js ungame turns 'game' into 'activity' when the line does not say there is none; the shape ends 'never call what you try together a game'); the battery counts an honest no-game turn as answered, apart (got.honest); (3) 'ek example do' is answered only by a WORKED page (3+ things written, 2+ with numbers: studio/request.js workedPage), so a ready-made bare fact ('1/2 = 2/4 | same amount') or number-less steps go to the line planner, which draws her example. Reverse if: the line planner's example pages fail the board gate more often than the ready-made pages they replace
