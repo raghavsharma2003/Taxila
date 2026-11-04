@@ -415,3 +415,5 @@
   border: 1px solid var(--line); border-radius: var(--radius-sm, 6px); background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 600; white-space: nowrap; flex: none; }
 .dk-mute[aria-pressed="true"] { border-color: var(--trouble); color: var(--trouble); }
 .dk-mute::after { content: ""; position: absolute; inset: -8px -4px; } /* 48 dp hit area around a 32 dp switch */
+.dk-hf[data-dock="muted"] .dk-hf-orb, .dk-hf[data-dock="starting"] .dk-hf-orb { color: var(--ink-2); border-color: var(--line); border-style: dashed; }
+.dk-hf[data-dock="muted"] .dk-hf-ring, .dk-hf[data-dock="starting"] .dk-hf-ring { opacity: 0; }

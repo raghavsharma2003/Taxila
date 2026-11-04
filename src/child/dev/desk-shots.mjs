@@ -17,7 +17,7 @@ for (const [w, h] of SIZES) {
   const errs = [];
   page.on("pageerror", (e) => errs.push(String(e)));
   for (const f of FIX) {
-    await page.goto(`${BASE}/src/child/dev/desk.html?class=${CLS}&fixture=${f}&face=plate${EXTRA}`, { waitUntil: "networkidle" }).catch(() => {});
+    await page.goto(`${BASE}/src/ui-v3/kaksha/dev/desk.html?class=${CLS}&fixture=${f}&face=plate${EXTRA}`, { waitUntil: "networkidle" }).catch(() => {});
     await page.waitForTimeout(700);
     const file = join(OUT, `${f}-c${CLS}-${w}x${h}.png`);
     await page.screenshot({ path: file });

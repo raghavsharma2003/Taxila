@@ -114,18 +114,20 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     // r7: Me → "Voice only" (fixtures voice / voice-board)
     faceHidden: name === "voice" || name === "voice-board",
     // r7: the Later list and the moment cards (Brain's ui.later / ui.moment)
-    later: name === "park" || name === "later" || name === "stop-checkin" ? [{ id: "l1", text: "Black hole mein kya hota hai?" }, { id: "l2", text: "Why is the sky blue?" }] : undefined,
+    later: name === "park" || name === "later" || name === "stop-checkin" || name === "returned" ? [{ id: "l1", text: "Black hole mein kya hota hai?", status: name === "returned" ? "returned" : "open" }, { id: "l2", text: "Why is the sky blue?", status: "open" }] : undefined,
     moment: name === "park" ? { kind: "park", quote: "Black hole mein kya hota hai?", note: "Great question. Let's finish halves, then I'll come back to it.", key: "p1" }
       : name === "decline" ? { kind: "decline", quote: "Tell me a scary story", note: "Not one for lessons. Here's something just as wild about halves...", key: "d1" }
-      : name === "detour" ? { kind: "detour", quote: "Is a pizza cut in 8 also halves?", note: "Quick one, then back to our question.", key: "t1" } : null,
+      : name === "detour" ? { kind: "detour", quote: "Is a pizza cut in 8 also halves?", note: "Quick one, then back to our question.", key: "t1" }
+      : name === "returned" ? { kind: "returned", quote: "Black hole mein kya hota hai?", laterId: "l1", key: "r1" } : null,
     // r7: the steer chips as useDesk offers them (Older, a talking floor, no sheet)
     steer: !young && !sheet && ["speaking", "showing", "your_turn", "yielding"].includes(floor) && !name.startsWith("summary")
-      ? [{ k: "diagram", label: "Diagram" }, { k: "game", label: "Game" }, { k: "another", label: "Alag tarah se" }, { k: "else", label: "Kuch aur" }] : null,
+      ? [{ id: "steer:picture", key: "diagram", label: "Diagram" }, { id: "steer:game", key: "game", label: "Game" }, { id: "steer:another", key: "another", label: "Alag tarah se" }, { id: null, key: "else", label: "Kuch aur" }] : null,
     tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : work ? "teach" : "warmup",
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
     // r7: hands-free fixtures (hf / hf-speaking / hf-muted): the duplex engine holds the floor
-    mic: name.startsWith("hf") ? { available: true, talking: false, drain: 0, tapToTalk: name === "hf-muted", handsFree: name !== "hf-muted", muted: name === "hf-muted" }
+    mic: name.startsWith("hf") ? { available: true, talking: false, drain: 0, tapToTalk: false, handsFree: name !== "hf-muted", muted: name === "hf-muted",
+        dock: name === "hf-muted" ? "muted" : name === "hf-speaking" ? "speaking" : "listening" }
       : { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },
     showHelp: young && name === "help-menu", typing: !young && (keyboard || name === "T3"), captionsOn: band !== "b1",
     offlineBadge: false, gate: name === "locked" ? "locked" : null,

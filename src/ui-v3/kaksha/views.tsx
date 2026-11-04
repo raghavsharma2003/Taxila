@@ -10,6 +10,7 @@ import { kt, KX_NAMES, RING_LABEL } from "./copy.ts";
 import { BASE } from "./Base.tsx";
 import { futurist } from "./look.ts";
 import { KxDock, KxTopBar, type NavItem } from "./nav.tsx";
+import { tr7 } from "../../copy/en.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 
@@ -121,6 +122,8 @@ export function HomeView(p: HomeViewProps) {
 // ---------------------------------------------------------------- World
 
 export interface WorldViewProps extends NavProps {
+  /** r7 (F Learning): the chapters the parent said school is on ("Your class is here"); empty: no line. */
+  school?: Array<{ subject: string; title: string }>;
   childName: string;
   world: World;
   /** The "Yesterday" world (null: no snapshot yet, the toggle is hidden). */
@@ -163,6 +166,12 @@ export function WorldView(p: WorldViewProps) {
         <div className="kx-world-head">
           <span className="kx-label">{kt("yourWorld")}</span>
           <h1 className="kx-h2">{kt("orbitTitle", { name: p.childName })}</h1>
+          {p.school?.map((s) => (
+            <p key={`${s.subject}:${s.title}`} className="kx-sub kx-school" data-testid="school-here">
+              <i aria-hidden="true" style={{ ["--c" as string]: `var(--k-r-${s.subject === "sst" ? "social" : s.subject})` }} />
+              {tr7("map.schoolHereAt", { subject: kt(RING_LABEL[s.subject] ?? "ringMaths"), chapter: s.title })}
+            </p>
+          ))}
         </div>
         <div className="kx-world-stage">
           <div className="kx-seg kx-seg--view" role="radiogroup" aria-label="View">

@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useChild } from "../../../child/ChildShell.tsx";
 import { useChildMap } from "../../../child/useChildMap.ts";
+import { schoolChaptersOf } from "../../../child/api.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { KakshaRoot } from "../Shell.tsx";
 import { HangarView, WorldView } from "../views.tsx";
@@ -23,7 +24,7 @@ function useWorld() {
     const before = map && !map.hidden ? rollSnapshot(cid, now) : null;
     const today = world(skills, CATALOG, before ?? undefined);
     const yesterday = before ? world(skills.map((k) => (k.state === "secure" && !before.has(k.skillId) ? { ...k, state: "got_it" as const } : k)), CATALOG) : null;
-    return { today, yesterday, hidden: !!map?.hidden, loading };
+    return { today, yesterday, hidden: !!map?.hidden, loading, school: map && !map.hidden ? schoolChaptersOf(map) : [] };
   }, [cid, map, loading]);
 }
 
@@ -35,7 +36,7 @@ export function KakshaWorld() {
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="world">
       <WorldView childName={child.first_name} world={w.today} yesterday={w.yesterday} hidden={w.hidden} reducedMotion={reducedMotion}
-        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} />
+        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} school={w.school} />
     </KakshaRoot>
   );
 }

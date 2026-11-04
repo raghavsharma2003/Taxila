@@ -40,6 +40,8 @@ export const KX = {
   momentDetour: K("Quick detour", "Chhota sa detour", "छोटा-सा मोड़"),
   momentDecline: K("Not for lessons", "Lesson ke liye nahi", "पाठ के लिए नहीं"),
   momentStop: K("Your call. Nothing is lost.", "Tumhari marzi. Kuch nahi khoyega.", "तुम्हारी मर्ज़ी। कुछ नहीं खोएगा।"),
+  momentReturned: K("Back to your question", "Tumhara sawaal", "तुम्हारा सवाल"),
+  laterNext: K("Next", "Agla", "अगला"),
   laterDebrief: K("Your questions for next time", "Agli baar ke sawaal", "अगली बार के सवाल"),
   // r7 app-nav-unified: the one dock (nav.tsx)
   navHome: K("Home", "Home", "होम"),

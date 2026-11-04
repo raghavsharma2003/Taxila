@@ -1,20 +1,23 @@
 // Visual band, reading level and per-band timing tokens (PRODUCT-DESIGN §4.2, §5.2). Pure data: no React.
 // The band follows class at setup (§5.4); the child may move up one band from settings, never down.
 
+import { classesOf, registerOf } from "../../shared/bands.ts";
+
 export type Band = "b1" | "b2" | "b3" | "b4";
 export type Family = "young" | "older";
 export type ReadingLevel = "R0" | "R1" | "R2";
 
 /**
- * Class → visual band. r7 D3 (main loop 2026-11-04, OWNER-RESET #1: class 4 got a five-year-old's app): the age bands are
- * classes 1-3 young, 4-6 preteen, 7-9 teen, and class 4 moves to the older look. Visually: B1 classes 1-2, B2 class 3
- * (the young family ends at YOUNG_MAX_CLASS), B3 classes 4-7, B4 8-9. The band TABLE is Brain's (shared/learner.ts BANDS);
- * when it carries the D3 age band per class, YOUNG_MAX_CLASS is read from it instead of written here.
+ * Class → visual band. r7 D3 (main loop 2026-11-04, OWNER-RESET #1: class 4 got a five-year-old's app): the look follows the
+ * teacher's register from Brain's ONE band table (shared/bands.ts registerOf: young 1-3, preteen 4-6, teen 7-9): the
+ * young register gets the young family, preteen and teen the older one. Visually: B1 classes 1-2, B2 the rest of the
+ * young register (class 3), B3 up to class 7, B4 8-9. No second table: YOUNG_MAX_CLASS is read from Brain's.
  */
-export const YOUNG_MAX_CLASS = 3;
+export const YOUNG_MAX_CLASS: number = classesOf("young")[1];
 export function bandForClass(classLevel: number): Band {
   if (classLevel <= 2) return "b1";
-  if (classLevel <= YOUNG_MAX_CLASS) return "b2";
+  const c = Math.min(9, Math.max(1, Math.round(classLevel) || 1));
+  if (registerOf(c) === "young") return "b2";
   if (classLevel <= 7) return "b3";
   return "b4";
 }

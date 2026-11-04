@@ -125,3 +125,10 @@
 .ks-voice-name b { color: var(--k-ink); }
 .ks-face--pip .ks-voice-name { font-size: 14px; }
 .ks-face--pip .ks-voice { gap: 4px; padding: 4px; }
+.ks-later-item { display: flex; gap: 8px; align-items: flex-start; width: 100%; min-height: 44px; padding: 6px 0; text-align: left; background: none; border: 0; color: inherit; font: inherit; }
+button.ks-later-item { cursor: pointer; }
+button.ks-later-item:hover span { text-decoration: underline; text-underline-offset: 3px; }
+.ks-later-sheet li[data-status="returned"] .ks-later-item span { text-decoration: line-through; color: var(--k-ink-3); }
+.ks-later-due { margin-left: auto; font: 600 14px/1 var(--k-mono); color: var(--k-her); }
+.ks-moment--returned { border-color: color-mix(in srgb, var(--k-secure) 60%, transparent); }
+.ks-moment--returned .ks-moment-ic { color: var(--k-secure); }

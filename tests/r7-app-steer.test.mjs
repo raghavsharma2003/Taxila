@@ -8,16 +8,13 @@ import { solveStage } from "../src/ui-v3/kaksha/lesson/stageLayout.ts";
 const desk = fs.readFileSync(new URL("../src/child/lesson/useDesk.ts", import.meta.url), "utf8");
 const classify = fs.readFileSync(new URL("../server/director/classify.js", import.meta.url), "utf8");
 
-test("steer chip ids are ones the Director reads (req:visual, req:game, the 'another' help request)", () => {
+test("the default steer row's ids are Brain's steer ids (shared/contracts.ts STEER_IDS)", async () => {
+  const { STEER_IDS } = await import("../shared/contracts.ts");
   const line = desk.match(/export const STEER_ID[^\n]*/)[0];
-  const ids = [...line.matchAll(/(diagram|game|another|else): ("[^"]+"|null)/g)].map((m) => [m[1], m[2]]);
-  assert.equal(ids.length, 4, "four steer rows");
-  for (const [, id] of ids) {
-    if (id === "null") continue;
-    const v = JSON.parse(id);
-    const known = /^req:(visual|story|game)$/.test(v) || new RegExp(`\\b${v}: "`).test(classify.slice(classify.indexOf("HELP_REQUESTS")));
-    assert.ok(known, `${v} is read by classify.js`);
-  }
+  const ids = [...line.matchAll(/(diagram|game|another|else): ("[^"]+"|null)/g)].map((m) => m[2]);
+  assert.equal(ids.length, 4, "four default chips");
+  for (const id of ids) if (id !== "null") assert.ok(STEER_IDS.includes(JSON.parse(id)), `${id} is a SteerId`);
+  assert.ok(classify.length > 0);
 });
 
 test("'something else' goes as words the change_topic lexicon reads", async () => {

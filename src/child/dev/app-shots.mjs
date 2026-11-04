@@ -33,7 +33,7 @@ const SKILLS = [
 ];
 const MAP = {
   mode: "sky", hidden: false, empty: false, skills: SKILLS,
-  subjects: [{ subject: "maths", book: "Ganita Prakash", chapters: [{ id: `c${CLS}-maths-ch07`, number: 7, title: "Fractions", sealed: false, here: true, secure: 2, total: 5,
+  subjects: [{ subject: "maths", book: "Ganita Prakash", chapters: [{ id: `c${CLS}-maths-ch07`, number: 7, title: "Fractions", sealed: false, here: true, school: true, secure: 2, total: 5,
     topics: [{ id: `c${CLS}-maths-ch07-t01`, title: "Fractional units", skills: SKILLS.slice(0, 2) }] }] }],
 };
 

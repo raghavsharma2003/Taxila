@@ -233,3 +233,14 @@ export type NBKey = keyof typeof NB;
 export function tnb(key: NBKey, vars: Record<string, string | number> = {}): string {
   return NB[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
 }
+
+// round 7 stream E (App): the child app and lesson shell. Other streams send copy here by patch (§A: App owns this file).
+export const R7 = {
+  // F Learning to-app/001: the chapter the parent said school is on, on the World and the map
+  "map.schoolHere": "Your class is here",
+  "map.schoolHereAt": "Your class is here: {subject} · {chapter}",
+} as const;
+export type R7Key = keyof typeof R7;
+export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {
+  return R7[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
+}

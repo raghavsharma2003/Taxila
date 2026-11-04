@@ -89,9 +89,9 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   const mic = m.mic.available && m.mic.tapToTalk ? (
     <TalkButton floor={m.floor} talking={m.mic.talking} drain={m.mic.drain} onTap={talk} mic={micMeter}
       disabled={m.gate !== null || m.sheet !== null} small={m.layout.keyboard} />
-  ) : m.mic.handsFree ? (
-    // r7 app-handsfree-dock: no talk button while the duplex engine holds the floor: a live level and what she is doing
-    <HandsFree floor={m.floor} mic={micMeter} teacher={m.teacher.name} small={m.layout.keyboard} />
+  ) : m.mic.handsFree || m.mic.muted ? (
+    // r7 app-handsfree-dock: no talk button while hands-free (Voice's dock states): a live level and what she is doing
+    <HandsFree floor={m.floor} dock={m.mic.dock ?? null} mic={micMeter} teacher={m.teacher.name} small={m.layout.keyboard} />
   ) : null;
   const muteBtn = a.toggleMute && (m.mic.handsFree || m.mic.muted) && m.gate === null ? (
     <button type="button" className="dk-mute" onClick={a.toggleMute} aria-pressed={!!m.mic.muted} data-testid="mute"
@@ -202,25 +202,34 @@ function TypeRow({ young, onSend, onClose, onFocus, canClose, initial = "" }: { 
  *  (information, so it stays under reduced motion), and one line on what she is doing: "Speak any time" while she
  *  listens, "You can cut in any time" while she talks, "{T} will wait" at the hand-over (the engine never cuts a thinking
  *  child off), "{T} is thinking" while she works on a reply. */
-function HandsFree({ floor, mic, teacher, small }: { floor: DeskModel["floor"]; mic?: Meter; teacher: string; small?: boolean }) {
+function HandsFree({ floor, dock, mic, teacher, small }: { floor: DeskModel["floor"]; dock: DeskModel["mic"]["dock"]; mic?: Meter; teacher: string; small?: boolean }) {
   const ring = useRef<HTMLSpanElement>(null);
+  const live = dock !== "muted" && dock !== "starting";
   useEffect(() => {
-    if (!mic) return;
+    if (!mic || !live) return;
     let smooth = 0;
     return mic.subscribe((v) => {
       smooth += (Math.min(1, v) - smooth) * 0.35;
       ring.current?.style.setProperty("--lvl", smooth.toFixed(3));
     });
-  }, [mic]);
-  const line = floor === "speaking" || floor === "showing" ? t("hf.speaking")
+  }, [mic, live]);
+  // Voice's dock state when the engine reports one; the floor otherwise (the headset open-mic path)
+  const line = dock === "starting" ? t("hf.starting")
+    : dock === "muted" ? t("hf.muted_line")
+      : dock === "hearing" ? t("hf.hearing")
+        : dock === "waiting" ? t("hf.wait")
+          : dock === "thinking" ? t("hf.thinking", { T: teacher })
+            : dock === "speaking" ? t("hf.speaking")
+              : dock === "listening" ? t("hf.listening")
+                : floor === "speaking" || floor === "showing" ? t("hf.speaking")
     : floor === "thinking" || floor === "heard" ? t("hf.thinking", { T: teacher })
       : floor === "your_turn" || floor === "yielding" ? t("hf.wait")
         : t("hf.listening");
   return (
-    <div className={`dk-hf${small ? " dk-hf--small" : ""}`} data-floor={floor} data-testid="handsfree" role="status" aria-live="polite">
+    <div className={`dk-hf${small ? " dk-hf--small" : ""}`} data-floor={floor} data-dock={dock ?? undefined} data-testid="handsfree" role="status" aria-live="polite">
       <span className="dk-hf-orb" aria-hidden="true">
         <span ref={ring} className="dk-hf-ring" />
-        <Glyph name="mic" size={small ? 18 : 24} />
+        <Glyph name={dock === "muted" ? "mic_slash" : "mic"} size={small ? 18 : 24} />
       </span>
       <span className="dk-hf-line">{line}</span>
     </div>

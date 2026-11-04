@@ -34,10 +34,12 @@ test("Pause → End is the check-in: Keep going, Short break, End (D5)", () => {
   assert.match(ud, /holdSpeech\(sheet === "pause" \|\| sheet === "end" \|\| sheet === "hint" \|\| sheet === "break"\)/, "a break holds her speech");
 });
 
-test("hands-free mute goes through the pause sheet's mic switch, and tap to talk is the fallback", () => {
+test("hands-free: Voice's dock states drive the dock; mute is runtime.setMuted; the link follows the live engine", () => {
   const ud = read("src/child/lesson/useDesk.ts");
-  assert.match(ud, /runtime\.setPushToTalk\(!openMic \|\| paused \|\| muted\)/);
-  assert.match(read("src/child/lesson/AnswerDock.tsx"), /m\.mic\.handsFree \? \(/);
+  assert.match(ud, /handsFreeDock\(\{ expected: bs\.duplexExpected/);
+  assert.match(ud, /runtime\.setPushToTalk\(!engineOpen \|\| paused\)/, "hands-free on screen never opens the mic before the engine is live");
+  assert.match(ud, /toggleMute: \(\) => \{ ptt\.stop\(\); runtime\.setMuted\(!muted\); \}/);
+  assert.match(read("src/child/lesson/AnswerDock.tsx"), /m\.mic\.handsFree \|\| m\.mic\.muted \? \(/);
 });
 
 test("cold start: the Kaksha paths paint Volt first, and the manifest is --k-void", () => {

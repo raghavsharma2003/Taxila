@@ -131,7 +131,7 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
       )}
       {/* the overlays over the slot, above her face (the stage's clip-path is its own stacking context) */}
       <div className="ks-over" style={px(L.slot)} data-later={m.later?.length ? "1" : undefined}>
-        {m.later && m.later.length > 0 && <LaterPill items={m.later} />}
+        {m.later && m.later.length > 0 && <LaterPill items={m.later} onPick={a.pickLater} />}
         {moment && <MomentCard moment={moment} choices={stopChoices} onPick={(c) => (a.pickStop ?? a.pickTile)(c)} reducedMotion={m.reducedMotion} />}
         {overlay}
       </div>
@@ -156,7 +156,9 @@ function heroRect(slot: Rect): Rect {
 }
 
 function pieceKey(t: TrayModel): string {
-  if (t.kind === "studio") return `studio:${t.studio?.intentId ?? ""}`;
+  // one StudioStage for every Studio slot: it owns the hand-over between pieces (a piece still being made never replaces the
+  // finished one; studio-stage-states), so a new slot must never remount it
+  if (t.kind === "studio") return "studio";
   if (t.kind === "board") return `board:${t.board?.lines.map((l) => l.text).join("|").slice(0, 80) ?? ""}`;
   return t.kind;
 }
@@ -170,12 +172,17 @@ const STEER_ICON: Record<string, string> = {
   another: "M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3M18 3v4h-4M6 21v-4h4",
   else: "M5 12h.01M12 12h.01M19 12h.01",
 };
+/** A chip's icon: the default row's key, else the steer id's intent (steer:picture → diagram, …), else the dots. */
+function iconOf(c: { id: string | null; key?: string; icon?: string }): string {
+  const k = c.key ?? (c.id ?? "").replace(/^steer:/, "");
+  return STEER_ICON[k === "picture" || k === "animation" ? "diagram" : k === "slower" || k === "example" || k === "story" || k === "easier" ? "another" : k] ?? STEER_ICON.else;
+}
 function SteerChips({ m, a }: { m: StageBodyProps["m"]; a: StageBodyProps["a"] }) {
   return (
     <div className="ks-steer" role="group" aria-label="Steer the lesson" data-testid="steer-chips">
       {m.steer?.map((c) => (
-        <button key={c.k} type="button" className="ks-chip" onClick={() => a.steer?.(c.k)} data-testid={`steer-${c.k}`}>
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={STEER_ICON[c.k]} /></svg>
+        <button key={c.id ?? c.key ?? c.label} type="button" className="ks-chip" onClick={() => a.steer?.(c)} data-testid={`steer-${c.key ?? (c.id ?? "").replace(/^steer:/, "")}`}>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={iconOf(c)} /></svg>
           <span>{c.label}</span>
         </button>
       ))}

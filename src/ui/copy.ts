@@ -80,6 +80,9 @@ export const EN = {
   "dock.numbers": "123",
   // r7 app-handsfree-dock: the hands-free readout (the duplex engine decides the floor; no talk button) and the mute switch
   "hf.listening": "Speak any time",
+  "hf.starting": "Getting ready to listen",
+  "hf.hearing": "Listening",
+  "hf.muted_line": "Mic is off",
   "hf.wait": "Take your time",
   "hf.speaking": "Cut in any time",
   "hf.thinking": "{T} is thinking",

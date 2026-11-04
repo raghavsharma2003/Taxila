@@ -93,7 +93,8 @@ export function Me() {
           on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />
-        {older && (
+        {/* Voice to-app/001 (D2): the talk choice is for every child, no headset rule */}
+        {(
           // r7 (D2): hands-free is the default; Tap to talk starts every lesson with the mic off and the Talk button showing
           <Choice id="talk" label={t("talkMode")} value={prefs.handsFree === false ? "tap" : "hands"} icon={ic("mic", "picto/mic")}
             options={[{ v: "hands", label: t("handsFree") }, { v: "tap", label: t("tapToTalk") }]}
