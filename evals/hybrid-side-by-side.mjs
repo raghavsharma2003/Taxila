@@ -136,7 +136,7 @@ async function lesson(lane, kit, classLevel, lines) {
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, replyMs = 0;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0;
     // (as brain/turn.js: the stop check-in is the Director's on both lanes)
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
@@ -159,9 +159,12 @@ async function lesson(lane, kit, classLevel, lines) {
       const [t, ms] = await timed(() => textReply({ instructions: p.instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
+      // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
+      // whether code replaced or repaired the line
+      if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
     }
     // replyReadyMs: from the child's words to her whole line ready (the classifier, then her line): what first sound waits on
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(guard ? { guard } : {}), ...(fellBack ? { fellBack } : {}) });
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     if (p.r.end) break;
   }

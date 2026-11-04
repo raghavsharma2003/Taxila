@@ -171,6 +171,33 @@ export function underived(t, item, problem) {
   const lead = (String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? []).filter((x) => !/_{2,}/.test(x)).join(" ");
   return nums.find((n) => !new RegExp(`(?<![\\d.])${n.replace(".", "\\.")}(?![\\d])`).test(lead)) ?? null;
 }
+/**
+ * round 7 (director2: "Tum bharo… 3 × 160" kept 160 underived after the rewrite): the worked example's own step that made the
+ * number, as a code lead ("Pehle dekho: 2 × (50 + 30) = 2 × 80 = 160."): the calculation only, never the step's English words.
+ * null when no step of the kit states it.
+ */
+export function derivationLead(n, workedExample, lang) {
+  if (!n) return null;
+  for (const st of workedExample?.steps ?? []) {
+    const m = String(st).match(new RegExp(`([\\d(][\\d\\s×x*+\\-−/().=]*=\\s*${n.replace(".", "\\.")})(?![\\d.])`));
+    if (m) return `${lang === "english" ? "First:" : "Pehle dekho:"} ${m[1].replace(/\s+/g, " ").trim()}.`;
+  }
+  return null;
+}
+/** round 7 (director2: "7" got only "Tum bharo"): a bare number the line passed over is said back first. Code words only. */
+export const ignoredLead = (n, lang) => (lang === "english" ? `You said ${n}. Let's check it together.` : `Tumne ${n} kaha. Chalo, ise saath mein check karte hain.`);
+/** round 7 (director2 c6: "tumne 160 ko 3 se multiply karne ke bajay 3 plus 3 kiya" on a plain "6"): HOW they went wrong, said
+ * when no misconception was matched, is a guess about the child: those sentences go. */
+const DIAGNOSIS = /\b(?:tumne|aapne|you)\b[^.!?।]{0,80}\b(?:ke\s+bajay|ke\s+bajaye|ki\s+jagah|instead\s+of)\b/i;
+export const madeUpDiagnosis = (t) => sentences(t).some((x) => DIAGNOSIS.test(x));
+export const withoutDiagnosis = (t) => sentences(t).filter((x) => !DIAGNOSIS.test(x)).join(" ").trim();
+/** round 7 (director2 c6: "Ab ginें"): a Roman word carrying Devanagari vowel signs is written out in Roman. */
+const MATRA = { "\u093E": "a", "\u093F": "i", "\u0940": "i", "\u0941": "u", "\u0942": "u", "\u0947": "e", "\u0948": "ai", "\u094B": "o", "\u094C": "au", "\u0902": "n", "\u0901": "n", "\u0947\u0902": "ein", "\u094B\u0902": "on", "\u093E\u0902": "aan", "\u0940\u0902": "een" };
+export const unmixWords = (t) => String(t ?? "").replace(/(\p{Script=Latin}+)([\u0900-\u0903\u093A-\u094F]+)/gu, (_, w, m) => w + (MATRA[m] ?? [...m].map((c) => MATRA[c] ?? "").join("")));
+/** round 7 (director2 c6 steering: "picture ko words mein dekho" twice): "see it in words" is never said; she has them imagine it. */
+const IN_WORDS = /\b(?:(?:picture|tasveer|photo|diagram)\s+ko\s+)?words\s+mein\s+(?:dekho|dekhte\s+hain|samjho|socho)\b|\b(?:see|picture)\s+it\s+in\s+words\b/gi;
+export const withoutInWords = (t, lang) => String(t ?? "").replace(IN_WORDS, lang === "english" ? "imagine it" : "socho");
+const PARK_STOP = new Set(["mujhe", "baare", "mein", "baat", "karni", "karte", "hain", "about", "talk", "want", "pasand", "chahiye", "kuch"]);
 export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
@@ -1136,6 +1163,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("affirms")) { reply = keepOr(withoutAffirm(reply)); guard.replaced = true; }
       if (found.includes("bracket")) { reply = sayBrackets(reply, state.lastContent ?? [], lang); guard.repaired = true; }
       if (found.includes("gameclaim")) { reply = keepOr(withoutGameActs(reply)); guard.replaced = true; }
+      // round 7 (main's director2 judgement: "your guards detect but don't prevent"): the block-2 guards had only the rewrite.
+      // A rewrite that keeps the problem now gets a code repair, never ships as it is.
+      if (found.includes("level")) { reply = keepOr(sentences(reply).filter((x) => !belowLevel(x, state.ctx?.classLevel, kitText)).join(" ").trim()); guard.replaced = true; }
+      if (found.includes("answerinq")) { const s = sentences(reply); reply = keepOr(s.slice(0, -1).join(" ").trim()); guard.replaced = true; }
+      if (found.includes("underived")) {
+        const lead = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang);
+        if (lead) { reply = joinAsk(lead, askEnd ?? pinned ?? ""); guard.replaced = true; }
+      }
+      if (found.includes("ignored") && bareNumberSaid != null) { reply = `${ignoredLead(bareNumberSaid, lang)} ${reply}`.trim(); guard.repaired = true; }
+      if (found.includes("readscard")) { reply = fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -1250,6 +1287,33 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (fixedLead) { reply = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, ui.ask.text); guard.codeLead = true; }
     }
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
+    // round 7 (director2): deterministic repairs on every turn — a made-up diagnosis of their mistake, a mixed-script word,
+    // "see it in words"
+    if (kindNow !== "safeguard" && verdict !== "misconception" && madeUpDiagnosis(reply)) {
+      const left = withoutDiagnosis(reply);
+      reply = left && handsBack(left) ? left : item && !CLOSING_MOVES.has(kindNow) ? joinAsk(left, askEnd ?? pinned ?? "") : left || fallbackReply(state, item);
+      guard.replaced = true; guard.caught = [...guard.caught, "diagnosis"];
+    }
+    { const u = withoutInWords(unmixWords(reply), lang); if (u !== reply) { reply = u; guard.repaired = true; } }
+    // (director2 c6: "Tum bharo. Khaali jagah bharo: …"): a bare "fill it" sentence before a card that says it already goes
+    if (/^(?:khaali\s+jagah\s+bharo|fill\s+(?:in\s+)?the\s+(?:gap|blank))/i.test(String(askEnd ?? pinned ?? "").trim())) {
+      const kept = sentences(reply).filter((x) => !/^\s*(?:(?:ab|chalo|tum|aap)\s+)*(?:bharo|bhariye|fill\s+it(?:\s+in)?)\s*[.!]?\s*$/i.test(x));
+      if (kept.length && kept.join(" ").trim() !== reply.trim()) { reply = kept.join(" ").trim(); guard.repaired = true; }
+    }
+    // round 7 (director2 c6 steering: "cricket ke baare mein" was parked by the Director, but her line never named it): a topic
+    // parked this turn is said with its promise when her words left it out
+    if (state.lastMove?.request === "park" && kindNow !== "safeguard") {
+      const e = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
+      const key = e ? (String(e.topic).toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) : null;
+      if (key && !new RegExp(`\\b${key}`, "i").test(reply)) {
+        reply = `${lang === "english" ? `${e.topic}: we'll talk about it after this part.` : `${e.topic}: iski baat is part ke baad karenge.`} ${reply}`.trim();
+        guard.repaired = true;
+      }
+    }
+    // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
+      reply = `${lang === "english" ? "Okay, in English now." : "Theek hai, ab Hindi mein."} ${reply}`.trim(); guard.repaired = true;
+    }
     const tidied = tidyAround(reply, pinned ? askEnd : null);
     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
   }

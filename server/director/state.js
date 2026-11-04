@@ -1613,6 +1613,8 @@ function toWrap(s, { prefix, stopping = false }) {
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
 
+const ORDINAL = [/^(?:1|ek|one|pehla|pehli|pahla|first)[\s.!?]*$/i, /^(?:2|do|two|doosra|doosri|dusra|dusri|second)[\s.!?]*$/i, /^(?:3|teen|three|teesra|teesri|tisra|third)[\s.!?]*$/i];
+
 // ───────────────────────────── step ─────────────────────────────
 
 function decide(s, input, item) {
@@ -1869,8 +1871,14 @@ function decide(s, input, item) {
   // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
   // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
   // p5-interaction: a ways-in chip (offerWays / boredOffer) is the request it names
-  const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
-    ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
+  // round 7 (director2 c6 offtopic: "Picture, Kahani, ya Game?" → "2" became a fill-in-the-blank): a bare 1-3 or "pehla /
+  // doosra / teesra" said to the ways in she just offered is the chip in that place
+  const waysUp = (s.lastUi?.chips ?? []).filter((c) => /^req:(visual|story|game)$/.test(c.id));
+  const nth = waysUp.length && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))
+    ? ORDINAL.findIndex((re) => re.test(String(input.text ?? "").trim())) : -1;
+  const picked = typeof chipId === "string" ? chipId : nth >= 0 && waysUp[nth] ? waysUp[nth].id : null;
+  const chipReq = p5Flag("STEER") && typeof picked === "string" && /^req:(visual|story|game)$/.test(picked)
+    ? (picked === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: picked === "req:game" ? "game" : "diagram", whole: true }) : null;
   const req = chipReq ?? cls?.request ?? null;
   // round 7 (judgement #10): a yes to the choices she just offered (the ways-in chips on the screen) asks which one; naming one is
   // its request (requests.js), the chip is its request (chipReq above)
