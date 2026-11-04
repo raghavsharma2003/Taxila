@@ -443,6 +443,9 @@ const SKETCH = {
     // leaves with midribs, a hanging fruit on its own stalk and a five-petal flower; every anchor ON the part it names
     strokes: [
       { op: "line", from: [128, 250], to: [272, 250], ink: "soft", weight: 2 },                             // soil
+      // the ground under it, hatched as a textbook does, clear of the roots; "soil" points at the first hatch, so its
+      // leader no longer runs along the soil line
+      ...[136, 152, 168, 236, 252, 268].map((x) => ({ op: "line", from: [x, 253], to: [x - 8, 263], ink: "soft", weight: 1 })),
       { op: "stroke", points: [[140, 256], [134, 262]], ink: "soft", weight: 1 },
       { op: "stroke", points: [[260, 256], [254, 262]], ink: "soft", weight: 1 },
       { op: "stroke", points: [[200, 250], [199, 268], [201, 286]], ink: "chalk", weight: 2 },               // tap root
@@ -462,7 +465,7 @@ const SKETCH = {
       { op: "circle", c: [188, 83], r: 8, fill: "accent", ink: "accent" },
       { op: "circle", c: [200, 87], r: 5, fill: "mark", ink: "mark" },                                       // its centre
     ],
-    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [150, 250], fruit: [176, 160] },
+    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [128, 263], fruit: [176, 160] },
   },
   circuit: {
     // round 7 (C1 board richness): a closed circuit as a textbook draws it: a cell (long and short plate) on the left,
