@@ -1,20 +1,20 @@
 {
  "v": 1,
- "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand",
+ "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 229,
-  "entries": 295,
-  "withMisconceptionMap": 66,
-  "mappedMisconceptions": 112,
+  "topicsCovered": 82,
+  "entries": 304,
+  "withMisconceptionMap": 72,
+  "mappedMisconceptions": 122,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 212
+    "covered": 63
    },
    "science": {
     "inScope": 146,
-    "covered": 15
+    "covered": 17
    },
    "evs": {
     "inScope": 64,
@@ -24,43 +24,43 @@
   "byClass": {
    "1": {
     "inScope": 29,
-    "covered": 15
+    "covered": 0
    },
    "2": {
     "inScope": 24,
-    "covered": 13
+    "covered": 0
    },
    "3": {
     "inScope": 56,
-    "covered": 23
+    "covered": 0
    },
    "4": {
     "inScope": 50,
-    "covered": 28
+    "covered": 15
    },
    "5": {
     "inScope": 52,
-    "covered": 30
+    "covered": 17
    },
    "6": {
     "inScope": 69,
-    "covered": 38
+    "covered": 26
    },
    "7": {
     "inScope": 79,
-    "covered": 46
+    "covered": 24
    },
    "8": {
     "inScope": 71,
-    "covered": 18
+    "covered": 0
    },
    "9": {
     "inScope": 84,
-    "covered": 18
+    "covered": 0
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 229,
+  "topicsCoveredAll": 82,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,29 +76,32 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 212
+    "covered": 63
    },
    "science": {
     "topics": 146,
-    "covered": 15
+    "covered": 17
    },
    "sst": {
     "topics": 65,
     "covered": 0
    }
   },
+  "arenaOnly": 151,
+  "arenaOnlyClass4to7": 64,
   "byFamily": {
    "todo-jodo": 15,
-   "taraazu": 4,
+   "taraazu": 8,
    "nishana": 14,
-   "kyun-lab": 15,
+   "kyun-lab": 14,
    "kon": 9,
    "nazariya": 11,
    "stambh": 6,
+   "yantra": 5,
    "arena": 204
   },
-  "skillsAdmitted": 633,
-  "rulesNotAdmitted": 1
+  "skillsAdmitted": 639,
+  "rulesNotAdmitted": 2
  },
  "skills": {
   "c6-maths-ch05-t02-s1": {
@@ -567,6 +570,92 @@
    },
    "contexts": [],
    "why": "RULES c7-maths-ch15-t02 taraazu/equation/solve · ACTS"
+  },
+  "c4-maths-ch08-t01-s1": {
+   "topicId": "c4-maths-ch08-t01",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "grammar": {
+    "smalls": "simple"
+   },
+   "misMap": {
+    "kg-is-100g": "c4-maths-ch08-t01-m-kg-is-100g"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch08-t01 taraazu/weigh/balance · ACTS"
+  },
+  "c4-maths-ch08-t01-s3": {
+   "topicId": "c4-maths-ch08-t01",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "grammar": {
+    "smalls": "simple"
+   },
+   "misMap": {
+    "kg-is-100g": "c4-maths-ch08-t01-m-kg-is-100g"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch08-t01 taraazu/weigh/balance · ACTS"
+  },
+  "c5-maths-ch08-t01-s2": {
+   "topicId": "c5-maths-ch08-t01",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "grammar": {
+    "smalls": "mixed"
+   },
+   "misMap": {
+    "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat",
+    "fifty-as-half": "c5-maths-ch08-t01-m-fifty-as-half"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch08-t01 taraazu/weigh/balance · ACTS"
+  },
+  "c5-maths-ch08-t01-s3": {
+   "topicId": "c5-maths-ch08-t01",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "grammar": {
+    "smalls": "mixed"
+   },
+   "misMap": {
+    "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat",
+    "fifty-as-half": "c5-maths-ch08-t01-m-fifty-as-half"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch08-t01 taraazu/weigh/balance · ACTS"
+  },
+  "c4-maths-ch08-t02-s1": {
+   "topicId": "c4-maths-ch08-t02",
+   "family": "taraazu",
+   "mode": "fill",
+   "goal": "fill",
+   "grammar": {
+    "smalls": "simple"
+   },
+   "misMap": {
+    "l-is-100ml": "c4-maths-ch08-t02-m-l-is-100ml"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch08-t02 taraazu/fill/fill · ACTS"
+  },
+  "c5-maths-ch08-t02-s2": {
+   "topicId": "c5-maths-ch08-t02",
+   "family": "taraazu",
+   "mode": "fill",
+   "goal": "fill",
+   "grammar": {
+    "smalls": "mixed"
+   },
+   "misMap": {
+    "mixed-concat": "c5-maths-ch08-t02-m-mixed-concat"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch08-t02 taraazu/fill/fill · ACTS"
   },
   "c4-maths-ch04-t02-s1": {
    "topicId": "c4-maths-ch04-t02",
@@ -1518,40 +1607,6 @@
    "contexts": [],
    "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict · ACTS"
   },
-  "c7-science-ch08-t01-s3": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
-  },
-  "c7-science-ch08-t01-s2": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
-  },
   "c7-science-ch11-t02-s2": {
    "topicId": "c7-science-ch11-t02",
    "family": "kyun-lab",
@@ -2498,6 +2553,110 @@
    },
    "contexts": [],
    "why": "RULES c6-maths-ch04-t03 stambh/bars/diff · ACTS"
+  },
+  "c7-science-ch11-t03-s3": {
+   "topicId": "c7-science-ch11-t03",
+   "family": "yantra",
+   "mode": "beam",
+   "goal": "route",
+   "grammar": {
+    "mirrors": [
+     1,
+     2
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c7-science-ch11-t03 yantra/beam/route · ACTS"
+  },
+  "c7-science-ch11-t04-s2": {
+   "topicId": "c7-science-ch11-t04",
+   "family": "yantra",
+   "mode": "beam",
+   "goal": "periscope",
+   "grammar": {},
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c7-science-ch11-t04 yantra/beam/periscope · ACTS"
+  },
+  "c7-science-ch03-t01-s2": {
+   "topicId": "c7-science-ch03-t01",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t01 yantra/circuit/light · ACTS"
+  },
+  "c7-science-ch03-t01-s3": {
+   "topicId": "c7-science-ch03-t01",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t01 yantra/circuit/light · ACTS"
+  },
+  "c7-science-ch03-t02-s3": {
+   "topicId": "c7-science-ch03-t02",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t02 yantra/circuit/switch · ACTS"
+  },
+  "c7-science-ch03-t02-s4": {
+   "topicId": "c7-science-ch03-t02",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t02 yantra/circuit/switch · ACTS"
+  },
+  "c7-science-ch08-t01-s3": {
+   "topicId": "c7-science-ch08-t01",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "match",
+   "grammar": {
+    "tol": 0.04
+   },
+   "misMap": {
+    "heavier-faster": "c7-science-ch08-t01-m1",
+    "amplitude-period": "c7-science-ch08-t01-m2"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch08-t01 yantra/pendulum/match · ACTS"
+  },
+  "c7-science-ch08-t01-s2": {
+   "topicId": "c7-science-ch08-t01",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "oscillation",
+   "grammar": {},
+   "misMap": {
+    "half-oscillation": "c7-science-ch08-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch08-t01 yantra/pendulum/oscillation · ACTS"
   },
   "c1-maths-ch03-t01-s1": {
    "topicId": "c1-maths-ch03-t01",
@@ -4623,18 +4782,6 @@
    "contexts": [],
    "why": "RULES c4-maths-ch07-t01 arena/pick/pick · ACTS"
   },
-  "c4-maths-ch08-t01-s1": {
-   "topicId": "c4-maths-ch08-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch08-t01 arena/pick/pick · ACTS"
-  },
   "c4-maths-ch08-t01-s2": {
    "topicId": "c4-maths-ch08-t01",
    "family": "arena",
@@ -4646,30 +4793,6 @@
    "misMap": {},
    "contexts": [],
    "why": "RULES c4-maths-ch08-t01 arena/pick/pick · ACTS"
-  },
-  "c4-maths-ch08-t01-s3": {
-   "topicId": "c4-maths-ch08-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch08-t01 arena/pick/pick · ACTS"
-  },
-  "c4-maths-ch08-t02-s1": {
-   "topicId": "c4-maths-ch08-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch08-t02 arena/pick/pick · ACTS"
   },
   "c4-maths-ch08-t02-s2": {
    "topicId": "c4-maths-ch08-t02",
@@ -5235,43 +5358,7 @@
    "contexts": [],
    "why": "RULES c5-maths-ch08-t01 arena/pick/pick · ACTS"
   },
-  "c5-maths-ch08-t01-s2": {
-   "topicId": "c5-maths-ch08-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch08-t01 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch08-t01-s3": {
-   "topicId": "c5-maths-ch08-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch08-t01 arena/pick/pick · ACTS"
-  },
   "c5-maths-ch08-t02-s1": {
-   "topicId": "c5-maths-ch08-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch08-t02 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch08-t02-s2": {
    "topicId": "c5-maths-ch08-t02",
    "family": "arena",
    "mode": "pick",
@@ -8423,6 +8510,159 @@
   "c8-science-ch07-t01": "adolescence (class 8): out of the class 4-7 scope and never gamified",
   "c8-science-ch07-t02": "adolescence (class 8): out of the class 4-7 scope and never gamified"
  },
+ "arenaOnly": [
+  "c1-maths-ch03-t01",
+  "c1-maths-ch03-t02",
+  "c1-maths-ch03-t03",
+  "c1-maths-ch04-t01",
+  "c1-maths-ch04-t02",
+  "c1-maths-ch05-t01",
+  "c1-maths-ch05-t02",
+  "c1-maths-ch06-t01",
+  "c1-maths-ch06-t02",
+  "c1-maths-ch08-t01",
+  "c1-maths-ch08-t02",
+  "c1-maths-ch11-t01",
+  "c1-maths-ch11-t02",
+  "c1-maths-ch12-t01",
+  "c1-maths-ch12-t02",
+  "c2-maths-ch01-t01",
+  "c2-maths-ch03-t01",
+  "c2-maths-ch03-t02",
+  "c2-maths-ch04-t02",
+  "c2-maths-ch06-t01",
+  "c2-maths-ch06-t02",
+  "c2-maths-ch06-t03",
+  "c2-maths-ch07-t01",
+  "c2-maths-ch08-t01",
+  "c2-maths-ch10-t01",
+  "c2-maths-ch10-t02",
+  "c2-maths-ch11-t01",
+  "c2-maths-ch11-t02",
+  "c3-maths-ch01-t02",
+  "c3-maths-ch03-t01",
+  "c3-maths-ch03-t02",
+  "c3-maths-ch04-t01",
+  "c3-maths-ch04-t03",
+  "c3-maths-ch05-t01",
+  "c3-maths-ch06-t01",
+  "c3-maths-ch06-t02",
+  "c3-maths-ch07-t01",
+  "c3-maths-ch07-t02",
+  "c3-maths-ch08-t02",
+  "c3-maths-ch09-t01",
+  "c3-maths-ch09-t02",
+  "c3-maths-ch10-t01",
+  "c3-maths-ch10-t02",
+  "c3-maths-ch11-t01",
+  "c3-maths-ch11-t02",
+  "c3-maths-ch12-t01",
+  "c3-maths-ch12-t02",
+  "c3-maths-ch13-t01",
+  "c3-maths-ch13-t02",
+  "c3-maths-ch14-t01",
+  "c3-maths-ch14-t02",
+  "c4-maths-ch01-t01",
+  "c4-maths-ch03-t01",
+  "c4-maths-ch03-t02",
+  "c4-maths-ch04-t01",
+  "c4-maths-ch05-t02",
+  "c4-maths-ch06-t01",
+  "c4-maths-ch06-t02",
+  "c4-maths-ch09-t02",
+  "c4-maths-ch11-t01",
+  "c4-maths-ch12-t01",
+  "c4-maths-ch12-t02",
+  "c4-maths-ch13-t01",
+  "c4-maths-ch13-t02",
+  "c5-maths-ch04-t02",
+  "c5-maths-ch05-t01",
+  "c5-maths-ch05-t02",
+  "c5-maths-ch06-t01",
+  "c5-maths-ch06-t02",
+  "c5-maths-ch07-t02",
+  "c5-maths-ch09-t01",
+  "c5-maths-ch09-t02",
+  "c5-maths-ch10-t01",
+  "c5-maths-ch12-t01",
+  "c5-maths-ch12-t02",
+  "c5-maths-ch13-t01",
+  "c5-maths-ch14-t02",
+  "c6-maths-ch01-t02",
+  "c6-maths-ch01-t03",
+  "c6-maths-ch01-t04",
+  "c6-maths-ch02-t01",
+  "c6-maths-ch03-t02",
+  "c6-maths-ch04-t01",
+  "c6-maths-ch05-t05",
+  "c6-maths-ch06-t03",
+  "c6-maths-ch08-t03",
+  "c6-maths-ch09-t02",
+  "c6-science-ch05-t02",
+  "c6-science-ch07-t02",
+  "c7-maths-ch01-t01",
+  "c7-maths-ch01-t03",
+  "c7-maths-ch02-t02",
+  "c7-maths-ch03-t04",
+  "c7-maths-ch04-t02",
+  "c7-maths-ch04-t03",
+  "c7-maths-ch05-t02",
+  "c7-maths-ch05-t03",
+  "c7-maths-ch06-t01",
+  "c7-maths-ch06-t02",
+  "c7-maths-ch06-t03",
+  "c7-maths-ch06-t04",
+  "c7-maths-ch07-t01",
+  "c7-maths-ch07-t02",
+  "c7-maths-ch08-t01",
+  "c7-maths-ch08-t02",
+  "c7-maths-ch08-t03",
+  "c7-maths-ch09-t02",
+  "c7-maths-ch10-t02",
+  "c7-maths-ch11-t03",
+  "c7-maths-ch12-t01",
+  "c7-maths-ch12-t02",
+  "c7-maths-ch13-t02",
+  "c7-maths-ch14-t01",
+  "c7-maths-ch14-t02",
+  "c7-maths-ch15-t03",
+  "c8-maths-ch01-t02",
+  "c8-maths-ch01-t03",
+  "c8-maths-ch02-t01",
+  "c8-maths-ch04-t02",
+  "c8-maths-ch05-t01",
+  "c8-maths-ch07-t01",
+  "c8-maths-ch07-t03",
+  "c8-maths-ch08-t01",
+  "c8-maths-ch08-t02",
+  "c8-maths-ch08-t03",
+  "c8-maths-ch09-t01",
+  "c8-maths-ch09-t02",
+  "c8-maths-ch09-t03",
+  "c8-maths-ch10-t01",
+  "c8-maths-ch10-t04",
+  "c8-maths-ch12-t01",
+  "c8-maths-ch14-t01",
+  "c8-maths-ch14-t02",
+  "c9-maths-ch01-t02",
+  "c9-maths-ch02-t01",
+  "c9-maths-ch03-t04",
+  "c9-maths-ch05-t02",
+  "c9-maths-ch05-t03",
+  "c9-maths-ch06-t01",
+  "c9-maths-ch06-t02",
+  "c9-maths-ch06-t03",
+  "c9-maths-ch07-t01",
+  "c9-maths-ch07-t02",
+  "c9-maths-ch07-t03",
+  "c9-maths-ch08-t02",
+  "c9-maths-ch09-t02",
+  "c9-maths-ch10-t01",
+  "c9-maths-ch11-t01",
+  "c9-maths-ch11-t02",
+  "c9-maths-ch14-t01",
+  "c9-maths-ch14-t02"
+ ],
  "entries": [
   {
    "topicId": "c6-maths-ch05-t02",
@@ -8880,6 +9120,85 @@
    "misMap": {
     "move-no-change": "c7-maths-ch15-t02-m-move-no-change",
     "one-side": "c7-maths-ch15-t02-m-one-side"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch08-t01",
+   "title": "Grams and kilograms",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "skillId": "c4-maths-ch08-t01-s1",
+   "skillIds": [
+    "c4-maths-ch08-t01-s1",
+    "c4-maths-ch08-t01-s3"
+   ],
+   "grammar": {
+    "smalls": "simple"
+   },
+   "misMap": {
+    "kg-is-100g": "c4-maths-ch08-t01-m-kg-is-100g"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch08-t01",
+   "title": "Converting kg and g",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "taraazu",
+   "mode": "weigh",
+   "goal": "balance",
+   "skillId": "c5-maths-ch08-t01-s2",
+   "skillIds": [
+    "c5-maths-ch08-t01-s2",
+    "c5-maths-ch08-t01-s3"
+   ],
+   "grammar": {
+    "smalls": "mixed"
+   },
+   "misMap": {
+    "mixed-concat": "c5-maths-ch08-t01-m-mixed-concat",
+    "fifty-as-half": "c5-maths-ch08-t01-m-fifty-as-half"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch08-t02",
+   "title": "Millilitres and litres",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "taraazu",
+   "mode": "fill",
+   "goal": "fill",
+   "skillId": "c4-maths-ch08-t02-s1",
+   "skillIds": [
+    "c4-maths-ch08-t02-s1"
+   ],
+   "grammar": {
+    "smalls": "simple"
+   },
+   "misMap": {
+    "l-is-100ml": "c4-maths-ch08-t02-m-l-is-100ml"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch08-t02",
+   "title": "Converting l and ml",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "taraazu",
+   "mode": "fill",
+   "goal": "fill",
+   "skillId": "c5-maths-ch08-t02-s2",
+   "skillIds": [
+    "c5-maths-ch08-t02-s2"
+   ],
+   "grammar": {
+    "smalls": "mixed"
+   },
+   "misMap": {
+    "mixed-concat": "c5-maths-ch08-t02-m-mixed-concat"
    }
   },
   {
@@ -9657,29 +9976,6 @@
    },
    "misMap": {
     "black-attracts-heat": "c7-science-ch07-t03-m2"
-   }
-  },
-  {
-   "topicId": "c7-science-ch08-t01",
-   "title": "Measuring time and the simple pendulum",
-   "classLevel": 7,
-   "subject": "science",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "skillId": "c7-science-ch08-t01-s3",
-   "skillIds": [
-    "c7-science-ch08-t01-s3",
-    "c7-science-ch08-t01-s2"
-   ],
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
    }
   },
   {
@@ -10463,6 +10759,116 @@
    },
    "misMap": {
     "scale-as-one": "c6-maths-ch04-t03-m-count-units"
+   }
+  },
+  {
+   "topicId": "c7-science-ch11-t03",
+   "title": "Reflection and plane mirrors",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "beam",
+   "goal": "route",
+   "skillId": "c7-science-ch11-t03-s3",
+   "skillIds": [
+    "c7-science-ch11-t03-s3"
+   ],
+   "grammar": {
+    "mirrors": [
+     1,
+     2
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c7-science-ch11-t04",
+   "title": "Pinhole camera, periscope and kaleidoscope",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "beam",
+   "goal": "periscope",
+   "skillId": "c7-science-ch11-t04-s2",
+   "skillIds": [
+    "c7-science-ch11-t04-s2"
+   ],
+   "grammar": {},
+   "misMap": {}
+  },
+  {
+   "topicId": "c7-science-ch03-t01",
+   "title": "Cells, bulbs and closed circuits",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "skillId": "c7-science-ch03-t01-s2",
+   "skillIds": [
+    "c7-science-ch03-t01-s2",
+    "c7-science-ch03-t01-s3"
+   ],
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   }
+  },
+  {
+   "topicId": "c7-science-ch03-t02",
+   "title": "Circuit diagrams and switches",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "skillId": "c7-science-ch03-t02-s3",
+   "skillIds": [
+    "c7-science-ch03-t02-s3",
+    "c7-science-ch03-t02-s4"
+   ],
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
+   }
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "title": "Measuring time and the simple pendulum",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "match",
+   "skillId": "c7-science-ch08-t01-s3",
+   "skillIds": [
+    "c7-science-ch08-t01-s3"
+   ],
+   "grammar": {
+    "tol": 0.04
+   },
+   "misMap": {
+    "heavier-faster": "c7-science-ch08-t01-m1",
+    "amplitude-period": "c7-science-ch08-t01-m2"
+   }
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "title": "Measuring time and the simple pendulum",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "oscillation",
+   "skillId": "c7-science-ch08-t01-s2",
+   "skillIds": [
+    "c7-science-ch08-t01-s2"
+   ],
+   "grammar": {},
+   "misMap": {
+    "half-oscillation": "c7-science-ch08-t01-m3"
    }
   },
   {
@@ -14318,6 +14724,13 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "make",
+   "why": "the act exercises none of the topic's kit skills (ACTS [])"
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "family": "kyun-lab",
+   "mode": "fair-test",
+   "goal": "predict",
    "why": "the act exercises none of the topic's kit skills (ACTS [])"
   }
  ]
