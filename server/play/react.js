@@ -17,6 +17,7 @@ import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
 import { vakyaHidden } from "../../src/play/families/vakya/vakya.logic.ts";
 import { kilaHidden } from "../../src/play/families/kila/kila.logic.ts";
+import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -49,6 +50,8 @@ export function hiddenOf(level) {
   if (level.family === "kaal") return kaalHidden(level);
   // r7 kila: the squares to net, the trap square (the LCM) and the towers to build (the factors) before the child sets them
   if (level.family === "kila") return kilaHidden(level);
+  // r7 naksha: the route's run lengths, the fuel, the pump's cm and the plan's side lengths before the child produces them
+  if (level.family === "naksha") return nakshaHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
