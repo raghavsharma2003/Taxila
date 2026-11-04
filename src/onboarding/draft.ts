@@ -14,6 +14,8 @@ export interface Draft {
     address?: "tum" | "aap"; interests?: string[]; comfort?: boolean; hardToHear?: boolean;
   };
   childId?: string;                                             // the profile created at P6
+  /** round 7 F item 2: "which chapter is school on?" ({ subject: chapter number }), written after the child exists */
+  schoolChapter?: Record<string, number>;
 }
 const KEY = "tx.onboarding";
 

@@ -72,6 +72,7 @@ export const KEPT_TABLES = Object.freeze({
   child_seq: "event counter only (no content)",
   child_controls: "parent-entered controls",
   child_routine: "parent-entered routine",
+  child_timetable: "the school timetable by weekday (034, round 7): parent-entered, or the intake's plain subject list",
   conductor_usage: "minutes used against the parent cap",
   job: "operational queue (cancel-or-run)",
   wakeup: "scheduler rows",
