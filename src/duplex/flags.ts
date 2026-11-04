@@ -109,8 +109,25 @@ export function serverDuplex(fetcher: typeof fetch = fetch): Promise<DuplexMode 
     return null;
   })();
   serverMode = p;
-  void p.then((v) => { if (v === null && serverMode === p) serverMode = null; });
+  void p.then((v) => { if (serverMode === p) serverAnswer = v; if (v === null && serverMode === p) serverMode = null; });
   return p;
+}
+/** The last settled server answer on this page (undefined = not settled yet). */
+let serverAnswer: DuplexMode | null | undefined = undefined;
+
+/**
+ * Round 7 (B2, voice-handsfree-from-first-line): will this lesson run hands-free, answered synchronously at the first frame
+ * (no wait on the network)? The same rules as resolveDuplexMode on what is known now: a device key wins; then the server's
+ * settled answer (prefetched by the child shell); an answer still on its way or unreadable counts as hands-free (round 7 D2:
+ * unknown runs on). Only "on" is hands-free: shadow and off are today's tap path. The dock renders hands-free from the
+ * first frame on this; if the engine then falls back, the dock follows the fallback.
+ */
+export function duplexExpected(): boolean {
+  const dev = deviceDuplex();
+  if (dev) return dev === "on";
+  if (buildDuplex() === "off") return false;
+  const srv = serverAnswer;
+  return srv !== "off" && srv !== "shadow";
 }
 /** Ask the server early (the child shell, before any lesson starts), so a lesson start never waits on it. */
 export function prefetchDuplexConfig(): void {
@@ -157,5 +174,6 @@ export async function resolveDuplexLane(fetcher?: typeof fetch): Promise<DuplexL
 export function resetDuplexFlagCache(): void {
   urlApplied = false;
   serverMode = null;
+  serverAnswer = undefined;
   serverLane = "d4";
 }
