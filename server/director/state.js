@@ -37,6 +37,12 @@ import { renderWorked, chainOf as chainOfStep } from "./worked.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
 export const oneLiveOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_ONE_LIVE ?? ""));
+/** A stuck turn (S3's stall split): a don't-know, a stuck read, or a silence while working; never a distraction or an aside. */
+const stuckTurn = (cls) => !!cls && !cls.flags?.offTopic && !["back", "park", "detour", "change_topic", "side_chat", "uptake"].includes(cls.request?.type)
+  && (!!cls.flags?.dontKnow || verdict(cls) === "stuck" || cls.request?.type === "thinking");
+/** An okay right after she taught on THIS card (a hint, a re-teach, an example): engaged with the card, never a distraction. */
+const ackToTeaching = (s, input, item) => s.lastMove?.itemId === item.id && ["hint", "reteach", "worked_example", "repair"].includes(s.lastMove?.kind)
+  && /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ha|ok|okay|ji|hmm+|samajh\s+gay[ai]|got\s+it|right|sure|chalo)[\s,.!]*)+$/i.test(String(input.text ?? "").trim());
 /** The why of a card's answer, language-free: a faded step's own calculation from the worked example, else null. */
 function whyOf(kit, item) {
   const we = kit?.workedExample;
@@ -2025,12 +2031,16 @@ function capPlan(s, input, p) {
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
+  // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
+  // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
+  if (oneLiveOn() && input.event === "turn" && item.id === s.activeItemId && (stuckTurn(input.cls) || ackToTeaching(s, input, item))) s.stuckTurns = { ...(s.stuckTurns ?? {}), [item.id]: (s.stuckTurns?.[item.id] ?? 0) + 1 };
   if (!pins || item.id !== s.activeItemId || s.pinItem !== item.id || (s.pinRun ?? 0) < LIMITS.cardMax) return p;
   // round 7 S3 (main's director2 decision: "one live item at a time"): a posed card stays live until it is answered, until two
   // misses plus help (then its answer and why), or a skip; turns alone never take it away (the 3-turn cap left a card after ONE
   // miss). A card that gets nothing but non-answers for twice the cap is still let go (the stall guard).
   const misses = s.misses?.[item.id] ?? 0;
-  if (oneLiveOn() && !(misses >= 2 && s.hintLevel >= 1) && (s.pinRun ?? 0) < LIMITS.cardMax * 2) return p;
+  const held = LIMITS.cardMax + Math.min(LIMITS.cardMax, s.stuckTurns?.[item.id] ?? 0);
+  if (oneLiveOn() && !(misses >= 2 && s.hintLevel >= 1) && (s.pinRun ?? 0) < held) return p;
   const assert = oneLiveOn() ? s.hintLevel >= 1 && misses >= 1 : s.hintLevel >= 2;
   if (assert) {
     if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item);
