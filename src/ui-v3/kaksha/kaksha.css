@@ -166,5 +166,10 @@
 .kx-madefor-item img, .kx-madefor-item i { display: block; width: 96px; height: 72px; object-fit: cover; background: var(--k-deep); }
 .kx-jar { font-size: 15px; }
 /* done with something to show: her portrait steps down so the day's card and the made-for strip sit above the dock */
-.kx-home[data-summary="1"] .kx-home-face { width: min(46vw, 190px); }
-.kx-home[data-summary="1"] .kx-home-main { gap: 12px; align-content: start; padding-top: 4px; }
+@media (max-width: 899px) {
+  .kx-home[data-summary="1"] .kx-home-face { width: min(46vw, 190px); }
+  .kx-home[data-summary="1"] .kx-home-main { gap: 12px; align-content: start; padding-top: 4px; }
+}
+@media (min-width: 900px) {
+  .kx-home-copy .kx-did, .kx-home-copy .kx-madefor { margin-left: 0; width: 340px; }
+}
