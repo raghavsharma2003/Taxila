@@ -6,6 +6,7 @@
 import { EndpointConfigError, laneEndpoint, laneKey, realtimeLane, resolveLane } from "./endpoints.js";
 import { admit, settle } from "./lanes.js";
 import { recordModelCall } from "./trace/model.js";
+import { CHAT, CHAT_FALLBACK } from "./cost/prices.js";
 import { record } from "./trace/writer.js";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
@@ -356,22 +357,12 @@ async function chatOnce(deployment, messages, opts = {}) {
 // watchdog (no bytes for `stallMs`, LIVE-STUDIO §9: 20 s) both abort the socket.
 
 /** $ per 1M tokens, Azure retail Global Standard eastus2 (MODEL-ROUTER §2 / model-refresh prices, read 2026-10-04). */
-export const PRICES = Object.freeze({
-  "taxila-codex": { in: 1.75, cached: 0.175, out: 14 },
-  "taxila-brain": { in: 4, cached: 0.4, out: 20 },
-  "gpt-5.6-terra": { in: 2, cached: 0.2, out: 12 },
-  "taxila-gpt6": { in: 2, cached: 0.2, out: 10 },
-  "taxila-gpt6-luna": { in: 0.1, cached: 0.01, out: 0.5 },
-  "taxila-fast": { in: 0.2, cached: 0.02, out: 1.2 },
-  "taxila-kimi-code": { in: 0.95, cached: 0.95, out: 4 },
-  "DeepSeek-V4-Flash": { in: 0.19, cached: 0.19, out: 0.51 },
-  "DeepSeek-V4-Pro": { in: 1.74, cached: 1.74, out: 3.48 },
-  "grok-4.3": { in: 1.25, cached: 1.25, out: 2.5 },
-});
+// Prices live in ONE book with every other meter (server/cost/prices.js, round 7 platform-cost-ledger); re-exported here.
+export const PRICES = CHAT;
 /** Dollars for one call's usage ({in, cached, out}); an unpriced deployment costs the dearest row (never 0: caps must bite). */
 export function usdOf(deployment, u) {
   if (!u) return 0;
-  const p = PRICES[deployment] ?? PRICES["taxila-brain"];
+  const p = PRICES[deployment] ?? PRICES[CHAT_FALLBACK];
   const cached = u.cached || 0;
   return (Math.max(0, (u.in || 0) - cached) * p.in + cached * p.cached + (u.out || 0) * p.out) / 1e6;
 }
