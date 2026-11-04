@@ -3,7 +3,7 @@
 // the Director as the route does), and writes both transcripts next to each other for a reader to judge. Claude reads them
 // (CLAUDE.md: judging is done by the Claude Code session, never a Foundry judge); this script scores nothing.
 //
-//   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--out <dir>]
+//   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
 //
 // No database: the route's own planTurn (routes/lesson.js __test) plans each turn on an in-memory learner state, as
@@ -20,6 +20,8 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
+import { DEPLOY } from "../server/azure.js";
+import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 
 const { planTurn } = __test;
@@ -49,6 +51,37 @@ if (DRY) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
 }
+
+// main's pilot limits (2026-11-04): a hard cap on model calls and on estimated spend, and a stop at the first auth refusal
+// (the keys may have been rotated: never retried around). Every Azure call goes through fetch, so the guard sits there.
+// Spend is an estimate: input ≈ request characters / 4 tokens, output ≈ 300 tokens a call, at the price book's rates.
+const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOString().slice(0, 10)}${DRY ? "-dry" : ""}`);
+const CAP = Number(arg("cap", "150"));
+const USD_CAP = Number(arg("usd", "2"));
+export const meter = { calls: 0, usd: 0, byDeployment: {} };
+if (!DRY) {
+  const { usdOf } = await import("../server/azure.js");
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url);
+    if (!/openai|azure|cognitiveservices|models\.ai/i.test(u)) return real(url, init);
+    let dep = "?";
+    try { dep = JSON.parse(String(init.body ?? "{}")).model ?? (u.match(/deployments\/([^/]+)/)?.[1] ?? "?"); } catch { /* not JSON */ }
+    if (meter.calls >= CAP || meter.usd >= USD_CAP) { console.error(`STOP: cap reached (${meter.calls} calls, ~$${meter.usd.toFixed(3)})`); stopWith(4, "cap"); }
+    meter.calls++;
+    meter.byDeployment[dep] = (meter.byDeployment[dep] ?? 0) + 1;
+    meter.usd += usdOf(dep, { in: Math.round(String(init.body ?? "").length / 4), cached: 0, out: 300, reasoning: 0 });
+    const res = await real(url, init);
+    if (res.status === 401 || res.status === 403) { console.error(`STOP: HTTP ${res.status} from ${dep} (auth): not retried`); stopWith(3, `auth ${res.status}`); }
+    return res;
+  };
+}
+/** A stop (cap or auth) still leaves the meter next to the finished scenarios; an unfinished scenario is not written. */
+function stopWith(code, why) {
+  try { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/meter.json`, JSON.stringify({ stopped: why, calls: meter.calls, usdEstimate: +meter.usd.toFixed(3), byDeployment: meter.byDeployment, cap: CAP, usdCap: USD_CAP }, null, 1) + "\n"); } catch { /* the exit matters more */ }
+  process.exit(code);
+}
+const timed = async (fn) => { const t0 = performance.now(); const v = await fn(); return [v, Math.round(performance.now() - t0)]; };
 
 const say = (r) => r?.ui?.ask?.text ?? null;
 
@@ -89,18 +122,19 @@ async function lesson(lane, kit, classLevel, lines) {
   for (const [i, text] of lines.entries()) {
     const now = (i + 1) * 20_000;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
-    const c = await classOf(s, kit, text, classLevel);
-    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : "") });
+    const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
+    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs });
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, replyMs = 0;
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
       const verdict = card ? (c.outcome === "correct" ? "correct" : c.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(c.outcome) ? "wrong" : null) : null;
-      const out = await agentLine(s, eventOf({ kind: "turn", childText: text, typed: true, cls: c, card, kit, lang: "hinglish" }), { verdict });
+      const [out, ms] = await timed(() => agentLine(s, eventOf({ kind: "turn", childText: text, typed: true, cls: c, card, kit, lang: "hinglish" }), { verdict }));
+      replyMs += ms;
       if (out?.say) {
         const an = structuredClone(next);
         an.activeItemId = s.activeItemId; an.hintLevel = s.hintLevel; an.phase = s.phase; an.itemsDone = s.itemsDone;
@@ -109,10 +143,12 @@ async function lesson(lane, kit, classLevel, lines) {
       } else fellBack = out?.error ?? "no line";
     }
     if (reply == null) {
-      const t = await textReply({ instructions: p.instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null });
+      const [t, ms] = await timed(() => textReply({ instructions: p.instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null }));
+      replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
     }
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(guard ? { guard } : {}), ...(fellBack ? { fellBack } : {}) });
+    // replyReadyMs: from the child's words to her whole line ready (the classifier, then her line): what first sound waits on
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(guard ? { guard } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     if (p.r.end) break;
   }
@@ -121,7 +157,7 @@ async function lesson(lane, kit, classLevel, lines) {
 
 const md = (name, topic, A, B) => {
   const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
-    : `**Asha** [${r.move}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}`).join("\n\n");
+    : `**Asha** [${r.move}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}`).join("\n\n");
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 
@@ -129,12 +165,19 @@ const topicId = arg("topic", "c6-maths-ch06-t01");
 const classLevel = Number(arg("class", "6"));
 const kit = kitFromFile(getTopic(topicId));
 const names = arg("scenario", Object.keys(SCENARIOS).join(",")).split(",").filter((n) => SCENARIOS[n]);
-const dir = arg("out", `evals/out/hybrid/${new Date().toISOString().slice(0, 16).replace(/[:T]/g, "")}${DRY ? "-dry" : ""}`);
+const dir = OUT;
 mkdirSync(dir, { recursive: true });
 for (const name of names) {
-  const [A, B] = await Promise.all([lesson("director", kit, classLevel, SCENARIOS[name]), lesson("agent", kit, classLevel, SCENARIOS[name])]);
-  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario: name, dry: DRY, director: A, agent: B }, null, 1) + "\n");
+  // one lane after the other, so neither lane's latency is measured while the other is calling
+  const A = await lesson("director", kit, classLevel, SCENARIOS[name]);
+  const B = await lesson("agent", kit, classLevel, SCENARIOS[name]);
+  const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
+  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario: name, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
   const fell = B.filter((r) => r.fellBack).length;
+  const p50 = (rows) => { const v = rows.filter((r) => r.replyReadyMs != null).map((r) => r.replyReadyMs).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
+  console.log(`${name}: ready p50 director ${p50(A)} ms · agent ${p50(B)} ms · calls so far ${meter.calls} (~$${meter.usd.toFixed(3)})`);
   console.log(`${name}: director ${A.filter((r) => r.who === "teacher").length} turns · agent ${B.filter((r) => r.who === "teacher").length} turns (${fell} fell back) → ${dir}/${name}.md`);
 }
+writeFileSync(`${dir}/meter.json`, JSON.stringify({ calls: meter.calls, usdEstimate: +meter.usd.toFixed(3), byDeployment: meter.byDeployment, cap: CAP, usdCap: USD_CAP }, null, 1) + "\n");
+console.log(`done: ${meter.calls} model calls, ~$${meter.usd.toFixed(3)} estimated`);

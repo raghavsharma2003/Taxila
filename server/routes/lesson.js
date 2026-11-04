@@ -7,6 +7,7 @@ import { randomUUID } from "crypto";
 import { q, one, tx } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
 import { runTurn } from "../brain/clauses.js";
+import { rollupLesson } from "../cost/rollup.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
@@ -792,6 +793,8 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
     endedBy, turns: state.turn ?? 0 }), []);
   const relStmts = Array.isArray(relEnd) ? relEnd : [];
   const results = await tx([...writes, ...relStmts, ...hookStmts]);
+  // round 7 (Platform patch from-platform/001): the lesson's spend rollup into lesson.cost, fire-and-forget (never throws)
+  rollupLesson(q, lesson.id).catch(() => {});
   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
