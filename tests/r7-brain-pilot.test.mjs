@@ -68,3 +68,76 @@ test("#3 (offtopic t10, steady t10): 'bye' gets the stop check-in first; a secon
   // the stop chip on the check-in ends it at once
   assert.equal(turn(once, "", NE, { chipId: "stop:end" }).move.kind, "wrap");
 });
+
+test("#4 (steady t9): a heard '8' on a perimeter-or-area question is off-format, never 'I couldn't hear you'", async () => {
+  const { claimsNotHeard, withoutNotHeard, textReply, replyDeps } = await import("../server/brain/say.js");
+  const { chat } = await import("../server/azure.js");
+  const { findItem } = await import("../server/director/items.js");
+  assert.equal(claimsNotHeard("Riya, tumhara answer mujhe clearly sunai nahi diya."), true);
+  assert.equal(claimsNotHeard("Sorry, I couldn't hear you."), true);
+  assert.equal(claimsNotHeard("Achha, tumne 8 kaha."), false);
+  assert.equal(withoutNotHeard("Riya, tumhara answer mujhe clearly sunai nahi diya. Please wahi answer phir se bolo."), "Please wahi answer phir se bolo.");
+  // the Director: a heard word or number read as "unclear" is the off-format nudge
+  let r = start();
+  for (let i = 0; i < 10 && !r.state.activeItemId; i++) r = turn(r, "haan");
+  assert.ok(r.state.activeItemId, "a card on the table");
+  const off = turn(r, "8", { ...NE, source: "note", request: { type: "unclear", whole: true, src: "note" } });
+  assert.match(off.move.shape, /they said "8", which does not answer this question as asked: .*never say you could not hear it/);
+  // the reply guard: the hearing claim goes whatever the move
+  try {
+    replyDeps.chat = async () => ({ text: `Riya, tumhara answer mujhe clearly sunai nahi diya. Tumne 8 kaha; ${off.ui.ask?.text ?? "kaunsa?"}` });
+    const out = await textReply({ instructions: "x", state: { ...off.state, mode: "text" }, kit: RANI, childText: "8", verdict: "ungraded", history: [], ui: off.ui, module: null });
+    assert.equal(claimsNotHeard(out.reply), false, out.reply);
+    assert.ok(out.guard.caught.includes("notheard"));
+    void findItem;
+  } finally { replyDeps.chat = chat; }
+});
+
+test("#5 (steady t3): a worked example states its givens first and says a bracket so it cannot be misheard", async () => {
+  const { bracketSlip, sayBrackets } = await import("../server/brain/brackets.js");
+  const SH = await import("../server/director/shapes.js");
+  const content = ["worked example: Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How far does she run?",
+    "steps for this part: One round is the perimeter of the park. → Perimeter = 2 × (50 + 30) = 2 × 80 = 160 m."];
+  const said = "Riya, rectangle mein opposite sides equal hoti hain. Ek round ka perimeter 2 times 50 plus 30, yani 160 m hota hai.";
+  assert.deepEqual(bracketSlip(said, content), { n: "2", a: "50", b: "30", op: "+" });
+  const fixed = sayBrackets(said, content, "hinglish");
+  assert.match(fixed, /50 plus 30, yani 80, ka 2 guna/);
+  assert.equal(bracketSlip(fixed, content), null);
+  assert.equal(bracketSlip("Pehle 50 plus 30, yani 80, phir 2 guna: 160 m.", content), null);
+  assert.match(SH.worked({ part: 1, parts: 2 }), /first say the problem and its givens/);
+  assert.doesNotMatch(SH.worked({ part: 2, parts: 2 }), /first say the problem/);
+  assert.match(SH.worked({ part: 2, parts: 2 }), /a bracket is said sum first/);
+});
+
+test("#6 (steady t3): her own how-question has no key: '4' is never met with '4 nahi'", async () => {
+  const { negatesAnswer, withoutNegation, textReply, replyDeps } = await import("../server/brain/say.js");
+  const { chat } = await import("../server/azure.js");
+  const line = "Riya, 4 nahi—rectangle mein opposite sides equal hoti hain. Ek round ka perimeter 160 m hota hai.";
+  assert.equal(negatesAnswer(line, "4"), true);
+  assert.equal(withoutNegation(line, "4"), "Riya, rectangle mein opposite sides equal hoti hain. Ek round ka perimeter 160 m hota hai.");
+  assert.equal(negatesAnswer("Haan, 4 sides hoti hain.", "4"), false);
+  let r = start();
+  for (let i = 0; i < 2; i++) r = turn(r, "haan");
+  r = turn(r, "4");
+  try {
+    replyDeps.chat = async () => ({ text: line });
+    const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: RANI, childText: "4", verdict: "ungraded", history: [], ui: r.ui, module: null });
+    assert.equal(negatesAnswer(out.reply, "4"), false, out.reply);
+    assert.ok(out.guard.caught.includes("negates"));
+  } finally { replyDeps.chat = chat; }
+});
+
+test("#7 (steady t5-t7): hint, then 'ek aur example do', then 'theek hai' keeps the card: it is posed again, never left", () => {
+  let r = start();
+  for (let i = 0; i < 14 && !(r.state.activeItemId && !String(r.state.activeItemId).includes(":")); i++) r = turn(r, "haan");
+  const card = r.state.activeItemId;
+  assert.ok(card);
+  r = turn(r, "6", cls("incorrect"));
+  assert.equal(r.move.kind, "hint");
+  r = turn(r, "ek aur example do", withReq("ek aur example do"));
+  assert.equal(r.state.activeItemId, card);
+  r = turn(r, "theek hai", { ...NE, flags: { ...NE.flags, minimal: true } });
+  assert.equal(r.state.activeItemId, card, "the same card");
+  assert.equal(r.ui.ask?.itemId, card);
+  assert.match(r.move.shape, /this same question again/);
+});

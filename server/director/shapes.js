@@ -75,6 +75,10 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
 // "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
 export const worked = ({ part, parts, stuck = false }) => join(
   `worked example, part ${part} of ${parts}: the one in LESSON NOW with its own numbers and names, never an example of your own`,
+  // round 7 (main's hybrid-pilot judgement #5: "2 times 50 plus 30" before the park was ever stated): its givens first, and a
+  // bracket said so it cannot be misheard
+  ...(part === 1 ? ["first say the problem and its givens (what each number is), then the step"] : []),
+  "a bracket is said sum first: 2 × (50 + 30) is '50 plus 30, that is 80, times 2'",
   stuck ? "they were stuck: show this part's steps yourself, each with its result; nothing for them to work out this turn"
     : "say one step, then ask them for the next step",
   "their thinking, your pace; no new idea",
@@ -503,6 +507,10 @@ export const answerTheirQuestion = () => "they asked a real question about today
 export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
 export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
 /** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
+// round 7 (main's hybrid-pilot judgement #4: "8" to a perimeter-or-area question got "tumhara answer mujhe clearly sunai nahi
+// diya"): words that were heard and do not fit the question are never met with a hearing claim; she says what they said and
+// asks which it is
+export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); say back what they said in a few words, then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
 export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(

@@ -1019,6 +1019,15 @@ function unclear(s, input, item, v) {
       return s.phase === "warmup" ? nextWarmup(s, input, SH.unverifiedMoveOn()) : poseNext(s, input, SH.unverifiedMoveOn());
     }
   }
+  // round 7 (main's hybrid-pilot judgement #7: hint, then "ek aur example do", then "theek hai" left the triangle question for a
+  // new probe): an okay right after she taught on THIS card (a hint, a re-teach, an example) is "go on", not a failed try:
+  // the card again, plainly, once per card. The stall guard below still leaves an item that gets nothing but non-answers.
+  const said = String(input.text ?? "").toLowerCase().replace(/[^\p{L} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const ack = !!said && /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ha|ok|okay|ji|hmm+|samajh\s+gay[ai]|samjh\s+gay[ai]|got\s+it|right|sure|chalo)\s*)+$/.test(said);
+  if (ack && s.lastMove?.itemId === item.id && ["hint", "reteach", "worked_example", "repair"].includes(s.lastMove?.kind) && !(s.ackReposed ?? []).includes(item.id)) {
+    s.ackReposed = [...(s.ackReposed ?? []), item.id];
+    return plan(moveKindFor(item), SH.pose({ item, prefix: "they said okay: now this same question again, plainly, for them to try" }), { item, probe: probeFor(item), chips: optionChips(item) });
+  }
   s.unclear += 1;
   const typed = !!input.typed;
   const shown = !!(s.lastUi?.chips?.length && s.lastMove?.itemId === item.id);
@@ -1470,7 +1479,13 @@ function p5RequestMove(s, input, item, req, labels) {
     // Typed input never gets "say it again" (they typed it; audit G4, unclear() above): no move of its own, so the phase
     // decides (a typed non-answer on an item gets the typed nudge). Round 2 integration: the note read a typed bare "7" as
     // noise and the lesson answered "aapne 7 kaha, poori baat dobara kahiye" (w1a-battery: repair moves on typed input 1+1).
-    case "unclear": if (input.typed) return null; return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    case "unclear": {
+      if (input.typed) return null;
+      // round 7 (judgement #4): a heard word or number on a question is off-format, never "say it again" (no hearing claim)
+      const heard = String(input.text ?? "").replace(/[^\p{L}\p{N}]+/gu, " ").trim();
+      if (item && heard && heard.split(" ").length <= 6) return { ...withLead(SH.offFormat({ said: heard })), request: "off_format" };
+      return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    }
     // round 7 A7: a tap on a Later entry (chipId later:<id>) is "talk about it now": served here, the lesson carries on
     case "later": {
       const e = tappedEntry(s.later, req.id);
@@ -2187,7 +2202,10 @@ export function step(prev, input) {
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question
-  if (!input.branch && ui.ask?.itemId) {
+  // round 7 (main's hybrid-pilot judgement #7): a turn spent on the child's OWN ask to have it again another way ("ek aur example
+  // do", read in code) is not a try on the card: it never brings the card cap closer, so they get a fresh try after it
+  const ownAsk = RE_PRESENT.has(move.request) && input.cls?.request?.src !== "note";
+  if (!input.branch && ui.ask?.itemId && !(ownAsk && s.pinItem === ui.ask.itemId)) {
     if (s.pinItem === ui.ask.itemId) s.pinRun = (s.pinRun ?? 0) + 1;
     else { s.pinItem = ui.ask.itemId; s.pinRun = 1; }
   }

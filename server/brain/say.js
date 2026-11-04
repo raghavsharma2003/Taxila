@@ -21,11 +21,12 @@ import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNo
 import { fallbackLead } from "../conversation/fallback-lead.js";
 // r4-latency: the TTS part split (part 0 = the first sentence the child hears)
 import { splitSentences } from "../voice/sentences.js";
+import { bracketSlip, sayBrackets } from "./brackets.js";
 import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
-const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword"]);
+const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword", "notheard", "bracket", "negates"]);
 // round 3 fix (experience B10 / B2): her words never name a screen part by its internal name. The review heard "Chips mein
 // chuno: keep going, short break, ya stop for today" (c4-10) and "bar1 ke 4 parts", "bar2 ko … kijiye" over strips labelled
 // A and B (3 times): the child sees buttons and strips A / B, never "chips" or "bar1". PURE.
@@ -69,6 +70,29 @@ export function floorContentOf(item) {
 
 /** A child's words on their way to a model: direct identifiers masked (scrubPii; decision scrub-pii-cued). */
 export const scrubbed = (t) => scrubPii(t).text;
+
+// round 7 (main's hybrid-pilot judgement #4): "tumhara answer mujhe clearly sunai nahi diya" said to a heard "8"
+const NOT_HEARD = /\b(?:(?:clearly|theek\s+se|sahi\s+se|thik\s+se)\s+)?(?:sunai\s+nahi\s+(?:diya|di|de\s+raha|aaya)|nahi\s+sun(?:a|i|\s+paayi|\s+paaya|\s+payi)|awaaz\s+nahi\s+aayi|(?:i\s+)?(?:couldn'?t|could\s+not|didn'?t|did\s+not)\s+(?:hear|catch)\s+(?:you|that|it|your)|(?:couldn'?t|could\s+not)\s+make\s+(?:it|that)\s+out)\b|सुनाई\s+नहीं/i;
+/** Does her line claim she did not hear them? */
+export const claimsNotHeard = (t) => NOT_HEARD.test(String(t ?? ""));
+/** Her line with every sentence that claims she did not hear them dropped (whole sentences, never letters). */
+// round 7 (main's hybrid-pilot judgement #6): "Rectangle ki sides kaise jodogi?" (her own how-question, no key) then "4" got
+// "4 nahi—": a verdict on an answer nothing graded. Their short answer negated in her line is caught on an ungraded turn.
+const escRe = (x) => String(x).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const negationOf = (said) => new RegExp(`(?<![\\p{L}\\p{N}])${escRe(said)}\\s+(?:nahi|nahin|nhi|not|galat|wrong)(?![\\p{L}])\\s*[—–,.:;-]?\\s*`, "iu");
+/** Does her line negate the child's short answer ("4 nahi")? */
+export function negatesAnswer(text, childText) {
+  const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  if (!said || said.split(" ").length > 3) return false;
+  return negationOf(said).test(String(text ?? ""));
+}
+/** Her line with the negation of their answer taken out ("Riya, 4 nahi—rectangle mein…" → "Riya, rectangle mein…"). */
+export function withoutNegation(text, childText) {
+  const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  if (!said) return String(text ?? "");
+  return String(text ?? "").replace(negationOf(said), "").replace(/^\s*([,—–-]\s*)/, "").trim();
+}
+export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
 
@@ -467,6 +491,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const posingTurn = guardable && state.hintLevel === 0 && POSING_MOVES.has(state.lastMove.kind);
   // p5-interaction: a thinking-aloud wait hands back by letting them go on, never by a question (the "thinkq" guard below)
   const thinkingWait = p5Flag("GUARDS") && state.lastMove?.request === "thinking";
+  // round 7 (judgement #4): words were heard this turn (a letter or a digit), and the move is not the unclear-line repair
+  const heardWords = /[\p{L}\p{N}]/u.test(String(childText ?? "")) && state.lastMove?.request !== "unclear";
   // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
   const checkin = state.lastMove?.checkin ?? null;
   const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
@@ -577,6 +603,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     leaksStage(t) && "stage",
     namesUiPart(own(t)) && "uiword",
     saysCantShow(t) && "cantshow",
+    // round 7 (main's hybrid-pilot judgement #4): never a claim that she did not hear words that were heard
+    heardWords && claimsNotHeard(t) && "notheard",
+    // round 7 (judgement #6): no verdict on what nothing graded
+    ["ungraded", "unverified", "attempt"].includes(verdict) && negatesAnswer(t, childText) && "negates",
+    // round 7 (judgement #5): a bracketed step of the lesson's content said so it is misheard ("2 times 50 plus 30")
+    bracketSlip(t, state.lastContent ?? []) && "bracket",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
@@ -861,6 +893,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
+      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict: credit what fits ('haan, 4 sides') or ask what they mean",
+      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",
+      found.includes("bracket") && "it says a bracketed step so it is misheard (like '2 times 50 plus 30' for 2 × (50 + 30)) — say the bracket first, then the multiple ('50 plus 30, that is 80, times 2')",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
       found.includes("uiword") && "it names a screen part by an internal name (chips, bar1) — say what the child sees: the buttons on the screen, strip A or B",
       found.includes("register") && (address === "aap" ? "it uses tum forms — address the child with aap forms only (aap, aapka; verbs ending -iye)" : "it uses aap — address the child with tum forms (tum, tumhara)"),
@@ -957,6 +992,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("stage")) { reply = stripStage(reply) || fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("uiword")) { reply = plainUiWords(reply, lang); guard.repaired = true; }
       if (found.includes("cantshow")) { reply = keepOr(stripCantShow(reply)); guard.replaced = true; }
+      if (found.includes("notheard")) { reply = keepOr(withoutNotHeard(reply)); guard.replaced = true; }
+      if (found.includes("negates")) { reply = keepOr(withoutNegation(reply, childText)); guard.repaired = true; }
+      if (found.includes("bracket")) { reply = sayBrackets(reply, state.lastContent ?? [], lang); guard.repaired = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -1003,6 +1041,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
           if (soft.includes("stage")) a = stripStage(a) || a;
           if (soft.includes("uiword")) a = plainUiWords(a, lang);
           if (soft.includes("cantshow")) a = stripCantShow(a) || a;
+          if (soft.includes("notheard")) a = withoutNotHeard(a) || a;
+          if (soft.includes("negates")) a = withoutNegation(a, childText) || a;
+          if (soft.includes("bracket")) a = sayBrackets(a, state.lastContent ?? [], lang);
           if (words(a) > max) a = trimToWords(a, max);
           if (words(a) >= GUTTED_MIN && !problems(a).filter((p) => !SOFT_FIX.has(p)).length) { reply = a; guard.regutted = true; }
         }
@@ -1195,7 +1236,7 @@ export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String
 
 /** The guards a single sentence can fail on its own (truth, safety, register, screen, script). The rest judge the whole
  *  turn's shape (ask, flat, drift, twoq, long, bare, nowhy, noconfirm) and are checked on `s1 + the question` instead. */
-export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "invented", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow",
+export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "deny", "claim", "quiz", "invented", "corrects", "screen", "parts", "register", "stage", "uiword", "cantshow", "notheard", "bracket", "negates",
   "leak", "units", "math", "script", "thinkq", "wrap", "same"]);
 
 /**
