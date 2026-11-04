@@ -41,7 +41,9 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       slot = clamp(Math.min(rowH - 14, (w - gut - 14) / p.cap), 14, 44);
     } else {
       px0 = 52; pw = w - px0 - 12;
-      labY = h - 50;                                   // the name / value strip under the columns
+      // the name / value strip under the columns; at a level's end the controls go and the world grows under the door
+      // cards, so the margin scales with the box (the cards never cover the names)
+      labY = h - Math.max(50, h * 0.18);
       base = labY - 8;
       ch = clamp((base - 64) / p.cap, 12, 52);         // room above the axis for the falling crate
       colW = pw / n; bw = clamp(colW * 0.62, 22, 76);
@@ -213,6 +215,8 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const any = cols.some((i) => s.h[i] > 0), cur = s.h[sel] ?? 0;
     const out: ControlSpec[] = [];
+    // a visible drop for the selected column (tapping a column drops too): a crate, or one picture
+    out.push({ id: "drop", label: W("stambh.drop"), aria: picto ? "add a picture" : "drop a crate", kind: "pad", group: "stack", disabled: cur % 2 === 1 || cur + 2 > 2 * p.cap, onPress: () => act({ kind: "drop", col: sel }) });
     if (p.half) out.push({ id: "half", label: `½ ${W("stambh.half")}`, aria: "drop a half crate", kind: "pad", group: "stack", disabled: cur % 2 === 1 || cur + 1 > 2 * p.cap, onPress: () => act({ kind: "drop", col: sel, half: true }) });
     out.push({ id: "lift", label: W("stambh.lift"), aria: "lift the top crate", kind: "pad", group: "stack", disabled: cur === 0, onPress: () => act({ kind: "lift", col: sel }) });
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });

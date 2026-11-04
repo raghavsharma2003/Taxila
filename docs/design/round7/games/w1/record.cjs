@@ -10,7 +10,10 @@ const srv = http.createServer((req, res) => {
 const port = srv.address().port;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+const ONLY = process.env.ONLY;
 const SCENES = [
+  { name: "stambh-bars", q: "family=stambh&mode=bars&goal=draw&class=5&fade=1&seed=3&art=kagaz&lang=hinglish&topic=c5-maths-ch15-t02&grammar=" + encodeURIComponent(JSON.stringify({ steps: [5] })) },
+  { name: "stambh-picto", q: "family=stambh&mode=picto&goal=draw&class=4&fade=1&seed=2&art=chalk&lang=hinglish&topic=c4-maths-ch14-t01&grammar=" + encodeURIComponent(JSON.stringify({ steps: [2] })) },
   { name: "kon-close-tri", q: "family=kon&mode=close&goal=tri&class=7&fade=1&seed=5&art=blueprint&lang=hinglish" },
   { name: "kon-zone-kind", q: "family=kon&mode=zone&goal=kind&class=6&fade=1&seed=4&art=raat&lang=hinglish&grammar=" + encodeURIComponent(JSON.stringify({ kinds: ["reflex"] })) },
   { name: "nishana-hop", q: "family=nishana&mode=hop&goal=hop&class=6&fade=1&seed=7&art=kagaz&lang=hinglish&grammar=" + encodeURIComponent(JSON.stringify({ ops: ["+", "-"] })) },
@@ -18,7 +21,7 @@ const SCENES = [
 
 (async () => {
   const browser = await chromium.launch();
-  for (const sc of SCENES) {
+  for (const sc of SCENES.filter((x) => !ONLY || x.name.startsWith(ONLY))) {
     const ctx = await browser.newContext({ viewport: { width: 412, height: 860 }, recordVideo: { dir: path.join(out, sc.name), size: { width: 412, height: 860 } } });
     const page = await ctx.newPage();
     page.on("pageerror", (e) => console.log(sc.name, "pageerror", e.message));
@@ -30,7 +33,14 @@ const SCENES = [
     const shot = async (k) => page.screenshot({ path: path.join(out, `${sc.name}-${k}.png`) });
     await shot("0-start");
     const press = (id) => page.evaluate((i) => window.__play.press(i), id);
-    if (sc.name.startsWith("kon")) {
+    if (sc.name.startsWith("stambh")) {
+      // the solver's acts one by one (each crate drops and settles), a check part-way (a wrong bar), then the rest and check
+      const acts = solve.filter((a) => a.kind !== "check"), half = Math.floor(acts.length / 2);
+      for (const a of acts.slice(0, half)) { await page.evaluate((x) => { window.__play.dispatch(x); window.__play.invalidate(); }, a); await sleep(220); }
+      await shot("1-aim"); await press("done"); await sleep(1300); await shot("2-miss");
+      for (const a of acts.slice(half)) { await page.evaluate((x) => { window.__play.dispatch(x); window.__play.invalidate(); }, a); await sleep(220); }
+      await press("done"); await sleep(1500); await shot("3-solved");
+    } else if (sc.name.startsWith("kon")) {
       const target = solve.find((a) => a.kind === "turn").deg;
       const wrong = (target + (sc.name.includes("kind") ? 200 : 25)) % 360;
       // sweep the arm to a wrong angle, commit (the miss and its gap are drawn), then sweep to the truth and commit
