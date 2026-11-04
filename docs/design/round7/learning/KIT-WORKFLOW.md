@@ -60,10 +60,26 @@ builder can read the tag.
 
 ## The other spend-gated workflows (prepared, not run)
 
-Each gets its own section with its size and call count before it is put to the owner:
-- Hinglish/Devanagari forms for the 293 census items, steps_hi/fadedVersion_hi on every worked example, and per-skill
-  `explain` plans, piloted on class 4-7 maths;
-- relevel classes 4-7 (the 70% of items with no measured ge), then classes 1-3 and 8-9;
-- language kits on real texts (learning-language-kits-real-text);
-- placement banks;
-- rewording Roman-Hinglish kit strings that collide with the content filter ('teen' and others).
+All estimates use the same price basis as G1: Azure Direct GPT-class at about $1.25 per M input and $10 per M output
+tokens. Judging is done by Claude in-session and costs nothing on Azure. Every run has a hard call cap and stops at it.
+
+| # | workflow | size (counted 2026-11-04 from data/kits, data/placement) | calls per full run | ≈ cost |
+|---|---|---|---|---|
+| G1 | sentence-train grammar items (above) | 55 skills, 284 items short | ~540 (cap 700) | ~$5 |
+| W1a | Hinglish + Devanagari complete answer forms | the 293 census items (docs/research/census/2026-10-21-kits-english-only-forms.json) | ~30 author (batches of 10) + ~293 blind re-solve ≈ **325** | ~$3 |
+| W1b | `steps_hi` / `fadedVersion_hi` on worked examples, class 4-7 maths pilot | 141 topic worked examples, 0 have Hindi steps today | 141 author + 141 verify ≈ **280** | ~$3 |
+| W1c | per-skill `explain` plans (concrete → pictorial → symbolic steps, anchor example with blind-solved numbers, analogy, misconception to pre-empt, board script), class 4-7 maths pilot | 424 skills | 424 author (long output) + 424 blind-solve of the anchor numbers ≈ **850** | ~$30 |
+| W2a | relevel class 4-7: measured `ge` for items with none | 4,695 of 6,665 items unmeasured (1,970 have ge) | 2 raters × batches of 20 ≈ **470** | ~$10 |
+| W2b | relevel classes 1-3 and 8-9 | 5,733 items, none measured | ≈ **575** | ~$12 |
+| W3 | language kits on real texts, class 4-7 English and Hindi (learning-language-kits-real-text) | 101 topics, 467 skills, 1,675 items | ~1 passage + ~16 items + ~16 blind-solves + adjudication ≈ 35 per topic ≈ **3,500** | ~$60 |
+| W4 | placement banks: class 9 maths and science (classes 3-8 exist) | 2 banks × ~120 items | ~6 author + 120 verify + ~25 adjudicate per bank ≈ **300** | ~$4 |
+| W5 | Roman-Hinglish strings that trip the content filter ('teen' = three, and others) | 424 'teen' occurrences across the kits | **0**: a code rewrite to the numeral, then the existing lint; no model call | $0 |
+
+**All of them: about 6,840 calls, about $127 (≈ ₹10,700).** Suggested order, if the owner approves part of it:
+1. G1 + W1a + W5: the cheapest, and they unblock Games and the Hinglish graders (~$8).
+2. W2a: Brain's level-matched item choice depends on it (~$10).
+3. W1b + W1c pilot: Brain's per-skill explain beats (~$33).
+4. W3, W2b, W4.
+
+Each workflow ships as a short `scripts/kits/*.mjs` with `--dry-run` (prints the plan and call count, makes no call)
+and `--cap N`. Nothing runs until the owner says yes.
