@@ -510,6 +510,19 @@ async function request(req, res, body) {
   send(res, 200, { granted: false, state: p.state });
 }
 
+/**
+ * POST /api/homework/match { childId, text } → { match } (round 7 F, learning-homework-help; agreed with App 2026-11-04):
+ * where the child's homework question sits in their own class book (server/homework/match.js: kit_item | topic | subject),
+ * or null. In memory over the class's kits, no model call (App waits ≤ 1.5 s). The text is not stored.
+ */
+async function homeworkMatch(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const text = typeof body.text === "string" ? body.text.trim().slice(0, 500) : "";
+  if (!text) throw bad("text required");
+  const { matchHomework } = await import("../homework/match.js");
+  send(res, 200, { match: matchHomework(text, child) });
+}
+
 export const routes = {
   "GET /api/child/plan": plan,
   "GET /api/child/boot": boot,
@@ -519,6 +532,7 @@ export const routes = {
   "GET /api/child/skill-line": skillLine,
   "GET /api/child/skill-line/audio": skillLineAudio,
   "GET /api/child/name-audio": nameAudio,
+  "POST /api/homework/match": homeworkMatch,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };
