@@ -20,7 +20,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1"
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
   "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram" };
-export const SKETCHES = ["plant", "flower", "leaf", "insect"];
+export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
 const PACE = { B1: 1.4, B2: 1.3, B3: 1.0, B4: 0.9 };
@@ -462,6 +462,28 @@ const SKETCH = {
       { op: "circle", c: [200, 87], r: 5, fill: "mark", ink: "mark" },                                       // its centre
     ],
     anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [150, 250], fruit: [176, 160] },
+  },
+  circuit: {
+    // round 7 (C1 board richness): a closed circuit as a textbook draws it: a cell (long and short plate) on the left,
+    // a bulb with its filament on top, a switch on the right, wires joining them; every anchor ON the part it names
+    strokes: [
+      { op: "line", from: [150, 110], to: [182, 110], weight: 2 },                                          // wire: top left
+      { op: "line", from: [218, 110], to: [250, 110], weight: 2 },                                          // wire: top right
+      { op: "line", from: [250, 110], to: [250, 166], weight: 2 },                                          // wire: right, to the switch
+      { op: "line", from: [250, 206], to: [250, 230], weight: 2 },                                          // wire: right, below it
+      { op: "line", from: [250, 230], to: [150, 230], weight: 2 },                                          // wire: bottom
+      { op: "line", from: [150, 230], to: [150, 182], weight: 2 },                                          // wire: left, to the cell
+      { op: "line", from: [150, 158], to: [150, 110], weight: 2 },
+      { op: "line", from: [132, 182], to: [168, 182], weight: 3, ink: "accent" },                           // cell: long plate (+)
+      { op: "line", from: [141, 170], to: [159, 170], weight: 3, ink: "accent" },                           // cell: short plate (-)
+      { op: "line", from: [150, 170], to: [150, 158], weight: 2 },
+      { op: "circle", c: [200, 110], r: 18, ink: "mark" },                                                  // bulb
+      { op: "stroke", points: [[189, 117], [194, 103], [200, 115], [206, 103], [211, 117]], ink: "mark", weight: 1 }, // its filament
+      { op: "circle", c: [250, 166], r: 3, fill: "chalk" },                                                 // switch: its two posts
+      { op: "circle", c: [250, 206], r: 3, fill: "chalk" },
+      { op: "line", from: [250, 206], to: [266, 172], weight: 2, ink: "good" },                             // switch: the lever
+    ],
+    anchors: { cell: [140, 182], bulb: [200, 96], switch: [258, 189], wire: [200, 230] },   // the cell: on its long plate
   },
   flower: {
     strokes: [
