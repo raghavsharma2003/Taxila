@@ -19,6 +19,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   "taraazu/equality": asAny(balanceLogic),
   "nishana/place": asAny(lineLogic),
   "nishana/compare": asAny(lineLogic),
+  "nishana/hop": asAny(lineLogic),
   "kyun-lab/fair-test": asAny(labLogic),
   "kon/turn": asAny(konLogic),
   "kon/set": asAny(konLogic),

@@ -167,6 +167,19 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, now = api.t, s = st();
     drawLine(c);
+    // hop: the start flag on its integer, and the hop from it to where the pod is now (an arc over the line)
+    if (p.hop) {
+      const X = toPx(p.hop.a);
+      P.stroke(c, [[X, ly], [X, ly - 34]], { role: "ink", width: 3 });
+      P.stroke(c, [[X, ly - 34], [X - 18, ly - 28], [X, ly - 22]], { role: "ink", width: 2.5, closed: true });
+      P.text(c, say(lang, "line.start"), X, ly - 46, { size: 14, weight: 700, role: "ink2" });
+      const mk = markOf(0);
+      if (mk !== null && mk !== undefined && Math.abs(toPx(mk) - X) > 6) {
+        const xa = X, xb = toPx(mk), hgt = Math.min(90, 20 + Math.abs(xb - xa) * 0.35);
+        c.save(); c.beginPath(); c.strokeStyle = P.color(ROLE[0]); c.lineWidth = 2.5; c.setLineDash([6, 5]);
+        c.moveTo(xa, ly - 4); c.quadraticCurveTo((xa + xb) / 2, ly - 4 - 2 * hgt, xb, ly - 4); c.stroke(); c.restore();
+      }
+    }
     api.target("line", x0 - 20, ly - 60, x1 - x0 + 40, 120);
     // after a wrong order: an arrow under the line from the right-hand pod to the left-hand one, "smaller" at its head
     if (cmpGoal && orderLookAt >= 0 && s.marks.every((m) => m !== null)) {
@@ -225,6 +238,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     if (roundGoal) return st().landed ? say(lang, "line.goal.round2", { t: unitWord(p.to ?? 100) }) : say(lang, "line.goal.round", { v: p.values[0].text });
     if (cmpGoal) return say(lang, "line.goal.cmp");
+    if (p.hop) return say(lang, "line.goal.hop", { a: H.fmt(p.hop.a).replace("-", "−"), v: p.values[0].text });
     return say(lang, "line.goal", { v: p.values[0].text });
   }
   function readouts(): Readout[] { return []; }

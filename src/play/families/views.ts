@@ -18,6 +18,7 @@ export const VIEWS: Record<string, MakeView> = {
   "taraazu/equality": makeBalanceView,
   "nishana/place": makeLineView,
   "nishana/compare": makeLineView,
+  "nishana/hop": makeLineView,
   "kyun-lab/fair-test": makeLabView,
   "kon/turn": makeKonView,
   "kon/set": makeKonView,

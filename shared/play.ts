@@ -28,7 +28,7 @@ export type FamilyId = (typeof FAMILIES)[number];
 export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
   taraazu: ["equation", "equality"],
-  nishana: ["place", "compare"],
+  nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
