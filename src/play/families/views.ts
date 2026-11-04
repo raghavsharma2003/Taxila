@@ -16,6 +16,7 @@ import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D bo
 import { makeArenaView } from "./arena/arena.view.ts";
 import { makeCircuitView } from "./yantra/circuit.view.ts";
 import { makeKaalView } from "./kaal/kaal.view.ts";
+import { makeVakyaView } from "./vakya/vakya.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -47,5 +48,6 @@ export const VIEWS: Record<string, MakeView> = {
   "yantra/circuit": makeCircuitView,
   "kaal/place": makeKaalView,
   "kaal/order": makeKaalView,
+  "vakya/rail": makeVakyaView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

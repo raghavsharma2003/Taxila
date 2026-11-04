@@ -62,8 +62,17 @@ export function kaalEvents(topicId) {
   return KAAL.filter((e) => e.topicId === topicId).map(({ id, year, circa, decade, label }) => ({ id, year, circa, ...(decade ? { decade } : {}), label }));
 }
 kaalEvents("");
-/** The arena's challenges / kaal's events ride the request (grammar.items / grammar.events); the client never loads the file. */
+/** VAKYA (r7, English / Hindi grammar): data/play/vakya/<bank>.json, built from verified kit items by tools/build-vakya.mjs. */
+const VAKYA = new Map();
+export function vakyaItems(bank, topicId) {
+  if (!/^c\d-(english|hindi)$/.test(String(bank))) return [];
+  if (!VAKYA.has(bank)) { try { VAKYA.set(bank, JSON.parse(readFileSync(join(ROOT, "data/play/vakya", `${bank}.json`), "utf8")).items ?? []); } catch { VAKYA.set(bank, []); } }
+  return VAKYA.get(bank).filter((c) => c.topicId === topicId);
+}
+/** The arena's challenges, kaal's events and vakya's sentence trains ride the request (grammar.items / grammar.events); the
+ *  client never loads a bank or the events file. */
 const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) }
+  : entry.family === "vakya" && entry.grammar?.bank ? { ...entry.grammar, items: vakyaItems(entry.grammar.bank, entry.topicId) }
   : entry.family === "kaal" ? { ...entry.grammar, events: kaalEvents(entry.topicId) } : entry.grammar);
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {

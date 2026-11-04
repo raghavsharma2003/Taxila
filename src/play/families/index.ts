@@ -15,6 +15,7 @@ import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./
 import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
+import { vakyaLogic } from "./vakya/vakya.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -53,5 +54,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7 SST: Kaal-nadi, events placed on the river of time (BCE left, CE right, no year 0)
   "kaal/place": asAny(kaalLogic),
   "kaal/order": asAny(kaalLogic),
+  // round 7: Vakya, English / Hindi grammar as a sentence train of word wagons
+  "vakya/rail": asAny(vakyaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

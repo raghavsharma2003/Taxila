@@ -15,6 +15,7 @@ import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
 import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
+import { vakyaHidden } from "../../src/play/families/vakya/vakya.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -58,6 +59,7 @@ export function hiddenOf(level) {
     case "hop": return p.hop ? [hopValue(p.hop)] : [];        // where the hop lands
     case "pendulum": return pendulumHidden(level);           // the thread lengths that keep the beat
     case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
+    case "rail": return vakyaHidden(level);                  // r7 vakya: the key sentence and its words, before the child builds them
     default: return [];
   }
 }
