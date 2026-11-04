@@ -5,6 +5,11 @@
 //     the look's own rest still. No path ever swaps her to another face (round 7 face-r8-fallback-swaps-person: r8 used to
 //     drop to TutorFace's Plate2D vector before reveal, a different-looking person). A page that saw a failure starts
 //     later mounts on the still directly (failedThisPage), so a remount does not re-download against her TTS audio.
+// Weak devices and the start (round 7 face-puppet-raster-cost-main-thread, ./lite.ts): the live stage is built only once
+// it is ARMED (her first audio, an idle page outside a lesson, or a fallback timer), so its chunk, pack decode and warm-up
+// never compete with Start → her first sound; and never on a device the static gate sends to the lite path (no WebGL2,
+// software raster, known-bad GPU). Until the stage reveals, and on the lite path for good, a live slot shows her rest still
+// with the LIGHT MOUTH (<LiteLayer>: pre-rendered mouths of the same face, swapped at 15 Hz from her output meter).
 // The look (./look.ts) is fixed per mount: the device's ?look=, else the server's TAXILA_FACE_LOOK. Until it is known
 // (a first visit) the host paints only the backdrop; it never paints one look and then swaps to another.
 // The AI disclosure ("<name>, AI teacher") is on the host on every path, never on the GPU.
@@ -16,6 +21,8 @@ import type { TapSource } from "../avatar/tap.ts";
 import { DEFAULT_LOOK, lookBackground, puppetPoster, type PuppetLook } from "./assets.ts";
 import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
 import { faceLook, faceLookNow } from "./look.ts";
+import { LIVE_ARM_FALLBACK_MS, armLive, liteGate } from "./lite.ts";
+import { LiteLayer } from "./LiteLayer.tsx";
 import { puppetBus } from "./bus.ts";
 import "./latch.ts"; // the page's safety latch listens from the first face mount, before the stage chunk loads
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
@@ -104,6 +111,26 @@ export function PuppetFace(p: PuppetFaceProps) {
     };
   }, [look]);
   const stageOff = phase === "held";
+  // arming the live stage (./lite.ts armLive): her first audio, an idle page with no lesson status, or the fallback timer
+  const [armed, setArmed] = useState(false);
+  const spoke = useRef(false);
+  if (p.status === "speaking") spoke.current = true;
+  const mountedAt = useRef(performance.now());
+  const idle = useRef(false);
+  useEffect(() => {
+    if (armed || p.still) return;
+    const check = () => {
+      if (armLive({ status: p.status, spokeYet: spoke.current, sinceMountMs: performance.now() - mountedAt.current, idle: idle.current })) setArmed(true);
+    };
+    check();
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    const ric = w.requestIdleCallback ? w.requestIdleCallback(() => { idle.current = true; check(); }, { timeout: 2500 }) : window.setTimeout(() => { idle.current = true; check(); }, 1200);
+    const t = window.setTimeout(check, Math.max(0, LIVE_ARM_FALLBACK_MS - (performance.now() - mountedAt.current)) + 20);
+    return () => {
+      if (w.cancelIdleCallback) w.cancelIdleCallback(ric); else window.clearTimeout(ric);
+      window.clearTimeout(t);
+    };
+  }, [armed, p.still, p.status]);
   const live = useRef({ status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion });
   live.current = { status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion };
   const onEvent = useRef(p.onEvent);
@@ -143,6 +170,15 @@ export function PuppetFace(p: PuppetFaceProps) {
       else s?.dispose();
     };
     const kept = adopt(parkKey);
+    if (!kept && !armed) return cleanup;
+    if (!kept) {
+      const g = liteGate(look);
+      if (g.lite) {
+        onEvent.current?.({ type: "fallback", reason: `lite: ${g.why}` });
+        setPhase("held");
+        return cleanup;
+      }
+    }
     if (kept) {
       kept.attach(el, p.framing ?? "medium", handler);
       stage.current = kept;
@@ -176,7 +212,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       .catch((err: unknown) => fail(`puppet failed: ${String(err).slice(0, 160)}`));
     return cleanup;
     // rebuilt only when the person, the framing or the meters change; status and motion flow through set()
-  }, [p.still, tutor.id, p.framing, sources, stageOff, look]);
+  }, [p.still, tutor.id, p.framing, sources, stageOff, look, armed]);
 
   useEffect(() => {
     stage.current?.set({ status: p.status, reducedMotion: !!p.reducedMotion, gentle: !!p.gentle });
@@ -192,6 +228,7 @@ export function PuppetFace(p: PuppetFaceProps) {
       style={{ position: "relative", overflow: "hidden", width: "100%", height: "100%", background: lookBackground(look ?? DEFAULT_LOOK) }}>
       {look && <img src={puppetPoster(p.framing ?? "medium", look)} alt="" aria-hidden="true" draggable={false} decoding="async"
         style={{ position: "absolute", left: 0, top: 0, width: "100%", height: "auto", display: "block" }} />}
+      {look && !p.still && phase !== "live" && <LiteLayer look={look} framing={p.framing ?? "medium"} sources={sources} status={p.status} />}
     </div>
   );
 }

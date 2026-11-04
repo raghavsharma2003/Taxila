@@ -1,0 +1,161 @@
+{
+ "method": "blind 3-image questionnaire (ref still, 8 moments, 6 consecutive frames); prompt verbatim",
+ "prompt": "Three images.\nImage 1: a character design, a single approved illustration.\nImage 2: eight numbered frames (1-8, reading order) taken from a 15-second animation of a character, rendered live in a small app window.\nImage 3: six numbered consecutive frames (1-6, reading order, 1/15 s apart) from the same animation.\nJudge strictly, from what is drawn. Answer every item.\n1. same_person: is the animated character (images 2 and 3) the same person as image 1, drawn in the same style? true/false.\n2. childish: does the animated character read as childish (a child, or a toddler-cartoon look) rather than an adult? true/false.\n3. uncanny: is anything uncanny (dead or misaligned eyes, rubbery or melting mouth, warped features, a face that seems to slide over the head)? true/false.\n4. moving_photo: does the animation read like a photograph or a still painting being warped (\"a moving photo\", a deepfake), rather than a drawn character that is animated? true/false.\n5. premium: how premium and production-quality is the animation, 1-5 (5 = top-tier studio quality, 3 = acceptable, 1 = broken or cheap).\n6. defects: list visible rendering defects with image and frame number (seams or cut lines, smears, texture swimming, a pop or jump between consecutive frames, broken teeth or mouth interior, eye errors, hair or jewellery breaking up). Empty string if none.\n7. reads_as: for each frame of image 2, what the character is doing, in 2-6 words.\n8. apparent_age: an age range for the character in image 2.\n9. one_fix: the single change that would most improve the animation.\nReply JSON only: {\"same_person\":bool,\"childish\":bool,\"uncanny\":bool,\"moving_photo\":bool,\"premium\":n,\"defects\":\"\",\"reads_as\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\",\"7\":\"\",\"8\":\"\"},\"apparent_age\":\"\",\"one_fix\":\"\"}",
+ "inputs": {
+  "ref": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/ref-r8.png",
+  "moments": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/r8-moments.png",
+  "seq": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/r8-seq.png"
+ },
+ "runs": [
+  {
+   "model": "taxila-brain",
+   "rep": 1,
+   "date": "2026-10-10T11:32:32.334Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 3,
+    "defects": "Image 3, frames 1-6: the teeth, tongue, and mouth opening subtly change shape and placement between consecutive frames, creating mouth-interior swimming. Image 2, frame 5: the thin white teeth line looks slightly smeared and uneven.",
+    "reads_as": {
+     "1": "smiling at viewer",
+     "2": "speaking with mouth open",
+     "3": "speaking cheerfully",
+     "4": "pausing with closed smile",
+     "5": "tilting head while speaking",
+     "6": "looking upward thoughtfully",
+     "7": "smiling forward again",
+     "8": "turning and looking right"
+    },
+    "apparent_age": "25-35",
+    "one_fix": "Use a stable, properly rigged set of mouth and teeth shapes to eliminate mouth-interior swimming between frames."
+   },
+   "usage": {
+    "completion_tokens": 507,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 317,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 969,
+     "engine_ttlt_ms": 6117,
+     "pre_inference_ms": 497,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1834,
+     "service_ttlt_ms": 6969,
+     "user_visible_ttft_ms": 1337
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 2816
+    },
+    "total_tokens": 4011
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 2,
+   "date": "2026-10-10T11:32:34.346Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 4,
+    "defects": "Image 3, frames 4-6: mouth interior flickers between incompatible teeth/tongue shapes across consecutive frames.",
+    "reads_as": {
+     "1": "smiling at the viewer",
+     "2": "speaking to the viewer",
+     "3": "speaking with an open smile",
+     "4": "pausing with a closed smile",
+     "5": "tilting head while speaking",
+     "6": "looking upward thoughtfully",
+     "7": "smiling warmly at viewer",
+     "8": "turning and looking right"
+    },
+    "apparent_age": "20-30 years",
+    "one_fix": "Stabilize the mouth interior and teeth across consecutive lip-sync frames."
+   },
+   "usage": {
+    "completion_tokens": 598,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 438,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 11,
+     "engine_ttft_ms": 1016,
+     "engine_ttlt_ms": 7320,
+     "pre_inference_ms": 774,
+     "service_tbt_ms": 11,
+     "service_ttft_ms": 2212,
+     "service_ttlt_ms": 8514,
+     "user_visible_ttft_ms": 1438
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 2816
+    },
+    "total_tokens": 4102
+   }
+  },
+  {
+   "model": "taxila-brain",
+   "rep": 0,
+   "date": "2026-10-10T11:32:34.380Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 4,
+    "defects": "",
+    "reads_as": {
+     "1": "smiling at viewer",
+     "2": "speaking with mouth open",
+     "3": "speaking cheerfully",
+     "4": "smiling with mouth closed",
+     "5": "tilting head while speaking",
+     "6": "looking upward thoughtfully",
+     "7": "smiling at viewer",
+     "8": "glancing sideways and smiling"
+    },
+    "apparent_age": "20-30 years",
+    "one_fix": "Add subtle secondary motion to the shoulders, hair, and earrings to reduce the rigid talking-head feel."
+   },
+   "usage": {
+    "completion_tokens": 648,
+    "completion_tokens_details": {
+     "accepted_prediction_tokens": 0,
+     "audio_tokens": 0,
+     "reasoning_tokens": 512,
+     "rejected_prediction_tokens": 0
+    },
+    "latency_checkpoint": {
+     "engine_tbt_ms": 10,
+     "engine_ttft_ms": 1000,
+     "engine_ttlt_ms": 7798,
+     "pre_inference_ms": 500,
+     "service_tbt_ms": 10,
+     "service_ttft_ms": 1877,
+     "service_ttlt_ms": 8671,
+     "user_visible_ttft_ms": 1377
+    },
+    "prompt_tokens": 3504,
+    "prompt_tokens_details": {
+     "audio_tokens": 0,
+     "cached_tokens": 2816
+    },
+    "total_tokens": 4152
+   }
+  }
+ ]
+}

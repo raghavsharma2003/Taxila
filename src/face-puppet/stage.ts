@@ -4,8 +4,12 @@
 // Frame loop: rAF, 60 fps target. Each frame = tap read → PuppetDriver (lip, floor, acting) → rig deform + draw.
 // Governor (low CPU on cheap phones): the frame's JS work (driver + rig) is tracked over a rolling 2 s window; if its p95
 // exceeds the budget the stage steps down, in order: DPR → 1.5 → 1, then a 30 fps cap; if a 30 fps / DPR 1 frame still
-// cannot fit, the stage reports `fallback: slow` and the host shows the fallback face. It never steps back up within a
-// page (no oscillation). Hidden tab: rAF stops, nothing runs.
+// cannot fit, the stage reports `fallback: slow` and the host holds her still (with the light mouth). It never steps back
+// up within a page (no oscillation). Hidden tab: rAF stops, nothing runs.
+// Raster-aware (round 7 face-puppet-raster-cost-main-thread): the JS work misses the cost that matters on a weak GPU or a
+// software rasteriser, where the draw itself (rasterising the layers) holds the main thread and the compositor. So a window
+// is ALSO over budget when the page's own frame clock is late (rAF interval p95 over RASTER_LATE_MS) or long tasks pile up
+// (≥ RASTER_LONG_TASKS tasks over 50 ms in the window) while the stage runs; at the floor, a still-late clock falls back.
 // Failures → `fallback` events (the host decides the face): no WebGL2, asset load error, load timeout (8 s), a second
 // context loss, the governor floor. A first context loss shows the poster and rebuilds once on restore.
 // Loading (ship5 p2-face): loader.ts decodes the layers off the main thread and runs the warm-up in <= 8 ms slices (the
@@ -62,6 +66,10 @@ export interface PuppetStageOptions {
 
 /** A drawn-frame gap above this is a visible freeze (5+ frames at 30 fps), reported as a `stall` event. */
 export const STALL_MS = 180;
+/** rAF interval p95 (ms) above which the page's frame clock is late: under 15 fps, whatever the JS work says. */
+export const RASTER_LATE_MS = 66;
+/** Long tasks (> 50 ms) in one governor window that count the window as over budget. */
+export const RASTER_LONG_TASKS = 3;
 
 /**
  * Turn first (open-r4lat-puppet-delays-turn-post): when the child's turn is committed, the face draws nothing for this
@@ -110,6 +118,11 @@ export class PuppetStage {
   private work: number[] = [];
   private rigMs: number[] = [];
   private intervals: number[] = [];
+  /** Every rAF callback's gap (drawn or skipped): the page's own frame clock, which a slow raster makes late. */
+  private rafGaps: number[] = [];
+  private lastRaf = 0;
+  private longTasks = 0;
+  private longObs: PerformanceObserver | null = null;
   private frames = 0;
   private stalls = 0;
   private revealed = false;
@@ -271,11 +284,25 @@ export class PuppetStage {
     for (const other of foreground) if (other !== this && other.running) { other.stop(); other.suspended = true; }
     this.running = true;
     this.lastNow = 0; // a stop/start (park, context restore) is not a stall
+    this.lastRaf = 0;
     const loop = (now: number) => {
       if (!this.running) return;
       this.raf = requestAnimationFrame(loop);
+      if (this.lastRaf && (typeof document === "undefined" || document.visibilityState !== "hidden")) {
+        this.rafGaps.push(now - this.lastRaf);
+        if (this.rafGaps.length > 120) this.rafGaps.shift();
+      }
+      this.lastRaf = now;
       this.tick(now);
     };
+    if (!this.longObs && typeof PerformanceObserver !== "undefined") {
+      try {
+        this.longObs = new PerformanceObserver((l) => { if (this.running) this.longTasks += l.getEntries().length; });
+        this.longObs.observe({ type: "longtask" });
+      } catch {
+        this.longObs = null; // no longtask entry type (Safari): the rAF clock alone
+      }
+    }
     this.raf = requestAnimationFrame(loop);
   }
 
@@ -376,18 +403,29 @@ export class PuppetStage {
     const budget = this.o.budgetMs ?? 8;
     const p95 = pct(this.work, 0.95);
     const limit = this.fpsCap >= 60 ? budget : this.fpsCap >= 30 ? budget * 2.5 : budget * 3.75;
-    if (p95 <= limit) { this.strikes = 0; return; }
-    if (++this.strikes < 2) { this.work.length = 0; this.rigMs.length = 0; return; }
+    const rafP95 = pct(this.rafGaps, 0.95);
+    const longs = this.longTasks;
+    this.longTasks = 0;
+    const raster = rafP95 > RASTER_LATE_MS || longs >= RASTER_LONG_TASKS;
+    if (p95 <= limit && !raster) { this.strikes = 0; return; }
+    if (++this.strikes < 2) { this.work.length = 0; this.rigMs.length = 0; this.rafGaps.length = 0; return; }
     this.strikes = 0;
     this.lastStep = now;
     this.work.length = 0;
     this.rigMs.length = 0;
+    this.rafGaps.length = 0;
     let step: string;
     if (this.dpr > 1.5) { this.dpr = 1.5; step = "dpr 1.5"; }
     else if (this.dpr > 1) { this.dpr = 1; step = "dpr 1"; }
     else if (this.fpsCap > 30) { this.fpsCap = 30; step = "30 fps"; }
     else if (this.fpsCap > 20) { this.fpsCap = 20; step = "20 fps"; }
-    else if (p95 > budget * 5.6) { step = "floor"; this.emit({ type: "governor", step, workP95: p95 }); this.emit({ type: "fallback", reason: `slow: work p95 ${p95.toFixed(1)} ms at 20 fps, dpr 1` }); this.stop(); return; }
+    else if (p95 > budget * 5.6 || raster) {
+      step = "floor";
+      this.emit({ type: "governor", step, workP95: p95 });
+      this.emit({ type: "fallback", reason: raster ? `slow raster: rAF p95 ${rafP95.toFixed(0)} ms, ${longs} long tasks at 20 fps, dpr 1` : `slow: work p95 ${p95.toFixed(1)} ms at 20 fps, dpr 1` });
+      this.stop();
+      return;
+    }
     else return; // at the 20 fps / dpr 1 floor and still inside a 20 fps frame: hold
     this.emit({ type: "governor", step, workP95: p95 });
   }
@@ -446,6 +484,8 @@ export class PuppetStage {
     for (const id of this.timers) window.clearTimeout(id);
     this.timers.clear();
     this.tap.dispose();
+    this.longObs?.disconnect();
+    this.longObs = null;
     this.canvas.removeEventListener("webglcontextlost", this.onLost);
     this.canvas.removeEventListener("webglcontextrestored", this.onRestored);
     this.rig?.dispose();
