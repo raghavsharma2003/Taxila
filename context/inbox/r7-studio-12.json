@@ -1,0 +1,25 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-board-label-cells-atoms",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "label@1 gains the plant cell (wall, membrane, cytoplasm, vacuole, nucleus, chloroplasts), the animal cell (round membrane, cytoplasm, nucleus; picked when the kit names no wall) and the atom (helium: nucleus with 2 protons and 2 neutrons, one shell, 2 electrons); this completes the labelled-diagram set (plant, flower, circuit, cells, atom). Label words are the kit's own, singular only through the part's own word list (fixes 'nucleus' → 'nucleu' and 'batteries' → 'batterie'), and a name longer than 11 letters gives way to the part's short name ('cell membrane' → membrane). Labels wider than their column move in from the board edge (cap 120 units, was 112). Sketches are kept 156 wide so the label columns (x 58, 342) never touch them (recording caught labels on the wall). Recordings docs/design/round7/studio/label-cell-plant-*, label-cell-animal-*, label-atom-*."
+    },
+    {
+      "id": "ms-r7-board-label-cells-atoms-reach",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 29,
+      "method": "labelCall over every class 1-9 science/EVS kit, expand + retime to a 7 s line naming the labels + gateWhiteboard + every leader on a drawn part + every label on the board; code only",
+      "title": "29 kits get a labelled diagram (14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower); 29/29 pass every W gate with every anchor on a drawn part. New: the plant cell in c8/c9 'cell' lessons, the atom in c9 ch08 t01-t04."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-board-label-cells-atoms", "rel": "measured_by", "dst": "ms-r7-board-label-cells-atoms-reach" }
+  ],
+  "md": {
+    "decisions": "## dc-r7-board-label-cells-atoms: cells and atoms as labelled diagrams (2026-11-04)\n\nLessons about a cell now show a plant cell drawn as a textbook does (or an animal cell when no cell wall is mentioned), and lessons about atoms show an atom with its nucleus, protons, neutrons, shell and electrons, each part labelled in the lesson's own word.\n",
+    "measurements": "## ms-r7-board-label-cells-atoms-reach (2026-11-04, n = 29 kits)\n\n29 science lessons now get a labelled diagram, all passing the board gates: 14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower.\n"
+  }
+}

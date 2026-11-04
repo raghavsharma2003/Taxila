@@ -77,6 +77,15 @@ The table recording showed that with App's stage-first layout (D7) the teacher's
 
 `label-circuit-*.mp4 / -strip.png`: c5-evs-ch07-t01 "Energy makes things work". A closed circuit as a textbook draws it: the cell (long and short plate), wires, a bulb with its filament and a switch, each labelled in the kit's word ("battery" here). 8 kits get it (c5 EVS, c7 circuits and conductors, c8 heating effect and batteries, c9 conduction by ionic compounds); a bulb must be named.
 
+`label-cell-plant-*`: c8-science-ch02-t01 (also c9 ch02 t01). A plant cell as a textbook draws it: the cell wall, the membrane just inside it, a large vacuole, the nucleus and chloroplasts in the cytoplasm, each labelled. "cell membrane" shows as "membrane", the part's short name, because the long name would not fit its column.
+
+`label-cell-animal-*`: an animal cell with a round membrane, cytoplasm, and a nucleus with its nucleolus. It is picked when a kit names the cell's parts but no cell wall. No current kit does, so this one is recorded from a direct call.
+
+`label-atom-*`: c9-science-ch08-t02 "Subatomic particles" (also t01, t03, t04). A helium atom: a nucleus with 2 protons and 2 neutrons, one shell, and 2 electrons on it, labelled down the right column so no two leaders cross.
+
+- **Reach now:** 29 kits get a labelled diagram (14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower). All 29 pass every W gate, with every anchor on a drawn part.
+- **Word fix:** a label is singular only through the part's own word list, so "nucleus" no longer clips to "nucleu" and "batteries" becomes "battery".
+
 ## Geometry to scale (C1 item 5, "geometry by constraint")
 
 `geo-rect-*`, `geo-triangle-*`, `geo-circle-*`: a shape the kit states with its measures, drawn to scale.

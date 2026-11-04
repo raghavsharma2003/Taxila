@@ -20,7 +20,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1"
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
   "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram" };
-export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit"];
+export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
 const PACE = { B1: 1.4, B2: 1.3, B3: 1.0, B4: 0.9 };
@@ -485,6 +485,46 @@ const SKETCH = {
     ],
     anchors: { cell: [140, 182], bulb: [200, 96], switch: [258, 189], wire: [200, 230] },   // the cell: on its long plate
   },
+  cellPlant: {
+    // round 7 (C1 board richness): a plant cell as a textbook draws it: a wall, the membrane just inside it, a large
+    // vacuole, the nucleus, chloroplasts in the cytoplasm; every anchor on the part it names. 156 wide, so the label
+    // columns (x 58 and 342) stay clear of the wall
+    strokes: [
+      { op: "rect", at: [122, 70], w: 156, h: 160, weight: 3, ink: "good" },                                 // cell wall
+      { op: "rect", at: [129, 77], w: 142, h: 146, weight: 1, ink: "chalk" },                                // membrane
+      { op: "ellipse", c: [195, 160], rx: 40, ry: 45, fill: "soft", ink: "soft" },                            // vacuole
+      { op: "circle", c: [245, 108], r: 15, fill: "accent", ink: "accent" },                                  // nucleus
+      { op: "ellipse", c: [152, 98], rx: 10, ry: 6, fill: "good", ink: "good" },                              // chloroplasts
+      { op: "ellipse", c: [252, 198], rx: 10, ry: 6, fill: "good", ink: "good" },
+      { op: "ellipse", c: [152, 192], rx: 10, ry: 6, fill: "good", ink: "good" },
+    ],
+    anchors: { wall: [122, 150], membrane: [129, 214], vacuole: [195, 160], nucleus: [245, 108], chloroplast: [252, 198], cytoplasm: [258, 150] },
+  },
+  cellAnimal: {
+    // an animal cell: a rounded membrane (no wall), cytoplasm, a nucleus with its nucleolus
+    strokes: [
+      { op: "ellipse", c: [200, 150], rx: 80, ry: 82, weight: 2, ink: "chalk" },                              // membrane
+      { op: "circle", c: [207, 146], r: 22, fill: "accent", ink: "accent" },                                  // nucleus
+      { op: "circle", c: [211, 141], r: 6, fill: "mark", ink: "mark" },                                       // nucleolus
+    ],
+    anchors: { membrane: [120, 150], nucleus: [214, 158], cytoplasm: [165, 190] },
+  },
+  atom: {
+    // an atom (helium: 2 protons, 2 neutrons, 2 electrons, so it is neutral): the nucleus, one shell, two electrons on it
+    strokes: [
+      { op: "circle", c: [200, 150], r: 75, ink: "soft", weight: 1 },                                         // the shell
+      { op: "circle", c: [200, 150], r: 20, ink: "chalk", weight: 1 },                                        // the nucleus
+      { op: "circle", c: [193, 144], r: 6, fill: "accent", ink: "accent" },                                   // protons
+      { op: "circle", c: [207, 156], r: 6, fill: "accent", ink: "accent" },
+      { op: "circle", c: [207, 144], r: 6, fill: "chalk", ink: "chalk" },                                     // neutrons
+      { op: "circle", c: [193, 156], r: 6, fill: "chalk", ink: "chalk" },
+      { op: "circle", c: [253, 203], r: 5, fill: "mark", ink: "mark" },                                       // electrons, opposite on the shell
+      { op: "circle", c: [147, 97], r: 5, fill: "mark", ink: "mark" },
+    ],
+    // anchors spread down the right column in the order they are labelled (shell, nucleus, neutron, electron), so no two
+    // leaders cross; the electron's leader is the short one to the lower electron
+    anchors: { proton: [193, 144], neutron: [207, 144], nucleus: [200, 130], electron: [253, 203], shell: [200, 75] },
+  },
   flower: {
     strokes: [
       { op: "line", from: [200, 290], to: [200, 175], weight: 3, ink: "good" },
@@ -533,8 +573,11 @@ function label(c, tl) {
   const right = labels.filter((l) => sk.anchors[l.anchor][0] >= 200).sort((p, q) => sk.anchors[p.anchor][1] - sk.anchors[q.anchor][1]);
   const place = (list, x) => list.forEach((l, i) => {
     const y = 40 + (i * 230) / Math.max(1, list.length - 1 || 1) + (list.length === 1 ? 90 : 0);
-    if (textBox(l.text, "s").w > 112) throw new Error("label_too_wide");
-    tl.add({ id: `l_${l.anchor}`, op: "label", at: [x, Math.min(285, y)], text: l.text, to: sk.anchors[l.anchor], ink: "accent" }, 700, { gap: 220 });
+    // a label wider than its column is moved in from the board's edge (4 units clear), never off it
+    const w = textBox(l.text, "s").w;
+    if (w > 120) throw new Error("label_too_wide");
+    const lx = x < 200 ? Math.max(x, 4 + w / 2) : Math.min(x, 396 - w / 2);
+    tl.add({ id: `l_${l.anchor}`, op: "label", at: [lx, Math.min(285, y)], text: l.text, to: sk.anchors[l.anchor], ink: "accent" }, 700, { gap: 220 });
   });
   try { place(left, 58); place(right, 342); } catch { return { error: "label_too_wide" }; }
   return { facts: { sketch: c.sketch, labels: labels.length, ...Object.fromEntries(labels.map((l, i) => [`label${i + 1}`, l.text])) } };
