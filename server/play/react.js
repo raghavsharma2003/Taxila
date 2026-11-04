@@ -14,6 +14,7 @@ import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
 import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
+import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -41,6 +42,9 @@ export function bank() {
 /** Values a line must not say aloud before the child produces them (per family; the server knows the key). */
 export function hiddenOf(level) {
   const p = level.params ?? {};
+  // r7 kaal: the event's year (and, in a century goal, its century) is never said before the child places it. Checked by
+  // family first: kaal's modes ("place", "order") share names with nishana's
+  if (level.family === "kaal") return kaalHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

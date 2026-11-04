@@ -25,6 +25,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
   "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
   "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
+  "kaal",       // round 7: SST time — Kaal-nadi, events placed on a river of time (BCE left, CE right, no year 0)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -38,6 +39,7 @@ export const MODES = {
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
+  kaal: ["place", "order"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -215,7 +217,12 @@ export type YantraAct =
   | { kind: "run" }                                                     // run the machine: the law answers
   | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | WeighAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
+// Kaal (round 7, SST time): the boat carries a stone along the river of time; `year` is a real year (negative = BCE, never 0)
+export type KaalAct =
+  | { kind: "place"; which: number; year: number }      // bring the boat with stone `which` to `year` (the law refuses year 0)
+  | { kind: "check" }                                   // RUN: drop the stone; the law compares it with the event's verified year
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -369,6 +376,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   arena: ["raat", "blueprint", "kagaz", "chalk"],
   stambh: ["kagaz", "chalk", "blueprint", "raat"],
   yantra: ["blueprint", "raat", "chalk", "kagaz"],
+  kaal: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

@@ -6,6 +6,7 @@ import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
+import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -50,8 +51,20 @@ export function arenaItems(bank, topicId) {
   if (!BANKS.has(bank)) { try { BANKS.set(bank, JSON.parse(readFileSync(join(ROOT, "data/arena", `${bank}.json`), "utf8")).challenges ?? []); } catch { BANKS.set(bank, []); } }
   return BANKS.get(bank).filter((c) => c.topicId === topicId);
 }
-/** The arena's challenges ride the request (grammar.items); the client never loads the bank. */
-const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) } : entry.grammar);
+/** Kaal (r7): data/play/kaal/events.json (the kits' dated events, built and checked by tools/build-kaal.mjs), loaded once.
+ *  The file is registered with the kaal law so validate refuses a stone whose year differs from it. */
+let KAAL = null;
+export function kaalEvents(topicId) {
+  if (!KAAL) {
+    try { KAAL = JSON.parse(readFileSync(join(ROOT, "data/play/kaal/events.json"), "utf8")).events ?? []; } catch { KAAL = []; }
+    registerKaalEvents(KAAL);
+  }
+  return KAAL.filter((e) => e.topicId === topicId).map(({ id, year, circa, decade, label }) => ({ id, year, circa, ...(decade ? { decade } : {}), label }));
+}
+kaalEvents("");
+/** The arena's challenges / kaal's events ride the request (grammar.items / grammar.events); the client never loads the file. */
+const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) }
+  : entry.family === "kaal" ? { ...entry.grammar, events: kaalEvents(entry.topicId) } : entry.grammar);
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {
   return {

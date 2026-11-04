@@ -14,6 +14,7 @@ import { pendulumLogic } from "./yantra/pendulum.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
+import { kaalLogic } from "./kaal/kaal.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -49,5 +50,8 @@ export const LOGIC: Record<string, AnyLogic> = {
   "yantra/beam": asAny(beamLogic),
   "yantra/pendulum": asAny(pendulumLogic),
   "yantra/circuit": asAny(circuitLogic),   // round 7 E6: wire a cell, a bulb and a switch; RUN closes the loop or not
+  // round 7 SST: Kaal-nadi, events placed on the river of time (BCE left, CE right, no year 0)
+  "kaal/place": asAny(kaalLogic),
+  "kaal/order": asAny(kaalLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

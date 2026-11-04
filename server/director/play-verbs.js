@@ -31,6 +31,9 @@ export const PLAY_ACTS = Object.freeze({
   yantra: { beam: { act: "build", hi: "sheesha lagao aur chalao", en: "place the mirrors and run it" },
     circuit: { act: "build", hi: "taar jodo aur chalao", en: "wire it up and run it" },
     pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
+  // r7 games: Kaal-nadi (SST time): the boat is brought to a year on the river of time and the stone dropped there
+  kaal: { place: { act: "place", hi: "naav us saal tak le jao aur patthar giraao", en: "take the boat to the year and drop the stone" },
+    order: { act: "place", hi: "har patthar ko uske saal par giraao", en: "drop each stone at its year" } },
 });
 
 /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */
