@@ -40,7 +40,7 @@ const out = {
   visemeFold: { when: "the tier has no viseme_* morphs (B+, B-lite)", map: VISEME_TO_ARKIT },
   faceStyle: L.faceStyle, iris: L.eyes.iris,
   emotions: EMOTIONS, states: STATES,
-  plates: fs.existsSync(`public/assets/teacher-candidates/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`public/assets/teacher-candidates/${look}/plate/plate.json`)) : null,
+  plates: fs.existsSync(`art/character/candidates-built/${look}/plate/plate.json`) ? JSON.parse(fs.readFileSync(`art/character/candidates-built/${look}/plate/plate.json`)) : null,
 };
-fs.writeFileSync(`public/assets/teacher-candidates/${look}/runtime.json`, JSON.stringify(out, null, 1));
+fs.writeFileSync(`art/character/candidates-built/${look}/runtime.json`, JSON.stringify(out, null, 1));
 console.log(`[runtime] ${look} runtime.json`);

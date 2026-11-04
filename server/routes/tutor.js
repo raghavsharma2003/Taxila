@@ -8,6 +8,8 @@
 //   POST /api/tutors/choose      body { childId, tutorId, source: "child" | "child_random", shown?: [id…], msToChoose? }
 //   POST /api/tutors/name        body { childId, name: string | null, source?: "child" | "parent" }   (child-names-teacher)
 //   GET  /api/tutors/name?childId=…  → { name, characterName, custom, history } (the parent corner; behind its gate)
+//   GET  /api/tutors/greeting?childId=…  → her once-a-day home greeting (server/face-puppet/greetings.js): { day, part,
+//        lang, id, text, clip, glance }; the client plays it once per child per `day` (round 7 face-home-daily-greeting)
 //
 // Rules (each enforced here, not in the client):
 // - The offer comes from shared/tutors.js eligibleTutors(): the child's CLASS (never content level, never device
@@ -30,6 +32,7 @@ import { requireChild as authRequireChild } from "../auth.js";
 import { requireParentIfPinSet as parentGate } from "./parent.js";
 import { CHARACTERS, SINGLE_TEACHER_ID, offerMode as charactersOfferMode, singleTeacher, teacherCard, teacherFor } from "../compiler/characters/index.js";
 import { checkTeacherName, effectiveTeacherName } from "../compiler/characters/naming.js";
+import { greetingFor } from "../face-puppet/greetings.js";
 import { CATALOGUE_REV, bandOfClass, defaultTutorFor, eligibleTutors, teacherNameSuggestions, tutorById } from "../../shared/tutors.js";
 
 const SOURCES = ["child", "child_random"];
@@ -204,8 +207,18 @@ async function getName(req, res) {
   });
 }
 
+/** GET /api/tutors/greeting — today's greeting line (and its pre-rendered clip, when rendered) for the child's home. */
+async function getGreeting(req, res) {
+  const childId = new URL(req.url || "/", "http://x").searchParams.get("childId") || "";
+  if (!ID_RE.test(childId)) throw bad("invalid childId");
+  const { child } = await deps.requireChild(req, childId);
+  res.setHeader("cache-control", "private, no-store");
+  send(res, 200, greetingFor(child));
+}
+
 export const routes = {
   "GET /api/tutors": getTutors,
+  "GET /api/tutors/greeting": getGreeting,
   "POST /api/tutors/choose": choose,
   "POST /api/tutors/name": setName,
   "GET /api/tutors/name": getName,

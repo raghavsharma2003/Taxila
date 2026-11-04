@@ -29,3 +29,12 @@
 /* Art placeholders (src/ui/Art.tsx): a calm token-coloured shape, never text. */
 .art-fallback { display: block; position: relative; overflow: hidden; }
 .art-fallback-shape { position: absolute; inset: 12%; border-radius: 50% 46% 52% 48%; opacity: .55; }
+
+/* Round 7: the young band's teach-back protégé, standing at her lower right inside the window. */
+.teacher-protege { position: absolute; right: 3%; bottom: 3%; height: 34%; max-width: 22%; aspect-ratio: 1; pointer-events: none; z-index: 2;
+  /* sized by the window's HEIGHT (and capped by its width) so it stands in the corner beside her, never over her face */
+  animation: teacher-protege-bob 3.2s ease-in-out infinite; }
+.teacher-protege img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transition: opacity 180ms ease-out; }
+.teacher-protege--still { animation: none; }
+@keyframes teacher-protege-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3%); } }
+@media (prefers-reduced-motion: reduce) { .teacher-protege { animation: none; } }
