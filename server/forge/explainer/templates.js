@@ -16,10 +16,10 @@ import { normalizeScript, lintScript, textBox, textProblem } from "../../../shar
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
-  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1"];
+  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -821,10 +821,66 @@ function tableBoard(c, tl) {
   return { facts: { ...(rule ? { rule } : {}), ...Object.fromEntries(rows.slice(0, 10).map((r, i) => [`row${i + 1}`, r.join(" | ")])) } };
 }
 
+/**
+ * round 7 (C1 studio-board-richness, geometry by constraint): a shape TO SCALE from the measures the kit states
+ * (geometry.js). A rectangle / square with its two dimensions on its sides, a triangle built from its three sides (the
+ * triangle inequality checked; each side's length outside its midpoint), a circle with a drawn radius "r = 5 cm".
+ */
+function measuredBoard(c, tl) {
+  const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
+  if (!unit) return { error: "unit" };
+  const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
+  const fmt = (v) => `${num(v)} ${unit}`;
+  const BW = 280, BH = 190, cx = 200, cy = 150;          // the drawing's box on the board (labels outside it)
+  if (c.shape === "rect" || c.shape === "square") {
+    const w = Number(c.w), h = Number(c.h);
+    if (!(w > 0 && h > 0) || w / h > 8 || h / w > 8) return { error: "rect_measures" };
+    // the side label needs its own width to the right of the shape: the shape is scaled into what is left
+    const sideW = textBox(fmt(h), "m").w + 14;
+    const k = Math.min((360 - sideW) / w, BH / h);
+    const W = w * k, H = h * k, x = (400 - (W + sideW)) / 2, y = cy - H / 2;
+    tl.add({ id: "shape", op: "rect", at: [x, y], w: W, h: H, weight: 2 }, 900);
+    tl.add({ op: "text", at: [x + W / 2, y + H + 26], text: fmt(w), size: "m", ink: "accent" }, 400, { gap: 160 });
+    tl.add({ op: "text", at: [x + W + 12, y + H / 2 + 7], text: fmt(h), size: "m", ink: "accent", align: "start" }, 400, { gap: 120 });
+    return { facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }) } };
+  }
+  if (c.shape === "triangle") {
+    const [a, b, d] = Array.isArray(c.sides) ? c.sides.map(Number) : [];
+    if (![a, b, d].every((v) => v > 0) || a + b <= d || a + d <= b || b + d <= a) return { error: "not_a_triangle" };
+    // base = the longest side, the apex from the other two (law of cosines)
+    const [base, s1, s2] = [a, b, d].sort((p, q) => q - p);
+    const px = (base * base + s1 * s1 - s2 * s2) / (2 * base), py = Math.sqrt(Math.max(0, s1 * s1 - px * px));
+    const k = Math.min(BW / base, BH / py);
+    const ox = cx - (base * k) / 2, oy = cy + (py * k) / 2;
+    const A = [ox, oy], B = [ox + base * k, oy], C = [ox + px * k, oy - py * k];
+    tl.add({ id: "shape", op: "polygon", points: [A, B, C], weight: 2 }, 1000);
+    const g = [(A[0] + B[0] + C[0]) / 3, (A[1] + B[1] + C[1]) / 3];
+    const label = (P, Q, len) => {
+      const m = [(P[0] + Q[0]) / 2, (P[1] + Q[1]) / 2];
+      const dx = m[0] - g[0], dy = m[1] - g[1], n = Math.hypot(dx, dy) || 1;
+      tl.add({ op: "text", at: [m[0] + (dx / n) * 38, m[1] + (dy / n) * 38 + 7], text: fmt(len), size: "m", ink: "accent" }, 380, { gap: 140 });
+    };
+    label(A, B, base); label(A, C, s1); label(B, C, s2);
+    return { facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}` } };
+  }
+  if (c.shape === "circle") {
+    const r = Number(c.r);
+    if (!(r > 0)) return { error: "radius" };
+    const R = 84;
+    tl.add({ id: "shape", op: "circle", c: [cx, cy], r: R, weight: 2 }, 900);
+    tl.add({ op: "circle", c: [cx, cy], r: 3, fill: "accent", ink: "accent" }, 200, { gap: 120 });
+    tl.add({ op: "arrow", from: [cx, cy], to: [cx + R, cy], weight: 2, ink: "accent" }, 500, { gap: 120 });   // an arrow: a radius, not a cut (W8)
+    // the label below the circle: text keeps its readable size while the drawing scales, so inside it can meet the rim
+    tl.add({ op: "text", at: [cx, cy + R + 30], text: `r = ${fmt(r)}`, size: "m", ink: "accent" }, 420, { gap: 80 });
+    return { facts: { shape: "circle", radius: fmt(r) } };
+  }
+  return { error: "shape" };
+}
+
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };

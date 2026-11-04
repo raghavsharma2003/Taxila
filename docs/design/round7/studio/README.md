@@ -76,3 +76,17 @@ The table recording showed that with App's stage-first layout (D7) the teacher's
 - **Known flaw:** the soil leader runs along the soil line. To be refined.
 
 `label-circuit-*.mp4 / -strip.png`: c5-evs-ch07-t01 "Energy makes things work". A closed circuit as a textbook draws it: the cell (long and short plate), wires, a bulb with its filament and a switch, each labelled in the kit's word ("battery" here). 8 kits get it (c5 EVS, c7 circuits and conductors, c8 heating effect and batteries, c9 conduction by ionic compounds); a bulb must be named.
+
+## Geometry to scale (C1 item 5, "geometry by constraint")
+
+`geo-rect-*`, `geo-triangle-*`, `geo-circle-*`: a shape the kit states with its measures, drawn to scale.
+
+| file | lesson | what's drawn |
+|---|---|---|
+| `geo-rect-*` | c4 "Distance around a shape" | 150 cm by 100 cm |
+| `geo-triangle-*` | c7 "Constructing triangles" | sides 6, 5 and 4 cm, built from the three sides |
+| `geo-circle-*` | c6 "Circles with a compass" | r = 5 cm |
+
+- **Labels:** every measure is written outside the shape. The recordings caught labels touching a side and the rim, and both were fixed.
+- **Reach:** 22 maths kits state a measured shape (8 rectangles, 4 squares, 5 triangles, 5 circles). All 22 pass every W gate. It is the drawn board in 11; before, those got a model-written flowchart, a key-terms board or a generic shape.
+- **Refusals:** mixed units are never drawn, and an impossible triangle (2, 3, 9) is refused.
