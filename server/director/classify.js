@@ -16,7 +16,7 @@ import { readIntent, sexualAsk } from "../conversation/lexicon.js";
 import { requestFromReading } from "../conversation/policy.js";
 import { p5Flag } from "../conversation/flags.js";
 import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
-import { isSteerChip, steerRequest } from "./steer.js";
+import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
 export { lessonIdiom } from "../safety/idioms.js";
@@ -604,6 +604,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // round 7 (contracts SteerId): a steer-row chip is the request its words would make, never an answer; one with no move
   // yet (steer:wrap2) is still never graded
   if (isSteerChip(chipId)) { const request = steerRequest(chipId); return done("no_evidence", "chip", request ? { request } : {}); }
+  // round 7 A7: a tap on a Later entry is the request to talk about it now, never an answer
+  if (laterChipId(chipId)) return done("no_evidence", "chip", { request: { type: "later", id: laterChipId(chipId), whole: true, src: "later" } });
   if (chipId && target.offered && /^pick:\d+$/.test(chipId)) {
     const picked = target.offered[Number(chipId.slice(5))];
     if (typeof picked === "string") {

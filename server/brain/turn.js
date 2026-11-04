@@ -85,6 +85,7 @@ async function askedBoard(ack, asked) {
 }
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
+import { keepPromise, laterUi } from "../director/later.js";
 import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts, trackedForUndo, editUndoOn } from "./supersede.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
@@ -984,6 +985,19 @@ export async function lessonTurn(req, body, hooks = {}) {
     const relFloor = [...new Set([...relHitsNow.filter((h) => h.family !== "memory_claim" || h.rule === "memory_claim.promise" || memUnbacked).map((h) => h.family),
       ...(memUnbacked ? ["memory_claim"] : [])])];
     if (relFloor.length) next.correction = [...new Set([...(next.correction ?? []), ...relFloor])];
+    // round 7 A7 (brain-parked-promise-tracking): a promise in her own final line to come back to something later is kept
+    // (s.later), so it comes back before the wrap; and the Later list on the screen follows s.later on both lanes (the
+    // agent lane builds its own ui). Never on a safeguard turn.
+    if (r.move.kind !== "safeguard" && !filteredSafeguard && teacherReply) {
+      const before = next.later ?? [];
+      next.later = keepPromise(before, { reply: teacherReply, turn: next.turn, topic: cls?.request?.topic ?? null, childText: moduleOnly ? "" : childText,
+        itemOnTable: !!r.ui?.ask, safeguard: !!next.safeguard });
+      const rows = laterUi(next.later, { turn: next.turn, wrapping: r.move.kind === "wrap", itemOnTable: !!r.ui?.ask });
+      const added = next.later !== before ? next.later.at(-1) : null;
+      const { later: _l, ...rest } = r.ui ?? {};
+      r = { ...r, ui: { ...rest, ...(rows ? { later: rows } : {}), ...(added ? { moment: { kind: "park", laterId: added.id, topic: added.topic } } : {}) } };
+      next.lastUi = r.ui;
+    }
     const replyItem = next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null;
     const replySpoils = spoiledBy(teacherReply, next, kit, replyItem);
     if (replySpoils) next.spoiled = [...(next.spoiled ?? []), replySpoils];

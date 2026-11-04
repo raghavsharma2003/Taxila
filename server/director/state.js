@@ -38,6 +38,7 @@ import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
 import { p5Flag } from "../conversation/flags.js";
 import { unsafeChildPhrase } from "../conversation/screen.js";
+import { laterUi, momentOf, tappedEntry } from "./later.js";
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
@@ -1442,6 +1443,14 @@ function p5RequestMove(s, input, item, req, labels) {
     // decides (a typed non-answer on an item gets the typed nudge). Round 2 integration: the note read a typed bare "7" as
     // noise and the lesson answered "aapne 7 kaha, poori baat dobara kahiye" (w1a-battery: repair moves on typed input 1+1).
     case "unclear": if (input.typed) return null; return item ? withLead(SH.unclearAgain()) : plan("repair", SH.unclearAgain(), { request: "unclear" });
+    // round 7 A7: a tap on a Later entry (chipId later:<id>) is "talk about it now": served here, the lesson carries on
+    case "later": {
+      const e = tappedEntry(s.later, req.id);
+      if (!e) return null;
+      s.later = serveLater(s.later, e.id, s.turn);
+      s.servedNow = { topic: e.topic, share: !!e.share };
+      return withLead(SH.returnParked({ topic: e.topic, share: !!e.share }));
+    }
     case "park": {
       // round 2 safety floor (adversarial B3): a parked topic is promised back later ("we'll come back to X"): screened too
       if (unsafeChildPhrase(req.topic)) return withLead(SH.declineOob());
@@ -2105,6 +2114,11 @@ export function step(prev, input) {
     s.lastMove = move;
   }
   const ui = uiFor(s, p, move, item, input.kit);
+  // round 7 A7: the Later list on the screen and the turn's conversational moment (director/later.js)
+  const laterRows = laterUi(s.later, { turn: s.turn, wrapping: move.kind === "wrap", itemOnTable: !!ui.ask });
+  if (laterRows) ui.later = laterRows;
+  const moment = input.event === "turn" ? momentOf(prev.later, s.later, move, { turn: s.turn }) : null;
+  if (moment) ui.moment = moment;
   s.lastUi = ui; // what a hold re-sends (chips are momentary on the client: absent would clear them)
   // the card pins (capPlan): how many teacher turns in a row (turns with no question on the card do not break the run)
   // have pinned this question
