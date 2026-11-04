@@ -22,6 +22,8 @@ import { Puppet2DRig } from "./runtime/rig.js";
 import { KeyRig } from "./rig-keys/keyrig.ts";
 import { KEY_LEAD_MS } from "./rig-keys/schedule.ts";
 import { PuppetDriver } from "./driver.ts";
+// round 7: the rig off the main thread (an OffscreenCanvas worker) where the browser can draw it there
+import { RemoteRig, startWorkerRig, workerRigSupported } from "./worker/remoteRig.ts";
 import { loadRigChunked } from "./loader.ts";
 import { clearPageSafety, pageInSafety } from "./latch.ts";
 import { puppetBus } from "./bus.ts";
@@ -61,6 +63,9 @@ export interface PuppetStageOptions {
   loader?: "chunked" | "judged";
   /** Route (b): the key rig's 2.5D jaw layer (rig-keys/keyrig.ts). */
   jaw?: boolean;
+  /** Draw the rig in an OffscreenCanvas worker where supported (round 7; the product's default, PuppetFace). The evals'
+   *  scripted clock (tick(now, force)) needs the synchronous main-thread path, so the stage's own default is off. */
+  worker?: boolean;
   /** The clock the bus events are judged against (default performance.now; the evals pass their scripted clock). */
   now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
@@ -94,11 +99,12 @@ const foreground: PuppetStage[] = [];
 const pct = (a: number[], q: number) => { if (!a.length) return 0; const s = [...a].sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(q * s.length))]; };
 
 export class PuppetStage {
-  readonly canvas: HTMLCanvasElement;
+  canvas: HTMLCanvasElement;
   readonly driver: PuppetDriver;
   private host: HTMLElement;
   private o: PuppetStageOptions;
-  private rig: Puppet2DRig | KeyRig | null = null;
+  private rig: Puppet2DRig | KeyRig | RemoteRig | null = null;
+  private sizeObs: ResizeObserver | null = null;
   private tap: TeacherTap;
   private raf = 0;
   private running = false;
@@ -146,13 +152,7 @@ export class PuppetStage {
     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
-    const c = document.createElement("canvas");
-    c.className = "fp-canvas";
-    c.setAttribute("aria-hidden", "true");
-    c.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block";
-    this.canvas = c;
-    c.addEventListener("webglcontextlost", this.onLost, false);
-    c.addEventListener("webglcontextrestored", this.onRestored, false);
+    this.canvas = this.makeCanvas();
     // Review v4 (2026-10-05): listen from construction, not after the pack loads. The driver needs no rig, and init()
     // awaits the chunk + pack + GL warm (seconds on a cold phone): a part-0 viseme batch, a Director affect or a look that
     // arrived in that window was silently dropped, so the greeting (the first line of every lesson) lost its visemes.
@@ -178,6 +178,16 @@ export class PuppetStage {
     }
   }
 
+  private makeCanvas(): HTMLCanvasElement {
+    const c = document.createElement("canvas");
+    c.className = "fp-canvas";
+    c.setAttribute("aria-hidden", "true");
+    c.style.cssText = "position:absolute;inset:0;width:100%;height:100%;opacity:0;transition:opacity 220ms ease-out;display:block";
+    c.addEventListener("webglcontextlost", this.onLost, false);
+    c.addEventListener("webglcontextrestored", this.onRestored, false);
+    return c;
+  }
+
   /** Load the pack and the rig; resolves when the first frame can draw. Rejects → the host falls back. */
   async init(): Promise<void> {
     const t0 = performance.now();
@@ -187,6 +197,35 @@ export class PuppetStage {
     const view = [...pack.view[this.o.framing ?? "medium"]] as [number, number, number];
     const ropts = { ext: "webp", dpr: this.dpr, view, clear: [...pack.clear] as [number, number, number], reducedMotion: this.o.reducedMotion };
     const base = this.o.base ?? pack.base;
+    // round 7: the rig in a worker (OffscreenCanvas), so a rig frame never holds the page's main thread. Where the browser
+    // cannot (no OffscreenCanvas / transfer / WebGL2 in a worker) or the worker fails to load, a fresh canvas takes the
+    // main-thread path below; the still holds the slot meanwhile, so nothing visible changes.
+    const kind = pack.rig === "keys" ? "keys" : "mesh";
+    if (this.o.worker && workerRigSupported(kind)) {
+      try {
+        const box: [number, number] = [this.canvas.clientWidth || this.host.clientWidth || 1, this.canvas.clientHeight || this.host.clientHeight || 1];
+        const res = await startWorkerRig(this.canvas, kind, base, { ...ropts, jaw: this.o.jaw }, box, (m) => {
+          if (this.disposed) return;
+          this.emit({ type: "fallback", reason: m.t === "lost" ? "webgl context lost (worker)" : `worker rig: ${m.message}` });
+        }, this.o.loadTimeoutMs ?? 8000);
+        if (this.disposed) { res.rig.dispose(); return; }
+        this.rig = res.rig;
+        if (typeof ResizeObserver === "function") {
+          this.sizeObs = new ResizeObserver(() => { if (this.rig instanceof RemoteRig) this.rig.size(this.canvas.clientWidth || 1, this.canvas.clientHeight || 1); });
+          this.sizeObs.observe(this.canvas);
+        }
+        this.emit({ type: "loaded", ms: Math.round(performance.now() - t0), path: res.path, slices: 0, longestSliceMs: 0, warmFrameMs: Math.round(res.warmFrameMs * 10) / 10 });
+        this.startTier(res.warmFrameMs);
+        return;
+      } catch (e) {
+        if (this.disposed) return;
+        // the transferred canvas can never get a main-thread context: replace it
+        const old = this.canvas;
+        this.canvas = this.makeCanvas();
+        old.replaceWith(this.canvas);
+        this.log.push({ type: "fallback", reason: `worker rig unavailable, main thread: ${String((e as Error)?.message ?? e).slice(0, 120)}`, at: Math.round(performance.now()) } as never);
+      }
+    }
     // ship5 p2-face: the chunked loader (loader.ts) by default: bitmaps decoded off-thread, warm-up in <= 8 ms slices.
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
@@ -318,7 +357,8 @@ export class PuppetStage {
     const rig = this.rig;
     if (!rig || this.disposed) return;
     // turn first: the child's turn is on its way to the server; the main thread is its until then
-    if (!force && now < this.holdUntil && this.status !== "speaking") return;
+    // (the hold matters only when the rig draws ON the main thread: a worker frame costs the page almost nothing)
+    if (!force && now < this.holdUntil && this.status !== "speaking" && !(rig instanceof RemoteRig)) return;
     if (this.holdUntil) { this.holdUntil = 0; this.lastNow = 0; } // a held gap is not a stall
     // adaptive rate (low CPU): 60 fps while she speaks or the face is changing (a state change, an expression ramp, a nod,
     // a look); 30 fps in the slow holds (listening, thinking, idle: breath, drift and blinks, whose shaper already runs on
@@ -335,7 +375,7 @@ export class PuppetStage {
     const tap = this.tap.read();
     rig.R.dpr = this.dpr;
     // a key rig shows the calm neutral mouth (never the smile) and neutral brows in a safety turn (KeyRig.calm)
-    if (rig instanceof KeyRig) rig.calm = this.driver.inSafety;
+    if (rig instanceof KeyRig || (rig instanceof RemoteRig && rig.kind === "keys")) rig.calm = this.driver.inSafety;
     const r0 = performance.now();
     const f = this.driver.frame({ nowMs: now, tap, status: this.status, childLevel: this.childLevel }, rig);
     const rigMs = performance.now() - r0 - f.workMs;
@@ -366,7 +406,7 @@ export class PuppetStage {
     // The rule, exactly (ship5 p2-face: the earlier write-up said "only during her silence", which was never true): the
     // FIRST of (a) she is not speaking, (b) she is speaking and her live mouth is near-closed, (c) 800 ms of frames. The
     // event names which one fired; (c) is the only case where the fade can start on an open mouth.
-    if (!this.revealed && this.frames > 2) {
+    if (!this.revealed && this.frames > 2 && (!(rig instanceof RemoteRig) || rig.rigMs.length >= 2)) {
       const why = f.state !== "speaking" ? "silence" : closedMouth ? "closed" : now - this.t0 > 800 ? "bound" : null;
       if (why) {
         this.revealed = true;
@@ -461,8 +501,8 @@ export class PuppetStage {
 
   /** The live rig's mouth state (evals: the rendered lip gap in rest-space px, p.g). */
   mouthProbe(): { gap: number; name: string; lip: string; state: string; revealed: boolean } | null {
-    const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string } } | null;
-    return r ? { gap: r.solver?.p?.g ?? 0, name: r.mouth?.name ?? "", lip: this.lipSource, state: this.driver.policy.faceState, revealed: this.revealed } : null;
+    const r = this.rig as unknown as { solver?: { p?: { g?: number } }; mouth?: { name: string; p?: { g: number } } } | null;
+    return r ? { gap: r.solver?.p?.g ?? r.mouth?.p?.g ?? 0, name: r.mouth?.name ?? "", lip: this.lipSource, state: this.driver.policy.faceState, revealed: this.revealed } : null;
   }
 
   /** Stats for the evals and the owner's ?facerig read-out. */
@@ -488,6 +528,8 @@ export class PuppetStage {
     this.tap.dispose();
     this.longObs?.disconnect();
     this.longObs = null;
+    this.sizeObs?.disconnect();
+    this.sizeObs = null;
     this.canvas.removeEventListener("webglcontextlost", this.onLost);
     this.canvas.removeEventListener("webglcontextrestored", this.onRestored);
     this.rig?.dispose();
