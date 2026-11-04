@@ -549,6 +549,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const gameUp = !!(state.playOn || module?.id || state.module?.id);
   // round 7 (full-run judgement #1): the child said something this turn (an answer to be graded, or not)
   const answeredNow = /[\p{L}\p{N}]/u.test(String(childText ?? ""));
+  // round 7 (main's full-run judgement #4: her own question "kitne groups?" got "4", and her next line asked something new):
+  // with no card on the table, a short answer to the question her last line asked is answered first, never skipped
+  const herLastQ = [...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
+  const saidNow = String(childText ?? "").trim();
+  const ownQAnswered = !item && /[?？]\s*$/.test(herLastQ.trim()) && answeredNow && !state.lastMove?.request && words(saidNow) <= 8
+    && !CLOSING_MOVES.has(state.lastMove?.kind) && !state.lastMove?.checkin;
+  const bareNumberSaid = /^\s*-?\d+(?:[.,/]\d+)?\s*\??\s*$/.test(saidNow) ? saidNow.replace(/[^\d.,/-]/g, "") : null;
   // round 2 safety floor: a check-in hands back by the choices it offers (the chips wait), never by a lesson question
   const checkin = state.lastMove?.checkin ?? null;
   const activeItem = checkin && state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
@@ -676,6 +683,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (full-run judgement #10: with a game up, "Game ne 3 jumps register kiye" on a SPOKEN "3": a game event arrives as a
     // module-only turn with no words, so on a turn they spoke the game did nothing to describe)
     (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
+    // (full-run judgement #4) their number answer to her own question is answered, never ignored
+    ownQAnswered && bareNumberSaid && !String(t).includes(bareNumberSaid) && "ignored",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
@@ -817,7 +826,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const shapeNote = R3 && !CLOSING_MOVES.has(kindNow) && !checkin && !restBreak && !thinkingWait && !whyProbe && !item?.diagnostic && mustHandBack
     ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
   const cardNote = englishCard && !CLOSING_MOVES.has(kindNow) ? `The question on the screen is in English: never read it out; ask the same question in your own words in their language (${lang === "hindi" ? "simple Hindi" : "Hinglish"}), keeping its numbers, and never its answer.` : null;
-  const lastNotes = [reqNote, shapeNote, cardNote].filter(Boolean).join(" ");
+  const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it; then the move.` : null;
+  const lastNotes = [reqNote, shapeNote, cardNote, ownQNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -963,6 +973,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
       found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: say back what they said and what part of it fits, or ask what they mean",
+      found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — say it back and respond to it first (what fits, what does not, the right one if it is not), then go on`,
       found.includes("readscard") && `it reads the English question card aloud — ask that question in your own words in their language instead, keeping its numbers`,
       found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: say back what they said, then the next step",
       found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",

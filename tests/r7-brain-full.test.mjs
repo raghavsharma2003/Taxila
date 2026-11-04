@@ -85,4 +85,18 @@ test("#2/#3 (c4 steady, c4 steering after 'hindi mein batao'): an English card i
     assert.doesNotMatch(fallbackReply(st, fadeItem(C4, { index: 0 })), /means 1 of/);
   }
 });
+
+test("#4 (c4 steady T5-T6): an answer to her own question ('4' to 'kitne groups?') is answered first, never skipped for a new question", async () => {
+  let r = start(C4, 4);
+  for (let i = 0; i < 2; i++) r = turn(C4, r, "haan");
+  r = turn(C4, r, "4");
+  const history = [{ who: "teacher", text: "1/3 ka matlab kya hai, kitne barabar groups banenge?" }, { who: "child", text: "4" }];
+  const calls = [];
+  replyDeps.chat = async (_d, msgs) => { calls.push(msgs.at(-1).content);
+    return { text: calls.length === 1 ? "Riya, 15 pencils total hain. Ab batao, problem humse kya pooch rahi hai?" : "Tumne 4 kaha; 1/3 mein 3 barabar groups bante hain, 4 nahi. Ab batao, 15 pencils ke 3 groups mein ek group mein kitne?" }; };
+  const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text", activeItemId: undefined, lastMove: { kind: "explain" } }, kit: C4, childText: "4", verdict: "ungraded", history: history.slice(0, 1), ui: {}, module: null });
+  assert.match(calls[0], /They answered your last question with "4": respond to that answer FIRST/);
+  assert.ok(out.guard.caught.includes("ignored"), JSON.stringify(out.guard));
+  assert.match(out.reply, /\b4\b/, out.reply);
+});
 });
