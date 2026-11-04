@@ -3,10 +3,10 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 74,
-  "entries": 295,
-  "withMisconceptionMap": 66,
-  "mappedMisconceptions": 112,
+  "topicsCovered": 76,
+  "entries": 297,
+  "withMisconceptionMap": 68,
+  "mappedMisconceptions": 116,
   "bySubject": {
    "maths": {
     "inScope": 304,
@@ -14,7 +14,7 @@
    },
    "science": {
     "inScope": 146,
-    "covered": 13
+    "covered": 15
    },
    "evs": {
     "inScope": 64,
@@ -48,7 +48,7 @@
    },
    "7": {
     "inScope": 79,
-    "covered": 20
+    "covered": 22
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 74,
+  "topicsCoveredAll": 76,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -80,7 +80,7 @@
    },
    "science": {
     "topics": 146,
-    "covered": 13
+    "covered": 15
    },
    "sst": {
     "topics": 65,
@@ -97,9 +97,10 @@
    "kon": 9,
    "nazariya": 11,
    "stambh": 6,
+   "yantra": 2,
    "arena": 204
   },
-  "skillsAdmitted": 633,
+  "skillsAdmitted": 637,
   "rulesNotAdmitted": 1
  },
  "skills": {
@@ -2500,6 +2501,58 @@
    },
    "contexts": [],
    "why": "RULES c6-maths-ch04-t03 stambh/bars/diff · ACTS"
+  },
+  "c7-science-ch03-t01-s2": {
+   "topicId": "c7-science-ch03-t01",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t01 yantra/circuit/light · ACTS"
+  },
+  "c7-science-ch03-t01-s3": {
+   "topicId": "c7-science-ch03-t01",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t01 yantra/circuit/light · ACTS"
+  },
+  "c7-science-ch03-t02-s3": {
+   "topicId": "c7-science-ch03-t02",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t02 yantra/circuit/switch · ACTS"
+  },
+  "c7-science-ch03-t02-s4": {
+   "topicId": "c7-science-ch03-t02",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch03-t02 yantra/circuit/switch · ACTS"
   },
   "c1-maths-ch03-t01-s1": {
    "topicId": "c1-maths-ch03-t01",
@@ -10622,6 +10675,44 @@
    },
    "misMap": {
     "scale-as-one": "c6-maths-ch04-t03-m-count-units"
+   }
+  },
+  {
+   "topicId": "c7-science-ch03-t01",
+   "title": "Cells, bulbs and closed circuits",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "light",
+   "skillId": "c7-science-ch03-t01-s2",
+   "skillIds": [
+    "c7-science-ch03-t01-s2",
+    "c7-science-ch03-t01-s3"
+   ],
+   "grammar": {},
+   "misMap": {
+    "one-wire": "c7-science-ch03-t01-m1",
+    "both-terminals-clash": "c7-science-ch03-t01-m3"
+   }
+  },
+  {
+   "topicId": "c7-science-ch03-t02",
+   "title": "Circuit diagrams and switches",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "circuit",
+   "goal": "switch",
+   "skillId": "c7-science-ch03-t02-s3",
+   "skillIds": [
+    "c7-science-ch03-t02-s3",
+    "c7-science-ch03-t02-s4"
+   ],
+   "grammar": {},
+   "misMap": {
+    "switch-before-only": "c7-science-ch03-t02-m2",
+    "switch-source": "c7-science-ch03-t02-m1"
    }
   },
   {
