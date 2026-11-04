@@ -11,7 +11,7 @@ Main loop (integration, decisions, owner contact): `session_0135KCpT8GA8E1uzNPiw
 | D Face (one grown-up Asha) | `session_01Uk49c26xwfjcNEq7a5EiFS` | `claude/r7-face` | new |
 | E App (child app, lesson shell) | `session_01Uk49c2MmSpb9CU49GhQaZc` | `claude/r7-app` | new |
 | F Learning (curriculum, level, Conductor, parent corner) | `session_01Uk49bzgH7EmatxJY8gd4Bz` | `claude/r7-learning` | new |
-| G Platform (release, staging, cost, India hot path) | `session_01DQV1RuwHDvZdoVJ8PpbsyJ` | `claude/r4-latency` (session may push only there) | was stream 3 |
+| G Platform (release, staging, cost, India hot path) | `session_01DQV1RuwHDvZdoVJ8PpbsyJ` | `claude/r7-platform` | was stream 3 |
 
 Send cross-stream patches with the Claude Code Remote `send_message` tool to the owner's session id above.
 
