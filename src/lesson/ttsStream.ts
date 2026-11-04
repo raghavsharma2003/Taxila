@@ -242,7 +242,9 @@ export function turnAudioEnabled(): boolean {
   } catch {
     /* storage blocked */
   }
-  return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO === "1";
+  // round 7 (B5, voice-first-sound-latency b): the fold is the default (the turn and her audio on one response, and the
+  // streamed Director clauses ride it); VITE_TURN_AUDIO=0 or ?turnaudio=0 turns it off
+  return (import.meta as { env?: Record<string, string> }).env?.VITE_TURN_AUDIO !== "0";
 }
 
 interface Fold { stream: ReadableStream<Uint8Array>; at: number; req: TtsRequest; sink: ClauseSink | null; pending: TtsClauseEvent[]; pendingV: TtsVisemeFrame[] }

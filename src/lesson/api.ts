@@ -10,6 +10,9 @@ import type {
 } from "../../shared/contracts.ts";
 import { postStartAudio, postTurnAudio, startAudioEnabled, turnAudioEnabled } from "./ttsStream.ts";
 
+/** Round 7 (B5): this page's server has no turn-audio fold (a 404 or an unframed 2xx once): plain turns from then on. */
+let foldMissing = false;
+
 export class ApiError extends Error {
   readonly status: number;
   readonly body: unknown;
@@ -71,8 +74,16 @@ export const httpLessonApi: LessonApi = {
   start: (req) => (startAudioEnabled()
     ? postStartAudio(req).catch((e: unknown) => (e instanceof ApiError && (e.status === 404 || (e.status >= 200 && e.status < 300)) ? postJson("/api/lesson/start", req) : Promise.reject(e)))
     : postJson("/api/lesson/start", req)),
-  // W2-G #7 round-trip fold: off by default (voice.turnAudio flag); same TurnResponse and the same ApiError mapping.
-  turn: (req, signal) => (turnAudioEnabled() ? postTurnAudio(req, signal) : postJson("/api/lesson/turn", req, signal)),
+  // W2-G #7 round-trip fold: on by default since round 7 (B5; ?turnaudio=0 turns it off); same TurnResponse and the same
+  // ApiError mapping. Like the start fold: a server without the route (404, or a 2xx that is not framed: the fold's own
+  // refusals are never 2xx) took nothing, so the turn goes to /api/lesson/turn, and the page stops asking the fold.
+  turn: (req, signal) => (turnAudioEnabled() && !foldMissing
+    ? postTurnAudio(req, signal).catch((e: unknown) => {
+      if (!(e instanceof ApiError && (e.status === 404 || (e.status >= 200 && e.status < 300)))) return Promise.reject(e);
+      foldMissing = true;
+      return postJson("/api/lesson/turn", req, signal);
+    })
+    : postJson("/api/lesson/turn", req, signal)),
   end: (lessonId) => postJson("/api/lesson/end", { lessonId }),
   endBeacon: (lessonId) => {
     const body = JSON.stringify({ lessonId });

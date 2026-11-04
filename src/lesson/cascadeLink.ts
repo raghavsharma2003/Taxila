@@ -455,8 +455,10 @@ export class CascadeLink implements TeacherLink {
     this.onTransport = opts.onTransport;
     this.ctx = opts.audioContext ?? null;
     this.merger = opts.predictive ?? predictiveEnabled() ? new FragmentMerger() : null;
-    // round 5: no continuer on D5 until its gate covers it (Voice Live's own turn detection has not been measured with one)
-    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => this.laneUsed !== "d5" }) : null;
+    // round 7 (B5): the continuer on every lane, D5 included: it plays through her output (the D5 stereo reference, so Voice
+    // Live's echo canceller removes it) and counts as her sounding for the engine (herSounding: ackNow). Round 5 had it off
+    // on D5 until measured; needs-live-check: Voice Live's turn detection with a continuer playing
+    this.ack = opts.ack ?? ackEnabled() ? new AckClient({ lessonId: opts.lessonId, onClip: (c) => this.playAck(c), continuer: () => true }) : null;
     this.prefetcher = opts.prefetch ?? prefetchEnabled()
       ? new TurnPrefetcher({ lessonId: opts.lessonId, onSend: (b) => this.ack?.request(b.text) }) : null;
     this.unregisterLatency = registerLatencyTarget({ lessonId: opts.lessonId, prefetcher: this.prefetcher, ack: this.ack, duplexLive: () => this.duplexDeciding });
