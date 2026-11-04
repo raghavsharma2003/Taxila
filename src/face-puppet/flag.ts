@@ -135,3 +135,19 @@ export function rigWorkerEnabled(): boolean {
     return true;
   }
 }
+
+/** Round 7 face-prewarm-for-first-sound: the home's worker-backed stage is handed to the lesson's face (./prewarm.ts;
+ *  default on). ?handoff=0 turns it off on this device (the A/B for start → first face); ?handoff=1 / default clears it. */
+export const FACE_HANDOFF_KEY = "tx.flag.face.handoff";
+export function faceHandoffEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("handoff");
+      if (v === "0") localStorage.setItem(FACE_HANDOFF_KEY, "0");
+      else if (v === "1" || v === "default") localStorage.removeItem(FACE_HANDOFF_KEY);
+    }
+    return !(typeof localStorage !== "undefined" && localStorage.getItem(FACE_HANDOFF_KEY) === "0");
+  } catch {
+    return true;
+  }
+}
