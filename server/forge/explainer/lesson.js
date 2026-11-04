@@ -12,6 +12,7 @@
 // Like lesson-fills.js: imports nothing heavy at load (the model call is a registered warmer), so Director tests stay pure;
 // process memory only.
 import { timelineCall } from "./timeline.js";
+import { tableCall } from "./table.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -89,6 +90,9 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   // library's model-written flow for the same topic
   const tlc = timelineCall(kit, { text });
   if (tlc) tries.push([tlc, "code"]);
+  // round 7: a computed table (the kit's "table of N" or its linear rule's values)
+  const tbc = tableCall(kit, { text });
+  if (tbc) tries.push([tbc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

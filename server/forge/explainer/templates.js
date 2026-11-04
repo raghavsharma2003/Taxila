@@ -16,10 +16,10 @@ import { normalizeScript, lintScript, textBox, textProblem } from "../../../shar
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
-  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1"];
+  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -761,10 +761,35 @@ function timelineBoard(c, tl) {
   }
 }
 
+/**
+ * round 7 (C1 studio-board-richness): a table (table.js: every cell computed). 2-4 columns, 1-10 rows; the rule it comes
+ * from on top, the header in accent, then the rows one by one so the pattern is seen growing.
+ */
+function tableBoard(c, tl) {
+  const head = Array.isArray(c.head) ? c.head.map(String) : [];
+  const rows = Array.isArray(c.rows) ? c.rows.map((r) => (Array.isArray(r) ? r.map(String) : [])) : [];
+  const cols = head.length;
+  if (cols < 2 || cols > 4 || rows.length < 1 || rows.length > 10 || rows.some((r) => r.length !== cols)) return { error: "table_shape" };
+  if ([...head, ...rows.flat()].some((t) => !t || [...t].length > 10 || textProblem(t))) return { error: "table_cell" };
+  const rule = typeof c.rule === "string" && fitsLabel(c.rule) ? c.rule : null;
+  const top = rule ? 52 : 22, rh = Math.min(34, (286 - top) / (rows.length + 1)), cw = Math.min(110, 340 / cols);
+  const x0 = 200 - (cw * cols) / 2, w = cw * cols, h = rh * (rows.length + 1);
+  const size = rh >= 28 ? "m" : "s";
+  if ([...head, ...rows.flat()].some((t) => textBox(t, size).w > cw - 10)) return { error: "table_cell_wide" };
+  if (rule) tl.add({ op: "text", at: [200, 30], text: rule, size: "m", ink: "accent" }, 500);
+  tl.add({ op: "rect", at: [x0, top], w, h, weight: 2 }, 600, { gap: 120 });
+  for (let j = 1; j < cols; j++) tl.add({ op: "line", from: [x0 + j * cw, top], to: [x0 + j * cw, top + h], weight: 1 }, 220, { gap: 40 });
+  tl.add({ op: "line", from: [x0, top + rh], to: [x0 + w, top + rh], weight: 2 }, 260, { gap: 40 });
+  const cy = (i) => top + rh * i + rh / 2 + (size === "m" ? 7 : 5);
+  head.forEach((t, j) => tl.add({ op: "text", at: [x0 + cw * (j + 0.5), cy(0)], text: t, size, ink: "accent" }, 260, { gap: j ? 20 : 120 }));
+  rows.forEach((r, i) => r.forEach((t, j) => tl.add({ op: "text", at: [x0 + cw * (j + 0.5), cy(i + 1)], text: t, size }, 200, { gap: j ? 20 : 160 })));
+  return { facts: { ...(rule ? { rule } : {}), ...Object.fromEntries(rows.slice(0, 10).map((r, i) => [`row${i + 1}`, r.join(" | ")])) } };
+}
+
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };

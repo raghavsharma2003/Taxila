@@ -54,3 +54,14 @@ Re-record with `node evals/studio-timing/record-split.mjs <board.json> <outdir> 
 - **Scale:** each tick sits at its year's true place, so the long gap from 1025 to 1191 shows as a long gap.
 - **Layout:** with up to 4 events, labels alternate above and below a left-to-right axis. With 5 or 6, the axis runs down and each event gets its own row. Labels are spread so they never touch, with a leader line back to the tick.
 - **Reach:** 7 topics today (c7-c9 social science, plus the history of cell theory in c9 science). It is picked before the library's model-written flowchart for those topics.
+
+## Tables (C1 item 5; every cell computed)
+
+`table-*.mp4 / -strip.png`: c9-maths-ch02-t02 "Linear patterns and relationships", y = 3x + 5 with x 0-4 → y 5, 8, 11, 14, 17, the rows appearing one by one.
+
+- **Sources:** the kit names "the table of N", or a linear rule y = ax + b in a linear-pattern, relationship or graph lesson. Units ("h = 20 m") and proof steps ("p = 2k") are never read as rules.
+- **Reach:** 5 kits (c3 times tables, c6 multiples of 7, c9 linear patterns and graphs). The table is the board in 2 of them; in the other 3 a code pick comes first.
+
+## The teacher's picture-in-picture never covers a piece (phones)
+
+The table recording showed that with App's stage-first layout (D7) the teacher's picture-in-picture, in the slot's bottom-right, covered the board's last row on a phone. Every piece now stays clear of that square (`src/studio/pipZone.ts`, the box contract's pipZone): it is lifted above it when there is room, and fitted into the space above it when there isn't. `timeline-down-*` was re-recorded with the fix.
