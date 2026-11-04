@@ -8,6 +8,7 @@ import { teacherRecord } from "../../ui/teacher/useTeacher.ts";
 import { kidLook, nextStep, StepFrame } from "../Layout.tsx";
 import { setLangPref, useDraft } from "../draft.ts";
 import { LangTile, LANGS, type Speak } from "./Meet.tsx";
+import { teacherBandFor } from "../teacherBand.ts";
 
 const BOARDS = [{ value: "cbse", label: "CBSE" }, { value: "rbse", label: "RBSE" }, { value: "other-state", label: "Other" }];
 
@@ -23,7 +24,7 @@ export function ClassStep() {
     set((cur) => ({ lang: l.ui, child: { ...(cur.child ?? {}), languagePref: l.id } }));
     setLangPref(l.ui);
   };
-  const rec = teacherRecord(defaultTutorFor({ class_level: c.classLevel ?? 5 }), (c.classLevel ?? 5) <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: c.classLevel ?? 5 }), teacherBandFor(c.classLevel));
   const ready = !!c.classLevel && !!c.board && !!speak;
   const why = !c.classLevel || !c.board ? "Choose a class and a board" : `Choose how ${rec.name} speaks`;
   return (
