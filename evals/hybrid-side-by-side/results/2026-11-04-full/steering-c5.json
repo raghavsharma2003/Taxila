@@ -1,0 +1,311 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko number line par cricket pitch jaise place karenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 977
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ko barabar parts mein baantkar socho: ball halfway ho, toh number line par woh kis jagah hogi? Golu ko bhi baad mein sikhaoge.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1166,
+   "replyReadyMs": 2143
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 579
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. Pehla step: 0 se 1 tak line ko 5 barabar gaps mein baanto. Kitne gaps banenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 811,
+   "replyReadyMs": 1390
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 724
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, chhote steps: 0 se 1 ko 5 barabar gaps mein baanto. Kitne gaps?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 938,
+   "replyReadyMs": 1662
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 535
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, picture ko words mein dekho: 0 se 1 tak 5 barabar gaps hain; 2/5 doosre gap par hai. Batao, kaunsa gap?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2226,
+   "replyReadyMs": 2761,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1174
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. 0, phir pehla, doosra gap gino: 2/5 doosre gap par. 0 ke baad kya aata hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 895,
+   "replyReadyMs": 2069
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 570
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai—cricket, stories, ya kuch aur?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 950,
+   "replyReadyMs": 1520
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 996
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein tumne bataya ki tumhe cricket pasand hai. Is baat ko yaad rakhenge; ab number line ka chhota step karte hain. Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1223,
+   "replyReadyMs": 2219
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 941
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 2/5 aur 1/2 ko number line par socho. Pehle 0 se 1 tak barabar hisson ki line banao. Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1127,
+   "replyReadyMs": 2068
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 822
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum pehle khud try karo. Main ab chhote steps mein, tumhare try ke baad hi madad karungi. Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1030,
+   "replyReadyMs": 1852
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1178
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho. Tum carry on, chhota break, ya aaj ke liye stop chun sakti ho.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1173,
+   "replyReadyMs": 2351
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ki boundary jaisi line par fractions ki jagah dhoondhenge. Zero se one ke beech aadhe raste par kaunsa number hoga?",
+   "move": "hook",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1537
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo aadha raasta sochte hain. Ghar zero par hai aur chai ki dukaan one par; bilkul beech wala mark kaunsa number hai?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2240,
+   "replyReadyMs": 3777
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 814
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, step by step chalte hain. Ghar zero aur dukaan one hai; raaste ko do barabar gaps mein baanto. Zero se pehla gap chalne par aadha raasta hota hai. Beech wale mark ka number kya hoga?",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2624,
+   "replyReadyMs": 3438
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 2596
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chhota bolungi. Zero se one tak do barabar gaps hain. Pehla gap chalke kaunsa fraction aata hai?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2064,
+   "replyReadyMs": 4660
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 529
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle picture. ghar se dukaan tak beech mein ek nishaan socho.",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2593,
+   "replyReadyMs": 3122
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Gol roti ke do barabar tukde socho; ek tukda aadha hai. Zero se one tak aadha raasta bhi wahi hai. Beech wale mark ko kya kahoge?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2351,
+   "replyReadyMs": 2352
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 518
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, fractions se thoda break lete hain. Cricket ki baat karein? Tumhe batting zyada pasand hai ya bowling?",
+   "move": "break",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2059,
+   "replyReadyMs": 2577
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1174
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket ki baat karte hain. Tumhe batting zyada pasand hai ya bowling?",
+   "move": "break",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1822,
+   "replyReadyMs": 2996
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 657
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ab main Hindi mein aur chhota bolungi. Cricket mein tumhe ballebaazi pasand hai ya gendbaazi?",
+   "move": "break",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1965,
+   "replyReadyMs": 2622
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1231
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, pehle tum khud sochogi. Main tumhare jawab ke baad hi chhota sa sanket dungi. 0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "move": "practice",
+   "card": "0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "replyMs": 7371,
+   "replyReadyMs": 8602,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1746
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, alvida! Aaj tumne aadhe hisse aur barabar faaslon par baat ki. Sankhya rekha par bhinn ki jagah pehchanna abhi baaki hai.",
+   "move": "wrap",
+   "card": "0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "replyMs": 2405,
+   "replyReadyMs": 4151
+  }
+ ]
+}

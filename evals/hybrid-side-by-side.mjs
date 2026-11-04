@@ -19,6 +19,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
+import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
 import { DEPLOY } from "../server/azure.js";
 import { teacherDeployment } from "../server/agent/flags.js";
@@ -136,7 +137,8 @@ async function lesson(lane, kit, classLevel, lines) {
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
     let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, replyMs = 0;
-    if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress) {
+    // (as brain/turn.js: the stop check-in is the Director's on both lanes)
+    if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
       const verdict = card ? (c.outcome === "correct" ? "correct" : c.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(c.outcome) ? "wrong" : null) : null;
       const [out, ms] = await timed(() => agentLine(s, eventOf({ kind: "turn", childText: text, typed: true, cls: c, card, kit, lang: "hinglish" }), { verdict }));
@@ -145,7 +147,12 @@ async function lesson(lane, kit, classLevel, lines) {
         const an = structuredClone(next);
         an.activeItemId = s.activeItemId; an.hintLevel = s.hintLevel; an.phase = s.phase; an.itemsDone = s.itemsDone;
         const a = applyAgentTurn(an, out, { kit, childText: text, cls: c, card, lessonId: LESSON.id });
-        next = an; move = a.move.kind; ui = a.ui; reply = out.say;
+        // the code invariants on her line, exactly as brain/turn.js applies them (main's pilot judgement #3, #8, #9)
+        const inv = { classLevel, kitText: (kit.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " "),
+          phase: s.phase, cardOnTable: !!card, agent: s.agent ?? {}, cls: c };
+        const breach = a.end && !p.r.end ? "agent_end_without_checkin" : agentBreach(out, inv);
+        if (breach) { fellBack = breach; next = { ...next, agent: resetAgentRuns(next.agent ?? s.agent ?? {}) }; }
+        else { an.agent = noteAgentTurn(an.agent, out, inv); next = an; move = a.move.kind; ui = a.ui; reply = out.say; }
       } else fellBack = out?.error ?? "no line";
     }
     if (reply == null) {
