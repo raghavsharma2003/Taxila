@@ -220,3 +220,18 @@ for (const e of MINE()) for (const fade of [1, 2, 3]) {
     }
   });
 }
+
+test("yantra/circuit: the switch-source wiring (bulb + closed switch, no cell) is answered as a missing cell, not a switch fault", async () => {
+  const { circuitLogic } = await import("../src/play/families/yantra/circuit.logic.ts");
+  let checked = 0;
+  for (const seed of [1, 2, 3, 4, 5, 6]) for (const c of circuitLogic.generate({ family: "yantra", mode: "circuit", goal: "switch", topicId: "t", skillId: "t-s1", classLevel: 7, fade: 2, mis: {}, misMap: { "switch-source": "k" }, grammar: {}, recent: [], seed })) {
+    const lv = circuitLogic.validate(c.level), acts = circuitLogic.malActs(lv, "switch-source");
+    if (!acts) continue;
+    let s = circuitLogic.init(lv); const ms = [];
+    acts.forEach((a, i) => { const r = circuitLogic.apply(lv, s, a, i + 1); s = r.state; ms.push(...r.moments); });
+    const m = ms.find((x) => x.kind === "misconception_consequence");
+    assert.equal(m?.facts?.why, "no_cell");
+    checked++;
+  }
+  assert.ok(checked > 0);
+});

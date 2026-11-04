@@ -42,7 +42,7 @@ export interface CircuitParams {
   /** wires already on the board at the start (a broken torch to fix); the child may cut them */
   pre: [string, string][];
 }
-export type RunWhy = "short" | "open_loop" | "switch_open" | "not_controlled" | "switch_before";
+export type RunWhy = "short" | "open_loop" | "no_cell" | "switch_open" | "not_controlled" | "switch_before";
 export interface RunResult { why: RunWhy | "glow"; wires: string[]; sw: boolean }
 export interface CircuitState extends Undoable<CircuitState> {
   /** wire keys "a|b" (terminal ids sorted) */
@@ -86,6 +86,8 @@ export function judge(p: CircuitParams, wires: string[], sw: boolean): RunWhy | 
   const isSw = p.goal === "switch";
   if (!g) {
     if (isSw && !sw) { const r1 = rootsOf(p, wires, true); if (r1("c+") !== r1("c-") && glows(r1)) return "switch_open"; }
+    // no wire reaches the cell at all: the bulb has nothing to light it ("bijli kahan se aayegi?"), whatever the switch does
+    if (!wires.some((w) => w.split("|").some((t) => t === "c+" || t === "c-"))) return "no_cell";
     return "open_loop";
   }
   if (isSw) {
@@ -118,7 +120,7 @@ export function malSignature(p: CircuitParams, wires: string[], sw: boolean, mal
 const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
 const isInt = (x: unknown): x is number => typeof x === "number" && Number.isInteger(x);
 /** the refusal code of each dark outcome (decisive ones are a committed wrong run) */
-const CODE: Record<RunWhy, string> = { short: "short", open_loop: "open", switch_open: "switch_open", not_controlled: "uncontrolled", switch_before: "wrong_side" };
+const CODE: Record<RunWhy, string> = { short: "short", open_loop: "open", no_cell: "open", switch_open: "switch_open", not_controlled: "uncontrolled", switch_before: "wrong_side" };
 export const DECISIVE = ["short", "open", "uncontrolled", "wrong_side"] as const;
 
 function validate(level: PlayLevel<unknown>): PlayLevel<CircuitParams> | null {
