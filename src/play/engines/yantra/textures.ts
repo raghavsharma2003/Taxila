@@ -2,6 +2,8 @@
 // by the level) so a screenshot is reproducible; nothing here reads the law.
 import { CanvasTexture, RepeatWrapping, SRGBColorSpace, type Texture } from "three";
 import { css, shade, type ThemePack } from "./palette.ts";
+/** a canvas colour from a numeric palette value (the engines' own 0xRRGGBB form; pixels on a canvas, not CSS chrome) */
+const hex = (n: number) => `#${n.toString(16).padStart(6, "0")}`;
 
 type Rnd = () => number;
 const canvas = (w: number, h: number) => { const c = document.createElement("canvas"); c.width = w; c.height = h; return { c, g: c.getContext("2d") as CanvasRenderingContext2D }; };
@@ -41,7 +43,7 @@ export function tileTexture(T: ThemePack, rnd: Rnd): Texture {
   const S = 128, { c, g } = canvas(S, S), t = T.tile;
   g.fillStyle = css(t.grout); g.fillRect(0, 0, S, S);
   const m = t.kind === "mat" ? 0 : 5;
-  g.fillStyle = "#ffffff"; g.fillRect(m, m, S - 2 * m, S - 2 * m);       // tinted by the instance colour (white = the face)
+  g.fillStyle = hex(0xffffff); g.fillRect(m, m, S - 2 * m, S - 2 * m);       // tinted by the instance colour (white = the face)
   if (t.kind === "ceramic") { const grd = g.createLinearGradient(0, 0, S, S); grd.addColorStop(0, "rgba(255,255,255,0.0)"); grd.addColorStop(1, "rgba(120,135,150,0.12)"); g.fillStyle = grd; g.fillRect(m, m, S - 2 * m, S - 2 * m); }
   if (t.kind === "paver") speckle(g, S, S, rnd, 500, [0x000000, 0xffffff], 0.08, 2.5);
   if (t.kind === "mat") {
@@ -144,17 +146,17 @@ export function backdropTexture(T: ThemePack, w: number, h: number, hy: number, 
     const sg = g.createRadialGradient(W * 0.72, Y, 0, W * 0.72, Y, H * 0.22); sg.addColorStop(0, "rgba(255,226,160,0.95)"); sg.addColorStop(0.18, "rgba(255,190,120,0.65)"); sg.addColorStop(1, "rgba(255,150,110,0)");
     g.fillStyle = sg; g.fillRect(0, 0, W, H);
     for (let layer = 0; layer < 2; layer++) {
-      g.fillStyle = layer ? "#2a2034" : "#4a3550";
+      g.fillStyle = layer ? hex(0x2a2034) : hex(0x4a3550);
       let x = -4;
       while (x < W) {
         const bw = 10 + rnd() * 26, bh = (layer ? 10 : 18) + rnd() * (layer ? 26 : 30);
         g.fillRect(x, Y - bh, bw, bh + 2);
-        if (layer) for (let k = 0; k < 4; k++) if (rnd() < 0.5) { g.fillStyle = "rgba(255,214,140,0.85)"; g.fillRect(x + 2 + rnd() * (bw - 5), Y - bh + 3 + rnd() * (bh - 6), 2, 2); g.fillStyle = "#2a2034"; }
+        if (layer) for (let k = 0; k < 4; k++) if (rnd() < 0.5) { g.fillStyle = "rgba(255,214,140,0.85)"; g.fillRect(x + 2 + rnd() * (bw - 5), Y - bh + 3 + rnd() * (bh - 6), 2, 2); g.fillStyle = hex(0x2a2034); }
         if (layer && rnd() < 0.18) { g.fillRect(x + bw * 0.3, Y - bh - 9, bw * 0.4, 9); }            // a water tank
         x += bw - 1;
       }
     }
-    g.fillStyle = "#231a2c"; g.fillRect(0, Y, W, H - Y);
+    g.fillStyle = hex(0x231a2c); g.fillRect(0, Y, W, H - Y);
   } else if (T.backdrop === "shelves") {
     // a lab wall: tiled to the horizon, a shelf of glassware above
     g.strokeStyle = "rgba(255,255,255,0.35)"; g.lineWidth = 1;
