@@ -1,0 +1,230 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket se fractions, yaani barabar hisse, dekhenge. Tumhe cricket pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1330
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, cricket se shuru karte hain. Match ke break mein ek roti do players mein baanto: dono ko barabar hissa kaise dogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1571,
+   "replyReadyMs": 2901
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1208
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, fractions thodi der ruk sakte hain. Abhi kis baare mein baat karna chahti ho? Phir lesson par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1186,
+   "replyReadyMs": 2394
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1215
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, roti ke teen barabar hisse karo. Har hissa one-third, yaani ek tihai hai. Teen kya batata hai?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2675,
+   "replyReadyMs": 3890,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1105
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 3 ka matlab poori cheez ke 3 barabar hisse; jaise roti ke 3 tukde. Agla step dekhein?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2790,
+   "replyReadyMs": 3895,
+   "guard": [
+    "leak",
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1009
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, bolkar game khelte hain: 6 runs ko 3 barabar groups mein baanto. Har group mein kitne runs honge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2885,
+   "replyReadyMs": 3894,
+   "guard": [
+    "screen",
+    "answerinq",
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq",
+     "leak"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1571
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 6 runs ko 3 barabar groups mein bolkar baanto; har group mein kitne runs aayenge?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2265,
+   "replyReadyMs": 3836,
+   "guard": [
+    "screen",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1139
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ye boring lag raha hai. Tarika badalte hain: main picture bataun, story sunaun, ya bolkar game khelein—kya chunogi?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2860,
+   "replyReadyMs": 3999,
+   "guard": [
+    "screen",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1202
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, in teen mein kaunsa chahiye: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1121,
+   "replyReadyMs": 2323
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1260
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek din Meera ne chocolate ke 4 barabar tukde kiye aur ek liya. Ab one-third mein 3 kya batata hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2446,
+   "replyReadyMs": 3706,
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1089
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum abhi rukna chahti ho, theek hai. Aage badhein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2388,
+   "replyReadyMs": 3477,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

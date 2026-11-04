@@ -1,0 +1,177 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ke overs se fractions (bhinn) ko number line par dekhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1064
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maine kya pasand hai poocha tha; “haan” se choice nahi pata chali. Cricket pitch ke aadhe raste par ball ho, number line par kahan dikhaogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1286,
+   "replyReadyMs": 2350
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 791
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalte hain. Number line par zero se one tak ka hissa dekho. Use barabar gaps mein baantte hain. Gaps barabar kyun hon?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1732,
+   "replyReadyMs": 2523
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 920
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, chhota bolungi. Zero se one tak barabar gaps banao; do-paanch ke liye kitne gaps chahiye?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1294,
+   "replyReadyMs": 2214
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 796
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, socho zero se one tak paanch barabar gaps hain. Do-paanch ke liye kitne gaps ginoge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2267,
+   "replyReadyMs": 3063,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1063
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, do gaps ginoge. Do-paanch mein upar wala do batata hai kitne gaps chalne hain. Zero se ginogi ya one se?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1314,
+   "replyReadyMs": 2377
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 627
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, baat karte hain; fractions baad mein. Kis baare mein baat karni hai?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1207,
+   "replyReadyMs": 1834
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 931
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket pe baat karenge—bas yeh step pehle. Zero se do gaps gin liye. Do-paanch aadhe se kidhar hai?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1140,
+   "replyReadyMs": 2071
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 826
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, bas khaali jagah bharni hai: do-paanch, aadhe se chhota hai; beech ki jagah se kis taraf aayega?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 2709,
+   "replyReadyMs": 3535
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1156
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, pehle tum koshish karo. Khaali jagah bharo: 2/5 beech se ___ hai, kyunki 2/5 aadhe se chhota hai.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1080,
+   "replyReadyMs": 2236
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1041
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho, theek hai. Aage badhein, chhota viraam lein, ya aaj ke liye rukein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2282,
+   "replyReadyMs": 3323,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}
