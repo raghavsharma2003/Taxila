@@ -38,5 +38,5 @@ import { routes as trace } from "./trace/routes.js";
 // round 7, stream G: the owner ops page (TAXILA_OPS_FOR)
 import { routes as ops } from "./ops/routes.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane, ...ops });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...lane });
 export { handle, register };
