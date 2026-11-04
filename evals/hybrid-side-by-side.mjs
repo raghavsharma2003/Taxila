@@ -3,7 +3,7 @@
 // the Director as the route does), and writes both transcripts next to each other for a reader to judge. Claude reads them
 // (CLAUDE.md: judging is done by the Claude Code session, never a Foundry judge); this script scores nothing.
 //
-//   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
+//   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
 //
 // No database: the route's own planTurn (routes/lesson.js __test) plans each turn on an in-memory learner state, as
@@ -38,7 +38,13 @@ export const SCENARIOS = {
   // stuck, asks for slower / Hindi / a picture, then leaves
   stuck: ["pata nahi", "samajh nahi aaya", "dhire dhire batao", "hindi mein batao", "5?", "pata nahi", "picture dikhao", "haan", "7",
     "bas aaj ke liye itna hi"],
+  // steering-heavy (main, 2026-11-04): how they want to be taught, a diversion, a language switch, then leaving
+  steering: ["haan", "step by step samjhao", "chhota bolo", "pehle picture dikhao", "pata nahi", "kuch aur baat karte hain", "cricket ke baare mein",
+    "hindi mein batao", "mujhe khud try karne do", "bye"],
 };
+
+/** The full run's topics (dc-r7-hybrid-brain: 12 lessons a lane = 4 scenarios × 3 topics; the class-4 topic is the class-4 child). */
+export const MATRIX_TOPICS = [["c6-maths-ch06-t01", 6], ["c5-maths-ch02-t01", 5], ["c4-maths-ch05-t01", 4]];
 
 const CHILD = (cls) => ({ id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: cls });
 const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
@@ -161,18 +167,20 @@ const md = (name, topic, A, B) => {
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 
-const topicId = arg("topic", "c6-maths-ch06-t01");
-const classLevel = Number(arg("class", "6"));
-const kit = kitFromFile(getTopic(topicId));
-const names = arg("scenario", Object.keys(SCENARIOS).join(",")).split(",").filter((n) => SCENARIOS[n]);
+const MATRIX = process.argv.includes("--matrix");
+const runs = MATRIX
+  ? MATRIX_TOPICS.flatMap(([topicId, classLevel]) => ["steady", "offtopic", "stuck", "steering"].map((name) => ({ topicId, classLevel, name })))
+  : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
-for (const name of names) {
+for (const { topicId, classLevel, name: scenario } of runs) {
+  const kit = kitFromFile(getTopic(topicId));
+  const name = MATRIX ? `${scenario}-c${classLevel}` : scenario;
   // one lane after the other, so neither lane's latency is measured while the other is calling
-  const A = await lesson("director", kit, classLevel, SCENARIOS[name]);
-  const B = await lesson("agent", kit, classLevel, SCENARIOS[name]);
+  const A = await lesson("director", kit, classLevel, SCENARIOS[scenario]);
+  const B = await lesson("agent", kit, classLevel, SCENARIOS[scenario]);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
-  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario: name, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
   const fell = B.filter((r) => r.fellBack).length;
   const p50 = (rows) => { const v = rows.filter((r) => r.replyReadyMs != null).map((r) => r.replyReadyMs).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
