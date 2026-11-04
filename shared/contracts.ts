@@ -434,7 +434,7 @@ export interface LessonStartRequest {
    * (V2 §6.3.3: "Practise something"). capped and resting refuse every purpose: 409 LessonStartRefused.
    * The aap/tum register is never a request field: the parent's controls decide it (V2 §3.3 step 4).
    */
-  purpose?: "lesson" | "practice" | "doubt";
+  purpose?: LessonPurpose;
   /**
    * Ask ("doubt") only: the child's question, sent WITH the start (flows G11), so the server routes the lesson to the
    * matching topic (server/lesson/purpose.js routeAsk) and titles it by the question. ≤ 500 characters are read.
@@ -445,7 +445,27 @@ export interface LessonStartRequest {
    * open lesson on the same server-written lane (cascade / text); otherwise the start opens a new lesson as before.
    */
   resumeLessonId?: string;
+  /**
+   * round 7 (Learning patch 007) homework only: the topic Learning's match ladder proposed (POST /api/homework/match). The
+   * start's topicId is sent only when the child tapped Yes on "Is this from <chapter>?"; null here: they said "Not this".
+   */
+  matchTopicId?: string | null;
+  /** homework only: the kit question the match found (rung kit_item); the lesson teaches on a look-alike and never poses it. */
+  matchItemId?: string;
 }
+/** What a start is for: a lesson, Practice, Ask ("doubt"), the session-first start, or HOMEWORK HELP (an Ask on their homework). */
+export type LessonPurpose = "lesson" | "practice" | "doubt" | "session" | "homework";
+/** round 7 (Learning patch 007): the homework match ladder (server/homework/match.js), POST /api/homework/match. */
+export type HomeworkRung = "kit_item" | "topic" | "subject";
+export interface HomeworkMatchRequest { childId: string; /** ≤ 500 characters */ text: string }
+export interface HomeworkMatch {
+  rung: HomeworkRung; topicId: string | null; subject: string; chapter: number | null; topicTitle: string | null;
+  /** rung kit_item: the kit question it matched (the lesson's look-alike comes from the same topic) */
+  itemId?: string;
+  /** rung kit_item: the word overlap, 0.6-1 */
+  score?: number;
+}
+export interface HomeworkMatchResponse { match: HomeworkMatch | null }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
 export interface LessonStartResponse {

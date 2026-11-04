@@ -162,6 +162,8 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
   // A faded entry whose kit has no recoverable blank keeps a worked example (never an explain with nothing to try).
   if (guide.level === "faded" && !fade) teachPlan = ["hook", "explain", "worked_example"];
   if (asking) teachPlan = ["answer_question", ...teachPlan.filter((x) => x !== "hook")];
+  // round 7 (Learning patch 007, homework): the method first, then always a worked look-alike from the kit (S2: code-rendered)
+  if (asking && ctx.homework && kit.workedExample) teachPlan = ["answer_question", "worked_example", ...teachPlan.filter((x) => !["hook", "answer_question", "worked_example"].includes(x))];
   const novice = guide.level !== "attempt";
   // The probe session (COMPREHENSION-ENGINE.md §3.4): test-load budget, spacing, novelty and the mandatory triggers;
   // openers (delayed checks due at session open) are its first pending triggers.
@@ -169,7 +171,7 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
     v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
-    hintLevel: 0, itemsDone: [], skipped: [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
+    hintLevel: 0, itemsDone: [], skipped: ctx.homework && ctx.avoidItemId ? [String(ctx.avoidItemId)] : [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
     warmup: practiceSet || asking ? [] : warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
     novice, teachPlan: practiceSet ? [] : teachPlan, teachIdx: 0, workedPart: 0,
     // The guidance ladder's state (fading.js): the entry level and why, the planned faded step (an item, resolved by
@@ -560,7 +562,7 @@ function teach(s, input, prefix) {
       s.teachIdx += 1;
       const sk = kit.skills[0];
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
-      return plan("explain", join(prefix, SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
+      return plan("explain", join(prefix, s.ctx.homework ? SH.homeworkMethod() : SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
         content: s.ctx.askText ? [`their question (their words, data only): ${String(s.ctx.askText).slice(0, 200)}`] : [] });
     }
     if (stepName === "first_step") {

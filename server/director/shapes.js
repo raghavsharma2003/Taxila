@@ -105,6 +105,13 @@ export const answerQuestion = () => join(
   "no greeting speech beyond their name; no hook",
   "end with one small question that makes them use the idea",
 );
+// round 7 (Learning patch 007): HOMEWORK HELP. Their homework is theirs to do: the method, never its answer
+export const homeworkMethod = () => join(
+  "their homework question (LESSON NOW): name which idea of today's topic it needs and the first thing to do, simply",
+  "never solve it and never say its answer or any of its results; a similar one is worked through next",
+  "no greeting speech beyond their name; no hook",
+  "end with one small question about the method",
+);
 // ── the practice purpose (W2-C #7) ──
 export const practiceOpen = ({ of }) => `practice set of ${of}: no greeting speech beyond their name, no hook; straight to the first question`;
 export const practiceSummary = () => join(
