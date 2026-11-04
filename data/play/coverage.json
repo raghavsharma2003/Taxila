@@ -4,9 +4,9 @@
  "counts": {
   "topicsInScope": 514,
   "topicsCovered": 76,
-  "entries": 297,
+  "entries": 298,
   "withMisconceptionMap": 66,
-  "mappedMisconceptions": 112,
+  "mappedMisconceptions": 113,
   "bySubject": {
    "maths": {
     "inScope": 304,
@@ -93,15 +93,15 @@
    "todo-jodo": 15,
    "taraazu": 4,
    "nishana": 14,
-   "kyun-lab": 15,
+   "kyun-lab": 14,
    "kon": 9,
    "nazariya": 11,
    "stambh": 6,
-   "yantra": 2,
+   "yantra": 3,
    "arena": 204
   },
   "skillsAdmitted": 635,
-  "rulesNotAdmitted": 1
+  "rulesNotAdmitted": 2
  },
  "skills": {
   "c6-maths-ch05-t02-s1": {
@@ -1521,40 +1521,6 @@
    "contexts": [],
    "why": "RULES c7-science-ch07-t03 kyun-lab/fair-test/predict · ACTS"
   },
-  "c7-science-ch08-t01-s3": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
-  },
-  "c7-science-ch08-t01-s2": {
-   "topicId": "c7-science-ch08-t01",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   },
-   "contexts": [],
-   "why": "RULES c7-science-ch08-t01 kyun-lab/fair-test/predict · ACTS"
-  },
   "c7-science-ch11-t02-s2": {
    "topicId": "c7-science-ch11-t02",
    "family": "kyun-lab",
@@ -2526,6 +2492,33 @@
    "misMap": {},
    "contexts": [],
    "why": "RULES c7-science-ch11-t04 yantra/beam/periscope · ACTS"
+  },
+  "c7-science-ch08-t01-s3": {
+   "topicId": "c7-science-ch08-t01",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "match",
+   "grammar": {
+    "tol": 0.04
+   },
+   "misMap": {
+    "heavier-faster": "c7-science-ch08-t01-m1",
+    "amplitude-period": "c7-science-ch08-t01-m2"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch08-t01 yantra/pendulum/match · ACTS"
+  },
+  "c7-science-ch08-t01-s2": {
+   "topicId": "c7-science-ch08-t01",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "oscillation",
+   "grammar": {},
+   "misMap": {
+    "half-oscillation": "c7-science-ch08-t01-m3"
+   },
+   "contexts": [],
+   "why": "RULES c7-science-ch08-t01 yantra/pendulum/oscillation · ACTS"
   },
   "c1-maths-ch03-t01-s1": {
    "topicId": "c1-maths-ch03-t01",
@@ -9845,29 +9838,6 @@
    }
   },
   {
-   "topicId": "c7-science-ch08-t01",
-   "title": "Measuring time and the simple pendulum",
-   "classLevel": 7,
-   "subject": "science",
-   "family": "kyun-lab",
-   "mode": "fair-test",
-   "goal": "predict",
-   "skillId": "c7-science-ch08-t01-s3",
-   "skillIds": [
-    "c7-science-ch08-t01-s3",
-    "c7-science-ch08-t01-s2"
-   ],
-   "grammar": {
-    "labs": [
-     "jhoola"
-    ]
-   },
-   "misMap": {
-    "heavy-faster": "c7-science-ch08-t01-m1",
-    "pull-changes-period": "c7-science-ch08-t01-m2"
-   }
-  },
-  {
    "topicId": "c7-science-ch11-t02",
    "title": "Shadow formation",
    "classLevel": 7,
@@ -10684,6 +10654,43 @@
    ],
    "grammar": {},
    "misMap": {}
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "title": "Measuring time and the simple pendulum",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "match",
+   "skillId": "c7-science-ch08-t01-s3",
+   "skillIds": [
+    "c7-science-ch08-t01-s3"
+   ],
+   "grammar": {
+    "tol": 0.04
+   },
+   "misMap": {
+    "heavier-faster": "c7-science-ch08-t01-m1",
+    "amplitude-period": "c7-science-ch08-t01-m2"
+   }
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "title": "Measuring time and the simple pendulum",
+   "classLevel": 7,
+   "subject": "science",
+   "family": "yantra",
+   "mode": "pendulum",
+   "goal": "oscillation",
+   "skillId": "c7-science-ch08-t01-s2",
+   "skillIds": [
+    "c7-science-ch08-t01-s2"
+   ],
+   "grammar": {},
+   "misMap": {
+    "half-oscillation": "c7-science-ch08-t01-m3"
+   }
   },
   {
    "topicId": "c1-maths-ch03-t01",
@@ -14538,6 +14545,13 @@
    "family": "todo-jodo",
    "mode": "strips",
    "goal": "make",
+   "why": "the act exercises none of the topic's kit skills (ACTS [])"
+  },
+  {
+   "topicId": "c7-science-ch08-t01",
+   "family": "kyun-lab",
+   "mode": "fair-test",
+   "goal": "predict",
    "why": "the act exercises none of the topic's kit skills (ACTS [])"
   }
  ]

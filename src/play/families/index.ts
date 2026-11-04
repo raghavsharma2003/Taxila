@@ -9,6 +9,7 @@ import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { beamLogic } from "./yantra/beam.logic.ts";
+import { pendulumLogic } from "./yantra/pendulum.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
 
@@ -41,5 +42,6 @@ export const LOGIC: Record<string, AnyLogic> = {
   "stambh/picto": asAny(stambhLogic),
   // round 7 E6: Yantra
   "yantra/beam": asAny(beamLogic),
+  "yantra/pendulum": asAny(pendulumLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
