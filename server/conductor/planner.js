@@ -174,6 +174,8 @@ export function planDay(inputs) {
       if (subj && subj.why !== "test_window") why.push({ code: subj.why, ref: subj.subject });
       slots.push({ id: `${day.learningDay}:L1`, kind: "live_lesson", targetMin, window: slotWindow, segments,
         ...(subj ? { subject: subj.subject } : {}),
+        // round 7 F item 8: her open promises (teacher.promise, e.g. a Question-jar revisit) this lesson keeps
+        ...(inputs.promises.length ? { promisesDue: inputs.promises.slice(0, 2).map((p) => p.id) } : {}),
         voiceSecWanted: voiceOf(segments), why, opener, successFirst: !!adapt.successFirst,
         pace: { newSkillBudget: testWindow && daysBetween(day.learningDay, testWindow.to) < 2 ? 0 : 1 },
         ...(testWindow ? { testChapters: testWindow.chapters } : {}) });

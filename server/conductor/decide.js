@@ -247,7 +247,12 @@ const HANDLERS = {
     if (ev.to === "wheel_spin") H.replanSoon("wheel_spin");
     else H.rule(`milestone:${ev.to}`);
   },
-  "teacher.promise"(s, ev) {
+  "teacher.promise_kept"(s, ev, H) {
+    const before = s.promises.length;
+    s.promises = s.promises.filter((p) => p.id !== ev.promiseId);
+    if (s.promises.length !== before) H.replanSoon("promise_kept");
+  },
+    "teacher.promise"(s, ev) {
     if (s.promises.some((p) => p.id === ev.promiseId)) return;
     s.promises = [...s.promises, { id: ev.promiseId, kind: ev.what.kind, ref: ev.what.ref, by: ev.by }].slice(-PLAN.promisesMax);
   },
