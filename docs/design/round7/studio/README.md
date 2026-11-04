@@ -99,3 +99,20 @@ The table recording showed that with App's stage-first layout (D7) the teacher's
 - **Labels:** every measure is written outside the shape. The recordings caught labels touching a side and the rim, and both were fixed.
 - **Reach:** 22 maths kits state a measured shape (8 rectangles, 4 squares, 5 triangles, 5 circles). All 22 pass every W gate. It is the drawn board in 11; before, those got a model-written flowchart, a key-terms board or a generic shape.
 - **Refusals:** mixed units are never drawn, and an impossible triangle (2, 3, 9) is refused.
+
+## India map places (C1 item 5, decision dc-r7-maps-no-outline)
+
+Places are pinned at their true latitude and longitude on a labelled 5° grid with a compass. Nothing is drawn that could be read as a boundary: no outline of India, its states or its coast. An official Survey of India outline waits on the owner.
+
+| file | lesson | what's drawn |
+|---|---|---|
+| `map-c6-sst-ch01-t01-*` | c6 "Locating Places on the Earth" | New Delhi, Ujjain, Mumbai, Kolkata, the Tropic of Cancer and the 82.5°E meridian |
+| `map-c7-sst-ch03-t01-*` | c7 "Climates of India" | Leh, Delhi, Mumbai, Chennai and the Tropic of Cancer (its name in the margin) |
+| `map-c6-sst-ch06-t01-*` | c6 "Beginnings of Indian Civilisation" | Harappa, Mohenjo-daro, Kalibangan, Dholavira, Lothal |
+| `map-c5-evs-ch02-t01-*` | c5 "From source to sea" | Prayagraj, Varanasi, Patna: close together, so one name sits out on a leader |
+
+- **Where the positions come from:** `data/geo/india-places.json` (61 places). Cities come from Natural Earth 1:10m populated places (public domain). Heritage sites, Kanyakumari and Darjeeling come from Wikidata's coordinate location (CC0). Each row names its source record, and `scripts/build-india-places.mjs` rebuilds the file.
+- **Scale:** one scale both ways, so a degree north is as long as a degree east. North is up.
+- **Names:** the lesson's own word ("Bombay" stays Bombay). A name sits beside its pin, or further out on a leader line that crosses nothing. A grid cross where a name needs the room is left out.
+- **Reach:** 33 lessons name 3 or more places, and all 33 boards pass every W gate. The map is the board drawn in 29 of them. 138 of the 147 named places are pinned; the rest are too close to a neighbour to label (Delhi and Panipat, Ajanta and Ellora). Her line names only what is drawn.
+- **Gate change:** W4 counts 3 or more evenly spaced degree labels ("15°N", "20°N", "25°N") as the grid's axis, like a number line's ticks. A single "23.5°N" is still checked against her line and the kit.

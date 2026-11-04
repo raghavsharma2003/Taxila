@@ -13,13 +13,14 @@
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
 import { normalizeScript, lintScript, textBox, textProblem } from "../../../shared/whiteboard.js";
+import { placeNamed } from "./places.js";
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -840,6 +841,132 @@ function timelineBoard(c, tl) {
 }
 
 /**
+ * round 7 (C1 studio-board-richness, maps decision dc-r7-maps-no-outline): places at their TRUE latitude/longitude on a
+ * labelled 5° grid with a compass, and nothing that could be read as a boundary (no outline, coastline or state shape).
+ * Every place must be in the gazetteer (places.js: its coordinates and their source); the name drawn is the call's (the
+ * kit's own word). The frame is the places' extent padded and snapped to 5°, one scale both ways (a degree of latitude is
+ * as tall as a degree of longitude is wide), then widened in 5° steps to the board's room. The grid is edge ticks and
+ * small crosses where grid lines meet, never lines a word would sit on (a cross a name needs the room of is left out).
+ * Each name sits beside its pin where that is clear, else further out on a leader line; laid out first, drawn after.
+ */
+function placesBoard(c, tl) {
+  const names = Array.isArray(c.places) ? c.places.filter((n) => fitsLabel(n)) : [];
+  const pins = [];
+  for (const n of names) { const p = placeNamed(n); if (p && !pins.some((q) => q.id === p.id)) pins.push({ ...p, name: n.trim() }); }
+  if (pins.length < 3 || pins.length > 6) return { error: "places" };
+  const TROPIC = 23.44, MERIDIAN = 82.5;
+  // a named line keeps 3° of frame on each side (its name goes beside it)
+  const lats = [...pins.map((p) => p.lat), ...(c.tropic ? [TROPIC - 2, TROPIC + 2] : [])], lons = [...pins.map((p) => p.lon), ...(c.meridian ? [MERIDIAN - 2, MERIDIAN + 2] : [])];
+  // the frame: padded 2.5° (a name needs room beside its pin), snapped out to 5°, at least 10° each way; then widened in
+  // 5° steps (10° at most, on the side the places are nearer) toward the board's room at that one scale
+  const snap = (lo, hi) => { let a = Math.floor((lo - 2.5) / 5) * 5, b = Math.ceil((hi + 2.5) / 5) * 5; while (b - a < 10) { a -= 5; if (b - a < 10) b += 5; } return [a, b]; };
+  let [la, lb] = snap(Math.min(...lats), Math.max(...lats)), [oa, ob] = snap(Math.min(...lons), Math.max(...lons));
+  const k = Math.min(286 / (ob - oa), 236 / (lb - la));
+  const grow = (a, b, lo, hi, room) => { const span = b - a; while ((b - a + 5) * k <= room && b - a + 5 <= span + 10) { if (lo - a <= b - hi) a -= 5; else b += 5; } return [a, b]; };
+  [oa, ob] = grow(oa, ob, Math.min(...lons), Math.max(...lons), 286);
+  [la, lb] = grow(la, lb, Math.min(...lats), Math.max(...lats), 236);
+  // (with the Tropic drawn, the frame sits left so the line's name can go in the margin beside its right end)
+  const w = (ob - oa) * k, h = (lb - la) * k, x0 = 54 + (c.tropic ? 0 : (286 - w) / 2), y0 = 18 + (236 - h) / 2;
+  const X = (lon) => x0 + (lon - oa) * k, Y = (lat) => y0 + (lb - lat) * k;
+  const box = (x, y, bw, bh) => ({ x, y, w: bw, h: bh });
+  const hits = (a, b, pad = 3) => a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad;
+  const inFrame = (b) => b.x > x0 + 2 && b.x + b.w < x0 + w - 2 && b.y > y0 + 2 && b.y + b.h < y0 + h - 2;
+  // a segment meets a box (sampled every 2 units: leaders are short)
+  const segHits = (a, b, r, pad = 2) => { const n = Math.max(2, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2)); for (let i = 0; i <= n; i++) { const x = a[0] + ((b[0] - a[0]) * i) / n, y = a[1] + ((b[1] - a[1]) * i) / n; if (x > r.x - pad && x < r.x + r.w + pad && y > r.y - pad && y < r.y + r.h + pad) return true; } return false; };
+  // the fixed marks: edge ticks, the named lines, the pins
+  const ticks = [], marks = [], segs = [];
+  for (let lat = la + 5; lat < lb; lat += 5) { const y = Y(lat); ticks.push([[x0, y], [x0 + 6, y]], [[x0 + w - 6, y], [x0 + w, y]]); marks.push(box(x0, y - 1, 6, 2), box(x0 + w - 6, y - 1, 6, 2)); }
+  for (let lon = oa + 5; lon < ob; lon += 5) { const x = X(lon); ticks.push([[x, y0 + h - 6], [x, y0 + h]], [[x, y0], [x, y0 + 6]]); marks.push(box(x - 1, y0 + h - 6, 2, 6), box(x - 1, y0, 2, 6)); }
+  const ty = Y(TROPIC), mx = X(MERIDIAN);
+  if (c.tropic) { marks.push(box(x0, ty - 1.5, w, 3)); segs.push([[x0, ty], [x0 + w, ty]]); }
+  if (c.meridian) { marks.push(box(mx - 1.5, y0, 3, h)); segs.push([[mx, y0], [mx, y0 + h]]); }
+  const pinBox = pins.map((p) => box(X(p.lon) - 6, Y(p.lat) - 6, 12, 12));
+  marks.push(...pinBox);
+  const clear = (b, except) => inFrame(b) && !marks.some((m) => m !== except && hits(b, m)) && !segs.some(([a, z]) => segHits(a, z, b));
+  // the named lines' own names, inside the frame
+  // (a name too long for the room either side of a crossing line breaks onto two lines: "Tropic of" / "Cancer")
+  const lineText = (text, cands) => {
+    const fhs = textBox("x", "s").h;
+    for (const parts of [[text], text.includes(" ") ? [text.slice(0, text.lastIndexOf(" ")), text.slice(text.lastIndexOf(" ") + 1)] : null].filter(Boolean)) {
+      for (const [x, y, align] of cands) {
+        const up = y < (c.tropic ? ty : y0 + h / 2);   // stacked away from the line
+        const rows = parts.map((t, r) => ({ t, at: [x, up ? y - (parts.length - 1 - r) * fhs : y + r * fhs] }));
+        const bs = rows.map((q) => textBox(q.t, "s", q.at, align));
+        const margin = x > x0 + w;   // a margin spot: on the board, outside the frame, clear of the compass
+        const ok = margin ? bs.every((b) => b.x + b.w <= 396 && b.y >= 2 && b.y + b.h <= 298 && b.y > y0 + 50) : bs.every((b) => clear(b));
+        if (ok) { marks.push(...bs); return { rows, align }; }
+      }
+    }
+    return null;
+  };
+  const tropicAt = c.tropic ? lineText("Tropic of Cancer", [[x0 + w + 6, ty + 5, "start"], [x0 + w - 12, ty - 11, "end"], [x0 + 12, ty - 11, "start"], [x0 + w - 12, ty + 22, "end"], [x0 + 12, ty + 22, "start"], [x0 + w / 2, ty - 11, "middle"], [x0 + w / 2, ty + 22, "middle"], [x0 + w / 4, ty - 11, "start"], [x0 + w / 4, ty + 22, "start"], [x0 + (3 * w) / 4, ty - 11, "end"], [x0 + (3 * w) / 4, ty + 22, "end"]]) : null;
+  // a named line whose name fits nowhere is left off (nothing is drawn yet: the board is laid out again without it)
+  if (c.tropic && !tropicAt) return placesBoard({ ...c, tropic: false }, tl);
+  const meridianAt = c.meridian ? lineText("82.5°E", [[mx + 7, y0 + 32, "start"], [mx - 7, y0 + 32, "end"], [mx + 7, y0 + h - 14, "start"], [mx - 7, y0 + h - 14, "end"], [mx + 7, y0 + h / 2, "start"], [mx - 7, y0 + h / 2, "end"]]) : null;
+  if (c.meridian && !meridianAt) return placesBoard({ ...c, meridian: false }, tl);
+  // each pin's name: beside it (no leader), else 30 or 52 units out on a leader that crosses nothing
+  const placed = [];
+  const fh = textBox("x", "s").h;
+  pins.forEach((p, i) => {
+    const [x, y] = [X(p.lon), Y(p.lat)], tw = textBox(p.name, "s").w;
+    const near = [[x + 9 + tw / 2, y], [x - 9 - tw / 2, y], [x, y - 8 - fh / 2], [x, y + 8 + fh / 2]];
+    const far = [];
+    for (const d of [30, 52]) for (const [ux, uy] of [[1, 0], [-1, 0], [0, -1], [0, 1], [0.7, -0.7], [-0.7, -0.7], [0.7, 0.7], [-0.7, 0.7]]) far.push([x + ux * (d + tw / 2), y + uy * d]);
+    for (const [cx, cy] of [...near, ...far]) {
+      const at = [cx, cy + fh * 0.25];                      // a label's `at` is its baseline; its box is centred on cy
+      const b = textBox(p.name, "s", at, "middle");
+      if (!clear(b, pinBox[i])) continue;
+      const lead = Math.hypot(cx - x, cy - y) > 30;
+      if (lead) {
+        const from = [Math.min(Math.max(x, b.x), b.x + b.w), y < b.y ? b.y - 2 : y > b.y + b.h ? b.y + b.h + 2 : Math.min(Math.max(y, b.y), b.y + b.h)];
+        if (marks.some((m) => m !== pinBox[i] && segHits(from, [x, y], m, 1))) continue;
+        segs.push([from, [x, y]]);
+      }
+      marks.push(b);
+      placed.push({ p, i, at, lead });
+      return;
+    }
+  });
+  if (placed.length < 3) return { error: `places_crowded:${placed.length}of${pins.length}` };
+  // the crosses where grid lines meet, except where a name or a leader is
+  const crosses = [];
+  for (let lat = la + 5; lat < lb; lat += 5) for (let lon = oa + 5; lon < ob; lon += 5) {
+    const r = box(X(lon) - 3, Y(lat) - 3, 6, 6);
+    if (!marks.some((m) => !pinBox.includes(m) && hits(r, m, 2)) && !segs.some(([a, z]) => segHits(a, z, r))) crosses.push([X(lon), Y(lat)]);
+  }
+  // draw: frame, ticks, degree labels, crosses, compass, named lines, pins and names
+  const latStep = 5 * k < 22 ? 10 : 5, lonStep = 5 * k < 40 ? 10 : 5;
+  tl.add({ op: "rect", at: [x0, y0], w, h, weight: 1, ink: "soft" }, 500);
+  for (const [a, z] of ticks) tl.add({ op: "line", from: a, to: z, weight: 1, ink: "soft" }, 50, { gap: 0 });
+  // the frame's own edges are labelled too (a 10° frame still shows 3 degrees each way: an axis, not a claim); at the
+  // bottom-left corner the latitude sits just above the corner and the longitude starts at it, so the two never touch
+  for (let lat = la; lat <= lb; lat += 5) if (lat % latStep === 0) tl.add({ op: "text", at: [x0 - 6, Y(lat) + (lat === la ? -2 : 5)], text: `${lat}°N`, size: "s", ink: "soft", align: "end" }, 140, { gap: 10 });
+  const lonLabels = []; for (let lon = oa + 5; lon <= ob; lon += 5) if (lon % lonStep === 0) lonLabels.push(lon);
+  if (lonLabels.length < 3) lonLabels.unshift(oa);   // the corner only when the axis needs it (it is never crowded then: 5° ≥ 47 units)
+  for (const lon of lonLabels) tl.add({ op: "text", at: [lon === oa ? x0 - 2 : X(lon), y0 + h + 17], text: `${lon}°E`, size: "s", ink: "soft", ...(lon === oa ? { align: "start" } : {}) }, 140, { gap: 10 });
+  for (const [x, y] of crosses) { tl.add({ op: "line", from: [x - 3, y], to: [x + 3, y], weight: 1, ink: "soft" }, 30, { gap: 0 }); tl.add({ op: "line", from: [x, y - 3], to: [x, y + 3], weight: 1, ink: "soft" }, 30, { gap: 0 }); }
+  const cx = Math.min(386, x0 + w + 26);
+  tl.add({ op: "arrow", from: [cx, y0 + 44], to: [cx, y0 + 14], weight: 2 }, 300, { gap: 120 });
+  tl.add({ op: "text", at: [cx, y0 + 8], text: "N", size: "s" }, 200, { gap: 20 });
+  if (c.tropic) {
+    tl.add({ id: "tropic", op: "line", from: [x0, ty], to: [x0 + w, ty], weight: 2, ink: "good", dashed: true }, 600, { gap: 200 });
+    for (const q of tropicAt.rows) tl.add({ op: "text", at: q.at, text: q.t, size: "s", ink: "good", align: tropicAt.align }, 300, { gap: 30 });
+  }
+  if (c.meridian) {
+    tl.add({ id: "meridian", op: "line", from: [mx, y0], to: [mx, y0 + h], weight: 2, ink: "good", dashed: true }, 600, { gap: 200 });
+    for (const q of meridianAt.rows) tl.add({ op: "text", at: q.at, text: q.t, size: "s", ink: "good", align: meridianAt.align }, 300, { gap: 30 });
+  }
+  tl.pause(200);
+  placed.sort((a, b) => a.i - b.i).forEach(({ p, at }, n) => {
+    tl.add({ id: `pin${n}`, op: "circle", c: [X(p.lon), Y(p.lat)], r: 4, fill: "accent", ink: "accent" }, 260, { gap: 260 });
+    tl.add({ id: `place${n}`, op: "label", at, text: p.name, to: [X(p.lon), Y(p.lat)], ink: "accent" }, 420, { gap: 30 });
+  });
+  const facts = Object.fromEntries(placed.map(({ p }, n) => [`place${n + 1}`, p.name]));
+  const north = placed.reduce((a, b) => (b.p.lat > a.p.lat ? b : a)), south = placed.reduce((a, b) => (b.p.lat < a.p.lat ? b : a));
+  return { facts: { ...facts, northmost: north.p.name, southmost: south.p.name, ...(c.tropic ? { line: "Tropic of Cancer" } : {}) } };
+}
+
+/**
  * round 7 (C1 studio-board-richness): a table (table.js: every cell computed). 2-4 columns, 1-10 rows; the rule it comes
  * from on top, the header in accent, then the rows one by one so the pattern is seen growing.
  */
@@ -923,7 +1050,7 @@ function measuredBoard(c, tl) {
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };

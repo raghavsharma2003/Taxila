@@ -15,6 +15,7 @@ import { timelineCall } from "./timeline.js";
 import { tableCall } from "./table.js";
 import { labelCall } from "./label-pick.js";
 import { measuredCall } from "./geometry.js";
+import { placesCall } from "./places.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -103,6 +104,9 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   // parts of), before the library's flow and the key-terms board
   const lbc = labelCall(kit, { text });
   if (lbc) tries.push([lbc, "code"]);
+  // round 7: the places a kit names, pinned at their true latitude/longitude on a degree grid (places.js; no outline)
+  const plc = placesCall(kit, { text });
+  if (plc) tries.push([plc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

@@ -378,6 +378,29 @@ export function segHitsBox(p, q, b) {
 /** A word box shrunk 2 units on each side (touching a line is fine, crossing it is not). */
 export const innerBox = (g) => ({ x: g.x + 2, y: g.y + 2, w: Math.max(0, g.w - 4), h: Math.max(0, g.h - 4) });
 /** Text / label boxes crossed by a line, an arrow shaft or a box edge. */
+/**
+ * round 7 (C1 maps, dc-r7-maps-no-outline): the degree labels of a latitude/longitude grid ("15°N", "20°N", "25°N") are the
+ * grid's AXIS, not claims: like a number line's evenly spaced ticks, ≥ 3 labels of one direction letter, each the whole
+ * text, every step equal. Their numbers are allowed (W4); a single "23.5°N" or an uneven set is still checked against
+ * her line and the kit. → canon number strings.
+ */
+function degreeAxes(ops) {
+  const by = { NS: [], EW: [] };
+  for (const o of ops) {
+    if (o.op !== "text") continue;
+    const m = String(o.text).trim().match(/^(\d{1,3})°([NSEW])$/);
+    if (m) by[/[NS]/.test(m[2]) ? "NS" : "EW"].push(Number(m[1]));
+  }
+  const out = [];
+  for (const vs of Object.values(by)) {
+    const u = [...new Set(vs)].sort((a, b) => a - b);
+    if (u.length < 3) continue;
+    const d = u[1] - u[0];
+    if (d > 0 && u.every((v, i) => !i || v - u[i - 1] === d)) out.push(...u.map((v) => canon(String(v))));
+  }
+  return out;
+}
+
 function textsCrossed(ops, byId) {
   const segs = segmentsOf(ops);
   const out = [];
@@ -507,6 +530,7 @@ export function gateWhiteboard(raw, ctx) {
   const derived = new Set();
   const per = ops.map((o) => opNumbers(o, allowed));
   for (const p of per) for (const d of p.derived) derived.add(d);
+  for (const d of degreeAxes(ops)) derived.add(d);
   const invented = [...new Set(per.flatMap((p) => p.nums).filter((t) => !numberAllowed(t, allowed, derived)))];
   const wrong = per.flatMap((p) => p.wrong);
   add("W4.numbers_from_truth", invented.length === 0 && wrong.length === 0, { invented: invented.slice(0, 5), wrong: wrong.slice(0, 3) });
