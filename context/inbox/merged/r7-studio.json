@@ -27,6 +27,20 @@
       "n": 250,
       "method": "evals/studio-timing/board-first-coverage*.mjs: classes 4-7 maths/science/evs kits, the Director's first explain move (and a 'picture dikhao' request), whiteboardIntentOf + board-first preselect with the p412 tray certification; code only, no model call",
       "title": "Board-first preselects a board BEFORE her line on 245/250 first explain moves (98%); on a subject-less picture ask 222/250 (88.8%; maths 119/141, science 63/69, evs 40/40). The ask misses are kit boards that are not drawings for a picture ask (they fall to the live ladder). Live misses are the real-line re-gate, read now from GET /api/studio/timing."
+    },
+    {
+      "id": "dc-r7-board-split",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "The day-4 board that moves: a whole cut into 2-12 equal sectors SPLITS (each part slides outward along its middle, 700 ms, after it is drawn) on the board-first and code-board paths (board-sync.js withSplit / splitOrStill, board-first.js preselect). Only through the full gate including W19.settled, never with a word inside the whole, and the still board whenever the split is refused (motion never costs a board). Regate masks an answer on a moving board as it does on a still one. Reversal: the owner finds the motion distracting; withSplit returns the script unchanged."
+    },
+    {
+      "id": "ms-r7-board-motion-coverage",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 250,
+      "method": "evals/studio-timing/board-motion-coverage.mjs: the ms-r7-board-first-coverage set (classes 4-7, the first explain move, p412 tray certification), counting preselected boards carrying move ops; code only",
+      "title": "4/250 first-explain boards move (c5-maths-ch02-t02, c6-maths-ch07-t02, c6-maths-ch07-t04, c7-maths-ch08-t02: fraction-parts boards); board-first coverage unchanged at 245/250. Before the regate W19 mask fix: 0 (the split's W19.settled echo of W9 blocked the answer mask)."
     }
   ],
   "edges": [
@@ -39,10 +53,15 @@
       "src": "dc-r7-studio-v2-device-class-serving",
       "rel": "measured_by",
       "dst": "ms-r7-studio-v2-servable"
+    },
+    {
+      "src": "dc-r7-board-split",
+      "rel": "measured_by",
+      "dst": "ms-r7-board-motion-coverage"
     }
   ],
   "md": {
-    "decisions": "## dc-r7-studio-no-build-state — no build state on the child's screen (2026-11-04)\n\nOWNER-RESET: the child never sees 'Asha is making this', skeletons or veils. The stage shows only finished pieces. While the next one is made, the last finished piece stays up, inert, or the calm ground does.\n\n## dc-r7-studio-v2-device-class-serving — serve Studio v2 where certified (2026-11-04)\n\nRound 4 kept Studio v2 off the child path unless a piece was playable and certified at all three sizes. No piece was, so the authored explainers and games never reached a child. Round 7 decision D8 serves a piece wherever it is certified at the device's own class. On the 360 phone it is served as its board twin until the portrait relayout (C1 item 13). This amends dc-r4c-studio-v2-off-child-path.\n",
-    "measurements": "## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)\n\nUnder D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.\n\n## ms-r7-board-first-coverage (2026-11-04, n = 250 class 4-7 topics)\n\nThe board-first rung already picks a board before her line on 98% of first explain moves and 88.8% of subject-less picture asks (the maths misses are kit boards that are text, not a drawing). What remains is live: a picked board refused against her real line. GET /api/studio/timing now counts those outcomes per replica.\n"
+    "decisions": "## dc-r7-studio-no-build-state — no build state on the child's screen (2026-11-04)\n\nOWNER-RESET: the child never sees 'Asha is making this', skeletons or veils. The stage shows only finished pieces. While the next one is made, the last finished piece stays up, inert, or the calm ground does.\n\n## dc-r7-studio-v2-device-class-serving — serve Studio v2 where certified (2026-11-04)\n\nRound 4 kept Studio v2 off the child path unless a piece was playable and certified at all three sizes. No piece was, so the authored explainers and games never reached a child. Round 7 decision D8 serves a piece wherever it is certified at the device's own class. On the 360 phone it is served as its board twin until the portrait relayout (C1 item 13). This amends dc-r4c-studio-v2-off-child-path.\n\n## dc-r7-board-split — the fraction board splits (2026-11-04)\n\nA circle cut into equal parts now pulls apart after it is drawn, so 'equal parts' is seen happening. It is applied only when the moving board passes every gate as it ends; otherwise the still board is shown. A word inside the whole means no split.\n",
+    "measurements": "## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)\n\nUnder D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.\n\n## ms-r7-board-first-coverage (2026-11-04, n = 250 class 4-7 topics)\n\nThe board-first rung already picks a board before her line on 98% of first explain moves and 88.8% of subject-less picture asks (the maths misses are kit boards that are text, not a drawing). What remains is live: a picked board refused against her real line. GET /api/studio/timing now counts those outcomes per replica.\n\n## ms-r7-board-motion-coverage (2026-11-04, n = 250)\n\n4 first-explain boards move (all fraction-parts boards). Coverage of board-first unchanged (245/250). Number-line jumps are not yet generated.\n"
   }
 }
