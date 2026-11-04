@@ -12,6 +12,11 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const ONLY = process.env.ONLY;
 const SCENES = [
+  { name: "pendulum-match", q: "family=yantra&mode=pendulum&goal=match&class=7&fade=1&seed=4&art=raat&lang=hinglish&topic=c7-science-ch08-t01" },
+  { name: "measure-total", q: "family=nazariya&mode=measure&goal=total&class=4&fade=1&seed=3&art=kagaz&lang=hinglish&topic=c4-maths-ch08-t01&grammar=" + encodeURIComponent(JSON.stringify({})) },
+  { name: "measure-compare", q: "family=nazariya&mode=measure&goal=compare&class=5&fade=1&seed=5&art=chalk&lang=hinglish&topic=c5-maths-ch08-t01" },
+  { name: "yantra-beam", q: "family=yantra&mode=beam&goal=route&class=7&fade=1&seed=4&art=blueprint&lang=hinglish&grammar=" + encodeURIComponent(JSON.stringify({ mirrors: [2] })) },
+  { name: "yantra-periscope", q: "family=yantra&mode=beam&goal=periscope&class=7&fade=1&seed=3&art=raat&lang=hinglish" },
   { name: "stambh-bars", q: "family=stambh&mode=bars&goal=draw&class=5&fade=1&seed=3&art=kagaz&lang=hinglish&topic=c5-maths-ch15-t02&grammar=" + encodeURIComponent(JSON.stringify({ steps: [5] })) },
   { name: "stambh-picto", q: "family=stambh&mode=picto&goal=draw&class=4&fade=1&seed=2&art=chalk&lang=hinglish&topic=c4-maths-ch14-t01&grammar=" + encodeURIComponent(JSON.stringify({ steps: [2] })) },
   { name: "kon-close-tri", q: "family=kon&mode=close&goal=tri&class=7&fade=1&seed=5&art=blueprint&lang=hinglish" },
@@ -33,7 +38,32 @@ const SCENES = [
     const shot = async (k) => page.screenshot({ path: path.join(out, `${sc.name}-${k}.png`) });
     await shot("0-start");
     const press = (id) => page.evaluate((i) => window.__play.press(i), id);
-    if (sc.name.startsWith("stambh")) {
+    if (sc.name.startsWith("pendulum")) {
+      const d = (x) => page.evaluate((a) => { window.__play.dispatch(a); window.__play.invalidate(); }, x);
+      // the belief first: a heavier bob, run (the period does not move), then the length that keeps the beat
+      const st0 = await page.evaluate(() => window.__play.state());
+      await d({ kind: "set", knob: "mass", value: st0.mass >= 100 ? 50 : 200 }); await sleep(300);
+      await shot("1-aim"); await press("run"); await sleep(2600); await shot("2-miss");
+      for (const a of solve.filter((x) => x.kind !== "run")) { await d(a); await sleep(300); }
+      await press("run"); await sleep(3200); await shot("3-solved");
+      console.log(sc.name, JSON.stringify(st0).slice(0, 160), JSON.stringify(solve));
+    } else if (sc.name.startsWith("measure")) {
+      const d = (x) => page.evaluate((a) => { window.__play.dispatch(a); window.__play.invalidate(); }, x);
+      const acts = solve; const half = Math.max(1, Math.floor(acts.length / 2));
+      for (const a of acts.slice(0, half)) { await d(a); await sleep(250); }
+      await shot("1-aim"); await shot("2-miss");
+      for (const a of acts.slice(half)) { await d(a); await sleep(250); }
+      await sleep(1500); await shot("3-solved");
+      console.log(sc.name, "acts", JSON.stringify(acts).slice(0, 200));
+    } else if (sc.name.startsWith("yantra-beam") || sc.name.startsWith("yantra-periscope")) {
+      const sol = info.level.params.sol, step = info.level.params.step;
+      const d = (x) => page.evaluate((a) => { window.__play.dispatch(a); window.__play.invalidate(); }, x);
+      for (const m of sol) { await d({ kind: "place", part: "mirror", x: m.x, y: m.y, rot: 0 }); await sleep(300); }
+      await shot("1-aim"); await press("run"); await sleep(1400); await shot("2-miss");
+      const placed = await page.evaluate(() => window.__play.state().placed);
+      for (let i = 0; i < sol.length; i++) for (let r = 0; r !== sol[i].rot; r = (r + step) % 180) { await d({ kind: "rotate", id: placed[i].id, rot: r + step }); await sleep(90); }
+      await press("run"); await sleep(1600); await shot("3-solved");
+    } else if (sc.name.startsWith("stambh")) {
       // the solver's acts one by one (each crate drops and settles), a check part-way (a wrong bar), then the rest and check
       const acts = solve.filter((a) => a.kind !== "check"), half = Math.floor(acts.length / 2);
       for (const a of acts.slice(0, half)) { await page.evaluate((x) => { window.__play.dispatch(x); window.__play.invalidate(); }, a); await sleep(220); }
