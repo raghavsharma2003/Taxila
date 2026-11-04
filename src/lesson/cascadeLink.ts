@@ -38,7 +38,7 @@ import { puppetBus } from "../face-puppet/bus.ts";
 // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
-import { VoiceLinkTrace } from "../voice/trace.ts";
+import { VoiceLinkTrace, vt } from "../voice/trace.ts";
 
 /** Round 5: a spoken final this soon after a tapped / typed answer is never a second turn (the owner's chip race). */
 export const LINK_TAP_GUARD_MS = 3000;
@@ -1285,6 +1285,8 @@ export class CascadeLink implements TeacherLink {
     this.abandonOpen = null;
     if (this.pc !== pc) throw new Error("the transcription call was replaced");
     this.callUp = true;
+    // round 7 (Platform cost ledger, option a): the D4 call runs browser ↔ Azure, so its seconds are reported from here
+    this.d4Up = { at: Date.now(), model: String(obj(this.audioInput.transcription).model ?? "") };
     if (this.pushToTalk) this.sendSession(null);
     else if (this.merger) this.sendSession(this.audioInput.turn_detection);
     // ship5 p1-duplex: a reconnect keeps the engine; the first call brings it up (off by default)
@@ -1588,7 +1590,18 @@ export class CascadeLink implements TeacherLink {
     if (this.dc?.readyState === "open") this.dc.send(JSON.stringify(event));
   }
 
+  /** The D4 transcription call that is up now (cost ledger): when it came up and its model. */
+  private d4Up: { at: number; model: string } | null = null;
+  /** One `stt.session` trace event per D4 call ({ model, sec }; never usd: the server prices it, capped). */
+  private reportD4Session(): void {
+    const up = this.d4Up;
+    this.d4Up = null;
+    if (!up) return;
+    vt("stt.session", { model: up.model, sec: Math.max(0, Math.round((Date.now() - up.at) / 100) / 10) });
+  }
+
   private teardownPeer(): void {
+    this.reportD4Session();
     const d5 = this.d5;
     this.d5 = null;
     d5?.close();
