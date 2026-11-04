@@ -4796,6 +4796,10 @@ var An = ["taxila:play-heard", "taxila:turn-sending"], Z = [], Q = (e, t) => {
 	work = [];
 	rigMs = [];
 	intervals = [];
+	rafGaps = [];
+	lastRaf = 0;
+	longTasks = 0;
+	longObs = null;
 	frames = 0;
 	stalls = 0;
 	revealed = !1;
@@ -4952,10 +4956,17 @@ var An = ["taxila:play-heard", "taxila:turn-sending"], Z = [], Q = (e, t) => {
 		let e = Z.indexOf(this);
 		e >= 0 && Z.splice(e, 1), Z.push(this);
 		for (let e of Z) e !== this && e.running && (e.stop(), e.suspended = !0);
-		this.running = !0, this.lastNow = 0;
+		this.running = !0, this.lastNow = 0, this.lastRaf = 0;
 		let t = (e) => {
-			this.running && (this.raf = requestAnimationFrame(t), this.tick(e));
+			this.running && (this.raf = requestAnimationFrame(t), this.lastRaf && (typeof document > "u" || document.visibilityState !== "hidden") && (this.rafGaps.push(e - this.lastRaf), this.rafGaps.length > 120 && this.rafGaps.shift()), this.lastRaf = e, this.tick(e));
 		};
+		if (!this.longObs && typeof PerformanceObserver < "u") try {
+			this.longObs = new PerformanceObserver((e) => {
+				this.running && (this.longTasks += e.getEntries().length);
+			}), this.longObs.observe({ type: "longtask" });
+		} catch {
+			this.longObs = null;
+		}
 		this.raf = requestAnimationFrame(t);
 	}
 	stop() {
@@ -5024,35 +5035,37 @@ var An = ["taxila:play-heard", "taxila:turn-sending"], Z = [], Q = (e, t) => {
 	}
 	govern(e) {
 		if (this.work.length < 60 || e - this.lastStep < 1500) return;
-		let t = this.o.budgetMs ?? 8, n = Q(this.work, .95);
-		if (n <= (this.fpsCap >= 60 ? t : this.fpsCap >= 30 ? t * 2.5 : t * 3.75)) {
+		let t = this.o.budgetMs ?? 8, n = Q(this.work, .95), r = this.fpsCap >= 60 ? t : this.fpsCap >= 30 ? t * 2.5 : t * 3.75, i = Q(this.rafGaps, .95), a = this.longTasks;
+		this.longTasks = 0;
+		let o = i > 66 || a >= 3;
+		if (n <= r && !o) {
 			this.strikes = 0;
 			return;
 		}
 		if (++this.strikes < 2) {
-			this.work.length = 0, this.rigMs.length = 0;
+			this.work.length = 0, this.rigMs.length = 0, this.rafGaps.length = 0;
 			return;
 		}
-		this.strikes = 0, this.lastStep = e, this.work.length = 0, this.rigMs.length = 0;
-		let r;
-		if (this.dpr > 1.5) this.dpr = 1.5, r = "dpr 1.5";
-		else if (this.dpr > 1) this.dpr = 1, r = "dpr 1";
-		else if (this.fpsCap > 30) this.fpsCap = 30, r = "30 fps";
-		else if (this.fpsCap > 20) this.fpsCap = 20, r = "20 fps";
-		else if (n > t * 5.6) {
-			r = "floor", this.emit({
+		this.strikes = 0, this.lastStep = e, this.work.length = 0, this.rigMs.length = 0, this.rafGaps.length = 0;
+		let s;
+		if (this.dpr > 1.5) this.dpr = 1.5, s = "dpr 1.5";
+		else if (this.dpr > 1) this.dpr = 1, s = "dpr 1";
+		else if (this.fpsCap > 30) this.fpsCap = 30, s = "30 fps";
+		else if (this.fpsCap > 20) this.fpsCap = 20, s = "20 fps";
+		else if (n > t * 5.6 || o) {
+			s = "floor", this.emit({
 				type: "governor",
-				step: r,
+				step: s,
 				workP95: n
 			}), this.emit({
 				type: "fallback",
-				reason: `slow: work p95 ${n.toFixed(1)} ms at 20 fps, dpr 1`
+				reason: o ? `slow raster: rAF p95 ${i.toFixed(0)} ms, ${a} long tasks at 20 fps, dpr 1` : `slow: work p95 ${n.toFixed(1)} ms at 20 fps, dpr 1`
 			}), this.stop();
 			return;
 		} else return;
 		this.emit({
 			type: "governor",
-			step: r,
+			step: s,
 			workP95: n
 		});
 	}
@@ -5136,9 +5149,9 @@ var An = ["taxila:play-heard", "taxila:turn-sending"], Z = [], Q = (e, t) => {
 		for (let e of this.offs) e();
 		this.offs = [];
 		for (let e of this.timers) window.clearTimeout(e);
-		this.timers.clear(), this.tap.dispose(), this.canvas.removeEventListener("webglcontextlost", this.onLost), this.canvas.removeEventListener("webglcontextrestored", this.onRestored), this.rig?.dispose(), this.rig = null, this.canvas.remove();
+		this.timers.clear(), this.tap.dispose(), this.longObs?.disconnect(), this.longObs = null, this.canvas.removeEventListener("webglcontextlost", this.onLost), this.canvas.removeEventListener("webglcontextrestored", this.onRestored), this.rig?.dispose(), this.rig = null, this.canvas.remove();
 	}
-}, $ = new URLSearchParams(location.search), Mn = $.get("mode") || "rt", Nn = +($.get("px") || 720), Pn = $.get("look") === "lamp1" ? "lamp1" : "r8";
+}, $ = new URLSearchParams(location.search), Mn = $.get("mode") || "rt", Nn = +($.get("px") || 720), Pn = $.get("look") === "lamp1" || $.get("look") === "lamp2" ? $.get("look") : "r8";
 async function Fn(e) {
 	let [t, n] = await Promise.all([fetch(`/diya/${e}.pcm`).then((e) => e.arrayBuffer()), fetch(`/diya/${e}.json`).then((e) => e.json())]), r = new Int16Array(t), i = new Float32Array(r.length);
 	for (let e = 0; e < r.length; e++) i[e] = r[e] / 32768;

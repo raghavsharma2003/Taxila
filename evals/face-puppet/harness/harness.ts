@@ -15,7 +15,7 @@ const Q = new URLSearchParams(location.search);
 const MODE = Q.get("mode") || "rt";
 const SIZE = +(Q.get("px") || 720);
 // ?look=r8|lamp1 (round 4): which puppet pack the stage loads (src/face-puppet/assets.ts); default the shipped default
-const LOOK = (Q.get("look") === "lamp1" ? "lamp1" : "r8") as "r8" | "lamp1";
+const LOOK = (Q.get("look") === "lamp1" || Q.get("look") === "lamp2" ? Q.get("look") : "r8") as "r8" | "lamp1" | "lamp2";
 
 interface Line { pcm: Float32Array; meta: { text: string; visemes: { ms: number; id: number }[]; words: { ms: number; durMs: number; text: string }[]; ms: number } }
 async function loadLine(id: string): Promise<Line> {
