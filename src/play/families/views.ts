@@ -5,6 +5,7 @@ import { makeAtomsView } from "./todo-jodo/atoms.view.ts";
 import { makeStripsView } from "./todo-jodo/strips.view.ts";
 import { makeBundlesView } from "./todo-jodo/bundles.view.ts";
 import { makeBalanceView } from "./taraazu/balance.view.ts";
+import { makeWeighView } from "./taraazu/weigh.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
 import { makeKonView } from "./kon/kon.view.ts";
@@ -19,6 +20,8 @@ export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/bundles": makeBundlesView,
   "taraazu/equation": makeBalanceView,
   "taraazu/equality": makeBalanceView,
+  "taraazu/weigh": makeWeighView,
+  "taraazu/fill": makeWeighView,
   "nishana/place": makeLineView,
   "nishana/compare": makeLineView,
   "nishana/hop": makeLineView,

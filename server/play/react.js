@@ -10,6 +10,7 @@ import { floorViolations, scanSafety } from "../director/safety.js";
 import { gcd, lcm } from "../../src/play/core/rat.ts";
 import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
+import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -45,6 +46,7 @@ export function hiddenOf(level) {
     case "place": case "compare": return [];
     case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
     case "bars": case "picto": return stambhHidden(level);   // round 7: the diff bar's value
+    case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
     default: return [];
   }
 }

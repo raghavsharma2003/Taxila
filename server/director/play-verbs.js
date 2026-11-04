@@ -7,7 +7,10 @@
 export const PLAY_ACTS = Object.freeze({
   "todo-jodo": { atoms: { act: "split_join", hi: "todo ya jodo", en: "split or join" }, strips: { act: "split_join", hi: "todo ya jodo", en: "split or join" },
     bundles: { act: "split_join", hi: "bundle banao ya kholo", en: "bundle or unbundle" } },
-  taraazu: { equation: { act: "balance", hi: "taraazu barabar karo", en: "balance it" }, equality: { act: "balance", hi: "taraazu barabar karo", en: "balance it" } },
+  taraazu: { equation: { act: "balance", hi: "taraazu barabar karo", en: "balance it" }, equality: { act: "balance", hi: "taraazu barabar karo", en: "balance it" },
+    // r7 games: measurement (src/play/families/taraazu/weigh.logic.ts): load real weights, pour real jugs
+    weigh: { act: "load", hi: "baat chadhao aur tolo", en: "load the weights and weigh" },
+    fill: { act: "fill", hi: "jug se bharo aur dekho", en: "pour the jugs and check" } },
   nishana: { place: { act: "place", hi: "line par rakho", en: "place it on the line" }, compare: { act: "choose", hi: "chuniye", en: "choose" },
     // r7 games: integer operations as hops from a start on the line
     hop: { act: "place", hi: "jahan pahunchoge wahan rakho", en: "land it where the hop ends" } },

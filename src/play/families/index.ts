@@ -4,6 +4,7 @@ import { atomsLogic } from "./todo-jodo/atoms.logic.ts";
 import { stripsLogic } from "./todo-jodo/strips.logic.ts";
 import { bundlesLogic } from "./todo-jodo/bundles.logic.ts";
 import { balanceLogic } from "./taraazu/balance.logic.ts";
+import { weighLogic } from "./taraazu/weigh.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
@@ -20,6 +21,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "todo-jodo/bundles": asAny(bundlesLogic),
   "taraazu/equation": asAny(balanceLogic),
   "taraazu/equality": asAny(balanceLogic),
+  // round 7: measurement on the balance (kg / g) and with jugs (l / ml)
+  "taraazu/weigh": asAny(weighLogic),
+  "taraazu/fill": asAny(weighLogic),
   "nishana/place": asAny(lineLogic),
   "nishana/compare": asAny(lineLogic),
   "nishana/hop": asAny(lineLogic),
