@@ -1488,6 +1488,15 @@ export async function lessonTurn(req, body, hooks = {}) {
         ...(vsShadow?.record ? { shadow: { ...vsShadow.record, ms: vsShadow.ms } } : {}) } } : {}),
     };
   }
+  // round 7 (C1 studio-board-timing; Studio's patch to Brain): the beat lookahead prewarms the NEXT turn's board after this
+  // response, off the critical path, so that turn's preselect finds it ready (board-first.js prewarm). Until planBeat's
+  // 1-2 beat lookahead ships, the predicted ask is this beat teaching the item on deck; swap in planBeat's beat and item
+  // when it lands. A wrong guess costs nothing: Studio serves it only to the ask it was picked for, and her line re-gates it.
+  if (!late && !moduleOnly && typeof studioSeam.prewarmWhiteboard === "function" && ["explain", "worked_example", "recap"].includes(next.beat?.type)) {
+    const aheadItem = upcomingItem(next, kit) ?? null;
+    setImmediate(() => seamSafe("studio.prewarmWhiteboard", () => studioSeam.prewarmWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: (next.turn ?? 0) + 1,
+      beat: next.beat, next, kit, item: aheadItem, line: { text: "" } })), false));
+  }
   return out;
 }
 
