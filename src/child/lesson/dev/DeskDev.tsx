@@ -84,8 +84,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     : { text: young ? "Which one is half?" : "How many quarters make one half?", source: "server", lines: [] };
   if (askModel && (name === "hint-line" || name === "not_yet")) askModel.lines = [{ kind: "hint", level: 1, text: young ? "Count the two equal parts." : "Count the shaded quarters on the board." }];
   if (askModel && name === "with-help") askModel.lines = [{ kind: "hint", level: 2, text: "Two quarters fill one half." }];
-  const answered = ["heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
-  const verdict = name === "correct" || name === "board-correct" || name === "with-help" ? "correct" : name === "not_yet" || name === "board-not_yet" ? "not_yet" : name === "partial" ? "partial" : undefined;
+  const answered = ["teachback-correct", "teachback-not_yet", "heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
+  const verdict = name === "correct" || name === "board-correct" || name === "with-help" || name === "teachback-correct" ? "correct" : name === "not_yet" || name === "board-not_yet" || name === "teachback-not_yet" ? "not_yet" : name === "partial" ? "partial" : undefined;
   const answer: DeskModel["answer"] = answered
     ? { text: young && (name === "heard" || name === "thinking") ? null : young ? "1/2" : "two", form: young && (name === "heard" || name === "thinking") ? "spoken" : "spoken",
         delivery: name === "T2" || name === "T4" ? "not_sent" : name === "RC" ? "sent" : "done", verdict, withHelp: name === "with-help" }
@@ -122,7 +122,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     // r7: the steer chips as useDesk offers them (Older, a talking floor, no sheet)
     steer: !young && !sheet && ["speaking", "showing", "your_turn", "yielding"].includes(floor) && !name.startsWith("summary")
       ? [{ id: "steer:picture", key: "diagram", label: "Diagram" }, { id: "steer:game", key: "game", label: "Game" }, { id: "steer:another", key: "another", label: "Alag tarah se" }, { id: null, key: "else", label: "Kuch aur" }] : null,
-    tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : work ? "teach" : "warmup",
+    tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : name.startsWith("teachback") ? "teachback" : work ? "teach" : "warmup",
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
     // r7: hands-free fixtures (hf / hf-speaking / hf-muted): the duplex engine holds the floor
