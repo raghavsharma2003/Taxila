@@ -20,7 +20,7 @@
 //      exactly as before, so this can only add boards, never remove one.
 // Kill switch TAXILA_BOARD_FIRST=0: nothing is preselected and nothing changes.
 import { answersRequest, samePage, shownBefore } from "../studio/request.js";
-import { gateCtxFor, regate, retime, withSectors, predictedLineOf } from "./board-sync.js";
+import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf } from "./board-sync.js";
 import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
@@ -123,7 +123,10 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // requestIntent). Never for an example (the same page is the repeat), never a page from earlier in the lesson.
       const onScreenAnswer = !!request && request.kind !== "example" && !!avoid && samePage(c.script, avoid);
       if (!onScreenAnswer && shownBefore(c.script, { avoid, seen })) continue;
-      const s = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
+      const s0 = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
+      // round 7 (motion ops): a whole cut into equal parts splits when the split passes the same gate (else the still board)
+      const sp = withSplit(s0);
+      const s = sp !== s0 && regate({ ...sp, board: { ...WB_BOARD, ...(sp.board ?? {}) } }, a2, ctx).ok ? sp : s0;
       // round 4 content: a board the child's device cannot show legibly (server/forge3/tray-gate.js) is never preselected:
       // her line is written from this board's facts row, so it must be one that will reach the stage
       if (certify && !certify({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } })) continue;
@@ -155,7 +158,13 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     if (!p || p.used) return null;
     p.used = true;
     const s = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
-    const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+    let r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+    // a split that her real line refuses: the still board (motion never costs the board)
+    if (!r.ok && s.ops.some((o) => o.op === "move")) {
+      const still = { ...s, ops: s.ops.filter((o) => o.op !== "move") };
+      // (refused still too: the still board's reasons are recorded, W19.settled only repeats them)
+      r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
+    }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
     return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, syncMs: Date.now() - t0 };
   } catch { return null; }

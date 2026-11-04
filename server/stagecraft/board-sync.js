@@ -126,6 +126,41 @@ export function withSectors(script, lineText) {
   return ops === script.ops ? script : { ...script, ops };
 }
 /**
+ * round 7 (C1 studio-whiteboard-motion-ops, the day-4 "board that moves"): a whole cut into equal sectors SPLITS — each
+ * part slides a little outward along its middle, after the parts are drawn — so "equal parts" is seen happening. Only
+ * when the script has no word inside the whole (a label would be left behind), and only through the full gate (the
+ * caller gates the split first and keeps the still board when the split is refused: motion never costs a board).
+ * reducedMotion players land the parts at once. PURE.
+ */
+export function withSplit(script) {
+  const ops = script?.ops ?? [];
+  if (ops.some((o) => o.op === "move")) return script;
+  const groups = new Map();
+  for (const o of ops) if (o.op === "sector" && Array.isArray(o.c)) { const k = `${o.c[0]},${o.c[1]},${o.r}`; (groups.get(k) ?? groups.set(k, []).get(k)).push(o); }
+  const moves = [];
+  for (const parts of groups.values()) {
+    if (parts.length < 2 || parts.length > 12) continue;
+    const { c, r } = parts[0];
+    // a word drawn inside the whole would be left where it was: no split for that whole
+    if (ops.some((o) => (o.op === "text" || o.op === "label") && Array.isArray(o.at) && Math.hypot(o.at[0] - c[0], o.at[1] - c[1]) < r)) continue;
+    const at = Math.max(...parts.map((o) => o.endMs)) + 250;
+    const d = Math.max(6, Math.min(16, r * 0.14));
+    for (const o of parts) {
+      const mid = ((o.fromDeg + o.toDeg) / 2) * Math.PI / 180;   // degrees clockwise from 12 o'clock
+      moves.push({ id: `split-${o.id}`.slice(0, 32), op: "move", target: o.id, by: [Math.round(Math.sin(mid) * d * 10) / 10, Math.round(-Math.cos(mid) * d * 10) / 10], startMs: at, endMs: at + 700 });
+    }
+  }
+  if (!moves.length) return script;
+  const end = Math.max(...moves.map((m) => m.endMs));
+  return { ...script, ops: [...ops, ...moves], durationMs: Math.max(Number(script.durationMs) || 0, end + 200) };
+}
+/** The split board when it passes the gate against her line, else the still one (motion never costs a board). */
+function splitOrStill(s, ask, ctx) {
+  const sp = withSplit(s);
+  if (sp !== s) { const r = regate(sp, ask, ctx); if (r.ok) return r; }
+  return regate(s, ask, ctx);
+}
+/**
  * r12 RCA failure 7 (owner lesson a95d2ff1, board pages 3-5: "those examples were drawn above the previous content"). The
  * client draws EVERY op since the last fresh page under a "continue" script (src/modules/whiteboard/StudioWhiteboard.tsx
  * priorFor/remember). A continue script whose new ops land on those earlier ops (a "?" written over a "4", a staircase
@@ -170,8 +205,10 @@ export function regate(script, ask, ctx) {
   for (let k = 0; k < 3 && !g.pass; k++) {
     const failing = g.checks.filter((c) => !c.pass);
     // (W18, her own question's answer, is masked the same way: its detail is the number, written as a reveal of every op)
-    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal" && c.id !== "W18.her_answer_unsaid")) break;
-    const reveals = failing.flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
+    // (round 7: a moving board's W19.settled that only repeats those two is masked with them)
+    const MASKABLE = (id) => id === "W9.no_reveal" || id === "W18.her_answer_unsaid";
+    if (!failing.length || failing.some((c) => !MASKABLE(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(MASKABLE)))) break;
+    const reveals = failing.filter((c) => MASKABLE(c.id)).flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
     const masked = maskReveals(g.script ?? raw, reveals);
     if (!masked) break;
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
@@ -262,7 +299,7 @@ export function codeBoard(ask0, { kit, lessonId, band = "B3" } = {}, ctx0) {
       const x = explainerFor({ lessonId, kit, item, openItem: item, band, ...t });
       if (!x?.params?.script) continue;
       const s = withSectors(retime(x.params.script, Math.max(800, Number(x.params.script.durationMs) || 0), ctx.speechMs), ctx.reply);
-      const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+      const r = splitOrStill({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
       if (r.ok) return { ...r, template: x.template, by: x.by };
     }
     // 2. the topic's authored catalogue boards (data/studio-catalogue: one per line of its checked explainer, kit-grounded,
@@ -272,7 +309,7 @@ export function codeBoard(ask0, { kit, lessonId, band = "B3" } = {}, ctx0) {
     for (const b0 of cat?.boards ?? []) {
       const b = { ...b0, script: fitLegible(b0.script) };
       const s = withSectors(retime(b.script, Math.max(800, Number(b.script.durationMs) || 0), ctx.speechMs), ctx.reply);
-      const r = regate(s, ask, ctx);
+      const r = splitOrStill(s, ask, ctx);
       if (r.ok) return { ...r, template: `catalogue:${b.line}`, by: "catalogue" };
     }
   } catch { /* the code board is a floor, never a failure */ }
