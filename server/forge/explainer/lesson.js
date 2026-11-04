@@ -13,6 +13,7 @@
 // process memory only.
 import { timelineCall } from "./timeline.js";
 import { tableCall } from "./table.js";
+import { labelCall } from "./label-pick.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -93,6 +94,10 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   // round 7: a computed table (the kit's "table of N" or its linear rule's values)
   const tbc = tableCall(kit, { text });
   if (tbc) tries.push([tbc, "code"]);
+  // round 7: a labelled diagram of the thing the kit is about (label-pick.js: a plant, flower, leaf or insect it names ≥ 3
+  // parts of), before the library's flow and the key-terms board
+  const lbc = labelCall(kit, { text });
+  if (lbc) tries.push([lbc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

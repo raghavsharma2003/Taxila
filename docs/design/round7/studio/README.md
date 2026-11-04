@@ -65,3 +65,12 @@ Re-record with `node evals/studio-timing/record-split.mjs <board.json> <outdir> 
 ## The teacher's picture-in-picture never covers a piece (phones)
 
 The table recording showed that with App's stage-first layout (D7) the teacher's picture-in-picture, in the slot's bottom-right, covered the board's last row on a phone. Every piece now stays clear of that square (`src/studio/pipZone.ts`, the box contract's pipZone): it is lifted above it when there is room, and fitted into the space above it when there isn't. `timeline-down-*` was re-recorded with the fix.
+
+## Labelled diagrams (C1 item 5, science)
+
+`label-plant-*.mp4 / -strip.png`: c3-evs-ch04-t01 "Parts of a plant". The plant is drawn as a teacher draws it, then each part gets its label on a leader line: fruit, flower, leaf, stem, root, soil.
+
+- **Who gets one:** a kit that is about a thing's parts (`label-pick.js`): it names the thing and at least 3 of its parts. A plant also needs both stem and root, so "Kinds of waste: flowers, leaves, soil" is not a plant diagram. Each label is the kit's own word.
+- **Reach:** 15 science and EVS kits (14 plant, 1 flower), all drawn by the explain rung and all passing every W gate (timed to her line). Before, they showed a key-terms bubble board.
+- **Truth fix:** the old plant sketch drew no fruit, and its "fruit" anchor sat on a leaf. It is redrawn with a real fruit, leaves with midribs, a five-petal flower and branching roots, and a test now checks every label points at a drawn part.
+- **Known flaw:** the soil leader runs along the soil line. To be refined.

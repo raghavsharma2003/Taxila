@@ -438,17 +438,30 @@ function parts(c, tl) {
 /** Vetted sketches: code-drawn strokes plus named anchor points a label may point at (left / right label columns). */
 const SKETCH = {
   plant: {
+    // round 7 (C1 board richness): drawn as a teacher draws it: soil, roots branching under it, a curved stem, two real
+    // leaves with midribs, a hanging fruit on its own stalk and a five-petal flower; every anchor ON the part it names
     strokes: [
-      { op: "line", from: [200, 268], to: [200, 120], weight: 3, ink: "good" },                              // stem
-      { op: "stroke", points: [[200, 268], [182, 285], [168, 292]], ink: "soft" },                          // roots
-      { op: "stroke", points: [[200, 268], [214, 287], [230, 294]], ink: "soft" },
-      { op: "stroke", points: [[200, 270], [198, 292]], ink: "soft" },
-      { op: "ellipse", c: [172, 180], rx: 26, ry: 11, fill: "good", ink: "good" },                         // leaves
-      { op: "ellipse", c: [228, 150], rx: 26, ry: 11, fill: "good", ink: "good" },
-      { op: "circle", c: [200, 104], r: 18, fill: "accent", ink: "accent" },                               // flower
-      { op: "line", from: [120, 262], to: [280, 262], ink: "soft", weight: 1 },                            // soil line
+      { op: "line", from: [128, 250], to: [272, 250], ink: "soft", weight: 2 },                             // soil
+      { op: "stroke", points: [[140, 256], [134, 262]], ink: "soft", weight: 1 },
+      { op: "stroke", points: [[260, 256], [254, 262]], ink: "soft", weight: 1 },
+      { op: "stroke", points: [[200, 250], [199, 268], [201, 286]], ink: "chalk", weight: 2 },               // tap root
+      { op: "stroke", points: [[200, 258], [186, 268], [176, 280]], ink: "chalk", weight: 1 },               // side roots
+      { op: "stroke", points: [[200, 262], [214, 272], [224, 284]], ink: "chalk", weight: 1 },
+      { op: "stroke", points: [[200, 250], [203, 210], [199, 160], [200, 104]], ink: "good", weight: 3 },     // stem
+      { op: "polygon", points: [[201, 196], [184, 184], [164, 180], [148, 186], [164, 198], [184, 200]], fill: "good", ink: "good" }, // leaf (left)
+      { op: "line", from: [199, 194], to: [154, 187], ink: "chalk", weight: 1 },                             // its midrib
+      { op: "polygon", points: [[200, 164], [217, 152], [237, 148], [253, 154], [237, 166], [217, 168]], fill: "good", ink: "good" }, // leaf (right)
+      { op: "line", from: [202, 162], to: [247, 155], ink: "chalk", weight: 1 },
+      { op: "stroke", points: [[200, 140], [190, 144], [184, 150]], ink: "good", weight: 1 },               // fruit stalk
+      { op: "circle", c: [180, 158], r: 8, fill: "mark", ink: "mark" },                                      // fruit
+      { op: "circle", c: [200, 74], r: 8, fill: "accent", ink: "accent" },                                   // petals
+      { op: "circle", c: [212, 83], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [207, 97], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [193, 97], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [188, 83], r: 8, fill: "accent", ink: "accent" },
+      { op: "circle", c: [200, 87], r: 5, fill: "mark", ink: "mark" },                                       // its centre
     ],
-    anchors: { flower: [200, 104], leaf: [228, 150], stem: [200, 215], root: [200, 285], soil: [140, 262], fruit: [172, 180] },
+    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [150, 250], fruit: [176, 160] },
   },
   flower: {
     strokes: [
