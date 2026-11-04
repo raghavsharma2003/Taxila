@@ -56,7 +56,7 @@ export function buildPlannerInputs(state, ctx) {
     routine: { bedtime: r.bedtime },
     limits: { capMin: Math.min(l.dailyMinutes, b.capMin), hwSubCapMin: b.hwSubCapMin, restDay: (l.restDays || []).includes(weekday(day)) },
     mode: state.mode, consentCore: !!state.consent.core_tutoring,
-    school: { testWindows },
+    school: { testWindows, subjects: subjectsInput(ctx.view.get("school.subjects")) },
     promises: [...state.promises].sort((a, b2) => (a.id < b2.id ? -1 : 1)),
     frozen: { slots: frozen, startedIds },              // no plan version: a re-plan of an unchanged day must hash equal
     usage: { usedMin: Math.floor(Number(used.value) || 0) },
@@ -66,6 +66,26 @@ export function buildPlannerInputs(state, ctx) {
             "usage.usedMin": { value: Math.floor(Number(used.value) || 0), src: used.src, stale: used.stale } },
     household: null,
   };
+}
+
+/** The rotation's ranked subjects as a planner input (a stale or missing key plans no subject: V25). */
+function subjectsInput(v) {
+  if (!v || v.stale || !v.value?.subjects?.length) return null;
+  return { subjects: [...v.value.subjects], why: v.value.why ?? "rotation", timetable: [...(v.value.timetable ?? [])] };
+}
+
+/**
+ * PURE. Today's lesson subject (round 7 F item 1, rotation.js priority): a test window whose subject the timetable
+ * allows (or with no timetable), else the rotation's first pick. null when neither is known (the start then asks
+ * reports/truth.js nextTopicForPlan, which applies the same order).
+ * @returns {{ subject: string, why: string } | null}
+ */
+export function slotSubject(school) {
+  const tw = school?.testWindows?.[0] ?? null;
+  const subj = school?.subjects ?? null;
+  if (tw && (!subj?.timetable?.length || subj.timetable.includes(tw.subject))) return { subject: tw.subject, why: "test_window" };
+  if (subj?.subjects?.length) return { subject: subj.subjects[0], why: subj.why };
+  return null;
 }
 
 /** 'pi1:' + sha256(JCS(inputs)) (X43). Inputs are already quantised and hold no raw now or asOf. */
@@ -150,7 +170,10 @@ export function planDay(inputs) {
       const promise = inputs.promises[0];
       if (promise) why.push({ code: "teacher_promise", ref: promise.id });
       const targetMin = segments.reduce((a, s) => a + s.minutes, 0);
+      const subj = slotSubject(school);
+      if (subj && subj.why !== "test_window") why.push({ code: subj.why, ref: subj.subject });
       slots.push({ id: `${day.learningDay}:L1`, kind: "live_lesson", targetMin, window: slotWindow, segments,
+        ...(subj ? { subject: subj.subject } : {}),
         voiceSecWanted: voiceOf(segments), why, opener, successFirst: !!adapt.successFirst,
         pace: { newSkillBudget: testWindow && daysBetween(day.learningDay, testWindow.to) < 2 ? 0 : 1 },
         ...(testWindow ? { testChapters: testWindow.chapters } : {}) });

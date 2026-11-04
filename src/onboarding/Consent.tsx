@@ -80,7 +80,8 @@ export function ConsentStep() {
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const across = d.learningAcrossDays ?? null;
-  const left = [across !== null, typeof d.likes === "boolean", !!d.reportChannel].filter((x) => !x).length;
+  // round 7 (dc-r7 D5): reports go only to the app until a second channel really sends, so there is no channel to choose
+  const left = [across !== null, typeof d.likes === "boolean"].filter((x) => !x).length;
   const ready = left === 0;
 
   const save = async () => {
@@ -121,8 +122,7 @@ export function ConsentStep() {
         <p className="row"><Icon name="cross" /> <strong>Off</strong></p>
       </Row>
       <Row speak="reports" title="Where reports go" body="One short weekly report with what your child can now do and one thing to try at home.">
-        <TileGroup label="Where reports go" columns={2} value={d.reportChannel ?? null} onChange={(v) => set({ reportChannel: v })}
-          options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
+        <p className="row"><Icon name="tick" /> <strong>In the Parent corner</strong></p>
       </Row>
       <ErrorNote>{err}</ErrorNote>
     </StepFrame>

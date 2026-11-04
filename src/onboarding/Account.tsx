@@ -99,7 +99,7 @@ export function AccountStep() {
               onChange={(e) => { set({ name: e.target.value }); setFieldErr((f) => ({ ...f, name: undefined })); }} required />
             <div className="field">
               <label htmlFor="ph">Mobile number <span className="muted">(optional for now)</span></label>
-              <span className="hint" id="ph-hint">Weekly reports will come here on WhatsApp.</span>
+              <span className="hint" id="ph-hint">For your account only.</span>
               <div className="phone-row">
                 <span className="phone-cc" aria-hidden="true">+91</span>
                 <input id="ph" className="input" inputMode="numeric" autoComplete="tel-national" maxLength={10} aria-describedby="ph-hint"

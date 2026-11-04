@@ -1,0 +1,36 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-limits-family-optin",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the daily limit, lesson hours and 'done for today' are the family's own opt-in (child_controls.limits_on, migration 035, off by default). TAXILA_DAY_LIMITS=on|off forces every child on or off; unset leaves it to each family. Controls shows the limit and hours only once the parent turns them on, so nothing on the screen is inert. Supersedes dc-r14-no-clock-gates's global off, by its own reversal condition (an opt-in parent control, off by default, never blocking the owner's test family). Reverse if: the owner wants limits on by default for real families.",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-report-channel-hidden",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the 'WhatsApp / only in the app' report-channel choice is hidden in set-up and Controls until a second channel really sends (GET /api/parent/controls reportChannels; TAXILA_REPORT_WHATSAPP=on once Platform's Notifier delivers). New rows default to 'app'. Reverse if: the Notifier ships WhatsApp delivery (then set the flag; the row reappears).",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-subject-rotation",
+   "kind": "decision",
+   "title": "Round 7 F item 1: the day's subject is ranked by server/conductor/rotation.js (the parent's school timetable for the weekday, else the intake's; a test window inside the timetable, or alone with no timetable; subjects with due reviews; then least-recently-taught, never-taught first; a subject already taught today goes last). reports/truth.js nextTopicForPlan (home, lesson start, parent 'next lesson') tries the ranked subjects in turn; the planner writes slot.subject from the same ranking (view key school.subjects). Kill switch TAXILA_ROTATION=off; TAXILA_ROTATION_SUBJECTS narrows the set. Reverse if: owner wants a single-subject day (set the env) or the Conductor day plan (item 9) takes over the choice.",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-learner-view-export",
+   "kind": "decision",
+   "title": "Round 7 F item 4: server/learner/view.js is the one learner read Brain consumes at a lesson start: strand θ (kt ability epoch, value only after 2 scored observations), the weak flag (topic or prerequisite skill with n>=3 and pL<0.4, or θ more than 1 GE under the class start) and minutesLeft (null when the family's limits are off; else min(cap left, hours left) with a deadlineAt for the mid-lesson wrap). learnerViewOf(child, {topicId, ledger, kit}) never throws.",
+   "at": "2026-11-04"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-limits-family-optin", "rel": "supersedes", "dst": "dc-r14-no-clock-gates" }
+ ],
+ "md": {
+  "decisions": "## dc-r7-limits-family-optin\nRound 7 stream F, 2026-11-04. dc-r7 D5 says every parent control is wired or hidden. The daily limit and lesson hours were inert for everyone (TAXILA_DAY_LIMITS off, dc-r14). Now each family opts in (child_controls.limits_on, 035, default off); the env still forces all on or all off. server/routes/child.js limitsOnFor(controls) feeds homeStateOf and plan.limits; Brain's lesson start passes plan.limits to startRefusal (docs/patches/to-brain/002), whose default stays TAXILA_DAY_LIMITS=on. Reversal: owner wants limits on by default.\n\n## dc-r7-report-channel-hidden\nThe WhatsApp choice promised a delivery nothing performs. Hidden in Consent and Controls until reportChannels() lists it (TAXILA_REPORT_WHATSAPP=on, set by Platform with the Notifier).\n\n## dc-r7-subject-rotation\nPlain Start taught maths every day (SUBJECT_ORDER first subject). rotation.js ranks subjects; nextTopicForPlan walks the ranking. New table child_timetable (034). Parent API: GET /api/parent/school, GET /api/parent/chapters, POST /api/parent/school-chapter, POST /api/parent/timetable; Conductor events school.pointer_set and school.timetable_set (re-plan only).\n\n## dc-r7-learner-view-export\nBrain reads θ, weak and minutes-left from server/learner/view.js (pure functions plus learnerViewOf).",
+  "measurements": "",
+  "rejected": ""
+ }
+}

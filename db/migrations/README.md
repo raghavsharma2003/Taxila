@@ -1,10 +1,15 @@
 # db/migrations
 
-Plain SQL, applied in file-name order, once each, by `node scripts/migrate.mjs` (reads `DATABASE_URL`; the applied set
-is the `schema_migrations` table). One statement per `;` at line end; no `$$` blocks (the Neon HTTP driver runs one
-statement per call).
+Plain SQL, applied in file-name order, once each, by `node scripts/migrate.mjs` (the applied set is the
+`schema_migrations` table). Each FILE runs in one transaction together with its `schema_migrations` row: a file is
+applied whole or not at all. Statements are split on top-level `;` (strings, quoted names, `$$`/`$tag$` bodies and
+comments are respected: `scripts/migrate-core.mjs` `splitSql`). No `begin`/`commit` inside a file, and nothing that
+cannot run in a transaction (`create index concurrently`, `vacuum`).
 
-- Test against the Neon **test branch** first (`DATABASE_URL=$CONDUCTOR_TEST_DATABASE_URL node scripts/migrate.mjs`).
+- `node scripts/migrate.mjs [--dry-run]` targets the **test branch** by default (`TAXILA_DB=test` semantics:
+  `CONDUCTOR_TEST_DATABASE_URL`, else `TEST_DATABASE_URL`; never falls back to production).
+- Production needs `--prod` on the command line plus `--backup NAME` (a Neon backup branch first) or `--no-backup`.
+- A database reachable only inside the ACA VNet (Azure PG): `--job` (runs `scripts/region/db-copy.mjs --apply-migrations`).
 - Production is migrated by the wave's integration step only, never by a stream (BUILD-PLAN §1.6).
 - Numbers are allotted by the main loop in each wave's seam commit. Use only your stream's numbers; an unused number
   stays unused (a gap is harmless, a collision is not).
@@ -45,3 +50,6 @@ statement per call).
 
 -- Round 5 (2026-10-15, main): 030 is allotted to 4B (claude/r4-duplex) for the edit full-undo (lesson_undo + the
 -- *_superseded archive tables, dc-r143-edit-full-undo). 027 stays a gap. Next free after that: 031.
+
+-- Round 7 (2026-11-04, PIPELINE.md): Brain 031-033, Learning 034-039, Platform 040-043 (040 = the cost ledger's
+-- lesson.cost rollup). Numbering is owned by stream G (platform).
