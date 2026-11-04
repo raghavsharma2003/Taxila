@@ -14,7 +14,14 @@ export type AnswerForm = "words" | "number" | "choice" | "draw" | "read_aloud" |
 export type TrayKind = "module" | "board" | "tiles" | "pad" | "studio";
 export type Verdict = "correct" | "not_yet" | "partial";
 export type DeskPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap";
-export type Sheet = null | "pause" | "end" | "hint" | "help" | "grownup";
+export type Sheet = null | "pause" | "end" | "hint" | "help" | "grownup" | "break";
+
+/** r7 app-lesson-moments-later: a parked question (Brain's ui.later; she brings it back at the wrap). */
+export interface LaterItem { id: string; text: string }
+/** r7: a designed moment on the stage (Brain's ui.moment): a diversion parked, a brief in-bounds detour, a warm decline,
+ *  or the stop check-in. `quote` is the child's words, `note` her one-line why. The stop check-in's choices are the turn's
+ *  own chips (stop:continue / break:rest / stop:wrap2 / stop:end), so they act through the Director as today. */
+export interface StageMoment { kind: "park" | "detour" | "decline" | "stop"; quote?: string; note?: string; key: string }
 
 /** "asked": the child's help request as a chip state under the ask ("Hint asked"; W1-A item 6), never the answer row. */
 export interface AskLine { kind: "hint" | "reask" | "didnt_catch" | "know" | "step" | "asked"; text: string; level?: 1 | 2 | 3 }
@@ -91,7 +98,9 @@ export interface DeskModel {
   /** Older: seconds thinking, shown from 4 s ("Thinking… 4 s"); Young never sees a number. */
   thinkingSeconds: number | null;
   thinkingLabel: boolean;
-  mic: { available: boolean; talking: boolean; drain: number; tapToTalk: boolean };
+  /** handsFree: the duplex engine holds the floor (no talk button; r7 app-handsfree-dock). muted: the child switched the mic
+   *  off (tap to talk is the fallback while muted). */
+  mic: { available: boolean; talking: boolean; drain: number; tapToTalk: boolean; handsFree?: boolean; muted?: boolean };
   /** Young: the Help button appears after tapOptionsS; Older: Hint is always there. */
   showHelp: boolean;
   /** A safeguard turn or the check-in (safe:* chips): no Hint or Help affordance. */
@@ -114,6 +123,8 @@ export interface DeskModel {
   reducedMotion: boolean;
   /** dev / tests: a deterministic plate instead of the live 3D head. */
   faceForm: "live" | "plate";
+  /** r7: Me → "Voice only": her face is not drawn (the stage holds her name, "AI teacher" and the caption). */
+  faceHidden?: boolean;
   /** Young: one more lamp breath at glowS. */
   lampBreath: number;
   /** A strip sentence other than the id's own (T2 "Try again" while still offline: "Still no internet…"). */
@@ -139,6 +150,16 @@ export interface DeskModel {
   intake?: UiDirectives["intake"] | null;
   /** The lesson variant (practice: the Summary reads "That's the set"). */
   variant?: "lesson" | "practice" | "doubt";
+  /** r7: the Later list (parked questions), oldest first; the Debrief shows it again. */
+  later?: LaterItem[];
+  /** r7: this turn's moment card, if any. */
+  moment?: StageMoment | null;
+  /** r7: the stop check-in's choices (the turn's stop:* / break:* chips), shown on the moment card, not as tiles. */
+  stopChoices?: Array<{ id: string; label: string }> | null;
+  /** r7: a break is running (Pause → End → Short break): since when (ms). */
+  breakSince?: number | null;
+  /** r7 app-lesson-steer-chips: the steer chips on offer now (null: none), labels in the lesson's language. */
+  steer?: Array<{ k: "diagram" | "game" | "another" | "else"; label: string }> | null;
 }
 
 export interface DeskActions {
@@ -179,4 +200,14 @@ export interface DeskActions {
   openPad?(): void;
   /** The Help menu closes back over the pad or tiles it covered (W1-A item 3). */
   closeHelpMenu?(): void;
+  /** r7: Pause → End → "Short break": the break sheet (mic held, she waits; Back resumes where we were). */
+  takeBreak?(): void;
+  /** r7: a stop check-in choice (the server's chip). */
+  pickStop?(c: { id: string; label: string }): void;
+  /** r7: hands-free mute (privacy, noise): the mic goes off the way a pause sheet switches it off; tap to talk meanwhile. */
+  toggleMute?(): void;
+  /** r7: the pad's "abc" key: close the pad for this item and type words instead (Older). */
+  padWords?(): void;
+  /** r7: a steer chip (diagram / game / explain differently / something else). */
+  steer?(k: "diagram" | "game" | "another" | "else"): void;
 }

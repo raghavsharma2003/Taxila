@@ -89,6 +89,15 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
   const mic = m.mic.available && m.mic.tapToTalk ? (
     <TalkButton floor={m.floor} talking={m.mic.talking} drain={m.mic.drain} onTap={talk} mic={micMeter}
       disabled={m.gate !== null || m.sheet !== null} small={m.layout.keyboard} />
+  ) : m.mic.handsFree ? (
+    // r7 app-handsfree-dock: no talk button while the duplex engine holds the floor: a live level and what she is doing
+    <HandsFree floor={m.floor} mic={micMeter} teacher={m.teacher.name} small={m.layout.keyboard} />
+  ) : null;
+  const muteBtn = a.toggleMute && (m.mic.handsFree || m.mic.muted) && m.gate === null ? (
+    <button type="button" className="dk-mute" onClick={a.toggleMute} aria-pressed={!!m.mic.muted} data-testid="mute"
+      aria-label={m.mic.muted ? t("hf.unmute") : t("hf.mute")}>
+      <Glyph name={m.mic.muted ? "mic_slash" : "mic"} size={20} /><span>{m.mic.muted ? t("hf.unmute") : t("hf.mute")}</span>
+    </button>
   ) : null;
 
   const side = (label: CopyKey, glyph: StateGlyphName, onClick: () => void, testid: string, extra?: { pressed?: boolean }) => sidesHidden ? (
@@ -158,9 +167,10 @@ export function AnswerDock({ m, a, micMeter, stripId, lit, setRef }:
     >
       <header className="dk-dock-head">
         <StateWord floor={m.floor} word={word} mode={mode?.key} modeGlyph={mode?.glyph} glyph={held ? "clock" : undefined} />
-        {!young && !m.typing && m.gate === null && !stripId && yourTurn && (
+        {!young && !m.typing && m.gate === null && !stripId && yourTurn && !muteBtn && (
           <button type="button" className="dk-wait" onClick={a.wait} data-testid="wait">{t("dock.wait")}</button>
         )}
+        {muteBtn}
       </header>
       {momentNote && <p className="dk-dock-note" role="status">{t("floor.moment", { T: m.teacher.name })}</p>}
       <div className="dk-dock-body">{body}</div>
@@ -185,5 +195,34 @@ function TypeRow({ young, onSend, onClose, onFocus, canClose, initial = "" }: { 
         </button>
       )}
     </form>
+  );
+}
+
+/** r7 app-handsfree-dock: the hands-free readout in place of the talk button. A ring that follows the child's mic level
+ *  (information, so it stays under reduced motion), and one line on what she is doing: "Speak any time" while she
+ *  listens, "You can cut in any time" while she talks, "{T} will wait" at the hand-over (the engine never cuts a thinking
+ *  child off), "{T} is thinking" while she works on a reply. */
+function HandsFree({ floor, mic, teacher, small }: { floor: DeskModel["floor"]; mic?: Meter; teacher: string; small?: boolean }) {
+  const ring = useRef<HTMLSpanElement>(null);
+  useEffect(() => {
+    if (!mic) return;
+    let smooth = 0;
+    return mic.subscribe((v) => {
+      smooth += (Math.min(1, v) - smooth) * 0.35;
+      ring.current?.style.setProperty("--lvl", smooth.toFixed(3));
+    });
+  }, [mic]);
+  const line = floor === "speaking" || floor === "showing" ? t("hf.speaking")
+    : floor === "thinking" || floor === "heard" ? t("hf.thinking", { T: teacher })
+      : floor === "your_turn" || floor === "yielding" ? t("hf.wait")
+        : t("hf.listening");
+  return (
+    <div className={`dk-hf${small ? " dk-hf--small" : ""}`} data-floor={floor} data-testid="handsfree" role="status" aria-live="polite">
+      <span className="dk-hf-orb" aria-hidden="true">
+        <span ref={ring} className="dk-hf-ring" />
+        <Glyph name="mic" size={small ? 18 : 24} />
+      </span>
+      <span className="dk-hf-line">{line}</span>
+    </div>
   );
 }

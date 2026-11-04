@@ -63,6 +63,10 @@ export interface DeskContext {
   textOnly: boolean;
   openMic: boolean;
   faceForm: "live" | "plate";
+  /** r7: Me → Teacher's face "Voice only": no face on the stage (her name and "AI teacher" still show). */
+  faceHidden?: boolean;
+  /** r7: Me → Talk mode "Tap to talk": the lesson starts muted (tap to talk), even where hands-free is live. */
+  startMuted?: boolean;
   /** Young B1 (R0): CC turns "captions always" on for the child (a saved preference). */
   setCaptionsAlways?: (on: boolean) => void;
   /** The child's first lesson on this device: the T6 "Can't hear?" heuristic runs only then (§3.13). */
@@ -93,6 +97,34 @@ const REQUESTS: Record<string, [string, string, string]> = {
   choices: ["Choices dikhao", "विकल्प दिखाइए", "Show me choices"],
   how: ["Kaise karte hain dikhao", "कैसे करते हैं, दिखाइए", "Show me how"],
 };
+
+/** r7 app-lesson-steer-chips: the steer chips. STEER_ID: the chip id the Director reads (null: sent as the child's words,
+ *  read by the request lexicon). STEER_CHIP: the short label on the chip, STEER_SAID: the words sent, one per lesson
+ *  language (hinglish, hindi, english; the child's own words, DESIGN-V3 §5). "Something else" has no chip id yet
+ *  (classify.js reads no words when a chip id is present), so it goes as words the lexicon's change_topic reads
+ *  ("kuch aur baat karte hain"), until Brain accepts req:change_topic. */
+export const STEER_ID: Record<SteerKey, string | null> = { diagram: "req:visual", game: "req:game", another: "another", else: null };
+export const STEER_CHIP: Record<SteerKey, [string, string, string]> = {
+  diagram: ["Diagram", "चित्र", "Diagram"],
+  game: ["Game", "खेल", "A game"],
+  another: ["Alag tarah se", "दूसरी तरह", "Another way"],
+  else: ["Kuch aur", "कुछ और", "Something else"],
+};
+export const STEER_SAID: Record<SteerKey, [string, string, string]> = {
+  diagram: ["Diagram bana ke dikhao", "चित्र बनाकर दिखाइए", "Show me a diagram"],
+  game: ["Game khelna hai", "खेल खेलना है", "Can we play a game"],
+  another: ["Kisi aur tarah samjhao", "किसी और तरह समझाइए", "Explain it differently"],
+  else: ["Kuch aur baat karte hain", "kuch aur baat karte hain", "Can we talk about something else"],
+};
+export type SteerKey = "diagram" | "game" | "another" | "else";
+export const STEER_ORDER: SteerKey[] = ["diagram", "game", "another", "else"];
+
+/** PURE (tests/r7-app-steer.test.mjs): are the steer chips offered now? Older, live, a talking floor, no sheet, no
+ *  safeguard turn, not while she thinks over an answer, never in Quick practice. */
+export function steerOffered(p: { family: string; live: boolean; floor: string; sheet: unknown; safeguard: boolean; gate: unknown; variant?: string; summary: unknown }): boolean {
+  if (p.family !== "older" || !p.live || p.sheet || p.safeguard || p.gate || p.summary || p.variant === "practice") return false;
+  return p.floor === "speaking" || p.floor === "showing" || p.floor === "your_turn" || p.floor === "yielding";
+}
 
 export { inferAsk, questionShortTitle, practiceCount, PRACTICE_OF } from "./deskPure.ts";
 import { inferAsk, questionShortTitle, practiceCount } from "./deskPure.ts";
@@ -163,7 +195,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const [sheet, setSheet] = useState<Sheet>(null);
   const resumeTurn = useRef(false);
   useEffect(() => {
-    bridge?.holdSpeech(sheet === "pause" || sheet === "end" || sheet === "hint");
+    bridge?.holdSpeech(sheet === "pause" || sheet === "end" || sheet === "hint" || sheet === "break");
   }, [sheet, bridge]);
   const lastSafeguard = useRef<Move | null>(null);
   useEffect(() => {
@@ -344,6 +376,25 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // drop Type for "tap_in_tray" (W1-A item 4; flows G2: an unknown engine left an empty tray and no way to answer).
   const liveModule = modulesMounted.length > 0 && !moduleFailed;
   const chips = ui.chips ?? [];
+  // r7 app-lesson-moments-later: Brain's ui.later (the parked questions; the list only grows within a lesson, and an id the
+  // server drops is gone: it was answered) and ui.moment (this turn's moment card). Typed structurally until the contract
+  // lands in shared/contracts.ts; absent today, so nothing shows.
+  const uiLater = (ui as { later?: Array<{ id?: unknown; text?: unknown }> }).later;
+  // The list as last sent: a turn without ui.later keeps it (a turn that sends [] clears it), so the Debrief still has it.
+  const laterSeen = useRef<DeskModel["later"]>([]);
+  const later = useMemo(() => {
+    if (!Array.isArray(uiLater)) return laterSeen.current ?? [];
+    const list = uiLater.filter((x) => x && typeof x.text === "string" && x.text.trim())
+      .map((x, i) => ({ id: String(x.id ?? `later-${i}`), text: String(x.text).slice(0, 140) }));
+    laterSeen.current = list;
+    return list;
+  }, [uiLater]);
+  const uiMoment = (ui as { moment?: { kind?: unknown; quote?: unknown; note?: unknown } }).moment;
+  const moment: DeskModel["moment"] = uiMoment && ["park", "detour", "decline", "stop"].includes(String(uiMoment.kind))
+    ? { kind: uiMoment.kind as NonNullable<DeskModel["moment"]>["kind"], quote: typeof uiMoment.quote === "string" ? uiMoment.quote : undefined,
+        note: typeof uiMoment.note === "string" ? uiMoment.note : undefined, key: `${state.replySeq ?? ""}:${String(uiMoment.kind)}` }
+    : null;
+  const [breakSince, setBreakSince] = useState<number | null>(null);
   // r5 QA pass 12 (main's review): a safeguard turn or the check-in (safe:* chips) offers no lesson help (Hint, Help).
   const safeguardTurn = state.move?.kind === "safeguard" || chips.some((c) => /^safe:/.test(String(c.id ?? ""))) || (ui as { beat?: { type?: string } }).beat?.type === "safeguard";
   const wb = ui.whiteboard?.value ? ui.whiteboard : null;
@@ -354,8 +405,11 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // voice, and for Older who tapped "123" (§6.3.4). A module keeps the tray; the pad takes the board's place.
   const [padOpen, setPadOpen] = useState(false);
   const numberItem = ui.answerForm === "number";
-  useEffect(() => setPadOpen(false), [ui.ask?.text, ui.answerForm]);
-  const padWanted = numberItem && (young || voiceDown || padOpen);
+  // r7 (open-e2e-number-pad-no-words): the pad's "abc" key closes it for this item and opens typing, so a worded answer
+  // or a typed steer is never impossible on a number item (Older only; Young keep the pad).
+  const [padWords, setPadWords] = useState(false);
+  useEffect(() => { setPadOpen(false); setPadWords(false); }, [ui.ask?.text, ui.answerForm]);
+  const padWanted = numberItem && (young || ((voiceDown || padOpen) && !padWords));
   const serverTray = ui.tray && ui.tray !== "none" ? ui.tray : null;
   // round 3 forge (patch 07): a Studio slot the stage reported as ended-empty does not hold the tray (an empty white box
   // under her line was the commonest broken view of the round 3 acceptance runs); a new slot id holds it again
@@ -389,6 +443,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // ship5 p1-duplex: while the duplex engine decides the floor the mic is open for the whole lesson (no talk button);
   // when it steps aside (quota, fault, kill switch) the screen's own talk policy applies again.
   const openMic = ctx.openMic || !!bs?.duplexLive;
+  // r7 app-handsfree-dock: the child's mute. Through the same switch a pause sheet uses (push-to-talk on → the link turns the
+  // mic off), so tap to talk is the visible fallback while muted. A lesson starts unmuted.
+  const [muted, setMuted] = useState(!!ctx.startMuted);
   const pttOn = bs?.cascade ? bs.pushToTalk : state.pushToTalk;
   const tapToTalk = spoken && (state.phase === "live" ? pttOn || !openMic : !openMic);
   tapToTalkNow.current = tapToTalk;
@@ -404,9 +461,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     end: () => runtime.talkEnd(),
   });
   useEffect(() => {
-    bridge?.setPushToTalk(!openMic || paused);
-    if (state.phase === "live" && spoken) runtime.setPushToTalk(!openMic || paused);
-  }, [state.phase, spoken, openMic, paused, runtime, bridge]);
+    bridge?.setPushToTalk(!openMic || paused || muted);
+    if (state.phase === "live" && spoken) runtime.setPushToTalk(!openMic || paused || muted);
+  }, [state.phase, spoken, openMic, paused, muted, runtime, bridge]);
 
   // YOUR TURN timers (escalate only; they never set a state): Young help after tapOptionsS, the second breath.
   const changeKey = `${floor}|${chips.map((c) => c.id).join(",")}|${bs?.replays ?? 0}`;
@@ -728,7 +785,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     thinkingSeconds: null,
     thinkingSince: !young && commitAt !== null && (floor === "thinking" || floor === "heard") ? commitAt : null,
     thinkingLabel: !!beats?.thinkingLabel || (floor === "thinking" && commitAt === null),
-    mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk },
+    mic: { available: spoken, talking: ptt.talking, drain: ptt.drain, tapToTalk, handsFree: spoken && openMic && !muted && !tapToTalk, muted: spoken && openMic && muted },
     showHelp: young && !safeguardTurn && (yt.tapOptions || tokens.tapOptionsS === null || voiceDown),
     safeguard: safeguardTurn,
     // one Send on screen (flows G15): while the NumberPad (its own Send) is open in the tray, the type row is closed
@@ -743,6 +800,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     helpLead: state.helpLead ?? "grownup",
     reducedMotion: ctx.reducedMotion,
     faceForm: ctx.faceForm,
+    faceHidden: !!ctx.faceHidden,
     lampBreath: floor === "your_turn" ? (young && yt.glowStrong ? 2 : 1) : 0,
     stripText: strip === "T2" && stillOfflineAt !== null ? "trouble.still_offline" : null,
     notMeWindow,
@@ -753,6 +811,12 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     // "/" on the Older pad in a fraction question (live-content 10).
     padSlash: !young && fractionQuestion(askText, state.topic?.title ?? ""),
     padComma: !!(ui as { padComma?: boolean }).padComma,
+    later,
+    moment,
+    breakSince: sheet === "break" ? breakSince : null,
+    steer: steerOffered({ family: ctx.family, live: state.phase === "live", floor, sheet, safeguard: safeguardTurn, gate: gate === "locked" ? gate : null, variant: ctx.variant, summary })
+      ? STEER_ORDER.map((k) => ({ k, label: STEER_CHIP[k][ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0] }))
+      : null,
   };
 
   // ───────── actions ─────────
@@ -811,6 +875,16 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     hearAgain: () => a.hearQuestion(),
     openHint: () => setSheet("hint"),
+    steer: (k) => {
+      if (!STEER_CHIP[k] || state.phase !== "live") return;
+      ptt.stop();
+      bridge?.stopReplay();
+      if (floor === "speaking" || floor === "showing") bridge?.quietStop(); // a steer is a barge-in: she stops and turns
+      const label = STEER_SAID[k][ctx.lessonLang === "hindi" ? 1 : ctx.lessonLang === "english" ? 2 : 0];
+      const id = STEER_ID[k];
+      if (id) runtime.tapChip({ id, label });
+      else runtime.say(label);
+    },
     hintPick: (k) => {
       setSheet(null);
       const row = REQUESTS[k];
@@ -848,13 +922,16 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setSheet("pause");
     },
     resume: () => {
-      const replayTurn = sheet === "pause" && resumeTurn.current;
+      const replayTurn = (sheet === "pause" || sheet === "break") && resumeTurn.current;
       resumeTurn.current = false;
       const newer = (bridge?.speechWaiting ?? 0) > 0;
       setSheet(null);
       if (replayTurn && !newer) bridge?.replay(false);
     },
     askEnd: () => setSheet("end"),
+    // r7 (D5): a real break from Pause → End: speech stays held (pause held it), the mic is off, Back resumes here
+    takeBreak: () => { ptt.stop(); setBreakSince(Date.now()); setSheet("break"); },
+    pickStop: (c) => { bridge?.stopReplay(); runtime.tapChip(c); },
     cancelEnd: () => setSheet(null),
     endLesson: () => {
       setSheet(null);
@@ -932,7 +1009,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       setFixDraft(item.answer?.text ?? "");
       setTyping(true);
     },
-    openPad: () => setPadOpen(true),
+    openPad: () => { setPadWords(false); setPadOpen(true); },
+    toggleMute: () => { ptt.stop(); setMuted((x) => !x); },
+    padWords: () => { setPadOpen(false); setPadWords(true); setTyping(true); },
     notMe: () => {
       void runtime.end();
       nav.who();

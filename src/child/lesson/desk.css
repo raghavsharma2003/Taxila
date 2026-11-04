@@ -311,6 +311,10 @@
 .dk-call { display: inline-flex; align-items: center; gap: var(--space-2); min-height: 48px; padding: 0 var(--space-3); border: 1px solid var(--line); border-radius: var(--radius-md);
   color: var(--ink); text-decoration: none; font-weight: 600; font-size: var(--t-body); font-variant-numeric: tabular-nums; }
 .dk-pair { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+/* r7 (D5): the stop check-in's three choices, stacked; the break sheet */
+.dk-stack { display: grid; gap: var(--gap); }
+.dk-sheet-sub { margin: 0 0 var(--space-3); color: var(--ink-2); font-size: var(--t-body, 16px); line-height: 1.45; }
+.dk-break-clock { font-variant-numeric: tabular-nums; }
 .dk-rows { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); }
 .dk-row { width: 100%; display: flex; align-items: center; gap: var(--space-3); min-height: 56px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-md);
   background: transparent; text-align: left; font-weight: 600; font-size: var(--t-label); }
@@ -397,3 +401,17 @@
 .dk-tray--pad .dk-pad[data-young="1"] .dk-pad-keys { grid-auto-rows: minmax(56px, 1fr); }
 .dk-helpmenu--over { align-content: start; padding-top: var(--space-2); row-gap: 6px; }
 .dk-helpmenu--over .dk-helpmenu-btn { min-height: 96px; }
+
+/* r7 app-handsfree-dock: the hands-free readout (no talk button) and the mute switch */
+.dk-hf { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.dk-hf-orb { position: relative; width: 56px; height: 56px; display: grid; place-items: center; border-radius: 50%; color: var(--listen);
+  border: 2px solid color-mix(in srgb, var(--listen) 70%, transparent); }
+.dk-hf--small .dk-hf-orb { width: 40px; height: 40px; }
+.dk-hf-ring { --lvl: 0; position: absolute; inset: -2px; border-radius: 50%; border: 3px solid var(--listen);
+  transform: scale(calc(1 + var(--lvl) * .45)); opacity: calc(.25 + var(--lvl) * .75); transition: transform 70ms linear, opacity 70ms linear; }
+.dk-hf[data-floor="speaking"] .dk-hf-orb, .dk-hf[data-floor="showing"] .dk-hf-orb, .dk-hf[data-floor="thinking"] .dk-hf-orb { color: var(--ink-2); border-color: var(--line); }
+.dk-hf-line { max-width: 100%; font-size: 14px; font-weight: 600; line-height: 1.2; text-align: center; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dk-mute { position: relative; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px; margin-left: auto;
+  border: 1px solid var(--line); border-radius: var(--radius-sm, 6px); background: var(--surface); color: var(--ink); font-size: 14px; font-weight: 600; white-space: nowrap; flex: none; }
+.dk-mute[aria-pressed="true"] { border-color: var(--trouble); color: var(--trouble); }
+.dk-mute::after { content: ""; position: absolute; inset: -8px -4px; } /* 48 dp hit area around a 32 dp switch */

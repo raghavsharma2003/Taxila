@@ -5,10 +5,16 @@ export type Band = "b1" | "b2" | "b3" | "b4";
 export type Family = "young" | "older";
 export type ReadingLevel = "R0" | "R1" | "R2";
 
-/** Class → visual band: B1 6-7 (classes 1-2), B2 8-9 (3-4), B3 10-12 (5-7), B4 13-15 (8-9). */
+/**
+ * Class → visual band. r7 D3 (main loop 2026-11-04, OWNER-RESET #1: class 4 got a five-year-old's app): the age bands are
+ * classes 1-3 young, 4-6 preteen, 7-9 teen, and class 4 moves to the older look. Visually: B1 classes 1-2, B2 class 3
+ * (the young family ends at YOUNG_MAX_CLASS), B3 classes 4-7, B4 8-9. The band TABLE is Brain's (shared/learner.ts BANDS);
+ * when it carries the D3 age band per class, YOUNG_MAX_CLASS is read from it instead of written here.
+ */
+export const YOUNG_MAX_CLASS = 3;
 export function bandForClass(classLevel: number): Band {
   if (classLevel <= 2) return "b1";
-  if (classLevel <= 4) return "b2";
+  if (classLevel <= YOUNG_MAX_CLASS) return "b2";
   if (classLevel <= 7) return "b3";
   return "b4";
 }
