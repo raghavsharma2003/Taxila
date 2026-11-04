@@ -1,7 +1,7 @@
 // /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor without a lesson (the picker is gone: one teacher).
 //   ?tutor=asha|arjun|uma  ?face=B|Blite|D|E  ?status=speaking|listening|thinking|your_turn|idle  ?framing=medium|close
 //   ?reduced=1  ?voice=1 (start the synthetic voice at once; needs a gesture unless autoplay is allowed)
-//   ?class=1-9
+//   ?class=1-9  ?via=lesson (render through <LessonFace>, the lesson's own face: the puppet and its fallbacks)
 // The synthetic voice is a looped, syllable-modulated harmonic signal (≈ 4.5 syllables/s, phrase pauses, bright/dark
 // vowels) on a LevelMeter exactly as a link attaches one, so the face runs its real tap → lip → behaviour path.
 // The face sits inside the real <TeacherStage> through its `face` slot: the same mount the lesson screen uses.
@@ -9,6 +9,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createLevelAnalyser, LevelMeter } from "../lesson/level.ts";
 import { TeacherStage } from "../stage/TeacherStage.tsx";
 import { TutorFace } from "../avatar/TutorFace.tsx";
+import { LessonFace } from "../face-puppet/LessonFace.tsx";
 import type { FloorStatus } from "../avatar/behaviour.ts";
 import type { StageEvent } from "../avatar/three/stage3d.ts";
 import type { FaceTier } from "../avatar/tier.ts";
@@ -55,6 +56,7 @@ export default function AvatarDev() {
   const cls = Number(q.get("class") ?? 6);
   const framing = (q.get("framing") as "medium" | "close") ?? "medium";
   const tier = (q.get("face") as FaceTier) || undefined;
+  const Face = q.get("via") === "lesson" ? LessonFace : TutorFace;
   const meter = useMemo(() => new LevelMeter(), []);
   const sources = useMemo(() => [meter], [meter]);
   const [voice, setVoice] = useState<{ ctx: AudioContext; src: AudioBufferSourceNode } | null>(null);
@@ -122,7 +124,7 @@ export default function AvatarDev() {
               mouth={sources}
               badge={band === "b1" || band === "b2"}
               framing={framing}
-              face={<TutorFace key={`${tutorId}-${tier}`} tutorId={tutorId} band={band} status={status} teacher={sources} reducedMotion={reduced} framing={framing} tier={tier} onEvent={onEvent} />}
+              face={<Face key={`${tutorId}-${tier}`} tutorId={tutorId} band={band} status={status} teacher={sources} reducedMotion={reduced} framing={framing} tier={tier} onEvent={onEvent} />}
               style={{ height: "100%" }}
             />
           </div>

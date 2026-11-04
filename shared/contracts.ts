@@ -159,6 +159,73 @@ export interface UiDirectives {
     /** the session's opened segments, purpose only (no titles on the agenda strip) */
     plan?: { segments: Array<{ purpose: string }> };
   };
+  // ── round 7 contracts (PIPELINE.md §O; Brain owns, App renders, Voice/Games/Studio read) ──
+  /**
+   * The steer row: the ways in this child can ask for right now (PIPELINE A7 brain-steering-persistence; App's stage
+   * shell renders them). A tap sends `TurnRequest.chipId = id`; the server reads it as the same request the words would
+   * make (server/director/steer.js steerRequest). Absent = the client keeps its default row; [] = no steer row this turn
+   * (a safeguard, a check-in, the wrap).
+   */
+  steer?: SteerChip[];
+  /**
+   * The Later list as the child's screen shows it (PIPELINE A6 brain-later-list-visible): every parked question or share
+   * of THIS lesson, open ones first. A tap on an open entry sends `chipId = "later:<id>"` (the child asks for it now).
+   * `text` is the parked topic (≤ 60 characters, server-written; never the child's off-task words beyond the topic).
+   * Absent = unchanged since the last turn; [] = empty.
+   */
+  later?: LaterEntryUi[];
+  /**
+   * The conversational moment this turn's move made (PIPELINE A6): the App shows its card (a parked chip flying to the
+   * Later tray, a declined ask, the stop check-in, a parked item coming back). One per turn at most; never set on a
+   * safeguard turn. Distinct from `TurnResponse.moment` (the voice layer's delivery Moment).
+   */
+  moment?: UiMoment;
+}
+
+// ── round 7 contracts (PIPELINE.md §O "contracts first"): the steer row, the Later list and the conversational moment ──
+/** A steer intent the child can tap. Each maps to the request its words would make (server/director/steer.js). */
+export type SteerId =
+  | "steer:replay"      // say / show it again
+  | "steer:slower"      // slower, smaller steps
+  | "steer:another"     // explain it another way
+  | "steer:example"     // an example (the kit's worked example when the lesson has one)
+  | "steer:story"       // as a story
+  | "steer:picture"     // show me a diagram / picture
+  | "steer:animation"   // show it moving
+  | "steer:game"        // a game on this idea
+  | "steer:hindi"       // Hindi mein
+  | "steer:english"     // in English
+  | "steer:harder"      // a harder one
+  | "steer:easier"      // an easier one
+  | "steer:skip"        // skip this question
+  | "steer:wrap2"       // wrap up in 2 minutes (decision D5)
+  | "steer:break"       // a short break (mic paused, resume where we were; D5)
+  | "steer:stop";       // stop for today (ends the lesson, not the day; D5)
+export const STEER_IDS: readonly SteerId[] = ["steer:replay", "steer:slower", "steer:another", "steer:example", "steer:story",
+  "steer:picture", "steer:animation", "steer:game", "steer:hindi", "steer:english", "steer:harder", "steer:easier", "steer:skip",
+  "steer:wrap2", "steer:break", "steer:stop"];
+/** One steer chip. `label` is server-written in the lesson language (≤ 24 chars); `icon` is a hint the App may map. */
+export interface SteerChip { id: SteerId; label: string; icon?: string }
+/** One Later entry on screen (the server's s.later, conversation/policy.js parkEntry). */
+export interface LaterEntryUi {
+  id: string;
+  /** the parked topic, ≤ 60 characters */
+  text: string;
+  /** a learning question (curiosity) vs a share from their life */
+  learning: boolean;
+  /** open: waiting; due: she brings it back this turn or next; returned: served (kept on screen, struck) */
+  status: "open" | "due" | "returned";
+  /** her promise: right after the current question, or before the wrap */
+  when: "after_question" | "at_end";
+}
+/** The conversational moment a move made (App's MomentCard). Words are the server's, never the model's. */
+export interface UiMoment {
+  kind: "park" | "detour" | "decline" | "stop_check" | "returned";
+  /** the Later entry it concerns (park / returned) */
+  laterId?: string;
+  /** the topic in a few words (≤ 60 characters): what was parked, declined or brought back */
+  topic?: string;
+  /** stop_check: the choices on the chips (carry on / short break / stop for today) are the chips themselves */
 }
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
@@ -217,6 +284,18 @@ export interface TurnRequest {
    */
   replyFiltered?: number;
   /**
+   * round 7 (PIPELINE C2-1 studio-game-utterance-double-turn): the child's words were a game command the playing
+   * activity's grammar consumed (PlayStudioRenderer's synchronous ack). The server never grades the card on them and
+   * answers game-aware. `consumed: false` (or absent) = an ordinary turn.
+   */
+  gameAct?: { consumed: boolean; game?: string; act?: string };
+  /**
+   * round 7 (PIPELINE A11 voice-interrupt-awareness): how much of her LAST line the child heard before cutting in, on ANY
+   * lane (the cascade player's position; the duplex engine's own copy stays in `duplex.heardUpTo`, read second). The
+   * server marks the unsaid tail and gives the move an "interrupted after X" fact. null / absent = heard it all.
+   */
+  heardUpTo?: { chars: number; words: number; ms: number } | null;
+  /**
    * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
    * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
    * safeguards even if `childText` now reads clean (OR semantics; safety-robust 2026-10-05).
@@ -254,6 +333,21 @@ export interface VoiceUtterance {
    * The server reads it in server/voicesig/lesson.js and does not store it.
    */
   kv?: import("../src/voicesig/types.ts").KnowledgeVoice;
+}
+/**
+ * round 7 (PIPELINE A10, joint with Voice): one clause of a STREAMED Director reply. The server guards each clause before it
+ * is sent (the first guarded clause goes to TTS while the rest is written); `final` closes the reply, and the full
+ * TurnResponse follows as the last event. A clause is never withdrawn once sent: a later guard failure rewrites only what
+ * has not been sent yet.
+ */
+export interface ReplyClauseEvent {
+  lessonId: string;
+  /** the seq the full teacher turn will be stored under (TurnResponse.teacherReplySeq) */
+  seq: number;
+  /** 0-based clause index within the reply */
+  i: number;
+  text: string;
+  final: boolean;
 }
 export interface TurnResponse {
   /**

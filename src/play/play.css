@@ -97,3 +97,9 @@
 /* r4-khand patch 07: the class 4-5 text floor (16 px) on the host chrome, and numerals at 18 px for every band */
 .pl-root[data-young] .pl-title, .pl-root[data-young] .pl-tag, .pl-root[data-young] .pl-readout i, .pl-root[data-young] .pl-btn--ghost, .pl-root[data-young] .pl-door span { font-size: 16px; }
 .pl-readout b { font-size: 18px; }
+
+/* ITEM-ARENA (round 4 G1): the question is the goal line and is never clamped; options sit two to a row and wrap */
+.pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
+.pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }
+.pl-btn[aria-pressed="true"] { outline: 3px solid var(--pl-you); outline-offset: 1px; }

@@ -19,6 +19,7 @@ import { sound } from "./core/sound.ts";
 import { say } from "./copy.ts";
 import { word, type WordKey } from "./engines/words.ts";
 import { parseVoice, pressesFor, type VoiceIntent } from "./core/voice.ts";
+import { setVoiceSink, type GameAct } from "./core/voiceSink.ts";
 import { PlayMap } from "./world/PlayMap.tsx";
 import { engineFor } from "./engines/registry.ts";
 import { detectTier, tierFacts } from "./engines/core3d/tier.ts";
@@ -173,7 +174,7 @@ export function PlayStage(props: PlayStageProps) {
     const make = viewFor(level.family, level.mode);
     if (!make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
     let view: FamilyView | null = null;
-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
+    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed, verb: props.verb ?? "fire" }); return view; },
       { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
     stageRef.current = stage; viewRef.current = view;
     changed();
@@ -236,18 +237,29 @@ export function PlayStage(props: PlayStageProps) {
     };
   }
 
-  // a spoken act: parse, map to the controls on screen now, press them in order (tagged via "voice"); never mid-drag
-  const heardId = props.heard?.id;
-  useEffect(() => {
-    const h = props.heard, v = viewRef.current, ctl = ctlRef.current;
-    if (!h || !v || !ctl) return;
-    const intent = parseVoice(h.text, lang);
+  // a spoken act: parse, map to the controls on screen now, press them in order (tagged via "voice"); never mid-drag.
+  // Returns what it did, so the lesson can tell a game command from an answer (core/voiceSink.ts).
+  const actOn = (text: string): GameAct | null => {
+    const v = viewRef.current, ctl = ctlRef.current;
+    if (!v || !ctl) return null;
+    const intent = parseVoice(text, lang);
     const pressed = intent ? pressesFor(intent, v.controls()) : null;
-    if (pressed && ctl.atTurnPoint()) {
+    const took = !!pressed && ctl.atTurnPoint();
+    if (took) {
       ctl.withVia("voice", () => { for (const id of pressed) viewRef.current?.controls().find((c) => c.id === id)?.onPress(); });
       changed();
     }
-    onEvent.current?.({ type: "voice", voice: { text: h.text.slice(0, 80), intent, pressed: pressed && ctl.atTurnPoint() ? pressed : null } });
+    onEvent.current?.({ type: "voice", voice: { text: text.slice(0, 80), intent, pressed: took ? pressed : null } });
+    return intent ? { verb: intent.verb, pressed: took, text: text.slice(0, 80), game: `${level.family}/${level.mode}` } : null;
+  };
+  const actRef = useRef(actOn);
+  actRef.current = actOn;
+  // embedded in a lesson, utterances arrive synchronously through the sink (the runtime reads the ack at once)
+  useEffect(() => (props.embedded ? setVoiceSink((t) => actRef.current(t)) : undefined), [props.embedded]);
+  // standalone (the play route / dev), utterances still arrive as the heard prop
+  const heardId = props.heard?.id;
+  useEffect(() => {
+    if (props.heard) actOn(props.heard.text);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heardId]);
 
@@ -292,7 +304,7 @@ export function PlayStage(props: PlayStageProps) {
         {groups.map(([g, cs]) => (
           <div key={g} className={`pl-row pl-row--${g}`} data-group={g}>
             {cs.map((c) => (
-              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled}
+              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled} aria-pressed={c.pressed === undefined ? undefined : c.pressed}
                 aria-label={c.aria ?? c.label} data-testid={`play-ctl-${c.id}`} onClick={() => { sound.unlock(); c.onPress(); changed(); }}>{c.label}</button>
             ))}
           </div>
