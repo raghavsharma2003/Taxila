@@ -58,6 +58,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "relational_note",
   // r4-khand (play_build migration): the child's saved Khand builds, a gallery derived from solved levels — history, deleted on M0
   "play_build",
+  // 036_placement.sql (round 7 F item 6): placement rounds (items asked, graded answers, the result) — academic record, deleted on M0
+  "placement",
 ]);
 
 /**
