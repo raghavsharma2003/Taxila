@@ -6999,3 +6999,41 @@ She never narrates a build or a failure (no game ready, picture coming or failed
 ## dc-r7-stt-cost-client-reported (2026-11-04, round 7; written up by main loop from the stream entry)
 
 STT spend is reported by the client and priced by the server. D4 transcription runs browser ↔ Azure over WebRTC, so the server only mints the token and never sees the session close. B Voice's cascade link emits one `stt.session {model, sec}` trace event per torn-down transcription call (close, reconnect, lane fallback), through the lesson's trace bus, and never a usd. server/cost/rollup.js always prices stt.session itself from {model, sec}, capped at 4 h per event, so a client can neither inflate nor zero the ledger. We chose this over estimating from lesson length × D4 share because it measures. Reverse if the client and the Cost Management STT meter disagree by more than 20% over a day (scripts/cost.mjs --reconcile): then estimate server-side instead.
+
+
+<!-- merged from inbox/r7-main-5.json -->
+## dc-r7-hybrid-director-default (2026-11-04, main loop)
+
+The Director is the default lane. The agent lane is frozen and its strengths are ported into the Director's wording before the lane is deleted. Evidence: jd-r7-hybrid-full-2026-11-04. The agent's 3.9 s p50 misses the ~3.5 s bar and it collapses to counting-level lessons; the Director wins c6 and c4, the agent c5. Supersedes dc-r7-hybrid-pilot-no-lane-yet. Reversal: after the port, a side-by-side shows the agent at least as good with p50 ≤ 3.5 s.
+
+
+<!-- merged from inbox/r7-face-9.json -->
+## dc-r7-face-rig-worker (2026-11-04)
+The second half of face-puppet-raster-cost-main-thread (main loop: Voice's start latency depends on the puppet being off the main thread, PIPELINE B deps).
+- **The split:** the puppet's rig (the r8 mesh runtime and the lamp2 painted-key rig) now draws in an OffscreenCanvas module worker (src/face-puppet/worker/rigWorker.ts) running the same rig code. The driver stays on the main thread (audio tap, puppet bus, face cues and DOM gaze need the page) and sends each frame's blendshapes. RemoteRig (worker/remoteRig.ts) never queues frames: one is in flight, and newer frames replace the pending one (latest wins).
+- **Worker shims:** the CSS box (clientWidth/Height, kept current by a ResizeObserver) and a document.createElement → OffscreenCanvas shim for the runtime's one 2D canvas.
+- **Fallback:** the stage probes OffscreenCanvas + transferControlToOffscreen + a worker-usable WebGL2 (mesh) or 2D (keys) context first. If any is missing, or the worker fails to load, a fresh canvas takes the unchanged main-thread path while the still holds the slot, so nothing visible changes. Context loss inside the worker becomes the usual fallback (her still).
+- **Switches:** the product turns it on in PuppetFace (rigWorkerEnabled, ?rigworker=0 opts a device out). The stage's own default stays off, because the evals' scripted clock (tick(now, force)) needs synchronous draws.
+- **TURN_HOLD_MS:** now applies only on the main-thread path. A worker frame costs the page almost nothing, so the turn POST no longer waits on the face.
+- **Measured** (evals/face-puppet/start-latency.mjs: /dev/desk?live=1, headless Chromium SwiftShader, CDP CPU x6, n=8 per arm, interleaved):
+  - Start → first 'speaking', p50 against puppet off: worker −35 ms, main-thread rig +79 ms (same run). Before this change: live +17 ms.
+  - Long tasks in the first 6 s, p50: puppet off 1.04 s, worker 1.30 s, main-thread rig 2.28 s (before this change: live 2.71 s, off 1.24 s).
+  - Every worker run's stage log reports path worker-bitmap.
+  - Dev-page checks: r8 main-thread frame work p95 0.3 ms in the worker against 4.6 ms on the main thread; lamp2 loads in the worker; with OffscreenCanvas removed it falls back cleanly.
+
+**Reverse if** a real low-end phone shows worker frames lagging her voice (latest-wins drops too many frames) or a browser mis-reports worker WebGL2 support. Then set ?rigworker=0 per device, or flip the default.
+
+
+<!-- merged from inbox/r7-learning-4.json -->
+## dc-r7-name-spoken
+The name preview PRODUCT-DESIGN-V2 asked for had no field and no preview. Now: server/routes/account.js spokenNameOf and setSpokenName (tolerant without 038), /api/me children carry name_spoken, POST/PATCH /api/children accept nameSpoken, src/onboarding/NamePreview.tsx on the child step.
+
+## dc-r7-home-kicks-plantoday
+Nothing in the product called planToday (hooks.js says so), so day_plan existed only when a test or job made one. server/routes/child.js kickPlanToday (pure gate shouldKickPlan) is fire-and-forget from planFor.
+
+
+<!-- merged from inbox/r7-learning-5.json -->
+## dc-r7-placement-prior
+Option (a) of the two main was offered: (b), a per-child fold ctx, needed patches to Brain's turn.js and supersede.js and makes replay depend on something outside kt_evidence. Pieces: server/learner/kt/placement.js (isPlacementRow, notPlacement/NOT_PLACEMENT, placementEvents, siteOf, PLACEMENT_SITE_SD_MIN), kt/ledger.js applyPlacement + ensureEpoch consumes placementPending, kt/ability.js withPlacement (exported from initialBase), comprehension/fuse.js skips the row, server/placement/kt.js writePlacementPrior (same commit contract as a Studio event), routes/placement.js calls it when a round finishes. Guarded readers: reports/facts.js, reports/truth.js loadTruth, reports/check.js (3 reads), relational/seam.js COUNTS_SQL, comprehension/session.js; the rest are scoped to a lesson session_id or explicit ids, or are the replay readers.
+
+also changed: ability.js read cat.js's placement summary as a POSTERIOR (site precision 1/sd² − 1/prior), which pulls the mean all the way to mu however wide sd is; cat.js ownEvidence is a flat-prior LIKELIHOOD, so the site is now exactly N(mu, sd²). Only initialBase({ placement }) used it, and nothing called that with a placement before this change (tests/rs6-placement still passes).

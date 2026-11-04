@@ -1,0 +1,166 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ki boundary se perimeter samjhenge: kisi shape ke chaaron taraf ki poori lambai. Triangle ki sides paanch, chhe aur nau centimetre hain; inhe jodkar perimeter kitna hoga?",
+   "move": "hook",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 4028
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo chhota step lete hain. Paanch aur chhe likha hai; pehle inko jodte hain. Paanch aur chhe milkar kitna hota hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2456,
+   "replyReadyMs": 6484
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 720
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, step by step samjhaati hoon. Pehle paanch aur chhe jodo, phir usmein nau jodenge. Paanch aur chhe kitna hota hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2339,
+   "replyReadyMs": 3059
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1451
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chhota bolungi. Paanch aur chhe kitna hota hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2115,
+   "replyReadyMs": 3566
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 698
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle picture. Triangle ki teen sides ko ek band cricket boundary jaisa socho.",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3364,
+   "replyReadyMs": 4062
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Triangle ki pehli do sides paanch aur chhe hain. Paanch mein chhe jodo, kitna aaya?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2276,
+   "replyReadyMs": 2277
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 721
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai—cricket, stories, ya kuch aur?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 3223,
+   "replyReadyMs": 3944,
+   "fellBack": "diversion_set_aside"
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1652
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket se samajhte hain. Boundary ke teen tukde paanch, chhe aur nau cm ke hain. Pehle paanch aur chhe milaakar kitne cm honge?",
+   "move": "hook",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2536,
+   "replyReadyMs": 4188
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 797
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein, chhota bataati hoon. Pehle paanch aur chhe jodo. Kitna hua?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2578,
+   "replyReadyMs": 3375
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1624
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tum khud koshish karo. Main rukti hoon. Teenon taraf jodkar kitna aaya?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2295,
+   "replyReadyMs": 3919
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1001
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho. Tum jaari rakh sakti ho, chhota break le sakti ho, ya aaj ke liye rok sakti ho—kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2399,
+   "replyReadyMs": 3400,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ]
+  }
+ ]
+}

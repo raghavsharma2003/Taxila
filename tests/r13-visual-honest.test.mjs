@@ -2,7 +2,7 @@
 // the chip "Show me a picture", "आलू दिखाओ" — she offered "aloo par picture", then said "screen par aloo dekho" over a maths
 // table. The floor: a picture nothing can make is never offered and never claimed; asked for, she says plainly she cannot
 // show it and gives it in words, and no board is asked for. Pure (fixture kit; the classifier's bytes only).
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
@@ -12,7 +12,12 @@ import { whiteboardAskOf } from "../server/brain/propose.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 // round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
 // the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_PARK_TOPIC = "off";
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_PARK_TOPIC: "off" };
+const R7_SAVED = {};
+describe("r13-visual-honest.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -74,4 +79,5 @@ test("A: the subject is forgotten after a few turns, and a subject the kit teach
   const on = toTeach();
   const v = turn(on, said(on, `${term} ki photo dikhao`), { text: `${term} ki photo dikhao` });
   assert.equal(v.move.request, "visual", `'${term}' is in the kit: the board answers it`);
+});
 });

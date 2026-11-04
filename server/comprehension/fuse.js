@@ -9,6 +9,7 @@ import { applyFacetEvent, applyFacetTeach, facetDrop, facetsOfClass, newFacet } 
 import { COMP_PARAMS_VERSION, FACET } from "./params.js";
 import { familyOf } from "./probes/shapes.js";
 import { misP } from "../learner/kt/misconception.js";
+import { isPlacementRow } from "../learner/kt/placement.js";
 
 /**
  * Misconception saturation guard [U]: a further hit on a misconception already at p ≥ 0.95 adds no information but,
@@ -50,6 +51,7 @@ export function fuseEvidence(state, events, ctx = {}) {
     ev = guardMis(ev, pre);
     ledger = ktFold(pre, [ev], ctx);
     comp.seen[ev.id] = 1;
+    if (isPlacementRow(ev)) continue;                      // a placement site seeds θ only (kt/placement.js): no facet
     const drop = facetDrop(ev, ctx);
     if (drop) { comp.drops[drop] = (comp.drops[drop] ?? 0) + 1; continue; }
 

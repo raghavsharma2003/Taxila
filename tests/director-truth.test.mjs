@@ -4,7 +4,7 @@
 //   "13 ka square"   the card asked 13 ka square, she asked "10 ka square kitna hoga?"; typed 100 → "didn't catch that"
 //   "Choices dikhao" the Young help button was sent as the child's answer, and other choices were read out
 //   the repair loop 12 repair/hint turns on one diagnostic item with non-answers
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, hintFor, hintShapeWords, LIMITS } from "../server/director/state.js";
 import { findItem, promptFor, choicesFor, DIAG_CHILD_HINTS, stripRungLabel } from "../server/director/items.js";
@@ -18,7 +18,12 @@ import { homeStateOf } from "../server/routes/child.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 // round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
 // "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_BYE_CHECKIN = "off";
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_BYE_CHECKIN: "off" };
+const R7_SAVED = {};
+describe("director-truth.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const SQ = kitFromFile(getTopic("c8-maths-ch01-t01"));   // class 8 squares (the audit's Kabir lesson)
 const SK = kitFromFile(getTopic("c2-maths-ch01-t01"));   // class 2 skip counting (the audit's Aarav lesson)
@@ -341,4 +346,5 @@ test("G-PRAISE-2: after a right diagnostic tap (9), 'isliye 10' is caught and re
   assert.ok(out.guard.caught.includes("corrects"), JSON.stringify(out.guard));
   assert.doesNotMatch(out.reply, /isliye 10/, out.reply);
   assert.ok(!out.guard.final?.includes("corrects"), JSON.stringify(out.guard));
+});
 });

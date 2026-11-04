@@ -2,10 +2,21 @@
 // got the same offer of ways into today's idea each time (3437b744, e6392332); a topic ask the classifier also read as a
 // stop got the stop check-in instead (6c45a7ea t12). Now an explicit topic ask is never met with the stop check-in, and a
 // "something else" asked again within a few turns offers real topics of the child's class as buttons. Pure.
-import { test, describe, afterEach } from "node:test";
+import { test, describe, afterEach, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+import { intakeParse } from "../server/director/session/intake.js";
+import { intakeCandidates } from "../server/director/session/candidates.js";
+import * as SH from "../server/director/shapes.js";
+// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
+// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_PARK_TOPIC: "off" };
+const R7_SAVED = {};
+describe("r145-topic-asks.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const K = kit();
 const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, now: (r.state.turn + 1) * 20_000, ...extra });
@@ -44,12 +55,6 @@ describe("census F1: topic asks", () => {
 
 // census 14.5 (F1, 2790c473: "leave school talk, I want progressions" kept the planned topic): the intake reads a wish to
 // study ("X padhna hai", Roman and Devanagari) and finds the topic for a loanword the recogniser wrote in Devanagari
-import { intakeParse } from "../server/director/session/intake.js";
-import { intakeCandidates } from "../server/director/session/candidates.js";
-import * as SH from "../server/director/shapes.js";
-// round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
-// the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_PARK_TOPIC = "off";
 const topOf = (t, cl) => { const f = intakeParse(t); const c = intakeCandidates(f, t, { classLevel: cl }); return { kind: f.kind, top: c.top?.topicId ?? null }; };
 test("the intake reads 'X padhna hai' as a wish and finds X, in Roman and in Devanagari", () => {
   assert.deepEqual(topOf("school ki baat chhodo, mujhe progression padhna hai", 9), { kind: "want", top: "c9-maths-ch08-t02" });
@@ -79,4 +84,5 @@ test("a topic ask read as a stop on an open check-in: released, the one warm lin
   assert.notEqual(r.move.checkin, "stop");
   assert.ok(!(r.ui?.chips ?? []).some((c) => c.id === "stop:end"), JSON.stringify(r.ui?.chips));
   assert.equal(r.move.shape.split(SH.afterCareCheck()).length - 1, 1, "the one warm line, once");
+});
 });

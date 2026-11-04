@@ -5103,3 +5103,21 @@ Her worked-example question is a keyed micro-item (the next kit step’s result)
 ## ms-r7-drain-test-race-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
 
 tests/graceful-shutdown.test.mjs raced on a loaded CI runner: 'a request still open after the grace is cut' expected leftOpen 1 and got 0 once on PR #38 (C2 Games' report). The test slept a fixed 50 ms after sending a never-answered request, so the server had not accepted it yet when the drain ran. Both drain tests now poll requests.active() until the request is in flight, up to 5 s (Games' patch 001). Checked 3/3 green, then 3/3 green with six busy-loop processes on the 4-core container. The other new platform suites (ops, release, cost, shard, migrate) have no fixed sleeps.
+
+
+<!-- merged from inbox/r7-main-5.json -->
+## jd-r7-hybrid-full-2026-11-04 (main loop judge, 2026-11-04)
+
+Method: stream A's harness. Director half run on f2c55d0d (results/2026-11-04-full); agent half rerun on b022df8a with production agent invariants (results/2026-11-04-full-agent2). Production deployments, no DB, scripted Hinglish child, c4/c5/c6 × 4 scenarios; n = 23 lessons (12 + 11), ~10 child turns each. Judged by three Claude judges (one per class) reading every turn against OWNER-RESET-2026-10-04 and the 11 pilot defects; synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Findings: docs/design/round7/judgements/hybrid-full-2026-11-04.md.
+
+
+<!-- merged from inbox/r7-learning-5.json -->
+## ms-r7-placement-prior-weight
+| floor | 2 correct | 4 correct | 6 correct | 6 wrong |
+|---|---|---|---|---|
+| none (class prior) | 4.77 | 5.22 | 5.51 | 1.41 |
+| 0.6 | 2.70 | 3.11 | 3.43 | 1.88 |
+| 0.8 | 3.03 | 3.50 | 3.84 | 1.81 |
+| 1.0 (chosen) | 3.30 | 3.80 | 4.14 | 1.75 |
+
+θ mean (GE), class 5, site at 2.0. One session's θ evidence is capped (THETA_STRAND_CAP), so later sessions keep moving it; the epoch's Glicko inflation also weakens the site with days.

@@ -6,7 +6,7 @@
 //     state the compile reads;
 //   - the failure drill: the classify deployment is gone → every turn still answers, on the fallback deployment;
 //   - the signals block (TB4) parses strictly and stays out of the schema unless switched on.
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -14,7 +14,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 // round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
 // "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_BYE_CHECKIN = "off";
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_BYE_CHECKIN: "off" };
+const R7_SAVED = {};
+describe("brain-turn.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const RUN = join(ROOT, "evals/teacher-brain/replay/run.mjs");
@@ -217,4 +222,5 @@ test("hedgedFallback: the hedge goes to the fallback deployment; a fast failure 
   const filter = Object.assign(new Error("blocked"), { code: "content_filter" });
   await assert.rejects(hedgedFallback(never, after(5, filter, true), 1), (e) => e.code === "content_filter", "a filter block decides (fails closed)");
   await assert.rejects(hedgedFallback(after(5, new Error("primary down"), true), after(5, new Error("fb down"), true), 1), /primary down/);
+});
 });

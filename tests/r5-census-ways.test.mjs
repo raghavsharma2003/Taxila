@@ -1,13 +1,18 @@
 // census 2026-10-21 F4 (option ≠ action; a95d2ff1, 6c45a7ea, c85501ec): the ways-in chips offered a picture and a game
 // that nothing could build. The Director now offers, and her shape names, only the ways Studio (brain/turn.js studioSeam
 // .waysFor) or the topic's own engine can answer. Pure (fixture kit; Studio's lesson state in memory).
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 // round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks and comes back; this file keeps testing
 // the earlier ways-in offer, which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_PARK_TOPIC = "off";
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_PARK_TOPIC: "off" };
+const R7_SAVED = {};
+describe("r5-census-ways.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -228,4 +233,5 @@ test("QA on be9b766a (13ec94a7, 7545d1fd): her words never deny a picture the bo
   assert.ok(boardTruthShape(`x; ${VISUAL_NOT_YET}`, { askedBoard: true }).includes(VISUAL_DRAWING));
   // the photo the board sketches instead: owned up to, the drawing never denied (rule last)
   for (const photo of [undefined, "busy"]) assert.match(drawAsked({ subject: "aloo", show: "picture", photo }), /never say there is no picture or nothing on the screen$/);
+});
 });

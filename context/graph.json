@@ -24360,6 +24360,55 @@
    "at": "2026-11-04",
    "title": "Round 7 A6, brain-teaching-question-evidence (kill switch TAXILA_R7_STEP_CHECK=off). A worked part that hands the next step to the child asks it as a code-chosen keyed micro-item: the next kit step whose result is the number after its last \"=\" (a known unit or none; never algebra, powers or Roman numerals). It is pinned as the card (the kit’s faded line, or the step with its result blanked) and graded by the classifier like any card, while the lesson stays in teach. A right answer (QA’s \"160?\" case: \"480?\" here) is confirmed and counted. A wrong or stuck one is shown with its result in the next part. TAXILA_ACK_CLOSE defaults to on (\"off\" restores the old flow). Coverage, all 830 kit worked examples: a keyed step after part 1 in 157 (19%): maths 135/304 (44%), science 13/146, sst 7/65, hindi 2/133, english 0/118, evs 0/64. Non-numeric worked examples keep her own-words question until a non-numeric key kind exists. Needs a live check: the card shows the kit’s English line in a Hinglish lesson.",
    "source": "inbox/r7-brain-remerge2.json"
+  },
+  {
+   "id": "jd-r7-hybrid-full-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Full hybrid side-by-side: 23 lessons (Director 12, agent 11), c4/c5/c6 × steady/offtopic/stuck/steering, Hinglish, production deployments, no DB, ~$2.72. Judged by three Claude judges (one per class), synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Per-scenario wins: Director c6 4/4 and c4 2/3; agent c5 4/4 (2 narrow). Still present after the pilot fixes: English card text, missing givens, abandoned items (most frequent), level collapse, ignored choices, game claims. New: a wrong answer affirmed ('5?' → 'haan, wahi sahi hai'). Fixed: stop check-in, change_topic misread, mostly false 'didn't hear'. Write-up: docs/design/round7/judgements/hybrid-full-2026-11-04.md.",
+   "source": "inbox/r7-main-5.json"
+  },
+  {
+   "id": "dc-r7-hybrid-director-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The Director is the default lesson lane. The agent lane is frozen behind its flag. Its strengths (listening, honest grading, honouring requests, engaging with the child's topic) are ported into the Director's wording, then the lane is deleted. Why: the agent's p50 is 3.9 s against the ~3.5 s bar; quality is split by class and the agent collapses to counting lessons. Reverse: a later side-by-side after the port shows the agent ≥ the Director with p50 ≤ 3.5 s.",
+   "source": "inbox/r7-main-5.json"
+  },
+  {
+   "id": "dc-r7-face-rig-worker",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The puppet rig draws in an OffscreenCanvas worker (both rig kinds), the driver stays on the main thread and sends blendshapes (latest wins); fallback to the main-thread path where unsupported; TURN_HOLD_MS only on that path. CPU x6 n=8: long tasks in the first 6 s 2.28 s (main-thread rig) → 1.30 s (worker; puppet off 1.04 s); start → first sound −35 ms vs puppet off.",
+   "source": "inbox/r7-face-9.json"
+  },
+  {
+   "id": "dc-r7-name-spoken",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (PRODUCT-DESIGN-V2 §6.2 step 6): the parent hears how the teacher says the child's name in set-up (GET /api/child/name-audio: the fixed line 'Namaste, {name}!' in her voice, rate-limited) and can store 'Spell it how it sounds' as child.name_spoken (migration 038; letters, marks, spaces, ' and - only, at most 40). Voice uses name_spoken ?? first_name on every lane; captions keep first_name. Reverse if: Voice's own name lexicon makes a per-child spelling unnecessary.",
+   "source": "inbox/r7-learning-4.json"
+  },
+  {
+   "id": "dc-r7-home-kicks-plantoday",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-conductor-day-plan, first step): the child home's plan read starts conductor planToday in the background (no added latency, at most once per child per 10 minutes per replica, errors logged), so day_plan and its rotation slot.subject exist after a learning day's first visit. Opt-in, TAXILA_CONDUCTOR_PLAN=on, until checked live on staging: the DB-backed suites drive the plan route against a test database. Reverse if: the background step adds Conductor load or day_plan churn in staging.",
+   "source": "inbox/r7-learning-4.json"
+  },
+  {
+   "id": "dc-r7-placement-prior",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04, option (a)): a finished placement round seeds the KT θ prior as one kt_evidence row per strand (via 'placement', migration 039; site in item_key 'site|<strand>|<mu>|<sd>'). The ledger records the site and folds it into the subject's next epoch base once (initialBase, or the next opened epoch); it never makes a skill state, session, θ observation or facet. Every kt_evidence reader that counts or claims skips it by ONE predicate (isPlacementRow / notPlacement), guarded by tests/r7-learning-placement-prior.test.mjs. Weight: the site is a likelihood N(mu, sd²) with sd floored at 1.0 GE. Reverse (widen the floor) if: on staging or pilot data, placed children's θ after their first two sessions still differs from an unplaced replay by more than 0.5 GE for more than 1 in 5 children whose answers disagree with the placement; tighten it if placement predicts first-session accuracy better than the class prior.",
+   "source": "inbox/r7-learning-5.json"
+  },
+  {
+   "id": "ms-r7-placement-prior-weight",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F: placement site weight in the real fold (kt/ledger.js; class 5 maths:core; class prior mu 4.5 sd 1.3; site mu 2.0; class-level item.open answers, distinct skills, one session). Floor 0.6/0.8/1.0 GE → θ after 4 correct 3.11/3.50/3.80 (no placement 5.22), after 6 correct 3.43/3.84/4.14 (5.51); wrong answers agree with the site at every floor. Chosen 1.0: after 2 correct θ is 1.3 GE past the site, after 4 1.8 GE past it. Site at 5.5 (ahead) with 6 wrong: θ 3.01 (no placement 1.41). n = 1 deterministic fold per cell (no randomness); method: scratch script folding placementEvents + item events through fold(), currentTheta.",
+   "source": "inbox/r7-learning-5.json"
   }
  ],
  "edges": [
@@ -38357,6 +38406,21 @@
    "src": "dc-r7-voice-talked",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "measured_by",
+   "dst": "jd-r7-hybrid-full-2026-11-04"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "supersedes",
+   "dst": "dc-r7-hybrid-pilot-no-lane-yet"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "part_of",
+   "dst": "dc-r7-hybrid-brain"
   }
  ]
 }
