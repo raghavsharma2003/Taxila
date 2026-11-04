@@ -24360,6 +24360,20 @@
    "at": "2026-11-04",
    "title": "Round 7 A6, brain-teaching-question-evidence (kill switch TAXILA_R7_STEP_CHECK=off). A worked part that hands the next step to the child asks it as a code-chosen keyed micro-item: the next kit step whose result is the number after its last \"=\" (a known unit or none; never algebra, powers or Roman numerals). It is pinned as the card (the kit’s faded line, or the step with its result blanked) and graded by the classifier like any card, while the lesson stays in teach. A right answer (QA’s \"160?\" case: \"480?\" here) is confirmed and counted. A wrong or stuck one is shown with its result in the next part. TAXILA_ACK_CLOSE defaults to on (\"off\" restores the old flow). Coverage, all 830 kit worked examples: a keyed step after part 1 in 157 (19%): maths 135/304 (44%), science 13/146, sst 7/65, hindi 2/133, english 0/118, evs 0/64. Non-numeric worked examples keep her own-words question until a non-numeric key kind exists. Needs a live check: the card shows the kit’s English line in a Hinglish lesson.",
    "source": "inbox/r7-brain-remerge2.json"
+  },
+  {
+   "id": "jd-r7-hybrid-full-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Full hybrid side-by-side: 23 lessons (Director 12, agent 11), c4/c5/c6 × steady/offtopic/stuck/steering, Hinglish, production deployments, no DB, ~$2.72. Judged by three Claude judges (one per class), synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Per-scenario wins: Director c6 4/4 and c4 2/3; agent c5 4/4 (2 narrow). Still present after the pilot fixes: English card text, missing givens, abandoned items (most frequent), level collapse, ignored choices, game claims. New: a wrong answer affirmed ('5?' → 'haan, wahi sahi hai'). Fixed: stop check-in, change_topic misread, mostly false 'didn't hear'. Write-up: docs/design/round7/judgements/hybrid-full-2026-11-04.md.",
+   "source": "inbox/r7-main-5.json"
+  },
+  {
+   "id": "dc-r7-hybrid-director-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The Director is the default lesson lane. The agent lane is frozen behind its flag. Its strengths (listening, honest grading, honouring requests, engaging with the child's topic) are ported into the Director's wording, then the lane is deleted. Why: the agent's p50 is 3.9 s against the ~3.5 s bar; quality is split by class and the agent collapses to counting lessons. Reverse: a later side-by-side after the port shows the agent ≥ the Director with p50 ≤ 3.5 s.",
+   "source": "inbox/r7-main-5.json"
   }
  ],
  "edges": [
@@ -38357,6 +38371,21 @@
    "src": "dc-r7-voice-talked",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "measured_by",
+   "dst": "jd-r7-hybrid-full-2026-11-04"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "supersedes",
+   "dst": "dc-r7-hybrid-pilot-no-lane-yet"
+  },
+  {
+   "src": "dc-r7-hybrid-director-default",
+   "rel": "part_of",
+   "dst": "dc-r7-hybrid-brain"
   }
  ]
 }

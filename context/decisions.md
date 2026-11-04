@@ -6999,3 +6999,9 @@ She never narrates a build or a failure (no game ready, picture coming or failed
 ## dc-r7-stt-cost-client-reported (2026-11-04, round 7; written up by main loop from the stream entry)
 
 STT spend is reported by the client and priced by the server. D4 transcription runs browser ↔ Azure over WebRTC, so the server only mints the token and never sees the session close. B Voice's cascade link emits one `stt.session {model, sec}` trace event per torn-down transcription call (close, reconnect, lane fallback), through the lesson's trace bus, and never a usd. server/cost/rollup.js always prices stt.session itself from {model, sec}, capped at 4 h per event, so a client can neither inflate nor zero the ledger. We chose this over estimating from lesson length × D4 share because it measures. Reverse if the client and the Cost Management STT meter disagree by more than 20% over a day (scripts/cost.mjs --reconcile): then estimate server-side instead.
+
+
+<!-- merged from inbox/r7-main-5.json -->
+## dc-r7-hybrid-director-default (2026-11-04, main loop)
+
+The Director is the default lane. The agent lane is frozen and its strengths are ported into the Director's wording before the lane is deleted. Evidence: jd-r7-hybrid-full-2026-11-04. The agent's 3.9 s p50 misses the ~3.5 s bar and it collapses to counting-level lessons; the Director wins c6 and c4, the agent c5. Supersedes dc-r7-hybrid-pilot-no-lane-yet. Reversal: after the port, a side-by-side shows the agent at least as good with p50 ≤ 3.5 s.
