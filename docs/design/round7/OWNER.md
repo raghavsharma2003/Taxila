@@ -1,7 +1,8 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-04, after integration 2 (`int/r6` 88a6147e,
-tsc + build + 3932 unit tests green). Nothing in round 7 has run live yet: the Azure keys are missing.
+Updated by the main loop at each integration. Last update: 2026-11-04 evening, after integration 4 (`int/r6` 9c73f1d6,
+tsc + build + 4265 unit tests green, single process). Live model calls so far: only the lesson-brain side-by-side runs
+(~$3.1 in total, on the stream's 2026-10-10 AI keys). Nothing is released: deploying needs the full key set.
 
 ## 1. Decisions only you can make
 
@@ -11,7 +12,7 @@ tsc + build + 3932 unit tests green). Nothing in round 7 has run live yet: the A
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
 | 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Side by side: `face/route-b-vs-r8-sheet.png`. Try it yourself with `?jaw=1` once your account is re-keyed. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
-| 5 | Staging app (~$40/mo, or reuse taxila-sin-staging); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | Needed before release; see the Platform release plan below. |
+| 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
 | 7 | The Founders Hub Milestone-3 usage plan; whether the subscription spending limit is back on | From the cost work on 2026-10-24. |
 
@@ -45,12 +46,31 @@ in parts, start with tiers 1 and 2 (~$21).
 - **Games**
   - Week 1 maths (angles, integer hops, bar graphs and pictographs): `games/w1/*.mp4` and `*-strip.png`.
   - Week 2 science (mirror beam, periscope, circuit, pendulum): `games/w2/`.
-- **Studio**: the fraction split animation, `studio/split-*.mp4`. The number-line jump comes with integration 3.
+- **Studio**:
+  - motion boards: `studio/split-*.mp4`, `jump-*.mp4`;
+  - history timelines: `timeline-*`;
+  - tables: `table-*`;
+  - labelled plant and circuit diagrams: `label-plant-*`, `label-circuit-*`;
+  - beat cards: `beat-card-*`.
+- **Games, more**:
+  - 3D mirror, circuit and pendulum: `games/w2/yantra3d-*.png`;
+  - the history river timeline (kaal), the sentence train (vakya), the kirana balance (taraazu) and the factor/multiple tower defence (kila).
+- **Parent corner** (Learning): `learning/shots/parent-notes-monthly.png`, `parent-controls-household.png`, `parent-teaching.png`.
 - **Face**
   - `face/r7-face-fallback-sheet.png`: the same Asha on every fallback path.
   - `face/stills-sheet.png`.
   - `face/lite-mouth-strip.png`: weak phones.
   - `face/route-b-vs-r8-sheet.png`.
+
+## 3b. Lesson brain: which engine (decided 2026-11-04)
+
+- The Director lane is the default. The freer agent lane is frozen; its strengths are being ported into the Director.
+  Full run: 23 lessons.
+  - Reply ready p50: 2.2 s for the Director vs 3.9 s for the agent.
+  - The agent dropped class-6 children to counting drills.
+  - Neither met the bar, and the worst defect was praising a wrong answer.
+  - Write-up: `judgements/hybrid-full-2026-11-04.md`.
+- Brain then fixed all 11 defects as code rules. A 12-lesson re-run is being judged now.
 
 ## 4. Calls the main loop took that you may want to reverse
 
@@ -74,8 +94,8 @@ in parts, start with tiers 1 and 2 (~$21).
 
 | Subject | Topics |
 |---|---|
-| Maths | 63 of 141 |
+| Maths | 63 of 141, plus kila (factors and multiples) and naksha (grids) |
 | Science | 17 |
-| SST | 6 |
+| SST | 6 (kaal), plus naksha (latitude and longitude) |
 | English | 6 |
 | Hindi | 0 (waits for G1) |
