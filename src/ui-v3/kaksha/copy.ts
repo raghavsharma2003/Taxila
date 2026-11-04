@@ -43,6 +43,16 @@ export const KX = {
   momentReturned: K("Back to your question", "Tumhara sawaal", "तुम्हारा सवाल"),
   laterNext: K("Next", "Agla", "अगला"),
   laterDebrief: K("Your questions for next time", "Agli baar ke sawaal", "अगली बार के सवाल"),
+  // r7 app-home-plan-states: Home's plan states (one CTA each; the lesson stays one tap away)
+  homeworkSub: K("Homework help is on. Bring the question you're stuck on.", "Homework help on hai. Jo sawaal atka hai, laao.", "होमवर्क मदद चालू है। अटका सवाल लाओ।"),
+  homeworkCta: K("Homework help", "Homework help", "होमवर्क मदद"),
+  todaysLesson: K("Today's lesson instead", "Aaj ka lesson", "आज का पाठ"),
+  testSub: K("Your {subject} test is coming up. Today is revision, at your pace.", "{subject} test aa raha hai. Aaj revision, aaram se.", "{subject} की परीक्षा आ रही है। आज दोहराई, आराम से।"),
+  reviseCta: K("Revise", "Revise", "दोहराओ"),
+  anotherCta: K("One more", "Ek aur", "एक और"),
+  didToday: K("Today you did", "Aaj tumne kiya", "आज तुमने किया"),
+  madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
+  jarWaiting: K("Your questions from last time are waiting. She brings them back in the next lesson.", "Pichhli baar ke sawaal intezaar mein hain.", "पिछली बार के सवाल इंतज़ार में हैं।"),
   // r7 app-nav-unified: the one dock (nav.tsx)
   navHome: K("Home", "Home", "होम"),
   navWorld: K("World", "Duniya", "दुनिया"),

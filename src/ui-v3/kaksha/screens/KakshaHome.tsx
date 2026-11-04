@@ -13,6 +13,10 @@ import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
 import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
 import { KakshaRoot } from "../Shell.tsx";
 import { HomeView, type HomeViewProps } from "../views.tsx";
+import { kt, RING_LABEL } from "../copy.ts";
+
+/** A subject id in words (the World's ring names: Maths, Science, …). */
+const subjectName = (s: string | null): string | null => (s ? (RING_LABEL[s] ? kt(RING_LABEL[s]) : s) : null);
 import { useChildNav } from "./useNav.ts";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
@@ -34,7 +38,8 @@ export function KakshaHome() {
   if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) return <ClassicHome />;
   const face = artTierD() ? { form: "plate" as const, tier: "D" as const } : faceFormOf(prefs.face);
   const state: HomeViewProps["state"] =
-    plan.source === "loading" ? "loading" : plan.state === "capped" ? "capped" : plan.state === "resting" ? "resting" : plan.state === "done" ? "done" : "start";
+    plan.source === "loading" ? "loading" : plan.state === "capped" ? "capped" : plan.state === "resting" ? "resting" : plan.state === "done" ? "done"
+      : plan.state === "homework" ? "homework" : plan.state === "test_window" ? "test" : "start";
   // Start sends NO topic (main 2026-10-10, audit #1): "Just start. Asha takes it from there." means the server decides,
   // and for the session-first cohort a plain start is the school-first intake (4A). The plan only decides the CTA state.
   const startTo = `/c/${cid}/lesson/new`;
@@ -47,7 +52,13 @@ export function KakshaHome() {
         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
           floor={hello.floor ?? undefined} meters={hello.meters}
-          startTo={continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)}
+          // r7 app-home-plan-states: homework help (Ask in homework mode; the lesson a quiet second link), the test window, what
+          // they did today and the made-for pieces, and parked questions still waiting
+          lessonTo={state === "homework" ? startTo : null} testSubject={subjectName(plan.testWindow?.subject ?? plan.topic?.subject ?? null)}
+          did={plan.did[0] ? { ask: plan.did[0].ask, answer: plan.did[0].answer, withHelp: plan.did[0].withHelp } : null}
+          madeFor={plan.madeFor.map((it) => ({ id: it.id, title: it.title, still: it.still, to: `/c/${cid}/notebook?made=${encodeURIComponent(it.id)}` }))}
+          jarWaiting={(plan.jarWaiting ?? 0) > 0}
+          startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)}
           dock={kn.dock} meTo={kn.meTo} />
       </div>
     </KakshaRoot>

@@ -23,6 +23,17 @@ const PLAN = {
   state: "start", topic: { id: `c${CLS}-maths-ch07-t01`, title: "Fractions", shortTitle: "Fractions", chapter: "Fractions", subject: "maths", minutes: 15 },
   resume: null, did: [], tried: null, opensAt: null, surfaces: { map: true, notebook: true, resume: true }, packReady: false, madeFor: [], textOnly: false,
 };
+// --plan start|done|homework|test_window|capped|resting (r7 app-home-plan-states)
+const PLAN_STATE = arg("plan", "start");
+PLAN.state = PLAN_STATE;
+if (PLAN_STATE === "done") {
+  PLAN.today = { lessonId: "l1", summary: { cards: [{ ask: "How many quarters make one half?", answer: "two", verified: true, withHelp: false }], tried: 3, nextTopic: null } };
+  PLAN.madeFor = [{ id: "m1", kind: "game", title: "Fraction pizza", topicTitle: "Fractions", at: "2026-11-04T10:00:00Z", still: null, because: null }];
+}
+if (PLAN_STATE === "homework") PLAN.homework = { until: "20:00" };
+if (PLAN_STATE === "test_window") PLAN.testWindow = { subject: "science", from: "2026-11-05", to: "2026-11-08" };
+if (PLAN_STATE === "start") PLAN.jar = { waiting: 2 };
+if (PLAN_STATE === "resting") PLAN.opensAt = "16:00";
 const skill = (id, title, subject, state) => ({ skillId: id, title, subject, state });
 const SKILLS = [
   skill(`c${CLS}-maths-ch07-t01-s1`, "Fractional units and equal shares", "maths", "secure"),
@@ -78,7 +89,7 @@ async function main() {
       if (ONLY.length && !ONLY.includes(name)) continue;
       await page.goto(BASE + path, { waitUntil: "networkidle" }).catch(() => {});
       await page.waitForTimeout(900);
-      const file = join(OUT, `${name}-c${CLS}-${w}x${h}.png`);
+      const file = join(OUT, `${name}${PLAN_STATE !== "start" ? "-" + PLAN_STATE : ""}-c${CLS}-${w}x${h}.png`);
       await page.screenshot({ path: file });
       console.log(file, errors.length ? `ERRORS: ${errors.splice(0).join(" | ")}` : "");
     }
