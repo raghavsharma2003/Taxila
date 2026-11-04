@@ -4,7 +4,7 @@
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
 import { solveStage, STAGE } from "../../ui-v3/kaksha/lesson/stageLayout.ts";
 
-const OUT = new URL("../../../../docs/design/round7/app/", import.meta.url);
+const OUT = new URL("../../../docs/design/round7/app/", import.meta.url);
 const VIEWPORTS = [["p360", 360, 800], ["p412", 412, 915], ["w1280", 1280, 800], ["l1366", 1366, 768]];
 const PAD = 232; // the Older NumberPad at full target size (4 rows of 52 + gaps), the tallest answer surface
 
@@ -65,7 +65,8 @@ ${rows.join("\n")}
 |---|---|---|---|---|---|---|
 ${(() => {
   let contract = null;
-  try { contract = JSON.parse(readFileSync(new URL("../../../../server/forge3/certs/box-contract.json", import.meta.url), "utf8")); } catch { /* */ }
+  // never silent: a missing contract once hid a wrong relative path (the spec compared against nothing)
+  contract = JSON.parse(readFileSync(new URL("../../../server/forge3/certs/box-contract.json", import.meta.url), "utf8"));
   const out = [];
   for (const [fam, band] of [["older", "b3"], ["young", "b2"]]) {
     for (const [id] of VIEWPORTS) {
