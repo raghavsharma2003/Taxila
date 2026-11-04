@@ -289,8 +289,8 @@ describe("round3 conversation", () => {
   });
 
   test("stop check-in and boredom say back what they asked before the choices (the acknowledgement is explicit)", () => {
-    assert.match(SH.stopCheck(), /say back in a few warm words, in their words, that they want to stop/);
-    assert.match(SH.boredOffer(), /say back in a few words, in their words, that this part is boring/);
+    assert.match(SH.stopCheck(), /first show in a few warm words that you heard exactly that/);   // (round 7 S5: de-recited)
+    assert.match(SH.boredOffer(), /first show in a few words that you heard this part is boring/);
     process.env.TAXILA_P5_R3CONV = "off";
     assert.match(SH.stopCheck(), /acknowledge it warmly in one short line/);
   });

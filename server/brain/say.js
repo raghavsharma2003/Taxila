@@ -929,7 +929,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
   const cardNote = englishCard && !CLOSING_MOVES.has(kindNow) ? `The question on the screen is in English: never read it out; ask the same question in your own words in their language (${lang === "hindi" ? "simple Hindi" : "Hinglish"}), keeping its numbers, and never its answer.` : null;
   const repeatNote = cardRepeat && !CLOSING_MOVES.has(kindNow) ? "Your last turn already read the question on the screen word for word: ask it again in fresh words (shorter, or from another side), keeping its numbers, never the same sentence and never its answer." : null;
-  const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it; then the move.` : null;
+  const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
   const workedLines = kindNow === "worked_example" && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that sets the problem up (who, what, what we want to find), with no numbers and no question." : null;
@@ -1078,15 +1078,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — talk about the thing itself, its parts and its numbers, plainly as across a table; never mention a picture, the screen, words or imagining",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
-      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: say back what they said and what part of it fits, or ask what they mean",
+      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: respond to the point of what they said and what part of it fits, or ask what they mean",
       found.includes("level") && `it is below class ${state.ctx?.classLevel} (counting on, a tiny sum of your own, or how many sides a shape has) — help at their class's level: show the step itself, then back to the question`,
       found.includes("answerinq") && "its question asks for what your line just said (the answer is inside the question) — ask for the next thing they work out, not what you told them",
       found.includes("underived") && `it puts a number on the card (${underived(reply, item, kit?.workedExample?.problem)}) that they never saw come from anywhere — first say in one line the step that made it, then the card`,
-      found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — say it back and respond to it first (what fits, what does not, the right one if it is not), then go on`,
+      found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — respond to it first (what fits, what does not, the right one if it is not), then go on`,
       found.includes("samecard") && "it reads the question on the screen word for word again, as your last turn did — ask it in fresh words, keeping its numbers",
       found.includes("readscard") && `it reads the English question card aloud — ask that question in your own words in their language instead, keeping its numbers`,
-      found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: say back what they said, then the next step",
-      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",
+      found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: respond to the point of what they said, then the next step",
+      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; respond to what they said and ask what they mean",
       found.includes("gameclaim") && "it says a game did or showed something, but no game is on the screen — it is a spoken game between you two: say what YOU and THEY do",
       found.includes("bracket") && "it says a bracketed step so it is misheard (like '2 times 50 plus 30' for 2 × (50 + 30)) — say the bracket first, then the multiple ('50 plus 30, that is 80, times 2')",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",

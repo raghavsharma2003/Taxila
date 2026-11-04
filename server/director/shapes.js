@@ -335,8 +335,8 @@ export const takeBreak = () => join(
 // but a judge read no acknowledgement (end_request "acknowledges" failed on J2 6 of 12); the line now says back what they
 // asked, in their words, before the choices
 export const stopCheck = () => (p5Flag("R3CONV")
-  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn"
-  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn");
+  ? "they said they want to stop: first show in a few warm words that you heard exactly that, never making them feel bad or pushed for it; then the three choices on the buttons (going on, a pause, ending today), each put your own way in their language, and wait; no lesson question this turn"
+  : "they said they want to stop: acknowledge it warmly in one short line, never making them feel bad or pushed for it; then the three choices on the buttons (going on, a pause, ending today), each put your own way in their language, and wait; no lesson question this turn");
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
@@ -470,7 +470,7 @@ export const levelEasier = () => "they asked for an easier one: a short warm lin
 const waysWords = (ways) => (ways.length > 1 ? `${ways.slice(0, -1).join(", ")} or ${ways.at(-1)}` : ways[0] ?? "a quick change of question");
 export const boredOffer = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
-  p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
+  p5Flag("R3CONV") ? "they are bored: first show in a few words that you heard this part is boring for them, never making them feel at fault for it; then change something NOW" : "they are bored: never making them feel at fault for it; change something NOW",
   `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices; ask which`,
   "no lesson question this turn",
 );
@@ -526,7 +526,7 @@ export const adultVoice = () => "a grown-up is speaking: greet them briefly and 
 // round 7 (main's hybrid-pilot judgement #10: "picture puzzle, cricket story, ya speed game" offered, "haan", then plain practice):
 // a yes to an offered choice is answered by asking which one, never by dropping the offer
 export const whichOne = ({ choices = [] } = {}) => `they said yes without picking one: ask which one they want, naming the choices again in a few words${choices.length ? ` (${choices.map((c) => clean(c, 30)).join(", ")})` : ""}; nothing else this turn`;
-export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); say back what they said in a few words, then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
+export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); take up what they meant (never a "you said …" echo), then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
 export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
@@ -582,7 +582,7 @@ export const switchOffer = ({ title, chapter, asked, button }) => join(
     : asked && clean(asked).toLowerCase() !== clean(title).toLowerCase()
       ? `they asked for ${clean(asked)}: the topic of their class for it is ${clean(title) || "another topic"}; say yes warmly, naming that topic`
       : `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
-  `they can start it now with the button${button ? ` that says "${clean(button)}"` : " on the screen"}, or carry on with today's work if they like; never name a button by any other words; no guilt either way`,
+  `they can start it now with the button${button ? ` that says "${clean(button)}"` : " on the screen"}, or carry on with today's work if they like; never name a button by any other words; never making them feel at fault for it either way`,
   "ask them nothing this turn: not which page or chapter, no lesson question",
 );
 /** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
@@ -618,7 +618,7 @@ export const MOD_NOTE = {
 /** Round 3: the second need of a two-needs turn (conversation/lexicon.js alsoReading), honoured in the same turn's words. */
 export const ALSO_NOTE = {
   frustration: "they also find it hard or are tired: one short line of empathy about the work first (never about them)",
-  boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
+  boredom: "they also said it is boring: acknowledge it in a few words, never making them feel at fault for it",
   easier: "they also asked for it easier: make the step smaller and simpler",
   slower: "they also asked you to go slower: short simple sentences, one small step",
   // round 4 (battery arm 2, multi_intent-01 "samajh nahi aaya, Hindi mein batao"): as a last-section note, "say it more
@@ -643,7 +643,7 @@ export const MUST_NOTE = Object.freeze({
   adapt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
   adopt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
   adult: "first greet the grown-up as a grown-up in a few words and say what you will do; then hand back to the child by name",
-  boredom: "first acknowledge it is getting boring in a few words, no guilt; then the change",
+  boredom: "first acknowledge it is getting boring in a few words, never making them feel at fault for it; then the change",
   // round 4 round B (battery 2026-10-10: "no game is ready for this yet", "video nahi" broke zero visible failure: a build
   // that is not there is never mentioned; game_request 4/8, animation 2/5)
   visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",

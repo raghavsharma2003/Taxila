@@ -89,7 +89,7 @@ test("F6/F9: a stop phrase mid-practice is ONE warm check-in (three chips), neve
     assert.equal(s.move.kind, "break");
     assert.deepEqual(s.ui.chips.map((x) => x.id), ["stop:continue", "break:rest", "stop:end"]);
     assert.doesNotMatch(s.move.shape, /stop now|short warm goodbye/i);
-    assert.match(s.move.shape, /no guilt and no pressure/);   // W2-I's stopCheck shape (patch 07 reconciled onto it)
+    assert.match(s.move.shape, /never making them feel bad or pushed for it/);   // (round 7 S5: de-recited; was 'no guilt and no pressure')   // W2-I's stopCheck shape (patch 07 reconciled onto it)
   }
 });
 
