@@ -451,6 +451,21 @@ export function revealsOf(ops, per, byId, texts, withhold) {
       const h = hit(tok); if (h) out.push(`${o.id}: ${tok} = answer ${h.t}`);
     }
   });
+  // round 7 (main: the c5 place-value board masked its hundreds digit "?" but wrote "10,500" under the boxes): when the
+  // board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on the board that
+  // CONTAINS that digit gives it away too and is a reveal (the whole number is masked "?"); a board that never splits a
+  // number into digits is unchanged ("15 cm" beside an answer of 5 is no reveal)
+  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim()))
+    .map((o) => String(o.text).trim()));
+  if (digitHits.size) {
+    for (const o of ops) {
+      const cells = o.op === "text" || o.op === "label" ? [String(o.text)] : o.op === "numwork" && Array.isArray(o.rows) ? o.rows.flat().map(String) : [];
+      for (const c of cells) for (const m of c.matchAll(/\d[\d,]*\d/g)) {
+        const d = [...digitHits].find((x) => m[0].replace(/,/g, "").includes(x));
+        if (d) out.push(`${o.id}: ${m[0]} = answer ${d}`);
+      }
+    }
+  }
   // a number line with its answer marked by position: a dot (small circle) or an arrow head at the answer's tick
   for (const nl of ops.filter((o) => o.op === "numwork" && o.layout === "number_line" && Array.isArray(o.range))) {
     let box; try { box = opGeometry(nl, byId).box; } catch { continue; }

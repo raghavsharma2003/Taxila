@@ -95,3 +95,22 @@ test("the text pick reads an operation's own operands, never the line's first tw
   assert.deepEqual(pick("3 × (−2) means three jumps of 2 to the left"), { template: "number-line-hop@1", start: 0, hops: [-2, -2, -2] });
   assert.equal(pick("Friendly numbers make adding easier: 38 + 2 + 25 = 40 + 25; to add 9, add 10 and take away 1")?.template === "bar-chart@1", false, "words are no bar labels");
 });
+
+test("W9: a board that writes a withheld digit in its own box never writes the number that contains it (main: 10,500 under '?')", async () => {
+  const { regate, gateCtxFor } = await import("../server/stagecraft/board-sync.js");
+  const { gateWhiteboard: gate } = await import("../server/studio/qa/whiteboard.js");
+  const x = expand({ template: "place-value@1", value: 10500 });
+  assert.ok(x.ok, x.errors?.join(","));
+  const kit = { expectations: ["Places: TTh, Th, H, T, O. In 10,500 the digits are 1, 0, 5, 0, 0: the 5 is in the hundreds place."] };
+  const ctx = { reply: "Dekho, yeh number 10,500 ke boxes hain.", kit, speechMs: 9000, withhold: { values: ["5"] } };
+  const s = retime(x.script, x.script.durationMs, 9000);
+  const raw = gate(s, ctx);
+  assert.ok(raw.checks.find((c) => c.id === "W9.no_reveal").detail.some((d) => /10,500 = answer 5/.test(d)), "the whole number is a reveal of its digit");
+  const r = regate(s, { intent: { intentId: "pv" }, line: { lessonId: "L", text: ctx.reply } }, ctx);
+  const texts = (r.ok ? r.script : r.gate.script).ops.filter((o) => o.op === "text").map((o) => o.text);
+  assert.ok(!texts.some((t) => /5/.test(t)), `no 5 anywhere: ${texts.join(" | ")}`);
+  // a board that never splits a number into digits is unchanged: "15 cm" beside an answer of 5 is no reveal
+  const plain = expand({ template: "measured@1", shape: "rect", w: 15, h: 8, unit: "cm" });
+  assert.ok(!gate(retime(plain.script, plain.script.durationMs, 6000), { reply: "15 cm aur 8 cm.", speechMs: 6000, withhold: { values: ["5"] } })
+    .checks.find((c) => c.id === "W9.no_reveal").detail.length);
+});
