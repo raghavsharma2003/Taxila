@@ -324,13 +324,11 @@ export const makeWeighView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     return out.join(" · ");
   }
   function readouts(): Readout[] {
+    // r7 phone rail: one short readout at a time (the rail's readouts share a line with the goal and clip past ~half its
+    // width). The pan's contents only once something is on it; the live tilt is the beam's own (drawn), never a sentence.
     const s = st(), out: Readout[] = [];
-    out.push({ k: W(fill ? "taraazu.fill.poured" : "taraazu.weigh.onpan"), v: s.pan.length ? listOf(s.pan) : W("taraazu.weigh.empty") });
     if (s.done) out.push({ k: "", v: W(fill ? "taraazu.fill.exact" : "taraazu.weigh.level"), role: "good" });
-    else if (!s.locked) {
-      const d = sumOf(s.pan) - truth;
-      out.push({ k: "", v: fill ? W(d < 0 ? "taraazu.fill.below" : "taraazu.fill.above") : d < 0 ? upper(W("taraazu.weigh.heavy.parcel", { item })) : W("taraazu.weigh.heavy.weights"), role: "look" });
-    } else if (!fill && s.pan.length) out.push({ k: "", v: W("taraazu.weigh.locked"), role: "ink2" });
+    else if (s.pan.length) out.push({ k: "", v: listOf(s.pan), role: s.locked ? "ink2" : undefined });
     return out;
   }
   function controls(): ControlSpec[] {
