@@ -189,6 +189,24 @@ export async function logout(req, res) {
  * under the single teacher, dc-r4-single-teacher-asha, whatever an older row stored), and teacher_name is the
  * EFFECTIVE custom name (null when the look's own is in use). The server is the one source; no client re-derives it.
  */
+/**
+ * PURE. The parent's spoken spelling of the name (038 child.name_spoken), or null to clear it. Letters, combining marks,
+ * spaces, apostrophes and hyphens only (it reaches a voice, never a prompt), at most 40 characters.
+ * @returns {string|null} @throws HttpError 400
+ */
+export function spokenNameOf(v) {
+  if (v == null) return null;
+  const s = String(v).normalize("NFC").trim().replace(/\s+/g, " ");
+  if (!s) return null;
+  if (s.length > 40 || !/^[\p{L}\p{M}][\p{L}\p{M} '\-]*$/u.test(s)) throw bad("the spoken name may hold letters, spaces, ' and - (at most 40)");
+  return s;
+}
+
+/** Write the spoken name (tolerant of a database without 038: the profile itself never fails on it). */
+async function setSpokenName(childId, v) {
+  await q("update child set name_spoken = $2 where id = $1", [childId, v]).catch((e) => { if (e?.code !== "42703") throw e; });
+}
+
 export function clientChild(c) {
   if (!c) return c;
   const t = teacherFor(c);
@@ -212,7 +230,10 @@ export async function meData(g) {
   });
   // One teacher everywhere (V2 §0.8): the name the client shows is the one lessons use — a stored name that no longer
   // passes (a later denylist entry, the child renamed to it) is sent as null, so every surface falls back to the look's.
-  const children = rows.map(clientChild);
+  // 038 (round 7 F): the spoken name, read apart so a database without the column never costs sign-in
+  const spoken = await q("select id, name_spoken from child where guardian_id = $1", [g.id]).catch(() => []);
+  const spokenBy = new Map(spoken.map((r) => [r.id, r.name_spoken ?? null]));
+  const children = rows.map((r) => clientChild({ ...r, name_spoken: spokenBy.get(r.id) ?? null }));
   const consents = await q(
     "select distinct on (child_id, purpose) child_id, purpose, granted, version, created_at from consent where guardian_id = $1 order by child_id, purpose, created_at desc", [g.id]);
   // r4 Kaksha (K-P10): the owner-test cohort for the ui.kaksha flag; false for everyone not on TAXILA_UI_KAKSHA.
@@ -271,6 +292,9 @@ export async function createChild(req, res, body) {
      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) returning *`,
     [g.id, firstName.slice(0, 40), cl, board, medium, lang, body.birthYear || null, body.avatar || null, body.teacherId || teacher, interests]);
   await q("insert into rel_state(child_id) values ($1) on conflict do nothing", [c.id]);
+  // round 7 F: "Spell it how it sounds" (038), set apart so a database without the column never costs the profile
+  const spoken = spokenNameOf(body.nameSpoken);
+  if (spoken) { await setSpokenName(c.id, spoken); c.name_spoken = spoken; }
   await q("insert into audit(guardian_id, action, detail) values ($1, 'child_create', $2)", [g.id, { childId: c.id }]);
   send(res, 201, { child: clientChild(c) });
 }
@@ -284,7 +308,12 @@ export async function updateChild(req, res, body) {
   const fields = { first_name: body.firstName, class_level: body.classLevel, board: body.board, school_medium: body.schoolMedium,
     language_pref: body.languagePref, interests: body.interests, teacher_id: body.teacherId, avatar: body.avatar };
   // The child's own picks (avatar, interests: C1-C3) stay child-writable; the profile facts are the parent's.
-  if (["first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id"].some((k) => fields[k] !== undefined)) await requireParentIfPinSet(req);
+  if (["first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id"].some((k) => fields[k] !== undefined) || body.nameSpoken !== undefined) await requireParentIfPinSet(req);
+  if (body.nameSpoken !== undefined) {
+    const spoken = spokenNameOf(body.nameSpoken);
+    await setSpokenName(child.id, spoken);
+    child.name_spoken = spoken;
+  }
   const sets = [], vals = [];
   for (const [k, v] of Object.entries(fields)) if (v !== undefined) { vals.push(v); sets.push(`${k} = $${vals.length}`); }
   if (!sets.length) return send(res, 200, { child: clientChild(child) });
