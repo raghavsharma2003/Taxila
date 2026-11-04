@@ -15,6 +15,8 @@ export const PLAY_ACTS = Object.freeze({
   // r4-khand (claude/r4-khand, src/play/engines/khand/copy.json goal lines)
   nazariya: { views: { act: "build", hi: "banao", en: "build" }, array: { act: "fill_count", hi: "bharo, phir gino", en: "fill, then count" },
     floor: { act: "lay", hi: "farsh bichhao", en: "lay the floor" }, powers: { act: "build", hi: "banao", en: "build" }, mirror: { act: "build", hi: "banao", en: "build" } },
+  // round 7 (src/play/families/stambh): a graph is BUILT, crate by crate / icon by icon
+  stambh: { bars: { act: "build", hi: "khambe banao", en: "build the bars" }, picto: { act: "build", hi: "chitr lagao", en: "stack the pictures" } },
   // r4-games-core (claude/r4-games-core, E1 angles: src/play/families/kon, data/play/engine-words.json kon.goal.*)
   kon: { turn: { act: "turn", hi: "teer ghumao", en: "turn the arrow" }, set: { act: "turn", hi: "kon kholo", en: "open the angle" },
     // r7 games: make a kind of angle / match one (zone), a linear pair (pair), close a triangle (close)

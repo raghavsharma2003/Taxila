@@ -23,6 +23,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
   "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
+  "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -34,6 +35,7 @@ export const MODES = {
   kon: ["turn", "set", "zone", "pair", "close"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
   arena: ["pick"],
+  stambh: ["bars", "picto"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -184,7 +186,13 @@ export type ArenaAct =
   | { kind: "aim"; option: string }                     // point at a target (an option id)
   | { kind: "fire" }                                    // the shot: graded against the verified key
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct;
+// Stambh (round 7, bar graphs and pictographs): one crate / icon at a time on a column (bars) or a row (picto)
+export type StambhAct =
+  | { kind: "drop"; col: number; half?: boolean }       // a crate (or, where the level allows, a half crate) onto column `col`
+  | { kind: "lift"; col: number }                       // the top crate off column `col`
+  | { kind: "check" }                                   // the law compares every bar with the data
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -336,6 +344,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   kon: ["blueprint", "raat", "kagaz", "chalk"],
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
   arena: ["raat", "blueprint", "kagaz", "chalk"],
+  stambh: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
