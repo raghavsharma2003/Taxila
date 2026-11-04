@@ -4,10 +4,9 @@
 //   ?class=1-9  ?protege=neutral|happy|puzzled (the lesson <Teacher> with the young teach-back protégé)  ?via=lesson (render through <LessonFace>, the lesson's own face: the puppet and its fallbacks)
 // The synthetic voice is a looped, syllable-modulated harmonic signal (≈ 4.5 syllables/s, phrase pauses, bright/dark
 // vowels) on a LevelMeter exactly as a link attaches one, so the face runs its real tap → lip → behaviour path.
-// The face sits inside the real <TeacherStage> through its `face` slot: the same mount the lesson screen uses.
+// The face renders bare (round 7: the retired TeacherStage shim is gone); ?protege= renders the lesson Teacher.
 import { useEffect, useMemo, useState } from "react";
 import { createLevelAnalyser, LevelMeter } from "../lesson/level.ts";
-import { TeacherStage } from "../stage/TeacherStage.tsx";
 import { TutorFace } from "../avatar/TutorFace.tsx";
 import { LessonFace } from "../face-puppet/LessonFace.tsx";
 import { Teacher } from "../ui/teacher/Teacher.tsx";
@@ -123,16 +122,9 @@ export default function AvatarDev() {
               <Teacher teacherId={tutorId} band={band} floor={status === "your_turn" ? "your_turn" : status ?? "idle"} meters={sources} reducedMotion={reduced}
                 protege={{ kind: protegeFor(q.get("child") ?? "dev"), mood: (q.get("protege") as ProtegeMood) || "neutral" }} style={{ height: "100%" }} />
             ) : (
-            <TeacherStage
-              floor={status}
-              band={band}
-              teacherId={tutorId}
-              mouth={sources}
-              badge={band === "b1" || band === "b2"}
-              framing={framing}
-              face={<Face key={`${tutorId}-${tier}`} tutorId={tutorId} band={band} status={status} teacher={sources} reducedMotion={reduced} framing={framing} tier={tier} onEvent={onEvent} />}
-              style={{ height: "100%" }}
-            />
+            <div style={{ position: "relative", width: "100%", height: "100%", borderRadius: 16, overflow: "hidden" }}>
+              <Face key={`${tutorId}-${tier}`} tutorId={tutorId} band={band} status={status} teacher={sources} reducedMotion={reduced} framing={framing} tier={tier} onEvent={onEvent} />
+            </div>
             )}
           </div>
         </section>
