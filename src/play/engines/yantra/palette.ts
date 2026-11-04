@@ -24,6 +24,19 @@ export interface ThemePack {
   beam: { core: number; glow: number; blend: "add" | "normal" };
   light: { key: number; keyI: number; hemiSky: number; hemiGround: number; hemiI: number; keyDir: [number, number, number]; pool: number };
   you: number; good: number; look: number;
+  /** the circuit kit and the pendulum stand (r7: the same bench wears all three laws) */
+  kit: {
+    /** the parts' base boards, the brass of the screw posts, a wire's insulation and the current's moving beads */
+    plate: number; brass: number; wire: number; current: number;
+    /** the cell's body and its printed band; the bulb's glass and its light; the switch's lever and knob */
+    cell: number; band: number; glass: number; glow: number; lever: number; knob: number;
+    /** the stray parts: a steel clip, a rubber eraser */
+    steel: number; rubber: number;
+    /** the pendulum: the stand, its rod, the thread, the scale and its ticks */
+    stand: number; rod: number; thread: number; ruler: number; tick: number;
+    /** the beat: the mela drum's shell and skin, the bell; the flash when the bob comes back to its side */
+    drum: number; skin: number; bell: number; flash: number;
+  };
   labels: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number };
 }
 
@@ -40,6 +53,8 @@ export const THEMES: Record<YantraTheme, ThemePack> = {
     beam: { core: 0xff1f45, glow: 0xff3355, blend: "normal" },
     light: { key: 0xffffff, keyI: 1.55, hemiSky: 0xeaf3ff, hemiGround: 0x7d8792, hemiI: 1.25, keyDir: [-3, 9, 5], pool: 0.3 },
     you: 0x5b7a00, good: 0x1f9d5b, look: 0xb86e00,
+    kit: { plate: 0xe8edf1, brass: 0xc9a23a, wire: 0xd8402c, current: 0xffb300, cell: 0x2f5da8, band: 0xe8c547, glass: 0xdfeff7, glow: 0xffd257, lever: 0x9aa6b2, knob: 0xd8402c,
+      steel: 0xc3cad2, rubber: 0xf08aa0, stand: 0x2b3440, rod: 0xb9c3cc, thread: 0xf4f1e8, ruler: 0xf1e3c2, tick: 0x3a3226, drum: 0xa8452c, skin: 0xf0e2c4, bell: 0xc9a23a, flash: 0x2f9de0 },
     labels: { ink: 0x16202a, you: 0x3f5a00, good: 0x146c3e, look: 0x8a5200, q1: 0x9a5b00, q2: 0x2f5da8, pill: 0xffffff, pillAlpha: 0.86 },
   },
   // a roof at dusk: a concrete slab, terracotta pavers, brick blocks; the beam is warm sunlight from a torch
@@ -54,6 +69,8 @@ export const THEMES: Record<YantraTheme, ThemePack> = {
     beam: { core: 0xfffbe6, glow: 0xffc21a, blend: "add" },
     light: { key: 0xffc79a, keyI: 1.7, hemiSky: 0xb9a4d8, hemiGround: 0x4a3a40, hemiI: 1.15, keyDir: [6, 5, 3], pool: 0.3 },
     you: 0xcbff4d, good: 0x74e8bd, look: 0xffb547,
+    kit: { plate: 0xe2d3bf, brass: 0xd6b26a, wire: 0x2f6fd0, current: 0xfff27a, cell: 0x2e2a36, band: 0xffc21a, glass: 0xf1ecf7, glow: 0xffd77a, lever: 0xb8bcc6, knob: 0xc9583a,
+      steel: 0xd4d8de, rubber: 0x6fb3e8, stand: 0x2e2a36, rod: 0xb8bcc6, thread: 0xfff4ea, ruler: 0xe9d4a8, tick: 0x2e2420, drum: 0xb5482e, skin: 0xf3e6c8, bell: 0xd6b26a, flash: 0x9fd8ff },
     labels: { ink: 0xfff4ea, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0xffd27a, q2: 0x9fd8ff, pill: 0x1a1426, pillAlpha: 0.74 },
   },
   // a maker's workbench: oiled planks, a green cutting mat, wooden blocks, a red-orange laser
@@ -68,8 +85,17 @@ export const THEMES: Record<YantraTheme, ThemePack> = {
     beam: { core: 0xffd2b0, glow: 0xff5a1f, blend: "add" },
     light: { key: 0xfff0d8, keyI: 1.6, hemiSky: 0xffe2c0, hemiGround: 0x3a2a1c, hemiI: 1.1, keyDir: [-4, 8, 4], pool: 0.32 },
     you: 0xcbff4d, good: 0x74e8bd, look: 0xffb547,
+    kit: { plate: 0x2f6b55, brass: 0xe0b44a, wire: 0xe0452a, current: 0xfff0a0, cell: 0x1d3466, band: 0xe8c547, glass: 0xe8f2f4, glow: 0xffcf6a, lever: 0x9a9a9a, knob: 0xe0452a,
+      steel: 0xd0d4d8, rubber: 0xf2a0b4, stand: 0x3a3a3a, rod: 0xd8d2c4, thread: 0xfff6ea, ruler: 0xe8c98e, tick: 0x2a1d10, drum: 0x9c3b22, skin: 0xf3e3c0, bell: 0xe0b44a, flash: 0x9fd8ff },
     labels: { ink: 0xfff6ea, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0xffd27a, q2: 0x9fd8ff, pill: 0x1c1510, pillAlpha: 0.76 },
   },
+};
+
+/** the four bobs (20, 50, 100, 200 g): wood, aluminium, brass, iron, each a size its mass would give (theme-free: a material
+ *  keeps its look in every theme, so a bigger, heavier bob is the same bob wherever it hangs) */
+export const BOB_LOOK: Record<number, { color: number; shine: number; r: number }> = {
+  20: { color: 0xc08a4f, shine: 12, r: 0.24 }, 50: { color: 0xcfd5dc, shine: 90, r: 0.31 },
+  100: { color: 0xd4a537, shine: 110, r: 0.39 }, 200: { color: 0x4d535c, shine: 60, r: 0.49 },
 };
 
 export const themeOf = (t: string): YantraTheme => ((YANTRA_THEMES as readonly string[]).includes(t) ? (t as YantraTheme) : "lab");

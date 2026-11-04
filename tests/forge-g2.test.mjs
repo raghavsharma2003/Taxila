@@ -2,7 +2,7 @@
 // predicates, the host-side re-derivation, the review queue (human-only approval, sha-pinned publish, per-child folders),
 // the Conductor end-of-day job, and — when Chromium is installed — the browser gate on the goldens and a harness run
 // with a scripted model. No network: model calls and Blob are injected fakes.
-import { test } from "node:test";
+import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readdirSync, readFileSync } from "fs";
 import { loadTopic, itemSpec, diagnosticSpec, eligibleSpecs, splitLevels, frameLevels, intDistractors, archetypeFor } from "../server/forge/g2/levels.js";
@@ -25,6 +25,15 @@ const haveChromium = !!browsersDir && existsSync(browsersDir) && readdirSync(bro
 const NO_BROWSER = process.env.FORGE_G2_BROWSER === "0" ? "FORGE_G2_BROWSER=0" : !haveChromium ? "no Chromium under PLAYWRIGHT_BROWSERS_PATH" : false;
 
 // ───────────── levels (truth) ─────────────
+// npm test runs every file in one process: every env write below (the public base, the child salt, the daily-build cap,
+// the storage account) is undone when this file ends, so nothing leaks into the next file.
+let ENV0;
+before(() => { ENV0 = { ...process.env }; process.env.FORGE_PUBLIC_BASE = "https://pub"; });
+after(() => {
+  for (const k of Object.keys(process.env)) if (!(k in ENV0)) delete process.env[k];
+  Object.assign(process.env, ENV0);
+});
+
 test("levels: fraction keys come from KitMath, misconception distractors carry kit ids", () => {
   const t = loadTopic("c6-maths-ch07-t05");
   const { specs } = eligibleSpecs(t, "choice");
@@ -156,7 +165,6 @@ test("qa: the host re-derives values from ITS LevelSpec, not from the frame's cl
 });
 
 // ───────────── review queue ─────────────
-process.env.FORGE_PUBLIC_BASE = "https://pub";
 function memStore() {
   const priv = new Map(), pub = new Map(), runs = new Map(), test = new Map();
   let v = 0;
