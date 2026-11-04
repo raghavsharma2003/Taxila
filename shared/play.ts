@@ -205,6 +205,7 @@ export type YantraAct =
   | { kind: "toggle"; id: string }                                      // circuit: open / close a switch
   | { kind: "set"; knob: string; value: number }                        // pendulum: a knob (length, mass, swing) to a value
   | { kind: "run" }                                                     // run the machine: the law answers
+  | { kind: "count"; at: number }                                       // pendulum (oscillation): "one more", `at` s after the release
   | { kind: "undo" };
 export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
 
