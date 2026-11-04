@@ -13,6 +13,7 @@ import { KxDock, KxTopBar, type NavItem } from "./nav.tsx";
 import { tr7 } from "../../copy/en.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
+import type { TapSource } from "../../avatar/tap.ts";
 
 export type Go = (to: string) => void;
 
@@ -61,6 +62,8 @@ export interface HomeViewProps extends NavProps {
   resuming?: boolean;
   go?: Go;
   floor?: TeacherFloor;
+  /** Her output meters while she speaks her daily greeting (Face stream useDailyGreeting). */
+  meters?: TapSource[];
 }
 
 export function HomeView(p: HomeViewProps) {
@@ -81,7 +84,7 @@ export function HomeView(p: HomeViewProps) {
       )}
       <main className="kx-home-main">
         <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
-          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} />
+          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
           <h1 className="kx-h1">{greet}</h1>
           <p className="kx-sub">{sub}</p>

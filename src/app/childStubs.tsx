@@ -3,7 +3,8 @@
 // of §1.2 is complete and navigable end to end.
 import type { RouteObject } from "react-router-dom";
 import { Link, useParams } from "react-router-dom";
-import { Icon, TeacherFace } from "../ui/index.ts";
+import { Icon } from "../ui/index.ts";
+import { Teacher } from "../ui/teacher/Teacher.tsx";
 
 function Stub({ name }: { name: string }) {
   const { cid } = useParams();
@@ -15,7 +16,7 @@ function Stub({ name }: { name: string }) {
         <Link to="/parent" className="iconbtn parent-door" aria-label="Parent corner"><Icon name="door" /></Link>
       </header>
       <div className="col stack center-fill" style={{ textAlign: "center" }}>
-        <TeacherFace size={160} />
+        <Teacher teacherId={null} band="b3" form="plate" floor="idle" label="below" lights="down" style={{ width: 160, height: 188 }} />
         <h1 className="t-title">{name}</h1>
         <p className="muted">This screen is still being built.</p>
         <Link to="/who">Back to the picker</Link>
