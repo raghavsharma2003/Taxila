@@ -428,6 +428,32 @@ function activate(s, item) {
   }
 }
 
+// ───────────── round 7 A4: the per-skill arc (PIPELINE §A Brain item 2; kill switch TAXILA_R7_SKILL_ARC=off) ─────────────
+export const skillArcOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SKILL_ARC ?? ""));
+/** Items of one skill posed in a row before the next skill is taught (its block), unless the skill settles sooner. */
+export const ARC_BLOCK = 3;
+/**
+ * A skill's worked example from the kit's OWN verified items (its anchor numbers, never invented ones): the easiest
+ * practice item of that skill other than `exceptId`, solved with its hint steps and its key. null when the skill has none
+ * with at least two statement steps (the explain alone then leads into its check).
+ */
+export function skillWorkedExample(s, kit, skillId, exceptId) {
+  const used = new Set([...(s.itemsDone ?? []), ...(s.skipped ?? []), ...(s.shownIds ?? []), exceptId, ...(s.queue ?? []).slice(0, 1)]);
+  const cands = kit.items.filter((i) => i.skillId === skillId && !used.has(i.id) && ["practice", "near_transfer"].includes(i.kind) && !i.diagnostic && i.answer)
+    .map((i) => ({ i, steps: (i.hints ?? []).map((h) => String(h).replace(/\s+/g, " ").trim()).filter((h) => h && !/[?？]\s*$/.test(h)).slice(0, 4) }))
+    .filter((x) => x.steps.length >= 2)
+    .sort((a, b) => (a.i.difficulty ?? 0) - (b.i.difficulty ?? 0));
+  const c = cands[0];
+  return c ? { itemId: c.i.id, problem: c.i.prompt_en || c.i.prompt_hi, steps: c.steps, answer: String(c.i.answer) } : null;
+}
+/** The hook's kind for this lesson: the kit's worked problem as a puzzle (classes 4-9, alternate lessons) or the prediction. */
+export function hookKindFor(s, kit) {
+  if (!kit?.workedExample?.problem) return "predict";
+  const cl = Number(s.ctx?.classLevel);
+  if (Number.isFinite(cl) && cl <= 3) return "predict";
+  return (s.seed >>> 0) % 2 === 0 ? "puzzle" : "predict";
+}
+
 /** Content lines for one part of the worked example (content is posed; it is not persona). */
 function workedContent(we, part, parts) {
   const per = Math.ceil(we.steps.length / parts);
@@ -527,12 +553,17 @@ function teach(s, input, prefix) {
     }
     if (stepName === "hook") {
       s.teachIdx += 1;
+      // round 7 A4: a hook kind per lesson (hookKindFor), never one interest template every time
+      if (skillArcOn() && hookKindFor(s, kit) === "puzzle") {
+        return plan("hook", join(prefix, SH.hookPuzzle({ protege: s.ctx.protege })), { format: "F4", content: [`the puzzle (the kit's worked problem): ${kit.workedExample.problem}`] });
+      }
       return plan("hook", join(prefix, SH.hook({ interest: interestFor(kit, s.ctx.interests, 0), contexts: kit.interestContexts, protege: s.ctx.protege })), { format: "F4" });
     }
     if (stepName === "explain") {
       s.teachIdx += 1;
       const sk = kit.skills[0];
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
+      if (skillArcOn() && !s.arcSkill) s.arcSkill = sk.id; // round 7 A4: skill 1's practice block starts at its explain
       // No whiteboard: the skill title is syllabus objective text, never something to put in front of a child
       // (G-OBJ-1; audit #6, the "Read and write 5- and 6-digit numbers…" ledge chip).
       return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary });
@@ -597,6 +628,14 @@ function poseNext(s, input, prefix, preferred) {
     if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
   s.activeItemId = undefined; s.hintLevel = 0; s.pendingWhy = undefined;
+  // round 7 A4 (PIPELINE §A Brain item 2, per-skill arc): a skill just explained gets ITS worked example next (its own
+  // verified item, solved with that item's steps), then its keyed check (the item queued at the explain)
+  if (s.skillArc?.we) {
+    const { skillId, we } = s.skillArc;
+    s.skillArc = undefined;
+    return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 1, stuck: true })), { skillId, format: "F2", stuck: true,
+      content: [`worked example: ${we.problem}`, `steps: ${we.steps.join(" → ")}`, `its answer: ${we.answer}`], whiteboard: { kind: "math", value: clip(we.problem) } });
+  }
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
@@ -609,9 +648,18 @@ function poseNext(s, input, prefix, preferred) {
   if (!s.introduced.includes(item.skillId)) {
     s.introduced.push(item.skillId); s.nextItemId = item.id;
     const sk = kit.skills.find((x) => x.id === item.skillId);
+    // round 7 A4: the skill being taught now (selectNext keeps its practice block together), and its worked example next
+    if (skillArcOn()) {
+      s.arcSkill = item.skillId;
+      const we = skillWorkedExample(s, kit, item.skillId, item.id);
+      if (we) { s.skillArc = { skillId: item.skillId, we }; s.shownIds = [...(s.shownIds ?? []), we.itemId]; }
+    }
     return plan("explain", SH.explain({ skillTitle: sk?.title ?? "", prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: item.skillId, format: kit.formats.primary });
   }
   activate(s, item);
+  if (item.skillId) s.arcCount = { ...(s.arcCount ?? {}), [item.skillId]: ((s.arcCount ?? {})[item.skillId] ?? 0) + 1 };
+  // (the first skill is taught in teach(), not here: its block starts at its first posed item)
+  if (skillArcOn() && !s.arcSkill && item.skillId && !String(item.id).startsWith("diag:")) s.arcSkill = item.skillId;
   const attemptFirst = !s.novice && s.practiced === 0;
   if (s.practiceSet && !s.practiceSet.posed.includes(item.id) && s.practiceSet.posed.length < s.practiceSet.of) {
     s.practiceSet = { ...s.practiceSet, posed: [...s.practiceSet.posed, item.id] };

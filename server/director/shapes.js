@@ -28,6 +28,17 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 
+/**
+ * round 7 A4 (PIPELINE §A Brain item 2: open-r3rv-interest-hook-template — one interest template in 12/12 lessons produced
+ * "cricket cake", "bat sunlight se energy leta hai"): the hook has kinds. "puzzle": the kit's own worked problem (in LESSON
+ * NOW) as a quick guess, no method yet; "predict": the everyday prediction (below, the interest only where the kit says the
+ * idea lives). state.js hookKindFor picks one per lesson.
+ */
+export const hookPuzzle = ({ protege }) => join(
+  "open with the problem in LESSON NOW as a quick puzzle, in its own numbers and names: ask for their first guess or how they would start; no method and no answer yet",
+  "a guess is welcome whatever it is; never a verdict on it",
+  `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
+);
 export const hook = ({ interest, contexts, protege }) => join(
   `open with one concrete everyday situation${interest ? ` built on their interest (${interest})` : ""}${contexts.length ? ` — kit contexts: ${contexts.slice(0, 3).join(", ")}` : ""}`,
   "ask what they think will happen or which they would pick — a prediction, no right answer yet",

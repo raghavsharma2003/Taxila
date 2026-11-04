@@ -367,7 +367,8 @@ export function testedOut(kit, answers) {
  */
 export function selectNext(s, kit, { easier = false, harder = false } = {}) {
   if (harder && contentF0()) return harderThan(s, kit);
-  const done = new Set([...s.itemsDone, ...s.skipped]);
+  // round 7 A4: an item shown as a skill's worked example is never posed as a question
+  const done = new Set([...s.itemsDone, ...s.skipped, ...(s.shownIds ?? [])]);
   // V1.4 (evals/mastery-calibration): a settled or parked skill gets no more practice items this lesson
   const off = new Set([...(s.pace?.settled ?? []), ...(s.pace?.parkedSkills ?? [])]);
   const ok = s.queue.map((id) => findItem(s, kit, id)).filter((it) => {
@@ -377,6 +378,13 @@ export function selectNext(s, kit, { easier = false, harder = false } = {}) {
     const sk = s.skills[it.skillId];
     return !!sk && sk.pKnown >= ERROR_SPOT_P && sk.correctUnaided >= 1;
   });
+  // round 7 A4 (per-skill arc): the skill being taught keeps its practice block together (ARC_BLOCK items, unless it settles
+  // or runs out) before the next skill is taught; after every skill, mixed practice (queue order)
+  const cur = s.arcSkill;
+  if (cur && !off.has(cur) && ((s.arcCount ?? {})[cur] ?? 0) < (s.arcBlock ?? 3)) {
+    const mine = ok.filter((it) => it.skillId === cur || String(it.id).startsWith("diag:"));
+    if (mine.length) ok.splice(0, ok.length, ...mine, ...ok.filter((it) => !mine.includes(it)));
+  }
   if (!easier) {
     // a skill the child has shown is easy for them (pace.fast): its HARDEST remaining item next, not the next easy one
     const head = ok[0];
