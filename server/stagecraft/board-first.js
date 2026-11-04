@@ -170,14 +170,16 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // her line is written from this board's facts row, so it must be one that will reach the stage
       if (certify && !certify({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } })) continue;
       const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, a2, ctx);
-      const failing = r.ok ? [] : (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id);
-      if (!r.ok && (!r.gate?.script || failing.some((f) => !LINE_BOUND.has(f)))) continue;
+      const failingChecks = r.ok ? [] : (r.gate?.checks ?? []).filter((x) => !x.pass);
+      // (a moving board's W19.settled that only repeats a line-bound miss is line-bound too)
+      const lineBound = (c) => LINE_BOUND.has(c.id) || (c.id === "W19.settled" && (c.detail ?? []).every((d) => LINE_BOUND.has(d)));
+      if (!r.ok && (!r.gate?.script || failingChecks.some((c) => !lineBound(c)))) continue;
       const facts = r.ok ? r.script.facts : scriptFacts(r.gate.script, { kind: "diagram", archetype: "whiteboard" });
       const row = rowOfFacts(facts, countsOf(s));
       if (!row) continue;
       // a board that passed only once its answer was written "?" (board-sync maskReveals) is kept AS MASKED: her real line
       // is re-gated against what will be drawn
-      const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : s;
+      const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : r.gate?.script?.ops ? { ...s, ops: r.gate.script.ops } : s;
       const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok };
       picks.set(id, pick);
       return pick;

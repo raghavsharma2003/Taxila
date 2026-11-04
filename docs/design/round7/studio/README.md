@@ -174,3 +174,15 @@ Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12),
 - **Text pick:** the arithmetic text pick (pick.js) now reads an operation's own operands. It used to take the line's first two numbers, which drew "2 + 2" dots for a perimeter formula, "3 + 4" for "3 + 4 × 2 = 11", and "2 + 3" for the Collatz rule. Motion made those boards long enough to pass W6, which exposed it.
 - **Products on the number line:** a product there is that many equal jumps from 0.
 - **Bar charts from text:** these need a graph word or name labels.
+
+## Perimeter picture request (main via Brain's S4 harness)
+
+`perimeter-picture-*`: c6-maths-ch06-t01, where a child asks for a picture of the rectangle. Before this, no board came up. Now the worked example's park is drawn to scale (50 m × 30 m) and named "rectangle", "perimeter" is written, and a marker walks the boundary side by side, back to where it began.
+
+- **measured@1:** now names the shape and, in a perimeter lesson, walks its boundary. It reads "12 m by 7 m" or "50 m long and 30 m wide" without the word rectangle.
+- **Which source wins:** a shape from her line, the item or the worked example now outranks a perimeter-mode area-grid. A shape from some other item never shadows the board her line is about.
+- **Masking:** a reveal is masked as "?" even while the timing check (W6) waits for her real line. While the item is the worked example, its stated givens (50, 30) are never masked, even when a later item's answer happens to match.
+- **Picture requests in perimeter/area lessons** (asked plain, as "picture", as "perimeter"):
+  - c5 ch11 t02: none → measured@1 (all three ways)
+  - c6 ch06 t01: catalogue / catalogue / none → measured@1 (all three ways)
+  - c6 ch06 t02: none → measured@1 (asked plain and as "picture")

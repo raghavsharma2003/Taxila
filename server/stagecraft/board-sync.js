@@ -90,7 +90,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   const content = (ask?.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask?.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText] };
-  const withhold0 = withheldValues({ items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
+  const withhold0 = withheldValues({ workedExample: kit?.workedExample, items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
     { itemId: ask?.kit?.item?.id, line: text });
   // round 5 (stream 2): the numbers the child asked to see are not withheld (the open question's own key still is)
   const request = ask?.intent?.request ?? null;
@@ -215,7 +215,11 @@ export function regate(script, ask, ctx) {
     // (W18, her own question's answer, is masked the same way: its detail is the number, written as a reveal of every op)
     // (round 7: a moving board's W19.settled that only repeats those two is masked with them)
     const MASKABLE = (id) => id === "W9.no_reveal" || id === "W18.her_answer_unsaid";
-    if (!failing.length || failing.some((c) => !MASKABLE(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(MASKABLE)))) break;
+    // (round 7 M2: masking also runs beside a timing miss: W6 is judged against her REAL line later, and a picture asked
+    // for before her line exists — Brain's S4 c6 perimeter request — was dropped for a reveal it could have masked)
+    const OTHER_OK = (id) => MASKABLE(id) || id === "W6.timing";
+    if (!failing.length || !failing.some((c) => MASKABLE(c.id))
+      || failing.some((c) => !OTHER_OK(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(OTHER_OK)))) break;
     const reveals = failing.filter((c) => MASKABLE(c.id)).flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
     const masked = maskReveals(g.script ?? raw, reveals);
     if (!masked) break;

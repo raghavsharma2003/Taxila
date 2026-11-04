@@ -1082,6 +1082,33 @@ function tableBoard(c, tl) {
  * (geometry.js). A rectangle / square with its two dimensions on its sides, a triangle built from its three sides (the
  * triangle inequality checked; each side's length outside its midpoint), a circle with a drawn radius "r = 5 cm".
  */
+// round 7 (M2, main via Brain's S4 harness: a c6 perimeter child asked for a picture and got none): the shape's NAME in the
+// kit's word over its top-left corner, and "perimeter" over its top-right when the board traces it, so a request that names
+// the thing ("rectangle ki picture", "perimeter dikhao") is answered. → the facts it adds.
+function nameShape(tl, c, word, b) {
+  if (!c.name) return {};
+  const y = Math.max(20, b.y - 16);
+  tl.add({ op: "text", at: [b.x, y], text: word, size: "s", ink: "soft", align: "start" }, 300, { gap: 120 });
+  if (c.trace && textBox(word, "s").w + textBox("perimeter", "s").w + 16 <= b.w) {
+    tl.add({ op: "text", at: [b.x + b.w, y], text: "perimeter", size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
+    return { name: word, shows: "perimeter" };
+  }
+  return { name: word };
+}
+// the perimeter IS the walk round the boundary: a marker runs every side in turn, back to where it began (each side one
+// follow, so a line naming the sides one by one lands on each) → the claim that it ends where it started
+function traceBoundary(tl, corners) {
+  const [s0] = corners;
+  const id = tl.add({ op: "circle", c: [round1(s0[0]), round1(s0[1])], r: 6, fill: "mark", ink: "mark", weight: 1 }, 200, { gap: 260 });
+  let at = [round1(s0[0]), round1(s0[1])];
+  for (const q of [...corners.slice(1), s0]) {
+    const d = [round1(q[0] - at[0]), round1(q[1] - at[1])];
+    tl.add({ op: "follow", target: id, path: [d] }, 650, { gap: 40 });
+    at = [at[0] + d[0], at[1] + d[1]];
+  }
+  return [{ id, c: [round1(at[0]), round1(at[1])] }];
+}
+
 function measuredBoard(c, tl) {
   const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
   if (!unit) return { error: "unit" };
@@ -1096,9 +1123,11 @@ function measuredBoard(c, tl) {
     const k = Math.min((360 - sideW) / w, BH / h);
     const W = w * k, H = h * k, x = (400 - (W + sideW)) / 2, y = cy - H / 2;
     tl.add({ id: "shape", op: "rect", at: [x, y], w: W, h: H, weight: 2 }, 900);
+    const named = nameShape(tl, c, c.shape === "square" ? "square" : "rectangle", { x, y, w: W, h: H });
     tl.add({ op: "text", at: [x + W / 2, y + H + 26], text: fmt(w), size: "m", ink: "accent" }, 400, { gap: 160 });
     tl.add({ op: "text", at: [x + W + 12, y + H / 2 + 7], text: fmt(h), size: "m", ink: "accent", align: "start" }, 400, { gap: 120 });
-    return { facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }) } };
+    const claims = c.trace ? traceBoundary(tl, [[x, y], [x + W, y], [x + W, y + H], [x, y + H]]) : [];
+    return { claims, facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }), ...named } };
   }
   if (c.shape === "triangle") {
     const [a, b, d] = Array.isArray(c.sides) ? c.sides.map(Number) : [];
@@ -1117,7 +1146,9 @@ function measuredBoard(c, tl) {
       tl.add({ op: "text", at: [m[0] + (dx / n) * 38, m[1] + (dy / n) * 38 + 7], text: fmt(len), size: "m", ink: "accent" }, 380, { gap: 140 });
     };
     label(A, B, base); label(A, C, s1); label(B, C, s2);
-    return { facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}` } };
+    const named = nameShape(tl, c, "triangle", { x: ox, y: C[1], w: base * k, h: oy - C[1] });
+    const claims = c.trace ? traceBoundary(tl, [A, C, B]) : [];
+    return { claims, facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}`, ...named } };
   }
   if (c.shape === "circle") {
     const r = Number(c.r);

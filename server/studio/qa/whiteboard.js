@@ -131,6 +131,10 @@ function valueTokens(text) {
  */
 export function withheldValues(kit, { itemId, line = "" } = {}) {
   const said = [...numbersIn(line)].map(rat).filter(Boolean);
+  // round 7 (M2, Brain's S4 c6 perimeter picture request): while the item IS the worked example (a faded step, "fade:N"),
+  // the numbers its problem STATES are its givens, taught openly ("a park 50 m long and 30 m wide"): never written "?" on
+  // its own picture because a later item's answer happens to be 50
+  if (/^fade:/.test(String(itemId ?? ""))) said.push(...[...numbersIn(String(kit?.workedExample?.problem ?? ""))].map(rat).filter(Boolean));
   const items = [...(kit?.items ?? [])].sort((a, b) => (b?.id === itemId) - (a?.id === itemId));
   const values = [], words = [], phrases = [];
   const lineWords = new Set(String(line).toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []);

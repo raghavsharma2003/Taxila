@@ -57,7 +57,8 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     const m = re.exec(flat);
     if (!m) return null;
     const before = flat.slice(0, m.index), after = flat.slice(m.index + m[0].length);
-    if (/[×x*÷/+−-]\s*$|[a-z]$/.test(before) || /^\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]/.test(after)) return null;
+    // (inside brackets an operation joins: "2 × (50 + 30)" is a rule's step, not two groups)
+    if (/[×x*÷/+−-]\s*\(?\s*$|[a-z]$/.test(before) || /^\s*\)?\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]/.test(after)) return null;
     return [Number(m[1]), Number(m[2])];
   };
   const onlyTwo = n.length === 2 && !/[×÷*/=]|\d[a-z]\b/.test(lower) ? [n[0], n[1]] : null;
@@ -68,7 +69,8 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     if (a <= 10 && b <= 10) return { template: "combine-count@1", a, b, op: "add" };
     if (a <= 99999 && b <= 99999) return { template: "column-op@1", a, b, op: "add" };
   }
-  const subOps = lone(/(\d+)\s*[−-]\s*(\d+)/) ?? lone(/\b(?:subtract|take away)\s+(\d+)\s+from\s+(\d+)/)?.reverse()
+  // ("1-9" or "2-3 days" is a range: a minus is "−" or a spaced hyphen)
+  const subOps = lone(/(\d+)\s*(?:−|\s-\s)\s*(\d+)/) ?? lone(/\b(?:subtract|take away)\s+(\d+)\s+from\s+(\d+)/)?.reverse()
     ?? (onlyTwo && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?|how many more|how much more|fewer)\b/.test(lower) ? onlyTwo : null);
   if (subOps) {
     const a = Math.max(...subOps), b = Math.min(...subOps);

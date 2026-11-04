@@ -12,9 +12,9 @@ import { getTopic } from "../server/content/curriculum.js";
 import { gateWhiteboard } from "../server/studio/qa/whiteboard.js";
 
 test("the kit's stated shapes are read with their measures; units must agree", () => {
-  assert.deepEqual(measuredCall({ expectations: ["A rectangle 8 cm by 5 cm has perimeter 26 cm."] }), { template: "measured@1", shape: "rect", w: 8, h: 5, unit: "cm" });
-  assert.deepEqual(measuredCall({ expectations: ["The triangle has sides 3 cm, 4 cm and 5 cm."] }), { template: "measured@1", shape: "triangle", sides: [3, 4, 5], unit: "cm" });
-  assert.deepEqual(measuredCall({ expectations: ["A circle has radius 7 cm."] }), { template: "measured@1", shape: "circle", r: 7, unit: "cm" });
+  assert.deepEqual(measuredCall({ expectations: ["A rectangle 8 cm by 5 cm has perimeter 26 cm."] }), { template: "measured@1", from: "lesson", shape: "rect", w: 8, h: 5, unit: "cm", name: true, trace: true }, "a perimeter lesson's rectangle is named and walked round");
+  assert.deepEqual(measuredCall({ expectations: ["The triangle has sides 3 cm, 4 cm and 5 cm."] }), { template: "measured@1", from: "lesson", shape: "triangle", sides: [3, 4, 5], unit: "cm", name: true });
+  assert.deepEqual(measuredCall({ expectations: ["A circle has radius 7 cm."] }), { template: "measured@1", from: "lesson", shape: "circle", r: 7, unit: "cm", name: true });
   assert.equal(measuredCall({ expectations: ["A rectangle 8 cm by 5 m."] }), null, "mixed units: not drawn to a wrong scale");
 });
 

@@ -87,10 +87,14 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   const open = openItem && item && openItem.id === item.id;
   const code = codePick({ kit, item, text, representation, interest });
   // round 7: a shape the kit states with its measures, drawn to scale (geometry.js); it outranks the generic shape@1
-  const mc = measuredCall(kit, { text });
-  if (mc && code?.template === "shape@1") tries.push([mc, "code"]);
+  const mc = measuredCall(kit, { text, item: openItem ?? item });
+  // (also ahead of a perimeter area-grid, which draws no shape name and no walk round it, and of any area-grid when the
+  // stated shape is a triangle: round 7 M2, a c6 perimeter picture request got no board)
+  const mcFirst = mc && (code?.template === "shape@1" || (mc.from !== "kit" && code?.template === "area-grid@1" && (code.mode === "perimeter" || mc.shape === "triangle")));
+  if (mc) delete mc.from;
+  if (mcFirst) tries.push([mc, "code"]);
   if (code) tries.push([open ? { ...code, hideResult: true } : code, "code"]);
-  if (mc && code?.template !== "shape@1") tries.push([mc, "code"]);
+  if (mc && !mcFirst) tries.push([mc, "code"]);
   // the open item's parallel: the worked example (a different problem, the same method)
   if (open) { const we = codePick({ kit, item: null, representation, interest }); if (we) tries.push([we, "code"]); }
   // round 7 (C1 studio-board-richness): the kit's own dated chain as a true-scale timeline (timeline.js), before the
