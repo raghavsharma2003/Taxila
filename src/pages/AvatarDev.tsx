@@ -1,7 +1,7 @@
 // /dev/avatar (dev builds or VITE_DEV_ROUTES=1 only): the 3D tutor without a lesson (the picker is gone: one teacher).
 //   ?tutor=asha|arjun|uma  ?face=B|Blite|D|E  ?status=speaking|listening|thinking|your_turn|idle  ?framing=medium|close
 //   ?reduced=1  ?voice=1 (start the synthetic voice at once; needs a gesture unless autoplay is allowed)
-//   ?class=1-9  ?via=lesson (render through <LessonFace>, the lesson's own face: the puppet and its fallbacks)
+//   ?class=1-9  ?protege=neutral|happy|puzzled (the lesson <Teacher> with the young teach-back protégé)  ?via=lesson (render through <LessonFace>, the lesson's own face: the puppet and its fallbacks)
 // The synthetic voice is a looped, syllable-modulated harmonic signal (≈ 4.5 syllables/s, phrase pauses, bright/dark
 // vowels) on a LevelMeter exactly as a link attaches one, so the face runs its real tap → lip → behaviour path.
 // The face sits inside the real <TeacherStage> through its `face` slot: the same mount the lesson screen uses.
@@ -10,6 +10,8 @@ import { createLevelAnalyser, LevelMeter } from "../lesson/level.ts";
 import { TeacherStage } from "../stage/TeacherStage.tsx";
 import { TutorFace } from "../avatar/TutorFace.tsx";
 import { LessonFace } from "../face-puppet/LessonFace.tsx";
+import { Teacher } from "../ui/teacher/Teacher.tsx";
+import { protegeFor, type ProtegeMood } from "../ui/teacher/Protege.tsx";
 import type { FloorStatus } from "../avatar/behaviour.ts";
 import type { StageEvent } from "../avatar/three/stage3d.ts";
 import type { FaceTier } from "../avatar/tier.ts";
@@ -117,6 +119,10 @@ export default function AvatarDev() {
             <label><input type="checkbox" checked={reduced} onChange={(e) => setReduced(e.target.checked)} /> reduced motion</label>
           </div>
           <div style={{ height: framing === "close" ? 300 : 380, maxWidth: 560, width: "100%", position: "relative" }} data-testid="stage">
+            {q.get("protege") ? (
+              <Teacher teacherId={tutorId} band={band} floor={status === "your_turn" ? "your_turn" : status ?? "idle"} meters={sources} reducedMotion={reduced}
+                protege={{ kind: protegeFor(q.get("child") ?? "dev"), mood: (q.get("protege") as ProtegeMood) || "neutral" }} style={{ height: "100%" }} />
+            ) : (
             <TeacherStage
               floor={status}
               band={band}
@@ -127,6 +133,7 @@ export default function AvatarDev() {
               face={<Face key={`${tutorId}-${tier}`} tutorId={tutorId} band={band} status={status} teacher={sources} reducedMotion={reduced} framing={framing} tier={tier} onEvent={onEvent} />}
               style={{ height: "100%" }}
             />
+            )}
           </div>
         </section>
       )}
