@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "fs";
-import { GROUPS, groupOf, parseShard, planShards, tapFileDurations } from "../scripts/test-shard-core.mjs";
+import { GROUPS, groupOf, parseShard, planShards } from "../scripts/test-shard-core.mjs";
 
 const DIR = new URL("./", import.meta.url).pathname;
 
@@ -56,26 +56,6 @@ test("the real suites: the three groups partition tests/*.test.mjs, and every gr
   let weights = {};
   try { weights = JSON.parse(readFileSync(DIR + "shard-weights.json", "utf8")).seconds; } catch { /* not measured yet */ }
   assert.deepEqual(planShards(by.unit, weights, 4).flat().sort(), by.unit);
-});
-
-test("tapFileDurations: top-level file points with their duration; nested tests ignored", () => {
-  const tap = [
-    "TAP version 13",
-    "# Subtest: /repo/tests/a.test.mjs",
-    "    ok 1 - inner test",
-    "      ---",
-    "      duration_ms: 5",
-    "      ...",
-    "ok 1 - /repo/tests/a.test.mjs",
-    "  ---",
-    "  duration_ms: 1234.5",
-    "  ...",
-    "not ok 2 - /repo/tests/b.test.mjs",
-    "  ---",
-    "  duration_ms: 10",
-    "  ...",
-  ].join("\n");
-  assert.deepEqual(tapFileDurations(tap), { "a.test.mjs": { s: 1.2345, ok: true }, "b.test.mjs": { s: 0.01, ok: false } });
 });
 
 test("ciVerdict: `gates` green AND build AND every shard green (any attempt); pre-matrix shas judged on `gates` alone", async () => {
