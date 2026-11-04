@@ -22,6 +22,10 @@ export const RULES = [
   // rounding = which landmark is nearer on the line (place the value between two landmarks, then choose the nearer end)
   R("c4-maths-ch04-t03", "nishana", "place", "round", { "round-truncate": "truncate", "round-chain": "chain-rounding", "round-last-digit": "wrong-digit" }, { to: [100, 1000] }),
   R("c5-maths-ch01-t02", "nishana", "place", "round", { "round-truncate": "truncate", "round-chain": "chain-round" }, { to: [1000, 10000], maxV: 99999 }),
+  // r7: integer operations as hops from a start drawn on the line (adding a negative hops left, subtracting one hops right;
+  // a product is repeated hops)
+  R("c6-maths-ch10-t03", "nishana", "hop", "hop", { "subtract-smaller": "subtract-smaller", "two-neg-positive": "two-neg-positive", "sign-of-bigger": "sign-of-bigger" }, { ops: ["+", "-"] }),
+  R("c7-maths-ch10-t01", "nishana", "hop", "hop", { "neg-neg": "neg-neg" }, { ops: ["×"] }),
 ];
 
 export const ACTS = {
@@ -39,4 +43,6 @@ export const ACTS = {
   "c7-maths-ch03-t01|place": ["s1", "s2"],
   "c4-maths-ch04-t03|round": ["s2"],                    // nearest 100 and 1000 (the grammar's "to")
   "c5-maths-ch01-t02|round": ["s1"],
+  "c6-maths-ch10-t03|hop": ["s2", "s1", "s3"],          // add and subtract integers on the line; subtracting a negative is adding
+  "c7-maths-ch10-t01|hop": ["s1", "s2"],                // a product as repeated hops; negative × negative
 };

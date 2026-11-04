@@ -8,6 +8,8 @@ import { detectTier, tierFacts } from "./core3d/tier.ts";
 export const ENGINE_ENTRIES: EngineEntry[] = [
   // E1 Antariksh · the Nishana law (place, compare, round) as aim → fire → decloak, and fly-into-gate commits (G1)
   { id: "antariksh", renders: [{ family: "nishana", mode: "place" }, { family: "nishana", mode: "compare" }], load: () => import("./antariksh/index.ts") },
+  // E2 Khand · the Nazariya law (views, array, floor, powers, mirror) as a voxel block world: build, look round, measure (r7)
+  { id: "khand", renders: (["views", "array", "floor", "powers", "mirror"] as const).map((mode) => ({ family: "nazariya" as const, mode })), load: () => import("./khand/index.ts") },
 ];
 
 export function engineFor(family: FamilyId, mode: PlayMode, goal?: string): EngineEntry | null {
