@@ -12,6 +12,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const ONLY = process.env.ONLY;
 const SCENES = [
+  { name: "circuit-switch", q: "family=yantra&mode=circuit&goal=switch&class=7&fade=2&seed=4&art=blueprint&lang=hinglish&topic=c7-science-ch03-t02" },
   { name: "pendulum-match", q: "family=yantra&mode=pendulum&goal=match&class=7&fade=1&seed=4&art=raat&lang=hinglish&topic=c7-science-ch08-t01" },
   { name: "measure-total", q: "family=nazariya&mode=measure&goal=total&class=4&fade=1&seed=3&art=kagaz&lang=hinglish&topic=c4-maths-ch08-t01&grammar=" + encodeURIComponent(JSON.stringify({})) },
   { name: "measure-compare", q: "family=nazariya&mode=measure&goal=compare&class=5&fade=1&seed=5&art=chalk&lang=hinglish&topic=c5-maths-ch08-t01" },
@@ -38,7 +39,16 @@ const SCENES = [
     const shot = async (k) => page.screenshot({ path: path.join(out, `${sc.name}-${k}.png`) });
     await shot("0-start");
     const press = (id) => page.evaluate((i) => window.__play.press(i), id);
-    if (sc.name.startsWith("pendulum")) {
+    if (sc.name.startsWith("circuit")) {
+      const d = (x) => page.evaluate((a) => { window.__play.dispatch(a); window.__play.invalidate(); }, x);
+      // the belief first: the switch between + and the bulb (one wire short of the right loop), then the solver's wiring
+      const acts = solve.filter((a) => a.kind !== "run"), half = Math.max(1, acts.length - 1);
+      for (const a of acts.slice(0, half)) { await d(a); await sleep(300); }
+      await shot("1-aim"); await press("run"); await sleep(1500); await shot("2-miss");
+      for (const a of acts.slice(half)) { await d(a); await sleep(300); }
+      await press("run"); await sleep(2500); await shot("3-solved");
+      console.log(sc.name, JSON.stringify(solve).slice(0, 300));
+    } else if (sc.name.startsWith("pendulum")) {
       const d = (x) => page.evaluate((a) => { window.__play.dispatch(a); window.__play.invalidate(); }, x);
       // the belief first: a heavier bob, run (the period does not move), then the length that keeps the beat
       const st0 = await page.evaluate(() => window.__play.state());
