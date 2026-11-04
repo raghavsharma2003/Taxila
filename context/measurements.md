@@ -5121,3 +5121,9 @@ Method: stream A's harness. Director half run on f2c55d0d (results/2026-11-04-fu
 | 1.0 (chosen) | 3.30 | 3.80 | 4.14 | 1.75 |
 
 θ mean (GE), class 5, site at 2.0. One session's θ evidence is capped (THETA_STRAND_CAP), so later sessions keep moving it; the epoch's Glicko inflation also weakens the site with days.
+
+
+<!-- merged from inbox/r7-main-6.json -->
+## jd-r7-director2-2026-11-04 (main loop judge, 2026-11-04)
+
+Method: stream A's harness, Director-only re-run at cb999f79 (fix block 2), results/2026-11-04-director2; n = 12 lessons (c4/c5/c6 × steady/offtopic/stuck/steering), ~10 child turns each, same scripted Hinglish child as 2026-11-04-full. Three Claude judges, one per class, read every teacher turn of each NEW lesson and its BEFORE twin; the main loop combined their verdicts; not blind. Per-item table and root causes: docs/design/round7/judgements/director2-2026-11-04.md.
