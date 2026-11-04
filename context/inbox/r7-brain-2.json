@@ -1,0 +1,30 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-steer-else",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 steer row gains steer:else (\"Kuch aur\": talk about something else), the 17th SteerId, asked for by E App. The server maps it to the change_topic request, the same one the words \"kuch aur baat karte hain\" make, and it is never a stop. The check-in chips stay stop:continue / break:rest / stop:end; the client Pause is chipId break:rest."
+  },
+  {
+   "id": "dc-r7-brain-play-verbs-data",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: the play-verb table (server/director/play-verbs.js) falls back to the Games-owned data/play/verbs.json for families / modes it does not list, shape { family: { mode: { act, hi, en } } }. The code table wins where both have an entry. An entry missing act, hi or en is skipped (no verb note, never a guessed verb), and a missing file is an empty table. Games can ship a mode without a Brain edit; tests/r4-conversation-play-verbs checks the file entries (a non-choose act never gets a choosing verb). Reversal: if Games moves every verb into the file, the code table becomes the file."
+  },
+  {
+   "id": "dc-r7-brain-learner-view-wired",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (F Learning patches to-brain/001-003 applied): lesson start reads learnerViewOf (in parallel with history / brief / stuck, failure → null) and passes { theta, weak, minutesLeft } to initLessonState. The practice queue is built at the child level (buildPracticeQueue classLevel / theta / weak); no view keeps the on-track default. The family minutes left is stored on the state when limits are on, for the mid-lesson limit (A9). startRefusal gets the plan limits flag. Also applied: Games to-brain/001 gameAct (words a game grammar consumed are not graded) and Studio to-brain/001 board pointing. Needs a live check: theta-chosen items on a child with 2+ scored answers."
+  },
+  {
+   "id": "dc-r7-brain-clause-stream",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A5 (PIPELINE §A Brain item 10, with Voice): the streamed, clause-guarded Director reply. Transport (main, 2026-11-04): POST /api/lesson/turn with Accept: text/event-stream sends event: clause (ReplyClauseEvent) per guarded clause and event: turn (the full TurnResponse) last. Headers: cache-control no-store, x-accel-buffering no, and a flush per event. Without the header the response is plain JSON, unchanged. Nothing is written before the first clause, so a refusal stays the plain JSON error with its status; an error after a clause is event: turn { error, status }. Brain side (say.js streamAsk): the one-call draft (and the lead-slot draft) streams. Its first closed sentence goes through lockFirstSentence: every per-sentence guard alone, and s1 + the pinned question passes every whole-turn guard. The turn.js post-fixes (self-gender, the affirmation opener) must also leave s1 unchanged. A locked s1 is sent while the rest is written. The whole draft then takes every guard as before. A final reply that no longer starts with s1 becomes the lock fallback (s1 + the question), so a sent clause is never withdrawn; a stream that dies after s1 also ends on that fallback. The only exception is a turn that failed closed to safeguarding after s1: an empty final clause, and the turn event carries clausesKept: false. The rest of the reply leaves as clauses after the guard (the TTS split, server/voice/sentences.js). Not early: closing, check-in, why, thinking, break and diagnostic turns, and turns with no pinned question. The streamed call has no hedge twin (the stall cut is 3 s, and a failure before s1 retries on the hedged one-call path). Kill switch TAXILA_R7_CLAUSE_STREAM=off. Needs a live check: first-clause time vs whole-reply time on the reply deployment, and the share of turns that lock (only pinned-question turns can today)."
+  }
+ ],
+ "edges": [],
+ "md": {}
+}

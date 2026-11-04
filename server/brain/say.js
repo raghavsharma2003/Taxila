@@ -3,7 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
-import { chat, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
+import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
 import { upcomingItem, hintShapeWords } from "../director/state.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
@@ -73,7 +73,7 @@ export const scrubbed = (t) => scrubPii(t).text;
 export const forModel = (t) => filterSafe(scrubbed(t));
 
 /** The reply model call, injectable for tests of the guards (tests/lesson-truth.test.mjs); production uses azure.js. */
-export const replyDeps = { chat };
+export const replyDeps = { chat, chatStream };
 
 /**
  * round 5 (sim lab p43, main safety review): do the CHILD'S OWN WORDS trip the content filter? The reply prompt carries the
@@ -454,7 +454,7 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
  */
 /** r5-latency: the reply lane's hedge point (~p95 of taxila-fast replies, n = 86, 2026-10-14); 0 turns it off. */
 export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
-export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true }) {
+export async function textReply({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
@@ -657,6 +657,41 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
     return blocked(probe);
   };
+  // round 7 A5 (PIPELINE §A Brain item 10, joint with Voice): the STREAMED reply. The one-call draft streams; the moment its
+  // first sentence is complete it is put through lockFirstSentence (every per-sentence guard on its own, and `s1 + the
+  // pinned question` passes every guard of the whole turn) and, locked, handed to onClause: TTS starts while the rest is
+  // written. The whole draft then takes every guard as before; a final reply that no longer starts with s1 becomes the
+  // lock's own fallback (s1 + the question), so a sent clause is never withdrawn. The lead-slot draft streams the same way
+  // (its lead's first sentence). Never early on a closing, check-in, why, thinking, break or diagnostic turn, or a turn with
+  // no pinned question (those send their clauses after the whole guard). Kill switch TAXILA_R7_CLAUSE_STREAM=off.
+  const clauseOn = typeof onClause === "function" && clauseStreamOn();
+  const clause = { sent: null, why: null };
+  const streamAsk = async (msgs) => {
+    let tried = false;
+    const onDelta = (_d, text) => {
+      if (tried) return;
+      const s1 = firstClosedSentence(text);
+      if (!s1) return;
+      tried = true;
+      const lock = lockFirstSentence({ reply: text, s1, askEnd: pinned ? askEnd : null, problems, spoken: true, confirmNeeded: G && verdict === "correct", t0: replyT0,
+        closing: CLOSING_MOVES.has(kindNow) || !!checkin || forgetSafety || whyProbe || thinkingWait || restBreak || !!item?.diagnostic });
+      if (!lock.locked) { clause.why = lock.why; return; }
+      // a post-fix the caller makes to her whole line (turn.js: self-gender, the affirmation opener) must leave s1 as it is
+      if (clauseFix && clauseFix(lock.s1) !== lock.s1) { clause.why = "s1_postfix"; return; }
+      clause.sent = lock;
+      try { onClause({ i: 0, text: lock.s1 }); } catch (e) { console.warn("[lesson] onClause threw:", e?.message); }
+    };
+    try {
+      return (await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
+        ...(overflow ? {} : { overflow: false }) })).text.trim();
+    } catch (e) {
+      // a content-filter block is the safeguarding path below, exactly as on the one-call path
+      if (isContentFilter(e)) throw e;
+      // a stream that died after s1 was sent: the lock's fallback (s1 + the question) passes every guard
+      if (clause.sent) return clause.sent.fallback;
+      return ask(msgs);
+    }
+  };
   // round 2 (conversation): the LEAD SLOT. A turn that answers a request before the card question, or puts the same
   // question again, is written as two parts: the model writes only what comes before the question, code adds the question
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
@@ -669,7 +704,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const leadCall = async (why = null, draft = null) => {
     const extra = [...(draft ? [{ role: "assistant", content: draft }] : []), { role: "system", content: leadSlotNote({ lead: state.lastMove?.lead ?? null, why, ageBand: state.ctx.ageBand,
       first: bridge, confirm: R3 && verdict === "correct" && !checkin, noAnswer: R3 && bridge && (wordsVerdict === "unverified" || wordsVerdict === "attempt") }) }];
-    const raw = await ask([...messages, ...extra]);
+    const raw = clauseOn && !draft ? await streamAsk([...messages, ...extra]) : await ask([...messages, ...extra]);
     const lead = cleanLead(raw, askEnd, leadMax);
     return leadOk(lead, [item?.answer, ...(item?.acceptable ?? [])], shortLead ? { min: LEAD_MIN_FIRST } : undefined) ? composeTurn(lead, askEnd) : null;
   };
@@ -683,7 +718,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
-    reply ??= await ask(lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages);
+    const oneCall = lastNotes ? [...messages, { role: "system", content: lastNotes }] : messages;
+    reply ??= clauseOn ? await streamAsk(oneCall) : await ask(oneCall);
   } catch (e) {
     // round 4 (stream 4A, 2026-10-10): a block on the COMPLETION (HTTP 200, finish_reason content_filter: the filter judged
     // the model's own words, not the child's) gets ONE fresh reply before the turn fails closed. In context, "explain it
@@ -1033,9 +1069,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // 14.4 (QA TEST a9c3136d t8, 9ad86661): the goodbye strip took her only sentence ("…padhai rok dete hain—…?"), the full-turn
   // retry raised self-harm again and was refused, and the child got "" and a module tray. A turn is never empty: the fixed line.
   if (!String(reply ?? "").trim()) { reply = fallbackReply(state, item); guard.replaced = true; guard.emptied = true; }
+  // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
+  if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;
+  if (clauseOn) guard.clause = clause.sent ? { sent: true, s1Ms: clause.sent.ms } : { sent: false, ...(clause.why ? { why: clause.why } : {}) };
   if (early) {
     const kept = early.locked ? String(reply).trim().startsWith(early.s1) : false;
     guard.early = { mode: firstSentenceMode(), locked: early.locked, ...(early.why ? { why: early.why } : {}), ...(early.locked ? { kept, lockedMs: early.ms } : {}),
@@ -1134,6 +1173,21 @@ export function speakNotWrite(reply, askEnd = null) {
 
 // ───────────── r4-latency: the first TTS sentence, locked early (TAXILA_TTS_FIRST_SENTENCE) ─────────────
 
+/**
+ * PURE. round 7 A5: the first sentence of a draft still being streamed, once it is closed: an end mark (. ! ? । …) followed by
+ * a space and more text, the same ends server/voice/sentences.js splits on (never "3.5", "Rs. 5", an initial). null until then.
+ */
+export function firstClosedSentence(text) {
+  const t = String(text ?? "").replace(/\s+/g, " ").replace(/^ /, "");
+  for (const m of t.matchAll(/([.!?।॥…]+["'”’)\]]*) (?=\S)/g)) {
+    const word = t.slice(0, m.index).split(" ").pop() ?? "";
+    if (m[1] === "." && (/^(rs|dr|mr|mrs|ms|no|st|vs|etc|e\.g|i\.e)$/i.test(word) || /^[A-Z]$/.test(word))) continue;
+    return t.slice(0, m.index + m[1].length).trim();
+  }
+  return null;
+}
+/** round 7 A5: the streamed, clause-guarded reply (on unless TAXILA_R7_CLAUSE_STREAM=off; only a client that asks streams). */
+export const clauseStreamOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_CLAUSE_STREAM ?? ""));
 /** off (default) | shadow (lock decided and logged on guard.early; behaviour unchanged). The live mode is not built yet. */
 export const firstSentenceMode = (env = process.env) => (/^shadow$/i.test(String(env.TAXILA_TTS_FIRST_SENTENCE ?? "")) ? "shadow" : "off");
 
@@ -1150,13 +1204,14 @@ export const PER_SENTENCE = new Set(["floor", "harmtalk", "forget", "praise", "d
  * minimal turn joinAsk(s1, question) fails no guard at all (so a final reply that starts with s1 always exists).
  * @returns {{ locked: true, s1: string, fallback: string, ms: number } | { locked: false, why: string }}
  */
-export function lockFirstSentence({ reply, askEnd, problems, closing, spoken, confirmNeeded, t0 = performance.now() }) {
+export function lockFirstSentence({ reply, s1: closed = null, askEnd, problems, closing, spoken, confirmNeeded, t0 = performance.now() }) {
   const no = (why) => ({ locked: false, why });
   if (!spoken) return no("text_lane");
   if (closing) return no("turn_kind");
   if (!askEnd) return no("no_pinned_question");
-  const parts = splitSentences(String(reply ?? "").trim());
-  if (parts.length < 2) return no("one_sentence");
+  // round 7 A5: a streamed draft hands its first CLOSED sentence (firstClosedSentence), the rest still being written
+  const parts = closed ? [closed] : splitSentences(String(reply ?? "").trim());
+  if (!closed && parts.length < 2) return no("one_sentence");
   const s1 = parts[0].trim();
   if (/[?？]/.test(s1)) return no("s1_asks");
   if (SCREEN_SENTENCE.test(s1) || namesUiPart(s1)) return no("s1_screen");

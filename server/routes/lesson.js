@@ -6,6 +6,7 @@ import { warmupItemsFor } from "../learner/checks.js";
 import { randomUUID } from "crypto";
 import { q, one, tx } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
+import { runTurn } from "../brain/clauses.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
@@ -864,7 +865,8 @@ async function turn(req, res, body) {
   const hooks = {};
   const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
-  try { send(res, 200, await lessonTurn(req, body, hooks)); }
+  // round 7 A5: `Accept: text/event-stream` streams her guarded clauses, then the turn (brain/clauses.js); otherwise plain JSON
+  try { await runTurn(req, res, (h) => lessonTurn(req, body, h), hooks); }
   finally { if (specP) settleAgentSpec(body?.lessonId, await specP); }
 }
 

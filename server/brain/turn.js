@@ -869,6 +869,21 @@ export async function lessonTurn(req, body, hooks = {}) {
   };
   // The verdict the teacher's words must agree with (G-PRAISE-1; planTurn: only a kit item graded against its key has one).
   const verdict = next.lastVerdict ?? "ungraded";
+  // round 7 A5: a client that asked for the streamed reply (routes/lesson.js, Accept: text/event-stream) gets her first guarded
+  // clause while the rest is written (say.js streamAsk). The clause carries the seq her turn is about to be stored under, and
+  // s1 is sent only when the post-fixes below (self-gender, the affirmation opener) would leave it unchanged.
+  const clauseHook = typeof hooks?.onClause === "function" ? (st) => ({
+    onClause: ({ i, text }) => hooks.onClause({ lessonId: lesson.id, seq: st.seq + 1, i, text, final: false }),
+    clauseFix: (s1) => {
+      const g = characterForState(st)?.pronouns?.subject === "he" ? "m" : "f";
+      if (repairSelfGender(s1, g) !== s1) return null;
+      const tapped = body.chipId ? (state.lastUi?.chips ?? []).find((c) => c.id === body.chipId)?.label ?? "" : "";
+      const af = affirmOpenerFix(`${s1} Aage.`, { verdict: cls ? uiVerdictOf(cls, target, state).verdict ?? null : null,
+        empty: !String(childText ?? "").trim() && !body.chipId && !moduleOnly, answer: String(childText ?? "").trim() || tapped,
+        name: st.ctx?.firstName ?? null, lang: st.ctx?.lang ?? "hinglish" });
+      return af.fix ? null : s1;
+    },
+  }) : null;
   if (textLane && (!r.hold || revoice) && !late) {
     const key = replyKey(next, kit, r, instructions, said, historyOf(next));
     const hit = await pickSpeculation(specs, key);
@@ -889,7 +904,8 @@ export async function lessonTurn(req, body, hooks = {}) {
       ? { reply: agentOut.say, guard: { caught: [], rewritten: false, replaced: false, agent: agentOut.notes }, filtered: false, floor: [] }
       : hit
       ? hit.result
-      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module }));
+      : await textReply({ instructions, state: next, kit, childText: said, trace, history: historyOf(next), verdict, ui: withStudioSlot(r.ui, studioSlot), module: boardAnswersAsk(r.move) ? null : next.module,
+        ...(clauseHook ? clauseHook(next) : {}) }));
     // The content filter blocked the reply call that carried the child's words: fail CLOSED. The turn is
     // re-planned as a disclosure (safeguard move, incident row) and the fixed helpline line is sent, with no
     // further model call on the same words.
