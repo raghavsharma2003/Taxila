@@ -406,7 +406,33 @@ const normQ = (t) => String(t ?? "").toLowerCase().replace(/…/g, " ").replace(
 // the text is split, then is put back)
 const sentencesOf = (t) => (String(t ?? "").replace(/\s+/g, " ").replace(/(\d)\.(\d)/g, "$1\u2024$2").match(/[^.!?।？]+[.!?।？]*/g) ?? [])
   .map((x) => x.replaceAll("\u2024", ".").trim()).filter(Boolean);
+/**
+ * TALKING-RULES §1.2 (docs/research/voice/v4): a short echo of the child's words with a rising tune at the START of
+ * a turn ("<their words>?", a disbelief echo) is spoken-register uptake, not a second question put to the child.
+ * Exempt: only the FIRST question sentence, beginning within the turn's first UPTAKE_LEAD_WORDS words, at most
+ * UPTAKE_MAX_WORDS words, with no question word and no imperative ending (bataiye / batao / socho …), and never
+ * the turn's last sentence. Without this, lastQuestionOnly / endOnAsk delete the echo that carries the reaction.
+ */
+export const UPTAKE_MAX_WORDS = 4;
+export const UPTAKE_LEAD_WORDS = 6;
+const WH = /(?:^|[^\p{L}])(?:kya|kaun|kaunsa|kaunsi|kitna|kitne|kitni|kaise|kyun|kyon|kyu|kab|kahan|kidhar|why|how|what|which|who|when|where|क्या|कौन|कौनसा|कितना|कितने|कितनी|कैसे|क्यों|कब|कहाँ|कहां)(?![\p{L}\p{M}])/iu;
+const IMPERATIVE_END = /(?:[a-z]{2,}(?:iye|iyega|ao|o)|[\p{Script=Devanagari}]+(?:िए|िये|ो|ाओ))$/iu;
+const wordsIn = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w));
+export const isUptakeQuestion = (x) => {
+  const t = String(x ?? "").trim();
+  if (!/[?？]\s*$/.test(t)) return false;
+  const w = wordsIn(t.replace(/[?？!.,।]+/g, " "));
+  return w.length > 0 && w.length <= UPTAKE_MAX_WORDS && !WH.test(t) && !IMPERATIVE_END.test(w.at(-1));
+};
 const isQuestion = (x) => /[?？]/.test(x);
+/** The index of the one exempt uptake echo in a turn's sentences, or -1. */
+const uptakeIndex = (ss) => {
+  const i = ss.findIndex(isQuestion);
+  if (i < 0 || i === ss.length - 1 || !isUptakeQuestion(ss[i])) return -1;
+  return wordsIn(ss.slice(0, i).join(" ")).length <= UPTAKE_LEAD_WORDS ? i : -1;
+};
+/** The turn's sentences that put a question to the child (the exempt uptake echo does not). */
+const askingIdx = (ss) => { const u = uptakeIndex(ss); return ss.map((x, i) => isQuestion(x) && i !== u); };
 
 /**
  * How a reply stands against the pinned question (UiDirectives.ask.text): does it END on that question (its last words
@@ -421,7 +447,7 @@ export function askParity(reply, ask) {
   // A card ask cut with "…" (askText: no sentence fits 120 characters) is a prefix of the question: contained is enough.
   const endsOnAsk = !a || (!!r && (/…\s*$/.test(String(ask)) ? r.includes(a) : r.endsWith(a)));
   const rest = a && r.includes(a) ? String(reply).split(new RegExp(escapeRe(String(ask).replace(/…$/, "").trim()), "i")).join(" ") : String(reply ?? "");
-  const others = sentencesOf(rest).filter(isQuestion).length;
+  const others = askingIdx(sentencesOf(rest)).filter(Boolean).length;
   const askIn = a && r.includes(a) ? 1 : 0;
   const finalQuestion = [...sentencesOf(reply)].reverse().find(isQuestion) ?? null;
   return { endsOnAsk, questions: others + askIn, finalQuestion };
@@ -435,7 +461,8 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
  */
 export function endOnAsk(reply, askFull) {
   const a = normQ(askFull);
-  const kept = sentencesOf(reply).filter((x) => !isQuestion(x) && !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
+  const ss = sentencesOf(reply), asking = askingIdx(ss);
+  const kept = ss.filter((x, i) => !asking[i] && !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
   return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();
 }
 
@@ -466,7 +493,7 @@ export function joinAsk(lead, askFull) {
 /** Keep only the LAST question of a turn with no pinned item (one question per turn). */
 export function lastQuestionOnly(reply, { keepContent = false } = {}) {
   const ss = sentencesOf(reply);
-  const qs = ss.map(isQuestion);
+  const qs = askingIdx(ss);
   let keep = qs.lastIndexOf(true);
   // round 3 (conversation; battery boredom-02, boredom-05: "…chalo tareeka badlein: game, picture, ya quick challenge? Kaunsa
   // chunogi?" was cut to "Kaunsa chunogi?", the offer gone): when the last question is a short tag after a question that

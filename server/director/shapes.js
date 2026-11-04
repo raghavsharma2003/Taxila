@@ -402,8 +402,8 @@ export const VERDICT_NOTE = {
   // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
   // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
   get not_yet() {
-    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
-      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
+    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step, curious and slower"
+      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step, curious and slower";
   },
   partial: "their answer was partly right: name the right part, no full agreement",
   unverified: "no verdict on their reply: neither praise nor 'wrong'",

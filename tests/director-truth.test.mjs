@@ -90,6 +90,13 @@ test("G-ASK parity predicates: ends-on-ask, one question, and the code repairs",
   assert.equal(fixed, "Achha. Socho. 13 ka square kitna hai?");
   assert.deepEqual(askParity(fixed, ask), { endsOnAsk: true, questions: 1, finalQuestion: "13 ka square kitna hai?" });
   assert.equal(lastQuestionOnly("Kya socha? Kaunsa bada hai?"), "Kaunsa bada hai?");
+  // TALKING-RULES §1.2: a turn-initial echo of the child's words is uptake, not a second question — kept, not counted
+  assert.equal(lastQuestionOnly("Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?"), "Cold drink? Phir toh saare paudhe burp karte! Paudhe kya peete hain?");
+  assert.equal(askParity("Arre! Pehli baar mein hi? Ab 13 ka square kitna hai?", ask).questions, 1);
+  assert.equal(endOnAsk("Arre! Pehli baar mein hi? Socho.", ask), "Arre! Pehli baar mein hi? Socho. 13 ka square kitna hai?");
+  // ... but never a real ask: a question word, an imperative, a second short question, or one deep in the turn
+  assert.equal(askParity("Kitna hua? 13 ka square kitna hai?", ask).questions, 2);
+  assert.equal(askParity("Achha, ek kaam karte hain, ab is wale ko dekhte hain. Pizza dekha? 13 ka square kitna hai?", ask).questions, 2);
   // an ask the card cut with "…" is a prefix of the full question
   assert.ok(askParity("Hmm. Ek bahut lambi baat, phir yeh poora sawaal hai?", "Ek bahut lambi baat…").endsOnAsk);
 });
