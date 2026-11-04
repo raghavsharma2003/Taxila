@@ -20,6 +20,8 @@ export const PLAY_ACTS = Object.freeze({
     // r7 games: make a kind of angle / match one (zone), a linear pair (pair), close a triangle (close)
     zone: { act: "turn", hi: "kon kholo", en: "open the angle" }, pair: { act: "turn", hi: "kon kholo", en: "open the angle" },
     close: { act: "turn", hi: "kon kholo ki triangle band ho", en: "open the angle so the triangle closes" } },
+  // r7 games: ITEM-ARENA (round 4 G1 revived): aim at a target, then fire
+  arena: { pick: { act: "aim", hi: "nishana lagao aur fire karo", en: "aim and fire" } },
 });
 
 /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */

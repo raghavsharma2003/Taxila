@@ -22,6 +22,7 @@ export const PLAY_VERSION = "play@1" as const;
 export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
+  "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -32,6 +33,7 @@ export const MODES = {
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  arena: ["pick"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -177,7 +179,12 @@ export type NazariyaAct =
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct;
+// ITEM-ARENA (round 4 G1)
+export type ArenaAct =
+  | { kind: "aim"; option: string }                     // point at a target (an option id)
+  | { kind: "fire" }                                    // the shot: graded against the verified key
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -328,6 +335,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
   kon: ["blueprint", "raat", "kagaz", "chalk"],
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
+  arena: ["raat", "blueprint", "kagaz", "chalk"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

@@ -174,7 +174,7 @@ export function PlayStage(props: PlayStageProps) {
     const make = viewFor(level.family, level.mode);
     if (!make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
     let view: FamilyView | null = null;
-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
+    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed, verb: props.verb ?? "fire" }); return view; },
       { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
     stageRef.current = stage; viewRef.current = view;
     changed();
@@ -304,7 +304,7 @@ export function PlayStage(props: PlayStageProps) {
         {groups.map(([g, cs]) => (
           <div key={g} className={`pl-row pl-row--${g}`} data-group={g}>
             {cs.map((c) => (
-              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled}
+              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled} aria-pressed={c.pressed === undefined ? undefined : c.pressed}
                 aria-label={c.aria ?? c.label} data-testid={`play-ctl-${c.id}`} onClick={() => { sound.unlock(); c.onPress(); changed(); }}>{c.label}</button>
             ))}
           </div>

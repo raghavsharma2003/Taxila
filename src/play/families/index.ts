@@ -8,6 +8,7 @@ import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
+import { arenaLogic } from "./arena/arena.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -32,5 +33,6 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nazariya/floor": asAny(floorLogic),
   "nazariya/powers": asAny(powersLogic),
   "nazariya/mirror": asAny(mirrorLogic),
+  "arena/pick": asAny(arenaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
