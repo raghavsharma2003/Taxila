@@ -1,5 +1,5 @@
 diff --git a/server/brain/turn.js b/server/brain/turn.js
-index 38a73572..ce17c4b5 100644
+index 38a73572..88151641 100644
 --- a/server/brain/turn.js
 +++ b/server/brain/turn.js
 @@ -509,6 +509,10 @@ export async function lessonTurn(req, body, hooks = {}) {
@@ -29,11 +29,11 @@ index 38a73572..ce17c4b5 100644
  export const boardAnswersAsk = (move) => !!(move?.request === "visual" && move.see && (move.see.subject || move.see.show === "number_line" || move.see.show === "picture"));
  export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
  
-+/** TurnRequest.gameAct, validated: what the client's play piece did with this utterance, or null. */
++/** TurnRequest.gameAct, validated: the play piece's grammar consumed these words (consumed: true), or null. */
 +export function gameActOf(body) {
 +  const g = body?.gameAct;
-+  if (!g || typeof g !== "object" || typeof g.verb !== "string" || typeof g.pressed !== "boolean") return null;
-+  return { verb: g.verb.slice(0, 16), pressed: g.pressed };
++  if (!g || typeof g !== "object" || g.consumed !== true) return null;
++  return { consumed: true, ...(typeof g.game === "string" ? { game: g.game.slice(0, 40) } : {}), ...(typeof g.act === "string" ? { act: g.act.slice(0, 24) } : {}) };
 +}
 +
 +/**
@@ -52,27 +52,9 @@ index 38a73572..ce17c4b5 100644
  /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
  export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);
  /** The promise's value if it settles within `ms` (0: only if already settled), else null. Never throws. */
-diff --git a/shared/contracts.ts b/shared/contracts.ts
-index 17c6a876..72a33618 100644
---- a/shared/contracts.ts
-+++ b/shared/contracts.ts
-@@ -209,6 +209,13 @@ export interface TurnRequest {
-    * planned for the child's last answer was never voiced, the cascade voices it on this turn.
-    */
-   laneResume?: boolean;
-+  /**
-+   * r7 Games (studio-game-utterance-double-turn): the play piece on screen took this utterance as a game command (its
-+   * closed voice grammar, src/play/core/voice.ts; acked synchronously on the PLAY_HEARD event, src/play/core/voiceSink.ts).
-+   * `pressed` false = a game command the piece could not take right now. Never an answer to the lesson card: the server
-+   * gives it no evidence and answers game-aware. Only ever subtracts grading, never safety: the words are still scanned.
-+   */
-+  gameAct?: { verb: string; pressed: boolean };
-   /**
-    * Round 4 (4A patch request 10): the realtime lane's reply was blocked by the content filter twice in a row (the reply and
-    * its one fresh retry). A hint that can only ADD safety: the server re-plans the turn as the safeguard, as it does for a
 diff --git a/tests/r7-brain-gameact.test.mjs b/tests/r7-brain-gameact.test.mjs
 new file mode 100644
-index 00000000..70659f03
+index 00000000..760f49dd
 --- /dev/null
 +++ b/tests/r7-brain-gameact.test.mjs
 @@ -0,0 +1,34 @@
@@ -87,7 +69,7 @@ index 00000000..70659f03
 +
 +describe("r7 brain: gameAct is never a card answer", () => {
 +  it("an acked game act becomes play_act / no_evidence even when the server thinks no piece is up", () => {
-+    const c = asPlayAct(CORRECT, { ...base, gameAct: { verb: "fraction", pressed: true } });
++    const c = asPlayAct(CORRECT, { ...base, gameAct: { consumed: true, game: "todo-jodo/strips", act: "fraction" } });
 +    assert.equal(c.outcome, "no_evidence");
 +    assert.equal(c.source, "play_act");
 +    assert.equal(c.request.type, "play_act");
@@ -99,14 +81,14 @@ index 00000000..70659f03
 +    assert.equal(asPlayAct(CORRECT, { ...base, gameAct: null }), CORRECT);
 +  });
 +  it("distress, help, a request, a chip, a module or predicate verdict are never rewritten", () => {
-+    const act = { verb: "number", pressed: true };
++    const act = { consumed: true, act: "number" };
 +    for (const cls of [{ ...CORRECT, flags: { distress: true } }, { ...CORRECT, help: "hint" }, { ...CORRECT, request: { type: "slower" } },
 +      { ...CORRECT, source: "module" }, { ...CORRECT, source: "predicate" }]) assert.equal(asPlayAct(cls, { ...base, gameAct: act }), cls);
 +    assert.equal(asPlayAct(CORRECT, { ...base, chipId: "c1", gameAct: act }), CORRECT);
 +    assert.equal(asPlayAct(CORRECT, { ...base, moduleOnly: true, gameAct: act }), CORRECT);
 +  });
 +  it("gameActOf validates the request body", () => {
-+    assert.deepEqual(gameActOf({ gameAct: { verb: "done", pressed: false } }), { verb: "done", pressed: false });
-+    for (const b of [{}, { gameAct: "x" }, { gameAct: { verb: "done" } }, null]) assert.equal(gameActOf(b), null);
++    assert.deepEqual(gameActOf({ gameAct: { consumed: true, game: "kon/zone", act: "done:held" } }), { consumed: true, game: "kon/zone", act: "done:held" });
++    for (const b of [{}, { gameAct: "x" }, { gameAct: { consumed: false, act: "done" } }, { gameAct: { act: "done" } }, null]) assert.equal(gameActOf(b), null);
 +  });
 +});

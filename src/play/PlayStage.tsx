@@ -250,7 +250,7 @@ export function PlayStage(props: PlayStageProps) {
       changed();
     }
     onEvent.current?.({ type: "voice", voice: { text: text.slice(0, 80), intent, pressed: took ? pressed : null } });
-    return intent ? { verb: intent.verb, pressed: took, text: text.slice(0, 80) } : null;
+    return intent ? { verb: intent.verb, pressed: took, text: text.slice(0, 80), game: `${level.family}/${level.mode}` } : null;
   };
   const actRef = useRef(actOn);
   actRef.current = actOn;

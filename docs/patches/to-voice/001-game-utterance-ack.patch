@@ -1,12 +1,12 @@
 diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
-index f3976e4b..99ea0801 100644
+index f3976e4b..ed090a98 100644
 --- a/src/lesson/runtime.ts
 +++ b/src/lesson/runtime.ts
 @@ -34,6 +34,7 @@ import { MINT_REFUSED, RATE_LIMITED, REALTIME_UNAVAILABLE } from "./realtime.ts"
  import { laneADeliveryEnabled, laneSwitchEnabled } from "./voiceFlags.ts";
  import { FaceProducer, faceCues, faceUiOf } from "../avatar/faceCues.ts";
  import { realtimeDeliveryLine } from "../../server/voice/expressive/compile/realtime.js";
-+import { gameActOf, type GameAct, type PlayHeardDetail } from "../play/core/voiceSink.ts";
++import { gameActOf, turnGameAct, type GameAct, type PlayHeardDetail } from "../play/core/voiceSink.ts";
  
  export type LessonPhase = "idle" | "starting" | "live" | "ending" | "ended" | "error";
  
@@ -43,7 +43,7 @@ index f3976e4b..99ea0801 100644
        if (input.typed) req.typed = true;
        if (input.voiceFeatures) req.voiceFeatures = input.voiceFeatures;
        if (input.duplex) req.duplex = input.duplex;
-+      if (input.gameAct) req.gameAct = { verb: input.gameAct.verb, pressed: input.gameAct.pressed };
++      if (input.gameAct) req.gameAct = turnGameAct(input.gameAct);
      }
      // A milestone call (no input) carries no teacher turn: those ride with the next child turn, whole.
      if (batch.events.length) req.moduleEvents = batch.events;

@@ -10,7 +10,7 @@ import type { VoiceIntent } from "./voice.ts";
 
 /** What the game did with one utterance. `pressed` false = a game command the stage could not take right now (no such
  *  control on screen, or a finger mid-drag); it is still a game act, never an answer to the lesson card. */
-export interface GameAct { verb: VoiceIntent["verb"]; pressed: boolean; text: string }
+export interface GameAct { verb: VoiceIntent["verb"]; pressed: boolean; text: string; game?: string }
 
 /** The PLAY_HEARD event detail. The runtime sets `text`; the play renderer sets `gameAct` when its grammar took it. */
 export interface PlayHeardDetail { text: string; gameAct?: GameAct }
@@ -35,5 +35,11 @@ export function probeVoice(text: string): GameAct | null {
 export function gameActOf(detail: unknown): GameAct | null {
   const g = (detail as { gameAct?: unknown } | null)?.gameAct as Partial<GameAct> | undefined;
   if (!g || typeof g.verb !== "string" || typeof g.pressed !== "boolean") return null;
-  return { verb: g.verb as GameAct["verb"], pressed: g.pressed, text: typeof g.text === "string" ? g.text.slice(0, 80) : "" };
+  return { verb: g.verb as GameAct["verb"], pressed: g.pressed, text: typeof g.text === "string" ? g.text.slice(0, 80) : "", ...(typeof g.game === "string" ? { game: g.game.slice(0, 40) } : {}) };
+}
+
+/** TurnRequest.gameAct (shared/contracts.ts, Brain): a parsed command is consumed by the game whether or not a control
+ *  could take it this instant; `act` is the grammar's verb, `game` the family/mode on screen. */
+export function turnGameAct(a: GameAct): { consumed: true; game?: string; act: string } {
+  return { consumed: true, act: a.pressed ? a.verb : `${a.verb}:held`, ...(a.game ? { game: a.game } : {}) };
 }
