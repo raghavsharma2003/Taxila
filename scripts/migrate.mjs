@@ -1,22 +1,78 @@
-// Apply db/migrations/*.sql in order, once each. Usage: node scripts/migrate.mjs (reads DATABASE_URL).
+// Apply db/migrations/*.sql in order, once each, each file in ONE transaction (round 7, platform-migrate-tooling; the logic
+// is scripts/migrate-core.mjs).
+//
+//   node scripts/migrate.mjs                 the TEST branch (TAXILA_DB=test semantics; the default)
+//   node scripts/migrate.mjs --dry-run       list what is pending, write nothing
+//   node scripts/migrate.mjs --prod --backup NAME | --no-backup
+//                                            production (DATABASE_URL_DIRECT, else DATABASE_URL). A Neon target gets a
+//                                            backup branch NAME first (NEON_API_KEY + NEON_PROJECT_ID); --no-backup says
+//                                            the caller took one (scripts/release.mjs) or accepts none, on the record
+//   node scripts/migrate.mjs --job [--prod]  a database reachable only inside the ACA VNet (Azure PG): runs the apply in a
+//                                            one-off ACA job (scripts/region/db-copy.mjs --apply-migrations); with
+//                                            --dry-run prints that job's plan only
+//
+// Driver: Neon hosts go over Neon's HTTP transaction API (the sandbox cannot reach 5432); any other host, or DB_DRIVER=pg,
+// uses the pg driver with server/db.js's TLS-enforcing pool config. Never prints a connection string.
+import { spawnSync } from "child_process";
 import { neon } from "@neondatabase/serverless";
-import { readdirSync, readFileSync } from "fs";
-import { join } from "path";
+import pg from "pg";
+import { ROOT, loadEnv } from "../infra/azure.mjs";
+import { pgPoolConfig } from "../server/db.js";
+import { migrate, migrationFiles, neonBackupBranch, resolveTarget } from "./migrate-core.mjs";
 
-const ROOT = new URL("..", import.meta.url).pathname;
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL not set");
-const sql = neon(url);
-await sql.query("create table if not exists schema_migrations (name text primary key, applied_at timestamptz not null default now())");
-const done = new Set((await sql.query("select name from schema_migrations")).map((r) => r.name));
-for (const f of readdirSync(join(ROOT, "db/migrations")).filter((f) => f.endsWith(".sql")).sort()) {
-  if (done.has(f)) continue;
-  const body = readFileSync(join(ROOT, "db/migrations", f), "utf8");
-  // neon HTTP runs one statement per call; split on ; at line end outside of $$ blocks (we don't use $$).
-  const stmts = body.split(/;\s*$/m).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
-  for (const s of stmts) await sql.query(s);
-  await sql.query("insert into schema_migrations(name) values ($1)", [f]);
-  console.log("applied", f, `(${stmts.length} statements)`);
+loadEnv();
+const argv = process.argv.slice(2);
+const flag = (f) => argv.includes(f);
+const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 ? argv[i + 1] : d; };
+const PROD = flag("--prod"), DRY = flag("--dry-run"), JOB = flag("--job");
+
+if (JOB) {
+  // the in-VNet path: the job reads schema_migrations and applies what is missing, inside the database's network
+  const args = ["scripts/region/db-copy.mjs", "--apply-migrations", ...(DRY ? ["--dry-run"] : []), ...(opt("--target") ? ["--target", opt("--target")] : []), ...(opt("--sha") ? ["--sha", opt("--sha")] : [])];
+  console.log(`migrate --job: node ${args.join(" ")}`);
+  const r = spawnSync(process.execPath, args, { cwd: ROOT, stdio: "inherit", env: process.env });
+  process.exit(r.status ?? 1);
 }
-const tables = await sql.query("select table_name from information_schema.tables where table_schema='public' order by 1");
-console.log("tables:", tables.map((t) => t.table_name).join(", "));
+
+let target;
+try { target = resolveTarget({ prod: PROD }); } catch (e) { console.error(`migrate: ${e.message}`); process.exit(2); }
+if (PROD && !DRY && !flag("--no-backup") && !opt("--backup")) {
+  console.error("--prod writes production: pass --backup NAME (a Neon backup branch is taken first) or --no-backup (one was taken by the caller)");
+  process.exit(2);
+}
+const neonHost = /\.neon\.tech$/.test(target.host) && process.env.DB_DRIVER !== "pg";
+console.log(`migrate: target ${target.label} (${target.host}), driver ${neonHost ? "neon-http" : "pg"}${DRY ? ", dry run" : ""}`);
+
+let client, end = async () => {}, connect = async () => {};
+if (neonHost) {
+  const sql = neon(target.url);
+  client = { query: (text, params = []) => sql.query(text, params), tx: (stmts) => sql.transaction(stmts.map((s) => sql.query(s.text, s.params ?? []))) };
+} else {
+  const c = new pg.Client(pgPoolConfig(target.url));
+  connect = () => c.connect();
+  end = () => c.end().catch(() => {});
+  client = {
+    query: async (text, params = []) => (await c.query(text, params)).rows,
+    tx: async (stmts) => {
+      await c.query("begin");
+      try { for (const s of stmts) await c.query(s.text, s.params ?? []); await c.query("commit"); }
+      catch (e) { await c.query("rollback").catch(() => {}); throw e; }
+    },
+  };
+}
+
+try {
+  await connect();
+  if (PROD && !DRY && opt("--backup")) {
+    if (!neonHost) throw new Error("--backup takes a Neon branch; for Azure PG take a server backup (portal / az) and pass --no-backup");
+    const { NEON_API_KEY, NEON_PROJECT_ID } = process.env;
+    if (!NEON_API_KEY || !NEON_PROJECT_ID) throw new Error("--backup needs NEON_API_KEY and NEON_PROJECT_ID");
+    const b = await neonBackupBranch({ apiKey: NEON_API_KEY, projectId: NEON_PROJECT_ID, host: target.host, name: opt("--backup") });
+    console.log(`backup branch ${b.name} (${b.branchId}) from ${b.parentId}`);
+  }
+  const r = await migrate({ client, files: migrationFiles(ROOT + "db/migrations"), dryRun: DRY, log: (s) => console.log(s) });
+  console.log(DRY ? `${r.pending.length} pending` : `${r.applied.length} applied, ${r.pending.length - r.applied.length} left`);
+} catch (e) {
+  console.error(`migrate failed: ${e.message}`);
+  process.exitCode = 1;
+} finally { await end(); }

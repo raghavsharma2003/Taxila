@@ -58,6 +58,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "relational_note",
   // r4-khand (play_build migration): the child's saved Khand builds, a gallery derived from solved levels — history, deleted on M0
   "play_build",
+  // 036_placement.sql (round 7 F item 6): placement rounds (items asked, graded answers, the result) — academic record, deleted on M0
+  "placement",
 ]);
 
 /**
@@ -72,6 +74,7 @@ export const KEPT_TABLES = Object.freeze({
   child_seq: "event counter only (no content)",
   child_controls: "parent-entered controls",
   child_routine: "parent-entered routine",
+  child_timetable: "the school timetable by weekday (034, round 7): parent-entered, or the intake's plain subject list",
   conductor_usage: "minutes used against the parent cap",
   job: "operational queue (cancel-or-run)",
   wakeup: "scheduler rows",

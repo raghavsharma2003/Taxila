@@ -4931,3 +4931,25 @@ Seven read-only pillar readers (workflow wf_f8ed24e3-497, 9 agents) mapped 180 p
 - Plus an 8-stream pipeline and a completeness critique.
 
 In short: a child can tap and talk through one graded maths lesson. That is far from the OWNER-RESET bar.
+
+
+<!-- merged from inbox/r7-games.json -->
+## ms-r7-games-khand-3d-cert
+- **What:** play-cert.js --only nazariya with Khand registered (mitti/barf/jungle themes, both bands).
+- **Result:** 96 of 96 3D samples pass at p360, p412 and l1366; 21 new 3d cells; no existing cell changed. 2D cells: 580 of 608 samples pass at every size (p360 580, p412 604, l1366 604).
+- **Not measured:** a real mid-range Android phone (owner check). (2026-11-04)
+
+
+<!-- merged from inbox/r7-studio.json -->
+## ms-r7-studio-v2-servable (2026-11-04, n = 1,142 catalogue rows)
+
+Under D8, from the existing per-class certificates: p412 1,007, l1366 1,071, p360 1,062 (as the board twin). Before: 0. Per-device visual sign-off by the owner is still pending.
+
+## ms-r7-board-first-coverage (2026-11-04, n = 250 class 4-7 topics)
+
+The board-first rung already picks a board before her line on 98% of first explain moves and 88.8% of subject-less picture asks (the maths misses are kit boards that are text, not a drawing). What remains is live: a picked board refused against her real line. GET /api/studio/timing now counts those outcomes per replica.
+
+
+## ms-r7-migrate-tooling-local-2026-11-04 (2026-11-04, round 7)
+
+Migrate tooling on a throwaway local PostgreSQL 16 (TLS on, verify-full with a self-signed CA; no Neon, no Azure): migrate.mjs (pg driver) --dry-run 30 pending, apply 30 applied, rerun 0 applied; db-copy.sh MODE=apply 30 applied each in one psql -1 transaction, rerun 0, missingMigrations empty; a planted 999_bad.sql (create table, then 1/0) failed at 'apply 999_bad.sql (rolled back)' with the table absent and no schema_migrations row. Refusals exit 2 with one line: TAXILA_DB=prod without --prod, --prod with TAXILA_DB=test, --prod without --backup/--no-backup. Unit tests: tests/migrate-tooling.test.mjs (10, no DB). Not yet run live: --dry-run on the stream's Neon branch (HTTP transaction path), the Neon backup-branch API, the ACA job apply (MIGRATIONS_TGZ ~35 KB as a container env var).

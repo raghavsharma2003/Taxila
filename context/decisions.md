@@ -6480,3 +6480,133 @@ Twelve reversible decisions that start round 7. Full text: docs/design/round7/PI
 - Personalisation persists.
 - Classes 4-7 first.
 - Salvage branches by path.
+
+
+## Round 7 main-loop decisions, by id (2026-11-04; full text in docs/design/round7/PIPELINE.md §D)
+
+### dc-r7-hybrid-brain
+
+one teacher brain, hybrid. The strong LLM plans, chooses and words moves with tools; code keeps the invariants as tools/post-checks (verified grading, level-calibrated item offer, Later list, stop protocol, parent limits, screen truth, frozen safety floor). A Claude-judged side-by-side at end of week 1 (about 12 lessons per lane) picks the default lane; the losing paths are then deleted. Why: owner 2026-10-14 (AGENT.md); 128-lesson gate (agent better on coherence/follows/adapts/human, worse on read accuracy and 6.0 vs 3.4 s turn p50). Reverse: the side-by-side favours the Director, or the agent lane cannot reach about 3.5 s p50.
+
+### dc-r7-handsfree-default
+
+hands-free D5 duplex is the default for every child; tap stays a visible fallback. Why: OWNER-RESET #10/#16; no real users yet, so the per-hour cost is test-only. Reverse: owner says otherwise, or the cost per child-hour at launch is unacceptable.
+
+### dc-r7-age-bands
+
+age bands classes 1-3 young, 4-6 preteen, 7-9 teen; class 4 moves to the older look. Brain owns the one band table (shared/learner.ts BANDS, shared/bands.ts); every other copy derives from it. Why: OWNER-RESET #1 (class 4 looked babyish). Reverse: the owner prefers class 4 in the young look.
+
+### dc-r7-turn-length
+
+explanation and worked-example turns may run 40-50 words for classes 5-9 when the board carries the detail. Why: 18-25-word caps make explanations thin (gap map brain-explanation-plans). Reverse: the owner or a Claude-judged review finds the turns too long to listen to.
+
+### dc-r7-stop-limits
+
+stop and limits. Add 'wrap up in 2' and a real timed break (mic paused, resume in place). 'Stop for today' ends the lesson. At a parent limit mid-lesson she finishes the current question, then wraps. No parent control stays inert: each is wired or hidden. Why: OWNER-RESET #7, #11. Reverse: the owner prefers another behaviour.
+
+### dc-r7-session-first-default
+
+session-first start is the default for everyone, with a Start-only Home. Daily subject comes from the parent timetable, then the child's intake, then Conductor rotation. Why: one-subject-forever today, plus the owner's 'just start'. Reverse: the owner prefers a chooser.
+
+### dc-r7-stage-first-shell
+
+stage-first lesson shell (content is the hero, face as PiP, steer chips, Later tray). Supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP'). App writes the 360/412/1280 geometry; Studio applies it to box-contract.json. Why: OWNER-RESET #12 (presentation). Reverse: the owner's review prefers the Desk layout.
+
+### dc-r7-studio-v2-serving
+
+Studio v2 is served wherever certified (412-px phones, laptops); the board twin stays on 360 px until the portrait relayout. Amends dc-r4c-studio-v2-off-child-path. Why: 41 engines and 385 authored topics never reach children. Reverse: a certified piece renders badly on a real device.
+
+### dc-r7-games-revive
+
+revive ITEM-ARENA and Khand MEASURE. The first wave-3 real-time engine is E6 Yantra (science physics). Timed or fast mechanics only on secure skills. Why: build-first replaces the 2026-10-10 stop; OWNER-RESET #3. Reverse: the owner picks another engine.
+
+### dc-r7-personalisation-persist
+
+'how this child learns' (format/representation responsiveness, interests, pace) persists across lessons. Consent handling is part of the later compliance pass. Why: build-first. Reverse: the compliance pass requires a different consent step.
+
+### dc-r7-scope
+
+depth first for CBSE classes 4-7 (Studio, games, kits); classes 1-3 and 8-9 keep working. Parked: RBSE, Hindi-medium, the explore tier, teacher choice, child-named teacher. Why: OWNER-RESET target band 9-13. Reverse: the owner widens scope.
+
+### dc-r7-no-branch-merges
+
+do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.
+
+
+
+<!-- merged from inbox/r7-brain.json -->
+## dc-r7-brain-contracts (2026-11-04, stream A Brain)
+
+The round-7 seams everyone codes against are in shared/contracts.ts: the steer row (SteerId, 16 ids, each the request its words would make), the Later list as the screen shows it (LaterEntryUi), the conversational moment (UiMoment), TurnRequest.gameAct (game-consumed words are never graded), TurnRequest.heardUpTo on any lane, and ReplyClauseEvent for the streamed, clause-guarded reply. steer:wrap2 is read but waits for its move (A9). Test: tests/r7-brain-contracts.test.mjs.
+
+
+<!-- merged from inbox/r7-games.json -->
+## dc-r7-games-gameact-sync-ack
+**The mounted play stage registers a synchronous sink (src/play/core/voiceSink.ts). The PLAY_HEARD listener writes the grammar's ack on the event detail, which runtime.ts reads as soon as dispatchEvent returns, and sends TurnRequest.gameAct { consumed, game, act }. turn.js applies asPlayAct to the OUTER cls before both lanes.** (2026-11-04)
+- Found: the round-3 guard rewrote only planTurn's local cls, so on the agent lane '1/3' said to a game was still read as "correct".
+- Every utterance is still sent: scanSafety and the distress read run on it. Only grading the card stops.
+- Reversal: if the lesson turn ever stops being sent for game acts, safety must move to the client path first.
+
+## dc-r7-games-new-law-modes
+**Week-1 coverage comes from law families whose act IS the idea, never from quizzes.**
+- kon zone/kind: make an angle of a kind from a tilted base.
+- kon zone/match: equal a long-armed reference angle.
+- kon pair/linear: protractor on B only, ∠AOC stated.
+- kon close/tri and close/iso: open ∠B until the triangle closes.
+- nishana hop: integer +, −, × as hops from a start on the line.
+- stambh bars/picto: bars built from falling crates, one crate per scale step; pictographs with a key and half icons.
+
+Mal-rules map to verified kit slugs only. Class 4-7 maths topics with a law game went from 44 to 59 (2026-11-04). Recordings: docs/design/round7/games/w1.
+
+## dc-r7-games-arena-net
+**ITEM-ARENA, applied by path from the parked d1ad46078 patches, serves only after every law family: a law game keeps every skill it admits. The play server attaches data/arena items to the request; the client never loads the bank. Evidence counts as form recognise + controllerEasy.** (2026-11-04)
+- Coverage: 210 of 304 maths topics in classes 1-9; 0 English, Hindi or SST, because their kit items are open answers.
+- Reversal: the owner rules that it is a quiz in costume (open-r7-games-arena-is-mcq).
+
+
+<!-- merged from inbox/r7-learning.json -->
+## dc-r7-limits-family-optin
+Round 7 stream F, 2026-11-04. dc-r7 D5 says every parent control is wired or hidden. The daily limit and lesson hours were inert for everyone (TAXILA_DAY_LIMITS off, dc-r14). Now each family opts in (child_controls.limits_on, 035, default off); the env still forces all on or all off. server/routes/child.js limitsOnFor(controls) feeds homeStateOf and plan.limits; Brain's lesson start passes plan.limits to startRefusal (docs/patches/to-brain/002), whose default stays TAXILA_DAY_LIMITS=on. Reversal: owner wants limits on by default.
+
+## dc-r7-report-channel-hidden
+The WhatsApp choice promised a delivery nothing performs. Hidden in Consent and Controls until reportChannels() lists it (TAXILA_REPORT_WHATSAPP=on, set by Platform with the Notifier).
+
+## dc-r7-subject-rotation
+Plain Start taught maths every day (SUBJECT_ORDER first subject). rotation.js ranks subjects; nextTopicForPlan walks the ranking. New table child_timetable (034). Parent API: GET /api/parent/school, GET /api/parent/chapters, POST /api/parent/school-chapter, POST /api/parent/timetable; Conductor events school.pointer_set and school.timetable_set (re-plan only).
+
+## dc-r7-learner-view-export
+Brain reads θ, weak and minutes-left from server/learner/view.js (pure functions plus learnerViewOf).
+
+
+<!-- merged from inbox/r7-studio.json -->
+## dc-r7-studio-no-build-state — no build state on the child's screen (2026-11-04)
+
+OWNER-RESET: the child never sees 'Asha is making this', skeletons or veils. The stage shows only finished pieces. While the next one is made, the last finished piece stays up, inert, or the calm ground does.
+
+## dc-r7-studio-v2-device-class-serving — serve Studio v2 where certified (2026-11-04)
+
+Round 4 kept Studio v2 off the child path unless a piece was playable and certified at all three sizes. No piece was, so the authored explainers and games never reached a child. Round 7 decision D8 serves a piece wherever it is certified at the device's own class. On the 360 phone it is served as its board twin until the portrait relayout (C1 item 13). This amends dc-r4c-studio-v2-off-child-path.
+
+
+<!-- merged from inbox/r7-voice.json -->
+## dc-r7-voice-handsfree-everyone — hands-free is every child's default, the cohort only an override (2026-11-04)
+
+The duplex switch no longer gates on the owner cohort. With TAXILA_DUPLEX unset/on, `/api/duplex/config` answers `{duplex:"on", lane:"d5"}` for every request when Voice Live is configured, `{duplex:"on"}` (D4) otherwise or when `TAXILA_DUPLEX_LANE=d4`. There is no sign-in lookup on that path. `shadow` stays as a staging/incident mode where the cohort still turns hands-free on for its guardians. `off` wins over everything. `authorizeD5` opens the Voice Live stream for any consented child whose answer is on + d5. On the client, an unreadable switch now runs hands-free on D4, never shadow or tap. The invisible fallback order stays D5 → D4 → push-to-talk → typed, and tap-to-talk stays a visible choice (App patch 001: prefs default `talk: "open"`, no headset-only rule).
+
+Needs a live check: production env `TAXILA_DUPLEX` is `shadow` today. Hands-free reaches children only after main/Platform sets it to `on` (or unset) on the deploy, with Voice Live configured.
+
+Reversal: if live owner-phone lessons on D5 show the hands-free floor doing worse than tap for a measured share of children, set `TAXILA_DUPLEX=shadow` (cohort-only again). No code change is needed.
+
+## dc-r7-voice-first-line-held-mic — hands-free on the screen from the first frame, mic held until the engine is live (2026-11-04)
+
+The microphone is requested beside the lesson start, so the permission prompt and device open overlap the server's opening line. The dock shows the hands-free state `starting` at once, instead of a tap button that later flips. The link itself stays on push-to-talk until the duplex engine is live. Opening it earlier would hand turn-taking to the server VAD while her opening line plays on a loudspeaker, the echo path the engine exists to gate. Mute uses the same hold, so a muted child is never read as silent. App renders this through patch 002 (useDesk). Reversal: if live lessons show children answering the opening line before the engine is up and losing those words, open the D5 ear first and let the engine adopt what it heard.
+
+
+## dc-r7-face-one-fallback-own-still (2026-11-04, round 7)
+
+Asha's only fallback is her own look's rest still, under every look (r8 included): PuppetFace has no TutorFace path (phases poster/live/held), LessonFace reaches TutorFace only for a non-puppet tutor or the voice-only presentation, and the FaceSlot adapter is always installed (puppet off on the device → her still, not the in-house Plate2D). Evidence: docs/design/round7/face/r7-face-fallback-sheet.png (int/r6 showed a different vector face on puppet-off, no WebGL2, kill switch and pack failure; r7-face shows her still on all five paths). Supersedes holdsOwnStill (lamp1/lamp2 only). Reverse only if a look ships without rest stills (tests/r7-face-fallback.test.mjs blocks that).
+
+
+## dc-r7-migrate-test-default-file-tx (2026-11-04, round 7)
+
+scripts/migrate.mjs targets the TEST branch by default (server/db.js dbUrl with TAXILA_DB=test: CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL, never a fallback to production); production only with --prod on the command line (TAXILA_DB=prod alone and --prod with TAXILA_DB=test are refused), plus --backup NAME (a Neon backup branch of the target's branch first) or --no-backup on the record. Each migration FILE runs in ONE transaction together with its schema_migrations row (Neon HTTP transaction, or pg begin/commit when DB_DRIVER=pg or the host is not Neon), so a failure leaves the file unapplied and unrecorded; statements are split with string / quoted-name / $tag$ / comment awareness (scripts/migrate-core.mjs splitSql, identical output to the old splitter on all 30 shipped files). --dry-run lists what is pending and writes nothing. --job applies inside the ACA VNet through scripts/region/db-copy.mjs --apply-migrations (psql -1 per file + its row; the sha's migrations ride as a git-archive env var). Reverse if a migration needs a non-transactional statement (create index concurrently): then that file gets an explicit opt-out marker, not a return to statement-by-statement.

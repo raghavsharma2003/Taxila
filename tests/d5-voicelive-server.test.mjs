@@ -11,7 +11,7 @@ import {
   VoiceLiveRelay, voiceLiveConfig, voiceLiveUrl, voiceLiveSession, toClientEvent, fromClientText,
   D5_FRAME_BYTES, D5_FRAMES_PER_APPEND, D5_SILENCE_MAX_MS, D5_SILENCE_MIN_MS,
 } from "../server/duplex/voicelive.js";
-import { cohortLane, modeFor } from "../server/duplex/config.js";
+import { cohortLane, duplexLane, modeFor } from "../server/duplex/config.js";
 import { authorizeD5, handleD5Upgrade, allowD5, D5_OPENS_PER_MINUTE } from "../server/duplex/d5route.js";
 
 const ENV = { AZURE_AI_CENTRALINDIA_ENDPOINT: "https://vl.example.cognitiveservices.azure.com/", AZURE_AI_CENTRALINDIA_KEY: "sekrit-key-123" };
@@ -201,18 +201,28 @@ test("voicelive relay: upstream close / the session cap end both sides once, wit
 
 // ───────────────────────────── config.js: the cohort's lane ─────────────────────────────
 
-test("config: the cohort gets lane d5 only when asked for AND Voice Live is configured; nobody else ever does", async () => {
-  assert.equal(cohortLane({}), "d4");
-  assert.equal(cohortLane({ TAXILA_DUPLEX_LANE: "d5" }), "d4", "no Voice Live config → D4");
-  assert.equal(cohortLane({ TAXILA_DUPLEX_LANE: "d5", ...ENV }), "d5");
+test("config (round 7, D2): every child is hands-free on lane d5 when Voice Live is configured; the cohort is only the shadow-mode override; the kill switch wins", async () => {
+  assert.equal(duplexLane({}), "d4", "no Voice Live config → D4");
+  assert.equal(duplexLane({ ...ENV }), "d5", "Voice Live configured → D5, no opt-in needed");
+  assert.equal(duplexLane({ TAXILA_DUPLEX_LANE: "d4", ...ENV }), "d4", "the env can pin D4");
+  assert.equal(cohortLane({ ...ENV }), "d5", "the old name is the same rule");
+  const anyone = { headers: { cookie: "tx_session=abc" } };
+  // global on (unset): every child, signed in or not, no lookup at all
+  let looked = 0;
+  const lookup = async () => { looked++; return { email: "someone@else.com" }; };
+  assert.deepEqual(await modeFor(anyone, { env: { ...ENV }, lookup }), { duplex: "on", lane: "d5" });
+  assert.deepEqual(await modeFor({ headers: {} }, { env: { ...ENV }, lookup }), { duplex: "on", lane: "d5" });
+  assert.deepEqual(await modeFor(anyone, { env: { TAXILA_DUPLEX: "on", TAXILA_DUPLEX_LANE: "d4", ...ENV }, lookup }), { duplex: "on" });
+  assert.deepEqual(await modeFor(anyone, { env: {}, lookup }), { duplex: "on" }, "no Voice Live: hands-free on D4");
+  assert.equal(looked, 0, "the cohort is never looked up while the global mode is on");
+  // shadow (staging / incident): the cohort override still turns hands-free on for its guardians
   const owner = { email: "Owner@Example.com" };
-  const env = { TAXILA_DUPLEX: "shadow", TAXILA_DUPLEX_LIVE_FOR: sha("owner@example.com"), TAXILA_DUPLEX_LANE: "d5", ...ENV };
-  const req = { headers: { cookie: "tx_session=abc" } };
-  assert.deepEqual(await modeFor(req, { env, lookup: async () => owner }), { duplex: "on", cohort: "owner", lane: "d5" });
-  assert.deepEqual(await modeFor(req, { env: { ...env, TAXILA_DUPLEX_LANE: "" }, lookup: async () => owner }), { duplex: "on", cohort: "owner" });
-  assert.deepEqual(await modeFor(req, { env, lookup: async () => ({ email: "someone@else.com" }) }), { duplex: "shadow" });
-  assert.deepEqual(await modeFor({ headers: {} }, { env, lookup: async () => owner }), { duplex: "shadow" });
-  assert.deepEqual(await modeFor(req, { env: { ...env, TAXILA_DUPLEX: "off" }, lookup: async () => owner }), { duplex: "off" }, "the kill switch wins");
+  const env = { TAXILA_DUPLEX: "shadow", TAXILA_DUPLEX_LIVE_FOR: sha("owner@example.com"), ...ENV };
+  assert.deepEqual(await modeFor(anyone, { env, lookup: async () => owner }), { duplex: "on", lane: "d5", cohort: "owner" });
+  assert.deepEqual(await modeFor(anyone, { env, lookup: async () => ({ email: "someone@else.com" }) }), { duplex: "shadow" });
+  // the kill switch wins over everything
+  assert.deepEqual(await modeFor(anyone, { env: { ...env, TAXILA_DUPLEX: "off" }, lookup: async () => owner }), { duplex: "off" });
+  assert.deepEqual(await modeFor(anyone, { env: { TAXILA_DUPLEX: "off", ...ENV }, lookup }), { duplex: "off" });
 });
 
 // ───────────────────────────── d5route.js ─────────────────────────────
@@ -228,7 +238,7 @@ const deps = (over = {}) => ({
 });
 const status = (p) => p.then(() => 200, (e) => e.status);
 
-test("d5route: the stt-token gates plus the cohort lane", async () => {
+test("d5route: the stt-token gates plus the lane (round 7, D2: no cohort gate)", async () => {
   const req = upgradeReq();
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps() })), 200);
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ env: {} }) })), 503);
@@ -236,7 +246,12 @@ test("d5route: the stt-token gates plus the cohort lane", async () => {
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ lookupLesson: async () => null }) })), 404);
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ lookupLesson: async () => ({ id: LESSON, child_id: "c1", ended_at: new Date() }) }) })), 409);
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ consent: async () => false }) })), 403);
-  assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ mode: async () => ({ duplex: "on", cohort: "owner" }) }) })), 403);
+  assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ mode: async () => ({ duplex: "on", cohort: "owner" }) }) })), 403, "no d5 lane (pinned d4)");
+  // every consented child on lane d5, no cohort
+  assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ mode: async () => ({ duplex: "on", lane: "d5" }) }) })), 200);
+  // the kill switch / a shadow answer never opens the stream
+  assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ mode: async () => ({ duplex: "off" }) }) })), 403);
+  assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ mode: async () => ({ duplex: "shadow", lane: "d5" }) }) })), 403);
   const unauth = Object.assign(new Error("not signed in"), { status: 401 });
   assert.equal(await status(authorizeD5(req, { lessonId: LESSON, ...deps({ child: async () => { throw unauth; } }) })), 401);
 });

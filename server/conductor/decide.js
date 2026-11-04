@@ -301,6 +301,10 @@ const HANDLERS = {
     s.school.testWindows = [...s.school.testWindows.filter((x) => !(x.subject === w.subject && x.to === w.to)), w];
     H.replanSoon("test_window");
   },
+  // round 7 F: the school's position and timetable live in their own tables (child.school_chapter, child_timetable);
+  // the planner reads them through the school.subjects view key, so a change only asks for a re-plan.
+  "school.pointer_set"(s, ev, H) { H.replanSoon("school_pointer"); },
+  "school.timetable_set"(s, ev, H) { H.replanSoon("timetable"); },
   "clock.wakeup"(s, ev, H, t) {
     switch (ev.reason) {
       case "day_start": H.replanNow("day_start"); break;                  // skipped inside replan if inputsHash is unchanged

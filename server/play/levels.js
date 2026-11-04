@@ -43,11 +43,20 @@ export function entryByKey(key, cov = coverage()) { return cov.entries.find((e) 
 /** Is there a play game for this skill? (the Director's admission check, patched in by docs/design/round3/play/patches) */
 export const hasPlay = (skillId, cov = coverage()) => !playOff() && cov.entries.some((e) => e.skillIds.includes(skillId));
 
+/** ITEM-ARENA (r7 revival): data/arena/<bank>.json, built from verified kit items by tools/build-arena.mjs, loaded once per file. */
+const BANKS = new Map();
+export function arenaItems(bank, topicId) {
+  if (!/^c\d-[a-z]+$/.test(String(bank))) return [];
+  if (!BANKS.has(bank)) { try { BANKS.set(bank, JSON.parse(readFileSync(join(ROOT, "data/arena", `${bank}.json`), "utf8")).challenges ?? []); } catch { BANKS.set(bank, []); } }
+  return BANKS.get(bank).filter((c) => c.topicId === topicId);
+}
+/** The arena's challenges ride the request (grammar.items); the client never loads the bank. */
+const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) } : entry.grammar);
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {
   return {
     family: entry.family, mode: entry.mode, topicId: entry.topicId, skillId: s.skillId ?? entry.skillId, classLevel: s.classLevel, fade: s.fade,
-    goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: entry.grammar, recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
+    goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: grammarOf(entry), recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
     ...(typeof s.pL === "number" ? { pL: s.pL } : {}),
     ...(s.focus ? { focus: s.focus } : {}),
   };

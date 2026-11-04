@@ -23460,6 +23460,143 @@
    "at": "2026-11-04",
    "title": "Round 7: do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.",
    "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-brain-contracts",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 contracts (Brain owns shared/contracts.ts): UiDirectives.steer (SteerChip[], SteerId union of 16 ids), UiDirectives.later (LaterEntryUi: id, text ≤ 60, learning, status open/due/returned, when after_question/at_end), UiDirectives.moment (UiMoment: park/detour/decline/stop_check/returned, laterId, topic), TurnRequest.gameAct ({consumed, game, act}: words a game grammar consumed are never graded), TurnRequest.heardUpTo (any lane; duplex.heardUpTo read second), ReplyClauseEvent (one guarded clause of a streamed reply, never withdrawn once sent). A steer tap is the request its words make (server/director/steer.js); steer:wrap2 is read but has no move until PIPELINE A9. Reversal: if App or Voice need a different shape, Brain changes the contract and messages every stream the sha.",
+   "source": "inbox/r7-brain.json"
+  },
+  {
+   "id": "dc-r7-face-one-fallback-own-still",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Asha's only fallback is her own look's rest still, under every look (r8 included): PuppetFace has no TutorFace path (phases poster/live/held), LessonFace reaches TutorFace only for a non-puppet tutor or the voice-only presentation, and the FaceSlot adapter is always installed (puppet off on the device → her still, not the in-house Plate2D). Evidence: docs/design/round7/face/r7-face-fallback-sheet.png (int/r6 showed a different vector face on puppet-off, no WebGL2, kill switch and pack failure; r7-face shows her still on all five paths). Supersedes holdsOwnStill (lamp1/lamp2 only). Reverse only if a look ships without rest stills (tests/r7-face-fallback.test.mjs blocks that).",
+   "source": "inbox/r7-face.json"
+  },
+  {
+   "id": "dc-r7-games-gameact-sync-ack",
+   "kind": "decision",
+   "title": "A game command is acked synchronously on the PLAY_HEARD detail and sent as TurnRequest.gameAct; the server gives it no card evidence on both lanes (asPlayAct before the agent verdict)",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-games-new-law-modes",
+   "kind": "decision",
+   "title": "Week-1 coverage by real mechanics: kon zone/pair/close, nishana hop, new family stambh (bars, picto); class 4-7 maths topics with a law game 44 → 59",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-games-arena-net",
+   "kind": "decision",
+   "title": "ITEM-ARENA revived as the broad net after every law family (bank rebuilt from today's kits, 2,922 challenges); evidence as recognition; maths only",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "ms-r7-games-khand-3d-cert",
+   "kind": "measurement",
+   "title": "Khand 3D: 96/96 3D samples pass at p360/p412/l1366 (21 new cells), play-cert --only nazariya",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "open-r7-games-arena-is-mcq",
+   "kind": "decision",
+   "title": "Open: ITEM-ARENA is 'aim at one of 4 options' over kit items, close to OWNER-RESET #3's 'not a game'; covers no English/Hindi/SST; owner/main to decide whether children see it",
+   "at": "2026-11-04",
+   "source": "inbox/r7-games.json"
+  },
+  {
+   "id": "dc-r7-limits-family-optin",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the daily limit, lesson hours and 'done for today' are the family's own opt-in (child_controls.limits_on, migration 035, off by default). TAXILA_DAY_LIMITS=on|off forces every child on or off; unset leaves it to each family. Controls shows the limit and hours only once the parent turns them on, so nothing on the screen is inert. Supersedes dc-r14-no-clock-gates's global off, by its own reversal condition (an opt-in parent control, off by default, never blocking the owner's test family). Reverse if: the owner wants limits on by default for real families.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-report-channel-hidden",
+   "kind": "decision",
+   "title": "Round 7 F (dc-r7 D5): the 'WhatsApp / only in the app' report-channel choice is hidden in set-up and Controls until a second channel really sends (GET /api/parent/controls reportChannels; TAXILA_REPORT_WHATSAPP=on once Platform's Notifier delivers). New rows default to 'app'. Reverse if: the Notifier ships WhatsApp delivery (then set the flag; the row reappears).",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-subject-rotation",
+   "kind": "decision",
+   "title": "Round 7 F item 1: the day's subject is ranked by server/conductor/rotation.js (the parent's school timetable for the weekday, else the intake's; a test window inside the timetable, or alone with no timetable; subjects with due reviews; then least-recently-taught, never-taught first; a subject already taught today goes last). reports/truth.js nextTopicForPlan (home, lesson start, parent 'next lesson') tries the ranked subjects in turn; the planner writes slot.subject from the same ranking (view key school.subjects). Kill switch TAXILA_ROTATION=off; TAXILA_ROTATION_SUBJECTS narrows the set. Reverse if: owner wants a single-subject day (set the env) or the Conductor day plan (item 9) takes over the choice.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-learner-view-export",
+   "kind": "decision",
+   "title": "Round 7 F item 4: server/learner/view.js is the one learner read Brain consumes at a lesson start: strand θ (kt ability epoch, value only after 2 scored observations), the weak flag (topic or prerequisite skill with n>=3 and pL<0.4, or θ more than 1 GE under the class start) and minutesLeft (null when the family's limits are off; else min(cap left, hours left) with a deadlineAt for the mid-lesson wrap). learnerViewOf(child, {topicId, ledger, kit}) never throws.",
+   "at": "2026-11-04",
+   "source": "inbox/r7-learning.json"
+  },
+  {
+   "id": "dc-r7-migrate-test-default-file-tx",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "scripts/migrate.mjs targets the TEST branch by default (server/db.js dbUrl with TAXILA_DB=test: CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL, never a fallback to production); production only with --prod on the command line (TAXILA_DB=prod alone and --prod with TAXILA_DB=test are refused), plus --backup NAME (a Neon backup branch of the target's branch first) or --no-backup on the record. Each migration FILE runs in ONE transaction together with its schema_migrations row (Neon HTTP transaction, or pg begin/commit when DB_DRIVER=pg or the host is not Neon), so a failure leaves the file unapplied and unrecorded; statements are split with string / quoted-name / $tag$ / comment awareness (scripts/migrate-core.mjs splitSql, identical output to the old splitter on all 30 shipped files). --dry-run lists what is pending and writes nothing. --job applies inside the ACA VNet through scripts/region/db-copy.mjs --apply-migrations (psql -1 per file + its row; the sha's migrations ride as a git-archive env var). Reverse if a migration needs a non-transactional statement (create index concurrently): then that file gets an explicit opt-out marker, not a return to statement-by-statement.",
+   "source": "inbox/r7-platform.json"
+  },
+  {
+   "id": "ms-r7-migrate-tooling-local-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Migrate tooling on a throwaway local PostgreSQL 16 (TLS on, verify-full with a self-signed CA; no Neon, no Azure): migrate.mjs (pg driver) --dry-run 30 pending, apply 30 applied, rerun 0 applied; db-copy.sh MODE=apply 30 applied each in one psql -1 transaction, rerun 0, missingMigrations empty; a planted 999_bad.sql (create table, then 1/0) failed at 'apply 999_bad.sql (rolled back)' with the table absent and no schema_migrations row. Refusals exit 2 with one line: TAXILA_DB=prod without --prod, --prod with TAXILA_DB=test, --prod without --backup/--no-backup. Unit tests: tests/migrate-tooling.test.mjs (10, no DB). Not yet run live: --dry-run on the stream's Neon branch (HTTP transaction path), the Neon backup-branch API, the ACA job apply (MIGRATIONS_TGZ ~35 KB as a container env var).",
+   "source": "inbox/r7-platform.json"
+  },
+  {
+   "id": "dc-r7-studio-no-build-state",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The child never sees a piece being made (171d1db6). StudioStage has no 'making' phase: no '{T} is making this' chip, no pencil skeleton of the unfinished piece, no streamed-partial veil, no sparkle. While a slot is planning / building / ready, the stage keeps the last finished piece (inert) or the calm ground. Reversal: if the owner wants a visible 'coming' cue, it is a calm one-line cue in her words, never on the stage.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "dc-r7-studio-v2-device-class-serving",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 D8 amends dc-r4c-studio-v2-off-child-path: a Studio v2 piece is served wherever its certificate passes AT THE DEVICE'S CLASS (p412, l1366). On the 360 phone, where its 1000-unit world is too small to play, it is served as its board twin, or not at all (tray-gate.js certifyForTray, cert 'catalogue-twin'). Reversal: per-device owner sign-off finds a certified class unusable; that class goes back to off (serveByViewport false) without code.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "ms-r7-studio-v2-servable",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 1142,
+   "method": "server/forge3/certs/catalogue.json topic x piece rows, serveByViewport per class (the existing certification, not re-rendered)",
+   "title": "Studio v2 cells servable under D8: p412 1007, l1366 1071, p360 1062 (board twin only when the piece carries one); 1 row serves nowhere. Under the round-4 rule (playable at all three sizes) it was 0.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "ms-r7-board-first-coverage",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 250,
+   "method": "evals/studio-timing/board-first-coverage*.mjs: classes 4-7 maths/science/evs kits, the Director's first explain move (and a 'picture dikhao' request), whiteboardIntentOf + board-first preselect with the p412 tray certification; code only, no model call",
+   "title": "Board-first preselects a board BEFORE her line on 245/250 first explain moves (98%); on a subject-less picture ask 222/250 (88.8%; maths 119/141, science 63/69, evs 40/40). The ask misses are kit boards that are not drawings for a picture ask (they fall to the live ladder). Live misses are the real-line re-gate, read now from GET /api/studio/timing.",
+   "source": "inbox/r7-studio.json"
+  },
+  {
+   "id": "dc-r7-voice-handsfree-everyone",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B1 (voice-handsfree-default, D2). server/duplex/config.js: with the global mode on (unset/1/on), every /api/duplex/config answer is {duplex:on}, plus lane d5 whenever Voice Live is configured (duplexLane; TAXILA_DUPLEX_LANE=d4 pins D4). No cohort lookup runs. The cohort (TAXILA_DUPLEX_LIVE_FOR) is now only the override while the global mode is shadow. The kill switch TAXILA_DUPLEX=off still wins. d5route authorizeD5 drops the cohort gate and needs only duplex on + lane d5. Client flags.ts: an unreadable or missing switch runs hands-free on lane D4 (no definite answer never asks for D5), not shadow. App patch docs/patches/to-app/001-handsfree-default.patch: prefs.talk defaults to open (hands-free), Me shows the talk choice to every child with no headset rule, tap-to-talk stays the child's choice. Tests: tests/r7-voice-handsfree.test.mjs; the old cohort-only expectations in d5-voicelive-server and p1-duplex-live were updated. Needs a live check: owner phone lesson on a build with TAXILA_DUPLEX=on (production is shadow today, a deploy setting for main/Platform) and Voice Live configured. Reverse if the live owner-phone lessons on D5 show the hands-free floor worse than tap for a measured share of children (e.g. echo-made turns or cut-offs above the round-7 bar); then return to cohort-only by setting TAXILA_DUPLEX=shadow, no code change.",
+   "source": "inbox/r7-voice.json"
+  },
+  {
+   "id": "dc-r7-voice-first-line-held-mic",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B2 (voice-handsfree-from-first-line). The runtime asks for the microphone beside POST /api/lesson/start, inside the start tap, and hands it to the cascade link. The bridge knows at the first frame whether hands-free is expected (flags.duplexExpected: a device key, else a settled server answer, else on). The dock renders hands-free from that first frame (handsFreeDock: starting until the engine is live). The LINK stays on push-to-talk, with the mic held, until the engine itself is live: hands-free on the screen does not mean hands-free on the wire, so her opening line on a loudspeaker can never come back as a child turn through today's server-VAD path before the engine's gates run. The mute (runtime.setMuted) holds push-to-talk underneath for the same reason: the engine never reads a muted child as silence. Reverse the held mic if live lessons show children answering her opening line before the engine is live (the words are lost): then open the D5 ear before the engine and let the engine adopt what it heard.",
+   "source": "inbox/r7-voice.json"
   }
  ],
  "edges": [
@@ -37237,6 +37374,46 @@
    "src": "dc-r7-hybrid-brain",
    "rel": "constrains",
    "dst": "dc-owner-2026-10-27-build-first"
+  },
+  {
+   "src": "dc-r7-games-gameact-sync-ack",
+   "rel": "supersedes",
+   "dst": "open-r3adv-game-command-graded"
+  },
+  {
+   "src": "ms-r7-games-khand-3d-cert",
+   "rel": "part_of",
+   "dst": "dc-r7-games-new-law-modes"
+  },
+  {
+   "src": "open-r7-games-arena-is-mcq",
+   "rel": "constrains",
+   "dst": "dc-r7-games-arena-net"
+  },
+  {
+   "src": "dc-r7-limits-family-optin",
+   "rel": "supersedes",
+   "dst": "dc-r14-no-clock-gates"
+  },
+  {
+   "src": "dc-r7-migrate-test-default-file-tx",
+   "rel": "measured_by",
+   "dst": "ms-r7-migrate-tooling-local-2026-11-04"
+  },
+  {
+   "src": "dc-r7-studio-v2-device-class-serving",
+   "rel": "measured_by",
+   "dst": "ms-r7-studio-v2-servable"
+  },
+  {
+   "src": "dc-r7-voice-handsfree-everyone",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-first-line-held-mic",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
   }
  ]
 }

@@ -76,10 +76,27 @@ export async function gateEvidence(sha) {
     if (s.pass === false && !s.dirty) return null;
   }
   try {
-    const out = spawnSync("gh", ["api", `repos/${REPO}/commits/${sha}/check-runs`, "--jq", '.check_runs[] | select(.name=="gates") | .conclusion'], { encoding: "utf8", timeout: 30_000 });
-    if (out.status === 0 && out.stdout.split("\n").includes("success")) return "GitHub Actions gates: success";
+    const out = spawnSync("gh", ["api", `repos/${REPO}/commits/${sha}/check-runs?per_page=100`, "--jq", '.check_runs[] | [.name, (.conclusion // "pending")] | @tsv'], { encoding: "utf8", timeout: 30_000 });
+    if (out.status === 0) return ciVerdict(out.stdout.split("\n").filter(Boolean).map((l) => { const [name, conclusion] = l.split("\t"); return { name, conclusion }; }));
   } catch { /* no gh: local stamp only */ }
   return null;
+}
+
+/**
+ * CI evidence from a sha's check runs (PURE; round 7 platform-gate-speed). The aggregate `gates` job must have
+ * succeeded AND every gate job it stands for (`build`, each `test (<group> <i/N>)` shard) too: a re-run of the
+ * aggregate alone, or a shard that failed on one attempt and was never re-run green, is not evidence. Shas from before
+ * the matrix carry only `gates` and are judged on it.
+ * @param {{ name: string, conclusion: string }[]} runs @returns {string|null}
+ */
+export function ciVerdict(runs) {
+  const green = new Map();   // job name → did any attempt succeed (a failed shard re-run green counts; a re-run of `gates` alone cannot make a red shard green)
+  for (const r of runs) green.set(r.name, green.get(r.name) === true || r.conclusion === "success");
+  if (green.get("gates") !== true) return null;
+  const parts = [...green].filter(([n]) => n === "build" || /^test \(/.test(n));
+  if (parts.some(([, ok]) => !ok)) return null;
+  const shards = parts.filter(([n]) => n !== "build").length;
+  return shards ? `GitHub Actions gates: success (build + ${shards} test shards)` : "GitHub Actions gates: success";
 }
 
 /**
