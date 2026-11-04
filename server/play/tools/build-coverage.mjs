@@ -67,7 +67,11 @@ export function build() {
       skillId: skillIds[0], skillIds, grammar: r.grammar, misMap, ...(r.arts ? { arts: r.arts } : {}) });
   }
   const inScope = [...cur.values()].filter((t) => /-(maths|science|evs)-/.test(t.id));
-  const covered = new Set(entries.map((e) => e.topicId));
+  // r7 (main 2026-11-04): ITEM-ARENA is a last-resort net and never counts as game coverage; its arena-only topics are
+  // the law-family backlog (arenaOnly below)
+  const NET_FAMILIES = new Set(["arena"]);
+  const covered = new Set(entries.filter((e) => !NET_FAMILIES.has(e.family)).map((e) => e.topicId));
+  const netOnly = [...new Set(entries.filter((e) => NET_FAMILIES.has(e.family) && !covered.has(e.topicId)).map((e) => e.topicId))].sort();
   const by = (pred) => inScope.filter(pred);
   const counts = {
     topicsInScope: inScope.length,
@@ -80,6 +84,8 @@ export function build() {
     topicsAll: cur.size,
     topicsCoveredAll: [...cur.keys()].filter((id) => covered.has(id)).length,
     bySubjectAll: Object.fromEntries([...new Set([...cur.values()].map((t) => t.subject))].sort().map((s) => [s, { topics: [...cur.values()].filter((t) => t.subject === s).length, covered: [...cur.values()].filter((t) => t.subject === s && covered.has(t.id)).length }])),
+    arenaOnly: netOnly.length,
+    arenaOnlyClass4to7: netOnly.filter((id) => /^c[4-7]-/.test(id)).length,
     byFamily: Object.fromEntries(FAMILY_RULES.map((m) => m.family).map((f) => [f, new Set(entries.filter((e) => e.family === f).map((e) => e.topicId)).size])),
   };
   // GRAMMAR.md §10: `skills` (skill id → its admitted game; the topic's FIRST rule wins) and `excluded` (topic id → why)
@@ -88,7 +94,7 @@ export function build() {
   for (const e of entries) for (const sk of e.skillIds) if (!skills[sk]) skills[sk] = { topicId: e.topicId, family: e.family, mode: e.mode, goal: e.goal, grammar: e.grammar, misMap: e.misMap, ...(e.arts ? { arts: e.arts } : {}), contexts: [], why: `RULES ${e.topicId} ${e.family}/${e.mode}/${e.goal} · ACTS` };
   counts.skillsAdmitted = Object.keys(skills).length;
   counts.rulesNotAdmitted = notAdmitted.length;
-  return { problems, file: { v: 1, note: "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand", counts, skills, excluded, entries, notAdmitted } };
+  return { problems, file: { v: 1, note: "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)", counts, skills, excluded, arenaOnly: netOnly, entries, notAdmitted } };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
