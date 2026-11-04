@@ -20,7 +20,7 @@ export const WAKE_REASONS = ["day_start", "night", "replan", "debounce_flush", "
   "care_note_expiry", "safety_settle", "safety_escalate", "resume_window_end", "pause_end", "dormancy_check", "household", "reassign"];
 const SafetyCategory = z.enum(["self_harm", "abuse", "neglect", "violence_at_home", "sexual_content", "bullying", "medical", "other"]);
 /** Parent settings the Conductor folds at M0 (parent_setting / child_controls is the source of truth). */
-export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz"];
+export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz", "sharedPhone"];
 
 /** An IANA zone the runtime knows ('Asia/Kolkata'); Intl throws a RangeError on anything else. */
 const Tz = z.string().regex(/^[A-Za-z][A-Za-z0-9_+\-]*(\/[A-Za-z0-9_+\-]+){0,2}$/, "tz: IANA zone").max(64).refine((tz) => {
@@ -35,6 +35,8 @@ export const SETTING_VALUE = {
   hoursStart: HHMM, hoursEnd: HHMM, bedtime: HHMM, schoolStart: HHMM, schoolEnd: HHMM, wakeTime: HHMM,
   restDays: z.array(z.number().int().min(0).max(6)).max(7),
   tz: Tz,
+  // round 7 F (household v1): the parent says these children share one phone for lessons (conductor/household.js)
+  sharedPhone: z.boolean(),
 };
 
 const OutcomeDigest = z.strictObject({

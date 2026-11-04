@@ -9,7 +9,7 @@ import { explainerFor } from "../server/forge/explainer/lesson.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { gateWhiteboard } from "../server/studio/qa/whiteboard.js";
-import { pipZoneFor } from "../src/studio/pipZone.ts";
+import { readPipZone, intoStage } from "../src/studio/pipZone.ts";
 
 test("cells are computed: a times table and a linear rule's values; units, proof steps and 'a table FOR x' are not rules", () => {
   const t7 = tableCall({ items: [{ hints: ["Say the 7 times table."] }] });
@@ -35,11 +35,13 @@ test("c9 linear patterns: the explain rung draws the computed table and it passe
   assert.equal(expand({ template: "table@1", head: ["x", "y"], rows: [["1", "a very long cell"]] }).ok, false, "a cell too long fails, never squeezed");
 });
 
-test("the PiP zone: inside the slot on a phone (portrait or turned), none on a desk (even a short tray)", () => {
-  assert.equal(pipZoneFor({ w: 396, h: 623 }, { w: 412, h: 915 }), 103 + 8);
-  assert.equal(pipZoneFor({ w: 344, h: 508 }, { w: 360, h: 800 }), 89 + 8);
-  assert.equal(pipZoneFor({ w: 760, h: 300 }, { w: 800, h: 360 }), 84 + 8, "a phone turned on its side");
-  assert.equal(pipZoneFor({ w: 850, h: 656 }, { w: 1280, h: 800 }), 0, "the wide grid: her tile is beside the slot");
-  assert.equal(pipZoneFor({ w: 752, h: 408 }, { w: 1366, h: 768 }), 0, "a desk's short tray has no PiP in it");
-  assert.equal(pipZoneFor({ w: 396, h: 623 }, null), 0, "no window (server): nothing reserved");
+test("the PiP zone is read LIVE from App's slot: its box while it shows, nothing when it is 'none' or absent", () => {
+  const slot = (zone, vars = {}) => ({ getAttribute: (n) => (n === "data-pip-zone" ? zone : null), style: { getPropertyValue: (n) => vars[n] ?? "" } });
+  const on = slot("bottom-right", { "--pip-zone-w": "103px", "--pip-zone-h": "103px", "--pip-zone-right": "8px", "--pip-zone-bottom": "8px" });
+  assert.deepEqual(readPipZone(on, { w: 396, h: 623 }), { x: 396 - 8 - 103, y: 623 - 8 - 103, w: 103, h: 103 });
+  assert.equal(readPipZone(slot("none"), { w: 396, h: 623 }), null, "her face holds the stage / a wide screen / keyboard up");
+  assert.equal(readPipZone(null, { w: 396, h: 623 }), null, "no slot element: nothing reserved");
+  assert.equal(readPipZone(slot("bottom-right", { "--pip-zone-w": "103px" }), { w: 396, h: 623 }), null, "a half-written zone is ignored");
+  // into the stage's own coordinates (the stage sits 4 px right and 10 px down inside the slot)
+  assert.deepEqual(intoStage({ x: 285, y: 512, w: 103, h: 103 }, { left: 8, top: 52 }, { left: 12, top: 62 }), { x: 281, y: 502, w: 103, h: 103 });
 });

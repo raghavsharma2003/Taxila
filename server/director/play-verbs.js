@@ -42,6 +42,11 @@ export const PLAY_ACTS = Object.freeze({
   kila: { multiples: { act: "place", hi: "burj ya jaal lagao aur lehar chalao", en: "set the towers or nets and run the wave" },
     factors: { act: "build", hi: "burj banao aur lehar chalao", en: "build the towers and run the wave" },
     lcm: { act: "place", hi: "jaal rakho aur lehar chalao", en: "set the trap and run the wave" } },
+  // r7 games: Naksha (maps and grids): send the drone to a lat / long, program a route, measure with the scale, copy a shape
+  naksha: { locate: { act: "place", hi: "drone ko us jagah le jao aur giraao", en: "fly the drone to the spot and drop" },
+    route: { act: "build", hi: "raasta banao aur chalao", en: "plan the route and run it" },
+    scale: { act: "set", hi: "scale se naapo aur truck chalao", en: "measure with the scale and drive the truck" },
+    shape: { act: "build", hi: "naksha jaisi baad lagao", en: "fence it like the plan" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
