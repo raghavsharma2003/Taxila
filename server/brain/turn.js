@@ -86,6 +86,7 @@ async function askedBoard(ack, asked) {
 import { comprehensionRead } from "../director/read.js";
 import { agentTurn, eventOf, applyAgentTurn, specWasteOf } from "../agent/agent.js";
 import { keepPromise, laterUi } from "../director/later.js";
+import { agentBreach, noteAgentTurn, resetAgentRuns } from "../agent/invariants.js";
 import { supersedable, editMissed, restoredState, liveWithout, supersedeStmts, undoStmt, orphanCacheStmts, trackedForUndo, editUndoOn } from "./supersede.js";
 import { childTurnRow, clientInstructions, debugFor, floorIncidentStmt, incidentStmt, kitFor, laneOf, runTurnTx, stageTurns, turnInsertStmt, turnLane, withAsk, withSeamUi, withStudioSlot } from "./rows.js";
 import { traceIdentify, traceLesson } from "../trace/context.js";
@@ -583,11 +584,17 @@ export async function lessonTurn(req, body, hooks = {}) {
       agentApplied = applyAgentTurn(agentNext, agentOut, { kit, childText, cls, card, lessonId: lesson.id });
       // round 7 (judgement #3): the agent never ends a lesson the Director did not end: the end goes through the stop check-in,
       // so the Director's move and line take this turn
-      if (agentApplied.end && !dirR.end) {
-        agentFallback = "agent_end_without_checkin";
+      // round 7 (judgement #8, #9): the agent's line keeps the class level and comes back from a diversion (agent/invariants.js);
+      // a line that breaks one is not sent, the Director takes this turn and the runs restart
+      const invCtx = { classLevel: child.class_level ?? state.ctx?.classLevel, kitText: (kit.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " "), phase: state.phase, cardOnTable: !!card,
+        agent: state.agent ?? {}, cls };
+      const breach = agentApplied.end && !dirR.end ? "agent_end_without_checkin" : agentBreach(agentOut, invCtx);
+      if (breach) {
+        agentFallback = breach;
         agentOut = null; agentApplied = null;
-        next.agent = { ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 };
+        next.agent = resetAgentRuns({ ...(next.agent ?? state.agent ?? {}), fallbacks: ((next.agent ?? state.agent)?.fallbacks ?? 0) + 1 });
       } else {
+        agentNext.agent = noteAgentTurn(agentNext.agent, agentOut, invCtx);
         next = agentNext;
         r = { ...r, move: agentApplied.move, ui: agentApplied.ui, moduleCommands: [], state: next, end: agentApplied.end, hold: false };
         mark("agent");

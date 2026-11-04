@@ -271,7 +271,8 @@ const ASK_TRUTH = {
   game: {
     // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she offers what exists, never narrates what does not
     engine: "they asked for a game: the activity already on the screen is the way to try it now; in one line, what to do in it (never call it a game; never say a game is not ready)",
-    none: "they asked for a game: a quick spoken game on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available)",
+    // round 7 (main's hybrid-pilot judgement #11: "Game ne 3 ko pehli side maana" with no game on the screen)
+    none: "they asked for a game: a quick spoken game between you two on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available; nothing is on the screen, so never say the game did, showed or counted anything)",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
@@ -510,6 +511,9 @@ export const adultVoice = () => "a grown-up is speaking: greet them briefly and 
 // round 7 (main's hybrid-pilot judgement #4: "8" to a perimeter-or-area question got "tumhara answer mujhe clearly sunai nahi
 // diya"): words that were heard and do not fit the question are never met with a hearing claim; she says what they said and
 // asks which it is
+// round 7 (main's hybrid-pilot judgement #10: "picture puzzle, cricket story, ya speed game" offered, "haan", then plain practice):
+// a yes to an offered choice is answered by asking which one, never by dropping the offer
+export const whichOne = ({ choices = [] } = {}) => `they said yes without picking one: ask which one they want, naming the choices again in a few words${choices.length ? ` (${choices.map((c) => clean(c, 30)).join(", ")})` : ""}; nothing else this turn`;
 export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); say back what they said in a few words, then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */

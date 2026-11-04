@@ -141,3 +141,56 @@ test("#7 (steady t5-t7): hint, then 'ek aur example do', then 'theek hai' keeps 
   assert.equal(r.ui.ask?.itemId, card);
   assert.match(r.move.shape, /this same question again/);
 });
+
+test("#8 (agent, steady t6-t10): the agent's remediation stays at class level: counting on, a bare tiny sum, or a third card-less practice turn is the Director's", async () => {
+  const { agentBreach, noteAgentTurn } = await import("../server/agent/invariants.js");
+  const c6 = { classLevel: 6, kitText: "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain.", phase: "practice", cardOnTable: true };
+  assert.equal(agentBreach({ say: "Chalo, paanch se chhe kadam aage gino, kitna hua?" }, c6), "level_count_on");
+  assert.equal(agentBreach({ say: "Cricket mein 5 + 2 runs kitne hue?" }, c6), "level_tiny_sum");
+  assert.equal(agentBreach({ say: "Teenon sides jodo: 5 + 6 + 9, kitna hua?" }, c6), null, "the kit's own sum is fine");
+  assert.equal(agentBreach({ say: "Paanch se chhe kadam aage gino." }, { ...c6, classLevel: 2 }), null, "classes 1-3 may count on");
+  let a = {};
+  for (let i = 0; i < 2; i++) a = noteAgentTurn(a, { say: "x" }, { phase: "practice", cardOnTable: false });
+  assert.equal(agentBreach({ say: "Ek aur socho." }, { ...c6, cardOnTable: false, agent: a }), "level_no_card");
+});
+
+test("#9 (agent, offtopic t2-t7): at most one engaged off-lesson turn, and never 'maths abhi side mein'", async () => {
+  const { agentBreach, noteAgentTurn } = await import("../server/agent/invariants.js");
+  const off = { ...NE, request: { type: "change_topic", whole: true } };
+  assert.equal(agentBreach({ say: "Theek hai, Maths abhi side mein rakhte hain, cricket ki baat karte hain!" }, { classLevel: 6, cls: NE }), "diversion_set_aside");
+  let a = noteAgentTurn({}, { say: "Cricket mein tumhara favourite kaun hai?" }, { cls: off });
+  assert.equal(a.offRun, 1);
+  assert.equal(agentBreach({ say: "Aur batao, kaunsi team pasand hai?" }, { classLevel: 6, cls: off, agent: a }), "diversion_no_return");
+  assert.equal(agentBreach({ say: "Mast! Ab wapas perimeter pe." , item: { id: "x" } }, { classLevel: 6, cls: off, agent: a }), null, "a card back is the return");
+});
+
+test("#10 (offtopic t7): a yes to an offered choice asks which one, never plain practice", () => {
+  process.env.TAXILA_R7_PARK_TOPIC = "off"; // the ways-in offer (the boredom offer takes the same chips)
+  try {
+    let r = start();
+    for (let i = 0; i < 2; i++) r = turn(r, "haan");
+    // (the pilot's note read "ye bahut boring hai" as boredom: the offer of picture / story / game)
+    r = turn(r, "ye bahut boring hai", { ...NE, source: "note", request: { type: "boredom", whole: true, src: "note" } });
+    const chips = (r.ui.chips ?? []).filter((c) => /^req:/.test(c.id));
+    assert.ok(chips.length, `the ways were offered: ${r.move.kind} ${JSON.stringify(r.ui.chips)}`);
+    const yes = turn(r, "haan");
+    assert.match(yes.move.shape, /they said yes without picking one: ask which one/);
+    assert.deepEqual(yes.ui.chips.map((c) => c.id), r.ui.chips.map((c) => c.id));
+  } finally { delete process.env.TAXILA_R7_PARK_TOPIC; }
+});
+
+test("#11 (offtopic t5-t6): with no game on the screen, she never says the game did anything", async () => {
+  const { gameActs, withoutGameActs, textReply, replyDeps } = await import("../server/brain/say.js");
+  const { chat } = await import("../server/azure.js");
+  assert.equal(gameActs("Riya, Game ne 3 ko pehli side maana."), true);
+  assert.equal(gameActs("Game rule: har side ek baar gino; pehli side ka number bolo."), false, "a spoken game's rule is fine");
+  assert.equal(withoutGameActs("Riya, Game ne 3 ko pehli side maana. Ab doosri side bolo."), "Ab doosri side bolo.");
+  let r = start();
+  for (let i = 0; i < 2; i++) r = turn(r, "haan");
+  r = turn(r, "game khelna hai", withReq("game khelna hai"));
+  try {
+    replyDeps.chat = async () => ({ text: "Riya, Game ne 3 ko pehli side maana. Ab agli side ka number bolo, kitna hai?" });
+    const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text", playOn: null, module: null }, kit: RANI, childText: "3", verdict: "ungraded", history: [], ui: r.ui, module: null });
+    assert.equal(gameActs(out.reply), false, out.reply);
+  } finally { replyDeps.chat = chat; }
+});

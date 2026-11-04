@@ -1852,6 +1852,13 @@ function decide(s, input, item) {
   const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
     ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
   const req = chipReq ?? cls?.request ?? null;
+  // round 7 (judgement #10): a yes to the choices she just offered (the ways-in chips on the screen) asks which one; naming one is
+  // its request (requests.js), the chip is its request (chipReq above)
+  const offered = (s.lastUi?.chips ?? []).filter((c) => /^req:(visual|story|game)$/.test(c.id));
+  if (!req && offered.length && !chipId && /^(?:(?:haan|han|ha|haa|ok|okay|theek\s+hai|thik\s+hai|achha|acha|yes|yeah|sure|chalo|ji)[\s,.!]*)+$/i.test(String(input.text ?? "").trim())
+    && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))) {
+    return plan("repair", SH.whichOne({ choices: offered.map((c) => c.label) }), { chips: s.lastUi.chips, request: "which_one" });
+  }
   // release 13 (A): the subject the child named ("aloo"), kept a few turns so a later "Show me a picture" chip is answered
   // honestly about IT (owner lesson a95d2ff1 turns 18-24)
   if (p5Flag("R4CONV") && req && !req.chapter && ["topic", "switch", "change_topic", "visual"].includes(req.type)) {
