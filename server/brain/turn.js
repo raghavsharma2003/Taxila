@@ -1064,7 +1064,7 @@ export async function lessonTurn(req, body, hooks = {}) {
         // with nothing to point at): on a turn answering the CHILD's ask the turn waits a moment for the board being drawn, so
         // it rides THIS response, drawn before her line refers to it (a slow line plan still lands on the stream, as before)
         const ack2 = await askedBoard(ack, !!ask.payload?.requested && r.move?.request === "visual");
-        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) };
+        studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) };
         wbAcked = true;
         next.wbBeat = kernel.beat?.id;
         // The live board IS the explanation surface: the Director's template rung (explainer@1) is not mounted beside it
@@ -1293,7 +1293,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: line } }), requested: true,
           ...(turnStudioNow()?.retire ? { replaces: String(turnStudioNow().retire) } : {}) })
         : null), null);
-      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}) }; wbAcked = true; moment = null; }
+      if (ack?.slotId && ack?.intentId) { const ack2 = await askedBoard(ack, r.move?.request === "visual"); studioSlot = { slotId: String(ack2.slotId), intentId: String(ack2.intentId), state: ack2.state ?? "planning", ...(ack2.artifact ? { artifact: ack2.artifact } : {}), ...(Number.isFinite(ack2.etaMs) && !ack2.artifact ? { etaMs: ack2.etaMs } : {}) }; wbAcked = true; moment = null; }
     }
   }
   // A late answer (the page-hide beacon already closed the lesson) that was a disclosure still gets the fixed

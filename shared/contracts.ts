@@ -171,7 +171,8 @@ export interface UiDirectives {
    * The Later list as the child's screen shows it (PIPELINE A6 brain-later-list-visible): every parked question or share
    * of THIS lesson, open ones first. A tap on an open entry sends `chipId = "later:<id>"` (the child asks for it now).
    * `text` is the parked topic (≤ 60 characters, server-written; never the child's off-task words beyond the topic).
-   * Absent = unchanged since the last turn; [] = empty.
+   * Sent on every turn that has entries to show: open and due ones, and a returned one for 2 turns after it came back.
+   * Absent = nothing to show (clear the list). It is never "unchanged since the last turn" (round 7, E App 2026-11-04).
    */
   later?: LaterEntryUi[];
   /**
