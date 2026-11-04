@@ -24,6 +24,12 @@ import { newLearnerState } from "../server/comprehension/fuse.js";
 import { DEPLOY } from "../server/azure.js";
 import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
+// round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
+// on screen each turn"): the pure parts of turn.js's visual path
+import { whiteboardIntentOf } from "../server/brain/propose.js";
+import { preselect } from "../server/stagecraft/board-first.js";
+import { entryFor } from "../server/play/levels.js";
+import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
 
 const { planTurn } = __test;
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
@@ -155,8 +161,32 @@ async function lesson(lane, kit, classLevel, lines) {
         else { an.agent = noteAgentTurn(an.agent, out, inv); next = an; move = a.move.kind; ui = a.ui; reply = out.say; }
       } else fellBack = out?.error ?? "no line";
     }
+    // S4: what a picture / game request would put on the screen this turn (turn.js: the board pick, the play admission), and
+    // her shape made true about it, as production does (boardTruthShape, askTruth); the screen is recorded on the row
+    let screen = null, instructions = p.instructions;
+    if (lane === "director" && p.r.move?.request === "visual") {
+      const visual = String(p.r.move.visual ?? "diagram");
+      let shape = String(next.lastMove?.shape ?? "");
+      if (visual === "game") {
+        const e = entryFor({ skillId: next.lastMove?.skillId ?? null, topicId: kit.topicId });
+        screen = e ? { kind: "game", game: `${e.family}/${e.mode}`, goal: e.goal ?? null } : { kind: "none", why: "no game for this skill" };
+        shape = askTruth(shape, "game", e ? "engine" : "none");
+      } else {
+        const item = next.activeItemId ? findItem(next, kit, next.activeItemId) : null;
+        const ask = whiteboardIntentOf({ lessonId: LESSON.id, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        const pick = preselect(ask, { kit });
+        if (pick) {
+          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null };
+          if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
+          if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
+        } else screen = { kind: "none", why: "no board for this ask" };
+        if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
+      }
+      next = { ...next, lastMove: { ...next.lastMove, shape } };
+      instructions = instructionsFor(next, kit);
+    }
     if (reply == null) {
-      const [t, ms] = await timed(() => textReply({ instructions: p.instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null }));
+      const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
@@ -164,7 +194,7 @@ async function lesson(lane, kit, classLevel, lines) {
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
     }
     // replyReadyMs: from the child's words to her whole line ready (the classifier, then her line): what first sound waits on
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     if (p.r.end) break;
   }
@@ -173,7 +203,7 @@ async function lesson(lane, kit, classLevel, lines) {
 
 const md = (name, topic, A, B) => {
   const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
-    : `**Asha** [${r.move}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}`).join("\n\n");
+    : `**Asha** [${r.move}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 
