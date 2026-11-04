@@ -12,6 +12,36 @@ import { VoiceLiveRelay, voiceLiveConfig, d5AsrModel } from "./voicelive.js";
 import { lessonPhrases } from "./phrases.js";
 import { d5Session } from "../cost/meter.js";
 
+// ───── round 7 (Platform 002, the India D5 relay taxila-d5-sin): a cross-host relay has no session cookie and no same
+// origin, so taxila-web authorizes exactly as the upgrade does (authorizeD5) and mints a single-use, 60 s, one-lesson HMAC
+// ticket (server/relay-ticket.js, Platform's); the relay (TAXILA_ROLE=d5relay) verifies it with no database. No relay URL
+// set → { url: null } and the client keeps today's same-origin socket (also the rollback: unset TAXILA_D5_RELAY_URL).
+/** Platform's ticket module, loaded on first use (injectable for tests). */
+const ticketLib = () => import("../relay-ticket.js");
+/** Tickets this relay process has already accepted (verifyRelayTicket bounds it). */
+const seenTickets = new Set();
+
+/** POST /api/duplex/ticket { lessonId } → { url, ticket } | { url: null }. */
+export async function d5Ticket(req, body, { env = process.env, authorize = {}, lib = ticketLib } = {}) {
+  const lessonId = String(body?.lessonId ?? "");
+  const relay = String(env.TAXILA_D5_RELAY_URL ?? "").trim();
+  const who = await authorizeD5(req, { lessonId, env, ...authorize });
+  if (!relay) return { url: null };
+  const { mintRelayTicket } = await lib();
+  const ticket = mintRelayTicket({ lessonId, childId: String(who.child.id), guardianId: String(who.guardian.id), mode: "on" }, { env });
+  return { url: relay.replace(/\/+$/, ""), ticket };
+}
+
+/** The relay's own authorization: the ticket for this lesson, or null with the reason (never a database). */
+export async function relayWho(req, { env = process.env, lib = ticketLib, seen = seenTickets } = {}) {
+  const q = new URL(req.url ?? "/", "http://x").searchParams;
+  const lessonId = q.get("lessonId") ?? "";
+  const { verifyRelayTicket } = await lib();
+  const v = verifyRelayTicket(q.get("ticket") ?? "", { lessonId, env, seen });
+  if (!v.ok) return { who: null, reason: v.reason };
+  return { who: { guardian: { id: v.guardianId }, child: { id: v.childId }, lesson: { id: v.lessonId, state: null } }, reason: null };
+}
+
 /** How long the phrase list may wait on the kit before the stream opens without its answers (names + core only). */
 export const D5_PHRASES_MS = 300;
 
@@ -66,23 +96,32 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   const env = deps.env ?? process.env;
   const problem = upgradeProblem(req);
   if (problem) return refuseUpgrade(socket, 400, `bad upgrade: ${problem}`);
-  // same-origin only: a page on another origin must not stream a signed-in child's mic through the cookie
-  const origin = String(req.headers.origin ?? "");
-  const host = String(req.headers["x-forwarded-host"] ?? req.headers.host ?? "");
-  if (origin && host && new URL(origin, "http://x").host !== host) return refuseUpgrade(socket, 403, "cross-origin");
-  const lessonId = new URL(req.url ?? "/", "http://x").searchParams.get("lessonId");
   let who;
-  try {
-    who = await authorizeD5(req, { lessonId, env, ...(deps.authorize ?? {}) });
-  } catch (e) {
-    return refuseUpgrade(socket, e instanceof HttpError ? e.status : 401, e instanceof HttpError ? e.message : "not signed in");
+  if (env.TAXILA_ROLE === "d5relay") {
+    // the India relay: no cookie, no same origin, no database. taxila-web already authorized this lesson and signed the
+    // ticket; one use, 60 s, this lesson only (Platform 002)
+    const r = await relayWho(req, { env, ...(deps.relay ?? {}) }).catch(() => ({ who: null, reason: "ticket_error" }));
+    if (!r.who) return refuseUpgrade(socket, 401, `ticket refused (${r.reason})`);
+    who = r.who;
+  } else {
+    // same-origin only: a page on another origin must not stream a signed-in child's mic through the cookie
+    const origin = String(req.headers.origin ?? "");
+    const host = String(req.headers["x-forwarded-host"] ?? req.headers.host ?? "");
+    if (origin && host && new URL(origin, "http://x").host !== host) return refuseUpgrade(socket, 403, "cross-origin");
+    const lessonId = new URL(req.url ?? "/", "http://x").searchParams.get("lessonId");
+    try {
+      who = await authorizeD5(req, { lessonId, env, ...(deps.authorize ?? {}) });
+    } catch (e) {
+      return refuseUpgrade(socket, e instanceof HttpError ? e.status : 401, e instanceof HttpError ? e.message : "not signed in");
+    }
   }
   // the browser gave up while we authorised (a reload, a lost network): accepting now would open an upstream nobody hears
   if (socket.destroyed || socket.writable === false) return null;
   if (!allowD5(who.guardian.id)) return refuseUpgrade(socket, 429, "too many voice sessions; wait a minute");
   const cfg = voiceLiveConfig(env);
   // round 7 (B4): the ear's model and the lesson's phrase list (bounded wait; a slow kit only drops its answers)
-  const phrases = await phrasesFor(who.lesson, deps.phrases ?? {});
+  // (the India relay has no lesson row: the core list only; the names and kit answers stay on taxila-web's own path)
+  const phrases = env.TAXILA_ROLE === "d5relay" ? lessonPhrases({}) : await phrasesFor(who.lesson, deps.phrases ?? {});
   if (socket.destroyed || socket.writable === false) return null;
   const ws = acceptWebSocket(req, socket, head);
   live.set(who.guardian.id, (live.get(who.guardian.id) ?? 0) + 1);
