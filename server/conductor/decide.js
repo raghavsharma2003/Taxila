@@ -7,6 +7,7 @@ import { addDays, dayMin, daysBetween, dayKindLookup, isoWeek, jitterSec, learni
 import { runGuards, summarize } from "./guards.js";
 import { buildPlannerInputs, inputsHash, planDay } from "./planner.js";
 import { validatePlan } from "./validate.js";
+import { R5, lateSittingLatch } from "./adapt.js";
 
 const BAD_CLOSE = new Set(["strained", "tired"]);
 const RESUMABLE = new Set(["network", "profile_switch"]);
@@ -130,6 +131,14 @@ function foldNight(s, day, H, { arm, armFrom = day }) {
   const wasActive = s.counters.lastActiveDay === day || s.counters.activeDays.includes(day);
   const cut = addDays(day, -PLAN.closesMaxDays);
   s.adapt.closes = s.adapt.closes.filter((c) => c.day >= cut).slice(-PLAN.closesRing);
+  // round 7 F (adapt.js): the R2 latch on the trimmed ring; R5's checked skills older than the re-check gap expire
+  const late = lateSittingLatch(s.adapt.closes, !!s.adapt.lateMinSet);
+  if (late !== !!s.adapt.lateMinSet) H.rule(late ? "R2:on" : "R2:off");
+  if (late) s.adapt.lateMinSet = true; else delete s.adapt.lateMinSet;
+  if (s.adapt.prereqChecked) {
+    const kept = Object.entries(s.adapt.prereqChecked).filter(([, d]) => daysBetween(d, armFrom) < R5.recheckDays);   // armFrom: today on a catch-up
+    if (kept.length) s.adapt.prereqChecked = Object.fromEntries(kept); else delete s.adapt.prereqChecked;
+  }
   s.counters.activeDays = s.counters.activeDays.filter((d) => d > addDays(day, -7)).sort();
   s.school.testWindows = s.school.testWindows.filter((w) => w.to >= day);
   const oCut = addDays(day, -PLAN.overridesKeepDays);
@@ -225,6 +234,9 @@ const HANDLERS = {
     if (s.lesson?.lessonId === ev.lessonId) delete s.lesson;
     const p = todaysPlan(s);
     if (p && slotId) p.doneSlotIds = addId(p.doneSlotIds, slotId);
+    // R5: the lesson that carried a prerequisite check ran it; that skill is not re-checked for R5.recheckDays
+    const check = p && slotId ? p.slots.find((x) => x.id === slotId)?.prereqCheck : null;
+    if (check && ev.minutes > 0) s.adapt.prereqChecked = { ...(s.adapt.prereqChecked ?? {}), [check.skillId]: t.today };
     if (RESUMABLE.has(ev.reason)) {
       const until = new Date(t.nowMs + PLAN.resumeWindowMin * 60_000);
       s.resumable = { lessonId: ev.lessonId, until: until.toISOString() };
@@ -269,6 +281,7 @@ const HANDLERS = {
       case "schoolEnd": s.routine.schoolEnd = String(v); break;
       case "wakeTime": s.routine.wakeTime = String(v); break;
       case "tz": s.tz = String(v); s.routine.tz = String(v); break;
+      case "sharedPhone": if (v === true) s.household = { shared: true }; else delete s.household; break;
     }
     // a lowered cap or earlier bedtime reaches a live lesson at its next segment boundary (dc AR-5 R8)
     if (lowers && s.mode === "in_lesson" && s.lesson) H.cmd({ kind: "brief.refresh", lessonId: s.lesson.lessonId });
