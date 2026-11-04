@@ -3,7 +3,7 @@
 // The ways-in chips are the child's words, so they go through chipLabels(lang) like the stop / check-in chips; a label said
 // aloud reads as the request its id names; and an English line from a Hinglish child does not switch the teacher's language
 // (only a language request does: compile.js PINNED). Pure.
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, chipLabels } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
@@ -13,7 +13,12 @@ import { languageRule } from "../server/compiler/compile.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
 // round 7 (main's hybrid-pilot judgement #2): "talk about something else" now parks; the ways-in chips this file checks stay
 // behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
-process.env.TAXILA_R7_PARK_TOPIC = "off";
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_PARK_TOPIC: "off" };
+const R7_SAVED = {};
+describe("r144-ways-chips-lang.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -76,4 +81,5 @@ test("a question about this story stays a question; a story request stays a requ
     "what happens in this story", "इस कहानी में राजा कौन है"]) assert.notEqual(requestOf(t)?.type, "story", t);
   for (const t of ["ek kahani sunao", "kahani batao na", "Kahani mein batao", "story ki tarah batao", "tell it as a story", "kahani sunao",
     "kahani shuru karein?", "कहानी सुनाओ"]) assert.equal(requestOf(t)?.type, "story", t);
+});
 });

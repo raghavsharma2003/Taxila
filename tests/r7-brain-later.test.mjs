@@ -1,12 +1,19 @@
 // round 7 A7 (PIPELINE §A Brain item 6): the Later list on the screen (ui.later), the turn's moment (ui.moment), a tap on a
 // Later entry as "talk about it now", and her own promise kept so it comes back before the wrap. Pure.
-import { test } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { findItem } from "../server/director/items.js";
 import { laterUi, momentOf, keepPromise, promisesLater } from "../server/director/later.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main 2026-11-04): these tests are the NEW behaviour, so they clear the kill switches they depend on and restore them
+// after (`npm test` runs every file in one process; an earlier file must never decide which path they test)
+const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
+const R7_KEEP = {};
+describe("r7-brain-later.test.mjs: round 7 behaviour (kill switches cleared)", () => {
+beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
+afterEach(() => { for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -70,4 +77,5 @@ test("her own promise is kept: parked from the child's topic, once, never on a s
   assert.equal(keepPromise([], { reply: "Baad mein baat karenge.", turn: 6, childText: "x y z", safeguard: true }).length, 0);
   const parkedNow = [{ id: "p6", topic: "cricket", at: 6, promise: "at_end" }];
   assert.equal(keepPromise(parkedNow, { reply: "Baad mein baat karenge.", turn: 6, childText: "kuch aur" }), parkedNow, "the Director parked this turn");
+});
 });

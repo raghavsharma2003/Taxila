@@ -1,0 +1,163 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ke snacks se aadha aur chautha hissa samjhenge. Ek roti ke chaar barabar tukde hon, toh ek tukde ko kya kahenge?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1502
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo roti ke tukdon se sochte hain. Roti ke chaar barabar tukdon mein se sirf ek tukde ko kya kahenge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2779,
+   "replyReadyMs": 4281
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Roti ke chaar barabar tukde hain; ek tukda chaar mein se ek hissa hai, jise ek chauthai kehte hain. Agar chaar mein se do tukde lo, toh kitne tukde liye?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3002,
+   "replyReadyMs": 3002
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1434
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne chaar kaha; chaar roti ke kul tukde hain. Ab unmein se do tukde uthao. Tumhare haath mein kitne tukde honge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2960,
+   "replyReadyMs": 4394
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1433
+  },
+  {
+   "who": "teacher",
+   "text": "Tum pooch rahi ho kyun? Roti ke chaar tukde kul hain, par jab do uthate ho, haath mein sirf uthaye hue tukde hote hain. Cricket mein chaar balls mein se do uthao, toh haath mein kitni balls hongi?",
+   "move": "explain",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3810,
+   "replyReadyMs": 5243
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1478
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahi ho samajh aa gaya. Chhota sa check: cricket ki chaar balls mein se do uthao, toh haath mein kitni balls hongi?",
+   "move": "probe",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2473,
+   "replyReadyMs": 3951
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1168
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne chhe kaha. Chaar balls mein se do uthao, toh chhe nahi ho sakti: chhe toh chaar se zyada hain. Pehle bas itna socho, do balls haath mein hain toh kitni uthayi?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3387,
+   "replyReadyMs": 4555
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 3013
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example lete hain. Chaar laddoo hain; unmein se ek laddoo tumne liya. Liya hua laddoo chaar mein se ek hissa hai, yani ek chauthai. Ab roti ke chaar barabar tukdon mein se ek tukda kya kehlaayega?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3556,
+   "replyReadyMs": 6569
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1118
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai. Roti ke chaar barabar tukde hain; hum sirf ek tukde ki baat kar rahe hain. Us ek tukde ko kya kehte hain?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3028,
+   "replyReadyMs": 4146
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1599
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne aath kaha. Ek roti ko chaar barabar tukdon mein baantein, toh tukde chaar hi rahenge, aath nahi. Ek tukde ko ek chauthai kehte hain. Agar chaar barabar tukdon mein se do tukde lo, toh kitne tukde liye?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3136,
+   "replyReadyMs": 4735
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1190
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho. Continue karein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 4415,
+   "replyReadyMs": 5605,
+   "guard": [
+    "wrap"
+   ]
+  }
+ ]
+}
