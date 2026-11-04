@@ -106,7 +106,10 @@ push all unpushed work and a `docs/handoff/<name>.md` to its branch, and is idle
 | stream 3 (latency) | `claude/r4-latency` | latency, overflow, regions |
 | QA (break-it) | `claude/r5-qa` | real-lesson QA on TEST |
 | sim lab | `claude/r5-simlab` | simulated children + judges (`evals/simlab/`); results in `evals/simlab/results/` |
-| others | `claude/r4-asha`, `claude/r4-asha-rig2`, `claude/r4-games-core`, `claude/r4-khand`, `claude/r4-app-design` | teacher face/rig, games, design |
+| others | `claude/r4-asha`, `claude/r4-games-core`, `claude/r4-khand`, `claude/r4-app-design` | teacher face/rig, games, design |
+| superseded | `claude/r4-asha-rig2` | salvaged by path into `claude/r7-face` (round 7, 2026-11-04: rig2 docs, lamp2/lamp3 tooling, demo, pack-report; its 10 context nodes routed via `context/inbox/r7-face.json`). Do not merge (dc-r7-no-branch-merges). |
+
+Round 7 (2026-11-04) re-created the streams: see `docs/design/round7/SESSIONS.md` for the current session/branch map.
 
 The new session can either re-create streams or work single-threaded; the owner decides.
 

@@ -29,6 +29,7 @@ import { resolveAddress } from "../director/register.js";
 import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
+import { routes as placementRoutes } from "./placement.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -54,8 +55,17 @@ export const countsAsDone = (state) => !state?.abandoned && !state?.stoppedEarly
   && (state?.ctx?.purpose ?? "lesson") === "lesson"
   && ((Array.isArray(state?.did) && state.did.length > 0) || Number(state?.minutes) >= DONE_MIN_MINUTES);
 
-/** The parent's lesson hours, daily cap and "done for today" gate lessons only when TAXILA_DAY_LIMITS=on (round 5: off). */
-export const dayLimitsOn = () => process.env.TAXILA_DAY_LIMITS === "on";
+/**
+ * Whose day limits apply (round 7 F, dc-r7 D5, superseding dc-r14's global off): TAXILA_DAY_LIMITS=on forces every child's
+ * on, =off forces every child's off, and unset (the default) leaves it to each family (child_controls.limits_on, migration
+ * 035, off by default: a lesson is always open until the parent turns the daily limit on).
+ */
+export const dayLimitsMode = () => { const v = process.env.TAXILA_DAY_LIMITS; return v === "on" || v === "off" ? v : "child"; };
+/** Every child's limits forced on (TAXILA_DAY_LIMITS=on): lesson.js startRefusal's default. A start passes the child's own
+ *  flag instead (planFor's plan.limits = limitsOnFor(controls)); see docs/patches/to-brain/002-start-refusal-limits.md. */
+export const dayLimitsOn = () => dayLimitsMode() === "on";
+/** Do the parent's daily limit, lesson hours and "done for today" apply to this child? */
+export const limitsOnFor = (controls) => dayLimitsMode() === "on" || (dayLimitsMode() === "child" && !!controls?.limitsOn);
 
 /** Lesson length shown on the card (V2 §3.4: Young 10-20 min, Older 20-30), never more than what is left today. */
 export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(Number(classLevel) <= 4 ? 15 : 25, capRemaining ?? Infinity));
@@ -70,7 +80,7 @@ export const lessonMinutes = (classLevel, capRemaining) => Math.max(5, Math.min(
  *   openNow?: boolean, safetyHold?: boolean, homework?: boolean, testWindow?: boolean }} a
  * @returns {import("../../shared/contracts").ChildHomeState}
  */
-export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false, limits = dayLimitsOn() }) {
+export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, to, anyLesson, openNow = false, safetyHold = false, homework = false, testWindow = false, limits = limitsOnFor(null) }) {
   if (safetyHold) return "safety_hold";
   // round 5 (owner, 2026-10-14: "remove the time frame for the class ... I am not even able to test after the time"):
   // with the day limits off (the default) a lesson is always available: no lesson hours, no daily cap, no "done for today".
@@ -99,21 +109,50 @@ export function homeStateOf({ resumable, usedMin, capMin, doneToday, now, from, 
 export const legacyHome = (state) => (state === "done" || state === "capped" ? "done" : state === "resting" || state === "safety_hold" ? "resting" : "default");
 
 async function controlsOf(child) {
-  const [row, open, w2a] = await Promise.all([
+  const [row, open, w2a, r7] = await Promise.all([
     one("select daily_minutes, hours_start, hours_end from child_controls where child_id = $1", [child.id]).catch(() => null),
     // A separate read: before migration 015 the column does not exist, and that must never cost the saved controls.
     one("select open_until from child_controls where child_id = $1 and open_until > now()", [child.id]).catch(() => null),
     // 019 columns, read apart for the same reason (a missing column never costs the saved controls)
     one("select homework_until, text_only from child_controls where child_id = $1", [child.id]).catch(() => null),
+    // 035 columns (round 7), apart for the same reason
+    one("select limits_on, extra_time, data_saver from child_controls where child_id = $1", [child.id]).catch(() => null),
   ]);
   const d = defaultControls(child.class_level);
   return {
     openUntil: open?.open_until ? new Date(open.open_until).toISOString() : null,
     homeworkUntil: w2a?.homework_until && new Date(w2a.homework_until) > new Date() ? new Date(w2a.homework_until).toISOString() : null,
     textOnly: !!w2a?.text_only,
+    limitsOn: !!r7?.limits_on, extraTime: r7?.extra_time ?? "normal", dataSaver: !!r7?.data_saver,
     capMin: Number(row?.daily_minutes) || d.dailyMinutes,
     from: HHMM.test(row?.hours_start ?? "") ? row.hours_start : d.hoursStart,
     to: HHMM.test(row?.hours_end ?? "") ? row.hours_end : d.hoursEnd,
+  };
+}
+
+/**
+ * The limit inputs of learner/view.js minutesLeft for a child right now (Brain's mid-lesson wrap, D5): the parent's
+ * controls, today's used minutes (conductor_usage, else the day's ended lessons), the hours end in the child's tz and
+ * today's planned live-lesson slot. Defensive: every read that fails falls back to the defaults.
+ * @returns {Promise<{ limitsOn: boolean, capMin: number, usedMin: number, to: string, localNow: string, openUntil: string|null, slotTargetMin: number|null }>}
+ */
+export async function limitsFor(child, now = new Date()) {
+  const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
+  const tz = routine?.tz || DEFAULT_TZ;
+  const day = learningDay(now, tz);
+  const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
+  const [controls, usage, rows, dayPlan] = await Promise.all([
+    controlsOf(child),
+    one("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [child.id, day]).catch(() => null),
+    q("select state from lesson where child_id = $1 and ended_at >= $2", [child.id, dayStart]).catch(() => []),
+    one("select plan from day_plan where child_id = $1 and day = $2 order by version desc limit 1", [child.id, day]).catch(() => null),
+  ]);
+  const loggedMin = rows.reduce((a, r) => a + (Number(r.state?.minutes) || 0), 0);
+  const slot = dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson");
+  return {
+    limitsOn: limitsOnFor(controls), capMin: Number(dayPlan?.plan?.capMin) || controls.capMin,
+    usedMin: Math.max(Number(usage?.used_min) || 0, loggedMin), to: controls.to, localNow: localTime(now, tz),
+    openUntil: controls.openUntil, slotTargetMin: Number(slot?.targetMin) || null,
   };
 }
 
@@ -177,7 +216,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const doneRows = todayRows.filter((r) => countsAsDone(r.state));
   const state = homeStateOf({ resumable, usedMin, capMin, doneToday: doneRows.length > 0, now: localTime(now, tz),
     from: controls.from, to: controls.to, anyLesson: !!anyRow?.any, openNow: !!controls.openUntil,
-    safetyHold: hold?.mode === "safety_hold", homework: !!controls.homeworkUntil, testWindow: !!test });
+    safetyHold: hold?.mode === "safety_hold", homework: !!controls.homeworkUntil, testWindow: !!test, limits: limitsOnFor(controls) });
   const teacher = teacherFor(child);
   // the ONE next-topic answer (truth.js nextTopicForPlan): inside an active test window it revises the test's subject,
   // on every surface (home topic, "Next time", parent next lesson, Progress, the lesson-end summary)
@@ -187,7 +226,7 @@ export async function planFor(child, guardian, now = new Date()) {
   const last = doneRows[0];
   return {
     state, homeState: legacyHome(state),
-    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: dayLimitsOn() },
+    plan: { openLesson: state === "resume" ? open.id : null, window: { from: controls.from, to: controls.to }, openUntil: controls.openUntil, limits: limitsOnFor(controls) },
     topic: state === "resume" ? null : topic,
     resume: state === "resume" ? { lessonId: open.id, ask: open.ask ?? null, topicTitle: getTopic(open.topic_id)?.title ?? "" } : null,
     // "Next time" on today's card is the plan's own next topic (the ONE next-topic function), never the sequence's next
@@ -236,7 +275,7 @@ export const mapStateOf = (row, dc) => MAP_STATE[parentState(row, dc).key];
  *   kitOf: (topic: any) => any }} a
  * @returns {Omit<import("../../shared/contracts").ChildMapResponse, "hidden">}
  */
-export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = null, kitOf, stateOf = null }) {
+export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = null, kitOf, stateOf = null, schoolChapter = null }) {
   const subjects = [];
   const flat = [];
   const hereChapter = hereTopicId ? getTopic(hereTopicId)?.chapter.id : null;
@@ -247,7 +286,9 @@ export function buildMap({ classLevel, rows, delayed, rechecks, hereTopicId = nu
     for (const id of ids) {
       const t = getTopic(id);
       let ch = chapters.at(-1);
-      if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, sealed: false, here: t.chapter.id === hereChapter, secure: 0, total: 0, topics: [] });
+      if (!ch || ch.id !== t.chapter.id) chapters.push(ch = { id: t.chapter.id, number: t.chapter.number, title: t.chapter.title, sealed: false, here: t.chapter.id === hereChapter,
+        // round 7 F item 2: "your class is here" = the chapter the parent (or the intake) said school is on
+        school: Number(schoolChapter?.[subject]) === t.chapter.number, secure: 0, total: 0, topics: [] });
       let kit = null;
       try { kit = kitOf(t); } catch { kit = null; }
       const skills = (kit?.skills ?? []).map((sk) => {
@@ -288,7 +329,7 @@ async function map(req, res) {
   ]);
   const out = buildMap({
     classLevel: child.class_level, rows: truth.projection, delayed: new Map(), rechecks: new Set(weave.map((r) => r.skill_id)),
-    hereTopicId: next?.id ?? null, kitOf: kitFromFile, stateOf: (id) => truth.state(id),
+    hereTopicId: next?.id ?? null, kitOf: kitFromFile, stateOf: (id) => truth.state(id), schoolChapter: child.school_chapter ?? null,
   });
   send(res, 200, { ...out, hidden: false });
 }
@@ -409,4 +450,6 @@ export const routes = {
   "POST /api/lesson/request": request,
   "GET /api/child/skill-line": skillLine,
   "GET /api/child/skill-line/audio": skillLineAudio,
+  // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
+  ...placementRoutes,
 };

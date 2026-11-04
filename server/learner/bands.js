@@ -1,13 +1,11 @@
 // Bands and the grade-equivalent scale derive from classLevel only (LEARNER-MODEL §3, LM18: no date of
-// birth). One table; shared/learner.ts BANDS mirrors it and tests/learner-bands.test.mjs asserts equality.
+// birth). One table: shared/learner.ts BANDS (Brain); this module re-exports it.
 
-export const BANDS = Object.freeze({
-  1: { b4: "B1", b3: "A", contract: "6-9", typicalAge: [6, 7] }, 2: { b4: "B1", b3: "A", contract: "6-9", typicalAge: [7, 8] },
-  3: { b4: "B2", b3: "A", contract: "6-9", typicalAge: [8, 9] }, 4: { b4: "B2", b3: "B", contract: "6-9", typicalAge: [9, 10] },
-  5: { b4: "B3", b3: "B", contract: "10-15", typicalAge: [10, 11] }, 6: { b4: "B3", b3: "B", contract: "10-15", typicalAge: [11, 12] },
-  7: { b4: "B3", b3: "C", contract: "10-15", typicalAge: [12, 13] }, 8: { b4: "B4", b3: "C", contract: "10-15", typicalAge: [13, 14] },
-  9: { b4: "B4", b3: "C", contract: "10-15", typicalAge: [14, 15] },
-});
+// round 7 (PIPELINE §A: Brain owns the band table): derived from shared/learner.ts BANDS, never redefined, so the
+// register (young 1-3, preteen 4-6, teen 7-9; decision D3) and the class-4 move reach every reader at once.
+import { BANDS as SHARED_BANDS } from "../../shared/learner.ts";
+
+export const BANDS = SHARED_BANDS;
 
 /** @param {number} classLevel 1-9 */
 export function bandsFor(classLevel) {

@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-contracts",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 contracts (Brain owns shared/contracts.ts): UiDirectives.steer (SteerChip[], SteerId union of 16 ids), UiDirectives.later (LaterEntryUi: id, text ≤ 60, learning, status open/due/returned, when after_question/at_end), UiDirectives.moment (UiMoment: park/detour/decline/stop_check/returned, laterId, topic), TurnRequest.gameAct ({consumed, game, act}: words a game grammar consumed are never graded), TurnRequest.heardUpTo (any lane; duplex.heardUpTo read second), ReplyClauseEvent (one guarded clause of a streamed reply, never withdrawn once sent). A steer tap is the request its words make (server/director/steer.js); steer:wrap2 is read but has no move until PIPELINE A9. Reversal: if App or Voice need a different shape, Brain changes the contract and messages every stream the sha."
+  },
+  {
+   "id": "dc-r7-brain-one-band-table",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Decision D3 is built as ONE band table. shared/learner.ts BANDS (Brain-owned) carries register young (1-3) / preteen (4-6) / teen (7-9), and class 4 contract \"10-15\". shared/bands.ts exports registerOf / contractBandOf / classesOf. server/learner/bands.js re-exports the table, and ageBandFor reads it (applied here so the gate stays green; patch docs/patches/to-learning/001). Asha’s persona sheets take their class ranges from it (young 1-3, older 4-9), and the agent lane’s register line reads registerOf. A class-4 child now gets the older sheet (peer protégé Bittu, not the baby elephant), the older turn lengths, and the older probe / why shapes. Reversal: if the class-4 talk-share or owner judgement on a live class-4 lesson is worse than the young register, move class 4 back in BANDS (one row). Needs a live check: Asha’s older notes were talk-gated on class 6 only."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-brain-contracts (2026-11-04, stream A Brain)\n\nThe round-7 seams everyone codes against are in shared/contracts.ts: the steer row (SteerId, 16 ids, each the request its words would make), the Later list as the screen shows it (LaterEntryUi), the conversational moment (UiMoment), TurnRequest.gameAct (game-consumed words are never graded), TurnRequest.heardUpTo on any lane, and ReplyClauseEvent for the streamed, clause-guarded reply. steer:wrap2 is read but waits for its move (A9). Test: tests/r7-brain-contracts.test.mjs.\n\n## dc-r7-brain-one-band-table (2026-11-04, stream A Brain)\n\nOne band table for the register: shared/learner.ts BANDS gains `register` (young 1-3, preteen 4-6, teen 7-9), and class 4 moves to the \"10-15\" band (decision D3). Learning’s twin and ageBandFor, Asha’s persona sheets and the agent lane all derive from it. A class-4 child gets the older sheet, peer protégé and turn lengths. Reversal: one row in BANDS if a live class-4 lesson reads worse. Test: tests/r7-brain-bands.test.mjs."
+ }
+}

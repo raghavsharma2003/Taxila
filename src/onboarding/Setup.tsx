@@ -10,6 +10,7 @@ import { useGate } from "../parent/Gate.tsx";
 import { isGateError } from "../parent/api.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
+import { HoursPicker } from "../ui-v3/Scheduler.tsx";
 
 interface Controls { dailyMinutes: number; hoursStart: string; hoursEnd: string }
 export const defaultsFor = (cl: number): Controls => ({ dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30" });
@@ -24,13 +25,9 @@ export function MinutesStepper({ value, onChange, min = 10, max = 120 }: { value
   );
 }
 
+/** Lesson hours: the custom From / Until rails (round 7 F item 3, OWNER-RESET #11: no native time picker). */
 export function HoursFields({ start, end, onChange }: { start: string; end: string; onChange: (s: string, e: string) => void }) {
-  return (
-    <div className="hours">
-      <div className="field"><label htmlFor="hs">From</label><input id="hs" type="time" className="input" value={start} onChange={(e) => onChange(e.target.value, end)} /></div>
-      <div className="field"><label htmlFor="he">Until</label><input id="he" type="time" className="input" value={end} onChange={(e) => onChange(start, e.target.value)} /></div>
-    </div>
-  );
+  return <HoursPicker start={start} end={end} onChange={onChange} />;
 }
 
 export function ControlsStep() {
@@ -79,7 +76,7 @@ export function ControlsStep() {
     // setup, so they are never lost to a gate refusal on P6.
     const p6 = d.child && d.childId === child.id ? {
       address: d.child.address ?? (child.class_level >= 5 ? "aap" : "tum"), comfortMode: !!d.child.comfort, captionsAlways: !!d.child.hardToHear,
-      reportChannel: d.reportChannel ?? "whatsapp",
+      reportChannel: d.reportChannel ?? "app",
     } : {};
     let pinSaved = !!hasPin;
     let stage: "pin" | "controls" = "controls";

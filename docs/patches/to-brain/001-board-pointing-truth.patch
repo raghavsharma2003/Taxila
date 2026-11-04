@@ -1,0 +1,90 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index 38a73572..0722afe6 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -73,7 +73,7 @@ import { publishPerception } from "../latency/bus.js";
+ // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
+ import { parseVoice } from "../../src/play/core/voice.ts";
+ // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
+-import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, drawAsked, pictureNote } from "../director/shapes.js";
++import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, DRAW_NO_POINT, DRAW_POINT_ONCE, drawAsked, pictureNote } from "../director/shapes.js";
+ import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
+ /** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
+ const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
+@@ -691,6 +691,12 @@ export async function lessonTurn(req, body, hooks = {}) {
+     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
+       item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
+     : null;
++  // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
++  // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
++  if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
++    next.lastMove = { ...next.lastMove, shape: pointShapeFor(next.lastMove.shape, { boardFirst: true }) };
++    try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] pointing truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
++  }
+   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
+   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
+   // ids (later.js gradeLater is idempotent per event id).
+@@ -1865,6 +1871,12 @@ const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn:
+  */
+ /** PURE. "nothing is on the screen this turn" made true for the board: the board asked for draws while she speaks; a board
+  * already up is on the screen; otherwise unchanged (QA on be9b766a, 13ec94a7). */
++/** PURE. drawAsked's pointing clause made true: point once when a certified board-first page lands before her clause, else
++ *  describe in words (C1 studio-board-pointing-truth). */
++export const pointShapeFor = (shape, { boardFirst = false } = {}) => {
++  const s = String(shape ?? "");
++  return boardFirst && s.includes(DRAW_NO_POINT) ? s.replace(DRAW_NO_POINT, DRAW_POINT_ONCE) : shape;
++};
+ export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } = {}) => {
+   const s = String(shape ?? "");
+   const truth = askedBoard ? VISUAL_DRAWING : boardUp ? VISUAL_ON_STAGE : null;
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index 06ef865a..a54df47b 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -510,13 +510,18 @@ export const visualUnavailable = ({ subject }) => join(
+  * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
+  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
+  */
++/** round 7 (C1 studio-board-pointing-truth, owner answer to the drawAsked vs VISUAL_DRAWING question): the board drawn for
++ *  the ask is pointed at once ONLY when it is certified to land before her clause (the board-first page, turn.js); else
++ *  she describes it in words and never sends their eyes to it. */
++export const DRAW_NO_POINT = "never send their eyes to the screen or the board";
++export const DRAW_POINT_ONCE = "the board shows it as you speak: send their eyes to it once, in a few words, then say what it shows";
+ export const drawAsked = ({ subject, show, photo }) => join(
+   photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
+     // QA on be9b766a (7545d1fd t2): "there is no photo, say so" came out as "is turn mein picture nahi hai" under the board's
+     // sketch; a sketch IS a picture, so the photo is owned up to and the drawing never denied
+     : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead, a drawing, not a photo`
+     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
+-  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
++  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; ${DRAW_NO_POINT}`,
+   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
+   // (last: the rule that must fire) the photo is owned up to, the board's drawing of it never denied
+   show === "picture" && photo !== "coming" ? "never say there is no picture or nothing on the screen" : "",
+diff --git a/tests/r7-board-pointing.test.mjs b/tests/r7-board-pointing.test.mjs
+new file mode 100644
+index 00000000..31778e73
+--- /dev/null
++++ b/tests/r7-board-pointing.test.mjs
+@@ -0,0 +1,21 @@
++// round 7 (C1 studio-board-pointing-truth; main's answer to the drawAsked vs VISUAL_DRAWING question): she points at the
++// board drawn for the child's ask once ONLY when a certified board-first page lands before her clause; otherwise the board
++// draws later and she describes the thing in words, never sending their eyes to it (QA c2cd0d93: "picture ko words mein
++// dekhiye" with the board up came from the no-pointing clause applied while a board was ready).
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { drawAsked, DRAW_NO_POINT, DRAW_POINT_ONCE } from "../server/director/shapes.js";
++import { pointShapeFor } from "../server/brain/turn.js";
++
++test("drawAsked describes in words and never points by default (the board draws after her line)", () => {
++  for (const show of ["show", "picture", "draw"]) assert.ok(drawAsked({ subject: "aloo", show }).includes(DRAW_NO_POINT), show);
++});
++
++test("a certified board-first page ready before her line: point once, then say what it shows", () => {
++  const shape = drawAsked({ subject: "triangle", show: "draw" });
++  const pointed = pointShapeFor(shape, { boardFirst: true });
++  assert.ok(pointed.includes(DRAW_POINT_ONCE));
++  assert.ok(!pointed.includes(DRAW_NO_POINT));
++  assert.equal(pointShapeFor(shape, { boardFirst: false }), shape, "no board-first page: words only, unchanged");
++  assert.equal(pointShapeFor("x; y", { boardFirst: true }), "x; y", "a shape without the clause is left alone");
++});

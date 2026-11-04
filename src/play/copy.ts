@@ -48,6 +48,8 @@ export const COPY = {
   "balance.tipped": L("jhuka", "tipped", "झुका"),
   // line
   "line.goal": L("{v} ko line par rakho", "Put {v} on the line", "{v} को रेखा पर रखो"),
+  "line.goal.hop": L("{a} se shuru: {v} kahan pahunchega?", "Start at {a}: where does {v} land?", "{a} से शुरू: {v} कहाँ पहुँचेगा?"),
+  "line.start": L("shuru", "start", "शुरू"),
   "line.goal.cmp": L("Dono ko rakho, phir chhota kaun?", "Place both, then which is smaller?", "दोनों को रखो, फिर छोटा कौन?"),
   "line.here": L("Yahan!", "Here!", "यहाँ!"),
   "line.goal.round": L("{v} ko line par rakho", "Put {v} on the line", "{v} को रेखा पर रखो"),
