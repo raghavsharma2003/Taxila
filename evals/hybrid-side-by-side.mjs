@@ -187,7 +187,9 @@ for (const { topicId, classLevel, name: scenario } of runs) {
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
   const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario]);
-  const B = await lesson("agent", kit, classLevel, SCENARIOS[scenario]);
+  // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
+  const DIRECTOR_ONLY = process.argv.includes("--director-only");
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario]);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
