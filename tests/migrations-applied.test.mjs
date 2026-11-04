@@ -27,6 +27,6 @@ describe("migrations applied", { skip: !sql && "no DATABASE_URL", concurrency: f
     if (!reachable) return t.skip("database unreachable");
     assert.ok(migrationFiles().length >= 7);
     const missing = await unappliedMigrations((text) => sql.query(text));
-    assert.deepEqual(missing, [], `apply with node --env-file=.env.local scripts/migrate.mjs: ${missing.join(", ")}`);
+    assert.deepEqual(missing, [], `apply with node scripts/migrate.mjs (test branch by default; --prod for production): ${missing.join(", ")}`);
   });
 });

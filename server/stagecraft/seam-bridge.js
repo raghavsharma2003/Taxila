@@ -97,7 +97,8 @@ function merge(lessonId, host, view0, point, outcome) {
   const id = outcome.candidateId;
   const c = host.state.candidates.find((x) => x.id === id) ?? null;
   const facts = { kind: outcome.facts.kind, archetype: stageArchetypeTag(outcome.facts.archetype), onScreen: { ...(outcome.facts.onScreen ?? {}) } };
-  // round 4 content: certified at the device's class (and at all three sizes) BEFORE it is proposed, or the W2 view stands
+  // round 4 content: certified at the device's class BEFORE it is proposed, or the W2 view stands (round 7 D8: at the
+  // device's class only; on the 360 phone as its board twin)
   const sc0 = { rung: outcome.rung, archetype: c?.archetype ?? outcome.facts.archetype, spec: c?.payload?.spec ?? null, boardTwin: c?.boardTwin ?? null };
   const vpNow = viewportOf(lessonId);
   const cert = certifyForTray({ kind: "stagecraft", stagecraft: sc0 }, { vp: vpNow.vp, box: vpNow.box, young: vpNow.known ? vpNow.young : (L.child?.class_level ?? 6) <= 4,

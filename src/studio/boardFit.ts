@@ -76,6 +76,8 @@ function scaleOp(o: Op, f: number, dx: number, dy: number): Op {
   if (o.op === "rect") { r.w = S(o.w); r.h = S(o.h); }
   if (o.op === "circle" || o.op === "sector") r.r = S(o.r);
   if (o.op === "ellipse") { r.rx = S(o.rx); r.ry = S(o.ry); }
+  // round 7 (motion ops): a move's shift and hop are lengths: scaled, never shifted
+  if (o.op === "move") { if (isPt(o.by)) r.by = [S(o.by[0]), S(o.by[1])]; if (typeof o.arc === "number") r.arc = S(o.arc); }
   return r;
 }
 

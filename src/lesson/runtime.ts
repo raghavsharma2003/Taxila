@@ -57,6 +57,8 @@ export interface LessonState {
   ui: UiDirectives;
   move: Move | null;
   pushToTalk: boolean;
+  /** Round 7 (B2 ↔ App): the child switched the microphone off (setMuted); hands-free resumes on unmute. */
+  muted: boolean;
   /** Director calls in flight (the Director is never on the voice critical path; this is for dev UI). */
   pendingTurns: number;
   error: string | null;
@@ -98,6 +100,11 @@ export interface LinkContext {
   api: LessonApi;
   /** The lesson was started as "cascade": a text-lane link whose child turns are spoken (CascadeLink). */
   cascade?: boolean;
+  /**
+   * Round 7 (B2): the microphone, asked for in parallel with POST /api/lesson/start (inside the child's start tap). A cascade
+   * link uses it instead of asking again; a rejection is the same "no microphone" as its own ask. Other links ignore it.
+   */
+  mic?: Promise<MediaStream>;
 }
 export type LinkFactory = (mode: LessonMode, ctx: LinkContext) => TeacherLink;
 
@@ -112,7 +119,7 @@ export const defaultLinkFactory: LinkFactory = (mode, c) =>
   mode === "voice"
     ? new VoiceLink({ lessonId: c.lessonId, levels: c.levels, fetchToken: c.api.realtimeToken })
     : c.cascade
-      ? new CascadeLink({ lessonId: c.lessonId, levels: c.levels })
+      ? new CascadeLink({ lessonId: c.lessonId, levels: c.levels, ...(c.mic ? { micStream: c.mic } : {}) })
       : new TextLink({ lessonId: c.lessonId, levels: c.levels });
 
 /** On-device voice features for a voice link (false: off). The default loads src/voice/features.ts lazily. */
@@ -182,6 +189,7 @@ const initialState = (mode: LessonMode = "voice"): LessonState => ({
   ui: {},
   move: null,
   pushToTalk: false,
+  muted: false,
   pendingTurns: 0,
   error: null,
   debug: null,
@@ -307,15 +315,23 @@ export class LessonRuntime {
     const gen = this.generation;
     this.store.set({ phase: "starting", connection: "connecting" });
     let lessonId: string | null = null;
+    // round 7 (B2, voice-handsfree-from-first-line): the microphone is asked for NOW, beside the lesson start, not after it
+    // (the permission prompt and the device open overlap the server's opening line instead of following it)
+    const mic = cascade ? earlyMic() : undefined;
+    let micTaken = false;
     try {
       const s = await this.api.start({ childId, topicId, mode: startMode, ...(resumeLessonId ? { resumeLessonId } : {}) });
       lessonId = s.lessonId;
       // r5 QA D24: a rejoined lesson numbers its next turns above everything the server already acknowledged
       if (s.resumed && s.turnSeqFloor) this.outbox.raiseFloor(s.lessonId, s.turnSeqFloor);
       // Ended or unmounted while starting: the server opened a lesson nobody will run.
-      if (gen !== this.generation) return this.closeQuietly(lessonId);
+      if (gen !== this.generation) {
+        if (mic) releaseMic(mic);
+        return this.closeQuietly(lessonId);
+      }
       this.store.set((st) => ({ lessonId: s.lessonId, topic: s.topic, teacher: s.teacher, ...(s.helpLead ? { helpLead: leadOf(st.helpLead, s.helpLead) } : {}) }));
-      const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}) });
+      const link = this.createLink(mode, { lessonId: s.lessonId, voice: s.teacher.voice, levels: this.levels, api: this.api, ...(cascade ? { cascade } : {}), ...(mic ? { mic } : {}) });
+      micTaken = true;
       this.link = link;
       this.unlisten = link.on((e) => this.onLinkEvent(e));
       await link.connect();
@@ -339,6 +355,7 @@ export class LessonRuntime {
       // sent now, in the background, off this lesson's chain (§4.7 T8: "the outbox is kept and sent after sign-in").
       void this.flushOthers(s.lessonId);
     } catch (err) {
+      if (mic && !micTaken) releaseMic(mic);
       if (gen !== this.generation) return lessonId ? this.closeQuietly(lessonId) : undefined;
       this.teardown();
       // The server opened a lesson that never ran (e.g. the voice call could not connect): close it.
@@ -379,6 +396,18 @@ export class LessonRuntime {
   setPushToTalk(on: boolean): void {
     this.link?.setPushToTalk(on);
     this.store.set({ pushToTalk: on && this.state.mode === "voice" });
+  }
+  /**
+   * Round 7 (B2 ↔ App contract, src/lesson/handsFree.ts): the child's mute. Muted, no audio leaves the device and the link
+   * holds push-to-talk (the engine never reads the quiet as their silence); a setPushToTalk meanwhile is remembered and
+   * applied on unmute. A link without a mute (the realtime lane) falls back to push-to-talk.
+   */
+  setMuted(on: boolean): void {
+    if (on === this.state.muted) return;
+    const l = this.link as (TeacherLink & { setMuted?: (on: boolean) => void }) | null;
+    if (l?.setMuted) l.setMuted(on);
+    else l?.setPushToTalk(on);
+    this.store.set({ muted: on });
   }
   talkStart(): void {
     this.link?.talkStart();
@@ -1202,4 +1231,20 @@ export function freshWords(merged: string, sent: string): string {
     i++; j++;
   }
   return j === 0 ? merged.trim() : a.slice(i).join(" ").trim();
+}
+
+/** Round 7 (B2): the cascade link's microphone ask, started early. Same constraints as CascadeLink.connect. */
+function earlyMic(): Promise<MediaStream> | undefined {
+  try {
+    if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) return undefined;
+    const p = navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    p.catch(() => {}); // the link reports a refusal; an unused early ask must not surface as an unhandled rejection
+    return p;
+  } catch {
+    return undefined;
+  }
+}
+/** An early microphone no link took (the start failed or was abandoned): stop its tracks. */
+function releaseMic(mic: Promise<MediaStream>): void {
+  void mic.then((m) => { for (const t of m.getTracks()) t.stop(); }, () => {});
 }

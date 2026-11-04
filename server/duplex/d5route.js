@@ -1,6 +1,7 @@
 // GET /api/duplex/voicelive?lessonId=… (WebSocket upgrade): the D5 lesson stream (server/duplex/voicelive.js). The same
-// gates as POST /api/voice/stt-token (the child's own open lesson, core_tutoring consent, a per-guardian rate) plus the
-// cohort: only a request whose /api/duplex/config answer is { lane: "d5" } may open it. Served by server/serve.mjs
+// gates as POST /api/voice/stt-token (the child's own open lesson, core_tutoring consent, a per-guardian rate) plus the lane:
+// only a request whose /api/duplex/config answer is { lane: "d5" } may open it — round 7 (D2), that is every consented child
+// while the global switch is on (no cohort gate; the kill switch TAXILA_DUPLEX=off or a pinned d4 lane refuses). Served by server/serve.mjs
 // (Azure Container Apps); the Vercel shim cannot hold a socket, and the client falls back to D4 when this refuses.
 import { one } from "../db.js";
 import { requireChild, hasConsent } from "../auth.js";
@@ -35,7 +36,7 @@ export async function authorizeD5(req, { lessonId, env = process.env, lookupLess
   if (lesson.ended_at) throw new HttpError(409, "lesson has ended");
   if (!(await consent(guardian.id, kid.id, "core_tutoring"))) throw new HttpError(403, "core_tutoring consent is required for voice");
   const m = await mode(req, { env });
-  if (m?.lane !== "d5") throw new HttpError(403, "not on lane d5");
+  if (m?.duplex !== "on" || m?.lane !== "d5") throw new HttpError(403, "not on lane d5");
   return { guardian, child: kid, lesson };
 }
 

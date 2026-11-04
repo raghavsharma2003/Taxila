@@ -5,13 +5,11 @@
 // centred. Every Studio artifact (a whiteboard script, a built game or animation, a skeleton, an image) renders into that
 // box and nowhere else: the box clips (`contain: strict`), the tray never grows or scrolls for it, and a resize refits it.
 //
-// The moment (filled by W2-H), at constant tray height:
-//   skeleton_shown  the sketch draws itself in pencil strokes in the accent colour (600 ms), a caption chip
-//                   "{T} is making this for you" (rotated per lesson)
-//   building        a watercolour wash fills in behind the pencil: the streamed partial, sanitised, in a script-less
-//                   sandboxed frame at 60% opacity, desaturated, inert (decoration, never interaction)
-//   ready           a tiny sparkle at the corner, no sound
-//   revealed        the veil lifts (300 ms), the pencil fades, scale 0.98 → 1.0, the first target pulses once
+// The moment, at constant tray height:
+//   planning / skeleton_shown / building / ready   round 7 (C1 app-studio-no-build-state, OWNER-RESET): the child never
+//                   sees a piece being made: no "{T} is making this" chip, no pencil sketch, no streamed-partial veil, no
+//                   sparkle. The stage keeps the last finished piece it showed (inert), or the calm ground.
+//   revealed        the finished piece appears (scale 0.98 → 1.0), the first target pulses once
 //   in_use          full interaction; answers graded by the host
 //   fallback_shown  the skeleton itself is the activity (correct, plain), host-graded; nothing says a build failed
 // Reduced motion (OS setting or the younger band's calm mode): no pencil animation, cross-fades only.
@@ -24,14 +22,11 @@ import { STAGE_DEFAULT, type BeatCard, type StudioArtifact, type StudioSlot } fr
 import { fitStage, validStage, type StageFit } from "./fit.ts";
 import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
-import { lessonOfIntent, studioApi, usePartial, useStudioSlot } from "./useStudio.ts";
+import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
-import { partialDocument } from "./kit/bundle.ts";
-import { sanitizePartial } from "./kit/sanitize.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
-import { useTeacherName } from "../ui/teacher/useTeacher.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
 
@@ -128,17 +123,14 @@ function boxFor(avail: { w: number; h: number }, design: { w: number; h: number 
   return next;
 }
 
-/** The phase the stage draws for a tray state. */
-type Phase = "making" | "ready" | "reveal" | "live" | "empty";
+/** A slot still being made: never drawn (the child never sees build state). */
+const IN_PROGRESS: ReadonlySet<string> = new Set(["planning", "skeleton_shown", "building", "ready"]);
+/** The phase the stage draws: "held" is the last finished piece kept (inert) while the next one is made. */
+type Phase = "held" | "reveal" | "live" | "empty";
 const phaseOf = (state: StudioSlot["state"], hasArtifact: boolean): Phase => {
   if (!hasArtifact) return "empty";
-  switch (state) {
-    case "planning": case "skeleton_shown": case "building": return "making";
-    case "ready": return "ready";
-    case "revealed": return "reveal";
-    case "in_use": case "fallback_shown": return "live";
-    default: return "live";
-  }
+  if (IN_PROGRESS.has(state)) return "held";
+  return state === "revealed" ? "reveal" : "live";
 };
 
 /** A frame that failed becomes its skeleton-as-activity (same params and words); the server retires the build. */
@@ -159,7 +151,13 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const mountId = useRef<string>("");
   if (!mountId.current) mountId.current = `${Date.now().toString(36)}${(++mounts).toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
   useEffect(() => { setSwap(null); setEpoch(0); setMenu(false); setGone(false); setTwinFor(null); twinArea.current = null; }, [slot.slotId]);
-  const given0: StudioArtifact | undefined = gone ? undefined : swap ?? slot.artifact;
+  // round 7 (C1): a slot still being made shows the last FINISHED piece this stage showed (inert), or nothing; its own
+  // artifact (a skeleton sketch, a partial) is never drawn
+  const building = IN_PROGRESS.has(slot.state) && !swap;
+  const live0: StudioArtifact | undefined = gone ? undefined : swap ?? slot.artifact;
+  const held = useRef<StudioArtifact | undefined>(undefined);
+  if (!building && live0) held.current = live0;
+  const given0: StudioArtifact | undefined = building ? (gone ? undefined : held.current) : live0;
   // round 3 forge: a piece too small to use on THIS device's box (a Studio v2 world, a play level whose layout refused the
   // box, or a renderer that failed) becomes its board twin: the same idea as a legible whiteboard (twinBoard.ts)
   const [twinFor, setTwinFor] = useState<string | null>(null);
@@ -263,11 +261,6 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot.slotId, state, phase, artifact, epoch, twin, swap, gone, !!fit]);
   const interactive = phase === "live" || phase === "reveal";
-  const teacher = useTeacherName()?.name || "Your teacher";
-  const caption = useMemo(() => tw2h(`making.${Math.abs(hashStr(lessonId ?? "")) % 3}` as "making.0", { T: teacher }), [lessonId, teacher]);
-
-  const partial = usePartial(lessonId, phase === "making" ? slot.intentId ?? null : null);
-  const veil = useMemo(() => (partial ? partialDocument(sanitizePartial(partial), design) : null), [partial, design]);
   const latest = useRef(onEvent);
   latest.current = onEvent;
   const emit = useCallback((e: StudioStageEvent) => {
@@ -345,20 +338,7 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         <StageMomentContext.Provider value={moment}>
           <div className="st-art">{body}</div>
         </StageMomentContext.Provider>
-        {phase === "making" && (
-          <div className="st-wash" aria-hidden="true">
-            {veil && fit && (
-              // the streamed partial: sanitised, in a frame with NO script permission at all, inert, under the pencil
-              <iframe className="st-veil" title="" tabIndex={-1} sandbox="" srcDoc={veil}
-                style={{ width: design.w, height: design.h, transform: `scale(${fit.w / design.w})`, transformOrigin: "0 0" }} />
-            )}
-          </div>
-        )}
-        {phase === "ready" && <span className="st-sparkle" aria-hidden="true" />}
       </div>
-      {phase === "making" && fit && (
-        <div className="st-chip" style={{ left: fit.x + 10, top: fit.y + fit.h - 40 }} data-testid="studio-chip">{caption}</div>
-      )}
       {controls && ctrlStyle && (
         <div className="st-ctrl" style={ctrlStyle}>
           <button type="button" className="st-ctrl-btn" aria-label={tw2h("more")} aria-expanded={menu} onClick={() => setMenu((m) => !m)} data-testid="studio-more">
@@ -375,5 +355,3 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     </div>
   );
 }
-
-function hashStr(s: string): number { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }

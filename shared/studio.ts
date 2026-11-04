@@ -168,7 +168,9 @@ export type WbOp =
       rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number] })
   /** Draw attention to an earlier op (circle, underline, pulse) without redrawing it. */
   | (WbBase & { op: "highlight"; target: string; style: "circle" | "underline" | "pulse" })
-  | (WbBase & { op: "erase"; target: string });
+  | (WbBase & { op: "erase"; target: string })
+  /** round 7: an earlier op slides by `by` over [startMs, endMs], hopping `arc` units high (a jump); never off the board. */
+  | (WbBase & { op: "move"; target: string; by: WbPoint; arc?: number });
 export type WbOpKind = WbOp["op"];
 export interface WhiteboardScript {
   v: 1;

@@ -1,0 +1,55 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-gameact-sync-ack",
+   "kind": "decision",
+   "title": "A game command is acked synchronously on the PLAY_HEARD detail and sent as TurnRequest.gameAct; the server gives it no card evidence on both lanes (asPlayAct before the agent verdict)",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-games-new-law-modes",
+   "kind": "decision",
+   "title": "Week-1 coverage by real mechanics: kon zone/pair/close, nishana hop, new family stambh (bars, picto); class 4-7 maths topics with a law game 44 → 59",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-games-arena-net",
+   "kind": "decision",
+   "title": "ITEM-ARENA revived as the broad net after every law family (bank rebuilt from today's kits, 2,922 challenges); evidence as recognition; maths only",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "ms-r7-games-khand-3d-cert",
+   "kind": "measurement",
+   "title": "Khand 3D: 96/96 3D samples pass at p360/p412/l1366 (21 new cells), play-cert --only nazariya",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "open-r7-games-arena-is-mcq",
+   "kind": "decision",
+   "title": "Open: ITEM-ARENA is 'aim at one of 4 options' over kit items, close to OWNER-RESET #3's 'not a game'; covers no English/Hindi/SST; owner/main to decide whether children see it",
+   "at": "2026-11-04"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-gameact-sync-ack",
+   "rel": "supersedes",
+   "dst": "open-r3adv-game-command-graded"
+  },
+  {
+   "src": "ms-r7-games-khand-3d-cert",
+   "rel": "part_of",
+   "dst": "dc-r7-games-new-law-modes"
+  },
+  {
+   "src": "open-r7-games-arena-is-mcq",
+   "rel": "constrains",
+   "dst": "dc-r7-games-arena-net"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-games-gameact-sync-ack\n**The mounted play stage registers a synchronous sink (src/play/core/voiceSink.ts). The PLAY_HEARD listener writes the grammar's ack on the event detail, which runtime.ts reads as soon as dispatchEvent returns, and sends TurnRequest.gameAct { consumed, game, act }. turn.js applies asPlayAct to the OUTER cls before both lanes.** (2026-11-04)\n- Found: the round-3 guard rewrote only planTurn's local cls, so on the agent lane '1/3' said to a game was still read as \"correct\".\n- Every utterance is still sent: scanSafety and the distress read run on it. Only grading the card stops.\n- Reversal: if the lesson turn ever stops being sent for game acts, safety must move to the client path first.\n\n## dc-r7-games-new-law-modes\n**Week-1 coverage comes from law families whose act IS the idea, never from quizzes.**\n- kon zone/kind: make an angle of a kind from a tilted base.\n- kon zone/match: equal a long-armed reference angle.\n- kon pair/linear: protractor on B only, ∠AOC stated.\n- kon close/tri and close/iso: open ∠B until the triangle closes.\n- nishana hop: integer +, −, × as hops from a start on the line.\n- stambh bars/picto: bars built from falling crates, one crate per scale step; pictographs with a key and half icons.\n\nMal-rules map to verified kit slugs only. Class 4-7 maths topics with a law game went from 44 to 59 (2026-11-04). Recordings: docs/design/round7/games/w1.\n\n## dc-r7-games-arena-net\n**ITEM-ARENA, applied by path from the parked d1ad46078 patches, serves only after every law family: a law game keeps every skill it admits. The play server attaches data/arena items to the request; the client never loads the bank. Evidence counts as form recognise + controllerEasy.** (2026-11-04)\n- Coverage: 210 of 304 maths topics in classes 1-9; 0 English, Hindi or SST, because their kit items are open answers.\n- Reversal: the owner rules that it is a quiz in costume (open-r7-games-arena-is-mcq).\n",
+  "measurements": "## ms-r7-games-khand-3d-cert\n- **What:** play-cert.js --only nazariya with Khand registered (mitti/barf/jungle themes, both bands).\n- **Result:** 96 of 96 3D samples pass at p360, p412 and l1366; 21 new 3d cells; no existing cell changed. 2D cells: 580 of 608 samples pass at every size (p360 580, p412 604, l1366 604).\n- **Not measured:** a real mid-range Android phone (owner check). (2026-11-04)\n"
+ }
+}

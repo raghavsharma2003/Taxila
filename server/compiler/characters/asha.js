@@ -6,6 +6,7 @@
 // top level are the classes 1-4 band (the sheet as it was before round 4, so fixtures that read the raw sheet keep
 // meaning what they meant); `sheetFor(c, classLevel)` in ./index.js picks the band for a real child. The 5-9 band is
 // Arjun's measured competence notes (arjun.js, parked) in a didi register.
+import { classesOf } from "../../../shared/bands.ts";
 const shared = {
   noLife: "has no real age, family, home, body or life events — never invent them",
   warmth: "warmth: steady, calm, never gushing; delight is short and specific",
@@ -14,9 +15,10 @@ const shared = {
   address: "address: the child's first name; no pet names or endearments",
 };
 
-/** Classes 1-4: the kind didi-teacher register, concrete first. */
+/** The young register (classes 1-3, shared/bands.ts): the kind didi-teacher register, concrete first. */
 const young = {
-  classes: [1, 4],
+  // round 7 (decision D3, dc-r7-age-bands): from the one band table; class 4 is no longer young (OWNER-RESET #1)
+  classes: classesOf("young"),
   // Care-receiving protégé for teach-back: 6-9-year-olds explain better to someone smaller than them.
   protege: { name: "Golu", what: "a pretend baby elephant just starting school" },
   notes: [
@@ -40,11 +42,12 @@ const young = {
  * with the talk gate re-run.
  */
 const older = {
-  classes: [5, 9],
+  // round 7 (decision D3): preteen + teen, classes 4-9, from the one band table
+  classes: [classesOf("preteen")[0], classesOf("teen")[1]],
   // A peer-aged protégé: a 10-15-year-old explains to a classmate who missed the class, never to a baby animal.
   protege: { name: "Bittu", what: "a pretend new student who missed this class" },
   notes: [
-    "an AI teacher character for Indian children in classes 5-9; a sharp, kind didi-tutor register",
+    `an AI teacher character for Indian children in classes ${classesOf("preteen")[0]}-${classesOf("teen")[1]}; a sharp, kind didi-tutor register`,
     shared.noLife,
     "competence before warmth: diagnose what they tried before explaining; respect their reasoning",
     "teaching: the child does the thinking; questions over lectures; one idea per turn; picture → rule → number",

@@ -167,6 +167,21 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, now = api.t, s = st();
     drawLine(c);
+    // hop: the start on its integer (a ring on the line, "start" under the numbers) and the hop from it to where the pod is
+    // now, an arc UNDER the number labels (above the line the pods ride and would hide it)
+    if (p.hop) {
+      const X = toPx(p.hop.a), by = Math.min(ly + 104, Hh - 30);
+      P.circle(c, X, ly, 9, { role: "ink", width: 3 });
+      P.stroke(c, [[X, ly + 10], [X, by]], { role: "ink3", width: 1.5, dash: [3, 4] });
+      P.text(c, say(lang, "line.start"), X, ly - 22, { size: 14, weight: 700, role: "ink2" });
+      const mk = markOf(0);
+      if (mk !== null && mk !== undefined && Math.abs(toPx(mk) - X) > 6) {
+        const xa = X, xb = toPx(mk), hgt = Math.min(36, 10 + Math.abs(xb - xa) * 0.12);
+        c.save(); c.beginPath(); c.strokeStyle = P.color(ROLE[0]); c.lineWidth = 2.5; c.setLineDash([6, 5]);
+        c.moveTo(xa, by); c.quadraticCurveTo((xa + xb) / 2, by + 2 * hgt, xb, by); c.stroke(); c.restore();
+        P.stroke(c, [[xb - 6, by - 7], [xb, by], [xb + 6, by - 7]], { role: ROLE[0], width: 2.5 });
+      }
+    }
     api.target("line", x0 - 20, ly - 60, x1 - x0 + 40, 120);
     // after a wrong order: an arrow under the line from the right-hand pod to the left-hand one, "smaller" at its head
     if (cmpGoal && orderLookAt >= 0 && s.marks.every((m) => m !== null)) {
@@ -225,6 +240,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     if (roundGoal) return st().landed ? say(lang, "line.goal.round2", { t: unitWord(p.to ?? 100) }) : say(lang, "line.goal.round", { v: p.values[0].text });
     if (cmpGoal) return say(lang, "line.goal.cmp");
+    if (p.hop) return say(lang, "line.goal.hop", { a: H.fmt(p.hop.a).replace("-", "−"), v: p.values[0].text });
     return say(lang, "line.goal", { v: p.values[0].text });
   }
   function readouts(): Readout[] { return []; }

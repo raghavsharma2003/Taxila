@@ -297,9 +297,9 @@ test("telemetry fold: readiness, waste, swaps excluded; rows never carry words",
   for (const e of effects.filter((x) => x.e === "telemetry")) for (const v of Object.values(e.row)) assert.ok(typeof v !== "string" || v.length < 200);
 });
 
-// round 4 content: Studio v2 is off the child path unless certified AS ITSELF at all three sizes (server/forge3/tray-gate.js);
-// no library piece is today, so "on" now keeps the W2 view and counts the refusal. The slot shape is still checked.
-test("seam bridge: on → a Studio v2 reveal goes through the tray gate (refused today: the W2 view stands); shadow → the W2 view is untouched; slot is never loading", async () => {
+// round 7 D8 (amends round 4's "off the child path unless certified at all three sizes"): a Studio v2 piece certified at
+// the device's class is proposed through the tray gate. The slot shape is still checked.
+test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certified at this class: proposed); shadow → the W2 view is untouched; slot is never loading", async () => {
   const { studioSeam } = await import("../server/studio/seam.js");
   const bridge = await import("../server/stagecraft/seam-bridge.js");
   const { revealPoint } = await import("../server/stagecraft/adapters.js");
@@ -318,10 +318,12 @@ test("seam bridge: on → a Studio v2 reveal goes through the tray gate (refused
     const v = bridge.augmentView(lessonId, w2view, p);
     if (mode === "shadow") assert.equal(v, w2view);
     else {
-      assert.equal(v.propose.reveal, "w2-piece", "the uncertified Studio v2 piece is not proposed: the W2 view stands");
-      assert.ok((host.gateRefusals ?? 0) >= 1, "the refusal is counted");
+      // round 7 D8: the library piece is certified at this device's class, so it is proposed (it was refused while the
+      // gate required all three sizes)
+      assert.equal(v.propose.reveal, `${lessonId}:c1`, "the certified Studio v2 piece is proposed");
+      assert.equal(host.gateRefusals ?? 0, 0, "nothing refused");
       const { _lesson } = await import("../server/studio/seam.js");
-      assert.ok(![..._lesson(lessonId).pieces.values()].some((x) => x.source === "stagecraft"), "no Stagecraft piece was created");
+      assert.ok([..._lesson(lessonId).pieces.values()].some((x) => x.source === "stagecraft"), "a Stagecraft piece was created");
       const slot = bridge.stagecraftSlot({ slotId: "s", intentId: "i", state: "ready", stagecraft: { rung: "engine_default" } });
       assert.equal(slot.state, "ready"); assert.equal(slot.artifact.kind, "stagecraft");
     }
