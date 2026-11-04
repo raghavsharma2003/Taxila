@@ -64,7 +64,7 @@ function hostGrader() {
     return { correct, complete: i >= items.length, wrongTries: correct ? 0 : wrong }; };
 }
 
-async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, fragment: FIXTURE } } = {}) {
+async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, fragment: FIXTURE }, turnSlot = null } = {}) {
   const mobile = viewport.width < 600;
   const page = await browser.newPage({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile });
   const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio", studioSlot: slot, ask: { text: "Try it", itemId: "i1" } };
@@ -76,7 +76,7 @@ async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, f
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "g@test.invalid", name: "Grown-up" }, children: [KID] });
     if (p === "/api/lesson/start") return json(200, { lessonId: LESSON, topic: { id: "c5-maths-ch02-t01", title: "Fractions", chapter: "Fractions" },
       teacher: { id: "arjun", name: "Arjun", voice: "v", addressedAs: "", role: "AI teacher" }, moduleCommands: [], ui, teacherOpening: "Dekho.", teacherOpeningSeq: 1 });
-    if (p === "/api/lesson/turn") { calls.push({ p, b: JSON.parse(route.request().postData() || "{}") }); return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: "Hmm.", teacherReplySeq: 2 }); }
+    if (p === "/api/lesson/turn") { calls.push({ p, b: JSON.parse(route.request().postData() || "{}") }); return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui: turnSlot ? { ...ui, studioSlot: turnSlot } : ui, teacherReply: "Hmm.", teacherReplySeq: 2 }); }
     if (p === "/api/lesson/end") return json(200, { summary: null, parentNote: null });
     if (p === "/api/studio/stream") return route.fulfill({ status: 204, body: "" });
     if (p === "/api/studio/slot") return json(200, { slot: null });
@@ -148,15 +148,23 @@ test("the tray states keep the tray the same size and never show a spinner, a pe
       if (/\d\s*%|loading|error|generat|spinner|function\s*\(|<\w+/i.test(m.trayText)) fails.push(`${state}: forbidden text "${m.trayText.slice(0, 80)}"`);
       const spin = await page.evaluate(() => [...document.querySelectorAll('[data-testid="tray"] *')].some((e) => /spin|progress/i.test(e.className?.baseVal ?? e.className ?? "") || e.getAttribute("role") === "progressbar"));
       if (spin) fails.push(`${state}: a spinner or progress element`);
-      const chip = await page.$('[data-testid="studio-chip"]');
-      if ((state === "skeleton_shown" || state === "building") !== !!chip) fails.push(`${state}: caption chip ${chip ? "shown" : "missing"}`);
+      // round 7 (C1 app-studio-no-build-state): the child never sees a piece being made: no "{T} is making this" chip, no
+      // pencil sketch, no veil, no sparkle; with no earlier piece the box stays the calm ground
+      const chip = await page.$('[data-testid="studio-chip"], .st-wash, .st-veil, .st-sparkle');
+      if (chip) fails.push(`${state}: build state on screen`);
+      const drawn = await page.evaluate(() => document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0);
+      if (["skeleton_shown", "building", "ready"].includes(state) && drawn) fails.push(`${state}: an unfinished piece is drawn`);
+      if (!["skeleton_shown", "building", "ready"].includes(state) && !drawn) fails.push(`${state}: the finished piece is not drawn`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-state-${state}.png` });
     } finally { await page.close(); }
   }
+  // the tray never moves; the box is compared among the states that draw the piece (round 7: an unfinished piece draws
+  // nothing, so its box is the calm ground's, not the piece's)
+  const drawnSizes = sizes.filter((x) => !["skeleton_shown", "building", "ready"].includes(x.state));
   for (const s of sizes) for (const k of ["x", "y", "w", "h"]) {
     if (Math.abs(s.tray[k] - sizes[0].tray[k]) > 4) fails.push(`${s.state}: tray ${k} moved ${s.tray[k]} vs ${sizes[0].tray[k]}`);
-    if (Math.abs(s.box[k] - sizes[0].box[k]) > 4) fails.push(`${s.state}: box ${k} moved`);
   }
+  for (const s of drawnSizes) for (const k of ["x", "y", "w", "h"]) if (Math.abs(s.box[k] - drawnSizes[0].box[k]) > 4) fails.push(`${s.state}: box ${k} moved`);
   assert.deepEqual(fails, []);
 });
 
@@ -332,5 +340,28 @@ test("an answer names its item and the mount key; a second wrong try reaches the
     assert.equal(ev.type, "stuck");
     assert.equal(ev.moduleId, `${LESSON}:st:1`);
     assert.equal(ev.data?.correct, undefined, "the lesson reads the host's grade, never a client claim");
+  } finally { await page.close(); }
+});
+
+// round 7 (C1 app-studio-no-build-state): while the next piece is still being made, the stage keeps the piece the child had
+// (inert: no corner control, no answers), never the new piece's sketch and never a caption about making it
+test("a piece still being made never replaces the finished piece on screen: the earlier piece stays, inert", { skip: SKIP, timeout: 120_000 }, async () => {
+  const page = await lessonWith({ width: 412, height: 860 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") },
+    { turnSlot: { slotId: "s2", intentId: `${LESSON}:st:2`, state: "building", artifact: skeletonOf("shade_fraction") } });
+  try {
+    await page.waitForSelector('[data-testid="studio-stage"][data-state="fallback_shown"]', { timeout: 10_000 });
+    const before = await page.evaluate(() => document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0);
+    assert.ok(before > 0, "the finished piece is drawn");
+    const input = await page.waitForSelector("input.dk-input, textarea.dk-input", { timeout: 8000 }).catch(() => null);
+    if (!input) { const type = await page.$('[data-testid="type"]'); if (type) await type.click(); }
+    await page.fill("input.dk-input, textarea.dk-input", "aur dikhao");
+    await page.keyboard.press("Enter");
+    await page.waitForSelector('[data-testid="studio-stage"][data-state="building"]', { timeout: 10_000 });
+    await page.waitForTimeout(400);
+    const m = await page.evaluate(() => ({ phase: document.querySelector('[data-testid="studio-stage"]')?.getAttribute("data-phase"),
+      drawn: document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0,
+      chip: !!document.querySelector('[data-testid="studio-chip"], .st-wash, .st-veil, .st-sparkle'),
+      ctrl: !!document.querySelector('[data-testid="studio-more"]') }));
+    assert.deepEqual(m, { phase: "held", drawn: before, chip: false, ctrl: false });
   } finally { await page.close(); }
 });

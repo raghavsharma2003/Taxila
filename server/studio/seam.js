@@ -1030,7 +1030,7 @@ export const studioSeam = {
       console.info("[studio] board-first page is the page on screen: kept");
       return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     }
-    { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
+    { const st = boardFirst.pickState(ask); noteBoardFirst(st); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
     // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
     // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.
     // Before: the slot planned with an empty stage for up to the 7 s budget (measured: 7/45 boards, lateness up to ~6 s).
@@ -1489,12 +1489,20 @@ export function noteWbTiming(lessonId, { lateMs, source }) {
   console.info(`[studio] wb_timing late=${late}ms source=${src}`);
   return { ok: true };
 }
-/** p50 / p90 of the recent whiteboard lateness (ms) and the anchor sources seen. */
+/** round 7 (C1 studio-board-timing): how each whiteboard ask's board-first pick ended (used | rejected:<first check> |
+ *  pending | none), counted per process, so the share of asks on the fast rung can be read in production. */
+const boardFirstCounts = {};
+function noteBoardFirst(st) {
+  const k = String(st ?? "none").startsWith("rejected:") ? `rejected:${String(st).slice(9).split(",")[0] || "?"}` : String(st ?? "none");
+  boardFirstCounts[k] = (boardFirstCounts[k] ?? 0) + 1;
+}
+/** p50 / p90 of the recent whiteboard lateness (ms), the anchor sources seen, and the board-first outcomes. */
 export function wbTimingStats() {
   const xs = wbTiming.map((x) => x.late).sort((a, b) => a - b);
   const q = (p) => (xs.length ? xs[Math.min(xs.length - 1, Math.floor(p * xs.length))] : null);
   const sources = {}; for (const x of wbTiming) sources[x.src] = (sources[x.src] ?? 0) + 1;
-  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources };
+  const asks = Object.values(boardFirstCounts).reduce((a, b) => a + b, 0);
+  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources, boardFirst: { asks, used: boardFirstCounts.used ?? 0, outcomes: { ...boardFirstCounts } } };
 }
 
 export function slotSnapshot(lessonId, intentId) {
