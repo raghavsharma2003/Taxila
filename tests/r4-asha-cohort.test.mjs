@@ -118,7 +118,7 @@ test("lamp2: the key rig runs on the stage (no WebGL needed), calm in a safety t
   assert.match(stage, /if \(pack\.rig !== "keys" && typeof WebGL2RenderingContext === "undefined"\) throw/);
   assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) \{ this\.driver\.visemes\.lead \+= KEY_LEAD_MS; this\.driver\.visemes\.extendedBilabials = true; \}/);
   const face = readFileSync(new URL("../src/face-puppet/PuppetFace.tsx", import.meta.url), "utf8");
-  assert.match(face, /holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
+  assert.doesNotMatch(face, /<TutorFace/, "every fallback is her own still");
   for (const f of ["rest-medium", "rest-close", "body", "head"]) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${f}.webp`, import.meta.url)), f);
   const g = JSON.parse(readFileSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url), "utf8"));
   for (const k of Object.keys(g.keys)) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${k}.webp`, import.meta.url)), `key ${k}`);
