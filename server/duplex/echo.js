@@ -21,7 +21,7 @@ const surf = (w) => String(w).normalize("NFC").toLowerCase().replace(new RegExp(
 // Census F5 #2: a negation keys on its surface, never its consonant skeleton (echoKey, shared with the cascade lane's isEcho)
 const sk = (w) => echoKey(String(w).replace(new RegExp(WORD.source, "gu"), ""));
 
-export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4, freshMs: 1000 };
+export const ECHO = { windowMs: 2000, minRun: 2, echoShare: 0.7, echoMinTokens: 4, freshMs: 1000, quoteOwn: 2 };
 
 export class EchoSubtractor {
   /** @param {{ windowMs?: number, minRun?: number }} [o] */
@@ -115,6 +115,7 @@ export class EchoSubtractor {
     // skeletons): one letter is too lossy to ANCHOR on. Short tokens still match by skeleton (her Roman line echoes back in
     // Devanagari), but a run counts only with at least one match of two letters or more (`long`), and the whole-text
     // echo share needs one too.
+    const isNeg = (i) => !!ts[i] && ts[i].startsWith("¬");
     const eq = (i, k) => ts[i] === hs[k];
     const long = (i) => !!ts[i] && ts[i].length >= 2;
     const hersToo = (i) => !!ts[i] && set.has(ts[i]);
@@ -141,7 +142,8 @@ export class EchoSubtractor {
         // fresh echo arrives at the TAIL of the text as she speaks: without token times only the last two tokens qualify
         // (M-D7 c01: her uptake "तीन" deleted BOTH of the child's own "तीन"s, the first spoken 1 s before hers)
         const tailOk = times ? true : i >= toks.length - 2;
-        const fresh = n === 1 && tailOk && surf(toks[i]) === surf(her[k].w) && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
+        // (never a negation on arrival time alone: "umm... nahin?" after her "haan ya nahin?" is the child's answer)
+        const fresh = n === 1 && tailOk && !isNeg(i) && surf(toks[i]) === surf(her[k].w) && her[k].endMs >= t - lagMs - this.o.freshMs && her[k].endMs <= t + 100;
         // with token times (word-timed sources) a token is echo only if it was heard WHILE her matching word was audible
         const aligned = !times || Array.from({ length: a - i }, (_, d) => i + d).every((x, d) => {
           const tw = times[x], hw = her[k + d];
@@ -175,6 +177,19 @@ export class EchoSubtractor {
     // Census F5 #2: a negation goes only inside a run of her words anchored by a long match (her echo, clearly): never
     // alone, never on a one-letter collision. (Never subtracting it at all, measured: her own echoed negations then leak
     // into the child's turn — a stray "nahi" beside the child's "haan" flips the meaning the other way.)
+    // R7 voice-echo-filter-residuals: her echo comes BEFORE the child's own words in an item (it is captured while she is
+    // audible, and the child answers after her), so a run of hers holding a negation that follows >= quoteOwn of the
+    // child's own words is the child QUOTING her ("…toh 9,000 nahi hai na?" after her "…woh 9,000 nahi hai?"): kept whole.
+    // Sim lab, 52,376 (her line → reply) pairs: negations lost 207 → 30 of 25,766; same-script floor unchanged, cross-script
+    // floor +1.9 % tokens (no new leaking line); quoteOwn 1 took the loss to 17 but the cross-script floor +64 %.
+    let own = 0;
+    for (let i = 0; i < toks.length;) {
+      if (!drop[i]) { if (ts[i]) own++; i++; continue; }
+      let j = i;
+      while (j < toks.length && drop[j]) j++;
+      if (own >= this.o.quoteOwn) for (let x = i; x < j; x++) if (isNeg(x)) { for (let y = i; y < j; y++) drop[y] = false; break; }
+      i = j;
+    }
     const removed = drop.filter(Boolean).length;
     if (!removed) return { text: toks.join(" "), removed: 0 };
     return { text: toks.filter((_, i) => !drop[i]).join(" "), removed };

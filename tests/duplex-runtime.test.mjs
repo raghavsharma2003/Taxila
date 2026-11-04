@@ -525,9 +525,12 @@ test("census F5: the carried burst's OWN item joins the fold-in though the ear o
   f.begin(3340, { carryFrom: 2620 });
   f.push({ type: "final", itemId: "burst", text: "8 corners", t: 3760, audioStartMs: 1996, audioEndMs: 3200 });
   assert.equal(f.view(3760).text, "8 corners");
-  // an item that ENDED before the carried onset is the last turn's, and stays out; so does one opened far earlier
+  // an item of the LAST turn (before her line's epoch) stays out, though it ended just before the onset; so does one
+  // opened far earlier that is still open at it (R7: an item of her line's epoch that ENDED just before the onset joins:
+  // tests/r7-voice-echo-residuals.test.mjs)
   const g = new TurnTranscript({ source: "voicelive" });
   g.begin(0);
+  g.begin(1800); // her line
   g.begin(3340, { carryFrom: 2620 });
   g.push({ type: "final", itemId: "before", text: "पुराना", t: 3400, audioStartMs: 1700, audioEndMs: 2400 });
   g.push({ type: "final", itemId: "early", text: "बहुत पहले", t: 3500, audioStartMs: 900, audioEndMs: 3000 });
