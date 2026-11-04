@@ -34,6 +34,16 @@ export const TUTORS = [
     },
     faceStyle: { smile: 0.8, headGain: 1.1, browGain: 1.1 },
     voice: { cps: 13.5, speakerMeanHz: 220 },
+    // The character record (PRODUCT-DESIGN-V2 §8, round 7 face-stills-and-character-record): her pronouns, and her
+    // stills per puppet look, rendered from that look's live rig (evals/face-puppet/stills.mjs) into
+    // public/assets/teacher/asha-stills/1/<look>-<pose>.webp; every surface shows the look the lesson shows.
+    pronouns: { subject: "she", object: "her", possessive: "her" },
+    stills: {
+      looks: ["r8", "lamp2"],
+      poses: ["portrait", "smile", "resting", "listening", "thinking", "curious", "proud"],
+      // poses the rig cannot hold yet (a wave, props) → the rig still that stands in until painted pose stills land
+      standIn: { wave: "smile", reading: "thinking", watering: "resting", telescope: "curious" },
+    },
   },
   {
     id: "arjun",
