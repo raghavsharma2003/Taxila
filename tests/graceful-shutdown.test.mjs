@@ -10,6 +10,11 @@ function serve(handler) {
   server.on("upgrade", (req, socket, head) => { const ws = acceptWebSocket(req, socket, head); ws.on("message", () => {}); });
   return new Promise((r) => server.listen(0, "127.0.0.1", () => r(server)));
 }
+/** Wait until the server has really accepted `n` requests (at most 5 s): a fixed sleep raced on loaded CI runners
+ *  (leftOpen 0 on PR #38; the fix is C2 Games' patch 001, applied to both drain tests). */
+async function inFlight(requests, n = 1) {
+  for (let i = 0; i < 250 && requests.active() < n; i++) await new Promise((r) => setTimeout(r, 20));
+}
 const get = (port, path) => new Promise((resolve, reject) => {
   http.get({ host: "127.0.0.1", port, path, agent: false }, (res) => { let b = ""; res.on("data", (c) => (b += c)); res.on("end", () => resolve({ status: res.statusCode, body: b })); }).on("error", reject);
 });
@@ -30,7 +35,7 @@ test("drain: in-flight request finishes, new connections refused, websocket told
   assert.equal(openWebSockets(), 1);
 
   const slow = get(port, "/slow");
-  await new Promise((r) => setTimeout(r, 50));
+  await inFlight(requests);
   assert.equal(requests.active(), 1);
 
   let flushed = false, exitCode = null;
@@ -56,7 +61,7 @@ test("drain: a request still open after the grace is cut, and the drain still fl
   const port = server.address().port;
   const requests = trackRequests(server);
   const hung = get(port, "/hang").catch((e) => e);
-  await new Promise((r) => setTimeout(r, 50));
+  await inFlight(requests);
   let flushed = false, exitCode = null;
   const r = await createDrain({ server, requests, flush: async () => { flushed = true; }, exit: (c) => { exitCode = c; }, log: () => {}, graceMs: 200, pollMs: 20 })();
   assert.equal(r.leftOpen, 1);
