@@ -11,6 +11,7 @@ import { ApiError, errText, postJson } from "../app/api.ts";
 import { PROMISES } from "../app/promises.ts";
 import { StepFrame } from "./Layout.tsx";
 import { useDraft } from "./draft.ts";
+import { teacherBandFor } from "./teacherBand.ts";
 
 /**
  * Step 3 "Our promises, before you sign up" (PRODUCT-DESIGN-V2 §3.2, §6.2; audit #24: the promises came AFTER the
@@ -22,7 +23,7 @@ export function PromisesStep() {
   const nav = useNavigate();
   const [d] = useDraft();
   const cl = d.child?.classLevel ?? 5;
-  const rec = teacherRecord(defaultTutorFor({ class_level: cl }), cl <= 4 ? "b2" : "b3");
+  const rec = teacherRecord(defaultTutorFor({ class_level: cl }), teacherBandFor(cl));
   const they = rec.pronouns.subject;
   const rows = [
     { art: "promises/ai-honest", title: `${rec.name} is an AI and says so`, body: aiHonestLine(they) },
