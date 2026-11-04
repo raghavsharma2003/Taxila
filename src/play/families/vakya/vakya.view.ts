@@ -59,7 +59,9 @@ export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function place(c: CanvasRenderingContext2D): void {
     const s = st(), pad = 12, sigW = 30, right = w - pad - sigW;
     const engW = p.engine ? clamp(textW(c, p.engine) + 44, 72, w * 0.5) : 64;
-    trackTop = 10;
+    // the scene (two track rows, the yard's two rows and its hint, about 350 px) sits in the middle of a tall stage instead of
+    // leaving its lower half empty; a short stage keeps it at the top. Stable per box size, so nothing jumps between acts.
+    trackTop = Math.round(clamp((h - 350) / 2, 10, 140));
     let x = pad, row = 0;
     engineBox = { x, y: trackTop + 6, w: engW, h: WH };
     x += engW + GAP;
