@@ -5,6 +5,13 @@ export { lockBeacon } from "../app/api.ts";
 import type { LedgerState } from "../ui/index.ts";
 import type { ClaimRow } from "./claims.ts";
 
+/** GET /api/parent/teaching (round 7 F): how the teacher works, and what she did in the last lessons and why (closed codes). */
+export interface TeachingOut {
+  teacher: string; approach: string[];
+  lessons: { id: string; topic: string | null; startedAt: string; why: { code: string; n: number; text: string }[] }[];
+  madeFor: import("../../shared/contracts.ts").MadeForItem[];
+}
+
 export interface GateState {
   hasPin: boolean; unlocked: boolean; unlockedUntil: string | null; lockedUntil: string | null;
   /** No PIN yet and this session is not the fresh onboarding one: the first PIN needs the account password. */
@@ -149,6 +156,7 @@ export const parentApi = {
   syllabus: (childId: string) => getJson<SyllabusOut>(`/api/parent/syllabus?${qs({ childId })}`),
   controls: (childId: string) => getJson<{ controls: ControlsT; dayLimits?: boolean; dayLimitsMode?: "on" | "off" | "child"; reportChannels?: ("whatsapp" | "app")[] }>(`/api/parent/controls?${qs({ childId })}`),
   setControls: (childId: string, c: Partial<ControlsT>) => postJson<{ controls: ControlsT }>("/api/parent/controls", { childId, ...c }),
+  teaching: (childId: string) => getJson<TeachingOut>(`/api/parent/teaching?${qs({ childId })}`),
   madeFor: (childId: string) => getJson<{ items: import("../../shared/contracts.ts").MadeForItem[] }>(`/api/parent/made-for?${qs({ childId })}`),
   homeTask: (childId: string, at: { period: string } | { lessonId: string }, done: boolean) => postJson("/api/parent/hometask", { childId, ...at, done }),
   reports: (childId: string) => getJson<ReportList>(`/api/parent/reports?${qs({ childId })}`),

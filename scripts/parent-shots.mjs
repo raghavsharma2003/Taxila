@@ -15,6 +15,7 @@ import { renderLang } from "../server/reports/render.js";
 import { assemble, laneAOrder } from "../server/reports/writer.js";
 import { gateReport } from "../server/reports/gate.js";
 import { LANGS } from "../server/reports/config.js";
+import { APPROACH, whyLines } from "../server/reports/teaching.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DIST = join(ROOT, "dist");
@@ -71,7 +72,12 @@ function api(path) {
     case "/api/parent/report": return u.searchParams.get("cadence") === "monthly" ? { report } : { report: null, skipped: "none", period: "x" };
     case "/api/parent/controls": return { controls, dayLimitsMode: "child", reportChannels: ["whatsapp", "app"] };
     case "/api/parent/household": return { eligible: true, shared: true };
-    case "/api/parent/memory": return { items: [], consent: true };
+    case "/api/parent/memory": return { keeps: "Short notes from lessons, to bring back what Riya likes.", remembered: [{ id: "m1", text: "Likes cricket examples", topic: "Fractions", at: "2026-10-20T12:00:00Z" }], fromLastLesson: [], forgotten: [] };
+    case "/api/parent/teaching": return { teacher: "Asha", approach: APPROACH, madeFor: [], lessons: [
+      { id: "L3", topic: "Fractions with the same numerator", startedAt: "2026-10-20T11:30:00Z", why: whyLines([
+        { move: "explain", reasons: ["request.visual"] }, { move: "reteach", reasons: [], misconception_id: "m1" }, { move: "hint", reasons: [] }, { move: "teachback", reasons: [] }], { name: "Riya", T: "Asha" }) },
+      { id: "L2", topic: "Numbers up to 1,00,000", startedAt: "2026-10-06T11:30:00Z", why: whyLines([{ move: "retrieval", reasons: [] }, { move: "worked_example", reasons: [] }], { name: "Riya", T: "Asha" }) },
+    ] };
     default: return {};
   }
 }
@@ -108,7 +114,12 @@ try {
   await card.waitFor({ timeout: 10_000 });
   await card.scrollIntoViewIfNeeded();
   await card.screenshot({ path: join(OUT, "parent-controls-household.png") });
-  console.log(`wrote ${OUT}/parent-notes-monthly.png and parent-controls-household.png`);
+  await page.evaluate((u) => { history.pushState({}, "", u); dispatchEvent(new PopStateEvent("popstate")); }, `/parent/teaching?c=${CID}`);
+  await page.getByTestId("teaching").waitFor({ timeout: 10_000 });
+  await page.waitForTimeout(400);
+  await unfix();
+  await page.screenshot({ path: join(OUT, "parent-teaching.png"), fullPage: true });
+  console.log(`wrote ${OUT}/parent-notes-monthly.png, parent-controls-household.png and parent-teaching.png`);
 } finally {
   await browser.close();
   server.close();

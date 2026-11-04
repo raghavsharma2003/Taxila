@@ -26,7 +26,8 @@ export function More() {
     <ParentShell title="More" child={current} kids={kids}>
       <h1 className="pa-h1">More</h1>
       <ul className="pa-list pa-more">
-        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note and the weekly letter">Notes</RowLink></li>
+        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note, the weekly letter and the monthly report">Notes</RowLink></li>
+        <li><RowLink to={`/parent/teaching${qs}`} sub="What the teacher did in recent lessons, and why">How the teacher teaches</RowLink></li>
         <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language, words on screen">Controls</RowLink></li>
         <li><RowLink to={`/parent/children${qs}`} sub="Add a child, switch child">Children</RowLink></li>
         <li><RowLink to={`/parent/data${qs}`} sub="Your choices, download, delete">Data and privacy</RowLink></li>
@@ -180,7 +181,7 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
  * consent's own promise: "You can see and delete each one"; a child's "please forget that" deletes this lesson's rows and
  * the ones she had in hand, the rest are here). The rows are shown as stored, labelled as the teacher AI's own note.
  */
-function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
+export function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
   const { relock } = useGate();
   const [m, setM] = useState<ParentMemory | null>(null);
   const [err, setErr] = useState<string | null>(null);

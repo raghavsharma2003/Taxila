@@ -650,6 +650,15 @@ async function emitSchool(childId, event) {
   catch (e) { console.error("[parent] school event", event.type, e?.message?.slice(0, 160)); }
 }
 
+// ───────────────────────────── how the teacher teaches (round 7 F, learning-parent-teaching-page) ─────────────────────────────
+/** GET /api/parent/teaching?childId= → { teacher, approach, lessons: [{ id, topic, startedAt, why: [{ code, n, text }] }], madeFor } */
+async function teaching(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const [{ teachingOf }, { teacherFor }] = await Promise.all([import("../reports/teaching.js"), import("../compiler/characters/index.js")]);
+  const T = teacherFor(child).name;
+  send(res, 200, { teacher: T, ...(await teachingOf(child, { T, q })) });
+}
+
 // ───────────────────────────── household (round 7 F, household v1) ─────────────────────────────
 // "The children share one phone for lessons": each child's Conductor gets parent.setting_changed{sharedPhone}, and the
 // planner then gives each her own window on that phone, younger first (conductor/household.js). Offered only to a
@@ -1533,6 +1542,7 @@ export const routes = {
   "GET /api/parent/chapters": getChapters,
   "POST /api/parent/school-chapter": setSchoolChapter,
   "POST /api/parent/timetable": setTimetable,
+  "GET /api/parent/teaching": teaching,
   "GET /api/parent/household": getHousehold,
   "POST /api/parent/household": setHousehold,
   "GET /api/parent/made-for": madeForList,
