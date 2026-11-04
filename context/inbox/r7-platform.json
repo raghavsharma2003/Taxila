@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-migrate-test-default-file-tx",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "scripts/migrate.mjs targets the TEST branch by default (server/db.js dbUrl with TAXILA_DB=test: CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL, never a fallback to production); production only with --prod on the command line (TAXILA_DB=prod alone and --prod with TAXILA_DB=test are refused), plus --backup NAME (a Neon backup branch of the target's branch first) or --no-backup on the record. Each migration FILE runs in ONE transaction together with its schema_migrations row (Neon HTTP transaction, or pg begin/commit when DB_DRIVER=pg or the host is not Neon), so a failure leaves the file unapplied and unrecorded; statements are split with string / quoted-name / $tag$ / comment awareness (scripts/migrate-core.mjs splitSql, identical output to the old splitter on all 30 shipped files). --dry-run lists what is pending and writes nothing. --job applies inside the ACA VNet through scripts/region/db-copy.mjs --apply-migrations (psql -1 per file + its row; the sha's migrations ride as a git-archive env var). Reverse if a migration needs a non-transactional statement (create index concurrently): then that file gets an explicit opt-out marker, not a return to statement-by-statement."
+    },
+    {
+      "id": "ms-r7-migrate-tooling-local-2026-11-04",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "title": "Migrate tooling on a throwaway local PostgreSQL 16 (TLS on, verify-full with a self-signed CA; no Neon, no Azure): migrate.mjs (pg driver) --dry-run 30 pending, apply 30 applied, rerun 0 applied; db-copy.sh MODE=apply 30 applied each in one psql -1 transaction, rerun 0, missingMigrations empty; a planted 999_bad.sql (create table, then 1/0) failed at 'apply 999_bad.sql (rolled back)' with the table absent and no schema_migrations row. Refusals exit 2 with one line: TAXILA_DB=prod without --prod, --prod with TAXILA_DB=test, --prod without --backup/--no-backup. Unit tests: tests/migrate-tooling.test.mjs (10, no DB). Not yet run live: --dry-run on the stream's Neon branch (HTTP transaction path), the Neon backup-branch API, the ACA job apply (MIGRATIONS_TGZ ~35 KB as a container env var)."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-migrate-test-default-file-tx", "rel": "measured_by", "dst": "ms-r7-migrate-tooling-local-2026-11-04" }
+  ]
+}

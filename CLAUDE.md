@@ -42,7 +42,7 @@ grades — classify against verified keys; identity is an authenticated child id
 - `shared/contracts.ts` — the seams between client, server and content
 - `data/curriculum/` NCERT syllabus graph; `data/kits/` verified teaching kits (blind-solved answer keys)
 - `docs/research/**` research; `docs/harvest/**` what was inherited from earlier products
-- `db/migrations/` (apply with `node scripts/migrate.mjs`), `evals/` measured harnesses
+- `db/migrations/` (apply with `node scripts/migrate.mjs`: the test branch by default, `--prod` for production), `evals/` measured harnesses
 
 ## Deploy
 `git push` first (ACR builds from GitHub), then `node scripts/deploy-azure.mjs` → Azure Container Apps `taxila-web`.

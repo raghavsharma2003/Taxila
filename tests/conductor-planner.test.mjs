@@ -11,6 +11,7 @@ import { recordingView } from "../server/conductor/view.js";
 import { BAND } from "../server/conductor/config.js";
 import { jcs, ulid } from "../server/conductor/ids.js";
 import { validateEvent, EventInvalid, idemKeyFor } from "../server/conductor/events.js";
+import { splitSql } from "../scripts/migrate-core.mjs";
 
 const CHILD = "11111111-2222-4333-8444-555555555555";
 const ist = (day, hhmm) => new Date(`${day}T${hhmm}:00+05:30`);
@@ -175,8 +176,8 @@ test("ulid: 26 Crockford chars, time-ordered", () => {
 // ───────────── the migration under scripts/migrate.mjs's splitter ─────────────
 test("004_conductor.sql survives migrate.mjs's split: every $$ body stays one statement", () => {
   const body = readFileSync(new URL("../db/migrations/004_conductor.sql", import.meta.url), "utf8");
-  // the exact split scripts/migrate.mjs uses
-  const stmts = body.split(/;\s*$/m).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
+  // the exact split scripts/migrate.mjs uses (scripts/migrate-core.mjs splitSql)
+  const stmts = splitSql(body);
   for (const s of stmts) assert.equal((s.match(/\$\$/g) || []).length % 2, 0, `unbalanced $$ in: ${s.slice(0, 80)}`);
   const fns = stmts.filter((s) => /^create or replace function/i.test(s)).map((s) => s.match(/function (\w+)/)[1]);
   assert.deepEqual(fns.sort(), ["complete_job", "fire_wakeups", "gen_ulid", "ingest_event"]);
@@ -184,7 +185,7 @@ test("004_conductor.sql survives migrate.mjs's split: every $$ body stays one st
 
 test("004_conductor_notification.sql survives the same split and aligns notification with §4.10.3", () => {
   const body = readFileSync(new URL("../db/migrations/004_conductor_notification.sql", import.meta.url), "utf8");
-  const stmts = body.split(/;\s*$/m).map((s) => s.replace(/^\s*--.*$/gm, "").trim()).filter(Boolean);
+  const stmts = splitSql(body);
   for (const s of stmts) assert.equal((s.match(/\$\$/g) || []).length % 2, 0, `unbalanced $$ in: ${s.slice(0, 80)}`);
   assert.ok(stmts.some((s) => /references child\(id\) on delete cascade/.test(s)), "child_id cascades");
   assert.ok(stmts.some((s) => /guardian_id set not null/.test(s)));
