@@ -12,8 +12,10 @@
 // expand(call, { band, lessonId, scriptId }) → { ok, script, facts, errors }: the script is normalised STRICTLY and
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
-import { normalizeScript, lintScript, textBox, textProblem } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, textBox, textProblem, settledScript } from "../../../shared/whiteboard.js";
 import { placeNamed } from "./places.js";
+
+const round1 = (v) => Math.round(v * 10) / 10;
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
@@ -162,12 +164,12 @@ function fractionOf(c, tl) {
   tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
   // step 1: the inner fraction c/d, column by column
   for (let i = 1; i < d; i++) tl.add({ op: "line", from: [x0 + i * cw, y0], to: [x0 + i * cw, y0 + H], weight: 1 }, 220, { gap: 50 });
-  for (let i = 0; i < cn; i++) tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 320, { gap: 100 });
+  for (let i = 0; i < cn; i++) { tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 200, { gap: 100 }); tl.add({ op: "sweep", target: `c${i}`, dir: "down" }, 480, { gap: 0 }); }
   tl.add({ id: "inner", op: "text", at: [x0 + (cn * cw) / 2, y0 - 16], text: `${cn}/${d}`, size: "m", ink: "accent" }, 380, { gap: 160 });
   // step 2: the outer fraction a/b of that part, row by row inside the shaded columns
   tl.pause(400);
   for (let j = 1; j < b; j++) tl.add({ op: "line", from: [x0, y0 + j * rh], to: [x0 + W, y0 + j * rh], weight: 1, ink: "soft" }, 220, { gap: 50 });
-  for (let j = 0; j < a; j++) tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 380, { gap: 140 });
+  for (let j = 0; j < a; j++) { tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 220, { gap: 140 }); tl.add({ op: "sweep", target: `r${j}`, dir: "right" }, 520, { gap: 0 }); }
   tl.add({ id: "outer", op: "text", at: [x0 + W + 12, y0 + (a * rh) / 2], text: `${a}/${b}`, size: "m", ink: "mark", align: "start" }, 380, { gap: 160 });
   // step 3: count the small parts: a × c of b × d
   const res = c.hideResult ? "?" : `${a * cn}/${b * d}`;
@@ -187,7 +189,7 @@ function combineCount(c, tl) {
   const dot = (i, x0, y0, id, ink) => ({ id, op: "circle", c: [x0 + (i % 5) * 30, y0 + Math.floor(i / 5) * 30], r: 10, fill: ink, ink });
   for (let i = 0; i < a; i++) tl.add(dot(i, op === "add" ? 40 : 110, 70, `a${i}`, "accent"), 160, { gap: 70 });
   if (op === "add") {
-    tl.add({ op: "text", at: [200, 85], text: "+", size: "l" }, 300);
+    tl.add({ id: "plus", op: "text", at: [200, 85], text: "+", size: "l" }, 300);
     for (let i = 0; i < b; i++) tl.add(dot(i, 245, 70, `b${i}`, "good"), 160, { gap: 70 });
   } else {
     // take away: cross out the last b dots, one by one
@@ -196,10 +198,21 @@ function combineCount(c, tl) {
       tl.add({ op: "line", from: [x - 12, y - 12], to: [x + 12, y + 12], ink: "mark", weight: 2 }, 220, { gap: 120 });
     }
   }
+  // round 7 (M2): adding is PUTTING TOGETHER: the second group slides over and joins the first, filling its rows of five
+  const claims = [];
+  if (op === "add" && b > 0) {
+    tl.pause(300);
+    for (let i = 0; i < b; i++) {
+      const k = a + i, tx = 40 + (k % 5) * 30, ty = 70 + Math.floor(k / 5) * 30, fx = 245 + (i % 5) * 30, fy = 70 + Math.floor(i / 5) * 30;
+      tl.add({ op: "move", target: `b${i}`, by: [tx - fx, ty - fy], arc: 18 }, 900, i ? { with: true } : { gap: 120 });
+      claims.push({ id: `b${i}`, c: [tx, ty] });
+    }
+    tl.add({ op: "erase", target: "plus" }, 300, { with: true });
+  }
   const sign = op === "add" ? "+" : "-";
   tl.add({ id: "eq", op: "numwork", at: [120, 220], layout: "equation", rows: [[String(a), sign, String(b), "=", res]], weight: 2 }, 1100, { gap: 350 });
   tl.add({ op: "highlight", target: "eq", style: "underline", ink: "mark" }, 500, { gap: 200 });
-  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "take away", result: c.hideResult ? "? (child works it out)" : result } };
+  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "take away", result: c.hideResult ? "? (child works it out)" : result }, claims };
 }
 
 function numberLineHop(c, tl) {
@@ -255,12 +268,20 @@ function columnOp(c, tl) {
   tl.add({ op: "text", at: [right - (width + 0.6) * cw, rowY[1]], text: op === "add" ? "+" : "-", size: "l" }, 200);
   tl.add({ op: "line", from: [right - (width + 1.1) * cw, 170], to: [right + 8, 170], weight: 2 }, 500, { gap: 150 });
   // then the answer, right to left, each column's carry written small above its column just before that column
+  const claims = [];
   for (let j = width - 1; j >= 0; j--) {
-    if (receives.has(j)) tl.add({ op: "text", at: [colX(j), 55], text: op === "add" ? "1" : "-1", size: "s", ink: "mark" }, 260, { gap: 200 });
+    if (op === "sub" && receives.has(j)) tl.add({ op: "text", at: [colX(j), 55], text: "-1", size: "s", ink: "mark" }, 260, { gap: 200 });
     // hideResult: each answer cell is "?" (the column method shown, the digits left to the child)
     if (dr[j].trim()) tl.add({ id: `r${j}`, op: "text", at: [colX(j), rowY[2]], text: c.hideResult ? "?" : dr[j], size: "l", ink: "accent" }, 300, { gap: 220 });
+    // round 7 (M2): adding, a column that makes ten sends its 1 UP to the next column: the small 1 appears beside this
+    // column's answer and rises to the top of the column on its left (ending where the still board wrote it)
+    if (op === "add" && receives.has(j - 1)) {
+      const id = tl.add({ op: "text", at: [colX(j) + 17, rowY[2] - 18], text: "1", size: "s", ink: "mark" }, 220, { gap: 160 });
+      tl.add({ op: "move", target: id, by: [round1(colX(j - 1) - colX(j) - 17), round1(55 - (rowY[2] - 18))], arc: 10 }, 900, { gap: 80 });
+      claims.push({ id, at: [colX(j - 1), 55] });
+    }
   }
-  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "subtract", result: c.hideResult ? "? (child works it out)" : r, carries: receives.size } };
+  return { claims, facts: { first: a, second: b, operation: op === "add" ? "add" : "subtract", result: c.hideResult ? "? (child works it out)" : r, carries: receives.size } };
 }
 
 const PLACES = ["O", "T", "H", "Th", "TTh", "L", "TL"];
@@ -275,28 +296,41 @@ function placeValue(c, tl) {
     tl.add({ op: "rect", at: [x0 + i * cw, y0], w: cw - 4, h: 90, weight: 1 }, 260, { gap: 60 });
     tl.add({ op: "text", at: [x0 + i * cw + (cw - 4) / 2, y0 + 22], text: place, size: "s", ink: "soft" }, 200, { with: true });
   });
-  digits.forEach((d, i) => tl.add({ id: `d${i}`, op: "text", at: [x0 + i * cw + (cw - 4) / 2, y0 + 62], text: d, size: "l", ink: "accent" }, 300, { gap: 220 }));
-  // the Indian grouping, written under the boxes
+  // round 7 (M2): the number is written under the boxes digit by digit, then each digit RISES into its place box, ones
+  // first (a digit's value is the place it lands in); then the Indian grouping under it
+  const claims = [];
+  digits.forEach((d, i) => tl.add({ id: `d${i}`, op: "text", at: [x0 + i * cw + (cw - 4) / 2, 222], text: d, size: "l", ink: "accent" }, 200, { gap: 60 }));
+  for (let i = n - 1; i >= 0; i--) {
+    tl.add({ op: "move", target: `d${i}`, by: [0, y0 + 62 - 222] }, 600, { gap: 160 });
+    claims.push({ id: `d${i}`, at: [x0 + i * cw + (cw - 4) / 2, y0 + 62] });
+  }
   const indian = value.toLocaleString("en-IN");
-  tl.add({ id: "num", op: "text", at: [200, 230], text: indian, size: "l" }, 900, { gap: 300 });
-  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") } };
+  tl.add({ id: "num", op: "text", at: [200, 262], text: indian, size: "l" }, 900, { gap: 300 });
+  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") }, claims };
 }
 
 function equalGroups(c, tl) {
   const { groups, each } = c;
   if (!isInt(groups, 2, 6) || !isInt(each, 1, 8)) return { error: "groups_range" };
   const gw = 340 / groups;
+  // round 7 (M2): all the dots first, in one heap under the groups; then they are SHARED OUT, one group at a time, each
+  // dot sliding to its place in its group (ending where the still board drew it): "equal groups" seen happening
+  const N = groups * each, hc = Math.min(12, N), claims = [];
+  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 62, weight: 1 }, 300, { gap: 80 });
+  const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 188 + Math.floor(k / hc) * 11];
+  for (let k = 0; k < N; k++) tl.add({ id: `g${k}`, op: "circle", c: heap(k), r: 4.5, fill: "accent", ink: "accent", weight: 1 }, 40, { gap: 10 });
   for (let g = 0; g < groups; g++) {
     const gx = 30 + g * gw;
-    tl.add({ op: "ellipse", c: [gx + gw / 2, 110], rx: gw / 2 - 6, ry: 62, weight: 1 }, 380, { gap: 120 });
     for (let i = 0; i < each; i++) {
-      const cols = each > 4 ? 2 : 1;
+      const cols = each > 4 ? 2 : 1, k = g * each + i;
       const x = gx + gw / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0), y = 110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13;
-      tl.add({ op: "circle", c: [x, y], r: 5, fill: "accent", ink: "accent", weight: 1 }, 110, { gap: 40 });
+      const [hx, hy] = heap(k);
+      tl.add({ op: "move", target: `g${k}`, by: [round1(x - hx), round1(y - hy)] }, 650, i ? { with: true } : { gap: 220 });
+      claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
     }
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each } };
+  return { facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────
@@ -322,6 +356,27 @@ function fitWidth(text, maxW) {
   return best;
 }
 
+/** A bent arrow's path as points (its quadratic curve sampled), the same curve shared/whiteboard.js draws. */
+function bentLeg(a, b, bend) {
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+  const ctl = [mx - (dy / len) * bend * len * 0.5, my + (dx / len) * bend * len * 0.5];
+  return [0, 0.25, 0.5, 0.75, 1].map((t) => [(1 - t) ** 2 * a[0] + 2 * (1 - t) * t * ctl[0] + t * t * b[0], (1 - t) ** 2 * a[1] + 2 * (1 - t) * t * ctl[1] + t * t * b[1]]);
+}
+/** A token that travels the legs in order (round 7, M2): it appears at the first leg's start, follows each leg, and steps
+ *  straight from one leg's end to the next's start. → the claim on where it ends. */
+function tour(tl, legs) {
+  if (!legs.length) return [];
+  const start = legs[0][0];
+  const id = tl.add({ op: "circle", c: [round1(start[0]), round1(start[1])], r: 5, fill: "mark", ink: "mark", weight: 1 }, 200, { gap: 260 });
+  let at = [round1(start[0]), round1(start[1])];
+  for (const leg of legs) {
+    const path = leg.map((q) => [round1(q[0] - at[0]), round1(q[1] - at[1])]).filter((q, i) => i || q[0] || q[1]);
+    if (path.length) tl.add({ op: "follow", target: id, path }, 800, { gap: 60 });
+    at = [at[0] + path.at(-1)[0], at[1] + path.at(-1)[1]];
+  }
+  return [{ id, c: [round1(at[0]), round1(at[1])] }];
+}
+
 function flow(c, tl) {
   const steps = c.steps;
   if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6 || !steps.every(fitsLabel)) return { error: "steps" };
@@ -343,18 +398,26 @@ function flow(c, tl) {
       const sameRow = Math.abs(py - y) < 1, sameCol = Math.abs(px - x) < 1;
       const from = sameRow ? [px + bw / 2 + 3, py] : sameCol ? [px, py + bh / 2 + 3] : [px + bw / 2 + 3, py];
       const to = sameRow ? [x - bw / 2 - 3, y] : sameCol ? [x, y - bh / 2 - 3] : [x - bw / 2 - 3, y];
-      tl.add({ op: "arrow", from, to, ink: "accent", ...(sameRow || sameCol ? {} : { bend: 0.2 }) }, 450, { gap: 160 });
+      tl.add({ op: "arrow", from, to, ink: "accent", ...(sameRow || sameCol ? {} : { bend: 0.2 }), __step: i }, 450, { gap: 160 });
     }
     tl.add({ id: `b${i}`, op: "rect", at: [x - bw / 2, y - bh / 2], w: bw, h: bh, round: 10, weight: 2 }, 420, { gap: 80 });
     if (!writeFit(tl, steps[i], x, y + 2, bw - 10, {}, { id: `t${i}` })) return { error: `label_too_wide:${i}` };
   }
-  return { facts: Object.fromEntries([["steps", n], ...steps.map((s, i) => [`step${i + 1}`, s])]) };
+  // round 7 (M2): then the process RUNS: a token goes along every arrow in order, step to step, ending at the last step
+  const legs = [];
+  for (let i = 1; i < n; i++) {
+    const a = tl.ops.find((o) => o.op === "arrow" && o.__step === i);
+    if (a) legs.push(a.bend ? bentLeg(a.from, a.to, a.bend) : [a.from, a.to]);
+  }
+  for (const o of tl.ops) delete o.__step;
+  const claims = tour(tl, legs);
+  return { facts: Object.fromEntries([["steps", n], ...steps.map((s, i) => [`step${i + 1}`, s])]), claims };
 }
 
 function cycle(c, tl) {
   const stages = c.stages;
   if (!Array.isArray(stages) || stages.length < 3 || stages.length > 6 || !stages.every(fitsLabel)) return { error: "stages" };
-  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100;
+  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [];
   const at = (i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
   for (let i = 0; i < n; i++) {
     const maxW = n <= 4 ? 160 : 140;
@@ -370,13 +433,17 @@ function cycle(c, tl) {
     // the arrow runs between the two labels along the loop, shortened so it never touches either word
     const sx = x + (nx - x) * 0.32, sy = y + (ny - y) * 0.32, ex = x + (nx - x) * 0.68, ey = y + (ny - y) * 0.68;
     tl.add({ op: "arrow", from: [sx, sy], to: [ex, ey], bend: -0.25, ink: "accent" }, 450, { gap: 140 });
+    legs.push(bentLeg([sx, sy], [ex, ey], -0.25));
   }
   if (c.centre && fitsLabel(c.centre)) {
     const size = sizeFor(c.centre, 150);
     if (size) tl.add({ op: "text", at: [cx, cy], text: c.centre, size, ink: "soft" }, 500, { gap: 200 });
   }
   tl.add({ op: "highlight", target: "t0", style: "circle", ink: "mark" }, 600, { gap: 300 });
-  return { facts: Object.fromEntries([["stages", n], ...stages.map((s, i) => [`stage${i + 1}`, s])]) };
+  // round 7 (M2): then one turn of the cycle: a token travels every arrow in order, back to where it began (a cycle
+  // never ends: the last stage leads to the first)
+  const claims = tour(tl, legs);
+  return { facts: Object.fromEntries([["stages", n], ...stages.map((s, i) => [`stage${i + 1}`, s])]), claims };
 }
 
 function compare(c, tl) {
@@ -603,7 +670,7 @@ function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
   if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
-  const facts = { angles: n };
+  const facts = { angles: n }, claims = [];
   list.forEach((a, i) => {
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
@@ -611,7 +678,11 @@ function angle(c, tl) {
     const xs = [0, L, L * Math.cos(th)], minX = Math.min(...xs), maxX = Math.max(...xs);
     const vx = i * colW + colW / 2 - (minX + maxX) / 2, vy = n === 1 ? 215 : 205;
     tl.add({ id: `h${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2 }, 520, { gap: i ? 260 : 120 });
-    tl.add({ id: `r${i}`, op: "line", from: [vx, vy], to: [vx + L * Math.cos(th), vy - L * Math.sin(th)], weight: 2 }, 520, { gap: 90 });
+    // round 7 (M2): the second arm is drawn along the first, then TURNS open by the angle (an angle is an amount of turn);
+    // it ends exactly where the still board drew it (a claim expand() checks)
+    tl.add({ id: `r${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2, ink: "accent" }, 420, { gap: 90 });
+    tl.add({ op: "rotate", target: `r${i}`, deg: -a.deg, about: [vx, vy] }, 700 + a.deg * 6, { gap: 120 });
+    claims.push({ id: `r${i}`, to: [vx + L * Math.cos(th), vy - L * Math.sin(th)] });
     tl.add({ op: "circle", c: [vx, vy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 40 });
     if (a.deg === 90) tl.add({ id: `m${i}`, op: "stroke", points: [[vx + 20, vy], [vx + 20, vy - 20], [vx, vy - 20]], ink: "mark", weight: 2 }, 420, { gap: 200 });
     else tl.add({ id: `m${i}`, op: "stroke", points: arcPts(vx, vy, n === 1 ? 34 : 26, a.deg), ink: "mark", weight: 2 }, 520, { gap: 200 });
@@ -624,7 +695,7 @@ function angle(c, tl) {
     if (n === 1 && c.arm && fitsLabel(c.arm)) tl.add({ op: "label", at: [vx + L * 0.72, vy + 34], text: c.arm, to: [vx + L * 0.72, vy + 4], ink: "soft" }, 520, { gap: 200 });
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
   });
-  return { facts };
+  return { facts, claims };
 }
 
 const SIDES = { triangle: 3, square: 4, rectangle: 4, quadrilateral: 4, pentagon: 5, hexagon: 6, octagon: 8, circle: 0 };
@@ -697,17 +768,24 @@ function symmetry(c, tl) {
     const d = c.dot, u = 25, y = 150;
     tl.add({ id: "dot", op: "circle", c: [200 - d * u, y], r: 8, fill: "accent", ink: "accent" }, 300, { gap: 300 });
     tl.add({ op: "text", at: [200 - (d * u) / 2, y - 26], text: String(d), size: "m", ink: "soft" }, 300, { gap: 200 });
-    tl.add({ op: "arrow", from: [200 - d * u + 10, y + 16], to: [200 + d * u - 10, y + 16], bend: 0.35, ink: "mark" }, 900, { gap: 300 });
+    // round 7 (M2): the image starts ON the dot and jumps across the line, as far again on the other side
+    tl.add({ id: "img", op: "circle", c: [200 - d * u, y], r: 8, fill: "good", ink: "good" }, 200, { gap: 200 });
+    tl.add({ op: "arrow", from: [200 - d * u + 10, y + 16], to: [200 + d * u - 10, y + 16], bend: 0.35, ink: "mark" }, 900, { gap: 120 });
+    tl.add({ op: "move", target: "img", by: [2 * d * u, 0], arc: 34 }, 900, { with: true });
     tl.add({ op: "text", at: [200 + (d * u) / 2, y - 26], text: String(d), size: "m", ink: "soft" }, 300, { gap: 200 });
-    tl.add({ id: "img", op: "circle", c: [200 + d * u, y], r: 8, fill: "good", ink: "good" }, 300, { gap: 120 });
-    return { facts: { line: c.line ?? "mirror line", left: d, right: d }, ground: "grid" };
+    return { facts: { line: c.line ?? "mirror line", left: d, right: d }, ground: "grid", claims: [{ id: "img", c: [200 + d * u, y] }] };
   }
   // a figure and its mirror half, drawn one half after the other
   tl.add({ id: "L", op: "stroke", points: [[200, 52], [150, 92], [118, 150], [150, 212], [200, 252]], weight: 2 }, 900, { gap: 260 });
   tl.add({ op: "circle", c: [164, 140], r: 9, fill: "accent", ink: "accent" }, 260, { gap: 80 });
-  tl.add({ id: "R", op: "stroke", points: [[200, 52], [250, 92], [282, 150], [250, 212], [200, 252]], weight: 2, ink: "good" }, 900, { gap: 320 });
-  tl.add({ op: "circle", c: [236, 140], r: 9, fill: "good", ink: "good" }, 260, { gap: 80 });
-  return { facts: { line: c.line ?? "mirror line", halves: "match" }, ground: "grid" };
+  // round 7 (M2): the mirror half is the first half FOLDED over the line: traced on top of it, then turned over the fold
+  // (a scale of -1 about the line: halfway through it lies flat along the fold)
+  tl.add({ id: "R", op: "stroke", points: [[200, 52], [150, 92], [118, 150], [150, 212], [200, 252]], weight: 2, ink: "good" }, 500, { gap: 320 });
+  tl.add({ id: "Rd", op: "circle", c: [164, 140], r: 9, fill: "good", ink: "good" }, 200, { gap: 40 });
+  tl.add({ op: "scale", target: "R", k: [-1, 1], about: [200, 150] }, 1500, { gap: 240 });
+  tl.add({ op: "move", target: "Rd", by: [72, 0], arc: 24 }, 1500, { with: true });
+  return { facts: { line: c.line ?? "mirror line", halves: "match" }, ground: "grid",
+    claims: [{ id: "R", points: [[200, 52], [250, 92], [282, 150], [250, 212], [200, 252]] }, { id: "Rd", c: [236, 140] }] };
 }
 
 const UNITS = ["cm", "m", "km", "mm", "units"];
@@ -725,7 +803,11 @@ function areaGrid(c, tl) {
   if (grid) {
     for (let i = 1; i < w; i++) tl.add({ op: "line", from: [x0 + i * cell, y0], to: [x0 + i * cell, y0 + H], weight: 1, ink: "soft" }, 160, { gap: 30 });
     for (let j = 1; j < h; j++) tl.add({ op: "line", from: [x0, y0 + j * cell], to: [x0 + W, y0 + j * cell], weight: 1, ink: "soft" }, 160, { gap: 30 });
-    if (mode === "area") for (let j = 0; j < h; j++) tl.add({ op: "rect", at: [x0 + 2, y0 + j * cell + 2], w: W - 4, h: cell - 4, fill: "accent", ink: "accent", weight: 1 }, 320, { gap: 140 });
+    // round 7 (M2): area is rows of squares: each row fills from the left, one after the other
+    if (mode === "area") for (let j = 0; j < h; j++) {
+      const id = tl.add({ op: "rect", at: [x0 + 2, y0 + j * cell + 2], w: W - 4, h: cell - 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 140 });
+      tl.add({ op: "sweep", target: id, dir: "right" }, 520, { gap: 0 });
+    }
   }
   tl.add({ op: "text", at: [x0 + W / 2, y0 - 14], text: `${w}${unit}`, size: "s", ink: "accent" }, 360, { gap: 200 });
   tl.add({ op: "text", at: [x0 + W + 8, y0 + H / 2], text: `${h}${unit}`, size: "s", ink: "accent", align: "start" }, 360, { gap: 120 });
@@ -771,7 +853,8 @@ function barChart(c, tl) {
   bars.forEach((b, i) => {
     const cx = x0 + (i + 0.5) * colW, hh = (b.value / top) * CH;
     if (!writeFit(tl, b.label, cx, y0 + 22, colW - 4, {}, { id: `l${i}`, size: "s", gap: i ? 120 : 240 })) throw new Error("label_too_wide");
-    if (hh >= 2) tl.add({ id: `b${i}`, op: "rect", at: [cx - bw / 2, y0 - hh], w: bw, h: hh, fill: "accent", ink: "accent", weight: 1 }, 520, { gap: 60 });
+    // round 7 (M2): each bar GROWS up from the axis to its value (its fill sweeps up)
+    if (hh >= 2) { tl.add({ id: `b${i}`, op: "rect", at: [cx - bw / 2, y0 - hh], w: bw, h: hh, fill: "accent", ink: "accent", weight: 1 }, 260, { gap: 60 }); tl.add({ op: "sweep", target: `b${i}`, dir: "up" }, 600, { gap: 0 }); }
     tl.add({ id: `v${i}`, op: "text", at: [cx, y0 - hh - 13], text: String(b.value), size: "s" }, 260, { gap: 60 });
   });
   return { facts: { bars: n, scale: `steps of ${step}`, ...Object.fromEntries(bars.map((b, i) => [`bar${i + 1}`, `${b.label} ${b.value}`])) } };
@@ -1064,6 +1147,21 @@ const BUILD = {
  * @param {{ band?: string, lessonId?: string, scriptId?: string }} [opts]
  * @returns {{ ok: boolean, script: any, facts: any, errors: string[] }}
  */
+/** The claims a settled board breaks (ids). Exported for tests as _claimsBroken. */
+export function _claimsBroken(script, claims) { return claimsBroken(script, claims); }
+function claimsBroken(script, claims) {
+  if (!claims.length) return [];
+  const end = new Map(settledScript(script).ops.map((o) => [o.id, o]));
+  const same = (p, q) => Array.isArray(p) && Array.isArray(q) && Math.abs(p[0] - q[0]) <= 1 && Math.abs(p[1] - q[1]) <= 1;
+  return claims.filter((cl) => {
+    const o = end.get(cl.id);
+    if (!o) return true;
+    for (const k of ["at", "c", "from", "to"]) if (cl[k] && !same(o[k], cl[k])) return true;
+    if (cl.points && (!Array.isArray(o.points) || o.points.length !== cl.points.length || o.points.some((q, i) => !same(q, cl.points[i])))) return true;
+    return false;
+  }).map((cl) => cl.id);
+}
+
 export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
@@ -1075,6 +1173,11 @@ export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   const raw = script(call, tl.ops, tl.t, facts, { lessonId, scriptId, ground: r.ground ?? "chalk" });
   const n = normalizeScript(raw, { strict: true });
   if (!n.ok) return { ok: false, script: null, facts: null, errors: n.errors.slice(0, 6) };
+  // round 7 (M2, "the motion's end is the explained state"): every motion a template adds claims where its op ENDS — the
+  // place the still board drew it (the turned arm at the angle, the carried 1 over its column, the shared-out dot in its
+  // group). The settled board must agree with every claim, or the template fails (the ladder steps down).
+  const bad = claimsBroken(n.script, r.claims ?? []);
+  if (bad.length) return { ok: false, script: null, facts: null, errors: bad.slice(0, 6).map((id) => `motion_claim:${id}`) };
   const lint = lintScript(n.script);
   if (lint.length) return { ok: false, script: null, facts: null, errors: lint.slice(0, 6).map((i) => `${i.check}:${i.id}`) };
   return { ok: true, script: n.script, facts: n.script.facts, errors: [] };

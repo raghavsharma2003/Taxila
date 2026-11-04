@@ -1,5 +1,5 @@
 // Local recording of a moving board (C1 motion ops: the fraction split, the number-line jump) on the real child route,
-// API mocked. No model calls. Frames: just before, during and just after the board's first move (a still board: as it draws).
+// API mocked. No model calls. Frames: as the board's motion starts, midway through it, and after it ends (a still board: as it draws).
 // node evals/studio-timing/record-split.mjs <board.json> <outdir> [name]   (board.json: { script, predicted, title?, topicId? })
 import { readFileSync, mkdirSync, readdirSync, renameSync, rmSync } from "fs";
 import { execFileSync } from "child_process";
@@ -20,9 +20,13 @@ const browser = await chromium.launch();
 const KID = { id: "kid-wb", first_name: "Kabir", class_level: 5, language_pref: "hinglish", teacher_id: "arjun" };
 const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio",
   studioSlot: { slotId: "slot1", intentId: "i1", state: "revealed", artifact: { kind: "whiteboard", script } } };
-const m0 = script.ops.find((o) => o.op === "move");
-// ms after her line starts: around the first move (before, during, after), else through a still board's drawing
-const AT = m0 ? [m0.startMs - 200, Math.round((m0.startMs + m0.endMs) / 2), m0.endMs + 500]
+// round 7 (M2): any motion op (move, rotate, scale, follow, sweep, morph)
+const MOTION = new Set(["move", "rotate", "scale", "follow", "sweep", "morph"]);
+const ms = script.ops.filter((o) => MOTION.has(o.op));
+const m0 = ms[0], mEnd = ms.length ? Math.max(...ms.map((o) => o.endMs)) : 0;
+// ms after her line starts: as the motion starts, midway through it, and after the board ends; a still board through
+// its drawing
+const AT = m0 ? [m0.startMs + 150, Math.round((m0.startMs + mEnd) / 2), Math.max(mEnd, script.durationMs) + 300]
   : [Math.round(script.durationMs * 0.35), Math.round(script.durationMs * 0.65), script.durationMs + 300];
 for (const [name, viewport] of [["p412", { width: 412, height: 915 }], ["w1280", { width: 1280, height: 800 }]]) {
   const mobile = viewport.width < 600;

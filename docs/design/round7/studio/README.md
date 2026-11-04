@@ -132,3 +132,45 @@ Board motion used to be `move` only (a slide or a hop). M1 adds five more motion
 - **Never off the board:** a motion that would carry its target off the board is refused, not clamped.
 - **Composition:** motions on one op compose in script order. The Player draws the target under one `matrix(...)`, with stroke width held steady under a scale.
 - **Recordings:** `motion-angle-*` shows a protractor arm turning to 60°, then the arc and "60°". `motion-area-*` shows a 5 × 3 area whose rows sweep in one by one, then "5 × 3 = 15". `motion-cycle-*` shows a droplet travelling sea → evaporation → cloud → rain → sea. These are hand-built demo boards (`evals/studio-timing/motion-demos.mjs`). M2 puts the same motion into the code templates children get.
+
+## M2: the templates children get now move (C1 item 6)
+
+Each code template animates its idea, timed inside its board. Each motion also ends exactly where the still board drew it: every template returns claims, and `expand()` checks them on the settled board. A motion that does not end on the explained state fails the template.
+
+| template | the motion |
+|---|---|
+| angle@1 | the second arm is drawn along the first, then turns open by the angle |
+| symmetry@1 | the mirror half is the first half folded over the line; a dot's image jumps across |
+| column-op@1 (add) | a column that makes ten sends its 1 up to the next column |
+| equal-groups@1 | a heap of dots is shared out group by group |
+| place-value@1 | each digit rises into its place box, ones first |
+| combine-count@1 (add) | the second group slides over and joins the first |
+| area-grid@1, fraction-of@1, bar-chart@1 | rows / columns fill in, bars grow up from the axis |
+| flow@1, cycle@1 | a token runs the process, arrow by arrow |
+
+**Reach** (board-first explain beats, classes 4-7, 250 kits; `evals/studio-timing/board-motion-coverage.mjs`):
+
+| | boards | moving before | moving after |
+|---|---|---|---|
+| all | 245 | 4 | 122 |
+| maths | 138 | 4 | 61 |
+| science | 67 | 0 | 35 |
+| EVS | 40 | 0 | 26 |
+| class 4 / 5 / 6 / 7 | 49 / 52 / 67 / 77 | 0 / 1 / 2 / 1 | 28 / 28 / 33 / 33 |
+
+Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12), shape@1 (10), places, measured.
+
+**Before and after, same kits** (`m2/<topic>-before-*` and `m2/<topic>-after-*`, p412 + w1280):
+- c6-maths-ch06-t03 (angle)
+- c5-maths-ch10-t01 (symmetry fold)
+- c6-science-ch02-t04 (flow)
+- c6-science-ch10-t03 (frog cycle)
+- c4-maths-ch09-t01 (equal groups)
+- c5-maths-ch11-t03 (area)
+- c5-maths-ch01-t01 (place value)
+
+**Fixes found on the way:**
+- **Gate:** what a moving board shows (W8 counts, W10 claims drawn, W13 fractions, W15 named shape) is judged where it ends. Layout checks still judge the start, and W19 judges the whole end board.
+- **Text pick:** the arithmetic text pick (pick.js) now reads an operation's own operands. It used to take the line's first two numbers, which drew "2 + 2" dots for a perimeter formula, "3 + 4" for "3 + 4 × 2 = 11", and "2 + 3" for the Collatz rule. Motion made those boards long enough to pass W6, which exposed it.
+- **Products on the number line:** a product there is that many equal jumps from 0.
+- **Bar charts from text:** these need a graph word or name labels.

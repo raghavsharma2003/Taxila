@@ -401,6 +401,8 @@ function degreeAxes(ops) {
   return out;
 }
 
+const END_JUDGED = new Set(["W8.counts_match_line", "W10.screen_claims_drawn", "W13.fractions_agree", "W15.named_shape_drawn"]);
+
 function textsCrossed(ops, byId) {
   const segs = segmentsOf(ops);
   const out = [];
@@ -628,6 +630,10 @@ export function gateWhiteboard(raw, ctx) {
   if (ops.some(isMotionOp)) {
     const end = gateWhiteboard(settledScript(script), ctx);
     add("W19.settled", end.pass, end.checks.filter((c) => !c.pass).map((c) => c.id).slice(0, 6));
+    // M2: what the board SHOWS (her counts, her claims, her fractions, the shape she names) is judged where the motion
+    // leaves it: dots heaped then shared into 3 groups show "3 groups of 4" once shared, not while heaped. Layout checks
+    // (fit, overlap, words clear of lines) still judge the board as it starts, and W19 the end board in full.
+    for (const c of checks) if (END_JUDGED.has(c.id)) { const e = end.checks.find((x) => x.id === c.id); if (e) { c.pass = e.pass; c.detail = e.detail; } }
   }
   const pass = checks.every((c) => c.pass);
   return { pass, checks, advisories, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
