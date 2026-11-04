@@ -14,6 +14,7 @@ import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
 import { prefetchDuplexConfig } from "../duplex/flags.ts";
 import "./child.css";
 import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
+import { BootMark, kxBoot } from "../app/Shell.tsx";
 
 export interface ChildCtx {
   cid: string;
@@ -121,6 +122,8 @@ export function ChildShell({ children }: { children?: ReactNode }) {
     return (
       <div {...rootAttrs}>
         <main className="cs-gate" aria-busy={state === "loading"} data-testid="child-gate">
+          {/* r7 app-cold-start-loading: the Volt mark while /api/me answers (the first paint's own look), never a blank */}
+          {state === "loading" && kxBoot() && <BootMark />}
           {state !== "loading" && (
             <div className="cs-card cs-gate-card">
               <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : t("grownupSignIn")}</h1>

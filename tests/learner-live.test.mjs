@@ -70,9 +70,13 @@ const LESSON_RUN = [
 describe("live learner path", () => {
   // LESSON_RUN is a fixed fold fixture with the classic hint ladder (wrong, wrong, then right on one item after a repair):
   // p5-interaction's card cap would resolve that item first. Scoped to this describe (npm test runs every file in one process).
-  let savedCap;
-  before(() => { savedCap = process.env.TAXILA_P5_CARDCAP; process.env.TAXILA_P5_CARDCAP = "off"; });
-  after(() => { if (savedCap === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = savedCap; });
+  // round 7 A4: and on the classic flow (no per-skill arc): the fixture's 21 answers end at the teach-back on it; with the arc's
+  // extra worked turns the signals arm's follow-up probe pushes the teach-back past the fixture's end (a length effect, no
+  // belief moves).
+  let savedCap, savedArc;
+  before(() => { savedCap = process.env.TAXILA_P5_CARDCAP; process.env.TAXILA_P5_CARDCAP = "off"; savedArc = process.env.TAXILA_R7_SKILL_ARC; process.env.TAXILA_R7_SKILL_ARC = "off"; });
+  after(() => { if (savedCap === undefined) delete process.env.TAXILA_P5_CARDCAP; else process.env.TAXILA_P5_CARDCAP = savedCap;
+    if (savedArc === undefined) delete process.env.TAXILA_R7_SKILL_ARC; else process.env.TAXILA_R7_SKILL_ARC = savedArc; });
   test("replay of the staged kt_evidence rows (seq = insert order) equals the online fold, across a whole lesson", async () => {
     const { log, live } = await drive(LESSON_RUN);
     assert.ok(log.length >= 6, `the lesson wrote KT events (${log.length})`);

@@ -11,6 +11,12 @@ export const RULES = [
   R("c7-maths-ch04-t01", "taraazu", "equation", "solve", {}, { maxX: 9, maxBags: 2 }),
   R("c7-maths-ch15-t01", "taraazu", "equation", "solve", {}, { maxX: 9, maxBags: 2 }),
   R("c7-maths-ch15-t02", "taraazu", "equation", "solve", { "move-no-change": "move-no-change", "one-side": "one-side" }),
+  // ── round 7: measurement (weigh.logic.ts). The conversion is the act: weights onto a pan (kg / g), jugs into a vessel
+  // (l / ml); c4 labels carry whole kg / l and simple small parts, c5 mixed ones ("2 kg 50 g")
+  R("c4-maths-ch08-t01", "taraazu", "weigh", "balance", { "kg-is-100g": "kg-is-100g" }, { smalls: "simple" }),
+  R("c5-maths-ch08-t01", "taraazu", "weigh", "balance", { "mixed-concat": "mixed-concat", "fifty-as-half": "fifty-as-half" }, { smalls: "mixed" }),
+  R("c4-maths-ch08-t02", "taraazu", "fill", "fill", { "l-is-100ml": "l-is-100ml" }, { smalls: "simple" }),
+  R("c5-maths-ch08-t02", "taraazu", "fill", "fill", { "mixed-concat": "mixed-concat" }, { smalls: "mixed" }),
 ];
 
 export const ACTS = {
@@ -18,4 +24,8 @@ export const ACTS = {
   "c7-maths-ch04-t01|solve": ["s1"],                    // the bag is the letter: an unknown number to find
   "c7-maths-ch15-t01|solve": ["s3"],                    // trying a value until it balances; never s1 (phrases to expressions)
   "c7-maths-ch15-t02|solve": ["s1", "s2", "s3"],        // one-step, two-step (2 bags), x on both sides
+  "c4-maths-ch08-t01|balance": ["s1", "s3"],            // 1 kg = 1000 g built from weights; adding weights to a total
+  "c5-maths-ch08-t01|balance": ["s2", "s3"],            // mixed units (2 kg 50 g = 2050 g); adding weights
+  "c4-maths-ch08-t02|fill": ["s1"],                     // 1 l = 1000 ml poured from jugs
+  "c5-maths-ch08-t02|fill": ["s2"],                     // mixed units (1 l 250 ml = 1250 ml)
 };

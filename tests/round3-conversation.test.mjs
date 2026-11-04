@@ -70,6 +70,9 @@ describe("round3 conversation", () => {
   });
 
   test("first pose after a right answer: the slot's last note asks for the confirmation first, and a confirming lead passes noconfirm", async () => {
+    // round 7 A4: the lead slot on the classic item order (the arc puts a skill's explain and worked example between items)
+    const savedArc = process.env.TAXILA_R7_SKILL_ARC; process.env.TAXILA_R7_SKILL_ARC = "off";
+    try {
     // right answers until one is followed by a NEW question at rung 0 (the first may get a why-probe instead)
     let r = toPractice();
     for (let k = 0; k < 6; k++) {
@@ -83,6 +86,7 @@ describe("round3 conversation", () => {
     assert.match(seen[0], /First confirm that their last answer was right/);
     assert.ok(!out.guard.caught.includes("noconfirm"), JSON.stringify(out.guard));
     assert.ok(out.reply.startsWith("Bilkul sahi, Riya"), out.reply);
+    } finally { if (savedArc === undefined) delete process.env.TAXILA_R7_SKILL_ARC; else process.env.TAXILA_R7_SKILL_ARC = savedArc; }
   });
 
   test("kill switch: TAXILA_P5_R3CONV=off keeps a first pose on round 2's one-call path", async () => {

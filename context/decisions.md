@@ -6610,3 +6610,129 @@ Asha's only fallback is her own look's rest still, under every look (r8 included
 ## dc-r7-migrate-test-default-file-tx (2026-11-04, round 7)
 
 scripts/migrate.mjs targets the TEST branch by default (server/db.js dbUrl with TAXILA_DB=test: CONDUCTOR_TEST_DATABASE_URL, else TEST_DATABASE_URL, never a fallback to production); production only with --prod on the command line (TAXILA_DB=prod alone and --prod with TAXILA_DB=test are refused), plus --backup NAME (a Neon backup branch of the target's branch first) or --no-backup on the record. Each migration FILE runs in ONE transaction together with its schema_migrations row (Neon HTTP transaction, or pg begin/commit when DB_DRIVER=pg or the host is not Neon), so a failure leaves the file unapplied and unrecorded; statements are split with string / quoted-name / $tag$ / comment awareness (scripts/migrate-core.mjs splitSql, identical output to the old splitter on all 30 shipped files). --dry-run lists what is pending and writes nothing. --job applies inside the ACA VNet through scripts/region/db-copy.mjs --apply-migrations (psql -1 per file + its row; the sha's migrations ride as a git-archive env var). Reverse if a migration needs a non-transactional statement (create index concurrently): then that file gets an explicit opt-out marker, not a return to statement-by-statement.
+
+
+<!-- merged from inbox/r7-app.json -->
+## dc-r7-app-stage-geometry
+D7 (main loop 2026-11-04) supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP over content'; the four-zone Desk with a pinned question card). The Desk's controller (useDesk / DeskModel), sheets, safety floor, Summary/Debrief and trouble screens are kept; only the body is laid out stage-first under the Kaksha skin. The numbers live in stageLayout.ts and the generated STAGE-GEOMETRY.md / stage-boxes.json; Studio applies them to server/forge3/certs/box-contract.json via docs/patches/to-studio/001-box-contract-stage-first.patch. New constraint for pieces: keep the top-right PiP zone and the top-left label zone clear.
+
+## dc-r7-app-nav-unified
+Before: Kaksha Home linked only World / For parents / Not me; Notebook, Ask, Practice and Me were reachable only by typed URL and brought back the classic Today·Map·Notebook·Ask tab bar (gap-map app-nav-unified). Now src/ui-v3/kaksha/nav.tsx (+ nav-model.ts, pure, tests/r7-app-nav.test.mjs) is the only child navigation under Kaksha; ChildScreen (src/child/chrome.tsx) renders the Kaksha frame for the screens not yet rebuilt natively (app-secondary-screens-kaksha).
+
+
+<!-- merged from inbox/r7-games-2.json -->
+## dc-r7-games-measure-to-taraazu
+**Khand MEASURE was salvaged from origin/claude/r4-khand's wip patch (0001-measure-mode-local.patch) and watched in a browser on 2026-11-04. Its 2D twin asks "1 kg 5 g: kitne g?" on a number pad ("Say 0") and offers "Left side / Right side" buttons, which is OWNER-RESET #3's rejected pattern word for word. It is not shipped; the patch stays on its branch. Grams/kg and l/ml (c4/c5-maths-ch08 t01/t02) go to taraazu weigh (load real weights on a pan balance, then weigh) and fill (pour measuring jugs to a label), with the kit slugs kg-is-100g, mixed-concat, fifty-as-half, l-is-100ml and number-only.** (2026-11-04; endorsed by main)
+- Reversal: the owner prefers the original MEASURE.
+
+## dc-r7-games-pendulum-over-jhoola
+**yantra/pendulum is the same experiment as kyun-lab's jhoola, played in real time. The child sets the thread so the swing keeps a bell's beat, and offering bobs of different weights shows that mass never changes the period. A second goal counts full oscillations. It names all three kit beliefs (m1 heavier-faster, m2 amplitude, m3 half-oscillation). The jhoola rule stays authored, with ACTS [] (not admitted).** The formula T = 2π√(L/g) is the law's truth and is never shown on screen at class 7. (2026-11-04)
+- Reversal: restore the jhoola ACTS to ["s3", "s2"].
+
+## dc-r7-games-yantra-e6
+**E6 Yantra's first engine wave is three law modes with 2D views: beam (place and turn mirrors, run; an exact ray trace with angle in = angle out), circuit (wire a cell, bulb and switch, run; it glows only on a closed loop with the switch on the path), and pendulum. The law decides; the view animates. The 3D core3d renderer for Yantra is the next step.** (2026-11-04)
+
+
+<!-- merged from inbox/r7-brain-remerge.json -->
+## dc-r7-brain-contracts (2026-11-04, stream A Brain)
+
+The round-7 seams everyone codes against are in shared/contracts.ts: the steer row (SteerId, 16 ids, each the request its words would make), the Later list as the screen shows it (LaterEntryUi), the conversational moment (UiMoment), TurnRequest.gameAct (game-consumed words are never graded), TurnRequest.heardUpTo on any lane, and ReplyClauseEvent for the streamed, clause-guarded reply. steer:wrap2 is read but waits for its move (A9). Test: tests/r7-brain-contracts.test.mjs.
+
+## dc-r7-brain-one-band-table (2026-11-04, stream A Brain)
+
+One band table for the register: shared/learner.ts BANDS gains `register` (young 1-3, preteen 4-6, teen 7-9), and class 4 moves to the "10-15" band (decision D3). Learning’s twin and ageBandFor, Asha’s persona sheets and the agent lane all derive from it. A class-4 child gets the older sheet, peer protégé and turn lengths. Reversal: one row in BANDS if a live class-4 lesson reads worse. Test: tests/r7-brain-bands.test.mjs.
+
+## dc-r7-brain-rewrite-never-strip (2026-11-04, stream A Brain)
+
+She never narrates a build or a failure (no game ready, picture coming or failed, nothing moving, "I lost my words"); she offers what exists. Guard repairs never leave a fragment: off-script sentences go whole, a check-in keeps its offer, and a turn left under four words becomes the move’s full fixed line. Test: tests/r7-brain-rewrite.test.mjs.
+
+
+<!-- merged from inbox/r7-studio-remerge.json -->
+## dc-r7-studio-no-build-state — no build state on the child's screen (2026-11-04)
+
+OWNER-RESET: the child never sees 'Asha is making this', skeletons or veils. The stage shows only finished pieces. While the next one is made, the last finished piece stays up, inert, or the calm ground does.
+
+## dc-r7-studio-v2-device-class-serving — serve Studio v2 where certified (2026-11-04)
+
+Round 4 kept Studio v2 off the child path unless a piece was playable and certified at all three sizes. No piece was, so the authored explainers and games never reached a child. Round 7 decision D8 serves a piece wherever it is certified at the device's own class. On the 360 phone it is served as its board twin until the portrait relayout (C1 item 13). This amends dc-r4c-studio-v2-off-child-path.
+
+## dc-r7-board-split — the fraction board splits (2026-11-04)
+
+A circle cut into equal parts now pulls apart after it is drawn, so 'equal parts' is seen happening. It is applied only when the moving board passes every gate as it ends; otherwise the still board is shown. A word inside the whole means no split.
+
+
+<!-- merged from inbox/r7-voice-remerge.json -->
+## dc-r7-voice-handsfree-everyone — hands-free is every child's default, the cohort only an override (2026-11-04)
+
+The duplex switch no longer gates on the owner cohort. With TAXILA_DUPLEX unset/on, `/api/duplex/config` answers `{duplex:"on", lane:"d5"}` for every request when Voice Live is configured, `{duplex:"on"}` (D4) otherwise or when `TAXILA_DUPLEX_LANE=d4`. There is no sign-in lookup on that path. `shadow` stays as a staging/incident mode where the cohort still turns hands-free on for its guardians. `off` wins over everything. `authorizeD5` opens the Voice Live stream for any consented child whose answer is on + d5. On the client, an unreadable switch now runs hands-free on D4, never shadow or tap. The invisible fallback order stays D5 → D4 → push-to-talk → typed, and tap-to-talk stays a visible choice (App patch 001: prefs default `talk: "open"`, no headset-only rule).
+
+Needs a live check: production env `TAXILA_DUPLEX` is `shadow` today. Hands-free reaches children only after main/Platform sets it to `on` (or unset) on the deploy, with Voice Live configured.
+
+Reversal: if live owner-phone lessons on D5 show the hands-free floor doing worse than tap for a measured share of children, set `TAXILA_DUPLEX=shadow` (cohort-only again). No code change is needed.
+
+## dc-r7-voice-first-line-held-mic — hands-free on the screen from the first frame, mic held until the engine is live (2026-11-04)
+
+The microphone is requested beside the lesson start, so the permission prompt and device open overlap the server's opening line. The dock shows the hands-free state `starting` at once, instead of a tap button that later flips. The link itself stays on push-to-talk until the duplex engine is live. Opening it earlier would hand turn-taking to the server VAD while her opening line plays on a loudspeaker, the echo path the engine exists to gate. Mute uses the same hold, so a muted child is never read as silent. App renders this through patch 002 (useDesk). Reversal: if live lessons show children answering the opening line before the engine is up and losing those words, open the D5 ear first and let the engine adopt what it heard.
+
+## dc-r7-voice-same-voice-failover — Diya from region 2 before mini-tts (2026-11-04)
+
+The DragonHD breaker is now per voice per Speech region. When the primary region fails, the same SSML in the same voice is sent to the second Speech resource (`AZURE_SPEECH_REGION_2`/`_KEY_2`). Only when both fail does the reply change to the character's mini-tts voice, which is the identity change QA D30 flagged. A reply keeps the region that spoke its first part. A lesson stuck on mini-tts returns to DragonHD when either region's breaker closes. Platform patch 001 wires today's Speech resource in as region 2 on the India stack. Reversal: if region 2's DragonHD voice audibly differs (a different model version there), the hop is itself an identity change; go back to primary → mini-tts.
+
+## dc-r7-voice-d5-ear — phrase list, second ear, switchable ear model (2026-11-04)
+
+The D5 ear returned empty transcripts for short Hinglish answers. Three changes address it. First, a per-lesson azure-speech `phrase_list` of terms only: names, this topic's short kit answers, a Hinglish core and number words. A slow kit drops only its answers. Second, a second ear: an unheard turn is held up to 2.5 s while the device's own clip of that burst is transcribed, and only an empty result becomes the re-ask. Third, `TAXILA_D5_ASR` can switch the ear to gpt-4o-(mini-)transcribe, whose deltas already reach the engine; the default stays azure-speech until a live arm. Reversals: if the phrase list pulls wrong answers onto listed ones, drop the kit answers; if the second ear's hold breaks the latency bar on unheard turns, shorten or drop it.
+
+
+## dc-r7-app-class4-older (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Class 4 has the older look (r7 D3, OWNER-RESET #1): src/child/band.ts YOUNG_MAX_CLASS = 3, so classes 1-3 are the young family (dawn, tiles, no Ask) and 4-9 the older one (night, typing, Ask, Hint, steer chips). src/app/band.ts re-exports the same function (no second table). The age-band table stays Brain's (shared/learner.ts); YOUNG_MAX_CLASS is read from it once it carries D3's 1-3 / 4-6 / 7-9. Reverse: the owner wants class 4 young again.
+
+
+## dc-r7-app-stop-checkin-ui (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Stop and break UI (r7 D5): Pause → End is a check-in (Keep going · Short break · End lesson), never an instant end; Short break is a sheet that holds her speech and the mic with a count-up clock and 'I'm back'. The server's own stop check-in (chips stop:continue / break:rest / stop:end, plus stop:wrap2 when Brain adds it) renders as a moment card on the stage, not as answer tiles. Later list (ui.later) and moment cards (ui.moment: park / detour / decline / stop) render from Brain's directives, typed structurally until the contract lands; the Debrief lists the parked questions. Reverse: the owner wants End to end at once.
+
+
+## dc-r7-app-handsfree-dock (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Hands-free dock (r7 D2): while the duplex engine holds the floor the dock shows no talk button but a live mic-level ring and one line on what she is doing (Speak any time · Cut in any time · Take your time · {T} is thinking), plus a Mute switch. Mute uses the pause sheet's mic switch (push-to-talk on → the cascade link turns the mic off), so tap to talk is the visible fallback while muted. A proper runtime mute is Voice's (src/lesson/runtime.ts). Reverse: Voice ships a mute that keeps the engine listening for its own wake rules.
+
+
+## dc-r7-app-steer-chips (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Steer chips (r7 app-lesson-steer-chips, OWNER-RESET #8): four chips under the stage in the lesson's language (Diagram · Game · Alag tarah se · Kuch aur), Older only, on a talking floor, never on a safeguard turn, in Quick practice or during the stop check-in. diagram → chip req:visual, game → req:game, explain differently → the 'another' help request; 'something else' goes as the child's words the change_topic lexicon reads, until Brain accepts a chip id for it. On a number item the pad's 'abc' key opens typing (open-e2e-number-pad-no-words). Reverse: Brain's contract renames the steer ids.
+
+
+## dc-r7-face-lite-path (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Weak devices and the start (face-puppet-raster-cost-main-thread): a static gate (src/face-puppet/lite.ts liteGate: tier.ts staticTier D, i.e. no WebGL2, software raster/failIfMajorPerformanceCaveat, known-bad GPU) never builds the r8 mesh stage and shows her rest still with a LIGHT MOUTH (4 pre-rendered mouth sprites from the live rig, public/face-puppet/r8/lite/, 15 Hz opacity swaps from her output meter); the live stage is ARMED only at her first audio (or an idle page outside a lesson, or 6 s); the governor is raster-aware (rAF interval p95 > 66 ms or >= 3 long tasks per window count as over budget; at the floor it falls back to the still + light mouth). TURN_HOLD_MS stays until the OffscreenCanvas worker (week 2). Reverse if the real-phone lab shows the gate sends capable GPUs to the lite path.
+
+
+## dc-r7-face-stills-from-rig (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Asha's stills are rendered from each look's live rig (evals/face-puppet/stills.mjs: portrait, smile, resting, listening, thinking, curious, proud; eyes-open frame picked) into public/assets/teacher/asha-stills/1/<look>-<pose>.webp (NOT public/assets/gen/: the build's artMasters plugin drops gen/**), ledger public/assets/teacher/asha-stills/1/index.json with look-free aliases; teacherRecord ids stay teacher/asha/<pose> and the art loaders (App patch docs/patches/to-app/001) map them to the look the page paints, so the owner's lamp2 cohort sees lamp2 stills. Wave/reading/watering/telescope are stand-ins until painted pose stills (Azure image generation, needs keys). shared/tutors.js carries Asha's pronouns and stills record.
+
+
+## dc-r7-face-clip-sidecars (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Her pre-rendered clips (public/audio/hello-{en,hi,hinglish}.mp3) ship viseme + word sidecars (<clip>.visemes.json) written offline from the clip's own audio by scripts/character/clip-visemes.py (greedy letter CTC, facebook/wav2vec2-base-960h on CPU, no transcript, no Azure; letters → the Azure viseme ids of the live path). src/face-puppet/clipBridge.ts puts them on the puppet bus anchored to the moment the clip's first sample sounds (re-anchored on play/seek, cut on pause); App applies docs/patches/to-app/003 (one call in src/child/voice.ts). Re-run the script whenever a clip is re-recorded.
+
+
+## dc-r7-release-one-command (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Production releases go through scripts/release.mjs <commit>. The steps are: gate evidence (CI build + every shard, or a clean local stamp); the X37 freeze; capture what is live (web revision + env names, worker image); ACR builds taxila-web:<sha7> and taxila-worker:<sha7> from GitHub AT the commit; migrate.mjs --prod --sha with a Neon backup branch; deploy-azure --image-tag (canary + smoke); a cohort check that every env name the previous web revision carried is still on the new one; deploy-worker --image-tag --jobs, so the worker and both Conductor jobs run the web's commit; a context entry. Progress is saved per commit, and a re-run resumes at the first unfinished step. --rollback moves the web to `previous` and the worker + jobs to the captured image together. ARM calls retry transient failures (network, 408/429/5xx) for idempotent methods only, never a POST that starts something. Reverse if ACR's git context cannot build at a commit sha (then build from a clean worktree upload).
+
+
+## dc-r7-cost-ledger (2026-11-04, round 7; written up by main loop from the stream entry)
+
+One price book (server/cost/prices.js, MODEL-STACK meter ids, estimates flagged) prices every meter: chat tokens, TTS chars, STT hours, Voice Live minutes, images. Every spend event carries its own usd: model.call, speech.tts (azure.js tts() records it), and stt.session / d5.session / image.call via server/cost/meter.js. A lesson's events (sid = lesson id) roll up into lesson.cost jsonb (migration 040) by meter and lane. scripts/cost.mjs reads by lesson, day or child and reconciles with Cost Management. The bill, not the book, is the truth: change a price only with its meter id. Until the five call sites in docs/patches/from-platform/001 land, lesson.cost covers chat + azure.js TTS only.
+
+
+## dc-r7-graceful-shutdown (2026-11-04, round 7; written up by main loop from the stream entry)
+
+taxila-web drains on SIGTERM (server/shutdown.js). It stops accepting new connections, readiness answers 503 'draining', open WebSockets get d5.closed {reason: server_restart} then close 1012 so the D5 client reconnects, and in-flight requests get 20 s before being cut. The trace writer is flushed with a 5 s deadline, then the process exits 0. deploy-azure sets terminationGracePeriodSeconds 30. Reverse if a lesson turn regularly exceeds 20 s (then raise both together).
+
+
+## dc-r7-ops-page (2026-11-04, round 7; written up by main loop from the stream entry)
+
+The owner ops page is GET /api/ops (HTML) + /api/ops/summary. It shows live lessons, lesson-turn p50/p90, 5xx by route, and $ per lesson-minute and per hour from lesson.cost. It answers only a signed-in guardian whose email or sha256 is in TAXILA_OPS_FOR (env, so the owner's account is keyed without a code change, main 2026-11-04); anyone else gets 404. Counts and timings only, and a lesson shows as an 8-char id prefix.

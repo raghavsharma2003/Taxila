@@ -56,6 +56,20 @@ export interface D5OpenOptions {
 /** A socket that cannot keep up (a stalled uplink) drops audio rather than queueing minutes of it. */
 export const D5_MAX_BUFFERED_BYTES = 64 * 1024;
 export const D5_OPEN_TIMEOUT_MS = 8000;
+/** Round 7 (B4): how much sent mic audio the second ear can reach back for. */
+export const D5_CLIP_KEEP_MS = 12_000;
+
+/** Mono PCM16 16 kHz → a WAV file (the transcribe route reads audio/wav). Pure. */
+export function wavOf(pcm: Int16Array, rate = 16000): Uint8Array<ArrayBuffer> {
+  const out = new Uint8Array(44 + pcm.length * 2);
+  const v = new DataView(out.buffer);
+  const str = (o: number, s: string) => { for (let i = 0; i < s.length; i++) out[o + i] = s.charCodeAt(i); };
+  str(0, "RIFF"); v.setUint32(4, 36 + pcm.length * 2, true); str(8, "WAVE"); str(12, "fmt ");
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, rate, true);
+  v.setUint32(28, rate * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); str(36, "data"); v.setUint32(40, pcm.length * 2, true);
+  for (let i = 0; i < pcm.length; i++) v.setInt16(44 + i * 2, pcm[i], true);
+  return out;
+}
 
 /** The ws URL for a lesson. Pure. */
 export function d5Url(lessonId: string, loc: { protocol: string; host: string }): string {
@@ -200,12 +214,47 @@ export class D5Stream {
     this.droppedSinceAnchor = false;
     this.lastCtxMs = ctxMs;
     ws.send(pcm);
+    this.keepMono(pcm, this.audioMs, frameMs);
     this.audioMs += frameMs;
     if (this.stats.framesSent++ === 0) {
       // its first sample is the server's audio time 0
       this.firstFrameAt = ctxMs + this.ctxOffset;
       try { this.firstFrame?.(this.firstFrameAt); } catch { /* the link's own */ }
     }
+  }
+
+  // ───── round 7 (B4): the second ear's source. The mic channel (left) of what was SENT, on Voice Live's own audio clock
+  // (audio_start_ms / audio_end_ms index it directly), kept for the last D5_CLIP_KEEP_MS. Nothing leaves the device from it
+  // unless the ear finalised a burst empty and the link asks for that burst (clip()).
+  private kept: { a: number; ms: number; mono: Int16Array }[] = [];
+  private keptMs = 0;
+  private keepMono(pcm: ArrayBuffer, a: number, ms: number): void {
+    try {
+      const st = new Int16Array(pcm);
+      const mono = new Int16Array(st.length >> 1);
+      for (let i = 0, j = 0; j < mono.length; i += 2, j++) mono[j] = st[i];
+      this.kept.push({ a, ms, mono });
+      this.keptMs += ms;
+      while (this.kept.length && this.keptMs - this.kept[0].ms >= D5_CLIP_KEEP_MS) this.keptMs -= this.kept.shift()!.ms;
+    } catch { /* odd frame: the second ear only loses it */ }
+  }
+  /** The mic audio (mono PCM16, 16 kHz) between two Voice Live audio times, or null when it is no longer (or never) kept. */
+  clip(a0: number, a1: number): Int16Array | null {
+    if (!Number.isFinite(a0) || !Number.isFinite(a1) || a1 <= a0 || !this.kept.length) return null;
+    if (a0 < this.kept[0].a) return null;
+    const parts: Int16Array[] = [];
+    let n = 0;
+    for (const k of this.kept) {
+      if (k.a + k.ms <= a0 || k.a >= a1) continue;
+      const s0 = Math.max(0, Math.floor(((a0 - k.a) / 1000) * 16000));
+      const s1 = Math.min(k.mono.length, Math.ceil(((a1 - k.a) / 1000) * 16000));
+      if (s1 > s0) { const p = k.mono.subarray(s0, s1); parts.push(p); n += p.length; }
+    }
+    if (!n) return null;
+    const out = new Int16Array(n);
+    let o = 0;
+    for (const p of parts) { out.set(p, o); o += p.length; }
+    return out;
   }
 
   /** D5 review #5: a Voice Live audio time (ms) → the client clock, across dropped frames and capture gaps. Null before audio. */
