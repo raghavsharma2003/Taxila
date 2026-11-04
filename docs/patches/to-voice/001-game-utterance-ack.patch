@@ -1,0 +1,49 @@
+diff --git a/src/lesson/runtime.ts b/src/lesson/runtime.ts
+index f3976e4b..99ea0801 100644
+--- a/src/lesson/runtime.ts
++++ b/src/lesson/runtime.ts
+@@ -34,6 +34,7 @@ import { MINT_REFUSED, RATE_LIMITED, REALTIME_UNAVAILABLE } from "./realtime.ts"
+ import { laneADeliveryEnabled, laneSwitchEnabled } from "./voiceFlags.ts";
+ import { FaceProducer, faceCues, faceUiOf } from "../avatar/faceCues.ts";
+ import { realtimeDeliveryLine } from "../../server/voice/expressive/compile/realtime.js";
++import { gameActOf, type GameAct, type PlayHeardDetail } from "../play/core/voiceSink.ts";
+ 
+ export type LessonPhase = "idle" | "starting" | "live" | "ending" | "ended" | "error";
+ 
+@@ -210,6 +211,8 @@ interface ChildInput {
+   voiceFeatures?: VoiceUtterance;
+   /** ship5 p1-duplex: the duplex engine's turn summary (hashes and codes, never words): TurnRequest.duplex. */
+   duplex?: TurnRequest["duplex"];
++  /** r7 Games: the play piece took these words as a game command (TurnRequest.gameAct). */
++  gameAct?: GameAct;
+ }
+ 
+ /**
+@@ -622,13 +625,16 @@ export class LessonRuntime {
+         // "" with confidence 0 = the child spoke and ASR failed: still worth a Director call (repair move).
+         // round 3 play (docs/design/round3/play/patches/05): a committed utterance also goes to a play piece on screen, whose
+         // closed voice grammar (src/play/core/voice.ts) may press a control with it; the turn below is sent either way
+-        if (e.text && !e.chipId && typeof window !== "undefined") { try { window.dispatchEvent(new CustomEvent("taxila:play-heard", { detail: { text: e.text } })); } catch { /* no play */ } }
++        // r7 Games: the piece acks a command it took on the event detail (src/play/core/voiceSink.ts); dispatch is synchronous,
++        // so the ack is read at once and the turn goes as a game act (TurnRequest.gameAct), never as an answer to the card
++        let gameAct: GameAct | null = null;
++        if (e.text && !e.chipId && typeof window !== "undefined") { try { const detail: PlayHeardDetail = { text: e.text }; window.dispatchEvent(new CustomEvent("taxila:play-heard", { detail })); gameAct = gameActOf(detail); } catch { /* no play */ } }
+         if ((e.text || e.asrConfidence === 0) && this.state.phase === "live") {
+-          const input: ChildInput = { childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) };
++          const input: ChildInput = { childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}), ...(gameAct ? { gameAct } : {}) };
+           // ship5 fixer (experience B3): a turn the duplex engine merged with a revoked commit never re-sends words
+           // already sent: it supersedes the revoked turn while that is still in flight, else only its new words go
+           if (e.revokeOf) { void this.revokedTurn(input, e.revokeOf.text); return; }
+-          this.queueTurn({ childText: e.text, startedAt: e.startedAt, asrConfidence: e.asrConfidence, chipId: e.chipId, typed: e.typed, ...(voice ? { voiceFeatures: voice } : {}), ...(e.duplex ? { duplex: e.duplex } : {}) });
++          this.queueTurn(input);
+         }
+         return;
+       }
+@@ -787,6 +793,7 @@ export class LessonRuntime {
+       if (input.typed) req.typed = true;
+       if (input.voiceFeatures) req.voiceFeatures = input.voiceFeatures;
+       if (input.duplex) req.duplex = input.duplex;
++      if (input.gameAct) req.gameAct = { verb: input.gameAct.verb, pressed: input.gameAct.pressed };
+     }
+     // A milestone call (no input) carries no teacher turn: those ride with the next child turn, whole.
+     if (batch.events.length) req.moduleEvents = batch.events;
