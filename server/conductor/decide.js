@@ -321,8 +321,12 @@ const HANDLERS = {
     if (ev.date === t.today) H.replanNow("replan:day_override");
   },
   "school.test_announced"(s, ev, H) {
-    const w = { subject: ev.subject, from: addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
+    const w = { subject: ev.subject, from: ev.from && ev.from <= ev.on ? ev.from : addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
     s.school.testWindows = [...s.school.testWindows.filter((x) => !(x.subject === w.subject && x.to === w.to)), w];
+    H.replanSoon("test_window");
+  },
+  "school.test_cleared"(s, ev, H) {
+    s.school.testWindows = s.school.testWindows.filter((x) => x.subject !== ev.subject);
     H.replanSoon("test_window");
   },
   // round 7 F: the school's position and timetable live in their own tables (child.school_chapter, child_timetable);

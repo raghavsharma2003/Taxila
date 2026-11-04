@@ -606,17 +606,25 @@ async function setTestWindow(req, res, body) {
   if (!DAY.test(String(body.from ?? "")) || !DAY.test(String(body.to ?? ""))) throw bad("from and to must be dates (YYYY-MM-DD)");
   if (body.to < body.from) throw bad("the test window must end after it starts");
   if ((Date.parse(body.to) - Date.parse(body.from)) / 86_400_000 > 21) throw bad("a test window is at most 3 weeks");
-  const w = { subject, from: body.from, to: body.to };
+  // round 7 F (learning-test-window-revision): the test's chapters, optional; lessons revise only those (content/next-topic.js)
+  const book = new Set((chaptersOf(child.class_level)[subject] ?? []).map((c) => c.number));
+  const chapters = body.chapters == null ? [] : Array.isArray(body.chapters) ? [...new Set(body.chapters.map(Number))].sort((a, b) => a - b) : null;
+  if (!chapters || chapters.length > 12 || chapters.some((c) => !book.has(c))) throw bad("chapters must be up to 12 chapter numbers of the class book");
+  const w = { subject, from: body.from, to: body.to, ...(chapters.length ? { chapters } : {}) };
   await one(`insert into child_controls(child_id, daily_minutes, test_window) values ($1, $2, $3)
       on conflict (child_id) do update set test_window = excluded.test_window, updated_at = now() returning child_id`,
   [child.id, defaultControls(child.class_level).dailyMinutes, w]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'test_window', $2)", [guardian.id, { childId: child.id, subject }]);
+  // the Conductor's copy (planner test mode, newSkillBudget 0 in the last 2 days; the weekly report's S17 line)
+  await emitSchool(child.id, { type: "school.test_announced", subject, on: w.to, from: w.from, chapters: chapters.map(String), via: "parent" });
   send(res, 200, { window: w });
 }
 /** DELETE /api/parent/test-window { childId } */
 async function deleteTestWindow(req, res, body) {
   const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const prev = await one("select test_window from child_controls where child_id = $1", [child.id]).catch(() => null);
   await q("update child_controls set test_window = null where child_id = $1", [child.id]);
+  if (prev?.test_window?.subject) await emitSchool(child.id, { type: "school.test_cleared", subject: prev.test_window.subject, via: "parent" });
   send(res, 200, { window: null });
 }
 

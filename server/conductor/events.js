@@ -80,7 +80,10 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("parent.resume"),
   ev("parent.consent_changed", { purpose: Purpose, granted: z.boolean(), consentVersion: z.union([z.number().int(), Id]) }),
   // school
-  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]) }),
+  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]),
+    from: Day.optional() }),   // round 7 F: the parent's own first day (else on − 4)
+  // round 7 F: the parent removed the test window (Controls → Clear)
+  ev("school.test_cleared", { subject: Id, via: z.enum(["parent", "child"]) }),
   ev("school.day_override", { date: Day, kind: z.enum(["off", "holiday", "school_day"]) }),
   // round 7 F: where the school is in a subject (child.school_chapter), and the school timetable for a weekday (034)
   ev("school.pointer_set", { subject: Id, chapter: z.number().int().min(1).max(40), on: Day, via: z.enum(["parent", "child", "intake"]) }),
@@ -140,7 +143,8 @@ export function idemKeyFor(e) {
     case "parent.setting_changed": return `setting:${e.key}:${e.settingsVersion}`;
     case "parent.pause": return `pause:${e.until}`;
     case "parent.consent_changed": return `consent:${e.purpose}:${e.consentVersion}:${e.granted ? 1 : 0}`;
-    case "school.test_announced": return `test:${e.subject}:${e.on}`;
+    case "school.test_announced": return `test:${e.subject}:${e.on}:${e.from ?? ""}:${[...e.chapters].sort().join(",")}`;
+    case "school.test_cleared": return null;   // no unique fact; clearing twice is harmless
     case "school.day_override": return `dayoverride:${e.date}:${e.kind}`;
     case "school.pointer_set": return `pointer:${e.subject}:${e.chapter}:${e.on}:${e.via}`;
     case "school.timetable_set": return `timetable:${e.via}:${e.weekday}:${e.rev}`;

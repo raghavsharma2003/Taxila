@@ -5,7 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
 import { getJson, postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
 import { HoursFields } from "../onboarding/Setup.tsx";
-import { ChoiceChips, DateRange } from "../ui-v3/Scheduler.tsx";
+import { ChoiceChips, DateRange, ManyChips } from "../ui-v3/Scheduler.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
 import { isRelock, parentApi, type ControlsT } from "./api.ts";
@@ -145,8 +145,11 @@ const fmtDayShort = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(
 
 /** "School test coming up" (STUDENT-FLOW §4.2 `test_window`): one window per child; the home shows calm revision. */
 function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; name: string; classLevel: number; onRelock: () => void }) {
-  const [w, setW] = useState<{ subject: string; from: string; to: string } | null>(null);
-  const [draft, setDraft] = useState({ subject: "maths", from: today(), to: today() });
+  const [w, setW] = useState<{ subject: string; from: string; to: string; chapters?: number[] } | null>(null);
+  const [draft, setDraft] = useState<{ subject: string; from: string; to: string; chapters: number[] }>({ subject: "maths", from: today(), to: today(), chapters: [] });
+  // round 7 F (test-window revision): the class book's chapters, so lessons revise only the test's chapters
+  const [book, setBook] = useState<Record<string, { number: number; title: string }[]>>({});
+  useEffect(() => { parentApi.chapters(classLevel).then((r) => setBook(r.chapters), () => setBook({})); }, [classLevel]);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -156,7 +159,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
   const subjects = TEST_SUBJECTS.filter((x) => (classLevel <= 5 ? x !== "science" && x !== "sst" : x !== "evs"));
   const save = async () => {
     setBusy(true); setErr(null);
-    try { setW((await postJson<{ window: typeof w }>("/api/parent/test-window", { childId, ...draft })).window); } catch (e) {
+    try { setW((await postJson<{ window: typeof w }>("/api/parent/test-window", { childId, ...draft, chapters: [...draft.chapters].sort((a, b) => a - b) })).window); } catch (e) {
       if (isRelock(e)) { onRelock(); return; }
       setErr(parentError(e));
     } finally { setBusy(false); }
@@ -174,6 +177,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
       {w ? (
         <>
           <p className="pa-effect" role="status">{tw2("controls.test.set", { subject: subjectWords(w.subject), from: fmtDayShort(w.from), to: fmtDayShort(w.to) })}</p>
+          {w.chapters?.length ? <p className="pa-meta" data-testid="test-chapters">Chapters {w.chapters.join(", ")}. In the last two days, only revision of what was already taught.</p> : null}
           <Button variant="secondary" onClick={() => void clear()} disabled={busy}>{tw2("controls.test.clear")}</Button>
         </>
       ) : (
@@ -181,10 +185,17 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
           <p className="pa-effect">{tw2("controls.test.none")}</p>
           <div className="pa-test-row">
             <span className="pa-h3" id="pa-test-subj">{tw2("controls.test.subject")}</span>
-            <ChoiceChips label={tw2("controls.test.subject")} value={draft.subject} onChange={(subject) => setDraft({ ...draft, subject })}
+            <ChoiceChips label={tw2("controls.test.subject")} value={draft.subject} onChange={(subject) => setDraft({ ...draft, subject, chapters: [] })}
               options={subjects.map((x) => ({ value: x, label: subjectWords(x).replace(/^./, (c) => c.toUpperCase()) }))} />
             <DateRange today={today()} from={draft.from} to={draft.to} maxSpanDays={21}
               fromLabel={tw2("controls.test.from")} toLabel={tw2("controls.test.to")} onChange={(from, to) => setDraft({ ...draft, from, to })} />
+            {(book[draft.subject]?.length ?? 0) > 0 && (
+              <>
+                <span className="pa-h3" id="pa-test-ch">Which chapters (optional)</span>
+                <ManyChips label="Which chapters" max={12} value={draft.chapters} onChange={(chapters) => setDraft({ ...draft, chapters })}
+                  options={(book[draft.subject] ?? []).map((c) => ({ value: c.number, label: String(c.number) }))} />
+              </>
+            )}
           </div>
           <Button onClick={() => void save()} disabled={busy} aria-label={`${tw2("controls.test.save")} for ${name}`}>{tw2("controls.test.save")}</Button>
         </>
