@@ -7,6 +7,7 @@ import { balanceLogic } from "./taraazu/balance.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
 import { konLogic } from "./kon/kon.logic.ts";
+import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
@@ -28,5 +29,8 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nazariya/floor": asAny(floorLogic),
   "nazariya/powers": asAny(powersLogic),
   "nazariya/mirror": asAny(mirrorLogic),
+  // round 7: Stambh, bar graphs and pictographs
+  "stambh/bars": asAny(stambhLogic),
+  "stambh/picto": asAny(stambhLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

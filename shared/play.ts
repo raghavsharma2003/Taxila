@@ -22,6 +22,7 @@ export const PLAY_VERSION = "play@1" as const;
 export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kon",          // round 4 G1: angles as an amount of turning (E1 Antariksh angles)
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
+  "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -32,6 +33,7 @@ export const MODES = {
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  stambh: ["bars", "picto"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -177,7 +179,13 @@ export type NazariyaAct =
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct;
+// Stambh (round 7, bar graphs and pictographs): one crate / icon at a time on a column (bars) or a row (picto)
+export type StambhAct =
+  | { kind: "drop"; col: number; half?: boolean }       // a crate (or, where the level allows, a half crate) onto column `col`
+  | { kind: "lift"; col: number }                       // the top crate off column `col`
+  | { kind: "check" }                                   // the law compares every bar with the data
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | StambhAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -328,6 +336,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   "kyun-lab": ["kagaz", "blueprint", "raat", "chalk"],
   kon: ["blueprint", "raat", "kagaz", "chalk"],
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
+  stambh: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
