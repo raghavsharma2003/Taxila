@@ -80,7 +80,7 @@ export function zonedToUtc(day, hhmm, tz) {
 export const jitterSec = (childId, salt, windowSec) => (windowSec > 0 ? fnv1a(`${childId}|${salt}`) % windowSec : 0);
 
 /**
- * @typedef {{ tz: string, wakeTime: string, schoolStart: string, schoolEnd: string, recoveryMin: number, bedtime: string, anchor?: string }} RoutineFacts
+ * @typedef {{ tz: string, wakeTime: string, schoolStart: string, schoolEnd: string, recoveryMin: number, bedtime: string, anchor?: string, lessonMin?: number }} RoutineFacts
  * @typedef {{ allowedFrom: string, allowedTo: string, dailyMinutes: number, restDays?: number[] }} ParentLimits
  * @typedef {{ kind: (day: string) => 'school_day' | 'holiday' | 'off' }} DayKindLookup
  * @typedef {'morning'|'at_school'|'recovery'|'learning_window'|'wind_down'|'night'|'free_day'} ClockPhase

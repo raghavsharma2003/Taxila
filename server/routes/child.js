@@ -203,7 +203,8 @@ function kickPlanToday(childId, now) {
 /** @returns {Promise<import("../../shared/contracts").ChildPlanResponse>} */
 export async function planFor(child, guardian, now = new Date()) {
   kickPlanToday(child.id, now);
-  const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
+  // select *: 045's lesson_days / lesson_min may not exist yet (then the schedule is the start time alone)
+  const routine = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
@@ -226,7 +227,7 @@ export async function planFor(child, guardian, now = new Date()) {
     // a school test the parent entered, covering today (019 child_controls.test_window)
     one("select test_window from child_controls where child_id = $1", [child.id]).then((r) => {
       const w = activeWindow(r?.test_window, day);
-      return w ? { subject: w.subject, from_day: w.from, to_day: w.to } : null;
+      return w ? { subject: w.subject, from_day: w.from, to_day: w.to, chapters: w.chapters ?? null } : null;
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
@@ -249,7 +250,8 @@ export async function planFor(child, guardian, now = new Date()) {
   const teacher = teacherFor(child);
   // the ONE next-topic answer (truth.js nextTopicForPlan): inside an active test window it revises the test's subject,
   // on every surface (home topic, "Next time", parent next lesson, Progress, the lesson-end summary)
-  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null });
+  // the window's chapters and today (round 7 F test-window revision): the home's "next" is the lesson's revision topic
+  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day, today: day, ...(test.chapters ? { chapters: test.chapters } : {}) } : null });
   const topic = nextT ? { id: nextT.id, title: nextT.title, shortTitle: shortTitleOf(nextT.title), chapter: nextT.chapter.title, subject: nextT.subject,
     minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
   const last = doneRows[0];
@@ -269,6 +271,8 @@ export async function planFor(child, guardian, now = new Date()) {
     testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null,
     homework: controls.homeworkUntil ? { until: controls.homeworkUntil } : null,
     textOnly: controls.textOnly,
+    // round 7 F (app-parent-schedule): the family's lesson time, for "Lesson time 5:00" on Home; a plan, never a lock
+    schedule: scheduleOf(routine, day),
   };
 }
 
@@ -508,6 +512,16 @@ async function request(req, res, body) {
   if (["start", "first", "homework", "test_window"].includes(p.state) && p.topic) return send(res, 200, { granted: true, topicId: p.topic.id });
   if (p.state === "resume") return send(res, 200, { granted: true, lid: p.plan.openLesson });
   send(res, 200, { granted: false, state: p.state });
+}
+
+/**
+ * PURE. The child Home's view of the parent's schedule (round 7 F, app-parent-schedule): { time, minutes, today } or null.
+ * `today`: today is one of the lesson days (all days when none are stored).
+ */
+export function scheduleOf(routine, day) {
+  if (!routine?.anchor) return null;
+  const days = Array.isArray(routine.lesson_days) ? routine.lesson_days.map(Number) : null;
+  return { time: routine.anchor, minutes: routine.lesson_min ?? null, today: !days || days.includes(new Date(`${day}T00:00:00Z`).getUTCDay()) };
 }
 
 /**

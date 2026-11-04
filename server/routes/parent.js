@@ -658,6 +658,41 @@ async function emitSchool(childId, event) {
   catch (e) { console.error("[parent] school event", event.type, e?.message?.slice(0, 160)); }
 }
 
+// ───────────────────────────── the lesson schedule (round 7 F, app-parent-schedule) ─────────────────────────────
+// Days (JS weekdays, 0 = Sunday), a start time and a length. Stored on child_routine (045: lesson_days, lesson_min; anchor
+// is 004's) and sent to the Conductor as parent.setting_changed { restDays, anchor, lessonMin }: the planner starts the
+// sitting at that time on those days and never plans it longer. It plans; it never locks the child out (the daily limit
+// and lesson hours do that, and only when the family turned them on).
+const HHMM_P = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const SCHEDULE_MINUTES = Object.freeze([15, 20, 25, 30, 35, 45]);
+
+/** GET /api/parent/schedule?childId= → { schedule: { days, time, minutes } | null, minutes: number[] } */
+async function getSchedule(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const r = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
+  const schedule = r?.anchor ? { days: Array.isArray(r.lesson_days) ? r.lesson_days.map(Number) : [0, 1, 2, 3, 4, 5, 6], time: r.anchor, minutes: r.lesson_min ?? null } : null;
+  send(res, 200, { schedule, minutes: SCHEDULE_MINUTES });
+}
+
+/** POST /api/parent/schedule { childId, days, time, minutes } → { schedule }. Inside an unlocked Parent corner. */
+async function setSchedule(req, res, body) {
+  const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const days = Array.isArray(body.days) ? [...new Set(body.days.map(Number))].sort((a, b) => a - b) : null;
+  if (!days || !days.length || days.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) throw bad("days must be one or more weekdays (0 = Sunday)");
+  if (!HHMM_P.test(String(body.time ?? ""))) throw bad("time must be HH:MM");
+  const minutes = Number(body.minutes);
+  if (!SCHEDULE_MINUTES.includes(minutes)) throw bad(`minutes must be one of ${SCHEDULE_MINUTES.join(", ")}`);
+  await one(`insert into child_routine (child_id, anchor, lesson_days, lesson_min) values ($1, $2, $3::smallint[], $4)
+      on conflict (child_id) do update set anchor = excluded.anchor, lesson_days = excluded.lesson_days, lesson_min = excluded.lesson_min, updated_at = now()
+      returning child_id`, [child.id, body.time, days, minutes]);
+  const settingsVersion = Date.now();
+  const restDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !days.includes(d));
+  for (const [key, value] of [["restDays", restDays], ["anchor", body.time], ["lessonMin", minutes]]) {
+    await emitSchool(child.id, { type: "parent.setting_changed", key, value, by: "owner", settingsVersion });
+  }
+  send(res, 200, { schedule: { days, time: body.time, minutes } });
+}
+
 // ───────────────────────────── how the teacher teaches (round 7 F, learning-parent-teaching-page) ─────────────────────────────
 /** GET /api/parent/teaching?childId= → { teacher, approach, lessons: [{ id, topic, startedAt, why: [{ code, n, text }] }], madeFor } */
 async function teaching(req, res) {
@@ -1551,6 +1586,8 @@ export const routes = {
   "POST /api/parent/school-chapter": setSchoolChapter,
   "POST /api/parent/timetable": setTimetable,
   "GET /api/parent/teaching": teaching,
+  "GET /api/parent/schedule": getSchedule,
+  "POST /api/parent/schedule": setSchedule,
   "GET /api/parent/household": getHousehold,
   "POST /api/parent/household": setHousehold,
   "GET /api/parent/made-for": madeForList,
