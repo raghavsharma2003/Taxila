@@ -236,7 +236,8 @@ export const helpExplain = ({ how, example = false, story = false }) => join(
 // owner-truth patch 07's own stopCheck is not added: W2-I's stopCheck (below) is the one check-in shape (reconciled 2026-10-05).
 export const changeTopic = () => join(
   "they want to talk about something else: say yes warmly — the lesson can wait a moment",
-  "ask what they would like to talk about, in a few words; a button on the screen brings them back to the lesson",
+  // round 7 (main's full-run judgement #7: "button dabakar hum lesson par laut sakte hain" is not a teacher; park and return)
+  "ask what they would like to talk about, in a few words, and promise to come back to it once this part is done (never mention a button)",
   "no lesson question this turn",
 );
 /** The one side-chat turn after change_topic: their topic, for real. */
