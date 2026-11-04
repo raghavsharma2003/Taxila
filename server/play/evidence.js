@@ -51,7 +51,9 @@ export function playKtEvents(c, opts) {
         { skillId: r.skillId, outcome: r.outcome === "partial" ? "incorrect" : r.outcome, itemId: `play:${v.levelId}`, probe: "P10", hintsUsed: 0, ...(r.misconceptionId ? { misconceptionId: r.misconceptionId } : {}) },
         { id: `${c.lessonId}:${c.childSeq}:play:${k++}`, sessionId: c.lessonId, sessionStartAt, at, episodeId: `${c.lessonId}:play:${v.levelId}`, grader: "code",
           ...(c.topicType ? { topicType: c.topicType } : {}), ...(c.kitVerified === false ? { kitVerified: false } : {}),
-          ...(r.discriminates ? { discriminates: r.discriminates } : {}), triesBefore: 0, episodeEnded: true });
+          ...(r.discriminates ? { discriminates: r.discriminates } : {}), triesBefore: 0, episodeEnded: true,
+          // ITEM-ARENA: a recognition among a few targets, tempered like an easy controller (kt/bktr.js), never a production
+          ...(String(v.levelId).startsWith("arena-") ? { form: "recognise", controllerEasy: true } : {}) });
       if (ev) events.push({ ...ev, target: r.skillId, via: "game" });
     }
   }

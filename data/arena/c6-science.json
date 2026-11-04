@@ -1,0 +1,2274 @@
+{
+ "v": 1,
+ "tier": "A",
+ "source": "data/kits/c6-science.json",
+ "challenges": [
+  {
+   "id": "c6-science-ch01-t01-rl-o2",
+   "topicId": "c6-science-ch01-t01",
+   "skillId": "c6-science-ch01-t01-s2",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Two identical wet sports jerseys are hung at the same time, one under a fan and one in still air. Based on what moving air does, which jersey do you predict will dry first: fan or still air?",
+    "hi": "Do ek jaisi geeli sports jerseys ek saath latkaayi gayi hain—ek fan ke neeche, doosri bina hawa wali jagah. Chalti hawa ke baare mein jo jaante ho, usse predict karo: kaunsi pehle sookhegi, fan wali ya bina hawa wali?"
+   },
+   "hint": "Chalti hawa sookhne par asar daalti hai.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "fan"
+    },
+    {
+     "id": "o2",
+     "text": "still air"
+    }
+   ],
+   "keyText": "fan"
+  },
+  {
+   "id": "c6-science-ch01-t02-i04",
+   "topicId": "c6-science-ch01-t02",
+   "skillId": "c6-science-ch01-t02-s3",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Asha hangs cotton in the sun and nylon in the shade, and the cotton dries first. Before she decides, predict: can she say cotton dries faster than nylon?",
+    "hi": "Asha cotton dhoop mein aur nylon chhaon mein taangti hai, aur cotton pehle sookhta hai. Socho: kya woh keh sakti hai ki cotton nylon se jaldi sookhta hai?"
+   },
+   "hint": "Point to where each cloth was hung",
+   "mis": "c6-science-ch01-t02-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch01-t02-i09",
+   "topicId": "c6-science-ch01-t02",
+   "skillId": "c6-science-ch01-t02-s3",
+   "difficulty": 4,
+   "itemKind": "far_transfer",
+   "prompt": {
+    "en": "A farmer says his new fertiliser made his wheat grow taller this year. But this year also had more rain. Can he be sure? How could he test it fairly?",
+    "hi": "Ek kisaan kehta hai ki naye khaad se iss saal uska gehun lamba hua. Par iss saal baarish bhi zyada hui. Kya woh pakka keh sakta hai? Fair test kaise karega?"
+   },
+   "hint": "Point to rain as a second change",
+   "mis": "c6-science-ch01-t02-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch02-t01-rl-o1",
+   "topicId": "c6-science-ch02-t01",
+   "skillId": "c6-science-ch02-t01-s1",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "In a school garden, a spinach stem is green and bends when pressed. A jasmine stem is brown and stays firm. Which plant has a woody stem: spinach or jasmine?",
+    "hi": "School garden mein palak ka tana hara hai aur dabane par mudta hai. Chameli ka tana bhoora hai aur sakht rehta hai. Woody tana kiska hai—palak ya chameli?"
+   },
+   "hint": "A woody stem is hard rather than soft.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "spinach"
+    },
+    {
+     "id": "o2",
+     "text": "jasmine"
+    }
+   ],
+   "keyText": "jasmine"
+  },
+  {
+   "id": "c6-science-ch02-t01-rl-o2",
+   "topicId": "c6-science-ch02-t01",
+   "skillId": "c6-science-ch02-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A plant beside the school gate has several hard, woody stems branching close to the ground. Is it a herb, shrub or tree?",
+    "hi": "School gate ke paas ek paudhe mein kai sakht, lakdi jaise tane zameen ke paas se shaakhaein banate hain. Yeh herb, shrub ya tree hai?"
+   },
+   "hint": "Use both the woody stems and branching position.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "shrub"
+    },
+    {
+     "id": "o2",
+     "text": "tree"
+    }
+   ],
+   "keyText": "shrub"
+  },
+  {
+   "id": "c6-science-ch02-t01-rl-h1",
+   "topicId": "c6-science-ch02-t01",
+   "skillId": "c6-science-ch02-t01-s1",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Two new plants in a science club are equally short. Plant A has a soft green stem; Plant B has a hard woody stem. Can equal height alone show that both stems are the same type? Answer yes or no.",
+    "hi": "Science club ke do naye paudhe barabar chhote hain. Plant A ka tana naram aur hara hai; Plant B ka sakht aur lakdi jaisa. Kya sirf barabar height se dono tanon ka type same keh sakte hain? Haan ya nahin?"
+   },
+   "hint": "Compare the given stem properties, not just height.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch02-t01-rl-h3",
+   "topicId": "c6-science-ch02-t01",
+   "skillId": "c6-science-ch02-t01-s3",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A pumpkin vine has a weak stem. One part reaches a fence, while another grows across open soil. Which part is likely to climb: the part by the fence or the part on open soil?",
+    "hi": "Kaddu ki bel ka tana kamzor hai. Ek hissa baad tak pahunchta hai, aur doosra khuli mitti par badhta hai. Kaunsa hissa chadhega—baad ke paas wala ya khuli mitti wala?"
+   },
+   "hint": "A weak stem needs support to grow upward.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "the part by the fence"
+    },
+    {
+     "id": "o2",
+     "text": "the part on open soil"
+    }
+   ],
+   "keyText": "the part by the fence"
+  },
+  {
+   "id": "c6-science-ch02-t02-rl-o1",
+   "topicId": "c6-science-ch02-t02",
+   "skillId": "c6-science-ch02-t02-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A student traces the veins on a mango leaf. Smaller veins branch from the middle vein and join one another. Is its venation reticulate or parallel?",
+    "hi": "Ek student aam ki patti ki nasein trace karta hai. Chhoti nasein beech wali nas se nikal kar aapas mein judti hain. Iska venation reticulate hai ya parallel?"
+   },
+   "hint": "Think about the pattern made by joining veins.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "reticulate"
+    },
+    {
+     "id": "o2",
+     "text": "parallel"
+    }
+   ],
+   "keyText": "reticulate"
+  },
+  {
+   "id": "c6-science-ch02-t02-rl-h1",
+   "topicId": "c6-science-ch02-t02",
+   "skillId": "c6-science-ch02-t02-s1",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Two leaves have long veins. In leaf A, smaller veins cross and join them; in leaf B, veins run alongside one another without joining. Which leaf has parallel venation: A or B?",
+    "hi": "Do pattiyon mein lambi nasein hain. Patti A mein chhoti nasein unhein kaatkar judti hain; patti B mein nasein bina jude ek-doosre ke saath chalti hain. Parallel venation kis patti mein hai: A ya B?"
+   },
+   "hint": "Crossing and joining distinguishes the other pattern.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A"
+    },
+    {
+     "id": "o2",
+     "text": "B"
+    }
+   ],
+   "keyText": "B"
+  },
+  {
+   "id": "c6-science-ch02-t02-rl-h2",
+   "topicId": "c6-science-ch02-t02",
+   "skillId": "c6-science-ch02-t02-s2",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "At a school plant survey, pot A has many similarly thin roots from the stem base. Pot B has one main root with branches. Which pot has fibrous roots: A or B?",
+    "hi": "School plant survey mein pot A ke stem ke base se kai lagbhag ek-jaisi patli roots nikalti hain. Pot B mein branches wali ek main root hai. Fibrous roots kis pot mein hain: A ya B?"
+   },
+   "hint": "Which pot lacks one distinct main root?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A"
+    },
+    {
+     "id": "o2",
+     "text": "B"
+    }
+   ],
+   "keyText": "A"
+  },
+  {
+   "id": "c6-science-ch02-t02-rl-h3",
+   "topicId": "c6-science-ch02-t02",
+   "skillId": "c6-science-ch02-t02-s3",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A new garden plant has leaves whose small veins join to form a net. Before digging it up, predict its usual root type: tap root or fibrous roots?",
+    "hi": "Ek naye garden plant ki pattiyon mein chhoti nasein judkar jaal banati hain. Use khodne se pehle uski aam taur par root type predict karo: tap root ya fibrous roots?"
+   },
+   "hint": "Recall which root type usually goes with that pattern.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "tap root"
+    },
+    {
+     "id": "o2",
+     "text": "fibrous roots"
+    }
+   ],
+   "keyText": "tap root"
+  },
+  {
+   "id": "c6-science-ch02-t04-rl-o2",
+   "topicId": "c6-science-ch02-t04",
+   "skillId": "c6-science-ch02-t04-s2",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Lizards on a school terrace eat mosquitoes. If the lizards disappear but nothing else changes, will the number of mosquitoes likely increase or decrease?",
+    "hi": "School ki chhat par chipkaliyan machchhar khati hain. Agar chipkaliyan gayab ho jaayein aur baaki sab waisa hi rahe, toh machchharon ki sankhya badhegi ya ghategi?"
+   },
+   "hint": "Think about how a predator affects its prey.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "increase"
+    },
+    {
+     "id": "o2",
+     "text": "decrease"
+    }
+   ],
+   "keyText": "increase"
+  },
+  {
+   "id": "c6-science-ch03-t01-rl-o2",
+   "topicId": "c6-science-ch03-t01",
+   "skillId": "c6-science-ch03-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "After kabaddi practice, Aarav needs food that helps repair body tissues. Which nutrient has this main role: protein, vitamin C or water?",
+    "hi": "Kabaddi practice ke baad Aarav ko aisa khaana chahiye jo body tissues ki repair mein madad kare. Yeh mukhya kaam kis ka hai: protein, vitamin C ya water?"
+   },
+   "hint": "Choose by the nutrient’s main role, not by a favourite food.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "protein"
+    },
+    {
+     "id": "o2",
+     "text": "vitamin C"
+    },
+    {
+     "id": "o3",
+     "text": "water"
+    }
+   ],
+   "keyText": "protein"
+  },
+  {
+   "id": "c6-science-ch03-t02-rl-h3",
+   "topicId": "c6-science-ch03-t02",
+   "skillId": "c6-science-ch03-t02-s3",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A new snack gives blue-black with iodine, leaves a patch on dry paper, and turns violet in the teacher-run protein test. Which claim fits: ‘only starch’, ‘starch and fat’, or ‘starch, fat and protein’?",
+    "hi": "Ek naye snack par iodine neela-kaala hota hai, sookhe paper par daag rehta hai, aur teacher ke protein test mein violet rang aata hai. Kaunsa claim sahi hai: ‘sirf starch’, ‘starch aur fat’, ya ‘starch, fat aur protein’?"
+   },
+   "hint": "Each test provides evidence about a different nutrient.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "only starch"
+    },
+    {
+     "id": "o2",
+     "text": "starch and fat"
+    },
+    {
+     "id": "o3",
+     "text": "starch, fat and protein"
+    }
+   ],
+   "keyText": "starch, fat and protein"
+  },
+  {
+   "id": "c6-science-ch03-t03-rl-o2",
+   "topicId": "c6-science-ch03-t03",
+   "skillId": "c6-science-ch03-t03-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A student rarely eats fresh fruit and has bleeding gums. Which missing nutrient could explain this: vitamin C or iron?",
+    "hi": "Ek student taaze phal kam khaata hai aur uske masoodon se khoon aata hai. Kis poshak tatva ki kami ho sakti hai: vitamin C ya iron?"
+   },
+   "hint": "Think of the nutrient supplied by many fresh fruits.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "vitamin C"
+    },
+    {
+     "id": "o2",
+     "text": "iron"
+    }
+   ],
+   "keyText": "vitamin C"
+  },
+  {
+   "id": "c6-science-ch03-t03-rl-h2",
+   "topicId": "c6-science-ch03-t03",
+   "skillId": "c6-science-ch03-t03-s2",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A doctor says Arjun’s tiredness is linked to iron-deficiency anaemia. For his regular meals, which is the better addition: spinach and chickpeas or extra plain rice?",
+    "hi": "Doctor kehte hain Arjun ki thakaan iron ki kami se hone wale anaemia se judi hai. Roz ke khane mein kya behtar jode: palak aur chane ya extra saada chawal?"
+   },
+   "hint": "Match the doctor’s finding to foods containing that mineral.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "spinach and chickpeas"
+    },
+    {
+     "id": "o2",
+     "text": "extra plain rice"
+    }
+   ],
+   "keyText": "spinach and chickpeas"
+  },
+  {
+   "id": "c6-science-ch03-t04-rl-o1",
+   "topicId": "c6-science-ch03-t04",
+   "skillId": "c6-science-ch03-t04-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Tomatoes for a Pune school canteen travel 30 km from a farm to a wholesale market, then 12 km to the canteen. What are their food miles along this route?",
+    "hi": "Pune ke school canteen ke tamatar farm se wholesale market tak 30 km, phir canteen tak 12 km aate hain. Is route par unke food miles kitne hain?"
+   },
+   "hint": "Count both parts of the food’s journey.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "84 km"
+    },
+    {
+     "id": "o2",
+     "text": "24 km"
+    },
+    {
+     "id": "o3",
+     "text": "43 km"
+    },
+    {
+     "id": "o4",
+     "text": "42 km"
+    }
+   ],
+   "keyText": "42 km"
+  },
+  {
+   "id": "c6-science-ch03-t04-rl-h1",
+   "topicId": "c6-science-ch03-t04",
+   "skillId": "c6-science-ch03-t04-s1",
+   "difficulty": 4,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A snack packet bought in Delhi says ‘Potatoes grown in Punjab; packed in Haryana’. It travelled 220 km to the packing unit and another 90 km to the shop. What distance should you count for its food miles?",
+    "hi": "Delhi mein kharide snack packet par likha hai: ‘Aloo Punjab mein uge; packing Haryana mein hui.’ Packing unit tak 220 km aur wahan se dukaan tak 90 km ka safar hua. Food miles ke liye kitni doori ginoge?"
+   },
+   "hint": "Include travel before and after packing.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "311 km"
+    },
+    {
+     "id": "o2",
+     "text": "620 km"
+    },
+    {
+     "id": "o3",
+     "text": "310 km"
+    },
+    {
+     "id": "o4",
+     "text": "13 km"
+    }
+   ],
+   "keyText": "310 km"
+  },
+  {
+   "id": "c6-science-ch04-t01-i04",
+   "topicId": "c6-science-ch04-t01",
+   "skillId": "c6-science-ch04-t01-s2",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: a golden-yellow house key made of brass. Will it stick to a magnet?",
+    "hi": "Guess karo: peetal ki bani sunehri ghar ki chaabi. Kya woh magnet se chipkegi?"
+   },
+   "hint": "Point to copper being non-magnetic",
+   "mis": "c6-science-ch04-t01-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch04-t01-i05",
+   "topicId": "c6-science-ch04-t01",
+   "skillId": "c6-science-ch04-t01-s3",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A paper clip is at the bottom of a glass of water. Predict: can you drag it up the side of the glass without touching the water, by moving a strong magnet outside the glass?",
+    "hi": "Paani ke glass ke andar neeche ek paper clip padi hai. Guess karo: kya bahar se tez magnet ghuma kar, paani ko chhoo-e bina, clip ko glass ki deewar ke saath upar la sakte ho?"
+   },
+   "hint": "Point to glass and water as more layers",
+   "mis": "c6-science-ch04-t01-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-science-ch04-t01-rl-o2",
+   "topicId": "c6-science-ch04-t01",
+   "skillId": "c6-science-ch04-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A phone-repair kit has a copper wire and an iron screw. Which material belongs in its magnetic-materials tray: copper or iron?",
+    "hi": "Phone-repair kit mein copper ka taar aur iron ka screw hai. Magnetic materials wali tray mein kaunsa material jayega: copper ya iron?"
+   },
+   "hint": "Being a metal alone does not make something magnetic.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "copper"
+    },
+    {
+     "id": "o2",
+     "text": "iron"
+    }
+   ],
+   "keyText": "iron"
+  },
+  {
+   "id": "c6-science-ch04-t02-rl-o2",
+   "topicId": "c6-science-ch04-t02",
+   "skillId": "c6-science-ch04-t02-s2",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Two magnetic clasps on school bags have their north poles facing each other. When brought close, will they attract or repel?",
+    "hi": "Do school bags ke magnetic clasps ke north poles ek doosre ke saamne hain. Paas laane par ve attract karenge ya repel?"
+   },
+   "hint": "Think of the rule for matching poles.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "attract"
+    },
+    {
+     "id": "o2",
+     "text": "repel"
+    }
+   ],
+   "keyText": "repel"
+  },
+  {
+   "id": "c6-science-ch04-t02-rl-h2",
+   "topicId": "c6-science-ch04-t02",
+   "skillId": "c6-science-ch04-t02-s2",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "In a school lab, a steel rod and an unlabelled magnet both attract a known magnet. Which result would prove the unlabelled object is a magnet: attraction to its north pole or repulsion from its north pole?",
+    "hi": "School lab mein steel rod aur bina label wala magnet, dono ek known magnet ko attract karte hain. Bina label wali cheez magnet hai, yeh kaunsa result prove karega: uske north pole se attraction ya repulsion?"
+   },
+   "hint": "Look for an effect that ordinary steel cannot show here.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "attraction to its north pole"
+    },
+    {
+     "id": "o2",
+     "text": "repulsion from its north pole"
+    }
+   ],
+   "keyText": "repulsion from its north pole"
+  },
+  {
+   "id": "c6-science-ch04-t03-rl-o1",
+   "topicId": "c6-science-ch04-t03",
+   "skillId": "c6-science-ch04-t03-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "At a school exhibition, a freely hanging magnet has stopped moving. Its blue end is marked N. Which direction is the blue end pointing: north or south?",
+    "hi": "School exhibition mein ek magnet dhaage se latak kar ruk gaya hai. Uska neela sira N marked hai. Neela sira kis disha mein hai: north ya south?"
+   },
+   "hint": "Think about where a freely hanging magnet's marked pole settles.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "north"
+    },
+    {
+     "id": "o2",
+     "text": "south"
+    }
+   ],
+   "keyText": "north"
+  },
+  {
+   "id": "c6-science-ch04-t03-rl-o2",
+   "topicId": "c6-science-ch04-t03",
+   "skillId": "c6-science-ch04-t03-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "At a metro exit, your compass needle settles with its N end pointing towards the ticket counter. In which direction is the ticket counter: north or south?",
+    "hi": "Metro exit par compass needle ka N wala sira ticket counter ki taraf rukta hai. Ticket counter kis disha mein hai: north ya south?"
+   },
+   "hint": "A compass's marked end helps identify a direction.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "north"
+    },
+    {
+     "id": "o2",
+     "text": "south"
+    }
+   ],
+   "keyText": "north"
+  },
+  {
+   "id": "c6-science-ch04-t03-rl-h2",
+   "topicId": "c6-science-ch04-t03",
+   "skillId": "c6-science-ch04-t03-s2",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "On a school hike, a compass shows north straight ahead. Your group must take the path to the west. Should you turn left or right?",
+    "hi": "School hike par compass ke mutabik north seedha aage hai. Group ko west wale raste par jaana hai. Left mudoge ya right?"
+   },
+   "hint": "Work around the compass directions from your current facing.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "left"
+    },
+    {
+     "id": "o2",
+     "text": "right"
+    }
+   ],
+   "keyText": "left"
+  },
+  {
+   "id": "c6-science-ch05-t01-i03",
+   "topicId": "c6-science-ch05-t01",
+   "skillId": "c6-science-ch05-t01-s1",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: you and your father both measure the length of the dining table in handspans. Will you get the same number? Why?",
+    "hi": "Guess karo: tum aur papa dono khaane ki mez ki lambai baalisht se naapte ho. Kya dono ka number same aayega? Kyon?"
+   },
+   "hint": "Point to how many of each fit along the table",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch05-t01-i04",
+   "topicId": "c6-science-ch05-t01",
+   "skillId": "c6-science-ch05-t01-s2",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Your scale's end is broken, so the first clear mark is 1 cm. An eraser lined up from 1 cm ends at 5.5 cm. Predict what Golu, who only reads the end mark, will say, and what the real length is.",
+    "hi": "Tumhari scale ka sira toota hai, pehla saaf nishaan 1 cm hai. 1 cm se rakha rubber 5.5 cm pe khatam hota hai. Guess karo, jo Golu sirf aakhri nishaan padhta hai, woh kya bolega, aur asli lambai kya hai?"
+   },
+   "hint": "Point to the 1 cm starting mark",
+   "mis": "c6-science-ch05-t01-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "4.6 cm"
+    },
+    {
+     "id": "o2",
+     "text": "4.4 cm"
+    },
+    {
+     "id": "o3",
+     "text": "4.5 cm"
+    },
+    {
+     "id": "o4",
+     "text": "5.4 cm"
+    }
+   ],
+   "keyText": "4.5 cm"
+  },
+  {
+   "id": "c6-science-ch05-t01-rl-o1",
+   "topicId": "c6-science-ch05-t01",
+   "skillId": "c6-science-ch05-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The school orders a 3 m banner, but the printer’s form asks for centimetres. What length should the school enter?",
+    "hi": "School 3 m ka banner order kar raha hai, lekin printer ka form centimetres mein length maangta hai. School kya length likhe?"
+   },
+   "hint": "Use the same conversion for each metre of the banner.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "600 cm"
+    },
+    {
+     "id": "o2",
+     "text": "3 cm"
+    },
+    {
+     "id": "o3",
+     "text": "301 cm"
+    },
+    {
+     "id": "o4",
+     "text": "300 cm"
+    }
+   ],
+   "keyText": "300 cm"
+  },
+  {
+   "id": "c6-science-ch05-t01-rl-o2",
+   "topicId": "c6-science-ch05-t01",
+   "skillId": "c6-science-ch05-t01-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A metro-card sleeve lies along a ruler. Its left edge is at 2 cm and its right edge is at 11 cm. What is its length?",
+    "hi": "Metro-card sleeve ruler ke saath rakha hai. Uska left edge 2 cm par aur right edge 11 cm par hai. Uski length kitni hai?"
+   },
+   "hint": "Find the distance between its two edge readings.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "18 cm"
+    },
+    {
+     "id": "o2",
+     "text": "10 cm"
+    },
+    {
+     "id": "o3",
+     "text": "11 cm"
+    },
+    {
+     "id": "o4",
+     "text": "9 cm"
+    }
+   ],
+   "keyText": "9 cm"
+  },
+  {
+   "id": "c6-science-ch05-t01-rl-h3",
+   "topicId": "c6-science-ch05-t01",
+   "skillId": "c6-science-ch05-t01-s3",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "For a school science display, Kavya joins a 1 m wire and a 25 cm wire end to end. What is their total length in millimetres?",
+    "hi": "School science display ke liye Kavya 1 m aur 25 cm ke do wires ko end to end jodti hai. Total length millimetres mein kitni hai?"
+   },
+   "hint": "Convert both wire lengths to the requested unit, then add.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "1,251 mm"
+    },
+    {
+     "id": "o2",
+     "text": "12,500 mm"
+    },
+    {
+     "id": "o3",
+     "text": "1,250 mm"
+    },
+    {
+     "id": "o4",
+     "text": "521 mm"
+    }
+   ],
+   "keyText": "1,250 mm"
+  },
+  {
+   "id": "c6-science-ch05-t02-i03",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s1",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "A curved line's two ends are 8 cm apart in a straight line. Predict: will a thread laid along the curve measure less than, equal to, or more than 8 cm?",
+    "hi": "Ek tedhi line ke dono sire seedhe 8 cm door hain. Guess karo: line ke saath bichhaya dhaaga 8 cm se kam, barabar ya zyada naapega?"
+   },
+   "hint": "Point to the bends",
+   "mis": "c6-science-ch05-t02-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "equal to"
+    },
+    {
+     "id": "o2",
+     "text": "more than 8 cm"
+    }
+   ],
+   "keyText": "more than 8 cm"
+  },
+  {
+   "id": "c6-science-ch05-t02-i04",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s1",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: Golu measures the same curve with a rubber band instead of a thread, stretching it a bit to fit. Will his answer be correct?",
+    "hi": "Guess karo: Golu wahi tedhi line dhaage ki jagah rubber band se naapta hai, thoda kheench ke. Kya uska answer sahi hoga?"
+   },
+   "hint": "Point to the stretch",
+   "mis": "c6-science-ch05-t02-m3",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch05-t02-i05",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s2",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: you measure around a cricket ball with a thread. Which is closest: 7 cm, 23 cm or 50 cm?",
+    "hi": "Guess karo: cricket ball ke chaaron taraf dhaage se naapo. Sabse kareeb kya hoga: 7 cm, 23 cm ya 50 cm?"
+   },
+   "hint": "Point to it being wider than 7 cm across",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "32 cm"
+    },
+    {
+     "id": "o2",
+     "text": "230 cm"
+    },
+    {
+     "id": "o3",
+     "text": "23 cm"
+    },
+    {
+     "id": "o4",
+     "text": "24 cm"
+    }
+   ],
+   "keyText": "23 cm"
+  },
+  {
+   "id": "c6-science-ch05-t02-rl-o1",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A thread is laid along a curved line showing a cycle route and marked at both ends. When straightened beside a ruler, the marks line up with 2 cm and 11 cm. How long is the curved line?",
+    "hi": "Cycle route ki tedhi line par dhaaga bichhaakar dono ends par marks lagaye. Seedha karke ruler ke paas rakha, toh marks 2 cm aur 11 cm par aaye. Tedhi line kitni lambi hai?"
+   },
+   "hint": "Measure between the two marks, not from the ruler’s zero.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "18 cm"
+    },
+    {
+     "id": "o2",
+     "text": "8 cm"
+    },
+    {
+     "id": "o3",
+     "text": "9 cm"
+    },
+    {
+     "id": "o4",
+     "text": "10 cm"
+    }
+   ],
+   "keyText": "9 cm"
+  },
+  {
+   "id": "c6-science-ch05-t02-rl-o2",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Meera wraps a thread once around a steel water bottle and marks where it meets its starting point. Straightened beside a ruler, the marked length is 24 cm. What is the distance around the bottle?",
+    "hi": "Meera steel water bottle ke chaaron taraf dhaaga ek baar lapetkar, jahan woh shuru wale point se milta hai, wahan mark lagati hai. Seedha karne par marked length 24 cm hai. Bottle ke chaaron taraf ki doori kitni hai?"
+   },
+   "hint": "The marked length represents one complete round.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "14 cm"
+    },
+    {
+     "id": "o2",
+     "text": "42 cm"
+    },
+    {
+     "id": "o3",
+     "text": "24 cm"
+    },
+    {
+     "id": "o4",
+     "text": "25 cm"
+    }
+   ],
+   "keyText": "24 cm"
+  },
+  {
+   "id": "c6-science-ch05-t02-rl-h2",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s2",
+   "difficulty": 4,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "For a school event, thread wrapped once around one drum measures 76 cm when straightened. Around a second drum it measures 91 cm. How much longer is the distance around the second drum?",
+    "hi": "School event ke liye pehle drum ke chaaron taraf ek baar lapeta dhaaga seedha karne par 76 cm hai. Doosre drum ke liye 91 cm hai. Doosre drum ke chaaron taraf ki doori kitni zyada hai?"
+   },
+   "hint": "Compare the two distances around the drums.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "16 cm"
+    },
+    {
+     "id": "o2",
+     "text": "14 cm"
+    },
+    {
+     "id": "o3",
+     "text": "51 cm"
+    },
+    {
+     "id": "o4",
+     "text": "15 cm"
+    }
+   ],
+   "keyText": "15 cm"
+  },
+  {
+   "id": "c6-science-ch05-t02-rl-h3",
+   "topicId": "c6-science-ch05-t02",
+   "skillId": "c6-science-ch05-t02-s3",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "On a metro-planning map, a thread laid along a curved route measures 7.5 cm when straightened. The map scale is 1 cm = 4 km. What is the route’s actual length?",
+    "hi": "Metro-planning map par tedhe route ke saath bichhaya dhaaga seedha karne par 7.5 cm hai. Map scale 1 cm = 4 km hai. Route ki asli length kitni hai?"
+   },
+   "hint": "Use the scale for the entire straightened thread length.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "30 km"
+    },
+    {
+     "id": "o2",
+     "text": "300 km"
+    },
+    {
+     "id": "o3",
+     "text": "31 km"
+    },
+    {
+     "id": "o4",
+     "text": "3 km"
+    }
+   ],
+   "keyText": "30 km"
+  },
+  {
+   "id": "c6-science-ch05-t03-rl-h3",
+   "topicId": "c6-science-ch05-t03",
+   "skillId": "c6-science-ch05-t03-s3",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A bicycle rolls along a straight cycle track. Which two motions happen at once: linear and circular, linear and oscillatory, or circular and oscillatory?",
+    "hi": "Cycle seedhe cycle track par chal rahi hai. Ek saath kaunsi do motions ho rahi hain: linear aur circular, linear aur oscillatory, ya circular aur oscillatory?"
+   },
+   "hint": "The bicycle changes place while each wheel turns.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "linear and circular"
+    },
+    {
+     "id": "o2",
+     "text": "linear and oscillatory"
+    },
+    {
+     "id": "o3",
+     "text": "circular and oscillatory"
+    }
+   ],
+   "keyText": "linear and circular"
+  },
+  {
+   "id": "c6-science-ch06-t01-rl-o1",
+   "topicId": "c6-science-ch06-t01",
+   "skillId": "c6-science-ch06-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "At a school exhibition, light passes through a coloured sheet, but you cannot read a label behind it. Is the sheet transparent, translucent or opaque?",
+    "hi": "School exhibition mein ek coloured sheet se roshni guzarti hai, lekin uske peeche ka label padh nahi paate. Sheet transparent, translucent ya opaque hai?"
+   },
+   "hint": "Also check whether the label is clear.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "translucent"
+    },
+    {
+     "id": "o2",
+     "text": "opaque"
+    }
+   ],
+   "keyText": "translucent"
+  },
+  {
+   "id": "c6-science-ch06-t01-rl-h1",
+   "topicId": "c6-science-ch06-t01",
+   "skillId": "c6-science-ch06-t01-s1",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A polished steel lunchbox lid is shiny, yet you cannot see your food through it. Which pair describes the lid: lustrous and opaque, or lustrous and transparent?",
+    "hi": "Polished steel lunchbox ka dhakkan chamakdar hai, par uske aar-paar khana nahi dikhta. Kaunsi jodi sahi hai: lustrous aur opaque, ya lustrous aur transparent?"
+   },
+   "hint": "Judge shine and passage of light separately.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "lustrous and opaque"
+    },
+    {
+     "id": "o2",
+     "text": "lustrous and transparent"
+    }
+   ],
+   "keyText": "lustrous and opaque"
+  },
+  {
+   "id": "c6-science-ch07-t01-i13",
+   "topicId": "c6-science-ch07-t01",
+   "skillId": "c6-science-ch07-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "From last time: at what temperature does pure water freeze, in °C?",
+    "hi": "Pichhli baar se: shuddh paani kis temperature pe jamta hai, °C mein?"
+   },
+   "hint": "Point to the bottom of the Celsius line",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "5"
+    },
+    {
+     "id": "o2",
+     "text": "0"
+    },
+    {
+     "id": "o3",
+     "text": "1"
+    },
+    {
+     "id": "o4",
+     "text": "2"
+    }
+   ],
+   "keyText": "0"
+  },
+  {
+   "id": "c6-science-ch07-t01-rl-o1",
+   "topicId": "c6-science-ch07-t01",
+   "skillId": "c6-science-ch07-t01-s1",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "After holding a chilled juice carton, Meera touches her classroom desk and says it feels warm. Her friend says the same desk feels cool. Which is more reliable for checking the desk’s temperature: their hands or a thermometer?",
+    "hi": "Thanda juice carton pakadne ke baad Meera ko classroom desk garam lagta hai. Uski dost ko wahi desk thanda lagta hai. Desk ka temperature jaanne ke liye kya zyada bharosemand hai: unke haath ya thermometer?"
+   },
+   "hint": "Touch depends partly on what your hand felt just before.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "their hands"
+    },
+    {
+     "id": "o2",
+     "text": "a thermometer"
+    }
+   ],
+   "keyText": "a thermometer"
+  },
+  {
+   "id": "c6-science-ch07-t01-rl-o2",
+   "topicId": "c6-science-ch07-t01",
+   "skillId": "c6-science-ch07-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "At a school event, one water bottle reads 18 °C and another reads 24 °C on a thermometer. Which bottle’s water is warmer: 18 °C or 24 °C?",
+    "hi": "School event mein thermometer par ek water bottle 18 °C aur doosri 24 °C dikhati hai. Kis bottle ka paani zyada garam hai: 18 °C ya 24 °C?"
+   },
+   "hint": "A higher temperature means warmer water.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "240"
+    },
+    {
+     "id": "o2",
+     "text": "24"
+    },
+    {
+     "id": "o3",
+     "text": "42"
+    },
+    {
+     "id": "o4",
+     "text": "25"
+    }
+   ],
+   "keyText": "24"
+  },
+  {
+   "id": "c6-science-ch07-t01-rl-h2",
+   "topicId": "c6-science-ch07-t01",
+   "skillId": "c6-science-ch07-t01-s2",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A thermometer shows drinking water at 16 °C. After the bottle sits in the sun, it reads 29 °C. By how many degrees Celsius did its temperature rise?",
+    "hi": "Thermometer par pehle peene ka paani 16 °C tha. Bottle dhoop mein rakhne ke baad reading 29 °C hai. Temperature kitne degree Celsius badha?"
+   },
+   "hint": "Find the rise by subtracting the earlier reading from the later one.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "31"
+    },
+    {
+     "id": "o2",
+     "text": "14"
+    },
+    {
+     "id": "o3",
+     "text": "130"
+    },
+    {
+     "id": "o4",
+     "text": "13"
+    }
+   ],
+   "keyText": "13"
+  },
+  {
+   "id": "c6-science-ch07-t02-i03",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "On a clinical thermometer there are 10 small divisions between 37 °C and 38 °C. The reading is 4 small divisions after 37. What is the temperature?",
+    "hi": "Clinical thermometer pe 37 °C aur 38 °C ke beech 10 chhote khaane hain. Reading 37 ke baad 4 khaane aage hai. Temperature kitna hai?"
+   },
+   "hint": "Point to 1 degree split into 10",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "18.7"
+    },
+    {
+     "id": "o2",
+     "text": "37.4"
+    },
+    {
+     "id": "o3",
+     "text": "37.5"
+    },
+    {
+     "id": "o4",
+     "text": "47.3"
+    }
+   ],
+   "keyText": "37.4"
+  },
+  {
+   "id": "c6-science-ch07-t02-i04",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: you take a lab thermometer out of warm water and wait 30 seconds before reading it. Will the reading be the same as it was in the water?",
+    "hi": "Guess karo: lab thermometer ko garam paani se nikaal ke 30 second baad padho. Kya reading wahi hogi jo paani mein thi?"
+   },
+   "hint": "Point to the column moving",
+   "mis": "c6-science-ch07-t02-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch07-t02-i05",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s1",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: can a clinical thermometer show the temperature of cold water from the fridge (about 5 °C)?",
+    "hi": "Guess karo: kya clinical thermometer fridge ke thande paani (lagbhag 5 °C) ka temperature dikha sakta hai?"
+   },
+   "hint": "Point to what range it is made for: body temperature",
+   "mis": "c6-science-ch07-t02-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch07-t02-i08",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A digital thermometer shows 101.3 °F for your sister. Normal is about 98.6 °F. Does she have a fever?",
+    "hi": "Digital thermometer tumhari behen ka 101.3 °F dikhata hai. Normal lagbhag 98.6 °F hai. Kya use bukhaar hai?"
+   },
+   "hint": "Point to subtracting",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-science-ch07-t02-i13",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "From last time: what is normal human body temperature in °C?",
+    "hi": "Pichhli baar se: insaan ke shareer ka saamaanya temperature °C mein kitna hota hai?"
+   },
+   "hint": "Point to the middle of the clinical scale",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "37"
+    },
+    {
+     "id": "o2",
+     "text": "47"
+    },
+    {
+     "id": "o3",
+     "text": "73"
+    },
+    {
+     "id": "o4",
+     "text": "38"
+    }
+   ],
+   "keyText": "37"
+  },
+  {
+   "id": "c6-science-ch07-t02-rl-o2",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "On a laboratory thermometer, five equal spaces lie between 10 °C and 20 °C. The liquid ends at the second mark after 10 °C. What is the reading?",
+    "hi": "Laboratory thermometer par 10 °C aur 20 °C ke beech paanch barabar spaces hain. Liquid 10 °C ke baad doosre mark tak hai. Reading kya hai?"
+   },
+   "hint": "Divide the difference between the labelled temperatures by the spaces.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "14"
+    },
+    {
+     "id": "o2",
+     "text": "41"
+    },
+    {
+     "id": "o3",
+     "text": "4"
+    },
+    {
+     "id": "o4",
+     "text": "15"
+    }
+   ],
+   "keyText": "14"
+  },
+  {
+   "id": "c6-science-ch07-t02-rl-h2",
+   "topicId": "c6-science-ch07-t02",
+   "skillId": "c6-science-ch07-t02-s2",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A laboratory thermometer has five equal spaces from −10 °C to 0 °C. The liquid ends at the third mark after −10 °C. What temperature does it show?",
+    "hi": "Laboratory thermometer par −10 °C se 0 °C tak paanch barabar spaces hain. Liquid −10 °C ke baad teesre mark par hai. Temperature kitna hai?"
+   },
+   "hint": "Move towards zero when counting marks from the lower label.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "−3"
+    },
+    {
+     "id": "o2",
+     "text": "−4"
+    },
+    {
+     "id": "o3",
+     "text": "−2"
+    },
+    {
+     "id": "o4",
+     "text": "−40"
+    }
+   ],
+   "keyText": "−4"
+  },
+  {
+   "id": "c6-science-ch08-t01-i04",
+   "topicId": "c6-science-ch08-t01",
+   "skillId": "c6-science-ch08-t01-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: an ice cube in a glass and a spoon of sugar stirred into a glass of water both 'disappear'. Is it the same kind of change?",
+    "hi": "Guess karo: glass mein rakha ice cube aur paani mein ghuli ek chammach cheeni, dono 'gayab' ho jaate hain. Kya dono ek hi tarah ka badlaav hai?"
+   },
+   "hint": "Point to the ice being water all along",
+   "mis": "c6-science-ch08-t01-m3",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch08-t01-i13",
+   "topicId": "c6-science-ch08-t01",
+   "skillId": "c6-science-ch08-t01-s2",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "From last time: at what temperature does water boil at sea level?",
+    "hi": "Pichhli baar se: samudra tal pe paani kis temperature pe ubalta hai?"
+   },
+   "hint": "Point to boiling",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "100"
+    },
+    {
+     "id": "o2",
+     "text": "99"
+    },
+    {
+     "id": "o3",
+     "text": "101"
+    },
+    {
+     "id": "o4",
+     "text": "1"
+    }
+   ],
+   "keyText": "100"
+  },
+  {
+   "id": "c6-science-ch09-t01-i05",
+   "topicId": "c6-science-ch09-t01",
+   "skillId": "c6-science-ch09-t01-s3",
+   "difficulty": 3,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: can winnowing separate rice grains from small stones of the same size? Why or why not?",
+    "hi": "Guess karo: kya phatakne se chawal ke daane aur unhi ke size ke chhote kankar alag ho sakte hain? Kyon ya kyon nahi?"
+   },
+   "hint": "Point to both being heavy",
+   "mis": "c6-science-ch09-t01-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch09-t01-rl-o2",
+   "topicId": "c6-science-ch09-t01",
+   "skillId": "c6-science-ch09-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "After harvesting wheat, the grains are still attached to the stalks. Which method separates the grains from the stalks: threshing or sieving?",
+    "hi": "Gehoon ki katai ke baad daane abhi danthalon se jude hain. Daane alag karne ke liye threshing ya sieving—kaunsa tareeka use hoga?"
+   },
+   "hint": "One method loosens grains from harvested stalks.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "threshing"
+    },
+    {
+     "id": "o2",
+     "text": "sieving"
+    }
+   ],
+   "keyText": "threshing"
+  },
+  {
+   "id": "c6-science-ch09-t02-i04",
+   "topicId": "c6-science-ch09-t02",
+   "skillId": "c6-science-ch09-t02-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: you pour salt water through a clean cloth or filter paper. Will the water coming out still be salty?",
+    "hi": "Guess karo: namak wala paani saaf kapde ya filter paper se chhaano. Jo paani niklega, kya woh ab bhi namkeen hoga?"
+   },
+   "hint": "Point to the filter's holes",
+   "mis": "c6-science-ch09-t02-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-science-ch09-t02-rl-o2",
+   "topicId": "c6-science-ch09-t02",
+   "skillId": "c6-science-ch09-t02-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A school lab has water mixed with fine, insoluble chalk powder. Which should students use to separate the powder: filter paper or a shallow plate in the sun?",
+    "hi": "School lab mein paani mein bareek, na ghulne wala chalk powder mila hai. Powder alag karne ke liye students kya use karein: filter paper ya dhoop mein rakhi chhichhli plate?"
+   },
+   "hint": "Choose what can hold back undissolved particles while water passes through.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "filter paper"
+    },
+    {
+     "id": "o2",
+     "text": "a shallow plate in the sun"
+    }
+   ],
+   "keyText": "filter paper"
+  },
+  {
+   "id": "c6-science-ch10-t01-i08",
+   "topicId": "c6-science-ch10-t01",
+   "skillId": "c6-science-ch10-t01-s3",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Is the mango tree in your colony living? Give three pieces of evidence.",
+    "hi": "Kya tumhari colony ka aam ka ped jeevit hai? Teen saboot do."
+   },
+   "hint": "Point to the mango season",
+   "mis": "c6-science-ch10-t01-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-science-ch10-t01-rl-o2",
+   "topicId": "c6-science-ch10-t01",
+   "skillId": "c6-science-ch10-t01-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A voice-controlled robot moves when Aarav speaks, but it never grows or makes new robots. Is it living or non-living?",
+    "hi": "Aarav ki awaaz sunkar ek robot chalta hai, lekin woh na badhta hai, na naye robot banata hai. Kya woh living hai ya non-living?"
+   },
+   "hint": "Check other characteristics of living things too.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "living"
+    },
+    {
+     "id": "o2",
+     "text": "non-living"
+    }
+   ],
+   "keyText": "non-living"
+  },
+  {
+   "id": "c6-science-ch10-t01-rl-h2",
+   "topicId": "c6-science-ch10-t01",
+   "skillId": "c6-science-ch10-t01-s2",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A salt crystal gets bigger in salty water. It does not respire or reproduce. Is the crystal living or non-living? Give the key reason.",
+    "hi": "Namak ka crystal namkeen paani mein bada ho jata hai. Woh respire ya reproduce nahi karta. Crystal living hai ya non-living? Mukhya wajah batao."
+   },
+   "hint": "Check its other life processes as well.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "living"
+    },
+    {
+     "id": "o2",
+     "text": "non-living"
+    }
+   ],
+   "keyText": "non-living"
+  },
+  {
+   "id": "c6-science-ch10-t01-rl-h3",
+   "topicId": "c6-science-ch10-t01",
+   "skillId": "c6-science-ch10-t01-s3",
+   "difficulty": 4,
+   "itemKind": "why",
+   "prompt": {
+    "en": "A dry bean seed in a packet shows no visible growth. After it gets water, it sprouts. Was the seed living before it was watered? Give the key reason.",
+    "hi": "Packet mein rakha sukha bean seed badhta hua nahi dikhta. Paani milne par woh ankurit hota hai. Kya paani milne se pehle beej living tha? Mukhya wajah batao."
+   },
+   "hint": "Think about what changes when the seed gets water.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-science-ch10-t02-i13",
+   "topicId": "c6-science-ch10-t02",
+   "skillId": "c6-science-ch10-t02-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "From last time: does a seed need soil to germinate?",
+    "hi": "Pichhli baar se: kya beej ko ankurit hone ke liye mitti chahiye?"
+   },
+   "hint": "Point to the wet cloth",
+   "mis": "c6-science-ch10-t02-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch10-t02-rl-o1",
+   "topicId": "c6-science-ch10-t02",
+   "skillId": "c6-science-ch10-t02-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A school science club puts chana seeds on damp cotton in an open container in a warm classroom. Which needed germination condition does the damp cotton provide: water, air or warmth?",
+    "hi": "School science club chane ke beej geeli cotton par, khule container mein, garam classroom mein rakhta hai. Geeli cotton germination ke liye kya deti hai: paani, hawa ya garmahat?"
+   },
+   "hint": "Think about what a seed absorbs before sprouting.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "water"
+    },
+    {
+     "id": "o2",
+     "text": "air"
+    },
+    {
+     "id": "o3",
+     "text": "warmth"
+    }
+   ],
+   "keyText": "water"
+  },
+  {
+   "id": "c6-science-ch10-t02-rl-h1",
+   "topicId": "c6-science-ch10-t02",
+   "skillId": "c6-science-ch10-t02-s1",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "For a school exhibition, Aarav keeps soaked peas fully submerged in a sealed jar and equally soaked peas on damp cotton in an open jar. Both stay warm. Which jar's seeds are more likely to germinate: sealed or open?",
+    "hi": "School exhibition ke liye Aarav bhigoye matar sealed jar mein poori tarah paani ke neeche rakhta hai, aur utne hi bhigoye matar open jar mein geeli cotton par. Dono garam jagah hain. Kis jar ke beej zyada ankurit honge: sealed ya open?"
+   },
+   "hint": "Seeds need access to air as well as moisture.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "sealed"
+    },
+    {
+     "id": "o2",
+     "text": "open"
+    }
+   ],
+   "keyText": "open"
+  },
+  {
+   "id": "c6-science-ch10-t02-rl-h2",
+   "topicId": "c6-science-ch10-t02",
+   "skillId": "c6-science-ch10-t02-s2",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "To test whether air affects moong germination, Kabir puts seeds underwater in a fridge and seeds on damp cotton in a warm room. Is his test fair: yes or no? Name the other condition he changed.",
+    "hi": "Air ka moong germination par asar check karne ke liye Kabir kuch beej fridge mein paani ke neeche rakhta hai aur kuch garam room mein geeli cotton par. Kya test fair hai: yes ya no? Air ke alawa badli hui ek condition batao."
+   },
+   "hint": "Compare where the two sets are kept.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch10-t03-rl-o1",
+   "topicId": "c6-science-ch10-t03",
+   "skillId": "c6-science-ch10-t03-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A sunflower seed sprouts in the school garden. What comes next in its life cycle: a seedling or a flower?",
+    "hi": "School garden mein sunflower ka beej ankurit hua. Uske life cycle mein agla stage kya hoga: seedling ya flower?"
+   },
+   "hint": "What does the sprout grow into first?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "a seedling"
+    },
+    {
+     "id": "o2",
+     "text": "a flower"
+    }
+   ],
+   "keyText": "a seedling"
+  },
+  {
+   "id": "c6-science-ch10-t03-rl-o2",
+   "topicId": "c6-science-ch10-t03",
+   "skillId": "c6-science-ch10-t03-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A student finds mosquito wrigglers in water standing in a bucket. Which stage are the wrigglers: larva or pupa?",
+    "hi": "Ek student ko balti mein jama paani mein machhar ke wrigglers dikhte hain. Yeh kaunsa stage hai: larva ya pupa?"
+   },
+   "hint": "Recall the stage that follows a mosquito egg.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "larva"
+    },
+    {
+     "id": "o2",
+     "text": "pupa"
+    }
+   ],
+   "keyText": "larva"
+  },
+  {
+   "id": "c6-science-ch11-t01-i03",
+   "topicId": "c6-science-ch11-t01",
+   "skillId": "c6-science-ch11-t01-s3",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Predict: a dry tissue is stuck inside the bottom of an 'empty' glass. The glass is pushed straight down, upside down, into a bucket of water. Will the tissue get wet?",
+    "hi": "Guess karo: ek 'khaali' glass ke tale mein sookha tissue chipka hai. Glass ko ulta karke seedha baalti ke paani mein dabaya. Kya tissue geela hoga?"
+   },
+   "hint": "Point to air needing space",
+   "mis": "c6-science-ch11-t01-m2",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-science-ch11-t01-rl-h3",
+   "topicId": "c6-science-ch11-t01",
+   "skillId": "c6-science-ch11-t01-s3",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Two identical deflated footballs balance on a simple scale. One is inflated and placed back on its side. Which side goes down: inflated football, deflated football or neither?",
+    "hi": "Do ek jaise, bina hawa wale football simple scale par balance hain. Ek mein hawa bharkar use wapas usi taraf rakha gaya. Kaunsi taraf neeche jayegi: hawa bhara football, bina hawa wala football, ya koi bhi nahi?"
+   },
+   "hint": "A balance responds to added weight.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "inflated football"
+    },
+    {
+     "id": "o2",
+     "text": "deflated football"
+    },
+    {
+     "id": "o3",
+     "text": "neither"
+    }
+   ],
+   "keyText": "inflated football"
+  },
+  {
+   "id": "c6-science-ch11-t02-rl-o1",
+   "topicId": "c6-science-ch11-t02",
+   "skillId": "c6-science-ch11-t02-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A school uses bamboo grown again after harvesting and iron ore dug from a mine. Which is renewable: bamboo or iron ore?",
+    "hi": "School dobara ugne wala bamboo aur khadaan se nikla iron ore use karta hai. Inmein renewable kaunsa hai: bamboo ya iron ore?"
+   },
+   "hint": "Think about regrowth compared with material taken from a mine.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "bamboo"
+    },
+    {
+     "id": "o2",
+     "text": "iron ore"
+    }
+   ],
+   "keyText": "bamboo"
+  },
+  {
+   "id": "c6-science-ch11-t02-rl-h1",
+   "topicId": "c6-science-ch11-t02",
+   "skillId": "c6-science-ch11-t02-s1",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "A canteen can cook using biogas made regularly from food waste or LPG obtained from underground deposits. Which fuel is renewable: biogas or LPG?",
+    "hi": "Canteen khane ke bache tukdon se regularly bani biogas ya zameen ke neeche ke bhandaar se mili LPG use kar sakti hai. Renewable fuel kaunsa hai: biogas ya LPG?"
+   },
+   "hint": "Compare fresh food waste with underground fuel deposits.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "biogas"
+    },
+    {
+     "id": "o2",
+     "text": "LPG"
+    }
+   ],
+   "keyText": "biogas"
+  },
+  {
+   "id": "c6-science-ch12-t01-rl-o2",
+   "topicId": "c6-science-ch12-t01",
+   "skillId": "c6-science-ch12-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "At a school stargazing event, Meera spots Saptarishi's two pointer stars. She extends an imaginary line through them to locate a useful direction-finding star. Which star is she looking for: Pole Star or Sirius?",
+    "hi": "School ke stargazing event mein Meera ko Saptarishi ke do pointer stars dikhte hain. Woh unke through ek imaginary line badhati hai. Direction jaanne ke liye woh kaunsa taara dhoondh rahi hai: Pole Star ya Sirius?"
+   },
+   "hint": "Think of the star used to find north.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Pole Star"
+    },
+    {
+     "id": "o2",
+     "text": "Sirius"
+    }
+   ],
+   "keyText": "Pole Star"
+  }
+ ]
+}

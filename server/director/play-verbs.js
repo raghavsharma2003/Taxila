@@ -8,13 +8,22 @@ export const PLAY_ACTS = Object.freeze({
   "todo-jodo": { atoms: { act: "split_join", hi: "todo ya jodo", en: "split or join" }, strips: { act: "split_join", hi: "todo ya jodo", en: "split or join" },
     bundles: { act: "split_join", hi: "bundle banao ya kholo", en: "bundle or unbundle" } },
   taraazu: { equation: { act: "balance", hi: "taraazu barabar karo", en: "balance it" }, equality: { act: "balance", hi: "taraazu barabar karo", en: "balance it" } },
-  nishana: { place: { act: "place", hi: "line par rakho", en: "place it on the line" }, compare: { act: "choose", hi: "chuniye", en: "choose" } },
+  nishana: { place: { act: "place", hi: "line par rakho", en: "place it on the line" }, compare: { act: "choose", hi: "chuniye", en: "choose" },
+    // r7 games: integer operations as hops from a start on the line
+    hop: { act: "place", hi: "jahan pahunchoge wahan rakho", en: "land it where the hop ends" } },
   "kyun-lab": { "fair-test": { act: "test", hi: "ek cheez badlo aur test karo", en: "change one thing and test" } },
   // r4-khand (claude/r4-khand, src/play/engines/khand/copy.json goal lines)
   nazariya: { views: { act: "build", hi: "banao", en: "build" }, array: { act: "fill_count", hi: "bharo, phir gino", en: "fill, then count" },
     floor: { act: "lay", hi: "farsh bichhao", en: "lay the floor" }, powers: { act: "build", hi: "banao", en: "build" }, mirror: { act: "build", hi: "banao", en: "build" } },
+  // round 7 (src/play/families/stambh): a graph is BUILT, crate by crate / icon by icon
+  stambh: { bars: { act: "build", hi: "khambe banao", en: "build the bars" }, picto: { act: "build", hi: "chitr lagao", en: "stack the pictures" } },
   // r4-games-core (claude/r4-games-core, E1 angles: src/play/families/kon, data/play/engine-words.json kon.goal.*)
-  kon: { turn: { act: "turn", hi: "teer ghumao", en: "turn the arrow" }, set: { act: "turn", hi: "kon kholo", en: "open the angle" } },
+  kon: { turn: { act: "turn", hi: "teer ghumao", en: "turn the arrow" }, set: { act: "turn", hi: "kon kholo", en: "open the angle" },
+    // r7 games: make a kind of angle / match one (zone), a linear pair (pair), close a triangle (close)
+    zone: { act: "turn", hi: "kon kholo", en: "open the angle" }, pair: { act: "turn", hi: "kon kholo", en: "open the angle" },
+    close: { act: "turn", hi: "kon kholo ki triangle band ho", en: "open the angle so the triangle closes" } },
+  // r7 games: ITEM-ARENA (round 4 G1 revived): aim at a target, then fire
+  arena: { pick: { act: "aim", hi: "nishana lagao aur fire karo", en: "aim and fire" } },
 });
 
 /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */

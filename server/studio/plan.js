@@ -406,7 +406,7 @@ function withDeadline(p, ms, code = "deadline") {
 
 /** Compact model ops → WbOp (t → startMs / endMs). Unknown keys dropped; the strict normaliser judges the rest. */
 export function expandOps(ops) {
-  const KEEP = ["c", "r", "rx", "ry", "at", "w", "h", "from", "to", "points", "fromDeg", "toDeg", "text", "size", "align", "target", "layout", "rows", "range", "marks", "fill", "style", "dashed", "bend", "head", "ink", "weight", "round"];
+  const KEEP = ["c", "r", "rx", "ry", "at", "w", "h", "from", "to", "points", "fromDeg", "toDeg", "text", "size", "align", "target", "layout", "rows", "range", "marks", "fill", "style", "dashed", "bend", "head", "ink", "weight", "round", "by", "arc"];
   return (Array.isArray(ops) ? ops : []).map((o) => {
     if (!o || typeof o !== "object") return o;
     const t = Array.isArray(o.t) ? o.t : [o.startMs, o.endMs];
