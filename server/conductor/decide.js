@@ -281,6 +281,7 @@ const HANDLERS = {
       case "schoolEnd": s.routine.schoolEnd = String(v); break;
       case "wakeTime": s.routine.wakeTime = String(v); break;
       case "tz": s.tz = String(v); s.routine.tz = String(v); break;
+      case "sharedPhone": if (v === true) s.household = { shared: true }; else delete s.household; break;
     }
     // a lowered cap or earlier bedtime reaches a live lesson at its next segment boundary (dc AR-5 R8)
     if (lowers && s.mode === "in_lesson" && s.lesson) H.cmd({ kind: "brief.refresh", lessonId: s.lesson.lessonId });

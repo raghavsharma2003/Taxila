@@ -51,6 +51,10 @@ export function buildPlannerInputs(state, ctx) {
   const gapDays = state.counters.lastActiveDay ? Math.min(30, daysBetween(state.counters.lastActiveDay, day)) : null;
   // round 7 F (R2, R5, R9): present only when they can fire, so a plan that reads none of them hashes as before
   const wheel = ctx.view.get("kt.wheelSpin"), placeGap = ctx.view.get("learner.placementGap");
+  // round 7 F household v1: a window on the phone she shares with siblings (null when she shares with nobody)
+  const hhv = ctx.view.get("household.window");
+  const household = !hhv.stale && hhv.value?.state === "planned" && hhv.value.from && hhv.value.to
+    ? { state: "planned", from: floor5(hhv.value.from), to: floor5(hhv.value.to) } : null;
   const checked = Object.entries(state.adapt.prereqChecked ?? {}).filter(([, d]) => daysBetween(d, day) < R5.recheckDays).map(([k]) => k).sort();
   const adaptAdd = { ...(state.adapt.lateMinSet ? { lateMinSet: true } : {}), ...(checked.length ? { prereqChecked: checked } : {}) };
   const viewAdd = {
@@ -74,9 +78,12 @@ export function buildPlannerInputs(state, ctx) {
     adapt: { successFirst: !!state.adapt.successFirstNext, gapDays, ...adaptAdd },
     view: { "kt.dueCount": { value: qCount(due.value), src: due.src, stale: due.stale },
             "usage.usedMin": { value: Math.floor(Number(used.value) || 0), src: used.src, stale: used.stale }, ...viewAdd },
-    household: null,
+    household,
   };
 }
+
+/** 'HH:MM' floored to 5 min (household windows inside inputsHash, household.md §3.4). */
+const floor5 = (hm) => { const [h, m] = String(hm).split(":").map(Number); return `${String(h).padStart(2, "0")}:${String(Math.floor(m / 5) * 5).padStart(2, "0")}`; };
 
 /** The rotation's ranked subjects as a planner input (a stale or missing key plans no subject: V25). */
 function subjectsInput(v) {
@@ -152,12 +159,21 @@ export function planDay(inputs) {
   // Shown-but-not-started slots still need their minutes; started ones are already in usage.usedMin.
   const frozenMin = slots.filter((s) => !frozen.startedIds.includes(s.id)).reduce((a, s) => a + s.targetMin, 0);
   let remaining = Math.max(0, limits.capMin - usage.usedMin - frozenMin);
-  const startDM = Math.max(dayMin(win.from), dayMin(win.effFrom));
-  const timeLeft = Math.max(0, dayMin(win.to) - startDM);   // learning-day minutes: 00:30 is after 20:30
+  let startDM = Math.max(dayMin(win.from), dayMin(win.effFrom));
+  let endDM = dayMin(win.to);
+  // household v1 (household.md §3.4): a planned window that starts at or after now is this sitting's window; it can only
+  // shorten the sitting (≤ to − from), never raise it. A window already past falls back to her own routine window.
+  const hh = inputs.household;
+  if (hh && dayMin(hh.from) >= startDM && dayMin(hh.from) < endDM) {
+    startDM = dayMin(hh.from);
+    endDM = Math.min(endDM, dayMin(hh.to));
+    fire("HH", "limits", "window", hh.from, ["household.window"]);
+  }
+  const timeLeft = Math.max(0, endDM - startDM);   // learning-day minutes: 00:30 is after 20:30
   const lessonToday = slots.some((s) => s.kind === "live_lesson");
   const due = inputs.view["kt.dueCount"];
   const dueCount = due.stale ? 0 : due.value;                      // a stale key never fires a rule (V25)
-  const slotWindow = [fromDayMin(startDM), win.to];
+  const slotWindow = [fromDayMin(startDM), fromDayMin(endDM)];
 
   if (!lessonToday && timeLeft > 0) {
     const aim = Math.max(b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0), Math.floor(PLAN.capShare * limits.capMin));

@@ -80,6 +80,15 @@ export function validatePlan(plan, inputs, { childId, now, tz } = {}) {
     // V20: no new skill in the last 2 days of a test window
     if (tw && (s.pace?.newSkillBudget ?? 0) > 0 && daysBetween(inputs.day.learningDay, tw.to) < 2) bad("V20", `slot ${s.id} newSkillBudget ${s.pace.newSkillBudget} in the last 2 days of a test window`);
   }
+  // V28 (household v1): a new sitting lies inside a planned, future household window
+  const hh = inputs.household;
+  if (hh?.state === "planned") {
+    for (const s of plan.slots) {
+      if (s.kind !== "live_lesson" || inputs.frozen.slots.some((f) => f.id === s.id)) continue;
+      if (dayMin(hh.from) < Math.max(dayMin(inputs.window.from), dayMin(inputs.window.effFrom))) continue;   // already past: her own routine window
+      if (dayMin(s.window[0]) < dayMin(hh.from) || dayMin(s.window[1]) > dayMin(hh.to)) bad("V28", `slot ${s.id} ${s.window[0]}-${s.window[1]} outside the household window ${hh.from}-${hh.to}`);
+    }
+  }
   // V30 (and V14's spirit): no other child's id anywhere in the plan.
   for (const m of jcs(plan).match(UUID) || []) if (m.toLowerCase() !== String(childId).toLowerCase()) bad("V30", `foreign id ${m.slice(0, 8)}…`);
   return out;

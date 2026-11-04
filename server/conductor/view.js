@@ -13,17 +13,21 @@
 //                   (depth ≤ 3, pL < .4) a check would start from (conductor/adapt.js wheelSpinView). Late key.
 //   learner.placementGap  round 7 F (R9): { [subject]: grade levels below the class's expected level } from the
 //                   child's latest finished placement, to .5; only subjects placed below. Late key.
+//   household.window round 7 F (household v1): this child's window on the phone she shares with siblings (the parent's
+//                   sharedPhone setting), { state: 'planned', from, to } | { state: 'none'|'in_lesson'|'done' };
+//                   computed by conductor/household.js allocate() from the guardian's children's conductor_state rows.
+//                   Stale when she shares with nobody. Never names or counts a sibling (V30). Late key.
 import { addDays, learningDay, zonedToUtc } from "./clock.js";
 
 /** Declared fallbacks: a missing or stale key returns these and never fires a rule (V25). */
 const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {}, "school.subjects": null,
-  "kt.wheelSpin": [], "learner.placementGap": {} };
+  "kt.wheelSpin": [], "learner.placementGap": {}, "household.window": null };
 /**
  * Keys added after decision logs were already being written. A snapshot recorded before a key existed was
  * decided by code that did not read it, so replay serves the declared fallback (which reproduces that code's
  * behaviour exactly: usage.voiceSecMonth {} = the full tier budget, as V3 then assumed). Any other miss throws.
  */
-const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects", "kt.wheelSpin", "learner.placementGap"]);
+const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects", "kt.wheelSpin", "learner.placementGap", "household.window"]);
 
 export class ReplayMiss extends Error {}
 
@@ -80,7 +84,10 @@ export async function loadView(db, childId, tz, now) {
     const { placementResultsOf, placementGapOf } = await import("../placement/store.js");
     return placementGapOf(await placementResultsOf(childId, { q_: (t, p) => db.q(t, p) }));
   })().catch(() => null);
-  const [due, usage, logged, cal, voice, subjects, wheel, gap] = await Promise.all([
+  // round 7 F (household v1): the guardian's children's conductor states (only when more than one shares the phone)
+  const siblingsP = db.q(`select s.state from conductor_state s join child c on c.id = s.child_id
+      where c.guardian_id = (select guardian_id from child where id = $1)`, [childId]).catch(() => []);
+  const [due, usage, logged, cal, voice, subjects, wheel, gap, siblings] = await Promise.all([
     db.q("select count(*)::int as n from skill_state where child_id = $1 and next_review is not null and next_review <= $2", [childId, asOf]),
     db.q("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [childId, day]),
     db.q(`select coalesce(sum((body->>'minutes')::real), 0) as m from student_event
@@ -90,8 +97,14 @@ export async function loadView(db, childId, tz, now) {
     db.q(`select l.key as lane, coalesce(sum(case when jsonb_typeof(l.value) = 'number' then (l.value)::text::real end), 0) as sec
             from conductor_usage u, jsonb_each(u.voice_sec) l
            where u.child_id = $1 and u.learning_day between $2::date and $3::date group by l.key`, [childId, monthStart, day]),
-    subjectsP, wheelP, gapP,
+    subjectsP, wheelP, gapP, siblingsP,
   ]);
+  const calendar = Object.fromEntries(cal.map((r) => [r.day, r.kind]));
+  let hh = null;
+  try {
+    const { householdWindowOf } = await import("./household.js");
+    hh = householdWindowOf(childId, siblings.map((r) => r.state).filter(Boolean), { day, now, calendar });
+  } catch { hh = null; }
   return {
     "kt.dueCount": { value: due[0]?.n ?? 0, asOf, src: "skill_state", stale: false },
     "usage.usedMin": usage[0]
@@ -102,5 +115,6 @@ export async function loadView(db, childId, tz, now) {
     "school.subjects": subjects ? { value: subjects, asOf, src: "rotation", stale: false } : { value: null, asOf, src: "fallback", stale: true },
     "kt.wheelSpin": wheel ? { value: wheel, asOf, src: "kt_skill_state", stale: false } : { value: [], asOf, src: "fallback", stale: true },
     "learner.placementGap": gap ? { value: gap, asOf, src: "placement", stale: false } : { value: {}, asOf, src: "fallback", stale: true },
+    "household.window": hh ? { value: hh, asOf, src: "household", stale: false } : { value: null, asOf, src: "fallback", stale: true },
   };
 }
