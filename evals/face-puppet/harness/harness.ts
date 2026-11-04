@@ -44,7 +44,7 @@ async function realtime() {
   let level = 0;
   const tapSrc: TapSource = { get value() { return level; }, onTap(fn) { fn(analyser); return () => fn(null); } };
   const stats: unknown[] = [];
-  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], budgetMs: Q.get("budget") ? +Q.get("budget")! : undefined, onEvent: (e) => { if (e.type !== "stats") stats.push(e); } });
+  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], jaw: Q.get("jaw") === "1", budgetMs: Q.get("budget") ? +Q.get("budget")! : undefined, onEvent: (e) => { if (e.type !== "stats") stats.push(e); } });
   await stage.init();
   stage.start();
   const lines = (Q.get("line") || "00").split(",");
@@ -102,7 +102,7 @@ async function capture() {
   };
   const fakeUp = { context: { createAnalyser: () => fakeOwn, sampleRate: 24000 }, connect() {}, disconnect() {} };
   const tapSrc: TapSource = { value: 0, onTap(fn) { fn(fakeUp as unknown as AnalyserNode); return () => {}; } };
-  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], loadTimeoutMs: 30000, now: () => clock });
+  const stage = new PuppetStage(host, { look: LOOK, band: "b2", sources: [tapSrc], loadTimeoutMs: 30000, now: () => clock, jaw: Q.get("jaw") === "1" });
   await stage.init();
   stage.canvas.style.transition = "none";
   // performance.now() is the driver's clock in production; in capture the stage is ticked with the scripted clock, and

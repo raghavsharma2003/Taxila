@@ -59,6 +59,8 @@ export interface PuppetStageOptions {
   loadTimeoutMs?: number;
   /** "chunked" (default, loader.ts) or "judged" (Puppet2DRig.load + warm() in one task: the parity eval). */
   loader?: "chunked" | "judged";
+  /** Route (b): the key rig's 2.5D jaw layer (rig-keys/keyrig.ts). */
+  jaw?: boolean;
   /** The clock the bus events are judged against (default performance.now; the evals pass their scripted clock). */
   now?: () => number;
   onEvent?: (e: PuppetStageEvent) => void;
@@ -189,7 +191,7 @@ export class PuppetStage {
     // The judged single-task path (load + warm) stays available for the parity eval and as the loader's own fallback.
     const abort = { aborted: false };
     const load: Promise<{ rig: Puppet2DRig | KeyRig; path: string; slices: number; longestSliceMs: number; warmFrameMs: number }> = pack.rig === "keys"
-      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
+      ? KeyRig.load(this.canvas, base, { dpr: this.dpr, view, clear: ropts.clear, reducedMotion: this.o.reducedMotion, jaw: this.o.jaw }).then((rig) => { rig.warm(); return { rig, path: "keys", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : this.o.loader === "judged"
       ? Puppet2DRig.load(this.canvas, base, ropts).then((rig) => { rig.warm(); return { rig, path: "judged", slices: 1, longestSliceMs: NaN, warmFrameMs: NaN }; })
       : loadRigChunked(this.canvas, base, ropts, { signal: abort });

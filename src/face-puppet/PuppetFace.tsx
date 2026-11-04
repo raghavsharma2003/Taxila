@@ -19,7 +19,7 @@ import { p as copy } from "../avatar/picker/copy.ts";
 import type { Emotion, FloorStatus } from "../avatar/behaviour.ts";
 import type { TapSource } from "../avatar/tap.ts";
 import { DEFAULT_LOOK, lookBackground, puppetPoster, type PuppetLook } from "./assets.ts";
-import { puppetForcedOn, puppetServerAllows } from "./flag.ts";
+import { faceJawEnabled, puppetForcedOn, puppetServerAllows } from "./flag.ts";
 import { faceLook, faceLookNow } from "./look.ts";
 import { LIVE_ARM_FALLBACK_MS, armLive, liteGate } from "./lite.ts";
 import { LiteLayer } from "./LiteLayer.tsx";
@@ -196,7 +196,7 @@ export function PuppetFace(p: PuppetFaceProps) {
         if (cancelled) return;
         if (!allowed && !puppetForcedOn()) { fail("off: server kill switch (TAXILA_FACE_PUPPET2D=0)"); return; }
         const s = new PuppetStage(el, {
-          look, band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion,
+          look, band: p.band, sources, framing: p.framing ?? "medium", reducedMotion: live.current.reducedMotion, jaw: faceJawEnabled(),
           seed: [...tutor.id].reduce((a, c) => a + c.charCodeAt(0), 0),
           onEvent: handler,
         });
