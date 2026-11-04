@@ -93,12 +93,13 @@ export function Me() {
           on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />
-        {older && (
-          <Choice id="talk" label={t("talkMode")} value={headset && prefs.talk === "open" ? "open" : "tap"} icon={ic("mic", "picto/mic")}
-            options={[{ v: "tap", label: t("tapToTalk") }, ...(headset ? [{ v: "open" as const, label: t("openMic") }] : [])]}
-            set={(v) => setPrefs({ talk: v as ChildPrefs["talk"] })} />
+        {/* Voice to-app/001 (D2): the talk choice is for every child, no headset rule */}
+        {(
+          // r7 (D2): hands-free is the default; Tap to talk starts every lesson with the mic off and the Talk button showing
+          <Choice id="talk" label={t("talkMode")} value={prefs.handsFree === false ? "tap" : "hands"} icon={ic("mic", "picto/mic")}
+            options={[{ v: "hands", label: t("handsFree") }, { v: "tap", label: t("tapToTalk") }]}
+            set={(v) => setPrefs({ handsFree: v === "hands" ? null : false, talk: v === "hands" && headset ? "open" : "tap" })} />
         )}
-        {older && !headset && <li className="me-hint">{t("openMicNeeds")}</li>}
         {older && (
           <Choice id="face" label={t("teacherFace")} value={prefs.face} icon={ic("face", "picto/ai-teacher")}
             options={[{ v: "face", label: t("faceMoving") }, { v: "small", label: t("faceStill") }, { v: "voice", label: t("faceVoice") }]}

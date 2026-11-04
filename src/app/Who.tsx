@@ -7,6 +7,7 @@ import { Icon } from "../ui/index.ts";
 import { ErrorNote } from "../ui/index.ts";
 import { errText, getJson, loadMe, lockBeacon, type ChildRow } from "./api.ts";
 import { bandForClass, useSurface } from "./band.ts";
+import { YOUNG_MAX_CLASS } from "../child/band.ts";
 import { Loading } from "./Shell.tsx";
 import { Avatar as ChildAvatar } from "../child/pictos.tsx";
 import { readStore, writeStore } from "./storage.ts";
@@ -30,7 +31,8 @@ export default function Who() {
   const [picked, setPicked] = useState<string | null>(null);
   const [pendingReset, setPendingReset] = useState<string | null>(null);
 
-  const young = !!kids?.some((c) => c.class_level <= 4);
+  // r7 D3: the young look is classes 1-3 only (class 4 has the older one)
+  const young = !!kids?.some((c) => c.class_level <= YOUNG_MAX_CLASS);
   useSurface({ band: kids ? (young ? "b1" : "b3") : null });
 
   // The picker is child mode: whatever brought the phone here (Lock, Back, the P8 handover), the corner is shut.

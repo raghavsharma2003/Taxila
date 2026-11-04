@@ -9,10 +9,15 @@ import { Settlement } from "./Settlement.tsx";
 import { kt, KX_NAMES, RING_LABEL } from "./copy.ts";
 import { BASE } from "./Base.tsx";
 import { futurist } from "./look.ts";
+import { KxDock, KxTopBar, type NavItem } from "./nav.tsx";
+import { tr7 } from "../../copy/en.ts";
 import type { HangarItem, World } from "./world.ts";
 import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 
 export type Go = (to: string) => void;
+
+/** r7 app-nav-unified: the one dock and the Me door, shared by every Kaksha screen (nav.tsx). Absent: no dock (dev). */
+export interface NavProps { dock?: NavItem[]; meTo?: string }
 
 /** A link that routes through `go` when given (the app) and is a plain href otherwise (the dev page). */
 function A({ to, go, className, children, testid, label }: { to: string; go?: Go; className?: string; children: ReactNode; testid?: string; label?: string }) {
@@ -38,7 +43,7 @@ const I = {
 
 // ---------------------------------------------------------------- Home (Open)
 
-export interface HomeViewProps {
+export interface HomeViewProps extends NavProps {
   childName: string;
   teacher: { id: string | null | undefined; name: string; band: string; form?: "live" | "plate"; tier?: "D" | "E" };
   family: "young" | "older";
@@ -63,12 +68,17 @@ export function HomeView(p: HomeViewProps) {
   const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub") : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : kt("openSub");
   const cta = p.state === "start" || p.state === "done";
   return (
-    <div className="kx-screen kx-home">
+    <div className={`kx-screen kx-home${p.dock ? " kx-hasdock" : ""}`}>
       <Sky screen="home" reducedMotion={p.reducedMotion} />
-      <header className="kx-top">
-        <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
-        {futurist() && <span className="kx-shell">{KX_NAMES.shell}</span>}
-      </header>
+      {p.meTo ? (
+        <KxTopBar go={p.go} meTo={p.meTo} parentTo={p.parentTo}
+          brand={<span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>} />
+      ) : (
+        <header className="kx-top">
+          <span className="kx-mark" aria-label="Taxila"><i aria-hidden="true" /><span className="kx-wordmark">TAXILA</span></span>
+          {futurist() && <span className="kx-shell">{KX_NAMES.shell}</span>}
+        </header>
+      )}
       <main className="kx-home-main">
         <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
           floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} />
@@ -89,20 +99,31 @@ export function HomeView(p: HomeViewProps) {
               <span data-volt="">{kt("start")}</span>
             </A>
           ) : null}
-          <nav className="kx-dock" aria-label="More">
-            <A to={p.worldTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-world"><Icon d={I.orbit} />{kt("myOrbit")}</A>
-            <A to={p.parentTo} go={p.go} className="kx-dockbtn kx-cut" testid="grownups"><Icon d={I.parent} />{kt("forParents")}</A>
-            {p.whoTo && <A to={p.whoTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-who"><Icon d={I.swap} />{kt("notMe", { name: p.childName })}</A>}
-          </nav>
+          {p.dock ? (
+            // r7: World, Notebook, Practice and Ask live in the one dock; the parent door is in the top bar. Only the
+            // sibling switch stays here (audit B06).
+            p.whoTo ? <nav className="kx-dock" aria-label="More">
+              <A to={p.whoTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-who"><Icon d={I.swap} />{kt("notMe", { name: p.childName })}</A>
+            </nav> : null
+          ) : (
+            <nav className="kx-dock" aria-label="More">
+              <A to={p.worldTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-world"><Icon d={I.orbit} />{kt("myOrbit")}</A>
+              <A to={p.parentTo} go={p.go} className="kx-dockbtn kx-cut" testid="grownups"><Icon d={I.parent} />{kt("forParents")}</A>
+              {p.whoTo && <A to={p.whoTo} go={p.go} className="kx-dockbtn kx-cut" testid="kx-who"><Icon d={I.swap} />{kt("notMe", { name: p.childName })}</A>}
+            </nav>
+          )}
         </section>
       </main>
+      {p.dock && <KxDock items={p.dock} active="home" go={p.go} />}
     </div>
   );
 }
 
 // ---------------------------------------------------------------- World
 
-export interface WorldViewProps {
+export interface WorldViewProps extends NavProps {
+  /** r7 (F Learning): the chapters the parent said school is on ("Your class is here"); empty: no line. */
+  school?: Array<{ subject: string; title: string }>;
   childName: string;
   world: World;
   /** The "Yesterday" world (null: no snapshot yet, the toggle is hidden). */
@@ -122,24 +143,35 @@ export function WorldView(p: WorldViewProps) {
   const station = pick ? w.rings.flatMap((r) => r.stations.map((s) => ({ ...s, subject: r.subject }))).find((s) => s.skillId === pick) : null;
   const built = pick ? w.structures.find((s) => s.skillId === pick) : null;
   const opened = pick ? w.items.filter((i) => i.open && i.by === (station?.title ?? built?.title)) : [];
+  const whenSeg = p.yesterday ? (
+    <div className="kx-seg" role="radiogroup" aria-label="When">
+      {(["yesterday", "today"] as const).map((k) => (
+        <button key={k} type="button" role="radio" aria-checked={when === k} onClick={() => setWhen(k)}>{kt(k)}</button>
+      ))}
+    </div>
+  ) : null;
   return (
-    <div className="kx-screen kx-world">
+    <div className={`kx-screen kx-world${p.dock ? " kx-hasdock" : ""}`}>
       <Sky screen="world" reducedMotion={p.reducedMotion} />
-      <header className="kx-top">
-        <A to={p.backTo} go={p.go} className="kx-ib kx-cut" label={kt("back")}><Icon d={I.back} /></A>
-        <span className="kx-sp" />
-        {p.yesterday && (
-          <div className="kx-seg" role="radiogroup" aria-label="When">
-            {(["yesterday", "today"] as const).map((k) => (
-              <button key={k} type="button" role="radio" aria-checked={when === k} onClick={() => setWhen(k)}>{kt(k)}</button>
-            ))}
-          </div>
-        )}
-      </header>
+      {p.meTo ? (
+        <KxTopBar go={p.go} backTo={p.backTo} meTo={p.meTo} actions={whenSeg} />
+      ) : (
+        <header className="kx-top">
+          <A to={p.backTo} go={p.go} className="kx-ib kx-cut" label={kt("back")}><Icon d={I.back} /></A>
+          <span className="kx-sp" />
+          {whenSeg}
+        </header>
+      )}
       <div className="kx-world-grid">
         <div className="kx-world-head">
           <span className="kx-label">{kt("yourWorld")}</span>
           <h1 className="kx-h2">{kt("orbitTitle", { name: p.childName })}</h1>
+          {p.school?.map((s) => (
+            <p key={`${s.subject}:${s.title}`} className="kx-sub kx-school" data-testid="school-here">
+              <i aria-hidden="true" style={{ ["--c" as string]: `var(--k-r-${s.subject === "sst" ? "social" : s.subject})` }} />
+              {tr7("map.schoolHereAt", { subject: kt(RING_LABEL[s.subject] ?? "ringMaths"), chapter: s.title })}
+            </p>
+          ))}
         </div>
         <div className="kx-world-stage">
           <div className="kx-seg kx-seg--view" role="radiogroup" aria-label="View">
@@ -190,6 +222,7 @@ export function WorldView(p: WorldViewProps) {
           </>
         )}
       </div>
+      {p.dock && <KxDock items={p.dock} active="world" go={p.go} />}
     </div>
   );
 }
@@ -261,7 +294,7 @@ function Loadout({ items, equipped }: { items: HangarItem[]; equipped: Record<st
   );
 }
 
-export interface HangarViewProps {
+export interface HangarViewProps extends NavProps {
   items: HangarItem[];
   equipped: Record<string, string>;
   onEquip: (slot: string, id: string) => void;
@@ -273,11 +306,15 @@ export interface HangarViewProps {
 export function HangarView(p: HangarViewProps) {
   const [pick, setPick] = useState<HangarItem | null>(null);
   return (
-    <div className="kx-screen kx-hangar">
+    <div className={`kx-screen kx-hangar${p.dock ? " kx-hasdock" : ""}`}>
       <Sky screen="hangar" reducedMotion={p.reducedMotion} />
-      <header className="kx-top">
-        <A to={p.backTo} go={p.go} className="kx-ib kx-cut" label={kt("back")}><Icon d={I.back} /></A>
-      </header>
+      {p.meTo ? (
+        <KxTopBar go={p.go} backTo={p.backTo} meTo={p.meTo} />
+      ) : (
+        <header className="kx-top">
+          <A to={p.backTo} go={p.go} className="kx-ib kx-cut" label={kt("back")}><Icon d={I.back} /></A>
+        </header>
+      )}
       <main className="kx-hangar-main">
         <h1 className="kx-h2">{kt("hangar")}</h1>
         <p className="kx-sub">{kt("hangarSub")}</p>
@@ -314,6 +351,7 @@ export function HangarView(p: HangarViewProps) {
           </>
         )}
       </div>
+      {p.dock && <KxDock items={p.dock} active="world" go={p.go} />}
     </div>
   );
 }

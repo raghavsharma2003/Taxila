@@ -10,8 +10,11 @@ export interface ChildPrefs {
   sounds: boolean | null;
   /** Haptic tick on YOUR TURN where supported. */
   haptics: boolean;
-  /** Talk mode: tap-to-talk (default) or open mic (Older, headset only). */
+  /** Talk mode: tap-to-talk (default) or open mic (Older, headset only). Legacy: r7 reads `handsFree`. */
   talk: "tap" | "open";
+  /** r7 (D2): hands-free is the default for every child (null = default on); false = tap to talk (the lesson starts with
+   *  the mic switched off and the Talk button showing, the same switch as the dock's Mute). */
+  handsFree: boolean | null;
   /** Older presentation: face · small (PiP) · voice and board only. */
   face: "face" | "small" | "voice";
   /** Quiet mode: type or tap; the lesson starts in text mode. */
@@ -40,7 +43,7 @@ export interface ChildPrefs {
 }
 
 export const DEFAULT_PREFS: ChildPrefs = {
-  captionsAlways: false, sounds: null, haptics: true, talk: "tap", face: "face", quiet: false, world: null,
+  captionsAlways: false, sounds: null, haptics: true, talk: "tap", handsFree: null, face: "face", quiet: false, world: null,
   largeText: false, calm: false, bandUp: false, theme: "system", mirror: false, hello: false, picture: null, address: null,
   shortcuts: true, pttNoteSeen: false,
 };

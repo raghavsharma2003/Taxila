@@ -56,8 +56,16 @@ const PUBLIC_PATH = /^\/(promises|privacy|help|leaving|trust)?\/?$/;
 const VOLT = { className: "kx", "data-klook": "volt", "data-ktheme": "night" } as const;
 const voltGround = { background: "var(--k-void)", color: "var(--k-ink)", fontFamily: "var(--k-sans)", minHeight: "100dvh" } as const;
 
+/** r7 app-cold-start-loading: index.html marks the Kaksha paths (/c/*, /who, /start, /parent) data-boot="kx"; their loading
+ *  states repeat the first paint's Volt mark, so the first frame, the code loading and the data loading are one look. */
+export const kxBoot = () => typeof document !== "undefined" && document.documentElement.getAttribute("data-boot") === "kx";
+export function BootMark({ label = "Loading" }: { label?: string }) {
+  return <div className="tx-skel" role="status" aria-live="polite" data-testid="boot-mark"><i aria-hidden="true" /><span className="sr-only">{label}</span></div>;
+}
+
 export function Loading({ label = "Loading" }: { label?: string }) {
   const site = typeof location !== "undefined" && PUBLIC_PATH.test(location.pathname);
+  if (!site && kxBoot()) return <BootMark label={label} />;
   return (
     <div className="center-fill" role="status" aria-live="polite" {...(site ? { ...VOLT, className: "center-fill kx", style: voltGround } : {})}>
       <div className="spinner" aria-hidden="true" style={site ? { borderColor: "var(--k-line-2)", borderTopColor: "var(--k-ion)" } : undefined} />
