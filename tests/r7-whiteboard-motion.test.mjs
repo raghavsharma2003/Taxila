@@ -78,3 +78,35 @@ test("the day-4 board that moves: the fraction-parts board for 'fractions' is pr
   assert.ok(p, "a board is preselected");
   assert.ok(p.script.ops.filter((o) => o.op === "move").length >= 2, "and it moves");
 });
+
+test("the number-line jump: the dot hops along each arrow, the hops add up (there and back stays on the board), and the board passes the gate", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  // two hops on one dot: the second is clamped against where the first LEFT it, not where it was drawn
+  const dot = { id: "d", op: "circle", c: [40, 150], r: 7, startMs: 0, endMs: 200 };
+  const back = normalizeScript(base([dot, { id: "m1", op: "move", target: "d", by: [300, 0], arc: 30, startMs: 300, endMs: 900 }, { id: "m2", op: "move", target: "d", by: [-150, 0], arc: 20, startMs: 1000, endMs: 1600 }]), { strict: true });
+  assert.equal(back.ok, true, JSON.stringify(back.errors));
+  assert.deepEqual(moveShift(back.script.ops, "d", 2000), [150, 0]);
+  assert.equal(normalizeScript(base([dot, { id: "m1", op: "move", target: "d", by: [300, 0], startMs: 300, endMs: 900 }, { id: "m2", op: "move", target: "d", by: [60, 0], startMs: 1000, endMs: 1600 }]), { strict: true }).ok, false, "the second hop would leave the board");
+  const s = expand({ template: "number-line-hop@1", start: 3, hops: [4, 2] }).script;
+  const hops = s.ops.filter((o) => o.op === "move");
+  const arrows = s.ops.filter((o) => o.op === "arrow");
+  assert.equal(hops.length, 2);
+  assert.ok(hops.every((m, i) => m.target === hops[0].target && m.arc > 0 && m.startMs === arrows[i].startMs), "one dot, hopping with each arrow");
+  const g = gateWhiteboard(s, { reply: "3 se shuru karo, 4 aage jao to 7, phir 2 aage to 9.", speechMs: 6000 });
+  assert.equal(g.pass, true, JSON.stringify(g.checks.filter((c) => !c.pass)));
+});
+
+test("a number line is as long as the board placed its marks for (the dot starts ON its number, not off the end of a short line)", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const s = normalizeScript(expand({ template: "number-line-hop@1", start: 18, hops: [-5] }).script, { strict: true });
+  assert.equal(s.ok, true, JSON.stringify(s.errors));
+  const line = s.script.ops.find((o) => o.op === "numwork" && o.layout === "number_line");
+  const dot = s.script.ops.find((o) => o.op === "circle");
+  const g = opGeometry(line);
+  const label18 = g.texts.find((t) => t.text === "18");
+  assert.ok(label18 && Math.abs(label18.x - dot.c[0]) < 1, `the start dot sits over its label (dot ${dot.c[0]}, label ${label18?.x})`);
+  assert.ok(g.box.x + g.box.w >= dot.c[0], "and on the line");
+  // a line with no length of its own keeps the old label-count size
+  const plain = opGeometry({ ...line, w: undefined });
+  assert.ok(plain.box.w < g.box.w);
+});

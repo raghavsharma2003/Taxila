@@ -26,6 +26,7 @@ import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
+import { pipZoneFor } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
@@ -120,6 +121,16 @@ function boxFor(avail: { w: number; h: number }, design: { w: number; h: number 
   const inset = insetFor(avail.w);
   let next = fitStage({ w: avail.w, h: avail.h - railPx }, design, { inset, maxScale: MAX_SCALE });
   if (railPx > 0 && next.w > 0) next = { ...next, h: next.h + railPx, y: Math.max(inset, Math.floor((avail.h - next.h - railPx) / 2)) };
+  // the piece never sits under her PiP: lifted clear of it where there is room above, else fitted into the room above
+  const pz = pipZoneFor(avail);
+  if (pz && next.w > 0 && next.x + next.w > avail.w - pz && next.y + next.h > avail.h - pz) {
+    const room = avail.h - pz;
+    if (next.h <= room - inset) next = { ...next, y: Math.max(inset, Math.floor(room - next.h)) };
+    else {
+      const fitted = fitStage({ w: avail.w, h: room }, design, { inset, maxScale: MAX_SCALE });
+      if (fitted.w > 0 && fitted.y + fitted.h <= room + 0.5) next = { ...fitted, y: Math.min(fitted.y, Math.max(inset, Math.floor(room - fitted.h))) };
+    }
+  }
   return next;
 }
 

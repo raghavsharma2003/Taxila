@@ -1,0 +1,40 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-board-table",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "table@1 (C1 item 5): a table whose every cell is computed (server/forge/explainer/table.js): 'the table of N' / 'N times table' / 'N ka pahada' (n | N x n, n = 1..10) and a linear rule y = ax + b in a linear-pattern / relationship / graph kit (x 0..4 | y). Units ('h = 20 m'), proof steps ('p = 2k') and 'a table FOR x' are never rules. Header in accent, rows appear one by one; facts rule + row1..rowN. explainerFor tries it after the code pick and the timeline. Recording docs/design/round7/studio/table-*."
+    },
+    {
+      "id": "dc-r7-piece-clear-of-pip",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "On a phone (and a phone turned on its side) every Studio piece stays clear of the teacher's PiP in the slot's bottom-right (src/studio/pipZone.ts: box contract stageFirst.pipZone, the same rule as stageLayout.ts pipFor; a phone is read from the viewport, never the slot: a desk tray can be short too): StudioStage lifts the box above it when there is room, else fits it into the room above. Found by the table recording (the last row was under the PiP at 412). Reversal: App exposes the live PiP rect to the stage; then use it instead of the mirrored rule."
+    },
+    {
+      "id": "ms-r7-board-table-reach",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 304,
+      "method": "tableCall over every class 1-9 maths kit (304), expand + gateWhiteboard against a line saying the rule and rows, and which template explainerFor returns; code only",
+      "title": "5 kits get a computed table (c3-maths-ch07-t02, c6-maths-ch05-t01, c9-maths-ch02-t02/t03, c9-maths-ch13-t01); 5/5 pass every W gate; the table is the drawn board in 2 (c6, c9-ch02-t02), a code pick comes first in 3."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-board-table",
+      "rel": "measured_by",
+      "dst": "ms-r7-board-table-reach"
+    },
+    {
+      "src": "dc-r7-piece-clear-of-pip",
+      "rel": "depends_on",
+      "dst": "dc-r7-board-table"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-board-table: tables whose cells are computed (2026-11-04)\n\nA kit that teaches a times table or a linear rule gets a table built by code, so every number in it is right. Things that only look like rules (units, proof steps) are left alone.\n\n## dc-r7-piece-clear-of-pip: the teacher's picture never covers the board on a phone (2026-11-04)\n\nWith the new stage-first layout her picture sits in the bottom-right of the stage on phones. Boards now move up, or shrink a little, so nothing is ever under it.\n",
+    "measurements": "## ms-r7-board-table-reach (2026-11-04, n = 304 maths kits)\n\n5 kits get a computed table; all pass the board gates. In 2 it is the board shown; in 3 another code board is picked first.\n"
+  }
+}

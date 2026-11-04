@@ -1039,6 +1039,13 @@ export const studioSeam = {
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
     const ladder = boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+      // the eta is promised only for a code board the stage would take (drawn()'s pure checks: not a page already shown,
+      // shares a word with her line unless the child asked, fits the device): never a pause for a board that will not come
+      onDeadline: (at, code) => {
+        if (!Number.isFinite(at) || !code?.script || shownBefore(code.script, { avoid: onPage, seen: L.wbSeen })) return;
+        if (!ask?.requested && !ask?.intent?.request && !syncedWithLine(code.script, ask?.line?.text)) return;
+        if (certifyForTray({ kind: "whiteboard", script: code.script }, gateCtx(L, p)).ok) p.etaAt = at;
+      },
       onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -1062,7 +1069,9 @@ export const studioSeam = {
     const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : restoredSlot()), () => restoredSlot());
     if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
-    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
+    // round 7: when a passing code board bounds the wait, the ack says how long (her first clause may hold for it, client side)
+    const etaMs = Number.isFinite(p.etaAt) ? Math.max(0, Math.round(p.etaAt - Date.now())) : null;
+    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning", ...(etaMs != null ? { etaMs } : {}) }, "ready", { value: ready, enumerable: false });
   },
 
   /**
@@ -1107,11 +1116,26 @@ export const studioSeam = {
       const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
-      return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [],
-        certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok, pictureFirst: beatBoardOn() && firstBoardOfSkill(L, ask),
-        // round 5 (stream 2): never the page already on the board again
-        avoid: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrev ?? null : null, seen: L.wbSeen })?.row ?? null;
+      return boardFirst.preselect(ask, boardFirstOpts(L, ask))?.row ?? null;
     } catch { return null; }
+  },
+
+  /**
+   * round 7 (C1 studio-board-timing): Brain's beat lookahead. `askAhead` is the whiteboard ask the NEXT turn is predicted to
+   * make (whiteboardIntentOf for the predicted move, that turn's intentId); its board is picked now, after this turn's
+   * response, so the next turn's preselectWhiteboard finds it ready. The same guards as preselectWhiteboard; never a
+   * continued board (it builds on what the next turn shows). Code only; never throws. → true when a board was picked.
+   */
+  prewarmWhiteboard(askAhead) {
+    try {
+      const lessonId = askAhead?.line?.lessonId || askAhead?.intent?.lessonId;
+      if (!lessonId || askAhead?.intent?.kind !== "whiteboard" || askAhead?.mode === "continue") return false;
+      const L = lessons.get(lessonId);
+      if (!L || L.safety || L.studioControl === "off") return false;
+      const decision = routerDecide({ intent: askAhead.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
+      if (decision.action !== "whiteboard" || L.pieces.has(String(askAhead.intent.intentId))) return false;
+      return !!boardFirst.prewarm(askAhead, boardFirstOpts(L, askAhead));
+    } catch { return false; }
   },
 
   /**
@@ -1502,7 +1526,7 @@ export function wbTimingStats() {
   const q = (p) => (xs.length ? xs[Math.min(xs.length - 1, Math.floor(p * xs.length))] : null);
   const sources = {}; for (const x of wbTiming) sources[x.src] = (sources[x.src] ?? 0) + 1;
   const asks = Object.values(boardFirstCounts).reduce((a, b) => a + b, 0);
-  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources, boardFirst: { asks, used: boardFirstCounts.used ?? 0, outcomes: { ...boardFirstCounts } } };
+  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources, boardFirst: { asks, used: boardFirstCounts.used ?? 0, outcomes: { ...boardFirstCounts }, prewarm: boardFirst.prewarmStats() } };
 }
 
 export function slotSnapshot(lessonId, intentId) {
@@ -1558,3 +1582,11 @@ export const safeStudio = {
  *   bond: import("../../shared/relational").BondSnapshot | null,
  * }} StudioLessonCtx */
 export { BY_KIND };
+
+/** The board-first options for a lesson (preselectWhiteboard and the lookahead's prewarmWhiteboard pick alike). */
+function boardFirstOpts(L, ask) {
+  return { kit: L.kit ?? undefined, redact: L.redact ?? [],
+    certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok, pictureFirst: beatBoardOn() && firstBoardOfSkill(L, ask),
+    // round 5 (stream 2): never the page already on the board again
+    avoid: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrev ?? null : null, seen: L.wbSeen };
+}
