@@ -5,18 +5,20 @@
 //   usage.usedMin   minutes used this learning day (conductor_usage when admission writes it, else the
 //                   day's lesson.ended minutes from the log)
 //   cal.days        shared calendar rows for [day − 1, day + 14] (the DayKindLookup input)
+//   school.subjects today's ranked subjects (conductor/rotation.js via reports/truth.js subjectsToday: timetable,
+//                   due reviews, least-recently-taught; round 7 F item 1). Late key: older snapshots replay as null.
 //   usage.voiceSecMonth  voice seconds per lane used so far this calendar month (conductor_usage.voice_sec,
 //                   learning days from the 1st through today): V3 compares against the REMAINING tier budget
 import { addDays, learningDay, zonedToUtc } from "./clock.js";
 
 /** Declared fallbacks: a missing or stale key returns these and never fires a rule (V25). */
-const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {} };
+const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {}, "school.subjects": null };
 /**
  * Keys added after decision logs were already being written. A snapshot recorded before a key existed was
  * decided by code that did not read it, so replay serves the declared fallback (which reproduces that code's
  * behaviour exactly: usage.voiceSecMonth {} = the full tier budget, as V3 then assumed). Any other miss throws.
  */
-const LATE_KEYS = new Set(["usage.voiceSecMonth"]);
+const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects"]);
 
 export class ReplayMiss extends Error {}
 
@@ -55,7 +57,14 @@ export async function loadView(db, childId, tz, now) {
   // The learning day runs 04:00 → 04:00 local (§3.2).
   const from = zonedToUtc(day, "04:00", tz).toISOString(), to = zonedToUtc(addDays(day, 1), "04:00", tz).toISOString();
   const monthStart = day.slice(0, 8) + "01";
-  const [due, usage, logged, cal, voice] = await Promise.all([
+  const subjectsP = (async () => {
+    const [c] = await db.q("select id, class_level from child where id = $1", [childId]);
+    if (!c) return null;
+    const { subjectsToday } = await import("../reports/truth.js");
+    const r = await subjectsToday(c, { now, q: (t, p) => db.q(t, p) });
+    return { subjects: r.subjects, why: r.why, timetable: r.timetable };
+  })().catch(() => null);
+  const [due, usage, logged, cal, voice, subjects] = await Promise.all([
     db.q("select count(*)::int as n from skill_state where child_id = $1 and next_review is not null and next_review <= $2", [childId, asOf]),
     db.q("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [childId, day]),
     db.q(`select coalesce(sum((body->>'minutes')::real), 0) as m from student_event
@@ -73,5 +82,6 @@ export async function loadView(db, childId, tz, now) {
       : { value: Number(logged[0]?.m ?? 0), asOf, src: "student_event", stale: false },
     "cal.days": { value: Object.fromEntries(cal.map((r) => [r.day, r.kind])), asOf, src: "calendar", stale: false },
     "usage.voiceSecMonth": { value: Object.fromEntries(voice.map((r) => [r.lane, Math.floor(Number(r.sec) || 0)])), asOf, src: "conductor_usage", stale: false },
+    "school.subjects": subjects ? { value: subjects, asOf, src: "rotation", stale: false } : { value: null, asOf, src: "fallback", stale: true },
   };
 }
