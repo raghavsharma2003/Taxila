@@ -22,6 +22,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kyun-lab/fair-test": asAny(labLogic),
   "kon/turn": asAny(konLogic),
   "kon/set": asAny(konLogic),
+  "kon/zone": asAny(konLogic),
+  "kon/pair": asAny(konLogic),
+  "kon/close": asAny(konLogic),
   // r4-khand: Nazariya, drawn by the Khand block world
   "nazariya/views": asAny(viewsLogic),
   "nazariya/array": asAny(arrayLogic),

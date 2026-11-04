@@ -30,7 +30,7 @@ export const MODES = {
   taraazu: ["equation", "equality"],
   nishana: ["place", "compare"],
   "kyun-lab": ["fair-test"],
-  kon: ["turn", "set"],
+  kon: ["turn", "set", "zone", "pair", "close"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
