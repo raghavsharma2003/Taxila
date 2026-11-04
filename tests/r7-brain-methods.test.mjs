@@ -1,11 +1,18 @@
 // round 7 A8 (PIPELINE §A Brain item 7, brain-steering-persistence): how the child asked to be taught, read in code, kept for
 // the lesson, rendered LAST on every compile (never shed) and mapped to knobs (word cap, attempt-first). Pure.
-import { test } from "node:test";
+import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readMethod, keepMethod, methodsLine } from "../server/conversation/methods.js";
 import { initLessonState, step } from "../server/director/state.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { kit, CTX, cls, BRIEF } from "./fixtures/kit.mjs";
+// round 7 (main 2026-11-04): these tests are the NEW behaviour, so they clear the kill switches they depend on and restore them
+// after (`npm test` runs every file in one process; an earlier file must never decide which path they test)
+const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
+const R7_KEEP = {};
+describe("r7-brain-methods.test.mjs: round 7 behaviour (kill switches cleared)", () => {
+beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
+afterEach(() => { for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
 
 const K = kit();
 const NE = cls("no_evidence");
@@ -59,4 +66,5 @@ test("A8 part 2: frustration on a card changes the approach: the card is left fo
   assert.equal(f.ui.ask, undefined);
   assert.equal(f.move.request, "frustration");
   assert.notEqual(f.move.kind, "wrap");
+});
 });
