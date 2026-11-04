@@ -23460,6 +23460,13 @@
    "at": "2026-11-04",
    "title": "Round 7: do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.",
    "source": "inbox/r7-main-decisions.json"
+  },
+  {
+   "id": "dc-r7-brain-contracts",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 contracts (Brain owns shared/contracts.ts): UiDirectives.steer (SteerChip[], SteerId union of 16 ids), UiDirectives.later (LaterEntryUi: id, text ≤ 60, learning, status open/due/returned, when after_question/at_end), UiDirectives.moment (UiMoment: park/detour/decline/stop_check/returned, laterId, topic), TurnRequest.gameAct ({consumed, game, act}: words a game grammar consumed are never graded), TurnRequest.heardUpTo (any lane; duplex.heardUpTo read second), ReplyClauseEvent (one guarded clause of a streamed reply, never withdrawn once sent). A steer tap is the request its words make (server/director/steer.js); steer:wrap2 is read but has no move until PIPELINE A9. Reversal: if App or Voice need a different shape, Brain changes the contract and messages every stream the sha.",
+   "source": "inbox/r7-brain.json"
   }
  ],
  "edges": [

@@ -6480,3 +6480,61 @@ Twelve reversible decisions that start round 7. Full text: docs/design/round7/PI
 - Personalisation persists.
 - Classes 4-7 first.
 - Salvage branches by path.
+
+
+## Round 7 main-loop decisions, by id (2026-11-04; full text in docs/design/round7/PIPELINE.md §D)
+
+### dc-r7-hybrid-brain
+
+one teacher brain, hybrid. The strong LLM plans, chooses and words moves with tools; code keeps the invariants as tools/post-checks (verified grading, level-calibrated item offer, Later list, stop protocol, parent limits, screen truth, frozen safety floor). A Claude-judged side-by-side at end of week 1 (about 12 lessons per lane) picks the default lane; the losing paths are then deleted. Why: owner 2026-10-14 (AGENT.md); 128-lesson gate (agent better on coherence/follows/adapts/human, worse on read accuracy and 6.0 vs 3.4 s turn p50). Reverse: the side-by-side favours the Director, or the agent lane cannot reach about 3.5 s p50.
+
+### dc-r7-handsfree-default
+
+hands-free D5 duplex is the default for every child; tap stays a visible fallback. Why: OWNER-RESET #10/#16; no real users yet, so the per-hour cost is test-only. Reverse: owner says otherwise, or the cost per child-hour at launch is unacceptable.
+
+### dc-r7-age-bands
+
+age bands classes 1-3 young, 4-6 preteen, 7-9 teen; class 4 moves to the older look. Brain owns the one band table (shared/learner.ts BANDS, shared/bands.ts); every other copy derives from it. Why: OWNER-RESET #1 (class 4 looked babyish). Reverse: the owner prefers class 4 in the young look.
+
+### dc-r7-turn-length
+
+explanation and worked-example turns may run 40-50 words for classes 5-9 when the board carries the detail. Why: 18-25-word caps make explanations thin (gap map brain-explanation-plans). Reverse: the owner or a Claude-judged review finds the turns too long to listen to.
+
+### dc-r7-stop-limits
+
+stop and limits. Add 'wrap up in 2' and a real timed break (mic paused, resume in place). 'Stop for today' ends the lesson. At a parent limit mid-lesson she finishes the current question, then wraps. No parent control stays inert: each is wired or hidden. Why: OWNER-RESET #7, #11. Reverse: the owner prefers another behaviour.
+
+### dc-r7-session-first-default
+
+session-first start is the default for everyone, with a Start-only Home. Daily subject comes from the parent timetable, then the child's intake, then Conductor rotation. Why: one-subject-forever today, plus the owner's 'just start'. Reverse: the owner prefers a chooser.
+
+### dc-r7-stage-first-shell
+
+stage-first lesson shell (content is the hero, face as PiP, steer chips, Later tray). Supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP'). App writes the 360/412/1280 geometry; Studio applies it to box-contract.json. Why: OWNER-RESET #12 (presentation). Reverse: the owner's review prefers the Desk layout.
+
+### dc-r7-studio-v2-serving
+
+Studio v2 is served wherever certified (412-px phones, laptops); the board twin stays on 360 px until the portrait relayout. Amends dc-r4c-studio-v2-off-child-path. Why: 41 engines and 385 authored topics never reach children. Reverse: a certified piece renders badly on a real device.
+
+### dc-r7-games-revive
+
+revive ITEM-ARENA and Khand MEASURE. The first wave-3 real-time engine is E6 Yantra (science physics). Timed or fast mechanics only on secure skills. Why: build-first replaces the 2026-10-10 stop; OWNER-RESET #3. Reverse: the owner picks another engine.
+
+### dc-r7-personalisation-persist
+
+'how this child learns' (format/representation responsiveness, interests, pace) persists across lessons. Consent handling is part of the later compliance pass. Why: build-first. Reverse: the compliance pass requires a different consent step.
+
+### dc-r7-scope
+
+depth first for CBSE classes 4-7 (Studio, games, kits); classes 1-3 and 8-9 keep working. Parked: RBSE, Hindi-medium, the explore tier, teacher choice, child-named teacher. Why: OWNER-RESET target band 9-13. Reverse: the owner widens scope.
+
+### dc-r7-no-branch-merges
+
+do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path.
+
+
+
+<!-- merged from inbox/r7-brain.json -->
+## dc-r7-brain-contracts (2026-11-04, stream A Brain)
+
+The round-7 seams everyone codes against are in shared/contracts.ts: the steer row (SteerId, 16 ids, each the request its words would make), the Later list as the screen shows it (LaterEntryUi), the conversational moment (UiMoment), TurnRequest.gameAct (game-consumed words are never graded), TurnRequest.heardUpTo on any lane, and ReplyClauseEvent for the streamed, clause-guarded reply. steer:wrap2 is read but waits for its move (A9). Test: tests/r7-brain-contracts.test.mjs.
