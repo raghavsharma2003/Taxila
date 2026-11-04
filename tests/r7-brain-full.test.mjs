@@ -41,4 +41,26 @@ test("#1 (c5 stuck T6, c4 offtopic T6): a verdict word only on a turn graded cor
   const b = await replyTo(C4, q, "3", "Sahi, Riya—1/3 mein 3 equal parts hote hain. Ab bolo, inmein se ek part ko fraction mein kaise likhenge?");
   assert.equal(affirmsAnswer(b.reply), false, b.reply);
 });
+
+test("#9 (c4 steering T5): the fixed fallback never asks a heard 'pata nahi' to say it again: a stuck signal gets help", async () => {
+  const { fallbackReply, FALLBACK } = await import("../server/brain/say.js");
+  let r = start(C4, 4);
+  for (let i = 0; i < 2; i++) r = turn(C4, r, "haan");
+  const st = (said) => ({ ...r.state, activeItemId: undefined, lastMove: { kind: "repair" }, recent: [...r.state.recent, { who: "child", text: said }] });
+  assert.equal(fallbackReply(st("pata nahi"), null), FALLBACK.hinglish.stuck);
+  assert.doesNotMatch(fallbackReply(st("pata nahi"), null), /phir se batao|kya kaha/);
+  assert.equal(fallbackReply(st("cricket"), null), FALLBACK.hinglish.heard);
+  assert.equal(fallbackReply(st(""), null), FALLBACK.hinglish.other, "no words heard: the re-ask stays");
+});
+
+test("#10 (c5 offtopic T6): with a game mounted, a spoken '3' is not a game event: 'Game ne 3 jumps register kiye' is caught", async () => {
+  let r = start(C5, 5);
+  for (let i = 0; i < 2; i++) r = turn(C5, r, "haan");
+  replyDeps.chat = async () => ({ text: "Game ne 3 jumps register kiye—tum 3 over 5 par pahunchi. Ab 2 over 5 ke liye kitne jumps chahiye?" });
+  const { gameActs } = await import("../server/brain/say.js");
+  const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text", module: { id: "nishana", itemId: null } }, kit: C5, childText: "3",
+    verdict: "ungraded", history: [], ui: r.ui, module: { id: "nishana" } });
+  assert.equal(gameActs(out.reply), false, out.reply);
+  assert.ok(out.guard.caught.includes("gameclaim"));
+});
 });

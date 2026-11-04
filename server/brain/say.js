@@ -250,6 +250,8 @@ export const FALLBACK = {
     // round 7 (PIPELINE §A Brain "zero spoken failure"): a plain re-ask, never "I lost my words"
     other: "Tell me that once more? I'm listening.",
     heard: "Thanks for telling me! Let's keep going.",
+    // round 7 (main's full-run judgement #9): a heard "pata nahi" is a stuck signal: help, never "say that again"
+    stuck: "That's okay. Let's take it one small step together.",
     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
     checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
     forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
@@ -257,6 +259,7 @@ export const FALLBACK = {
     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
     other: "Ek baar phir se batao, kya kaha tumne?",
     heard: "Accha, batane ke liye thanks! Chalo, aage badhte hain.",
+    stuck: "Koi baat nahi. Chalo, isko ek chhote step mein saath mein dekhte hain.",
     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
     forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
@@ -432,7 +435,12 @@ export function fallbackReply(state, item) {
     return composeTurn(state.ctx.address === "aap" && lang !== "english" ? toAap(lead) : lead, q);
   }
   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
-  const line = lines[kind] ?? lines.other;
+  // round 7 (main's full-run judgement #9: "Ek baar phir se batao, kya kaha tumne?" on a heard "pata nahi"): the re-ask is only
+  // for a turn with no words heard; a stuck signal gets help, any other heard words the "heard" line
+  const lastChild = [...(state.recent ?? [])].reverse().find((t) => t.who === "child")?.text ?? "";
+  const heardNow = /[\p{L}\p{N}]/u.test(lastChild);
+  const stuckNow = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|maloom\s+nahi|malum\s+nahi|samajh\s+nahi|nahi\s+samjh|don'?t\s+know|no\s+idea|nahi\s+aata|nahi\s+ata|पता\s+नहीं)(?![\p{L}])/iu.test(lastChild);
+  const line = lines[kind] ?? (stuckNow ? lines.stuck : heardNow ? lines.heard : lines.other);
   // The fixed lines are written in tum forms; an "aap" child hears them in aap forms (G-REG-1).
   return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
 }
@@ -634,7 +642,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     ["ungraded", "unverified", "attempt"].includes(verdict) && negatesAnswer(t, childText) && "negates",
     // round 7 (judgement #5): a bracketed step of the lesson's content said so it is misheard ("2 times 50 plus 30")
     bracketSlip(t, state.lastContent ?? []) && "bracket",
-    !gameUp && gameActs(t) && "gameclaim",
+    // (full-run judgement #10: with a game up, "Game ne 3 jumps register kiye" on a SPOKEN "3": a game event arrives as a
+    // module-only turn with no words, so on a turn they spoke the game did nothing to describe)
+    (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
