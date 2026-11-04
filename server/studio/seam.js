@@ -1039,6 +1039,13 @@ export const studioSeam = {
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
     const ladder = boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+      // the eta is promised only for a code board the stage would take (drawn()'s pure checks: not a page already shown,
+      // shares a word with her line unless the child asked, fits the device): never a pause for a board that will not come
+      onDeadline: (at, code) => {
+        if (!Number.isFinite(at) || !code?.script || shownBefore(code.script, { avoid: onPage, seen: L.wbSeen })) return;
+        if (!ask?.requested && !ask?.intent?.request && !syncedWithLine(code.script, ask?.line?.text)) return;
+        if (certifyForTray({ kind: "whiteboard", script: code.script }, gateCtx(L, p)).ok) p.etaAt = at;
+      },
       onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -1062,7 +1069,9 @@ export const studioSeam = {
     const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : restoredSlot()), () => restoredSlot());
     if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
-    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
+    // round 7: when a passing code board bounds the wait, the ack says how long (her first clause may hold for it, client side)
+    const etaMs = Number.isFinite(p.etaAt) ? Math.max(0, Math.round(p.etaAt - Date.now())) : null;
+    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning", ...(etaMs != null ? { etaMs } : {}) }, "ready", { value: ready, enumerable: false });
   },
 
   /**

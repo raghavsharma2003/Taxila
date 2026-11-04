@@ -110,6 +110,9 @@ export interface StudioSlot {
   intentId?: string;
   state: StudioState | "fallback_shown";
   artifact?: StudioArtifact;
+  /** round 7: a board still planning that WILL be on the stage within this many ms (a passing code board bounds the wait);
+   *  absent when nothing bounds it. The client may hold her first clause for it (src/studio/boardHold.ts). */
+  etaMs?: number;
 }
 
 /** Anything the StudioStage can render. Each kind is drawn by a renderer registered in src/studio/renderers.ts. */
