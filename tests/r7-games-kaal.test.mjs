@@ -270,7 +270,8 @@ test("kaal coverage: the authored entries, mapped to real kit misconceptions, ad
   }
   for (const m of ["place", "order"]) { const a = playActOf("kaal", m); assert.ok(a && a.act === "place" && !/chun/.test(a.hi), m); }
   assert.equal(coverage().counts.byFamily.kaal, 6);
-  assert.deepEqual(coverage().counts.bySubjectAll.sst, { topics: 65, covered: 6 });
+  // kaal's six, plus naksha's c6-sst-ch01-t01 (latitude / longitude and the map scale)
+  assert.deepEqual(coverage().counts.bySubjectAll.sst, { topics: 65, covered: 7 });
 });
 
 for (const e of KE()) for (const fade of [1, 2, 3]) {
