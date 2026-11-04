@@ -22,8 +22,10 @@ export const STEPS = ["evidence", "freeze", "capture", "images", "migrate", "web
  * @param {{ sha: string, migrate?: "neon"|"job"|"skip", backup?: string, force?: boolean }} o
  * @returns {{ id: string, title: string, kind: "cmd"|"fn", argv?: string[] }[]}
  */
-export function planRelease({ sha, migrate = "neon", backup, force = false }) {
+export function planRelease({ sha, migrate = "neon", backup, force = false, set = [] }) {
   if (!/^[0-9a-f]{40}$/.test(String(sha))) throw new Error(`release: a full 40-hex commit sha, got ${sha}`);
+  for (const kv of set) if (!/^[A-Z][A-Z0-9_]*=/.test(kv)) throw new Error(`release --set ${kv}: expected NAME=VALUE`);
+  const sets = set.flatMap((kv) => ["--set", kv]);
   const s7 = sha.slice(0, 7);
   const mig = migrate === "skip" ? null
     : migrate === "job" ? ["scripts/migrate.mjs", "--prod", "--job", "--sha", sha]
@@ -31,12 +33,12 @@ export function planRelease({ sha, migrate = "neon", backup, force = false }) {
   return [
     { id: "evidence", title: `gate evidence for ${s7} (CI: build + every shard, or a clean local stamp)`, kind: "fn" },
     { id: "freeze", title: force ? "X37 freeze window: --force, not checked" : "outside the X37 freeze (18:00-21:30 IST)", kind: "fn" },
-    { id: "capture", title: "record what is live (web current revision + env names, worker image): the rollback target", kind: "fn" },
+    { id: "capture", title: `record what is live (web current revision + env names, worker image): the rollback target${needsFor(set).length ? `; refuse unless the live web carries ${needsFor(set).map((g) => g.join(" or ")).join(" and ")}` : ""}`, kind: "fn" },
     { id: "images", title: `ACR: taxila-web:${s7} and taxila-worker:${s7} from GitHub at ${s7}`, kind: "fn" },
     mig ? { id: "migrate", title: `production migrations of ${s7}${migrate === "job" ? " (in-VNet job)" : `, Neon backup branch first`}`, kind: "cmd", argv: mig }
       : { id: "migrate", title: "migrations: --migrate skip (the target already has every file; deploy-azure's migrations gate still checks)", kind: "fn" },
-    { id: "web", title: `web: canary revision of taxila-web:${s7}, smoke, then 100%`, kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--image-tag", s7] },
-    { id: "cohort", title: "the new web revision carries every env name the previous one did", kind: "fn" },
+    { id: "web", title: `web: canary revision of taxila-web:${s7}, smoke, then 100%${set.length ? `; settings ${set.join(" ")}` : ""}`, kind: "cmd", argv: ["scripts/deploy-azure.mjs", "--image-tag", s7, ...sets] },
+    { id: "cohort", title: `the new web revision carries every env name the previous one did${set.length ? `, and ${set.map((kv) => kv.split("=")[0]).join(", ")} took the new value` : ""}`, kind: "fn" },
     { id: "worker", title: `worker + canary/nightly jobs on taxila-worker:${s7}`, kind: "cmd", argv: ["scripts/deploy-worker.mjs", "--image-tag", s7, "--jobs", ...(force ? ["--force"] : [])] },
     { id: "record", title: `context/inbox entry for the release of ${s7}`, kind: "fn" },
   ];
@@ -77,6 +79,23 @@ export async function runSteps({ steps, state, exec, save = () => {}, log = () =
   }
   return { ok: true, ran, skipped };
 }
+
+/**
+ * Env a deploy setting depends on (PURE): groups of names, one of each group must be on the web template BEFORE the
+ * release turns the setting on. TAXILA_DUPLEX on (not off / 0 / false / shadow) needs Voice Live's endpoint and key
+ * (server/duplex/voicelive.js voiceLiveConfig): without them every lesson would start in a lane that cannot open.
+ * @param {string[]} set NAME=VALUE pairs @returns {string[][]}
+ */
+export function needsFor(set = []) {
+  const v = Object.fromEntries(set.map((kv) => { const i = kv.indexOf("="); return [kv.slice(0, i), kv.slice(i + 1)]; }));
+  const out = [];
+  if ("TAXILA_DUPLEX" in v && !["0", "off", "false", "shadow"].includes(String(v.TAXILA_DUPLEX).trim().toLowerCase())) {
+    out.push(["TAXILA_VOICELIVE_ENDPOINT", "AZURE_AI_CENTRALINDIA_ENDPOINT"], ["TAXILA_VOICELIVE_KEY", "AZURE_AI_CENTRALINDIA_KEY"]);
+  }
+  return out;
+}
+/** The groups of `needs` that `names` does not satisfy (PURE). */
+export const unmet = (needs, names) => needs.filter((g) => !g.some((n) => names.includes(n)));
 
 /**
  * Env names the previous web revision had and the new one lacks (PURE). Cohort switches (TAXILA_UI_KAKSHA,

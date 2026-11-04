@@ -6,7 +6,9 @@
 //   flags: --migrate neon|job|skip (default neon: Neon over HTTP with a backup branch; job: the in-VNet ACA job for
 //          Azure PG; skip: the target already has every file) · --backup NAME (default pre-release-<sha7>) ·
 //          --force (inside the X37 freeze) · --allow-drop A,B (env names this release removes from the web on purpose) ·
-//          --restart (forget the recorded progress for this commit and start from the first step)
+//          --restart (forget the recorded progress for this commit and start from the first step) ·
+//          --set NAME=VALUE (repeatable; a plain env setting the new web revision gets, e.g. TAXILA_DUPLEX=on: checked
+//          against what it needs BEFORE anything deploys, and read back from the new revision after)
 //   node scripts/release.mjs <rev> --rollback [--plan]  web back to `previous` and the worker + jobs back to the image
 //                                                    captured before this release, together
 // State: node_modules/.cache/release/<sha>.json. Needs the Azure service principal (.env.local) except for --plan.
@@ -15,13 +17,14 @@ import { execFileSync, spawnSync } from "child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { ROOT, acrBuild, arm, loadEnv } from "../infra/azure.mjs";
 import { REPO, gateEvidence } from "../infra/gate.mjs";
-import { envDropped, inFreeze, planRelease, planRollback, runSteps } from "./release-core.mjs";
+import { envDropped, inFreeze, needsFor, planRelease, planRollback, runSteps, unmet } from "./release-core.mjs";
 
 loadEnv();
 const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
-const rev = argv.find((a, i) => !a.startsWith("--") && !["--migrate", "--backup", "--allow-drop"].includes(argv[i - 1]));
+const rev = argv.find((a, i) => !a.startsWith("--") && !["--migrate", "--backup", "--allow-drop", "--set"].includes(argv[i - 1]));
+const SET = argv.flatMap((a, i) => (a === "--set" && argv[i + 1] ? [argv[i + 1]] : []));
 if (!rev) { console.error("usage: node scripts/release.mjs <commit> [--plan] [--rollback] [--migrate neon|job|skip] [--backup NAME] [--force] [--allow-drop A,B] [--restart]"); process.exit(2); }
 const git = (...a) => execFileSync("git", a, { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
 let sha;
@@ -39,7 +42,7 @@ const save = (s) => { mkdirSync(DIR, { recursive: true }); writeFileSync(STATE, 
 let state = flag("--restart") && !ROLLBACK ? { sha, created: new Date().toISOString(), steps: {} } : load();
 
 let steps;
-try { steps = ROLLBACK ? planRollback({ capture: state.steps?.capture?.data }) : planRelease({ sha, migrate: MIGRATE, backup: opt("--backup"), force: FORCE }); }
+try { steps = ROLLBACK ? planRollback({ capture: state.steps?.capture?.data }) : planRelease({ sha, migrate: MIGRATE, backup: opt("--backup"), force: FORCE, set: SET }); }
 catch (e) { console.error(`release: ${e.message}`); process.exit(2); }
 
 if (PLAN) {
@@ -63,7 +66,8 @@ async function webCurrent() {
   const name = tr[0]?.revisionName || a.properties.latestReadyRevisionName;
   const r = await arm("GET", `/providers/Microsoft.App/containerApps/${WEB}/revisions/${name}?${API}`);
   const c = r.properties.template.containers[0];
-  return { revision: name, image: c.image, env: (c.env || []).map((e) => e.name).sort() };
+  const plain = Object.fromEntries((c.env || []).filter((e) => !e.secretRef).map((e) => [e.name, e.value]));
+  return { revision: name, image: c.image, env: (c.env || []).map((e) => e.name).sort(), plain };
 }
 
 const fn = {
@@ -82,6 +86,9 @@ const fn = {
     const web = await webCurrent();
     const w = await app(WORKER);
     const workerImage = w?.properties?.template?.containers?.[0]?.image ?? null;
+    const missing = unmet(needsFor(SET), web.env);
+    if (missing.length) throw new Error(`--set ${SET.join(" ")} needs ${missing.map((g) => g.join(" or ")).join(" and ")} on ${WEB}, which the live revision lacks: add it first (deploy-azure --secret), nothing was deployed`);
+    for (const kv of SET) console.log(`  setting ${kv} (live today: ${web.plain[kv.split("=")[0]] ?? "unset"})`);
     console.log(`  live: ${WEB} ${web.revision} (${web.image.split(":").pop()}, ${web.env.length} env names); ${WORKER} ${workerImage?.split(":").pop() ?? "none"}`);
     return { webRevision: web.revision, webImage: web.image, webEnv: web.env, workerImage, workerTag: workerImage?.split(":").pop() ?? null };
   },
@@ -99,7 +106,11 @@ const fn = {
     if (!now.image.endsWith(`:${s7}`)) throw new Error(`${WEB} current revision ${now.revision} runs ${now.image.split(":").pop()}, not ${s7}`);
     const lost = envDropped(before, now.env, (opt("--allow-drop", "") || "").split(",").filter(Boolean));
     if (lost.length) throw new Error(`the new web revision lacks env ${lost.join(", ")} that ${st.steps.capture.data.webRevision} carried (cohort switches off?). Fix the template, or roll back: node scripts/release.mjs ${s7} --rollback`);
-    return { revision: now.revision, envNames: now.env.length };
+    for (const kv of SET) {
+      const [k, ...v] = kv.split("=");
+      if ((now.plain[k] ?? "") !== v.join("=")) throw new Error(`${WEB} ${now.revision} has ${k}=${now.plain[k] ?? "unset"}, not ${v.join("=")}. Roll back: node scripts/release.mjs ${s7} --rollback`);
+    }
+    return { revision: now.revision, envNames: now.env.length, set: SET };
   },
   record(st) {
     const d = (id) => st.steps[id]?.data ?? {};

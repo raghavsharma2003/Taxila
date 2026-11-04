@@ -2,7 +2,7 @@
 // retry rule. No Azure, no git, no database.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { STEPS, envDropped, inFreeze, planRelease, planRollback, runSteps } from "../scripts/release-core.mjs";
+import { STEPS, envDropped, inFreeze, needsFor, planRelease, planRollback, runSteps, unmet } from "../scripts/release-core.mjs";
 import { armRetryable } from "../infra/azure.mjs";
 
 const SHA = "23d3d7e685405a10e9071ebe6119044c9b2653b8";
@@ -92,4 +92,21 @@ test("armRetryable: transient failures of idempotent calls only; a POST that sta
   assert.equal(armRetryable("POST", "/providers/Microsoft.ContainerRegistry/registries/taxilacr/scheduleRun?x", new Error("fetch failed")), false);
   assert.equal(armRetryable("POST", "/providers/Microsoft.App/jobs/j/start?x", { status: 503 }), false);
   assert.equal(armRetryable("POST", "/providers/Microsoft.App/containerApps/a/revisions/r/activate?x", { status: 500 }), false);
+});
+
+test("--set: forwarded to the web deploy only; malformed pairs refused", () => {
+  const p = planRelease({ sha: SHA, set: ["TAXILA_DUPLEX=on", "X_Y=a=b"] });
+  assert.deepEqual(p.find((s) => s.id === "web").argv, ["scripts/deploy-azure.mjs", "--image-tag", "23d3d7e", "--set", "TAXILA_DUPLEX=on", "--set", "X_Y=a=b"]);
+  assert.ok(!p.find((s) => s.id === "worker").argv.includes("--set"));
+  assert.match(p.find((s) => s.id === "cohort").title, /TAXILA_DUPLEX, X_Y took the new value/);
+  assert.throws(() => planRelease({ sha: SHA, set: ["duplex=on"] }), /NAME=VALUE/);
+});
+
+test("needsFor: TAXILA_DUPLEX on needs Voice Live's endpoint and key on the web; shadow or off needs nothing", () => {
+  const needs = needsFor(["TAXILA_DUPLEX=on"]);
+  assert.equal(needs.length, 2);
+  assert.deepEqual(unmet(needs, ["AZURE_AI_CENTRALINDIA_ENDPOINT", "AZURE_AI_CENTRALINDIA_KEY"]), []);
+  assert.deepEqual(unmet(needs, ["TAXILA_VOICELIVE_ENDPOINT"]), [["TAXILA_VOICELIVE_KEY", "AZURE_AI_CENTRALINDIA_KEY"]]);
+  for (const v of ["shadow", "off", "0", "OFF"]) assert.deepEqual(needsFor([`TAXILA_DUPLEX=${v}`]), [], v);
+  assert.deepEqual(needsFor(["OTHER=1"]), []);
 });
