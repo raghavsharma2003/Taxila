@@ -58,28 +58,32 @@ builder can read the tag.
 - **Total: about 540 calls, about $5 (about ₹420) per full run.** A re-run of only the failures is about 30% of that.
   Hard cap per run: 700 calls. The script stops and reports at the cap, and never retries in a loop.
 
-## The other spend-gated workflows (prepared, not run)
+## All spend-gated workflows: built, dry-run counted, not run
 
-All estimates use the same price basis as G1: Azure Direct GPT-class at about $1.25 per M input and $10 per M output
-tokens. Judging is done by Claude in-session and costs nothing on Azure. Every run has a hard call cap and stops at it.
+**Revised 2026-11-04 (supersedes the first estimate of ~6,840 calls / ~$127).** Azure only AUTHORS. Every check is
+done by Claude in session, per CLAUDE.md "Judges and evaluation use Claude": the blind solve of new keys, the
+equivalence check of new answer forms, adjudication and the level rating. That removes every solver, adjudicator and
+rater call from Azure. The counts below are the scripts' own dry runs (`node scripts/kits/run.mjs all`), priced at
+taxila-gpt6 ($2 per M input, $10 per M output).
 
-| # | workflow | size (counted 2026-11-04 from data/kits, data/placement) | calls per full run | ≈ cost |
-|---|---|---|---|---|
-| G1 | sentence-train grammar items (above) | 55 skills, 284 items short | ~540 (cap 700) | ~$5 |
-| W1a | Hinglish + Devanagari complete answer forms | the 293 census items (docs/research/census/2026-10-21-kits-english-only-forms.json) | ~30 author (batches of 10) + ~293 blind re-solve ≈ **325** | ~$3 |
-| W1b | `steps_hi` / `fadedVersion_hi` on worked examples, class 4-7 maths pilot | 141 topic worked examples, 0 have Hindi steps today | 141 author + 141 verify ≈ **280** | ~$3 |
-| W1c | per-skill `explain` plans (concrete → pictorial → symbolic steps, anchor example with blind-solved numbers, analogy, misconception to pre-empt, board script), class 4-7 maths pilot | 424 skills | 424 author (long output) + 424 blind-solve of the anchor numbers ≈ **850** | ~$30 |
-| W2a | relevel class 4-7: measured `ge` for items with none | 4,695 of 6,665 items unmeasured (1,970 have ge) | 2 raters × batches of 20 ≈ **470** | ~$10 |
-| W2b | relevel classes 1-3 and 8-9 | 5,733 items, none measured | ≈ **575** | ~$12 |
-| W3 | language kits on real texts, class 4-7 English and Hindi (learning-language-kits-real-text) | 101 topics, 467 skills, 1,675 items | ~1 passage + ~16 items + ~16 blind-solves + adjudication ≈ 35 per topic ≈ **3,500** | ~$60 |
-| W4 | placement banks: class 9 maths and science (classes 3-8 exist) | 2 banks × ~120 items | ~6 author + 120 verify + ~25 adjudicate per bank ≈ **300** | ~$4 |
-| W5 | Roman-Hinglish strings that trip the content filter ('teen' = three, and others) | 424 'teen' occurrences across the kits | **0**: a code rewrite to the numeral, then the existing lint; no model call | $0 |
+| # | workflow | script | Azure calls (exact) | ≈ cost | in-session Claude work |
+|---|---|---|---|---|---|
+| G1 | sentence-train grammar items (C2's vakya target) | `run.mjs g1` | 83 (cap 120) | $2.66 | blind-solve ~400 candidates |
+| W1a | Hinglish + Devanagari complete answer forms (293 census items) | `run.mjs w1a` | 30 (cap 60) | $0.60 | equivalence check of the new forms |
+| W1b | Hindi worked-example steps, class 4-7 maths | `run.mjs w1b` | 141 (cap 160) | $2.62 | code checks the numbers match; read-through |
+| W1c | per-skill explain plans, class 4-7 maths | `run.mjs w1c` | 424 (cap 480) | $15.26 | blind-solve the 848 anchor and check answers |
+| W2a | relevel class 4-7 (4,695 items with no ge) | `run.mjs w2` | **0** | $0 | rate 118 packets of 40 items |
+| W2b | relevel classes 1-3 and 8-9 | `run.mjs w2 --only c1` … | **0** | $0 | rate about 145 packets |
+| W3 | language kits on the real NCERT chapters, class 4-7 English/Hindi | `run.mjs w3` | 101 (cap 130) | $4.85 | blind-solve ~1,600 items |
+| W4 | placement banks, class 9 maths and science | `run.mjs w4` | 8 (cap 8) | $0.36 | blind-solve 80 items |
+| W5 | the 'teen' collisions | `w5-filter-numerals.mjs` | 0 | $0 | **done** (339 rewritten; 45 listed in W5-SKIPPED.md) |
 
-**All of them: about 6,840 calls, about $127 (≈ ₹10,700).** Suggested order, if the owner approves part of it:
-1. G1 + W1a + W5: the cheapest, and they unblock Games and the Hinglish graders (~$8).
-2. W2a: Brain's level-matched item choice depends on it (~$10).
-3. W1b + W1c pilot: Brain's per-skill explain beats (~$33).
-4. W3, W2b, W4.
+**Total Azure: 787 calls, about $26 (≈ ₹2,200).**
 
-Each workflow ships as a short `scripts/kits/*.mjs` with `--dry-run` (prints the plan and call count, makes no call)
-and `--cap N`. Nothing runs until the owner says yes.
+How a run works:
+1. `node --env-file=.env.local scripts/kits/run.mjs <wf> --run [--cap N] [--only prefix]` writes
+   `evals/kit-runs/<wf>/verify-packet.jsonl` (no keys) and `keys.jsonl`. It is resumable and stops at the cap.
+2. Claude solves or rates the packet in session.
+3. A merge folds into `data/kits` only the items whose blind solve agreed, then `lint-kits`, the gates and a commit.
+
+Nothing runs until the owner says yes.
