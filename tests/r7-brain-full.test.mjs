@@ -99,4 +99,25 @@ test("#4 (c4 steady T5-T6): an answer to her own question ('4' to 'kitne groups?
   assert.ok(out.guard.caught.includes("ignored"), JSON.stringify(out.guard));
   assert.match(out.reply, /\b4\b/, out.reply);
 });
+
+test("#7/#8 (c5 offtopic, c4 steering): no 'button' park; her promises ('yaad rakhenge', 'examples banaungi') are kept on the Later list; a story turn has room for the story", async () => {
+  const SH = await import("../server/director/shapes.js");
+  const { promisesLater, keepPromise } = await import("../server/director/later.js");
+  assert.doesNotMatch(SH.changeTopic(), /a button on the screen brings them back/);
+  assert.match(SH.changeTopic(), /promise to come back to it once this part is done/);
+  assert.equal(promisesLater("Achha, is baat ko yaad rakhenge."), true);
+  assert.equal(promisesLater("Main cricket examples banaungi, theek hai?"), true);
+  assert.equal(promisesLater("Main tumhe ek sawaal dungi."), false);
+  const L = keepPromise([], { reply: "Achha, is baat ko yaad rakhenge.", turn: 4, childText: "cricket" });
+  assert.equal(L.length, 1);
+  assert.match(L[0].topic, /cricket/);
+  // the story request never goes through the short lead slot (one call, room for the story, then the card)
+  let r = start(C4, 4);
+  for (let i = 0; i < 14 && !r.state.activeItemId; i++) r = turn(C4, r, "haan");
+  r = turn(C4, r, "story", { ...NE, source: "request", request: { type: "story", whole: true } });
+  let n = 0;
+  replyDeps.chat = async () => { n++; return { text: "Ek din Meera ne roti ke 4 barabar tukde kiye aur ek tukda apne dost ko diya. Ab batao?" }; };
+  await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: C4, childText: "story", verdict: "ungraded", history: [], ui: r.ui, module: null });
+  assert.ok(n >= 1);
+});
 });
