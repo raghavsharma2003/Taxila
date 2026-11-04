@@ -5026,3 +5026,9 @@ Agent lane with stream 2's tools (748ddff8): local server, TEST branch, battery-
 ## r5a-ms-spoken-numbers-eff989c0 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
 
 Spoken Hindi numbers (eff989c0): comprehension/grade/numbers.js now reads with grading/spoken-number.js (one reader), Devanagari 1-99 with nukta/candrabindu folded, ASR fused hundreds (छेसो, पाँचसो, chheso), split mode for working aloud (last stated result) in numbersIn/matchNumber, rKey and classifyFast (number_working). tests/r5-spoken-numbers.test.mjs 4/4 fail on int/r5-rel141, pass on eff989c0; 66 related test files 844/844. Voice-arm before: sim lab 29de42f9 correct verdicts 77 -> 51; re-run requested.
+
+
+<!-- merged from inbox/r7-main-4.json -->
+## jd-r7-hybrid-pilot-2026-11-04 (main loop judge, 2026-11-04)
+
+Method: stream A's evals/hybrid-side-by-side.mjs at 8c42d580, production deployments (taxila-fast reply, grok-4-1-fast-non-reasoning classify, taxila-gpt6 agent), no DB, scripted Hinglish class-6 child on c6-maths-ch06-t01. n = 2 scenarios (steady, offtopic) × 2 lanes × 10 child turns; stuck not run (150-call cap). Judged by Claude in the main loop against OWNER-RESET-2026-10-04, reading every turn; not blind. Reply-ready p50: steady Director 2033 / agent 3818 ms; offtopic 2569 / 3183 ms; one agent turn 9533 ms. Findings and the 11 defects: docs/design/round7/judgements/hybrid-pilot-2026-11-04.md. Small n: a defect hunt, not a verdict.

@@ -6751,3 +6751,9 @@ Owner decision 14.2: a REAL picture on the Director lane for the picture cohort 
 ## dc-r5-persistent-misses-14-2 (2026-10-14; recovered 2026-11-04 from an inbox entry that never reached the graph)
 
 Owner decision 14.2, the battery's persistent misses: (1) a drawing whose face IS numbers ('ghadi draw karo': 1-12; a ruler 0-15) may write them (studio/request.js askedNumbers FACE_NUMBERS → W4 extraNumbers); (2) a game asked for with no game to mount: her line never announces one (turn.js claim_game: studio/request.js ungame turns 'game' into 'activity' when the line does not say there is none; the shape ends 'never call what you try together a game'); the battery counts an honest no-game turn as answered, apart (got.honest); (3) 'ek example do' is answered only by a WORKED page (3+ things written, 2+ with numbers: studio/request.js workedPage), so a ready-made bare fact ('1/2 = 2/4 | same amount') or number-less steps go to the line planner, which draws her example. Reverse if: the line planner's example pages fail the board gate more often than the ready-made pages they replace
+
+
+<!-- merged from inbox/r7-main-4.json -->
+## dc-r7-hybrid-pilot-no-lane-yet (2026-11-04, main loop)
+
+The pilot picks no lane. Most defects are lane-independent and belong in code as invariants for both lanes (the hybrid plan: the LLM words, code keeps invariants): the stop check-in on every goodbye, park-and-return on change_topic, card text spoken whole and in the lesson language, a level floor on remediation, never claiming not to have heard. After the fixes: the full 12-per-lane side-by-side (stuck, a class-4 child, a steering-heavy child added). Reversal: the fixes cannot be made lane-independent, or the full run shows one lane clearly better.
