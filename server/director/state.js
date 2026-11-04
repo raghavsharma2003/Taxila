@@ -33,6 +33,10 @@ import {
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
+import { renderWorked } from "./worked.js";
+/** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
+export const workedCodeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_WORKED_CODE ?? ""));
+const rendered = (we, o, s) => { if (!workedCodeOn()) return {}; const r = renderWorked(we, { ...o, lang: s.ctx.lang }); return r ? { rendered: r } : {}; };
 import { newTalk, noteChildTurn } from "./talk.js";
 import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
@@ -622,6 +626,8 @@ function teach(s, input, prefix) {
       const stuck = shown();
       return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck })), { ...(stuck ? { stuck } : {}),
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
+        // (the steps before the gap only, as workedLeadContent: the gap's key is never said before it is posed)
+        ...(i > 0 ? rendered(we, { part: 1, parts: 1, upTo: Math.min(i, Math.max(1, Math.ceil(i / 2))) }, s) : {}),
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
@@ -637,10 +643,12 @@ function teach(s, input, prefix) {
       s.stepCheck = check; activate(s, check);
       return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), {
         item: check, probe: "P15", skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+        ...rendered(we, { part: s.workedPart, parts }, s),
       });
     }
     return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+      ...rendered(we, { part: s.workedPart, parts }, s),
     });
   }
   s.phase = "practice";
@@ -2180,6 +2188,8 @@ export function step(prev, input) {
   if (item && s.methods?.includes("try_first") && ["practice", "probe", "retrieval"].includes(move.kind) && !s.hintLevel) move.format = "F8";
   // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
   if (p.stuck) move.stuck = true;
+  // round 7 S2: the worked part rendered in code (worked.js); brain/say.js speaks these lines after one framing sentence
+  if (p.rendered?.length) move.rendered = [...p.rendered];
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {

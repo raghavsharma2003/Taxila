@@ -254,6 +254,8 @@ const LANG_NAME = { hindi: "simple Hindi (Roman script when written; idea-words 
 /** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
 export const languageAsked = ({ lang, teaching = false }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  // round 7 (main's S6 verdict: the stronger model said "parimap, aakriti, bhuja" in a Hindi switch; the fast one kept English nouns)
+  lang === "hindi" ? "use the Hindi words for the lesson's terms (the Hindi names of the shapes, parts and measures), never English words with Hindi grammar" : null,
   teaching ? "say the last idea again in it, simply, and end with one small question" : "say the question in it",
 );
 /** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
@@ -299,8 +301,9 @@ export const visualDrawing = ({ subject, said, show } = {}) => join(
     : subject ? `they asked to see ${clean(subject)}: say in plain words what it looks like` : "",
   VISUAL_DRAWING,
 );
-// round 7 (main's full-run judgement #11: "picture ko words mein dekho"): help them imagine it; never name words, screens or a lack
-export const VISUAL_NOT_YET = "nothing is on the screen this turn: help them imagine it, with everyday things they can picture ('socho …'); never say 'in words', never a drawing made of characters, never that you cannot draw, never ask them to draw it";
+// round 7 (main's director2 decision S1: "in words" and "imagine / kalpana karo" are both the owner's #8 failure, a picture asked
+// and words given): with nothing up, the thing itself is talked about plainly; nothing about pictures, screens, words or imagining
+export const VISUAL_NOT_YET = "nothing is on the screen this turn: talk about the thing itself, its parts and its numbers, plainly as across a table; never mention a picture, the screen, words or imagining, never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
@@ -705,6 +708,7 @@ export const helpExplainP5 = ({ how, example = false, story = false }) => join(
 /** "Hindi mein batao" with a question on the table (p5 wording): simpler first, in the new language, then the question. */
 export const languageAskedP5 = ({ lang }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  lang === "hindi" ? "use the Hindi words for the lesson's terms (the Hindi names of the shapes, parts and measures), never English words with Hindi grammar" : null,
   "first say what the question asks, simply, in it; then the question in it",
 );
 /** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
