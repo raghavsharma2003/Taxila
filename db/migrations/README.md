@@ -53,3 +53,5 @@ cannot run in a transaction (`create index concurrently`, `vacuum`).
 
 -- Round 7 (2026-11-04, PIPELINE.md): Brain 031-033, Learning 034-039, Platform 040-043 (040 = the cost ledger's
 -- lesson.cost rollup). Numbering is owned by stream G (platform).
+-- Update (2026-11-04, main): Learning used all of 034-039 and also gets 044-049 (044 = the parent_report cadence check).
+-- Brain stays 031-033, Platform 040-043. Applied so far: 034-040.
