@@ -1,0 +1,44 @@
+// round 7: main's judgement of the full hybrid run (docs/design/round7/judgements/hybrid-full-2026-11-04.md), the Director
+// block, one test per defect on the exact transcript turn (evals/hybrid-side-by-side/results/2026-11-04-full/). Pure.
+import { test, describe, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { initLessonState, step } from "../server/director/state.js";
+import { textReply, replyDeps, affirmsAnswer, withoutAffirm } from "../server/brain/say.js";
+import { chat } from "../server/azure.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+import { CTX, cls } from "./fixtures/kit.mjs";
+
+const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
+const R7_KEEP = {};
+describe("r7-brain-full: the Director block after the full hybrid run", () => {
+beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
+afterEach(() => { replyDeps.chat = chat; for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
+
+const C5 = kitFromFile(getTopic("c5-maths-ch02-t01"));
+const C4 = kitFromFile(getTopic("c4-maths-ch05-t01"));
+const NE = cls("no_evidence");
+const start = (K, classLevel) => step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel, ageBand: "10-15", lang: "hinglish" }, seed: 3, now: 0 }), { event: "start", kit: K, now: 0 });
+const turn = (K, r, text, c = NE, extra = {}) => step(r.state, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000, ...extra });
+const replyTo = async (K, r, childText, draft) => {
+  replyDeps.chat = async () => ({ text: draft });
+  return textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: K, childText, verdict: "ungraded", history: [], ui: r.ui, module: null });
+};
+
+test("#1 (c5 stuck T6, c4 offtopic T6): a verdict word only on a turn graded correct: '5?' and a game pick '3' are never 'sahi'", async () => {
+  assert.equal(affirmsAnswer("Riya, agar tum kul barabar hisse 5 keh rahi ho, haan, wahi sahi hai."), true);
+  assert.equal(affirmsAnswer("Sahi, Riya—1/3 mein 3 equal parts hote hain."), true);
+  assert.equal(affirmsAnswer("Iska sahi tarika ye hai: pehle jodo."), false, "a neutral 'sahi' is not a verdict");
+  assert.equal(affirmsAnswer("Achha, tumne 5 kaha."), false);
+  assert.doesNotMatch(withoutAffirm("Sahi, Riya—1/3 mein 3 equal parts hote hain."), /^Sahi/);
+  let r = start(C5, 5);
+  for (let i = 0; i < 3; i++) r = turn(C5, r, "pata nahi");
+  const a = await replyTo(C5, r, "5?", "Riya, agar tum kul barabar hisse 5 keh rahi ho, haan, wahi sahi hai. Pehla hissa 1/5 hota hai. Doosra nishaan kya hoga?");
+  assert.equal(affirmsAnswer(a.reply), false, a.reply);
+  assert.ok(a.guard.caught.includes("affirms"));
+  let q = start(C4, 4);
+  for (let i = 0; i < 2; i++) q = turn(C4, q, "haan");
+  const b = await replyTo(C4, q, "3", "Sahi, Riya—1/3 mein 3 equal parts hote hain. Ab bolo, inmein se ek part ko fraction mein kaise likhenge?");
+  assert.equal(affirmsAnswer(b.reply), false, b.reply);
+});
+});
