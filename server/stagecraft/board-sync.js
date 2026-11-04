@@ -149,6 +149,13 @@ export function withSplit(script) {
       const mid = ((o.fromDeg + o.toDeg) / 2) * Math.PI / 180;   // degrees clockwise from 12 o'clock
       moves.push({ id: `split-${o.id}`.slice(0, 32), op: "move", target: o.id, by: [Math.round(Math.sin(mid) * d * 10) / 10, Math.round(-Math.cos(mid) * d * 10) / 10], startMs: at, endMs: at + 700 });
     }
+    // the whole's own outline would be left behind as a ring the parts slide across (seen in the round-7 recording):
+    // it fades out as they split, unless a later op points at it
+    for (const w of ops) {
+      if (w.op !== "circle" || !Array.isArray(w.c) || Math.hypot(w.c[0] - c[0], w.c[1] - c[1]) > 1 || Math.abs((w.r ?? 0) - r) > 1) continue;
+      if (ops.some((o) => o.target === w.id)) continue;
+      moves.push({ id: `split-out-${w.id}`.slice(0, 32), op: "erase", target: w.id, startMs: at, endMs: at + 700 });
+    }
   }
   if (!moves.length) return script;
   const end = Math.max(...moves.map((m) => m.endMs));
