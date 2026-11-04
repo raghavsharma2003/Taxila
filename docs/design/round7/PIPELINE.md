@@ -471,3 +471,7 @@ Built from the 7-pillar gap map (`gap-map.json`: 180 items, each with status, ev
   ui.moment, steer request ids, TurnRequest.gameAct, heardUpTo).
 - Integration: the main loop merges stream heads into `int/r6` every ~48 h (Platform, Learning, Brain, Voice, Studio,
   Games, Face, App), runs the gates, and deploys to staging once Platform's pipeline exists.
+- Context inbox (added 2026-11-04 after integration 2): never edit an inbox file after it is pushed. The main loop
+  moves merged files to `context/inbox/merged/`; git treats that as a rename, so later stream edits to the same file
+  follow it into `merged/` and never reach the graph (28 nodes were hidden this way and recovered). Each batch is a
+  NEW file `context/inbox/r7-<stream>-<n>.json`, with prose (md.decisions / md.measurements / md.rejected) for every node.

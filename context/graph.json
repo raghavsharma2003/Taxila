@@ -23879,6 +23879,92 @@
    "at": "2026-11-04",
    "title": "Round 7 B4 (voice-d5-ear-asr). Three layers against the D5 ear's empty finals (5/14 short Hinglish answers on the owner harness). (1) Phrase list: each D5 session sends azure-speech a per-lesson phrase_list (server/duplex/phrases.js): the child's and teacher's names, this topic's short kit answers (≤3 words), a Hinglish core (हाँ/नहीं/पता नहीं/दीदी…) and Hindi number words. Terms only, never sentences. The kit lookup is bounded at 300 ms. Because all of the topic's answers and every number are in the list, the bias is toward the lesson's vocabulary, not toward one item's key. (2) Second ear: a turn the engine commits as unheard is held (≤2.5 s) while the device's own clip of that span (the mic channel the D5 stream sent, kept 12 s on Voice Live's audio clock) goes to /api/voice/transcribe. Words found → a real turn with that confidence; none → the unheard re-ask as before. Turns stay in order. (3) Model: TAXILA_D5_ASR=gpt-4o-transcribe|gpt-4o-mini-transcribe switches the ear to a delta-streaming model. Deltas already feed the engine host (live.ts). The default stays azure-speech until a live arm. D4 keywords are not wired (no structured field on the live-transcribe session). Reverse the phrase list if a live arm shows it pulls wrong answers onto listed ones (false-correct grading). Reverse the second ear if its median hold pushes R p90 past the latency bar on unheard turns.",
    "source": "inbox/r7-voice-remerge.json"
+  },
+  {
+   "id": "rj-r7-inbox-file-reedited-after-merge",
+   "kind": "rejection",
+   "at": "2026-11-04",
+   "title": "Streams re-editing a context inbox file after the main loop merged it. merge-inbox moves the file to context/inbox/merged/; git records a rename, so a stream's later edits to the same path merge into merged/<f>.json and are never read. Integration 2 found 28 nodes from Brain, Face, Platform, Studio and Voice hidden this way (recovered by moving them back and re-merging). Fix: one new inbox file per batch (r7-<stream>-<n>.json); PIPELINE.md §O.",
+   "source": "inbox/r7-main-2.json"
+  },
+  {
+   "id": "r5a-ms-agent-vs-director-571b301",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Sim lab (session_012H8HYZhSzPwAoXPMsKERUb, evals/simlab/results/r5-agent-vs-director-571b301 on claude/r5-simlab @20ba103a): agent lane (taxila-gpt6) vs Director, same sha, n=64 cards per arm, text lane, 14 child turns, two judges. Agent beats Director on 57/64 cards paired. Judge-1 means Director -> agent: coherence 3.17->4.27, follows_child 2.89->3.64, adapts 2.28->3.70, human 3.86->4.45, channel_truth 2.55->3.27, pacing 2.83->3.39, safety 4.94->5.00, understanding 2.80->3.25. Clusters (lessons/64) Director->agent: repeats_explanation 58->30, stuck_loop 46->22, topic_jump 14->2, ignores_child 22->10, type/write 5->0. Still high on agent: missed_misconception 35, ignored_request 34, over_checks 31, points_empty_screen 17, false_understood 21; own skill reads 82/164 right with 61 overclaims; boards drawn 2 (Director 164); turn p50 5.9 s / p90 8.1 s (Director 2.9/5.0), 20 Director takeovers (9 s timeouts), $0.070 per lesson.",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-dc-understood-is-earned",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "status": "proposed",
+   "title": "Agent lane: the per-skill read 'understood' is earned in code (server/agent/agent.js earnedRead): right answers on two different items, or one on a why / transfer item, and no wrong answer after the last right one; otherwise held at partly (or not), and the model is shown its unsupported claim. Motivated by 61/164 overclaims on 571b301.",
+   "reversal": "the sim lab shows underclaims (understood withheld from a child who has it) outnumbering the overclaims it removes",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-ms-agent-tools-smoke-748ddff8",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Agent lane with stream 2's tools (748ddff8): local server, TEST branch, battery-r5 6 personas x 10 turns, conc 6: 19 board pages drawn through boardShow (571b301 sim run: 2 in 64 lessons), 0 HTTP errors, battery D 92%, A/O/B/S/T/F/C 100%. Agent call (taxila-gpt6, strict json_schema, non-streamed) p50 4281 ms / p90 5279 ms, mean 273 output tokens; 10/66 turns hit the 6 s timeout and fell back to the Director. Effort none vs low: no difference (n=5 each, ~3.7 s). Latency needs streaming (stream 3 sayDeltasOf + speakStreamed).",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "r5a-ms-spoken-numbers-eff989c0",
+   "kind": "measurement",
+   "at": "2026-10-14",
+   "title": "Spoken Hindi numbers (eff989c0): comprehension/grade/numbers.js now reads with grading/spoken-number.js (one reader), Devanagari 1-99 with nukta/candrabindu folded, ASR fused hundreds (छेसो, पाँचसो, chheso), split mode for working aloud (last stated result) in numbersIn/matchNumber, rKey and classifyFast (number_working). tests/r5-spoken-numbers.test.mjs 4/4 fail on int/r5-rel141, pass on eff989c0; 66 related test files 844/844. Voice-arm before: sim lab 29de42f9 correct verdicts 77 -> 51; re-run requested.",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-instructed-nonverbals",
+   "kind": "rejection",
+   "title": "Asking gpt-4o-mini-tts or gpt-realtime-2.1 in prose for a laugh/chuckle/breath: 0 audible events in 18 judged clips",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-paralinguistic-tags-en-IN-dragonhd",
+   "kind": "rejection",
+   "title": "[laughter]/[breathing]/[sighing] on en-IN DragonHD are spoken as words (12/12), despite Learn saying all voices/all languages",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-llm-planner-serial",
+   "kind": "rejection",
+   "title": "LLM delivery planner on the serial live path: +0.9-2.4 s p50 (n=10/arm)",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "hv-full-text-planner",
+   "kind": "rejection",
+   "title": "Planner that rewrites the line as segments: grok dropped words 2/10; annotate clause indices instead",
+   "at": "2026-10-04",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "dc-r5-picture-on-director-lane",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "Owner decision 14.2: a REAL picture on the Director lane for the picture cohort (studio/picture.js picturesFor: TAXILA_PICTURES = off | all | unset → TAXILA_PICTURES_FOR, guardian emails or their sha256, the duplex cohort pattern). A photo ask, or a thing outside the kit the board sketches, starts startPicture; the board sketch and her 'a real picture is being made, it comes in a few seconds' (shapes drawAsked photo:'coming' / pictureNote) go up at once and the picture reveals on the Studio stream after Content Safety passes (~15 s), replacing the sketch; it stays into the next turn (the tray gate now certifies a picture-lane image: inline JPEG / PNG, contain-fit, no text) and is taken down on the board's rules (turn.js leftBoard). The lane's limits: 4 per lesson, at most TAXILA_PICTURES_IN_FLIGHT (3) being made at once, a deployment that answers 429 rests 15-20 s while the chain moves on; a full lesson or a busy lane is said honestly ('a photo cannot come right now'), a picture is never said to be there before it mounts. Reverse if: picture jobs fail more than 1 in 5 in the cohort, or a revealed picture is judged off-subject by the owner more than 1 in 10",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "dc-r5-persistent-misses-14-2",
+   "kind": "decision",
+   "at": "2026-10-14",
+   "title": "Owner decision 14.2, the battery's persistent misses: (1) a drawing whose face IS numbers ('ghadi draw karo': 1-12; a ruler 0-15) may write them (studio/request.js askedNumbers FACE_NUMBERS → W4 extraNumbers); (2) a game asked for with no game to mount: her line never announces one (turn.js claim_game: studio/request.js ungame turns 'game' into 'activity' when the line does not say there is none; the shape ends 'never call what you try together a game'); the battery counts an honest no-game turn as answered, apart (got.honest); (3) 'ek example do' is answered only by a WORKED page (3+ things written, 2+ with numbers: studio/request.js workedPage), so a ready-made bare fact ('1/2 = 2/4 | same amount') or number-less steps go to the line planner, which draws her example. Reverse if: the line planner's example pages fail the board gate more often than the ready-made pages they replace",
+   "source": "inbox/r7-main-3-remerge-old.json"
+  },
+  {
+   "id": "corr-face3d-nc-deps",
+   "kind": "finding",
+   "title": "face3d-nc-deps-rejected said no face-specific model passes commercial use; GNM Head (Apache-2.0, 2026-07) does. Harvest ws-19's 'adult identities unusable' note is wrong: the tutor is an adult",
+   "at": "2026-10-03",
+   "source": "inbox/r7-main-3-remerge-old.json"
   }
  ],
  "edges": [
