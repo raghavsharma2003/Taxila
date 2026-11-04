@@ -11,6 +11,7 @@ import { kit, CTX, cls } from "./fixtures/kit.mjs";
 // "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
 process.env.TAXILA_R7_BYE_CHECKIN = "off";
 process.env.TAXILA_R7_PARK_TOPIC = "off"; // and the earlier ways-in offer on "something else" (judgement #2)
+process.env.TAXILA_R7_FRUSTRATION = "off"; // and the earlier hint-on-the-same-question for frustration (A8 part 2)
 
 const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });

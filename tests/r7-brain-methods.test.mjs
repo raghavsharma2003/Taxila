@@ -47,3 +47,16 @@ test("never on a safeguard or wrap move; a graded answer never reads as a method
   r = turn(r, "step by step", cls("correct"));
   assert.equal(r.state.methods, undefined);
 });
+
+test("A8 part 2: frustration on a card changes the approach: the card is left for later, never re-posed this turn", () => {
+  let r = start();
+  for (let i = 0; i < 12 && !r.state.activeItemId; i++) r = turn(r, "haan");
+  const card = r.state.activeItemId;
+  assert.ok(card);
+  const f = turn(r, "mujhse nahi hoga", { ...NE, source: "p5", request: { type: "frustration", whole: true, src: "p5" } });
+  assert.equal(f.state.activeItemId, undefined, "not re-posed");
+  assert.ok(f.state.skipped.includes(card), "left for later");
+  assert.equal(f.ui.ask, undefined);
+  assert.equal(f.move.request, "frustration");
+  assert.notEqual(f.move.kind, "wrap");
+});

@@ -463,6 +463,8 @@ const STEP_KEY = /=\s*₹?\s*([-−]?\d[\d,]*(?:\.\d+)?)\s*(?:°|%|₹|rs\.?|rup
  * after its last "="). Its prompt is the kit's faded line for that step when there is one, else the step with its result
  * blanked. null when the step has no result in code (then she asks in her own words, unkeyed, as before).
  */
+/** round 7 A8 part 2: frustration on a card changes the approach (TAXILA_R7_FRUSTRATION=off: a hint on the same question). */
+export const frustrationNewWayOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_FRUSTRATION ?? ""));
 /** round 7 (main's hybrid-pilot judgement #3): a goodbye gets the stop check-in first (TAXILA_R7_BYE_CHECKIN=off: ends at once). */
 export const byeCheckInOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_BYE_CHECKIN ?? ""));
 /** round 7 (main's hybrid-pilot judgement #2): change_topic parks and comes back (TAXILA_R7_PARK_TOPIC=off: the ways-in offer). */
@@ -1436,6 +1438,15 @@ function p5RequestMove(s, input, item, req, labels) {
     case "frustration": {
       // round 3: no question on the table: the re-explanation still opens with the empathy line (it had none)
       if (!item) { const t = teachAgainPlan(s, kit, "another"); return p5Flag("R3CONV") ? { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" } : t; }
+      // round 7 A8 part 2 (PIPELINE §A Brain item 7, product policy: frustration changes the approach, never re-poses): the
+      // card is left for later (no verdict; the card cap's "leave"), and the idea is taught again another way, with the
+      // empathy line first. TAXILA_R7_FRUSTRATION=off: a hint rung on the same question, as before.
+      if (frustrationNewWayOn()) {
+        if (!s.skipped.includes(item.id)) s.skipped.push(item.id);
+        s.activeItemId = undefined; s.hintLevel = 0; s.unclear = 0;
+        const t = teachAgainPlan(s, kit, "another");
+        return { ...t, shape: join(SH.frustrationTeach(), t.shape), request: "frustration" };
+      }
       const p = decideAs(s, input, item, "stuck");
       return { ...p, shape: join(SH.frustrationFirst(), p.shape), request: "frustration" };
     }
