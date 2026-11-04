@@ -3,7 +3,7 @@
 // only the in-memory put; Neon and Blob writes run after the response with their errors logged.
 // Keys carry identity (inherited law: model + prompt + gate + kit versions in every cache key), so a gate, prompt or
 // kit change is a miss, never a stale hit.
-import { q, one } from "../db.js";
+import { q, one, dbUrl } from "../db.js";
 import { putBlob, blobConfigured, sha256 } from "./blob.js";
 
 const MAX_MEM = 2000;
@@ -17,7 +17,9 @@ const pending = new Set();
 export const flushWrites = () => Promise.allSettled([...pending]);
 function background(p) { pending.add(p); p.finally(() => pending.delete(p)).catch(() => {}); return p; }
 
-export const dbConfigured = () => !!process.env.DATABASE_URL;
+/** A database is configured when server/db.js would resolve one (TAXILA_DB=test with only a test url counts; a bad
+ * TAXILA_DB value reads as "none" here, and db.js itself throws on first use). */
+export const dbConfigured = () => { try { return !!dbUrl(); } catch { return false; } };
 
 /**
  * @returns {Promise<{ hit: "memory"|"db"|null, body?: any, ms: number }>}
