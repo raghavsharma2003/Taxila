@@ -137,7 +137,7 @@ export const snapshotSkill = (st) => ({
  *   protege: { name: string, what: string }, ageBand: "6-9"|"10-15", lang: string, interests: string[],
  *   firstMeeting: boolean, hasCallback: boolean, topicTitle: string, nextTitle?: string }, seed: number, now?: number }} a
  */
-export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp }) {
+export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck = {}, warmupItems = [], activeMisconceptionIds = [], ctx: ctx0, seed, now = Date.now(), openers = [], comp, level = null }) {
   const ctx = protegeNotChild(ctx0);
   const classLevel = ctx.classLevel ?? (ctx.ageBand === "6-9" ? 3 : 6);
   const band = bandOf(classLevel);
@@ -172,7 +172,11 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     purpose: practiceSet ? "practice" : asking ? "doubt" : "lesson",
     practiceSet: practiceSet ? { ids: practiceSet, of: Math.min(practiceSet.length, ctx.practice?.count ?? practiceSet.length), posed: [], firstTry: 0 } : undefined,
     talk: newTalk(),
-    queue: practiceSet ?? buildPracticeQueue(kit, { activeMisconceptionIds }),
+    // round 7 (F Learning's learner view, patch to-brain/001; PIPELINE §A Brain item 4): items at this child's level, θ on the
+    // GE scale (null until 2 scored answers → the class default) and the weak flag; absent → today's on-track default
+    queue: practiceSet ?? buildPracticeQueue(kit, { activeMisconceptionIds, ...(level ? { classLevel: ctx.classLevel, theta: level.theta ?? undefined, weak: !!level.weak } : {}) }),
+    // the family's minutes left at the start (D5 mid-lesson limit: the wrap after deadlineAt), or null when limits are off
+    ...(level?.minutesLeft?.today != null ? { minutesLeft: level.minutesLeft } : {}),
     // Experienced learners attempt before any explanation, so their skills count as introduced.
     // Attempt-first learners have the skills they have met introduced; a skill they have never met still gets one short
     // explain turn before its first item (poseNext). A practice set is retrieval: every skill counts as introduced.

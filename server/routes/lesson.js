@@ -42,6 +42,7 @@ import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.j
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
+import { learnerViewOf } from "../learner/view.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -252,7 +253,8 @@ export async function lessonStart(req, body) {
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
   mark("plan");
-  const refusal = startRefusal(dayPlan.state, body.purpose);
+  // round 7 (F Learning patch to-brain/002, dc-r7 D5): the family's own daily-limit opt-in (child_controls.limits_on)
+  const refusal = startRefusal(dayPlan.state, body.purpose, { limits: dayPlan.plan?.limits === true });
   // The refusal names the control that refused (the parent's lesson hours or daily limit, or today's lesson done) and the
   // hours window, so the child's screen can say which and when (BUILD-PLAN W1-A item 2; smooth G8).
   if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining,
@@ -272,6 +274,8 @@ export async function lessonStart(req, body) {
     bondP]);
   mark("reads2");
   const ledger = live.state.ledger;
+  // round 7 (F Learning patch to-brain/001): θ, the weak flag and minutes left for this child and topic; null on any failure
+  const viewP = early(learnerViewOf(child, { topicId: topic.id, ledger: live.state, kit }).catch(() => null));
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
   const band = bandOf(child.class_level);
@@ -285,7 +289,7 @@ export async function lessonStart(req, body) {
   const warmupItems = await warmupItemsFor(checks.openers, { ledger });
   mark("warmup");
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
-  const [history, brief0, stuck] = await Promise.all([historyP, brief0P, stuckP]);
+  const [history, brief0, stuck, view] = await Promise.all([historyP, brief0P, stuckP, viewP]);
   // The interests the parent picked reach the teacher only under "Remember what {child} likes" (the memory consent;
   // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
   mark("reads3");
@@ -318,6 +322,7 @@ export async function lessonStart(req, body) {
     topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,
     seed: Math.floor(Math.random() * 2 ** 32),
     openers: warmupItems.map((w) => w.skillId), comp: skillsMapFor(live.state, kit, skillIds, now),
+    level: view ? { theta: view.theta?.value ?? null, weak: !!view.weak?.weak, minutesLeft: view.minutesLeft ?? null } : null,
     ctx: {
       sessionId: lessonId, classLevel: child.class_level, schoolMedium: child.school_medium ?? undefined,
       // the teacher's id AND name are pinned here for the life of the lesson (a rename lands on the next one)

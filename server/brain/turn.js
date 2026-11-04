@@ -73,7 +73,7 @@ import { publishPerception } from "../latency/bus.js";
 // round 3 fix (adversarial B2): the play piece's own closed voice grammar (pure, no DOM)
 import { parseVoice } from "../../src/play/core/voice.ts";
 // round 3 fix (experience B2 / B3): the visual ask's clause made true about the screen
-import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, drawAsked, pictureNote } from "../director/shapes.js";
+import { askTruth, VISUAL_ON_STAGE, VISUAL_NOT_YET, VISUAL_DRAWING, DRAW_NO_POINT, DRAW_POINT_ONCE, drawAsked, pictureNote } from "../director/shapes.js";
 import { picturesFor, startPicture, takeFailedPicture } from "../studio/picture.js";
 /** How long a turn answering the child's visual ask waits for the board being drawn for it (the code board lands in ~0.6 s). */
 const ASKED_BOARD_WAIT_MS = Number(process.env.TAXILA_ASKED_BOARD_WAIT_MS || 1500);
@@ -509,6 +509,10 @@ export async function lessonTurn(req, body, hooks = {}) {
   }
   // p5-interaction: an answer's own words beside the grade (a hedge, "is it right?", "I'm right") ride on the move as notes
   if (cls && childText && p5Flag("STEER")) cls = withAnswerMods(cls, childText);
+  // r7 Games (studio-game-utterance-double-turn): the play piece on screen took this utterance as a game command
+  // (TurnRequest.gameAct, acked by the client's closed grammar). Rewritten HERE, before both lanes read cls: the agent lane's
+  // verdict is computed from this cls, and planTurn's own guard (asPlayAct below) only ever saw its local copy.
+  if (cls) cls = asPlayAct(cls, { state, childText, chipId: body.chipId, moduleOnly, gameAct: gameActOf(body) });
   // safety-robust (2026-10-05; INTEGRATION.md §2.1, PLAN X-1 / W2.5-2): the duplex floor's sticky partial-safety state
   // (TurnRequest.duplex.safetyPending: the predicate ran on EVERY partial, and a hit stays even when the final transcript
   // was revised clean) is OR-ed into this turn's distress flag before planTurn; it never subtracts. A client can only use
@@ -691,6 +695,12 @@ export async function lessonTurn(req, body, hooks = {}) {
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
       item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
+  // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
+  // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
+  if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
+    next.lastMove = { ...next.lastMove, shape: pointShapeFor(next.lastMove.shape, { boardFirst: true }) };
+    try { instructions = instructionsFor(next, kit); } catch (e) { console.warn(`[studio] pointing truth left out of the compile: ${String(e?.message ?? e).slice(0, 80)}`); }
+  }
   // W1-C settle: start the blind grade of this turn's held why / teach-back NOW (or adopt the pregrade), while the reply
   // is written and the turn commits, not after; the post-commit launchGrades below is then a no-op for the same event
   // ids (later.js gradeLater is idempotent per event id).
@@ -1538,10 +1548,7 @@ export async function planTurn(base, cls, c) {
   // card question the Desk folds away in play mode: no grade (an exact "1/3" was credited and the lesson moved on mid-game;
   // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
   // chip or an engine's machine answer are never touched.
-  if (cls && !moduleOnly && !c.chipId && c.childText && playIsUp(state) && !cls.flags?.distress && !cls.request && !cls.help
-    && !["module", "chip", "predicate"].includes(cls.source) && parseVoice(String(c.childText)) !== null) {
-    cls = { ...cls, outcome: "no_evidence", confidence: 1, source: "play_act", request: { type: "play_act", whole: true } };
-  }
+  if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
@@ -1865,6 +1872,12 @@ const PERCEIVE_DEPS = { classifyFast, classify, understand, speculate, planTurn:
  */
 /** PURE. "nothing is on the screen this turn" made true for the board: the board asked for draws while she speaks; a board
  * already up is on the screen; otherwise unchanged (QA on be9b766a, 13ec94a7). */
+/** PURE. drawAsked's pointing clause made true: point once when a certified board-first page lands before her clause, else
+ *  describe in words (C1 studio-board-pointing-truth). */
+export const pointShapeFor = (shape, { boardFirst = false } = {}) => {
+  const s = String(shape ?? "");
+  return boardFirst && s.includes(DRAW_NO_POINT) ? s.replace(DRAW_NO_POINT, DRAW_POINT_ONCE) : shape;
+};
 export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } = {}) => {
   const s = String(shape ?? "");
   const truth = askedBoard ? VISUAL_DRAWING : boardUp ? VISUAL_ON_STAGE : null;
@@ -1872,6 +1885,26 @@ export const boardTruthShape = (shape, { askedBoard = false, boardUp = false } =
 };
 export const boardAnswersAsk = (move) => !!(move?.request === "visual" && move.see && (move.see.subject || move.see.show === "number_line" || move.see.show === "picture"));
 export const playIsUp = (state) => !!state?.playOn || state?.lastMove?.visual === "game";
+
+/** TurnRequest.gameAct, validated: the play piece's grammar consumed these words (consumed: true), or null. */
+export function gameActOf(body) {
+  const g = body?.gameAct;
+  if (!g || typeof g !== "object" || g.consumed !== true) return null;
+  return { consumed: true, ...(typeof g.game === "string" ? { game: g.game.slice(0, 40) } : {}), ...(typeof g.act === "string" ? { act: g.act.slice(0, 24) } : {}) };
+}
+
+/**
+ * PURE. A game command is the GAME's act, never an answer to the card the Desk folds away in play mode. True when the
+ * client acked it (gameAct), or, for clients without the ack, when a piece is up and the server's copy of the closed
+ * grammar parses it. Distress, a request the bytes read, a help ask, a chip, a module or predicate verdict are never touched.
+ */
+export function asPlayAct(cls, { state, childText, chipId, moduleOnly, gameAct }) {
+  if (!cls || moduleOnly || chipId || !childText || cls.flags?.distress || cls.request || cls.help) return cls;
+  if (["module", "chip", "predicate"].includes(cls.source)) return cls;
+  if (cls.source === "play_act") return cls;
+  const isAct = !!gameAct || (playIsUp(state) && parseVoice(String(childText)) !== null);
+  return isAct ? { ...cls, outcome: "no_evidence", confidence: 1, source: "play_act", request: { type: "play_act", whole: true } } : cls;
+}
 
 /** CONVERSATION-V2 §4.4: the longest a non-answer turn waits on the UNDERSTAND note from its start (gpt-6-sol p90 2174 ms). */
 export const NOTE_WAIT_MS = Number(process.env.TAXILA_NOTE_WAIT_MS ?? 2200);

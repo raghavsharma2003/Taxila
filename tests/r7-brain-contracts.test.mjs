@@ -48,3 +48,7 @@ test("'steer:slower' while she teaches is the same re-explain the words 'slowly 
   assert.match(s.move.shape, /slow down/);
   assert.equal(s.state.teachIdx, idx);
 });
+
+test("'steer:else' (Kuch aur) is the change-topic request, never a stop", () => {
+  assert.deepEqual(steerRequest("steer:else"), { type: "change_topic", whole: true, src: "steer" });
+});

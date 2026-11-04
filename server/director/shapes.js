@@ -523,12 +523,17 @@ export const visualUnavailable = ({ subject }) => join(
  * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
  */
+/** round 7 (C1 studio-board-pointing-truth, owner answer to the drawAsked vs VISUAL_DRAWING question): the board drawn for
+ *  the ask is pointed at once ONLY when it is certified to land before her clause (the board-first page, turn.js); else
+ *  she describes it in words and never sends their eyes to it. */
+export const DRAW_NO_POINT = "never send their eyes to the screen or the board";
+export const DRAW_POINT_ONCE = "the board shows it as you speak: send their eyes to it once, in a few words, then say what it shows";
 export const drawAsked = ({ subject, show, photo }) => join(
   // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): a photo being made, a busy lane or no photo is never
   // narrated; the board's sketch is what she talks about, and a photo that arrives simply appears (it is never promised)
   show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: the board draws a simple sketch of it now; talk about it as a sketch, never as a photo (never say a photo is coming, being made, or cannot come)`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
-  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
+  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; ${DRAW_NO_POINT}`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
   // (last: the rule that must fire) the board's drawing of it is never denied
   show === "picture" ? "never say there is no picture or nothing on the screen" : "",
