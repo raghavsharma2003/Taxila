@@ -24,6 +24,10 @@ export const PLAY_ACTS = Object.freeze({
     close: { act: "turn", hi: "kon kholo ki triangle band ho", en: "open the angle so the triangle closes" } },
   // r7 games: ITEM-ARENA (round 4 G1 revived): aim at a target, then fire
   arena: { pick: { act: "aim", hi: "nishana lagao aur fire karo", en: "aim and fire" } },
+  // r7 games: E6 Yantra (science puzzle-physics)
+  yantra: { beam: { act: "build", hi: "sheesha lagao aur chalao", en: "place the mirrors and run it" },
+    circuit: { act: "build", hi: "taar jodo aur chalao", en: "wire it up and run it" },
+    pendulum: { act: "set", hi: "dhaaga set karo aur chalao", en: "set the thread and run it" } },
 });
 
 /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */

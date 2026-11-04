@@ -24,6 +24,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "nazariya",   // r4-khand: block world (views, arrays, area/perimeter, squares/cubes, mirror)
   "arena",        // round 4 G1: ITEM-ARENA, one verified kit item per level, graded against its verified key
   "stambh",     // round 7: bar graphs and pictographs built from falling crates / stacked icons
+  "yantra",     // round 7 E6: science puzzle-physics (mirrors route a beam, circuits close a loop, a pendulum keeps a beat)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -36,6 +37,7 @@ export const MODES = {
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
   arena: ["pick"],
   stambh: ["bars", "picto"],
+  yantra: ["beam", "circuit", "pendulum"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -192,7 +194,19 @@ export type StambhAct =
   | { kind: "lift"; col: number }                       // the top crate off column `col`
   | { kind: "check" }                                   // the law compares every bar with the data
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct;
+// Yantra (round 7 E6, science puzzle-physics). Parts sit on a board; the child places and turns them, wires terminals or sets
+// knobs, then RUNs: the law (never a physics engine) decides what happens, and the view animates it.
+export type YantraAct =
+  | { kind: "place"; part: string; x: number; y: number; rot?: number }   // beam: a part (a mirror) onto a board cell, at `rot` degrees
+  | { kind: "rotate"; id: string; rot: number }                         // beam: turn a placed part to `rot` degrees
+  | { kind: "remove"; id: string }                                      // beam: take a placed part off
+  | { kind: "wire"; a: string; b: string }                              // circuit: join terminal `a` to terminal `b`
+  | { kind: "unwire"; a: string; b: string }                            // circuit: cut that wire
+  | { kind: "toggle"; id: string }                                      // circuit: open / close a switch
+  | { kind: "set"; knob: string; value: number }                        // pendulum: a knob (length, mass, swing) to a value
+  | { kind: "run" }                                                     // run the machine: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -345,6 +359,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   nazariya: ["kagaz", "blueprint", "chalk", "raat"],
   arena: ["raat", "blueprint", "kagaz", "chalk"],
   stambh: ["kagaz", "chalk", "blueprint", "raat"],
+  yantra: ["blueprint", "raat", "chalk", "kagaz"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
