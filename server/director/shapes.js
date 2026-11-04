@@ -646,6 +646,10 @@ export const MUST_NOTE = Object.freeze({
 export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
 /** Round 4 (lever 5, TAXILA_ACK_CLOSE): the child only acknowledged her teaching question; the step is held for this turn.
  *  `asked` is the teacher's own last question (never the child's words). */
+/** round 7 A6 (teaching-question evidence): her worked step's question was answered right (the key in code): confirm it. */
+export const stepCheckRight = () => "they worked out that step right: confirm it plainly in a few words, naming the step, then go on";
+/** round 7 A6: the step's question got a wrong answer: no verdict words; the step is shown with its result next. */
+export const stepCheckMissed = () => "that step is not there yet: no verdict words; show it yourself with its result, calmly";
 export const ackCloseMove = ({ asked }) => `they only said okay to your question "${clean(asked).slice(0, 90)}": answer it yourself now, plainly, in one or two short sentences, and link it to the idea in a few words; no new example and no new step; end with one small question that checks they followed`;
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local

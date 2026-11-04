@@ -226,11 +226,12 @@ export function protegeNotChild(ctx) {
  * top cause of J.confused (12 of 30 judged turns) is a teaching question answered only with "haan" / "ok" / "hmm", after which
  * the next teach step opens a NEW example as if nothing had been asked. A must-note asking the reply to close the question
  * moved nothing (J 40 -> 40 of 270; rejected, context inbox), because the step itself is the new example. With
- * TAXILA_ACK_CLOSE=on (default off) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
+ * TAXILA_ACK_CLOSE (default on since round 7; "off" restores the old flow) the step is HELD for one turn: she closes her own question (its answer, plainly, and one
  * line linking it to the idea), and the next turn advances. Once per teach step: a second bare okay on the same step moves on,
  * so the lesson never stalls on acknowledgements.
  */
-export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "off").trim().toLowerCase() === "on";
+// round 7 A6 (PIPELINE §A Brain item 3): on by default; TAXILA_ACK_CLOSE=off restores the old flow
+export const ackCloseOn = (env = process.env) => String(env.TAXILA_ACK_CLOSE ?? "on").trim().toLowerCase() !== "off";
 function ackHold(s, input) {
   if (!ackCloseOn() || input.event !== "turn" || input.cls?.outcome !== "no_evidence" || input.cls?.request || input.cls?.help) return null;
   if (!bareAck(input.text ?? "") || !TEACH_KINDS.has(s.lastMove?.kind) || s.lastMove?.itemId || s.ackHeldAt === s.teachIdx) return null;
@@ -446,6 +447,26 @@ export function skillWorkedExample(s, kit, skillId, exceptId) {
   const c = cands[0];
   return c ? { itemId: c.i.id, problem: c.i.prompt_en || c.i.prompt_hi, steps: c.steps, answer: String(c.i.answer) } : null;
 }
+// ───────────── round 7 A6: teaching-question evidence (PIPELINE §A Brain item 3; kill switch TAXILA_R7_STEP_CHECK=off) ─────────────
+export const stepCheckOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_STEP_CHECK ?? ""));
+// the LAST "= N" with a known unit (or none), then punctuation, a clause break or the end ("= 13, so…", "= ₹300", "= 120°");
+// never algebra ("= 50C"), a power ("= 3⁶") or a Roman numeral
+const STEP_KEY = /=\s*₹?\s*([-−]?\d[\d,]*(?:\.\d+)?)\s*(?:°|%|₹|rs\.?|rupees?|paise|mm|cm|km|m|kg|g|mg|ml|l|litres?|liters?|minutes?|mins?|hours?|hrs?|seconds?|secs?|days?|weeks?|months?|years?|cm²|m²|km²|units?|degrees?|metres?|meters?)?(?=\s*(?:[,;:.!।)]|$|\s(?:so|and|which|the|is|hai|toh)\b))/giu;
+/**
+ * The question that ends a worked part, as a code-chosen keyed micro-item: the NEXT kit step, its result the key (the number
+ * after its last "="). Its prompt is the kit's faded line for that step when there is one, else the step with its result
+ * blanked. null when the step has no result in code (then she asks in her own words, unkeyed, as before).
+ */
+export function stepCheckItem(kit, skillId, we, i) {
+  const step = String(we?.steps?.[i] ?? "").trim();
+  const m = [...step.matchAll(STEP_KEY)].at(-1);
+  if (!m) return null;
+  const key = m[1].replace(/,/g, "").replace("−", "-");
+  const faded = we.fadedVersion?.[i];
+  const prompt = faded && /_{2,}/.test(faded) ? faded : `${step.slice(0, m.index)}= ___`.replace(/\s{2,}/g, " ");
+  return { id: `check:${skillId}:${i}`, skillId, kind: "practice", difficulty: 1, prompt_en: prompt, prompt_hi: prompt, answer: key, acceptable: [], hints: [], stepCheck: true };
+}
+
 /** The hook's kind for this lesson: the kit's worked problem as a puzzle (classes 4-9, alternate lessons) or the prediction. */
 export function hookKindFor(s, kit) {
   if (!kit?.workedExample?.problem) return "predict";
@@ -502,10 +523,19 @@ function teach(s, input, prefix) {
     else s.teachPlan = [...s.teachPlan, ...(s.fadeItem ? ["explain", "fade"] : ["explain", "worked_example"])];
     prefix = join(prefix, started ? SH.firstStepStarted() : SH.firstStepStuck());
   }
+  // round 7 A6: the reply to her keyed step question (stepCheckItem) is graded like any card (the classifier, its key); a right
+  // one is confirmed and counted, a wrong or stuck one is shown with its result in the next worked part
+  let stepMissed = false;
+  if (s.stepCheck && input.event === "turn" && s.activeItemId === s.stepCheck.id) {
+    const v = verdict(input.cls), sc = s.stepCheck;
+    s.stepCheck = undefined; s.activeItemId = undefined; s.hintLevel = 0;
+    if (v === "right") { s.itemsDone.push(sc.id); prefix = join(prefix, SH.stepCheckRight()); }
+    else if (v === "wrong" || v === "stuck") { stepMissed = true; if (v === "wrong") prefix = join(prefix, SH.stepCheckMissed()); }
+  }
   // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
   // the worked steps, never asked to compute the next one (SH.worked stuck)
   const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
-  const shown = () => replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
+  const shown = () => stepMissed || replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
     const stepName = s.teachPlan[s.teachIdx];
     if (stepName === "answer_question") {
@@ -585,6 +615,17 @@ function teach(s, input, prefix) {
     s.workedPart += 1;
     if (s.workedPart >= parts) s.teachIdx += 1;
     const stuck = shown();
+    // round 7 A6: a part that hands the next step to them asks it as a keyed micro-item (the card), never a free question
+    const per = Math.ceil(we.steps.length / parts);
+    // (the first step from the next part on that has a result in code)
+    let check = null;
+    for (let i = s.workedPart * per; stepCheckOn() && !stuck && s.workedPart < parts && !check && i < we.steps.length; i++) check = stepCheckItem(kit, kit.skills[0].id, we, i);
+    if (check) {
+      s.stepCheck = check; activate(s, check);
+      return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), {
+        item: check, probe: "P15", skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+      });
+    }
     return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
     });
