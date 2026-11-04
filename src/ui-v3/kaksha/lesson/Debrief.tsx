@@ -126,10 +126,10 @@ export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
       )}
 
       {/* r7 app-lesson-moments-later: the parked questions come back here (she returns to them next time) */}
-      {!s.ending && m.later && m.later.length > 0 && (
+      {!s.ending && (m.laterUnserved ?? m.later ?? []).length > 0 && (
         <section className="kx-db-sec" aria-labelledby="kx-db-later" data-testid="debrief-later">
           <h2 id="kx-db-later" className="kx-label">{kt("laterDebrief")}</h2>
-          <ul className="kx-db-list">{m.later.map((l) => <li key={l.id} className="kx-db-skill kx-cut"><div className="kx-db-skilltext"><b>{l.text}</b></div></li>)}</ul>
+          <ul className="kx-db-list">{(m.laterUnserved ?? m.later ?? []).map((l) => <li key={l.id} className="kx-db-skill kx-cut"><div className="kx-db-skilltext"><b>{l.text}</b></div></li>)}</ul>
         </section>
       )}
 

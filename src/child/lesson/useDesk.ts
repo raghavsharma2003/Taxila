@@ -387,12 +387,16 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // list (absent = unchanged since the last turn, [] = empty), ui.moment this turn's moment card. Kept as last sent, so
   // the Debrief still has the list after the wrap.
   const uiLater = ui.later;
-  const laterSeen = useRef<NonNullable<DeskModel["later"]>>([]);
+  // Brain (39a1fa87): the server sends the whole list every turn it has one; absent = empty. The Debrief's own record keeps
+  // every entry parked in this lesson that never came back (open/due when last seen), so the wrap never loses one.
+  const unserved = useRef(new Map<string, NonNullable<DeskModel["later"]>[number]>());
   const later = useMemo(() => {
-    if (!Array.isArray(uiLater)) return laterSeen.current;
-    const list = uiLater.filter((x) => x && typeof x.text === "string" && x.text.trim())
+    const list = (Array.isArray(uiLater) ? uiLater : []).filter((x) => x && typeof x.text === "string" && x.text.trim())
       .map((x) => ({ id: String(x.id), text: String(x.text).slice(0, 60), status: x.status, when: x.when, learning: !!x.learning }));
-    laterSeen.current = list;
+    for (const l of list) {
+      if (l.status === "returned") unserved.current.delete(l.id);
+      else unserved.current.set(l.id, l);
+    }
     return list;
   }, [uiLater]);
   const uiMoment = ui.moment;
@@ -831,6 +835,7 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     padSlash: !young && fractionQuestion(askText, state.topic?.title ?? ""),
     padComma: !!(ui as { padComma?: boolean }).padComma,
     later,
+    laterUnserved: [...unserved.current.values()],
     moment,
     breakSince: sheet === "break" ? breakSince : null,
     // the server's row when it sends one (ui.steer; [] = none this turn), else the default row; only when steering is offered
