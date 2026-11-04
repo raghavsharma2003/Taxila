@@ -957,7 +957,14 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     },
     askEnd: () => setSheet("end"),
     // r7 (D5): a real break from Pause → End: speech stays held (pause held it), the mic is off, Back resumes here
-    takeBreak: () => { ptt.stop(); setBreakSince(Date.now()); setSheet("break"); },
+    // Brain (A, 2026-11-04): the client's break is told to the Director with the check-in's own chip id, no words, so she
+    // resumes "where we were" when the child is back
+    takeBreak: () => {
+      ptt.stop();
+      setBreakSince(Date.now());
+      setSheet("break");
+      if (state.phase === "live") runtime.tapChip({ id: "break:rest", label: "" });
+    },
     pickStop: (c) => { bridge?.stopReplay(); runtime.tapChip(c); },
     cancelEnd: () => setSheet(null),
     endLesson: () => {
