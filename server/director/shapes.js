@@ -323,6 +323,10 @@ export const stopCheck = () => (p5Flag("R3CONV")
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
+// round 7 (E App: Pause → "Short break" sends chipId break:rest; the client holds her speech for the whole break and plays a
+// held reply only when the child taps "I'm back"): so the reply is a tiny acknowledgement, never an instruction or question
+export const restAck = () => "they are taking a short break now: at most a few warm words that a break is fine and you will be right here; no lesson, no question, nothing for them to do";
+export const backFromRest = "they are back from their short break: welcome them back in a few words, then carry on exactly where you were";
 
 // 14.4.3 `sameStory` (state.js: a MODEL re-read restarted an episode the predicate or a sure layer opened; sim lab 6da8f599 p08
 // r1-r3 #7-11 "Kya aap abhi safe hain?" five turns running after "abhi theek hai"): the same active hand-off to a grown-up, but

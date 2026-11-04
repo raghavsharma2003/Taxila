@@ -1824,7 +1824,12 @@ function decide(s, input, item) {
   // 2b. A help request (a client action): acts on the question on the table; never evidence, never a stop.
   if (cls?.help && ["warmup", "teach", "practice", "teachback"].includes(s.phase)) return helpMove(s, input, item, cls.help);
   // 3. Choices offered by a break.
-  if (chipId === "break:rest") return plan("break", SH.stretch());
+  // round 7 (E App): a short break is acknowledged in a few words; the next turn picks up where they were (below)
+  if (chipId === "break:rest") { s.resting = s.turn; return plan("break", SH.restAck(), { request: "break" }); }
+  if (s.resting != null) {
+    s.resting = undefined;
+    if (!(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) && !chipId?.startsWith("break:")) return resume(s, input, item, SH.backFromRest);
+  }
   if (chipId === "break:easier" && s.phase === "practice") {
     if (s.activeItemId) { noteStuck(s, item); s.skipped.push(s.activeItemId); }
     s.easier = true;
