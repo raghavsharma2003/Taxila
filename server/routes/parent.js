@@ -650,6 +650,30 @@ async function emitSchool(childId, event) {
   catch (e) { console.error("[parent] school event", event.type, e?.message?.slice(0, 160)); }
 }
 
+// ───────────────────────────── household (round 7 F, household v1) ─────────────────────────────
+// "The children share one phone for lessons": each child's Conductor gets parent.setting_changed{sharedPhone}, and the
+// planner then gives each her own window on that phone, younger first (conductor/household.js). Offered only to a
+// guardian with two or more children (D5: wired or hidden). Inside an unlocked Parent corner.
+
+/** GET /api/parent/household → { eligible, shared } (shared: every child of the guardian is marked as sharing). */
+async function getHousehold(req, res) {
+  const g = await requireParent(req);
+  const rows = await q(`select c.id, coalesce((s.state->'household'->>'shared')::boolean, false) as shared
+      from child c left join conductor_state s on s.child_id = c.id where c.guardian_id = $1`, [g.id]).catch(() => []);
+  send(res, 200, { eligible: rows.length >= 2, shared: rows.length >= 2 && rows.every((r) => r.shared) });
+}
+
+/** POST /api/parent/household { shared } → { eligible, shared }. Emits the setting to each child's Conductor. */
+async function setHousehold(req, res, body) {
+  const g = await requireParent(req);
+  if (typeof body?.shared !== "boolean") throw bad("shared must be true or false");
+  const kids = await q("select id from child where guardian_id = $1", [g.id]);
+  if (kids.length < 2) throw bad("a shared phone needs two or more children");
+  const settingsVersion = Date.now();
+  for (const k of kids) await emitSchool(k.id, { type: "parent.setting_changed", key: "sharedPhone", value: body.shared, by: "owner", settingsVersion });
+  send(res, 200, { eligible: true, shared: body.shared });
+}
+
 /** GET /api/parent/chapters?classLevel= → { chapters } (set-up: before the child exists; signed-in guardian only). */
 async function getChapters(req, res) {
   await requireGuardian(req);
@@ -1508,6 +1532,8 @@ export const routes = {
   "GET /api/parent/chapters": getChapters,
   "POST /api/parent/school-chapter": setSchoolChapter,
   "POST /api/parent/timetable": setTimetable,
+  "GET /api/parent/household": getHousehold,
+  "POST /api/parent/household": setHousehold,
   "GET /api/parent/made-for": madeForList,
   "POST /api/auth/forgot": async (req, res, body) => (await import("./account.js")).forgotPassword(req, res, body),
   "POST /api/auth/reset": async (req, res, body) => (await import("./account.js")).resetPassword(req, res, body),

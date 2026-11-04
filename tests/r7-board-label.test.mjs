@@ -47,3 +47,16 @@ test("c3 'Parts of a plant': the explain rung draws the labelled plant, every la
   const g = gateWhiteboard(retime(x.script, x.script.durationMs, 7000), { reply: line, speechMs: 7000 });
   assert.equal(g.pass, true, JSON.stringify(g.checks.filter((c) => !c.pass)));
 });
+
+test("a circuit lesson gets the circuit: the kit's own word for the cell ('battery' stays 'battery'), and a bulb is required", () => {
+  const c = labelCall({ expectations: ["A closed circuit: a battery, connecting wires, a bulb and a switch."] });
+  assert.equal(c.sketch, "circuit");
+  assert.deepEqual(c.labels.map((l) => [l.anchor, l.text]), [["cell", "battery"], ["wire", "wire"], ["bulb", "bulb"], ["switch", "switch"]]);
+  assert.equal(labelCall({ expectations: ["In a circuit the cell, the wires and a switch carry the current."] }), null, "no bulb: not this sketch");
+  const x = expand(c, { band: "B3" });
+  assert.ok(x.ok, x.errors?.join(","));
+  const sketch = x.script.ops.filter((o) => /^k\d+$/.test(o.id)).map((o) => opGeometry(o).box);
+  for (const l of x.script.ops.filter((o) => o.op === "label")) assert.ok(sketch.some((b) => l.to[0] >= b.x - 4 && l.to[0] <= b.x + b.w + 4 && l.to[1] >= b.y - 4 && l.to[1] <= b.y + b.h + 4), `"${l.text}" points at a drawn part`);
+  const g = gateWhiteboard(retime(x.script, x.script.durationMs, 7000), { reply: "Is circuit mein battery, wire, bulb aur switch hain.", speechMs: 7000 });
+  assert.equal(g.pass, true, JSON.stringify(g.checks.filter((k) => !k.pass)));
+});

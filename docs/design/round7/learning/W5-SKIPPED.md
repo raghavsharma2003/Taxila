@@ -2,6 +2,12 @@
 
 `scripts/kits/w5-filter-numerals.mjs` rewrote 339 counting "teen" to "3" in her Hinglish text. These 45 keep "teen" because the word IS the exercise (a number name), is quoted (the child reads or says exactly that), or is the English "teen". Under the open item open-r143-kit-filter-collisions, each needs a decision: Devanagari "तीन" in place, a reworded prompt, or keep it. No change is made without that decision. Measuring whether each actually trips the filter needs model calls, so it is spend-gated.
 
+**Decided (main, 2026-11-04):**
+- "teen-chauthai" stays in words. It is the Hindi name of the fraction 3/4, and "3-chauthai" is neither a numeral nor a word.
+- Anything a child's answer is graded against (answer, acceptable and option forms, such as the spoken pictograph option) stays exactly as the kit has it. W5 never rewrites those.
+
+The other rows below are still open.
+
 | file · path | why kept | text |
 |---|---|---|
 | `c1-english.json.topics[8].items[11].prompt_hi` | number name | Apne teddy ko Tara ke rainbow ki kahani do-teen sentence mein sunao. |

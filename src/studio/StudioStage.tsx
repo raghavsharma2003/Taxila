@@ -19,23 +19,19 @@
 // archetype is not offered to this child for a week), behind one small corner button.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { STAGE_DEFAULT, type BeatCard, type StudioArtifact, type StudioSlot } from "../../shared/studio.ts";
-import { fitStage, validStage, type StageFit } from "./fit.ts";
+import { validStage, type StageFit } from "./fit.ts";
+import { boxFor, insetFor, PHONE_TRAY_MAX_W, pipKeepFor, type Rect } from "./stageBox.ts";
 import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
 import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
-import { pipZoneFor } from "./pipZone.ts";
+import { intoStage, readPipZone } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
 
-/** Px kept free between the box and the tray edge, so a piece never touches the rounded tray corners. */
-const STAGE_INSET = 8;
-/** On a phone-width tray every px goes to the piece (round 3 forge: a 16:10 world is width-bound at 328 px). */
-const STAGE_INSET_PHONE = 2;
-const PHONE_TRAY_MAX_W = 420;
 /**
  * The device's last line (round 3 forge, docs/design/round3/forge/RESEARCH.md): a Studio v2 world (1000 x 625 design units,
  * labels 38 units, targets 130 units: src/studio-v2/core/tokens.ts MIN) whose box makes its words smaller than the play
@@ -58,8 +54,6 @@ export const RAIL_PX = 112, RAIL_PX_YOUNG = 124;
 /** round 4 content: the beat card header (one row of 14 px chips; 16 px for classes 1-5, shared/play.ts FLOORS). */
 export const CARD_HEAD_PX = 34, CARD_HEAD_PX_YOUNG = 38;
 const SV2 = { world: 1000, label: 38, target: 130 };
-/** Upscale cap: a 400-unit piece on a wide desktop tray stays a picture, not a poster. */
-const MAX_SCALE = 3;
 /** The corner control (44 px: the touch minimum at every band). */
 const CTRL = 44;
 /** The open menu's size (studio.css .st-menu: 168 px wide; two 44 px rows, gap, padding, border). */
@@ -113,26 +107,8 @@ function useStageArea() {
   return { ref, avail };
 }
 
-/** The px kept free around the box for a stage of this width (phone-width trays give the piece every px). */
-const insetFor = (w: number) => (w <= PHONE_TRAY_MAX_W ? STAGE_INSET_PHONE : STAGE_INSET);
 
 /** The stage box for a design in the measured area; with the rail band, the box grows by the band above the world. */
-function boxFor(avail: { w: number; h: number }, design: { w: number; h: number }, railPx: number): StageFit {
-  const inset = insetFor(avail.w);
-  let next = fitStage({ w: avail.w, h: avail.h - railPx }, design, { inset, maxScale: MAX_SCALE });
-  if (railPx > 0 && next.w > 0) next = { ...next, h: next.h + railPx, y: Math.max(inset, Math.floor((avail.h - next.h - railPx) / 2)) };
-  // the piece never sits under her PiP: lifted clear of it where there is room above, else fitted into the room above
-  const pz = pipZoneFor(avail);
-  if (pz && next.w > 0 && next.x + next.w > avail.w - pz && next.y + next.h > avail.h - pz) {
-    const room = avail.h - pz;
-    if (next.h <= room - inset) next = { ...next, y: Math.max(inset, Math.floor(room - next.h)) };
-    else {
-      const fitted = fitStage({ w: avail.w, h: room }, design, { inset, maxScale: MAX_SCALE });
-      if (fitted.w > 0 && fitted.y + fitted.h <= room + 0.5) next = { ...fitted, y: Math.min(fitted.y, Math.max(inset, Math.floor(room - fitted.h))) };
-    }
-  }
-  return next;
-}
 
 /** A slot still being made: never drawn (the child never sees build state). */
 const IN_PROGRESS: ReadonlySet<string> = new Set(["planning", "skeleton_shown", "building", "ready"]);
@@ -243,7 +219,26 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     [artifact, frame, playFill, avail]);
   // the rail band for a Studio v2 world on a phone-width tray
   const railPx = !!avail && avail.w <= PHONE_TRAY_MAX_W && artifact?.kind === "stagecraft" ? (young ? RAIL_PX_YOUNG : RAIL_PX) : 0;
-  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx) : null), [avail, design, railPx, boardPending]);
+  // round 7 (D7): her PiP's live keep-clear zone, read from App's slot element and re-read whenever it changes
+  const [pip, setPip] = useState<Rect | null>(null);
+  useEffect(() => {
+    const stage = ref.current;
+    const slotEl = stage?.closest("[data-stage-slot]") as HTMLElement | null;
+    if (!stage || !slotEl || typeof MutationObserver === "undefined") { setPip(null); return; }
+    const read = () => {
+      const sr = slotEl.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+      const z = readPipZone(slotEl, { w: sr.width, h: sr.height });
+      const next = z ? intoStage(z, sr, tr) : null;
+      setPip((cur) => (cur && next && Math.abs(cur.x - next.x) < 1 && Math.abs(cur.y - next.y) < 1 && cur.w === next.w && cur.h === next.h) || (!cur && !next) ? cur : next);
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(slotEl, { attributes: true, attributeFilter: ["data-pip-zone", "style"] });
+    return () => mo.disconnect();
+  }, [avail]);
+  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx, pip, { keepWhole: playFill }) : null), [avail, design, railPx, boardPending, pip, playFill]);
+  // a play piece keeps its whole box; the corner her PiP covers goes to the play view to keep clear (C2 Games)
+  const pipKeep = fit && playFill ? pipKeepFor({ x: fit.x, y: fit.y, w: fit.w, h: fit.h }, pip) : null;
   // the device check: decided from the box the piece actually got (never from a viewport guess)
   useEffect(() => {
     if (!fit || !given0 || given0.kind !== "stagecraft" || twinFor === slot.slotId) return;
@@ -345,7 +340,9 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         </div>
       )}
       <div className={`st-box st-${phase}`} data-testid="studio-box" data-rail={railPx > 0 ? "1" : undefined}
-        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}) } : { visibility: "hidden" }}>
+        data-pip-keep={pipKeep ? "bottom-right" : undefined}
+        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}),
+          ...(pipKeep ? { ["--pip-keep-w" as string]: `${pipKeep.w}px`, ["--pip-keep-h" as string]: `${pipKeep.h}px` } : {}) } : { visibility: "hidden" }}>
         <StageMomentContext.Provider value={moment}>
           <div className="st-art">{body}</div>
         </StageMomentContext.Provider>

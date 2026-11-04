@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-pip-play-keeps-box",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "Main's decision (a) after C2 Games found 6e1036a3 shrank every p360 play box to 263x432 < MIN_BOX 300x440 (each game mounted its text twin): a play piece is never moved or shrunk for the PiP (src/studio/stageBox.ts boxFor keepWhole). The PiP may overlap its bottom-right corner, handed to the play view on .st-box as data-pip-keep='bottom-right' and --pip-keep-w / --pip-keep-h (px, box coordinates, from App's live zone); Games lays the views out around it. Boards / explainers keep the lift / fit. Test: tests/r7-stage-pip-play.test.mjs (p360 measured + contract, p412, l1366 >= MIN_BOX)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-pip-play-keeps-box",
+      "rel": "amends",
+      "dst": "dc-r7-pip-zone-live"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-pip-play-keeps-box: games keep their whole box (2026-11-04)\n\nMy fix that kept boards clear of the teacher's picture also shrank games on a 360 px phone below the size a game needs, so every game fell back to its text version. Games now keep their whole box; Studio tells the game which corner the picture covers and the game keeps that corner clear. Boards still move clear of the picture.\n"
+  }
+}
