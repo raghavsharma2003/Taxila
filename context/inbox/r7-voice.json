@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-handsfree-everyone",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B1 (voice-handsfree-default, D2). server/duplex/config.js: with the global mode on (unset/1/on), every /api/duplex/config answer is {duplex:on}, plus lane d5 whenever Voice Live is configured (duplexLane; TAXILA_DUPLEX_LANE=d4 pins D4). No cohort lookup runs. The cohort (TAXILA_DUPLEX_LIVE_FOR) is now only the override while the global mode is shadow. The kill switch TAXILA_DUPLEX=off still wins. d5route authorizeD5 drops the cohort gate and needs only duplex on + lane d5. Client flags.ts: an unreadable or missing switch runs hands-free on lane D4 (no definite answer never asks for D5), not shadow. App patch docs/patches/to-app/001-handsfree-default.patch: prefs.talk defaults to open (hands-free), Me shows the talk choice to every child with no headset rule, tap-to-talk stays the child's choice. Tests: tests/r7-voice-handsfree.test.mjs; the old cohort-only expectations in d5-voicelive-server and p1-duplex-live were updated. Needs a live check: owner phone lesson on a build with TAXILA_DUPLEX=on (production is shadow today, a deploy setting for main/Platform) and Voice Live configured. Reverse if the live owner-phone lessons on D5 show the hands-free floor worse than tap for a measured share of children (e.g. echo-made turns or cut-offs above the round-7 bar); then return to cohort-only by setting TAXILA_DUPLEX=shadow, no code change."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-handsfree-everyone",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-handsfree-everyone — hands-free is every child's default, the cohort only an override (2026-11-04)\n\nThe duplex switch no longer gates on the owner cohort. With TAXILA_DUPLEX unset/on, `/api/duplex/config` answers `{duplex:\"on\", lane:\"d5\"}` for every request when Voice Live is configured, `{duplex:\"on\"}` (D4) otherwise or when `TAXILA_DUPLEX_LANE=d4`. There is no sign-in lookup on that path. `shadow` stays as a staging/incident mode where the cohort still turns hands-free on for its guardians. `off` wins over everything. `authorizeD5` opens the Voice Live stream for any consented child whose answer is on + d5. On the client, an unreadable switch now runs hands-free on D4, never shadow or tap. The invisible fallback order stays D5 → D4 → push-to-talk → typed, and tap-to-talk stays a visible choice (App patch 001: prefs default `talk: \"open\"`, no headset-only rule).\n\nNeeds a live check: production env `TAXILA_DUPLEX` is `shadow` today. Hands-free reaches children only after main/Platform sets it to `on` (or unset) on the deploy, with Voice Live configured.\n\nReversal: if live owner-phone lessons on D5 show the hands-free floor doing worse than tap for a measured share of children, set `TAXILA_DUPLEX=shadow` (cohort-only again). No code change is needed.\n"
+ }
+}

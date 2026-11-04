@@ -4,7 +4,7 @@
 //   2. localStorage "tx.flag.duplex" = "1" | "0" | "shadow";
 //   3. the server's runtime kill switch: GET /api/duplex/config → { duplex: "on" | "off" | "shadow" } (env TAXILA_DUPLEX on the
 //      Container App, no rebuild; round 3: "on" for the owner-test cohort TAXILA_DUPLEX_LIVE_FOR while everyone else is
-//      "shadow"). Round 3 (duplex, 2026-10-09): when the route is missing, slow (3 s) or errors the lesson runs SHADOW (the
+//      "shadow"). [Superseded by round 7, D2: unknown now runs hands-free ON, lane D4.] Round 3 (duplex, 2026-10-09): when the route is missing, slow (3 s) or errors the lesson runs SHADOW (the
 //      engine only logs; the child gets today's path), never live: production is shadow because the switch criteria are not
 //      met (docs/design/round3/duplex/CRITERIA.md), and a network hiccup must not turn an unproven floor on for a child. Before,
 //      it failed OPEN to the build default "on". A build default "off" still wins;
@@ -123,7 +123,9 @@ export async function resolveDuplexMode(fetcher?: typeof fetch): Promise<DuplexM
   if (dev === "off" || dev === "on") return traced(dev, "device_key", dev, undefined);
   const srv = await serverDuplex(fetcher);
   if (srv === "off") return traced("off", "server_off", dev, srv);
-  if (srv === null) return traced(buildDuplex() === "off" ? "off" : "shadow", "server_unknown", dev, srv);
+  // round 7 (D2, dc-r7-handsfree-default): an unreadable switch is HANDS-FREE on D4 (the lane stays d4 without a definite
+  // answer, so no D5 stream is asked for), never tap: hands-free is every child's default; a build default "off" still wins
+  if (srv === null) return traced(buildDuplex() === "off" ? "off" : "on", "server_unknown", dev, srv);
   if (dev === "shadow" || srv === "shadow") return traced("shadow", dev === "shadow" ? "device_key" : "server_shadow", dev, srv);
   return traced(srv, "server", dev, srv);
 }
