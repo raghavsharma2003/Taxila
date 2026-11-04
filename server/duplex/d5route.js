@@ -8,7 +8,22 @@ import { requireChild, hasConsent } from "../auth.js";
 import { HttpError } from "../http.js";
 import { acceptWebSocket, refuseUpgrade, upgradeProblem } from "../ws.js";
 import { modeFor } from "./config.js";
-import { VoiceLiveRelay, voiceLiveConfig } from "./voicelive.js";
+import { VoiceLiveRelay, voiceLiveConfig, d5AsrModel } from "./voicelive.js";
+import { lessonPhrases } from "./phrases.js";
+
+/** How long the phrase list may wait on the kit before the stream opens without its answers (names + core only). */
+export const D5_PHRASES_MS = 300;
+
+/** Round 7 (B4): the lesson's phrase list for the ear; the kit lookup never holds the stream open longer than D5_PHRASES_MS. */
+export async function phrasesFor(lesson, { kit = defaultKit, timeoutMs = D5_PHRASES_MS } = {}) {
+  let timer;
+  const k = await Promise.race([
+    Promise.resolve().then(() => kit(lesson)).catch(() => null),
+    new Promise((r) => { timer = setTimeout(() => r(null), timeoutMs); }),
+  ]).finally(() => clearTimeout(timer));
+  return lessonPhrases({ state: lesson?.state ?? null, kit: k });
+}
+const defaultKit = async (lesson) => (await import("../brain/rows.js")).kitFor(lesson.topic_id, lesson.state);
 
 export const D5_PATH = "/api/duplex/voicelive";
 export const D5_OPENS_PER_MINUTE = 10;
@@ -40,7 +55,7 @@ export async function authorizeD5(req, { lessonId, env = process.env, lookupLess
   return { guardian, child: kid, lesson };
 }
 
-const defaultLesson = (id) => one("select id, child_id, state, ended_at from lesson where id = $1", [id]);
+const defaultLesson = (id) => one("select id, child_id, topic_id, state, ended_at from lesson where id = $1", [id]);
 
 /**
  * The upgrade handler. `openUpstream` defaults to Node's global WebSocket (undici; it takes a headers option), so the
@@ -65,6 +80,9 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   if (socket.destroyed || socket.writable === false) return null;
   if (!allowD5(who.guardian.id)) return refuseUpgrade(socket, 429, "too many voice sessions; wait a minute");
   const cfg = voiceLiveConfig(env);
+  // round 7 (B4): the ear's model and the lesson's phrase list (bounded wait; a slow kit only drops its answers)
+  const phrases = await phrasesFor(who.lesson, deps.phrases ?? {});
+  if (socket.destroyed || socket.writable === false) return null;
   const ws = acceptWebSocket(req, socket, head);
   live.set(who.guardian.id, (live.get(who.guardian.id) ?? 0) + 1);
   const openUpstream = deps.openUpstream ?? ((url, headers) => new WebSocket(url, { headers }));
@@ -72,6 +90,8 @@ export async function handleD5Upgrade(req, socket, head, deps = {}) {
   try {
     relay = new VoiceLiveRelay({
       cfg,
+      asr: d5AsrModel(env),
+      phrases,
       client: { send: (t) => ws.send(t), close: (c, r) => ws.close(c, r) },
       openUpstream,
       onEnd: (s) => {
