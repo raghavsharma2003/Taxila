@@ -51,7 +51,15 @@ export interface CascadeSurface {
   setServerVad(silenceMs: number | null): void;
   /** Told when the duplex state changes (the UI's talk policy, the status word, the acceptance probes). */
   onState?(s: CascadeDuplexState): void;
+  /**
+   * Round 7 (B4): the second ear. Given a burst the ear finalised EMPTY (Voice Live audio times), transcribe the device's own
+   * clip of it; null = no words (or no clip / no time). Optional: without it an unheard turn goes as it did.
+   */
+  secondEar?(a0: number, a1: number): Promise<{ text: string; confidence?: number } | null>;
 }
+
+/** Round 7 (B4): the longest the second ear may hold an unheard turn before it goes as unheard. */
+export const SECOND_EAR_MS = 2500;
 
 export interface CascadeDuplexState {
   mode: DuplexMode;
@@ -269,6 +277,7 @@ export class CascadeDuplex {
    */
   onSttEvent(raw: unknown): boolean {
     if (this.closed || this.fallbackReason) return false;
+    this.noteSpan(raw);
     // release 14 half-duplex: an item that started over her line is her echo; nothing of it reaches the link either
     if (this.deciding && this.live.echoOnly(raw)) return true;
     this.live.stt(raw);
@@ -366,11 +375,66 @@ export class CascadeDuplex {
     return this.verdictHold > this.now() ? this.verdictHold : null;
   }
 
+  // ───── round 7 (B4): the second ear ─────
+  /** item → its speech span on Voice Live's audio clock (speech_started / speech_stopped); the last few only. */
+  private spans = new Map<string, { a0?: number; a1?: number }>();
+  /** Child turns go out in order: a turn the second ear is holding delays the ones after it. */
+  private emitChain: Promise<void> = Promise.resolve();
+  private noteSpan(raw: unknown): void {
+    const e = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+    const id = typeof e.item_id === "string" ? e.item_id : "";
+    if (!id) return;
+    if (e.type === "input_audio_buffer.speech_started" && typeof e.audio_start_ms === "number") this.spans.set(id, { ...this.spans.get(id), a0: e.audio_start_ms });
+    else if (e.type === "input_audio_buffer.speech_stopped" && typeof e.audio_end_ms === "number") this.spans.set(id, { ...this.spans.get(id), a1: e.audio_end_ms });
+    else return;
+    while (this.spans.size > 16) this.spans.delete(this.spans.keys().next().value as string);
+  }
+  /** The audio span of a turn: from its first item's start to its last item's end (the ear's items for this turn). */
+  private turnSpan(items: string[]): { a0: number; a1: number } | null {
+    let a0 = Infinity, a1 = -Infinity;
+    for (const id of items) {
+      const s = this.spans.get(id);
+      if (typeof s?.a0 === "number") a0 = Math.min(a0, s.a0);
+      if (typeof s?.a1 === "number") a1 = Math.max(a1, s.a1);
+    }
+    return Number.isFinite(a0) && Number.isFinite(a1) && a1 > a0 ? { a0: Math.max(0, a0 - 300), a1: a1 + 200 } : null;
+  }
+
   private commit(turn: DuplexTurn): void {
     this.verdictHold = turn.verdictHoldUntil ?? null;
+    const items = this.turnItems.length ? [...this.turnItems] : turn.itemId ? [turn.itemId] : [];
     const itemId = this.turnItems[0] ?? turn.itemId;
     this.turnItems = [];
     this.itemText.clear();
+    // round 7 (B4): speech the ear could not read gets one more listen from the device's own clip before she re-asks
+    const span = turn.duplex?.unheard && this.s.secondEar ? this.turnSpan(items) : null;
+    if (span) {
+      const ear = this.s.secondEar!;
+      const t0 = this.now();
+      this.earsPending++;
+      this.emitChain = this.emitChain.then(async () => {
+        let got: { text: string; confidence?: number } | null = null;
+        try {
+          got = await Promise.race([ear(span.a0, span.a1), new Promise<null>((r) => setTimeout(() => r(null), SECOND_EAR_MS))]);
+        } catch { got = null; }
+        this.earsPending--;
+        if (this.closed) return;
+        const text = String(got?.text ?? "").trim();
+        vt("d5.second_ear", { heard: !!text, ms: Math.round(this.now() - t0), spanMs: Math.round(span.a1 - span.a0) });
+        if (!text) return this.emitTurn(turn, itemId);
+        const { unheard: _u, ...rest } = turn.duplex ?? ({} as NonNullable<DuplexTurn["duplex"]>);
+        this.emitTurn({ ...turn, text, asrConfidence: got?.confidence, duplex: rest as DuplexTurn["duplex"] }, itemId);
+      });
+      return;
+    }
+    // nothing held: out at once, as before; behind a held turn: in order after it
+    if (!this.earsPending) this.emitTurn(turn, itemId);
+    else this.emitChain = this.emitChain.then(() => this.emitTurn(turn, itemId));
+  }
+  private earsPending = 0;
+
+  private emitTurn(turn: DuplexTurn, itemId: string | undefined): void {
+    if (this.closed) return;
     this.s.emitChild({
       type: "child_final", text: turn.text, startedAt: turn.startedAt, itemId,
       ...(turn.asrConfidence !== undefined ? { asrConfidence: turn.asrConfidence } : {}),
