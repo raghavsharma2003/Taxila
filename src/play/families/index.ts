@@ -16,6 +16,7 @@ import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
 import { vakyaLogic } from "./vakya/vakya.logic.ts";
+import { kilaLogic } from "./kila/kila.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -56,5 +57,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kaal/order": asAny(kaalLogic),
   // round 7: Vakya, English / Hindi grammar as a sentence train of word wagons
   "vakya/rail": asAny(vakyaLogic),
+  // round 7 E4: Kila, turn-based tower defence on a numbered path (a tower on square p fires on every multiple of p)
+  "kila/multiples": asAny(kilaLogic),
+  "kila/factors": asAny(kilaLogic),
+  "kila/lcm": asAny(kilaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
