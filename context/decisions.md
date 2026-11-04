@@ -7037,3 +7037,36 @@ Nothing in the product called planToday (hooks.js says so), so day_plan existed 
 Option (a) of the two main was offered: (b), a per-child fold ctx, needed patches to Brain's turn.js and supersede.js and makes replay depend on something outside kt_evidence. Pieces: server/learner/kt/placement.js (isPlacementRow, notPlacement/NOT_PLACEMENT, placementEvents, siteOf, PLACEMENT_SITE_SD_MIN), kt/ledger.js applyPlacement + ensureEpoch consumes placementPending, kt/ability.js withPlacement (exported from initialBase), comprehension/fuse.js skips the row, server/placement/kt.js writePlacementPrior (same commit contract as a Studio event), routes/placement.js calls it when a round finishes. Guarded readers: reports/facts.js, reports/truth.js loadTruth, reports/check.js (3 reads), relational/seam.js COUNTS_SQL, comprehension/session.js; the rest are scoped to a lesson session_id or explicit ids, or are the replay readers.
 
 also changed: ability.js read cat.js's placement summary as a POSTERIOR (site precision 1/sd² − 1/prior), which pulls the mean all the way to mu however wide sd is; cat.js ownEvidence is a flat-prior LIKELIHOOD, so the site is now exactly N(mu, sd²). Only initialBase({ placement }) used it, and nothing called that with a placement before this change (tests/rs6-placement still passes).
+
+
+<!-- merged from inbox/r7-learning-6.json -->
+## dc-r7-day-plan-rules-r2-r5-r9
+Pure rules in server/conductor/adapt.js (lateSittingLatch, wheelSpinView, prereqPick, foundationShare). Planner wiring in planner.js. The R2 latch and the R5 checked-skill record live in conductor state adapt.lateMinSet / adapt.prereqChecked (decide.js foldNight and lesson.ended). They appear in PlannerInputs only when they can fire, so a child with none of this evidence plans and hashes exactly as before. Still not built: R4 (needs format families, the how-this-child-learns item), R6 (needs an η refit, M2+ only), R7, R11-R14 (need consumers on the child and parent surfaces).
+
+also fixed: conductor/view.js loadView destructured school.subjects from a Promise.all that never held it (round 7 F week 1), so the rotation's subject was always the stale fallback in the Conductor's plan. It is now awaited.
+
+## dc-r7-lesson-brief-slot
+The brief is §4.5's LessonBrief plus LessonBriefAdd: slotId, planVersion, subject, targetMin, segments with lanes, wrapAt / hardStopAt, holdNewTopics, newSkillBudget, opener, successFirst, soloRounds (band base; R7 not built), promisesDue, reviewItemIds, testChapters, prereqCheck, foundationShare, why, adaptTrace. It carries no θ, η, gap or sibling field.
+
+
+<!-- merged from inbox/r7-learning-7.json -->
+## dc-r7-household-v1
+What v1 drops from household.md: the household tables, the inbox and the 60 s debounce, the worker pass, the courier event household.window_assigned (the window is a recorded view key, read at the child's own plan step), presence-wins re-flow when a sibling starts early or out of order, overrun re-flow, and the 10-minute hysteresis against a delivered window. A sibling's re-plan therefore reaches the others only at their own next plan step. No sibling id, name, band, length or count reaches a child's plan, brief or screen (V30); the view value is only { state, from, to }. The children are never shown a time.
+
+
+<!-- merged from inbox/r7-studio-10.json -->
+## dc-r7-pip-play-keeps-box: games keep their whole box (2026-11-04)
+
+My fix that kept boards clear of the teacher's picture also shrank games on a 360 px phone below the size a game needs, so every game fell back to its text version. Games now keep their whole box; Studio tells the game which corner the picture covers and the game keeps that corner clear. Boards still move clear of the picture.
+
+
+<!-- merged from inbox/r7-studio-8.json -->
+## dc-r7-board-circuit-diagram: circuit lessons get a drawn circuit (2026-11-04)
+
+Lessons about electric circuits, conductors and batteries now show a proper circuit diagram (cell, wires, bulb, switch) with each part labelled in the kit's own words. With the plant and flower, 23 science lessons now get a labelled diagram.
+
+
+<!-- merged from inbox/r7-studio-9.json -->
+## dc-r7-pip-zone-live: Studio reads the PiP's real position (2026-11-04)
+
+App now publishes where the teacher's picture sits. Studio reads that live, instead of a copy of App's sizing rule, so boards stay clear of it however App lays the stage out.
