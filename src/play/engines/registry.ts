@@ -10,6 +10,8 @@ export const ENGINE_ENTRIES: EngineEntry[] = [
   { id: "antariksh", renders: [{ family: "nishana", mode: "place" }, { family: "nishana", mode: "compare" }], load: () => import("./antariksh/index.ts") },
   // E2 Khand · the Nazariya law (views, array, floor, powers, mirror) as a voxel block world: build, look round, measure (r7)
   { id: "khand", renders: (["views", "array", "floor", "powers", "mirror"] as const).map((mode) => ({ family: "nazariya" as const, mode })), load: () => import("./khand/index.ts") },
+  // E6 Yantra · the beam law (place, rotate, remove, run) as an optics bench: mirrors on tiles, the law's trace drawn as light (r7)
+  { id: "yantra", renders: [{ family: "yantra", mode: "beam" }], load: () => import("./yantra/index.ts") },
 ];
 
 export function engineFor(family: FamilyId, mode: PlayMode, goal?: string): EngineEntry | null {
