@@ -64,6 +64,8 @@ async function health(req, res) {
   if (url.searchParams.get("ready") === "1") {
     // a replica draining for shutdown (server/shutdown.js) is alive but must not be routed new work
     if (isDraining()) return send(res, 503, { ...out, ok: false, draining: true });
+    // the India D5 relay (TAXILA_ROLE=d5relay) has no database: it verifies signed tickets (server/relay-ticket.js)
+    if (process.env.TAXILA_ROLE === "d5relay") return send(res, 200, { ...out, role: "d5relay" });
     const r = await dbReady();
     out.db = r.ok ? "ok" : "down";
     if (!r.ok) return send(res, 503, { ...out, ok: false });
