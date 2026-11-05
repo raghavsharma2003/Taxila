@@ -77,6 +77,8 @@ function App() {
   if (m.summary) {
     m.caption = { text: family === "young" ? "Shabaash, Riya. Aaj tumne aadha pehchaana. Kal phir milte hain." : "Achha kaam, Kabir. Kal do minute mein dekhenge ki quarters wala idea yaad hai.", speaking: false, mode: "phrase", lang: "hi-Latn" };
     if (fixture === "summary-ending") m.summary = { ...m.summary, ending: true };
+    // summary-made: a real lesson id and a board seen, so "What helped?" and the goodbye show
+    if (fixture === "summary-made") { m.lessonId = "00000000-0000-4000-8000-0000000000aa"; m.boardSeen = true; }
   }
   const assertive = m.floor === "your_turn" && !m.strip && !m.sheet ? `Your turn. ${m.ask?.text ?? ""}` : "";
   return (

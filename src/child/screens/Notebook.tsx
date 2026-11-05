@@ -18,7 +18,10 @@
 // immutable once a lesson ended, so each is fetched once and kept on the device (no N+1 on every open), at most
 // SUMMARY_CONCURRENCY at a time. Replace the source with a server list (GET /api/child/notebook) when it exists.
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
+import { MadeShelf } from "./NotebookMade.tsx";
+import { JarPage, readJar, type JarItem } from "./NotebookJar.tsx";
+import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import type { LessonSummary } from "../../../shared/contracts.ts";
 import { bestCard, getLessonSummary } from "../api.ts";
 import { Spot } from "../art.tsx";
@@ -32,7 +35,7 @@ import { readArtefacts } from "../prefs.ts";
 import { Link } from "react-router-dom";
 import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { StudioSlot, WhiteboardScript } from "../../../shared/studio.ts";
-import { tnb } from "../../copy/en.ts";
+import { tnb, tr7 } from "../../copy/en.ts";
 import "./notebook.css";
 
 interface Page { lessonId: string; topic: string; at: number; summary: LessonSummary | null; chips: string[]; topicId?: string | null; boards?: number; first?: WhiteboardScript | null }
@@ -87,11 +90,24 @@ async function pooled<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Pr
 }
 
 export function Notebook() {
-  const { cid, family } = useChild();
+  const { cid, family, child, band } = useChild();
   const { plan } = usePlan(cid);
   const young = family === "young";
   const kx = useKx();
+  const rec = useTeacher(child.teacher_id, band);
   const [pages, setPages] = useState<Page[] | null>(null);
+  // r7 app-notebook-log: Lessons | Made for you; ?made=<id> (Home, Debrief) opens that piece on the Made page
+  const [search] = useSearchParams();
+  const madeId = search.get("made");
+  const [page, setPage] = useState<"lessons" | "made" | "jar">(madeId ? "made" : "lessons");
+  // the Question jar (Learning's GET /api/child/jar): its page shows only when the route answers
+  const [jar, setJar] = useState<JarItem[] | null>(null);
+  useEffect(() => {
+    if (!kx) return;
+    const ac = new AbortController();
+    void readJar(cid, ac.signal).then((j) => { if (!ac.signal.aborted) setJar(j); });
+    return () => ac.abort();
+  }, [cid, kx]);
   useEffect(() => {
     const ac = new AbortController();
     const list = readArtefacts(cid).slice().reverse().slice(0, 12);
@@ -132,7 +148,14 @@ export function Notebook() {
     // verified tick, the boards to replay); the empty state a calm panel, never a picture
     return (
       <ChildScreen testid="notebook" ground="shelf" title={t("notebook")} surfaces={plan.surfaces} className="kx-notebook">
-        {pages && !shown.length ? (
+        <div className="kx-seg kx-nb-tabs" role="tablist" aria-label={t("notebook")}>
+          {(jar ? (["lessons", "made", "jar"] as const) : (["lessons", "made"] as const)).map((k) => (
+            <button key={k} type="button" role="tab" aria-selected={page === k} onClick={() => setPage(k)} data-testid={`nb-tab-${k}`}>
+              {tr7(k === "lessons" ? "nb.lessons" : k === "made" ? "nb.made" : "nb.jar")}
+            </button>
+          ))}
+        </div>
+        {page === "jar" && jar ? <JarPage items={jar} name={rec.name} /> : page === "made" ? <MadeShelf cid={cid} young={young} openId={madeId} name={rec.name} /> : pages && !shown.length ? (
           plan.source === "loading" ? <div className="kx-wait" aria-busy="true" /> :
           <StatePanel glyph="notebook" line={emptyLine} testid="notebook-empty" />
         ) : (

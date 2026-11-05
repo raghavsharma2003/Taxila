@@ -56,6 +56,16 @@ const API = {
   "/api/tutors": { tutors: [], current: "asha" },
   "/api/lesson/list": { lessons: [] },
   "/api/notebook": { items: [] },
+  "/api/studio/made-for": { cards: [
+    { id: "m1", title: "Fraction pizza", kind: "game", topicId: `c${CLS}-maths-ch07-t01`, at: "2026-11-05T10:05:00Z", replay: null },
+    { id: "m2", title: "Halves and quarters", kind: "animation", topicId: `c${CLS}-maths-ch07-t01`, at: "2026-11-04T10:09:00Z", replay: null },
+    { id: "m3", title: "Magnet tug", kind: "game", topicId: `c${CLS}-science-ch04-t01`, at: "2026-11-02T09:00:00Z", replay: null },
+  ] },
+  "/api/child/jar": { items: [
+    { id: "j1", topic: "Why do magnets stick to the fridge?", subject: "science", share: false, at: "2026-11-03T10:00:00Z", state: "waiting", answeredAt: null },
+    { id: "j2", topic: "Is zero a fraction?", subject: "maths", share: false, at: "2026-11-04T10:00:00Z", state: "waiting", answeredAt: null },
+    { id: "j3", topic: "What is half of a half?", subject: "maths", share: false, at: "2026-11-01T10:00:00Z", state: "answered", answeredAt: "2026-11-04T10:20:00Z" },
+  ] },
   "/api/homework/match": { match: { rung: "topic", topicId: `c${CLS}-maths-ch07-t01`, subject: "maths", chapter: 7, topicTitle: "Fractions" } },
   "/api/child/memory": arg("memory", "on") === "off" ? { keeps: false, items: [] } : { keeps: true, items: [
     { id: "11", text: "I like bowling more than batting.", at: "2026-11-03T10:00:00Z" },
@@ -80,6 +90,8 @@ export const SCREENS = {
   who: `/who`,
   homework: `/c/${CID}/ask?homework=1`,
   station: `/c/${CID}/map`,
+  "notebook-made": `/c/${CID}/notebook?made=m1`,
+  "notebook-jar": `/c/${CID}/notebook`,
 };
 
 async function main() {
@@ -107,6 +119,10 @@ async function main() {
       if (name === "station") {
         await page.evaluate(() => document.querySelector(".kx-station")?.click()).catch(() => {});
         await page.waitForTimeout(600);
+      }
+      if (name === "notebook-jar") {
+        await page.click('[data-testid="nb-tab-jar"]').catch(() => {});
+        await page.waitForTimeout(400);
       }
       if (name === "homework") {
         await page.fill("textarea", "Riya ate 3/8 of a pizza and Aman ate 2/8. How much did they eat together?").catch(() => {});

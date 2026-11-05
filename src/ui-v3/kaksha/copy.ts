@@ -66,6 +66,18 @@ export const KX = {
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   playAgain: K("Play again", "Phir se khelo", "फिर से खेलो"),
   practiseThis: K("Practise this", "Isko practise karo", "इसका अभ्यास करो"),
+  // r7 Debrief: "What helped?" (Older, one tap) and the closing emote to her
+  helpedQ: K("What helped today?", "Aaj kisne madad ki?", "आज किसने मदद की?"),
+  helpedBoard: K("The drawing", "Drawing", "ड्रॉइंग"),
+  helpedExplain: K("How {T} explained", "{T} ne kaise samjhaya", "{T} ने कैसे समझाया"),
+  helpedSelf: K("Trying it myself", "Khud try karna", "ख़ुद कोशिश करना"),
+  helpedUnsure: K("Not sure", "Pata nahi", "पता नहीं"),
+  helpedThanks: K("Thanks for telling {T}.", "{T} ko batane ke liye thanks.", "{T} को बताने के लिए धन्यवाद।"),
+  emoteQ: K("Send {T} a goodbye", "{T} ko bye bolo", "{T} को बाय बोलो"),
+  emoteWave: K("Wave", "Wave", "हाथ हिलाओ"),
+  emoteThanks: K("Thanks", "Thanks", "धन्यवाद"),
+  emoteFun: K("That was fun", "Maza aaya", "मज़ा आया"),
+  emoteSent: K("Sent to {T}.", "{T} ko bhej diya.", "{T} को भेज दिया।"),
   jarWaiting: K("Your questions from last time are waiting. She brings them back in the next lesson.", "Pichhli baar ke sawaal intezaar mein hain.", "पिछली बार के सवाल इंतज़ार में हैं।"),
   // r7 app-nav-unified: the one dock (nav.tsx)
   navHome: K("Home", "Home", "होम"),

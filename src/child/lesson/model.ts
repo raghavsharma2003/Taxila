@@ -80,6 +80,10 @@ export interface DeskIntake {
 }
 
 export interface DeskModel {
+  /** r7: the lesson's id once the start answered (the Debrief's reflect and emote name it); null before. */
+  lessonId?: string | null;
+  /** r7: a board (or a whiteboard Studio piece) was on the stage at some point this lesson. */
+  boardSeen?: boolean;
   band: Band;
   family: Family;
   teacher: { id: string; name: string };
