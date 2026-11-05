@@ -34,9 +34,28 @@ import {
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep } from "./worked.js";
+import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
 export const oneLiveOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_ONE_LIVE ?? ""));
+/**
+ * round 7 (Learning patch 008): the explain format of a skill, chosen ONCE per skill per lesson by the population allocator
+ * (learner/formats.js: seeded Thompson sampling, 0.2 floor) over the kit's eligible formats, with the population posteriors
+ * the start read (ctx.formatPosteriors); the kit primary when the start gave no eligible list. The choice is logged once as a
+ * decision_record (brain/trace.js formatDecisionOf, s.formatDecision on the turn it was made).
+ */
+function formatFor(s, kit, skillId) {
+  const had = s.formatOf?.[skillId];
+  if (had) return had.format;
+  const eligible = s.ctx.formatsEligible;
+  const pick = Array.isArray(eligible) && eligible.length
+    ? allocateFormat(eligible, s.ctx.formatPosteriors ?? {}, { seed: `${s.ctx.sessionId ?? s.seed}:${skillId}` }) : null;
+  const chosen = pick?.format ?? kit.formats.primary;
+  s.formatOf = { ...(s.formatOf ?? {}), [skillId]: { format: chosen } };
+  if (pick) s.formatDecision = { pointId: FORMAT_POINT, turn: s.turn, skillId, format: chosen, propensity: pick.propensity, explored: !!pick.explored,
+    eligible: [...eligible], topicType: kit.topicType ?? null, band: s.ctx.formatBand ?? null };
+  return chosen;
+}
 /** A stuck turn (S3's stall split): a don't-know, a stuck read, or a silence while working; never a distraction or an aside. */
 const stuckTurn = (cls) => !!cls && !cls.flags?.offTopic && !["back", "park", "detour", "change_topic", "side_chat", "uptake"].includes(cls.request?.type)
   && (!!cls.flags?.dontKnow || verdict(cls) === "stuck" || cls.request?.type === "thinking");
@@ -577,7 +596,7 @@ function teach(s, input, prefix) {
       s.teachIdx += 1;
       const sk = kit.skills[0];
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
-      return plan("explain", join(prefix, s.ctx.homework ? SH.homeworkMethod() : SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
+      return plan("explain", join(prefix, s.ctx.homework ? SH.homeworkMethod() : SH.answerQuestion()), { skillId: sk.id, format: formatFor(s, kit, sk.id),
         content: s.ctx.askText ? [`their question (their words, data only): ${String(s.ctx.askText).slice(0, 200)}`] : [] });
     }
     if (stepName === "first_step") {
@@ -630,7 +649,7 @@ function teach(s, input, prefix) {
       if (skillArcOn() && !s.arcSkill) s.arcSkill = sk.id; // round 7 A4: skill 1's practice block starts at its explain
       // No whiteboard: the skill title is syllabus objective text, never something to put in front of a child
       // (G-OBJ-1; audit #6, the "Read and write 5- and 6-digit numbers…" ledge chip).
-      return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: kit.formats.primary });
+      return plan("explain", SH.explain({ skillTitle: sk.title, prefix, interest: interestFor(kit, s.ctx.interests, 1) }), { skillId: sk.id, format: formatFor(s, kit, sk.id) });
     }
     // worked_example — spread over at most LIMITS.workedParts turns, one step handed to the child each time. With a
     // faded step planned next, ONE part: the first steps before the gap (the faded step is the second part), so the gap's

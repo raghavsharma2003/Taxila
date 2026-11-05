@@ -42,6 +42,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
 import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
+import { eligibleFormats, posteriorsFor } from "../learner/formats.js"; // Learning patch 008 (the explain format allocator)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
@@ -288,6 +289,8 @@ export async function lessonStart(req, body) {
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
   const band = bandOf(child.class_level);
+  // round 7 (Learning patch 008): the population posteriors of the explain formats for this topic type and band ({} on any error)
+  const formatPostP = early(posteriorsFor(kit.topicType, band).catch(() => ({})));
   const weaveQ = weaveExpire(weaveRows.map(weaveEntryOf), new Date(now).toISOString());
   const beliefs = {};
   for (const id of Object.keys(ledger.skills)) beliefs[id] = beliefFor(id, { ...live.state, now });
@@ -355,6 +358,8 @@ export async function lessonStart(req, body) {
       ...(purpose === "homework" ? { homework: true, ...(typeof body.matchItemId === "string" ? { avoidItemId: body.matchItemId.slice(0, 80) } : {}) } : {}),
       ...(askText ? { askText } : {}),
       ...(sessionFirst ? { session: sessionFirst } : {}),
+      // Learning patch 008: the formats the kit allows and their population posteriors (the explain format is allocated per skill)
+      formatsEligible: eligibleFormats(kit), formatPosteriors: await formatPostP, formatBand: band,
       // Learning patch 006: only the clock of the slot (wrap at the next natural stop after wrapAt, never past hardStopAt)
       ...(today?.brief?.wrapAt || today?.brief?.hardStopAt ? { lessonBrief: { wrapAt: today.brief.wrapAt ?? null, hardStopAt: today.brief.hardStopAt ?? null } } : {}),
       // the bond stage RELATIONAL-OS pinned for this lesson (W2-I snapshot), for the turn's Moment (W2-E TB6)

@@ -58,7 +58,7 @@ import { relationalViolations, relationalHits, repairSelfGender, safetyPreface, 
 import { characterForState } from "../compiler/characters/index.js";
 import { nextBeat, uiBeatOf } from "./beat.js";
 import { momentOf } from "./moment.js";
-import { brainTraceStmt, columnReady, comprehensionReasons, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
+import { brainTraceStmt, columnReady, comprehensionReasons, formatDecisionOf, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
 import { FACTS_ROW_PREFIX } from "../director/modules.js";
 import { engagementOf, frustrationLoop, initialAffect } from "../learner/affect.js";
 import { turnSignals } from "../persona/signals.js";
@@ -1416,7 +1416,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         proposals: kernel.proposals, arb: kernel.arb, reasons: traceReasons,
         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
-      ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
+      ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
+        formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
       ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
     ]));
