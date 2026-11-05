@@ -339,6 +339,9 @@ function jobBodies(x) {
   const wp = (x.envRes?.properties?.workloadProfiles || []).length ? { workloadProfileName: "Consumption" } : {};
   const body = (job, cron, timeout, cpu, memory, secrets, env, file) => {
     const script = readFileSync(new URL(`../infra/m3/${file}`, import.meta.url), "utf8");
+    // the script rides as ONE container arg: Linux caps a single argv string at 128 KiB (MAX_ARG_STRLEN), and ACA documents
+    // no larger limit. Fail at plan time, not at the job's first start, if it ever grows near that.
+    if (Buffer.byteLength(script) > 96 * 1024) throw new Error(`infra/m3/${file} is ${Buffer.byteLength(script)} bytes: over the 96 KiB budget for a single container arg`);
     const b = { location: x.envRes?.location || "<the environment's location>", tags: { ...TAGS },
       properties: { environmentId: x.envRes?.id || `<${N.env} id>`, ...wp,
         configuration: { triggerType: "Schedule", replicaTimeout: timeout, replicaRetryLimit: 2,
@@ -438,15 +441,17 @@ async function alerts(ag) {
   }
   for (const [name, r] of Object.entries(RULES)) {
     const path = `/providers/Microsoft.Insights/scheduledQueryRules/${name}?api-version=${API.sqr}`;
-    const body = { location: ws?.location || "<workspace location>", kind: "LogAlert", tags: TAGS, properties: { displayName: name, description: r.desc, severity: r.sev, enabled: true,
+    const body = { location: ws?.location || "<workspace location>", kind: "LogAlert", tags: { ...TAGS }, properties: { displayName: name, description: r.desc, severity: r.sev, enabled: true,
       scopes: [ws?.id || "<workspace id>"], evaluationFrequency: r.every, windowSize: r.window, muteActionsDuration: r.mute, autoMitigate: false,
       criteria: { allOf: [{ query: r.query, timeAggregation: r.agg, ...(r.metric ? { metricMeasureColumn: r.metric } : {}), operator: r.op, threshold: r.threshold,
         failingPeriods: { numberOfEvaluationPeriods: 1, minFailingPeriodsToAlert: 1 } }] },
       actions: { actionGroups: [ag?.id || `<${N.ag} id>`] } } };
+    // the whole desired rule (severity, frequency, window, mute, criteria, scope, action group) as a tag, like the jobs'
+    // m3-spec: any change re-PUTs it; comparing only the query and window left a changed threshold or severity un-applied
+    body.tags["m3-spec"] = sha(JSON.stringify(body)).slice(0, 16);
     if (CREDS) {
       const cur = await arm("GET", path, undefined, { allow404: true });
-      const same = cur && cur.properties.enabled && cur.properties.criteria?.allOf?.[0]?.query === r.query && cur.properties.windowSize === r.window
-        && (cur.properties.actions?.actionGroups || []).some((a) => a.toLowerCase() === String(ag?.id || "").toLowerCase());
+      const same = cur && cur.properties.enabled && cur.tags?.["m3-spec"] === body.tags["m3-spec"];
       if (same) { say("alerts", `ok: ${name}`); continue; }
     }
     await act("alerts", `PUT rule ${name} (every ${r.every}, window ${r.window}): ${r.query}`, () => arm("PUT", path, body));
