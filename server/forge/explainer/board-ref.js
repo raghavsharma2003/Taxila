@@ -12,7 +12,7 @@ import { codePick } from "./pick.js";
 
 /** Template id → its params (type and range, as each template checks them) and one valid example. */
 export const BOARD_REFS = Object.freeze({
-  "fraction-line@1": { subject: "maths", params: "den 2-12, to (or wholes) 1-3, from 0; explain: marks [{ num, label? }] (labelled points; a label must equal num/den, e.g. '3/6 = 1/2') and/or hop { num } (one jump per 1/den from 0); asks: mark k (the named mark, '?') | target [a, den] (asked, not placed); show + target [a, den] = hop to a/den and name it", example: { den: 4, to: 2, marks: [{ num: 4, label: "1" }, { num: 7, label: "7/4" }], hop: { num: 7 } } },
+  "fraction-line@1": { subject: "maths", params: "den 2-12, to (or wholes) 1-3, from 0; explain: marks [{ num, label? }] (labelled points; a label must equal num/den, e.g. '3/6 = 1/2') and/or hop { num } (one jump per 1/den from 0); asks: mark k (the named mark, '?') | target [a, den] (asked, not placed); show + target [a, den] = hop to a/den and name it; two denominators: dens [d1, d2] (2-12 each, to 1-2), marks [[a, d], ...] labelled points (d1 above, d2 below), target [[a, d], ...] the pair to compare, nothing placed", example: { den: 4, to: 2, marks: [{ num: 4, label: "1" }, { num: 7, label: "7/4" }], hop: { num: 7 } } },
   "fraction-parts@1": { subject: "maths", params: "parts 2-12, shade 0-parts, whole circle|bar|roti", example: { parts: 4, shade: 3, whole: "roti" } },
   "fraction-of@1": { subject: "maths", params: "a/b of c/d: a 1-b, b 2-6, c 1-d, d 2-6, hideResult?", example: { a: 2, b: 3, c: 3, d: 5 } },
   "combine-count@1": { subject: "maths", params: "a 0-10, b 0-10, op add|take_away, hideResult?", example: { a: 4, b: 3, op: "add" } },

@@ -96,7 +96,23 @@ export function drawnCounts(ops) {
   const families = [...fams].map(([k, v]) => ({ kind: k.split("@")[0], n: v.length, ops: v }));
   // number lines: numwork number_line (labels = ticks), or a long straight line with short crossing ticks
   const lines = [];
-  for (const o of ops) if (o.op === "numwork" && o.layout === "number_line") { const n = (o.rows?.[0] ?? []).filter((c) => String(c).trim() !== "").length; lines.push({ id: o.id, ticks: n, gaps: Math.max(0, n - 1) }); }
+  for (const o of ops) if (o.op === "numwork" && o.layout === "number_line") {
+    const n = (o.rows?.[0] ?? []).filter((c) => String(c).trim() !== "").length;
+    lines.push({ id: o.id, ticks: n, gaps: Math.max(0, n - 1) });
+    // round 7 (fraction lines): the short ticks drawn across a labelled line split it further. Each side's ticks (above /
+    // across, below / across) with the labelled ends make a line of their own; "N gaps in each whole" counts per whole
+    const [ax, ay] = o.at ?? [0, 0], x0 = ax + 12, x1 = ax + (o.w ?? 0) - 12, wholes = Math.max(1, Number(o.range?.[1] ?? 1) - Number(o.range?.[0] ?? 0));
+    const short = ops.filter((t) => t !== o && t.op === "line" && Math.abs(t.to[0] - t.from[0]) <= 2 && Math.abs(t.to[1] - t.from[1]) <= 30
+      && Math.min(t.from[1], t.to[1]) <= ay + 1 && Math.max(t.from[1], t.to[1]) >= ay - 1 && t.from[0] > x0 + 2 && t.from[0] < x1 - 2);
+    for (const side of [(t) => Math.min(t.from[1], t.to[1]) < ay - 1, (t) => Math.max(t.from[1], t.to[1]) > ay + 1]) {
+      const xs = new Set(short.filter(side).map((t) => Math.round(t.from[0])));
+      if (!xs.size) continue;
+      for (let k = 1; k < wholes; k++) xs.add(Math.round(x0 + ((x1 - x0) * k) / wholes));
+      const g = xs.size + 1;
+      lines.push({ id: `${o.id}:ticks`, ticks: xs.size + 2, gaps: g });
+      if (g % wholes === 0 && wholes > 1) lines.push({ id: `${o.id}:per-whole`, ticks: g / wholes + 1, gaps: g / wholes });
+    }
+  }
   const longs = ops.filter((o) => (o.op === "line" || o.op === "arrow") && Math.hypot(o.to[0] - o.from[0], o.to[1] - o.from[1]) >= 120 && Math.abs(o.to[1] - o.from[1]) <= 0.2 * Math.abs(o.to[0] - o.from[0]));
   for (const L of longs) {
     const y = (L.from[1] + L.to[1]) / 2, x0 = Math.min(L.from[0], L.to[0]), x1 = Math.max(L.from[0], L.to[0]);

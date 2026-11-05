@@ -129,6 +129,7 @@ function fractionParts(c, tl) {
  *   target  (the item names a/den and asks where it goes) a/den is written above the line, no point is drawn
  */
 function fractionLine(c, tl) {
+  if (Array.isArray(c.dens)) return fractionLine2(c, tl);
   const den = c.den, w = c.wholes ?? c.to ?? 1;
   if (c.from != null && c.from !== 0) return { error: "fraction_line_from" };
   if (!isInt(den, 2, 12) || !isInt(w, 1, 3) || den * w > 24) return { error: "fraction_line_range" };
@@ -205,6 +206,39 @@ function fractionLine(c, tl) {
     return { claims, facts: { ...facts, find: `${tgt}/${den}`, where: "? (child works it out)" } };
   }
   return { claims, facts };
+}
+
+/**
+ * round 7 (Learning: comparing fractions, c5-maths-ch02-t02): TWO denominators on one line, sharing 0 and the wholes: the
+ * first den's ticks and points above the line, the second's below, so "3/5 vs 3/8" is read by where each point sits.
+ * `marks` [[a, den], ...] are labelled points (each on its own den's side); `target` [[a, den], ...] only writes the fractions
+ * to compare (the asking form: nothing placed, "which is bigger" stays the child's).
+ */
+function fractionLine2(c, tl) {
+  const dens = c.dens, w = c.wholes ?? c.to ?? 1;
+  if (c.from != null && c.from !== 0) return { error: "fraction_line_from" };
+  if (dens.length !== 2 || !dens.every((d) => isInt(d, 2, 12)) || dens[0] === dens[1] || !isInt(w, 1, 2) || dens.some((d) => d * w > 24)) return { error: "fraction_line2_range" };
+  const pts = (Array.isArray(c.marks) ? c.marks : []).map((m) => (Array.isArray(m) ? m : [m?.num, m?.den]));
+  const asks = (Array.isArray(c.target) ? c.target : []).map((m) => (Array.isArray(m) ? m : [m?.num, m?.den]));
+  if ([...pts, ...asks].some(([a, d]) => !dens.includes(d) || !isInt(a, 1, d * w))) return { error: "fraction_line2_mark" };
+  const x0 = 30, W = 340, y = 160;
+  const X = (u) => round1(x0 + 12 + (u / w) * (W - 24));
+  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: w + 1 }, (_, i) => String(i))], range: [0, w], w: W, weight: 2 }, 1200);
+  dens.forEach((d, side) => {
+    const dy = side === 0 ? -1 : 1;
+    const tick = Math.max(70, Math.min(200, Math.round(1300 / (d * w))));
+    for (let i = 1; i < d * w; i++) if (i % d) tl.add({ op: "line", from: [X(i / d), y], to: [X(i / d), y + dy * 12], weight: 1, ink: side ? "accent" : "chalk" }, tick, { gap: Math.round(tick / 2) });
+  });
+  const facts = { line: `0 to ${w}`, above: `${dens[0]} equal gaps in each whole`, below: `${dens[1]} equal gaps in each whole` };
+  for (const [a, d] of pts) {
+    const side = dens.indexOf(d), dy = side === 0 ? -1 : 1;
+    // (a tall tick in mark ink on its own side: two dots would read as a count of 2 — W8)
+    tl.add({ op: "line", from: [X(a / d), y], to: [X(a / d), y + dy * 22], weight: 3, ink: "mark" }, 300, { gap: 300 });
+    // (below the line the whole numbers are written: the lower den's labels sit under them)
+    tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 34 : 66)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
+  }
+  if (asks.length) tl.add({ op: "text", at: [200, 60], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
+  return { claims: [], facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
 }
 
 /**
