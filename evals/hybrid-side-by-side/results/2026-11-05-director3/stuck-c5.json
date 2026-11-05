@@ -1,0 +1,192 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hello Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko number line par cricket pitch jaise place karenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1100
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, koi baat nahi—cricket interest zaroori nahi. Socho, 1 metre pitch ko 2 barabar hisson mein baantenge; ek hissa kaise likhoge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1230,
+   "replyReadyMs": 2330
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1081
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak ek poori roti socho; use 2 barabar tukdon mein kaato. Har tukda kitna hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1286,
+   "replyReadyMs": 2367
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 913
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. 0 se 1 tak line ko 5 barabar gaps mein baanto. Har gap kitna hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1369,
+   "replyReadyMs": 2282
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1026
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, 0 se 1 tak ki rekha ko 5 barabar hisson mein baanto. Har hissa ek-paanchvaan hai. 2/5 ke liye kitne hisse gino?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1258,
+   "replyReadyMs": 2284
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1126
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 5 kaha—yeh kul barabar hisson ki sankhya hai. 2/5 ke liye 0 se kitne hisse ginna hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2515,
+   "replyReadyMs": 3641,
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1192
+  },
+  {
+   "who": "teacher",
+   "text": "Ek udaharan dekho, kadam se kadam. Diya hai: 2/5, 0 aur 1. Pehle: 5 barabar hisse. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1265,
+   "replyReadyMs": 2457
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 797
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak paanch barabar hisse hain. 2/5 ka matlab 0 se do hisse. Doosre nishaan par kaunsa bhinn hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2684,
+   "replyReadyMs": 3481,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "2 5"
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1226
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, “haan” se lagta hai tumne baat pakdi. Doosra nishaan 2/5 hota hai, kyunki hum 0 se do hisse ginte hain. Tum 2/5 bolo.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1571,
+   "replyReadyMs": 2797
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1355
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 likha. 2/5 mein 2, ginte hue hisson ki sankhya hai; 5 kul hisse hain. Middle se pehle ya baad?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 2970,
+   "replyReadyMs": 4325,
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1307
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Jaari rakhein, thoda viraam lein, ya aaj khatam karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1749,
+   "replyReadyMs": 3056
+  }
+ ],
+ "agent": []
+}
