@@ -20,6 +20,7 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   if (!src) return null;
   const v = extractValues(src);
   const lower = src.toLowerCase();
+  const flat0 = lower.replace(/(\d),(?=\d{3}\b)/g, "$1");
   const n = ints(v);
   const rep = String(representation ?? "").toLowerCase();
   // round 4 content: a fraction OF a fraction ("3/5 of 2/3", "1/2 × 1/4", "half of a half", "aadhe ka aadha"): the area model
@@ -31,6 +32,17 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     const food = /roti|chapati|pizza|cake|pie/.test(lower) || (/roti|chapati|pizza|pie/.test(rep)) || (!rep && /^(cooking|food)$/.test(String(interest ?? "")));
     const bar = /\b(bar|strip|line|ribbon|rope)\b/.test(rep);
     return { template: "fraction-parts@1", whole: food && fr[1] <= 8 ? "roti" : bar || fr[1] > 8 ? "bar" : "circle", parts: fr[1], shade: fr[0] };
+  }
+  // round 7 (M3): a decimal to LOCATE or compare ("0.45 on the number line", "tenths and hundredths"): the unit it lies in
+  // is lifted off the number line and zoomed into its tenths (number-line-zoom@1)
+  if ((/decimal|tenths?|hundredths?/.test(lower) || kitSays(kit, /decimal|tenths?|hundredths?/)) && /locat|compar|order|smallest|largest|number line|tenths?|hundredths?|between|greater|smaller|bigger/.test(lower)) {
+    // (the first such decimal that is no item's answer: a board that must write its value "?" says nothing — W9/W17)
+    const keys = new Set((kit?.items ?? []).flatMap((i) => [i?.answer, ...(i?.acceptable ?? [])]).flatMap((x) => String(x ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map((t) => String(Number(t))));
+    // (never in a line that is doing arithmetic: adding decimals is lined-up places, not a location)
+    for (const d of /\d\s*[+×÷*]\s*\d|\d\s[−-]\s\d|\b(?:add|adding|subtract|sum|difference|multiply|divide)\b/.test(flat0) ? [] : flat0.matchAll(/(?<![\d.])(\d)\.(\d{1,2})(?![\d.])/g)) {
+      if (keys.has(String(Number(d[0]))) || /[+×÷*]|\s[−-]\s/.test(lower.slice(Math.max(0, d.index - 3), d.index + d[0].length + 3))) continue;
+      return { template: "number-line-zoom@1", value: Number(d[0]) };
+    }
   }
   // integers with a sign (−2 − 3, −63 ÷ 7): a hop on the number line when it fits
   // a sign is NEGATIVE only where no operand precedes it ("(−2)", "−6 is colder"), never the minus of "8 − 3"
@@ -58,7 +70,8 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     if (!m) return null;
     const before = flat.slice(0, m.index), after = flat.slice(m.index + m[0].length);
     // (inside brackets an operation joins: "2 × (50 + 30)" is a rule's step, not two groups)
-    if (/[×x*÷/+−-]\s*\(?\s*$|[a-z]$/.test(before) || /^\s*\)?\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]/.test(after)) return null;
+    // (nor inside a decimal: "2.85 + 2.50" is no 85 + 2)
+    if (/[×x*÷/+−-]\s*\(?\s*$|[a-z]$|\d\.$/.test(before) || /^\s*\)?\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]|^\.\d/.test(after)) return null;
     return [Number(m[1]), Number(m[2])];
   };
   const onlyTwo = n.length === 2 && !/[×÷*/=]|\d[a-z]\b/.test(lower) ? [n[0], n[1]] : null;

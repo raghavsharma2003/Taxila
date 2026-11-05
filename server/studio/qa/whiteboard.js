@@ -28,7 +28,7 @@
 //   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
-import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp, finalOp } from "../../../shared/whiteboard.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
@@ -440,11 +440,16 @@ export function revealsOf(ops, per, byId, texts, withhold) {
   if (!values.length && !words.length) return [];
   const out = [];
   const hit = (tok) => { const r = rat(tok); return r ? values.find((x) => rEq(x.r, r)) : null; };
+  // round 7 (main, M3): a digit written INSIDE a box (a place-value box, a grid cell) is that box's digit, never an origin
+  // or a column's label: a hidden 0 or 1 in a place-value box is judged like any other digit
+  const boxes = ops.filter((o) => o.op === "rect").map((o) => opGeometry(o, byId).box);
+  // (where the digit ENDS: place-value digits rise into their boxes)
+  const inBox = (o) => { const at = ops.some((m) => isMotionOp(m) && m.target === o.id) ? finalOp(o, ops).at : o.at; if (!Array.isArray(at)) return false; const [x, y] = at; return boxes.some((b) => x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h); };
   ops.forEach((o, k) => {
     const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? []);
     // a bare "0" or "1" (the origin or the whole of a number line, a place-value column) marks the board, it is not a
     // result; "5 − 5 = 0" or "3/4 + 1/4 = 1" still is (bench 2026-10-05: an origin labelled 0 was refused)
-    const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text));
+    const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text)) && !inBox(o);
     for (const tok of [...per[k].nums, ...per[k].derived]) {
       if (bare) continue;
       if (axis && (o.rows?.[0] ?? []).some((c) => canon(c) === tok)) continue;
@@ -455,7 +460,8 @@ export function revealsOf(ops, per, byId, texts, withhold) {
   // board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on the board that
   // CONTAINS that digit gives it away too and is a reveal (the whole number is masked "?"); a board that never splits a
   // number into digits is unchanged ("15 cm" beside an answer of 5 is no reveal)
-  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim()))
+  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim())
+    && (!/^\s*[01]\s*$/.test(String(o.text)) || inBox(o)))
     .map((o) => String(o.text).trim()));
   if (digitHits.size) {
     for (const o of ops) {

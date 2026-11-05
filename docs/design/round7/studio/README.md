@@ -186,3 +186,12 @@ Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12),
   - c5 ch11 t02: none → measured@1 (all three ways)
   - c6 ch06 t01: catalogue / catalogue / none → measured@1 (all three ways)
   - c6 ch06 t02: none → measured@1 (asked plain and as "picture")
+
+## M3a: the decimal zoom (C1 item 6)
+
+`decimal-zoom-*`: c7-maths-ch03-t03, item "Between which two tenths does 0.47 lie on a number line?". The number line 0–3 is drawn and the unit 0–1 lights up. A copy of that unit lifts off, stretches to the full width and lands as a second number line, joined to the unit by two guide lines. That line has its ten tenths, and 0.47 is marked on it.
+
+- **The zoom is in the drawing, not the camera.** Zooming the board's view would scale the text along with the drawing, so labels that crowd at full size still crowd zoomed. The textbook "magnified segment" keeps every label a normal size, and is built from M1's move and scale. The stretched unit ends exactly on the lower line (a claim).
+- **Reach:** 11 boards across the decimal lessons (c7 ch03 t01–t03), used when an item is explained or retaught. A decimal that is an item's answer is never chosen, since it would have to be written "?". A line that adds, subtracts, multiplies or divides never gets the zoom.
+- **W9:** a 0 or 1 that ends inside a box (a place-value box) is now judged like any other digit. Only a bare 0 or 1 outside any box still counts as a number line's origin.
+- **Pick fixes:** "2.85 + 2.50" is no 85 + 2, and a full stop after a number is not a decimal point.

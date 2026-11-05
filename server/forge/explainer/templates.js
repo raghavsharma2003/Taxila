@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -1053,6 +1053,43 @@ function placesBoard(c, tl) {
 }
 
 /**
+ * round 7 (C1 M3, the zoom): a decimal LOCATED by zooming into the one unit it lies in, as a textbook draws it. The number
+ * line a..a+2 is drawn; the unit [a, a+1] that holds the value lights up; a copy of that unit lifts off and STRETCHES into
+ * the full-width line below (a scale about its left end, then a slide down: the zoom), joined to the unit by two guide
+ * lines; the stretched unit gets its ten tenths, and the value is marked on it. Every label is a normal size: the zoom is
+ * in the drawing, never in the text. The stretched unit ends exactly on the lower line (a claim expand() checks).
+ */
+function numberLineZoom(c, tl) {
+  const v = Number(c.value);
+  if (!(v > 0 && v < 10) || Math.abs(Math.round(v * 100) - v * 100) > 1e-6 || Number.isInteger(v)) return { error: "zoom_value" };
+  // (4 labels on the top line and 6 on the lower one: evenly spaced, so both read as axes, not as answers — W9)
+  const a = Math.floor(v), lo = a, hi = a + 3;
+  const fmt = (x) => String(+x.toFixed(2));
+  const y1 = 80, y2 = 212, x0 = 30, W = 340;
+  const X1 = (u) => x0 + 12 + ((u - lo) / (hi - lo)) * (W - 24), X2 = (u) => x0 + 12 + (u - a) * (W - 24);
+  tl.add({ id: "top", op: "numwork", at: [x0, y1], layout: "number_line", rows: [[fmt(lo), fmt(lo + 1), fmt(lo + 2), fmt(hi)]], range: [lo, hi], w: W, weight: 2 }, 900);
+  tl.add({ id: "unit", op: "line", from: [X1(a), y1], to: [X1(a + 1), y1], weight: 3, ink: "accent" }, 450, { gap: 200 });
+  // the zoom: the unit's copy stretches to the full width about its left end, then slides down onto the lower line
+  const k = round1((X2(a + 1) - X2(a)) / (X1(a + 1) - X1(a)) * 100) / 100;
+  tl.add({ id: "z", op: "line", from: [X1(a), y1], to: [X1(a + 1), y1], weight: 3, ink: "accent" }, 200, { gap: 120 });
+  // (it lifts off the line first, so the stretch happens in clear space, never along the line it came from)
+  const mid = Math.round((y2 - y1) / 2);
+  tl.add({ op: "move", target: "z", by: [0, mid] }, 600, { gap: 120 });
+  tl.add({ op: "scale", target: "z", k: [k, 1], about: [X1(a), y1 + mid] }, 1100, { gap: 80 });
+  tl.add({ op: "move", target: "z", by: [round1(X2(a) - X1(a)), y2 - y1 - mid] }, 700, { gap: 60 });
+  // (the guides start below the top line's labels, never through them)
+  tl.add({ op: "line", from: [X1(a), y1 + 34], to: [X2(a), y2 - 8], weight: 1, ink: "soft", dashed: true }, 300, { gap: 60 });
+  tl.add({ op: "line", from: [X1(a + 1), y1 + 34], to: [X2(a + 1), y2 - 8], weight: 1, ink: "soft", dashed: true }, 300, { gap: 40 });
+  // the zoomed unit: its ten tenths, its ends and the value
+  tl.add({ id: "bottom", op: "numwork", at: [x0, y2], layout: "number_line", rows: [[0, 2, 4, 6, 8, 10].map((t) => fmt(a + t / 10))], range: [a, a + 1], w: W, weight: 2 }, 700, { gap: 120 });
+  for (let i = 1; i < 10; i++) tl.add({ op: "line", from: [X2(a + i / 10), y2 - 5], to: [X2(a + i / 10), y2 + 5], weight: 1 }, 60, { gap: 10 });
+  tl.add({ id: "val", op: "circle", c: [round1(X2(v)), y2], r: 6, fill: "mark", ink: "mark" }, 300, { gap: 200 });
+  tl.add({ id: "valT", op: "text", at: [round1(X2(v)), y2 - 22], text: fmt(v), size: "m", ink: "mark" }, 300, { gap: 40 });
+  const claims = [{ id: "z", from: [X2(a), y2], to: [round1(X1(a) + (X1(a + 1) - X1(a)) * k + (X2(a) - X1(a))), y2] }];
+  return { claims, facts: { value: fmt(v), between: `${fmt(a)} and ${fmt(a + 1)}`, tenths: "the unit split into 10 tenths" } };
+}
+
+/**
  * round 7 (C1 studio-board-richness): a table (table.js: every cell computed). 2-4 columns, 1-10 rows; the rule it comes
  * from on top, the header in accent, then the rows one by one so the pattern is seen growing.
  */
@@ -1167,7 +1204,7 @@ function measuredBoard(c, tl) {
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };
