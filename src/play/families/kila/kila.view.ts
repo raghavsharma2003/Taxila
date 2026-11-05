@@ -6,12 +6,15 @@
 // a square, every tower whose period divides it fires (a shot line and one dot per tower on the square). Only when the ball
 // reaches the gate does the law's answer show: a tick on the gate, or a magnifier on each square that is not as the goal
 // needs (a net where no shot came, a flag no shot reached, a flower that was hit, a tower that misses the gate).
+// Divisibility: each square holds a numbered foe (its number large, mono, never below 16 px); the fort's ÷d tower stands at
+// the gate and, as the wave reaches a foe, shoots it if d divides it (the foe cracks); nets lie under the numbers. The
+// squares carry no square numbers there (the foes' numbers are the only numbers on the path).
 import type { KilaAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { allTowers, hitsOn, markWant, towerGoal, type KilaParams, type KilaState } from "./kila.logic.ts";
+import { allTowers, divBreaks, divGoal, divWant, hitsOn, markWant, towerGoal, type KilaParams, type KilaState } from "./kila.logic.ts";
 
 const RUN_SPEED = 6;     // squares / s while a whole wave runs (cosmetic; the law has already answered)
 const STEP_SPEED = 4;    // squares / s for one "next"
@@ -20,7 +23,8 @@ const SHOT_LIFE = 0.35;  // s a shot line stays
 export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<KilaParams, KilaState, KilaAct>;
   const { level, ctl, lang } = deps;
-  const p = level.params, n = p.n, towersMode = towerGoal(p.goal);
+  const p = level.params, n = p.n, towersMode = towerGoal(p.goal), div = divGoal(p.goal), foes = p.foes ?? [];
+  const digits = Math.max(3, ...foes.map((x) => String(x).length));
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
   let w = 320, h = 420, cols = 6, cell = 48, gap = 4, x0 = 8, y0 = 8;
@@ -38,9 +42,11 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     w = bw; h = bh;
     // the column count that gives the biggest square for n squares + the gate in this box
     let best = -1;
-    for (let c = 12; c >= 4; c--) {   // on a tie the wider grid (fewer rows: the snake reads as a path)
+    // divisibility: fewer, bigger squares (a 5-digit foe must read at ≥ 16 px), so 2-6 columns and a larger cap
+    const [cHi, cLo, cap] = div ? [6, 2, 104] : [12, 4, 86];
+    for (let c = cHi; c >= cLo; c--) {   // on a tie the wider grid (fewer rows: the snake reads as a path)
       const rows = Math.ceil((n + 1) / c), g = 4;
-      const s = Math.min((w - 16 - g * (c - 1)) / c, (h - 16 - g * (rows - 1)) / rows, 86);
+      const s = Math.min((w - 16 - g * (c - 1)) / c, (h - 16 - g * (rows - 1)) / rows, cap);
       if (s > best + 0.5) { best = s; cols = c; }
     }
     gap = 4; cell = Math.max(30, best);
@@ -68,7 +74,8 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function landed(b: number): void {
     const all = allTowers(p, st());
     let fired = 0;
-    for (const q of all) if (b % q === 0) { shots.push({ from: q, to: b, t0: api.t }); fired++; }
+    if (div) { if (divBreaks(p, b)) { shots.push({ from: n + 1, to: b, t0: api.t }); fired++; } }
+    else for (const q of all) if (b % q === 0) { shots.push({ from: q, to: b, t0: api.t }); fired++; }
     if (fired) {
       api.sfx("tick", fired);
       const [x, y] = centre(b);
@@ -138,6 +145,12 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.stroke(c, [[a, v], [b, v]], { role: "you", width: 1.6 });
     }
   }
+  /** divisibility: the net lies under the foe's number, across the square's lower part */
+  function divNet(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
+    const P = api.P, a = x + s * 0.24, b = x + s * 0.76, top = y + s * 0.6, bot = y + s * 0.92;
+    for (let k = 0; k <= 4; k++) { const u = a + ((b - a) * k) / 4; P.stroke(c, [[u, top], [u, bot]], { role: "you", width: 1.8 }); }
+    for (let k = 0; k <= 2; k++) { const v = top + ((bot - top) * k) / 2; P.stroke(c, [[a, v], [b, v]], { role: "you", width: 1.8 }); }
+  }
   function trap(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const cx = x + s * 0.69, cy = y + s * 0.68, r = s * 0.2;   // the right half: a tower may stand left
     api.P.circle(c, cx, cy, r, { role: "you", width: 3 });
@@ -156,6 +169,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   /** the squares the law's answer marks with a magnifier after a missed wave (only what is on screen, never the key) */
   function lookSquares(): number[] {
     const s = st(), all = allTowers(p, s);
+    if (div) { const want = divWant(p); return [...want.filter((q) => !s.marks.includes(q)), ...s.marks.filter((q) => !want.includes(q))]; }
     if (p.goal === "mark") { const want = markWant(p); return [...want.filter((q) => !s.marks.includes(q)), ...s.marks.filter((q) => !want.includes(q))]; }
     if (p.goal === "meet") return s.marks.filter((q) => hitsOn(p.fixed, q) < 2);
     if (p.goal === "all") return s.towers.filter((q) => !p.targets.every((t) => t % q === 0));
@@ -170,7 +184,21 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let k = 0; k <= n; k++) { const [x, y] = slotXY(k); line.push([x + cell / 2, y + cell / 2]); }
     P.stroke(c, line, { role: "ink3", width: Math.max(4, cell * 0.16), alpha: 0.25 });
     const small = clamp(cell * 0.3, 14, 18);
-    for (let sq = 1; sq <= n; sq++) {
+    // a foe's number: as big as the square allows for the longest foe, never below 16 px
+    const big = clamp(Math.min(cell * 0.34, (cell - 8) / (digits * 0.62)), 16, 28);
+    if (div) for (let sq = 1; sq <= n; sq++) {
+      const [x, y] = slotXY(sq - 1), broke = sq <= rolled && divBreaks(p, sq);
+      if (!s.done) api.target(`sq-${sq}`, x, y, cell, cell);
+      P.body(c, x, y, cell, cell, { role: "panel", r: Math.min(8, cell * 0.16), state: look.includes(sq) ? "look" : "idle", seed: sq });
+      P.text(c, String(foes[sq - 1]), x + cell / 2, y + cell * 0.36, { size: big, role: "ink", font: "mono", weight: 700, align: "center", baseline: "middle", maxW: cell - 6 });
+      if (s.marks.includes(sq)) divNet(c, x, y, cell);
+      // the shot came: the foe cracks (a slash across its number and a dot at the foot)
+      if (broke) {
+        P.stroke(c, [[x + cell * 0.12, y + cell * 0.52], [x + cell * 0.88, y + cell * 0.2]], { role: "q1", width: 3, alpha: 0.9 });
+        P.circle(c, x + cell * 0.86, y + cell - cell * 0.12, cell * 0.06, { role: "q1", fill: true });
+      }
+    }
+    else for (let sq = 1; sq <= n; sq++) {
       const [x, y] = slotXY(sq - 1);
       if (!s.done) api.target(`sq-${sq}`, x, y, cell, cell);
       P.body(c, x, y, cell, cell, { role: "panel", r: Math.min(8, cell * 0.16), state: look.includes(sq) ? "look" : "idle", seed: sq });
@@ -192,6 +220,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // the gate (slot n): with "all", the gate squares are the gates (the last one is the fort)
     const [gx, gy] = slotXY(n);
     gate(c, gx, gy, cell);
+    if (div) P.chip(c, `÷${p.d}`, gx + cell / 2, gy + cell * 0.2, { size: clamp(cell * 0.24, 16, 22), font: "mono" });
     if (p.goal === "all") for (const t of p.targets) { const [x, y] = slotXY(t - 1); P.stroke(c, [[x + 2, y + 2], [x + cell - 2, y + 2], [x + cell - 2, y + cell - 2], [x + 2, y + cell - 2]], { role: "q4", width: 3, closed: true }); }
     // shots in flight
     for (const sh of shots) {
@@ -203,13 +232,15 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const f = Math.min(shown, n), a = Math.max(1, Math.floor(f)), b = Math.min(n, a + 1), u = f - Math.floor(f);
       const [ax, ay] = centre(a), [bx, by] = centre(b);
       const bx2 = f < 1 ? ax : ax + (bx - ax) * u, by2 = f < 1 ? ay : ay + (by - ay) * u;
-      P.circle(c, bx2, by2 - cell * 0.05, cell * 0.16, { role: "ink2", fill: true });
+      // divisibility: the ball rolls along the squares' lower-left corner, clear of the foes' numbers
+      if (div) P.circle(c, bx2 - cell * 0.36, by2 + cell * 0.3, cell * 0.1, { role: "ink2", fill: true });
+      else P.circle(c, bx2, by2 - cell * 0.05, cell * 0.16, { role: "ink2", fill: true });
     } else {
       const [ax, ay] = slotXY(0);
-      P.circle(c, ax + cell * 0.16, ay + cell / 2, cell * 0.12, { role: "ink2", fill: true, alpha: 0.7 });
+      P.circle(c, ax + cell * (div ? 0.14 : 0.16), ay + cell * (div ? 0.8 : 0.5), cell * (div ? 0.09 : 0.12), { role: "ink2", fill: true, alpha: 0.7 });
     }
     if (end && s.done) P.tick(c, gx + cell / 2, gy + cell * 0.1, Math.min(26, cell * 0.5), 1);
-    if (end) for (const sq of look) { const [x, y] = slotXY(sq - 1); P.magnifier(c, x + cell * 0.78, y + cell * 0.5, Math.min(22, cell * 0.36)); }
+    if (end) for (const sq of look) { const [x, y] = slotXY(sq - 1); P.magnifier(c, x + cell * (div ? 0.84 : 0.78), y + cell * (div ? 0.76 : 0.5), Math.min(22, cell * (div ? 0.3 : 0.36))); }
   }
 
   function goal(): string {
@@ -221,6 +252,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       case "common": return W("kila.goal.common", { p: p.fixed[0] });
       case "all": return p.targets.length > 1 ? W("kila.goal.all2", { g: p.targets[0], h: p.targets[1] }) : W("kila.goal.all", { g: p.targets[0] });
       case "meet": return W("kila.goal.meet", { a: p.fixed[0], b: p.fixed[1] });
+      case "ones": case "tail": case "sum": return W("kila.goal.div", { d: p.d ?? 0 });
     }
   }
   // the wave's square count only: never a running total of hits, never the key

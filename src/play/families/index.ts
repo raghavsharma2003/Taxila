@@ -62,6 +62,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kila/multiples": asAny(kilaLogic),
   "kila/factors": asAny(kilaLogic),
   "kila/lcm": asAny(kilaLogic),
+  "kila/divisibility": asAny(kilaLogic),
   // round 7: Naksha, maps and grids (latitude / longitude, routes and directions, map scale, shapes on a dot grid)
   "naksha/locate": asAny(nakshaLogic),
   "naksha/route": asAny(nakshaLogic),
