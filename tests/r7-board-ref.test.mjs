@@ -180,9 +180,8 @@ test("director5: every v2 script board is preselected as the script's and drawn 
   assert.deepEqual(claimsNotDrawn("Screen par line ko 2 hisson mein kaato, phir 4 hisson mein kaato.", eighths), []);
   assert.deepEqual(claimsNotDrawn("Screen par line 8 barabar gaps mein hai; 3 gaps 0 se.", eighths), []);
   assert.equal(claimsNotDrawn("Screen par line 4 barabar gaps mein bati hai.", eighths).length, 1);
-  // Learning's data still to change (told): s2 remediation 2 says the train stops at 7/5, its board draws no hop to it;
-  // c5-t02 s1 explain 3's compare board is written in English under a Hinglish line
-  const KNOWN = new Set(["c5-maths-ch02-t01 s2 remediation2", "c5-maths-ch02-t02 s1 explain3"]);
+  // (Learning's v2.1 fixed the last two: the train's hop to 7/5, the compare board in the line's Hinglish)
+  const KNOWN = new Set();
   const misses = [];
   let n = 0;
   for (const f of fs.readdirSync("data/lesson-scripts-v2")) {
