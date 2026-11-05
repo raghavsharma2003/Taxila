@@ -54,6 +54,43 @@ export function askSignature(ask) {
 const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · served to the real turn's pick · shown · dropped (another move)
 /** Board-first lookahead counters for this replica (GET /api/studio/timing). */
 export const prewarmStats = () => ({ ...prewarmed });
+// round 7 (main, director4: Brain's R4 screen contract): what the board shows, for her line to be checked against: the shape
+// kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
+const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "fraction-parts@1": "whole in parts",
+  "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
+  "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
+/** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
+export const SCREEN_SHAPES = Object.freeze(["rectangle", "square", "triangle", "quadrilateral", "pentagon", "hexagon", "octagon", "polygon", "circle",
+  "number line", "whole in parts", "area model", "groups", "comparison", "flow", "cycle", "bar chart", "table", "timeline", "map", "labelled diagram",
+  "column sum", "place value", "grid", "angle", "symmetry", "drawing"]);
+function shapeWord(raw, template) {
+  const w = String(raw ?? "").toLowerCase().trim();
+  if (w === "rect") return "rectangle";
+  if (/^\d+-sided shape$/.test(w)) return "polygon";
+  if (SCREEN_SHAPES.includes(w)) return w;
+  return SHAPE_OF[template] ?? "drawing";
+}
+/** → { template, shape (one of SCREEN_SHAPES), numbers: string[], labels: string[] } */
+export function screenOf(c, facts, script = null) {
+  const on = facts?.onScreen ?? {};
+  const own = c?.facts?.onScreen ?? {};
+  const shape = shapeWord(own.shape ?? on.shape, c?.template);
+  const split = (v) => String(v ?? "").split(/\s*\|\s*|\s+(?=\d)/).map((x) => x.trim()).filter((x) => x && !/\?/.test(x));
+  // (and every number the board itself writes: a template whose facts row names none still shows its numbers)
+  const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [])
+    : o.op === "numwork" ? (o.layout === "fraction" ? [(o.rows ?? []).flat().map(String).join("/")] : (o.rows ?? []).flat().map(String)).filter((x) => /^\d+(?:\.\d+)?(?:\/\d+)?$/.test(x)) : []));
+  return { template: c?.template ?? null, shape, numbers: [...new Set([...split(on.numbers).filter((x) => /\d/.test(x)), ...drawn])].slice(0, 24), labels: [...new Set(split(on.labels))] };
+}
+/** A script ref's own facts as a line ("shape triangle. sides 6, 5, 4 cm"), or null when it does not render. */
+function scriptRefFacts(ref, kit, ask) {
+  try {
+    const r = resolveBoardRef(ref, { kit });
+    const x = r.ok ? expand(r.call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
+    if (!x?.ok) return null;
+    const t = Object.entries(x.facts?.onScreen ?? {}).filter(([, v]) => !/\?/.test(String(v))).map(([k, v]) => `${k} ${v}`).join(". ");
+    return t.length >= 12 ? t : null;
+  } catch { return null; }
+}
 // round 7 (dc-r7-teaching-scripts): script board refs that did not render (the turn fell back to the code's pick)
 const scriptRefs = { failed: 0 };
 export const scriptRefStats = () => ({ ...scriptRefs });
@@ -149,7 +186,10 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
     if (!id) return null;
-    if (ask?.mode === "continue") return null;              // a continued board builds on the last one: the line plan's job
+    // a continued board builds on the last one: the line plan's job. round 7 (main, director4 S1): NOT a scripted beat's
+    // board: Brain's beat id holds across e1 → e2 → e3 (one "explain" beat), so steps 2-3 came as "continue" and got no
+    // board at all; a script names a NEW page for each step
+    if (ask?.mode === "continue" && !ask?.intent?.boardRef) return null;
     for (const [k, v] of picks) if (now - v.at > TTL_MS) picks.delete(k);
     if (picks.has(id)) {
       const p = picks.get(id);
@@ -158,7 +198,11 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       if (p.ahead === askSignature(ask) && !shownBefore(p.script, { avoid, seen })) { if (!p.hit) { p.hit = true; prewarmed.hit++; } return p; }
       picks.delete(id); prewarmed.stale++;             // picked ahead for another move: pick for this one
     }
-    const predicted = predictedLineOf(ask, kit);
+    // round 7 (main, director4 S2): a scripted beat's board is judged against what IT shows (its facts row: her line is
+    // written from the pick's row), not against a line predicted from the kit's first item (c6: a predicted "rectangle 8
+    // cm, 5 cm" line refused the authored triangle 4, 5, 6 and the code's rectangle took its place)
+    const refFacts = ask?.intent?.boardRef ? scriptRefFacts(ask.intent.boardRef, kit, ask) : null;
+    const predicted = refFacts ?? predictedLineOf(ask, kit);
     if (predicted.length < 12) return null;
     const a2 = { ...ask, line: { ...(ask.line ?? {}), text: predicted } };
     // W9 (no answer reveal) as if her line said NO number: the withheld set can only shrink once her real line exists
@@ -196,7 +240,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // a board that passed only once its answer was written "?" (board-sync maskReveals) is kept AS MASKED: her real line
       // is re-gated against what will be drawn
       const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : r.gate?.script?.ops ? { ...s, ops: r.gate.script.ops } : s;
-      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok };
+      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok, screen: screenOf(c, facts, kept) };
       picks.set(id, pick);
       return pick;
     }
@@ -229,7 +273,7 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
       r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
     }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
-    return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, syncMs: Date.now() - t0 };
+    return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, screen: p.screen ?? null, syncMs: Date.now() - t0 };
   } catch { return null; }
 }
 

@@ -17,6 +17,7 @@ import { createStageGradeSession } from "./grade.js";
 // round 4 content: the ONE certificate gate (Studio v2 is off the child path unless certified at all three sizes)
 import { certifyForTray, viewportOf } from "../forge3/tray-gate.js";
 import { record as traceRecord } from "../trace/writer.js";
+import { sceneMayPlay } from "../../shared/scene.js";
 
 // `var` + function declarations (hoisted): kernel-point.js registers its hooks at load, and with the seam ⇄ bridge import
 // cycle (patch 03) it may run before this module's body has evaluated; a `let`/`const` binding would be in its TDZ then.
@@ -100,9 +101,13 @@ function merge(lessonId, host, view0, point, outcome) {
   // round 4 content: certified at the device's class BEFORE it is proposed, or the W2 view stands (round 7 D8: at the
   // device's class only; on the 360 phone as its board twin)
   const sc0 = { rung: outcome.rung, archetype: c?.archetype ?? outcome.facts.archetype, spec: c?.payload?.spec ?? null, boardTwin: c?.boardTwin ?? null };
+  const scene = c?.payload?.scene ?? null;
+  // round 7 M5a (main: answer leaks are zero-visible-failure): a code-built scene never comes up over a held key
+  if (scene && !sceneMayPlay(scene, { held: L.held === undefined ? [] : L.held }).ok) { host.sceneHeld = (host.sceneHeld ?? 0) + 1; return keepW2(); }
   const vpNow = viewportOf(lessonId);
-  const cert = certifyForTray({ kind: "stagecraft", stagecraft: sc0 }, { vp: vpNow.vp, box: vpNow.box, young: vpNow.known ? vpNow.young : (L.child?.class_level ?? 6) <= 4,
-    topicId: L.topicId ?? point.current?.topicId ?? null, factsKind: facts.kind, verdict: c?.verdict ?? null });
+  const ctx0 = { vp: vpNow.vp, box: vpNow.box, young: vpNow.known ? vpNow.young : (L.child?.class_level ?? 6) <= 4,
+    topicId: L.topicId ?? point.current?.topicId ?? null, factsKind: facts.kind, verdict: c?.verdict ?? null };
+  const cert = scene ? certifyForTray({ kind: "scene", scene }, ctx0) : certifyForTray({ kind: "stagecraft", stagecraft: sc0 }, ctx0);
   if (!cert.ok) {
     host.gateRefusals = (host.gateRefusals ?? 0) + 1;
     console.info(`[stagecraft] tray gate refused ${outcome.rung} ${sc0.archetype ?? "-"} at ${cert.vp}: ${String(cert.why).slice(0, 100)}`);
@@ -115,7 +120,8 @@ function merge(lessonId, host, view0, point, outcome) {
     misconceptionId: point.current.misconceptionId ?? null, need: want?.need ?? "explain", neededAtMs: 0, intent: null, personal: outcome.rung === "generated_spec",
     signature: [], state: "ready", source: "stagecraft", retired: false, createdAt: Date.now(), facts, requested: !!want?.childRequested,
     stagecraft: { rung: outcome.rung, archetype: c?.archetype ?? outcome.facts.archetype, spec: c?.payload?.spec ?? null, boardTwin: c?.boardTwin ?? null,
-      board: null, cue: outcome.cue ?? { clauseIdx: 0, preRollMs: 400, crossFadeMs: 420 }, buildSha: c?.payload?.buildSha ?? null, blobUrl: c?.payload?.blobUrl ?? null } });
+      board: null, cue: outcome.cue ?? { clauseIdx: 0, preRollMs: 400, crossFadeMs: 420 }, buildSha: c?.payload?.buildSha ?? null, blobUrl: c?.payload?.blobUrl ?? null,
+      ...(scene ? { scene } : {}) } });
   out.propose = { reveal: id, ...(want?.childRequested ? { requested: true } : {}) };
   out.revealing = facts;
   return out;
@@ -140,6 +146,8 @@ export function gradeSessionFor(p) {
 /** slotOf for a Stagecraft piece: the artifact the device's stage controller mounts (src/stagecraft). Never a loading state. */
 export function stagecraftSlot(p, state = p.state) {
   const st = state === "fallback_ready" ? "fallback_shown" : state;
+  // round 7 M5a: a Stagecraft scene is drawn by the scene player (artifact kind "scene"), on her line's clock
+  if (p.stagecraft?.scene) return { slotId: p.slotId, intentId: p.intentId, state: st, artifact: { kind: "scene", stage: p.stagecraft.scene.stage, scene: { ...p.stagecraft.scene, line: { lessonId: p.intentId.split(":")[0] } } } };
   // the Studio v2 engines and board draw in a 1000 x 625 design box (src/studio-v2/core/tokens.ts W, H): the stage fits it
   return { slotId: p.slotId, intentId: p.intentId, state: st, artifact: { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: p.stagecraft } };
 }

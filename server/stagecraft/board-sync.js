@@ -94,13 +94,34 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
     { itemId: ask?.kit?.item?.id, line: text });
   // round 5 (stream 2): the numbers the child asked to see are not withheld (the open question's own key still is)
   const request = ask?.intent?.request ?? null;
-  const withhold = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
+  const withhold1 = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
+  // round 7 (main, director4 S2: "boards must show the authored rows and numbers"): a SCRIPTED beat's board (intent.boardRef)
+  // shows what Learning authored and certified. On an explain or worked beat no card is open, so nothing is withheld (the
+  // kit's other items' keys masked "6 cm | ? cm" on c6); a remediation withholds only its own item's key; a check beat
+  // keeps the full set (its card is live)
+  const sk = ask?.intent?.boardRef ? ask?.intent?.scriptBeat?.kind ?? null : null;
+  const withhold = !sk || sk === "check" ? withhold1
+    : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
+  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   // main 14.4: the answer her own question asks for, when her line already states it (selfAnswer): never drawn (W18)
   const sa = selfAnswer(spoken, { worked: String(kit?.workedExample?.problem ?? "") });
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
-    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) };
+    ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
+    ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
+}
+/** The numbers a script board ref authors (its params, nested or flat: sides, w, h, marks, labels …), as strings. */
+function refNumbers(ref) {
+  const out = new Set();
+  const walk = (v) => {
+    if (typeof v === "number" && Number.isFinite(v)) out.add(String(v));
+    else if (typeof v === "string") for (const m of v.match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []) out.add(m.replace(/\s+/g, ""));
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === "object") Object.values(v).forEach(walk);
+  };
+  try { walk(ref); } catch { /* a ref is data */ }
+  return [...out];
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
@@ -204,7 +225,7 @@ export function boardModeFor(script, under = []) {
 export function regate(script, ask, ctx) {
   if (!script?.ops?.length) return { ok: false, script: null, gate: null };
   const raw = { ...script, scriptId: ask?.intent?.intentId ?? script.scriptId, line: { lessonId: ask?.line?.lessonId ?? "", ...(ask?.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
-    anchor: "line_audio_start", mode: ask?.mode === "continue" ? "continue" : "fresh" };
+    anchor: "line_audio_start", mode: ask?.mode === "continue" && !ask?.intent?.boardRef ? "continue" : "fresh" };   // (a scripted page is new: director4 S1)
   delete raw.facts;
   let g = gateWhiteboard(raw, ctx);
   // round 4 content: a board refused ONLY because it writes the answer to her question (W9) keeps its picture with that
@@ -406,7 +427,7 @@ export async function plan(ask, o) {
   const t0 = Date.now();
   const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs, avoid: o.avoid, seen: o.seen })));
   if (!boardSyncOn()) return (await startLine()).v ?? { ok: false, script: null, usd: 0, why: "planner_error" };
-  const prior = ask?.mode === "continue" ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
+  const prior = ask?.mode === "continue" && !ask?.intent?.boardRef ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
   const ctx = gateCtxFor(ask, { kit: o.kit, redact: o.redact, prior });
   const tag = (r, source, extra = {}) => ({ ok: true, script: r.script, gate: r.gate, usd: extra.usd ?? 0, ms: Date.now() - t0, source, syncMs: Date.now() - t0, ...extra });
   // round 5 (stream 2, RCA-1): a ready-made board (speculative, code, template) is drawn only when it shows what the child

@@ -312,7 +312,7 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
 /** A scene may play this turn: no keyed card live (the turn's hint: an asking move, an open item), the withheld values known
  *  and empty (L.held, noteWithheld), none of them on screen (shared/scene.js sceneMayPlay). */
 function sceneMayPlayNow(L, p, hint = null) {
-  const scene = p?.artifact?.scene;
+  const scene = p?.artifact?.scene ?? p?.stagecraft?.scene;
   if (!scene) return { ok: false, why: "no_scene" };
   return sceneMayPlay(scene, { held: L.held === undefined ? [] : L.held, cardLive: !!hint?.asking || !!hint?.itemOpen });
 }
@@ -798,6 +798,8 @@ export const studioSeam = {
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
       if (p && !VISIBLE.has(p.state) && offSkill(p)) { retirePiece(L, p.intentId, "skill_changed"); stagecraft.noteRetired(L.lessonId); }
+      // round 7 M5a: a Stagecraft scene proposed before the move is not revealed on a turn whose card is live
+      else if (p && !VISIBLE.has(p.state) && p.stagecraft?.scene && !sceneMayPlayNow(L, p, hint).ok) { retirePiece(L, p.intentId, "card_live"); stagecraft.noteRetired(L.lessonId); }
       else if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
       // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
       else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
@@ -811,7 +813,7 @@ export const studioSeam = {
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     if (on && VISIBLE.has(on.state) && offSkill(on)) { retirePiece(L, on.intentId, "skill_changed"); return null; }
     // round 7 M5a: a scene on screen leaves the moment a keyed card goes live (it may show the card's answer)
-    if (on && VISIBLE.has(on.state) && on.source === "scene" && !sceneMayPlayNow(L, on, hint).ok) { retirePiece(L, on.intentId, "card_live"); return null; }
+    if (on && VISIBLE.has(on.state) && (on.source === "scene" || on.stagecraft?.scene) && !sceneMayPlayNow(L, on, hint).ok) { retirePiece(L, on.intentId, "card_live"); return null; }
     if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
       const g = gatedSlot(L, on, on.source === "skeleton" ? "fallback_ready" : on.state, "on_screen");
       // the device changed to a box the piece is not certified for: it leaves the tray (never shown broken)
@@ -1032,7 +1034,9 @@ export const studioSeam = {
       // r12 RCA failure 7: a continue page that would land on what the child already sees is drawn on a clean board
       if (r.script.mode === "continue" && boardSync.boardModeFor(r.script, L.wbUnder ?? []) === "fresh") r.script = { ...r.script, mode: "fresh" };
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
-      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
+      // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
+      const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
+      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen };
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;

@@ -76,3 +76,15 @@ test("lesson-script form (Learning): to, labelled marks and a hop; a label of an
   assert.match(expand({ template: "fraction-line@1", den: 4, marks: [{ num: 1, label: "1/2" }] }).errors.join(","), /label_value/, "1/4's point labelled 1/2 is false");
   assert.equal(expand({ template: "fraction-line@1", den: 4, from: 1 }).ok, false);
 });
+
+test("two denominators on one line (Learning, comparing fractions): marks on each den's side, the asking form places nothing", async () => {
+  const { speechMsOf } = await import("../server/studio/plan.js");
+  const gate = (c, line) => { const x = expand(c); assert.ok(x.ok, x.errors?.join(",")); return gateWhiteboard(retimeToLine(x.script, line), { reply: line, speechMs: speechMsOf(line) }); };
+  const g1 = gate({ template: "fraction-line@1", dens: [5, 8], marks: [[3, 5], [3, 8]] }, "Upar 5 barabar gap, neeche 8 barabar gap. 3/5 aur 3/8 dekho: 3/5 aage hai.");
+  assert.ok(g1.pass, JSON.stringify(g1.checks.filter((c) => !c.pass)));
+  const ask = expand({ template: "fraction-line@1", dens: [3, 5], target: [[2, 3], [2, 5]] });
+  assert.equal(ask.facts.onScreen.compare, "2/3 vs 2/5");
+  assert.ok(!ask.script.ops.some((o) => o.op === "line" && o.ink === "mark"), "no point placed: which is bigger stays the child's");
+  assert.equal(expand({ template: "fraction-line@1", dens: [5, 5] }).ok, false);
+  assert.equal(expand({ template: "fraction-line@1", dens: [5, 8], marks: [[3, 7]] }).ok, false, "a mark on neither den");
+});

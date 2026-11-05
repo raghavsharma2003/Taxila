@@ -54,3 +54,55 @@ test("board-first preselect builds the board a scripted beat names (intent.board
   assert.equal(BF.scriptRefStats().failed, before + 1);
   assert.notEqual(q?.by, "script");
 });
+
+test("W4 reads a list's commas as separators, a thousands comma as part of the number (Learning: '7, 3, 3, 3')", async () => {
+  const { numbersIn } = await import("../server/studio/qa/whiteboard.js");
+  const n = [...numbersIn("7, 3, 3, 3 and 45,000 and 1,00,000")];
+  for (const v of ["7", "3", "45000", "100000"]) assert.ok(n.includes(v), v);
+  assert.ok(!n.some((v) => v.includes(",")));
+});
+
+test("director4 S1/S2: a scripted explain step gets its board even as a 'continue' ask, with every authored number shown", async () => {
+  const BF = await import("../server/stagecraft/board-first.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const ask = (t, ref, kind, n) => { const kit = kitFromFile(getTopic(t)); const it = kit.items[0];
+    return [{ intent: { intentId: `d4-${n}:wb:1`, lessonId: `d4-${n}`, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: `e${n}`, kind } },
+      line: { lessonId: `d4-${n}`, text: "" }, mode: "continue", kit: { topicId: t, content: [], item: { id: it.id, prompt_en: it.prompt_en } } }, kit]; };
+  const pick = (...a) => { const [q, kit] = ask(...a); return BF.preselect(q, { kit }); };
+  const c5 = pick("c5-maths-ch02-t01", { template: "fraction-line@1", params: { den: 2, from: 0, to: 1, marks: [{ num: 1, label: "1/2" }] } }, "explain", 1);
+  assert.equal(c5?.by, "script", "S1: Brain's one 'explain' beat id made steps 2-3 'continue': no board at all");
+  assert.deepEqual(c5.screen, { template: "fraction-line@1", shape: "number line", numbers: ["0", "1", "1/2"], labels: ["1/2"] });
+  const tri = pick("c6-maths-ch06-t01", { template: "measured@1", params: { shape: "triangle", unit: "cm", sides: [4, 5, 6], trace: true } }, "explain", 2);
+  assert.equal(tri?.by, "script");
+  assert.ok(["4", "5", "6"].every((v) => tri.screen.numbers.includes(v)), `S2: no '? cm' (${JSON.stringify(tri.screen)})`);
+  assert.equal(tri.screen.shape, "triangle");
+  const pent = pick("c6-maths-ch06-t01", { template: "measured@1", params: { shape: "pentagon", unit: "m", sides: [4, 5, 3, 6, 2] } }, "worked", 3);
+  assert.deepEqual(pent.screen.numbers, ["4", "5", "3", "6", "2"]);
+  // a check beat still withholds: the named mark is "?"
+  const chk = pick("c5-maths-ch02-t01", { template: "fraction-line@1", params: { den: 3, from: 0, to: 1, mark: 1 } }, "check", 4);
+  assert.ok(!chk.screen.numbers.includes("1/3"));
+  // certify: a ref whose board leaves the line's measures off fails
+  const bare = await certifyBoardRef({ template: "shape@1", shape: "pentagon" }, { line: "Ek paanch bhujaon wali kyaari: 4 m, 5 m, 3 m, 6 m, 2 m." });
+  assert.ok(bare.failed.some((f) => f.startsWith("line_measures_not_on_board")));
+});
+
+test("Brain R4: a screen's shape is always one word of the closed set", async () => {
+  const { screenOf, SCREEN_SHAPES } = await import("../server/stagecraft/board-first.js");
+  const s = (t, shape) => screenOf({ template: t }, { onScreen: { shape } }).shape;
+  assert.equal(s("measured@1", "rect"), "rectangle");
+  assert.equal(s("measured@1", "7-sided shape"), "polygon");
+  assert.equal(s("shape@1", "kyaari"), "drawing", "a free name is never passed through");
+  assert.equal(s("fraction-line@1", undefined), "number line");
+  assert.equal(s("anything@9", undefined), "drawing");
+  for (const t of ["measured@1", "shape@1", "fraction-line@1", "table@1", "symmetry@1", "shade-grid@1"]) assert.ok(SCREEN_SHAPES.includes(s(t, undefined)), t);
+});
+
+test("Brain R4: screen numbers are what the board writes (a fraction numwork reads a/b), never a '?'", async () => {
+  const { screenOf } = await import("../server/stagecraft/board-first.js");
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const x = expand({ template: "fraction-parts@1", parts: 4, shade: 3, whole: "roti" });
+  assert.deepEqual(screenOf({ template: "fraction-parts@1" }, x.facts, x.script).numbers, ["3/4"]);
+  const asked = { ops: [{ op: "numwork", layout: "fraction", rows: [["?"], ["?"]] }, { op: "text", text: "? cm" }] };
+  assert.deepEqual(screenOf({ template: "fraction-parts@1" }, {}, asked).numbers, []);
+});

@@ -119,3 +119,39 @@ test("seam withholding: no scene comes up on a turn with a card open, and one on
   studioSeam.noteWithheld("scene-held-4", null);
   assert.notEqual((await studioSeam.composeAsk("scene-held-4", { visual: "animation", topicId: T, child }))?.kind, "scene");
 });
+
+test("Stagecraft rung: an animation want on a pilot topic reveals its scene (built instantly, never a spec), withheld over a held key", async (tc) => {
+  const bridge = await import("../server/stagecraft/seam-bridge.js");
+  const { StagecraftHost } = await import("../server/stagecraft/host.js");
+  const { createBuilders } = await import("../server/stagecraft/builders.js");
+  const { productionCatalog } = await import("../server/stagecraft/lesson.js");
+  const { stagecraftPointFor } = await import("../server/stagecraft/kernel-point.js");
+  const { studioSeam, _lesson } = seam;
+  const T = "c4-maths-ch05-t01";
+  const kit = kitFromFile(getTopic(T));
+  const catalog = productionCatalog({ fresh: true });
+  const builders = { instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) };
+  const child = { id: "child-1", class_level: 4, language_pref: "hinglish" };
+  const run = (id, held) => {
+    const host = bridge.attach(id, new StagecraftHost({ lessonId: id, mode: "on", catalog, builders }));
+    studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child });
+    _lesson(id).child = child;
+    for (let k = 0; k < 3; k++) studioSeam.statusFacts(id, { beat: "explain" });
+    if (held) studioSeam.noteWithheld(id, held);
+    const p = stagecraftPointFor({ lesson: { id, topic_id: T }, prev: { beat: { type: "explain" }, turn: 4 }, state: {}, kit, child, childText: "animation dikhao na", now: Date.now() });
+    return { host, p, view: studioSeam.statusFacts(id, { beat: "explain", stagecraftPoint: p }) };
+  };
+  const a = run("sc-rung-1");
+  tc.after(() => { bridge.detach("sc-rung-1"); bridge.detach("sc-rung-2"); });
+  assert.equal(a.p.want?.childRequested, true);
+  assert.equal(a.p.want?.archetype, "scene:equal-parts", "the scene ranks first among the topic's animations");
+  assert.ok(a.view?.propose?.reveal, JSON.stringify(a.view));
+  const slot = studioSeam.slotFor("sc-rung-1", { reveal: a.view.propose.reveal }, { beat: "explain", tray: null, asking: false, skillId: a.p.current.skillId });
+  assert.equal(slot?.artifact?.kind, "scene");
+  assert.equal(slot.artifact.scene.id, "equal-parts");
+  assert.ok(!a.host.state.candidates.some((c) => c.archetype === "scene:equal-parts" && c.rung === "generated_spec"), "never a spec build for a scene");
+  // a held key: Stagecraft does not reveal the scene
+  const b = run("sc-rung-2", ["1/4"]);
+  const s2 = b.view?.propose?.reveal ? studioSeam.slotFor("sc-rung-2", { reveal: b.view.propose.reveal }, { beat: "explain", tray: null }) : null;
+  assert.notEqual(s2?.artifact?.kind, "scene");
+});
