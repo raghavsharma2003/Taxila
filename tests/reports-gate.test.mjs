@@ -14,7 +14,8 @@ import { LANGS, VOICE_WORDS } from "../server/reports/config.js";
 import { dayFacts, SKILLS } from "./fixtures/report-facts.mjs";
 
 const SAMPLE = { name: "Riya", skill: "Compares fractions with the same numerator", belief: "A bigger denominator means a bigger fraction",
-  interest: "cricket", n: 7, k: 3, d: 2, lessons: 2, days: 2, min: 41, date: { y: 2026, m: 10, d: 9 }, object: "maths" };
+  interest: "cricket", n: 7, k: 3, d: 2, lessons: 2, days: 2, min: 41, date: { y: 2026, m: 10, d: 9 }, object: "maths",
+  h: 5, q: 4, m: 24, subject: "maths" };
 const slotsFor = (shapeId) => Object.fromEntries(Object.keys(SHAPES[shapeId].slots).map((k) => [k, SAMPLE[k]]));
 
 function assembled(facts, { k7 = false } = {}) {
@@ -99,7 +100,7 @@ test("template digit hygiene: 2,000 random slot sets render with no digit outsid
   for (let i = 0; i < 2000; i++) {
     const id = ids[rnd(ids.length)];
     const slots = slotsFor(id);
-    for (const k of ["n", "k", "d", "lessons", "days", "min"]) if (k in slots) slots[k] = 1 + rnd(400);
+    for (const k of ["n", "k", "d", "lessons", "days", "min", "h", "q", "m"]) if (k in slots) slots[k] = 1 + rnd(400);
     if ("date" in slots) slots.date = { y: 2026, m: 1 + rnd(12), d: 1 + rnd(28) };
     for (const lang of LANGS) {
       const v = lineViolations(renderShape(id, lang, slots), { shapeId: id, slots, lang, firstName: "Riya" });

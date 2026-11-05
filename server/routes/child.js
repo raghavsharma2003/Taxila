@@ -203,7 +203,8 @@ function kickPlanToday(childId, now) {
 /** @returns {Promise<import("../../shared/contracts").ChildPlanResponse>} */
 export async function planFor(child, guardian, now = new Date()) {
   kickPlanToday(child.id, now);
-  const routine = await one("select tz from child_routine where child_id = $1", [child.id]).catch(() => null);
+  // select *: 045's lesson_days / lesson_min may not exist yet (then the schedule is the start time alone)
+  const routine = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
   const tz = routine?.tz || DEFAULT_TZ;
   const day = learningDay(now, tz);
   const dayStart = zonedToUtc(day, "04:00", tz).toISOString();
@@ -226,7 +227,7 @@ export async function planFor(child, guardian, now = new Date()) {
     // a school test the parent entered, covering today (019 child_controls.test_window)
     one("select test_window from child_controls where child_id = $1", [child.id]).then((r) => {
       const w = activeWindow(r?.test_window, day);
-      return w ? { subject: w.subject, from_day: w.from, to_day: w.to } : null;
+      return w ? { subject: w.subject, from_day: w.from, to_day: w.to, chapters: w.chapters ?? null } : null;
     }).catch(() => null),
     // today's revealed Studio pieces (the mini-shelf; [] until W2-H's feed has rows)
     madeForOf(child.id, { since: dayStart, limit: 3 }),
@@ -249,7 +250,8 @@ export async function planFor(child, guardian, now = new Date()) {
   const teacher = teacherFor(child);
   // the ONE next-topic answer (truth.js nextTopicForPlan): inside an active test window it revises the test's subject,
   // on every surface (home topic, "Next time", parent next lesson, Progress, the lesson-end summary)
-  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null });
+  // the window's chapters and today (round 7 F test-window revision): the home's "next" is the lesson's revision topic
+  const nextT = await nextTopicOf(child, { testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day, today: day, ...(test.chapters ? { chapters: test.chapters } : {}) } : null });
   const topic = nextT ? { id: nextT.id, title: nextT.title, shortTitle: shortTitleOf(nextT.title), chapter: nextT.chapter.title, subject: nextT.subject,
     minutes: Number(dayPlan?.plan?.slots?.find((x) => x.kind === "live_lesson")?.targetMin) || lessonMinutes(child.class_level, capRemaining) } : null;
   const last = doneRows[0];
@@ -269,6 +271,8 @@ export async function planFor(child, guardian, now = new Date()) {
     testWindow: test ? { subject: test.subject, from: test.from_day, to: test.to_day } : null,
     homework: controls.homeworkUntil ? { until: controls.homeworkUntil } : null,
     textOnly: controls.textOnly,
+    // round 7 F (app-parent-schedule): the family's lesson time, for "Lesson time 5:00" on Home; a plan, never a lock
+    schedule: scheduleOf(routine, day),
   };
 }
 
@@ -510,6 +514,29 @@ async function request(req, res, body) {
   send(res, 200, { granted: false, state: p.state });
 }
 
+/**
+ * PURE. The child Home's view of the parent's schedule (round 7 F, app-parent-schedule): { time, minutes, today } or null.
+ * `today`: today is one of the lesson days (all days when none are stored).
+ */
+export function scheduleOf(routine, day) {
+  if (!routine?.anchor) return null;
+  const days = Array.isArray(routine.lesson_days) ? routine.lesson_days.map(Number) : null;
+  return { time: routine.anchor, minutes: routine.lesson_min ?? null, today: !days || days.includes(new Date(`${day}T00:00:00Z`).getUTCDay()) };
+}
+
+/**
+ * POST /api/homework/match { childId, text } → { match } (round 7 F, learning-homework-help; agreed with App 2026-11-04):
+ * where the child's homework question sits in their own class book (server/homework/match.js: kit_item | topic | subject),
+ * or null. In memory over the class's kits, no model call (App waits ≤ 1.5 s). The text is not stored.
+ */
+async function homeworkMatch(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const text = typeof body.text === "string" ? body.text.trim().slice(0, 500) : "";
+  if (!text) throw bad("text required");
+  const { matchHomework } = await import("../homework/match.js");
+  send(res, 200, { match: matchHomework(text, child) });
+}
+
 export const routes = {
   "GET /api/child/plan": plan,
   "GET /api/child/boot": boot,
@@ -519,6 +546,7 @@ export const routes = {
   "GET /api/child/skill-line": skillLine,
   "GET /api/child/skill-line/audio": skillLineAudio,
   "GET /api/child/name-audio": nameAudio,
+  "POST /api/homework/match": homeworkMatch,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };

@@ -250,13 +250,16 @@ export const claimRows = (rows) => rows.filter((r) => r.scored).sort((a, b) => D
  * PURE. A parent-entered school test window (019 child_controls.test_window) that covers the learning `day`, or null.
  * @param {any} w  the stored {subject, from, to}  @param {string} day  YYYY-MM-DD (learningDay)
  */
-export const activeWindow = (w, day) => (w && w.subject && w.from <= day && w.to >= day ? { subject: w.subject, from: w.from, to: w.to } : null);
+export const activeWindow = (w, day) => (w && w.subject && w.from <= day && w.to >= day
+  ? { subject: w.subject, from: w.from, to: w.to, ...(Array.isArray(w.chapters) && w.chapters.length ? { chapters: w.chapters.map(Number) } : {}) } : null);
 
 /** The child's school test window covering today (its own tz's learning day), or null. Read-only and defensive. */
 export async function testWindowOf(child, { now = new Date(), q = dbq } = {}) {
   try {
     const [r] = await q(`select c.test_window, r.tz from child_controls c left join child_routine r on r.child_id = c.child_id where c.child_id = $1`, [child.id]);
-    return activeWindow(r?.test_window, learningDay(now, r?.tz || "Asia/Kolkata"));
+    const today = learningDay(now, r?.tz || "Asia/Kolkata");
+    const w = activeWindow(r?.test_window, today);
+    return w ? { ...w, today } : null;
   } catch { return null; }
 }
 
@@ -272,7 +275,8 @@ export async function nextTopicForPlan(child, { testWindow, now = new Date(), q 
   const w = testWindow === undefined ? await testWindowOf(child, { now, q }) : testWindow;
   if (!rotationOn()) {
     if (w) {
-      const t = await nextTopicFor(child, { subject: w.subject }).catch(() => null);
+      const review = !!w.today && (Date.parse(w.to) - Date.parse(w.today)) / 86_400_000 < 2;
+      const t = await nextTopicFor(child, { subject: w.subject, ...(w.chapters?.length ? { revise: { chapters: w.chapters, review } } : {}) }).catch(() => null);
       if (t) return t;
     }
     return nextTopicFor(child).catch(() => null);
@@ -280,6 +284,12 @@ export async function nextTopicForPlan(child, { testWindow, now = new Date(), q 
   const [pick, placed] = await Promise.all([subjectsToday(child, { testWindow: w, now, q }), placementResultsOf(child.id, { q_: q })]);
   // round 7 F item 6: a finished placement round sets where a subject starts when the school's chapter is not known
   const startGE = startGEOf(placed);
+  // round 7 F: a test window with chapters revises only those; retrieval-only (a topic already met) in its last 2 days
+  if (w?.chapters?.length) {
+    const review = !!w.today && (Date.parse(w.to) - Date.parse(w.today)) / 86_400_000 < 2;
+    const t = await nextTopicFor(child, { subject: w.subject, revise: { chapters: w.chapters, review } }).catch(() => null);
+    if (t) return t;
+  }
   for (const subject of pick.subjects) {
     const t = await nextTopicFor(child, { subject, startGE }).catch(() => null);
     if (t) return t;

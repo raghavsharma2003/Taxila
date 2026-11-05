@@ -20,7 +20,7 @@ export const WAKE_REASONS = ["day_start", "night", "replan", "debounce_flush", "
   "care_note_expiry", "safety_settle", "safety_escalate", "resume_window_end", "pause_end", "dormancy_check", "household", "reassign"];
 const SafetyCategory = z.enum(["self_harm", "abuse", "neglect", "violence_at_home", "sexual_content", "bullying", "medical", "other"]);
 /** Parent settings the Conductor folds at M0 (parent_setting / child_controls is the source of truth). */
-export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz", "sharedPhone"];
+export const SETTING_KEYS = ["dailyMinutes", "hoursStart", "hoursEnd", "restDays", "bedtime", "schoolStart", "schoolEnd", "wakeTime", "tz", "sharedPhone", "anchor", "lessonMin"];
 
 /** An IANA zone the runtime knows ('Asia/Kolkata'); Intl throws a RangeError on anything else. */
 const Tz = z.string().regex(/^[A-Za-z][A-Za-z0-9_+\-]*(\/[A-Za-z0-9_+\-]+){0,2}$/, "tz: IANA zone").max(64).refine((tz) => {
@@ -37,6 +37,8 @@ export const SETTING_VALUE = {
   tz: Tz,
   // round 7 F (household v1): the parent says these children share one phone for lessons (conductor/household.js)
   sharedPhone: z.boolean(),
+  // round 7 F (app-parent-schedule): the lesson start time and length the parent chose
+  anchor: HHMM, lessonMin: z.number().int().min(10).max(60),
 };
 
 const OutcomeDigest = z.strictObject({
@@ -80,7 +82,10 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("parent.resume"),
   ev("parent.consent_changed", { purpose: Purpose, granted: z.boolean(), consentVersion: z.union([z.number().int(), Id]) }),
   // school
-  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]) }),
+  ev("school.test_announced", { subject: Id, on: Day, chapters: z.array(Id).max(20), via: z.enum(["parent", "child"]),
+    from: Day.optional() }),   // round 7 F: the parent's own first day (else on − 4)
+  // round 7 F: the parent removed the test window (Controls → Clear)
+  ev("school.test_cleared", { subject: Id, via: z.enum(["parent", "child"]) }),
   ev("school.day_override", { date: Day, kind: z.enum(["off", "holiday", "school_day"]) }),
   // round 7 F: where the school is in a subject (child.school_chapter), and the school timetable for a weekday (034)
   ev("school.pointer_set", { subject: Id, chapter: z.number().int().min(1).max(40), on: Day, via: z.enum(["parent", "child", "intake"]) }),
@@ -140,7 +145,8 @@ export function idemKeyFor(e) {
     case "parent.setting_changed": return `setting:${e.key}:${e.settingsVersion}`;
     case "parent.pause": return `pause:${e.until}`;
     case "parent.consent_changed": return `consent:${e.purpose}:${e.consentVersion}:${e.granted ? 1 : 0}`;
-    case "school.test_announced": return `test:${e.subject}:${e.on}`;
+    case "school.test_announced": return `test:${e.subject}:${e.on}:${e.from ?? ""}:${[...e.chapters].sort().join(",")}`;
+    case "school.test_cleared": return null;   // no unique fact; clearing twice is harmless
     case "school.day_override": return `dayoverride:${e.date}:${e.kind}`;
     case "school.pointer_set": return `pointer:${e.subject}:${e.chapter}:${e.on}:${e.via}`;
     case "school.timetable_set": return `timetable:${e.via}:${e.weekday}:${e.rev}`;
