@@ -32,6 +32,9 @@ does in NCERT, not counting exercises.
 - NEW, requested from Studio for c5: `fraction-line@1` { den: 2-12, from: 0, to: 1|2|3, marks?: [{ num, label? }], hop?: { num } }
   (0 to `to`, cut into `den` equal gaps per unit; marks highlight points num/den; a hop draws the jumps from 0).
   Use it for EVERY c5 number-line board. Never use a shaded circle for c5.
+  Studio (2026-11-05) built it as written; labels are checked against num/den at expand. A CHECK board must not show its
+  answer: use `mark: k` (a "?" on the k-th mark, its fraction never written) or `target: [a, den]` (the asked fraction
+  written above the line, nothing placed), with no marks and no hop.
 A board ref is `{ "template": "...", "params": { … } }`. Each explain beat and the worked example name the board
 they speak over; the beat's `convey` must point at something visible on that board.
 

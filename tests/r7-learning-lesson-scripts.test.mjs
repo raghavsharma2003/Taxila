@@ -19,7 +19,14 @@ const RANGE = {
   "compare@1": (p) => p.left?.items?.length >= 1 && p.right?.items?.length >= 1,
   "measured@1": (p) => ["m", "cm"].includes(p.unit) && ["rect", "square", "triangle", "circle"].includes(p.shape),
   "shape@1": (p) => typeof p.shape === "string",
-  "fraction-line@1": (p) => p.den >= 2 && p.den <= 12 && [1, 2, 3].includes(p.to) && (p.marks ?? []).every((m) => m.num >= 0 && m.num <= p.den * p.to),
+  // Studio's board (C1, 2026-11-05): marks label points and hop draws the solved jumps (explain, worked, remediation);
+  // a CHECK board uses mark k ("?" on a named mark) or target [a, den] (the asked fraction written, not placed), never both
+  "fraction-line@1": (p) => {
+    const inLine = (n) => Number.isInteger(n) && n >= 0 && n <= p.den * p.to;
+    return p.den >= 2 && p.den <= 12 && [1, 2, 3].includes(p.to) && (p.marks ?? []).every((m) => inLine(m.num))
+      && (p.hop === undefined || inLine(p.hop.num)) && (p.mark === undefined || inLine(p.mark)) && !(p.mark !== undefined && p.target !== undefined)
+      && (p.target === undefined || (Array.isArray(p.target) && p.target[1] === p.den && inLine(p.target[0])));
+  },
 };
 const esc = (s) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 /** The prompt prints the key as a word (a two-way choice "X or Y" and yes/no keys are not a leak). */
@@ -55,7 +62,11 @@ for (const f of files) {
         assert.ok(mis.has(c.targets), `${k.skillId}/${c.id} targets a kit misconception`);
         assert.ok(c.key && c.wrongIfMis && c.wrongIfMis !== c.key, `${k.skillId}/${c.id} key and the misconception's answer`);
         assert.ok(!leaks(c.prompt, c.key), `${k.skillId}/${c.id} prompt prints its key`);
-        if (c.board) boards.push(c.board);
+        if (c.board) {
+          boards.push(c.board);
+          const p = c.board.params ?? {};
+          if (c.board.template === "fraction-line@1") assert.ok(!p.hop && !(p.marks ?? []).length && (p.mark !== undefined || p.target), `${k.skillId}/${c.id} a check line asks (mark/target), never shows`);
+        }
       }
       assert.ok(k.ladder.length >= 3, `${k.skillId} ladder`);
       for (const r of k.ladder) assert.ok(items.has(r.itemId), `${k.skillId} ladder ${r.itemId} is a kit item`);
