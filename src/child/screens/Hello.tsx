@@ -25,7 +25,8 @@ import { Spot } from "../art.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { INTERESTS, interestIds } from "../interests.ts";
 import { t } from "../copy.ts";
-import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
+import { AVATARS, Avatar, avatarName, avatarsFor, Icon, Picto } from "../pictos.tsx";
+import { tr7 } from "../../copy/en.ts";
 import { helloClip, useVoiceClip } from "../voice.ts";
 import { listenOnce } from "../sayHi.ts";
 import { kakshaEnabled } from "../../ui-v3/kaksha/flag.ts";
@@ -223,6 +224,9 @@ export function Hello() {
     // Kaksha (r7 app-secondary-screens-kaksha): Hello as a boot sequence. Her comms window, a mono log of what each
     // step set up (done steps ticked, the current one live), and the step's panel with its one plasma action.
     const at = bootIndex(card);
+    // r7 9-15 sweep: the older family picks an emblem (the painted animals stay the young family's)
+    const set = avatarsFor(family);
+    const pageSet = set.slice((page * 6) % set.length, ((page * 6) % set.length) + 6);
     let kbody;
     switch (card) {
       case "greet":
@@ -235,7 +239,7 @@ export function Hello() {
             ) : (
               <Cta onClick={() => setCard("ai")} testid="hello-next">{t("helloNext")}</Cta>
             )}
-            {clip.playing && <Ghost onClick={() => setCard("ai")}>{t("helloNext")}</Ghost>}
+            {clip.playing && <Ghost onClick={() => setCard("ai")} testid="hello-next">{t("helloNext")}</Ghost>}
           </>
         );
         break;
@@ -253,7 +257,7 @@ export function Hello() {
           <>
             <h2 tabIndex={-1} className="kx-h3">{t("pickPicture")}</h2>
             <div className="kx-pics" role="radiogroup" aria-label={t("pickPicture")}>
-              {pageAvatars.map((a) => (
+              {pageSet.map((a) => (
                 <button key={a} type="button" role="radio" aria-checked={avatar === a} className="kx-pic kx-cut" aria-label={avatarName(a)} onClick={() => setAvatar(a)}>
                   <Avatar id={a} size={young ? 76 : 64} />
                 </button>
@@ -269,7 +273,7 @@ export function Hello() {
       case "likes":
         kbody = (
           <>
-            <h2 tabIndex={-1} className="kx-h3">{t("likesQ")}</h2>
+            <h2 tabIndex={-1} className="kx-h3">{young ? t("likesQ") : tr7("hello.likesOlder")}</h2>
             <div className="kx-likes">{parentPicks.map((id) => <span key={id} className="kx-like kx-cut" data-on=""><Spot id={`interests/${id}`} size={56} fallback={<Glyph name="picture" size={28} />} /><span>{label(id)}</span></span>)}</div>
             <div className="kx-hello-pair">
               <Ghost onClick={() => setCard("change")}>{t("change")}</Ghost>

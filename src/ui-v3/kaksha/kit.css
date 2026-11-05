@@ -188,3 +188,11 @@
 .kx-jaritem .kx-glyph { flex: none; color: var(--k-her); margin-top: 1px; }
 .kx-jaritem[data-state="answered"] { border-left-color: var(--k-secure); color: var(--k-ink-2); }
 .kx-jaritem[data-state="answered"] .kx-glyph { color: var(--k-secure); }
+/* r7 9-15 sweep: the paired action never wraps its word onto two lines at 360-412 */
+.kx-hello-pair .kx-cta { font-size: 16px; padding: 0 14px; white-space: nowrap; }
+.kx-hello-pair .kx-ghost--kit { padding: 0 12px; white-space: nowrap; }
+/* the compact face still prints her name and "AI teacher" whole (never clipped: the AI label is a safety floor) */
+.kx-hello-face[data-compact] { width: min(52vw, 204px); }
+.kx-hello-face .kx-who { white-space: nowrap; }
+.kx-hello-face[data-compact] .kx-who b { font-size: 16px; padding: 5px 7px; }
+.kx-hello-face[data-compact] .kx-ai { font-size: 14px; padding: 4px 6px; }

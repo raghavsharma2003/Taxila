@@ -254,6 +254,8 @@ export const R7 = {
   "nb.madeEmpty": "Things {T} makes for you will be here.",
   "nb.close": "Close",
   "nb.jar": "Questions",
+  // r7 9-15 onboarding sweep: Hello for the older family
+  "hello.likesOlder": "Your parent picked these. Still you?",
   "jar.waiting": "{T} will bring these back",
   "jar.answered": "Answered",
   "jar.answeredOn": "answered on {date}",

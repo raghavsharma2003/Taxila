@@ -17,7 +17,7 @@ import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { tr7, tw } from "../../copy/en.ts";
 import { useHeadset } from "../lesson/headset.ts";
-import { AVATARS, Avatar, avatarName, Icon, Picto, type IconName } from "../pictos.tsx";
+import { AVATARS, Avatar, avatarName, avatarsFor, Icon, Picto, type IconName } from "../pictos.tsx";
 import { usePlan } from "../plan.ts";
 import type { ChildPrefs } from "../prefs.ts";
 
@@ -133,7 +133,7 @@ export function Me() {
         </Panel>
         <KxSheet open={picking} onClose={() => setPicking(false)} title={t("pickPicture")} closeLabel={t("close")} testid="picture-sheet">
           <div className="kx-pics" role="radiogroup" aria-label={t("pickPicture")}>
-            {AVATARS.map((a) => (
+            {avatarsFor(family).map((a) => (
               <button key={a} type="button" role="radio" aria-checked={child.avatar === a} className="kx-pic kx-cut" aria-label={avatarName(a)} onClick={() => void pick(a)}>
                 <Avatar id={a} size={64} />
               </button>

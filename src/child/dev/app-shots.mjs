@@ -92,6 +92,10 @@ export const SCREENS = {
   station: `/c/${CID}/map`,
   "notebook-made": `/c/${CID}/notebook?made=m1`,
   "notebook-jar": `/c/${CID}/notebook`,
+  // r7 onboarding sweep: the parent set-up (Learning's src/onboarding, shot for review) and the child's first meeting
+  "start-class": `/start/class`, "start-promises": `/start/promises`, "start-phone": `/start/phone`, "start-child": `/start/child`,
+  "start-controls": `/start/controls`, "start-handover": `/start/handover`, "start-student": `/start/student`,
+  "hello-ai": `/c/${CID}/hello`, "hello-picture": `/c/${CID}/hello`, "hello-likes": `/c/${CID}/hello`, "hello-hi": `/c/${CID}/hello`,
 };
 
 async function main() {
@@ -119,6 +123,14 @@ async function main() {
       if (name === "station") {
         await page.evaluate(() => document.querySelector(".kx-station")?.click()).catch(() => {});
         await page.waitForTimeout(600);
+      }
+      // Hello steps: click through to the step named (greet → ai → picture → likes/change → hi)
+      const STEPS = { "hello-ai": ["hello-hear", "hello-next"], "hello-picture": ["hello-hear", "hello-next", "hello-gotit"], "hello-likes": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme"],
+        "hello-hi": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme", "hello-done", "hello-right"] };
+      for (const tid of STEPS[name] ?? []) {
+        if (tid === "PIC") await page.evaluate(() => document.querySelector('[role="radio"]')?.click()).catch(() => {});
+        else await page.evaluate((t) => document.querySelector(`[data-testid="${t}"]`)?.click(), tid).catch(() => {});
+        await page.waitForTimeout(350);
       }
       if (name === "notebook-jar") {
         await page.click('[data-testid="nb-tab-jar"]').catch(() => {});
