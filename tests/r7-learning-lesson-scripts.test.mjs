@@ -85,3 +85,44 @@ for (const f of files) {
     assert.equal(checked.size, mis.size, "every kit misconception is checked somewhere");
   });
 }
+
+// Studio's full whiteboard gate (certifyBoardRef's W-checks, server/forge/explainer/board-ref.js) on every board, against a
+// stand-in for what she will say over it: an explain beat's `point`, the worked example's problem + step results + answer,
+// a check's prompt (its key and accepted forms withheld: W9), a remediation's move. W6 (timing) is judged against the
+// stand-in's length, which is not her line; Studio re-times and re-gates every board against her real line at turn time,
+// so W6 (and W19 when only W6 fails at the end state) is left to that gate. Every other W-check must pass here.
+test("every board passes Studio's whiteboard gate (W6 timing is judged at turn time against her real line)", async () => {
+  const [{ resolveBoardRef }, { expand }, { gateWhiteboard }, { retimeToLine }] = await Promise.all([
+    import("../server/forge/explainer/board-ref.js"), import("../server/forge/explainer/templates.js"),
+    import("../server/studio/qa/whiteboard.js"), import("../server/stagecraft/board-sync.js")]);
+  const failed = [];
+  for (const f of files) {
+    const s = JSON.parse(readFileSync(new URL(f, DIR), "utf8"));
+    const kit = kitTopic(s.topicId);
+    for (const k of s.skills) {
+      const we = k.workedExample;
+      const beats = [...k.explain.map((e) => [e.id, e.board, e.point, null]), ["we", we.board, [we.problem, ...we.steps.map((x) => x.result), we.answer].join(" "), null],
+        ...k.checks.map((c) => [c.id, c.board, c.prompt, { values: [c.key, ...(c.accept ?? [])] }]), ...k.remediation.map((r, i) => [`rem${i + 1}`, r.board, r.move, null])];
+      for (const [id, board, line, withhold] of beats) {
+        if (!board) continue;
+        const r = resolveBoardRef(board, { kit });
+        if (!r.ok) { failed.push(`${k.skillId}/${id}: ${r.why}`); continue; }
+        const text = String(line);
+        const g = gateWhiteboard(retimeToLine(expand(r.call).script, text), { reply: text, speechMs: Math.max(1500, text.split(/\s+/).length * 400), withhold: withhold ?? { values: [] }, kit });
+        const bad = g.checks.filter((c) => !c.pass && c.id !== "W6.timing" && !(c.id === "W19.settled" && c.detail?.every?.((d) => d === "W6.timing")));
+        if (bad.length) failed.push(`${k.skillId}/${id}: ${bad.map((c) => `${c.id} ${JSON.stringify(c.detail)}`).join(" | ")}`);
+      }
+    }
+  }
+  assert.deepEqual(failed, []);
+});
+
+test("Brain's runtime validator walks every skill of every script (server/director/script.js)", async () => {
+  const { validateTopicScript } = await import("../server/director/script.js");
+  for (const f of files) {
+    const s = JSON.parse(readFileSync(new URL(f, DIR), "utf8"));
+    const r = validateTopicScript(s, kitTopic(s.topicId));
+    assert.deepEqual(r.errors, [], s.topicId);
+    assert.equal(r.ok.length, s.skills.length, `${s.topicId} walkable skills`);
+  }
+});
