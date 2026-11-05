@@ -121,3 +121,16 @@ test("R4: a sentence naming another shape, or pointing at a number the board lac
   // with no slot facts, the script beat's board ref names the shape
   assert.equal(screenFacts({}, { scriptBeat: { board: { template: "measured@1", params: { shape: "rect" } } } }).shape, "rectangle");
 });
+
+test("R4: the card's own question is never dropped, even when it names other numbers or another shape", async () => {
+  const { textReply, replyDeps } = await import("../server/brain/say.js");
+  const { chat } = await import("../server/azure.js");
+  const q = "Agar ek rectangle ki bhujayein 7 cm aur 2 cm hon, toh parimap kitna hoga?";
+  const base = initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish" }, seed: 7, now: 0 });
+  const state = { ...base, recent: [], turn: 4, mode: "text", lastMove: { kind: "explain", shape: "x", scriptBeat: { kind: "explain", beatId: "e1", board: { template: "measured@1", params: { shape: "triangle" } } } } };
+  replyDeps.chat = async () => ({ text: `Triangle ki teeno bhujayein jodo. ${q}` });
+  try {
+    const out = await textReply({ instructions: "x", state, kit: K, childText: "haan", history: [], ui: { ask: { text: q }, studioSlot: { artifact: { screen: { shape: "triangle", numbers: ["4", "5", "6"] } } } }, module: null });
+    assert.ok(out.reply.includes(q), out.reply);
+  } finally { replyDeps.chat = chat; }
+});

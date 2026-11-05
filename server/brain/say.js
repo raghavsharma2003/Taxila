@@ -1424,7 +1424,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // dc-r7-script-walk-v2 R4: a sentence that contradicts the screen is dropped (never on a safeguard turn); a line left empty
     // falls back to the move's own fixed line
     if (kindNow !== "safeguard" && state.lastMove?.scriptBeat) {
-      const bad = screenContradictions(reply, screenFacts(ui, state.lastMove));
+      // (the card's own question is verified content, never checked against the board: a transfer question may name other
+      // numbers or another shape, Learning's c6 s2/e2, s3/e1-e2)
+      const cardQ = [ui?.ask?.text, item ? promptFor(item, lang) : null].filter(Boolean).map((x) => String(x).replace(/\s+/g, " ").trim());
+      const inCard = (x) => { const t = x.replace(/\s+/g, " ").trim().replace(/[.!?।]+$/, ""); return t.length > 3 && cardQ.some((q) => q.includes(t)); };
+      const bad = screenContradictions(reply, screenFacts(ui, state.lastMove)).filter((x) => !inCard(x));
       if (bad.length) {
         const kept = sentences(reply).filter((x) => !bad.some((b) => b.trim() === x.trim()));
         reply = kept.join(" ").trim() || fallbackReply(state, item);
