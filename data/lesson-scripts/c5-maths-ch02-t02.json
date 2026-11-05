@@ -1,0 +1,848 @@
+{
+ "topicId": "c5-maths-ch02-t02",
+ "classLevel": 5,
+ "version": 1,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "bhinn",
+   "en": "fraction"
+  },
+  {
+   "hi": "barabar hisse",
+   "en": "equal parts"
+  },
+  {
+   "hi": "ansh",
+   "en": "numerator"
+  },
+  {
+   "hi": "har",
+   "en": "denominator"
+  },
+  {
+   "hi": "sankhya rekha",
+   "en": "number line"
+  },
+  {
+   "hi": "poora",
+   "en": "one whole"
+  },
+  {
+   "hi": "tukda",
+   "en": "piece"
+  },
+  {
+   "hi": "tulna",
+   "en": "comparison"
+  },
+  {
+   "hi": "bada",
+   "en": "bigger"
+  },
+  {
+   "hi": "chhota",
+   "en": "smaller"
+  },
+  {
+   "hi": "ek chauthai",
+   "en": "one quarter"
+  },
+  {
+   "hi": "aadha",
+   "en": "one half"
+  }
+ ],
+ "skills": [
+  {
+   "skillId": "c5-maths-ch02-t02-s1",
+   "hook": {
+    "convey": "one same-size pizza, shared once among 4, once among 8 → 8 looks bigger than 4, yet each slice is smaller → which slice to pick is the question",
+    "interestSlots": [
+     "pizza and roti sharing",
+     "laddoos at Diwali",
+     "chocolate bars",
+     "ribbon at a tailor's shop",
+     "water bottles"
+    ],
+    "slotUse": "the one same-size whole that gets cut into equal parts and shared; one part each, never a count of separate things"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "one bar = one whole; cut into 4 equal parts; 1 part shaded = 1/4; bottom number = how many equal parts the one whole is cut into",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "point": "the 1 shaded part of the bar cut into 4 equal parts, 1/4"
+    },
+    {
+     "id": "e2",
+     "convey": "same-size bar, now cut into 8 equal parts → each quarter split in 2 → 1 shaded part = 1/8 → half as long as the 1/4 part",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 8,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "point": "the 1 shaded part of the same-size bar cut into 8 equal parts, 1/8"
+    },
+    {
+     "id": "e3",
+     "convey": "both on one 0-to-1 line: 1/8 sits nearer 0, 1/4 further on → 1/8 < 1/4; more equal parts of the same whole → each part smaller → bigger bottom number, smaller unit fraction",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/8"
+        },
+        {
+         "num": 2,
+         "label": "1/4"
+        }
+       ]
+      }
+     },
+     "point": "the 2 marks: 1/8 nearer 0, 1/4 further from 0"
+    }
+   ],
+   "workedExample": {
+    "problem": "Which is bigger: 1/6 or 1/3 of the same chocolate bar?",
+    "givens": [
+     "one chocolate bar, the same bar for both",
+     "fraction A: 1/6",
+     "fraction B: 1/3",
+     "top number of both is 1"
+    ],
+    "find": "the bigger of 1/6 and 1/3",
+    "steps": [
+     {
+      "do": "both top numbers 1 → one piece each → compare the size of one piece",
+      "result": "compare one sixth piece with one third piece"
+     },
+     {
+      "do": "sixths: the bar cut into 6 equal parts",
+      "result": "1/6 is 1 of 6 equal parts"
+     },
+     {
+      "do": "thirds: the same bar cut into 3 equal parts → fewer parts, each part longer",
+      "result": "1/3 is 1 of 3 equal parts"
+     },
+     {
+      "do": "cut each third in 2 → 6 equal parts; one third covers 2 of them",
+      "result": "1/3 = 2/6"
+     },
+     {
+      "do": "2 sixths against 1 sixth",
+      "result": "1/3 > 1/6"
+     }
+    ],
+    "answer": "1/3 > 1/6",
+    "why": "same whole → more equal parts → each part smaller; a sixth = half of a third → 1/3 is the bigger piece even though 3 < 6",
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "Two same-size rotis: one is cut into 10 equal pieces, the other into 5 equal pieces. Which single piece is bigger: 1/10 or 1/5?",
+     "key": "1/5",
+     "accept": [
+      "one fifth",
+      "the piece from the roti cut into 5"
+     ],
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "wrongIfMis": "1/10",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "Put in order from smallest to biggest: 1/3, 1/12, 1/6.",
+     "key": "1/12, 1/6, 1/3",
+     "accept": [
+      "1/12 < 1/6 < 1/3",
+      "1/12 1/6 1/3"
+     ],
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "wrongIfMis": "1/3, 1/6, 1/12",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "A line from 0 to 1 is cut into 4 equal gaps. Is the first mark after 0 bigger or smaller than 1/8?",
+     "key": "bigger",
+     "accept": [
+      "it is bigger",
+      "1/4 is bigger",
+      "bada"
+     ],
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "wrongIfMis": "smaller",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t02-i01",
+     "why": "1/4 vs 1/8 of one pizza, same pair as e1-e3 → choose the bigger slice directly"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i05",
+     "why": "predict before cutting: 3 vs 6 pieces of one laddoo → rule used without a picture"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i04",
+     "why": "three unit fractions to order (1/2, 1/10, 1/5) → bottom numbers read in reverse"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-rl-o1",
+     "why": "1/6 vs 1/9 inside a story with two identical bottles → same-whole condition stated, not drawn"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-rl-h1",
+     "why": "1/12, 1/7, 1/4 of identical ribbons, bottom numbers not in halving pairs → rule alone, shortest to longest"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "move": "two same-size paper strips laid one over the other: one cut into 4 equal parts, one into 8; one 1/4 piece covers exactly two 1/8 pieces → a 1/8 piece = half of a 1/4 piece → more cuts of the same whole → smaller piece; 8 > 4 but 1/8 < 1/4",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 8,
+       "shade": 2,
+       "whole": "bar"
+      }
+     },
+     "then": "two same-size juice bottles: Asha pours out 1/5 of hers, Ravi pours out 1/10 of his → who pours out more juice",
+     "thenKey": "Asha",
+     "thenAccept": [
+      "Asha, 1/5",
+      "1/5 wali"
+     ]
+    }
+   ],
+   "bridgeToNext": "one piece each → piece size decides (bottom number); next: same bottom number → same-size pieces → number of pieces (top number) decides"
+  },
+  {
+   "skillId": "c5-maths-ch02-t02-s2",
+   "hook": {
+    "convey": "one cake cut into 7 equal pieces; Riya takes 3, Sohan takes 5 → same cake, same-size pieces → who has more is settled by the top number alone",
+    "interestSlots": [
+     "birthday cake",
+     "storybook pages read",
+     "chocolate bars",
+     "phone data pack",
+     "laddoos at Diwali"
+    ],
+    "slotUse": "one whole cut into equal parts, two shares of that same whole taken by two people"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bar in 7 equal parts → each part 1/7; 3 shaded = 3/7 = three 1/7 pieces; top number = how many of those equal parts are taken",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 7,
+       "shade": 3,
+       "whole": "bar"
+      }
+     },
+     "point": "the 3 shaded parts of the bar cut into 7 equal parts, 3/7"
+    },
+    {
+     "id": "e2",
+     "convey": "same bar, same 1/7 parts; 5 shaded = 5/7 → piece size unchanged, 5 pieces against 3 pieces → 5/7 > 3/7",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 7,
+       "shade": 5,
+       "whole": "bar"
+      }
+     },
+     "point": "the 5 shaded parts of the same bar in 7 equal parts, 5/7"
+    },
+    {
+     "id": "e3",
+     "convey": "one 0-to-1 line in sevenths: 3/7 = 3 gaps from 0, 5/7 = 5 gaps from 0 → further from 0 = bigger; same bottom number → compare top numbers",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/7"
+        },
+        {
+         "num": 5,
+         "label": "5/7"
+        }
+       ]
+      }
+     },
+     "point": "the 2 marks: 3/7, and 5/7 further from 0"
+    },
+    {
+     "id": "e4",
+     "convey": "rule holds only with matching bottom numbers → same-size pieces → more pieces = more; bottom numbers differ → piece sizes differ → number of pieces alone decides nothing",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "same bottom number",
+        "items": [
+         "same-size pieces",
+         "more pieces = more"
+        ]
+       },
+       "right": {
+        "title": "different bottom numbers",
+        "items": [
+         "different-size pieces",
+         "pieces alone do not decide"
+        ]
+       }
+      }
+     },
+     "point": "left: same bottom number, same-size pieces, more pieces = more; right: different bottom numbers, different-size pieces, pieces alone do not decide"
+    }
+   ],
+   "workedExample": {
+    "problem": "Which is less of the same cake: 5/8 or 3/8?",
+    "givens": [
+     "one cake, the same cake for both",
+     "fraction A: 5/8",
+     "fraction B: 3/8",
+     "bottom number of both is 8"
+    ],
+    "find": "the smaller of 5/8 and 3/8",
+    "steps": [
+     {
+      "do": "both bottom numbers 8 → the same cake cut into 8 equal parts → every piece the same size",
+      "result": "each piece is 1/8"
+     },
+     {
+      "do": "5/8 as pieces",
+      "result": "5/8 is 5 pieces of 1/8"
+     },
+     {
+      "do": "3/8 as pieces",
+      "result": "3/8 is 3 pieces of 1/8"
+     },
+     {
+      "do": "same-size pieces → fewer pieces = less cake",
+      "result": "3 pieces < 5 pieces, 2 pieces fewer"
+     },
+     {
+      "do": "back to fractions",
+      "result": "3/8 < 5/8"
+     }
+    ],
+    "answer": "3/8 < 5/8",
+    "why": "same bottom number → same-size pieces → the count of pieces decides; 3 eighths sit before 5 eighths on the line",
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 3,
+        "label": "3/8"
+       },
+       {
+        "num": 5,
+        "label": "5/8"
+       }
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c0",
+     "prompt": "Meena ate 2/6 of a cake and her brother ate 4/6 of the same cake. Who ate more: Meena or her brother, or did they eat the same?",
+     "key": "her brother",
+     "accept": [
+      "brother",
+      "the brother",
+      "her brother, 4/6",
+      "4/6"
+     ],
+     "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
+     "wrongIfMis": "the same amount",
+     "board": null
+    },
+    {
+     "id": "c1",
+     "prompt": "Two same-size cakes. Asha's cake is cut into 4 equal pieces and she takes 2 of them. Ben's cake is cut into 12 equal pieces and he takes 3 of them. Ben says he has more because 3 pieces are more than 2 pieces. Who has more cake: Asha or Ben?",
+     "key": "Asha",
+     "accept": [
+      "Asha has more",
+      "Asha, 2/4",
+      "Ben is wrong, Asha"
+     ],
+     "targets": "c5-maths-ch02-t02-m-tops-only",
+     "wrongIfMis": "Ben",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "Which is bigger of the same cake: 3/4 or 5/6? Both are one piece short of the whole cake.",
+     "key": "5/6",
+     "accept": [
+      "five sixths",
+      "not equal, 5/6 is bigger"
+     ],
+     "targets": "c5-maths-ch02-t02-m-gap-thinking",
+     "wrongIfMis": "they are equal",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t02-i02",
+     "why": "3/7 vs 5/7 of a cake, the pair from e1-e3 → bigger top number, bigger share"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i13",
+     "why": "2/9 vs 5/9 asked as the smaller → same rule read the other way"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-rl-o2",
+     "why": "2/9 vs 4/9 of identical data packs → same-whole condition inside a story"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i09",
+     "why": "4/9 vs 7/9 of the same book, answer is a person → read the fractions out of the story"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-rl-h2",
+     "why": "17/25 vs 21/25 → who read more and by how much → 4/25 as the gap between same-size parts"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
+     "move": "same denominator = same SIZE of piece, not the same amount → line 0 to 1 cut into 6 equal gaps; 2/6 = 2 gaps from 0, 4/6 = 4 gaps from 0 → same-size gaps, more of them = further from 0 = bigger",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/6"
+        },
+        {
+         "num": 4,
+         "label": "4/6"
+        }
+       ]
+      }
+     },
+     "then": "a ribbon 1 m long cut into 8 equal pieces; Asha takes 3 pieces, Gopi takes 5 → who has more ribbon",
+     "thenKey": "Gopi",
+     "thenAccept": [
+      "Gopi, 5/8 m",
+      "5/8 m"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t02-m-tops-only",
+     "move": "both shares laid on one 0-to-1 line in twelfths: 2/4 = 6 twelfths, 3/12 = 3 twelfths → 2 quarter-pieces reach further than 3 twelfth-pieces → number of pieces decides only when the pieces are the same size, i.e. same bottom number",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 12,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/12"
+        },
+        {
+         "num": 6,
+         "label": "2/4"
+        }
+       ]
+      }
+     },
+     "then": "two same-size bars: 2 pieces of the bar cut into 3 equal pieces, or 4 pieces of the bar cut into 12 equal pieces → which is more",
+     "thenKey": "2 pieces of the bar cut into 3",
+     "thenAccept": [
+      "2/3",
+      "the 2 pieces"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t02-m-gap-thinking",
+     "move": "one 0-to-1 line in twelfths: 3/4 = 9 twelfths, gap to 1 = 3 twelfths; 5/6 = 10 twelfths, gap to 1 = 2 twelfths → both one piece short, but the missing pieces differ in size → smaller gap = closer to the whole = bigger",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 12,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 9,
+         "label": "3/4"
+        },
+        {
+         "num": 10,
+         "label": "5/6"
+        }
+       ]
+      }
+     },
+     "then": "two same-size bars: 4/5 of one, 9/10 of the other → each one piece short of a whole → which is bigger",
+     "thenKey": "9/10",
+     "thenAccept": [
+      "nine tenths"
+     ]
+    }
+   ],
+   "bridgeToNext": "same bottom → compare tops; next: same top number → same count of pieces → piece size (bottom number) decides, back to the unit-fraction rule"
+  },
+  {
+   "skillId": "c5-maths-ch02-t02-s3",
+   "hook": {
+    "convey": "two same-size chocolate bars; Meena eats 3 pieces of one, Raju 3 pieces of the other → equal only if the pieces match; one bar cut in 5, the other in 8",
+    "interestSlots": [
+     "chocolate bars",
+     "mela juice glasses",
+     "pizza and roti sharing",
+     "metro map strips",
+     "laddoos at Diwali"
+    ],
+    "slotUse": "two same-size wholes cut into different numbers of equal parts, the same number of parts taken from each"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bar in 5 equal parts, 3 shaded = 3/5; each part 1/5",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 5,
+       "shade": 3,
+       "whole": "bar"
+      }
+     },
+     "point": "the 3 shaded parts of the bar cut into 5 equal parts, 3/5"
+    },
+    {
+     "id": "e2",
+     "convey": "same-size bar in 8 equal parts, 3 shaded = 3/8; same count 3, but each 1/8 part shorter → shading stops sooner",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 8,
+       "shade": 3,
+       "whole": "bar"
+      }
+     },
+     "point": "the 3 shaded parts of the same-size bar cut into 8 equal parts, 3/8"
+    },
+    {
+     "id": "e3",
+     "convey": "same top → same count → piece size decides; 1/5 > 1/8 (unit-fraction rule) → 3/5 > 3/8; bigger bottom → smaller fraction, only when the tops match",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "3/5",
+        "items": [
+         "3 pieces",
+         "each piece 1/5",
+         "bigger pieces"
+        ]
+       },
+       "right": {
+        "title": "3/8",
+        "items": [
+         "3 pieces",
+         "each piece 1/8",
+         "smaller pieces"
+        ]
+       }
+      }
+     },
+     "point": "3/5: 3 pieces, each piece 1/5, bigger pieces; 3/8: 3 pieces, each piece 1/8, smaller pieces"
+    },
+    {
+     "id": "e4",
+     "convey": "3/4 vs 3/8 on one line in eighths: a quarter = 2 eighths → 3/4 = 6 eighths → twice as far from 0 as 3/8",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/8"
+        },
+        {
+         "num": 6,
+         "label": "3/4"
+        }
+       ]
+      }
+     },
+     "point": "the 2 marks: 3/8, and 3/4 twice as far from 0"
+    }
+   ],
+   "workedExample": {
+    "problem": "Which is bigger: 2/5 or 2/3 (two bars of the same size)?",
+    "givens": [
+     "fraction A: 2/5",
+     "fraction B: 2/3",
+     "the same whole for both",
+     "top number of both is 2"
+    ],
+    "find": "the bigger of 2/5 and 2/3",
+    "steps": [
+     {
+      "do": "both top numbers 2 → 2 pieces each → compare the size of each piece",
+      "result": "2 pieces and 2 pieces"
+     },
+     {
+      "do": "fifths: the whole cut into 5 equal parts",
+      "result": "each piece 1/5"
+     },
+     {
+      "do": "thirds: the same whole cut into 3 equal parts → fewer parts, bigger parts",
+      "result": "each piece 1/3, and 1/3 > 1/5"
+     },
+     {
+      "do": "2 bigger pieces against 2 smaller pieces",
+      "result": "2/3 > 2/5"
+     }
+    ],
+    "answer": "2/3 > 2/5",
+    "why": "same top number → same count of pieces → the bigger piece wins; fewer equal parts of the same whole → bigger parts → thirds beat fifths",
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "2/3",
+       "items": [
+        "2 pieces",
+        "each piece 1/3"
+       ]
+      },
+      "right": {
+       "title": "2/5",
+       "items": [
+        "2 pieces",
+        "each piece 1/5"
+       ]
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "Which is more of the same chocolate bar: 4/7 or 4/9?",
+     "key": "4/7",
+     "accept": [
+      "four sevenths"
+     ],
+     "targets": "c5-maths-ch02-t02-m-tops-only",
+     "wrongIfMis": "the same, both are 4 pieces",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "Tara and Gopi have same-size ribbons. Tara cuts off 5/12 of hers and Gopi cuts off 5/6 of his. Who cuts off the longer piece: Tara or Gopi?",
+     "key": "Gopi",
+     "accept": [
+      "Gopi, 5/6",
+      "5/6 wala"
+     ],
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "wrongIfMis": "Tara",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "Which is bigger of the same pizza: 4/5 or 5/6? Both are one slice short of the whole pizza.",
+     "key": "5/6",
+     "accept": [
+      "five sixths",
+      "not equal, 5/6 is bigger"
+     ],
+     "targets": "c5-maths-ch02-t02-m-gap-thinking",
+     "wrongIfMis": "they are equal",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t02-i03",
+     "why": "2/3 vs 2/5 of one roti, the worked-example pair in a story → same count, bigger pieces"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i11",
+     "why": "draw two same-size strips, 2/3 and 2/6 → picture made by the child, not given"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i06",
+     "why": "3/4 vs 3/8, says what differs → piece size named, an eighth = half a quarter"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-rl-h3",
+     "why": "5/8 vs 5/12 of metro maps, asks why → explanation, not just the pick"
+    },
+    {
+     "itemId": "c5-maths-ch02-t02-i14",
+     "why": "3/4 vs 4/5, both one piece short → size of the missing piece decides, tops differ"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t02-m-tops-only",
+     "move": "two same-length chocolate strips laid end to end on one 0-to-1 line: 3 quarter-pieces reach 3/4, 3 eighth-pieces reach only 3/8 → same number of pieces, quarter-pieces longer → 3/4 reaches twice as far",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/8"
+        },
+        {
+         "num": 6,
+         "label": "3/4"
+        }
+       ]
+      }
+     },
+     "then": "two same-size bars: 3/4 of one shaded, 3/6 of the other shaded → which shading is longer, or are they the same",
+     "thenKey": "3/4",
+     "thenAccept": [
+      "the 3/4 shading",
+      "three quarters"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t02-m-bigger-denominator",
+     "move": "two same-size ribbons on one 0-to-1 line in twelfths: a sixth = 2 twelfths → 5/6 = 10 twelfths; 5/12 stops at 5 twelfths → bigger bottom number → smaller pieces → with the same top, 5/12 is shorter",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 12,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 5,
+         "label": "5/12"
+        },
+        {
+         "num": 10,
+         "label": "5/6"
+        }
+       ]
+      }
+     },
+     "then": "two 1 m ribbons: 2/3 of one cut off, 2/6 of the other cut off → which cut piece is longer",
+     "thenKey": "2/3",
+     "thenAccept": [
+      "2/3 m",
+      "the 2/3 piece"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t02-m-gap-thinking",
+     "move": "two same-size bars with the missing piece of each marked: 4/5 is missing 1/5, a bigger gap; 5/6 is missing 1/6, a smaller gap → compare the size of the missing pieces, not their number → 1/6 < 1/5 → 5/6 is missing less → 5/6 bigger",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "4/5",
+        "items": [
+         "missing 1/5",
+         "bigger gap"
+        ]
+       },
+       "right": {
+        "title": "5/6",
+        "items": [
+         "missing 1/6",
+         "smaller gap"
+        ]
+       }
+      }
+     },
+     "then": "two same-size bars: 2/3 of one, 3/4 of the other → each one piece short of a whole → which is bigger",
+     "thenKey": "3/4",
+     "thenAccept": [
+      "three quarters",
+      "teen chauthai"
+     ]
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ],
+ "verified": {
+  "by": "separate Claude agent, blind (prompts only)",
+  "on": "2026-11-05",
+  "checksAndRemediation": "14/14 agree",
+  "workedExamples": "3/3 ok"
+ }
+}

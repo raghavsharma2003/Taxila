@@ -28,7 +28,7 @@ import { speakable } from "../voice/spoken.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
-import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
+import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
@@ -1375,14 +1375,15 @@ async function report(req, res) {
     return send(res, 200, { report: { ...reportOut(r), ...(hold ? { held: true, renders: noVoice(reportOut(r).renders) } : {}) } });
   }
   const cadence = sp.get("cadence");
-  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly or monthly");
+  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly, monthly or term");
   if (hold) return send(res, 200, { report: null, skipped: "held", held: true });
   const tz = await tzOf(child.id);
   const today = learningDay(new Date(), tz);
-  let period = sp.get("period") || (cadence === "daily" ? "today" : cadence === "monthly" ? "thismonth" : "thisweek");
+  let period = sp.get("period") || (cadence === "daily" ? "today" : cadence === "monthly" ? "thismonth" : cadence === "term" ? "thisterm" : "thisweek");
   if (period === "today") period = today;
   if (period === "thisweek") period = isoWeek(today);
   if (period === "thismonth") period = today.slice(0, 7);
+  if (period === "thisterm") period = termOf(today);
   try { windowOf(cadence, period, tz); } catch { throw bad("invalid period"); }
   const out = await previewReport(child.id, { cadence, period }, { db: { q } });
   if (out.skipped) return send(res, 200, { report: null, skipped: out.skipped, period });
@@ -1416,7 +1417,7 @@ async function reportEvidence(req, res) {
     throw new HttpError(404, "line not found");
   } else {
     const cadence = sp.get("cadence"), period = sp.get("period");
-    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly or monthly");
+    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly, monthly or term");
     try { windowOf(cadence, String(period), await tzOf(child.id)); } catch { throw bad("invalid period"); }
     r = (await previewReport(child.id, { cadence, period }, { db: { q } })).report;
   }

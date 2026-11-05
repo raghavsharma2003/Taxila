@@ -2973,6 +2973,41 @@
       "representation": "Two torches at A and B pointing at each other on a line",
       "moveShape": "Child shines 'torch A' through B and 'torch B' through A, then says which light covers which part; name each ray by its starting torch"
      }
+    },
+    {
+     "id": "c6-maths-ch02-t01-m-only-sides",
+     "skillId": "c6-maths-ch02-t01-s3",
+     "belief": "Thinks the segments joining a set of points are only the sides going around the shape, so n points give n segments and the diagonals are left out",
+     "signs": [
+      "For 4 points, draws only the 4 sides of the shape and stops",
+      "Says 5 points make 5 segments",
+      "Does not count AC and BD because they cut across the middle"
+     ],
+     "diagnostic": {
+      "prompt_en": "A, B, C and D are the four corners of a square. How many line segments can be drawn joining each pair of corners?",
+      "prompt_hi": "A, B, C aur D ek square ke chaar corners hain. Har do corners ko jodne wale kitne line segments ban sakte hain?",
+      "options": [
+       {
+        "text": "6",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "4",
+        "misconceptionId": "c6-maths-ch02-t01-m-only-sides",
+        "correct": false
+       },
+       {
+        "text": "12",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "An organised pair list by first letter (AB, AC, AD / BC, BD / CD), each pair coloured on the square as it is listed",
+      "moveShape": "child's 4 sides → 'is A joined to C?' → list pairs from A, then B, then C → 3 + 2 + 1 = 6 → 4 sides + 2 diagonals"
+     }
     }
    ],
    "items": [
@@ -3571,7 +3606,8 @@
      "Starting at O and going through A gives ray ___.",
      "Starting at O and going through B gives ray ___.",
      "They point in ___ directions, so they are two different rays."
-    ]
+    ],
+    "skillId": "c6-maths-ch02-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -3592,6 +3628,73 @@
     "ruler edges",
     "laser pointers",
     "roads between villages"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch02-t01-s1",
+     "problem": "Say whether each is a point, a line segment, a line or a ray: (a) the exact spot P where two roads cross on a map; (b) the beam from a laser pointer, which starts at the pointer and goes on without end; (c) the edge of a door from its top corner to its bottom corner; (d) a straight railway track drawn on a map with arrows at both ends to show it goes on without end both ways.",
+     "givens": [
+      "(a) exact crossing spot P",
+      "(b) laser beam: starts at the pointer, goes on without end",
+      "(c) door edge: top corner to bottom corner",
+      "(d) track with arrows at both ends"
+     ],
+     "find": "The name of each: point, line segment, line or ray",
+     "steps": [
+      {
+       "do": "(a) exact position, no length",
+       "result": "(a) point"
+      },
+      {
+       "do": "(b) 1 endpoint (pointer), goes on one way",
+       "result": "(b) ray"
+      },
+      {
+       "do": "(c) 2 endpoints (two corners), fixed length",
+       "result": "(c) line segment"
+      },
+      {
+       "do": "(d) 0 endpoints, goes on both ways",
+       "result": "(a) point, (b) ray, (c) line segment, (d) line"
+      }
+     ],
+     "answer": "(a) point, (b) ray, (c) line segment, (d) line",
+     "why": "count endpoints: none + no length → point; 2 → segment; 1 → ray; 0 + endless both ways → line"
+    },
+    {
+     "skillId": "c6-maths-ch02-t01-s3",
+     "problem": "Six bus stops A, B, C, D, E and F are marked on a map, and no three of them are on one straight line. A straight wire is drawn joining every pair of bus stops. How many wires (line segments) are drawn?",
+     "givens": [
+      "6 points A, B, C, D, E, F",
+      "No three points on one straight line",
+      "Every pair joined by one segment"
+     ],
+     "find": "Number of line segments",
+     "steps": [
+      {
+       "do": "from A → AB, AC, AD, AE, AF",
+       "result": "5"
+      },
+      {
+       "do": "from B, new only → BC, BD, BE, BF",
+       "result": "4"
+      },
+      {
+       "do": "from C → CD, CE, CF; from D → DE, DF",
+       "result": "3 and 2"
+      },
+      {
+       "do": "from E → EF; F → none new",
+       "result": "1 and 0"
+      },
+      {
+       "do": "add",
+       "result": "5 + 4 + 3 + 2 + 1 = 15"
+      }
+     ],
+     "answer": "15 line segments",
+     "why": "each pair once; AB = BA so skip pairs already listed → 5 + 4 + 3 + 2 + 1"
+    }
    ]
   },
   {
@@ -3722,6 +3825,41 @@
      "remediation": {
       "representation": "Tracing paper copy of one angle laid over the other",
       "moveShape": "Child lays the copy on top, sees the arms match exactly, then erases and redraws arcs of different sizes; ask whether the arms moved"
+     }
+    },
+    {
+     "id": "c6-maths-ch02-t02-m-full-turn-zero",
+     "skillId": "c6-maths-ch02-t02-s2",
+     "belief": "Believes an angle is fixed by where the arm ends up, not by how much it turned, so a full turn that comes back to the start is 'no turn' or no angle",
+     "signs": [
+      "Says a fan blade that went all the way round has turned 0",
+      "Gives the same answer for a quarter turn and a quarter turn plus a full turn",
+      "Describes an angle only by the final position ('it points east') rather than the turn from the first arm"
+     ],
+     "diagnostic": {
+      "prompt_en": "A ceiling fan blade points at the window. It turns all the way round once and stops pointing at the window again. How much has it turned?",
+      "prompt_hi": "Ceiling fan ka ek blade khidki ki taraf hai. Woh poora ek chakkar ghoomta hai aur phir se khidki ki taraf aakar ruk jaata hai. Woh kitna ghooma?",
+      "options": [
+       {
+        "text": "One full turn (four quarter turns)",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "No turn at all, because it ends where it started",
+        "misconceptionId": "c6-maths-ch02-t02-m-full-turn-zero",
+        "correct": false
+       },
+       {
+        "text": "A half turn",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A dial with a pointer that drags a ribbon behind it, so the swept part of the turn stays visible; plus the child's own body turn with an arm stretched out",
+      "moveShape": "start pointer at window → turn, ribbon trails → count quarter turns passed (1, 2, 3, 4) → same end position, ribbon shows a whole circle swept → angle = turn swept, not end position"
      }
     }
    ],
@@ -4324,7 +4462,8 @@
      "At 2 o'clock the hour hand has turned ___ hour-spaces from 12.",
      "At 4 o'clock it has turned ___ hour-spaces.",
      "4 spaces is more turn than 2, so the ___ o'clock angle is bigger."
-    ]
+    ],
+    "skillId": "c6-maths-ch02-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -4346,6 +4485,72 @@
     "auto-rickshaw turns",
     "cricket bat swing",
     "folding fan"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch02-t02-s1",
+     "problem": "In the school playground, Tara stands at point T, Ravi at point R and Sonu at point S. Two straight ropes start from Tara: one goes to Ravi and the other goes to Sonu. Name the vertex and the arms of the angle the ropes make at Tara, and name the angle with three letters in two correct ways.",
+     "givens": [
+      "rope 1 starts at T and goes through R",
+      "rope 2 starts at T and goes through S"
+     ],
+     "find": "the vertex, the two arms, and two correct three-letter names of the angle",
+     "steps": [
+      {
+       "do": "common starting point of both ropes",
+       "result": "vertex = T"
+      },
+      {
+       "do": "rays from the vertex through the other points",
+       "result": "arms = ray TR and ray TS"
+      },
+      {
+       "do": "name = point on one arm, vertex in the middle, point on other arm",
+       "result": "∠RTS"
+      },
+      {
+       "do": "other order of the arm points, vertex still middle",
+       "result": "∠STR"
+      },
+      {
+       "do": "collect: vertex, arms, names",
+       "result": "Vertex T; arms TR and TS; the angle is ∠RTS (also ∠STR)."
+      }
+     ],
+     "answer": "Vertex T; arms TR and TS; the angle is ∠RTS (also ∠STR).",
+     "why": "angle = two rays from one common point; middle letter of the name = vertex; arm letters may swap, vertex letter never moves"
+    },
+    {
+     "skillId": "c6-maths-ch02-t02-s3",
+     "problem": "Meera cuts two angles from cardboard. ∠ABC has arms 9 cm long; ∠PQR has arms 4 cm long. She places ∠PQR on ∠ABC so that Q sits on B and arm QP lies along arm BA. Arm QR then lies outside ∠ABC, turned further than arm BC. Which angle is bigger?",
+     "givens": [
+      "∠ABC: arms 9 cm",
+      "∠PQR: arms 4 cm",
+      "Q on B, QP along BA",
+      "QR lies outside ∠ABC, beyond BC"
+     ],
+     "find": "the bigger angle",
+     "steps": [
+      {
+       "do": "vertices together: Q on B",
+       "result": "common vertex"
+      },
+      {
+       "do": "one arm on the other: QP along BA",
+       "result": "common starting arm"
+      },
+      {
+       "do": "compare second arms: QR beyond BC",
+       "result": "QR turned further from the starting arm than BC"
+      },
+      {
+       "do": "arm lengths 4 cm vs 9 cm → not part of the turn",
+       "result": "∠PQR is bigger than ∠ABC, even though its arms are shorter"
+      }
+     ],
+     "answer": "∠PQR is bigger than ∠ABC, even though its arms are shorter",
+     "why": "superpose: vertex on vertex, arm on arm → the second arm turned further = bigger angle; arm length ≠ amount of turn"
+    }
    ]
   },
   {
@@ -4475,6 +4680,41 @@
      "remediation": {
       "representation": "Two protractors of different sizes over the same angle on screen",
       "moveShape": "Child predicts both readings, then sees them match; ask what 1 degree is a part of"
+     }
+    },
+    {
+     "id": "c6-maths-ch02-t03-m-join-wrong-end",
+     "skillId": "c6-maths-ch02-t03-s3",
+     "belief": "Believes the degree mark can be joined to either end of the first arm, so joins it to the far end instead of to the vertex where the protractor's centre was",
+     "signs": [
+      "Joins the dot to the far end of the first line, making a triangle-like shape",
+      "Cannot point to which point is the vertex of the angle just drawn",
+      "Measures the drawn angle afterwards and gets a different number"
+     ],
+     "diagnostic": {
+      "prompt_en": "To draw ∠ABC = 40°, Meera draws arm BC, puts the protractor's centre on B with the baseline along BC, and marks a dot A at 40. Which line must she draw to finish the angle?",
+      "prompt_hi": "∠ABC = 40° banane ke liye Meera arm BC banati hai, protractor ka centre B par aur baseline BC ke saath rakhti hai, aur 40 par ek dot A lagati hai. Angle poora karne ke liye use kaun si line kheenchni chahiye?",
+      "options": [
+       {
+        "text": "Join A to B",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Join A to C",
+        "misconceptionId": "c6-maths-ch02-t03-m-join-wrong-end",
+        "correct": false
+       },
+       {
+        "text": "Draw a line from A parallel to BC",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two paper strips pinned together at one end (pin = vertex B): one strip lies on BC, the other is swung round to the dot",
+      "moveShape": "pin at B = protractor centre → both arms must leave the pin → swing second strip from BC to the 40 dot → rule along that strip from B → name the middle letter = B"
      }
     }
    ],
@@ -5071,7 +5311,8 @@
      "Find the scale that reads ___ where QR points.",
      "Follow that scale to where arm QP crosses it and read the number.",
      "Check: if the angle looks narrow, the reading should be under ___°."
-    ]
+    ],
+    "skillId": "c6-maths-ch02-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -5092,6 +5333,74 @@
     "clock faces",
     "ramps and stairs",
     "kite string angle"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch02-t03-s2",
+     "problem": "Kabir measures ∠XYZ. The protractor's centre is on Y and its baseline lies along arm YZ, which points to the left. The outer scale starts at 0 on the left; the inner scale starts at 0 on the right. Arm YX crosses the outer scale at 145 and the inner scale at 35. The angle looks wider than the corner of a page. What is ∠XYZ?",
+     "givens": [
+      "centre on Y, baseline along YZ",
+      "YZ points left",
+      "outer scale: 0 on the left; inner scale: 0 on the right",
+      "YX crosses outer at 145, inner at 35",
+      "angle looks wider than a right angle"
+     ],
+     "find": "the measure of ∠XYZ",
+     "steps": [
+      {
+       "do": "scale with 0 where arm YZ points (left)",
+       "result": "outer scale"
+      },
+      {
+       "do": "read outer scale where YX crosses",
+       "result": "145°"
+      },
+      {
+       "do": "sense check: wider than a page corner → more than a quarter turn 90°, less than a half turn 180°",
+       "result": "90° < 145° < 180°, consistent"
+      },
+      {
+       "do": "other scale 35 = 180 − 145 → the reading from the wrong zero",
+       "result": "∠XYZ = 145°"
+      }
+     ],
+     "answer": "∠XYZ = 145°",
+     "why": "read from the 0 on the arm where the turn starts; wide angle → above 90°; the two scales always add to 180°"
+    },
+    {
+     "skillId": "c6-maths-ch02-t03-s3",
+     "problem": "Draw ∠PQR = 125°, where arm QR is 6 cm long and points to the right from Q.",
+     "givens": [
+      "∠PQR = 125°",
+      "QR = 6 cm, pointing right from Q",
+      "vertex Q"
+     ],
+     "find": "the drawn angle PQR of 125°",
+     "steps": [
+      {
+       "do": "ruler → line segment QR = 6 cm, Q on the left end",
+       "result": "arm QR drawn"
+      },
+      {
+       "do": "protractor centre on Q, baseline along QR",
+       "result": "protractor placed"
+      },
+      {
+       "do": "scale with 0 on the R side → go to 125 → dot P",
+       "result": "point P marked at 125 on the right-starting scale"
+      },
+      {
+       "do": "remove protractor → ruler from Q through P",
+       "result": "arm QP drawn"
+      },
+      {
+       "do": "check: wide angle, more than a right angle; other scale at P shows 55 = 180 − 125",
+       "result": "∠PQR = 125°"
+      }
+     ],
+     "answer": "∠PQR = 125°",
+     "why": "draw = measure in reverse: centre on vertex, baseline on first arm, count from the 0 on that arm, join the mark to the vertex"
+    }
    ]
   },
   {
@@ -5222,6 +5531,41 @@
      "remediation": {
       "representation": "Clock hands with both the small and the large angle shaded in different colours",
       "moveShape": "Child shades the outside angle and adds the two parts; ask what the two parts make together"
+     }
+    },
+    {
+     "id": "c6-maths-ch02-t04-m-crossing-all-equal",
+     "skillId": "c6-maths-ch02-t04-s3",
+     "belief": "Believes that where two straight roads or lines cross, all four angles are equal, so every corner has the same size and type as the one it sees",
+     "signs": [
+      "Gives the same measure to all four angles at a crossing",
+      "Calls every corner acute when one corner is acute",
+      "Does not use the straight line to find the angle next to a known one"
+     ],
+     "diagnostic": {
+      "prompt_en": "Two straight roads cross each other. One of the corner angles is 60°. What is the angle at the corner right next to it (sharing one road), and what type is it?",
+      "prompt_hi": "Do seedhi sadkein ek doosre ko kaatti hain. Ek kone ka angle 60° hai. Uske theek bagal wale kone ka angle (jo ek sadak share karta hai) kitna hai, aur woh kis type ka hai?",
+      "options": [
+       {
+        "text": "120°, obtuse",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "60°, acute",
+        "misconceptionId": "c6-maths-ch02-t04-m-crossing-all-equal",
+        "correct": false
+       },
+       {
+        "text": "90°, right",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two strips pinned at the crossing point: one strip fixed as a straight road, the other rotated so one angle opens while its neighbour closes",
+      "moveShape": "fix road 1 = straight angle 180° → rotate road 2 → one angle grows, neighbour shrinks → neighbours on one road add to 180° → 60° → 180° − 60° = 120° → obtuse"
      }
     }
    ],
@@ -5808,7 +6152,8 @@
      "145° is between 90° and ___°: obtuse.",
      "180° exactly: ___.",
      "300° is between 180° and 360°: ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch02-t04-s1"
    },
    "formats": {
     "primary": "F3",
@@ -5830,6 +6175,74 @@
     "door hinges",
     "rangoli lines",
     "cricket fielding positions"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch02-t04-s2",
+     "problem": "A, O and C lie on one straight line, with O between A and C. Ray OB is drawn so that ∠AOB = 50°. Find and name the type of: (a) ∠AOC, (b) ∠BOC, (c) the angle from OA to OB the long way round (the outside of ∠AOB).",
+     "givens": [
+      "A, O, C on one straight line, O between A and C",
+      "∠AOB = 50°"
+     ],
+     "find": "∠AOC, ∠BOC and the reflex angle AOB, with their types",
+     "steps": [
+      {
+       "do": "OA and OC point in opposite directions → half turn",
+       "result": "∠AOC = 180°, straight angle"
+      },
+      {
+       "do": "∠BOC = 180° − 50°",
+       "result": "130°, obtuse"
+      },
+      {
+       "do": "long way round = full turn − 50° = 360° − 50°",
+       "result": "310°"
+      },
+      {
+       "do": "310° between 180° and 360°",
+       "result": "reflex angle"
+      },
+      {
+       "do": "collect the three",
+       "result": "∠AOC = 180° (straight); ∠BOC = 130° (obtuse); the outside of ∠AOB = 310° (reflex)."
+      }
+     ],
+     "answer": "∠AOC = 180° (straight); ∠BOC = 130° (obtuse); the outside of ∠AOB = 310° (reflex).",
+     "why": "arms in opposite directions = 180° straight; inside + outside of an angle = 360° full turn; more than 180° and less than 360° = reflex"
+    },
+    {
+     "skillId": "c6-maths-ch02-t04-s3",
+     "problem": "A wall clock shows exactly 10 o'clock. Find the smaller angle and the larger angle between the hour hand and the minute hand, and name the type of each.",
+     "givens": [
+      "time 10:00: minute hand on 12, hour hand on 10",
+      "12 equal hour-spaces in a full turn of 360°"
+     ],
+     "find": "the smaller and larger angles between the hands and their types",
+     "steps": [
+      {
+       "do": "one hour-space = 360° ÷ 12",
+       "result": "30°"
+      },
+      {
+       "do": "from 10 to 12 the short way = 2 spaces → 2 × 30°",
+       "result": "60°"
+      },
+      {
+       "do": "60° between 0° and 90°",
+       "result": "smaller angle acute"
+      },
+      {
+       "do": "long way round = 360° − 60°",
+       "result": "300°, between 180° and 360° → reflex"
+      },
+      {
+       "do": "collect both",
+       "result": "Smaller angle 60° (acute); larger angle 300° (reflex)."
+      }
+     ],
+     "answer": "Smaller angle 60° (acute); larger angle 300° (reflex).",
+     "why": "clock = full turn 360° in 12 equal spaces → 30° each; type from the measure only; smaller + larger = 360°"
+    }
    ]
   },
   {
@@ -11290,7 +11703,8 @@
      "Factors of 30 in pairs: 1 × 30, 2 × 15, 3 × 10, 5 × ___, so 1, 2, 3, 5, 6, 10, 15, 30.",
      "Numbers in both lists: 1, 2, ___, 10.",
      "The biggest common factor is ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch05-t01-s2"
    },
    "formats": {
     "primary": "F6",
@@ -11313,6 +11727,70 @@
     "gift packs",
     "school assembly rows",
     "tiffin boxes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch05-t01-s1",
+     "problem": "List all the factors of 28 and the first five multiples of 28.",
+     "givens": [
+      "the number 28"
+     ],
+     "find": "All factors of 28 and the first five multiples of 28",
+     "steps": [
+      {
+       "do": "factor pairs of 28, trying 1, 2, 3, …",
+       "result": "1 × 28, 2 × 14, 4 × 7 (3, 5 and 6 do not divide 28 exactly)"
+      },
+      {
+       "do": "next try 7 → already in a pair",
+       "result": "Pairs have met, so the list is complete"
+      },
+      {
+       "do": "factors in order",
+       "result": "1, 2, 4, 7, 14, 28"
+      },
+      {
+       "do": "28 × 1, 28 × 2, 28 × 3, 28 × 4, 28 × 5",
+       "result": "28, 56, 84, 112, 140"
+      }
+     ],
+     "answer": "Factors of 28: 1, 2, 4, 7, 14, 28; first five multiples of 28: 28, 56, 84, 112, 140",
+     "why": "factor = divides 28 exactly → found in pairs, list stops at 28; multiple = 28 × a counting number → list never ends"
+    },
+    {
+     "skillId": "c6-maths-ch05-t01-s3",
+     "problem": "Kavya waters her tulsi plant every 6 days and cleans the fish bowl every 9 days. She did both jobs today. After how many days will she next do both jobs on the same day? Does this need common factors or common multiples?",
+     "givens": [
+      "watering every 6 days",
+      "cleaning every 9 days",
+      "both done today"
+     ],
+     "find": "The first day after today when both jobs fall together, and which idea is needed",
+     "steps": [
+      {
+       "do": "repeating every 6 and every 9 days → which idea",
+       "result": "Common multiples of 6 and 9"
+      },
+      {
+       "do": "multiples of 6",
+       "result": "6, 12, 18, 24, 30, 36"
+      },
+      {
+       "do": "multiples of 9",
+       "result": "9, 18, 27, 36"
+      },
+      {
+       "do": "numbers in both lists",
+       "result": "18, 36"
+      },
+      {
+       "do": "first common multiple",
+       "result": "18"
+      }
+     ],
+     "answer": "After 18 days; it needs common multiples",
+     "why": "jobs repeat → days of each job are multiples; both together → common multiple; next time → smallest one (18, not 6 × 9 = 54)"
+    }
    ]
   },
   {
@@ -16500,6 +16978,41 @@
       "representation": "Two circles of different sizes, each cut in half and overlaid",
       "moveShape": "Child lays the small half on the big half; ask what 'half' depends on"
      }
+    },
+    {
+     "id": "c6-maths-ch07-t01-m-share-flipped",
+     "skillId": "c6-maths-ch07-t01-s3",
+     "belief": "Writes an equal share as people over things, so 3 rotis shared among 4 children becomes 4/3 roti each",
+     "signs": [
+      "Writes 4/3 for 3 rotis shared among 4 children",
+      "Gives each child more than a whole roti when there are fewer rotis than children",
+      "Puts the number of sharers on top of the fraction"
+     ],
+     "diagnostic": {
+      "prompt_en": "2 rotis are shared equally among 5 children. How much roti does each child get?",
+      "prompt_hi": "2 rotiyan 5 bacchon mein barabar baanti gayi. Har bacche ko kitni roti mili?",
+      "options": [
+       {
+        "text": "2/5 of a roti",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "5/2 of a roti",
+        "misconceptionId": "c6-maths-ch07-t01-m-share-flipped",
+        "correct": false
+       },
+       {
+        "text": "1/5 of a roti",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Bar model: each roti drawn as a bar cut into 5 equal parts, one part per child coloured in every bar",
+      "moveShape": "cut each roti into 5 → each child gets 1/5 from each roti → 1/5 + 1/5 = 2/5 → reasonableness: fewer rotis than children ⇒ share < 1 whole ⇒ 5/2 impossible"
+     }
     }
    ],
    "items": [
@@ -17029,7 +17542,8 @@
      "5 laddoos give 5 × 3 = ___ thirds.",
      "15 thirds shared by 3 children: ___ thirds each.",
      "Each child gets 5/3 of a laddoo, which is 1 whole and ___ more."
-    ]
+    ],
+    "skillId": "c6-maths-ch07-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -17051,6 +17565,68 @@
     "rakhi ribbons",
     "pizza slices",
     "measuring tape"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch07-t01-s1",
+     "problem": "A piece of sugarcane 30 cm long is cut into 5 equal pieces. What fraction of the sugarcane is one piece, and how long is that piece?",
+     "givens": [
+      "whole = 30 cm sugarcane",
+      "cut into 5 equal pieces"
+     ],
+     "find": "the fractional unit for one piece and its length",
+     "steps": [
+      {
+       "do": "whole → 5 equal parts → one part",
+       "result": "1/5 of the sugarcane"
+      },
+      {
+       "do": "length of one part = 30 ÷ 5",
+       "result": "6 cm"
+      },
+      {
+       "do": "check: 5 parts × 6 cm",
+       "result": "30 cm = the whole"
+      },
+      {
+       "do": "fractional unit + length",
+       "result": "1/5 of the sugarcane, 6 cm long"
+      }
+     ],
+     "answer": "1/5 of the sugarcane, 6 cm long",
+     "why": "1/n = one of n EQUAL parts of the whole → equal parts ⇒ whole ÷ n each"
+    },
+    {
+     "skillId": "c6-maths-ch07-t01-s2",
+     "problem": "Three pizzas of the same size are shared. The first is shared equally by 6 friends, the second by 3 friends, and the third by 8 friends. In which group does each friend get the biggest share? Arrange 1/6, 1/3 and 1/8 from biggest to smallest.",
+     "givens": [
+      "same-size pizzas",
+      "pizza 1: 6 equal parts",
+      "pizza 2: 3 equal parts",
+      "pizza 3: 8 equal parts"
+     ],
+     "find": "the group with the biggest share, and 1/6, 1/3, 1/8 in order from biggest",
+     "steps": [
+      {
+       "do": "share per friend in each group",
+       "result": "1/6, 1/3, 1/8 of a pizza"
+      },
+      {
+       "do": "same whole → fewer equal parts → bigger part",
+       "result": "3 parts < 6 parts < 8 parts"
+      },
+      {
+       "do": "order the unit fractions, biggest first",
+       "result": "1/3 > 1/6 > 1/8"
+      },
+      {
+       "do": "group with biggest share + order",
+       "result": "The group of 3 friends; 1/3 > 1/6 > 1/8"
+      }
+     ],
+     "answer": "The group of 3 friends; 1/3 > 1/6 > 1/8",
+     "why": "same whole cut into more equal parts → each part smaller → bigger bottom number = smaller unit fraction"
+    }
    ]
   },
   {
@@ -17859,6 +18435,41 @@
       "representation": "A 2/3 bar where each third is split in two, showing both the count of parts and the shaded parts doubling",
       "moveShape": "Child splits each third and counts total parts and shaded parts; ask what happened to both numbers"
      }
+    },
+    {
+     "id": "c6-maths-ch07-t03-m-stop-early",
+     "skillId": "c6-maths-ch07-t03-s3",
+     "belief": "Thinks a fraction is in lowest terms as soon as top and bottom have been divided once by some common factor, even when they still share a factor.",
+     "signs": [
+      "Writes 16/24 = 8/12 and stops",
+      "Says 'I already divided it, so it is simplest'",
+      "Gives different 'lowest terms' answers for 16/24 depending on which factor was tried first"
+     ],
+     "diagnostic": {
+      "prompt_en": "Sonu reduces 16/24 by dividing top and bottom by 2 and writes 8/12 as his final answer. Is 8/12 in lowest terms?",
+      "prompt_hi": "Sonu ne 16/24 ke upar aur neeche dono ko 2 se divide kiya aur final answer 8/12 likha. Kya 8/12 lowest terms mein hai?",
+      "options": [
+       {
+        "text": "No: 8 and 12 still share the factor 4, so 8/12 = 2/3",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: it has been divided once, so 8/12 is in lowest terms",
+        "misconceptionId": "c6-maths-ch07-t03-m-stop-early",
+        "correct": false
+       },
+       {
+        "text": "No: divide only the top by 2 again, so it becomes 4/12",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Factor lists of numerator and denominator side by side, with common factors circled",
+      "moveShape": "factors of 8: 1, 2, 4, 8 | factors of 12: 1, 2, 3, 4, 6, 12 → common: 1, 2, 4 → a common factor other than 1 left → divide by 4 → 2/3 → factors of 2 and 3 share only 1 → stop; shortcut: divide 16/24 by 8 (biggest common factor) in one go"
+     }
     }
    ],
    "items": [
@@ -18454,7 +19065,8 @@
      "9 and 12 are both in the ___ table: divide by 3: 3/4.",
      "3 and 4 have no common factor except ___, so stop.",
      "18/24 = ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch07-t03-s3"
    },
    "formats": {
     "primary": "F3",
@@ -18476,6 +19088,66 @@
     "cricket win fractions",
     "pizza slices",
     "chocolate bars"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch07-t03-s1",
+     "problem": "Asha ate 3/4 of a roti. Babu ate 6/8 of a roti of the same size. Did they eat the same amount of roti?",
+     "givens": [
+      "Asha ate 3/4 of a roti",
+      "Babu ate 6/8 of a same-size roti"
+     ],
+     "find": "Whether 3/4 and 6/8 are the same amount",
+     "steps": [
+      {
+       "do": "roti → 4 equal parts → shade 3",
+       "result": "3/4 shaded"
+      },
+      {
+       "do": "cut each quarter into 2 equal pieces → count all pieces",
+       "result": "4 × 2 = 8 equal pieces"
+      },
+      {
+       "do": "count shaded pieces → 3 quarters × 2 pieces each",
+       "result": "3 × 2 = 6 shaded pieces, so 6/8"
+      },
+      {
+       "do": "shaded region unchanged by the cuts → compare amounts",
+       "result": "3/4 = 6/8, the same amount"
+      }
+     ],
+     "answer": "Yes, they ate the same amount: 3/4 = 6/8",
+     "why": "same shaded region, only cut finer → twice as many pieces, each half the size → amount unchanged"
+    },
+    {
+     "skillId": "c6-maths-ch07-t03-s2",
+     "problem": "Fill the blank so the fractions are equivalent: 4/7 = ?/21.",
+     "givens": [
+      "4/7",
+      "new denominator 21"
+     ],
+     "find": "The numerator that makes ?/21 equal to 4/7",
+     "steps": [
+      {
+       "do": "denominator 7 → 21: 21 ÷ 7",
+       "result": "3, so the bottom was multiplied by 3"
+      },
+      {
+       "do": "same multiplier on top: 4 × 3",
+       "result": "12"
+      },
+      {
+       "do": "write the new fraction",
+       "result": "4/7 = 12/21"
+      },
+      {
+       "do": "check: 12/21 ÷ 3 top and bottom",
+       "result": "12 ÷ 3 = 4, 21 ÷ 3 = 7 → 4/7"
+      }
+     ],
+     "answer": "12 (4/7 = 12/21)",
+     "why": "× 3 on top and bottom → each seventh cut into 3 equal pieces → 3 times as many pieces, each a third the size → same amount"
+    }
    ]
   },
   {
@@ -18600,6 +19272,41 @@
      "remediation": {
       "representation": "Two same-size cakes cut into fifths and ninths, with 2 pieces lifted from each",
       "moveShape": "Child places the two pieces from each cake side by side; ask whose two pieces are bigger"
+     }
+    },
+    {
+     "id": "c6-maths-ch07-t04-m-half-by-numerator",
+     "skillId": "c6-maths-ch07-t04-s3",
+     "belief": "Checks a fraction against 1/2 by comparing its numerator with the 1 in 1/2, so thinks any fraction with numerator more than 1 is more than half (3/8 > 1/2).",
+     "signs": [
+      "Says 3/8 is more than 1/2 because 3 is more than 1",
+      "Never compares the numerator with half the denominator",
+      "Calls 2/7 'more than half'"
+     ],
+     "diagnostic": {
+      "prompt_en": "Is 3/8 more than 1/2, less than 1/2, or exactly 1/2?",
+      "prompt_hi": "3/8, 1/2 se zyada hai, kam hai, ya bilkul 1/2 ke barabar?",
+      "options": [
+       {
+        "text": "Less than 1/2 (half of 8 is 4, and 3 < 4)",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "More than 1/2, because 3 is more than 1",
+        "misconceptionId": "c6-maths-ch07-t04-m-half-by-numerator",
+        "correct": false
+       },
+       {
+        "text": "Exactly 1/2",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Number line from 0 to 1 cut into eighths, with 1/2 marked at 4/8",
+      "moveShape": "0–1 line → 8 equal jumps → 1/2 lands on 4/8 → place 3/8 → left of 1/2 → rule: numerator vs half of denominator (3 vs 4) → test 5/8, 2/7 the same way"
      }
     }
    ],
@@ -19198,7 +19905,8 @@
      "5/6 = ___/30 (multiply top and bottom by 5).",
      "4/5 = 24/30 (multiply top and bottom by ___).",
      "25/30 > 24/30, so ___ > 4/5."
-    ]
+    ],
+    "skillId": "c6-maths-ch07-t04-s2"
    },
    "formats": {
     "primary": "F3",
@@ -19220,6 +19928,69 @@
     "exam marks",
     "water in bottles",
     "kite string lengths"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch07-t04-s1",
+     "problem": "Three friends each ate 4 pieces of a cake. All three cakes were the same size, but Ravi's cake was cut into 11 equal pieces, Neha's into 9 and Imran's into 7. So Ravi ate 4/11, Neha 4/9 and Imran 4/7 of a cake. Arrange the amounts from smallest to largest.",
+     "givens": [
+      "4/11",
+      "4/9",
+      "4/7",
+      "same-size cakes"
+     ],
+     "find": "The order of 4/11, 4/9, 4/7 from smallest to largest",
+     "steps": [
+      {
+       "do": "numerators all 4 → same number of pieces each",
+       "result": "compare piece size only"
+      },
+      {
+       "do": "same cake, more pieces → smaller pieces",
+       "result": "elevenths < ninths < sevenths"
+      },
+      {
+       "do": "4 small pieces < 4 bigger pieces",
+       "result": "4/11 < 4/9 < 4/7"
+      }
+     ],
+     "answer": "4/11, 4/9, 4/7 (Ravi ate the least, Imran the most)",
+     "why": "same numerator → same count of pieces → smaller denominator = bigger pieces = more cake"
+    },
+    {
+     "skillId": "c6-maths-ch07-t04-s3",
+     "problem": "Two equal-sized water bottles: Anil's is 5/12 full and Bina's is 7/13 full. Using 1/2 as a benchmark (no common denominator), whose bottle has more water?",
+     "givens": [
+      "Anil: 5/12 full",
+      "Bina: 7/13 full",
+      "equal-sized bottles"
+     ],
+     "find": "Which bottle has more water",
+     "steps": [
+      {
+       "do": "half of 12",
+       "result": "6, so 1/2 = 6/12"
+      },
+      {
+       "do": "5 < 6",
+       "result": "5/12 < 1/2"
+      },
+      {
+       "do": "half of 13",
+       "result": "6.5"
+      },
+      {
+       "do": "7 > 6.5",
+       "result": "7/13 > 1/2"
+      },
+      {
+       "do": "5/12 below 1/2, 7/13 above 1/2",
+       "result": "5/12 < 1/2 < 7/13"
+      }
+     ],
+     "answer": "Bina's bottle (7/13 > 1/2 > 5/12)",
+     "why": "fraction > 1/2 ↔ numerator > half the denominator; one below 1/2 and one above → order fixed without common denominator"
+    }
    ]
   },
   {
@@ -19992,7 +20763,8 @@
      "1/6 = 2/12 (multiply top and bottom by ___).",
      "9/12 + 2/12 = ___.",
      "Check: 11/12 is more than 3/4 and less than ___, which makes sense."
-    ]
+    ],
+    "skillId": "c6-maths-ch07-t05-s2"
    },
    "formats": {
     "primary": "F2",
@@ -20014,6 +20786,62 @@
     "recipes in cups",
     "distance walked in km",
     "pizza slices eaten"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch07-t05-s1",
+     "problem": "Ravi painted 3/11 of a wall in the morning and 5/11 of the same wall in the afternoon. What fraction of the wall has he painted, and what fraction is still left?",
+     "givens": [
+      "morning: 3/11 of the wall",
+      "afternoon: 5/11 of the wall"
+     ],
+     "find": "Fraction painted and fraction left",
+     "steps": [
+      {
+       "do": "same denominator 11 → add numerators only",
+       "result": "3/11 + 5/11 = 8/11"
+      },
+      {
+       "do": "whole wall as elevenths",
+       "result": "1 = 11/11"
+      },
+      {
+       "do": "whole − painted",
+       "result": "11/11 − 8/11 = 3/11"
+      }
+     ],
+     "answer": "8/11 of the wall is painted; 3/11 is left",
+     "why": "same-size parts (elevenths) → count the parts; the denominator names the part size and stays 11"
+    },
+    {
+     "skillId": "c6-maths-ch07-t05-s3",
+     "problem": "Anu walked 1 2/3 km to school and then 2 1/2 km to the market. How far did she walk in all?",
+     "givens": [
+      "1 2/3 km",
+      "2 1/2 km"
+     ],
+     "find": "Total distance walked",
+     "steps": [
+      {
+       "do": "whole parts",
+       "result": "1 + 2 = 3"
+      },
+      {
+       "do": "fraction parts → common denominator 6",
+       "result": "2/3 = 4/6 and 1/2 = 3/6"
+      },
+      {
+       "do": "add the fraction parts",
+       "result": "4/6 + 3/6 = 7/6 = 1 1/6"
+      },
+      {
+       "do": "wholes + fraction sum",
+       "result": "3 + 1 1/6 = 4 1/6 km"
+      }
+     ],
+     "answer": "4 1/6 km",
+     "why": "mixed fraction = wholes + fraction; fractions → same-size parts (sixths) before adding; extra whole from 7/6 carried into the wholes; check: between 1 + 2 = 3 and 2 + 3 = 5"
+    }
    ]
   },
   {
@@ -20707,7 +21535,8 @@
      "Open the compass to ___ cm using a ruler.",
      "Put the compass point on the ___ O.",
      "Turn the pencil all the way round without changing the ___."
-    ]
+    ],
+    "skillId": "c6-maths-ch08-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -20728,6 +21557,79 @@
     "chapati rolling",
     "bicycle wheels",
     "chairs around a flagpole"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c6-maths-ch08-t01-s1",
+     "problem": "A circular clock face has its centre at O. Points A and B are on the edge of the clock, and the straight line AB passes through O. OA = 7 cm. Name the radius and the diameter, and find the length of AB.",
+     "givens": [
+      "O = centre",
+      "A, B on the circle",
+      "AB passes through O",
+      "OA = 7 cm"
+     ],
+     "find": "the radius, the diameter, and the length of AB",
+     "steps": [
+      {
+       "do": "OA: centre → circle",
+       "result": "OA is a radius, 7 cm"
+      },
+      {
+       "do": "OB: centre → circle, every radius equal",
+       "result": "OB is a radius, 7 cm"
+      },
+      {
+       "do": "AB: edge → through O → edge",
+       "result": "AB is a diameter"
+      },
+      {
+       "do": "AB = OA + OB",
+       "result": "7 + 7 = 14 cm"
+      },
+      {
+       "do": "name each segment + AB length",
+       "result": "OA and OB are radii (7 cm each); AB is the diameter, 14 cm"
+      }
+     ],
+     "answer": "OA and OB are radii (7 cm each); AB is the diameter, 14 cm",
+     "why": "diameter = radius on one side of the centre + radius on the other side → 2 × radius"
+    },
+    {
+     "skillId": "c6-maths-ch08-t01-s3",
+     "problem": "A circular flower bed in a park has its centre at O and a radius of 4 m. A tap T is 4 m from O, a bench B is 3 m from O, and a gate G is 5 m from O. Which of them is on the edge of the flower bed, which is inside it, and which is outside it?",
+     "givens": [
+      "centre O",
+      "radius = 4 m",
+      "OT = 4 m",
+      "OB = 3 m",
+      "OG = 5 m"
+     ],
+     "find": "whether T, B and G are on, inside or outside the circle",
+     "steps": [
+      {
+       "do": "rule: on the circle ⇔ distance from O = radius",
+       "result": "on the edge means exactly 4 m from O"
+      },
+      {
+       "do": "T: 4 m vs 4 m",
+       "result": "4 = 4 → on the edge"
+      },
+      {
+       "do": "B: 3 m vs 4 m",
+       "result": "3 < 4 → inside"
+      },
+      {
+       "do": "G: 5 m vs 4 m",
+       "result": "5 > 4 → outside"
+      },
+      {
+       "do": "T, B, G together",
+       "result": "Tap T is on the edge, bench B is inside, gate G is outside"
+      }
+     ],
+     "answer": "Tap T is on the edge, bench B is inside, gate G is outside",
+     "why": "every point on a circle is exactly one radius from the centre → less than radius = inside, more = outside"
+    }
    ]
   },
   {

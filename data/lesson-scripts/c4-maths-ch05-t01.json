@@ -183,14 +183,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "1/2",
-     "board": {
-      "template": "fraction-parts@1",
-      "params": {
-       "parts": 3,
-       "shade": 1,
-       "whole": "bar"
-      }
-     }
+     "board": null
     },
     {
      "id": "c3",
@@ -257,13 +250,13 @@
     },
     {
      "targets": "c4-maths-ch05-t01-m-part-part",
-     "move": "switch from chocolate bar to roti: whole roti first → its equal pieces give the bottom number; eaten pieces give the top; pieces left are a different question, never the bottom",
+     "move": "switch from chocolate bar to a round roti cut into 4 equal sectors: whole roti first → its equal pieces give the bottom number; eaten pieces give the top; pieces left are a different question, never the bottom",
      "board": {
       "template": "fraction-parts@1",
       "params": {
        "parts": 4,
        "shade": 1,
-       "whole": "roti"
+       "whole": "circle"
       }
      },
      "then": "cake cut into 3 equal pieces, 2 pieces eaten → fraction of the cake eaten?",
@@ -365,13 +358,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "1/2",
-     "board": {
-      "template": "equal-groups@1",
-      "params": {
-       "groups": 3,
-       "each": 6
-      }
-     }
+     "board": null
     },
     {
      "id": "c2",
@@ -425,23 +412,21 @@
     },
     {
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
-     "move": "fair-share test on the same 16 marbles: uneven groups 7, 3, 3, 3 beside equal groups 4, 4, 4, 4 → only equal groups make quarters",
+     "move": "fair-share test on the same 16 marbles: uneven groups 7 + 3 + 3 + 3 beside equal groups 4 + 4 + 4 + 4 → only equal groups make quarters",
      "board": {
       "template": "compare@1",
       "params": {
        "left": {
         "title": "Uneven groups of 16",
         "items": [
-         "7, 3, 3, 3",
-         "not fair",
-         "no quarters"
+         "7 + 3 + 3 + 3",
+         "not fair"
         ]
        },
        "right": {
         "title": "Equal groups of 16",
         "items": [
-         "4, 4, 4, 4",
-         "fair share",
+         "4 + 4 + 4 + 4",
          "each group = 1/4"
         ]
        }

@@ -15,7 +15,7 @@ import { dayFacts, SKILLS } from "./fixtures/report-facts.mjs";
 
 const SAMPLE = { name: "Riya", skill: "Compares fractions with the same numerator", belief: "A bigger denominator means a bigger fraction",
   interest: "cricket", n: 7, k: 3, d: 2, lessons: 2, days: 2, min: 41, date: { y: 2026, m: 10, d: 9 }, object: "maths",
-  h: 5, q: 4, m: 24, subject: "maths", way: "F3", t: 2 };
+  h: 5, q: 4, m: 24, subject: "maths", way: "F3", t: 2, m1: { y: 2026, m: 10 }, m2: { y: 2026, m: 12 }, n1: 12, k1: 3, n2: 12, k2: 11 };
 const slotsFor = (shapeId) => Object.fromEntries(Object.keys(SHAPES[shapeId].slots).map((k) => [k, SAMPLE[k]]));
 
 function assembled(facts, { k7 = false } = {}) {
@@ -100,7 +100,8 @@ test("template digit hygiene: 2,000 random slot sets render with no digit outsid
   for (let i = 0; i < 2000; i++) {
     const id = ids[rnd(ids.length)];
     const slots = slotsFor(id);
-    for (const k of ["n", "k", "d", "lessons", "days", "min", "h", "q", "m", "t"]) if (k in slots) slots[k] = 1 + rnd(400);
+    for (const k of ["n", "k", "d", "lessons", "days", "min", "h", "q", "m", "t", "n1", "k1", "n2", "k2"]) if (k in slots) slots[k] = 1 + rnd(400);
+    for (const k of ["m1", "m2"]) if (k in slots) slots[k] = { y: 2026, m: 1 + rnd(12) };
     if ("date" in slots) slots.date = { y: 2026, m: 1 + rnd(12), d: 1 + rnd(28) };
     for (const lang of LANGS) {
       const v = lineViolations(renderShape(id, lang, slots), { shapeId: id, slots, lang, firstName: "Riya" });

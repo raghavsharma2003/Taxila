@@ -14,6 +14,8 @@ const MONTH = {
 };
 /** A date slot { y, m, d } (local calendar parts) in the report language: "6 Oct" / "6 अक्टूबर". */
 export const fmtDate = (lang, dt) => `${dt.d} ${MONTH[lang][dt.m - 1]}`;
+/** A month slot { y, m } (S14 Then → now) in the report language: "Apr" / "अप्रैल" (no digits: the term names its months). */
+export const fmtMonth = (lang, mo) => MONTH[lang][mo.m - 1];
 
 const q = (s) => `“${s}”`;
 const times = { en: (k) => (k === 1 ? "once" : `${k} times`), hinglish: (k) => `${k} baar`, hi: (k) => `${k} बार` };
@@ -80,6 +82,15 @@ export const SHAPES = {
     en: () => "No lessons this month.",
     hinglish: () => "Is mahine koi lesson nahi hua.",
     hi: () => "इस महीने कोई पाठ नहीं हुआ।" },
+  // round 7 F batch R2: the term report (Apr-Sep, Oct-Mar)
+  "header.term": { slots: { lessons: "number", days: "number", min: "number" },
+    en: (s) => `${plural(s.lessons, "lesson", "lessons")} · ${daysEn(s.days)} · ${s.min} min`,
+    hinglish: (s) => `${s.lessons} lesson · ${s.days} din · ${s.min} min`,
+    hi: (s) => `${s.lessons} पाठ · ${s.days} दिन · ${s.min} मिनट` },
+  "header.zero_term": { slots: {},
+    en: () => "No lessons this term.",
+    hinglish: () => "Is term mein koi lesson nahi hua.",
+    hi: () => "इस टर्म में कोई पाठ नहीं हुआ।" },
   "header.zero": { slots: {},
     en: () => "No lessons this week.",
     hinglish: () => "Is hafte koi lesson nahi hua.",
@@ -177,6 +188,25 @@ export const SHAPES = {
     en: (s) => `Taxila explained ${plural(s.n, "new idea", "new ideas")} this month, in ${plural(s.k, "way", "ways")}; ${s.t} of them with ${s.way}.`,
     hinglish: (s) => `Is mahine Taxila ne ${s.n} nayi baatein ${s.k} tareekon se samjhaayi; unmein se ${s.t} ${s.way} ke saath.`,
     hi: (s) => `इस महीने Taxila ने ${s.n} नई बातें ${s.k} तरीक़ों से समझाईं; उनमें से ${s.t} ${s.way} के साथ।` },
+  "routine.days_term": { slots: { n: "number", d: "number", m: "number" },
+    en: (s) => `Lessons on ${s.n} of ${s.d} days this term; a usual lesson was about ${s.m} min.`,
+    hinglish: (s) => `Is term ${s.d} mein se ${s.n} din lesson hue; aam taur par ek lesson lagbhag ${s.m} min ka.`,
+    hi: (s) => `इस टर्म ${s.d} में से ${s.n} दिन पाठ हुए; आम तौर पर एक पाठ लगभग ${s.m} मिनट का।` },
+  "ways.used_term": { slots: { n: "number", k: "number", way: "way", t: "number" },
+    en: (s) => `Taxila explained ${plural(s.n, "new idea", "new ideas")} this term, in ${plural(s.k, "way", "ways")}; ${s.t} of them with ${s.way}.`,
+    hinglish: (s) => `Is term Taxila ne ${s.n} nayi baatein ${s.k} tareekon se samjhaayi; unmein se ${s.t} ${s.way} ke saath.`,
+    hi: (s) => `इस टर्म Taxila ने ${s.n} नई बातें ${s.k} तरीक़ों से समझाईं; उनमें से ${s.t} ${s.way} के साथ।` },
+  // S14 Then → now (term only, RP-D6): the two months' counts side by side; the rule that admitted it is in HOW, never
+  // a verdict word ("improved", "better", "sabse") in the line itself
+  "change.row": { slots: { skill: "curriculum", m1: "month", n1: "number", k1: "number", m2: "month", n2: "number", k2: "number" },
+    en: (s) => `${q(s.skill)}: in ${s.m1}, ${s.k1} of ${s.n1} right on the first try without help; in ${s.m2}, ${s.k2} of ${s.n2}.`,
+    hinglish: (s) => `${q(s.skill)}: ${s.m1} mein ${s.n1} mein se ${s.k1} pehli baar mein bina madad ke sahi; ${s.m2} mein ${s.n2} mein se ${s.k2}.`,
+    hi: (s) => `${q(s.skill)}: ${s.m1} में ${s.n1} में से ${s.k1} पहली बार में बिना मदद के सही; ${s.m2} में ${s.n2} में से ${s.k2}।` },
+  // S14 still learning: every other topic practised in the term, counted (no rate, no direction)
+  "still.count": { slots: { n: "number" },
+    en: (s) => `Still learning: ${plural(s.n, "other topic", "other topics")} practised this term. A change shows here only once there are enough questions in two months far enough apart.`,
+    hinglish: (s) => `Abhi seekh rahe hain: is term ${s.n} aur topics par kaam hua. Yahan badlaav tabhi dikhta hai jab do door ke mahinon mein kaafi sawaal hon.`,
+    hi: (s) => `अभी सीख रहे हैं: इस टर्म ${s.n} और विषयों पर काम हुआ। यहाँ बदलाव तभी दिखता है जब दो दूर के महीनों में काफ़ी सवाल हों।` },
   // S13 what we're trying next: the next scheduled re-check
   "next.recheck": { slots: { skill: "curriculum", date: "date" },
     en: (s) => `Next: Taxila checks ${q(s.skill)} again on ${s.date}.`,
@@ -207,6 +237,7 @@ export const FIXED = {
   "title.daily": { en: () => "Today with Taxila", hinglish: () => "Aaj Taxila ke saath", hi: () => "आज Taxila के साथ" },
   "title.weekly": { en: () => "This week with Taxila", hinglish: () => "Is hafte Taxila ke saath", hi: () => "इस हफ़्ते Taxila के साथ" },
   "title.monthly": { en: () => "This month with Taxila", hinglish: () => "Is mahine Taxila ke saath", hi: () => "इस महीने Taxila के साथ" },
+  "title.term": { en: () => "This term with Taxila", hinglish: () => "Is term Taxila ke saath", hi: () => "इस टर्म Taxila के साथ" },
   // S13 when no re-check is scheduled after the month (required monthly)
   "next.generic": { en: () => "Next: Taxila keeps to the plan in the coming lessons and will share what it finds.",
     hinglish: () => "Aage: Taxila agle lessons mein plan ke hisaab se chalegi aur jo milega, batayegi.",
@@ -311,6 +342,20 @@ export const HOW = {
     hinglish: "Is mahine Taxila ne kitni nayi baatein kitne tareekon se samjhaayi, aur unmein se kitni ek khaas tareeke se. Yeh batata hai Taxila ne kya kiya, yeh nahin ki aapka bachcha kaise seekhta hai.",
     hi: "इस महीने Taxila ने कितनी नई बातें कितने तरीक़ों से समझाईं, और उनमें से कितनी एक ख़ास तरीक़े से। यह बताता है कि Taxila ने क्या किया, यह नहीं कि आपका बच्चा कैसे सीखता है।" },
   "next.recheck": DATED,
+  "header.term": HEADER_HOW,
+  "header.zero_term": { en: "No lesson started in this term.", hinglish: "Is term mein koi lesson shuru nahi hua.", hi: "इस टर्म में कोई पाठ शुरू नहीं हुआ।" },
+  "routine.days_term": { en: "Days of the term with a lesson, and the middle lesson length.",
+    hinglish: "Term ke woh din jin par lesson hua, aur beech wali lesson ki lambai.",
+    hi: "टर्म के वे दिन जिन पर पाठ हुआ, और बीच वाली पाठ की लंबाई।" },
+  "ways.used_term": { en: "How many new ideas Taxila explained this term and in how many ways, and how many of them in one of those ways. It says what Taxila did, not how your child learns.",
+    hinglish: "Is term Taxila ne kitni nayi baatein kitne tareekon se samjhaayi, aur unmein se kitni ek khaas tareeke se. Yeh batata hai Taxila ne kya kiya, yeh nahin ki aapka bachcha kaise seekhta hai.",
+    hi: "इस टर्म Taxila ने कितनी नई बातें कितने तरीक़ों से समझाईं, और उनमें से कितनी एक ख़ास तरीक़े से। यह बताता है कि Taxila ने क्या किया, यह नहीं कि आपका बच्चा कैसे सीखता है।" },
+  "change.row": { en: "Every question on this topic in the first month of the term with at least 10 of them, and in the last such month, at least 2 months later. A line appears only when first-try answers rose by a rule fixed before any child's data: a clear rise that chance alone is very unlikely to explain.",
+    hinglish: "Term ke pehle mahine ke saare sawaal jismein is topic ke kam se kam 10 sawaal hue, aur aakhri aise mahine ke, kam se kam 2 mahine baad. Line tabhi aati hai jab pehli baar wale sahi jawab ek pehle se tay niyam se badhe: saaf badhat, jise sirf sanyog se samjhana bahut mushkil hai.",
+    hi: "टर्म के पहले महीने के सारे सवाल जिसमें इस विषय के कम से कम 10 सवाल हुए, और आख़िरी ऐसे महीने के, कम से कम 2 महीने बाद। लाइन तभी आती है जब पहली बार वाले सही जवाब एक पहले से तय नियम से बढ़े: साफ़ बढ़त, जिसे सिर्फ़ संयोग से समझाना बहुत मुश्किल है।" },
+  "still.count": { en: "Topics with questions this term that have no line above. It says nothing about whether they went up or down.",
+    hinglish: "Is term ke woh topics jin par sawaal hue par upar koi line nahi hai. Yeh nahi batata ki woh badhe ya ghate.",
+    hi: "इस टर्म के वे विषय जिन पर सवाल हुए पर ऊपर कोई लाइन नहीं है। यह नहीं बताता कि वे बढ़े या घटे।" },
   "exam.review": { en: "The school dates you entered in the Parent corner. In the last two days before them Taxila only goes over earlier work.",
     hinglish: "Parent corner mein aapki daali school ki tareekhein. Unse pehle ke aakhri do din Taxila sirf pehle ka kaam dohrati hai.",
     hi: "Parent corner में आपकी डाली स्कूल की तारीख़ें। उनसे पहले के आख़िरी दो दिन Taxila सिर्फ़ पहले का काम दोहराती है।" },
@@ -334,6 +379,7 @@ export const renderShape = (shapeId, lang, slots) => {
   for (const [k, type] of Object.entries(sh.slots)) {
     if (s[k] === undefined || s[k] === null) throw new Error(`reports: ${shapeId} slot ${k} missing`);
     if (type === "date") s[k] = fmtDate(lang, s[k]);
+    if (type === "month") s[k] = fmtMonth(lang, s[k]);
     if (type === "object") s[k] = HOME_OBJECT[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown home object ${s[k]}`); })();
     if (type === "subject") s[k] = SUBJECT_LABEL[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown subject ${s[k]}`); })();
     if (type === "way") s[k] = WAY_LABEL[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown way ${s[k]}`); })();

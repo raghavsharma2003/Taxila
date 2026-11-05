@@ -183,6 +183,13 @@ function enqueueReports(s, day, H, active) {
     H.enqueue("parent.monthly", `parent.monthly:${s.childId}:${month}`, { month }, { runAfter });
     H.rule("parent_monthly");
   }
+  // round 7 F batch R2: the term report (PARENT-REPORT §2, S14), on the fold of the term's last learning day (30 Sep: T1
+  // Apr-Sep; 31 Mar: T2 Oct-Mar, named by the year it started, reports/facts.js TERM_RE); one per child and term
+  if (day.endsWith("-09-30") || day.endsWith("-03-31")) {
+    const y = Number(day.slice(0, 4)), term = day.endsWith("-09-30") ? `${y}-T1` : `${y - 1}-T2`;
+    H.enqueue("parent.term", `parent.term:${s.childId}:${term}`, { term }, { runAfter });
+    H.rule("parent_term");
+  }
 }
 
 const markActive = (s, day, H) => {

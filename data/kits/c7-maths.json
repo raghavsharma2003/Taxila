@@ -2260,6 +2260,41 @@
       "representation": "Number line starting at the whole and jumping back",
       "moveShape": "Child acts out the phrase on the number line: find the start, then jump; ask which number was the start"
      }
+    },
+    {
+     "id": "c7-maths-ch02-t01-m-story-left-to-right",
+     "skillId": "c7-maths-ch02-t01-s3",
+     "belief": "Builds the story by doing the operations strictly in the order they are written, left to right, ignoring that × and ÷ group their numbers before + and −.",
+     "signs": [
+      "For 100 − 3 × 20 tells a story where ₹3 is spent first and then something happens 20 times",
+      "Reads the expression aloud left to right and turns each sign into the next event of the story",
+      "Picks the story 'each of three people pays ₹100 minus ₹20' for 100 − 3 × 20"
+     ],
+     "diagnostic": {
+      "prompt_en": "Which story matches 50 + 4 × 10?",
+      "prompt_hi": "Kaunsi kahani 50 + 4 × 10 se match karti hai?",
+      "options": [
+       {
+        "text": "Raju has ₹50 and then gets four more ₹10 notes. How much money does he have now?",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Raju has ₹50 and gets ₹4 more; then his money becomes 10 times as much. How much does he have now?",
+        "misconceptionId": "c7-maths-ch02-t01-m-story-left-to-right",
+        "correct": false
+       },
+       {
+        "text": "Raju has ₹50 and spends four ₹10 notes. How much money is left?",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Bar model: one bar of ₹50 joined to a block made of four ₹10 strips, with the 4 × 10 block boxed as a single piece",
+      "moveShape": "box the × part first → name it as one quantity (four ₹10 notes = ₹40) → story joins ₹50 + that quantity → work out both stories (₹90 vs ₹540) → only one equals the expression's value"
+     }
     }
    ],
    "items": [
@@ -2832,7 +2867,8 @@
      "386 is 3 ___ than 389.",
      "One part gains 3, the other loses ___.",
      "So the two expressions are ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch02-t01-s2"
    },
    "formats": {
     "primary": "F4",
@@ -2853,6 +2889,70 @@
     "cricket scores",
     "mela ride tickets",
     "phone recharge plans"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch02-t01-s1",
+     "problem": "Raju buys 2 kg of rice at ₹55 per kg and 3 packets of biscuits at ₹20 each. He pays with a ₹500 note. Write an expression for the change he gets, and find it.",
+     "givens": [
+      "2 kg rice at ₹55 per kg",
+      "3 packets of biscuits at ₹20 each",
+      "paid ₹500"
+     ],
+     "find": "An expression for the change, and its value",
+     "steps": [
+      {
+       "do": "cost of rice",
+       "result": "2 × 55"
+      },
+      {
+       "do": "cost of biscuits",
+       "result": "3 × 20"
+      },
+      {
+       "do": "change = money given − total cost",
+       "result": "500 − (2 × 55 + 3 × 20)"
+      },
+      {
+       "do": "work out the bracket",
+       "result": "2 × 55 + 3 × 20 = 110 + 60 = 170"
+      },
+      {
+       "do": "500 − 170",
+       "result": "330"
+      }
+     ],
+     "answer": "500 − (2 × 55 + 3 × 20) = ₹330",
+     "why": "each item cost = number × price; bill = sum of item costs; change = paid − bill → bracket keeps the whole bill together before subtracting"
+    },
+    {
+     "skillId": "c7-maths-ch02-t01-s3",
+     "problem": "Tell a short situation that matches the expression (150 − 30) ÷ 4, and find its value.",
+     "givens": [
+      "expression (150 − 30) ÷ 4"
+     ],
+     "find": "A matching situation and the value",
+     "steps": [
+      {
+       "do": "bracket first → start amount, something taken away",
+       "result": "Start with 150, take away 30 → 120"
+      },
+      {
+       "do": "÷ 4 applies to what is left",
+       "result": "The remaining 120 is shared equally among 4"
+      },
+      {
+       "do": "fit a context to that shape",
+       "result": "Dadi gives ₹150 to 4 cousins; they spend ₹30 on one kite together and share the rest equally"
+      },
+      {
+       "do": "value of the expression",
+       "result": "120 ÷ 4 = 30, so each cousin gets ₹30"
+      }
+     ],
+     "answer": "For example: Dadi gives ₹150 to 4 cousins; they spend ₹30 on a kite together and share the rest equally, so each gets ₹30",
+     "why": "story must follow the expression's grouping: bracket = one step done first (150 − 30), then the ÷ 4 shares that result, not the 150"
+    }
    ]
   },
   {
@@ -4341,7 +4441,8 @@
      "7 cm = 7 hundredths = ___ m.",
      "The tenths place holds ___.",
      "2 m 7 cm = ___ m."
-    ]
+    ],
+    "skillId": "c7-maths-ch03-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -4363,6 +4464,66 @@
     "cloth at the tailor",
     "rainfall in cm",
     "cricket pitch measurements"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch03-t01-s1",
+     "problem": "Rahul measures his eraser with a ruler. Each centimetre on the ruler is divided into 10 equal small parts. One end of the eraser is at the 0 mark, and the other end is 4 small parts after the 3 cm mark. Write the eraser's length in cm as a fraction and as a decimal.",
+     "givens": [
+      "1 cm = 10 equal small parts",
+      "eraser ends 4 small parts after 3 cm"
+     ],
+     "find": "The length in cm as a fraction and as a decimal",
+     "steps": [
+      {
+       "do": "1 cm ÷ 10 equal parts",
+       "result": "One small part = 1/10 cm = 0.1 cm"
+      },
+      {
+       "do": "4 small parts",
+       "result": "4/10 cm = 0.4 cm"
+      },
+      {
+       "do": "whole cm + tenths",
+       "result": "3 + 4/10 = 3 4/10 cm"
+      },
+      {
+       "do": "as a decimal → tenths digit after the point",
+       "result": "3.4 cm"
+      }
+     ],
+     "answer": "3 4/10 cm = 3.4 cm",
+     "why": "one cm cut into 10 equal parts → each part = one tenth; digit after the point counts tenths"
+    },
+    {
+     "skillId": "c7-maths-ch03-t01-s2",
+     "problem": "A square rangoli is drawn as a 10 × 10 grid of equal small squares. 47 small squares are coloured. Write the coloured part as a fraction and as a decimal of the whole rangoli, and say how many tenths and hundredths it is.",
+     "givens": [
+      "10 × 10 grid = 100 equal squares",
+      "47 squares coloured"
+     ],
+     "find": "The coloured part as a fraction, as a decimal, and in tenths and hundredths",
+     "steps": [
+      {
+       "do": "1 small square of 100",
+       "result": "1/100 = 0.01 of the rangoli"
+      },
+      {
+       "do": "47 small squares",
+       "result": "47/100 of the rangoli"
+      },
+      {
+       "do": "split 47 → full rows of 10 + extra squares",
+       "result": "4 full rows + 7 squares = 4 tenths and 7 hundredths"
+      },
+      {
+       "do": "tenths digit, then hundredths digit",
+       "result": "0.47"
+      }
+     ],
+     "answer": "47/100 = 0.47 (4 tenths and 7 hundredths)",
+     "why": "whole = 100 equal parts → each = one hundredth; one row = 10 hundredths = 1 tenth → first digit after point = rows, second = extra squares"
+    }
    ]
   },
   {
@@ -9757,7 +9918,8 @@
      "Linear pair: 180° − 72° = ___.",
      "Across from 108° is ___.",
      "The four angles: 72°, 108°, 72°, ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch05-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -9778,6 +9940,66 @@
     "railway level crossings",
     "crossed kite strings",
     "crossed cricket bats"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch05-t01-s1",
+     "problem": "At a railway level crossing, a straight road meets a straight track. The two angles the road makes with the track on one side form a linear pair, and one of them is 30° more than the other. Find both angles.",
+     "givens": [
+      "The two angles form a linear pair",
+      "One angle is 30° more than the other"
+     ],
+     "find": "The two angles",
+     "steps": [
+      {
+       "do": "smaller angle = x → bigger = x + 30°; linear pair → sum 180°",
+       "result": "x + (x + 30°) = 180°"
+      },
+      {
+       "do": "collect",
+       "result": "2x + 30° = 180°"
+      },
+      {
+       "do": "subtract 30°",
+       "result": "2x = 150°"
+      },
+      {
+       "do": "halve",
+       "result": "x = 75°, so the other angle is 75° + 30° = 105°"
+      },
+      {
+       "do": "check: 75° + 105°",
+       "result": "180°"
+      }
+     ],
+     "answer": "75° and 105°",
+     "why": "linear pair → two neighbouring angles fill a straight angle → sum 180°"
+    },
+    {
+     "skillId": "c7-maths-ch05-t01-s2",
+     "problem": "Two straight sticks AB and CD cross at O. Angle AOC is 58°. Find angle BOD, the angle across the crossing point from AOC, and show why using linear pairs.",
+     "givens": [
+      "AB and CD are straight lines crossing at O",
+      "∠AOC = 58°"
+     ],
+     "find": "∠BOD",
+     "steps": [
+      {
+       "do": "A, O, B on one line → ∠AOC + ∠COB = 180°",
+       "result": "∠COB = 180° − 58° = 122°"
+      },
+      {
+       "do": "C, O, D on one line → ∠COB + ∠BOD = 180°",
+       "result": "∠BOD = 180° − 122° = 58°"
+      },
+      {
+       "do": "compare ∠AOC and ∠BOD",
+       "result": "∠BOD = ∠AOC = 58° (vertically opposite)"
+      }
+     ],
+     "answer": "∠BOD = 58°",
+     "why": "∠AOC and ∠BOD each make a linear pair with the same ∠COB → both = 180° − ∠COB → equal"
+    }
    ]
   },
   {
@@ -10511,7 +10733,8 @@
      "Gap near the right end: 3 cm.",
      "Gap in the middle: ___ cm.",
      "The gap stays the same, so AB and CD are ___."
-    ]
+    ],
+    "skillId": "c7-maths-ch05-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -10532,6 +10755,72 @@
     "window grills",
     "zebra crossings",
     "creases on a cricket pitch"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c7-maths-ch05-t02-s2",
+     "problem": "On a wall clock, the hour hand and the minute hand are two straight segments from the centre. Are the hands perpendicular at 3:00? Are they perpendicular at 4:00?",
+     "givens": [
+      "12 equal hour marks around the clock",
+      "times 3:00 and 4:00",
+      "minute hand on 12 at both times"
+     ],
+     "find": "Whether the hands are perpendicular at 3:00 and at 4:00",
+     "steps": [
+      {
+       "do": "full turn ÷ 12 hour marks",
+       "result": "360° ÷ 12 = 30° between neighbouring marks"
+      },
+      {
+       "do": "3:00 → hands on 12 and 3",
+       "result": "3 × 30° = 90°"
+      },
+      {
+       "do": "4:00 → hands on 12 and 4",
+       "result": "4 × 30° = 120°"
+      },
+      {
+       "do": "perpendicular ⇔ angle = 90°",
+       "result": "3:00 → perpendicular; 4:00 → not perpendicular"
+      }
+     ],
+     "answer": "Perpendicular at 3:00 (90°); not perpendicular at 4:00 (120°)",
+     "why": "perpendicular = meet at exactly 90°; tilt or position does not matter, only the angle"
+    },
+    {
+     "skillId": "c7-maths-ch05-t02-s3",
+     "problem": "A line l is drawn on a page and a point P is marked 4 cm above it. Draw a line through P parallel to l using a ruler and a set-square, and check that it is parallel.",
+     "givens": [
+      "line l",
+      "point P, 4 cm from l",
+      "ruler and set-square"
+     ],
+     "find": "A line through P parallel to l, and a check",
+     "steps": [
+      {
+       "do": "one edge of the set-square on l",
+       "result": "Set-square edge lies exactly along l"
+      },
+      {
+       "do": "ruler held firmly against another edge of the set-square",
+       "result": "Ruler fixed; it guides the set-square"
+      },
+      {
+       "do": "slide set-square along ruler until the same edge reaches P",
+       "result": "Edge passes through P, still in the same direction as l"
+      },
+      {
+       "do": "draw along that edge → line m",
+       "result": "Line m through P"
+      },
+      {
+       "do": "measure gap between l and m at two far-apart places",
+       "result": "4 cm and 4 cm, so m ∥ l"
+      }
+     ],
+     "answer": "Line m through P with m ∥ l; the gap is 4 cm at both checks",
+     "why": "sliding keeps the edge's direction unchanged → same direction as l → never meet; equal gaps at two places confirm"
+    }
    ]
   },
   {

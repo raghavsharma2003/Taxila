@@ -30,7 +30,7 @@ import { HttpError } from "../http.js";
 import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
 import { routes as placementRoutes } from "./placement.js";
-import { openJar, jarSummary } from "../learner/jar.js";
+import { openJar, jarSummary, jarNotebook } from "../learner/jar.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -538,6 +538,18 @@ async function homeworkMatch(req, res, body) {
 }
 
 /**
+ * GET /api/child/jar?childId= → { items } (round 7 F, App's app-notebook-log: the Notebook's "Questions in the jar").
+ * The child's own kept questions and shares: waiting ones oldest first, then up to 10 answered ones newest first, with
+ * the date each was answered. No counts. On the Conductor's safety hold the page is empty. Read-only (no child delete).
+ */
+async function jar(req, res) {
+  const { child } = await requireChild(req, childIdOf(query(req).get("childId")));
+  const hold = await one("select mode from conductor_state where child_id = $1", [child.id]).catch(() => null);
+  if (hold?.mode === "safety_hold") return send(res, 200, { items: [] });
+  send(res, 200, { items: await jarNotebook(child.id) });
+}
+
+/**
  * POST /api/child/reflect { childId, lessonId, choice } → 204 (round 7 F, App's app-debrief-made-later "What helped?").
  * choice: "made:<madeForId>" (a piece revealed in THAT lesson) | board | explain | self | unsure. Emits child.reflect;
  * the first tap per lesson wins (a second is a 204 no-op). A lesson that is not this child's own → 404; an unknown
@@ -573,6 +585,7 @@ export const routes = {
   "GET /api/child/name-audio": nameAudio,
   "POST /api/homework/match": homeworkMatch,
   "POST /api/child/reflect": reflect,
+  "GET /api/child/jar": jar,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };
