@@ -56,6 +56,11 @@ const API = {
   "/api/tutors": { tutors: [], current: "asha" },
   "/api/lesson/list": { lessons: [] },
   "/api/notebook": { items: [] },
+  "/api/studio/made-for": { cards: [
+    { id: "m1", title: "Fraction pizza", kind: "game", topicId: `c${CLS}-maths-ch07-t01`, at: "2026-11-05T10:05:00Z", replay: null },
+    { id: "m2", title: "Halves and quarters", kind: "animation", topicId: `c${CLS}-maths-ch07-t01`, at: "2026-11-04T10:09:00Z", replay: null },
+    { id: "m3", title: "Magnet tug", kind: "game", topicId: `c${CLS}-science-ch04-t01`, at: "2026-11-02T09:00:00Z", replay: null },
+  ] },
   "/api/homework/match": { match: { rung: "topic", topicId: `c${CLS}-maths-ch07-t01`, subject: "maths", chapter: 7, topicTitle: "Fractions" } },
   "/api/child/memory": arg("memory", "on") === "off" ? { keeps: false, items: [] } : { keeps: true, items: [
     { id: "11", text: "I like bowling more than batting.", at: "2026-11-03T10:00:00Z" },
@@ -80,6 +85,7 @@ export const SCREENS = {
   who: `/who`,
   homework: `/c/${CID}/ask?homework=1`,
   station: `/c/${CID}/map`,
+  "notebook-made": `/c/${CID}/notebook?made=m1`,
 };
 
 async function main() {

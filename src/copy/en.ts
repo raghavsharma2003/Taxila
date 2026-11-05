@@ -248,6 +248,11 @@ export const R7 = {
   "hw.confirm": "Is this from {topic}?",
   "hw.yes": "Yes",
   "hw.no": "Not this",
+  // r7 app-notebook-log: the Notebook's pages
+  "nb.lessons": "Lessons",
+  "nb.made": "Made for you",
+  "nb.madeEmpty": "Things {T} makes for you will be here.",
+  "nb.close": "Close",
 } as const;
 export type R7Key = keyof typeof R7;
 export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {

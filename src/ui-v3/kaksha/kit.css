@@ -171,3 +171,15 @@
 .kx-mem-item { display: grid; gap: 6px; padding: 12px 14px; background: var(--k-deep); border-left: 2px solid var(--k-her); }
 .kx-mem-text { margin: 0; font: 600 17px/1.35 var(--k-sans); }
 .kx-mem-item .kx-ghost--kit { justify-self: start; min-height: 48px; }
+
+/* Notebook: Lessons | Made for you, and the made-for shelf */
+.kx-nb-tabs { justify-self: start; }
+.kx-nb-tabs button[aria-selected="true"] { background: var(--k-ink); color: var(--k-void); }
+.kx-made-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.kx-made-tile { --k-cut: 12px; display: grid; gap: 6px; align-content: start; width: 100%; min-height: 128px; padding: 12px; text-align: left; border: 1px solid var(--k-line-2); background: var(--k-panel); }
+.kx-made-tile b { font: 700 16px/1.25 var(--k-sans); color: var(--k-ink); }
+.kx-made-tile[aria-pressed="true"] { border-color: var(--k-ion); box-shadow: inset 0 0 0 1px var(--k-ion); }
+.kx-made-tile:disabled { opacity: .5; cursor: default; }
+.kx-made-ico { width: 44px; height: 44px; display: grid; place-items: center; color: var(--k-her); border: 1px solid var(--k-line-2); background: var(--k-deep); }
+.kx-made-play { display: grid; gap: 10px; }
+.kx-made-stage { aspect-ratio: 4 / 3; position: relative; }
