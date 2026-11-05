@@ -120,19 +120,60 @@ export function screenFacts(ui, lastMove) {
   const params = ref && typeof ref === "object" ? (ref.params && typeof ref.params === "object" ? ref.params : ref) : {};
   const shape = SHAPE_ALIAS[String(sc?.shape ?? params.shape ?? "").toLowerCase()] ?? null;
   const numbers = Array.isArray(sc?.numbers) ? sc.numbers.map(String) : null;
-  return { shape, numbers };
+  // SC1 (Studio's counted facts, shared/studio.ts ScreenCounts): what the template counted as it drew; absent → no count check
+  const counts = sc?.counts && typeof sc.counts === "object" ? sc.counts : null;
+  return { shape, numbers, counts };
+}
+// SC1: a counted claim about the board ("beech mein 2 nishaan", "3 barabar hisse", "5 bhujayein", "2 rangin") → the counts it
+// may match; a claim whose kind the board did not count is never checked
+const HI_COUNT = { ek: 1, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, panch: 5, chhe: 6, chhah: 6, saat: 7, aath: 8, nau: 9, das: 10 };
+const NUM_W = "(\\d+|ek|do|teen|chaa?r|paa?nch|chhe|chhah|saat|aath|nau|das)";
+const countOf = (w) => /^\d+$/.test(w) ? Number(w) : HI_COUNT[w.toLowerCase()] ?? null;
+const COUNTED = [
+  ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:chhote\\s+)?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
+  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups]],
+  ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => (c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps])],
+  ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
+  ["shaded", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hisse\\s+|parts?\\s+|tukde\\s+)?(?:shaded|rangi\\w*|rangee\\w*|colou?red)(?![\\p{L}])`, "giu"), (c) => [c.shaded]],
+];
+const DEICTIC = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye|\b(?:yahan|is|iss|ye|yeh)\s+(?:line|rekha|shape|aakar|chitra?|figure|rectangle|triangle|square|circle|pentagon|hexagon|patti|strip|kyaari)/i;
+/** SC1: does this sentence state a count the board's counted facts contradict? */
+export function countContradicts(x, counts) {
+  if (!counts || !DEICTIC.test(x)) return false;
+  // "beech mein N" claims are inner marks only; the plain "N marks" rule then skips them
+  const t = String(x);
+  for (const [kind, re, allowed] of COUNTED) {
+    for (const m of t.matchAll(re)) {
+      if (kind === "ticks" && /beech\s+mein\s*$/i.test(t.slice(0, m.index))) continue;
+      if (kind === "gaps" && /^\s*(?:hisse\s+|parts?\s+|tukde\s+)?(?:shaded|rangi|rangee|colou?red)/i.test(t.slice(m.index + m[0].length))) continue;
+      const ok = allowed(counts).filter((v) => typeof v === "number");
+      if (!ok.length) continue;                       // not counted by this board: never flagged
+      const n = countOf(m[1]);
+      if (n != null && !ok.includes(n)) return true;
+    }
+  }
+  // a side value with a unit, said of a side, must be one the board wrote
+  if (Array.isArray(counts.sideValues) && counts.sideValues.length && /\b(?:sides?|bhuja\w*)\b/i.test(t) && !/parimap|perimeter|\bkul\b|total|jod/i.test(t)) {
+    const vals = counts.sideValues.map((v) => String(v).replace(/\s+/g, " ").trim().toLowerCase());
+    for (const m of t.matchAll(/(?<![\d.])(\d+(?:\.\d+)?)\s*(cm|m|km|mm)\b/gi)) if (!vals.includes(`${m[1]} ${m[2].toLowerCase()}`)) return true;
+  }
+  return false;
 }
 /** The sentences of her line that contradict the screen (another shape named; a screen-pointing number the board lacks). */
 export function screenContradictions(text, facts) {
-  if (!facts?.shape && !facts?.numbers) return [];
+  if (!facts?.shape && !facts?.numbers && !facts?.counts) return [];
   const POINT = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye/i;
   return (String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => {
+    if (facts.counts && countContradicts(x, facts.counts)) return true;
     if (facts.shape) {
       const named = SHAPES.filter(([, re]) => re.test(x)).map(([n]) => n);
       if (named.length && !named.includes(facts.shape) && !(facts.shape === "square" && named.includes("rectangle"))) return true;
     }
     if (facts.numbers?.length && POINT.test(x)) {
-      const ns = (x.match(/\d+(?:\/\d+)?/g) ?? []);
+      // (SC1: a number that is a count — "4 hisse", "beech mein 3 nishaan" — is the counts' business, never this check's:
+      // director5's false flags were counts the board drew but never wrote)
+      const bare = COUNTED.reduce((acc, [, re]) => acc.replace(re, " "), x);
+      const ns = (bare.match(/\d+(?:\/\d+)?/g) ?? []);
       if (ns.some((n) => !facts.numbers.some((m) => m === n || m.startsWith(`${n} `) || m.split(/[^\d/]+/).includes(n)))) return true;
     }
     return false;

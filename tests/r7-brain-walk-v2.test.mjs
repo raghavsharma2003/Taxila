@@ -119,7 +119,7 @@ describe("script walk v2", () => {
 test("R4: a sentence naming another shape, or pointing at a number the board lacks, contradicts the screen", async () => {
   const { screenContradictions, screenFacts } = await import("../server/brain/say.js");
   const facts = screenFacts({ studioSlot: { artifact: { screen: { shape: "triangle", numbers: ["4", "5", "6"] } } } }, null);
-  assert.deepEqual(facts, { shape: "triangle", numbers: ["4", "5", "6"] });
+  assert.deepEqual(facts, { shape: "triangle", numbers: ["4", "5", "6"], counts: null });
   assert.deepEqual(screenContradictions("Board par triangle dekho: 4, 5 aur 6 cm.", facts), []);
   assert.equal(screenContradictions("Rectangle mein chaaron sides jodte hain.", facts).length, 1);
   assert.equal(screenContradictions("Screen par 2/5 dekho.", facts).length, 1);

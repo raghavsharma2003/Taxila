@@ -77,6 +77,15 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.ok(gave, "the card is let go with its answer");
     assert.match(gave.answer, /\d/);
   });
+
+  test("SC2: a picture asked for while a script card is live shows THAT card's board", () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    assert.equal(L.r.move.scriptBeat?.beatId, "e1");
+    L.t("picture dikhao", { ...cls("no_evidence"), request: { type: "visual", kind: "diagram" } });
+    assert.equal(L.r.move.scriptBeat?.beatId, "e1", JSON.stringify(L.r.move.scriptBeat));
+    assert.deepEqual(L.r.move.scriptBeat?.board, S1.explain[0].board);
+  });
 });
 
 test("v2.1 validator: {friend} not the child or Asha, no '?' glyph, no echo ask, ≤3 worked steps (c4-5), follow-ups with a board", async () => {
@@ -97,4 +106,25 @@ test("a scripted lesson's teach-back invents no pretend learner (director5 c4: '
   assert.doesNotMatch(SH.teachback({ protege: null }), /Golu|undefined/);
   assert.match(SH.teachback({ protege: { name: "Golu", what: "a pretend baby elephant" } }), /Golu/, "unscripted lessons keep their protege");
   assert.doesNotMatch(SH.teachbackFollowup({ protege: null, missing: "x" }), /undefined/);
+});
+
+test("SC1: counted claims are checked against Studio's screen.counts, and never without them", async () => {
+  const { countContradicts, screenContradictions } = await import("../server/brain/say.js");
+  const line = { lines: [{ gaps: 3, ticks: 4, innerTicks: 2 }], marks: [{ at: "1/3", label: "1/3" }] };
+  assert.equal(countContradicts("Board par dekho, 0 aur 1 ke beech mein 2 nishaan hain.", line), false);
+  assert.equal(countContradicts("Board par dekho, beech mein 3 nishaan hain.", line), true);
+  assert.equal(countContradicts("Dekho, line 4 barabar hisson mein bati hai.", line), true);
+  assert.equal(countContradicts("Board par dekho, beech mein 3 nishaan hain.", null), false, "no counts: no count check");
+  const pent = { sides: 5, corners: 5, sideValues: ["4 m", "5 m", "3 m", "6 m", "2 m"] };
+  assert.equal(countContradicts("Is kyaari ki 4 bhujayein hain.", pent), true);
+  assert.equal(countContradicts("Board par sab bhujayein jodo: kul 20 m.", pent), false, "a total is not a side value");
+  assert.equal(countContradicts("Dekho, 4 hisse hain aur 3 rangin hain.", { parts: 4, shaded: 1 }), true);
+  // director5's false flag: a count the board drew but never wrote is not a missing number
+  assert.equal(screenContradictions("Board par dekho, beech mein 2 nishaan hain.", { shape: null, numbers: ["0", "1"], counts: line }).length, 0);
+});
+
+test("{friend} fills a card's graded fields too: the friend's wrong pick is graded as its misconception", async () => {
+  const { scriptThenItem } = await import("../server/director/script.js");
+  const it = scriptThenItem("s1", { targets: "m-x", then: { prompt: { hi: "{friend} ya Ravi, kaun sahi hai", en: "{friend} or Ravi, who is right" }, key: "Ravi", accept: [], wrongIfMis: "{friend}" } });
+  assert.equal(it.scriptThen.wrongIfMis, "{friend}", "the then-card carries its listed wrong pick");
 });

@@ -579,7 +579,14 @@ function walkNext(s, input, prefix) {
 // cards go through these (a module-level child name, set per step: the walk is synchronous)
 let friendOf = "";
 const saidIn = (x, lang) => { const t = saidIn0(x, lang); return t == null ? t : fillFriend(t, friendOf); };
-const friendly = (item) => (item ? { ...item, prompt_en: fillFriend(item.prompt_en, friendOf), prompt_hi: fillFriend(item.prompt_hi, friendOf) } : item);
+const friendly = (item) => {
+  if (!item) return item;
+  const f = (x) => fillFriend(x, friendOf);
+  // (Learning, c5-t02: the friend can be a card's key or its listed wrong pick, so graded fields are filled with the same name)
+  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: f(m.wrongIfMis) } : m);
+  return { ...item, prompt_en: f(item.prompt_en), prompt_hi: f(item.prompt_hi), answer: f(item.answer), acceptable: (item.acceptable ?? []).map(f),
+    ...(item.scriptAsk ? { scriptAsk: meta(item.scriptAsk) } : {}), ...(item.scriptCheck ? { scriptCheck: meta(item.scriptCheck) } : {}), ...(item.scriptThen ? { scriptThen: meta(item.scriptThen) } : {}) };
+};
 // ───────────── dc-r7-script-walk-v2: a beat is DONE, not shown (R1-R3) ─────────────
 // v2 beats teach and ask: each explain beat poses its keyed micro-question as the card, and the walk moves on only when that
 // card is answered right (or its remediation's follow-up is through). A diversion never uses a beat up: the card stays and is
@@ -680,6 +687,25 @@ function currentBeatRef(s, kit) {
   // a check with no board of its own shows the last explain beat's
   const fallback = [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
   return { scriptId: scriptIdOf(kit), skillId: w.skillId, beatId: id ?? kind, kind: kind || "explain", board: board ?? fallback };
+}
+/** SC2: a live script card's own beat ref, with its board (an ask: its explain beat's; a check: its own, else the last explain
+ *  beat's, as currentBeatRef; a follow-up: its then.board) or none. */
+function cardBeatRef(s, kit, item) {
+  const sk = skillScriptOf(kit, item.skillId);
+  if (!sk) return null;
+  const base = { scriptId: scriptIdOf(kit), skillId: item.skillId };
+  if (item.scriptAsk) {
+    const b = sk.explain?.find((x) => x.id === item.scriptAsk.beatId);
+    const board = item.scriptAsk.beatId === "worked" ? sk.workedExample?.board : b?.board;
+    return { ...base, beatId: item.scriptAsk.beatId, kind: item.scriptAsk.beatId === "worked" ? "worked" : "explain", ...(board ? { board } : {}) };
+  }
+  if (item.scriptCheck) {
+    const board = sk.checks?.find((c) => c.id === item.scriptCheck.checkId)?.board ?? [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
+    return { ...base, beatId: item.scriptCheck.checkId, kind: "check", ...(board ? { board } : {}) };
+  }
+  const r = sk.remediation?.find((x) => x.targets === item.scriptThen.targets);
+  const board = r?.then && typeof r.then === "object" ? r.then.board ?? null : null;
+  return { ...base, beatId: `then:${item.scriptThen.targets}`, kind: "check", ...(board ? { board } : {}) };
 }
 /** R1: their reply to a v2 beat's question. "pata nahi", or a beat whose must-say words her line left out, gets the SAME beat
  *  again, smaller, once; a right answer goes on; a wrong one gets its remediation (walkRemedy) or the hint ladder. */
@@ -975,6 +1001,10 @@ function leavePractice(s, kit) {
   // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
   const P = s.pace;
   const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
+  // v3 (director5/6: skill 1's cards and ladder spent practiceMax, so skills 2-3 were never taught): in script mode item counts
+  // never end practice before every scripted skill has been walked; the clock and the brief still do
+  const unwalked = scriptIdOf(kit) && kit.skills.some((sk) => skillScriptOf(kit, sk.id) && !s.introduced.includes(sk.id));
+  if (unwalked) return s.minutes >= LIMITS.minutes[s.ctx.ageBand] || pastBrief(s, "wrapAt");
   return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand]
     || pastBrief(s, "wrapAt"); // round 7 (Learning patch 006): the slot's target length reached → the next natural stop
 }
@@ -2567,9 +2597,13 @@ export function step(prev, input) {
   // round 7 T2: the script beat this move renders (brain/propose.js puts its board on Studio's ask as intent.boardRef)
   if (p.scriptBeat) move.scriptBeat = { ...p.scriptBeat };
   // dc-r7-script-walk-v2 R4: a picture asked for during a walk re-shows the current beat's board (never a board of another idea)
-  if (!move.scriptBeat && p.request === "visual" && p.visual !== "game" && s.walk && scriptOn()) {
-    const cur = currentBeatRef(s, input.kit);
-    if (cur?.board) move.scriptBeat = cur;
+  if (p.request === "visual" && p.visual !== "game" && scriptOn()) {
+    // (SC2, Studio: while a script card is live the picture is THAT card's board, never the beat a reteach routes to; a card
+    // with no board sends none, and Studio picks for the live item)
+    const live = s.activeItemId ? findItem(s, input.kit, s.activeItemId) ?? s.scriptCard ?? null : null;
+    const card = live && (live.scriptAsk || live.scriptCheck || live.scriptThen) ? cardBeatRef(s, input.kit, live) : null;
+    if (card) move.scriptBeat = card;
+    else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
   }
   // dc-r7-script-walk-v2 R1: the words this beat must say (brain/say.js holds her line to them; the next turn checks them)
   if (p.mustSay?.length) move.mustSay = [...p.mustSay];

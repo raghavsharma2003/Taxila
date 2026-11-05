@@ -19,7 +19,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust } from "../server/director/script.js";
-import { createReactiveChild, MIN_TURNS } from "./child-sim/reactive.mjs";
+import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
@@ -113,7 +113,7 @@ async function classOf(state, kit, text, classLevel) {
 /** One lesson on one lane: the opening, then every scripted line. */
 async function lesson(lane, kit, classLevel, lines, persona = null) {
   // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
-  const child = persona ? createReactiveChild({ persona, seed: 7, kit }) : null;
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya" }) : null;
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
   let r = step(initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
@@ -138,8 +138,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
-  // (H1.1: steady runs 40 turns, so skills 2-3 are reached)
-  const MAX = child ? (persona === "steady" ? 40 : MIN_TURNS + 10) : lines.length;
+  // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
+  const MAX = child ? maxTurnsFor(persona) : lines.length;
   let lastBoardUp = false;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
@@ -148,10 +148,13 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
       const card = live ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
       const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: live.scriptAsk.wrongIfMis ?? null }
-        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null } : null;
+        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null }
+        : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: live.scriptThen.wrongIfMis ?? null } : null;
       const sb = s.lastMove?.scriptBeat;
       const out = child.reply({ turn: i, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
-        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card, ask, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish" });
+        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card, ask, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
+        // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
+        ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}) });
       text = out.text; leaving = out.kind === "leave";
     }
     if (text == null) break;
