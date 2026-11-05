@@ -10,7 +10,7 @@ tsc + build + 4265 unit tests green, single process). Live model calls so far: o
 |---|---|---|
 | 1 | **Azure keys (the blocker).** Nothing has been tried live and nothing can be released without them. | Re-add the keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
-| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Side by side: `face/route-b-vs-r8-sheet.png`. Try it yourself with `?jaw=1` once your account is re-keyed. |
+| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
 | 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
@@ -26,7 +26,7 @@ equivalence check, adjudication and level rating. Figures come from the scripts'
 
 | Tier | Work | Azure calls | ~Cost | Unblocks |
 |---|---|---|---|---|
-| 1 | G1 sentence-train grammar items (55 skills) | 83 | $2.66 | English and Hindi grammar games (Games) |
+| 1 | G1 sentence-train grammar items (85 tagged skills, 444 items short) | 128 | $4.10 | English and Hindi grammar games (Games) |
 | 1 | W1a Hinglish/Devanagari answer forms | 30 | $0.60 | Hinglish answers graded correctly |
 | 2 | W1b Hindi worked-example steps, class 4-7 maths | 141 | $2.62 | Worked examples in Hindi |
 | 2 | W1c explain plans per skill, class 4-7 maths (424 skills) | 424 | $15.26 | Richer explanations (Brain) |

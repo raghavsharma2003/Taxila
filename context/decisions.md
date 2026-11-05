@@ -7277,3 +7277,9 @@ tests/p4-content-unit 'board sync: the line plan wins inside the deadline' (App:
 ## fx-r7-pick-operands (2026-11-04, round 7; written up by main loop from the stream entry)
 
 pick.js text pick reads an operation's OWN operands ('4 + 3', 'add 4 and 3', '3 groups of 4', '6 × 8'), refusing a sign another operation joins ('3 + 4 × 2', '9 + 9 + 1', '3n + 2'); a word problem keeps its word cue only when it has exactly two numbers. Products on a number line are k equal jumps from 0. Bar charts from text need a graph word or capitalised name labels; an area/perimeter pick needs measured sides (a unit, 'N by M', rows/columns). Found because motion made old wrong picks ('2 + 2' dots for a perimeter formula, '3 + 4' for '3 + 4 × 2 = 11', Collatz '2 + 3') long enough to pass W6. 11 kits changed board, each from a wrong pick to the library or a better template; none lost a board.
+
+
+<!-- merged from inbox/r7-main-9.json -->
+## dc-r7-teaching-scripts (2026-11-05, main loop)
+
+Three fix rounds (11 items, then structural S1-S6) made her more truthful but did not make her teach. The core gaps persisted: the answer inside the question, ignored answers, no complete worked example, no class-level practice, unkept promises, speech disconnected from the screen. That is dc-r7-brain-structural-block's reversal condition. The diagnosis is that per-turn improvisation with guards cannot produce a coherent lesson. The teaching becomes authored data: lesson scripts per skill, written and blind-verified in-session by Claude agents (precedent: the 18 end-of-class items and the relevel ratings; no Azure calls). The Director walks the script; the reply model paraphrases and must first answer the child. Listening and screen contracts are enforced in code. Pilot: the three judged topics. Reversal: if director4 on scripted topics still shows the gaps, the reply layer is the next suspect.
