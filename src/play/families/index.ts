@@ -17,7 +17,9 @@ import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
 import { vakyaLogic } from "./vakya/vakya.logic.ts";
 import { kilaLogic } from "./kila/kila.logic.ts";
+import { ghadiLogic } from "./ghadi/ghadi.logic.ts";
 import { nakshaLogic } from "./naksha/naksha.logic.ts";
+import { darpanLogic } from "./darpan/darpan.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -68,5 +70,13 @@ export const LOGIC: Record<string, AnyLogic> = {
   "naksha/route": asAny(nakshaLogic),
   "naksha/scale": asAny(nakshaLogic),
   "naksha/shape": asAny(nakshaLogic),
+  // round 7: Ghadi, time and clocks (a geared clock, bus trips, a race podium, a month calendar); nothing runs on a clock
+  "ghadi/set": asAny(ghadiLogic),
+  "ghadi/run": asAny(ghadiLogic),
+  "ghadi/race": asAny(ghadiLogic),
+  "ghadi/calendar": asAny(ghadiLogic),
+  // round 7: Darpan, symmetry (lines of symmetry laid and folded; the smallest turn and the order of turn symmetry)
+  "darpan/mirror": asAny(darpanLogic),
+  "darpan/turn": asAny(darpanLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

@@ -47,6 +47,14 @@ export const PLAY_ACTS = Object.freeze({
     route: { act: "build", hi: "raasta banao aur chalao", en: "plan the route and run it" },
     scale: { act: "set", hi: "scale se naapo aur truck chalao", en: "measure with the scale and drive the truck" },
     shape: { act: "build", hi: "naksha jaisi baad lagao", en: "fence it like the plan" } },
+  // r7 games: Ghadi (time and clocks): set the geared clock / the ticket / the podium / the flag, then run it (never timed)
+  ghadi: { set: { act: "set", hi: "suiyan ghuma kar ghadi milao aur ghanti bajao", en: "turn the hands to the time and ring the bell" },
+    run: { act: "set", hi: "ghadi ya ticket set karo aur bus chalao", en: "set the clock or the ticket and run the bus" },
+    race: { act: "place", hi: "har dhaavak ko podium par rakho aur daud chalao", en: "put each runner on the podium and run the race" },
+    calendar: { act: "place", hi: "jhanda us taareekh par lagao aur din ginte jao", en: "plant the flag on the date and hop the days" } },
+  // r7 games: Darpan (symmetry): lay the mirror lines and fold; turn the figure on the turntable and spin
+  darpan: { mirror: { act: "place", hi: "aaine ki lakeerein rakho aur modo", en: "lay the mirror lines and fold" },
+    turn: { act: "set", hi: "ghumao aur chakri chalao", en: "turn it and spin" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
