@@ -156,7 +156,8 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
-    mode: !request && next?.wbBeat === beat.id ? "continue" : "fresh",
+    // (a script beat's own board is a new page: e1 → e2 → e3 are one "explain" beat to the Director; Studio, director4 S1)
+    mode: !request && next?.wbBeat === beat.id && !next?.lastMove?.scriptBeat?.board ? "continue" : "fresh",
     kit: { topicId: kit?.topicId ?? next?.topicId ?? "", ...(next?.kitHash ? { kitHash: next.kitHash } : {}),
       content: (next?.lastContent ?? []).map((x) => String(typeof x === "string" ? x : JSON.stringify(x))).slice(0, 8),
       ...(item ? { item: { id: item.id, prompt_en: item.prompt_en ?? "", prompt_hi: item.prompt_hi ?? "" } } : {}),

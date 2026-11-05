@@ -250,7 +250,7 @@ export function validateTopicScript(sc, kit) {
 
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
 /** The script versions the Director walks. */
-export const WALK_VERSIONS = new Set([1]);
+export const WALK_VERSIONS = new Set([1, 2]);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
 const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
 const loaded = new Map();
@@ -271,7 +271,6 @@ export function scriptFor(kit) {
     if (sc === undefined && fileOk) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, SCRIPT_DIR), "utf8")); } catch { sc = null; } }
     sc ??= null;
     const v = sc ? validateTopicScript(sc, kit) : null;
-    // (the v2 walk — beat completion, R1 — lands after the schema: until then a v2 script validates but is not walked)
     loaded.set(id, v?.ok.length && WALK_VERSIONS.has(Number(sc.version ?? 1)) ? { script: sc, ok: new Set(v.ok) } : null);
   }
   return loaded.get(id);
@@ -286,13 +285,22 @@ export const scriptIdOf = (kit) => { const f = scriptFor(kit); return f ? `${f.s
 export function walkBeats(sk, { hook = false } = {}) {
   return [...(hook ? ["hook"] : []), ...(sk.explain ?? []).map((b) => `explain:${b.id}`), "worked", ...(sk.checks ?? []).map((c) => `check:${c.id}`)];
 }
-const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind: "practice", difficulty: 1, prompt_en: prompt, prompt_hi: prompt,
+// (v2: a Said prompt gives the card both forms; a v1 string is both)
+const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind: "practice", difficulty: 1,
+  prompt_en: typeof prompt === "object" && prompt ? prompt.en : prompt, prompt_hi: typeof prompt === "object" && prompt ? prompt.hi : prompt,
   answer: String(key), acceptable: [...(accept ?? [])].map(String), hints: [], ...extra });
+/** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
+export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
+  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null } });
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
   { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis } });
 /** A remediation's follow-up question as a keyed card. */
-export const scriptThenItem = (skillId, r) => keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } });
+export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets } })
+  : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
+/** The script version of a skill (1 or 2). */
+export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;
 const WORDS = {
   hinglish: { given: "Diya hai", first: "Pehle", then: "Phir", answer: "Toh jawab" },
   hindi: { given: "Diya hai", first: "Pehle", then: "Phir", answer: "Toh jawab" },
@@ -310,4 +318,26 @@ export function scriptWorkedLines(w, lang = "hinglish") {
   const answer = saidIn(w.answer, lang) ?? String(w.answer).match(/\d+(?:\.\d+)?(?:\/\d+)?(?:\s*(?:km|cm|mm|m|kg|g|l|ml|rupees|₹))?/)?.[0] ?? null;
   if (!answer) return null;
   return [...(givens.length ? [dot(`${W.given}: ${givens.join(", ")}`)] : []), ...steps.map((r, i) => dot(`${i === 0 ? W.first : W.then}: ${r}`)), dot(`${W.answer}: ${answer}`)];
+}
+
+const BECAUSE = { hinglish: "kyunki", hindi: "kyunki", english: "because" };
+/** v2 (F3): the worked example as code lines in the lesson language: givens, then each step's do, result and why. The child's
+ *  step (yourStep) is the card after these; the answer and why are said after it (state.js gave). null: a field has no form. */
+export function scriptWorkedLinesV2(w, lang = "hinglish") {
+  const W = WORDS[lang] ?? WORDS.hinglish;
+  const givens = (w?.givens ?? []).map((g) => saidIn(g, lang));
+  if (!givens.length || givens.some((g) => !g)) return null;
+  const lines = [dot(`${W.given}: ${givens.join(", ")}`)];
+  for (const st of w.steps ?? []) {
+    const d = saidIn(st.do, lang), y = saidIn(st.why, lang);
+    if (!d || !String(st.result ?? "").trim()) return null;
+    lines.push(dot(`${d.charAt(0).toUpperCase()}${d.slice(1)}: ${String(st.result).trim()}${y ? `, ${BECAUSE[lang] ?? BECAUSE.hinglish} ${y}` : ""}`));
+  }
+  return lines;
+}
+/** v2 (R1): did her line say the beat's must-say terms (each, in the lesson language's form or the other)? */
+export function saidMust(line, mustSay = [], lang = "hinglish") {
+  const t = String(line ?? "").toLowerCase();
+  const norm = (x) => String(x ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+  return (mustSay ?? []).every((m) => (typeof m === "string" ? [m] : [saidIn(m, lang), m?.hi, m?.en]).filter(Boolean).some((v) => t.replace(/\s+/g, " ").includes(norm(v))));
 }

@@ -87,6 +87,21 @@ export const scriptExplain = ({ bridge = false, board = false } = {}) => join(
   // (T3: a question with an answer is a keyed check, never her own: a wrong answer to an unkeyed one cannot be corrected)
   "end by asking them to notice or say back one part of it in their words — never a sum or number for them to work out, never 'samjha?'",
 );
+// dc-r7-script-walk-v2: the beat teaches, then asks its own question (the card) last
+export const scriptExplainV2 = ({ bridge = false, board = false, smaller = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  smaller ? "they did not get it yet: the SAME idea in a smaller step, with a simpler picture or number; never a new idea"
+    : "one idea: the beat in LESSON NOW, in your own words; objects first, then the symbol",
+  "say the must-say words in LESSON NOW exactly as written",
+  board ? "point at what the board shows as you say it (the point in LESSON NOW)" : "point at the screen only at what the on-screen row lists",
+  "end with the question on the card, in the lesson's language; nothing after it",
+);
+export const scriptWorkedV2 = () => join(
+  "worked example: say the problem in LESSON NOW in one sentence with its numbers; its steps are said after your sentence",
+  "then their step is the question on the card; never say its answer",
+);
+export const EXAMPLE_ON_BEAT = "they asked for an example: this beat's own board and numbers (LESSON NOW), one small case of it; never numbers of your own";
+export const SMALLER_AFTER_STUCK = "they said they do not know: no verdict, warmly; the same idea again, smaller";
 export const scriptWorked = () => join(
   "worked example: the one in LESSON NOW with its own numbers and names, never an example of your own",
   "say the problem and what each given number is, then every step with its result, then the answer and why it is right",

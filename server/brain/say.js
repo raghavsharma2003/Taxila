@@ -12,6 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
+import { saidMust } from "../director/script.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -104,6 +105,38 @@ export function negatesAnswer(text, childText) {
   const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
   if (!said || said.split(" ").length > 3) return false;
   return negationOf(said).test(String(text ?? ""));
+}
+// dc-r7-script-walk-v2 R4: her words match the screen. The shape on the board (Studio's slot artifact.screen, else the script
+// beat's board ref) and the numbers it shows; a sentence that names another shape, or points at the screen with a number the
+// board does not show, is dropped (director4 c6: "rectangle" over a triangle in 6 of 8; c5 "screen par 2/5" over nothing).
+const SHAPES = [["rectangle", /(?<![\p{L}])(?:rectangle|rectangular|aayat\w*)(?![\p{L}])/iu], ["square", /(?<![\p{L}])(?:square|varg)(?![\p{L}])/iu],
+  ["triangle", /(?<![\p{L}])(?:triangle|tribhuj)(?![\p{L}])/iu], ["pentagon", /(?<![\p{L}])(?:pentagon|panchbhuj)(?![\p{L}])/iu],
+  ["hexagon", /(?<![\p{L}])(?:hexagon|shatbhuj)(?![\p{L}])/iu], ["circle", /(?<![\p{L}])(?:circle|vritt|gola)(?![\p{L}])/iu]];
+const SHAPE_ALIAS = { rect: "rectangle", rectangle: "rectangle", square: "square", triangle: "triangle", pentagon: "pentagon", hexagon: "hexagon", circle: "circle" };
+/** What the screen shows this turn: { shape, numbers } (null fields unknown). */
+export function screenFacts(ui, lastMove) {
+  const sc = ui?.studioSlot?.artifact?.screen ?? null;
+  const ref = lastMove?.scriptBeat?.board ?? null;
+  const params = ref && typeof ref === "object" ? (ref.params && typeof ref.params === "object" ? ref.params : ref) : {};
+  const shape = SHAPE_ALIAS[String(sc?.shape ?? params.shape ?? "").toLowerCase()] ?? null;
+  const numbers = Array.isArray(sc?.numbers) ? sc.numbers.map(String) : null;
+  return { shape, numbers };
+}
+/** The sentences of her line that contradict the screen (another shape named; a screen-pointing number the board lacks). */
+export function screenContradictions(text, facts) {
+  if (!facts?.shape && !facts?.numbers) return [];
+  const POINT = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye/i;
+  return (String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => {
+    if (facts.shape) {
+      const named = SHAPES.filter(([, re]) => re.test(x)).map(([n]) => n);
+      if (named.length && !named.includes(facts.shape) && !(facts.shape === "square" && named.includes("rectangle"))) return true;
+    }
+    if (facts.numbers?.length && POINT.test(x)) {
+      const ns = (x.match(/\d+(?:\/\d+)?/g) ?? []);
+      if (ns.some((n) => !facts.numbers.some((m) => m === n || m.startsWith(`${n} `) || m.split(/[^\d/]+/).includes(n)))) return true;
+    }
+    return false;
+  });
 }
 // round 7 T3 (dc-r7-teaching-scripts, the listening contract; kill switch TAXILA_R7_LISTEN=off)
 export const listenOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_LISTEN ?? ""));
@@ -808,6 +841,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
     // (full-run judgement #4) their number answer to her own question is answered, never ignored
     ownQAnswered && bareNumberSaid && !String(t).includes(bareNumberSaid) && "ignored",
+    // dc-r7-script-walk-v2 R1: a scripted beat's must-say words are in her line
+    kindNow !== "safeguard" && state.lastMove?.mustSay?.length && !saidMust(t, state.lastMove.mustSay, lang) && "mustsay",
     // round 7 T3 (listening contract): their own question is answered first, never met with a question back
     listenOn() && kindNow !== "safeguard" && !checkin && wordsVerdict === "ungraded" && childAsks(childText) && !state.lastMove?.request?.startsWith?.("visual")
       && /[?？]\s*$/.test(sentences(String(t))[0] ?? "") && "dodged",
@@ -1114,6 +1149,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("level") && `it is below class ${state.ctx?.classLevel} (counting on, a tiny sum of your own, or how many sides a shape has) — help at their class's level: show the step itself, then back to the question`,
       found.includes("answerinq") && "its question asks for what your line just said (the answer is inside the question) — ask for the next thing they work out, not what you told them",
       found.includes("underived") && `it puts a number on the card (${underived(reply, item, kit?.workedExample?.problem)}) that they never saw come from anywhere — first say in one line the step that made it, then the card`,
+      found.includes("mustsay") && `this beat must say these words as they are: ${(state.lastMove?.mustSay ?? []).join(", ")} — keep everything else, add them where they fit`,
       found.includes("dodged") && "they asked you a question: your first sentence answers it plainly (or, if it is for later, says when you will come back to it), never a question back",
       found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — respond to it first (what fits, what does not, the right one if it is not), then go on`,
       found.includes("samecard") && "it reads the question on the screen word for word again, as your last turn did — ask it in fresh words, keeping its numbers",
@@ -1383,6 +1419,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (nm && new RegExp(`\\b${nm}\\b`, "i").test(recent)) {
         const cut = reply.replace(new RegExp(`^\\s*${nm}\\s*[,—–-]\\s*`, "i"), "");
         if (cut !== reply && cut.trim()) { reply = cut.charAt(0).toUpperCase() + cut.slice(1); guard.repaired = true; }
+      }
+    }
+    // dc-r7-script-walk-v2 R4: a sentence that contradicts the screen is dropped (never on a safeguard turn); a line left empty
+    // falls back to the move's own fixed line
+    if (kindNow !== "safeguard" && state.lastMove?.scriptBeat) {
+      const bad = screenContradictions(reply, screenFacts(ui, state.lastMove));
+      if (bad.length) {
+        const kept = sentences(reply).filter((x) => !bad.some((b) => b.trim() === x.trim()));
+        reply = kept.join(" ").trim() || fallbackReply(state, item);
+        guard.repaired = true; guard.caught = [...guard.caught, "screenmismatch"];
       }
     }
     // round 7 T3 (listening contract): a wrong answer is ALWAYS corrected, first: graded wrong (or wrong to her own closed sum),

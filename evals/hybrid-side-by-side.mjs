@@ -17,7 +17,8 @@ import { classify, classifyFast, targetFor } from "../server/director/classify.j
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
-import { textReply, replyDeps } from "../server/brain/say.js";
+import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts } from "../server/brain/say.js";
+import { saidMust } from "../server/director/script.js";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
@@ -185,7 +186,7 @@ async function lesson(lane, kit, classLevel, lines) {
         if (pick) {
           screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
             ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
-          slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null } } };
+          slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
         } else screen = { kind: "none", why: "no board for this ask" };
@@ -210,7 +211,14 @@ async function lesson(lane, kit, classLevel, lines) {
     const check = cardId ? { itemId: cardId, scripted: String(cardId).startsWith("script:"), misses: next.misses?.[cardId] ?? 0, gave: !!next.lastMove?.gave } : null;
     // (a board or game on screen this turn; Studio's code-built scenes (M5a) are not simulated in-process: scene is always null)
     const boardUp = !!(screen && screen.kind !== "none");
+    // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
+    // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
+    const delivered = next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
+    const answered = activeItem && ["correct", "incorrect", "misconception"].includes(c.outcome) ? c.outcome : null;
+    const verdictGiven = answered ? (answered === "correct" ? affirmsAnswer(reply) : NOT_RIGHT.test((String(reply).match(/[^.!?।]+[.!?।]*/) ?? [""])[0])) : null;
+    const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+      gate: { delivered, answered, verdictGiven, contradictions },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     if (p.r.end) break;
