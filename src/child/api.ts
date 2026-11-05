@@ -199,3 +199,9 @@ export async function homeworkMatch(cid: string, text: string, ms = 1500): Promi
 /** The chip is asked only when the match names a topic (rungs kit_item and topic); "subject" or none starts at once. */
 export const homeworkAsks = (m: HomeworkMatch | null): m is HomeworkMatch & { topicId: string } =>
   !!m && (m.rung === "kit_item" || m.rung === "topic") && !!m.topicId;
+
+/** r7 app-world-hangar-depth: the chapters the ledger has sealed (every skill Got it or Secure; server/routes/child.js
+ *  buildMap decides `sealed`, never the app). */
+export function sealedChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ id: string; title: string; sealed?: boolean }> }> } | null): Array<{ id: string; subject: string; title: string }> {
+  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.sealed).map((c) => ({ id: c.id, subject: s.subject, title: c.title })));
+}

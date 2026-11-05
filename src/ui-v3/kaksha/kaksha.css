@@ -195,3 +195,8 @@ nav.kx-nav.kx-nav { view-transition-name: kx-dock; }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
+/* r7 app-world-hangar-depth: the chapters the ledger sealed (a state of the map, never a collectible) */
+.kx-seals { display: grid; gap: 8px; margin-top: 4px; }
+.kx-seals ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.kx-seal { --k-cut: 8px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 8px; border: 1px solid var(--k-secure); background: var(--k-panel); color: var(--k-ink); font: 600 15px/1.2 var(--k-sans); }
+.kx-seal svg { width: 26px; height: 26px; flex: none; color: var(--c, var(--k-secure)); }

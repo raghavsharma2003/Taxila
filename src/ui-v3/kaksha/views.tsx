@@ -172,6 +172,8 @@ export interface WorldViewProps extends NavProps {
   reducedMotion: boolean;
   backTo: string;
   hangarTo: string;
+  /** r7 app-world-hangar-depth: the chapters the ledger has sealed (empty: no row). */
+  seals?: Array<{ id: string; subject: string; title: string }>;
   /** r7 app-practice-entry: where "Practise this" on a station goes (its topic's practice set); null: not offered (hold). */
   practiceTo?: ((skillId: string) => string | null) | null;
   go?: Go;
@@ -249,6 +251,19 @@ export function WorldView(p: WorldViewProps) {
                 </li>
               )))}
             </ul>
+          )}
+          {!p.hidden && (p.seals?.length ?? 0) > 0 && (
+            <section className="kx-seals" aria-label={kt("sealedChapters")} data-testid="world-seals">
+              <p className="kx-label kx-secure-ink">{kt("sealedChapters")}</p>
+              <ul>
+                {p.seals!.map((c) => (
+                  <li key={c.id} className="kx-seal kx-cut" style={{ ["--c" as string]: `var(--k-r-${c.subject === "sst" ? "social" : c.subject})` }}>
+                    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l14 6v10c0 9-6 15-14 18C12 34 6 28 6 19V9z" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M13 20l5 5 9-10" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <span>{c.title}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
           )}
           <A to={p.hangarTo} go={p.go} className="kx-dockbtn kx-cut kx-hangar-link" testid="kx-hangar"><Icon d={I.hangar} />{kt("hangar")}</A>
         </section>

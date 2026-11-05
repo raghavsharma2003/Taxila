@@ -66,6 +66,10 @@ export const KX = {
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   playAgain: K("Play again", "Phir se khelo", "फिर से खेलो"),
   practiseThis: K("Practise this", "Isko practise karo", "इसका अभ्यास करो"),
+  // r7 app-world-hangar-depth: chapter seals (the ledger's: every skill Got it or Secure)
+  chapterSealed: K("Chapter sealed", "Chapter pakka", "अध्याय पक्का"),
+  sealNote: K("Every idea in this chapter is yours now.", "Is chapter ka har idea ab tumhara hai.", "इस अध्याय का हर विचार अब तुम्हारा है।"),
+  sealedChapters: K("Sealed chapters", "Pakke chapters", "पक्के अध्याय"),
   // r7 Debrief: "What helped?" (Older, one tap) and the closing emote to her
   helpedQ: K("What helped today?", "Aaj kisne madad ki?", "आज किसने मदद की?"),
   helpedBoard: K("The drawing", "Drawing", "ड्रॉइंग"),
