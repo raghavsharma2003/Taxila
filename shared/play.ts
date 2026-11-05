@@ -32,6 +32,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "ghadi",      // round 7: time and clocks (a geared clock set by hand, bus trips, a race podium, a month calendar); never timed
   "darpan",     // round 7: symmetry (mirror lines laid and folded; a turntable's smallest turn and order of turn symmetry)
   "feeta",      // round 7: length and distance (a ribbon cut against a ruler, a rope off a cm tape, a garden fence, a trip meter, routes in order)
+  "guna",       // round 7: multi-digit multiplication and division (a field cut into place-value pieces, a godown shared into trucks, stories with leftovers)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -52,6 +53,7 @@ export const MODES = {
   ghadi: ["set", "run", "race", "calendar"],
   darpan: ["mirror", "turn"],
   feeta: ["measure", "fence", "trip", "compare"],
+  guna: ["field", "pack", "story"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -284,7 +286,19 @@ export type FeetaAct =
   | { kind: "put"; lane: number; at: number }            // compare: item `lane` onto slot `at` (0 = shortest; swaps)
   | { kind: "run" }                                      // lay the ribbon / fence the garden / ride the trip / ride the routes: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct;
+// Guna (round 7, multi-digit multiplication and division): a field a × b cut into place-value pieces (each fills with its
+// tiles) and a truck loaded with place-value crates; a godown of crates shared one round at a time into equal trucks (a
+// crate opened into ten of the next place when it cannot be shared); a story's vehicles / packets / jar set, then run
+export type GunaAct =
+  | { kind: "cut"; side: number; at: number }            // field: a cut on side 0 (a, across) or 1 (b, down) at unit `at` (again = lifted)
+  | { kind: "round"; side: number; to: number }          // field (round): the side stretched / shrunk to a round length
+  | { kind: "crate"; place: number; by: number }         // field: one crate of 10^place on (+1) or off (−1) the truck
+  | { kind: "open"; place: number }                      // pack: one crate of 10^place opened into ten of the next place down
+  | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
+  | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
+  | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -445,6 +459,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   ghadi: ["kagaz", "chalk", "blueprint", "raat"],
   darpan: ["kagaz", "blueprint", "chalk", "raat"],
   feeta: ["kagaz", "chalk", "blueprint", "raat"],
+  guna: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

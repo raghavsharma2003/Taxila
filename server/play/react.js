@@ -21,6 +21,7 @@ import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
 import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
 import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
+import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -63,6 +64,9 @@ export function hiddenOf(level) {
   // r7 feeta: the length / perimeter / metres the child must produce and the nearest route are never said first. Checked by
   // family first: feeta's "compare" is also nishana's mode name
   if (level.family === "feeta") return feetaHidden(level);
+  // r7 guna: the product (or the estimate), the quotient and its leftover, a story's answer are never said first. Checked by
+  // family first: modes may share names with other families
+  if (level.family === "guna") return gunaHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

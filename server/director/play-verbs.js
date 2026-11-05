@@ -60,6 +60,11 @@ export const PLAY_ACTS = Object.freeze({
     fence: { act: "set", hi: "baad kaato aur bagiche ko ghero", en: "cut the fence and go round the garden" },
     trip: { act: "set", hi: "meter set karo aur cycle chalao", en: "set the meter and ride the trip" },
     compare: { act: "place", hi: "raaston ko chhote se bade kram mein rakho aur chalao", en: "put the routes from shortest to longest and ride them" } },
+  // r7 games: Guna (multi-digit multiplication and division): cut the field and load the truck; share the godown into trucks;
+  // set out the vehicles / packets / jar and run the story
+  guna: { field: { act: "load", hi: "khet kaato aur truck bharo", en: "cut the field and load the truck" },
+    pack: { act: "load", hi: "godown ka maal trucks mein barabar baanto", en: "share the godown equally into the trucks" },
+    story: { act: "set", hi: "gaadiyan ya packet rakho aur kahani chalao", en: "set out the vehicles or packets and run the story" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
