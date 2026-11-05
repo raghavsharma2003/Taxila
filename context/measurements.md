@@ -5133,3 +5133,43 @@ Method: stream A's harness, Director-only re-run at cb999f79 (fix block 2), resu
 ## jd-r7-reply-model-ab-2026-11-04 (main loop, 2026-11-04)
 
 Method: stream A's harness, Director-only. Arm A taxila-fast (results/2026-11-04-director2, cb999f79); arm B taxila-gpt6 (results/2026-11-04-gpt6-ab, fb995233). Classify on taxila-fast in both. n = 12 lessons per arm (c4/c5/c6 × steady/offtopic/stuck/steering), the same scripted Hinglish child. One Claude judge read all 240 teacher turns; not blind; the arms differ slightly in code repairs. Wins 4/4/4. Worked examples: A 3 real + 5 partial, B 1 + 3. B had 8 guard fallbacks. Latency from the json: p50 2.52 vs 3.21 s, p90 3.56 vs 4.54 s. Cost ~$0.21 vs ~$1.26.
+
+
+<!-- merged from inbox/r7-studio-11.json -->
+## ms-r7-board-geometry-reach (2026-11-04, n = 22 kits)
+
+22 maths lessons state a measured shape; all pass the board gates. In 11 the to-scale shape is now the board shown.
+
+
+<!-- merged from inbox/r7-studio-12.json -->
+## ms-r7-board-label-cells-atoms-reach (2026-11-04, n = 29 kits)
+
+29 science lessons now get a labelled diagram, all passing the board gates: 14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower.
+
+
+<!-- merged from inbox/r7-studio-13.json -->
+## ms-r7-board-places-reach (2026-11-04, n = 33 kits)
+
+33 lessons name three or more places; all 33 boards pass the board gates and 29 now show the map. 138 of 147 named places are pinned; the rest sit too close to a neighbour to label.
+
+
+<!-- merged from inbox/r7-studio-15.json -->
+## ms-r7-motion-reach-m2 (2026-11-04, n = 250 kits)
+
+Boards that move went from 4 to 122 of 245 (maths 61, science 35, EVS 26; every class 4-7 gains 28 to 33).
+
+
+<!-- merged from inbox/r7-studio-16.json -->
+## ms-r7-picture-request-perimeter (2026-11-04)
+
+In the perimeter and area lessons, picture requests that got a fitting board rose from 2 of 9 to 8 of 9 asks across the three lessons that lacked one.
+
+
+## ms-r7-app-home-done-fits-360 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+At 360x800 the done state with both the day card and the made-for strip overflowed the dock with her full portrait; with data-summary the portrait steps down to min(46vw,190px) and everything sits above the dock (n=1 mocked shot per size: 360x800, 412x915, 1280x800; method app-shots.mjs --plan done).
+
+
+## ms-r7-isolation-debt-cleared-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
+
+Module-level env and global writes in tests/*.test.mjs: 21 at int/r6 5a5b2f45 when tests/test-isolation.test.mjs landed (Brain 11 TAXILA_R7_* lines in 8 files, Forge 7 in 3 files, 3 module-level globals). 2 after integration 3b (07185e93). 0 after integration 4 (6c3c3c95), and the known-debt list is now empty. Integration 4's single-process npm test: 4,265 tests, 0 fail (main).
