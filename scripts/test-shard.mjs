@@ -54,7 +54,7 @@ if (flag("--measure") || flag("--all")) {
       for (const k of Object.keys(totals)) { const m = new RegExp(`^# ${k} (\\d+)$`, "m").exec(out); if (m) totals[k] += Number(m[1]); }
       if (code !== 0) {
         failed.push(f);
-        if (ALL) console.log(`\n✗ ${f} (exit ${code}, ${seconds[f]} s)\n${out.split("\n").filter((l) => /^not ok|^\s+(error|expected|actual|location):|^# (pass|fail)/.test(l)).slice(0, 40).join("\n")}`);
+        if (ALL) console.log(`\n✗ ${f} (exit ${code}, ${seconds[f]} s)\n${out.split("\n").filter((l) => /^\s*not ok|^\s+(error|expected|actual|location):|^\s+(\+|-) |^# (pass|fail)/.test(l)).slice(0, 40).join("\n")}`);
       } else if (ALL) process.stdout.write(".");
     }
   };
