@@ -5,6 +5,7 @@
 // The child's turn itself goes through POST /api/lesson/turn like a text-lane turn: the Director writes the
 // reply there (one compile() for every lane), and the client speaks it through tts-stream by seq.
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
+import { emitChildText } from "../duplex/childText.js";
 import { takeAgentSpec, settleAgentSpec } from "../latency/agentSpec.js";
 import { one } from "../db.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
@@ -391,6 +392,8 @@ async function turnAudio(req, res, body) {
   // round 7 (B5 ↔ Brain A5): the Director's locked first clause (brain/say.js streamAsk) is spoken HERE the moment it is
   // guarded, while the rest of the reply is written: the fold opens at that clause, exactly as for the agent lane
   const hooks = { onAgentSay: early.onAgentSay, onClause: (ev) => early.onDirectorClause(ev) };
+  // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
+  if (body?.lessonId && typeof body?.childText === "string") emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true });
   const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
   const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
