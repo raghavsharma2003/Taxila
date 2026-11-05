@@ -466,6 +466,15 @@ export interface HomeworkMatch {
   score?: number;
 }
 export interface HomeworkMatchResponse { match: HomeworkMatch | null }
+/**
+ * round 7 (App patch 008, STUDENT-FLOW §11.4 "What {T} remembers"): the child's own memory rows (server/relational/routes.js).
+ * GET /api/child/memory?childId= → ChildMemoryResponse (keeps false: the memory consent is off, items empty);
+ * DELETE /api/child/memory ChildMemoryDeleteRequest → { deleted } (one item; never "all" from the child).
+ */
+export interface ChildMemoryItem { id: string; text: string; at: string }
+export interface ChildMemoryResponse { keeps: boolean; items: ChildMemoryItem[] }
+export interface ChildMemoryDeleteRequest { childId: string; id: string }
+export interface ChildMemoryDeleteResponse { deleted: number }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
 export interface LessonStartResponse {

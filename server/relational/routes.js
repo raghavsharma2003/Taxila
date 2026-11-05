@@ -12,8 +12,10 @@
 import { q, one } from "../db.js";
 import { send, bad, need } from "../http.js";
 import { requireParentChild } from "../routes/parent.js";
+import { hasConsent, requireChild } from "../auth.js";
 import { getKit, getTopic } from "../content/index.js";
 import { callbackCandidates, keepsOf } from "./memory.js";
+import { relNoteStmt } from "./writers.js";
 
 const KEEPS_COPY = {
   memory_keeps_learning_and_likes: "Between lessons she keeps your child's learning (what was hard, what came good) and the interests you chose. You can see and delete each memory here.",
@@ -89,7 +91,40 @@ async function deleteMemory(req, res, body) {
   send(res, 200, { deleted: rows.length });
 }
 
+// The child's own view (STUDENT-FLOW §11.4 "What {T} remembers", r7 app-me-settings): the signed-in family's child,
+// no parent PIN (it is the child's own record). Only the memory rows (the child's own words, as stored), never the
+// learning callbacks, interests or anything a teacher turn produced.
+//   GET    /api/child/memory?childId=   → { keeps: boolean, items: [{ id, text, at }] }   keeps false: the memory consent is off
+//   DELETE /api/child/memory { childId, id } → { deleted }   one item only (a child never deletes "all" in one tap); a hard
+//          delete, and a memory_forgotten note so the parent's page shows that something was forgotten (not what)
+async function getChildMemory(req, res) {
+  const childId = new URL(req.url || "/", "http://x").searchParams.get("childId");
+  const { guardian, child } = await requireChild(req, childId);
+  const keeps = await hasConsent(guardian.id, child.id, "memory").catch(() => false);
+  const rows = keeps
+    ? await q("select id, text, created_at from memory where child_id = $1 and superseded_by is null order by created_at desc limit 50", [child.id]).catch(() => [])
+    : [];
+  send(res, 200, { keeps, items: rows.map((r) => ({ id: String(r.id), text: r.text, at: r.created_at })) });
+}
+
+async function deleteChildMemory(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const id = String(body?.id ?? "");
+  if (!/^\d{1,18}$/.test(id)) throw bad("invalid memory id");
+  const rows = await q("delete from memory where child_id = $1 and id = $2 returning id", [child.id, id]);
+  // (A Brain: through the relational writer, so legal_mode M0 writes no note; a note that cannot be written never fails the delete)
+  if (rows.length) {
+    try {
+      const st = relNoteStmt(child, { agentId: String(child.teacher_id ?? "asha"), lessonId: null, kind: "memory_forgotten", slots: {} });
+      await q(st.text, st.params).catch(() => {});
+    } catch { /* M0, or a child row without legal_mode: no note */ }
+  }
+  send(res, 200, { deleted: rows.length });
+}
+
 export const routes = {
   "GET /api/parent/memory": getMemory,
   "DELETE /api/parent/memory": deleteMemory,
+  "GET /api/child/memory": getChildMemory,
+  "DELETE /api/child/memory": deleteChildMemory,
 };

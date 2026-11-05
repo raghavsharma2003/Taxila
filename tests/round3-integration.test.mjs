@@ -32,7 +32,8 @@ describe("round 3 integration: server/index.js registers both round-3 route tabl
     const pk = Object.keys(play), rk = Object.keys(relational);
     assert.ok(pk.length > 0 && rk.length > 0);
     assert.ok(pk.every((k) => /\/api\/play\//.test(k)), `play keys: ${pk.join(", ")}`);
-    assert.ok(rk.every((k) => /\/api\/parent\/memory/.test(k)), `relational keys: ${rk.join(", ")}`);
+    // (round 7, App patch 008: the child's own "What {T} remembers" view sits beside the parent's)
+    assert.ok(rk.every((k) => /\/api\/(?:parent|child)\/memory/.test(k)), `relational keys: ${rk.join(", ")}`);
     assert.equal(pk.filter((k) => rk.includes(k)).length, 0);
   });
 });
