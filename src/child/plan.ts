@@ -43,6 +43,10 @@ export interface HomePlan {
   testWindow: { subject: string; from: string; to: string } | null;
   /** The parent's per-child "Tap and type only" (server truth, any device). */
   textOnly: boolean;
+  /** r7 app-home-plan-states: the parent's homework help is on until this time (state "homework"). */
+  homework?: { until: string } | null;
+  /** r7: questions parked in earlier lessons and still waiting (the Question jar; null until the server stores them). */
+  jarWaiting?: number;
 }
 
 const STATES = new Set<ChildHomeState>(["start", "first", "resume", "done", "capped", "resting", "homework", "test_window", "safety_hold"]);
@@ -98,6 +102,8 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     madeFor: Array.isArray(r.madeFor) ? r.madeFor.slice(0, 3) : [],
     testWindow: r.testWindow ?? null,
     textOnly: !!r.textOnly,
+    homework: r.homework ?? null,
+    jarWaiting: Math.max(0, Number(r.jar?.waiting) || 0),
   };
 }
 

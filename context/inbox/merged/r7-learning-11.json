@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-homework-match",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-homework-help, typed v1; shape agreed with App 2026-11-04): POST /api/homework/match { childId, text } → { match } places the child's homework question in their own class book by a code ladder, first rung that holds: kit_item (a kit question of the class, same numbers and word overlap ≥ .6), topic (curriculum.findTopic over titles and chapters), subject (a small subject vocabulary, only subjects the class has), else null. No model call, the text is not stored, about 4 ms warm. App confirms the chapter with the child ('Is this from …?') and starts with purpose homework; Brain applies the start and the Ask beat (docs/patches/to-brain/007-homework-start.md). A photo and its extraction come later (needs a live vision check). Reverse if: on staging, more than 1 in 5 confirmed chips are 'Not this' for the kit_item or topic rungs."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

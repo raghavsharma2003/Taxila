@@ -1,0 +1,169 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko cricket ke equal shares se dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1423
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya! Cricket pasand hai. Socho, ek paratha 4 players mein barabar baanta—har player ko kitna hissa milega? Golu ko bhi sikhaoge.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1063,
+   "replyReadyMs": 2486
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1106
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. Pehla step: shape ko barabar parts mein baanto. Agar 3 barabar parts hain, har part ko one-third kehte hain. Riya, 3 parts ginogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1051,
+   "replyReadyMs": 2157
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1719
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—chhota step: 1/3 mein 1 liya gaya part batata hai. Tum bolo, 1 kya batata hai?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2239,
+   "replyReadyMs": 3958,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 976
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, imagine ek poora circle 3 barabar parts mein baanta hai; 1 part rangin hai. Rangin parts kitne hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1954,
+   "replyReadyMs": 2930,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1130
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Rangin parts 1 hain—isi liye fraction ka upar wala number 1 hai. Neeche wala number kya batayega?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1208,
+   "replyReadyMs": 2338
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1299
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Phir fraction par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2657,
+   "replyReadyMs": 3956
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1147
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein fielders equal groups jaise hote hain—sab apni jagah sambhalte hain. Tumhe batting pasand hai ya bowling?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1035,
+   "replyReadyMs": 2182
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 2086
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein gendbaaz gend phenkte hain, aur ballebaaz run banata hai. Riya, tumhe ballebaazi pasand hai ya gendbaazi?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 908,
+   "replyReadyMs": 2994
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1094
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—pehle tum khud try karo. Batao: ek-tihai mein 1, kitne barabar hisson mein se hai?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 903,
+   "replyReadyMs": 1997
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1220
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho—hum jaari rakh sakte hain, chhota break le sakte hain, ya aaj rok sakte hain. Tumhari choice kya hai?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1693,
+   "replyReadyMs": 2913,
+   "guard": [
+    "nochoice"
+   ]
+  }
+ ],
+ "agent": []
+}

@@ -8,7 +8,7 @@
 // template rungs). Reduced motion: every op appears complete at its startMs, nothing is animated along a path.
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
-import { erasers, moveShift, opGeometry, opProgress, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
+import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
 import { HAND_FONT, paletteFor, isNumeric, type BoardSkin, type Ink, type Palette } from "./palette.ts";
 
 const WEIGHT: Record<number, number> = { 1: 2.4, 2: 3.4, 3: 5 };
@@ -95,7 +95,8 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
   }, [byId]);
   const er = useMemo(() => erasers({ ...script, ops: all }), [script, all]);
   const priorIds = useMemo(() => new Set((prior ?? []).map((o) => o.id)), [prior]);
-  const moved = useMemo(() => new Set(all.flatMap((o) => (o.op === "move" ? [o.target] : []))), [all]);
+  // round 7 (motion ops): the ops some motion (move, rotate, scale, follow, sweep, morph) acts on
+  const moved = useMemo(() => new Set(all.flatMap((o) => (isMotionOp(o) ? [(o as { target: string }).target] : []))), [all]);
   const t = useTimeline(startAt, script.durationMs, frozenAt, onDone);
   const q = (op: WbOp) => {
     if (priorIds.has(op.id)) return 1;
@@ -109,17 +110,24 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
       <rect x={0} y={0} width={BW} height={BH} fill={pal.ground} />
       {pal.grid && <Grid w={BW} h={BH} color={pal.grid} />}
       {all.map((op) => {
-        if (op.op === "erase" || op.op === "move") return null;
+        if (op.op === "erase" || isMotionOp(op)) return null;
         // an earlier board's op fades when THIS script erases it, at the eraser's time (not at once)
         const vis = visibleShare(op, t, er);
         const p = q(op);
         if (p <= 0 || vis <= 0) return null;
-        const view = <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} />;
-        // round 7 (motion ops): an op some move targets slides (and hops) by its moves' progress; reduced motion: it is at
-        // each started move's end at once
-        if (!moved.has(op.id)) return view;
-        const [dx, dy] = moveShift(all, op.id, t, reducedMotion);
-        return <g key={op.id} transform={`translate(${dx.toFixed(1)} ${dy.toFixed(1)})`} data-moved={op.id}>{view}</g>;
+        if (!moved.has(op.id)) return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} />;
+        // round 7 (motion ops): an op a motion acts on is drawn under its transform at t (slid, hopped, turned, scaled,
+        // carried along a path), with its points morphed and its fill swept in; reduced motion: each started motion is at
+        // its end at once. Strokes keep their width under a scale (divided back by it).
+        const pts = op.op === "stroke" || op.op === "polygon" ? morphAt(all, op, t, reducedMotion) : null;
+        const shown = pts ? ({ ...op, points: pts } as WbOp) : op;
+        const g = pts ? opGeometry(shown, byId) : geoms.get(op.id)!;
+        const sweep = sweepAt(all, op.id, t, reducedMotion);
+        const M = motionMatrix(all, op.id, t, reducedMotion);
+        const k = Math.max(0.3, Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])));
+        const view = <OpView key={op.id} op={shown} g={g} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} sweep={sweep} strokeScale={k} />;
+        if (isIdentity(M)) return <g key={op.id} data-moved={op.id}>{view}</g>;
+        return <g key={op.id} transform={`matrix(${M.map((v) => v.toFixed(4)).join(" ")})`} data-moved={op.id}>{view}</g>;
       })}
       {pulseBox && <PulseRing key={pulse!.seq} box={pulseBox} color={pal.ink.mark} reducedMotion={reducedMotion} />}
       {onTapText && t >= script.durationMs && script.ops.filter((o) => (o.op === "text" || o.op === "label") && visibleShare(o, t, er) > 0).map((o) => {
@@ -145,18 +153,24 @@ const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: 
   return <path d={lines.join(" ")} stroke={color} strokeWidth={1} fill="none" />;
 });
 
-const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null }) {
+const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null, sweep = null, strokeScale = 1 }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null; sweep?: { p: number; dir: "up" | "down" | "left" | "right" } | null; strokeScale?: number }) {
   const color = pal.ink[(op.ink ?? "chalk") as Ink];
-  const sw = WEIGHT[op.weight ?? 2];
+  const sw = WEIGHT[op.weight ?? 2] / strokeScale;
   // the op's progress is spent on its paths in order, then on its texts (a label's leader, then its word)
   const parts = g.paths.length + g.texts.length;
   const share = (i: number) => (parts ? Math.max(0, Math.min(1, p * parts - i)) : p);
   const fillInk = "fill" in op && op.fill ? pal.ink[op.fill as Ink] : null;
-  const fillP = fillInk && g.fill ? Math.max(0, Math.min(1, (p - 0.55) / 0.45)) : 0;
+  // a swept fill is revealed by its sweep (a clip growing from one side), not faded in with the outline
+  const fillP = fillInk && g.fill ? (sweep ? (sweep.p > 0 ? 1 : 0) : Math.max(0, Math.min(1, (p - 0.55) / 0.45))) : 0;
+  const b = g.box, sp = sweep?.p ?? 1;
+  const clip = sweep && sp < 1 ? (sweep.dir === "right" ? { x: b.x, y: b.y, w: b.w * sp, h: b.h } : sweep.dir === "left" ? { x: b.x + b.w * (1 - sp), y: b.y, w: b.w * sp, h: b.h }
+    : sweep.dir === "down" ? { x: b.x, y: b.y, w: b.w, h: b.h * sp } : { x: b.x, y: b.y + b.h * (1 - sp), w: b.w, h: b.h * sp }) : null;
+  const clipId = clip ? `wbsw-${op.id}` : undefined;
   const pulse = op.op === "highlight" && op.style === "pulse";
   return (
     <g opacity={vis} data-op={op.op} data-id={op.id}>
-      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" />}
+      {clip && <defs><clipPath id={clipId}><rect x={clip.x - 2} y={clip.y - 2} width={clip.w + 4} height={clip.h + 4} /></clipPath></defs>}
+      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
       {g.paths.map((d, i) => {
         const s = share(i);
         return s > 0 ? (

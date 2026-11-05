@@ -41,6 +41,7 @@ import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
+import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
@@ -93,7 +94,10 @@ export { forgeSeam };
 
 // round 4 (stream 4A): "session" is the session-first start (no topic chosen by the child; the intake decides). It is
 // served only when TAXILA_SESSION_FIRST=on (director/session/start.js); otherwise it starts exactly like "lesson".
-const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session"]);
+// round 7 (Learning patch 007): "homework" is an Ask start for the child's homework (App's HOMEWORK HELP): routed and screened
+// exactly like a doubt; the Director teaches the method on a kit-verified look-alike and never gives their answer
+const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session", "homework"]);
+const ASK_PURPOSES = new Set(["doubt", "homework"]);
 /**
  * PURE. Why a lesson cannot start in this plan state (null: it can). safety_hold, capped and resting refuse everything; done
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
@@ -218,6 +222,9 @@ export async function lessonStart(req, body) {
   const weaveP = early(q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []));
   // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
   const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
+  // round 7 (Learning patch 006): today's Conductor plan and its LessonBrief (server/conductor/slot.js). null when there is no
+  // plan or on any read error (then the start runs exactly as before)
+  const lessonBriefP = early(lessonBriefFor(child.id, { now: new Date() }).catch(() => null));
   const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
   // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
   // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
@@ -244,8 +251,8 @@ export async function lessonStart(req, body) {
   const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
   // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
   // unknown topic id) leaves the topic resolved exactly as before.
-  const asked = purpose === "doubt" && !body.topicId
-    ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose, firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
+  const asked = ASK_PURPOSES.has(purpose) && !body.topicId
+    ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose: "doubt", firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
     : null;
   const routed = asked?.topicId ? getTopic(asked.topicId) : null;
   // no topic: the ONE next-topic answer (reports/truth.js), so a start inside a school test window revises its subject
@@ -311,13 +318,15 @@ export async function lessonStart(req, body) {
   // An Ask's first words are the child's own (W2-C review: safety by predicate, not instruction). The same predicate
   // every child turn passes (director/safety.js scanSafety, passive ideation included) runs BEFORE they become the
   // question her opening answers: a disclosure opens on the safeguard move with the helplines, never on an explain.
-  const askRaw = purpose === "doubt" && typeof body.firstText === "string" ? body.firstText.trim() : "";
+  const askRaw = ASK_PURPOSES.has(purpose) && typeof body.firstText === "string" ? body.firstText.trim() : "";
   const askSafety = askRaw ? scanSafety(askRaw.slice(0, 500)) : { distress: false, kind: null };
   const askText = askRaw && !askSafety.distress ? askRaw.slice(0, 200) : "";
   // round 4 (stream 4A, session-first): the intake's inputs (the day plan as her private prior, due reviews, the school
   // pointer); null unless TAXILA_SESSION_FIRST=on and purpose "session" (then today's start, unchanged). The guardian in
   // TAXILA_SESSION_FIRST_FOR (the owner first) gets it on the plain Start too (purpose "lesson", no topic the child chose).
-  const sessionFirst = sessionStartCtx({ purpose, child, plan: dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
+  // Learning patch 006: dayPlan.plan is the home's summary (no slots); the Conductor plan is what planPrior reads
+  const today = await lessonBriefP;
+  const sessionFirst = sessionStartCtx({ purpose, child, plan: today?.plan ?? dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
     guardian, topicChosen: !!body.topicId || !!routed,
   });
   const state0 = initLessonState({
@@ -340,9 +349,14 @@ export async function lessonStart(req, body) {
       // the practice set from the purpose seam (W2-A); absent until it is filled
       ...(practice ? { practice } : {}),
       // the purpose and, for an Ask, the child's own question (W2-C #7: the Director answers it first, no greeting)
-      purpose,
+      // (a homework start is an Ask to the Director, marked: the method on a look-alike, never their answer; the matched kit
+      // question itself is never posed)
+      purpose: purpose === "homework" ? "doubt" : purpose,
+      ...(purpose === "homework" ? { homework: true, ...(typeof body.matchItemId === "string" ? { avoidItemId: body.matchItemId.slice(0, 80) } : {}) } : {}),
       ...(askText ? { askText } : {}),
       ...(sessionFirst ? { session: sessionFirst } : {}),
+      // Learning patch 006: only the clock of the slot (wrap at the next natural stop after wrapAt, never past hardStopAt)
+      ...(today?.brief?.wrapAt || today?.brief?.hardStopAt ? { lessonBrief: { wrapAt: today.brief.wrapAt ?? null, hardStopAt: today.brief.hardStopAt ?? null } } : {}),
       // the bond stage RELATIONAL-OS pinned for this lesson (W2-I snapshot), for the turn's Moment (W2-E TB6)
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },

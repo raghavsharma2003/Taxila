@@ -24451,6 +24451,328 @@
    "at": "2026-11-04",
    "title": "StudioStage reads the teacher's PiP keep-clear zone LIVE from App's slot element (data-pip-zone, --pip-zone-w/-h/-right/-bottom on [data-stage-slot], App 7472ec30, in int/r6 07185e93), moved into the stage's coordinates and re-read on every change (MutationObserver); the piece is lifted above it or fitted into the room above. Replaces the mirrored copy of App's rule (dc-r7-piece-clear-of-pip). Re-recorded table-* at 412 with the live zone.",
    "source": "inbox/r7-studio-9.json"
+  },
+  {
+   "id": "jd-r7-director2-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Director re-run after the 11-item fix block: 12 lessons (c4/c5/c6 × 4 scenarios), same scripted child, cb999f79, ~$0.21. Three Claude judges (one per class) compared every turn against the BEFORE twin; not blind. Fixed: affirming wrong answers, false 'didn't hear'. Mostly fixed: button deflection, English card read-aloud, verbatim repeats. Still present: quiz in costume ('game:'/'kahani:' labels), picture→'words mein dekho', answer inside the question, abandoned items, no real worked examples, level drops, unkept promises. c6 stuck and steering worse. Guard rewrites 10→14; p50 slower in 7 of 12. Root causes: guards detect but don't prevent; a guard instruction causes a defect; prompt text recited; teaching improvised, not rendered from the kit. docs/design/round7/judgements/director2-2026-11-04.md.",
+   "source": "inbox/r7-main-6.json"
+  },
+  {
+   "id": "dc-r7-brain-structural-block",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Stop patching the Director line by line; next block is structural. S1 guards enforce (regenerate once with the constraint, else a code line; no flagged line ships). S2 worked examples code-rendered from the kit; questions templated so the answer cannot be inside. S3 one live item; arc follows the kit's skill order with bridges. S4 steering real (picture→Studio board, game→play family; harness records the screen). S5 remove sentence-shaped prompt text. S6 reply-model A/B (taxila-gpt6 vs taxila-fast). Reverse: a re-run after S1-S5 shows the same defects (then the plan and wording architecture is the problem, not enforcement).",
+   "source": "inbox/r7-main-6.json"
+  },
+  {
+   "id": "jd-r7-reply-model-ab-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Director reply-model A/B: taxila-fast (director2, cb999f79) vs taxila-gpt6 (fb995233), the same 12 scripted lessons (c4/c5/c6 × 4 scenarios), classify on fast in both. One Claude judge read all 240 turns; not blind; the arms are on slightly different heads. Lesson wins: fast 4, gpt6 4, even 4. Defects ≈ 22 (fast) vs ≈ 21 (gpt6) plus 8 gpt6 guard fallbacks. Real worked examples fast 3 + 5 partial vs gpt6 1 + 3. gpt6 better at handling the child's words and in real Hindi; worse at worked examples, repetition and missed wrong answers. Reply-ready p50 2.52 vs 3.21 s (+0.69), p90 3.56 vs 4.54 s (+0.98); ~6× cost.",
+   "source": "inbox/r7-main-7.json"
+  },
+  {
+   "id": "dc-r7-reply-model-fast",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Keep taxila-fast as the Director reply model on every turn, teaching turns included. Why: jd-r7-reply-model-ab-2026-11-04 shows no teaching gain for taxila-gpt6 (it is worse on worked examples and repetition) at +0.7 s p50 and ~6× cost; the shared defects are upstream (Director and kit) and are addressed by S2/S3. Reverse: after S2-S5, an A/B on the same head shows the stronger model clearly better at teaching for ≤ 0.5 s.",
+   "source": "inbox/r7-main-7.json"
+  },
+  {
+   "id": "dc-r7-app-home-plan-states",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The Kaksha Home renders the Conductor's day states from ChildPlanResponse with one main action each: homework → 'Homework help' (to Ask with homework=1) plus a quiet 'Today's lesson instead' link; test_window → 'Your <subject> test is coming up' + Revise; done → One more, with a 'Today you did' card (plan.did[0], the verified tick) and a 'Made for you' strip (to the Notebook); start/test show the jar line when jar.waiting > 0. Nothing is counted against a target. Reverse: Learning changes ChildPlanResponse or the owner wants a different primary action per state.",
+   "source": "inbox/r7-app-3.json"
+  },
+  {
+   "id": "ms-r7-app-home-done-fits-360",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "At 360x800 the done state with both the day card and the made-for strip overflowed the dock with her full portrait; with data-summary the portrait steps down to min(46vw,190px) and everything sits above the dock (n=1 mocked shot per size: 360x800, 412x915, 1280x800; method app-shots.mjs --plan done).",
+   "source": "inbox/r7-app-3.json"
+  },
+  {
+   "id": "dc-r7-app-kaksha-kit",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Every secondary child screen under Kaksha (Notebook, Ask, Me, Your teacher, Hello, Who, the Home's hold/offline/signed-out states, the child shell's gate) is built from one Kaksha kit (src/ui-v3/kaksha/kit.tsx: KxPage, Panel, SwitchRow, ChoiceRow, LinkRow, StatePanel, Cta, Ghost, Sheet, line glyphs) inside Kaksha's own .kx root; ChildScreen's Kaksha branch is KxPage. The classic components stay only for ?ui=classic. Reverse: the owner wants the classic screens back under Kaksha, or a screen needs a part the kit cannot express.",
+   "source": "inbox/r7-app-4.json"
+  },
+  {
+   "id": "dc-r7-app-hello-boot",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Kaksha Hello is a boot sequence: her comms window, a mono log of the five steps (done ticked, current live; words, never a count) and the step's panel with one plasma action. The steps, their order, the AI disclosure copy and Skip are unchanged. Reverse: the disclosure must be its own full screen again.",
+   "source": "inbox/r7-app-4.json"
+  },
+  {
+   "id": "dc-r7-app-me-no-theme",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Me under Kaksha has no Theme row: the Kaksha look follows the child's family (kakshaThemeFor), so Light/Dark/Match phone changed nothing (app-me-settings evidence). Reverse: Kaksha gains a per-child light/dark theme.",
+   "source": "inbox/r7-app-4.json"
+  },
+  {
+   "id": "dc-r7-app-child-memory",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "What {T} remembers is on the child's Your teacher screen (reached from Me): the memory rows in the child's own words with 'From what you said on {date}' and Forget this (a hard delete of ONE item, plus a memory_forgotten note so the parent page shows that something was forgotten); consent off shows 'doesn't remember anything between days. Your grown-up chose this.' The server route GET/DELETE /api/child/memory is Brain's (to-brain/008, requireChild, no PIN); until it lands the section is absent, never empty. Reverse: Brain prefers a different route shape, or the parent must approve a child's forget.",
+   "source": "inbox/r7-app-5.json"
+  },
+  {
+   "id": "dc-r7-app-bigger-text-desk",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Me → Bigger text now reaches the lesson: the Desk's --t-* type tokens are restated ×1.18 for b3/b4 under data-comfort=large (literal values, never a self-referencing calc), the Kaksha stage's px text scales by --ks-k, and the Desk's measure folds 1.18 into fontScale so solveStage grows the rail, chips and dock. Reverse: the Desk moves to rem-based type.",
+   "source": "inbox/r7-app-5.json"
+  },
+  {
+   "id": "dc-r7-brain-director-block2",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 Director block 2 (main's full-run judgement, 11 items): code guards on the Director lane's line. Her line affirms only what the verified-key classifier graded correct this turn. An English card is never read aloud in a Hinglish lesson. A posed question stays live until it is answered, until two misses plus help, or until it is skipped. A worked example states its givens and never holds its answer. There is a class level floor. A promise is kept on the Later list. 'pata nahi' gets help, never 'didn't hear'. A game claim needs a game event. A card she already read word for word is asked in fresh words, and never re-read bare.",
+   "source": "inbox/r7-brain-10.json"
+  },
+  {
+   "id": "dc-r7-brain-lesson-brief",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Learning patch 006): the lesson start reads the Conductor's plan through conductor/slot.js lessonBriefFor. Before this, planPrior only ever saw the home summary, which has no slots. planPrior also takes R5's prereqCheck (decideSegment opens foundation_first on it when the segment teaches its topic) and R9's foundationShare (capped at .6). The Director wraps at the next natural stop after brief.wrapAt and never runs past hardStopAt. With a null brief, the start behaves exactly as before.",
+   "source": "inbox/r7-brain-10.json"
+  },
+  {
+   "id": "dc-r7-face-prewarm-handoff",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The home's live stage, when its rig draws in a worker, is parked 10 s on unmount and handed to the lesson's face (same person/look/band, other meters: stage.retarget); the other framing's poster and the lite sprites decode at idle. Home → desk lesson, CPU x6 SwiftShader n=8: lesson face live p50 765 ms, 560 ms BEFORE her first sound (never after; 8/8 adopted) vs 1099 ms after it without the hand-off; first sound +102 ms vs puppet off (no hand-off +125 ms).",
+   "source": "inbox/r7-face-10.json"
+  },
+  {
+   "id": "dc-r7-test-window-revision",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-test-window-revision): the parent's school test window can name its chapters (Controls → School → Which chapters, up to 12). Inside the window a plain Start revises only those chapters (content/next-topic.js revisionPick): the first topic not done yet, back-chaining only inside the chapters, else a review; in the last two days no new topic (a topic already met: weak, then in progress, then learned; a never-met chapter is taught only if nothing in the chapters was met). The parent's window now reaches the Conductor (school.test_announced with the parent's first day and chapters; new school.test_cleared), which it never did before, so the planner's test mode (newSkillBudget 0 in the last two days, LessonBrief holdNewTopics) and the weekly report's S17 line now fire for parent-entered windows. Reverse if: parents say the chapter list is too much to enter (then infer it from the school pointer).",
+   "source": "inbox/r7-learning-10.json"
+  },
+  {
+   "id": "dc-r7-homework-match",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-homework-help, typed v1; shape agreed with App 2026-11-04): POST /api/homework/match { childId, text } → { match } places the child's homework question in their own class book by a code ladder, first rung that holds: kit_item (a kit question of the class, same numbers and word overlap ≥ .6), topic (curriculum.findTopic over titles and chapters), subject (a small subject vocabulary, only subjects the class has), else null. No model call, the text is not stored, about 4 ms warm. App confirms the chapter with the child ('Is this from …?') and starts with purpose homework; Brain applies the start and the Ask beat (docs/patches/to-brain/007-homework-start.md). A photo and its extraction come later (needs a live vision check). Reverse if: on staging, more than 1 in 5 confirmed chips are 'Not this' for the kit_item or topic rungs.",
+   "source": "inbox/r7-learning-11.json"
+  },
+  {
+   "id": "dc-r7-parent-schedule",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (app-parent-schedule): Controls has a 'Lesson schedule' card on the Scheduler controls (DayToggles, TimeRail, a length chip: 15-45 min). It is stored on child_routine (anchor from 004; lesson_days and lesson_min from migration 045) and sent to the Conductor as parent.setting_changed { restDays (the days not chosen), anchor, lessonMin }. The planner starts the day's sitting at the anchor when it is still ahead and inside the learning window (a household window wins), and never plans it longer than the chosen length, though never below the band's minimum segment set. The child Home gets plan.schedule { time, minutes, today } to show the lesson time. It is a plan, never a lock: Home states and the lesson start ignore the schedule's days (only the family's daily limit and hours, when turned on, refuse). One-off reschedules are not in v1. Reverse if: families want the schedule to close lessons outside it (then it becomes the hours window under limits_on).",
+   "source": "inbox/r7-learning-12.json"
+  },
+  {
+   "id": "dc-r7-explain-format-allocator",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-how-this-child-learns): the explain format of each skill's first explain is chosen by a POPULATION allocator (server/learner/formats.js). It uses Thompson sampling over the kit's eligible formats (primary + secondary; F5 only for T1/T2), per topic type x band, with a 0.2 exploration floor. It is seeded by session:skill, so replay is exact. The Monte Carlo propensity is logged to decision_record (point explain_format, options {eligible, skillId, topicType, band}). A night job format.join:{child}:{day} scores each decision by the first scored, unaided, non-NA answer on that skill after it in the same lesson (first try = 1, else 0; none = no outcome). The scores are added to format_posterior, which never holds a child id. The Director wiring is Brain's (patch 008). No parent or child line says how a child learns best; per-child lines are counts of what Taxila did, hedged until real data exists (main 2026-11-04). Reverse if: the population posteriors stay flat after enough lessons (then the primary format is as good as any and the floor costs nothing to drop), or per-band cells are too sparse (then pool bands).",
+   "source": "inbox/r7-learning-13.json"
+  },
+  {
+   "id": "dc-r7-report-monthly-r1",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-parent-report-sections, batch R1): parents get a monthly report (cadence monthly, period YYYY-MM; Conductor job parent.monthly enqueued on the night fold of a month's last learning day; Notes tab 'This month'; migration 044 widens parent_report.cadence). Its sections are code-counted L0/L1 lines through the existing claim gate, each with an independent re-derivation in reports/check.js: S4 holding up (answers whose previous contact on the skill was ≥ 7 days earlier, ≥ 3 for the count line, else 'still learning how it holds up'), S6 when it gets hard (hints Taxila gave before any answer and how many were then solved, ≥ 5 scored answers), S7 curiosity (the child's own questions kept in the question jar and how many Taxila came back to), S9 routine (lesson days of the month and the median lesson length; no streaks or missed days), S13 what's next (the earliest re-check still ahead, else fixed copy), S16 the cross-context note; up to 3 strengths and 3 growth edges. The weekly report inside a parent-entered test window carries an S17 line that avoids every pressure word (the lexicon bans test, exam, परीक्षा). The monthly spoken script stays one TTS request (≤ 1200 chars; optional sections dropped first), main 2026-11-04. RENDER_VERSION pr-3. Reverse if: a parent-facing review finds a monthly line misread as a judgement of the child, or the checker disagrees with the generator on any staged monthly report.",
+   "source": "inbox/r7-learning-8.json"
+  },
+  {
+   "id": "dc-r7-parent-teaching-page",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-parent-teaching-page): /parent/teaching ('How {T} teaches {child}', linked from More) shows: how the teacher works (fixed copy, the same for every child); per recent lesson (last 5 counted), what she did and why, from brain_trace's closed codes through a fixed lexicon (server/reports/teaching.js: the child's own requests such as a slower pace or a picture, then reteach / worked example / hint / teach-back / on-screen piece / warm-up / break, at most 4 lines, fixed priority); the made-for pieces with their kit 'because'; and What {T} remembers with Delete (the Data page's card). No model text and no statement about the child's mind, ability or style; every line passes the report lexicon (tests/r7-learning-teaching). Not yet: the hedged 'What helps {child}' claims from resolved reteach rows (they wait on learning-how-this-child-learns). Reverse if: parents read a lesson's lines as a judgement of the child.",
+   "source": "inbox/r7-learning-9.json"
+  },
+  {
+   "id": "dc-r7-staging-test-db-only",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "taxila-staging can never reach production data, by construction. scripts/staging.mjs deploys it with TAXILA_DB=test AND re-points DATABASE_URL itself at the TEST branch, and it removes DATABASE_URL_DIRECT, so code that reads DATABASE_URL directly still lands on TEST. deploy-azure --create now copies only the secrets the new app's env and registries reference, so production's database URL is not even stored on the staging app. The apply refuses if the TEST host equals the production host, and after the deploy it reads the staging app's own DATABASE_URL secret and compares host hashes. Chat runs on the southindia account and TAXILA_DUPLEX is on. Its worker copies taxila-staging's env (deploy-worker --web) and has no scheduled jobs, so a staging canary never pages the owner. Creating it waits for the owner's yes on cost (~$40/mo). Reverse if the owner prefers to repurpose taxila-sin-staging (then --env taxila-sin-env and its RG).",
+   "source": "inbox/r7-platform-3.json"
+  },
+  {
+   "id": "dc-r7-d5-relay-ticket",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The India D5 relay (taxila-d5-sin, South India) runs the same image with TAXILA_ROLE=d5relay: only /api/health and the /api/duplex/voicelive upgrade. It has no database and no session cookie. taxila-web authorizes the child as today (authorizeD5) and mints a 60-second, single-use HMAC ticket bound to that lesson (server/relay-ticket.js, key TAXILA_D5_TICKET_KEY). The relay only verifies the ticket. The relay app carries only Voice Live's endpoint and key and the ticket key, never production's database URL or model keys. Browsers are pointed at it by one variable on taxila-web (TAXILA_D5_RELAY_URL); unsetting it is the rollback, and the client falls back once to the same-origin path. Voice wires the mint, accept and client parts (docs/patches/from-platform/002); scripts/region/d5-relay.mjs refuses to deploy a sha without them. We chose the ticket over an ephemeral Voice Live token to the browser because the server keeps the Voice Live key and session config. Reverse if Front Door path routing on taxila.dev arrives first (same origin, the cookie works, no ticket needed).",
+   "source": "inbox/r7-platform-3.json"
+  },
+  {
+   "id": "ms-r7-isolation-debt-cleared-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Module-level env and global writes in tests/*.test.mjs: 21 at int/r6 5a5b2f45 when tests/test-isolation.test.mjs landed (Brain 11 TAXILA_R7_* lines in 8 files, Forge 7 in 3 files, 3 module-level globals). 2 after integration 3b (07185e93). 0 after integration 4 (6c3c3c95), and the known-debt list is now empty. Integration 4's single-process npm test: 4,265 tests, 0 fail (main).",
+   "source": "inbox/r7-platform-4.json"
+  },
+  {
+   "id": "dc-r7-board-geometry-to-scale",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "measured@1 (C1 item 5, geometry by constraint): a shape the kit states with its measures (geometry.js: 'rectangle 8 cm by 5 cm', 'length .. breadth ..', 'square of side 7 m', 'triangle with sides 3, 4 and 5 cm', 'circle of radius 5 cm'; the first stated; units must agree) is drawn TO SCALE: rectangle / square with its dimensions on its sides, a triangle built from its three sides (law of cosines; triangle inequality checked), a circle with a radius arrow and 'r = 5 cm' below it. Every measure outside the shape (recordings caught labels on a side and on the rim). explainerFor: after the code pick, but ahead of the generic shape@1. Recordings docs/design/round7/studio/geo-*.",
+   "source": "inbox/r7-studio-11.json"
+  },
+  {
+   "id": "ms-r7-board-geometry-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 22,
+   "method": "measuredCall over every class 3-9 maths kit, expand + retime to a 6 s line saying the measures + gateWhiteboard, and the template explainerFor returns; code only",
+   "title": "22 kits state a measured shape (8 rect, 4 square, 5 triangle, 5 circle); 22/22 pass every W gate; measured@1 is the drawn board in 11 (before: a model flow, a key-terms board or the generic shape@1).",
+   "source": "inbox/r7-studio-11.json"
+  },
+  {
+   "id": "dc-r7-board-label-cells-atoms",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "label@1 gains the plant cell (wall, membrane, cytoplasm, vacuole, nucleus, chloroplasts), the animal cell (round membrane, cytoplasm, nucleus; picked when the kit names no wall) and the atom (helium: nucleus with 2 protons and 2 neutrons, one shell, 2 electrons); this completes the labelled-diagram set (plant, flower, circuit, cells, atom). Label words are the kit's own, singular only through the part's own word list (fixes 'nucleus' → 'nucleu' and 'batteries' → 'batterie'), and a name longer than 11 letters gives way to the part's short name ('cell membrane' → membrane). Labels wider than their column move in from the board edge (cap 120 units, was 112). Sketches are kept 156 wide so the label columns (x 58, 342) never touch them (recording caught labels on the wall). Recordings docs/design/round7/studio/label-cell-plant-*, label-cell-animal-*, label-atom-*.",
+   "source": "inbox/r7-studio-12.json"
+  },
+  {
+   "id": "ms-r7-board-label-cells-atoms-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 29,
+   "method": "labelCall over every class 1-9 science/EVS kit, expand + retime to a 7 s line naming the labels + gateWhiteboard + every leader on a drawn part + every label on the board; code only",
+   "title": "29 kits get a labelled diagram (14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower); 29/29 pass every W gate with every anchor on a drawn part. New: the plant cell in c8/c9 'cell' lessons, the atom in c9 ch08 t01-t04.",
+   "source": "inbox/r7-studio-12.json"
+  },
+  {
+   "id": "dc-r7-maps-no-outline",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Map boards (main's decision, option b): places pinned at their TRUE latitude/longitude on a labelled 5° degree grid with a compass, and NO outline of any kind: no country, state, coastline or region shape, from memory or from data, because an Indian product must show India's official boundaries and none is sourced yet. places@1 draws only a frame, edge ticks, small crosses where grid lines meet, degree labels, a compass, the Tropic of Cancer / 82.5°E meridian when the kit names them, and pins with names. Every pin comes from data/geo/india-places.json (61 places; cities from Natural Earth 1:10m populated places, public domain; heritage sites, Kanyakumari and Darjeeling from Wikidata P625, CC0; each row names its source record; built by scripts/build-india-places.mjs). Option (a), an official outline, waits on the owner (on main's decision list).",
+   "reversal": "an owner-approved, provenance-recorded Survey of India outline is committed",
+   "source": "inbox/r7-studio-13.json"
+  },
+  {
+   "id": "dc-r7-board-places-template",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "places@1 (C1 item 5, India map places): places.js picks a science/SST/EVS kit naming ≥ 3 gazetteer places (never a maths word problem), up to 6 in the kit's order and words ('Bombay' stays Bombay). Frame = the places' extent padded 2.5°, snapped to 5°, one scale both ways, widened ≤ 10° toward the board's room. Names are laid out before anything is drawn: beside the pin, else 30/52 units out on a leader that crosses nothing; a grid cross a name needs the room of is left out; a place whose name fits nowhere is left off (her line is written only from what is drawn); a named line whose name fits nowhere is left off. Gate change: W4 treats ≥ 3 evenly spaced degree labels of one direction ('15°N', '20°N', '25°N', each the whole text) as an AXIS, like a number line's ticks; a lone or uneven degree is still checked. Explain ladder: after label@1, before the library. Recordings docs/design/round7/studio/map-*.",
+   "source": "inbox/r7-studio-13.json"
+  },
+  {
+   "id": "ms-r7-board-places-reach",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 33,
+   "method": "placesCall over every class 1-9 science/SST/EVS kit; expand + retime to an 8 s line naming the drawn places + gateWhiteboard with the kit; the template explainerFor returns; code only, no model calls",
+   "title": "33 kits name ≥ 3 places; 33/33 boards pass every W gate; places@1 is the board drawn in 29 (the rest keep an earlier rung, e.g. a timeline). 138 of the 147 named places are pinned; the 9 left off are near neighbours (Delhi/Jaipur/Panipat/Shimla, Ajanta/Ellora, Patna/Pataliputra) or a long name at the frame's edge (Thiruvananthapuram). The Tropic / 82.5°E lines are drawn in every kit that names them.",
+   "source": "inbox/r7-studio-13.json"
+  },
+  {
+   "id": "fx-r7-p4-board-sync-order-not-clock",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "tests/p4-content-unit 'board sync: the line plan wins inside the deadline' (App: failed under single-process npm test load, 28/28 alone): the speculative-board half asserted syncMs < 900; now it asserts ORDER (the spec board answered before the 2 s line plan landed). 8 parallel copies: 8/8 pass.",
+   "source": "inbox/r7-studio-13.json"
+  },
+  {
+   "id": "dc-r7-motion-family",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "C1 item 6, M1: the whiteboard motion family beyond move. rotate (deg about a point), scale (k = [kx, ky] about a point; negative = mirror/fold), follow (a path of offsets, even speed by length), sweep (a filled shape's fill revealed from one side), morph (a stroke's/polygon's points to new ones). Each targets an earlier op of the script, only of the kinds it may (MOTION_TARGETS: text, labels and number work are only ever translated), and is REFUSED (not clamped) when the target would end off the board. Affine motions compose in script order (motionMatrix); the Player draws a moved op under one SVG matrix with stroke width divided back by the scale; settledScript/finalOp give the end board, which W19 gates (an arm turned onto a word is refused). Reduced motion: a started motion is at its end. Recordings docs/design/round7/studio/motion-{angle,area,cycle}-* (hand-built demos in evals/studio-timing/motion-demos.mjs); M2 puts the motion into the code templates.",
+   "source": "inbox/r7-studio-14.json"
+  },
+  {
+   "id": "dc-r7-motion-templates",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "C1 item 6, M2: the code templates animate their idea. angle@1 arm turns open; symmetry@1 half folds (scale -1) and the dot's image jumps; column-op@1 add: the carried 1 rises from the column that made ten; equal-groups@1 a heap shared out group by group; place-value@1 digits rise into their place boxes; combine-count@1 add: the second group slides over to join; area-grid / fraction-of / bar-chart fills sweep in; flow@1 / cycle@1 a token tours the arrows. Explained-end-state check (main's ask): each template returns claims = where each moved op ends (the still board's position); expand() refuses the template (motion_claim:<id>) when the settled board breaks one. Gate: W8/W10/W13/W15 judge a moving board where it ENDS (END_JUDGED); layout checks judge its start; W19 the whole end board.",
+   "reversal": "a measured child run shows a motion distracts (slower or worse answers after a moving board than after the same still board): turn that template's motion off",
+   "source": "inbox/r7-studio-15.json"
+  },
+  {
+   "id": "fx-r7-pick-operands",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "pick.js text pick reads an operation's OWN operands ('4 + 3', 'add 4 and 3', '3 groups of 4', '6 × 8'), refusing a sign another operation joins ('3 + 4 × 2', '9 + 9 + 1', '3n + 2'); a word problem keeps its word cue only when it has exactly two numbers. Products on a number line are k equal jumps from 0. Bar charts from text need a graph word or capitalised name labels; an area/perimeter pick needs measured sides (a unit, 'N by M', rows/columns). Found because motion made old wrong picks ('2 + 2' dots for a perimeter formula, '3 + 4' for '3 + 4 × 2 = 11', Collatz '2 + 3') long enough to pass W6. 11 kits changed board, each from a wrong pick to the library or a better template; none lost a board.",
+   "source": "inbox/r7-studio-15.json"
+  },
+  {
+   "id": "ms-r7-motion-reach-m2",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 250,
+   "method": "evals/studio-timing/board-motion-coverage.mjs: class 4-7 maths/science/EVS kits driven to their first explain move, board-first preselect certified at p412; a board MOVES when it has any motion op; same kits before (2017b56c) and after; code only",
+   "title": "Moving first-explain boards 4 → 122 of 245 (maths 4 → 61 of 138, science 0 → 35 of 67, EVS 0 → 26 of 40; class 4 0 → 28, class 5 1 → 28, class 6 2 → 33, class 7 1 → 33). Boards 245 → 245. Still: compare@1 32, catalogue ≈54, label@1 12, shape@1 10.",
+   "source": "inbox/r7-studio-15.json"
+  },
+  {
+   "id": "fx-r7-picture-request-perimeter",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Brain's S4 harness (via main): a c6 perimeter child asking for a picture got no board. Fixed in four places. (1) measured@1 names its shape ('rectangle', kit word) and, in a perimeter context, writes 'perimeter' and walks the boundary with a marker (one follow per side, claim: back at its start); geometry.js reads '12 m by 7 m' / '50 m long and 30 m wide' and tags its source (line/item, lesson = worked example + expectations, kit = another item); explainerFor lets a line or lesson shape outrank a perimeter-mode or triangle area-grid, never a shape from another item. (2) regate masks W9/W18 reveals beside a W6 miss (W6 is judged against her real line later); preselect treats a W19 that only repeats W6 as line-bound and keeps the masked board. (3) withheldValues: while the item IS the worked example (fade:N), the numbers its problem states are givens, never withheld. (4) pick.js: an operation inside brackets after another ('2 × (50 + 30)') and a hyphen range ('1-9') are not two-group sums.",
+   "reversal": "a measured run shows the boundary marker distracts from the perimeter step her line names",
+   "source": "inbox/r7-studio-16.json"
+  },
+  {
+   "id": "ms-r7-picture-request-perimeter",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "n": 7,
+   "method": "every class 4-7 maths kit titled perimeter/area/rectangle, driven to its first item, a picture request (plain, 'picture', subject 'perimeter') through whiteboardIntentOf → preselect certified at p412; before/after on the same kits; plus the first-explain coverage over 250 kits",
+   "title": "Picture requests answered: c5-ch11-t02 0/3 → 3/3, c6-ch06-t01 2/3 (catalogue, no shape) → 3/3 measured@1, c6-ch06-t02 0/3 → 2/3; others unchanged (c6-ch06-t03 still none). First explain: boards 245 → 247, moving 122 → 125.",
+   "source": "inbox/r7-studio-16.json"
+  },
+  {
+   "id": "fx-r7-w9-digit-in-number",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "W9 (main: the c5-maths-ch01-t01 place-value board masked its hundreds digit '?' but wrote '10,500' under the boxes): when a board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on it that CONTAINS that digit is a reveal too, and regate masks the whole number '?'. A board that never splits a number into digits is unchanged ('15 cm' beside an answer of 5 is no reveal). Tested in tests/r7-motion-templates.test.mjs.",
+   "reversal": "none: a board never shows its own answer",
+   "source": "inbox/r7-studio-17.json"
+  },
+  {
+   "id": "dc-r7-voice-name-spoken",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 name preview (B ↔ F Learning, migration 038 child.name_spoken). When a parent spells the child's name 'how it sounds' (e.g. 'Aa-rav'), every lane's TTS says that spelling. styleForChild puts { written: first_name, spoken: name_spoken } into the spoken cell, and speakable() (the one path for mini-tts and DragonHD text) swaps whole-word, any-case occurrences of the written name before rendering. Captions, stored turns and the guards keep first_name. Cache keys follow the spoken text, so no cached audio of the old name is replayed. Reverse if the owner hears a spelled name rendered worse than the written one on DragonHD (e.g. a hyphen read as a pause too long); then add a lexicon/phoneme path instead.",
+   "source": "inbox/r7-voice-4.json"
+  },
+  {
+   "id": "dc-r7-voice-board-hold",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Studio's to-voice/001 (first-clause board hold) applied to src/lesson/ttsStream.ts. On the folded turn-audio path, her reply's first sample waits for a board that will land within 300 ms (src/studio/boardHold.ts, set only when a passing code board bounds the wait); resumes and replays never wait. The continuer/uptake plays on its own player and is never held. Early Director clauses (B5) are adopted by playEarly and carry no hold; on those turns she starts while the board lands. Reverse if the owner sees boards still landing after her first word on folded turns, or hears the wait as a stall.",
+   "source": "inbox/r7-voice-4.json"
+  },
+  {
+   "id": "dc-r7-voice-d5-relay-ticket",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Platform 002, the India D5 relay taxila-d5-sin): Voice's three pieces. (1) Mint: POST /api/duplex/ticket { lessonId } runs authorizeD5 exactly as the upgrade does; with TAXILA_D5_RELAY_URL set it returns { url, ticket } from Platform's mintRelayTicket (single use, 60 s, one lesson); without it { url: null }, which is today's path and the rollback. (2) Accept: handleD5Upgrade under TAXILA_ROLE=d5relay skips the same-origin check and authorizeD5 and verifies the ticket instead (a module-level seen set refuses reuse), with 401 'ticket refused (<reason>)' otherwise. The relay has no lesson row, so its ear gets the core phrase list only (no names, no kit answers). (3) Client: d5Stream asks for a ticket, opens the relay first, and on a refusal or silence retries once on the same-origin socket (stats.relayFallbacks, via). server/relay-ticket.js is Platform's and loads lazily, so this lands before that file is in the base. Reverse the relay-first order if live India lessons show the relay's open failing often enough that the retry costs first sound more than the shorter path saves.",
+   "source": "inbox/r7-voice-5.json"
+  },
+  {
+   "id": "dc-r7-voice-voicesig-internal",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (voice-voicesig-acting): TAXILA_VOICESIG unset now means 'internal'. In our own lessons a computed knowledge state (fragileCorrect, effortfulGuess, searching, workingAloud) hands its tie-breaker (followUpProbe / gentlerHint / slowerPace) to the Director's planCtx.voice, while the adapter and evidence gate still run as shadow, so the learner model gets no evidence weight. 'shadow' restores the old default, 'on' uses the full children-evidence gate, and 'off' is the kill switch. Safety turns never act. The status page labels these states 'internal: ... not yet measured on children'. Precision on simulated data only: fragileCorrect 0.855, effortfulGuess 0.486, rapidGuess 0.737, heldBelief 0.591. Reverse (set TAXILA_VOICESIG=shadow) if internal lessons show the hints firing on children who were fine (gentler hint or slower pace for a confident child), or effortfulGuess acting too often given its 0.486 precision.",
+   "source": "inbox/r7-voice-6.json"
+  },
+  {
+   "id": "dc-r7-voice-echo-residuals",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (voice-echo-filter-residuals, 4b open items 3-4). (1) Echo filter: her echo is captured while she is audible and the child answers after her, so in an item it comes BEFORE the child's own words. A run of hers holding a negation that follows >= 2 of the child's own words is the child quoting her and is kept whole; a lone negation is never removed on arrival time alone. Sim lab, 52,376 (her line → reply) pairs: negations lost 207 → 30 of 25,766; same-script floor unchanged (2,524 tokens); cross-script floor 19,441 → 19,813 (+1.9 %, no new leaking line); quoteOwn 1 measured 17 lost but cross-script floor +64 %. (2) Fan-in: an item of the epoch being closed (her line) whose audio reaches into the CARRY_PRE_MS before the device's onset joins the carried turn: a short burst can end before the device sees it under her echo (phone f7-stop-0386). Bake replay, 132 runs: 2 phone barge / fold-in turns gain their words (both still mis-heard by the ear), 0 other commits change. Reverse (1) if live lessons show her echoed negation leaking after a child's preface (a stray 'nahi' flipping the child's 'haan'); reverse (2) if a carried turn picks up her echo items as words.",
+   "source": "inbox/r7-voice-7.json"
+  },
+  {
+   "id": "rj-r7-create-copies-all-secrets",
+   "kind": "rejection",
+   "at": "2026-11-04",
+   "title": "Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.",
+   "source": "inbox/r7-main-8-remerge.json"
   }
  ],
  "edges": [
@@ -38468,6 +38790,76 @@
    "src": "dc-r7-pip-zone-live",
    "rel": "supersedes",
    "dst": "dc-r7-piece-clear-of-pip"
+  },
+  {
+   "src": "dc-r7-brain-structural-block",
+   "rel": "measured_by",
+   "dst": "jd-r7-director2-2026-11-04"
+  },
+  {
+   "src": "dc-r7-brain-structural-block",
+   "rel": "part_of",
+   "dst": "dc-r7-hybrid-director-default"
+  },
+  {
+   "src": "dc-r7-reply-model-fast",
+   "rel": "measured_by",
+   "dst": "jd-r7-reply-model-ab-2026-11-04"
+  },
+  {
+   "src": "dc-r7-reply-model-fast",
+   "rel": "part_of",
+   "dst": "dc-r7-brain-structural-block"
+  },
+  {
+   "src": "dc-r7-board-geometry-to-scale",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-geometry-reach"
+  },
+  {
+   "src": "dc-r7-board-label-cells-atoms",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-label-cells-atoms-reach"
+  },
+  {
+   "src": "dc-r7-board-places-template",
+   "rel": "measured_by",
+   "dst": "ms-r7-board-places-reach"
+  },
+  {
+   "src": "dc-r7-motion-templates",
+   "rel": "measured_by",
+   "dst": "ms-r7-motion-reach-m2"
+  },
+  {
+   "src": "fx-r7-picture-request-perimeter",
+   "rel": "measured_by",
+   "dst": "ms-r7-picture-request-perimeter"
+  },
+  {
+   "src": "dc-r7-voice-name-spoken",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-board-hold",
+   "rel": "part_of",
+   "dst": "dc-r7-voice-first-sound"
+  },
+  {
+   "src": "dc-r7-voice-d5-relay-ticket",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-voicesig-internal",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-echo-residuals",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
   }
  ]
 }

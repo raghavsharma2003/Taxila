@@ -23,6 +23,28 @@ export interface D5StreamDeps {
   /** Page origin for the ws URL. */
   location?: { protocol: string; host: string };
   now?: () => number;
+  /**
+   * Round 7 (Platform 002, the India relay): ask taxila-web for a relay URL and a single-use ticket for this lesson
+   * (POST /api/duplex/ticket). null / { url: null } / an error → today's same-origin socket. Injectable for tests.
+   */
+  ticket?: (lessonId: string) => Promise<{ url: string | null; ticket?: string } | null>;
+}
+
+/** Default ticket ask: never throws (no relay is the same as a refused ticket: today's path). */
+async function askTicket(lessonId: string): Promise<{ url: string | null; ticket?: string } | null> {
+  try {
+    const res = await fetch("/api/duplex/ticket", { method: "POST", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ lessonId }) });
+    if (!res.ok) return null;
+    return (await res.json()) as { url: string | null; ticket?: string };
+  } catch {
+    return null;
+  }
+}
+
+/** The relay's socket URL for a lesson (an http(s) base is turned into ws(s)). Pure. */
+export function relayUrl(base: string, lessonId: string, ticket: string): string {
+  const u = base.replace(/^http(s?):/i, "ws$1:");
+  return `${u}${u.includes("?") ? "&" : "?"}lessonId=${encodeURIComponent(lessonId)}&ticket=${encodeURIComponent(ticket)}`;
 }
 
 export interface D5Socket {
@@ -92,7 +114,7 @@ export function translateSend(event: D5Json): D5Json | null {
 }
 
 export class D5Stream {
-  readonly stats = { framesSent: 0, framesDropped: 0, eventsIn: 0, opens: 0 };
+  readonly stats = { framesSent: 0, framesDropped: 0, eventsIn: 0, opens: 0, relayFallbacks: 0 };
   /** The last session status Voice Live reported (AEC / DNS / VAD / ASR), for the flight recorder. */
   session: D5Json | null = null;
   private ws: D5Socket | null = null;
@@ -131,9 +153,31 @@ export class D5Stream {
    */
   async start(o: D5OpenOptions): Promise<void> {
     this.stats.opens++;
-    const WS = this.d.WebSocket ?? (globalThis as unknown as { WebSocket: new (url: string) => D5Socket }).WebSocket;
     const loc = this.d.location ?? (globalThis as unknown as { location: { protocol: string; host: string } }).location;
-    const ws = new WS(d5Url(o.lessonId, loc));
+    const same = d5Url(o.lessonId, loc);
+    // round 7 (Platform 002): the India relay first when taxila-web offers one; a refused or silent relay costs one retry
+    // on today's same-origin socket, never the lane
+    const t = await (this.d.ticket ?? askTicket)(o.lessonId).catch(() => null);
+    if (t?.url && t.ticket) {
+      try {
+        this.via = "relay";
+        return await this.openAt(relayUrl(t.url, o.lessonId, t.ticket), o);
+      } catch {
+        // the relay refused or stayed silent: one retry on the same-origin socket (close() detached its handlers)
+        this.closed = false;
+        this.closedReason = null;
+        this.stats.relayFallbacks++;
+      }
+    }
+    this.via = "same_origin";
+    return this.openAt(same, o);
+  }
+  /** Round 7: which socket this stream opened ("relay" = the India D5 relay; null before a start). */
+  via: "relay" | "same_origin" | null = null;
+
+  private async openAt(url: string, o: D5OpenOptions): Promise<void> {
+    const WS = this.d.WebSocket ?? (globalThis as unknown as { WebSocket: new (url: string) => D5Socket }).WebSocket;
+    const ws = new WS(url);
     ws.binaryType = "arraybuffer";
     this.ws = ws;
     await new Promise<void>((resolve, reject) => {

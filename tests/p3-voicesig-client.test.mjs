@@ -130,7 +130,7 @@ test("ONE tap: the utterance numbers and the voicesig head read the same front-e
   assert.ok(!JSON.stringify(kv).includes("paanch"), "numbers only: no words, no audio");
   assert.equal("kv" in req.voiceFeatures.features, false, "kv is top-level, never inside features (that would 400)");
   // ...and the server reads it end to end (shadow)
-  const read = seamTurn({ kv, childText: "umm shayad paanch", cls: { outcome: "correct", flags: {} }, item: { id: "i", answer: "5" }, classLevel: 5, env: {} });
+  const read = seamTurn({ kv, childText: "umm shayad paanch", cls: { outcome: "correct", flags: {} }, item: { id: "i", answer: "5" }, classLevel: 5, env: { TAXILA_VOICESIG: "shadow" } });
   assert.equal(read.read.state, "fragileCorrect");
   assert.deepEqual(read.hints, {}, "shadow");
   await rt.end();

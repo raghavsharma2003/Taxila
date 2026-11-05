@@ -9,8 +9,8 @@
 // inside the test / before() and restore it after, or pass an env object to the code under test. A line that truly must
 // run at import and is harmless to every other suite carries `// one-process-safe: <why>` on the same line.
 //
-// RATCHET: KNOWN_DEBT lists the offenders present when this check landed. They do not fail the check; any NEW offender
-// does. Fixing one needs no edit here (a fixed entry is just no longer found), and the list is pruned at the next pass.
+// KNOWN_DEBT was a ratchet for the offenders present when this check landed (21 on 2026-11-04); all are fixed, and it
+// stays empty.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "fs";
@@ -31,12 +31,9 @@ export function moduleLevelWrites(src) {
   return [...new Set(out)];
 }
 
-// present at int/r6 07185e93 (2026-11-04, after integration 3b: Brain, Forge, Studio, Games and Face moved theirs into
-// hooks). Do not add to this list: fix the new suite instead.
-const KNOWN_DEBT = new Set([
-  "p2-face-flag.test.mjs globalThis.localStorage",
-  "r4-asha-blink.test.mjs globalThis.performance",
-]);
+// Empty since int/r6 6c3c3c95 (integration 4, 2026-11-04): every suite sets its env and globals inside hooks. Keep it
+// empty: fix a new suite instead of listing it.
+const KNOWN_DEBT = new Set([]);
 
 test("moduleLevelWrites: column-0 env and global writes only; indented, compared or marked lines are fine", () => {
   const src = [

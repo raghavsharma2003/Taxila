@@ -179,6 +179,10 @@ test("SCAN: the /teacher route renders her card only, and the onboarding step li
   assert.match(routes, /path: "teacher", element: s\(<TeacherScreen \/>\)/);
   const screen = code(readFileSync(join(ROOT, "src/child/screens/Teacher.tsx"), "utf8"));
   assert.doesNotMatch(screen, /<button|onClick|Sheet|TeacherNamer/, "Your teacher has nothing to press");
+  // r7 (STUDENT-FLOW §11.4): What {T} remembers lives on this screen; its only control is Forget this on a memory item
+  const rem = code(readFileSync(join(ROOT, "src/child/screens/Remembers.tsx"), "utf8"));
+  assert.doesNotMatch(rem, /TeacherNamer|getTutors|teacher_id|teacherId|rename|pick/i, "nothing in What she remembers picks or renames her");
+  assert.equal((rem.match(/onClick=/g) ?? []).length, 1, "one control: Forget this");
   const onb = code(readFileSync(join(ROOT, "src/onboarding/index.tsx"), "utf8"));
   assert.doesNotMatch(onb, /pick|choose|tutor/i);
   const hello = code(readFileSync(join(ROOT, "src/child/screens/Hello.tsx"), "utf8"));

@@ -22,15 +22,15 @@
 .ks-rail { flex: none; overflow: hidden; border-top: 1px solid var(--k-line); background: var(--k-panel-solid); }
 .ks-rail .dk-card { height: 100%; border: 0; border-radius: 0; background: transparent; box-shadow: none; padding: 8px 12px; clip-path: none !important; }
 .ks-rail .dk-card--empty { display: none; }
-.ks-rail .dk-ask { font-size: 18px; line-height: 1.3; }
-.ks[data-kind="wide"] .ks-rail .dk-ask { font-size: 20px; }
+.ks-rail .dk-ask { font-size: calc(18px * var(--ks-k, 1)); line-height: 1.3; }
+.ks[data-kind="wide"] .ks-rail .dk-ask { font-size: calc(20px * var(--ks-k, 1)); }
 
 /* captions: under her when she holds the stage; a two-line subtitle over the piece's foot while she speaks */
 .ks-hero-cap { position: absolute; left: 12px; right: 12px; bottom: 10px; text-align: center; }
 .ks-subtitle { position: absolute; left: 10px; right: 10px; bottom: 8px; z-index: 3; padding: 6px 10px; text-align: center;
   background: color-mix(in srgb, var(--k-void) 78%, transparent); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--k-line); }
-.ks-subtitle .dk-caption, .ks-subtitle p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; font-size: 16px; }
+.ks-subtitle .dk-caption, .ks-subtitle p { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0; font-size: calc(16px * var(--ks-k, 1)); }
 .ks-caption { overflow: hidden; padding: 4px 4px 0; display: flex; align-items: flex-start; }
 
 /* her face: one element; it glides between the stage, the PiP and the tile */
@@ -85,8 +85,8 @@
 .ks-moment--detour .ks-moment-ic { color: var(--k-her); }
 .ks-moment-body { min-width: 0; display: grid; gap: 4px; }
 .ks-moment-k { font: 600 14px/1.2 var(--k-mono); letter-spacing: .04em; text-transform: uppercase; color: var(--k-ink-3); }
-.ks-moment-q { font: 600 17px/1.3 var(--k-sans); overflow-wrap: anywhere; }
-.ks-moment-w { font: 400 15px/1.4 var(--k-sans); color: var(--k-ink-2); }
+.ks-moment-q { font: 600 calc(17px * var(--ks-k, 1))/1.3 var(--k-sans); overflow-wrap: anywhere; }
+.ks-moment-w { font: 400 calc(15px * var(--ks-k, 1))/1.4 var(--k-sans); color: var(--k-ink-2); }
 .ks-moment-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
 .ks-moment-btn { min-height: 48px; padding: 0 16px; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink);
   font: 600 16px/1 var(--k-sans); clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px); cursor: pointer; }

@@ -2775,3 +2775,8 @@ The A/B run reverted only some of a patch's paths, so re-applying the whole patc
 ## rj-r7-inbox-file-reedited-after-merge (2026-11-04, main loop, round 7 integration 2)
 
 What was tried: streams kept appending to their one inbox file (context/inbox/r7-<stream>.json) across batches. What broke: the main loop's merge moves each merged file to context/inbox/merged/, which git records as a rename. A later edit to the old path follows the rename on merge, so the new entries landed in merged/ and were never read into the graph. Integration 2 found 28 such nodes (Brain 3, Face 15, Platform 6, Studio 2, Voice 2), moved them back as *-remerge.json and merged them. Rule since: a new file per batch, never re-edit a pushed inbox file (docs/design/round7/PIPELINE.md §O). A check that would catch it: after each integration, every node id in context/inbox/merged/*.json must exist in graph.json.
+
+
+## rj-r7-create-copies-all-secrets (2026-11-04, round 7, Platform; written up by main loop)
+
+Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.

@@ -10,6 +10,7 @@ import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 export const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WEEK_RE = /^(\d{4})-W(\d{2})$/;
+export const MONTH_RE = /^(\d{4})-(0[1-9]|1[0-2])$/;
 const iso = (x) => (x == null ? null : new Date(x).toISOString());
 
 /** Monday ('YYYY-MM-DD') of an ISO week id 'YYYY-Www'. */
@@ -36,6 +37,12 @@ export function windowOf(cadence, period, tz) {
   if (cadence === "weekly") {
     const mon = mondayOf(period);
     return { cadence, period, firstDay: mon, lastDay: addDays(mon, 6), from: zonedToUtc(mon, "04:00", tz).toISOString(), to: zonedToUtc(addDays(mon, 7), "04:00", tz).toISOString() };
+  }
+  if (cadence === "monthly") {
+    if (!MONTH_RE.test(period)) throw new Error(`reports: bad month ${period}`);
+    const first = `${period}-01`;
+    const next = addDays(addDays(first, 27), 4).slice(0, 7) + "-01";            // the 1st of the following month
+    return { cadence, period, firstDay: first, lastDay: addDays(next, -1), from: zonedToUtc(first, "04:00", tz).toISOString(), to: zonedToUtc(next, "04:00", tz).toISOString() };
   }
   throw new Error(`reports: unknown cadence ${cadence}`);
 }
@@ -69,6 +76,14 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     db.q(`select skill_id, display, next_review_at, refresh from kt_skill_state where child_id = $1`, [childId]),
     db.q(`select misconception_id, hits, resolved_at from kt_misconception where child_id = $1`, [childId]),
   ]);
+  // round 7 F (S7, S17): the child's own questions in the window (question_jar, 037) and the school test windows the parent
+  // entered (Conductor state). Both tolerate a missing table: the sections are simply left out.
+  const monthlyOrWeekly = cadence === "monthly" || cadence === "weekly";
+  const [jar, cstate] = await Promise.all([
+    cadence === "monthly" ? db.q(`select id, learning, created_at, answered_at from question_jar where child_id = $1 and created_at >= $2 and created_at < $3 order by created_at, id`,
+      [childId, w.from, w.to]).catch(() => []) : [],
+    monthlyOrWeekly ? db.q("select state->'school'->'testWindows' as tw from conductor_state where child_id = $1", [childId]).catch(() => []) : [],
+  ]);
   const consent = Object.fromEntries(consentRows.map((r) => [r.purpose, !!r.granted]));
   const facts = {
     child: { id: c.id, firstName: c.first_name, classLevel: c.class_level, languagePref: c.language_pref, tz: c.tz },
@@ -82,8 +97,15 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     skills: Object.fromEntries(skills.map((s) => [s.skill_id, { display: s.display, nextReviewAt: iso(s.next_review_at), refresh: !!s.refresh }])),
     misconceptions: Object.fromEntries(mis.map((m) => [m.misconception_id, { hits: Number(m.hits), resolvedAt: iso(m.resolved_at) }])),
     titles: {}, beliefs: {},
+    jar: jar.map((r) => ({ id: String(r.id), learning: !!r.learning, createdAt: iso(r.created_at), answeredAt: iso(r.answered_at) })),
+    testWindows: (Array.isArray(cstate[0]?.tw) ? cstate[0].tw : [])
+      .filter((t) => t && typeof t.subject === "string" && t.from <= w.lastDay && t.to >= w.firstDay)
+      .map((t) => ({ subject: t.subject, from: t.from, to: t.to })).sort((a, b) => (a.from + a.subject < b.from + b.subject ? -1 : 1)),
   };
   const skillIds = new Set(facts.events.flatMap((e) => e.skillIds));
+  // S13 (monthly): the next few scheduled re-checks after the window, whether or not the skill came up in it
+  if (cadence === "monthly") for (const [sid] of Object.entries(facts.skills).filter(([, x]) => x.nextReviewAt && x.nextReviewAt >= w.to)
+    .sort((a, b) => (a[1].nextReviewAt < b[1].nextReviewAt ? -1 : a[1].nextReviewAt > b[1].nextReviewAt ? 1 : a[0] < b[0] ? -1 : 1)).slice(0, 3)) skillIds.add(sid);
   const misIds = new Set(facts.events.flatMap((e) => [e.misconceptionId, e.discriminates]).filter(Boolean));
   for (const s of skillIds) facts.titles[s] = (await lookup.skillTitle?.(s).catch(() => null)) ?? null;
   for (const m of misIds) facts.beliefs[m] = (await lookup.belief?.(m).catch(() => null)) ?? null;
@@ -92,4 +114,4 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
 
 /** Digest of the snapshot (audit and replay: the same facts render the same Lane A text, E-R9). */
 export const factsDigest = (f) => createHash("sha256").update(JSON.stringify({ c: f.child, w: f.window, l: f.lessons, e: f.events.map((e) => [e.id, e.seq]),
-  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs })).digest("hex").slice(0, 32);
+  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs, ...(f.jar?.length ? { j: f.jar } : {}), ...(f.testWindows?.length ? { tw: f.testWindows } : {}) })).digest("hex").slice(0, 32);

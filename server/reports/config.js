@@ -3,7 +3,7 @@
 // change alters what a parent reads (stored reports are keyed by it, so an operator re-render is a new row).
 
 /** Stored with every report; a template or rule change that alters parent text must bump it. */
-export const RENDER_VERSION = "pr-2";   // pr-2: delayed-success copy, no interest line, no-lesson header, dated re-checks only in the future
+export const RENDER_VERSION = "pr-3";   // pr-3: monthly cadence and its sections (S4, S6, S7, S9, S13, S16); weekly exam shape (S17)
 
 /**
  * The calibration gate (COMPREHENSION-ENGINE.md §7.1 K7: ≥ 0.9 delayed accuracy at 1 and 4 weeks, ECE ≤ 0.05,
@@ -12,7 +12,7 @@ export const RENDER_VERSION = "pr-2";   // pr-2: delayed-success copy, no intere
  */
 export const CALIBRATION = Object.freeze({ k7Passed: false });
 
-export const CADENCES = Object.freeze(["daily", "weekly"]);
+export const CADENCES = Object.freeze(["daily", "weekly", "monthly"]);
 export const LANGS = Object.freeze(["en", "hinglish", "hi"]);
 /** child.language_pref → report language. */
 export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish", hindi: "hi" });
@@ -23,12 +23,14 @@ export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish",
  * Daily is pull-only in v1 (X11) and carries no home activity (PL6: at most one per week).
  */
 export const CAPS = Object.freeze({
-  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, body: 5 },
-  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, body: 5 },
+  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, body: 5 },
+  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, body: 5 },
+  // round 7 F (PARENT-REPORT §2, §9.2: one card per section): the monthly report in the app
+  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, body: 20 },
 });
 
 /** Spoken-script budgets (PARENT-REPORT §9.1 weekly 60-90 s) at ~2.3 spoken words/s [U]. Over budget → throw. */
-export const VOICE_WORDS = Object.freeze({ daily: 110, weekly: 200 });
+export const VOICE_WORDS = Object.freeze({ daily: 110, weekly: 200, monthly: 200 });
 /** And never longer than one /api/tts request takes (server/routes/tts.js MAX_TTS_CHARS), so speech is never cut. */
 export const VOICE_CHARS = 1200;
 
@@ -60,4 +62,14 @@ export const PRICE_MICRO_USD = Object.freeze({ "taxila-brain": { in: 4, out: 20 
  * 25k µ$ and a weekly one under 40k with room for the fast fallback; a failed call is charged its worst case.
  * Cost per child-month ≈ per-report cost × (A active days + 4.3 letters); A is not measured on real families.
  */
-export const JOB_BUDGET = Object.freeze({ daily: 25_000, weekly: 40_000 });
+export const JOB_BUDGET = Object.freeze({ daily: 25_000, weekly: 40_000, monthly: 40_000 });
+
+// ───────────── round 7 F: monthly sections (PARENT-REPORT §5) [U] ─────────────
+/** S4: a check "after a gap" = an attempt whose previous contact with the skill was at least this many days earlier. */
+export const HOLD_GAP_DAYS = 7;
+/** S4 L0 line needs this many such checks; fewer (≥ 1) is the "still learning how it holds up" line. */
+export const HOLD_MIN_N = 3;
+/** S6 needs this many scored questions in the month before any line about hints. */
+export const HARD_MIN_N = 5;
+/** S9 needs this many lessons in the month. */
+export const ROUTINE_MIN_LESSONS = 2;

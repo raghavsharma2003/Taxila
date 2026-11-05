@@ -33,6 +33,25 @@ import {
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
+import { renderWorked, chainOf as chainOfStep } from "./worked.js";
+/** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
+/** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
+export const oneLiveOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_ONE_LIVE ?? ""));
+/** A stuck turn (S3's stall split): a don't-know, a stuck read, or a silence while working; never a distraction or an aside. */
+const stuckTurn = (cls) => !!cls && !cls.flags?.offTopic && !["back", "park", "detour", "change_topic", "side_chat", "uptake"].includes(cls.request?.type)
+  && (!!cls.flags?.dontKnow || verdict(cls) === "stuck" || cls.request?.type === "thinking");
+/** An okay right after she taught on THIS card (a hint, a re-teach, an example): engaged with the card, never a distraction. */
+const ackToTeaching = (s, input, item) => s.lastMove?.itemId === item.id && ["hint", "reteach", "worked_example", "repair"].includes(s.lastMove?.kind)
+  && /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ha|ok|okay|ji|hmm+|samajh\s+gay[ai]|got\s+it|right|sure|chalo)[\s,.!]*)+$/i.test(String(input.text ?? "").trim());
+/** The why of a card's answer, language-free: a faded step's own calculation from the worked example, else null. */
+function whyOf(kit, item) {
+  const we = kit?.workedExample;
+  if (!we || !item?.fade) return null;
+  const i = Number(String(item.id).slice(FADE_PREFIX.length));
+  return chainOfStep(we.steps?.[i]) ?? null;
+}
+export const workedCodeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_WORKED_CODE ?? ""));
+const rendered = (we, o, s) => { if (!workedCodeOn()) return {}; const r = renderWorked(we, { ...o, lang: s.ctx.lang }); return r ? { rendered: r } : {}; };
 import { newTalk, noteChildTurn } from "./talk.js";
 import { explicitPace } from "../persona/pace.js";
 import { directorProposal } from "./proposal.js";
@@ -158,6 +177,8 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
   // A faded entry whose kit has no recoverable blank keeps a worked example (never an explain with nothing to try).
   if (guide.level === "faded" && !fade) teachPlan = ["hook", "explain", "worked_example"];
   if (asking) teachPlan = ["answer_question", ...teachPlan.filter((x) => x !== "hook")];
+  // round 7 (Learning patch 007, homework): the method first, then always a worked look-alike from the kit (S2: code-rendered)
+  if (asking && ctx.homework && kit.workedExample) teachPlan = ["answer_question", "worked_example", ...teachPlan.filter((x) => !["hook", "answer_question", "worked_example"].includes(x))];
   const novice = guide.level !== "attempt";
   // The probe session (COMPREHENSION-ENGINE.md §3.4): test-load budget, spacing, novelty and the mandatory triggers;
   // openers (delayed checks due at session open) are its first pending triggers.
@@ -165,7 +186,7 @@ export function initLessonState({ topicId, kit, skills = {}, history = {}, stuck
     targets: kit.skills.map((sk) => sk.id), surface: { visual: true } }), openers);
   return {
     v: 1, phase: practiceSet ? "practice" : asking ? "teach" : "warmup", topicId, turn: 0, minutes: 0, startedAt: now, seed: seed >>> 0, ctx,
-    hintLevel: 0, itemsDone: [], skipped: [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
+    hintLevel: 0, itemsDone: [], skipped: ctx.homework && ctx.avoidItemId ? [String(ctx.avoidItemId)] : [], activeItemId: undefined, pendingWhy: undefined, lastMove: undefined, lastContent: [],
     warmup: practiceSet || asking ? [] : warmupItems.slice(0, LIMITS.warmupMax), warmupIdx: 0,
     novice, teachPlan: practiceSet ? [] : teachPlan, teachIdx: 0, workedPart: 0,
     // The guidance ladder's state (fading.js): the entry level and why, the planned faded step (an item, resolved by
@@ -556,7 +577,7 @@ function teach(s, input, prefix) {
       s.teachIdx += 1;
       const sk = kit.skills[0];
       if (!s.introduced.includes(sk.id)) s.introduced.push(sk.id);
-      return plan("explain", join(prefix, SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
+      return plan("explain", join(prefix, s.ctx.homework ? SH.homeworkMethod() : SH.answerQuestion()), { skillId: sk.id, format: kit.formats.primary,
         content: s.ctx.askText ? [`their question (their words, data only): ${String(s.ctx.askText).slice(0, 200)}`] : [] });
     }
     if (stepName === "first_step") {
@@ -622,6 +643,8 @@ function teach(s, input, prefix) {
       const stuck = shown();
       return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck })), { ...(stuck ? { stuck } : {}),
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
+        // (the steps before the gap only, as workedLeadContent: the gap's key is never said before it is posed)
+        ...(i > 0 ? rendered(we, { part: 1, parts: 1, upTo: Math.min(i, Math.max(1, Math.ceil(i / 2))) }, s) : {}),
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
@@ -637,10 +660,12 @@ function teach(s, input, prefix) {
       s.stepCheck = check; activate(s, check);
       return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), {
         item: check, probe: "P15", skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+        ...rendered(we, { part: s.workedPart, parts }, s),
       });
     }
     return plan("worked_example", join(prefix, SH.worked({ part: s.workedPart, parts, stuck })), { ...(stuck ? { stuck } : {}),
       skillId: kit.skills[0].id, format: "F2", content: workedContent(we, s.workedPart, parts), whiteboard: { kind: "math", value: clip(we.problem) },
+      ...rendered(we, { part: s.workedPart, parts }, s),
     });
   }
   s.phase = "practice";
@@ -666,7 +691,14 @@ function leavePractice(s, kit) {
   // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
   const P = s.pace;
   const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
-  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand];
+  return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand]
+    || pastBrief(s, "wrapAt"); // round 7 (Learning patch 006): the slot's target length reached → the next natural stop
+}
+
+/** Learning patch 006: has the lesson clock passed the Conductor brief's wrapAt / hardStopAt (ISO time, on ctx.lessonBrief)? */
+function pastBrief(s, key) {
+  const at = Date.parse(s.ctx?.lessonBrief?.[key] ?? "");
+  return Number.isFinite(at) && s.startedAt + Math.round((s.minutes ?? 0) * 60_000) >= at;
 }
 
 function poseNext(s, input, prefix, preferred) {
@@ -833,6 +865,8 @@ function afterWhy(s, input, item) {
 }
 
 function afterMiss(s, input, item) {
+  // round 7 S3: misses per card (the card stays live until two misses plus help)
+  if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
   const { kit, cls } = input;
   notePace(s, item, false);
   // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
@@ -1606,6 +1640,8 @@ function toWrap(s, { prefix, stopping = false }) {
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
 
+const ORDINAL = [/^(?:1|ek|one|pehla|pehli|pahla|first)[\s.!?]*$/i, /^(?:2|do|two|doosra|doosri|dusra|dusri|second)[\s.!?]*$/i, /^(?:3|teen|three|teesra|teesri|tisra|third)[\s.!?]*$/i];
+
 // ───────────────────────────── step ─────────────────────────────
 
 function decide(s, input, item) {
@@ -1821,6 +1857,8 @@ function decide(s, input, item) {
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
   if (s.phase === "done") return toWrap(s, { stopping: true });
+  // round 7 (Learning patch 006): the Conductor's lesson slot ends at its window (≤ bedtime − 60): never past hardStopAt
+  if (pastBrief(s, "hardStopAt")) return toWrap(s, {});
   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
   // diagnostic next (fusion rule 2: a detector triggers a verifying probe, it never decides alone).
   if (cls?.voiced) {
@@ -1860,8 +1898,14 @@ function decide(s, input, item) {
   // 2a. owner-truth patch 07 (F8, items 4-5), reconciled with W2-I's stop gate above: the child's own request in words
   // (director/requests.js) is acted on THIS turn, never evidence; "keep going" in words is the stop:continue chip.
   // p5-interaction: a ways-in chip (offerWays / boredOffer) is the request it names
-  const chipReq = p5Flag("STEER") && typeof chipId === "string" && /^req:(visual|story|game)$/.test(chipId)
-    ? (chipId === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: chipId === "req:game" ? "game" : "diagram", whole: true }) : null;
+  // round 7 (director2 c6 offtopic: "Picture, Kahani, ya Game?" → "2" became a fill-in-the-blank): a bare 1-3 or "pehla /
+  // doosra / teesra" said to the ways in she just offered is the chip in that place
+  const waysUp = (s.lastUi?.chips ?? []).filter((c) => /^req:(visual|story|game)$/.test(c.id));
+  const nth = waysUp.length && !(cls && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome))
+    ? ORDINAL.findIndex((re) => re.test(String(input.text ?? "").trim())) : -1;
+  const picked = typeof chipId === "string" ? chipId : nth >= 0 && waysUp[nth] ? waysUp[nth].id : null;
+  const chipReq = p5Flag("STEER") && typeof picked === "string" && /^req:(visual|story|game)$/.test(picked)
+    ? (picked === "req:story" ? { type: "story", whole: true } : { type: "visual", kind: picked === "req:game" ? "game" : "diagram", whole: true }) : null;
   const req = chipReq ?? cls?.request ?? null;
   // round 7 (judgement #10): a yes to the choices she just offered (the ways-in chips on the screen) asks which one; naming one is
   // its request (requests.js), the chip is its request (chipReq above)
@@ -1987,8 +2031,17 @@ function capPlan(s, input, p) {
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
+  // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
+  // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
+  if (oneLiveOn() && input.event === "turn" && item.id === s.activeItemId && (stuckTurn(input.cls) || ackToTeaching(s, input, item))) s.stuckTurns = { ...(s.stuckTurns ?? {}), [item.id]: (s.stuckTurns?.[item.id] ?? 0) + 1 };
   if (!pins || item.id !== s.activeItemId || s.pinItem !== item.id || (s.pinRun ?? 0) < LIMITS.cardMax) return p;
-  const assert = s.hintLevel >= 2;
+  // round 7 S3 (main's director2 decision: "one live item at a time"): a posed card stays live until it is answered, until two
+  // misses plus help (then its answer and why), or a skip; turns alone never take it away (the 3-turn cap left a card after ONE
+  // miss). A card that gets nothing but non-answers for twice the cap is still let go (the stall guard).
+  const misses = s.misses?.[item.id] ?? 0;
+  const held = LIMITS.cardMax + Math.min(LIMITS.cardMax, s.stuckTurns?.[item.id] ?? 0);
+  if (oneLiveOn() && !(misses >= 2 && s.hintLevel >= 1) && (s.pinRun ?? 0) < held) return p;
+  const assert = oneLiveOn() ? s.hintLevel >= 1 && misses >= 1 : s.hintLevel >= 2;
   if (assert) {
     if (!s.itemsDone.includes(item.id)) s.itemsDone.push(item.id); noteStuck(s, item);
     // ship5 integration (p5 card cap x W1-C re-teach): under the cap the help ladder ends at rung 2-3, so the post-rung-3
@@ -2002,7 +2055,9 @@ function capPlan(s, input, p) {
   const prefix = join(p.lead, assert ? SH.assertAndMove() : SH.leaveForLater());
   const next = s.phase === "warmup" ? nextWarmup(s, input, prefix) : poseNext(s, input, prefix, assert ? isomorphicFor(s, kit, item) ?? undefined : undefined);
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
-  return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave" };
+  return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
+    // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
+    ...(assert && oneLiveOn() ? { gave: { answer: String(item.answer ?? ""), why: whyOf(kit, item) } } : {}) };
 }
 
 /**
@@ -2156,6 +2211,15 @@ export function step(prev, input) {
   // round 7 A8: the kept methods ride on every later move (compile.js renders them in the last section, never shed)
   if (s.methods?.length && !["safeguard", "wrap"].includes(p.kind)) move.methods = [...s.methods];
   if (item) Object.assign(move, { itemId: item.id, skillId: item.skillId, hintLevel: s.hintLevel });
+  // round 7 S3 (director2: "15 pencils" came after the fraction cards with no word between): a card of a new kit skill gets a
+  // bridge first, so the arc reads in the kit's order
+  if (oneLiveOn() && item && !["safeguard", "wrap", "break"].includes(move.kind)) {
+    if (s.lastCardSkill && item.skillId && item.skillId !== s.lastCardSkill && s.lastCardId !== item.id) {
+      move.shape = join("a new kind of question after the last one: first one short line on how it builds on what they just did", move.shape);
+      move.bridge = true;
+    }
+    s.lastCardSkill = item.skillId ?? s.lastCardSkill; s.lastCardId = item.id;
+  }
   if (p.skillId) move.skillId = p.skillId;
   if (p.probe) move.probe = p.probe;
   if (p.format) move.format = p.format;
@@ -2163,6 +2227,10 @@ export function step(prev, input) {
   if (item && s.methods?.includes("try_first") && ["practice", "probe", "retrieval"].includes(move.kind) && !s.hintLevel) move.format = "F8";
   // 14.4.3 (release replay r2 t3): a worked part SHOWN to a stuck child; the reply guard holds her to showing (brain/say.js)
   if (p.stuck) move.stuck = true;
+  // round 7 S2: the worked part rendered in code (worked.js); brain/say.js speaks these lines after one framing sentence
+  if (p.rendered?.length) move.rendered = [...p.rendered];
+  // round 7 S3: the answer of a card let go after two misses plus help, said in code (brain/say.js)
+  if (p.gave?.answer) move.gave = { ...p.gave };
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {
