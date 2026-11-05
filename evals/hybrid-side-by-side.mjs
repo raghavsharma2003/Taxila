@@ -26,7 +26,7 @@ import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
-import { whiteboardIntentOf } from "../server/brain/propose.js";
+import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { preselect } from "../server/stagecraft/board-first.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -172,9 +172,11 @@ async function lesson(lane, kit, classLevel, lines) {
         screen = e ? { kind: "game", game: `${e.family}/${e.mode}`, goal: e.goal ?? null } : { kind: "none", why: "no game for this skill" };
         shape = askTruth(shape, "game", e ? "engine" : "none");
       } else {
-        const item = next.activeItemId ? findItem(next, kit, next.activeItemId) : null;
-        const ask = whiteboardIntentOf({ lessonId: LESSON.id, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
+        // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
         const pick = preselect(ask, { kit });
+        if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
           screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);

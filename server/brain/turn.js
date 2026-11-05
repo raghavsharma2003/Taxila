@@ -46,7 +46,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -703,7 +703,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // her line is written from), so it can be in when her line is; requestIntent below re-gates it against her real line.
   if (!late && textLane && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.prepareWhiteboard === "function") {
     seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
+      item: boardItemOf(next, kit, findItem), line: { text: "" } })), false);
   }
   // round 2 content, board-first: the board for an accepted whiteboard ask is chosen NOW (kit code / library / catalogue,
   // gated on everything that does not depend on her exact words), and its facts row joins the move's content below, so her
@@ -711,7 +711,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // request included). null = nothing preselected, the turn is exactly as before.
   const wbFirstRow = !late && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.preselectWhiteboard === "function"
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
+      item: boardItemOf(next, kit, findItem), line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
