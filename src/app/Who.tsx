@@ -15,6 +15,8 @@ import { readStore, writeStore } from "./storage.ts";
 // ChildShell, so childshell.css re-points the v2 tokens); nothing on a ?ui=classic device
 import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
 import { Cta, Ghost, Glyph, KxPage } from "../ui-v3/kaksha/kit.tsx";
+import { useInstallOffer } from "./install.ts";
+import { tr7 } from "../copy/en.ts";
 
 export const LAST_CHILD_KEY = "tx.lastChild";
 
@@ -31,6 +33,7 @@ export default function Who() {
   const [err, setErr] = useState<string | null>(null);
   const [picked, setPicked] = useState<string | null>(null);
   const [pendingReset, setPendingReset] = useState<string | null>(null);
+  const installOffer = useInstallOffer();
 
   // r7 D3: the young look is classes 1-3 only (class 4 has the older one)
   const young = !!kids?.some((c) => c.class_level <= YOUNG_MAX_CLASS);
@@ -110,6 +113,7 @@ export default function Who() {
         </div>
         {resetNote && <p className="kx-sub kx-whosel-note" role="status">{resetNote}</p>}
         <Link to="/start/child?add=1" className="kx-textlink kx-whosel-add"><Glyph name="plus" size={18} /> Add a child (parent)</Link>
+        {installOffer && <button type="button" className="kx-textlink kx-whosel-add" onClick={() => void installOffer()} data-testid="install-app"><Glyph name="play" size={18} /> {tr7("app.install")}</button>}
       </KxPage>
     );
   }
