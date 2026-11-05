@@ -840,7 +840,7 @@ function corners(shape, cx, cy, R, turn = 0) {
 function shape(c, tl) {
   if (!(c.shape in SIDES)) return { error: "shape" };
   const copies = c.copies === 2 ? 2 : 1;
-  for (const k of ["name", "side", "corner", "centre", "radius", "diameter"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  for (const k of ["name", "side", "corner", "centre", "radius", "diameter", "chord", "arc"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
   const names = Array.isArray(c.names) ? c.names : [];
   if (names.some((x) => !fitsLabel(x))) return { error: "names" };
   if (c.shape === "circle") {
@@ -848,18 +848,35 @@ function shape(c, tl) {
     const cx = 200, cy = 138, r = 100;
     tl.add({ id: "o", op: "circle", c: [cx, cy], r, weight: 2 }, 1000);
     tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+    // round 7 (Learning, c6 circles: "a circle can't show a radius or diameter"): a radius and a diameter are drawn as
+    // ARROWS (a measure, not a cut: W8 refuses a round whole cut by lines through its centre), each label beside its segment,
+    // never on it (W2); a chord is a line clear of the centre (it cuts nothing W8 counts); an arc is a stroke just outside the rim
+    const at = (deg, rr = r) => [round1(cx + rr * Math.cos(rad(deg))), round1(cy + rr * Math.sin(rad(deg)))];
     if (c.diameter) {
-      tl.add({ id: "dia", op: "line", from: [cx - r, cy], to: [cx + r, cy], ink: "good", weight: 2 }, 600, { gap: 200 });
-      tl.add({ op: "text", at: [cx + 50, cy + 18], text: c.diameter, size: "s", ink: "good" }, 420, { gap: 60 });
+      tl.add({ id: "dia", op: "arrow", from: at(180), to: at(0), ink: "good", weight: 2 }, 600, { gap: 200 });
+      tl.add({ op: "text", at: [cx - 46, cy + 20], text: c.diameter, size: "s", ink: "good" }, 420, { gap: 60 });
     }
     if (c.radius) {
-      const ex = cx + r * Math.cos(rad(-50)), ey = cy + r * Math.sin(rad(-50));
-      tl.add({ id: "rad", op: "line", from: [cx, cy], to: [ex, ey], ink: "accent", weight: 2 }, 520, { gap: 200 });
-      tl.add({ op: "text", at: [(cx + ex) / 2 + 30, (cy + ey) / 2 - 4], text: c.radius, size: "s", ink: "accent" }, 420, { gap: 60 });
+      const e = at(-50), hw = textBox(c.radius, "s").w / 2;
+      tl.add({ id: "rad", op: "arrow", from: [cx, cy], to: e, ink: "accent", weight: 2 }, 520, { gap: 200 });
+      // (beyond the radius's end, outside the rim: clear of the segment and of the circle, pulled in at the board's edge)
+      tl.add({ op: "text", at: [round1(Math.min(400 - hw - 4, e[0] + hw + 10)), round1(e[1] + 4)], text: c.radius, size: "s", ink: "accent" }, 420, { gap: 60 });
+    }
+    if (c.chord) {
+      const a = at(150), b = at(30);
+      tl.add({ id: "chord", op: "line", from: a, to: b, ink: "mark", weight: 2 }, 520, { gap: 200 });
+      tl.add({ op: "text", at: [cx, round1(a[1] + 22)], text: c.chord, size: "s", ink: "mark" }, 420, { gap: 60 });
+    }
+    if (c.arc) {
+      const pts = Array.from({ length: 9 }, (_, i) => at(200 + i * 7.5, r + 9));
+      tl.add({ id: "arc", op: "stroke", points: pts, ink: "accent", weight: 3 }, 600, { gap: 200 });
+      const m = at(230, r + 30);
+      tl.add({ op: "text", at: [Math.max(m[0], textBox(c.arc, "s").w / 2 + 6), m[1]], text: c.arc, size: "s", ink: "accent" }, 420, { gap: 60 });
     }
     if (c.centre) tl.add({ op: "label", at: [Math.max(textBox(c.centre, "s").w / 2 + 6, 62), 262], text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
     if (c.name) tl.add({ op: "text", at: [300, 270], text: c.name, size: sizeFor(c.name, 180) ?? "s", ink: "accent" }, 500, { gap: 200 });
-    return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}) } };
+    return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}),
+      ...(c.chord ? { chord: "drawn" } : {}), ...(c.arc ? { arc: "drawn" } : {}) } };
   }
   const R = copies === 1 ? 100 : 70;
   for (let k = 0; k < copies; k++) {

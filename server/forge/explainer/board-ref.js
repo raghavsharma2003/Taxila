@@ -25,7 +25,7 @@ export const BOARD_REFS = Object.freeze({
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
   "angle@1": { subject: "maths", params: "angles [{ deg 1-359 }] (1-2)", example: { angles: [{ deg: 60 }] } },
-  "shape@1": { subject: "maths", params: "shape (circle | polygon names); optional short labels: name, side, corner, centre, radius, diameter, names []; copies 1|2", example: { shape: "circle", radius: "radius" } },
+  "shape@1": { subject: "maths", params: "shape (circle | polygon names); optional short labels: name, side, corner, centre, names []; a circle also radius, diameter (drawn as arrows from / through the centre), chord (a line clear of the centre), arc (along the rim), each a short label (e.g. 'diameter 14 cm'); copies 1|2", example: { shape: "circle", radius: "radius" } },
   "symmetry@1": { subject: "maths", params: "line? (label), dot? (squares from the line)", example: { dot: 3 } },
   "bar-chart@1": { subject: "maths|science|evs", params: "bars [{ label, value }] 2-6", example: { bars: [{ label: "Mon", value: 4 }, { label: "Tue", value: 6 }] } },
   "table@1": { subject: "any", params: "head [2-4 cells], rows [1-10 × same width], rule? (short)", example: { head: ["n", "2n"], rows: [["1", "2"], ["2", "4"]] } },

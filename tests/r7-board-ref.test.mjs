@@ -254,3 +254,17 @@ test("director6 #1: a number her line states is never drawn '?' — the take's s
   assert.ok(r.failed.includes("stated_drawn_as_unknown:40"), JSON.stringify(r.failed));
   assert.equal((await certifyBoardRef({ template: "measured@1", shape: "rect", unit: "m", w: 40, h: 25 }, { line, withhold: { values: ["130"], words: [] } })).ok, true);
 });
+
+test("Learning c6 circles: a circle shows its radius and diameter (arrows, not cuts), a chord and an arc, each labelled clear of its line", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const line = "Screen par ek circle hai. Centre se kinaare tak ki line radius hai, 7 cm. Ek kinaare se doosre kinaare tak, centre se hoke, diameter hai, 14 cm. Chord bhi kinaare se kinaare tak jaati hai, par centre se nahi. Kinaare ka ek hissa arc hai.";
+  const ref = { template: "shape@1", shape: "circle", centre: "centre O", radius: "radius 7 cm", diameter: "diameter 14 cm", chord: "chord", arc: "arc" };
+  const r = await certifyBoardRef(ref, { line });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  const x = expand(ref);
+  assert.equal(x.script.ops.filter((o) => o.op === "arrow").length, 2, "radius and diameter are measures (arrows): W8 never reads them as cuts");
+  assert.ok(x.script.ops.some((o) => o.id === "chord" && o.op === "line"));
+  assert.ok(x.script.ops.some((o) => o.id === "arc" && o.op === "stroke"));
+  // the bare circle without the line's measures still fails (the line states 7 cm and 14 cm)
+  assert.ok((await certifyBoardRef({ template: "shape@1", shape: "circle", diameter: "diameter", chord: "chord" }, { line })).failed.some((f) => f.startsWith("line_measures_not_on_board")));
+});
