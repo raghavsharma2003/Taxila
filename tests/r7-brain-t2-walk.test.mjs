@@ -58,14 +58,19 @@ describe("T2: the Director walks the script", () => {
     assert.equal(ask.intent.scriptBeat.kind, "explain");
   });
 
-  test("a right check goes to the next check; the checks done, the script's ladder poses its kit items", () => {
+  test("a right check goes to the next check; the checks done, the next scripted skill is walked (v4 W5), else the ladder", () => {
     const L = run();
     toFirstCheck(L);
     const posed = [L.r.move.itemId];
-    for (let i = 0; i < 8; i++) { L.t("x", cls("correct")); if (L.r.move.itemId && L.r.move.itemId !== posed.at(-1)) posed.push(L.r.move.itemId); }
+    const beats = [];
+    for (let i = 0; i < 8; i++) { L.t("x", cls("correct")); if (L.r.move.scriptBeat) beats.push(`${L.r.move.scriptBeat.skillId}:${L.r.move.scriptBeat.beatId}`); if (L.r.move.itemId && L.r.move.itemId !== posed.at(-1)) posed.push(L.r.move.itemId); }
     const checks = S1.checks.map((c) => `script:${S1.skillId}:${c.id}`);
     assert.deepEqual(posed.slice(0, checks.length), checks, "every check, in order");
-    assert.equal(posed[checks.length], S1.ladder[0].itemId, "then the ladder's first rung");
+    // (v4 W5, director6: skill 1 → ladder → skill 3 skipped skill 2): with another scripted skill, it comes next, never the ladder
+    const next = SC.skills[1];
+    if (next) assert.ok(beats.some((b) => b.startsWith(`${next.skillId}:`)), `the next scripted skill is walked: ${beats.join(", ")}`);
+    else assert.equal(posed[checks.length], S1.ladder[0].itemId, "then the ladder's first rung");
+    assert.ok(!posed.slice(checks.length).includes(S1.ladder[0].itemId) || !next, "no ladder while a scripted skill is unwalked");
   });
 
   test("a wrong check gets its misconception's remediation, then the remediation's keyed follow-up as the card", () => {

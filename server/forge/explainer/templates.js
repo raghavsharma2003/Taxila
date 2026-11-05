@@ -859,7 +859,7 @@ function shape(c, tl) {
     }
     if (c.centre) tl.add({ op: "label", at: [Math.max(textBox(c.centre, "s").w / 2 + 6, 62), 262], text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
     if (c.name) tl.add({ op: "text", at: [300, 270], text: c.name, size: sizeFor(c.name, 180) ?? "s", ink: "accent" }, 500, { gap: 200 });
-    return { facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}) } };
+    return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}) } };
   }
   const R = copies === 1 ? 100 : 70;
   for (let k = 0; k < copies; k++) {
@@ -1382,6 +1382,38 @@ function claimsBroken(script, claims) {
   }).map((cl) => cl.id);
 }
 
+/**
+ * round 7 (main, director6 #2: "every template emits screen.counts"): the counts of a template that does not count its own
+ * drawing, from its call and its facts row — word boards included: a compare board's columns (title, how many items, and
+ * the quantities its items state: "2 tukde" → { n: 2, what: "tukde" }), a flow's or cycle's steps, a timeline's events, a
+ * table's rows and columns, a chart's bars and values, labels, places, hops, digits. → counts, or null.
+ */
+function derivedCounts(call, facts = {}) {
+  const qty = (t) => { const m = String(t ?? "").trim().match(/^(\d+)\s+(\p{L}[\p{L} ]{0,20}?)(?=\s*(?:[=,(]|$))/u); return m ? { n: Number(m[1]), what: m[2].trim() } : null; };
+  const col = (side) => side && typeof side === "object" ? { title: String(side.title ?? "").slice(0, 24), items: (side.items ?? []).length,
+    quantities: (side.items ?? []).map(qty).filter(Boolean) } : null;
+  switch (call.template) {
+    case "compare@1": { const cols = [col(call.left), col(call.right)].filter(Boolean); return cols.length ? { columns: cols } : null; }
+    case "flow@1": return Number.isInteger(facts.steps) ? { steps: facts.steps } : null;
+    case "cycle@1": return Number.isInteger(facts.stages) ? { steps: facts.stages } : null;
+    case "timeline@1": return Array.isArray(call.events) ? { events: call.events.length } : null;
+    case "table@1": return Array.isArray(call.rows) ? { rows: call.rows.length, cols: (call.head ?? call.rows[0] ?? []).length } : null;
+    case "parts@1": return Number.isInteger(facts.parts) ? { parts: facts.parts } : null;
+    case "label@1": return Number.isInteger(facts.labels) ? { labels: facts.labels } : null;
+    case "bar-chart@1": return Array.isArray(call.bars) ? { bars: call.bars.length, values: call.bars.map((b) => `${b.label} ${b.value}`) } : null;
+    case "places@1": return Array.isArray(call.places) ? { places: call.places.length } : null;
+    case "angle@1": return Array.isArray(call.angles) ? { angles: call.angles.map((a) => a?.deg).filter(Number.isFinite) } : null;
+    case "number-line-hop@1": return Array.isArray(call.hops) ? { hops: call.hops.length } : null;
+    case "number-line-zoom@1": return { lines: [{ gaps: 10, ticks: 11, innerTicks: 9 }] };
+    case "combine-count@1": return Number.isInteger(call.a) && Number.isInteger(call.b) ? { amounts: [call.a, call.b] } : null;
+    case "fraction-of@1": return Number.isInteger(call.b) && Number.isInteger(call.d) ? { rows: call.b, cols: call.d, parts: call.b * call.d } : null;
+    case "column-op@1": return { rows: 2 };
+    case "place-value@1": return Number.isInteger(facts.digits) ? { digits: facts.digits } : null;
+    case "symmetry@1": return { halves: 2 };
+    default: return null;
+  }
+}
+
 export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
@@ -1389,7 +1421,8 @@ export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   let r;
   try { r = build(call, tl); } catch (e) { return { ok: false, script: null, facts: null, errors: [`build:${String(e?.message ?? e).slice(0, 60)}`] }; }
   if (r.error) return { ok: false, script: null, facts: null, errors: [r.error] };
-  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: r.facts, ...(r.counts ? { counts: r.counts } : {}) };
+  const counts = r.counts ?? derivedCounts(call, r.facts);
+  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: r.facts, ...(counts ? { counts } : {}) };
   const raw = script(call, tl.ops, tl.t, facts, { lessonId, scriptId, ground: r.ground ?? "chalk" });
   const n = normalizeScript(raw, { strict: true });
   if (!n.ok) return { ok: false, script: null, facts: null, errors: n.errors.slice(0, 6) };

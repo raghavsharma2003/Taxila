@@ -306,7 +306,7 @@ function cleanFacts(f) {
  * (label "?" = the asked mark, "" = unlabelled), parts / shaded, rows / cols, groups / each, sides / corners / sideValues
  * ["6 cm", …], radius. Unknown keys and bad values are dropped. → the counts, or null.
  */
-const COUNT_INTS = ["parts", "shaded", "rows", "cols", "groups", "each", "sides", "corners"];
+const COUNT_INTS = ["parts", "shaded", "rows", "cols", "groups", "each", "sides", "corners", "steps", "events", "bars", "labels", "places", "hops", "digits", "halves"];
 const smallStr = (v) => typeof v === "string" && v.length <= 24 && !/[<>{}\n]/.test(v);
 function cleanCounts(c) {
   if (!c || typeof c !== "object") return null;
@@ -323,6 +323,14 @@ function cleanCounts(c) {
   }
   if (Array.isArray(c.sideValues)) { const sv = c.sideValues.slice(0, 8).filter(smallStr); if (sv.length) out.sideValues = sv; }
   if (smallStr(c.radius)) out.radius = c.radius;
+  // (director6 #2: word boards count too) compare columns, chart values, angles, amounts
+  if (Array.isArray(c.columns)) {
+    const cs = c.columns.slice(0, 2).filter((x) => x && typeof x === "object").map((x) => ({ title: smallStr(x.title) ? x.title : "", items: Number.isInteger(x.items) && x.items >= 0 && x.items <= 12 ? x.items : 0,
+      quantities: (Array.isArray(x.quantities) ? x.quantities : []).slice(0, 6).filter((q) => Number.isInteger(q?.n) && q.n >= 0 && q.n <= 1000 && smallStr(q.what)).map((q) => ({ n: q.n, what: q.what })) }));
+    if (cs.length) out.columns = cs;
+  }
+  if (Array.isArray(c.values)) { const vs = c.values.slice(0, 8).filter(smallStr); if (vs.length) out.values = vs; }
+  for (const k of ["angles", "amounts"]) if (Array.isArray(c[k])) { const ns = c[k].slice(0, 6).filter((n) => Number.isFinite(n) && n >= 0 && n <= 100000); if (ns.length) out[k] = ns; }
   return Object.keys(out).length ? out : null;
 }
 
