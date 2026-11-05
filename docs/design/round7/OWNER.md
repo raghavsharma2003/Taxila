@@ -107,6 +107,26 @@ in parts, start with tiers 1 and 2 (~$21).
     - 25 places where her words don't match the screen.
   - Two code checks were also deleting correct teaching, and the written corrections were never spoken.
   - Decision (`dc-r7-script-walk-v3`): code now speaks the written corrections and worked examples nearly word for word. Explanations stay in her own words but fall back to the written line. Checks may never delete teaching. She grades only the question she just asked. Then director6. Write-up: `judgements/director5-2026-11-05.md`.
+- 2026-11-05 night: director6 (16 lessons, $0.81). A big step, and just short of the bar.
+
+  | Measure | director5 | director6 |
+  |---|---|---|
+  | Beats really taught | 39% | 79% |
+  | Answers judged | 75% | 89% |
+  | Right answers called wrong | ≥ 14 | 2 |
+  | Places her words don't match the screen | 25 | 12 |
+
+  - Her explanations now land almost every time.
+  - What's left is mechanical:
+    - checks still cut a correction down to the bare question;
+    - a follow-up question longer than the card limit is cut;
+    - the worked example comes out as one block;
+    - she says her point twice;
+    - one skill is skipped;
+    - side-topics are never returned to.
+  - Decision (`dc-r7-script-walk-v4`): fix those. Learning may now start writing the next 30 topics in the final format, held back from children until director7 passes.
+  - Write-up: `judgements/director6-2026-11-05.md`.
+  - Separately, a quiet-hour re-test showed Azure's model answers in about 1.4 s at any hour. Her ~3 s reply time is our own pipeline, so it's ours to cut.
 
 ## 4. Calls the main loop took that you may want to reverse
 

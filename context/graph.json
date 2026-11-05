@@ -25323,6 +25323,20 @@
    "at": "2026-11-05",
    "title": "certifyBoardRef fails a ref whose board cannot show what it authors. numbers_not_shown:<v> fires when an authored value (sides, dims, mark labels, list items) is not drawn or is drawn as '?'. line_measures_not_on_board fires when the beat line states two or more measures ('4 m, 5 m') and the board draws none of them. To make the c6 worked pentagon certifiable, measured@1 draws pentagon, hexagon, octagon, quadrilateral and polygon with 3-8 labelled side lengths and corner names, regular and not to scale. Reverse if a legitimate ref authors a number that must not be drawn (then a per-param 'hidden' flag, never a silent pass).",
    "source": "inbox/r7-studio-24.json"
+  },
+  {
+   "id": "jd-r7-director6-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director6 (v3 walk, v2.1 scripts, H1.1 child; 16 lessons, 1,190 calls, ~$0.807) judged by 4 Claude judges by hand: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 (+6 \"?\" boards); up from 39% / 75% / ≥14 / 25 in director5. Gate failed narrowly; reversal not triggered (explain beats taught ~94% outside one beat).",
+   "source": "inbox/r7-main-13.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v4",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Close the runtime gaps: authored text and code verdicts immune to every guard (verdict → authored say/point → card, never the bare card); worked example one step per turn; model gets only a lead-in when the point is inserted; wrongIfMis before by-value, accept graded right, missed card closed after remediation; every scripted skill walked in order; asides parked and returned. Data v2.2 (then-prompt ≤120 chars, boards on every check/then-card, self-contained asks), Studio never draws a stated number as \"?\", H1.2 harness. Authoring of the 30-topic batch may start staged (not live) until director7 passes.",
+   "source": "inbox/r7-main-13.json"
   }
  ],
  "edges": [
@@ -39635,6 +39649,16 @@
    "src": "dc-r7-board-screen-contract",
    "rel": "part_of",
    "dst": "dc-r7-script-walk-v2"
+  },
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "measured_by",
+   "dst": "jd-r7-director6-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v3"
   }
  ]
 }
