@@ -11,6 +11,7 @@ interface TopicKit {
   topicId: string;                 // matches data/curriculum topic id
   topicType: "T1"|"T2"|"T3"|"T4"|"T5"; // T1 verbatim/sequence, T2 vocab, T3 concept/why, T4 procedure, T5 problem-solving
   skills: { id: string; title: string; prereqSkillIds: string[] }[];   // 2-5 fine-grained skills
+                                   // optional kind: "grammar" on class 4-7 English/Hindi grammar skills (scripts/kits/tag-grammar.mjs)
   expectations: string[];          // what a complete teach-back/explanation must contain (AutoTutor EMT)
   misconceptions: {
     id: string; belief: string;    // what the child wrongly believes
