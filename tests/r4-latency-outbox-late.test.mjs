@@ -21,6 +21,13 @@ class QuietLink {
   sendChild(text) { this.emit({ type: "child_final", text, startedAt: Date.now(), typed: true }); }
   applyInstructions() {} promptTeacher() {} interrupt() {} setPushToTalk() {} talkStart() {} talkEnd() {} close() {}
 }
+// Real timers, unref'd (main 2026-11-05, Platform's gate timing: this file took 111 s for 2 tests). Page 1's turn never
+// answers by design, so its outbox kept walking the retry schedule with a 25 s deadline per attempt AFTER the assertions,
+// and those timers held the process open. Same clock, same assertions; leftover retries no longer keep Node alive.
+const unrefTimers = {
+  setTimeout: (fn, ms) => { const t = setTimeout(fn, ms); t.unref?.(); return t; },
+  clearTimeout: (h) => clearTimeout(h),
+};
 const until = async (f, ms = 2000) => { const t0 = Date.now(); while (!f()) { if (Date.now() - t0 > ms) throw new Error("timed out"); await new Promise((r) => setTimeout(r, 5)); } };
 const startOf = (lessonId) => async () => ({ lessonId, topic: { id: "t", title: "T", chapter: "1" }, teacher: { id: "asha", name: "Asha", voice: "v" }, moduleCommands: [], ui: {} });
 
@@ -28,7 +35,7 @@ test("late disclosure on the claiming outbox: held when the page dies, flushed o
   const store = new MemoryOutboxStore(true); // the browser's durable store, shared by both page loads
   // ── page 1: the child types a disclosure; the server never answers before the page dies
   const sent1 = [];
-  const page1 = new LessonRuntime({
+  const page1 = new LessonRuntime({ timers: unrefTimers,
     outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
     api: { start: startOf("OLD"), turn: (r) => { sent1.push(r); return new Promise(() => {}); }, end: async () => ({}), realtimeToken: async () => { throw new Error("no"); } },
   });
@@ -57,7 +64,7 @@ test("late disclosure on the claiming outbox: held when the page dies, flushed o
   };
 
   // ── page 2: the next load flushes the held answer to OLD
-  const page2 = new LessonRuntime({ outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
+  const page2 = new LessonRuntime({ timers: unrefTimers, outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
     api: { start: startOf("NEW"), turn: server, end: async () => ({}), realtimeToken: async () => { throw new Error("no"); } } });
   await page2.start("c1", "text");
   await until(() => !!page2.store.get().lateSafeguard);
@@ -74,14 +81,14 @@ test("late disclosure on the claiming outbox: held when the page dies, flushed o
 
 test("control: the same flush of a held answer that is NOT a disclosure raises nothing", async () => {
   const store = new MemoryOutboxStore(true);
-  const page1 = new LessonRuntime({ outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
+  const page1 = new LessonRuntime({ timers: unrefTimers, outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
     api: { start: startOf("OLD"), turn: () => new Promise(() => {}), end: async () => ({}), realtimeToken: async () => { throw new Error("no"); } } });
   await page1.start("c1", "text");
   page1.say("teen chauthai");
   await new Promise((r) => setTimeout(r, 20));
   page1.dispose();
   let flushed = 0;
-  const page2 = new LessonRuntime({ outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
+  const page2 = new LessonRuntime({ timers: unrefTimers, outboxStore: store, createLink: (_m, c) => new QuietLink(c.levels),
     api: { start: startOf("NEW"), end: async () => ({}), realtimeToken: async () => { throw new Error("no"); },
       turn: async (r) => (r.lessonId === "OLD" ? (flushed++, { move: { kind: "hold", shape: "" }, moduleCommands: [], ui: {}, end: true, late: true }) : { move: { kind: "probe", shape: "x" }, moduleCommands: [], ui: {} }) } });
   await page2.start("c1", "text");
