@@ -77,7 +77,7 @@ function refNumbersOf(call) {
 export async function certifyBoardRef(ref, { kit = null, item = null, line, withhold = null } = {}) {
   const r = resolveBoardRef(ref, { kit, item });
   if (!r.ok) return { ok: false, failed: [r.why] };
-  const [{ gateWhiteboard, withheldValues }, { retimeToLine }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js")]);
+  const [{ gateWhiteboard, withheldValues }, { retimeToLine, regate }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js")]);
   const x = expand(r.call);
   const text = String(line ?? "");
   const speechMs = Math.max(1500, text.split(/\s+/).length * 400);
@@ -91,6 +91,18 @@ export async function certifyBoardRef(ref, { kit = null, item = null, line, with
   // c6's worked pentagon was a bare shape@1)
   const measures = [...text.matchAll(/(\d+(?:\.\d+)?)\s*(?:cm|mm|km|m)\b/g)].map((m) => m[1]);
   const lineOnly = measures.length >= 2 && !measures.some((v) => drawn.has(v)) ? [`line_measures_not_on_board:${[...new Set(measures)].join(",")}`] : [];
-  const failed = [...g.checks.filter((c) => !c.pass).map((c) => c.id), ...(authored.length ? [`numbers_not_shown:${authored.join(",")}`] : []), ...lineOnly];
+  // round 7 (main, director6 #1): a number the line STATES is never drawn "?": the production pass that writes a withheld
+  // answer as "?" (board-sync regate → maskReveals) is run on this board; a stated number it would mask fails the ref
+  const nums = (t) => String(t ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [];
+  const textNums = (sc) => new Set((sc?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : nums(o.text)) : o.op === "numwork" ? (o.rows ?? []).flat().map(String).filter((v) => v !== "?") : [])));
+  const stated = new Set(nums(text));
+  let maskedStated = [];
+  try {
+    const rg = regate(retimeToLine(x.script, text), { intent: { intentId: "certify" }, line: { lessonId: "" } }, { reply: text, speechMs, withhold: w });
+    const after = textNums(rg.ok ? rg.script : rg.gate?.script);
+    maskedStated = [...textNums(x.script)].filter((v) => stated.has(v) && !after.has(v));
+  } catch { /* the gate above still judges the ref */ }
+  const failed = [...g.checks.filter((c) => !c.pass).map((c) => c.id), ...(authored.length ? [`numbers_not_shown:${authored.join(",")}`] : []), ...lineOnly,
+    ...(maskedStated.length ? [`stated_drawn_as_unknown:${[...new Set(maskedStated)].join(",")}`] : [])];
   return !failed.length ? { ok: true, call: r.call } : { ok: false, call: r.call, failed };
 }

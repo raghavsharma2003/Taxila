@@ -59,6 +59,11 @@ export interface ScreenCounts {
   marks?: { at: string; label: string }[];
   parts?: number; shaded?: number; rows?: number; cols?: number; groups?: number; each?: number;
   sides?: number; corners?: number; sideValues?: string[]; radius?: string;
+  /** director6 #2: word and other boards — compare columns (title, item count, quantities their items state), steps, events,
+   *  bars with values, labels, places, hops, digits, halves, angles, amounts */
+  columns?: { title: string; items: number; quantities: { n: number; what: string }[] }[];
+  steps?: number; events?: number; bars?: number; values?: string[]; labels?: number; places?: number; hops?: number;
+  digits?: number; halves?: number; angles?: number[]; amounts?: number[];
 }
 export interface StudioFacts { kind: StudioKind; archetype: string; onScreen: Record<string, string | number>; counts?: ScreenCounts; step?: number; itemId?: string }
 export interface BuildRecord {

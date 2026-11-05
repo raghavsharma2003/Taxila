@@ -103,7 +103,11 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // (a scripted CARD's board writes its authored labels on purpose — "2/4" on the 1/4-hops card, whose key is "before 2/4" —
   // and Learning's check.mjs certifies each card's board against that card's own answers: those labels are not withheld,
   // every other kit key still is; director5 then-cards)
-  const withhold = !sk ? withhold1 : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef)
+  // (director6: a then-card's board, or a check card's OWN board — Brain's scriptBeat.ownBoard — draws every number it
+  // authors; a check that BORROWS its explain beat's board, which may teach the answer — c4 s3 c1, "1 hissa = 1/2" under
+  // "the bigger piece's fraction?" — frees only its mark labels)
+  const ownCard = String(ask?.intent?.scriptBeat?.beatId ?? "").startsWith("then:") || ask?.intent?.scriptBeat?.ownBoard === true;
+  const withhold = !sk ? withhold1 : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
   const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
@@ -114,14 +118,25 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
 }
-/** A withheld set without the values a board ref writes as its mark labels (rational equality: "2/4" frees "1/2"). */
-function withoutLabels(w, ref) {
+/**
+ * A withheld set without the values a board ref AUTHORS to show (rational equality: "2/4" frees "1/2"): mark labels, side
+ * lengths and dims, the words of list items ("2 tukde") — those only for a card's OWN board (`authored`). round 7
+ * (director6 #1): only an asked mark (no label) is "?"; a number the card states is drawn. Structural params (den, num,
+ * parts, groups) are not values shown and free nothing.
+ */
+function withoutLabels(w, ref, { authored = false } = {}) {
   try {
     const params = { ...(ref ?? {}), ...(ref?.params ?? {}) };
     const val = (t) => { const m = String(t).trim().match(/^(\d+(?:\.\d+)?)(?:\s*\/\s*(\d+))?$/); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
-    const labels = (Array.isArray(params.marks) ? params.marks : []).flatMap((m) => String(m?.label ?? "").split(/\s*=\s*/)).map(val).filter((v) => v != null);
-    if (!labels.length || !w?.values?.length) return w;
-    return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !labels.some((l) => Math.abs(l - x) < 1e-9); }) };
+    const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []);
+    const shown = [];
+    for (const m of Array.isArray(params.marks) ? params.marks : []) if (m && typeof m === "object" && !Array.isArray(m)) shown.push(...nums(m.label));
+    if (authored) for (const k of ["sides", "w", "h", "r", "value"]) for (const v of [params[k]].flat()) if (v != null) shown.push(...nums(v));
+    if (authored) for (const k of ["items", "steps", "stages", "parts", "names"]) for (const v of [params[k], params.left?.[k], params.right?.[k]].flat()) if (typeof v === "string") shown.push(...nums(v));
+    if (authored) for (const t of [params.left?.title, params.right?.title, params.whole, params.centre]) if (typeof t === "string") shown.push(...nums(t));
+    const vals = shown.map(val).filter((v) => v != null);
+    if (!vals.length || !w?.values?.length) return w;
+    return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !vals.some((l) => Math.abs(l - x) < 1e-9); }) };
   } catch { return w; }
 }
 /** The numbers a script board ref authors (its params, nested or flat: sides, w, h, marks, labels …), as strings. */
