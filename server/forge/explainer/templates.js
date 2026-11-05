@@ -1308,6 +1308,28 @@ function measuredBoard(c, tl) {
     const claims = c.trace ? traceBoundary(tl, [A, C, B]) : [];
     return { claims, facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}`, ...named } };
   }
+  // round 7 (main, director4 S2: the c6 pentagon showed no side lengths): a polygon with its side LENGTHS written along
+  // its sides (drawn regular: a shape with these lengths has no single drawing, so it is labelled, not to scale), corner
+  // names outside its corners, and the perimeter walk. sides: 3-8 lengths; names (optional) one per corner.
+  const POLY = { pentagon: 5, hexagon: 6, octagon: 8, quadrilateral: 4, polygon: 0 };
+  if (c.shape in POLY) {
+    const sides = Array.isArray(c.sides) ? c.sides.map(Number) : [];
+    const n = POLY[c.shape] || sides.length;
+    if (n < 3 || n > 8 || sides.length !== n || !sides.every((v) => v > 0)) return { error: "polygon_sides" };
+    const names = Array.isArray(c.names) ? c.names.map(String) : [];
+    if (names.length && (names.length !== n || names.some((x) => !fitsLabel(x) || [...x].length > 3))) return { error: "polygon_names" };
+    const P = Array.from({ length: n }, (_, i) => { const a = ((-90 + 180 / n + (360 * i) / n) * Math.PI) / 180; return [round1(cx + 92 * Math.cos(a)), round1(cy + 4 + 92 * Math.sin(a))]; });
+    tl.add({ id: "shape", op: "polygon", points: P, weight: 2 }, 1000);
+    for (let i = 0; i < n; i++) {
+      const A = P[i], B = P[(i + 1) % n], m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+      const dx = m[0] - cx, dy = m[1] - cy - 4, d = Math.hypot(dx, dy) || 1;
+      tl.add({ op: "text", at: [round1(m[0] + (dx / d) * 30), round1(m[1] + (dy / d) * 30 + 6)], text: fmt(sides[i]), size: "s", ink: "accent" }, 320, { gap: 120 });
+    }
+    names.forEach((nm, i) => { const [x, y] = P[i], dx = x - cx, dy = y - cy - 4, d = Math.hypot(dx, dy) || 1;
+      tl.add({ op: "text", at: [round1(x + (dx / d) * 16), round1(y + (dy / d) * 16 + 6)], text: nm, size: "s", ink: "soft" }, 200, { gap: 40 }); });
+    const claims = c.trace ? traceBoundary(tl, P) : [];
+    return { claims, facts: { shape: c.shape === "polygon" ? `${n}-sided shape` : c.shape, sides: sides.map(num).join(", ") + ` ${unit}`, ...(names.length ? { corners: names.join(" ") } : {}) } };
+  }
   if (c.shape === "circle") {
     const r = Number(c.r);
     if (!(r > 0)) return { error: "radius" };
