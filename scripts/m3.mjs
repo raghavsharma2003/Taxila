@@ -411,13 +411,14 @@ async function jobs() {
 
 async function actiongroup() {
   const path = `/providers/Microsoft.Insights/actionGroups/${N.ag}?api-version=${API.insights}`;
-  const body = { location: "Global", tags: TAGS, properties: { groupShortName: "m3owner", enabled: true,
-    armRoleReceivers: [{ name: "subscription-owner", roleId: OWNER_ROLE, useCommonAlertSchema: true }] } };
+  const email = String(E.M3_ALERT_EMAIL || "").trim();
+  const body = P.actionGroupBody({ ownerRole: OWNER_ROLE, email, tags: TAGS });
+  const who = `armRoleReceivers Owner (${OWNER_ROLE}; direct assignments only)${email ? " + emailReceiver (M3_ALERT_EMAIL)" : " (set M3_ALERT_EMAIL to also reach an Owner held through a group)"}`;
   if (CREDS) {
     const g = await arm("GET", path, undefined, { allow404: true });
-    if (g && g.properties.enabled && (g.properties.armRoleReceivers || []).some((r) => r.roleId === OWNER_ROLE)) { say("actiongroup", `ok: ${N.ag} → Owner role`); return g; }
+    if (P.actionGroupMatches(g, body)) { say("actiongroup", `ok: ${N.ag} → ${who}`); return g; }
   }
-  return act("actiongroup", `PUT ${N.ag}: armRoleReceivers Owner (${OWNER_ROLE}); notifies whoever holds Owner on the subscription`, () => arm("PUT", path, body));
+  return act("actiongroup", `PUT ${N.ag}: ${who}`, () => arm("PUT", path, body));
 }
 
 const RULES = {
@@ -427,7 +428,7 @@ const RULES = {
     agg: "Count", op: "GreaterThan", threshold: 0 },
   "m3-verify-silent": { sev: 1, every: "PT1H", window: "P2D", mute: "PT12H",
     desc: "M3 credit unlock: no M3-OK from m3-verify in 26 h (the verifier is dead, or the portfolio has not been healthy for a day)",
-    query: 'ContainerAppConsoleLogs_CL | where TimeGenerated > ago(26h) | where ContainerJobName_s == "m3-verify" and Log_s startswith "M3-OK" | summarize n = count()',
+    query: (armedAt) => P.silentQuery(armedAt), armed: true,   // silent until armed-at + 26 h (no first-day false alarm)
     agg: "Total", metric: "n", op: "LessThan", threshold: 1 },
 };
 async function alerts(ag) {
@@ -441,20 +442,20 @@ async function alerts(ag) {
   }
   for (const [name, r] of Object.entries(RULES)) {
     const path = `/providers/Microsoft.Insights/scheduledQueryRules/${name}?api-version=${API.sqr}`;
-    const body = { location: ws?.location || "<workspace location>", kind: "LogAlert", tags: { ...TAGS }, properties: { displayName: name, description: r.desc, severity: r.sev, enabled: true,
+    const cur = CREDS ? await arm("GET", path, undefined, { allow404: true }) : null;
+    // armed-at: kept from the live rule's tag on every re-apply (stable query, stable spec hash); set once on first create
+    const armedAt = r.armed ? (cur?.tags?.["m3-armed-at"] || P.armedNow()) : null;
+    const query = typeof r.query === "function" ? r.query(armedAt) : r.query;
+    const body = { location: ws?.location || "<workspace location>", kind: "LogAlert", tags: { ...TAGS, ...(armedAt ? { "m3-armed-at": armedAt } : {}) }, properties: { displayName: name, description: r.desc, severity: r.sev, enabled: true,
       scopes: [ws?.id || "<workspace id>"], evaluationFrequency: r.every, windowSize: r.window, muteActionsDuration: r.mute, autoMitigate: false,
-      criteria: { allOf: [{ query: r.query, timeAggregation: r.agg, ...(r.metric ? { metricMeasureColumn: r.metric } : {}), operator: r.op, threshold: r.threshold,
+      criteria: { allOf: [{ query, timeAggregation: r.agg, ...(r.metric ? { metricMeasureColumn: r.metric } : {}), operator: r.op, threshold: r.threshold,
         failingPeriods: { numberOfEvaluationPeriods: 1, minFailingPeriodsToAlert: 1 } }] },
       actions: { actionGroups: [ag?.id || `<${N.ag} id>`] } } };
     // the whole desired rule (severity, frequency, window, mute, criteria, scope, action group) as a tag, like the jobs'
     // m3-spec: any change re-PUTs it; comparing only the query and window left a changed threshold or severity un-applied
     body.tags["m3-spec"] = sha(JSON.stringify(body)).slice(0, 16);
-    if (CREDS) {
-      const cur = await arm("GET", path, undefined, { allow404: true });
-      const same = cur && cur.properties.enabled && cur.tags?.["m3-spec"] === body.tags["m3-spec"];
-      if (same) { say("alerts", `ok: ${name}`); continue; }
-    }
-    await act("alerts", `PUT rule ${name} (every ${r.every}, window ${r.window}): ${r.query}`, () => arm("PUT", path, body));
+    if (cur && cur.properties.enabled && cur.tags?.["m3-spec"] === body.tags["m3-spec"]) { say("alerts", `ok: ${name}`); continue; }
+    await act("alerts", `PUT rule ${name} (every ${r.every}, window ${r.window}${armedAt ? `, armed ${armedAt}` : ""}): ${query}`, () => arm("PUT", path, body));
   }
 }
 

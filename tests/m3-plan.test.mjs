@@ -408,3 +408,31 @@ test("m3.mjs plan runs without Azure and prints the 60-day totals", () => {
   assert.match(out, /6 services: \$13\.5\/day, \$812\.\d over 60 days/);
   assert.match(out, /qualify by 2027-01-04, so the clock must start by 2026-11-06/);
 });
+
+// ── platform review follow-ups (2026-11-05): the silent rule's arming, the optional email receiver ──
+test("silentQuery: reports healthy (n = 1) until armed-at + 26 h; armed-at must be an ISO UTC second; armedNow matches it", () => {
+  const q = P.silentQuery("2026-11-05T14:40:05Z");
+  assert.match(q, /^let armed = datetime\(2026-11-05T14:40:05Z\); /);
+  assert.match(q, /summarize n = count\(\) \| extend n = iff\(now\(\) < armed \+ 26h, 1, n\)$/);
+  assert.equal(P.silentQuery("2026-11-05T14:40:05Z"), q, "same armed-at → same query (stable spec hash on re-apply)");
+  for (const bad of ["", "2026-11-05", "2026-11-05T14:40:05.123Z", "now()"]) assert.throws(() => P.silentQuery(bad), /ISO UTC second/);
+  assert.match(P.armedNow(new Date("2026-11-05T14:40:05.678Z")), /^2026-11-05T14:40:05Z$/);
+});
+
+test("actionGroupBody: the Owner role always; an email receiver only from M3_ALERT_EMAIL; matching is exact on the email set", () => {
+  const OWNER = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635";
+  const plain = P.actionGroupBody({ ownerRole: OWNER });
+  assert.deepEqual(plain.properties.emailReceivers, []);
+  assert.equal(plain.properties.armRoleReceivers[0].roleId, OWNER);
+  assert.ok(plain.properties.groupShortName.length <= 12);
+  const withMail = P.actionGroupBody({ ownerRole: OWNER, email: " owner@example.test " });
+  assert.deepEqual(withMail.properties.emailReceivers, [{ name: "m3-alert-email", emailAddress: "owner@example.test", useCommonAlertSchema: true }]);
+  assert.throws(() => P.actionGroupBody({ ownerRole: OWNER, email: "not-an-address" }), /not an email/);
+  const live = (emails, enabled = true) => ({ properties: { enabled, armRoleReceivers: [{ roleId: OWNER }], emailReceivers: emails.map((e) => ({ emailAddress: e })) } });
+  assert.equal(P.actionGroupMatches(live([]), plain), true);
+  assert.equal(P.actionGroupMatches(live([]), withMail), false, "adding the email re-PUTs");
+  assert.equal(P.actionGroupMatches(live(["OWNER@example.test"]), withMail), true);
+  assert.equal(P.actionGroupMatches(live(["owner@example.test"]), plain), false, "removing it re-PUTs too");
+  assert.equal(P.actionGroupMatches(live([], false), plain), false);
+  assert.equal(P.actionGroupMatches(null, plain), false);
+});

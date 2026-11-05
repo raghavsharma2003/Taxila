@@ -440,3 +440,41 @@ export function opensshRsaPublicKey(jwk, comment = "m3-no-login") {
   const str = (buf) => { const l = Buffer.alloc(4); l.writeUInt32BE(buf.length); return Buffer.concat([l, buf]); };
   return `ssh-rsa ${Buffer.concat([str(Buffer.from("ssh-rsa")), str(mpint(b(jwk.e))), str(mpint(b(jwk.n)))]).toString("base64")} ${comment}`;
 }
+
+// ── alerts (round 7 platform review, 2026-11-05) ──
+
+/**
+ * The "verifier silent" rule's query, armed at `armedAt` (ISO). Before armed-at + 26 h it reports n = 1 (healthy): the
+ * verifier has not had a day to log its first M3-OK yet, so the owner never gets a false alarm on day one. `apply` stores
+ * armed-at in the rule's `m3-armed-at` tag and reuses it on every re-apply, so the query (and its spec hash) stay stable.
+ * PURE. @param {string} armedAt
+ */
+export function silentQuery(armedAt) {
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(String(armedAt))) throw new Error(`m3-armed-at must be an ISO UTC second, got ${armedAt}`);
+  return `let armed = datetime(${armedAt}); ContainerAppConsoleLogs_CL | where TimeGenerated > ago(26h) | where ContainerJobName_s == "m3-verify" and Log_s startswith "M3-OK" | summarize n = count() | extend n = iff(now() < armed + 26h, 1, n)`;
+}
+
+/** An ISO UTC second for "now" (the armed-at format). PURE given the clock. */
+export const armedNow = (d = new Date()) => d.toISOString().slice(0, 19) + "Z";
+
+/**
+ * The action group: whoever holds Owner on the subscription (directly assigned), plus an optional email receiver for
+ * owners who hold Owner through a group (armRoleReceivers reach direct assignments only). The address comes from
+ * M3_ALERT_EMAIL at apply time and is never hard-coded. PURE.
+ * @param {{ ownerRole: string, email?: string, tags?: object }} o
+ */
+export function actionGroupBody({ ownerRole, email = "", tags = {} }) {
+  const e = String(email || "").trim();
+  if (e && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) throw new Error("M3_ALERT_EMAIL is not an email address");
+  return { location: "Global", tags, properties: { groupShortName: "m3owner", enabled: true,
+    armRoleReceivers: [{ name: "subscription-owner", roleId: ownerRole, useCommonAlertSchema: true }],
+    emailReceivers: e ? [{ name: "m3-alert-email", emailAddress: e, useCommonAlertSchema: true }] : [] } };
+}
+
+/** Does a live action group already match the desired one (enabled, the Owner receiver, exactly the desired emails)? PURE. */
+export function actionGroupMatches(live, want) {
+  const emails = (g) => (g?.properties?.emailReceivers || []).map((r) => String(r.emailAddress).toLowerCase()).sort().join(",");
+  return !!live?.properties?.enabled
+    && (live.properties.armRoleReceivers || []).some((r) => r.roleId === want.properties.armRoleReceivers[0].roleId)
+    && emails(live) === emails(want);
+}
