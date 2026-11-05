@@ -8,6 +8,7 @@ import { runGuards, summarize } from "./guards.js";
 import { buildPlannerInputs, inputsHash, planDay } from "./planner.js";
 import { validatePlan } from "./validate.js";
 import { R5, lateSittingLatch } from "./adapt.js";
+import { foldReflect } from "../learner/reflect.js";
 
 const BAD_CLOSE = new Set(["strained", "tired"]);
 const RESUMABLE = new Set(["network", "profile_switch"]);
@@ -267,6 +268,7 @@ const HANDLERS = {
     if (ev.to === "wheel_spin") H.replanSoon("wheel_spin");
     else H.rule(`milestone:${ev.to}`);
   },
+  "child.reflect"(s, ev) { foldReflect(s, ev); },
   "teacher.promise_kept"(s, ev, H) {
     const before = s.promises.length;
     s.promises = s.promises.filter((p) => p.id !== ev.promiseId);

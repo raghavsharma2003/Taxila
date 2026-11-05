@@ -32,6 +32,19 @@ export const HOME_OBJECT = {
 };
 
 /** A school subject in the report language (S17's exam line). [U: native review] */
+/** S5: the way Taxila explained a new idea (learner/formats.js FORMAT_WORDS; F-codes never render). What Taxila DID, never a claim
+ *  about how the child learns. */
+export const WAY_LABEL = {
+  F1: { en: "a short explanation with the key thing on screen", hinglish: "chhoti si samjhaish, khaas baat screen par", hi: "छोटी सी समझाइश, ख़ास बात स्क्रीन पर" },
+  F2: { en: "one solved example first", hinglish: "pehle ek hal kiya hua udaharan", hi: "पहले एक हल किया हुआ उदाहरण" },
+  F3: { en: "a picture or number line first", hinglish: "pehle ek chitra ya sankhya rekha", hi: "पहले एक चित्र या संख्या रेखा" },
+  F4: { en: "a story or example from what they like", hinglish: "unki pasand ki kahani ya udaharan", hi: "उनकी पसंद की कहानी या उदाहरण" },
+  F5: { en: "a rhythm, like a chant", hinglish: "ek lay, jaise koi chant", hi: "एक लय, जैसे कोई गीत" },
+  F6: { en: "a game with no points", hinglish: "bina points ka khel", hi: "बिना अंकों का खेल" },
+  F7: { en: "their turn to explain", hinglish: "unki baari samjhane ki", hi: "उनकी बारी समझाने की" },
+  F8: { en: "trying first, then the explanation", hinglish: "pehle koshish, phir samjhaish", hi: "पहले कोशिश, फिर समझाइश" },
+};
+
 export const SUBJECT_LABEL = {
   maths: { en: "Maths", hinglish: "Maths", hi: "गणित" },
   science: { en: "Science", hinglish: "Science", hi: "विज्ञान" },
@@ -159,6 +172,11 @@ export const SHAPES = {
     en: (s) => `Lessons on ${s.n} of ${s.d} days this month; a usual lesson was about ${s.m} min.`,
     hinglish: (s) => `Is mahine ${s.d} mein se ${s.n} din lesson hue; aam taur par ek lesson lagbhag ${s.m} min ka.`,
     hi: (s) => `इस महीने ${s.d} में से ${s.n} दिन पाठ हुए; आम तौर पर एक पाठ लगभग ${s.m} मिनट का।` },
+  // S5 ways Taxila explained (counts of what Taxila did; never "learns best by")
+  "ways.used": { slots: { n: "number", k: "number", way: "way", t: "number" },
+    en: (s) => `Taxila explained ${plural(s.n, "new idea", "new ideas")} this month, in ${plural(s.k, "way", "ways")}; ${s.t} of them with ${s.way}.`,
+    hinglish: (s) => `Is mahine Taxila ne ${s.n} nayi baatein ${s.k} tareekon se samjhaayi; unmein se ${s.t} ${s.way} ke saath.`,
+    hi: (s) => `इस महीने Taxila ने ${s.n} नई बातें ${s.k} तरीक़ों से समझाईं; उनमें से ${s.t} ${s.way} के साथ।` },
   // S13 what we're trying next: the next scheduled re-check
   "next.recheck": { slots: { skill: "curriculum", date: "date" },
     en: (s) => `Next: Taxila checks ${q(s.skill)} again on ${s.date}.`,
@@ -289,6 +307,9 @@ export const HOW = {
   "routine.days": { en: "Days of the month with a lesson, and the middle lesson length.",
     hinglish: "Mahine ke woh din jin par lesson hua, aur beech wali lesson ki lambai.",
     hi: "महीने के वे दिन जिन पर पाठ हुआ, और बीच वाली पाठ की लंबाई।" },
+  "ways.used": { en: "How many new ideas Taxila explained this month and in how many ways, and how many of them in one of those ways. It says what Taxila did, not how your child learns.",
+    hinglish: "Is mahine Taxila ne kitni nayi baatein kitne tareekon se samjhaayi, aur unmein se kitni ek khaas tareeke se. Yeh batata hai Taxila ne kya kiya, yeh nahin ki aapka bachcha kaise seekhta hai.",
+    hi: "इस महीने Taxila ने कितनी नई बातें कितने तरीक़ों से समझाईं, और उनमें से कितनी एक ख़ास तरीक़े से। यह बताता है कि Taxila ने क्या किया, यह नहीं कि आपका बच्चा कैसे सीखता है।" },
   "next.recheck": DATED,
   "exam.review": { en: "The school dates you entered in the Parent corner. In the last two days before them Taxila only goes over earlier work.",
     hinglish: "Parent corner mein aapki daali school ki tareekhein. Unse pehle ke aakhri do din Taxila sirf pehle ka kaam dohrati hai.",
@@ -315,6 +336,7 @@ export const renderShape = (shapeId, lang, slots) => {
     if (type === "date") s[k] = fmtDate(lang, s[k]);
     if (type === "object") s[k] = HOME_OBJECT[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown home object ${s[k]}`); })();
     if (type === "subject") s[k] = SUBJECT_LABEL[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown subject ${s[k]}`); })();
+    if (type === "way") s[k] = WAY_LABEL[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown way ${s[k]}`); })();
   }
   return sh[lang](s);
 };

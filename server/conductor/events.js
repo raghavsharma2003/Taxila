@@ -72,6 +72,8 @@ export const StudentEvent = z.discriminatedUnion("type", [
   ev("teacher.promise", { promiseId: Id, what: z.strictObject({ kind: z.enum(["game", "topic", "revisit"]), ref: Id }), by: Id }),
   // round 7 F item 8: a promise she kept (a Question-jar revisit answered in a later lesson) leaves the plan
   ev("teacher.promise_kept", { promiseId: Id, lessonId: Id }),
+  // round 7 F (App's "What helped?"): the child's one tap after a lesson; a CHOICE, never a claim (learner/reflect.js)
+  ev("child.reflect", { lessonId: Id, choice: z.string().regex(/^(made:[A-Za-z0-9_.:@\-]{1,90}|board|explain|self|unsure)$/, "choice: made:<id>|board|explain|self|unsure") }),
   // parent (settings row + event in ONE transaction, orch §6)
   ev("parent.setting_changed", { key: z.enum(SETTING_KEYS), value: z.unknown(), by: z.literal("owner"), settingsVersion: z.number().int().min(0) })
     .superRefine((e, ctx) => {
@@ -108,7 +110,7 @@ export const EVENT_TYPES = StudentEvent.options.map((o) => o.shape.type.value);
 
 /** Which producers may emit which event families (an event's source is set by the server, never the body). */
 export const SOURCE_OF = (type) =>
-  type.startsWith("app.") || type.startsWith("slot.") ? "device"
+  type.startsWith("app.") || type.startsWith("slot.") || type.startsWith("child.") ? "device"
   : type.startsWith("lesson.") || type === "skill.milestone" || type === "teacher.promise" || type === "teacher.promise_kept" ? "director"
   : type.startsWith("parent.") ? "parent"
   : type.startsWith("school.") ? "school"
@@ -142,6 +144,7 @@ export function idemKeyFor(e) {
     case "skill.milestone": return `milestone:${e.skillId}:${e.to}:${e.evidenceSeq}`;
     case "teacher.promise": return `promise:${e.promiseId}`;
     case "teacher.promise_kept": return `promise_kept:${e.promiseId}`;
+    case "child.reflect": return `reflect:${e.lessonId}`;           // first tap per lesson wins
     case "parent.setting_changed": return `setting:${e.key}:${e.settingsVersion}`;
     case "parent.pause": return `pause:${e.until}`;
     case "parent.consent_changed": return `consent:${e.purpose}:${e.consentVersion}:${e.granted ? 1 : 0}`;

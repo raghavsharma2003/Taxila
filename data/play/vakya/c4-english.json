@@ -3,6 +3,238 @@
  "source": "data/kits/c4-english.json",
  "items": [
   {
+   "id": "c4-english-ch04-t01-i10",
+   "topicId": "c4-english-ch04-t01",
+   "skillId": "c4-english-ch04-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'When Meena play, she play with zest.' (She does this every day.)",
+    "hi": "Galti dhoondo: 'When Meena play, she play with zest.' (Ye roz ki baat hai.)"
+   },
+   "keyFrom": "answer",
+   "engine": "When",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "play",
+      "plays"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "she"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "plays",
+      "play"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "Meena"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "with"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "zest"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "when",
+     "meena",
+     "plays",
+     "she",
+     "plays",
+     "with",
+     "zest"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "when",
+      "meena",
+      "play",
+      "she",
+      "play",
+      "with",
+      "zest"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch04-t01-m-third-person-s",
+   "malKit": "c4-english-ch04-t01-m-third-person-s",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "eee3fe62"
+  },
+  {
+   "id": "c4-english-ch04-t01-rl-h3",
+   "topicId": "c4-english-ch04-t01",
+   "skillId": "c4-english-ch04-t01-s4",
+   "kind": "near_transfer",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Complete this sentence about a regular habit: “When Arjun ___ (cook), he ___ (clean) the counter afterwards.” Say the full sentence.",
+    "hi": "Regular habit ke baare mein sentence complete karo: “When Arjun ___ (cook), he ___ (clean) the counter afterwards.” Poora English sentence bolo."
+   },
+   "keyFrom": "answer",
+   "engine": "When",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "cook",
+      "cooks"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "afterwards"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "he"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "counter"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "Arjun"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "cleans",
+      "clean"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "when",
+     "arjun",
+     "cooks",
+     "he",
+     "cleans",
+     "the",
+     "counter",
+     "afterwards"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "bac4bf28"
+  },
+  {
+   "id": "c4-english-ch05-t01-i07",
+   "topicId": "c4-english-ch05-t01",
+   "skillId": "c4-english-ch05-t01-s4",
+   "kind": "practice",
+   "difficulty": 1,
+   "lang": "en",
+   "prompt": {
+    "en": "Say 'a' or 'an': ___ elephant, ___ monkey.",
+    "hi": "'a' lagega ya 'an': ___ elephant, ___ monkey."
+   },
+   "keyFrom": "answer",
+   "engine": "An",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "monkey"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "elephant"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "an",
+     "elephant",
+     "a",
+     "monkey"
+    ]
+   ],
+   "mals": [],
+   "mis": "c4-english-ch05-t01-m-a-an",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "313f3c8e"
+  },
+  {
    "id": "c4-english-ch07-t01-rl-h3",
    "topicId": "c4-english-ch07-t01",
    "skillId": "c4-english-ch07-t01-s4",
@@ -340,6 +572,215 @@
     "agrees": true
    },
    "seal": "0302118e"
+  },
+  {
+   "id": "c4-english-ch10-t01-rl-h3",
+   "topicId": "c4-english-ch10-t01",
+   "skillId": "c4-english-ch10-t01-s4",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Combine these into one comparison using 'than': 'The red swing is fast. The blue swing is faster.' Start with 'The blue swing'.",
+    "hi": "In dono sentences ko 'than' use karke ek comparison mein badlo: 'The red swing is fast. The blue swing is faster.' 'The blue swing' se shuru karo."
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "red"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "swing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "faster"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "swing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "blue"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "than"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "blue",
+     "swing",
+     "is",
+     "faster",
+     "than",
+     "the",
+     "red",
+     "swing"
+    ]
+   ],
+   "mals": [],
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "a80e106b"
+  },
+  {
+   "id": "c4-english-ch11-t01-i07",
+   "topicId": "c4-english-ch11-t01",
+   "skillId": "c4-english-ch11-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'At last we reached to the top of the pass.'",
+    "hi": "Galti dhoondo: 'At last we reached to the top of the pass.'"
+   },
+   "keyFrom": "answer",
+   "engine": "At",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "pass"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "last"
+     ],
+     "init": 0
+    },
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "we"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "top"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "of"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "reached"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "at",
+     "last",
+     "we",
+     "reached",
+     "the",
+     "top",
+     "of",
+     "the",
+     "pass"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "at",
+      "last",
+      "we",
+      "reached",
+      "to",
+      "the",
+      "top",
+      "of",
+      "the",
+      "pass"
+     ]
+    }
+   ],
+   "mis": "c4-english-ch11-t01-m-reach-to",
+   "malKit": "c4-english-ch11-t01-m-reach-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "b3753a0a"
   },
   {
    "id": "c4-english-ch12-t01-i09",

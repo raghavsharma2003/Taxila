@@ -30,8 +30,17 @@ test("every request it words is a real closed code, and every line passes the re
   for (const m of ["reteach", "worked_example", "hint", "teachback", "show_module", "retrieval", "break"]) {
     for (const k of [1, 3]) all.push(...whyLines(Array.from({ length: k }, () => row(m, [], m === "reteach" ? "m1" : null)), x).map((l) => l.text));
   }
+  for (const w of ["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]) for (const k of [1, 2]) all.push(...whyLines([], { ...x, ways: Array(k).fill(w) }).map((l) => l.text));
   for (const s of all) {
     assert.deepEqual(bannedHits(s), [], s);
     assert.deepEqual(lockedHits(s), [], s);
   }
+});
+
+test("the way each new idea was explained: counted, the two most used, after the child's requests, unknown codes ignored", () => {
+  const lines = whyLines([row("explain", ["request.slower"])], { ...x, ways: ["F3", "F2", "F3", "F9"] });
+  assert.deepEqual(lines.map((l) => l.code), ["request.slower", "way.F3", "way.F2"]);
+  assert.equal(lines[1].text, "Asha explained 2 new ideas with a picture or number line first.");
+  assert.equal(lines[2].text, "Asha explained a new idea with one solved example first.");
+  assert.ok(!lines.some((l) => /F\d/.test(l.text)));
 });

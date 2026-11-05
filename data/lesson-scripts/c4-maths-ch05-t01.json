@@ -1,0 +1,672 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "version": 1,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "bhinn",
+   "en": "fraction"
+  },
+  {
+   "hi": "barabar hisse",
+   "en": "equal parts"
+  },
+  {
+   "hi": "aadha",
+   "en": "half"
+  },
+  {
+   "hi": "ek-tihaai",
+   "en": "one-third"
+  },
+  {
+   "hi": "ek-chauthaai",
+   "en": "one-quarter"
+  },
+  {
+   "hi": "ansh",
+   "en": "numerator (top number)"
+  },
+  {
+   "hi": "har",
+   "en": "denominator (bottom number)"
+  },
+  {
+   "hi": "samooh",
+   "en": "group"
+  },
+  {
+   "hi": "baantna",
+   "en": "to share"
+  }
+ ],
+ "skills": [
+  {
+   "skillId": "c4-maths-ch05-t01-s1",
+   "hook": {
+    "convey": "one roti, 2 siblings → fair share only if both pieces same size; number of pieces alone does not decide the name",
+    "interestSlots": [
+     "rotis and parathas",
+     "birthday cake",
+     "watermelon",
+     "chocolate bars"
+    ],
+    "slotUse": "the one whole being cut and shared"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "roti cut into 2 same-size pieces → each piece = half = 1/2; bottom 2 = equal pieces in the whole, top 1 = pieces taken",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "point": "the roti in 2 equal pieces, 1 piece shaded"
+    },
+    {
+     "id": "e2",
+     "convey": "both cakes have 3 pieces, but only same-size pieces get the name third; Cake A uneven → no thirds; Cake B equal → each piece 1/3",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Cake A",
+        "items": [
+         "3 pieces",
+         "1 big, 2 small",
+         "not thirds"
+        ]
+       },
+       "right": {
+        "title": "Cake B",
+        "items": [
+         "3 pieces",
+         "all the same size",
+         "each piece = 1/3"
+        ]
+       }
+      }
+     },
+     "point": "the row '1 big, 2 small' under Cake A against 'all the same size' under Cake B"
+    },
+    {
+     "id": "e3",
+     "convey": "circle in 3 equal parts → one part = one-third = 1/3; bottom 3 = all equal parts of the whole",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "point": "the circle in 3 equal parts, 1 part shaded"
+    },
+    {
+     "id": "e4",
+     "convey": "circle in 4 equal parts, 1 shaded → one quarter = 1/4; bottom = all 4 parts of the whole, never the 3 unshaded parts left → not 1/3",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "point": "the circle in 4 equal parts: 1 shaded, 3 unshaded"
+    }
+   ],
+   "workedExample": {
+    "problem": "A roti is cut into 3 equal pieces. 2 pieces are eaten. What fraction of the roti is eaten?",
+    "givens": [
+     "1 whole roti",
+     "cut into 3 equal pieces",
+     "2 pieces eaten"
+    ],
+    "find": "the fraction of the roti that is eaten",
+    "steps": [
+     {
+      "do": "check the pieces → same size?",
+      "result": "yes, 3 equal pieces, so each piece is 1/3"
+     },
+     {
+      "do": "bottom number = equal pieces in the whole roti",
+      "result": "3"
+     },
+     {
+      "do": "top number = pieces eaten",
+      "result": "2"
+     },
+     {
+      "do": "write top over bottom",
+      "result": "2/3"
+     }
+    ],
+    "answer": "2/3",
+    "why": "equal pieces → each is 1/3; 2 of them eaten → 2/3; bottom counts the whole roti (3), not the 1 piece left",
+    "board": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 2,
+      "whole": "roti"
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "A laddoo is broken into 3 pieces: one big piece and two small pieces. Is each piece one-third of the laddoo?",
+     "key": "No",
+     "accept": [
+      "no, the pieces are not equal",
+      "nahin",
+      "no, not equal"
+     ],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "Yes",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "A chocolate bar is cut into 3 equal pieces and 1 of the pieces is eaten. What fraction of the chocolate bar is eaten?",
+     "key": "1/3",
+     "accept": [
+      "one-third",
+      "one third",
+      "ek-tihaai"
+     ],
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "wrongIfMis": "1/2",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "bar"
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": "A cake is cut into 4 pieces: 2 big pieces and 2 small pieces. Riya takes 1 small piece. Did Riya take one quarter of the cake?",
+     "key": "No",
+     "accept": [
+      "no, the pieces are not equal",
+      "nahin"
+     ],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "Yes",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c4-maths-ch05-t01-i01",
+     "why": "name one of 4 equal pieces → quarter, 1/4; warm-up naming"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i09",
+     "why": "more than one part taken → 3 of 4 equal parts = 3/4; top number beyond 1"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i06",
+     "why": "same count of pieces, different sizes → only equal pieces are thirds"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i07",
+     "why": "error spot: parts left used as bottom → bottom = whole's equal parts"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-h1",
+     "why": "harder contrast with quarters on flags → equality decides, count alone does not"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "move": "fair-sharing story: 3 friends, one watermelon cut as 1 big slice + 2 small → fair? no; then paper strip folded into 3 same-size parts beside it → only same-size parts carry the name third",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Uneven watermelon cut",
+        "items": [
+         "1 big slice",
+         "2 small slices",
+         "not fair → not thirds"
+        ]
+       },
+       "right": {
+        "title": "Folded paper strip",
+        "items": [
+         "3 same-size parts",
+         "fair share",
+         "each part = 1/3"
+        ]
+       }
+      }
+     },
+     "then": "roti torn into 2 pieces, one bigger and one smaller → is the smaller piece half of the roti? yes/no",
+     "thenKey": "No"
+    },
+    {
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "move": "switch from chocolate bar to roti: whole roti first → its equal pieces give the bottom number; eaten pieces give the top; pieces left are a different question, never the bottom",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "then": "cake cut into 3 equal pieces, 2 pieces eaten → fraction of the cake eaten?",
+     "thenKey": "2/3"
+    }
+   ],
+   "bridgeToNext": "fraction of one whole (a roti) → fraction of a set of things (laddoos); same rule: equal shares; bottom = how many equal groups the set is shared into"
+  },
+  {
+   "skillId": "c4-maths-ch05-t01-s2",
+   "hook": {
+    "convey": "8 laddoos, 2 children, fair share → each child's share = half of the laddoos; a fraction can be of a whole set, not only of one roti",
+    "interestSlots": [
+     "laddoos and bananas",
+     "cricket team",
+     "chocolate bars",
+     "birthday cake"
+    ],
+    "slotUse": "the set of things being shared out into equal groups"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "8 laddoos → 2 equal groups → 1/2 of 8 = one group = 4; check: 2 groups of 4 = 8",
+     "board": {
+      "template": "equal-groups@1",
+      "params": {
+       "groups": 2,
+       "each": 4
+      }
+     },
+     "point": "the 2 groups, 4 in each"
+    },
+    {
+     "id": "e2",
+     "convey": "6 bananas → 3 equal groups → 1/3 of 6 = one group = 2; bottom 3 = number of equal groups, top 1 = groups taken",
+     "board": {
+      "template": "equal-groups@1",
+      "params": {
+       "groups": 3,
+       "each": 2
+      }
+     },
+     "point": "the 3 groups, 2 in each; any one group is 1/3"
+    },
+    {
+     "id": "e3",
+     "convey": "12 marbles → 4 equal groups → 1/4 of 12 = one group = 3; method: bottom number → that many equal groups → size of one group is the answer",
+     "board": {
+      "template": "equal-groups@1",
+      "params": {
+       "groups": 4,
+       "each": 3
+      }
+     },
+     "point": "the 4 groups, 3 in each"
+    }
+   ],
+   "workedExample": {
+    "problem": "What is 1/3 of 15 pencils?",
+    "givens": [
+     "15 pencils in all",
+     "fraction wanted: 1/3"
+    ],
+    "find": "how many pencils make 1/3 of 15",
+    "steps": [
+     {
+      "do": "read 1/3 → bottom 3 = equal groups, top 1 = groups taken",
+      "result": "1 of 3 equal groups"
+     },
+     {
+      "do": "share 15 pencils into 3 equal groups",
+      "result": "5 pencils in each group, because 3 groups of 5 make 15"
+     },
+     {
+      "do": "take 1 group",
+      "result": "5 pencils"
+     }
+    ],
+    "answer": "5 pencils",
+    "why": "1/3 = one of 3 equal shares of the whole set; 3 × 5 = 15 confirms the groups are equal and use every pencil",
+    "board": {
+     "template": "equal-groups@1",
+     "params": {
+      "groups": 3,
+      "each": 5
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "18 laddoos are put equally on 3 plates. Ravi takes 1 plate. What fraction of all the laddoos did Ravi take?",
+     "key": "1/3",
+     "accept": [
+      "one-third",
+      "one third",
+      "ek-tihaai"
+     ],
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "wrongIfMis": "1/2",
+     "board": {
+      "template": "equal-groups@1",
+      "params": {
+       "groups": 3,
+       "each": 6
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": "16 marbles are put into 4 groups of 7, 3, 3 and 3 marbles. Is the group of 7 one-quarter of the marbles?",
+     "key": "No",
+     "accept": [
+      "no, the groups are not equal",
+      "nahin"
+     ],
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "wrongIfMis": "Yes",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c4-maths-ch05-t01-i03",
+     "why": "thirds of a set as sharing among 3 friends → 3 equal groups"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-o2",
+     "why": "one-third in a word problem without the sharing story spelled out"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i08",
+     "why": "quarters of a bigger set → 4 equal groups"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-h2",
+     "why": "name the fraction of the set and find the amount, both"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i10",
+     "why": "two fractions of the same set in one problem → half and quarter"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-part-part",
+     "move": "map the plates onto a bar: 3 plates ↔ bar of 3 equal parts; whole bar = all the laddoos = bottom; shaded part = Ravi's plate = top; plates left are not the bottom",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "then": "20 bananas packed equally into 4 bags, 1 bag given away → fraction of the bananas given away?",
+     "thenKey": "1/4"
+    },
+    {
+     "targets": "c4-maths-ch05-t01-m-unequal-parts",
+     "move": "fair-share test on the same 16 marbles: uneven groups 7, 3, 3, 3 beside equal groups 4, 4, 4, 4 → only equal groups make quarters",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Uneven groups of 16",
+        "items": [
+         "7, 3, 3, 3",
+         "not fair",
+         "no quarters"
+        ]
+       },
+       "right": {
+        "title": "Equal groups of 16",
+        "items": [
+         "4, 4, 4, 4",
+         "fair share",
+         "each group = 1/4"
+        ]
+       }
+      }
+     },
+     "then": "12 pencils split into groups of 6, 3 and 3 → is the group of 6 one-third of the pencils? yes/no",
+     "thenKey": "No"
+    }
+   ],
+   "bridgeToNext": "same 8 laddoos: 1/2 of 8 = 4, 1/4 of 8 = 2 → more equal groups from the same whole → smaller share; next: compare 1/2, 1/3, 1/4 of one whole"
+  },
+  {
+   "skillId": "c4-maths-ch05-t01-s3",
+   "hook": {
+    "convey": "one birthday cake shared by 2 friends vs the same-size cake shared by 4 friends → which share is bigger; more sharers → smaller piece",
+    "interestSlots": [
+     "birthday cake",
+     "rotis and parathas",
+     "chocolate bars",
+     "watermelon"
+    ],
+    "slotUse": "the one whole shared among fewer or more people"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bar cut into 2 equal parts → one part = 1/2; shaded part reaches the middle of the bar",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "point": "the shaded half of the bar"
+    },
+    {
+     "id": "e2",
+     "convey": "same bar cut into 4 equal parts → one part = 1/4; shaded part much shorter than the half on the last board",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 4,
+       "shade": 1,
+       "whole": "bar"
+      }
+     },
+     "point": "the shaded quarter at one end of the bar"
+    },
+    {
+     "id": "e3",
+     "convey": "bigger bottom number → same whole cut into more parts → each part smaller → 1/2 > 1/4; 4 > 2 as whole numbers does not make 1/4 bigger; only true for the same whole",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bar cut into 2",
+        "items": [
+         "2 equal parts",
+         "1 part = 1/2",
+         "bigger piece"
+        ]
+       },
+       "right": {
+        "title": "Same bar cut into 4",
+        "items": [
+         "4 equal parts",
+         "1 part = 1/4",
+         "smaller piece"
+        ]
+       }
+      }
+     },
+     "point": "'bigger piece' under 'Bar cut into 2' against 'smaller piece' under 'Same bar cut into 4'"
+    }
+   ],
+   "workedExample": {
+    "problem": "Which is bigger: 1/3 of a chocolate bar or 1/4 of the same chocolate bar?",
+    "givens": [
+     "one chocolate bar, the same whole for both",
+     "first fraction: 1/3",
+     "second fraction: 1/4"
+    ],
+    "find": "the bigger of 1/3 and 1/4 of the same bar",
+    "steps": [
+     {
+      "do": "check the whole → same bar for both?",
+      "result": "yes, the same bar, so the pieces can be compared"
+     },
+     {
+      "do": "1/3 → bar cut into 3 equal parts, take 1",
+      "result": "1 of 3 equal parts"
+     },
+     {
+      "do": "1/4 → same bar cut into 4 equal parts, take 1",
+      "result": "1 of 4 equal parts"
+     },
+     {
+      "do": "more equal parts from the same bar → each part smaller",
+      "result": "each quarter is smaller than each third"
+     },
+     {
+      "do": "compare the two single pieces",
+      "result": "1/3 > 1/4"
+     }
+    ],
+    "answer": "1/3 of the chocolate bar",
+    "why": "bottom number = how many equal parts the same whole is cut into; 4 parts → smaller pieces than 3 parts → 1/3 bigger, though 4 > 3",
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Bar cut into 3",
+       "items": [
+        "3 equal parts",
+        "1 part = 1/3"
+       ]
+      },
+      "right": {
+       "title": "Same bar cut into 4",
+       "items": [
+        "4 equal parts",
+        "1 part = 1/4"
+       ]
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "One roti is cut into 3 equal pieces. A roti of the same size is cut into 2 equal pieces. Write the fraction for the bigger single piece.",
+     "key": "1/2",
+     "accept": [
+      "half",
+      "one half",
+      "aadha"
+     ],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "1/3",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "One chocolate bar is shared equally by 4 children. Another bar of the same size is shared equally by 2 children. Kabir is in the group of 4 and says he gets more chocolate because 4 is more than 2. Is Kabir right?",
+     "key": "No",
+     "accept": [
+      "no, he gets less",
+      "nahin",
+      "no, 1/4 is less than 1/2"
+     ],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "Yes",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "Put these pieces of the same cake in order, smallest first: 1/2, 1/4, 1/3.",
+     "key": "1/4, 1/3, 1/2",
+     "accept": [
+      "1/4 1/3 1/2",
+      "quarter, third, half"
+     ],
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "wrongIfMis": "1/2, 1/3, 1/4",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c4-maths-ch05-t01-i13",
+     "why": "quick recall: 1/2 vs 1/4 of the same pizza"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i04",
+     "why": "predict from a sharing story → 2 sharers vs 3 sharers, halves vs thirds"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i05",
+     "why": "explain the rule in words → bottom number = number of equal parts, more parts → smaller each"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-i11",
+     "why": "order three unit fractions of one whole, biggest first"
+    },
+    {
+     "itemId": "c4-maths-ch05-t01-rl-h3",
+     "why": "link back to collections → 1/3 and 1/4 of 12 slices as amounts, then the difference"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
+     "move": "fraction bars of the same length, one in 2 equal parts, one in 3 → predict the longer single piece → lay one piece from each side by side → more cuts of the same bar → each piece shorter",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bar in 2 equal parts",
+        "items": [
+         "1 piece = 1/2",
+         "longer piece"
+        ]
+       },
+       "right": {
+        "title": "Same bar in 3 equal parts",
+        "items": [
+         "1 piece = 1/3",
+         "shorter piece"
+        ]
+       }
+      }
+     },
+     "then": "same watermelon: cut into 4 equal slices or into 3 equal slices → which single slice is bigger, 1/4 or 1/3?",
+     "thenKey": "1/3"
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ],
+ "verified": {
+  "by": "separate Claude agent, blind (prompts only)",
+  "on": "2026-11-05",
+  "checksAndRemediation": "45/45 agree (3 after a rewrite and re-solve)",
+  "workedExamples": "9/9 ok"
+ }
+}
