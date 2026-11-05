@@ -267,3 +267,46 @@ c6-ch07-t02 (3 location items), c6-ch07-t03 (1) and c4-ch05-t02 (1, a measuring 
 "write 7/4 as a mixed fraction", a decimal line or a roti.
 
 Board refs for lesson scripts: see `BOARD-REFS.md`.
+
+## M5a: cinematic scenes, code-built ($0; the owner's #4)
+
+"animation dikhao" on a pilot topic now gets a small FILM of the idea instead of a board. It is not a hand-drawn
+whiteboard: it is coloured actors (the Sun, a drop, the Earth, a roti cut in four, an ant on a field) moving on keyframed
+tracks, with short captions in the lesson's language, its beats bound to her clauses. Everything is code: no model call,
+no spend.
+
+- **Format** (`shared/scene.js`): actors (props from `shared/scene-props.js`, 64 code-drawn props), tracks (keys: position,
+  rotation, scale, opacity; loops), captions (≤ 32 chars, top or bottom band), beats (`clause` = her clause index) and
+  facts (the values on screen, for her facts row).
+- **The same truth everywhere:** `sceneAt(scene, t)` is the one interpolation, used by the player, the lint and the tests.
+  The film follows her voice: `lineWarp` pins each beat to its clause's onset. Reduced motion holds still at each beat.
+- **Layout lint:** every visible actor stays on stage at every key, beat and 250 ms step; captions never overlap and fit
+  the stage; duration 4-40 s.
+- **Tray gate:** a `scene` rule in tray-gate.js. Served where the scene is clean and its captions (18 stage units) reach
+  14 px for young children and 13 px for older ones at the device's box.
+- **Player:** `src/modules/scene/ScenePlayer.tsx` (SVG, flat friendly palette), registered as the `scene` artifact kind
+  (`SceneRenderer`). It waits for her line's audio anchor like the whiteboard.
+- **Delivery:** `studioSeam.composeAsk` answers an animation ask on a pilot topic with the scene piece (source "scene"),
+  shown by this turn's `slotFor` like a play piece. Her facts row carries the scene's facts and steps.
+  `TAXILA_SCENES=0` turns it off.
+
+The 20 pilots (`server/forge/animate/scenes.js`):
+- **Science:** water cycle (c7), day and night (c7), germination (c6), photosynthesis (c7), food chain (c6),
+  evaporation (c6), circuit tester (c7), magnets attract/repel (c6), shadow (c7), solar eclipse (c7).
+- **Maths:** equal parts of a roti (c4), sharing 12 laddoos in 3 plates (c4), quarter/half/full turns (c5), area by
+  unit squares (c5), perimeter as an ant's walk (c6), integers as a lift below the ground floor (c6), symmetry by folding
+  (c6), bar graph (c5), arrays of chairs (c5), clock in 5-minute steps (c4).
+
+Measured (code): 20/20 scenes clean in en, hinglish and hi (60/60). The tray gate certifies 360/360 (20 scenes × 3
+languages × p360/p412/l1366 × young/older). Numbers are computed, not drawn: the laddoos end 4 to a plate, and the ant
+ends where it started with "Perimeter = 20 m".
+
+Recordings: `docs/design/round7/studio/scenes/` holds one strip per scene at p412 and w1280 (a frame as each beat
+settles), plus videos of the water cycle, day and night, and equal sharing.
+
+Not yet:
+- a Stagecraft rung, so scenes come only from the child's ask (a plan-led "animation" want still gets the Studio v2
+  explainer or the board);
+- per-item withholding: the pilots show concept values (1/4, 20 m) that a kit item may ask, so a check beat must not
+  use a scene;
+- Brain's "show the movement in words" shape stays until main decides the pilots cover enough.

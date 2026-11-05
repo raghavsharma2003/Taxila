@@ -36,6 +36,7 @@ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./
 import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import * as boardSync from "../stagecraft/board-sync.js";
+import { sceneFor } from "../forge/animate/scenes.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
@@ -240,6 +241,8 @@ function artifactOf(p) {
 /** The Work tray slot of a piece (shared/studio.ts StudioSlot). */
 export function slotOf(p, state = p.state) {
   if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
+  // round 7 M5a: a code-built scene is its own artifact
+  if (p.source === "scene") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
   if (p.source === "play") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 5: a picture (studio/picture.js) is its own artifact, like a board
@@ -300,6 +303,27 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
   }
   noteRefusal(L, p, r, where);
   return null;
+}
+/**
+ * round 7 M5a: the scene piece for an animation ask, waiting for this turn's slotFor (L.pendingPlay, as a play piece
+ * does), or null (no scene for the topic, or not certified at the device's size). Code only, no model call.
+ */
+function scenePieceFor(L, lessonId, topicId, child) {
+  if (!topicId || process.env.TAXILA_SCENES === "0") return null;
+  const lang = child?.language_pref === "hi" ? "hi" : child?.language_pref === "en" ? "en" : "hinglish";
+  const r = sceneFor(topicId, { lang });
+  if (!r?.ok) return null;
+  const n = [...L.pieces.values()].filter((p) => p.source === "scene").length + 1;
+  const intentId = `${lessonId}:scene:${n}`;
+  const scene = { ...r.scene, line: { lessonId } };
+  const piece = { intentId, slotId: `${intentId}:slot`, kind: "animation", archetype: `scene:${r.scene.id}`, source: "scene",
+    artifact: { kind: "scene", stage: r.scene.stage, scene },
+    facts: { kind: "animation", archetype: `scene:${r.scene.id}`, onScreen: { ...Object.fromEntries(Object.entries(r.scene.facts).map(([k, v]) => [k, String(v)])), steps: r.scene.beats.map((b) => b.says).join(", ") } },
+    skillId: null, need: "explain", requested: true, state: "ready", retired: false, createdAt: Date.now() };
+  if (!gatedSlot(L, piece, "revealed", "scene")) return null;
+  L.pieces.set(intentId, piece);
+  L.pendingPlay = { intentId, turn: L.turn };
+  return { kind: "scene", intentId, scene: r.scene.id, ms: 0 };
 }
 /** Is a piece's artifact certified now (statusFacts proposes only what slotFor would show)? */
 function certifiedNow(L, p) {
@@ -676,6 +700,12 @@ export const studioSeam = {
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return null;
       const child = x.child?.id ? x.child : L.child;
       if (!child?.id) return null;
+      // round 7 M5a (owner's #4): "animation dikhao" on a topic with a code-built cinematic scene gets the SCENE (a small
+      // film of the idea, its beats on her clauses), certified at the device's size like every tray piece
+      if (x.visual === "animation") {
+        const sp = scenePieceFor(L, lessonId, x.topicId ?? L.topicId ?? null, child);
+        if (sp) return sp;
+      }
       const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
         skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? viewportOf(lessonId).vp, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
       if (!r) return lessonPieceForAsk(L, x);
