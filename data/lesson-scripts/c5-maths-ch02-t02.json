@@ -403,6 +403,20 @@
    },
    "checks": [
     {
+     "id": "c0",
+     "prompt": "Meena ate 2/6 of a cake and her brother ate 4/6 of the same cake. Who ate more: Meena or her brother, or did they eat the same?",
+     "key": "her brother",
+     "accept": [
+      "brother",
+      "the brother",
+      "her brother, 4/6",
+      "4/6"
+     ],
+     "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
+     "wrongIfMis": "the same amount",
+     "board": null
+    },
+    {
      "id": "c1",
      "prompt": "Two same-size cakes. Asha's cake is cut into 4 equal pieces and she takes 2 of them. Ben's cake is cut into 12 equal pieces and he takes 3 of them. Ben says he has more because 3 pieces are more than 2 pieces. Who has more cake: Asha or Ben?",
      "key": "Asha",
@@ -451,6 +465,34 @@
     }
    ],
    "remediation": [
+    {
+     "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
+     "move": "same denominator = same SIZE of piece, not the same amount → line 0 to 1 cut into 6 equal gaps; 2/6 = 2 gaps from 0, 4/6 = 4 gaps from 0 → same-size gaps, more of them = further from 0 = bigger",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/6"
+        },
+        {
+         "num": 4,
+         "label": "4/6"
+        }
+       ]
+      }
+     },
+     "then": "a ribbon 1 m long cut into 8 equal pieces; Asha takes 3 pieces, Gopi takes 5 → who has more ribbon",
+     "thenKey": "Gopi",
+     "thenAccept": [
+      "Gopi, 5/8 m",
+      "5/8 m"
+     ]
+    },
     {
      "targets": "c5-maths-ch02-t02-m-tops-only",
      "move": "both shares laid on one 0-to-1 line in twelfths: 2/4 = 6 twelfths, 3/12 = 3 twelfths → 2 quarter-pieces reach further than 3 twelfth-pieces → number of pieces decides only when the pieces are the same size, i.e. same bottom number",

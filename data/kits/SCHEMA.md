@@ -18,6 +18,7 @@ interface TopicKit {
     signs: string[];               // what the child says/does when holding it
     diagnostic: { prompt_en: string; prompt_hi: string; options: { text: string; misconceptionId: string|null; correct: boolean }[] };
     remediation: { representation: string; moveShape: string }   // alternate representation + teacher move shape
+    skillId?: string;              // the skill this misconception belongs to (set on the round 7 F kit-gap additions)
   }[];
   items: {
     id: string; skillId: string;
@@ -31,6 +32,10 @@ interface TopicKit {
     verified?: { solverAnswer: string; agrees: boolean; note?: string }  // filled by blind solver
   }[];                             // 10-16 items per topic, covering ≥5 kinds
   workedExample: { problem: string; steps: string[]; fadedVersion: string[] };  // fadedVersion has "___" blanks
+                                   // + skillId?: the skill it teaches (scripts/kits/kit-gaps.mjs)
+  skillExamples?: { skillId: string; problem: string; givens: string[]; find: string;
+    steps: { do: string; result: string }[]; answer: string; why: string }[];   // a full worked example for every other skill
+                                   // (round 7 F kit gaps; `do`/`why` are shapes; blind-verified by a separate Claude agent)
   formats: { primary: "F1"|"F2"|"F3"|"F4"|"F5"|"F6"|"F7"|"F8"; secondary: string[]; engineHints: string[] }; // engineHints: manipulative/sim kind names
   interestContexts: string[];      // contexts the item numbers/stories can be re-skinned into (cricket, kitchen, market, trains…)
 }
