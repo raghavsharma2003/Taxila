@@ -733,6 +733,11 @@ export const studioSeam = {
       return pendSlot;
     }
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
+    // round 7 M4 (never stale): the reveal point is built before the Director moves, so on a turn whose move changes the
+    // skill a Stagecraft piece decided for the old skill would come up under her line about the new one (measured in the
+    // replay, evals/stagecraft/replay.mjs: 33 of 252 reveals, 115 stage turns). With the move's skill (hint.skillId, patch
+    // to Brain 009) such a piece is not revealed, and one still up leaves with this reply. Inert without hint.skillId.
+    const offSkill = (q) => !!q && q.source === "stagecraft" && typeof hint?.skillId === "string" && !!hint.skillId && !!q.skillId && q.skillId !== hint.skillId;
     // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
     if (turnStudio?.reveal) {
@@ -750,7 +755,8 @@ export const studioSeam = {
       const beat = typeof hint?.beat === "string" ? hint.beat : null;
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
-      if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      if (p && !VISIBLE.has(p.state) && offSkill(p)) { retirePiece(L, p.intentId, "skill_changed"); stagecraft.noteRetired(L.lessonId); }
+      else if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
       // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
       else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
@@ -761,6 +767,7 @@ export const studioSeam = {
       }
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (on && VISIBLE.has(on.state) && offSkill(on)) { retirePiece(L, on.intentId, "skill_changed"); return null; }
     if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
       const g = gatedSlot(L, on, on.source === "skeleton" ? "fallback_ready" : on.state, "on_screen");
       // the device changed to a box the piece is not certified for: it leaves the tray (never shown broken)

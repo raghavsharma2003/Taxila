@@ -205,3 +205,39 @@ When her real line names a step on the board ("Pehle food…, phir mouth…, usk
 - **Reach** (first explain, classes 4–7; her line stood in by one naming each thing on the board in a short sentence): 168 of 241 boards have their steps on her words. By template: flow 88/91, label 12/12, cycle 4/4, compare 26/32, angle 6/9, shape 6/9. 16 anchored boards were refused by the gate and fell back to even pacing.
 - **Not yet anchored:** boards with no named steps (fraction pictures, column work, places), where the words are numbers rather than names.
 - **Live check needed:** the onsets are estimates. Voice's word timings (when they exist) would make them exact.
+
+## M4: Stagecraft fed, never stale (C1 item 9, rest rule of item 11)
+
+Offline replay: `node evals/stagecraft/replay.mjs`. It runs 94 recorded real lessons (conversation-r3 final6-after +
+heldout-after; real Director, real replies; c4-7 maths/science/EVS; 469 lesson-minutes) through the PRODUCTION path:
+StagecraftHost, productionCatalog, the instant builders, kernel-point `kernelPoint` / `feedPoint`. Spec build times are
+drawn from calibration.json. $0, no model call. Results: `evals/stagecraft/results/replay-2026-11-05.json`.
+
+What changed:
+- The reveal point uses the skill being taught (`state.lastMove.skillId`), not the kit's first skill.
+- Sources are fed at the point (`feedPoint`): a state input first (a topic, skill or beat change invalidates
+  immediately), then the beat lookahead on a change (`lookahead.js`, interim until Brain's planBeat), then the stuck
+  signal (two non-correct graded answers). `STAGECRAFT_FEEDS=off` turns the feeds off.
+- seam `slotFor` has a skill guard (`hint.skillId`, Brain patch `docs/patches/to-brain/009-studio-slot-skill.patch`):
+  a Stagecraft piece whose skill is not the move's skill is not revealed, and one still up leaves with that reply. The
+  guard is inert until Brain applies 009.
+
+| arm | pieces / 10 min | built ahead | at preferred rung | stale reveals | stale stage turns | stage active |
+|---|---|---|---|---|---|---|
+| today (production now) | 4.63 | 0 | 0.798 | 67 | 244/717 | 0.516 |
+| + skill fix | 5.35 | 0 | 0.934 | 33 | 115/691 | 0.495 |
+| + feeds at the point | 5.39 | 0.597 | 0.934 | 34 | 116/694 | 0.497 |
+| + feeds after her reply (Brain hook) | 5.46 | 0.590 | 0.934 | 35 | 116/694 | 0.497 |
+| + guard (M4) | 5.44 | 0.549 | 0.940 | **0** | **0/643** | **0.470** |
+| guard without the rest rule | 6.33 | 0.582 | 0.925 | 0 | 0/782 | 0.554 |
+
+Per subject (M4): maths 5.39 pieces/10 min, active 0.44; science 5.24, active 0.50; EVS 5.90, active 0.50.
+Per class (M4): c4 7.06 / 0.46; c5 5.25 / 0.50; c6 5.62 / 0.50; c7 3.95 / 0.39. Stale reveals are 0 in every row.
+Spec builds: 0.84 per lesson, about $0.001 per lesson.
+
+How to read it: "built ahead" counts the reveals served by a candidate that was ready before the point, against
+on-demand builds. Today the instant rung builds on demand in about 0 ms, so what the child sees changes mostly through
+correctness (the right skill, nothing stale) and the rest rule, not through lead time. Feeding at the point gives the
+same as a Brain hook after her reply (0.597 vs 0.590), so no hook is needed. Stage active 0.47 is inside the 35-55%
+target (the earlier simulator's 0.85 had no rest rule or recorded boards). The guard reads the move's skill, the same
+field the replay uses as truth, so its 0 means "what production checks", and the field itself is measured live.
