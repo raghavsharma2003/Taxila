@@ -5221,3 +5221,9 @@ Method: codePick over c5-maths-ch02-t01 (worked example + 19 items), before vs a
 n: 20
 
 Method: sceneFor over the 20 pilot topics × en/hinglish/hi: normalizeScene + lintScene; certifyForTray at p360/p412/l1366 × young/older; real child route recordings (vite + playwright, API mocked); code only
+
+
+<!-- merged from inbox/r7-main-11.json -->
+## `jd-r7-director4-2026-11-05`
+
+n = 12 lessons (4 scenarios × c4/c5/c6, the same scripted child as director3), 375 calls on taxila-fast, ~$0.204. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only with TAXILA_R7_SCRIPT=on, on claude/r4-conversation e18c27ad (int/r6 c6c9ab91c + T2–T4 + patch 010) and Learning’s ec40168a3 scripts. Three Claude judges (one per class, not blind to the arm) read every teacher turn against the script and director3, attributing each defect to script data, runtime walk, reply rendering or harness. Date 2026-11-05. Full write-up: docs/design/round7/judgements/director4-2026-11-05.md. Reply-ready p50 per lesson 2.34–3.65 s (c4 2.3–2.8 s vs director3 3.3–3.5 s).

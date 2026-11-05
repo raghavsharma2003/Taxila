@@ -22,7 +22,8 @@ const kit = (() => { try { return kitFromFile(getTopic(T)); } catch { return nul
 const catalog = productionCatalog();
 const instantOnly = () => ({ instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) });
 const written = [];
-_setDeps({ writeEvidence: async (_child, ev) => { written.push(ev); return { written: true }; }, q: async () => [], gateAvailable: () => false });
+const OWN_DEPS = { writeEvidence: async (_child, ev) => { written.push(ev); return { written: true }; }, q: async () => [], gateAvailable: () => false };
+_setDeps(OWN_DEPS);
 
 function lesson(id) {
   // the host is attached BEFORE the prefetch, so the seam's startStagecraft finds it (no production deps, no network)
@@ -38,6 +39,9 @@ test("seam (patch 03): a child's request is proposed, shown by slotFor, revealed
   // round 4 content: Studio v2 is off the child path (the tray gate); this test drives the seam mechanics behind the gate
   const gate = await import("../server/forge3/tray-gate.js");
   gate._certifyStudioV2ForTests(true); tc.after(() => gate._certifyStudioV2ForTests(false));
+  // (the seam's deps are one shared object: in a single-process run another file's module-level _setDeps may have replaced
+  // this file's evidence recorder after it was set above, so it is set again where it is used)
+  _setDeps(OWN_DEPS);
   const id = "p4s-1"; const { L } = lesson(id);
   for (let k = 0; k < 3; k++) studioSeam.statusFacts(id, { beat: "explain" });       // past the first-reveal turn
   const p = point(id, 4, "animation dikhao na");
