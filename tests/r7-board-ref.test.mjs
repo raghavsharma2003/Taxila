@@ -86,3 +86,23 @@ test("director4 S1/S2: a scripted explain step gets its board even as a 'continu
   const bare = await certifyBoardRef({ template: "shape@1", shape: "pentagon" }, { line: "Ek paanch bhujaon wali kyaari: 4 m, 5 m, 3 m, 6 m, 2 m." });
   assert.ok(bare.failed.some((f) => f.startsWith("line_measures_not_on_board")));
 });
+
+test("Brain R4: a screen's shape is always one word of the closed set", async () => {
+  const { screenOf, SCREEN_SHAPES } = await import("../server/stagecraft/board-first.js");
+  const s = (t, shape) => screenOf({ template: t }, { onScreen: { shape } }).shape;
+  assert.equal(s("measured@1", "rect"), "rectangle");
+  assert.equal(s("measured@1", "7-sided shape"), "polygon");
+  assert.equal(s("shape@1", "kyaari"), "drawing", "a free name is never passed through");
+  assert.equal(s("fraction-line@1", undefined), "number line");
+  assert.equal(s("anything@9", undefined), "drawing");
+  for (const t of ["measured@1", "shape@1", "fraction-line@1", "table@1", "symmetry@1", "shade-grid@1"]) assert.ok(SCREEN_SHAPES.includes(s(t, undefined)), t);
+});
+
+test("Brain R4: screen numbers are what the board writes (a fraction numwork reads a/b), never a '?'", async () => {
+  const { screenOf } = await import("../server/stagecraft/board-first.js");
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const x = expand({ template: "fraction-parts@1", parts: 4, shade: 3, whole: "roti" });
+  assert.deepEqual(screenOf({ template: "fraction-parts@1" }, x.facts, x.script).numbers, ["3/4"]);
+  const asked = { ops: [{ op: "numwork", layout: "fraction", rows: [["?"], ["?"]] }, { op: "text", text: "? cm" }] };
+  assert.deepEqual(screenOf({ template: "fraction-parts@1" }, {}, asked).numbers, []);
+});

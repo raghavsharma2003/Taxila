@@ -1034,7 +1034,9 @@ export const studioSeam = {
       // r12 RCA failure 7: a continue page that would land on what the child already sees is drawn on a clean board
       if (r.script.mode === "continue" && boardSync.boardModeFor(r.script, L.wbUnder ?? []) === "fresh") r.script = { ...r.script, mode: "fresh" };
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
-      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
+      // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
+      const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
+      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen };
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
