@@ -1,0 +1,21 @@
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 0c928822..ae826b17 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -2,6 +2,7 @@
+ // Every route acts for an authenticated guardian's child (requireChild). One compile() feeds both lanes:
+ // the voice client applies `instructions` verbatim via session.update, and text mode generates its reply
+ // from the SAME string (inherited rejection: two prompts for two lanes).
++import { emitChildText } from "../duplex/childText.js";
+ import { warmupItemsFor } from "../learner/checks.js";
+ import { randomUUID } from "crypto";
+ import { q, one, tx } from "../db.js";
+@@ -896,6 +897,8 @@ async function turn(req, res, body) {
+   // the take may wait for the same classify the turn adopts, so the turn never waits on it: the spec lands on `hooks` when
+   // handed over (turn.js reads it only after its own classify); whatever happens it is settled (logged, aborted) at the end
+   const hooks = {};
++  // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
++  if (body?.lessonId && typeof body?.childText === "string") emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true });
+   const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
+   specP?.then((s) => { if (s) hooks.agentSpec = s; });
+   // round 7 A5: `Accept: text/event-stream` streams her guarded clauses, then the turn (brain/clauses.js); otherwise plain JSON

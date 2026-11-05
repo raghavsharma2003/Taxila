@@ -596,22 +596,22 @@ test("barge-in: speech_started then an EMPTY transcript → she resumes from whe
 
 test("barge-in: a lone 'hmm' resumes her; her own echo resumes her; a real answer stops her", async () => {
   {
-    const { env, link, events } = await speakingLink();
+    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
     try {
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "हम्म", logprobs: [{ logprob: -0.1 }] });
-      await flush();
+      await until(() => events.some((e) => e.type === "teacher_audio_start")); // load-robust: resuming goes through the player's async start
       assert.ok(events.some((e) => e.type === "teacher_audio_start"), "resumed");
       assert.ok(!events.some((e) => e.type === "child_final"));
       assert.equal(link.bargeStats.resumedBackchannel, 1);
     } finally { link.close(); env.restore(); }
   }
   {
-    const { env, link, events } = await speakingLink();
+    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
     try {
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "एक रोटी के चार बराबर हिस्से करो" });
-      await flush();
+      await until(() => events.some((e) => e.type === "teacher_audio_start"));
       assert.ok(events.some((e) => e.type === "teacher_audio_start"), "her own voice in Devanagari is recognised as echo");
       assert.equal(link.bargeStats.resumedEcho, 1);
     } finally { link.close(); env.restore(); }

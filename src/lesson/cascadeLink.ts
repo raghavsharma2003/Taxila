@@ -38,6 +38,7 @@ import { puppetBus } from "../face-puppet/bus.ts";
 // ship5 p1-duplex: the hands-free duplex engine (src/duplex/cascadeDuplex.ts). Off unless the caller passes `duplex`.
 import type { CascadeDuplex, CascadeDuplexOptions, CascadeDuplexState } from "../duplex/cascadeDuplex.ts";
 import type { DuplexMode } from "../duplex/flags.ts";
+import { partialPostWanted } from "../duplex/flags.ts";
 import { VoiceLinkTrace, vt } from "../voice/trace.ts";
 
 /** Round 5: a spoken final this soon after a tapped / typed answer is never a second turn (the owner's chip race). */
@@ -338,6 +339,8 @@ function takePrimed(): AudioContext | null {
   return c;
 }
 
+/** Round 7 (Studio M4): the device posts its live partial no faster than this (the server drops anything faster than 300 ms). */
+export const CHILD_TEXT_POST_MS = 400;
 const defaultToken = (lessonId: string) => postJson<RealtimeTokenResponse>("/api/voice/stt-token", { lessonId });
 
 async function defaultTranscribe(lessonId: string, clip: Blob): Promise<TranscribeResult> {
@@ -376,6 +379,9 @@ export class CascadeLink implements TeacherLink {
   };
 
   private readonly lessonId: string;
+  private childTextTimer: ReturnType<typeof setTimeout> | null = null;
+  private childTextNext: { itemId: string; text: string } | null = null;
+  private childTextAt = 0;
   private readonly fetchToken: (lessonId: string) => Promise<RealtimeTokenResponse>;
   private readonly speech: SpeechStreamFetch;
   private readonly transcribeClip: (lessonId: string, clip: Blob) => Promise<TranscribeResult>;
@@ -883,7 +889,32 @@ export class CascadeLink implements TeacherLink {
     }, PTT_TAIL_MS);
   }
 
+  /** Round 7 (Studio M4): post the newest partial at most every CHILD_TEXT_POST_MS (never awaited, never retried). */
+  private postChildText(itemId: string, text: string): void {
+    if (!partialPostWanted() || !text) return;
+    this.childTextNext = { itemId, text };
+    if (this.childTextTimer) return;
+    const wait = Math.max(0, this.childTextAt + CHILD_TEXT_POST_MS - Date.now());
+    this.childTextTimer = setTimeout(() => {
+      this.childTextTimer = null;
+      const n = this.childTextNext;
+      this.childTextNext = null;
+      if (!n) return;
+      this.childTextAt = Date.now();
+      try {
+        void fetch("/api/duplex/child-text", { method: "POST", credentials: "same-origin", keepalive: true, headers: { "content-type": "application/json" },
+          body: JSON.stringify({ lessonId: this.lessonId, itemId: n.itemId, text: n.text, t: Date.now() }) }).catch(() => {});
+      } catch { /* never on the lesson's path */ }
+    }, wait);
+  }
+  private clearChildTextPost(): void {
+    if (this.childTextTimer) clearTimeout(this.childTextTimer);
+    this.childTextTimer = null;
+    this.childTextNext = null;
+  }
+
   close(): void {
+    this.clearChildTextPost();
     if (this.closed) return;
     // round 7 (B2): an early microphone connect() never took is released with the link
     if (this.micStream) { void this.micStream.then((m) => { for (const t of m.getTracks()) t.stop(); }, () => {}); this.micStream = null; }
@@ -963,6 +994,10 @@ export class CascadeLink implements TeacherLink {
       if (e.type === "child_speech_start") { this.stopAck(); this.ack.onSpeech(); }
       if (e.type === "child_speech_end") this.ack.speechEnded(e.at); // round 5: the continuer's ~900 ms clock
     }
+    // Round 7 (Studio M4): the child's live partial to the server's in-process listeners (server/duplex/childText.js), only
+    // when /api/duplex/config asked for it; at most one post per CHILD_TEXT_POST_MS, the newest text; a final cancels it
+    if (e.type === "child_partial") this.postChildText(e.itemId, e.text);
+    else if (e.type === "child_final" || e.type === "child_silent") this.clearChildTextPost();
     // Round 2 latency: the prefetcher reads the partials and the item's end (it never changes what the turn sends)
     if (this.prefetcher) {
       if (e.type === "child_partial") this.prefetcher.onPartial(e.itemId, e.text);

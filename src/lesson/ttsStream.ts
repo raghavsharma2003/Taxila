@@ -10,7 +10,8 @@ import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, ty
 import { ApiError } from "./api.ts";
 import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
 import { boardHoldMs } from "../studio/boardHold.ts";
-import { adpcmWanted, decodeAdpcm } from "./adpcm.ts";
+import { adpcmWanted, decodeAdpcm, codecOverride } from "./adpcm.ts";
+import { OpusPcmDecoder, opusSupported } from "./opus.ts";
 
 export const PCM_RATE = 24_000;
 /** Lead before the first chunk plays: absorbs network jitter between chunks without audible delay. */
@@ -105,9 +106,20 @@ export type SpeechStreamFetch = (req: TtsRequest, signal: AbortSignal, sink?: Cl
 // server frames only when asked (Accept below); an older server answers raw audio/pcm and the client reads it as before.
 
 export const FRAMES_ACCEPT = "application/x-taxila-pcm-frames;v=2";
-export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 } as const;
-/** The Accept a TTS request sends: frames v2, plus `codec=adpcm` on a slow link (round 5, QA D12; ./adpcm.ts). */
-export const framesAccept = (): string => (adpcmWanted() ? `${FRAMES_ACCEPT};codec=adpcm` : FRAMES_ACCEPT);
+export const FRAME = { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5, opus: 6 } as const;
+/**
+ * The Accept a TTS request sends: frames v2 plus a codec preference list, first that the server can encode wins.
+ * Round 7 (QA D12): `opus` first wherever WebCodecs decodes it (every link: ~3 KB/s against PCM's 48), then `adpcm` on a
+ * slow link (round 5, ./adpcm.ts); none of them → PCM. `?tts=pcm|adpcm|opus` forces one.
+ */
+export const framesAccept = (): string => {
+  const forced = codecOverride();
+  const list = forced === "pcm" ? [] : forced === "adpcm" ? ["adpcm"] : [
+    ...(forced === "opus" || opusSupported() === true ? ["opus"] : []),
+    ...(adpcmWanted() ? ["adpcm"] : []),
+  ];
+  return list.length ? `${FRAMES_ACCEPT};codec=${list.join("+")}` : FRAMES_ACCEPT;
+};
 export interface TtsFrame {
   type: number;
   /** PCM bytes for type 0, the parsed JSON otherwise. */
@@ -156,6 +168,8 @@ export class FrameParser {
       if (type === FRAME.pcm) out.push({ type, payload: body.slice() });
       // round 5 (QA D12): an ADPCM frame becomes a PCM frame here, so nothing after the parser changes
       else if (type === FRAME.adpcm) out.push({ type: FRAME.pcm, payload: decodeAdpcm(body) });
+      // round 7 (QA D12): an Opus packet stays a type-6 frame here (decoding is async); readFrames / pcmOfFrames decode it
+      else if (type === FRAME.opus) out.push({ type, payload: body.slice() });
       else {
         try {
           out.push({ type, payload: JSON.parse(new TextDecoder().decode(body)) as Record<string, unknown> });
@@ -171,16 +185,17 @@ export class FrameParser {
 }
 
 /** Async iteration over the frames of a framed body. */
-export async function* readFrames(body: ReadableStream<Uint8Array>): AsyncGenerator<TtsFrame> {
+export async function* readFrames(body: ReadableStream<Uint8Array>, opus: OpusPcmDecoder = new OpusPcmDecoder()): AsyncGenerator<TtsFrame> {
   const reader = body.getReader();
   const parser = new FrameParser();
   try {
     for (;;) {
       const { done, value } = await reader.read();
       if (done) return;
-      for (const f of parser.push(value)) yield f;
+      for (const f of parser.push(value)) yield f.type === FRAME.opus ? { type: FRAME.pcm, payload: await opus.decode(f.payload as Uint8Array) } : f;
     }
   } finally {
+    opus.close();
     reader.releaseLock();
   }
 }
@@ -189,7 +204,7 @@ export async function* readFrames(body: ReadableStream<Uint8Array>): AsyncGenera
  * A framed body → a PCM-only stream (what PcmStreamPlayer plays), JSON frames going to `onFrame`. The first frame is
  * awaited by the caller of `onTurn`-style consumers through `onFrame`.
  */
-export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFrame) => void): ReadableStream<Uint8Array> {
+export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFrame) => void, opus: OpusPcmDecoder = new OpusPcmDecoder()): ReadableStream<Uint8Array> {
   const reader = body.getReader();
   const parser = new FrameParser();
   return new ReadableStream<Uint8Array>({
@@ -197,12 +212,16 @@ export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFr
       for (;;) {
         const { done, value } = await reader.read();
         if (done) {
+          opus.close();
           ctl.close();
           return;
         }
         let pushed = false;
         for (const f of parser.push(value)) {
-          if (f.type === FRAME.pcm) {
+          if (f.type === FRAME.opus) {
+            ctl.enqueue(await opus.decode(f.payload as Uint8Array));
+            pushed = true;
+          } else if (f.type === FRAME.pcm) {
             ctl.enqueue(f.payload as Uint8Array);
             pushed = true;
           } else onFrame(f);
@@ -211,6 +230,7 @@ export function pcmOfFrames(body: ReadableStream<Uint8Array>, onFrame: (f: TtsFr
       }
     },
     cancel(reason) {
+      opus.close();
       return reader.cancel(reason);
     },
   });
