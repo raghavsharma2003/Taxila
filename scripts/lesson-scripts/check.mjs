@@ -49,13 +49,26 @@ const esc = (s) => s.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 export function leaks(prompt, key) {
   const p = String(prompt).toLowerCase(), k = String(key).toLowerCase().trim();
   if (!k || /^(yes|no)$/.test(k)) return false;
-  if (new RegExp(`(^|[^\\w/])${esc(k)}\\s+or\\s|\\sor\\s+${esc(k)}([^\\w/]|$)`).test(p)) return false;
+  // a choice question is not a leak (Brain's rule: a key is never inside a NON-choice question): it offers options
+  // with "or" / Hinglish "ya", and the key is one of them
+  if (/\b(or|ya)\b/.test(p) && /\?/.test(p)) return false;
   return new RegExp(`(^|[^\\w/])${esc(k)}([^\\w/]|$)`).test(p);
 }
 
 /** Every board beat with its stand-in line and what it must withhold. */
-export function beatsOf(skill) {
+export function beatsOf(skill, version = 1) {
   const we = skill.workedExample;
+  if (version >= 2) {
+    // v2: her line IS the authored Said (spoken nearly verbatim), so the stand-in is its hi + en forms
+    const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+    return [
+      ...skill.explain.map((e) => ({ id: e.id, board: e.board, line: [said(e.point), ...(e.mustSay ?? []).map(said)].join(" "), withhold: { values: [e.ask?.key].filter(Boolean) }, check: false })),   // the beat's board shows the idea; only its exact key is withheld
+      { id: "we", board: we.board, line: [said(we.problem), ...we.givens.map(said), ...we.steps.flatMap((x) => [said(x.do), x.result])].join(" "),
+        withhold: { values: [we.yourStep?.key, ...(we.yourStep?.accept ?? [])].filter(Boolean) }, check: false },
+      ...skill.checks.map((c) => ({ id: c.id, board: c.board, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true })),
+      ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
+    ].filter((b) => b.board);
+  }
   return [
     ...skill.explain.map((e) => ({ id: e.id, board: e.board, line: e.point, withhold: null, check: false })),
     { id: "we", board: we.board, line: [we.problem, ...we.steps.map((x) => x.result), we.answer].join(" "), withhold: null, check: false },
@@ -66,6 +79,7 @@ export function beatsOf(skill) {
 
 /** S: structure against the kit. → error strings */
 export function structureErrors(s, kit) {
+  if ((s.version ?? 1) >= 2) return structureErrorsV2(s, kit);
   const e = [];
   if (!kit) return [`no kit topic ${s.topicId}`];
   if (s.skills.map((k) => k.skillId).join() !== kit.skills.map((k) => k.id).join()) e.push("skills are not the kit's, in kit order");
@@ -92,12 +106,99 @@ export function structureErrors(s, kit) {
       if (!mis.has(r.targets) || !r.move || !r.then || !r.thenKey) e.push(at(`remediation ${r.targets}`));
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move)) e.push(at("remediation falls back to counting"));
     }
-    for (const b of beatsOf(k)) {
+    for (const b of beatsOf(k, s.version ?? 1)) {
       if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
     }
   }
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
   const checked = new Set(s.skills.flatMap((k) => k.checks.map((c) => c.targets)));
+  for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
+  return e;
+}
+
+/** The interests a v2 hook slot may name, and the words its spoken use must contain (server/persona/signals.js). */
+async function interestWords() { return (await import("../../server/persona/signals.js")).INTERESTS; }
+/** Hindi function words: a Said.hi without any of them reads as English (F1). */
+const HINGLISH = /\b(hai|hain|ho|hota|hoti|hote|ko|ka|ki|ke|mein|me|se|par|aur|ya|toh|to|kya|kitna|kitni|kitne|kaun|kaunsa|kaunsi|kaise|kyun|nahi|nahin|yeh|ye|woh|wo|isme|isko|usko|apna|apni|dekho|batao|socho|chalo|ab|phir|jab|agar|bhi|sirf|wala|wali|wale|liye|tak|baad|pehle|ek|do|teen|char|chaar|paanch|ne|kisne|kisko|kyunki|kam|zyada|bada|badi|chhota|chhoti|khaya|kiya|liya|diya|gaya|hua|lagta|lagti|dono|sabse|kitna|matlab|jaise|waala|barabar|hissa|hisse)\b/i;
+/** F1: a spoken/shown field is { hi, en }, both present, and hi reads as Hinglish. */
+export function saidErrors(x, at) {
+  if (!x || typeof x !== "object" || typeof x.hi !== "string" || typeof x.en !== "string" || !x.hi.trim() || !x.en.trim()) return [`${at}: not a Said { hi, en }`];
+  const e = [];
+  if (!HINGLISH.test(x.hi)) e.push(`${at}: hi reads as English ("${x.hi.slice(0, 50)}")`);
+  if (/!/.test(x.hi) || /!/.test(x.en)) e.push(`${at}: '!' in a spoken line`);
+  return e;
+}
+const keyedErrors = (a, at, mis) => {
+  if (!a || typeof a !== "object") return [`${at}: no keyed ask`];
+  const e = saidErrors(a.prompt, `${at}.prompt`);
+  if (a.key == null || String(a.key).trim() === "") e.push(`${at}: no key`);
+  else if (leaks(a.prompt?.hi ?? "", a.key) || leaks(a.prompt?.en ?? "", a.key)) e.push(`${at}: prompt prints its key`);
+  if (a.targets !== undefined && !mis.has(a.targets)) e.push(`${at}: targets ${a.targets}, not a kit misconception`);
+  if (a.wrongIfMis !== undefined && String(a.wrongIfMis).trim() === String(a.key).trim()) e.push(`${at}: wrongIfMis equals the key`);
+  return e;
+};
+
+/** S (v2, dc-r7-script-walk-v2): F1 Hinglish Said fields, F2 keyed explain beats, F3 worked yourStep, F4 slots that fit. */
+export function structureErrorsV2(s, kit) {
+  const e = [];
+  if (!kit) return [`no kit topic ${s.topicId}`];
+  if (s.skills.map((k) => k.skillId).join() !== kit.skills.map((k) => k.id).join()) e.push("skills are not the kit's, in kit order");
+  const mis = new Set(kit.misconceptions.map((m) => m.id)), items = new Map(kit.items.map((i) => [i.id, i]));
+  const words = s.__interests ?? {};
+  for (const k of s.skills) {
+    const at = (x) => `${k.skillId}/${x}`;
+    if (!k.hook?.convey || !(k.hook.interestSlots?.length >= 1)) e.push(at("hook"));
+    for (const [i, sl] of (k.hook?.interestSlots ?? []).entries()) {
+      e.push(...saidErrors(sl.use, at(`hook.slot${i}.use`)));
+      const ws = words[sl.interest];
+      if (!ws) e.push(at(`hook.slot${i}: interest '${sl.interest}' is not one of the 12`));
+      else if (!ws.some((w) => new RegExp(`\\b${w}`, "i").test(sl.use?.hi ?? ""))) e.push(at(`hook.slot${i}: use.hi names no ${sl.interest} word`));
+    }
+    if (!(k.explain.length >= 1 && k.explain.length <= 4)) e.push(at("explain: 1-4 beats"));
+    for (const [i, b] of k.explain.entries()) {
+      if (!b.convey) e.push(at(`${b.id}: convey`));
+      if (!(b.mustSay?.length >= 1 && b.mustSay.length <= 3)) e.push(at(`${b.id}: 1-3 mustSay`));
+      for (const [j, m] of (b.mustSay ?? []).entries()) e.push(...saidErrors(m, at(`${b.id}.mustSay${j}`)).filter((x) => !/reads as English/.test(x)));   // a term may be one word
+      if (b.point) e.push(...saidErrors(b.point, at(`${b.id}.point`)));
+      if (b.board && !b.point) e.push(at(`${b.id}: a board with no spoken point`));
+      e.push(...keyedErrors(b.ask, at(`${b.id}.ask`), mis));
+      if (i === 0 && !b.ask) e.push(at("F2: the first beat ends in no keyed question"));
+    }
+    const we = k.workedExample ?? {};
+    for (const f of ["problem", "find", "answer", "why"]) e.push(...saidErrors(we[f], at(`we.${f}`)));
+    for (const [j, g] of (we.givens ?? []).entries()) e.push(...saidErrors(g, at(`we.given${j}`)));
+    if (!(we.steps?.length >= 1)) e.push(at("we: at least one shown step before yourStep"));
+    for (const [j, st] of (we.steps ?? []).entries()) {
+      e.push(...saidErrors(st.do, at(`we.step${j}.do`)), ...saidErrors(st.why, at(`we.step${j}.why`)));
+      if (st.result == null || String(st.result).trim() === "") e.push(at(`we.step${j}: no result`));
+    }
+    e.push(...keyedErrors(we.yourStep, at("we.yourStep"), mis));
+    const keyNum = String(we.yourStep?.key ?? "").match(/\d+(?:[./]\d+)?/)?.[0];
+    if (keyNum && !String(we.answer?.en ?? "").includes(keyNum)) e.push(at(`we: answer.en does not carry yourStep's key ${keyNum}`));
+    if (/_{2,}/.test(JSON.stringify(we))) e.push(at("we: faded blanks"));
+    if (k.checks.length < 2 || k.checks.length > 3) e.push(at("2-3 checks"));
+    for (const c of k.checks) {
+      e.push(...keyedErrors({ ...c }, at(c.id), mis));
+      if (!c.targets) e.push(at(`${c.id}: targets`));
+      if (!c.wrongIfMis) e.push(at(`${c.id}: wrongIfMis`));
+      const p = c.board?.params ?? {};
+      if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
+    }
+    if (k.ladder.length < 3) e.push(at("ladder: fewer than 3 rungs"));
+    for (const r of k.ladder) if (!items.has(r.itemId)) e.push(at(`ladder ${r.itemId} is not a kit item`));
+    const targeted = new Set([...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)].filter(Boolean));
+    const remFor = new Set(k.remediation.map((r) => r.targets));
+    for (const t of targeted) if (!remFor.has(t)) e.push(at(`no remediation for ${t}`));
+    for (const [j, r] of k.remediation.entries()) {
+      if (!mis.has(r.targets) || !r.move) e.push(at(`remediation${j} ${r.targets}`));
+      e.push(...saidErrors(r.say, at(`rem${j}.say`)), ...keyedErrors(r.then, at(`rem${j}.then`), mis));
+      if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move ?? "")) e.push(at("remediation falls back to counting"));
+    }
+    if (k.bridgeToNext != null) e.push(...saidErrors(k.bridgeToNext, at("bridgeToNext")));
+    for (const b of beatsOf(k, 2)) if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
+  }
+  if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
+  const checked = new Set(s.skills.flatMap((k) => [...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)]).filter(Boolean));
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   return e;
 }
@@ -108,7 +209,7 @@ export async function boardErrors(s, kit) {
     import("../../server/forge/explainer/board-ref.js"), import("../../server/forge/explainer/templates.js"),
     import("../../server/studio/qa/whiteboard.js"), import("../../server/stagecraft/board-sync.js")]);
   const errors = [], w6 = [];
-  for (const k of s.skills) for (const b of beatsOf(k)) {
+  for (const k of s.skills) for (const b of beatsOf(k, s.version ?? 1)) {
     const r = resolveBoardRef(b.board, { kit });
     if (!r.ok) { errors.push(`${k.skillId}/${b.id}: ${r.why}`); continue; }
     const text = String(b.line ?? "");
@@ -124,7 +225,14 @@ export async function boardErrors(s, kit) {
 
 /** V: Brain's runtime validator. → error strings */
 export async function runtimeErrors(s, kit) {
-  const { validateTopicScript } = await import("../../server/director/script.js");
+  const m = await import("../../server/director/script.js");
+  if ((s.version ?? 1) >= 2) {
+    // Brain's v2 validator (dc-r7-script-walk-v2): per skill until a topic-level one exists
+    if (m.validateTopicScriptV2) { const r = m.validateTopicScriptV2(s, kit); return [...(r.errors ?? []).map(String), ...((r.ok ?? []).length !== s.skills.length ? [`walkable ${(r.ok ?? []).length}/${s.skills.length}`] : [])]; }
+    if (m.validateSkillScriptV2) return s.skills.flatMap((k) => { const r = m.validateSkillScriptV2(k, kit, s); return (r?.errors ?? (Array.isArray(r) ? r : [])).map((x) => `${k.skillId}: ${typeof x === "string" ? x : JSON.stringify(x)}`); });
+    return ["Brain's v2 validator is not in this tree yet (server/director/script.js validateSkillScriptV2)"];
+  }
+  const { validateTopicScript } = m;
   const r = validateTopicScript(s, kit);
   const e = (r.errors ?? []).map((x) => (typeof x === "string" ? x : JSON.stringify(x)));
   if ((r.ok ?? []).length !== s.skills.length) e.push(`walkable ${(r.ok ?? []).length}/${s.skills.length} skills`);
@@ -134,6 +242,7 @@ export async function runtimeErrors(s, kit) {
 /** All three gates for one topic. */
 export async function checkTopic(topicId) {
   const s = scriptOf(topicId), kit = kitTopic(topicId);
+  if ((s.version ?? 1) >= 2) Object.defineProperty(s, "__interests", { value: await interestWords(), enumerable: false });
   const S = structureErrors(s, kit);
   const W = kit ? await boardErrors(s, kit) : { errors: [], w6: [] };
   const V = kit ? await runtimeErrors(s, kit) : [];
@@ -143,6 +252,22 @@ export async function checkTopic(topicId) {
 /** The blind solver's packet (prompts only) and the matching keys, for every check and remediation follow-up. */
 export function blindPacket(topicId) {
   const s = scriptOf(topicId), questions = [], keys = [], examples = [];
+  if ((s.version ?? 1) >= 2) {
+    // v2: every keyed question the child is asked (explain asks, the worked yourStep with the steps shown before it,
+    // checks, remediation follow-ups), in English for the solver; keys stripped
+    const ask = (id, prompt, a, extra = {}) => { questions.push({ id, classLevel: s.classLevel, prompt: prompt.en, ...extra }); keys.push({ id, key: a.key, accept: a.accept ?? [] }); };
+    for (const k of s.skills) {
+      // an explain ask follows her spoken point (and what the board shows); a remediation follow-up follows her say
+      for (const b of k.explain) ask(`${k.skillId}/${b.id}`, b.ask.prompt, b.ask, b.point ? { context: { saidJustBefore: b.point.en } } : {});
+      const we = k.workedExample;
+      ask(`${k.skillId}/we`, we.yourStep.prompt, we.yourStep, { context: { problem: we.problem.en, shownSteps: we.steps.map((x) => `${x.do.en}: ${x.result}`) } });
+      for (const c of k.checks) ask(`${k.skillId}/${c.id}`, c.prompt, c);
+      k.remediation.forEach((r, i) => ask(`${k.skillId}/rem${i + 1}`, r.then.prompt, r.then, r.say ? { context: { saidJustBefore: r.say.en } } : {}));
+      examples.push({ id: `${k.skillId}/we`, classLevel: s.classLevel, problem: we.problem.en, givens: we.givens.map((g) => g.en), find: we.find.en,
+        steps: [...we.steps.map((x) => ({ do: x.do.en, result: x.result, why: x.why.en })), { do: "(the child's step)", result: we.yourStep.key }], answer: we.answer.en, why: we.why.en });
+    }
+    return { questions, keys, examples };
+  }
   for (const k of s.skills) {
     for (const c of k.checks) { const id = `${k.skillId}/${c.id}`; questions.push({ id, classLevel: s.classLevel, prompt: c.prompt }); keys.push({ id, key: c.key, accept: c.accept ?? [] }); }
     k.remediation.forEach((r, i) => { const id = `${k.skillId}/rem${i + 1}`; questions.push({ id, classLevel: s.classLevel, prompt: r.then }); keys.push({ id, key: r.thenKey, accept: r.thenAccept ?? [] }); });
