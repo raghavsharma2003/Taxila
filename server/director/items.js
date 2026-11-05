@@ -160,6 +160,8 @@ export function findItem(s, kit, id) {
   if (id.startsWith("fade:")) return addressed(s?.fadeItem?.id === id ? s.fadeItem : null, address);
   // round 7 A6: her teaching question as a keyed micro-item (state.js stepCheckItem), pinned in the state while it is asked
   if (id.startsWith("check:")) return addressed(s?.stepCheck?.id === id ? s.stepCheck : null, address);
+  // round 7 T2: a lesson script's check (or a remediation's follow-up), pinned in the state while it is the card
+  if (id.startsWith("script:")) return addressed(s?.scriptCard?.id === id ? s.scriptCard : null, address);
   return addressed(kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null, address);
 }
 

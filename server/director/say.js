@@ -200,7 +200,8 @@ export function screenProblem(text, ui, module, { coming = false } = {}) {
     // acting on the screen needs something to act on (and never a board drawn to be watched)
     if (act && (!screenHasTargets(ui, module) || (watchOnly(module) && !ui?.chips?.length))) return true;
     // r12 RCA failure 5: LOOKING needs only something to look at — a whiteboard counts; what it shows is checked below
-    if (!act && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
+    // (round 7 T4, stage-aware: a board this turn brings — a scripted beat's, a picture asked for — is something to look at)
+    if (!act && !coming && !screenHasTargets(ui, module) && !ui?.studioSlot?.artifact) return true;
   }
   // census F3: she points at a diagram / picture and nothing is on the stage (and nothing is coming this turn)
   if (!coming && emptyStage(ui, module) && POINT_DIAG.test(t)) return true;

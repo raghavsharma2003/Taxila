@@ -1,6 +1,7 @@
 // round 7 (dc-r7-teaching-scripts, T-schema): a topic's lesson script (shared/contracts.ts TopicScript, Learning's
 // LESSON-SCRIPTS-SPEC.md shape) checked in code against its kit before the Director may walk it. A skill whose script fails is
 // never walked (the lesson keeps the kit path for it). PURE.
+import { readFileSync as readScriptFile } from "fs";
 import { belowLevel, rateAsFraction } from "../brain/say.js";
 export { rateAsFraction };
 
@@ -134,4 +135,60 @@ export function validateTopicScript(sc, kit) {
     errors.push(...e);
   }
   return { ok, errors };
+}
+
+// ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
+export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
+const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
+const loaded = new Map();
+/** Tests: a script for a topic in place of data/lesson-scripts (null: none); no argument clears every override and the cache. */
+export function setScriptForTest(topicId, script) { if (topicId === undefined) { loaded.clear(); return; } loaded.set(`test:${topicId}`, script); loaded.delete(topicId); }
+/**
+ * The topic's validated script: { script, ok } (ok: the skill ids the Director may walk), or null (no script, or none walkable).
+ * Read once per topic per process.
+ */
+export function scriptFor(kit) {
+  const id = kit?.topicId;
+  if (!id || !scriptOn()) return null;
+  if (!loaded.has(id)) {
+    let sc = loaded.has(`test:${id}`) ? loaded.get(`test:${id}`) : undefined;
+    // under node --test the files are read only with TAXILA_R7_SCRIPT=on, so the kit-path suites stay as written when
+    // scripts land in data/lesson-scripts; a test that walks a script sets one with setScriptForTest
+    const fileOk = !process.env.NODE_TEST_CONTEXT || /^on$/i.test(String(process.env.TAXILA_R7_SCRIPT ?? ""));
+    if (sc === undefined && fileOk) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, SCRIPT_DIR), "utf8")); } catch { sc = null; } }
+    sc ??= null;
+    const v = sc ? validateTopicScript(sc, kit) : null;
+    loaded.set(id, v?.ok.length ? { script: sc, ok: new Set(v.ok) } : null);
+  }
+  return loaded.get(id);
+}
+/** A walkable skill's script, or null. */
+export function skillScriptOf(kit, skillId) {
+  const f = scriptFor(kit);
+  return f?.ok.has(skillId) ? f.script.skills.find((k) => k.skillId === skillId) ?? null : null;
+}
+export const scriptIdOf = (kit) => { const f = scriptFor(kit); return f ? `${f.script.topicId}@${f.script.version ?? 1}` : null; };
+/** The beats of a skill, in order: the hook (the lesson's first skill only), each explain beat, the worked example, each check. */
+export function walkBeats(sk, { hook = false } = {}) {
+  return [...(hook ? ["hook"] : []), ...(sk.explain ?? []).map((b) => `explain:${b.id}`), "worked", ...(sk.checks ?? []).map((c) => `check:${c.id}`)];
+}
+const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind: "practice", difficulty: 1, prompt_en: prompt, prompt_hi: prompt,
+  answer: String(key), acceptable: [...(accept ?? [])].map(String), hints: [], ...extra });
+/** A script check as a keyed card (the classifier grades it against its key, like any item). */
+export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
+  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis } });
+/** A remediation's follow-up question as a keyed card. */
+export const scriptThenItem = (skillId, r) => keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } });
+const WORDS = {
+  hinglish: { given: "Diya hai", first: "Pehle", then: "Phir", answer: "Toh jawab" },
+  hindi: { given: "Diya hai", first: "Pehle", then: "Phir", answer: "Toh jawab" },
+  english: { given: "Given", first: "First", then: "Then", answer: "So the answer is" },
+};
+const dot = (t) => String(t).trim().replace(/[.;,]+$/, "") + ".";
+/** The script's worked example as code lines (brain/say.js speaks them after one framing sentence): givens, each step's result, the answer. */
+export function scriptWorkedLines(w, lang = "hinglish") {
+  const W = WORDS[lang] ?? WORDS.hinglish;
+  const steps = (w?.steps ?? []).map((x) => String(x?.result ?? "").trim()).filter(Boolean);
+  if (steps.length < 2 || !String(w?.answer ?? "").trim()) return null;
+  return [dot(`${W.given}: ${(w.givens ?? []).join(", ")}`), ...steps.map((r, i) => dot(`${i === 0 ? W.first : W.then}: ${r}`)), dot(`${W.answer}: ${w.answer}`)];
 }

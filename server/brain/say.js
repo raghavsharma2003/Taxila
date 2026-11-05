@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection } from "../director/say.js";
+import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -104,6 +104,17 @@ export function negatesAnswer(text, childText) {
   const said = String(childText ?? "").replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
   if (!said || said.split(" ").length > 3) return false;
   return negationOf(said).test(String(text ?? ""));
+}
+// round 7 T3 (dc-r7-teaching-scripts, the listening contract; kill switch TAXILA_R7_LISTEN=off)
+export const listenOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_LISTEN ?? ""));
+/** A sentence that tells them their answer is not right (or not yet). */
+export const NOT_RIGHT = /(?<![\p{L}])(?:nahi|nahin|nhi|nahiin|galat|not|wrong|almost|lagbhag|close|isn'?t|no|oops|chook|thoda\s+(?:sa\s+)?(?:alag|aur))(?![\p{L}])|नहीं|गलत/iu;
+/** The code lead that corrects a wrong answer their line left uncorrected: names their answer when it was short. */
+export function notRightLead(said, lang = "hinglish") {
+  const x = String(said ?? "").replace(/[?？!.]+$/, "").trim();
+  const short = x && x.split(/\s+/).length <= 3 ? x : "";
+  if (lang === "english") return short ? `Not quite, ${short} isn't it.` : "Not quite.";
+  return short ? `${short} sahi nahi hai.` : "Nahi, yeh jawab nahi hai.";
 }
 /** Her line with the negation of their answer taken out ("Riya, 4 nahi—rectangle mein…" → "Riya, rectangle mein…"). */
 export function withoutNegation(text, childText) {
@@ -775,7 +786,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (never on a safeguard turn: its reassurance is no feedback on an answer, and no pedagogy guard rewrites safety copy)
     kindNow !== "safeguard" && praiseOf(t) === "claims" && "claim",
     right && correctsRight(t, right) && "corrects",
-    screenProblem(t, ui, module, { coming: !!state.lastMove?.visual && state.lastMove?.request === "visual" }) && "screen",
+    screenProblem(t, ui, module, { coming: (!!state.lastMove?.visual && state.lastMove?.request === "visual") || (!!state.lastMove?.scriptBeat?.board && !ui?.studioSlot) }) && "screen",
     // W2-B #1: the line names parts the mounted module does not show (she said quarters over fifths). Her OWN words only:
     // the kit's posed question is verified content (W2-E: the replay showed the predicate flagging a verified question
     // that names halves/quarters/eighths beside a 1/2-only predict screen, which cost a rewrite and her lead-in).
@@ -797,6 +808,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
     // (full-run judgement #4) their number answer to her own question is answered, never ignored
     ownQAnswered && bareNumberSaid && !String(t).includes(bareNumberSaid) && "ignored",
+    // round 7 T3 (listening contract): their own question is answered first, never met with a question back
+    listenOn() && kindNow !== "safeguard" && !checkin && wordsVerdict === "ungraded" && childAsks(childText) && !state.lastMove?.request?.startsWith?.("visual")
+      && /[?？]\s*$/.test(sentences(String(t))[0] ?? "") && "dodged",
     // (full-run judgement #6, #5)
     kindNow !== "safeguard" && belowLevel(t, state.ctx?.classLevel, kitText) && "level",
     !CLOSING_MOVES.has(kindNow) && answerInQuestion(t) && "answerinq",
@@ -1100,6 +1114,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("level") && `it is below class ${state.ctx?.classLevel} (counting on, a tiny sum of your own, or how many sides a shape has) — help at their class's level: show the step itself, then back to the question`,
       found.includes("answerinq") && "its question asks for what your line just said (the answer is inside the question) — ask for the next thing they work out, not what you told them",
       found.includes("underived") && `it puts a number on the card (${underived(reply, item, kit?.workedExample?.problem)}) that they never saw come from anywhere — first say in one line the step that made it, then the card`,
+      found.includes("dodged") && "they asked you a question: your first sentence answers it plainly (or, if it is for later, says when you will come back to it), never a question back",
       found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — respond to it first (what fits, what does not, the right one if it is not), then go on`,
       found.includes("samecard") && "it reads the question on the screen word for word again, as your last turn did — ask it in fresh words, keeping its numbers",
       found.includes("readscard") && `it reads the English question card aloud — ask that question in your own words in their language instead, keeping its numbers`,
@@ -1369,6 +1384,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         const cut = reply.replace(new RegExp(`^\\s*${nm}\\s*[,—–-]\\s*`, "i"), "");
         if (cut !== reply && cut.trim()) { reply = cut.charAt(0).toUpperCase() + cut.slice(1); guard.repaired = true; }
       }
+    }
+    // round 7 T3 (listening contract): a wrong answer is ALWAYS corrected, first: graded wrong (or wrong to her own closed sum),
+    // and her first sentence does not say it is not right → code says it before her line (never on a safeguard or closing turn)
+    if (listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && answeredNow && (verdict === "not_yet" || selfV === "incorrect")
+      && !NOT_RIGHT.test(sentences(reply)[0] ?? reply)) {
+      // (their words carrying the key — "1/3" said of a 1/3 card in a wrong form — are never repeated: that would say the key)
+      const key = String(item?.answer ?? "").trim();
+      reply = `${notRightLead(key && saidNow.includes(key) ? "" : saidNow, lang)} ${reply}`.trim();
+      guard.repaired = true; guard.caught = [...guard.caught, "uncorrected"];
     }
     const tidied = tidyAround(reply, pinned ? askEnd : null);
     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }

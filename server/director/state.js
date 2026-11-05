@@ -34,6 +34,7 @@ import {
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
+import { scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -508,6 +509,99 @@ export function skillWorkedExample(s, kit, skillId, exceptId) {
   const c = cands[0];
   return c ? { itemId: c.i.id, problem: c.i.prompt_en || c.i.prompt_hi, steps: c.steps, answer: String(c.i.answer) } : null;
 }
+// ───────────── round 7 T2 (dc-r7-teaching-scripts): the Director walks the lesson script ─────────────
+// A skill with a validated script (director/script.js) is taught beat by beat: the move IS the next beat (hook, each explain
+// beat with its board, the full worked example, each keyed check as the card), then the script's ladder of the kit's own
+// items; a wrong check gets that misconception's remediation and its keyed follow-up. The reply model only renders the beat.
+// A skill without one keeps the kit path. Kill switch TAXILA_R7_SCRIPT=off.
+/** Start walking a skill's script (once per skill per lesson). false: no walkable script. */
+function walkStart(s, kit, skillId, { hook = false } = {}) {
+  if (!scriptOn() || (s.walked ?? []).includes(skillId)) return false;
+  const sk = skillScriptOf(kit, skillId);
+  if (!sk) return false;
+  const prev = s.walked?.length ? skillScriptOf(kit, s.walked.at(-1)) : null;
+  s.walked = [...(s.walked ?? []), skillId];
+  s.walk = { skillId, beats: walkBeats(sk, { hook }), i: 0, ladder: (sk.ladder ?? []).map((r) => r.itemId), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext } : {}) };
+  // (the S3 card bridge would say it again on its first check)
+  if (oneLiveOn()) s.lastCardSkill = skillId;
+  return true;
+}
+/** The walk's next beat as a plan; null when its beats are done (the ladder then poses). */
+function walkNext(s, input, prefix) {
+  const { kit } = input;
+  const w = s.walk;
+  const sk = w ? skillScriptOf(kit, w.skillId) : null;
+  if (!sk) { s.walk = undefined; return null; }
+  const skillId = w.skillId;
+  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}) } });
+  while (w.i < w.beats.length) {
+    const [kind, id] = w.beats[w.i].split(":");
+    w.i += 1;
+    if (!s.introduced.includes(skillId)) s.introduced.push(skillId);
+    if (skillArcOn()) s.arcSkill = skillId;
+    const bridge = w.bridge && kind !== "check" ? w.bridge : null;
+    if (bridge) delete w.bridge;
+    const bridgeLine = bridge ? [`bridge from what they just did: ${bridge}`] : [];
+    if (kind === "hook") {
+      const interest = interestFor(kit, s.ctx.interests, 0);
+      return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`,
+        `their world: ${sk.hook.slotUse}; e.g. ${interest ?? sk.hook.interestSlots[0]}`], ...ref("hook", "hook") });
+    }
+    if (kind === "explain") {
+      const b = sk.explain.find((x) => x.id === id);
+      if (!b) continue;
+      return plan("explain", join(prefix, SH.scriptExplain({ bridge: !!bridge, board: !!b.board })), { skillId, format: formatFor(s, kit, skillId),
+        content: [...bridgeLine, `the idea: ${b.convey}`, ...(b.point ? [`on the board, point at: ${b.point}`] : []),
+          ...(b.terms?.length ? [`words: ${b.terms.join(", ")}`] : [])], ...ref("explain", b.id, b.board) });
+    }
+    if (kind === "worked") {
+      const we = sk.workedExample;
+      const lines = workedCodeOn() ? scriptWorkedLines(we, s.ctx.lang) : null;
+      return plan("worked_example", join(prefix, SH.scriptWorked()), { skillId, format: "F2", stuck: true,
+        content: [...bridgeLine, `worked example: ${we.problem}`, `find: ${we.find}`, `steps: ${we.steps.map((x) => `${x.do} → ${x.result}`).join("; ")}`,
+          `answer: ${we.answer}`, `why it is right: ${we.why}`],
+        whiteboard: { kind: "math", value: clip(we.problem) }, ...(lines ? { rendered: lines } : {}), ...ref("worked", "worked", we.board) });
+    }
+    if (kind === "check") {
+      const c = sk.checks.find((x) => x.id === id);
+      if (!c) continue;
+      const item = scriptCheckItem(skillId, c);
+      if (s.itemsDone.includes(item.id) || s.skipped.includes(item.id)) continue;
+      s.scriptCard = item; s.phase = "practice";
+      activate(s, item);
+      return plan("practice", SH.pose({ item, prefix }), { item, probe: probeFor(item), ...ref("check", c.id, c.board) });
+    }
+  }
+  return null;
+}
+/** The script's ladder: its next kit item not yet done; the walk ends when the ladder is spent. */
+function walkLadder(s, kit) {
+  const w = s.walk;
+  if (!w) return null;
+  const gone = new Set([...s.itemsDone, ...s.skipped]);
+  for (const id of w.ladder) { if (gone.has(id)) continue; const it = findItem(s, kit, id); if (it) return it; }
+  s.walk = undefined;
+  return null;
+}
+/** A wrong answer to a scripted check: that misconception's remediation (once per misconception), then its keyed follow-up. */
+function walkRemedy(s, input, item) {
+  const { kit } = input;
+  const targets = item.scriptCheck?.targets;
+  if (!targets || verdict(input.cls) !== "wrong" || (s.remedied ?? []).includes(targets)) return null;
+  const r = skillScriptOf(kit, item.skillId)?.remediation?.find((x) => x.targets === targets);
+  if (!r) return null;
+  s.remedied = [...(s.remedied ?? []), targets];
+  s.skipped.push(item.id);
+  s.activeItemId = undefined; s.hintLevel = 0;
+  const then = scriptThenItem(item.skillId, r);
+  s.scriptCard = then; s.nextItemId = then.id;
+  const mis = kit.misconceptions.find((m) => m.id === targets);
+  logReteach(s, "kit", item.skillId, mis ?? null);
+  return plan("reteach", SH.scriptRemedy(), { skillId: item.skillId,
+    content: [`their question: ${item.prompt_en}`, `its answer: ${item.answer}`, ...(mis?.belief ? [`the wrong idea: ${mis.belief}`] : []),
+      `the new way: ${r.move}`, `follow-up question: ${r.then}`],
+    scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}) } });
+}
 // ───────────── round 7 A6: teaching-question evidence (PIPELINE §A Brain item 3; kill switch TAXILA_R7_STEP_CHECK=off) ─────────────
 export const stepCheckOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_STEP_CHECK ?? ""));
 // the LAST "= N" with a known unit (or none), then punctuation, a clause break or the end ("= 13, so…", "= ₹300", "= 120°");
@@ -523,6 +617,8 @@ export const frustrationNewWayOn = (env = process.env) => !/^(off|0|false)$/i.te
 /** round 7 (main's hybrid-pilot judgement #3): a goodbye gets the stop check-in first (TAXILA_R7_BYE_CHECKIN=off: ends at once). */
 export const byeCheckInOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_BYE_CHECKIN ?? ""));
 /** round 7 (main's hybrid-pilot judgement #2): change_topic parks and comes back (TAXILA_R7_PARK_TOPIC=off: the ways-in offer). */
+/** round 7 T3: the wrap waits until every parked promise is returned (TAXILA_R7_WRAP_BLOCK=off: one folded into the wrap). */
+export const wrapBlockOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_WRAP_BLOCK ?? ""));
 export const parkTopicOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_PARK_TOPIC ?? ""));
 
 export function stepCheckItem(kit, skillId, we, i) {
@@ -602,6 +698,14 @@ function teach(s, input, prefix) {
   }
   // QA 14.4.1 (65fae3d0, 3e2fcb15): a child who could not follow the teaching ("pata nahi", or off somewhere else) is SHOWN
   // the worked steps, never asked to compute the next one (SH.worked stuck)
+  // round 7 T2: the first skill's teaching is its script when it has one (the Ask/homework and first-step paths keep theirs)
+  if (scriptOn() && !s.walk && !(s.walked ?? []).length) {
+    const rest = s.teachPlan.slice(s.teachIdx);
+    if (rest.length && rest.every((x) => ["hook", "explain", "worked_example", "fade"].includes(x)) && walkStart(s, kit, kit.skills[0].id, { hook: rest.includes("hook") })) {
+      s.teachIdx = s.teachPlan.length; s.fadeItem = undefined;
+    }
+  }
+  if (s.walk) { const w = walkNext(s, input, prefix); if (w) return w; s.phase = "practice"; return poseNext(s, input, prefix); }
   const replied = input.event === "turn" && ["hook", "explain", "worked_example"].includes(s.lastMove?.kind) ? verdict(input.cls) : null;
   const shown = () => stepMissed || replied === "stuck" || replied === "off" || ["fade.not_landed", "first_step.stuck"].includes(s.guidance?.reason);
   while (s.teachIdx < s.teachPlan.length) {
@@ -756,7 +860,15 @@ function poseNext(s, input, prefix, preferred) {
     return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 1, stuck: true })), { skillId, format: "F2", stuck: true,
       content: [`worked example: ${we.problem}`, `steps: ${we.steps.join(" → ")}`, `its answer: ${we.answer}`], whiteboard: { kind: "math", value: clip(we.problem) } });
   }
+  // round 7 T2: the script's next beat (a check card), then its ladder (a queued follow-up goes first)
+  let ladder = null;
+  if (s.walk && !s.nextItemId) {
+    const w = walkNext(s, input, prefix);
+    if (w) return w;
+    ladder = walkLadder(s, kit);
+  }
   if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
+  if (ladder && !preferred) preferred = ladder;
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
   const verifying = s.verify && !skipped.has(`diag:${s.verify}`) ? findItem(s, kit, `diag:${s.verify}`) : null;
@@ -765,6 +877,10 @@ function poseNext(s, input, prefix, preferred) {
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
   if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
   // A skill nobody has explained yet gets one short explain turn first (novices; experienced attempt first).
+  if (!s.introduced.includes(item.skillId) && walkStart(s, kit, item.skillId)) {
+    const w = walkNext(s, input, prefix);
+    if (w) return w;
+  }
   if (!s.introduced.includes(item.skillId)) {
     s.introduced.push(item.skillId); s.nextItemId = item.id;
     const sk = kit.skills.find((x) => x.id === item.skillId);
@@ -902,6 +1018,9 @@ function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
   if (verdict(input.cls) === "wrong") s.misses = { ...(s.misses ?? {}), [item.id]: (s.misses?.[item.id] ?? 0) + 1 };
   const { kit, cls } = input;
+  // round 7 T2: a scripted check answered wrong gets its misconception's scripted remediation and keyed follow-up
+  const remedy = scriptOn() ? walkRemedy(s, input, item) : null;
+  if (remedy) return remedy;
   notePace(s, item, false);
   // a parked skill (V1.4: wheel-spinning ahead) stops here: the item is left, the engine's re-teach takes it next lesson
   if (s.pace?.parkedSkills?.includes(item.skillId) && !item.fade && s.hintLevel < 4) {
@@ -1667,8 +1786,19 @@ function toWrap(s, { prefix, stopping = false }) {
   // never on a child's stop or goodbye (letting them go is quick: NEVER MANIPULATE)
   if (!stopping && p5Flag("R4CONV") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share })); s.servedNow = { topic: due.topic, share: !!due.share }; }
+    if (due) {
+      s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share };
+      // round 7 T3 (listening contract): a parked promise is RETURNED before the wrap, on a turn of its own; the wrap waits (the
+      // next turn wraps, or returns the next open one). TAXILA_R7_WRAP_BLOCK=off: folded into the wrap as before
+      if (wrapBlockOn()) {
+        s.wrapAfter = { prefix: prefix ?? null };
+        s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
+        return plan("repair", join(SH.returnParked({ topic: due.topic, share: !!due.share }), SH.returnedTurn({ share: !!due.share })), { request: "returned" });
+      }
+      prefix = join(prefix, SH.returnParked({ topic: due.topic, share: !!due.share }));
+    }
   }
+  s.wrapAfter = undefined;
   s.stopAsked = undefined; s.sidebar = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
@@ -2015,6 +2145,8 @@ function decide(s, input, item) {
     if (s.equity === "low" && s.phase === "practice") return plan("break", SH.takeBreakOneStep(), { chips: [{ id: "break:easier", label: labels.easier }] });
     return plan("break", SH.takeBreak(), { chips: [{ id: "break:easier", label: labels.easier }, { id: "break:rest", label: labels.rest }, { id: "break:continue", label: labels.go }] });
   }
+  // round 7 T3: a wrap held for a parked promise goes on now (or returns the next open one)
+  if (s.wrapAfter) { const w = s.wrapAfter; s.wrapAfter = undefined; return toWrap(s, { prefix: w.prefix ?? undefined }); }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
     case "teach": return ackHold(s, input) ?? bluffCheck(s, input) ?? teach(s, input);
@@ -2265,6 +2397,8 @@ export function step(prev, input) {
   if (p.rendered?.length) move.rendered = [...p.rendered];
   // round 7 S3: the answer of a card let go after two misses plus help, said in code (brain/say.js)
   if (p.gave?.answer) move.gave = { ...p.gave };
+  // round 7 T2: the script beat this move renders (brain/propose.js puts its board on Studio's ask as intent.boardRef)
+  if (p.scriptBeat) move.scriptBeat = { ...p.scriptBeat };
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {
