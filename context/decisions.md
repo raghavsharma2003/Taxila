@@ -7702,3 +7702,107 @@ reversal: director4 or the owner find scenes crowd out the live board on explana
 **Reverse if:** director6 meets K1, G1–G3 and SC1 and still delivers fewer than 80% of explain beats. Then explain beats also become near-verbatim authored speech, which is the full authored voice. The model would keep only verdict framing and diversions.
 
 Rationale and the judges’ split on the reversal: see the section "On reversing" in docs/design/round7/judgements/director5-2026-11-05.md.
+
+
+<!-- merged from inbox/r7-app-11.json -->
+## `dc-r7-app-notebook-jar`
+Re-sent edge only: the Questions page is part of the Notebook decision `dc-r7-app-notebook-made` (the r7-app-10 edge was skipped because both nodes arrived in the same merge).
+
+
+<!-- merged from inbox/r7-app-12.json -->
+## `dc-r7-app-older-emblems`
+This came from the 9-15 onboarding sweep. The first thing a 13-year-old chose was a cartoon red panda in a circle, which is exactly the 'looks like it's for a 5-year-old' the owner flagged. Older children now pick an emblem in the same visual language as the rest of the app. Nothing a child already chose changes, and younger children keep the animals. The sweep found nothing babyish in the parent set-up (Learning's screens).
+
+
+<!-- merged from inbox/r7-app-13.json -->
+## `dc-r7-app-ask-voice`
+This is a voice-first product, and Ask was the one child screen where the only way in was typing. Now a child can say the question, see what Asha heard, and fix a misheard word before asking. That matters because a misheard question would start a whole lesson on the wrong thing. There is no new recognizer: the same server ASR that hears the child in lessons hears them here. Nothing is stored on the device, and the clip is sent once.
+
+
+<!-- merged from inbox/r7-app-14.json -->
+## `dc-r7-app-pwa`
+The owner tests on a mid-range Android phone, so Taxila should open from its own icon and look like the product from the first frame. The icon is the app's own Volt mark, and the splash, the first paint and the app share one dark ground. The worker exists only to make the app open fast and survive a dead signal: it holds the app's code and look, never a lesson, a plan, an answer or anything a child said or made. If offline, the child gets the app's own offline screen, never a stale lesson.
+
+
+<!-- merged from inbox/r7-brain-11.json -->
+## `dc-r7-brain-script-walk-v3` (2026-11-05, stream A Brain)
+
+Main's director5 judgement (docs/design/round7/judgements/director5-2026-11-05.md) failed the scale gate on every line. Its consensus causes were: the wrong question graded, code layers stripping teaching, authored remediation never spoken, a glued worked example, and verdict sequencing. The Brain half of dc-r7-script-walk-v3 is built as follows. Every switch is on by default and has a kill switch.
+
+- **K1** (TAXILA_R7_K1)
+  - verdictFor grades a probe or teach-back target only as correct or misconception, never as not_yet.
+  - A not_yet is undone when it follows a correct verdict on the same words.
+  - Code's 'not right' lead goes only on a graded not_yet. It also removes the model's echo or 'Achha, dekhte hain' hedge that would contradict the lead.
+- **K2** (TAXILA_R7_SCRIPT_GRADE)
+  - classifyFast grades scriptAsk, scriptCheck and scriptThen cards in code: a key or accept form, unitless, or Hindi number words ('ek bata chaar', 'bees') is right; the listed wrong answer is its misconception; any other answer-shaped reply is wrong; an ack is never an answer unless the key is yes or no.
+  - A remediation turn leads with the verdict before the authored say ('koi baat nahi' is not a verdict).
+  - A script card that is let go says its key in code.
+- **G1-G3**
+  - In script mode, contentFallback says the beat's point and the underived derivation lead is off.
+  - The leak guard runs on the reply minus the beat's own point.
+  - After every guard, an explain beat whose point is not said (pointSaid: every number and at least 70% of content words) gets the point verbatim before the card.
+- **V1**
+  - A v2 remediation is code-rendered: an optional framing of at most 15 words with no digits, then the authored say, then the then-card on the same move.
+  - The worked example is a problem turn (problem, givens, find), then the steps as do, result and why, then the child's step as the card.
+  - The worked answer is replayed only right after a skipped or missed step.
+- **v2.1 validator** (version 2.1 only)
+  - no child name, Asha or Riya in spoken text; use {friend}, which the walk fills with a name that is not the child's;
+  - no '?' glyph;
+  - an ask key is not a number the point states;
+  - at most 3 worked steps (yourStep included) for classes up to 5;
+  - every remediation has a board.
+- **Harness**
+  - The gate counts per turn are delivered, answered, verdictGiven, contradictions and rightCalledWrong.
+  - Steady allows 40 turns. Learning's child still leaves at 24 until H1.1 lands.
+  - --dry counts would-be calls.
+- Scripted teach-backs use no protege. Director5's c4 'Golu' was a character met for the first time.
+
+Still open: SC1 counted screen facts (Studio), then the R4 check uses them. SC2 board timing.
+
+Reverse if director6 meets K1, G1-G3 and SC1 and still delivers fewer than 80% of explain beats. Then explain beats become near-verbatim authored speech too.
+
+
+<!-- merged from inbox/r7-brain-12.json -->
+## `dc-r7-brain-v3-sc1-wiring` (2026-11-05, stream A Brain)
+
+- **SC1** (with Studio 9e88da21): screenFacts carries `screen.counts`.
+  - countContradicts checks a deictic sentence's counted claim against the counts: 'beech mein N' against innerTicks; 'N gaps/hisse' against gaps or gapsPerWhole, parts or groups; 'N marks' against any line count; sides and corners; shaded.
+  - It checks a side value with a unit against sideValues, but not totals.
+  - A kind the board did not count is never flagged, and with no counts there is no count check.
+  - Counted numbers are taken out of the old pointed-number check (director5's false flags).
+- **SC2**: on a visual request while a script card is live, scriptBeat is that card's ref. An ask uses its explain beat's board, a check its own board (else the last explain beat's), and a then-card its then.board. With no board there is none, and Studio picks.
+- **{friend}** (Learning c5-t02): the friend's name also fills the answer, acceptable and wrongIfMis. Then-cards carry wrongIfMis.
+- **practiceMax in script mode**: director6's dry run showed steady ending at turn 24. Skill 1's cards and ladder used up practiceMax (9), so skills 2-3 were never walked. While a scripted skill is unwalked, only the clock or the brief ends practice. Steady now runs 42 turns and reaches skill 2 or 3.
+- **H1.1 wiring**: the child gets name 'Riya', maxTurnsFor(persona) and probe: true on probe and teach-back moves.
+
+The director6 dry count is now 1,003, about 1,125 live calls and about $0.70, under the approved 1,300 / $0.85.
+
+
+<!-- merged from inbox/r7-learning-27.json -->
+## `dc-r7-scripts-v2-live` (2026-11-05, F Learning)
+
+The v2 rewrites of the four pilot topics (c4 equal shares, c5 number line, c5 compare fractions, c6 perimeter) are ready to become the live scripts in data/lesson-scripts/. The full check passes with them in place. The copy waits on Brain updating two tests that walk v1 beats.
+
+**Board changes.** The c6 hexagon remediation moves to Studio's measured@1 polygon: six labelled sides, corners A to F, and a perimeter walk. Her spoken line now names each side with its length, so the board carries only what she says. The e2 explain board keeps shape@1 with a single 5 cm label on purpose. The teaching point is that a regular hexagon's unlabelled sides still belong to the perimeter, and measured@1 always labels every side.
+
+**c5 rewording.** Studio's W10 gate flagged three c5-ch02-t01 lines that said '2 hisson', '3 gaps' or '7 hisse' while the line drew other counts. They now speak through the drawn marks instead.
+
+**Staging.** data/lesson-scripts-v2/ is kept until Brain switches its side-by-side harness to the live dir.
+
+
+<!-- merged from inbox/r7-studio-24.json -->
+## `dc-r7-test-app-server-dist`
+
+Browser suites that drive the real app serve the prebuilt dist/ from a static server (tests/support/app-server.mjs) instead of a Vite dev server, which compiled the whole client on every page load. The gate and CI's browser shard build dist/ first. A dist/ older than any client source falls back to the dev server, so a local run never tests stale code; APP_SERVER=dev forces it. Independent page cases run 4 at a time, while timing measurements stay sequential. r4-content-beat-desk stays on the dev server because /dev/desk is a dev-only route. Reverse if a production-build-only difference hides a bug the dev server would show. (C1 Studio, 2026-11-05)
+
+## `dc-r7-board-screen-contract`
+
+Every whiteboard on screen tells Brain what it shows: studioSlot.artifact.screen = { template, shape, numbers, labels }. shape comes from a closed list of words R4 can match against her Hinglish or English. numbers are what the board actually writes, never a '?'. Reverse if R4 needs positions or which mark is which. (C1 Studio, 2026-11-05)
+
+## `dc-r7-script-board-withholding`
+
+A scripted board hides answers by what its beat is for. Explain and worked beats show the numbers they teach; a remediation hides only its own item's answer; a check hides them all. The ref's own facts predict the board, and a scripted ref is drawn even on Brain's 'continue' asks. This fixes director4 S1, where 11 c5 explain boards showed nothing, and S2, where boards showed '? pieces' and '? cm'. Reverse if an explain beat's value is an answer asked later in the same lesson. (C1 Studio, 2026-11-05)
+
+## `dc-r7-board-ref-certify-numbers`
+
+A board ref that cannot show its own numbers fails certification (numbers_not_shown), and so does a board that draws none of the measures its line states (line_measures_not_on_board). measured@1 now draws labelled polygons (pentagon to octagon, 3-8 sides, corner names) so the c6 pentagon can show 4, 5, 3, 6, 2 m. Reverse if a ref must author a number that is not drawn. (C1 Studio, 2026-11-05)
