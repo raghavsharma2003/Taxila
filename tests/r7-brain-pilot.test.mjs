@@ -9,11 +9,13 @@ import { requestOf } from "../server/director/requests.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 // round 7 (main 2026-11-04): these tests are the NEW behaviour, so they clear the kill switches they depend on and restore them
 // after (`npm test` runs every file in one process; an earlier file must never decide which path they test)
 const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
 const R7_KEEP = {};
 describe("r7-brain-pilot.test.mjs: round 7 behaviour (kill switches cleared)", () => {
+  kitPath(); // (the kit path: these replay director2's v1/kit lessons; lesson scripts off)
 beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
 afterEach(() => { for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
 

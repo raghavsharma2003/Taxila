@@ -258,12 +258,15 @@ const REACTIVE = process.argv.includes("--reactive");
 const runs = MATRIX
   ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => ["steady", "offtopic", "stuck", "steering"].map((name) => ({ topicId, classLevel, name })))
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
+// (a run finished in parts: --skip leaves out lessons already written, by output name)
+const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
 for (const { topicId, classLevel, name: scenario } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
   const name = MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
+  if (SKIP.has(name)) continue;
   // one lane after the other, so neither lane's latency is measured while the other is calling
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
