@@ -5,10 +5,11 @@
 import { createHash } from "crypto";
 import { learningDay } from "../conductor/clock.js";
 import { subjectOfSkill } from "../learner/kt/ability.js";
-import { CAPS, CALIBRATION, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, ROUTINE_MIN_LESSONS, TRICKY_MIN_N, WAYS_MIN_N } from "./config.js";
+import { CAPS, CALIBRATION, CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, ROUTINE_MIN_LESSONS, TRICKY_MIN_N, WAYS_MIN_N } from "./config.js";
 import { bySkill, delayedSuccesses, inWindow, isAttempt, isErrorspotFixed, isExplained, isFirstTryUnaided, isTransferPass } from "./derive.js";
 import { dateParts } from "./facts.js";
 import { lineViolations } from "./gate.js";
+import { monthsApart, pRose } from "./stats.js";
 import { HOME_OBJECT, WAY_LABEL, renderShape } from "./templates.js";
 
 export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}`,
@@ -87,7 +88,7 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
     ...facts.lessons.filter((l) => !l.endedAt).flatMap((l) => { const es = evIn.filter((e) => e.sessionId === l.id); return es.length ? [F.ev(es.at(-1).id)] : []; })];
   const header = !facts.lessons.length
     ? (cadence === "daily" ? claim("header", "header.nolesson", {}, evIn.map((e) => F.ev(e.id)), "no lesson started in window; evidence rows exist in it")
-      : claim("header", cadence === "monthly" ? "header.zero_month" : "header.zero", {}, [], "no lesson started in window"))
+      : claim("header", cadence === "monthly" ? "header.zero_month" : cadence === "term" ? "header.zero_term" : "header.zero", {}, [], "no lesson started in window"))
     : cadence === "daily"
       ? claim("header", "header.daily", { lessons: facts.lessons.length, min }, lessonIds, "lessons started in window; min = round(Σ(end−started)), open lesson ends at its last evidence row")
       : claim("header", `header.${cadence}`, { lessons: facts.lessons.length, days: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, min }, lessonIds,
@@ -227,7 +228,7 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
     const mins = facts.lessons.map((l) => Math.round((lessonEndMs(l, evIn, openUntil) - Date.parse(l.startedAt)) / 60_000)).sort((a, b) => a - b);
     const med = mins.length % 2 ? mins[(mins.length - 1) / 2] : Math.round((mins[mins.length / 2 - 1] + mins[mins.length / 2]) / 2);
     const days = Math.round((Date.parse(w.to) - Date.parse(w.from)) / 86_400_000);
-    const r = admit(claim("routine", "routine.days", { n: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, d: days, m: med },
+    const r = admit(claim("routine", cadence === "term" ? "routine.days_term" : "routine.days", { n: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, d: days, m: med },
       facts.lessons.map((l) => F.lesson(l.id)), "n = distinct learning days with a lesson; d = days in the month; m = median lesson minutes (the header's rule)"));
     if (r) claims.push(r);
   }
@@ -240,9 +241,44 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
       const per = new Map();
       for (const d of ways) per.set(d.format, (per.get(d.format) ?? 0) + 1);
       const [top, t] = [...per].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
-      const c = admit(claim("ways", "ways.used", { n: ways.length, k: per.size, way: top, t }, ways.map((d) => F.way(d.id)),
+      const c = admit(claim("ways", cadence === "term" ? "ways.used_term" : "ways.used", { n: ways.length, k: per.size, way: top, t }, ways.map((d) => F.way(d.id)),
         "n = explain_format decisions in the month's lessons; k = distinct formats; way = the most used (ties: lowest F-code); t = its count"));
       if (c) claims.push(c);
+    }
+  }
+  if (caps.change) {
+    // S14 Then → now (term; RP-D6): per skill, the first-try rate in the term's FIRST learning month with ≥ CHANGE_MIN_N
+    // scored answers vs its LAST such month, ≥ CHANGE_MIN_MONTHS apart. A row only when the rate ROSE (the pre-declared
+    // direction) by ≥ CHANGE_MIN_DELTA and P(now > then) ≥ CHANGE_P (CHANGE_P_MANY when more than 4 skills were
+    // compared). A fall or a small rise is never a line; those skills are counted in the still-learning line instead.
+    const comps = [];
+    for (const [s, list] of [...attempts].sort(sortSkills)) {
+      const byMonth = new Map();
+      for (const e of list) { const mo = learningDay(new Date(e.at), tz).slice(0, 7); if (!byMonth.has(mo)) byMonth.set(mo, []); byMonth.get(mo).push(e); }
+      const full = [...byMonth].filter(([, l]) => l.length >= CHANGE_MIN_N).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+      if (full.length < 2) continue;
+      const [m1, l1] = full[0], [m2, l2] = full.at(-1);
+      if (monthsApart(m1, m2) < CHANGE_MIN_MONTHS) continue;
+      const n1 = l1.length, k1 = l1.filter(isFirstTryUnaided).length, n2 = l2.length, k2 = l2.filter(isFirstTryUnaided).length;
+      comps.push({ s, m1, m2, l1, l2, n1, k1, n2, k2, delta: k2 / n2 - k1 / n1, p: pRose(k1, n1, k2, n2) });
+    }
+    const pMin = comps.length > 4 ? CHANGE_P_MANY : CHANGE_P;
+    const mo = (m) => ({ y: Number(m.slice(0, 4)), m: Number(m.slice(5, 7)) });
+    const rose = comps.filter((x) => x.delta >= CHANGE_MIN_DELTA - 1e-9 && x.p >= pMin).sort((a, b) => b.delta - a.delta || (a.s < b.s ? -1 : 1));
+    const changes = admittedUpTo(rose.map((x) => claim("change", "change.row", { skill: facts.titles[x.s], m1: mo(x.m1), n1: x.n1, k1: x.k1, m2: mo(x.m2), n2: x.n2, k2: x.k2 },
+      [...x.l1, ...x.l2].map((e) => F.ev(e.id)),
+      `first and last learning month in the term with ≥ ${CHANGE_MIN_N} scored answers on the skill, ≥ ${CHANGE_MIN_MONTHS} months apart; k = first-try unaided; rise ≥ ${CHANGE_MIN_DELTA} and P(now > then) ≥ ${pMin} (Beta(1+k, 1+n−k) each; ${comps.length} skills compared)`,
+      x.s, { compared: comps.length })), caps.change);
+    claims.push(...changes);
+    if (caps.still) {
+      // the still-learning line: every other titled skill with scored answers in the term (counts only; no rate, no direction)
+      const rowSkills = new Set(changes.map((c) => c.skillId));
+      const rest = [...attempts].filter(([s]) => !rowSkills.has(s)).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+      if (rest.length) {
+        const c = admit(claim("still", "still.count", { n: rest.length }, rest.flatMap(([, l]) => l.map((e) => F.ev(e.id))),
+          "n = titled skills with scored answers in the term that have no Then → now row", null, { skills: rest.map(([s]) => s) }));
+        if (c) claims.push(c);
+      }
     }
   }
   let fixedNext = false;

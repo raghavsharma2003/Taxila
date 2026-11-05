@@ -60,6 +60,8 @@ export const JOB_KINDS = {
   "format.join": { lane: "fast", priority: 4, purpose: "core_tutoring", budgetMicroUsd: 0, maxAttempts: 4, leaseSec: 60, allowedIn: ["paused"] },
   // round 7 F: parent.monthly:{child}:{YYYY-MM}, the monthly report (app; PARENT-REPORT §9.2), enqueued on the month's last night fold
   "parent.monthly": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.monthly, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
+  // round 7 F batch R2: parent.term:{child}:{YYYY-T1|T2}, the term report (app), enqueued on the term's last night fold
+  "parent.term": { lane: "fast", priority: 2, purpose: "core_tutoring", budgetMicroUsd: REPORT_BUDGET.term, maxAttempts: 4, leaseSec: 120, allowedIn: ["paused", "in_lesson"] },
   // Forge G2 end-of-day (server/forge/g2/conductor-job.js; enqueued by the night fold): deliver approved agent-built
   // mechanics for tomorrow, or start one reviewed-later build per gap. Slow lane; never in a lesson or safety_hold.
   "forge.g2.nightly": { lane: "slow", priority: 4, purpose: "core_tutoring", budgetMicroUsd: 3_500_000, maxAttempts: 3, leaseSec: 120, allowedIn: ["paused"] },

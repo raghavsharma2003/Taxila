@@ -5,7 +5,8 @@
 // by the same bug. It also checks COMPLETENESS (a count claim must cite every row that counts, not a convenient
 // subset) and that every rendered line maps to an admitted claim or registered fixed copy.
 import { NOT_PLACEMENT } from "../learner/kt/placement.js";
-import { WAYS_MIN_N } from "./config.js";
+import { CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, WAYS_MIN_N } from "./config.js";
+import { pRose } from "./stats.js";
 /** S5: the explain formats a parent line may name (written out here, not taken from the generator). */
 const WAY_CODES = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
 
@@ -42,6 +43,28 @@ export async function checkReport(db, report, lookup) {
   const from = ms(report.window_from), to = ms(report.window_to);
   const inWin = (at) => ms(at) >= from && ms(at) < to;
   const out = [];
+  // S14 (term): the window's scored rows per titled skill per learning month, read once, written out here (not claims.js)
+  let termCache = null;
+  const termView = async () => {
+    if (termCache) return termCache;
+    const rows0 = await db.q(`select * from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [report.child_id, report.window_from, report.window_to]);
+    const late = new Set(rows0.map((r) => String(r.id)).filter((id) => id.endsWith(":late")).map((id) => id.slice(0, -5)));
+    const rows = rows0.filter((r) => !late.has(String(r.id)) && scored(r));
+    const perSkill = new Map();
+    for (const r of rows) for (const k of r.skill_ids || []) { if (!perSkill.has(k)) perSkill.set(k, []); perSkill.get(k).push(r); }
+    for (const k of [...perSkill.keys()]) if (!(await lookup.skillTitle(k))) perSkill.delete(k);
+    const comp = new Map();
+    for (const [k, list] of perSkill) {
+      const byMo = new Map();
+      for (const r of list) { const mo = learningDate(r.occurred_at, child.tz).slice(0, 7); if (!byMo.has(mo)) byMo.set(mo, []); byMo.get(mo).push(r); }
+      const full = [...byMo].filter(([, l]) => l.length >= CHANGE_MIN_N).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+      if (full.length < 2) continue;
+      const [a, la] = full[0], [b, lb] = full.at(-1);
+      const gap = (Number(b.slice(0, 4)) - Number(a.slice(0, 4))) * 12 + Number(b.slice(5)) - Number(a.slice(5));
+      if (gap >= CHANGE_MIN_MONTHS) comp.set(k, { a, b, la, lb });
+    }
+    return (termCache = { perSkill, comp });
+  };
   for (const c of report.claims) {
     const why = [];
     const ids = { ev: [], lesson: [], skill: [], jar: [], test: [], way: [] };
@@ -102,7 +125,7 @@ export async function checkReport(db, report, lookup) {
       else if (ms(sk.next_review_at) < Math.max(to, report.created_at ? ms(report.created_at) : to)) why.push("re-check date already past when the report was made");
     };
     switch (c.shapeId) {
-      case "header.daily": case "header.weekly": case "header.monthly": case "header.zero": case "header.zero_month": case "header.nolesson": {
+      case "header.daily": case "header.weekly": case "header.monthly": case "header.term": case "header.zero": case "header.zero_month": case "header.zero_term": case "header.nolesson": {
         // a lesson counts when something in it was graded or it ran ≥ 5 min, and it was not an abandoned start
         const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
         const win = win0.filter((l) => {
@@ -112,7 +135,7 @@ export async function checkReport(db, report, lookup) {
           return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000;
         });
         if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("header does not cite exactly the window's lessons");
-        if (c.shapeId === "header.zero" || c.shapeId === "header.zero_month") { if (win.length) why.push("zero header but lessons exist"); break; }
+        if (c.shapeId === "header.zero" || c.shapeId === "header.zero_month" || c.shapeId === "header.zero_term") { if (win.length) why.push("zero header but lessons exist"); break; }
         if (c.shapeId === "header.nolesson") {
           if (win.length) why.push("no-lesson header but lessons exist");
           const inside = await db.q(`select id from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT}`, [report.child_id, report.window_from, report.window_to]);
@@ -125,7 +148,7 @@ export async function checkReport(db, report, lookup) {
         const endOf = (l) => { if (l.ended_at) return ms(l.ended_at); const es = winEv.filter((r) => r.session_id === String(l.id)); return es.length ? Math.max(...es.map((r) => ms(r.occurred_at))) : ms(l.started_at); };
         const min = Math.round(win.reduce((a, l) => a + endOf(l) - ms(l.started_at), 0) / 60_000);
         if (s.min !== min) why.push(`min slot ${s.min} ≠ ${min}`);
-        if ((c.shapeId === "header.weekly" || c.shapeId === "header.monthly") && s.days !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("days slot ≠ distinct learning days");
+        if (["header.weekly", "header.monthly", "header.term"].includes(c.shapeId) && s.days !== new Set(win.map((l) => learningDate(l.started_at, child.tz))).size) why.push("days slot ≠ distinct learning days");
         break;
       }
       case "st.delayed": delayedPair(true); break;
@@ -206,7 +229,7 @@ export async function checkReport(db, report, lookup) {
         if (c.shapeId === "curious.asked" ? s.k !== back || back < 1 : back !== 0) why.push("k slot ≠ questions answered by the time of the report");
         break;
       }
-      case "ways.used": {
+      case "ways.used": case "ways.used_term": {
         // S5, re-derived: the month's explain_format decisions in the child's counted lessons (the routine line's rule)
         const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
         const counted = new Set(win0.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; }).map((l) => String(l.id)));
@@ -222,7 +245,7 @@ export async function checkReport(db, report, lookup) {
         if (!top || s.way !== top[0] || s.t !== top[1]) why.push("way/t slots ≠ the most used way and its count");
         break;
       }
-      case "routine.days": {
+      case "routine.days": case "routine.days_term": {
         const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
         const win = win0.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; });
         if (win.map((l) => String(l.id)).sort().join(",") !== lessons.map((l) => String(l.id)).sort().join(",")) why.push("routine line does not cite exactly the month's lessons");
@@ -246,6 +269,32 @@ export async function checkReport(db, report, lookup) {
         const lastDay = localDate(to - 86_400_000, child.tz), firstDay = localDate(from + 4 * 3600_000, child.tz);
         const ok = ids.test.length === 1 && tws.some((t) => `${t.subject}:${t.from}:${t.to}` === ids.test[0] && t.subject === s.subject && t.from <= lastDay && t.to >= firstDay);
         if (!ok) why.push("exam line does not cite a parent-entered test window overlapping the week");
+        break;
+      }
+      // ───────────── round 7 F batch R2: the term report, S14 Then → now ─────────────
+      case "change.row": {
+        if (report.cadence !== "term") why.push("a Then → now row outside a term report");
+        const { comp } = await termView();
+        const x = comp.get(c.skillId);
+        if (!x) { why.push("the skill has no two full months (≥ 10 answers each, ≥ 2 apart) in the term"); break; }
+        const mo = (m) => ({ y: Number(m.slice(0, 4)), m: Number(m.slice(5)) });
+        if (s.m1?.y !== mo(x.a).y || s.m1?.m !== mo(x.a).m || s.m2?.y !== mo(x.b).y || s.m2?.m !== mo(x.b).m) why.push("m1/m2 ≠ the first and last full months");
+        const k1 = x.la.filter(firstTry).length, k2 = x.lb.filter(firstTry).length;
+        if (s.n1 !== x.la.length || s.k1 !== k1 || s.n2 !== x.lb.length || s.k2 !== k2) why.push(`n1/k1/n2/k2 ${s.n1}/${s.k1}/${s.n2}/${s.k2} ≠ ${x.la.length}/${k1}/${x.lb.length}/${k2}`);
+        if ([...x.la, ...x.lb].map((r) => String(r.id)).sort().join(",") !== ev.map((r) => String(r.id)).sort().join(",")) why.push("row does not cite exactly the two months' answers");
+        const pMin = comp.size > 4 ? CHANGE_P_MANY : CHANGE_P;
+        if (!(k2 / x.lb.length - k1 / x.la.length >= CHANGE_MIN_DELTA - 1e-9)) why.push(`rise under ${CHANGE_MIN_DELTA}`);
+        if (!(pRose(k1, x.la.length, k2, x.lb.length) >= pMin)) why.push(`P(now > then) under ${pMin} (${comp.size} skills compared)`);
+        break;
+      }
+      case "still.count": {
+        if (report.cadence !== "term") why.push("a still-learning line outside a term report");
+        const { perSkill } = await termView();
+        const rowSkills = new Set(report.claims.filter((x) => x.shapeId === "change.row").map((x) => x.skillId));
+        const rest = [...perSkill].filter(([k]) => !rowSkills.has(k));
+        if (s.n !== rest.length || !rest.length) why.push(`n slot ${s.n} ≠ ${rest.length} other practised topics`);
+        const want = [...new Set(rest.flatMap(([, l]) => l.map((r) => String(r.id))))].sort().join(",");
+        if (want !== [...new Set(ev.map((r) => String(r.id)))].sort().join(",")) why.push("still-learning line does not cite exactly those topics' answers");
         break;
       }
       default: why.push(`no check for shape ${c.shapeId}`);

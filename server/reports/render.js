@@ -3,7 +3,7 @@
 // (disclosure, close) are carried as lines with `voiceOnly` so the spoken script is built from lines only.
 import { renderFixed, renderShape } from "./templates.js";
 
-const ORDER = ["header", "exam", "strength", "row", "hold", "hard", "curious", "routine", "ways", "tricky", "interest", "next", "home"];
+const ORDER = ["header", "exam", "strength", "change", "still", "row", "hold", "hard", "curious", "routine", "ways", "tricky", "interest", "next", "home"];
 /** Lines Lane B may never drop from the spoken script. */
 const MUST_KEEP = new Set(["header", "strength", "home"]);
 
@@ -31,7 +31,7 @@ export function renderLang(built, child, lang) {
   fixed("close", "frame", { voiceOnly: true, mustKeep: true });
   fixed("footer.howweknow", "footer", { appOnly: true });
   fixed("footer.notamark", "footer", { appOnly: true });
-  if (built.cadence === "monthly") fixed("footer.context", "footer", { appOnly: true });   // S16, once per monthly report
+  if (built.cadence === "monthly" || built.cadence === "term") fixed("footer.context", "footer", { appOnly: true });   // S16, once per monthly / term report
   const title = { kind: "fixed", fixedId: `title.${built.cadence}`, text: renderFixed(`title.${built.cadence}`, lang) };
   return { title, lines };
 }

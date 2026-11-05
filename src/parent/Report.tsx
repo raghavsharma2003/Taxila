@@ -101,12 +101,15 @@ function ReportView({ r, cid, onTap }: { r: ReportOut; cid: string; onTap: (clai
 /** "October 2026" from 'YYYY-MM' (a monthly report's period). */
 const fmtMonth = (p: string) => { const [y, m] = p.split("-").map(Number); return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString("en-IN", { month: "long", year: "numeric", timeZone: "UTC" }); };
 
+/** "Apr–Sep 2026" from 'YYYY-T1|T2' (a term report's period: T1 Apr-Sep, T2 Oct-Mar). */
+const fmtTerm = (p: string) => { const m = /^(\d{4})-T([12])$/.exec(p); if (!m) return p; const y = Number(m[1]); return m[2] === "1" ? `Apr–Sep ${y}` : `Oct ${y}–Mar ${y + 1}`; };
+
 export default function Notes() {
   const { rid } = useParams();
   const { kids, current } = useChildren();
   const cid = current?.id ?? "";
   const list = useParentData(current ? () => parentApi.reports(current.id) : null, [current?.id]);
-  const [tab, setTab] = useState<"daily" | "weekly" | "monthly">("daily");
+  const [tab, setTab] = useState<"daily" | "weekly" | "monthly" | "term">("daily");
   const stored = useParentData(current && rid ? () => parentApi.report(current.id, rid) : null, [current?.id, rid]);
   const preview = useParentData(current && !rid ? () => parentApi.reportPreview(current.id, tab) : null, [current?.id, rid, tab]);
   const [tap, setTap] = useState<string | null>(null);
@@ -121,23 +124,23 @@ export default function Notes() {
         <div className="pa-stack">
           {!rid ? (
             <div className="pa-seg" role="tablist" aria-label="Which note">
-              {(["daily", "weekly", "monthly"] as const).map((c) => (
+              {(["daily", "weekly", "monthly", "term"] as const).map((c) => (
                 <button key={c} type="button" role="tab" aria-selected={tab === c} className="pa-seg-btn" onClick={() => setTab(c)}>
-                  {c === "daily" ? "Today" : c === "weekly" ? "This week" : "This month"}
+                  {c === "daily" ? "Today" : c === "weekly" ? "This week" : c === "monthly" ? "This month" : "This term"}
                 </button>
               ))}
             </div>
-          ) : <RowLink to={`/parent/notes?c=${cid}`}>Today, this week and this month</RowLink>}
+          ) : <RowLink to={`/parent/notes?c=${cid}`}>Today, this week, this month and this term</RowLink>}
           {r ? <ReportView r={r} cid={cid} onTap={setTap} />
             : (rid ? stored.data : preview.data) && (
-              <p className="pa-note">{held ? HOME.held : tab === "daily" ? `No lesson yet today.` : tab === "weekly" ? "Nothing yet this week." : "Nothing yet this month."}</p>
+              <p className="pa-note">{held ? HOME.held : tab === "daily" ? `No lesson yet today.` : tab === "weekly" ? "Nothing yet this week." : tab === "monthly" ? "Nothing yet this month." : "Nothing yet this term."}</p>
             )}
           <section className="pa-card" aria-labelledby="pa-earlier-h">
             <h2 id="pa-earlier-h" className="pa-card-title">Earlier notes</h2>
             {list.data.reports.length === 0 ? <p className="pa-muted">The first note is written after the first lesson day ends.</p> : (
               <ul className="pa-list">
                 {list.data.reports.map((x) => (
-                  <li key={x.id}><RowLink to={`/parent/notes/${x.id}?c=${cid}`}>{x.cadence === "daily" ? fmtDayLong(x.period) : x.cadence === "monthly" ? fmtMonth(x.period) : x.period.replace(/^(\d{4})-W0?(\d{1,2})$/, "Week $2, $1")}</RowLink></li>
+                  <li key={x.id}><RowLink to={`/parent/notes/${x.id}?c=${cid}`}>{x.cadence === "daily" ? fmtDayLong(x.period) : x.cadence === "monthly" ? fmtMonth(x.period) : x.cadence === "term" ? fmtTerm(x.period) : x.period.replace(/^(\d{4})-W0?(\d{1,2})$/, "Week $2, $1")}</RowLink></li>
                 ))}
               </ul>
             )}
