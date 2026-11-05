@@ -2,7 +2,7 @@
 // functions of GET /api/child/map through world.ts and data/kaksha/catalog.json. With learning_profile consent off the
 // map is hidden: the World shows the planet and the Hangar only (identity without the academic record).
 import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
 import { useChild } from "../../../child/ChildShell.tsx";
 import { useChildMap } from "../../../child/useChildMap.ts";
 import { schoolChaptersOf } from "../../../child/api.ts";
@@ -13,6 +13,7 @@ import { secureSet, topicOfSkill, world, type Catalog, type WorldSkill } from ".
 import { cachedHold } from "../../../child/plan.ts";
 import { readEquipped, rollSnapshot, writeEquipped } from "../memory.ts";
 import { useChildNav } from "./useNav.ts";
+import { useKxGo } from "./go.ts";
 
 const CATALOG = catalogJson as unknown as Catalog;
 
@@ -31,13 +32,13 @@ function useWorld() {
 
 export function KakshaWorld() {
   const { cid, child, family, reducedMotion } = useChild();
-  const nav = useNavigate();
+  const go = useKxGo(reducedMotion);
   const w = useWorld();
   const kn = useChildNav();
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="world">
       <WorldView childName={child.first_name} world={w.today} yesterday={w.yesterday} hidden={w.hidden} reducedMotion={reducedMotion}
-        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} school={w.school}
+        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={go} dock={kn.dock} meTo={kn.meTo} school={w.school}
         // r7 app-practice-entry: a station's topic (its skill id without the -sN suffix) as a practice set; none on a hold
         practiceTo={cachedHold(cid) ? null : (skillId) => { const t = topicOfSkill(skillId); return t ? `/c/${cid}/practice/${encodeURIComponent(t)}` : null; }} />
     </KakshaRoot>
@@ -46,14 +47,14 @@ export function KakshaWorld() {
 
 export function KakshaHangar() {
   const { cid, family, reducedMotion } = useChild();
-  const nav = useNavigate();
+  const go = useKxGo(reducedMotion);
   const w = useWorld();
   const [equipped, setEquipped] = useState(() => readEquipped(cid));
   const kn = useChildNav();
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="hangar">
       <HangarView items={w.today.items} equipped={equipped} onEquip={(slot, id) => setEquipped(writeEquipped(cid, slot, id))}
-        reducedMotion={reducedMotion} backTo={`/c/${cid}/map`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} />
+        reducedMotion={reducedMotion} backTo={`/c/${cid}/map`} go={go} dock={kn.dock} meTo={kn.meTo} />
     </KakshaRoot>
   );
 }

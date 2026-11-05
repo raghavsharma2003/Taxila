@@ -181,3 +181,17 @@
 .kx-ghost--go { display: inline-flex; align-items: center; gap: 8px; border-color: var(--k-ion); color: var(--k-ink); }
 /* on phones the dock is a bottom bar: the sheet rises above it (from 1024 px the dock is a left rail) */
 @media (max-width: 1023px) { .kx-hasdock > .kx-sheet.kx-sheet { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); max-height: calc(100dvh - 140px); overflow-y: auto; } }
+
+/* r7 app-motion-transitions (go.ts: React Router navigate with a View Transition). The screen fades out fast and the new
+   one rises in; her window (kx-asha) morphs between Home, Your teacher and the lesson's stage; the dock (kx-dock) holds
+   still. Reduced motion never starts a transition (go.ts), and the OS setting stops any that would. The pseudo-elements
+   live on the document root, outside .kx, so the curve is written out (the k tokens are not defined there). */
+::view-transition-old(root) { animation: kx-vt-out .16s cubic-bezier(.16, 1, .3, 1) both; }
+::view-transition-new(root) { animation: kx-vt-in .32s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes kx-vt-out { to { opacity: 0; } }
+@keyframes kx-vt-in { from { opacity: 0; transform: translateY(10px); } }
+nav.kx-nav.kx-nav { view-transition-name: kx-dock; }
+::view-transition-group(kx-dock) { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
