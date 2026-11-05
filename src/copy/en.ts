@@ -253,6 +253,11 @@ export const R7 = {
   "nb.made": "Made for you",
   "nb.madeEmpty": "Things {T} makes for you will be here.",
   "nb.close": "Close",
+  "nb.jar": "Questions",
+  "jar.waiting": "{T} will bring these back",
+  "jar.answered": "Answered",
+  "jar.answeredOn": "answered on {date}",
+  "jar.empty": "When {T} saves a question for later, it waits here.",
 } as const;
 export type R7Key = keyof typeof R7;
 export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {
