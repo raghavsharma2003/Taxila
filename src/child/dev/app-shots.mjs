@@ -45,7 +45,9 @@ const SKILLS = [
 const MAP = {
   mode: "sky", hidden: false, empty: false, skills: SKILLS,
   subjects: [{ subject: "maths", book: "Ganita Prakash", chapters: [{ id: `c${CLS}-maths-ch07`, number: 7, title: "Fractions", sealed: false, here: true, school: true, secure: 2, total: 5,
-    topics: [{ id: `c${CLS}-maths-ch07-t01`, title: "Fractional units", skills: SKILLS.slice(0, 2) }] }] }],
+    topics: [{ id: `c${CLS}-maths-ch07-t01`, title: "Fractional units", skills: SKILLS.slice(0, 2) }] },
+    { id: `c${CLS}-maths-ch02`, number: 2, title: "Lines and Angles", sealed: true, here: false, school: false, secure: 1, total: 1,
+      topics: [{ id: `c${CLS}-maths-ch02-t01`, title: "Angles", skills: SKILLS.slice(2, 3) }] }] }],
 };
 
 const API = {

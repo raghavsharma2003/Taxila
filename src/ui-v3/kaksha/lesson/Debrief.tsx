@@ -21,7 +21,7 @@ import { kt } from "../copy.ts";
 import { baseLabelOf } from "../Base.tsx";
 import { futurist } from "../look.ts";
 import type { Catalog } from "../world.ts";
-import { closingLine, nowSecure, type DebriefSecure, type MapLike } from "./debrief.ts";
+import { closingLine, nowSealed, nowSecure, type DebriefSeal, type DebriefSecure, type MapLike } from "./debrief.ts";
 
 const CATALOG = catalogJson as unknown as Catalog;
 
@@ -45,25 +45,28 @@ export interface DebriefProps {
 export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onReflect, onEmote }: DebriefProps) {
   const [secure, setSecure] = useState<DebriefSecure[] | null>(null);
   const [made, setMade] = useState<MadeForItem[]>([]);
+  const [sealed, setSealed] = useState<DebriefSeal[]>([]);
   // once, when the lesson has ended (the summary is up); not while it is still being saved
   const ending = !!m.summary?.ending;
   useEffect(() => {
     if (ending) return;
     let live = true;
-    void Promise.all([before, loadAfter()]).then(([b, a]) => { if (live) setSecure(nowSecure(b, a, CATALOG)); }, () => {});
+    void Promise.all([before, loadAfter()]).then(([b, a]) => { if (live) { setSecure(nowSecure(b, a, CATALOG)); setSealed(nowSealed(b, a)); } }, () => {});
     if (loadMade) void loadMade().then((xs) => { if (live) setMade(xs); }, () => {});
     return () => { live = false; };
   }, [ending, before, loadAfter, loadMade]);
-  return <DebriefView m={m} onFinish={onFinish} secure={secure} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} />;
+  return <DebriefView m={m} onFinish={onFinish} secure={secure} sealed={sealed} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} />;
 }
 
 export interface DebriefViewProps {
   m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string;
+  /** r7: chapters the ledger sealed in this lesson (nowSealed). */
+  sealed?: DebriefSeal[];
   onReflect?: (lessonId: string, choice: ReflectChoice) => void; onEmote?: (lessonId: string, emote: ChildEmote) => void;
 }
 
 /** Presentational (the dev page renders it with fixtures). */
-export function DebriefView({ m, onFinish, secure, made = [], madeTo, onReflect, onEmote }: DebriefViewProps) {
+export function DebriefView({ m, onFinish, secure, sealed = [], made = [], madeTo, onReflect, onEmote }: DebriefViewProps) {
   const [helped, setHelped] = useState<ReflectChoice | null>(null);
   const [emoted, setEmoted] = useState<ChildEmote | null>(null);
   const s = m.summary!;
@@ -138,6 +141,23 @@ export function DebriefView({ m, onFinish, secure, made = [], madeTo, onReflect,
                     <span className="kx-db-opened"><span className="kx-db-key">{kt("openedTitle")}</span> {k.items.join(", ")}</span>
                   )}
                 </div>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* r7 app-world-hangar-depth: a chapter the ledger sealed in this lesson (every idea in it is theirs): once, here */}
+      {!s.ending && sealed.length > 0 && (
+        <section className="kx-db-sec" aria-labelledby="kx-db-seal" data-testid="debrief-sealed">
+          <h2 id="kx-db-seal" className="kx-label kx-secure-ink">{kt("chapterSealed")}</h2>
+          <ul className="kx-db-list">
+            {sealed.map((c) => (
+              <li key={c.chapterId} className="kx-db-seal kx-cut">
+                <span className="kx-db-seal-mark" aria-hidden="true">
+                  <svg viewBox="0 0 40 40"><path d="M20 3l14 6v10c0 9-6 15-14 18C12 34 6 28 6 19V9z" fill="none" stroke="currentColor" strokeWidth="2.2" /><path d="M13 20l5 5 9-10" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                </span>
+                <div className="kx-db-skilltext"><b>{c.title}</b><span className="kx-db-opened">{kt("sealNote")}</span></div>
               </li>
             ))}
           </ul>
