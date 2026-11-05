@@ -1,9 +1,12 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-05 noon UTC, at integration 6 (`int/r6` c6c9ab91c,
-tsc + build green; 4469 of 4482 unit tests pass single-process. The 1 failure is a Studio test-isolation bug,
-fixed in tests only; 11 are skipped; 1 is a known todo). Live model calls so far: only the lesson-brain runs
-(~$3.3 in total, on the stream's 2026-10-10 AI keys). Nothing is released: deploying needs the full key set.
+Updated by the main loop at each integration. Last update: 2026-11-05 evening UTC, at integration 7 (`int/r6`).
+- **Build checks:** tsc and the build are green.
+- **Unit tests:** 4598 of 4611 pass, both in the new 9-minute per-file gate and single-process.
+  - 1 failure: a test that wrongly walked a new lesson script. Fixed in tests only, and re-proved.
+  - 11 skipped; 1 is a known todo.
+- **Live model calls so far:** only the lesson-brain runs, about $3.5 plus director5 (capped at $0.70), on the stream's 2026-10-10 AI keys.
+- **Nothing is released:** deploying needs the full key set.
 
 ## 1. Decisions only you can make
 
@@ -17,7 +20,7 @@ fixed in tests only; 11 are skipped; 1 is a known todo). Live model calls so far
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
 | 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
 | 6c | Parent term report, section S18 (the term report itself is built) | S18 would show the child's own words ("what I liked this term") and let the parent write back. The child's quote needs a show-consent step from the child; a parent free-text reply breaks the rule that every parent-facing line is structured and checked. Recommendation: leave S18 out until the test phase. |
-| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." If verification was 2026-07-08, the 60 days must start by **2026-11-06**. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Also: is the spending limit back on? |
+| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." If verification was 2026-07-08, the 60 days must start by **2026-11-06**. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Alerts go to identities assigned Owner directly on the subscription; if you hold Owner through a group, also add the env var `M3_ALERT_EMAIL`. Also: is the spending limit back on? |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
 
