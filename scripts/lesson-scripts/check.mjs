@@ -33,7 +33,11 @@ export const RANGE = {
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
   "equal-groups@1": (p) => p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8,
   "compare@1": (p) => p.left?.items?.length >= 1 && p.right?.items?.length >= 1,
-  "measured@1": (p) => ["m", "cm"].includes(p.unit) && ["rect", "square", "triangle", "circle"].includes(p.shape),
+  // Studio 3dc6208a: measured@1 also draws polygons (sides 3-8, all labelled; names one per corner, ≤ 3 chars)
+  "measured@1": (p) => ["m", "cm"].includes(p.unit) && (["rect", "square", "triangle", "circle"].includes(p.shape)
+    || (["pentagon", "hexagon", "octagon", "quadrilateral", "polygon"].includes(p.shape) && Array.isArray(p.sides)
+      && p.sides.length === ({ pentagon: 5, hexagon: 6, octagon: 8, quadrilateral: 4 }[p.shape] ?? p.sides.length) && p.sides.length >= 3 && p.sides.length <= 8
+      && p.sides.every((v) => Number(v) > 0) && (!p.names || (p.names.length === p.sides.length && p.names.every((x) => [...String(x)].length <= 3))))),
   "shape@1": (p) => typeof p.shape === "string",
   "number-line-hop@1": (p) => Number.isInteger(p.start) && Array.isArray(p.hops),
   // marks label points and hop draws the solved jumps; a CHECK uses mark k or target [a, den], never both
