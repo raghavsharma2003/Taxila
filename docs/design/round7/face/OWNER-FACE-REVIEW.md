@@ -26,7 +26,7 @@ Each look shows the full face, then the mouth up close.*
 | **Who sees it today** | Everyone (the default) | Only your account (owner cohort), once it is re-keyed | Your account with `?jaw=1` |
 | **Reads as** | Young, round, big eyes | A grown-up teacher | A grown-up teacher whose mouth visibly opens more |
 | **Mouth timing** (drawn mouth vs the voice; the bar is −125 … +45 ms) | median −5 ms, **89%** of replies within ±50 ms (real lesson page, n = 46, Oct 2026) | median +5 ms, **67%** of lines within ±50 ms; worst −320 / +235 ms (24-line battery) | median −20 ms, **100%** of lines within ±50 ms (same 24-line battery) |
-| **Lips close on b / m / p** (132 such words in the battery) | 123/132 with its current rule | **132/132** | **132/132** |
+| **Lips close on b / m / p** (132 such words in the battery) | **132/132** (123/132 before 2026-11-05) | **132/132** | **132/132** |
 | **Weak phones** | Has the light mouth (still + 4 painted mouths) where the rig can't run | No live-rig gate needed (2D is cheap) | Same as lamp2 |
 
 **What the sheet shows.** r8's mouth opens wide and clearly (teeth, tongue) but she looks like a child. lamp2 looks
@@ -38,9 +38,11 @@ layer adds a visible drop on open vowels ("think", "about") and still closes ful
 - **lamp2 or lamp2 + jaw:** we make it the default look (`TAXILA_FACE_LOOK`) after the real-phone pass (section 5).
   Then her stills, the parent badge and the light mouth are re-rendered in that look (no Azure spend: they come from
   the live rig).
-- **Also possible, independent of the look:** r8 could take lamp2's b / m / p rule (the 9 missed words: "dhoop",
-  "carbon", "about", "tum", "lagbhag", "खुशबू", "Shabash", "Ab", "vaashpikaran"). It is a small change, but it is not
-  measured on r8 yet.
+- **Done on 2026-11-05, whichever look you pick:** r8 now uses lamp2's b / m / p rule too. On r8's own lip solver it
+  closes her lips on all 132 b / m / p words in the battery (it used to miss "dhoop", "carbon", "about", "tum",
+  "lagbhag", "खुशबू", "Shabash", "Ab" and "vaashpikaran"). It adds no closure the audio doesn't ask for and doesn't move
+  the timing (`r8-bilabial-battery.json`). Nobody has watched it in motion yet: look for any stutter-like closures
+  when you try r8.
 
 To try it yourself: sign in with your re-keyed account, open a lesson, then add `?jaw=1` to the URL for the jaw.
 

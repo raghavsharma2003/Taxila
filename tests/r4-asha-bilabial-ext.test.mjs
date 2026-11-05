@@ -25,12 +25,12 @@ test("the extended rule seals single internal / final b m p; the base rule does 
   assert.deepEqual(seals(addBilabialsExtended([{ ms: 0, id: 2 }], [{ ms: 0, durMs: 300, text: "phir" }])), []);
 });
 
-test("resolveVisemes uses the extended rule only when asked; the scheduler asks only when the stage sets it", () => {
+test("resolveVisemes uses the extended rule only when asked; the scheduler asks for it on every look (round 7)", () => {
   const n21 = (t) => t.filter((x) => x.id === 21).length;
-  assert.equal(n21(resolveVisemes(visemes, words)), 0, "r8 / default: base rule");
+  assert.equal(n21(resolveVisemes(visemes, words)), 0, "resolveVisemes alone: base rule");
   assert.equal(n21(resolveVisemes(visemes, words, undefined, { extendedBilabials: true })), 3);
-  assert.equal(new VisemeScheduler().extendedBilabials, false, "off unless a key-rig look turns it on");
+  assert.equal(new VisemeScheduler().extendedBilabials, true, "r8 and lamp2 alike: 132/132 on r8's lip solver (r8-bilabial-battery.mjs)");
   const stage = readFileSync(new URL("../src/face-puppet/stage.ts", import.meta.url), "utf8");
-  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) \{ this\.driver\.visemes\.lead \+= KEY_LEAD_MS; this\.driver\.visemes\.extendedBilabials = true; \}/);
-  assert.equal((stage.match(/extendedBilabials = true/g) ?? []).length, 1, "set in exactly one place: the key-rig look");
+  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) this\.driver\.visemes\.lead \+= KEY_LEAD_MS;/);
+  assert.doesNotMatch(stage, /extendedBilabials = (true|false)/, "the stage no longer switches the rule per look");
 });
