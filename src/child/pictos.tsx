@@ -3,6 +3,8 @@
 //    colours, never text). <Picto id="picto/garden" size={64} /> renders the painted art when it exists.
 //  - Older icons: the tab bar / rail and row icons are SVG (Material Symbols Rounded shapes, §7.3: never raster).
 // Colour comes from currentColor and the art tint tokens only (PD-G13: no raw hex outside tokens.css).
+import { AVATARS, EMBLEMS } from "./avatars.ts";
+export { AVATARS, EMBLEMS, OLDER_AVATAR_SET, avatarsFor, type OlderAvatarSet } from "./avatars.ts";
 import type { ReactNode } from "react";
 import { Spot } from "./art.tsx";
 
@@ -92,18 +94,10 @@ export function Picto({ id, size = 48 }: { id: string; size?: number }) {
 }
 
 /** The 24 avatar discs (§7.5): animals and objects, never human faces; tints rotate teal, rose, leaf, sky, terracotta, stone. */
-export const AVATARS = [
-  "red-panda", "tiger-cub", "elephant-calf", "river-dolphin", "hornbill", "peacock", "turtle", "butterfly", "squirrel",
-  "camel", "rhino", "snow-leopard", "kite", "rocket", "football", "cricket-bat", "mango", "sunflower", "mountain",
-  "sailboat", "auto-rickshaw", "bicycle", "telescope", "paintbrush",
-] as const;
 const TINTS = ["var(--art-teal)", "var(--art-rose)", "var(--art-leaf)", "var(--art-sky)", "var(--art-terracotta)", "var(--art-stone)"];
 /** r7 (9-15 onboarding sweep; gap app-identity-avatars): the older family's identity set. Line emblems on a chamfered
  *  dark tile in the look's own hues, drawn here (no raster), in place of the painted animals that read "for a 5-year-old".
  *  Ids are plain strings (the child row's avatar column takes any id); a child who picked an animal keeps it. */
-export const EMBLEMS = [
-  "em-orbit", "em-comet", "em-bolt", "em-prism", "em-wave", "em-peak", "em-atom", "em-delta", "em-nova", "em-helix", "em-grid", "em-flare",
-] as const;
 const EMBLEM_PATH: Record<string, string> = {
   "em-orbit": "M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6M3 14.5c-.8-2.5 3-5.6 8.4-6.9s10.2-.6 11 1.9-3 5.6-8.4 6.9S3.8 17 3 14.5",
   "em-comet": "M17 7a3 3 0 1 0 0 .01M14.8 9.2L4 20M12.5 6.5L5 14M17.5 11.5L10 19",
@@ -136,8 +130,7 @@ export function Emblem({ id, size = 56 }: { id: string; size?: number }) {
 
 /** Human names for the avatar pictures (accessible names; the art itself carries no text). */
 export const avatarName = (id: string) => (id.startsWith("em-") ? `${id.slice(3)} emblem` : id.replace(/-/g, " "));
-/** The identity set offered to a family: Older the emblems, Young the painted pictures. */
-export const avatarsFor = (family: "young" | "older"): readonly string[] => (family === "older" ? EMBLEMS : AVATARS);
+
 
 /** The disc's fallback: its tint and a simple drawn mark (a different shape per avatar, so a child can tell them apart). */
 function AvatarMark({ i }: { i: number }) {
