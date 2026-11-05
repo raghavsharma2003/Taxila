@@ -184,3 +184,9 @@
 @keyframes kx-in-fill { to { background: var(--k-move); } }
 .kx[data-motion="reduced"] .kx-in-br, .kx[data-motion="reduced"] .kx-in-dot { animation-duration: 1ms; animation-delay: 0ms !important; }
 @media (prefers-reduced-motion: reduce) { .kx-in-br, .kx-in-dot { animation-duration: 1ms; animation-delay: 0ms !important; } }
+
+/* r7 app-debrief-made-later: the session's made-for pieces */
+.kx-db-made { list-style: none; margin: 0; padding: 0; display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }
+.kx-db-made-item { --k-cut: 10px; display: grid; gap: 6px; width: 132px; padding: 6px; border: 1px solid var(--k-line-2); background: var(--k-panel); color: var(--k-ink); font: 600 14px/1.25 var(--k-sans); text-decoration: none; }
+.kx-db-made-item img, .kx-db-made-blank { display: block; width: 120px; height: 90px; object-fit: cover; background: var(--k-deep); }
+.kx-db-made-item:hover { border-color: var(--k-ion); }

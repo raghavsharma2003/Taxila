@@ -1,8 +1,9 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-04 evening, after integration 4 (`int/r6` 9c73f1d6,
-tsc + build + 4265 unit tests green, single process). Live model calls so far: only the lesson-brain side-by-side runs
-(~$3.1 in total, on the stream's 2026-10-10 AI keys). Nothing is released: deploying needs the full key set.
+Updated by the main loop at each integration. Last update: 2026-11-05 noon UTC, at integration 6 (`int/r6` c6c9ab91c,
+tsc + build green; 4469 of 4482 unit tests pass single-process. The 1 failure is a Studio test-isolation bug,
+fixed in tests only; 11 are skipped; 1 is a known todo). Live model calls so far: only the lesson-brain runs
+(~$3.3 in total, on the stream's 2026-10-10 AI keys). Nothing is released: deploying needs the full key set.
 
 ## 1. Decisions only you can make
 
@@ -10,12 +11,12 @@ tsc + build + 4265 unit tests green, single process). Live model calls so far: o
 |---|---|---|
 | 1 | **Azure keys (the blocker).** Nothing has been tried live and nothing can be released without them. | Re-add the keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
-| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Side by side: `face/route-b-vs-r8-sheet.png`. Try it yourself with `?jaw=1` once your account is re-keyed. |
+| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
 | 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
 | 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
-| 7 | The Founders Hub Milestone-3 usage plan; whether the subscription spending limit is back on | From the cost work on 2026-10-24. |
+| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." If verification was 2026-07-08, the 60 days must start by **2026-11-06**. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Also: is the spending limit back on? |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
 
@@ -26,7 +27,7 @@ equivalence check, adjudication and level rating. Figures come from the scripts'
 
 | Tier | Work | Azure calls | ~Cost | Unblocks |
 |---|---|---|---|---|
-| 1 | G1 sentence-train grammar items (55 skills) | 83 | $2.66 | English and Hindi grammar games (Games) |
+| 1 | G1 sentence-train grammar items (85 tagged skills, 444 items short) | 128 | $4.10 | English and Hindi grammar games (Games) |
 | 1 | W1a Hinglish/Devanagari answer forms | 30 | $0.60 | Hinglish answers graded correctly |
 | 2 | W1b Hindi worked-example steps, class 4-7 maths | 141 | $2.62 | Worked examples in Hindi |
 | 2 | W1c explain plans per skill, class 4-7 maths (424 skills) | 424 | $15.26 | Richer explanations (Brain) |
@@ -35,6 +36,10 @@ equivalence check, adjudication and level rating. Figures come from the scripts'
 | — | W2 relevel, all classes | 0 | $0 | Level match (OWNER-RESET #2): rated by Claude in-session, no approval needed |
 | — | Face: the 27 daily-greeting clips (DragonHD) | 27 | cents | Her spoken home greeting |
 | — | Face: painted pose stills (wave, reading, …) via Azure images | tbd | small | Replaces stand-in stills |
+| — | Studio gate services: Azure AI Vision OCR + Content Safety (image moderation) | recurring | ~₹4,500/month at cap | Lets generated pictures be checked, so they can ever be shown |
+| — | Studio image rung (needs the gate services) | per picture | $0.0066; ~$2.6 for a 200-lesson test; ~$13/day at 1,000 lessons/day | Pictures as lesson pieces |
+| — | Studio dedicated spec deployment (owner action: create `taxila-stagecraft`) | 0 extra tokens | — | Spec builds stop sharing quota with the reply model |
+| later | Studio Sora clips, a priced 5-clip test first | tbd | tbd | Only if code-built animation can't do it |
 | **All** | | **~815** | **~$26 (≈ ₹2,200)** | |
 
 Recommendation: approve it all. At ~$26 it is less than one test-battery day was in October. If you'd rather approve

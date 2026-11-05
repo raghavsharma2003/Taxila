@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  { "id": "rj-r7-inbox-md-string-per-char", "kind": "rejection", "at": "2026-11-05",
+    "title": "merge-inbox fed a string `md` to Object.entries: one context file per character (1,309 junk files at integration 5)" }
+ ],
+ "edges": [
+  { "src": "dc-r7-pilot-scripts-format", "rel": "measured_by", "dst": "ms-r7-pilot-scripts-blind" }
+ ],
+ "md": {
+  "rejected": "## `rj-r7-inbox-md-string-per-char`\n\nWhat was tried: inbox files carry their prose in `md`, documented as an object keyed by document (`decisions`, `measurements`, `rejected`). App's r7-app-3..7 sent `md` as one plain string. `scripts/merge-inbox.mjs` ran `Object.entries(box.md)`, which on a string yields one entry per character. So each character was appended to a file named after its index: context/0.md … context/1308.md.\n\nWhat broke: integration 5 (425c1ae1a) committed all 1,309 of those files. App's prose never reached decisions.md, and `context.mjs --check` passed, because it only reads the four known documents. It flagged App's nodes as \"written up nowhere\", and they got title-only write-ups, which hid the cause. A Learning edge written as {from, to, kind} with relation `supports` was silently skipped too.\n\nFix (integration 6):\n- merge-inbox routes a string `md` to the document of the file's most common node kind;\n- an unknown key goes to architecture.md with a warning, never to a new file;\n- edges are accepted as {from, to, kind} as well;\n- `context.mjs --check` fails on any file in context/ other than the known documents;\n- the junk was removed and App's five prose blocks re-applied to decisions.md.\n\nLesson: a check that only reads the files it expects cannot see files it does not expect. It has to list the directory."
+ }
+}

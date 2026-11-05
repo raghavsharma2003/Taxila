@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-steps-on-her-words",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "C1 item 6, M3b: a board's named steps land on the words that name them. board-sync anchorSteps: for each text/label op her real line names (a 4+ letter word, in order through the line), the step's group (the ops since the previous named step) is delayed so its word lands ~250 ms before its estimated onset (index in the line × the line's ms). Only delays, never reorders; the first step's box keeps a start by 1.2 s (W6), only its word waits; delays are scaled down so the board ends within her line + 1.5 s. Applied in takePreselected when the anchored board passes the full gate, else the even pacing. No client/Voice change; onsets are estimates (Voice word timings would make them exact).",
+      "reversal": "measured word timings show the estimated onsets miss by more than ~400 ms on real lines: then anchor on Voice's word timestamps instead"
+    },
+    {
+      "id": "ms-r7-steps-on-her-words",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "n": 247,
+      "method": "first-explain boards over 250 class 4-7 kits (board-first preselect), her line stood in by a sentence naming each fact in turn ('Pehle dekho X, …'), takePreselected with gateCtxFor; code only",
+      "title": "168 of 241 taken boards have their named steps on her words (flow 88/91, label 12/12, cycle 4/4, compare 26/32, angle 6/9, shape 6/9); 16 anchored boards refused by the gate fell back to even pacing. Not anchored: boards whose words are numbers (fractions, column work) or places."
+    }
+  ],
+  "edges": [ { "src": "dc-r7-steps-on-her-words", "rel": "measured_by", "dst": "ms-r7-steps-on-her-words" } ],
+  "md": {
+    "decisions": "## dc-r7-steps-on-her-words: each step appears as she names it (2026-11-05)\n\nWhen the teacher's line names the steps on the board one by one, each step now appears just as she says it, instead of the board drawing at its own even pace.\n",
+    "measurements": "## ms-r7-steps-on-her-words (2026-11-05, n = 247 boards)\n\n168 of 241 explanation boards now draw each named step on the word that names it.\n"
+  }
+}

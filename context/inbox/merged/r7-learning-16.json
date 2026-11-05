@@ -1,0 +1,18 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-pilot-scripts-blind",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F, pilot lesson scripts (dc-r7-teaching-scripts): blind verification of data/lesson-scripts/ (c4-maths-ch05-t01 equal shares, c5-maths-ch02-t01 fractions on a number line, c6-maths-ch06-t01 perimeter; 9 skills). Method: three Claude agents authored, one per topic, from the kit, to docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md. A SEPARATE Claude agent then saw only the prompts (keys stripped) and solved every check question and every remediation follow-up (n = 45), and checked every worked example step by step (n = 9). No Azure calls. Result: 42/45 matched the key's normalised form; the other 3 gave the same answer in other words or a simpler equivalent form (2/6 m = 1/3 m), so 45/45 agree in substance, and those keys now carry the equivalent forms. The solver flagged 3 questions: one relied on an undescribed picture (c4 s1/c2), one gave its answer away in the wording (c5 s1/rem3), one was ambiguous and referred to another question (c5 s3/rem3, which also had a board marking 7/5 against an 8/5 answer). All 3 were rewritten and blind re-solved by a fresh agent: 3/3 match, unambiguous, no giveaway. Worked examples: 9/9 correct; one board/problem mismatch (paratha drawn as roti) was fixed in the problem text. Structure is held by tests/r7-learning-lesson-scripts.test.mjs (kit order, real misconceptions and items, board ranges, c5 on fraction-line only, no faded blanks, no key printed in its prompt, every kit misconception checked). Date 2026-11-05."
+  },
+  {
+   "id": "dc-r7-pilot-scripts-format",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F: the pilot lesson scripts live in data/lesson-scripts/<topicId>.json, status 'draft', in Learning's authoring shape (per skill: hook {convey, interestSlots, slotUse}, explain beats {convey, board, point}, workedExample {problem, givens, find, steps[{do, result}], answer, why, board}, 2-3 checks {prompt, key, accept, targets, wrongIfMis, board}, ladder of kit itemIds, remediation per misconception {move, board, then, thenKey}, bridgeToNext). Every teaching text field is a SHAPE (note form), never a quotable line. Brain owns the runtime schema in shared/; when its sha lands, Learning maps these files onto it (a mechanical rename, not a rewrite). c5 boards all use fraction-line@1, which Studio is asked to build; the other boards are existing templates. Reverse if: Brain's schema needs content these files do not hold (then author the missing field, keeping the blind-verify step)."
+  }
+ ],
+ "edges": [{ "from": "ms-r7-pilot-scripts-blind", "to": "dc-r7-pilot-scripts-format", "kind": "supports" }],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

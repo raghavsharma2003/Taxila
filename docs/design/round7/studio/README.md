@@ -186,3 +186,132 @@ Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12),
   - c5 ch11 t02: none → measured@1 (all three ways)
   - c6 ch06 t01: catalogue / catalogue / none → measured@1 (all three ways)
   - c6 ch06 t02: none → measured@1 (asked plain and as "picture")
+
+## M3a: the decimal zoom (C1 item 6)
+
+`decimal-zoom-*`: c7-maths-ch03-t03, item "Between which two tenths does 0.47 lie on a number line?". The number line 0–3 is drawn and the unit 0–1 lights up. A copy of that unit lifts off, stretches to the full width and lands as a second number line, joined to the unit by two guide lines. That line has its ten tenths, and 0.47 is marked on it.
+
+- **The zoom is in the drawing, not the camera.** Zooming the board's view would scale the text along with the drawing, so labels that crowd at full size still crowd zoomed. The textbook "magnified segment" keeps every label a normal size, and is built from M1's move and scale. The stretched unit ends exactly on the lower line (a claim).
+- **Reach:** 11 boards across the decimal lessons (c7 ch03 t01–t03), used when an item is explained or retaught. A decimal that is an item's answer is never chosen, since it would have to be written "?". A line that adds, subtracts, multiplies or divides never gets the zoom.
+- **W9:** a 0 or 1 that ends inside a box (a place-value box) is now judged like any other digit. Only a bare 0 or 1 outside any box still counts as a number line's origin.
+- **Pick fixes:** "2.85 + 2.50" is no 85 + 2, and a full stop after a number is not a decimal point.
+
+## M3b: steps land on her words (C1 item 6)
+
+When her real line names a step on the board ("Pehle food…, phir mouth…, uske baad stomach…"), that step's box, arrow and word appear just before she says it, about 250 ms early, instead of being paced evenly across her line. This is `server/stagecraft/board-sync.js` anchorSteps, applied in takePreselected, so no client or Voice change is needed.
+
+- **Timing:** onsets are estimated from each word's position in her line × the line's length. Steps are only ever delayed, never reordered. The board still starts at once, and it ends with her line.
+- **Fallback:** the anchored board must pass the full gate, or the evenly paced board is shown.
+- **Reach** (first explain, classes 4–7; her line stood in by one naming each thing on the board in a short sentence): 168 of 241 boards have their steps on her words. By template: flow 88/91, label 12/12, cycle 4/4, compare 26/32, angle 6/9, shape 6/9. 16 anchored boards were refused by the gate and fell back to even pacing.
+- **Not yet anchored:** boards with no named steps (fraction pictures, column work, places), where the words are numbers rather than names.
+- **Live check needed:** the onsets are estimates. Voice's word timings (when they exist) would make them exact.
+
+## M4: Stagecraft fed, never stale (C1 item 9, rest rule of item 11)
+
+Offline replay: `node evals/stagecraft/replay.mjs`. It runs 94 recorded real lessons (conversation-r3 final6-after +
+heldout-after; real Director, real replies; c4-7 maths/science/EVS; 469 lesson-minutes) through the PRODUCTION path:
+StagecraftHost, productionCatalog, the instant builders, kernel-point `kernelPoint` / `feedPoint`. Spec build times are
+drawn from calibration.json. $0, no model call. Results: `evals/stagecraft/results/replay-2026-11-05.json`.
+
+What changed:
+- The reveal point uses the skill being taught (`state.lastMove.skillId`), not the kit's first skill.
+- Sources are fed at the point (`feedPoint`): a state input first (a topic, skill or beat change invalidates
+  immediately), then the beat lookahead on a change (`lookahead.js`, interim until Brain's planBeat), then the stuck
+  signal (two non-correct graded answers). `STAGECRAFT_FEEDS=off` turns the feeds off.
+- seam `slotFor` has a skill guard (`hint.skillId`, Brain patch `docs/patches/to-brain/009-studio-slot-skill.patch`):
+  a Stagecraft piece whose skill is not the move's skill is not revealed, and one still up leaves with that reply. The
+  guard is inert until Brain applies 009.
+
+| arm | pieces / 10 min | built ahead | at preferred rung | stale reveals | stale stage turns | stage active |
+|---|---|---|---|---|---|---|
+| today (production now) | 4.63 | 0 | 0.798 | 67 | 244/717 | 0.516 |
+| + skill fix | 5.35 | 0 | 0.934 | 33 | 115/691 | 0.495 |
+| + feeds at the point | 5.39 | 0.597 | 0.934 | 34 | 116/694 | 0.497 |
+| + feeds after her reply (Brain hook) | 5.46 | 0.590 | 0.934 | 35 | 116/694 | 0.497 |
+| + guard (M4) | 5.44 | 0.549 | 0.940 | **0** | **0/643** | **0.470** |
+| guard without the rest rule | 6.33 | 0.582 | 0.925 | 0 | 0/782 | 0.554 |
+
+Per subject (M4): maths 5.39 pieces/10 min, active 0.44; science 5.24, active 0.50; EVS 5.90, active 0.50.
+Per class (M4): c4 7.06 / 0.46; c5 5.25 / 0.50; c6 5.62 / 0.50; c7 3.95 / 0.39. Stale reveals are 0 in every row.
+Spec builds: 0.84 per lesson, about $0.001 per lesson.
+
+How to read it: "built ahead" counts the reveals served by a candidate that was ready before the point, against
+on-demand builds. Today the instant rung builds on demand in about 0 ms, so what the child sees changes mostly through
+correctness (the right skill, nothing stale) and the rest rule, not through lead time. Feeding at the point gives the
+same as a Brain hook after her reply (0.597 vs 0.590), so no hook is needed. Stage active 0.47 is inside the 35-55%
+target (the earlier simulator's 0.85 had no rest rule or recorded boards). The guard reads the move's skill, the same
+field the replay uses as truth, so its 0 means "what production checks", and the field itself is measured live.
+
+## Fractions on a line (main, director3 judgement 2026-11-05)
+
+c5 "fractions on a line" lessons used to get a shaded circle (fraction-parts@1) while she said "nishaan" and "gap". A
+text about the number line now draws `fraction-line@1`. That covers the code pick (the kit item or worked example)
+and the claims board (her line: "teesra nishaan", "5 equal gaps"). The board is 0 to 1 (or 0 to 2-3), with ticks at
+every 1/den and only the whole numbers written. What it highlights follows the ask:
+
+- the solved example: a dot hops gap by gap and the point is named;
+- a named mark asked for its fraction: a tall tick with "?" and no dot (W9 reads a dot as the answer);
+- an asked fraction: written above the line, never placed.
+
+A line labelled with every whole number of its range is now its axis for W9.
+
+Measured over c5-maths-ch02-t01 (the worked example + 19 items, code only):
+
+| | fraction-parts@1 | number-line-hop@1 | none | fraction-line@1 |
+|---|---|---|---|---|
+| before | 8 | 3 | 9 | 0 |
+| after | 0 | 0 | 2 | 18 |
+
+All 18 fraction-line boards pass the full gate on their item, with the item's answers withheld. Elsewhere it fires on
+c6-ch07-t02 (3 location items), c6-ch07-t03 (1) and c4-ch05-t02 (1, a measuring jug's marks). It is never used for
+"write 7/4 as a mixed fraction", a decimal line or a roti.
+
+Board refs for lesson scripts: see `BOARD-REFS.md`.
+
+## M5a: cinematic scenes, code-built ($0; the owner's #4)
+
+"animation dikhao" on a pilot topic now gets a small FILM of the idea instead of a board. It is not a hand-drawn
+whiteboard: it is coloured actors (the Sun, a drop, the Earth, a roti cut in four, an ant on a field) moving on keyframed
+tracks, with short captions in the lesson's language, its beats bound to her clauses. Everything is code: no model call,
+no spend.
+
+- **Format** (`shared/scene.js`): actors (props from `shared/scene-props.js`, 64 code-drawn props), tracks (keys: position,
+  rotation, scale, opacity; loops), captions (≤ 32 chars, top or bottom band), beats (`clause` = her clause index) and
+  facts (the values on screen, for her facts row).
+- **The same truth everywhere:** `sceneAt(scene, t)` is the one interpolation, used by the player, the lint and the tests.
+  The film follows her voice: `lineWarp` pins each beat to its clause's onset. Reduced motion holds still at each beat.
+- **Layout lint:** every visible actor stays on stage at every key, beat and 250 ms step; captions never overlap and fit
+  the stage; duration 4-40 s.
+- **Tray gate:** a `scene` rule in tray-gate.js. Served where the scene is clean and its captions (18 stage units) reach
+  14 px for young children and 13 px for older ones at the device's box.
+- **Player:** `src/modules/scene/ScenePlayer.tsx` (SVG, flat friendly palette), registered as the `scene` artifact kind
+  (`SceneRenderer`). It waits for her line's audio anchor like the whiteboard.
+- **Delivery:** `studioSeam.composeAsk` answers an animation ask on a pilot topic with the scene piece (source "scene"),
+  shown by this turn's `slotFor` like a play piece. Her facts row carries the scene's facts and steps.
+  `TAXILA_SCENES=0` turns it off.
+
+The 20 pilots (`server/forge/animate/scenes.js`):
+- **Science:** water cycle (c7), day and night (c7), germination (c6), photosynthesis (c7), food chain (c6),
+  evaporation (c6), circuit tester (c7), magnets attract/repel (c6), shadow (c7), solar eclipse (c7).
+- **Maths:** equal parts of a roti (c4), sharing 12 laddoos in 3 plates (c4), quarter/half/full turns (c5), area by
+  unit squares (c5), perimeter as an ant's walk (c6), integers as a lift below the ground floor (c6), symmetry by folding
+  (c6), bar graph (c5), arrays of chairs (c5), clock in 5-minute steps (c4).
+
+Measured (code): 20/20 scenes clean in en, hinglish and hi (60/60). The tray gate certifies 360/360 (20 scenes × 3
+languages × p360/p412/l1366 × young/older). Numbers are computed, not drawn: the laddoos end 4 to a plate, and the ant
+ends where it started with "Perimeter = 20 m".
+
+Recordings: `docs/design/round7/studio/scenes/` holds one strip per scene at p412 and w1280 (a frame as each beat
+settles), plus videos of the water cycle, day and night, and equal sharing.
+
+Not yet:
+- a Stagecraft rung, so scenes come only from the child's ask (a plan-led "animation" want still gets the Studio v2
+  explainer or the board);
+- ~~per-item withholding~~ DONE (main: answer leaks are zero-visible-failure). `shared/scene.js` sceneMayPlay: a
+  scene never comes up while a keyed card or check is live (the turn's asking move, or patch 010's `itemOpen`), never
+  when the live key could not be computed (`L.held === null`, fail closed), and never while any value is withheld. A
+  scene on screen leaves the moment a card opens. The explicit check is sceneShowsHeld: every value in its captions,
+  text and facts against the held values, with rational equality (2/8 is the 1/4 on screen). Brain applies
+  `docs/patches/to-brain/010-studio-slot-item-open.patch` to cover word-answer cards; until then the asking move and
+  the held values cover it;
+- Brain's "show the movement in words" shape stays until main decides the pilots cover enough.

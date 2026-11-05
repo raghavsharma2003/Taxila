@@ -40,6 +40,7 @@ const I = {
   back: "M15 5l-7 7 7 7",
   swap: "M7 7h11l-3-3M17 17H6l3 3",
   hangar: "M3 20V10l9-6 9 6v10M8 20v-6h8v6",
+  practice: "M13 3L5 13h6l-1 8 8-10h-6z",
 };
 
 // ---------------------------------------------------------------- Home (Open)
@@ -171,6 +172,8 @@ export interface WorldViewProps extends NavProps {
   reducedMotion: boolean;
   backTo: string;
   hangarTo: string;
+  /** r7 app-practice-entry: where "Practise this" on a station goes (its topic's practice set); null: not offered (hold). */
+  practiceTo?: ((skillId: string) => string | null) | null;
   go?: Go;
 }
 
@@ -257,7 +260,13 @@ export function WorldView(p: WorldViewProps) {
             <h2 id="kx-sheet-h" className="kx-h3">{station?.title ?? built?.title}</h2>
             {built && <p className="kx-sub">{futurist() && BASE[built.kind] ? `${BASE[built.kind].label}: ${BASE[built.kind].why}` : `${built.label}: ${built.why}`}</p>}
             {opened.map((i) => <p key={i.id} className="kx-sub">{`${kt("opened")}: ${i.label}`}</p>)}
-            <button type="button" className="kx-ghost kx-cut" onClick={() => setPick(null)}>{kt("close")}</button>
+            <div className="kx-row">
+              {/* r7 app-practice-entry: a quick retrieval set on this idea (in-run feedback only, nothing carried) */}
+              {station && p.practiceTo?.(station.skillId) && (
+                <A to={p.practiceTo(station.skillId)!} go={p.go} className="kx-ghost kx-cut kx-ghost--go" testid="station-practise"><Icon d={I.practice} />{kt("practiseThis")}</A>
+              )}
+              <button type="button" className="kx-ghost kx-cut" onClick={() => setPick(null)}>{kt("close")}</button>
+            </div>
           </>
         )}
       </div>

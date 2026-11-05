@@ -56,6 +56,7 @@ const API = {
   "/api/tutors": { tutors: [], current: "asha" },
   "/api/lesson/list": { lessons: [] },
   "/api/notebook": { items: [] },
+  "/api/homework/match": { match: { rung: "topic", topicId: `c${CLS}-maths-ch07-t01`, subject: "maths", chapter: 7, topicTitle: "Fractions" } },
   "/api/child/memory": arg("memory", "on") === "off" ? { keeps: false, items: [] } : { keeps: true, items: [
     { id: "11", text: "I like bowling more than batting.", at: "2026-11-03T10:00:00Z" },
     { id: "12", text: "My cat is called Chiku.", at: "2026-10-30T10:00:00Z" },
@@ -77,6 +78,8 @@ export const SCREENS = {
   teacher: `/c/${CID}/teacher`,
   hello: `/c/${CID}/hello`,
   who: `/who`,
+  homework: `/c/${CID}/ask?homework=1`,
+  station: `/c/${CID}/map`,
 };
 
 async function main() {
@@ -99,6 +102,17 @@ async function main() {
       if (ONLY.length && !ONLY.includes(name)) continue;
       await page.goto(BASE + path, { waitUntil: "networkidle" }).catch(() => {});
       await page.waitForTimeout(900);
+      // homework: type a question and ask, so the shot is the "Is this from <topic>?" chip
+      // station: the World with a station's sheet open (Practise this)
+      if (name === "station") {
+        await page.evaluate(() => document.querySelector(".kx-station")?.click()).catch(() => {});
+        await page.waitForTimeout(600);
+      }
+      if (name === "homework") {
+        await page.fill("textarea", "Riya ate 3/8 of a pizza and Aman ate 2/8. How much did they eat together?").catch(() => {});
+        await page.click('[data-testid="ask-go"]').catch(() => {});
+        await page.waitForTimeout(700);
+      }
       const file = join(OUT, `${name}${PLAN_STATE !== "start" ? "-" + PLAN_STATE : ""}-c${CLS}-${w}x${h}.png`);
       await page.screenshot({ path: file });
       console.log(file, errors.length ? `ERRORS: ${errors.splice(0).join(" | ")}` : "");

@@ -537,6 +537,31 @@ async function homeworkMatch(req, res, body) {
   send(res, 200, { match: matchHomework(text, child) });
 }
 
+/**
+ * POST /api/child/reflect { childId, lessonId, choice } → 204 (round 7 F, App's app-debrief-made-later "What helped?").
+ * choice: "made:<madeForId>" (a piece revealed in THAT lesson) | board | explain | self | unsure. Emits child.reflect;
+ * the first tap per lesson wins (a second is a 204 no-op). A lesson that is not this child's own → 404; an unknown
+ * choice or a made-for piece not from that lesson → 400. A choice, never a claim: no parent surface reads it.
+ */
+async function reflect(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const { lessonId } = need(body, "lessonId");
+  const { parseChoice } = await import("../learner/reflect.js");
+  const c = parseChoice(body.choice);
+  if (!c || !/^[A-Za-z0-9_.:@\-]{1,96}$/.test(String(lessonId))) throw bad("choice must be made:<id>, board, explain, self or unsure");
+  const lesson = await one("select id from lesson where id::text = $1 and child_id = $2", [String(lessonId), child.id]).catch(() => null);
+  if (!lesson) throw new HttpError(404, "lesson not found");
+  if (c.kind === "made") {
+    // the shelf's own rule (reports/madeFor.js): a revealed, not hidden, non-whiteboard mount of THIS lesson
+    const made = await one(`select 1 as ok from studio_mount m where m.lesson_id = $1 and m.revealed_at is not null and not m.hidden
+        and m.source <> 'whiteboard' and coalesce(m.intent_id::text, m.build_sha) = $2 limit 1`, [lesson.id, c.id]).catch(() => null);
+    if (!made) throw bad("that piece was not made in this lesson");
+  }
+  const { emit } = await import("../conductor/index.js");
+  await emit(child.id, { type: "child.reflect", lessonId: String(lesson.id), choice: body.choice });
+  send(res, 204);
+}
+
 export const routes = {
   "GET /api/child/plan": plan,
   "GET /api/child/boot": boot,
@@ -547,6 +572,7 @@ export const routes = {
   "GET /api/child/skill-line/audio": skillLineAudio,
   "GET /api/child/name-audio": nameAudio,
   "POST /api/homework/match": homeworkMatch,
+  "POST /api/child/reflect": reflect,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };

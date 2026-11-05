@@ -3,7 +3,8 @@
 // change alters what a parent reads (stored reports are keyed by it, so an operator re-render is a new row).
 
 /** Stored with every report; a template or rule change that alters parent text must bump it. */
-export const RENDER_VERSION = "pr-3";   // pr-3: monthly cadence and its sections (S4, S6, S7, S9, S13, S16); weekly exam shape (S17)
+export const RENDER_VERSION = "pr-4";   // pr-4: S5 ways Taxila explained (monthly)
+// was   // pr-3: monthly cadence and its sections (S4, S6, S7, S9, S13, S16); weekly exam shape (S17)
 
 /**
  * The calibration gate (COMPREHENSION-ENGINE.md §7.1 K7: ≥ 0.9 delayed accuracy at 1 and 4 weeks, ECE ≤ 0.05,
@@ -23,10 +24,10 @@ export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish",
  * Daily is pull-only in v1 (X11) and carries no home activity (PL6: at most one per week).
  */
 export const CAPS = Object.freeze({
-  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, body: 5 },
-  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, body: 5 },
+  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, body: 5 },
+  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, body: 5 },
   // round 7 F (PARENT-REPORT §2, §9.2: one card per section): the monthly report in the app
-  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, body: 20 },
+  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, body: 20 },
 });
 
 /** Spoken-script budgets (PARENT-REPORT §9.1 weekly 60-90 s) at ~2.3 spoken words/s [U]. Over budget → throw. */
@@ -73,3 +74,5 @@ export const HOLD_MIN_N = 3;
 export const HARD_MIN_N = 5;
 /** S9 needs this many lessons in the month. */
 export const ROUTINE_MIN_LESSONS = 2;
+/** S5 needs this many explain_format decisions in the month (one lesson never reads as a pattern) [U]. */
+export const WAYS_MIN_N = 4;

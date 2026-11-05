@@ -74,7 +74,7 @@ export function laneAOrder(lines, lang, cadence) {
   const over = () => words() > VOICE_WORDS[cadence] || keep.map((l) => l.text).join(" ").length > VOICE_CHARS;
   // monthly (round 7 F): the optional sections go first, then the spoken rows as before
   const sec = (name) => () => keep.find((l) => l.section === name);
-  const DROP = [sec("routine"), sec("curious"), sec("hard"), sec("hold"), sec("next"), ...Array.from({ length: 5 }, () => () => keep.filter((l) => l.section === "row").at(-1)),
+  const DROP = [sec("ways"), sec("routine"), sec("curious"), sec("hard"), sec("hold"), sec("next"), ...Array.from({ length: 5 }, () => () => keep.filter((l) => l.section === "row").at(-1)),
     () => keep.filter((l) => l.section === "row").at(-1), () => keep.filter((l) => l.section === "row").at(-1),
     () => keep.find((l) => l.section === "interest"), () => keep.filter((l) => l.section === "tricky").at(-1),
     () => keep.filter((l) => l.section === "strength" && !l.mustKeep).at(-1), () => keep.filter((l) => l.section === "strength" && !l.mustKeep).at(-1),

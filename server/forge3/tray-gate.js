@@ -40,6 +40,7 @@ import { verdictFor, certificates } from "./certify.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
 import { boardFrame } from "../../src/studio/boardView.ts";
+import { normalizeScene, lintScene, CAPTION_SIZE } from "../../shared/scene.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(here, "..", "..");
@@ -239,6 +240,18 @@ export function certifyForTray(artifact, ctx = {}) {
         if (!v || v.unavailable) return out(false, "judge", "build not judged at the child's size");
         const ok = vp ? !!v.byViewport?.[vp] : !!v.pass;
         return out(ok, "judge", ok ? "judged at this size" : `judged: fails at ${vp}`);
+      }
+      case "scene": {
+        // round 7 M5a: a code-built scene is drawn contain-fit in the box; it is served where it is clean (normalised, its
+        // layout lint empty) and its captions (CAPTION_SIZE stage units) reach the floor at this box: 14 px young, 13 px older
+        const box = ctx.box ?? contractBox(vp, { young });
+        if (!box) return out(false, "scene-fit", "no box for this class");
+        const n = normalizeScene(artifact.scene);
+        const lint = n.ok ? lintScene(n.scene) : n.errors;
+        if (!n.ok || lint.length) return out(false, "scene-fit", `scene not clean: ${lint.slice(0, 3).join(",")}`);
+        const px = CAPTION_SIZE * Math.min(box.w / n.scene.stage.w, box.h / n.scene.stage.h);
+        const floor = young ? 14 : 13;
+        return out(px >= floor, "scene-fit", px >= floor ? `captions ${px.toFixed(1)} px` : `captions ${px.toFixed(1)} px < ${floor} px at ${vp}`);
       }
       case "image": {
         if (!/^data:image\/(?:png|jpeg);base64,/.test(String(artifact.src ?? ""))) return out(false, "image", "not a picture-lane image");

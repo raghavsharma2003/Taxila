@@ -32,7 +32,7 @@ function vakyaIndex() {
 export const G1_TARGET = 6, G1_LOSS = 1.4, G1_BATCH = 8;
 
 export const g1 = {
-  name: "g1-grammar-items", cap: 120,
+  name: "g1-grammar-items", cap: 150,
   plan(opts) {
     const idx = vakyaIndex();
     if (!idx) throw new Error("g1 needs data/play/vakya/index.json (C2 Games' build-vakya output)");

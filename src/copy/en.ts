@@ -172,10 +172,6 @@ export const subjectWords = (s: string | null | undefined): string =>
 
 /** W2-H: the Studio stage (LIVE-STUDIO §4, STUDENT-FLOW §5.3): the caption chip, the child's controls, skeleton chrome. */
 export const W2H = {
-  // the caption chip while a piece is being made (rotated per lesson so it never becomes a tic)
-  "making.0": "{T} is making this for you",
-  "making.1": "{T} is drawing this for you",
-  "making.2": "{T} is putting this together",
   // the child's controls on a piece
   "again": "Show me again",
   "notThis": "Not this one",
@@ -247,6 +243,11 @@ export const R7 = {
   "mem.off": "{T} doesn't remember anything between days. Your grown-up chose this.",
   "mem.none": "{T} hasn't kept anything you said yet.",
   "mem.row": "What {T} remembers",
+  // r7 homework help: the one confirm after the match (Learning's ladder), then the lesson starts
+  "hw.checking": "Finding it in your book…",
+  "hw.confirm": "Is this from {topic}?",
+  "hw.yes": "Yes",
+  "hw.no": "Not this",
 } as const;
 export type R7Key = keyof typeof R7;
 export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {
