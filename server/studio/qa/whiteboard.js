@@ -421,8 +421,11 @@ function textsCrossed(ops, byId) {
 // ───────────────────────────── W9: no reveal ─────────────────────────────
 
 /** Labels of a number line that are its axis (≥ 4 evenly spaced values), not a marked target. */
-function axisLabels(cells) {
+function axisLabels(cells, range = null) {
   const vs = cells.map(rat).filter(Boolean).map((r) => r[0] / r[1]);
+  // round 7 (main, director3: fractions on a line): a line labelled with EVERY whole number of its range and nothing
+  // else ("0 1" for 0 to 1, "0 1 2" for 0 to 2) is its frame: the fractions between are what the child finds
+  if (Array.isArray(range) && vs.length >= 2 && vs.length === cells.length && vs[0] === range[0] && vs.at(-1) === range[1] && vs.every((v, i) => Number.isInteger(v) && (!i || v - vs[i - 1] === 1))) return true;
   if (vs.length < 4) return false;
   const d = vs[1] - vs[0];
   return d > 0 && vs.every((v, i) => !i || Math.abs(v - vs[i - 1] - d) < 1e-9);
@@ -446,7 +449,7 @@ export function revealsOf(ops, per, byId, texts, withhold) {
   // (where the digit ENDS: place-value digits rise into their boxes)
   const inBox = (o) => { const at = ops.some((m) => isMotionOp(m) && m.target === o.id) ? finalOp(o, ops).at : o.at; if (!Array.isArray(at)) return false; const [x, y] = at; return boxes.some((b) => x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h); };
   ops.forEach((o, k) => {
-    const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? []);
+    const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? [], o.range);
     // a bare "0" or "1" (the origin or the whole of a number line, a place-value column) marks the board, it is not a
     // result; "5 − 5 = 0" or "3/4 + 1/4 = 1" still is (bench 2026-10-05: an origin labelled 0 was refused)
     const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text)) && !inBox(o);

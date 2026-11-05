@@ -241,3 +241,29 @@ correctness (the right skill, nothing stale) and the rest rule, not through lead
 same as a Brain hook after her reply (0.597 vs 0.590), so no hook is needed. Stage active 0.47 is inside the 35-55%
 target (the earlier simulator's 0.85 had no rest rule or recorded boards). The guard reads the move's skill, the same
 field the replay uses as truth, so its 0 means "what production checks", and the field itself is measured live.
+
+## Fractions on a line (main, director3 judgement 2026-11-05)
+
+c5 "fractions on a line" lessons used to get a shaded circle (fraction-parts@1) while she said "nishaan" and "gap". A
+text about the number line now draws `fraction-line@1`. That covers the code pick (the kit item or worked example)
+and the claims board (her line: "teesra nishaan", "5 equal gaps"). The board is 0 to 1 (or 0 to 2-3), with ticks at
+every 1/den and only the whole numbers written. What it highlights follows the ask:
+
+- the solved example: a dot hops gap by gap and the point is named;
+- a named mark asked for its fraction: a tall tick with "?" and no dot (W9 reads a dot as the answer);
+- an asked fraction: written above the line, never placed.
+
+A line labelled with every whole number of its range is now its axis for W9.
+
+Measured over c5-maths-ch02-t01 (the worked example + 19 items, code only):
+
+| | fraction-parts@1 | number-line-hop@1 | none | fraction-line@1 |
+|---|---|---|---|---|
+| before | 8 | 3 | 9 | 0 |
+| after | 0 | 0 | 2 | 18 |
+
+All 18 fraction-line boards pass the full gate on their item, with the item's answers withheld. Elsewhere it fires on
+c6-ch07-t02 (3 location items), c6-ch07-t03 (1) and c4-ch05-t02 (1, a measuring jug's marks). It is never used for
+"write 7/4 as a mixed fraction", a decimal line or a roti.
+
+Board refs for lesson scripts: see `BOARD-REFS.md`.

@@ -26,6 +26,10 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   // round 4 content: a fraction OF a fraction ("3/5 of 2/3", "1/2 × 1/4", "half of a half", "aadhe ka aadha"): the area model
   const of = fractionOfIn(src);
   if (of) return { template: "fraction-of@1", ...of };
+  // round 7 (main, director3 judgement): a fraction ON A NUMBER LINE ("Mark 2/5 on a number line", "the middle mark", "4
+  // equal gaps") is drawn on the line it is about, never as a shaded circle (fraction-line@1)
+  const fl = fractionLineIn(src, { kit, item: !!item || text != null });
+  if (fl) return fl;
   // a fraction of a whole: the first proper fraction with a small denominator
   const fr = v.fractions.find(([a, d]) => d >= 2 && d <= 12 && a >= 0 && a <= d);
   if (fr) {
@@ -127,6 +131,49 @@ export function fractionOfIn(text) {
 
 /** Does the kit itself say this word (so a part label is the book's own word)? */
 const kitSays = (kit, re) => re.test(kitText(kit));
+
+const ORD = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, ninth: 9, tenth: 10, pehla: 1, pehle: 1, pahla: 1, doosra: 2, dusra: 2, teesra: 3, tisra: 3 };
+/** A whole object to shade ("roti", "pizza", "circle", "bar"): the fraction is OF it, not on a line. */
+const WHOLE_OBJECT = /\b(roti|chapati|pizza|cake|pie|circle|bar|strip|rectangle|shape|shaded?)\b/;
+/** The number line a fraction lies on, in words ("number line", "mark", "gap", "nishaan", "0 to 1", "0 se 1"). */
+export const ON_A_LINE = /number\s*line|\bmarks?\b|\bgaps?\b|nishaan|nishan|\b0\s*(?:to|se|-to-)\s*[1-3]\b|\bfrom\s+0\b|\bon\s+a\s+line\b|\bstones?\b/;
+/**
+ * round 7 (main, director3 judgement 2026-11-05): the fraction-line@1 call for a text about a fraction on the number line,
+ * or null. The line's split: "N equal parts / gaps", "K marks in between" (K+1 gaps), else the fraction's denominator; its
+ * length: "0 to 2" (else what the fraction needs, ≤ 3). What it highlights follows the ask: a NAMED mark ("the middle
+ * mark", "the first mark", "the 7th stone") asked for its fraction is ringed with "?"; a fraction asked for its place is
+ * written above the line with no point; only the kit's own solved example (`item` false) hops to the point and names it.
+ * Inside a fractions lesson about the line (its worked example), a plain "N equal parts" text is on the line too.
+ */
+export function fractionLineIn(src, { kit = null, item = false } = {}) {
+  const lower = String(src ?? "").toLowerCase();
+  const kitLine = /number\s*line|\bon a line\b/.test(String(kit?.workedExample?.problem ?? "").toLowerCase());
+  // (a lesson whose example is on the line: a text that asks WHERE a fraction is, never "write 7/4 as a mixed fraction")
+  const where = /\b(where|locate|place|point|left|right|between|closer|nearer|jumps?|kahan|kahaan)\b/.test(lower);
+  if (!(ON_A_LINE.test(lower) || (kitLine && where && !WHOLE_OBJECT.test(lower)))) return null;
+  // (a decimal line, "4.30 km to 4.40 km", is the decimal zoom's; a mixed number "2 1/3" is not a/b on 0..1)
+  if (/\d\.\d/.test(lower) || /\b\d\s+\d\s*\/\s*\d/.test(lower)) return null;
+  if (WHOLE_OBJECT.test(lower) && !/number\s*line|nishaan|nishan|\b0\s*(?:to|se|-to-)\s*[1-3]\b/.test(lower)) return null;
+  const fr = [...lower.matchAll(/(?<![\d.])(\d{1,2})\s*\/\s*(\d{1,2})(?![\d.])/g)].map((m) => [Number(m[1]), Number(m[2])]).filter(([, d]) => d >= 2 && d <= 12);
+  const split = lower.match(/\b(\d{1,2})\s+equal\s+(?:parts?|gaps?|pieces?|hisse|hisson)\b/)?.[1];
+  const between = lower.match(/\b(\d{1,2})\s+(?:equally\s+spaced\s+|small\s+)?marks?\s+(?:in\s+between|between|inside)\b/)?.[1];
+  const den = split ? Number(split) : between ? Number(between) + 1 : fr.find(([a, d]) => /every|each|har/.test(lower) && a === 1)?.[1] ?? fr[0]?.[1];
+  if (!(den >= 2 && den <= 12)) return null;
+  const tgt = fr.find(([, d]) => d === den) ?? null;
+  const span = Number(lower.match(/\b0\s*(?:to|se|-to-)\s*([1-3])\b/)?.[1] ?? 0);
+  const wholes = Math.min(3, Math.max(1, span, tgt ? Math.ceil(tgt[0] / den) : 1));
+  if (den * wholes > 24 || (tgt && tgt[0] > den * wholes)) return null;
+  const base = { template: "fraction-line@1", den, ...(wholes > 1 ? { wholes } : {}) };
+  // a named mark, asked for its fraction
+  const ordM = lower.match(/\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|pehla|pehle|pahla|doosra|dusra|teesra|tisra)\s+(?:mark|stone|nishaan|nishan)\b/)
+    ?? lower.match(/\b(\d{1,2})(?:st|nd|rd|th)\s+(?:mark|stone|nishaan|nishan)\b/);
+  const k = /\bmiddle\s+(?:mark|point|nishaan)|\bbeech\s+(?:ka|wala)\s+(?:mark|nishaan)/.test(lower) ? (den * wholes) % 2 ? null : (den * wholes) / 2
+    : ordM ? ORD[ordM[1]] ?? Number(ordM[1]) : null;
+  if (k != null && k >= 1 && k <= den * wholes && /\b(what|which|how far|kya|kaunsa|kitna|name|naam)\b/.test(lower)) return { ...base, mark: k };
+  if (tgt && !item) return { ...base, target: tgt, show: true };
+  if (tgt && tgt[0] >= 1) return { ...base, target: tgt };
+  return base;
+}
 const kitTextMemo = new WeakMap();
 function kitText(kit) {
   if (!kit || typeof kit !== "object") return "";

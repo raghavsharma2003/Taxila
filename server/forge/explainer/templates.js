@@ -18,11 +18,11 @@ import { placeNamed } from "./places.js";
 const round1 = (v) => Math.round(v * 10) / 10;
 
 export const BOARD = { w: 400, h: 300 };
-export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
+export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -118,6 +118,55 @@ function fractionParts(c, tl) {
   if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
   return { facts };
+}
+
+/**
+ * round 7 (main, director3 judgement 2026-11-05): a fraction ON THE NUMBER LINE (c5 "fractions on a line": she says
+ * "nishaan" and "gap", so a shaded roti contradicts her). 0 to `wholes` (1-3), each whole split into `den` equal gaps
+ * (ticks at every 1/den, only the whole numbers written). Three uses, by what the item asks:
+ *   show    (the worked example / an explanation) a dot hops gap by gap from 0 and lands on target a/den, which is written
+ *   mark k  (the item names a mark and asks its fraction) that mark is ringed and marked "?": its fraction is never written
+ *   target  (the item names a/den and asks where it goes) a/den is written above the line, no point is drawn
+ */
+function fractionLine(c, tl) {
+  const den = c.den, w = c.wholes ?? 1;
+  if (!isInt(den, 2, 12) || !isInt(w, 1, 3) || den * w > 24) return { error: "fraction_line_range" };
+  const tgt = Array.isArray(c.target) && isInt(c.target[0], 0, den * w) && c.target[1] === den ? c.target[0] : null;
+  const mark = isInt(c.mark, 1, den * w) ? c.mark : null;
+  if (c.show && tgt == null) return { error: "fraction_line_show" };
+  const x0 = 30, W = 340, y = 170;
+  const X = (u) => round1(x0 + 12 + (u / w) * (W - 24));
+  // (paced for her explanation: the line, then the gaps one by one, ~4-5 s before the point, so a ~12 s line keeps up — W6)
+  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: w + 1 }, (_, i) => String(i))], range: [0, w], w: W, weight: 2 }, 1200);
+  const tick = Math.max(90, Math.min(320, Math.round(2400 / (den * w))));
+  for (let i = 1; i < den * w; i++) if (i % den) tl.add({ op: "line", from: [X(i / den), y - 7], to: [X(i / den), y + 7], weight: 1 }, tick, { gap: Math.round(tick / 2) });
+  const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
+  const claims = [];
+  if (c.show) {
+    // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
+    const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
+    for (let k = 1; k <= tgt; k++) {
+      const from = X((k - 1) / den), to = X(k / den);
+      tl.add({ op: "arrow", from: [from, y - 10], to: [to, y - 10], bend: -0.6, ink: "accent" }, 650, { gap: k === 1 ? 400 : 150 });
+      tl.add({ op: "move", target: dot, by: [round1(to - from), 0], arc: 12 }, 650, { with: true });
+    }
+    tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
+    claims.push({ id: dot, c: [X(tgt / den), y] });
+    return { claims, facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
+  }
+  if (mark != null) {
+    // (the mark the item NAMES is its given: a tall tick in mark ink and a "?" over it; never a dot on it, which is how a
+    // board answers "where is it" — W9 reads a dot there as the answer)
+    tl.add({ op: "line", from: [X(mark / den), y - 14], to: [X(mark / den), y + 14], weight: 3, ink: "mark" }, 500, { gap: 700 });
+    tl.add({ op: "text", at: [X(mark / den), y - 30], text: "?", size: "l", ink: "mark" }, 400, { gap: 300 });
+    // (no "each 1/den" here: for the first mark it IS the answer)
+    return { claims, facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)" } };
+  }
+  if (tgt != null) {
+    tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
+    return { claims, facts: { ...facts, find: `${tgt}/${den}`, where: "? (child works it out)" } };
+  }
+  return { claims, facts };
 }
 
 /**
@@ -1202,7 +1251,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
