@@ -1,5 +1,5 @@
 // Types for shared/whiteboard.js (the whiteboard script's one implementation; the script TYPES are shared/studio.ts).
-import type { StudioFacts, WbOp, WhiteboardScript } from "./studio.ts";
+import type { StudioFacts, WbOp, WbPoint, WhiteboardScript } from "./studio.ts";
 
 export const LIMITS: Readonly<{ maxOps: number; maxPointsPerStroke: number; maxTextChars: number; maxDurationMs: number; minBoard: number; maxBoard: number; maxNumRows: number; maxNumCols: number; maxCellChars: number; maxWordCellChars: number }>;
 export const OPS: readonly string[];
@@ -28,3 +28,13 @@ export function lintScript(script: WhiteboardScript): { id: string; check: strin
 export function moveShift(ops: readonly WbOp[], id: string, t: number, reducedMotion?: boolean): [number, number];
 export function shiftOp<T extends WbOp>(op: T, dx: number, dy: number): T;
 export function settledScript(script: WhiteboardScript): WhiteboardScript;
+export type WbMatrix = [number, number, number, number, number, number];
+export const MOTION: ReadonlySet<string>;
+export const MOTION_TARGETS: Readonly<Record<"rotate" | "scale" | "follow" | "sweep" | "morph", readonly string[]>>;
+export function isMotionOp(op: unknown): boolean;
+export function motionMatrix(ops: readonly WbOp[], id: string, t: number, reducedMotion?: boolean): WbMatrix;
+export function isIdentity(m: WbMatrix): boolean;
+export function morphAt(ops: readonly WbOp[], op: WbOp, t: number, reducedMotion?: boolean): WbPoint[] | null;
+export function sweepAt(ops: readonly WbOp[], id: string, t: number, reducedMotion?: boolean): { p: number; dir: "up" | "down" | "left" | "right" } | null;
+export function transformOp<T extends WbOp>(op: T, m: WbMatrix): T;
+export function finalOp<T extends WbOp>(op: T, ops: readonly WbOp[]): T;

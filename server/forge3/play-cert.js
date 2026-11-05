@@ -91,6 +91,25 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const [k, v] of Object.entries(prior.pieces ?? {})) if (!k.startsWith(`${only}/`)) table.pieces[k] = v;
     table.samples = (prior.samples ?? []).filter((x) => !String(x.key ?? "").startsWith(`${only}/`));
   }
+  // --resume (with --only): a run cut short (the container restarts) keeps this family's samples already judged in the r7
+  // format (each records its box), rebuilds their cells from them, and skips those coverage entries; the table is
+  // written after every entry, so a restart loses at most the entry in flight
+  const resume = only && argv.includes("--resume") && prior;
+  const done = new Set();
+  if (resume) {
+    for (const x of prior.samples ?? []) {
+      if (!String(x.key ?? "").startsWith(`${only}/`) || !x.box) continue;
+      table.samples.push(x);
+      done.add(`${x.topicId}|${x.key}|${x.goal}`);
+      const band = (x.classLevel ?? 6) <= 5 ? 4 : 7;
+      const cell = ((table.pieces[x.key] ??= {})[`${x.art}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
+      cell.n++;
+      for (const [vp, ok] of Object.entries(x.byViewport ?? {})) if (!ok) cell.byViewport[vp] = false;
+      for (const f of x.fails ?? []) if (cell.fails.length < 12 && !cell.fails.includes(f)) cell.fails.push(f);
+    }
+    console.log(`resume: ${done.size} entries of ${only} already judged`);
+  }
+  const checkpoint = () => { fs.mkdirSync(path.dirname(out), { recursive: true }); fs.writeFileSync(out, JSON.stringify(table, null, 1)); };
   const force = (f) => judge.page.evaluate((x) => { window.__taxilaPlayRender = x; }, f);
   let shot = 0;
   // r7: each size is judged on its own and then probed, so a certificate records the box the piece was judged in and
@@ -116,6 +135,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   };
   for (const entry of entries) {
     const key = `${entry.family}/${entry.mode}`;
+    if (done.has(`${entry.topicId}|${key}|${entry.goal}`)) continue;
     const band = entry.classLevel <= 5 ? 4 : 7;
     const levels = await coverageLevels(entry, seeds);
     if (!levels.length) { table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, noLevel: true }); console.log(`${entry.topicId} ${key}: no served level`); continue; }
@@ -157,6 +177,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       }
     }
     await force(null);
+    checkpoint();
   }
   await judge.close(); await browser.close(); server.close();
   servingVerdicts(table);

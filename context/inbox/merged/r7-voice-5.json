@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-d5-relay-ticket",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Platform 002, the India D5 relay taxila-d5-sin): Voice's three pieces. (1) Mint: POST /api/duplex/ticket { lessonId } runs authorizeD5 exactly as the upgrade does; with TAXILA_D5_RELAY_URL set it returns { url, ticket } from Platform's mintRelayTicket (single use, 60 s, one lesson); without it { url: null }, which is today's path and the rollback. (2) Accept: handleD5Upgrade under TAXILA_ROLE=d5relay skips the same-origin check and authorizeD5 and verifies the ticket instead (a module-level seen set refuses reuse), with 401 'ticket refused (<reason>)' otherwise. The relay has no lesson row, so its ear gets the core phrase list only (no names, no kit answers). (3) Client: d5Stream asks for a ticket, opens the relay first, and on a refusal or silence retries once on the same-origin socket (stats.relayFallbacks, via). server/relay-ticket.js is Platform's and loads lazily, so this lands before that file is in the base. Reverse the relay-first order if live India lessons show the relay's open failing often enough that the retry costs first sound more than the shorter path saves."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-d5-relay-ticket",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-d5-relay-ticket — the India D5 relay opens with a ticket, never a cookie (2026-11-04)\n\nThe India relay sits on its own host, so it sees neither the taxila.dev cookie nor the same origin. taxila-web authorizes the lesson as it always has, then hands the browser a short single-use ticket. The relay checks only that ticket, with no database. The browser tries the relay first and falls back once to the same-origin socket. With no relay URL configured nothing changes, which is also the rollback. The relay's ear gets the core phrase list only. Reversal: if relay opens fail often enough that the retry costs more first sound than the shorter path saves, go same-origin first.\n"
+ }
+}

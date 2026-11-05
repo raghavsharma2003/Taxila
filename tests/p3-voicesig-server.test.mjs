@@ -24,11 +24,12 @@ const childEvidence = Object.fromEntries(VS_STATES.map((s) => [s, { population: 
 const ladderL1 = Object.fromEntries(VS_STATES.map((s) => [s, { level: 1, earnedBy: "fixture", at: "2026-10-05" }]));
 const identityCal = { h1: { kind: "identity" }, h2: { kind: "identity" }, h3: { kind: "identity" }, h4: { kind: "identity" } };
 
-test("mode: unset ships shadow (the pipeline is on), off is the kill switch, on is explicit", () => {
-  assert.equal(seamMode({}), "shadow");
+test("mode: unset ships internal (round 7), shadow and on are explicit, off is the kill switch", () => {
+  assert.equal(seamMode({}), "internal", "round 7: unset = internal (the hints act in our own lessons)");
+  assert.equal(seamMode({ TAXILA_VOICESIG: "shadow" }), "shadow");
   assert.equal(seamMode({ TAXILA_VOICESIG: "off" }), "off");
   assert.equal(seamMode({ TAXILA_VOICESIG: "ON" }), "on");
-  assert.equal(seamMode({ TAXILA_VOICESIG: "garbage" }), "shadow");
+  assert.equal(seamMode({ TAXILA_VOICESIG: "garbage" }), "internal");
 });
 
 test("helpers: verdict from the grader only, answer form, age band from class", () => {
@@ -247,11 +248,12 @@ test("persistence never throws: a failing database degrades to session-only", as
 // ───────── routes and the status page ─────────
 
 test("config + status routes: kill switches, and every state says shadow with its labelled numbers", async () => {
-  assert.deepEqual(config({}), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
+  assert.deepEqual(config(SHADOW), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
+  assert.equal(config({}).mode, "internal");
   assert.equal(config({ TAXILA_VOICESIG: "off" }).frontend, false);
   assert.equal(config({ TAXILA_VOICESIG_FRONTEND: "0" }).frontend, false);
   assert.equal(config({ TAXILA_VOICESIG_DETECTOR: "0" }).detector, false);
-  const st = status({});
+  const st = status(SHADOW);
   assert.deepEqual(st.liveStates, []);
   assert.equal(st.states.length, 8);
   for (const s of st.states) {

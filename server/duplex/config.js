@@ -98,6 +98,15 @@ export async function modeFor(req, { env = process.env, lookup = null, timeoutMs
 }
 
 export const duplexConfigRoutes = {
+  // round 7 (Platform 002): the India D5 relay's ticket (server/duplex/d5route.js d5Ticket; loaded here lazily: no cycle)
+  "POST /api/duplex/ticket": async (req, res, body) => {
+    const { d5Ticket } = await import("./d5route.js");
+    const out = await d5Ticket(req, body);
+    res.statusCode = 200;
+    res.setHeader("content-type", "application/json; charset=utf-8");
+    res.setHeader("cache-control", "no-store");
+    res.end(JSON.stringify(out));
+  },
   "GET /api/duplex/config": async (req, res) => {
     const body = await modeFor(req);
     res.statusCode = 200;

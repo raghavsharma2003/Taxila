@@ -79,6 +79,11 @@ function scaleOp(o: Op, f: number, dx: number, dy: number): Op {
   if (o.op === "ellipse") { r.rx = S(o.rx); r.ry = S(o.ry); }
   // round 7 (motion ops): a move's shift and hop are lengths: scaled, never shifted
   if (o.op === "move") { if (isPt(o.by)) r.by = [S(o.by[0]), S(o.by[1])]; if (typeof o.arc === "number") r.arc = S(o.arc); }
+  // M1: a turn's or a scale's pivot is a point (scaled and shifted); a follow's path is offsets (scaled only); a morph's
+  // points are points
+  if ((o.op === "rotate" || o.op === "scale") && "about" in o) r.about = P(o.about);
+  if (o.op === "follow" && Array.isArray(o.path)) r.path = (o.path as unknown[]).map((q) => (isPt(q) ? [S(q[0]), S(q[1])] : q));
+  if (o.op === "morph" && Array.isArray(o.to)) r.to = (o.to as unknown[]).map(P);
   return r;
 }
 

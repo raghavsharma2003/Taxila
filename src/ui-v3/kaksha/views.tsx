@@ -49,8 +49,19 @@ export interface HomeViewProps extends NavProps {
   teacher: { id: string | null | undefined; name: string; band: string; form?: "live" | "plate"; tier?: "D" | "E" };
   family: "young" | "older";
   reducedMotion: boolean;
-  /** "start": Start; "done": Start + the done line; "capped" / "resting": no CTA (calm line); "loading": no CTA. */
-  state: "start" | "done" | "capped" | "resting" | "loading";
+  /** "start": Start; "done": One more + what they did; "capped" / "resting": no CTA (calm line); "loading": no CTA.
+   *  r7 app-home-plan-states: "homework": Homework help (the lesson one tap below); "test": Revise for the school test. */
+  state: "start" | "done" | "capped" | "resting" | "loading" | "homework" | "test";
+  /** homework: today's lesson as the quiet second link (STUDENT-FLOW §4.2), never a second primary. */
+  lessonTo?: string | null;
+  /** test: the test's subject in words. */
+  testSubject?: string | null;
+  /** done: today's first did card (her question and the child's answer; never a score). */
+  did?: { ask: string | null; answer: string; withHelp: boolean } | null;
+  /** done: today's made-for pieces (newest first; the strip is absent while empty). */
+  madeFor?: Array<{ id: string; title: string; still: string | null; to: string }>;
+  /** Questions parked in earlier lessons still waiting (a calm line, never a count). */
+  jarWaiting?: boolean;
   startTo: string;
   worldTo: string;
   parentTo: string;
@@ -68,10 +79,13 @@ export interface HomeViewProps extends NavProps {
 
 export function HomeView(p: HomeViewProps) {
   const greet = kt(p.greeting === "morning" ? "greetMorning" : p.greeting === "evening" ? "greetEvening" : "greetDay", { name: p.childName });
-  const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub") : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : kt("openSub");
-  const cta = p.state === "start" || p.state === "done";
+  const sub = p.resuming && p.state === "start" ? kt("resumeSub") : p.state === "done" ? kt("doneSub") : p.state === "capped" ? kt("cappedSub")
+    : p.state === "resting" ? kt("restSub", { time: p.opensAt ?? "" }) : p.state === "homework" ? kt("homeworkSub")
+      : p.state === "test" ? kt("testSub", { subject: p.testSubject || "school" }) : kt("openSub");
+  const cta = p.state === "start" || p.state === "done" || p.state === "homework" || p.state === "test";
+  const ctaWord = p.state === "homework" ? kt("homeworkCta") : p.state === "test" ? kt("reviseCta") : p.state === "done" ? kt("anotherCta") : kt("start");
   return (
-    <div className={`kx-screen kx-home${p.dock ? " kx-hasdock" : ""}`}>
+    <div className={`kx-screen kx-home${p.dock ? " kx-hasdock" : ""}`} data-home-state={p.state} data-summary={p.state === "done" && (p.did || p.madeFor?.length) ? "1" : undefined}>
       <Sky screen="home" reducedMotion={p.reducedMotion} />
       {p.meTo ? (
         <KxTopBar go={p.go} meTo={p.meTo} parentTo={p.parentTo}
@@ -96,12 +110,34 @@ export function HomeView(p: HomeViewProps) {
               <span data-volt="">{kt("continueCta")}</span>
             </A>
           ) : cta ? (
-            <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${kt("start")}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>
+            <A to={p.startTo} go={p.go} className="kx-cta kx-cut" testid="start-lesson" label={`${ctaWord}, with ${p.teacher.name}, ${kt("aiTeacher")}`}>
               <span className="kx-cta-sweep" aria-hidden="true" />
               <Icon d={I.play} size={22} />
-              <span data-volt="">{kt("start")}</span>
+              <span data-volt="">{ctaWord}</span>
             </A>
           ) : null}
+          {p.state === "homework" && p.lessonTo && (
+            <A to={p.lessonTo} go={p.go} className="kx-textlink" testid="homework-lesson">{kt("todaysLesson")}</A>
+          )}
+          {p.state === "done" && p.did && (
+            <div className="kx-did kx-cut" data-testid="did-card">
+              <span className="kx-label">{kt("didToday")}</span>
+              {p.did.ask && <p className="kx-did-ask" data-speech="">{p.did.ask}</p>}
+              <p className="kx-did-ans"><span className="kx-sr">{kt("answered")}: </span>{p.did.answer}<span className="kx-did-how">{p.did.withHelp ? kt("withHint") : kt("onOwn")}</span></p>
+            </div>
+          )}
+          {p.madeFor && p.madeFor.length > 0 && (p.state === "done" || p.state === "capped") && (
+            <section className="kx-madefor" aria-label={kt("madeForYou")} data-testid="madefor-shelf">
+              <span className="kx-label">{kt("madeForYou")}</span>
+              <ul>{p.madeFor.slice(0, 3).map((it) => (
+                <li key={it.id}><A to={it.to} go={p.go} className="kx-madefor-item kx-cut">
+                  {it.still ? <img src={it.still} alt="" width={96} height={72} loading="lazy" /> : <i aria-hidden="true" />}
+                  <span>{it.title}</span>
+                </A></li>
+              ))}</ul>
+            </section>
+          )}
+          {p.jarWaiting && (p.state === "start" || p.state === "test") && <p className="kx-sub kx-jar" data-testid="jar-waiting">{kt("jarWaiting")}</p>}
           {p.dock ? (
             // r7: World, Notebook, Practice and Ask live in the one dock; the parent door is in the top bar. Only the
             // sibling switch stays here (audit B06).

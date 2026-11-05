@@ -129,7 +129,9 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     const el = root.current;
     if (!el || !onSize) return;
     const measure = () => {
-      const fs = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1;
+      // the browser / OS text size, times Me → Bigger text (the shell's data-comfort; child.css scales the type by 1.18)
+      const comfort = el.closest('[data-comfort="large"]') ? 1.18 : 1;
+      const fs = (parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1) * comfort;
       const vv = window.visualViewport;
       const inset = vv ? Math.max(0, Math.round(window.innerHeight - vv.height)) : 0;
       onSize({

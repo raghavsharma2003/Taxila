@@ -606,17 +606,25 @@ async function setTestWindow(req, res, body) {
   if (!DAY.test(String(body.from ?? "")) || !DAY.test(String(body.to ?? ""))) throw bad("from and to must be dates (YYYY-MM-DD)");
   if (body.to < body.from) throw bad("the test window must end after it starts");
   if ((Date.parse(body.to) - Date.parse(body.from)) / 86_400_000 > 21) throw bad("a test window is at most 3 weeks");
-  const w = { subject, from: body.from, to: body.to };
+  // round 7 F (learning-test-window-revision): the test's chapters, optional; lessons revise only those (content/next-topic.js)
+  const book = new Set((chaptersOf(child.class_level)[subject] ?? []).map((c) => c.number));
+  const chapters = body.chapters == null ? [] : Array.isArray(body.chapters) ? [...new Set(body.chapters.map(Number))].sort((a, b) => a - b) : null;
+  if (!chapters || chapters.length > 12 || chapters.some((c) => !book.has(c))) throw bad("chapters must be up to 12 chapter numbers of the class book");
+  const w = { subject, from: body.from, to: body.to, ...(chapters.length ? { chapters } : {}) };
   await one(`insert into child_controls(child_id, daily_minutes, test_window) values ($1, $2, $3)
       on conflict (child_id) do update set test_window = excluded.test_window, updated_at = now() returning child_id`,
   [child.id, defaultControls(child.class_level).dailyMinutes, w]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'test_window', $2)", [guardian.id, { childId: child.id, subject }]);
+  // the Conductor's copy (planner test mode, newSkillBudget 0 in the last 2 days; the weekly report's S17 line)
+  await emitSchool(child.id, { type: "school.test_announced", subject, on: w.to, from: w.from, chapters: chapters.map(String), via: "parent" });
   send(res, 200, { window: w });
 }
 /** DELETE /api/parent/test-window { childId } */
 async function deleteTestWindow(req, res, body) {
   const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const prev = await one("select test_window from child_controls where child_id = $1", [child.id]).catch(() => null);
   await q("update child_controls set test_window = null where child_id = $1", [child.id]);
+  if (prev?.test_window?.subject) await emitSchool(child.id, { type: "school.test_cleared", subject: prev.test_window.subject, via: "parent" });
   send(res, 200, { window: null });
 }
 
@@ -648,6 +656,50 @@ async function requireSetupChild(req, childId) {
 async function emitSchool(childId, event) {
   try { const { emit } = await import("../conductor/index.js"); await emit(childId, event); }
   catch (e) { console.error("[parent] school event", event.type, e?.message?.slice(0, 160)); }
+}
+
+// ───────────────────────────── the lesson schedule (round 7 F, app-parent-schedule) ─────────────────────────────
+// Days (JS weekdays, 0 = Sunday), a start time and a length. Stored on child_routine (045: lesson_days, lesson_min; anchor
+// is 004's) and sent to the Conductor as parent.setting_changed { restDays, anchor, lessonMin }: the planner starts the
+// sitting at that time on those days and never plans it longer. It plans; it never locks the child out (the daily limit
+// and lesson hours do that, and only when the family turned them on).
+const HHMM_P = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const SCHEDULE_MINUTES = Object.freeze([15, 20, 25, 30, 35, 45]);
+
+/** GET /api/parent/schedule?childId= → { schedule: { days, time, minutes } | null, minutes: number[] } */
+async function getSchedule(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const r = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
+  const schedule = r?.anchor ? { days: Array.isArray(r.lesson_days) ? r.lesson_days.map(Number) : [0, 1, 2, 3, 4, 5, 6], time: r.anchor, minutes: r.lesson_min ?? null } : null;
+  send(res, 200, { schedule, minutes: SCHEDULE_MINUTES });
+}
+
+/** POST /api/parent/schedule { childId, days, time, minutes } → { schedule }. Inside an unlocked Parent corner. */
+async function setSchedule(req, res, body) {
+  const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const days = Array.isArray(body.days) ? [...new Set(body.days.map(Number))].sort((a, b) => a - b) : null;
+  if (!days || !days.length || days.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) throw bad("days must be one or more weekdays (0 = Sunday)");
+  if (!HHMM_P.test(String(body.time ?? ""))) throw bad("time must be HH:MM");
+  const minutes = Number(body.minutes);
+  if (!SCHEDULE_MINUTES.includes(minutes)) throw bad(`minutes must be one of ${SCHEDULE_MINUTES.join(", ")}`);
+  await one(`insert into child_routine (child_id, anchor, lesson_days, lesson_min) values ($1, $2, $3::smallint[], $4)
+      on conflict (child_id) do update set anchor = excluded.anchor, lesson_days = excluded.lesson_days, lesson_min = excluded.lesson_min, updated_at = now()
+      returning child_id`, [child.id, body.time, days, minutes]);
+  const settingsVersion = Date.now();
+  const restDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !days.includes(d));
+  for (const [key, value] of [["restDays", restDays], ["anchor", body.time], ["lessonMin", minutes]]) {
+    await emitSchool(child.id, { type: "parent.setting_changed", key, value, by: "owner", settingsVersion });
+  }
+  send(res, 200, { schedule: { days, time: body.time, minutes } });
+}
+
+// ───────────────────────────── how the teacher teaches (round 7 F, learning-parent-teaching-page) ─────────────────────────────
+/** GET /api/parent/teaching?childId= → { teacher, approach, lessons: [{ id, topic, startedAt, why: [{ code, n, text }] }], madeFor } */
+async function teaching(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const [{ teachingOf }, { teacherFor }] = await Promise.all([import("../reports/teaching.js"), import("../compiler/characters/index.js")]);
+  const T = teacherFor(child).name;
+  send(res, 200, { teacher: T, ...(await teachingOf(child, { T, q })) });
 }
 
 // ───────────────────────────── household (round 7 F, household v1) ─────────────────────────────
@@ -1323,13 +1375,14 @@ async function report(req, res) {
     return send(res, 200, { report: { ...reportOut(r), ...(hold ? { held: true, renders: noVoice(reportOut(r).renders) } : {}) } });
   }
   const cadence = sp.get("cadence");
-  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly or monthly");
   if (hold) return send(res, 200, { report: null, skipped: "held", held: true });
   const tz = await tzOf(child.id);
   const today = learningDay(new Date(), tz);
-  let period = sp.get("period") || (cadence === "daily" ? "today" : "thisweek");
+  let period = sp.get("period") || (cadence === "daily" ? "today" : cadence === "monthly" ? "thismonth" : "thisweek");
   if (period === "today") period = today;
   if (period === "thisweek") period = isoWeek(today);
+  if (period === "thismonth") period = today.slice(0, 7);
   try { windowOf(cadence, period, tz); } catch { throw bad("invalid period"); }
   const out = await previewReport(child.id, { cadence, period }, { db: { q } });
   if (out.skipped) return send(res, 200, { report: null, skipped: out.skipped, period });
@@ -1363,7 +1416,7 @@ async function reportEvidence(req, res) {
     throw new HttpError(404, "line not found");
   } else {
     const cadence = sp.get("cadence"), period = sp.get("period");
-    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly or monthly");
     try { windowOf(cadence, String(period), await tzOf(child.id)); } catch { throw bad("invalid period"); }
     r = (await previewReport(child.id, { cadence, period }, { db: { q } })).report;
   }
@@ -1532,6 +1585,9 @@ export const routes = {
   "GET /api/parent/chapters": getChapters,
   "POST /api/parent/school-chapter": setSchoolChapter,
   "POST /api/parent/timetable": setTimetable,
+  "GET /api/parent/teaching": teaching,
+  "GET /api/parent/schedule": getSchedule,
+  "POST /api/parent/schedule": setSchedule,
   "GET /api/parent/household": getHousehold,
   "POST /api/parent/household": setHousehold,
   "GET /api/parent/made-for": madeForList,

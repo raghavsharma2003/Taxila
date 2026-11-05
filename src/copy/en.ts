@@ -239,6 +239,14 @@ export const R7 = {
   // F Learning to-app/001: the chapter the parent said school is on, on the World and the map
   "map.schoolHere": "Your class is here",
   "map.schoolHereAt": "Your class is here: {subject} · {chapter}",
+  // r7 app-me-settings: What {T} remembers (STUDENT-FLOW §11.4)
+  "mem.title": "What {T} remembers",
+  "mem.from": "From what you said on {date}",
+  "mem.forget": "Forget this",
+  "mem.forgotten": "{T} has forgotten that.",
+  "mem.off": "{T} doesn't remember anything between days. Your grown-up chose this.",
+  "mem.none": "{T} hasn't kept anything you said yet.",
+  "mem.row": "What {T} remembers",
 } as const;
 export type R7Key = keyof typeof R7;
 export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {

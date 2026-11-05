@@ -46,22 +46,51 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     const hop = minus ? -Math.abs(b) : b;
     if (Math.abs(a) <= 20 && Math.abs(hop) <= 20 && hop !== 0) return { template: "number-line-hop@1", start: a, hops: [hop] };
   }
-  const two = n.length >= 2 ? [n[0], n[1]] : null;
-  if (two && /\b(add|sum|total|plus|altogether|in all)\b|\d\s*\+\s*\d|\+/.test(lower)) {
-    const [a, b] = two;
+  // round 7 (M2): the two numbers of an operation are its OPERANDS, read where the operation is written ("4 + 3", "add 4
+  // and 3", "3 groups of 4"), not the line's first two numbers. One sign between two numbers is an operation only when no
+  // other operation joins them ("3 + 4 × 2" is order of operations, "9 + 9 + 1" a longer sum, "3n + 2" a rule: none is two
+  // groups put together). A word problem with exactly two numbers keeps the word cue ("4 apples, 3 more: how many in
+  // all?"). Measured: once motion made such boards pass W6, the old first-two-numbers rule drew "2 + 2" dots for a
+  // perimeter lesson, 2 + 3 for the Collatz rule and 3 + 4 for "3 + 4 × 2 = 11".
+  const flat = lower.replace(/(\d),(?=\d{3}\b)/g, "$1");   // "2,000 + 50" is 2000 + 50
+  const lone = (re) => {
+    const m = re.exec(flat);
+    if (!m) return null;
+    const before = flat.slice(0, m.index), after = flat.slice(m.index + m[0].length);
+    // (inside brackets an operation joins: "2 × (50 + 30)" is a rule's step, not two groups)
+    if (/[×x*÷/+−-]\s*\(?\s*$|[a-z]$/.test(before) || /^\s*\)?\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]/.test(after)) return null;
+    return [Number(m[1]), Number(m[2])];
+  };
+  const onlyTwo = n.length === 2 && !/[×÷*/=]|\d[a-z]\b/.test(lower) ? [n[0], n[1]] : null;
+  const addOps = lone(/(\d+)\s*\+\s*(\d+)/) ?? lone(/\b(?:add|adding|sum of|total of|plus)\s+(\d+)\s+(?:and|to|with)\s+(\d+)/)
+    ?? (onlyTwo && /\b(add|sum|total|plus|altogether|in all)\b|\d\s+more\b/.test(lower) ? onlyTwo : null);
+  if (addOps) {
+    const [a, b] = addOps;
     if (a <= 10 && b <= 10) return { template: "combine-count@1", a, b, op: "add" };
     if (a <= 99999 && b <= 99999) return { template: "column-op@1", a, b, op: "add" };
   }
-  if (two && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?|how many more|how much more|fewer)\b|\d\s*[−-]\s*\d/.test(lower)) {
-    const a = Math.max(...two), b = Math.min(...two);
+  // ("1-9" or "2-3 days" is a range: a minus is "−" or a spaced hyphen)
+  const subOps = lone(/(\d+)\s*(?:−|\s-\s)\s*(\d+)/) ?? lone(/\b(?:subtract|take away)\s+(\d+)\s+from\s+(\d+)/)?.reverse()
+    ?? (onlyTwo && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?|how many more|how much more|fewer)\b/.test(lower) ? onlyTwo : null);
+  if (subOps) {
+    const a = Math.max(...subOps), b = Math.min(...subOps);
     if (a <= 10) return { template: "combine-count@1", a, b, op: "take_away" };
     if (a <= 99999) return { template: "column-op@1", a, b, op: "sub" };
   }
-  if (two && /\b(times|multiply|multiplied|groups? of|each|rows? of|product)\b|×/.test(lower)) {
-    const g = Math.min(...two), e = Math.max(...two);
+  const mulOps = lone(/(\d+)\s*[×x*]\s*(\d+)/) ?? lone(/(\d+)\s+(?:groups?|rows?|bags?|boxes?|packets?)\s+of\s+(\d+)/) ?? lone(/(\d+)\s+times\s+(\d+)/)
+    ?? (n.length === 2 && !/[+−÷/=]|\d[a-z]\b/.test(lower) && /\b(times|multiply|multiplied|groups? of|each|rows? of|product)\b/.test(lower) ? [n[0], n[1]] : null);
+  if (mulOps) {
+    const g = Math.min(...mulOps), e = Math.max(...mulOps);
     if (g >= 2 && g <= 6 && e >= 1 && e <= 8) return { template: "equal-groups@1", groups: g, each: e };
   }
-  if (/number line|jump|hop|skip/.test(lower) && n.length >= 2 && n[0] <= 100 && n[1] >= 1 && n[1] <= 20) {
+  // "3 × (−2) means three jumps of 2 to the left": a product on the number line is that many equal jumps from 0 (round 7
+  // M2: read as "start 3, hop −2" it drew 3 → 1)
+  const times = /number line|jump|hop|skip/.test(lower) ? flat.match(/(\d+)\s*[×x*]\s*\(?\s*([−-])?\s*(\d+)\s*\)?/) : null;
+  if (times) {
+    const k = Number(times[1]), step = (times[2] ? -1 : 1) * Number(times[3]);
+    if (k >= 1 && k <= 4 && step && Math.abs(step) <= 20 && Math.abs(k * step) <= 40) return { template: "number-line-hop@1", start: 0, hops: Array(k).fill(step) };
+  }
+  if (!times && /number line|jump|hop|skip/.test(lower) && n.length >= 2 && n[0] <= 100 && n[1] >= 1 && n[1] <= 20) {
     return { template: "number-line-hop@1", start: n[0], hops: [/back|left|minus|subtract/.test(lower) ? -n[1] : n[1]] };
   }
   const big = n.find((x) => x >= 1000 && x <= 9_999_999);
@@ -108,7 +137,9 @@ function geometryPick({ kit, src, lower, n }) {
     }
     // two pairs in a graph / table problem, or three or more anywhere ("June 140, July 250, August 230")
     const keyword = /bar graph|graph|chart|pictograph|table|data|tally/.test(lower);
-    if ((pairs.length >= 3 || (keyword && pairs.length >= 2)) && pairs.length <= 6 && pairs.every((p) => Number.isInteger(p.value) && p.value <= 100000)) {
+    // (three without a graph word only when every label is a name, "June", "Monday", "Ravi": "easier 38, add 9, away 1" in
+    // a mental-adding line is no data — round 7 M2)
+    if (((pairs.length >= 3 && pairs.every((p) => /^[A-Z]/.test(p.label))) || (keyword && pairs.length >= 2)) && pairs.length <= 6 && pairs.every((p) => Number.isInteger(p.value) && p.value <= 100000)) {
       // a label longer than its column holds at the small size is written as its first three letters (Sep, Sat)
       const maxChars = Math.floor((312 / pairs.length - 4) / 10.5);
       return { template: "bar-chart@1", bars: pairs.map((p) => ({ label: p.label.length > maxChars ? p.label.slice(0, 3) : p.label, value: p.value })) };
@@ -121,7 +152,10 @@ function geometryPick({ kit, src, lower, n }) {
     return { template: "symmetry@1", ...(line ? { line } : {}), ...(d && +d >= 1 && +d <= 6 ? { dot: +d } : {}) };
   }
   // area / perimeter of a rectangle or square with its sides in the text
-  if (/\b(area|perimeter|boundary|fence|border)\b|rectangular (?:park|field|garden|room|plot)|\brounds? of\b/.test(lower) && n.length >= 1) {
+  // (its sides MEASURED: a unit, "5 by 3", or rows and columns — "2 lengths and 2 breadths" in a formula, or "the L-shaped
+  // border around the square" of n × n, gives no sides; round 7 M2)
+  const measured = /\b\d+\s*(?:cm|mm|km|m|units?)\b|\b\d+\s*(?:by|×|x)\s*\d+\b|\b\d+\s+(?:rows?|columns?)\b/.test(lower);
+  if (measured && /\b(area|perimeter|boundary|fence|border)\b|rectangular (?:park|field|garden|room|plot)|\brounds? of\b/.test(lower) && n.length >= 1) {
     const unit = (lower.match(/\b\d+\s*(cm|mm|km|m)\b/) ?? [])[1];
     const sq = /\bsquare\b/.test(lower) && !/rectang/.test(lower);
     const dims = n.filter((x) => x >= 1 && x <= 1000);
@@ -142,7 +176,7 @@ function geometryPick({ kit, src, lower, n }) {
   }
   // a named shape (two of it for congruent figures), its parts in the kit's own words
   // a shape word that names a shape (not "square number", "squares of 12", "circle the answer", "sq cm")
-  const shapeText = lower.replace(/\bsquare\s+(?:numbers?|roots?|units?|cm|mm|m|km|metres?|meters?|centimetres?|kilometres?)\b|\bsquares?\s+of\b|\bperfect\s+squares?\b|\bsquared\b|\bcircle\s+(?:the|your|it|one|each|all)\b|\bsquares?\s+(?:paper|grid)\b|\bsquared\s+paper\b/g, " ");
+  const shapeText = lower.replace(/\bsquare\s+(?:numbers?|roots?|units?|cm|mm|m|km|metres?|meters?|centimetres?|kilometres?)\b|\bsquares?\s+of\b|\bperfect\s+squares?\b|\bsquared\b|\bcircle\s+(?:the|your|it|one|each|all)\b|\bsquares?\s+(?:paper|grid)\b|\bsquared\s+paper\b|\beach\s+square\b/g, " ");
   const sw = SHAPE_WORDS.find((w) => new RegExp(`\\b${w}s?\\b`).test(shapeText));
   if (sw || /congruent/.test(lower)) {
     const shape = sw ?? "quadrilateral";

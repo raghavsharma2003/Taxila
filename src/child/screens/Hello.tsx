@@ -29,7 +29,15 @@ import { AVATARS, Avatar, avatarName, Icon, Picto } from "../pictos.tsx";
 import { helloClip, useVoiceClip } from "../voice.ts";
 import { listenOnce } from "../sayHi.ts";
 import { kakshaEnabled } from "../../ui-v3/kaksha/flag.ts";
-import { kt } from "../../ui-v3/kaksha/copy.ts";
+import { kt, type KxKey } from "../../ui-v3/kaksha/copy.ts";
+import { Comms } from "../../ui-v3/kaksha/Shell.tsx";
+import { Cta, Ghost, Glyph, KxPage, Panel } from "../../ui-v3/kaksha/kit.tsx";
+
+/** The boot log: each step's line (Kaksha Hello). "change" is the likes step too. */
+const BOOT: { card: Card; key: KxKey }[] = [
+  { card: "greet", key: "bootHello" }, { card: "ai", key: "bootAi" }, { card: "picture", key: "bootPicture" }, { card: "likes", key: "bootLikes" }, { card: "hi", key: "bootHi" },
+];
+const bootIndex = (c: Card) => BOOT.findIndex((b) => b.card === (c === "change" ? "likes" : c));
 
 const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
@@ -82,7 +90,7 @@ export function Hello() {
   }, [card, clip.played]);
   // focus each card's title (§11: a new card is announced)
   useEffect(() => {
-    document.querySelector<HTMLElement>(".hello-card h1, .hello-card h2")?.focus({ preventScroll: true });
+    document.querySelector<HTMLElement>(".hello-card h1, .hello-card h2, .kx-hello-card h1, .kx-hello-card h2")?.focus({ preventScroll: true });
   }, [card]);
 
   const finish = async (picks: string[] = likes) => {
@@ -211,6 +219,116 @@ export function Hello() {
       break;
   }
 
+  if (kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha)) {
+    // Kaksha (r7 app-secondary-screens-kaksha): Hello as a boot sequence. Her comms window, a mono log of what each
+    // step set up (done steps ticked, the current one live), and the step's panel with its one plasma action.
+    const at = bootIndex(card);
+    let kbody;
+    switch (card) {
+      case "greet":
+        kbody = (
+          <>
+            <h1 tabIndex={-1} className="kx-h2">{rec.name}</h1>
+            <p className="kx-hello-role"><span className="kx-ai">{t("aiTeacher")}</span></p>
+            {helloClip(rec.id, lang) && !clip.failed ? (
+              <Cta onClick={clip.play} disabled={clip.playing} testid="hello-hear"><Glyph name="speaker" size={22} /> {clip.playing ? t("playing") : t("tapToHear", { T: rec.name })}</Cta>
+            ) : (
+              <Cta onClick={() => setCard("ai")} testid="hello-next">{t("helloNext")}</Cta>
+            )}
+            {clip.playing && <Ghost onClick={() => setCard("ai")}>{t("helloNext")}</Ghost>}
+          </>
+        );
+        break;
+      case "ai":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{t("aiLine1")}</h2>
+            <p className="kx-sub kx-hello-line"><Glyph name="eye" size={22} /> <span>{t("aiLine2")}</span></p>
+            <Cta onClick={() => setCard("picture")} testid="hello-gotit">{t("gotIt")}</Cta>
+          </>
+        );
+        break;
+      case "picture":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{t("pickPicture")}</h2>
+            <div className="kx-pics" role="radiogroup" aria-label={t("pickPicture")}>
+              {pageAvatars.map((a) => (
+                <button key={a} type="button" role="radio" aria-checked={avatar === a} className="kx-pic kx-cut" aria-label={avatarName(a)} onClick={() => setAvatar(a)}>
+                  <Avatar id={a} size={young ? 76 : 64} />
+                </button>
+              ))}
+            </div>
+            <div className="kx-hello-pair">
+              <Ghost onClick={() => setPage((p) => p + 1)}><Glyph name="replay" size={20} /> {t("morePictures")}</Ghost>
+              <Cta onClick={afterPicture} disabled={!avatar} testid="hello-thatsme">{t("thatsMe")}</Cta>
+            </div>
+          </>
+        );
+        break;
+      case "likes":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{t("likesQ")}</h2>
+            <div className="kx-likes">{parentPicks.map((id) => <span key={id} className="kx-like kx-cut" data-on=""><Spot id={`interests/${id}`} size={56} fallback={<Glyph name="picture" size={28} />} /><span>{label(id)}</span></span>)}</div>
+            <div className="kx-hello-pair">
+              <Ghost onClick={() => setCard("change")}>{t("change")}</Ghost>
+              <Cta onClick={() => afterLikes(parentPicks)} testid="hello-right">{t("thatsRight")}</Cta>
+            </div>
+          </>
+        );
+        break;
+      case "change":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{t("likesPick")}</h2>
+            <div className="kx-likes">
+              {INTERESTS.map((id) => (
+                <button key={id} type="button" className="kx-like kx-cut" aria-pressed={likes.includes(id)}
+                  onClick={() => setLikes((xs) => (xs.includes(id) ? xs.filter((x) => x !== id) : xs.length < 3 ? [...xs, id] : xs))}>
+                  <Spot id={`interests/${id}`} size={56} fallback={<Glyph name="picture" size={28} />} /><span>{label(id)}</span>
+                </button>
+              ))}
+            </div>
+            <Cta onClick={() => afterLikes(likes)} testid="hello-done">{t("done")}</Cta>
+          </>
+        );
+        break;
+      case "hi":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{hi === "heard" ? t("sayHiHeard", { T: rec.name }) : hi === "listening" ? t("sayHiListening", { T: rec.name }) : t("sayHiQ", { T: rec.name })}</h2>
+            {hi === "none" && <p className="kx-sub" role="status">{t("sayHiNone")}</p>}
+            <div className="kx-hello-pair">
+              <Ghost onClick={skipHi} testid="hello-skip">{hi === "none" ? t("helloNext") : t("skip")}</Ghost>
+              {hi !== "none" && <Cta onClick={sayHi} disabled={hi !== "idle"} testid="hello-sayhi"><Glyph name="mic" size={22} /> {t("sayHiStart")}</Cta>}
+            </div>
+            <p className="kx-tagline">{framing}</p>
+          </>
+        );
+        break;
+    }
+    return (
+      <KxPage family={family} reducedMotion={reducedMotion} screen="hello" bare meTo={`/c/${cid}/me`} className="kx-hello">
+        <div className="kx-hello-grid" data-card={card} data-testid="hello-boot">
+          <div className="kx-hello-face" data-compact={card !== "greet" || undefined}>
+            <Comms teacherId={rec.id} teacherName={rec.name} band={band} floor={clip.playing ? "speaking" : card === "greet" ? "idle" : "your_turn"}
+              meters={[clip.meter]} framing="close" reducedMotion={reducedMotion} showName={card !== "greet"} />
+          </div>
+          <div className="kx-hello-side">
+            <ol className="kx-boot" aria-hidden="true">
+              {BOOT.map((b, i) => (
+                <li key={b.key} data-state={i < at ? "done" : i === at ? "now" : "next"}>
+                  <span className="kx-boot-mark">{i < at ? <Glyph name="tick" size={16} /> : i === at ? ">" : ""}</span>{kt(b.key)}
+                </li>
+              ))}
+            </ol>
+            <Panel className="kx-hello-card" testid="hello-card">{kbody}</Panel>
+          </div>
+        </div>
+      </KxPage>
+    );
+  }
   return (
     <div className={`cs hello ${young ? "cs--young" : "cs--older"}`} data-testid="hello" data-card={card}>
       <main className="hello-main" id="main" data-compact={card !== "greet" || undefined}>

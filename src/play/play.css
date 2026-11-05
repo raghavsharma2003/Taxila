@@ -105,6 +105,13 @@
 .pl-readout b { font-size: 18px; }
 
 /* ITEM-ARENA (round 4 G1): the question is the goal line and is never clamped; options sit two to a row and wrap */
+/* r7 taraazu weigh / fill and todo-jodo atoms (hcf / lcm): a long goal beside its readouts was clipped; the pan's contents (500 g ×2 · 200 g …) can be long; on a phone the readouts take their own line
+   under the goal (full width, wrapping) instead of clipping beside it */
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-rail, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-rail { flex-wrap: wrap; row-gap: 4px; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-goal, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-goal { flex: 1 1 100%; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readouts, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readouts { max-width: 100%; flex-wrap: wrap; row-gap: 2px; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readouts:empty, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readouts:empty { display: none; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readout, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readout { white-space: normal; }
 .pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
 .pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }

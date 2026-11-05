@@ -9,7 +9,8 @@
 import type { ReactNode } from "react";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { kakshaEnabled } from "../ui-v3/kaksha/flag.ts";
-import { backOf, dockItems, KxDock, KxTopBar, navKeyOf } from "../ui-v3/kaksha/nav.tsx";
+import { backOf, dockItems, navKeyOf } from "../ui-v3/kaksha/nav.tsx";
+import { KxPage } from "../ui-v3/kaksha/kit.tsx";
 import { cachedSurfaces } from "./plan.ts";
 import { Scene } from "./art.tsx";
 import { useChild } from "./ChildShell.tsx";
@@ -68,6 +69,12 @@ export function Ground({ kind, rest, flat }: { kind: SceneKind; rest?: boolean; 
   const id = SCENE_ART[kind];
   if (!id) return <div className="scene"><div className="scene-fallback"><SceneFallback kind="plain" /></div></div>;
   return <Scene id={rest ? `${id}-rest` : id} flat={flat} fallback={<SceneFallback kind={kind} />} />;
+}
+
+/** Kaksha is on for this child (ui.kaksha from /api/me, read at render). */
+export function useKx(): boolean {
+  const { me } = useChild();
+  return kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha);
 }
 
 /** "Grown-ups": the plain parent door (§5.2). */
@@ -159,24 +166,21 @@ export function ChildScreen({ testid, ground, rest, title, actions, home, childr
   );
 }
 
-/** The Kaksha frame for the child screens Kaksha does not draw natively yet (r7 app-nav-unified). */
+/** The Kaksha frame for every secondary child screen (r7 app-nav-unified; app-secondary-screens-kaksha): the kit's KxPage,
+ *  so the screen sits in Kaksha's own root (.kx) with the one top bar and the one dock. */
 function KxScreen({ testid, ground, title, actions, home, children, surfaces, className }:
   { testid: string; ground: SceneKind; title?: ReactNode; actions?: ReactNode; home?: boolean; children: ReactNode;
     surfaces?: { map: boolean; notebook: boolean }; className?: string }) {
-  const { cid, family } = useChild();
+  const { cid, family, reducedMotion } = useChild();
   const nav = useNavigate();
   const { pathname } = useLocation();
-  const go = (to: string) => nav(to);
   const key = navKeyOf(pathname);
   const dock = dockItems({ cid, family, surfaces: surfaces ?? cachedSurfaces(cid) });
   return (
-    <div className={`cs ${family === "older" ? "cs--older" : "cs--young"} cs--kx ${className ?? ""}`} data-testid={testid} data-ground={ground}>
-      <main className="cs-main kx-hasdock" id="main">
-        <KxTopBar go={go} backTo={home ? null : backOf(pathname, cid)} title={title} actions={actions} meTo={`/c/${cid}/me`} meActive={key === "me"}
-          parentTo={home ? "/parent" : null} />
-        {children}
-      </main>
-      <KxDock items={dock} active={key} go={go} />
-    </div>
+    <KxPage family={family} reducedMotion={reducedMotion} screen={testid} testid={testid} className={`kx-ground-${ground}${className ? ` ${className}` : ""}`}
+      title={title} actions={actions} backTo={home ? null : backOf(pathname, cid)} meTo={`/c/${cid}/me`} meActive={key === "me"}
+      parentTo={home ? "/parent" : null} dock={dock} active={key} go={(to) => nav(to)}>
+      {children}
+    </KxPage>
   );
 }

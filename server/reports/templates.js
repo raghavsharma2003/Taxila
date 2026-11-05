@@ -31,6 +31,16 @@ export const HOME_OBJECT = {
   sst: { en: "a map, the calendar or a newspaper picture", hinglish: "Naqshe, calendar ya akhbaar ki photo", hi: "नक़्शे, कैलेंडर या अख़बार की फ़ोटो" },
 };
 
+/** A school subject in the report language (S17's exam line). [U: native review] */
+export const SUBJECT_LABEL = {
+  maths: { en: "Maths", hinglish: "Maths", hi: "गणित" },
+  science: { en: "Science", hinglish: "Science", hi: "विज्ञान" },
+  evs: { en: "EVS", hinglish: "EVS", hi: "पर्यावरण" },
+  english: { en: "English", hinglish: "English", hi: "अंग्रेज़ी" },
+  hindi: { en: "Hindi", hinglish: "Hindi", hi: "हिंदी" },
+  sst: { en: "Social Science", hinglish: "Social Science", hi: "सामाजिक विज्ञान" },
+};
+
 /**
  * Claim shapes. `slots`: slot → type. Each language renders from typed slots only.
  * @type {Record<string, { slots: Record<string, 'name'|'curriculum'|'child'|'number'|'date'|'object'>, en: Function, hinglish: Function, hi: Function, locked?: boolean }>}
@@ -49,6 +59,14 @@ export const SHAPES = {
     en: () => "No lesson started; some time with Taxila outside a lesson.",
     hinglish: () => "Koi lesson shuru nahi hua; lesson ke bahar Taxila ke saath thoda samay.",
     hi: () => "कोई पाठ शुरू नहीं हुआ; पाठ के बाहर Taxila के साथ थोड़ा समय।" },
+  "header.monthly": { slots: { lessons: "number", days: "number", min: "number" },
+    en: (s) => `${plural(s.lessons, "lesson", "lessons")} · ${daysEn(s.days)} · ${s.min} min`,
+    hinglish: (s) => `${s.lessons} lesson · ${s.days} din · ${s.min} min`,
+    hi: (s) => `${s.lessons} पाठ · ${s.days} दिन · ${s.min} मिनट` },
+  "header.zero_month": { slots: {},
+    en: () => "No lessons this month.",
+    hinglish: () => "Is mahine koi lesson nahi hua.",
+    hi: () => "इस महीने कोई पाठ नहीं हुआ।" },
   "header.zero": { slots: {},
     en: () => "No lessons this week.",
     hinglish: () => "Is hafte koi lesson nahi hua.",
@@ -112,6 +130,47 @@ export const SHAPES = {
     hinglish: (s) => `Abhi ${q(s.skill)} par kaam chal raha hai: ${s.n} mein se ${s.k} jawab ek aam confusion se milte hain, ${q(s.belief)}. Agle lessons mein yeh, ya isse pehle wala step, phir aayega.`,
     hi: (s) => `अभी ${q(s.skill)} पर काम चल रहा है: ${s.n} में से ${s.k} जवाब एक आम उलझन से मिलते हैं, ${q(s.belief)}। अगले पाठों में यह, या इससे पहले वाला कदम, फिर आएगा।` },
 
+  // ───────────── round 7 F: monthly sections and the weekly exam line (PARENT-REPORT §5) ─────────────
+  // S4 holding up over time (L0): wording is about topics and the schedule, never memory (S4 banned list)
+  "hold.week": { slots: { n: "number", k: "number" },
+    en: (s) => `Topics that came back after a week or more: ${plural(s.n, "question", "questions")}, ${s.k} right on the first try without help.`,
+    hinglish: (s) => `Jo topics ek hafte ya zyada baad phir aaye, un par ${s.n} sawaal; ${s.k} pehli baar mein bina madad ke sahi.`,
+    hi: (s) => `जो विषय एक हफ़्ते या ज़्यादा बाद फिर आए, उन पर ${s.n} सवाल; ${s.k} पहली बार में बिना मदद के सही।` },
+  "hold.few": { slots: { name: "name", n: "number" },
+    en: (s) => `Taxila is still learning how topics hold up for ${s.name} after a week or more: ${plural(s.n, "question", "questions")} like that so far.`,
+    hinglish: (s) => `${s.name} ke liye topics ek hafte baad kaise tikte hain, Taxila abhi seekh rahi hai: ab tak aise ${s.n} sawaal.`,
+    hi: (s) => `${s.name} के लिए विषय एक हफ़्ते बाद कैसे टिकते हैं, Taxila अभी सीख रही है: अब तक ऐसे ${s.n} सवाल।` },
+  // S6 when it gets hard: what Taxila did, and what happened next (never a trait)
+  "hard.hint": { slots: { h: "number", k: "number" },
+    en: (s) => `When a question was hard, Taxila gave a hint before any answer ${times.en(s.h)}; ${s.k} of those were then solved.`,
+    hinglish: (s) => `Jab sawaal mushkil laga, Taxila ne jawab se pehle hint diya: ${times.hinglish(s.h)}; unmein se ${s.k} phir hal hue.`,
+    hi: (s) => `जब सवाल मुश्किल लगा, Taxila ने जवाब से पहले संकेत दिया: ${times.hi(s.h)}; उनमें से ${s.k} फिर हल हुए।` },
+  // S7 curiosity: the child's own questions (question_jar), counted; Taxila's follow-up
+  "curious.asked": { slots: { name: "name", q: "number", k: "number" },
+    en: (s) => `${s.name} asked ${plural(s.q, "question", "questions")} of their own in lessons; Taxila came back to ${s.k} of them in a later lesson.`,
+    hinglish: (s) => `${s.name} ne lessons mein apne ${s.q} sawaal poochhe; Taxila ne unmein se ${s.k} par agle lesson mein baat ki.`,
+    hi: (s) => `${s.name} ने पाठों में अपने ${s.q} सवाल पूछे; Taxila ने उनमें से ${s.k} पर अगले पाठ में बात की।` },
+  "curious.asked_open": { slots: { name: "name", q: "number" },
+    en: (s) => `${s.name} asked ${plural(s.q, "question", "questions")} of their own in lessons; Taxila comes back to them in the next lessons.`,
+    hinglish: (s) => `${s.name} ne lessons mein apne ${s.q} sawaal poochhe; Taxila agle lessons mein in par baat karegi.`,
+    hi: (s) => `${s.name} ने पाठों में अपने ${s.q} सवाल पूछे; Taxila अगले पाठों में इन पर बात करेगी।` },
+  // S9 routine: counts only (no streaks, no missed days)
+  "routine.days": { slots: { n: "number", d: "number", m: "number" },
+    en: (s) => `Lessons on ${s.n} of ${s.d} days this month; a usual lesson was about ${s.m} min.`,
+    hinglish: (s) => `Is mahine ${s.d} mein se ${s.n} din lesson hue; aam taur par ek lesson lagbhag ${s.m} min ka.`,
+    hi: (s) => `इस महीने ${s.d} में से ${s.n} दिन पाठ हुए; आम तौर पर एक पाठ लगभग ${s.m} मिनट का।` },
+  // S13 what we're trying next: the next scheduled re-check
+  "next.recheck": { slots: { skill: "curriculum", date: "date" },
+    en: (s) => `Next: Taxila checks ${q(s.skill)} again on ${s.date}.`,
+    hinglish: (s) => `Aage: Taxila ${s.date} ko ${q(s.skill)} phir jaanchegi.`,
+    hi: (s) => `आगे: Taxila ${s.date} को ${q(s.skill)} फिर जाँचेगी।` },
+  // S17 exam shape (weekly, inside a test window the parent entered)
+  // no pressure words (lexicon "pressure": test, exam, परीक्षा, marks): the dates the parent entered, in plain words
+  "exam.review": { slots: { subject: "subject" },
+    en: (s) => `${s.subject} at school, the dates you entered: Taxila is going over those chapters again, with no new topics in the last two days.`,
+    hinglish: (s) => `School mein ${s.subject}, aapki di hui tareekhein: Taxila un chapters ko dohra rahi hai, aur aakhri do din koi naya topic nahi.`,
+    hi: (s) => `स्कूल में ${s.subject}, आपकी दी हुई तारीख़ें: Taxila उन अध्यायों को दोहरा रही है, और आख़िरी दो दिन कोई नया विषय नहीं।` },
+
   // (no interest shape: memory.text is model paraphrase, not a typed value; see config.js and decision reports-no-interest-line)
 
   // S12: fact → activity (object + ask) → praise cue → failure cue. Rank 1-2: from a skill with first-try successes only (PLI18).
@@ -129,6 +188,15 @@ export const SHAPES = {
 export const FIXED = {
   "title.daily": { en: () => "Today with Taxila", hinglish: () => "Aaj Taxila ke saath", hi: () => "आज Taxila के साथ" },
   "title.weekly": { en: () => "This week with Taxila", hinglish: () => "Is hafte Taxila ke saath", hi: () => "इस हफ़्ते Taxila के साथ" },
+  "title.monthly": { en: () => "This month with Taxila", hinglish: () => "Is mahine Taxila ke saath", hi: () => "इस महीने Taxila के साथ" },
+  // S13 when no re-check is scheduled after the month (required monthly)
+  "next.generic": { en: () => "Next: Taxila keeps to the plan in the coming lessons and will share what it finds.",
+    hinglish: () => "Aage: Taxila agle lessons mein plan ke hisaab se chalegi aur jo milega, batayegi.",
+    hi: () => "आगे: Taxila अगले पाठों में योजना के हिसाब से चलेगी और जो मिलेगा, बताएगी।" },
+  // S16 the cross-context note (once per monthly report)
+  "footer.context": { en: () => "Children can be different with different people and on different days. What you see at home is just as real.",
+    hinglish: () => "Bachche alag logon ke saath aur alag dinon mein alag ho sakte hain. Ghar par jo aap dekhte hain, woh bhi utna hi sach hai.",
+    hi: () => "बच्चे अलग लोगों के साथ और अलग दिनों में अलग हो सकते हैं। घर पर जो आप देखते हैं, वह भी उतना ही सच है।" },
   disclosure: { en: (s) => `This is Taxila, an AI teacher, with a note about ${s.name}.`,
     hinglish: (s) => `Main Taxila hoon, ek AI teacher. Yeh ${s.name} ke baare mein ek note hai.`,
     hi: (s) => `मैं Taxila हूँ, एक AI टीचर। यह ${s.name} के बारे में एक नोट है।` },
@@ -201,6 +269,30 @@ export const HOW = {
     hi: "इस समय में Taxila ने यह विषय पढ़ाया; इस पर अभी सवाल नहीं हुए।" },
   "tricky.work": join2(TRICKY_HOW, DATED), "tricky.work_next": join2(TRICKY_HOW, NEXT),
   "tricky.mixup": join2(MIXUP_HOW, DATED), "tricky.mixup_next": join2(MIXUP_HOW, NEXT),
+  "header.monthly": HEADER_HOW,
+  "header.zero_month": { en: "No lesson started in this month.", hinglish: "Is mahine koi lesson shuru nahi hua.", hi: "इस महीने कोई पाठ शुरू नहीं हुआ।" },
+  "hold.week": { en: "Questions on a topic whose last appearance was at least a week earlier, and how many were right on the first try with no hint and no help asked first.",
+    hinglish: "Un topics ke sawaal jo pichhli baar kam se kam ek hafta pehle aaye the, aur unmein se kitne pehli baar mein, bina hint aur bina pehle madad maange, sahi hue.",
+    hi: "उन विषयों के सवाल जो पिछली बार कम से कम एक हफ़्ता पहले आए थे, और उनमें से कितने पहली बार में, बिना संकेत और बिना पहले मदद माँगे, सही हुए।" },
+  "hold.few": { en: "Questions on a topic whose last appearance was at least a week earlier. There are not enough yet to say more.",
+    hinglish: "Un topics ke sawaal jo pichhli baar kam se kam ek hafta pehle aaye the. Abhi itne nahi hain ki aur kuch kaha jaaye.",
+    hi: "उन विषयों के सवाल जो पिछली बार कम से कम एक हफ़्ता पहले आए थे। अभी इतने नहीं हैं कि और कुछ कहा जाए।" },
+  "hard.hint": { en: "Questions where Taxila gave one or more hints before the answer, and how many of those were then solved with the hints.",
+    hinglish: "Woh sawaal jinmein Taxila ne jawab se pehle ek ya zyada hint diye, aur unmein se kitne hint ke saath hal hue.",
+    hi: "वे सवाल जिनमें Taxila ने जवाब से पहले एक या ज़्यादा संकेत दिए, और उनमें से कितने संकेत के साथ हल हुए।" },
+  "curious.asked": { en: "Questions the child asked in lessons that Taxila kept for later, and how many Taxila has come back to.",
+    hinglish: "Lessons mein bachche ke poochhe sawaal jo Taxila ne baad ke liye rakhe, aur unmein se kitno par Taxila laut chuki hai.",
+    hi: "पाठों में बच्चे के पूछे सवाल जो Taxila ने बाद के लिए रखे, और उनमें से कितनों पर Taxila लौट चुकी है।" },
+  "curious.asked_open": { en: "Questions the child asked in lessons that Taxila kept for later.",
+    hinglish: "Lessons mein bachche ke poochhe sawaal jo Taxila ne baad ke liye rakhe.",
+    hi: "पाठों में बच्चे के पूछे सवाल जो Taxila ने बाद के लिए रखे।" },
+  "routine.days": { en: "Days of the month with a lesson, and the middle lesson length.",
+    hinglish: "Mahine ke woh din jin par lesson hua, aur beech wali lesson ki lambai.",
+    hi: "महीने के वे दिन जिन पर पाठ हुआ, और बीच वाली पाठ की लंबाई।" },
+  "next.recheck": DATED,
+  "exam.review": { en: "The school dates you entered in the Parent corner. In the last two days before them Taxila only goes over earlier work.",
+    hinglish: "Parent corner mein aapki daali school ki tareekhein. Unse pehle ke aakhri do din Taxila sirf pehle ka kaam dohrati hai.",
+    hi: "Parent corner में आपकी डाली स्कूल की तारीख़ें। उनसे पहले के आख़िरी दो दिन Taxila सिर्फ़ पहले का काम दोहराती है।" },
   "home.skill": { en: "A topic with right first-try answers in this period. The activity is a suggestion, not a task.",
     hinglish: "Is samay mein jis topic par pehli baar mein sahi jawab aaye. Activity ek sujhaav hai, kaam nahi.",
     hi: "इस समय में जिस विषय पर पहली बार में सही जवाब आए। गतिविधि एक सुझाव है, काम नहीं।" },
@@ -222,6 +314,7 @@ export const renderShape = (shapeId, lang, slots) => {
     if (s[k] === undefined || s[k] === null) throw new Error(`reports: ${shapeId} slot ${k} missing`);
     if (type === "date") s[k] = fmtDate(lang, s[k]);
     if (type === "object") s[k] = HOME_OBJECT[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown home object ${s[k]}`); })();
+    if (type === "subject") s[k] = SUBJECT_LABEL[s[k]]?.[lang] ?? (() => { throw new Error(`reports: unknown subject ${s[k]}`); })();
   }
   return sh[lang](s);
 };

@@ -24,6 +24,7 @@ import { faceLook, faceLookNow } from "./look.ts";
 import { LIVE_ARM_FALLBACK_MS, armLive, liteGate } from "./lite.ts";
 import { LiteLayer } from "./LiteLayer.tsx";
 import { puppetBus } from "./bus.ts";
+import { HANDOFF_PARK_MS, canHandOff, handoffKey, prewarmStills } from "./prewarm.ts";
 import "./latch.ts"; // the page's safety latch listens from the first face mount, before the stage chunk loads
 import type { PuppetStage, PuppetStageEvent } from "./stage.ts";
 
@@ -71,21 +72,29 @@ export function sourcesKey(list: readonly TapSource[]): string {
 // and a rebuilt stage shows the still poster over her voice until it reveals: 2.5 s while she talked under the old reveal
 // rule, 0.8-1.4 s with the closed-mouth reveal (evals/face-puppet/out/remount-*.json). Adopted: 0 ms, the same context.
 const PARK_MS = 1500;
-let parked: { stage: PuppetStage; key: string; timer: number } | null = null;
-function park(stage: PuppetStage, key: string): void {
+// round 7 face-prewarm-for-first-sound (./prewarm.ts): a worker-backed stage waits HANDOFF_PARK_MS instead, and a face of
+// the same person, look and band adopts it with its own meters (the home's face becomes the lesson's).
+let parked: { stage: PuppetStage; key: string; hand: string; timer: number } | null = null;
+function park(stage: PuppetStage, key: string, hand: string): void {
   if (parked) { window.clearTimeout(parked.timer); parked.stage.dispose(); }
   stage.stop();
   stage.canvas.remove();
-  const timer = window.setTimeout(() => { if (parked?.stage === stage) parked = null; stage.dispose(); }, PARK_MS);
-  parked = { stage, key, timer };
+  const timer = window.setTimeout(() => { if (parked?.stage === stage) parked = null; stage.dispose(); }, canHandOff(stage) ? HANDOFF_PARK_MS : PARK_MS);
+  parked = { stage, key, hand, timer };
 }
-function adopt(key: string): PuppetStage | null {
-  if (!parked || parked.key !== key || !parked.stage.isRevealed) return null;
+function adopt(key: string, hand: string, sources: TapSource[]): PuppetStage | null {
+  if (!parked || !parked.stage.isRevealed) return null;
+  if (parked.key !== key) {
+    if (parked.hand !== hand || !canHandOff(parked.stage)) return null;
+    parked.stage.retarget(sources);
+  }
   const s = parked.stage;
   window.clearTimeout(parked.timer);
   parked = null;
   return s;
 }
+/** Whether a stage is parked now, and whether it can be handed off (the ?facerig read-out and the evals). */
+export const parkedStage = () => (parked ? { key: parked.key, hand: parked.hand, handOff: canHandOff(parked.stage) } : null);
 
 /** The tutors the puppet IS: Asha (Diya's voice), the one teacher for every class since round 4
  *  (dc-r4-single-teacher-asha). Arjun is parked and has no puppet art: a lesson pinned to him before round 4 keeps
@@ -131,6 +140,14 @@ export function PuppetFace(p: PuppetFaceProps) {
       window.clearTimeout(t);
     };
   }, [armed, p.still, p.status]);
+  // the other framing's poster and the light-mouth sprites, decoded at idle (./prewarm.ts)
+  useEffect(() => {
+    if (!look || p.still) return;
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number; cancelIdleCallback?: (id: number) => void };
+    if (w.requestIdleCallback) { const h = w.requestIdleCallback(() => prewarmStills(look), { timeout: 4000 }); return () => w.cancelIdleCallback?.(h); }
+    const h = window.setTimeout(() => prewarmStills(look), 1500);
+    return () => window.clearTimeout(h);
+  }, [look, p.still]);
   const live = useRef({ status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion });
   live.current = { status: p.status, mic: p.mic, reducedMotion: !!p.reducedMotion };
   const onEvent = useRef(p.onEvent);
@@ -145,7 +162,8 @@ export function PuppetFace(p: PuppetFaceProps) {
     let micTimer = 0;
     let failed = false;
     const el = host.current;
-    const parkKey = `${tutor.id}|${look}|${p.band}|${srcKey}`;
+    const hand = handoffKey(tutor.id, look, p.band);
+    const parkKey = `${hand}|${srcKey}`;
     const fail = (reason: string) => {
       if (cancelled) return;
       failed = true;
@@ -166,10 +184,10 @@ export function PuppetFace(p: PuppetFaceProps) {
       window.clearInterval(micTimer);
       const s = stage.current;
       stage.current = null;
-      if (s && !failed && s.isRevealed) park(s, parkKey);
+      if (s && !failed && s.isRevealed) park(s, parkKey, hand);
       else s?.dispose();
     };
-    const kept = adopt(parkKey);
+    const kept = adopt(parkKey, hand, sources);
     if (!kept && !armed) return cleanup;
     if (!kept) {
       const g = liteGate(look);

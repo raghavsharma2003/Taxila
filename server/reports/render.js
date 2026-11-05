@@ -3,12 +3,12 @@
 // (disclosure, close) are carried as lines with `voiceOnly` so the spoken script is built from lines only.
 import { renderFixed, renderShape } from "./templates.js";
 
-const ORDER = ["header", "strength", "row", "tricky", "interest", "home"];
+const ORDER = ["header", "exam", "strength", "row", "hold", "hard", "curious", "routine", "tricky", "interest", "next", "home"];
 /** Lines Lane B may never drop from the spoken script. */
 const MUST_KEEP = new Set(["header", "strength", "home"]);
 
 /**
- * @param {{ cadence: string, claims: any[], fixedHome: boolean }} built
+ * @param {{ cadence: string, claims: any[], fixedHome: boolean, fixedNext?: boolean }} built
  * @param {{ firstName: string }} child
  * @param {'en'|'hinglish'|'hi'} lang
  */
@@ -21,14 +21,17 @@ export function renderLang(built, child, lang) {
   };
   fixed("disclosure", "frame", { voiceOnly: true, mustKeep: true });
   for (const section of ORDER) {
-    for (const c of built.claims.filter((x) => x.section === section)) {
-      lines.push({ kind: "claim", key: c.id, claimId: c.id, section, text: renderShape(c.shapeId, lang, c.slots), mustKeep: MUST_KEEP.has(section) });
-    }
+    // only the FIRST line of a must-keep section is must-keep (a monthly report has up to 3 strengths)
+    built.claims.filter((x) => x.section === section).forEach((c, i) => {
+      lines.push({ kind: "claim", key: c.id, claimId: c.id, section, text: renderShape(c.shapeId, lang, c.slots), mustKeep: MUST_KEEP.has(section) && i === 0 });
+    });
+    if (section === "next" && built.fixedNext) fixed("next.generic", "next");
     if (section === "home" && built.fixedHome) fixed("home.generic", "home", { mustKeep: true });
   }
   fixed("close", "frame", { voiceOnly: true, mustKeep: true });
   fixed("footer.howweknow", "footer", { appOnly: true });
   fixed("footer.notamark", "footer", { appOnly: true });
+  if (built.cadence === "monthly") fixed("footer.context", "footer", { appOnly: true });   // S16, once per monthly report
   const title = { kind: "fixed", fixedId: `title.${built.cadence}`, text: renderFixed(`title.${built.cadence}`, lang) };
   return { title, lines };
 }

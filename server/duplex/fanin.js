@@ -62,6 +62,7 @@ export class TurnTranscript {
 
   /** A new turn (epoch). `carryFrom`: keep items whose audio started at or after this time (overlap words, fold-in). */
   begin(t, { carryFrom = null } = {}) {
+    this.prevStart = this.turnStart;
     this.turnStart = t;
     this.carryFrom = carryFrom;
     this.updatedAt = null;
@@ -78,6 +79,11 @@ export class TurnTranscript {
     // turn, 0/5 on every D5 arm). An item still open at the carried onset, opened at most CARRY_PRE_MS before it, belongs.
     // (its audio end must be KNOWN to reach past the onset: an item of the last turn whose end is unknown never joins)
     if (this.carryFrom !== null && it.audioEndMs != null && start >= this.carryFrom - CARRY_PRE_MS && it.audioEndMs >= this.carryFrom - 40) return true;
+    // R7 voice-echo-filter-residuals (4b open item 4, phone f7-stop-0386): a short burst can END before the device sees it
+    // at all ("एक मिनट दीदी" 2.8-3.8 s, the device's onset 4.1 s under her echo). An item of the epoch being closed (her
+    // line) that ENDED inside the CARRY_PRE_MS before the onset is that burst too (one still open at it: the rule above).
+    // Bake replay, 132 runs: 2 phone barge / fold-in turns gain their words, 0 other commits change.
+    if (this.carryFrom !== null && it.audioEndMs != null && this.prevStart != null && start >= this.prevStart - 40 && it.audioEndMs < this.carryFrom - 40 && it.audioEndMs >= this.carryFrom - CARRY_PRE_MS) return true;
     return start >= this.turnStart - 40;
   }
 
