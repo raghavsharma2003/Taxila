@@ -335,6 +335,59 @@ export function templateBoard(ask, script, ctx) {
   const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
   return r.ok ? r : null;
 }
+/**
+ * round 7 (C1 M3b, step markers bound to her words): a board's labelled steps land on the words that name them. For each
+ * text / label op her line names (one of its words of 4+ letters, in order through her line), the estimated onset of that
+ * word (its place in the line × the line's length in ms) is when the step should appear; the step's group — the ops drawn
+ * since the previous named step (its box, its arrow, then its word) — is DELAYED so its word lands ~250 ms before she says
+ * it. Steps are only ever delayed (the board still starts on time: W6), never reordered, and the whole is capped so it
+ * ends with her line. → { script, anchored: n } (n = steps placed on her words; 0 → the script unchanged). PURE.
+ */
+export function anchorSteps(script, lineText, speechMs) {
+  const ops = script?.ops ?? [];
+  const line = String(lineText ?? "").toLowerCase();
+  if (!ops.length || !line || !(speechMs > 0)) return { script, anchored: 0 };
+  const order = ops.map((o, i) => [o, i]).sort((a, b) => a[0].startMs - b[0].startMs || a[1] - b[1]).map(([, i]) => i);
+  const words = (t) => (String(t).toLowerCase().match(/[\p{L}\p{N}]{4,}/gu) ?? []);
+  let from = 0;
+  const marks = [];   // [position in `order`, onset ms]
+  order.forEach((i, k) => {
+    const o = ops[i];
+    if (o.op !== "text" && o.op !== "label") return;
+    const ws = words(o.text);
+    if (!ws.length) return;
+    let at = -1;
+    for (const w of ws) { const j = line.indexOf(w, from); if (j >= 0 && (at < 0 || j < at)) at = j; }
+    if (at < 0) return;
+    from = at + 1;
+    marks.push([k, Math.round((at / line.length) * speechMs)]);
+  });
+  if (marks.length < 2) return { script, anchored: 0 };
+  const shift = new Array(order.length).fill(0);
+  let d = 0, prev = -1;
+  for (const [k, onset] of marks) {
+    const want = onset - 250 - ops[order[k]].startMs;
+    if (want > d) d = want;
+    for (let q = prev + 1; q <= k; q++) shift[q] = d;
+    prev = k;
+  }
+  for (let q = prev + 1; q < order.length; q++) shift[q] = d;
+  // (the board still starts at once: in the first step's group only its word waits for her; what is drawn before it — the
+  // first box — keeps a start by 1.2 s, W6)
+  const firstStart = ops[order[0]].startMs;
+  for (let q = 0; q < marks[0][0]; q++) shift[q] = Math.min(shift[q], Math.max(0, 1200 - firstStart));
+  // never past her line: the delays are scaled down until the board ends within it (+1.5 s)
+  const lastEnd = (f) => Math.max(...order.map((i, k) => ops[i].endMs + shift[k] * f));
+  let f = 1;
+  while (f > 0 && lastEnd(f) > speechMs + 1500) f = Math.round((f - 0.1) * 10) / 10;
+  // (already in step — every named step drawn no earlier than her word — the board is unchanged, its steps still counted)
+  if (!d) return { script, anchored: marks.length, moved: 0 };
+  if (f <= 0) return { script, anchored: 0 };
+  const out = ops.map((o) => ({ ...o }));
+  order.forEach((i, k) => { const dd = Math.round(shift[k] * f); out[i].startMs += dd; out[i].endMs += dd; });
+  return { script: { ...script, ops: out, durationMs: Math.max(script.durationMs ?? 0, ...out.map((o) => o.endMs)) + 200 }, anchored: marks.length, moved: marks.length };
+}
+
 /** A template shown as the LAST rung (the line plan failed): re-timed to her line so it draws while she speaks (W6). */
 export function retimeToLine(script, lineText) {
   if (!script?.ops?.length) return script;

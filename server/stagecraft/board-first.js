@@ -20,13 +20,15 @@
 //      exactly as before, so this can only add boards, never remove one.
 // Kill switch TAXILA_BOARD_FIRST=0: nothing is preselected and nothing changes.
 import { answersRequest, samePage, shownBefore } from "../studio/request.js";
-import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf } from "./board-sync.js";
+import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf, anchorSteps } from "./board-sync.js";
 import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { scriptFacts, isMotionOp } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
+import { resolveBoardRef } from "../forge/explainer/board-ref.js";
+import { expand } from "../forge/explainer/templates.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -52,6 +54,9 @@ export function askSignature(ask) {
 const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · served to the real turn's pick · shown · dropped (another move)
 /** Board-first lookahead counters for this replica (GET /api/studio/timing). */
 export const prewarmStats = () => ({ ...prewarmed });
+// round 7 (dc-r7-teaching-scripts): script board refs that did not render (the turn fell back to the code's pick)
+const scriptRefs = { failed: 0 };
+export const scriptRefStats = () => ({ ...scriptRefs });
 /** Tests only. */
 export function _resetPrewarm() { prewarmed.made = prewarmed.hit = prewarmed.used = prewarmed.stale = 0; }
 
@@ -112,6 +117,17 @@ export function rowOfFacts(facts, counts = {}) {
 function candidates(ask, kit, lessonId, band, predicted) {
   const out = [];
   const item = ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? null : null;
+  // round 7 (dc-r7-teaching-scripts): a scripted beat NAMES its board (intent.boardRef, Brain's whiteboardIntentOf from the
+  // lesson script). It is tried first and gated like any other; a ref that fails falls through to the code's own pick
+  const ref = ask?.intent?.boardRef;
+  if (ref) {
+    try {
+      const r = resolveBoardRef(ref, { kit, item, text: predicted });
+      const x = r.ok ? expand(r.call, { band, lessonId }) : null;
+      if (x?.ok) out.push({ script: fitLegible(x.script), by: "script", template: r.call.template, facts: x.facts });
+      else scriptRefs.failed++;
+    } catch { scriptRefs.failed++; }
+  }
   for (const t of [{ text: predicted }, {}]) {
     try {
       const x = explainerFor({ lessonId, kit, item, openItem: item, band, ...t });
@@ -200,8 +216,12 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     if (p.ahead && p.ahead !== askSignature(ask)) { picks.delete(String(ask?.intent?.intentId ?? "")); prewarmed.stale++; return null; }
     p.used = true;
     if (p.ahead) prewarmed.used++;
-    const s = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
-    let r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+    const s0 = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
+    // round 7 (M3b): its named steps land on her words, when that board passes the gate (else the even pacing)
+    const an = anchorSteps(s0, ctx.reply, ctx.speechMs);
+    let s = s0, r = null;
+    if (an.anchored) { r = regate({ ...an.script, board: { ...WB_BOARD, ...(an.script.board ?? {}) } }, ask, ctx); if (r.ok) { s = an.script; anchoredStats.used++; } else { r = null; anchoredStats.refused++; } }
+    r ??= regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     // a split that her real line refuses: the still board (motion never costs the board)
     if (!r.ok && s.ops.some(isMotionOp)) {
       const still = { ...s, ops: s.ops.filter((o) => !isMotionOp(o)) };
@@ -213,6 +233,9 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
   } catch { return null; }
 }
 
+/** round 7 (M3b): how often a taken board's steps were placed on her words (used) or that board was refused (refused). */
+const anchoredStats = { used: 0, refused: 0 };
+export const anchoredSteps = () => ({ ...anchoredStats });
 /** Why the preselected board was not shown (telemetry codes): none | rejected:<check ids> | used. */
 export function pickState(ask) {
   const p = picks.get(String(ask?.intent?.intentId ?? ""));

@@ -114,3 +114,33 @@ test("W9: a board that writes a withheld digit in its own box never writes the n
   assert.ok(!gate(retime(plain.script, plain.script.durationMs, 6000), { reply: "15 cm aur 8 cm.", speechMs: 6000, withhold: { values: ["5"] } })
     .checks.find((c) => c.id === "W9.no_reveal").detail.length);
 });
+
+test("W9: a hidden 0 or 1 in a place-value box is masked too (main, M3), while a number line's bare 0 stays an origin", async () => {
+  const { regate } = await import("../server/stagecraft/board-sync.js");
+  const x = expand({ template: "place-value@1", value: 10500 });
+  const kit = { expectations: ["Places: TTh, Th, H, T, O. In 10,500 the digits are 1, 0, 5, 0, 0: the 1 is in the ten thousands place."] };
+  const ctx = { reply: "Dekho, yeh number 10,500 ke boxes hain.", kit, speechMs: 9000, withhold: { values: ["1"] } };
+  const s = retime(x.script, x.script.durationMs, 9000);
+  const r = regate(s, { intent: { intentId: "pv1" }, line: { lessonId: "L", text: ctx.reply } }, ctx);
+  const cells = (r.ok ? r.script : r.gate.script).ops.filter((o) => o.op === "text" && /^[\d?]$/.test(o.text)).map((o) => o.text);
+  assert.equal(cells[0], "?", `the ten-thousands box: ${cells.join(" ")}`);
+  assert.ok(!(r.ok ? r.script : r.gate.script).ops.some((o) => o.op === "text" && /10,500/.test(o.text)), "nor the number that contains it");
+  // a number line's bare 0 (its origin, in no box) is still not a reveal of a withheld 0
+  const hop = expand({ template: "number-line-hop@1", start: 0, hops: [3] });
+  const g = gateWhiteboard(retime(hop.script, hop.script.durationMs, 6000), { reply: "0 se 3 ka jump.", speechMs: 6000, withhold: { values: ["0"] } });
+  const zeroTexts = new Set(hop.script.ops.filter((o) => o.op === "text" && o.text === "0").map((o) => o.id));
+  assert.ok(!g.checks.find((c) => c.id === "W9.no_reveal").detail.some((d) => zeroTexts.has(d.split(":")[0])));
+});
+
+test("the decimal zoom: the unit that holds the value lifts off, stretches into the lower line and lands on it; decimal operands are no integer sum", () => {
+  const x = expand({ template: "number-line-zoom@1", value: 0.47 });
+  assert.ok(x.ok, x.errors?.join(","));
+  assert.deepEqual(motions(x), ["move", "scale", "move"]);
+  const z = end(x, "z"), bottom = x.script.ops.find((o) => o.id === "bottom");
+  assert.ok(Math.abs(z.from[1] - bottom.at[1]) < 1 && Math.abs(z.to[0] - z.from[0] - (bottom.w - 24)) < 2, "the stretched unit is the lower line");
+  assert.ok(x.script.ops.some((o) => o.op === "text" && o.text === "0.47"));
+  assert.equal(expand({ template: "number-line-zoom@1", value: 3 }).ok, false, "a whole number has nothing to zoom into");
+  const k = { topicId: "c7-maths-ch03-t04", expectations: ["decimals"] };
+  assert.equal(codePick({ kit: k, text: "2.85 + 2.50 = 5.35" })?.template === "combine-count@1", false, "no 85 + 2");
+  assert.deepEqual(codePick({ kit: { topicId: "c7-maths-ch03-t03", expectations: ["tenths"] }, text: "Between which two tenths does 0.47 lie on a number line?" }), { template: "number-line-zoom@1", value: 0.47 });
+});
