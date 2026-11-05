@@ -37,6 +37,7 @@ import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
 import * as boardSync from "../stagecraft/board-sync.js";
 import { sceneFor } from "../forge/animate/scenes.js";
+import { sceneMayPlay } from "../../shared/scene.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
@@ -308,6 +309,13 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
  * round 7 M5a: the scene piece for an animation ask, waiting for this turn's slotFor (L.pendingPlay, as a play piece
  * does), or null (no scene for the topic, or not certified at the device's size). Code only, no model call.
  */
+/** A scene may play this turn: no keyed card live (the turn's hint: an asking move, an open item), the withheld values known
+ *  and empty (L.held, noteWithheld), none of them on screen (shared/scene.js sceneMayPlay). */
+function sceneMayPlayNow(L, p, hint = null) {
+  const scene = p?.artifact?.scene;
+  if (!scene) return { ok: false, why: "no_scene" };
+  return sceneMayPlay(scene, { held: L.held === undefined ? [] : L.held, cardLive: !!hint?.asking || !!hint?.itemOpen });
+}
 function scenePieceFor(L, lessonId, topicId, child) {
   if (!topicId || process.env.TAXILA_SCENES === "0") return null;
   const lang = child?.language_pref === "hi" ? "hi" : child?.language_pref === "en" ? "en" : "hinglish";
@@ -321,6 +329,8 @@ function scenePieceFor(L, lessonId, topicId, child) {
     facts: { kind: "animation", archetype: `scene:${r.scene.id}`, onScreen: { ...Object.fromEntries(Object.entries(r.scene.facts).map(([k, v]) => [k, String(v)])), steps: r.scene.beats.map((b) => b.says).join(", ") } },
     skillId: null, need: "explain", requested: true, state: "ready", retired: false, createdAt: Date.now() };
   if (!gatedSlot(L, piece, "revealed", "scene")) return null;
+  // (a card already live from the last turn: the play ladder answers instead, never a scene that may show its key)
+  if (!sceneMayPlayNow(L, piece).ok) return null;
   L.pieces.set(intentId, piece);
   L.pendingPlay = { intentId, turn: L.turn };
   return { kind: "scene", intentId, scene: r.scene.id, ms: 0 };
@@ -748,7 +758,9 @@ export const studioSeam = {
     const pendRec = L.pendingPlay;
     const pend = pendRec && pendRec.turn === L.turn ? L.pieces.get(pendRec.intentId) : null;
     L.pendingPlay = null;
-    const pendSlot = pend && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
+    // round 7 M5a (main: answer leaks are zero-visible-failure): a scene never comes up while a keyed card is live
+    if (pend?.source === "scene" && !sceneMayPlayNow(L, pend, hint).ok) { retirePiece(L, pend.intentId, "card_live"); }
+    const pendSlot = pend && pend.state !== "retired" && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
       ? gatedSlot(L, pend, pend.source === "skeleton" ? "fallback_ready" : "revealed", "play") : null;
     // a piece shown early that this turn does not show leaves the stage again (never a stale piece under her line)
     if (pendRec?.early && !pendSlot) push(L, { t: "retract", intentId: pendRec.intentId });
@@ -798,6 +810,8 @@ export const studioSeam = {
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     if (on && VISIBLE.has(on.state) && offSkill(on)) { retirePiece(L, on.intentId, "skill_changed"); return null; }
+    // round 7 M5a: a scene on screen leaves the moment a keyed card goes live (it may show the card's answer)
+    if (on && VISIBLE.has(on.state) && on.source === "scene" && !sceneMayPlayNow(L, on, hint).ok) { retirePiece(L, on.intentId, "card_live"); return null; }
     if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
       const g = gatedSlot(L, on, on.source === "skeleton" ? "fallback_ready" : on.state, "on_screen");
       // the device changed to a box the piece is not certified for: it leaves the tray (never shown broken)
@@ -874,6 +888,9 @@ export const studioSeam = {
       L.onScreen = p.intentId; L.lastRevealTurn = L.turn;
       if (p.source === "stagecraft") stagecraft.noteRevealed(L.lessonId, p.intentId);
       // a Stagecraft piece is graded by its engine registry over the spec the server revealed (gradeAny), never the frame
+      // round 7 M5a: a scene is watched, never answered (no grade session, and no studio_mount row: its source check
+      // admits the Studio build sources only, as for play)
+      if (p.source === "scene") { push(L, { t: "status", status: statusOf(p) }); return; }
       p.grade = stagecraft.gradeSessionFor(p) ?? createGradeSession(p.archetype, p.params);
       push(L, { t: "status", status: statusOf(p) });
       if (p.source === "library" && p.buildSha) noteMount(p.buildSha).catch(() => {});

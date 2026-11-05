@@ -26,3 +26,6 @@ export function lintScene(scene: Scene): string[];
 export function lineWarp(scene: Scene, clauseOnsets?: readonly number[]): (tLine: number) => number;
 export function stillAt(scene: Scene, t: number): number;
 export function beatAt(scene: Scene, t: number): SceneBeat | null;
+export function sceneValues(scene: Scene): string[];
+export function sceneShowsHeld(scene: Scene, held: readonly string[] | null | undefined): string[];
+export function sceneMayPlay(scene: Scene, o?: { held?: readonly string[] | null; cardLive?: boolean }): { ok: boolean; why: string };

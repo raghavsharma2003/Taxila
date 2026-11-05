@@ -73,3 +73,49 @@ test("seam: 'animation dikhao' on a pilot topic is answered by its scene; a topi
   const g = await studioSeam.composeAsk(id, { visual: "game", topicId: T, child: { id: "child-1", class_level: 4 } });
   assert.notEqual(g?.kind, "scene");
 });
+
+test("withholding: a scene never plays while a keyed card is live, never when the key is unknown, never showing a held value", async () => {
+  const { sceneValues, sceneShowsHeld, sceneMayPlay } = await import("../shared/scene.js");
+  const parts = sceneFor("c4-maths-ch05-t01", { lang: "en" }).scene;
+  assert.ok(sceneValues(parts).includes("1/4"));
+  assert.deepEqual(sceneShowsHeld(parts, ["2/8"]), ["1/4"], "rational equality: 2/8 is the 1/4 on screen");
+  assert.equal(sceneMayPlay(parts, { held: [] }).ok, true);
+  assert.equal(sceneMayPlay(parts, { held: [], cardLive: true }).why, "card_live");
+  assert.equal(sceneMayPlay(parts, { held: null }).why, "held_unknown");
+  assert.match(sceneMayPlay(parts, { held: ["1/4"] }).why, /^shows_held:1\/4/);
+  assert.equal(sceneMayPlay(parts, { held: ["7"] }).why, "card_live", "any live key: no scene, even one that shows another value");
+  // every pilot: its values are found (no scene can show a number the check does not see)
+  for (const t of Object.keys(SCENES)) {
+    const s = sceneFor(t, { lang: "en" }).scene;
+    for (const v of sceneValues(s)) assert.ok(sceneShowsHeld(s, [v]).length, `${t}: ${v}`);
+  }
+});
+
+test("seam withholding: no scene comes up on a turn with a card open, and one on screen leaves when a card goes live", async () => {
+  const { studioSeam, _lesson } = seam;
+  const T = "c4-maths-ch05-t01";
+  const kit = kitFromFile(getTopic(T));
+  const child = { id: "child-1", class_level: 4, language_pref: "hinglish" };
+  const mk = (id) => { studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child }); _lesson(id).child = child; return _lesson(id); };
+  // a key held from the last turn: composeAsk gives no scene
+  const L1 = mk("scene-held-1");
+  studioSeam.noteWithheld("scene-held-1", ["1/4"]);
+  assert.notEqual((await studioSeam.composeAsk("scene-held-1", { visual: "animation", topicId: T, child }))?.kind, "scene");
+  assert.ok(![...L1.pieces.values()].some((p) => p.source === "scene"));
+  // composed with no card, but this turn's move asks an item: not shown, retired
+  const L2 = mk("scene-held-2");
+  assert.equal((await studioSeam.composeAsk("scene-held-2", { visual: "animation", topicId: T, child }))?.kind, "scene");
+  assert.equal(studioSeam.slotFor("scene-held-2", null, { beat: "explain", tray: null, visualRequest: true, asking: true }), null);
+  assert.equal([...L2.pieces.values()].find((p) => p.source === "scene").retiredWhy, "card_live");
+  // shown, then a card opens (patch 010's itemOpen): it leaves
+  const L3 = mk("scene-held-3");
+  await studioSeam.composeAsk("scene-held-3", { visual: "animation", topicId: T, child });
+  assert.equal(studioSeam.slotFor("scene-held-3", null, { beat: "explain", tray: null, visualRequest: true })?.artifact?.kind, "scene");
+  await studioSeam.onReveal({ lessonId: "scene-held-3", childId: child.id, turn: L3.turn, studio: { reveal: [...L3.pieces.values()].find((p) => p.source === "scene").intentId } });
+  assert.equal(studioSeam.slotFor("scene-held-3", null, { beat: "practice_set", tray: null, itemOpen: true }), null);
+  assert.equal(L3.onScreen, null);
+  // the key could not be computed (noteWithheld null): fail closed
+  mk("scene-held-4");
+  studioSeam.noteWithheld("scene-held-4", null);
+  assert.notEqual((await studioSeam.composeAsk("scene-held-4", { visual: "animation", topicId: T, child }))?.kind, "scene");
+});

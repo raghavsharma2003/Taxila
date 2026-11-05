@@ -218,3 +218,36 @@ export function lineWarp(scene, clauseOnsets) {
 export const stillAt = (scene, t) => { let s = 0; for (const b of scene.beats) if (b.t <= t) s = b.t; return Math.max(s, scene.beats.length ? 0 : t); };
 /** What a beat shows (the facts row's moment): the says of the last beat at or before t. */
 export const beatAt = (scene, t) => [...scene.beats].reverse().find((b) => b.t <= t) ?? null;
+
+// ───────────────────────────── withholding (main: answer leaks are zero-visible-failure) ─────────────────────────────
+const RAT = (t) => {
+  const s = String(t).replace(/\s+/g, "").replace(/[−–]/g, "-");
+  let m = s.match(/^(-?\d+)\/(\d+)$/); if (m) return Number(m[2]) ? [Number(m[1]), Number(m[2])] : null;
+  m = s.match(/^(-?\d+(?:\.\d+)?)$/); if (m) { const d = (m[1].split(".")[1] ?? "").length; return [Math.round(Number(m[1]) * 10 ** d), 10 ** d]; }
+  return null;
+};
+/** Every value a scene puts on screen: the numbers and fractions in its captions, its text parts and its facts. */
+export function sceneValues(scene) {
+  const texts = [...scene.captions.map((c) => c.text), ...scene.actors.flatMap((a) => actorParts(a).filter((p) => p.shape === "text").map((p) => p.text)),
+    ...Object.values(scene.facts ?? {}).map(String)];
+  return [...new Set(texts.flatMap((t) => String(t).match(/-?\d+\s*\/\s*\d+|-?\d+(?:\.\d+)?/g) ?? []).map((x) => x.replace(/\s+/g, "")))];
+}
+/** The scene's on-screen values that equal one of `held` (rational equality: 2/8 is 1/4). */
+export function sceneShowsHeld(scene, held) {
+  const hs = (held ?? []).map(RAT).filter(Boolean);
+  return sceneValues(scene).filter((v) => { const r = RAT(v); return r && hs.some((h) => h[0] * r[1] === r[0] * h[1]); });
+}
+/**
+ * May a scene play now? Never while a keyed card or check is live (`cardLive`), never when the live card's withheld values
+ * could not be computed (`held === null`: fail closed), never while any value is withheld, and never when it shows one.
+ * → { ok, why }
+ */
+export function sceneMayPlay(scene, { held, cardLive = false } = {}) {
+  if (cardLive) return { ok: false, why: "card_live" };
+  if (held === null) return { ok: false, why: "held_unknown" };
+  if (Array.isArray(held) && held.length) {
+    const hit = sceneShowsHeld(scene, held);
+    return { ok: false, why: hit.length ? `shows_held:${hit.join(",")}` : "card_live" };
+  }
+  return { ok: true, why: "no_live_key" };
+}

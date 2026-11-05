@@ -307,6 +307,11 @@ settles), plus videos of the water cycle, day and night, and equal sharing.
 Not yet:
 - a Stagecraft rung, so scenes come only from the child's ask (a plan-led "animation" want still gets the Studio v2
   explainer or the board);
-- per-item withholding: the pilots show concept values (1/4, 20 m) that a kit item may ask, so a check beat must not
-  use a scene;
+- ~~per-item withholding~~ DONE (main: answer leaks are zero-visible-failure). `shared/scene.js` sceneMayPlay: a
+  scene never comes up while a keyed card or check is live (the turn's asking move, or patch 010's `itemOpen`), never
+  when the live key could not be computed (`L.held === null`, fail closed), and never while any value is withheld. A
+  scene on screen leaves the moment a card opens. The explicit check is sceneShowsHeld: every value in its captions,
+  text and facts against the held values, with rational equality (2/8 is the 1/4 on screen). Brain applies
+  `docs/patches/to-brain/010-studio-slot-item-open.patch` to cover word-answer cards; until then the asking move and
+  the held values cover it;
 - Brain's "show the movement in words" shape stays until main decides the pilots cover enough.
