@@ -195,3 +195,13 @@ Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12),
 - **Reach:** 11 boards across the decimal lessons (c7 ch03 t01–t03), used when an item is explained or retaught. A decimal that is an item's answer is never chosen, since it would have to be written "?". A line that adds, subtracts, multiplies or divides never gets the zoom.
 - **W9:** a 0 or 1 that ends inside a box (a place-value box) is now judged like any other digit. Only a bare 0 or 1 outside any box still counts as a number line's origin.
 - **Pick fixes:** "2.85 + 2.50" is no 85 + 2, and a full stop after a number is not a decimal point.
+
+## M3b: steps land on her words (C1 item 6)
+
+When her real line names a step on the board ("Pehle food…, phir mouth…, uske baad stomach…"), that step's box, arrow and word appear just before she says it, about 250 ms early, instead of being paced evenly across her line. This is `server/stagecraft/board-sync.js` anchorSteps, applied in takePreselected, so no client or Voice change is needed.
+
+- **Timing:** onsets are estimated from each word's position in her line × the line's length. Steps are only ever delayed, never reordered. The board still starts at once, and it ends with her line.
+- **Fallback:** the anchored board must pass the full gate, or the evenly paced board is shown.
+- **Reach** (first explain, classes 4–7; her line stood in by one naming each thing on the board in a short sentence): 168 of 241 boards have their steps on her words. By template: flow 88/91, label 12/12, cycle 4/4, compare 26/32, angle 6/9, shape 6/9. 16 anchored boards were refused by the gate and fell back to even pacing.
+- **Not yet anchored:** boards with no named steps (fraction pictures, column work, places), where the words are numbers rather than names.
+- **Live check needed:** the onsets are estimates. Voice's word timings (when they exist) would make them exact.
