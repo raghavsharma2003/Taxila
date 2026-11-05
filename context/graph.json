@@ -24971,6 +24971,260 @@
    "at": "2026-11-05",
    "title": "Keep the teaching-scripts architecture; no scale-out. Script format v2 (Hinglish for every spoken field, keyed micro-question per explain beat, <=2 explain beats before a keyed question, worked = problem + do/result/why with the last step the child’s, slots fit beats) and runtime v2 (beat completes only when said and answered, diversions do not consume beats, script mode silences kit sources, screen contract enforced in code, language request persists, question jar) plus a reactive scripted child; director5 gates the 30-topic scale-out (>=80% beats delivered, >=90% keyed answers get a verdict, 0 contradictions, every judge axis >=3.5).",
    "source": "inbox/r7-main-11.json"
+  },
+  {
+   "id": "dc-r7-app-notebook-jar",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Notebook's third page, Questions, renders Learning's GET /api/child/jar: waiting items under '{T} will bring these back' (oldest first), answered ones struck through with 'answered on {date}'. No counts, nothing to delete. The page appears only when the route answers (absent before integration 7). Reverse: the jar moves into the lesson Later tray only.",
+   "source": "inbox/r7-app-10.json"
+  },
+  {
+   "id": "dc-r7-app-debrief-reflect-emote",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Debrief asks 'What helped today?' (Older only; only when this lesson used two or more supports: a piece she built or a board, plus her explanation) with chips for each made piece, The drawing, How {T} explained, Trying it myself, Not sure; one tap goes to Learning's POST /api/child/reflect as a choice. A goodbye row (Wave / Thanks / That was fun) goes to Brain's POST /api/child/emote. Both are sent by the lesson frame, never by the Debrief, and absent until the lesson has an id. Reverse: the reflect beat proves noise in the owner's test.",
+   "source": "inbox/r7-app-8.json"
+  },
+  {
+   "id": "dc-r7-app-notebook-made",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Notebook has two pages under Kaksha: Lessons (the board pages, unchanged) and Made for you (GET /api/studio/made-for, newest first, no counts or completion), where a tap plays the piece again in the real Studio stage with no lesson in its intent (posts nothing). ?made=<id> from Home and the Debrief opens that piece. The Question jar page waits for Learning's child-facing jar route. Reverse: Studio moves replays to their own route.",
+   "source": "inbox/r7-app-9.json"
+  },
+  {
+   "id": "dc-r7-face-r8-extended-bilabials",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Every look uses the extended b / m / p rule (track.ts VisemeScheduler.extendedBilabials = true); it was lamp2's only. On r8's own lip solver the 24-line Diya battery seals 132/132 b/m/p words vs 123/132, no new unowed closure, the same timing.",
+   "source": "inbox/r7-face-11.json"
+  },
+  {
+   "id": "ms-r7-face-r8-bilabial-battery-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "r8 bilabial battery (offline, 24 stored Diya lines, r8 product weights path + the lips.js seal line): base rule 123/132 sealed, extended 132/132; unowed closures 4 vs 4 (same Azure-origin spots); offset vs CTC median +10 ms, 95% within +-50 ms in both arms (n = 21).",
+   "source": "inbox/r7-face-11.json"
+  },
+  {
+   "id": "dc-r7-games-kila",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "E4 Kila: turn-based tower defence over the periodicity law (a tower on square p fires on p, 2p, 3p…; the wave moves only on next / run). Modes multiples (mark / guard / common), factors (all), lcm (meet); budget = answers + 2 so 'build everything' cannot win. New law topics: c4-maths-ch03-t01, c5-maths-ch13-t01, c5-maths-ch13-t02. Why: factors/multiples was the largest maths gap served only by ITEM-ARENA. Reverse: a child pilot shows the tower frame hides the factor/multiple distinction.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "dc-r7-games-naksha",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "naksha (maps and grids) as one law family for SST lat/long and the maths grid/route/scale topics: locate (drone to a lat/long crossing), route (steps / compass with a rotated north / turns relative to heading), scale (fuel for road cm x scale; where D km runs out), shape (fence a copy on a dot plot; a turn counts, a flip does not). 5 topics: c6-sst-ch01-t01, c4-maths-ch01-t03, c4-maths-ch02-t02, c5-maths-ch14-t01, c5-maths-ch14-t02. Why: one mechanic serves the only class 4-7 SST grid topic and four uncovered maths topics. Reverse: the kits' grid skills split into mechanics that do not share a board.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "dc-r7-games-yantra3d-all",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Yantra 3D renders all three laws (beam, circuit, pendulum) from one engine entry, dispatching by mode: circuit as a workbench of brass posts (current beads follow the law's loop; a spark plus the law's reason otherwise), pendulum as a lab stand with four bobs of visibly different mass and a beat bell (the law's own period, no formula). Why: one engine keeps the theme pack and certification in one place. Reverse: a mid-range Android cannot hold the three scenes in one chunk.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "dc-r7-games-pip-keep",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "A play piece keeps its whole box (>= MIN_BOX 300x440) under the teacher's PiP; StudioStage names the covered bottom-right corner on .st-box (data-pip-keep, --pip-keep-w/h) and PlayStage reads it live, the controls reserving that corner (right padding + min-height). Why: 6e1036a37's lift/fit handed play 263x432 at p360 and every game fell back to its text twin. Reverse: the PiP moves out of the slot on phones.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "dc-r7-games-cert-twin-guard",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "A play certificate certifies the GAME: play-cert judges each size on its own, records the box and whether the play stage mounted, and fails twin:layout / twin:no-stage; tests/r7-games-cert-twin.test.mjs holds it. play-cert checkpoints after every coverage entry and --resume skips entries already judged in this format (container restarts lost whole families). Why: the p360 twin passed as the game after 6e1036a37. Reverse: never; a twin that passes as a game is a silent lie.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "ms-r7-games-recert-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Play recertification on integration 4/5 (PiP fix), forge3-qa@2 at p360 / p412 / l1366, seeds 2, every art and 3D theme: 2928 samples, each recording box and game=true; 2928/2928 pass at every size after three view fixes. Per family: naksha 72, todo-jodo 152, taraazu 64, nishana 212, kyun-lab 144, kaal 88, kila 72, kon 80, nazariya 224, stambh 56, vakya 48, yantra 84, arena 1632. p360 box 320x524, p412 372x639, l1366 720x520.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "fd-r7-games-rail-clip",
+   "kind": "finding",
+   "at": "2026-11-05",
+   "title": "Judged as the real game on a phone box, three views clipped their rail (goal + readouts share one line, readouts capped at 52%, goal clamped to 2 lines): taraazu weigh/fill (p360 and p412), todo-jodo atoms hcf/lcm (p360; pre-existing, 20/32 samples), vakya rail (p360, the kit prompt). Fixed per family: the goal takes the full width and readouts wrap below; vakya's goal may take 4 lines; taraazu dropped its live tilt sentence (the beam shows it). The twin had hidden all three.",
+   "source": "inbox/r7-games-3.json"
+  },
+  {
+   "id": "ms-r7-pilot-scripts-boards",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: Studio's full whiteboard gate (certifyBoardRef W-checks, int/r6 integration 6) on every board of the three pilot lesson scripts. Run in-session, no model calls. Stand-in lines: an explain beat's point; the worked example's problem + step results + answer; a check's prompt with its key and accepted forms withheld (W9); a remediation's move. First run: 67 boards, 21 failed. With the kit passed to the gate (its vocabulary and numbers): 16 failed. The gate found 4 real defects, all fixed. (1) c4 s1/c2, W9: the check's bar wrote 1/3, its own answer; the board was removed and the prompt is self-contained. (2) c4 s2/c1, W4: the check's equal-groups board drew 6 per plate, a number the question never says; the board was removed. (3) c4 s1/rem2, W8: a 'roti' whole was cut by lines through its centre; it is now a circle in 4 equal sectors, and the move says so. (4) c4 s2/rem2, W4: the compare board's '7, 3, 3, 3' did not read as the move's numbers; it is now '7 + 3 + 3 + 3' in both, with 2 rows per side. Left: only W6 timing (8 boards) and W19 where W6 was its only end-state failure. W6 compares the board's length with the stand-in's length, not her real line; Studio re-times and re-gates each board against her real line at turn time. So tests/r7-learning-lesson-scripts.test.mjs enforces every W-check except W6 in CI, and also runs Brain's validateTopicScript (9/9 skills walkable, 0 errors). Answer keys and thenKeys are unchanged, so the blind verification (ms-r7-pilot-scripts-blind) stands. Date 2026-11-05.",
+   "source": "inbox/r7-learning-18.json"
+  },
+  {
+   "id": "dc-r7-script-pipeline",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (main 2026-11-05): lesson scripts are made by a repeatable pipeline, docs/design/round7/learning/SCRIPT-PIPELINE.md: pick, author (one Claude agent in session), check (node scripts/lesson-scripts/check.mjs <topicId>), blind solve (a separate Claude agent on the --blind packet), log, gates. No Azure calls. The next 30 class 4-7 maths topics are ranked by node scripts/lesson-scripts/next-topics.mjs. The 30-topic batch waits for the director4 verdict. Reverse if: director4 changes the script format (then the checker and spec change first, and the batch follows).",
+   "source": "inbox/r7-learning-19.json"
+  },
+  {
+   "id": "ms-r7-script-pipeline-test",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: the lesson-script pipeline run end to end on one topic, c5-maths-ch02-t02 (comparing fractions, ranked 7th of the next 30), in session with no Azure calls. One Claude agent authored from the spec, the kit and one finished script. Its first check run had 4 W failures (a number-line board with 2 marks over a stand-in line that never says 2); after it fixed them the check passed S 0, W 0 (W6 left to turn time on 2 boards) and V 0. A separate Claude agent saw only the --blind packet: 14/14 answers agree with the keys, 0 questions flagged, 3/3 worked examples ok. On its one minor note, the s3 problem now says the two wholes are the same size. The kit gaps found are logged in this file's measurements prose. Date 2026-11-05.",
+   "source": "inbox/r7-learning-20.json"
+  },
+  {
+   "id": "dc-r7-question-jar-wired",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F item 8: the Question jar is wired end to end by Learning patch 004b (docs/patches/to-brain/004b-question-jar.patch, a ready-to-apply diff against claude/r4-conversation; it lands after director4). Lesson end writes the unserved parked questions to question_jar and emits teacher.promise. The next lesson's greeting comes back to the first carried question (shapes.returnJar). Serving a carried entry marks its row answered and emits teacher.promise_kept. Learning ships the pure pieces in server/learner/jar.js: jarLaterEntries, jarServed, emitJarEvents, and jarItemsFromLesson skipping carried entries. Reverse if: director4 or later judging shows the jar opening crowds the lesson start (then serve it at the first item boundary instead of the greeting).",
+   "source": "inbox/r7-learning-21.json"
+  },
+  {
+   "id": "ms-r7-kit-gaps-blind",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: kit gaps filled for the 30 next-script topics (class 4-7 maths, next-topics.mjs) plus c5-maths-ch02-t02, in session with no Azure calls. Before: each topic had ONE workedExample not tied to a skill (60 of 90 skills had none of their own), and 19 skills had no misconception any item targets. Five Claude author agents wrote 60 per-skill worked examples (skillExamples) and 20 new misconceptions with diagnostics (misconceptions[].skillId), and tagged each topic's workedExample with its skill. scripts/kits/kit-gaps.mjs lints shape, ids, coverage and exact arithmetic: 31/31 pass after 1 real fix (a step '8 − 3 = 5 jumps = 500' that skipped ×100). Two SEPARATE Claude agents blind-solved the 80-item packet (no answers shown): 80/80 agree in substance (72 matched the key by numbers, 8 gave the same answer in other words). They flagged 3 real issues, all fixed and re-solved blind by a fresh agent 3/3: an ambiguous 'single turn' question, an eraser problem that never said it starts at 0, and a belief text naming sevenths over a sixths diagnostic. The c5-maths-ch02-t02 script now checks its new same-denominator misconception. Its first draft of 2 items described amounts over one whole (7/6 of a cake, 9 of 8 pieces); a blind agent caught that, and they were fixed and re-solved 2/2. lint-kits clean. Date 2026-11-05.",
+   "source": "inbox/r7-learning-22.json"
+  },
+  {
+   "id": "ms-r7-pilot-scripts-v2",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F (dc-r7-script-walk-v2): the four pilot scripts (c4-maths-ch05-t01, c5-maths-ch02-t01, c6-maths-ch06-t01, c5-maths-ch02-t02; 12 skills) rewritten to Brain's schema v2, in session with no Azure calls. Each Said field is {hi Roman Hinglish, en}, every explain beat ends in a keyed ask, the worked example ends in yourStep, and interest slots fit their beat. The judged defects are fixed: the c4 cricket promise, the c6 round ground with a 'corner', the c6 worked board without lengths, a shape named over the wrong board, c5 s1 kept on 1/2, 1/4 and 1/8, and c5's untaught 'simplify'. Brain's validateTopicScript/validateSkillScriptV2 (claude/r4-conversation 8cfd24161, run in a worktree): 12/12 skills walkable, 0 errors. Learning's v2 structure check: 0 errors. Studio's whiteboard gate: c4, c6 and c5-t02 pass except W6; c5-t01 fails W10 on 13 boards, because Studio's drawnCounts reads every fraction-line@1 as 1 gap (Studio has the report). Blind solve by separate agents, packets with keys stripped: 112 keyed questions and 12 worked examples. First pass: 104 agreed, the other 8 were explain asks the solver could not answer without the line spoken just before them. The packet now carries that line, and a fresh agent re-solved the 13 affected questions: 11 clean, 2 real defects fixed (a spoken line naming the wrong neighbouring mark, and a train question with no start point), then re-solved 2/2. Worked examples: 11/12, then the c4 s3 'why' was fixed ('4 parts are smaller than 3 parts' became 'each of 4 equal parts is smaller'), re-checked ok. Final: every key agrees, 12/12 worked examples ok. Files are staged in data/lesson-scripts-v2/ until integration 7 brings Brain's validator and Studio fixes W10; then they replace the v1 files. Date 2026-11-05.",
+   "source": "inbox/r7-learning-23.json"
+  },
+  {
+   "id": "dc-r7-reactive-child",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (H1 of the director4 judgement; main 2026-11-05): the hybrid side-by-side runs get a REACTIVE scripted child, evals/child-sim/reactive.mjs. It is rule-based with no model calls and is deterministic per seed. Each turn it reads what Brain's harness already records: the teacher's line, the script beat, the live keyed card, the v2 beat ask, boardUp and lang. It answers the question on the table right or wrong by its persona's odds per question kind, with a learning bump per miss. A wrong answer is the misconception the item targets: the v2 ask's wrongIfMis, or the kit misconception's diagnostic option when the item is that diagnostic, else a near miss attributed to it. So the authored remediation can fire. Right answers come in Hinglish forms ('teen', '1/4 hai na', 'ek bata chaar'). Every persona (steady, stuck, offtopic, steering) plays all five events within 20 turns: pata nahi, a picture request, a cricket aside, Hindi mein bolo, and mujhe khud try karne do. It never leaves before 20 turns. Brain wires it into evals/hybrid-side-by-side.mjs. Reverse if: the judges find its answers unlike a real class 4-6 child (then fit the odds and forms to real transcripts once they exist).",
+   "source": "inbox/r7-learning-24.json"
+  },
+  {
+   "id": "dc-r7-term-report",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F batch R2 (PARENT-REPORT §2, §5 S14, §4.3 RP-D6): the term report. Cadence 'term' has two terms: T1 is Apr 1 to Sep 30, and T2 is Oct 1 to Mar 31, named by the year it starts (2026-T2). It carries the monthly sections over the term (header, strengths, rows, S4, S6, S7, S9, S5, tricky, S13 required, one home activity, S16), plus two new parts. S14 Then → now gives at most 4 rows. Per titled skill it compares the first-try rate in the term's first learning month that has ≥ 10 scored answers with its last such month, at least 2 months later. A row appears only when the rate ROSE (the pre-declared direction) by ≥ 0.2 and P(now > then) ≥ .95 under independent Beta(1+k, 1+n−k) posteriors. The threshold is .975 when more than 4 skills were compared. P is exact (closed form, server/reports/stats.js). A row shows the two months' counts and no verdict word. The still-learning line gives the count of every other practised topic, with no rate and no direction. check.js re-derives the months, counts, cited rows and the rule from raw rows, and the comparison count independently. The Conductor enqueues parent.term on the night fold of 30 Sep / 31 Mar. The Notes page gains a 'This term' tab. RENDER_VERSION is pr-5. Reverse if: real families' terms show the rule admits almost no rows (lower the n floor only with a new pre-registered rule), or parents read a row as a verdict.",
+   "source": "inbox/r7-learning-25.json"
+  },
+  {
+   "id": "dc-r7-jar-notebook-read",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (App ask app-notebook-log, STUDENT-FLOW §7): GET /api/child/jar?childId= returns { items: [{ id, topic, subject, share, at, state: 'waiting'|'answered', answeredAt }] } from question_jar (037). Behind requireChild. Waiting items come oldest first, then up to 10 answered ones newest first. No counts, and items is [] on the Conductor's safety hold. Read-only, with no child-side delete. App's proposed state 'kept' became 'answered' with answeredAt, because 'kept' already means 'kept for later' in jar events. Reverse if: the Notebook needs paging past 30 waiting items.",
+   "source": "inbox/r7-learning-26.json"
+  },
+  {
+   "id": "dc-r7-kit-budget-split",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (main gate-speed ask): kit-budget.test.mjs (~312-440 s serial, 15.7% of serial test time) is split into tests/kit-budget-c1…c9.test.mjs plus kit-budget-lint.test.mjs. Each class file loads only its own kit files. The shared body is in tests/fixtures/kit-budget-suite.mjs. The lint file holds the 1% drop bound, still over ALL kits (per class it would be stricter: classes 8-9 alone exceed 1%), plus a check that every kit file's class has a file. Every assertion is kept. Measured 2026-11-05 on 4 cores: the longest file (c7) takes ~75 s; all 10 in parallel take 145 s of wall time against ~450 s serial. No verdict cache, so CI is always cold. Reverse if: the shard planner's weights show a class file above 90 s (then split that class by subject).",
+   "source": "inbox/r7-learning-26.json"
+  },
+  {
+   "id": "dc-r7-m3-credit-unlock",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Unlock Microsoft for Startups Milestone 3 ($25k + 2-year extension) by holding 7 candidate services (5 required + 2 spare), each ≥ $1 EVERY UTC day for 60 days, counted as Cost Management ServiceNames. The 7 services: Container Apps (taxila-web, guard only), PostgreSQL (taxila-cin-pg, optional downsize to B2s), Container Registry (taxilacr → Premium), Foundry Models, Foundry Tools and Storage (a capped daily ACA job, m3-keeper, spends $1.35 / $1.35 / $1.25 under a $2 cap, from what the APIs report), and Virtual Machines (optional D2as_v5, owner-gated). An ACA job m3-verify reads Cost Management daily and alerts the Owner role. All of it runs inside Azure with no Claude session. scripts/m3.mjs is dry-run by default. Reverse if Microsoft changes or clarifies the rule (e.g. counts by resource or meter, not ServiceName), if Cost Management shows Foundry Models and Foundry Tools collapsing into one service, if the 180-day deadline has already passed (open-r7-m3-verification-deadline), or if the credit cannot cover the 60 days.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "fd-r7-m3-rule-2026-11-05",
+   "kind": "finding",
+   "at": "2026-11-05",
+   "title": "Microsoft for Startups milestone rules, read 2026-11-05 from https://learn.microsoft.com/en-us/startups/standard-benefits/unlock-more-benefits (page dated 2026-11-03). M3 $25k: ≥ 5 workloads, each ≥ $1, every day for 60 continuous days; dropping one below $1 drops the count. The page does not say how a 'unique service' is counted. M2 clause: not qualifying for M3 within 180 days of business verification cancels the sponsorship and converts the subscription to pay-as-you-go. M4 $50k: the same rule with 7 workloads; milestones can be skipped. M3 adds a one-time 2-year extension.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "open-r7-m3-verification-deadline",
+   "kind": "open",
+   "at": "2026-11-05",
+   "title": "The M3 deadline is unknown. If business verification was 2026-07-08 (the sponsorship's start), the 180 days end 2027-01-04 and the 60-day clock must start by 2026-11-06. On 2026-10-24 only 2 services held ≥ $1/day. We do not know the real verification date, or whether a clause published around 2026-11-03 applies to a July sponsorship. The owner must check the Founders Hub milestone tracker.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-acr-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Container Registry retail, eastus2: Premium Registry Unit $1.6666/day (meter 2f8e1105), Standard $0.6666/day (984c39d8), Basic $0.1666/day (5c9e7a65). Premium is the only tier that holds $1/day; it adds $1.50/day over today's Basic. n = 2 reads (discovery filter + meterId re-check), Azure Retail Prices API, 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-pg-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "PostgreSQL Flexible retail, centralindia: D2ds_v5 2 vCore $0.251/h (fdd9e8a2); Burstable B1ms $0.0245/h (27c18f86), B2s $0.098/h (3e7d2ab5), B2ms $0.196/h, B4ms $0.392/h; storage $0.131/GB-month (94cadb5b). With 64 GB: today $6.30/day, B2s $2.63/day, B1ms $0.86/day (under the $1.25 bar, refused). n = 2 reads, Retail Prices API, 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-vm-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Linux VM retail, centralindia: Standard_D2as_v5 $0.0556/h = $1.334/day (70be92d6), the cheapest common x64 size ≥ $1.25/day. Near misses: D2als_v6 $0.052/h = $1.248/day, B2s $0.0448/h = $1.075/day. E4 Standard SSD disk $2.64/month = $0.087/day, billed under Storage. n = 7,555 VM rows read (all pages), then a meterId re-check; Retail Prices API, 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-storage-ops-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Storage retail, eastus2, General Block Blob v2 Hot LRS: 'LRS List and Create Container Operations' $0.05 per 10,000 (meter 3d7aa86c, the same meter as Hot LRS Write Operations). Microsoft's REST-to-price map puts ListBlobs in the 'List and create container' class. $1.25/day = 250,000 List Blobs calls. n = 2 reads, Retail Prices API + learn.microsoft.com map-rest-apis-transaction-categories (ms.date 2025-05-14), 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-tts-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Speech TTS retail: ServiceName 'Foundry Tools', product 'Azure Speech', 'S1 Neural Text To Speech Characters' $15 per 1M characters in both centralindia and eastus2 (meter 0f98e708). Neural HD is $22 (ad55d150). $1.35/day = 90,000 characters, about 128 requests of the keeper's fixed paragraphs. n = 2 reads, Retail Prices API, 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-price-models-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Foundry Models retail, eastus2, GlobalStandard short context. gpt-5.6-luna (taxila-fast = DEPLOY_FAST): input $0.20, cached $0.02, output $1.20 per 1M tokens (1e606a78 / 97d64f6e / 0edf673f). gpt-5.6-sol (taxila-brain = DEPLOY_BRAIN): $4 / $0.40 / $20. These match server/cost/prices.js. $1.35/day on luna ≈ 1.1M output tokens (~280 calls); on sol ≈ 67,500 (~17 calls). n = 2 reads, Retail Prices API, 2026-11-05.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "ms-r7-m3-jobs-fake-azure-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "tests/m3-plan.test.mjs, 15/15 pass. Both in-job scripts were run end to end against a fake Azure (a blob store with ETags, chat, TTS, List Blobs, Cost Management with nextLink). Results: the am run reached each target under the $2 cap, and its ledger matched the spend the fake reported to 1e-3; the pm run made 0 extra calls; an unreadable ledger led to exactly one blind spend per day across reruns, and the pm run skipped; a failing primary deployment fell back to taxila-brain; a lost ledger write never let the retry pass the cap. The verifier printed M3-OK with streak 13 and a written report, and alerted on a dip, a missing ledger, a reset and a failed query. The in-job copies of plan.js functions match it (toString and fixtures). NOT measured live: no Azure credentials in the session; nothing was applied.",
+   "source": "inbox/r7-m3-1.json"
+  },
+  {
+   "id": "dc-r7-gate-test-all",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The commit gate is `npx tsc -b && npx vite build && npm run test:all`. test:all runs every suite in its own node --test process, 4 at a time, about 9 minutes on 4 cores (532 s for 499 suites), against about 32 minutes for the single-process npm test. The two runs execute exactly the same tests. They differed in one way: state shared between files in one process. tests/test-isolation.test.mjs now refuses module-level env and global writes, and its known-debt list is empty. The main loop's integration step still runs single-process `DATABASE_URL= npm test`, which is what catches any remaining cross-file state (as the r7-brain-step-check and r1443 leaks showed). Main approved it on 2026-11-05. Reverse (go back to single-process npm test as the commit gate) if a cross-file leak reaches int/r6 more than once in a round after passing test:all but failing single-process npm test.",
+   "source": "inbox/r7-platform-5.json"
+  },
+  {
+   "id": "ms-r7-test-all-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "499 suites at int/r6 4c5b4bed, one node --test process each, 4 at a time on the 4-core container: 532 s wall; serial total 1,986 s. Single-process npm test took about 32 min (main, integration 6). Slowest suites: kit-budget 312 s (15.7% of serial time), studio-stage-states 112 s, r4-latency-outbox-late 111 s, forge-g2 94 s, brain-turn 92 s, w2b-whiteboard-browser 84 s, migrations-applied 60 s (a 60 s reachability probe, now 10 s), studio-qa 49 s, and four DB suites at about 45 s each. The fixes went to the owners through main. Only r5-edit-supersede-db failed in isolation: it needs model keys when a TEST DB is set, and Brain is making it skip without them.",
+   "source": "inbox/r7-platform-5.json"
+  },
+  {
+   "id": "dc-r7-scene-withholding",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Main: answer leaks are zero-visible-failure. A code-built scene never plays while a keyed card or check is live (asking move, or patch 010 itemOpen), never when the live key is unknown (L.held null: fail closed), never while any value is withheld, and never when it shows a held value (sceneShowsHeld, rational equality). Enforced at composeAsk, at the pending slot, at Stagecraft merge, at reveal and on screen.",
+   "reversal": "a scene authored with no values and no answer words turns out to be needed during a card (then a scene-level 'valueFree' flag, still never over a word key)",
+   "source": "inbox/r7-studio-23.json"
+  },
+  {
+   "id": "dc-r7-stagecraft-scene-rung",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Each pilot scene is a Stagecraft animation archetype scene:<id> (noSpec: never a generated spec; boost: ranked ahead of the topic's Studio v2 animation), built by the instant rung, certified with the scene rule, slotted as a 'scene' artifact. Script-beat scenes (ExplainBeat.scene { topic }, Brain patch 011) wait for the director4 judgement.",
+   "reversal": "director4 or the owner find scenes crowd out the live board on explanation beats (then drop boost, keep scenes for asks only)",
+   "source": "inbox/r7-studio-23.json"
   }
  ],
  "edges": [
@@ -39093,6 +39347,146 @@
    "src": "dc-r7-script-walk-v2",
    "rel": "part_of",
    "dst": "dc-r7-teaching-scripts"
+  },
+  {
+   "src": "dc-r7-app-debrief-reflect-emote",
+   "rel": "part_of",
+   "dst": "dc-r7-app-debrief-made"
+  },
+  {
+   "src": "dc-r7-app-notebook-made",
+   "rel": "part_of",
+   "dst": "dc-r7-app-debrief-made"
+  },
+  {
+   "src": "dc-r7-face-r8-extended-bilabials",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-r8-bilabial-battery-2026-11-05"
+  },
+  {
+   "src": "ms-r7-face-r8-bilabial-battery-2026-11-05",
+   "rel": "caused_by",
+   "dst": "ms-r7-face-route-b-battery-2026-11-04"
+  },
+  {
+   "src": "dc-r7-games-cert-twin-guard",
+   "rel": "caused_by",
+   "dst": "dc-r7-games-pip-keep"
+  },
+  {
+   "src": "dc-r7-games-cert-twin-guard",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-recert-2026-11-05"
+  },
+  {
+   "src": "fd-r7-games-rail-clip",
+   "rel": "caused_by",
+   "dst": "ms-r7-games-recert-2026-11-05"
+  },
+  {
+   "src": "dc-r7-games-yantra3d-all",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-recert-2026-11-05"
+  },
+  {
+   "src": "dc-r7-pilot-scripts-format",
+   "rel": "measured_by",
+   "dst": "ms-r7-pilot-scripts-boards"
+  },
+  {
+   "src": "dc-r7-script-pipeline",
+   "rel": "measured_by",
+   "dst": "ms-r7-script-pipeline-test"
+  },
+  {
+   "src": "dc-r7-script-pipeline",
+   "rel": "measured_by",
+   "dst": "ms-r7-kit-gaps-blind"
+  },
+  {
+   "src": "dc-r7-pilot-scripts-format",
+   "rel": "measured_by",
+   "dst": "ms-r7-pilot-scripts-v2"
+  },
+  {
+   "src": "dc-r7-term-report",
+   "rel": "part_of",
+   "dst": "dc-r7-report-monthly-r1"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-rule-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-azure-spend-2026-10-24"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-acr-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-pg-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-vm-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-storage-ops-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-tts-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-price-models-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m3-credit-unlock",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-jobs-fake-azure-2026-11-05"
+  },
+  {
+   "src": "dc-owner-2026-10-27-azure-soft",
+   "rel": "constrains",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "open-r7-m3-verification-deadline",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-rule-2026-11-05"
+  },
+  {
+   "src": "dc-r7-gate-test-all",
+   "rel": "measured_by",
+   "dst": "ms-r7-test-all-2026-11-05"
+  },
+  {
+   "src": "dc-r7-scene-withholding",
+   "rel": "constrains",
+   "dst": "dc-r7-code-scenes"
+  },
+  {
+   "src": "dc-r7-stagecraft-scene-rung",
+   "rel": "part_of",
+   "dst": "dc-r7-code-scenes"
+  },
+  {
+   "src": "dc-r7-stagecraft-scene-rung",
+   "rel": "constrains",
+   "dst": "dc-r7-stagecraft-fed-never-stale"
   }
  ]
 }

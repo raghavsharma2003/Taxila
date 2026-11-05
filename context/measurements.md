@@ -5227,3 +5227,177 @@ Method: sceneFor over the 20 pilot topics × en/hinglish/hi: normalizeScene + li
 ## `jd-r7-director4-2026-11-05`
 
 n = 12 lessons (4 scenarios × c4/c5/c6, the same scripted child as director3), 375 calls on taxila-fast, ~$0.204. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only with TAXILA_R7_SCRIPT=on, on claude/r4-conversation e18c27ad (int/r6 c6c9ab91c + T2–T4 + patch 010) and Learning’s ec40168a3 scripts. Three Claude judges (one per class, not blind to the arm) read every teacher turn against the script and director3, attributing each defect to script data, runtime walk, reply rendering or harness. Date 2026-11-05. Full write-up: docs/design/round7/judgements/director4-2026-11-05.md. Reply-ready p50 per lesson 2.34–3.65 s (c4 2.3–2.8 s vs director3 3.3–3.5 s).
+
+
+<!-- merged from inbox/r7-face-11.json -->
+## ms-r7-face-r8-bilabial-battery-2026-11-05 (2026-11-05)
+`evals/face-puppet/r8-bilabial-battery.mjs` → `docs/design/round7/face/r8-bilabial-battery.json`. It is offline: no Azure spend and no browser. It uses the 24 stored Diya lines (`evals/face-puppet/out/diya/`), the same battery as the lamp2 / route-b measurements.
+- **Path.** r8's product mouth: `resolveVisemes` (base vs extended rule), then `weightsAt` at 60 fps, sampled at audio time + EVENT_LEAD_MS (no key lead).
+- **Seal criterion.** This is r8's own lip solver (`runtime/lips.js`): `cPP = smoothstep(0.6, 0.92, viseme_PP) > 0.85` shuts the lip gap and holds it for 67 ms, whatever the jaw does. A first version also required the jaw to be near closed. That gave 91 / 99 of 132, which is stricter than what r8 draws, so it was replaced by the solver's rule.
+- **Results.** Sealed b / m / p words: base 123/132, extended **132/132**. Unowed closures (sealed frames inside no b / m / p word window): 4 in both arms, at the same spots, so they come from Azure's own viseme stream and not from the rule. Offset vs the wav2vec2 alignment (E3): median +10 ms, IQR 0..+20, 95% within ±50 ms, n = 21, in both arms (the bar is −125..+45 ms).
+- **Limits.** These are weights on the product path, not pixels. Nobody has looked at the added closures in motion on r8 yet. That belongs to the owner's viewing and the real-phone pass.
+
+
+<!-- merged from inbox/r7-games-3.json -->
+### Play recertification, 2026-11-05 (forge3-qa@2, p360/p412/l1366)
+
+- **Total:** 2928 samples; every one records its box and `game: true`.
+- **Pass rate:** 2928/2928 pass at every size, after three rail fixes (taraazu weigh/fill, todo-jodo atoms hcf/lcm, vakya).
+- **Boxes:** p360 320x524, p412 372x639, l1366 720x520.
+- **Samples per family:** naksha 72, todo-jodo 152, taraazu 64, nishana 212, kyun-lab 144, kaal 88, kila 72, kon 80, nazariya 224, stambh 56, vakya 48, yantra 84, arena 1632.
+- **Needs a live phone check:** the PiP keep-corner reservation. The harness has no PiP.
+
+
+<!-- merged from inbox/r7-learning-20.json -->
+## ms-r7-script-pipeline-test (2026-11-05, F Learning)
+
+The pipeline in docs/design/round7/learning/SCRIPT-PIPELINE.md was run on c5-maths-ch02-t02:
+- **Author:** one agent wrote the script.
+- **check.mjs:** 4 W failures on the first run, then all gates passed.
+- **Blind solve:** 14/14 answers agree; worked examples 3/3 ok.
+
+Kit gaps the author reported, worth fixing in the kit before the 30-topic batch:
+1. No kit misconception trips a plain same-denominator comparison (s2). The s2 checks therefore test where the rule stops: 2/4 vs 3/12 (counting pieces without their size) and 3/4 vs 5/6 (one piece short of the whole).
+2. The kit has only one worked example, which belongs to s3 (2/5 vs 2/3). The s1 and s2 worked examples were written by the author and verified blind.
+3. fraction-line@1 takes at most 12 parts per whole, so pairs like 3/5 vs 3/8 cannot share one line. Those beats use compare@1, or pairs that fit.
+4. Item i10, a 'better deal' at a mela, was left off the ladder. Its price framing is close to the rate-read-as-fraction ban.
+
+
+<!-- merged from inbox/r7-learning-22.json -->
+## ms-r7-kit-gaps-blind (2026-11-05, F Learning)
+
+The 30-topic script batch needs, per skill, a full worked example and a real misconception to check. The kits had one topic-level worked example and missed misconceptions for 19 skills.
+
+**Added:**
+- 60 `skillExamples` (problem, givens, find, steps {do, result}, answer, why);
+- 20 misconceptions with a diagnostic and a `skillId`;
+- a `skillId` on each topic's `workedExample`;
+- c5-maths-ch02-t02's missing same-denominator misconception, 'same bottom so equal', which its script now checks.
+
+**Verification:**
+- scripts/kits/kit-gaps.mjs: lint 31/31.
+- Blind solve by two separate agents: 80/80 agree in substance. 3 flagged items were fixed and re-solved 3/3.
+- tests/r7-learning-kit-gaps.test.mjs keeps coverage and exact arithmetic in CI.
+
+**Notes from the authors, for review rather than defects:**
+- c6-ch07-t04's new 'half by numerator' partly overlaps 'only numerator/denominator'.
+- c5-ch02-t03's 'different numbers so unequal' sits near 'more pieces more'.
+- A few existing worked examples could fit two skills; the skill assigned is noted in the kit.
+
+
+<!-- merged from inbox/r7-learning-23.json -->
+## ms-r7-pilot-scripts-v2 (2026-11-05, F Learning)
+
+The four pilot scripts are rewritten to Brain's schema v2 (F1-F4). They are staged in data/lesson-scripts-v2/.
+
+**Gates:**
+- **Brain's v2 validator:** 12/12 skills, 0 errors. It was run on Brain's head in a worktree, because the validator reaches this tree at integration 7.
+- **Learning's v2 structure rules** in check.mjs: F1 (Hinglish Said, no English-only spoken line), F2 (a keyed ask ending every beat, its key never in a non-choice prompt; Hinglish 'ya' counts as a choice), F3 (yourStep, with answer.en carrying its key), F4 (interest words in each slot). All 0 errors, held in CI by tests/r7-learning-lesson-scripts-v2.test.mjs.
+- **Studio's whiteboard gate:** 3 of 4 topics clean apart from W6. c5-t01 is blocked on Studio's W10 gap count for fraction-line@1.
+
+**Blind solve:** every key and worked example agrees after 3 real fixes, each re-solved by a fresh agent.
+
+**Lesson for the pipeline:** a v2 blind packet must carry the line spoken just before each ask. An explain ask is answered in the context of her point and the board, and without that line 8 of 112 looked unanswerable.
+
+**Open:**
+- Promote the files to data/lesson-scripts/ when integration 7 lands.
+- Re-run the full check then.
+- Studio's W10 fix for c5.
+
+
+<!-- merged from inbox/r7-m3-1.json -->
+## fd-r7-m3-rule-2026-11-05 (finding, read 2026-11-05)
+
+Source: https://learn.microsoft.com/en-us/startups/standard-benefits/unlock-more-benefits (ms.date 2026-11-03).
+- Milestone 3 ($25k): "Use at least 5 Azure workloads over a sustained period of 60 days." The clock starts once each workload has at least $1 in spend, and "every workload must stay above $1 in spend for all 60 days". "If any workload drops below the threshold, you fall under the required number."
+- A workload is "an Azure service you actively use in your solution. Each unique service counts." How a service is identified is not stated.
+- The Milestone 2 clause: "If you don't qualify for Milestone 3 ... within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go."
+- Milestone 4 ($50k) is the same rule with 7 workloads, and milestones can be skipped. Milestone 3 brings a one-time 2-year extension.
+
+## ms-r7-m3-price-acr-2026-11-05 (2026-11-05, Retail Prices API, n = 2 reads)
+
+Filter: `serviceName eq 'Container Registry' and armRegionName eq 'eastus2'`, re-checked by meterId with `node scripts/m3.mjs prices`.
+- Premium Registry Unit: $1.6666/day (2f8e1105-47d0-4105-a934-b2175c766a71).
+- Standard: $0.6666/day.
+- Basic: $0.1666/day.
+
+Only Premium holds $1/day.
+
+## ms-r7-m3-price-pg-2026-11-05 (2026-11-05, Retail Prices API, n = 2 reads)
+
+Filters: `serviceName eq 'Azure Database for PostgreSQL' and armRegionName eq 'centralindia'` with `contains(productName,'Flexible Server Burstable BS Series')`, `contains(meterName,'Storage')`, and `contains(productName,'Ddsv5') and skuName eq '2 vCore'`.
+- D2ds_v5: $0.251/h.
+- Burstable: B1ms $0.0245/h, B2s $0.098/h, B2ms $0.196/h, B4ms $0.392/h.
+- Storage: $0.131/GB-month.
+
+Per day with 64 GB (730 h/month): today $6.30; B2s $2.63; B1ms $0.86, under $1.25, so `--pg-downsize` refuses it. New 2026-10 Burstable v2 rows (Basv2 / Balsv2 / Batsv2 / Bafsv2, priced per vCore) were seen but not used: their SKU names were not verified.
+
+## ms-r7-m3-price-vm-2026-11-05 (2026-11-05, Retail Prices API, n = 7,555 rows + 1 re-check)
+
+Filter: `serviceName eq 'Virtual Machines' and armRegionName eq 'centralindia' and priceType eq 'Consumption'`, all pages, Linux rows only.
+- Standard_D2as_v5: $0.0556/h = $1.334/day (70be92d6-4fad-569d-8eb6-87cf609ea508). The cheapest common x64 size at or above $1.25/day.
+- Near misses: D2als_v6 $1.248/day; B2s $1.075/day; F1ads_v7 $1.33/day (NVMe-only family).
+- E4 Standard SSD disk: $2.64/month (5909273e), about $0.087/day, billed under Storage.
+
+## ms-r7-m3-price-storage-ops-2026-11-05 (2026-11-05, Retail Prices API, n = 2 reads)
+
+Filter: `serviceName eq 'Storage' and armRegionName eq 'eastus2' and productName eq 'General Block Blob v2' and skuName eq 'Hot LRS'`.
+- 'LRS List and Create Container Operations': $0.05 per 10K (3d7aa86c-0e9d-4139-b59f-cc5bad92b873). This is the same meter id as Hot LRS Write Operations.
+- Microsoft's REST-to-price map (map-rest-apis-transaction-categories) puts ListBlobs in 'List and create container'.
+- $1.25 = 250,000 calls. taxilaforge is StorageV2 Standard_LRS eastus2; its access tier is checked by `apply`.
+
+## ms-r7-m3-price-tts-2026-11-05 (2026-11-05, Retail Prices API, n = 2 reads)
+
+Filter: `armRegionName eq 'centralindia' and contains(meterName,'Text To Speech')`.
+- ServiceName 'Foundry Tools', product 'Azure Speech'.
+- 'S1 Neural Text To Speech Characters': $15 per 1M (0f98e708-a16c-407b-8089-a0ed9e14ab49), the same in eastus2.
+- Neural HD: $22 per 1M.
+
+The keeper uses standard neural voices (hi-IN-SwaraNeural, en-IN-NeerjaNeural). It counts only the text's characters, a lower bound on what is billed.
+
+## ms-r7-m3-price-models-2026-11-05 (2026-11-05, Retail Prices API, n = 2 reads)
+
+Filter: `armRegionName eq 'eastus2' and contains(meterName,'5.6')`.
+- gpt-5.6-luna ShortCo Std Gl (taxila-fast, DEPLOY_FAST): input $0.20, cached $0.02, output $1.20 per 1M (1e606a78 / 97d64f6e / 0edf673f).
+- gpt-5.6-sol (taxila-brain, DEPLOY_BRAIN): $4 / $0.40 / $20.
+
+These equal server/cost/prices.js, and the test asserts that. ServiceName is 'Foundry Models'. New 'Cd Wr' (cache write) meters exist; the keeper's prompts stay under the caching size.
+
+## ms-r7-m3-jobs-fake-azure-2026-11-05 (2026-11-05, node --test, n = 15 tests)
+
+tests/m3-plan.test.mjs runs both in-job scripts' main() against a fake Azure, with no network.
+
+Keeper:
+- The am run reached each target ($1.35 / $1.35 / $1.25) under the $2 cap. The ledger agreed with the fake's own spend to within 1e-3.
+- The pm run made 0 new calls.
+- With an unreadable ledger, a rerun did not spend again (one blind spend per day), and the pm run skipped with exit 1.
+- Once the ledger read again, nothing was bought twice.
+- A primary deployment that returned 400 three batches in a row fell back to taxila-brain.
+- A ledger write lost after a batch left exit 1. The retry stayed under the cap.
+
+Verifier:
+- Read two Cost Management pages and printed M3-OK with streak 13 (start 2026-11-06, completes 2027-01-04).
+- One service dipping still held the clock (5 left) but alerted services-below-min and portfolio-under-floor. Two dipping alerted streak-reset; a missing ledger alerted ledger-missing; a 403 alerted cost-query-failed.
+
+The copies inside the self-contained jobs equal plan.js (toString for the verbatim ones, fixtures for the rest).
+
+Not measured: anything live. The session had no Azure credentials.
+
+
+<!-- merged from inbox/r7-studio-23.json -->
+### 2026-11-05 Scene withholding and rung (C1 Studio, code)
+Every value in all 20 pilots' captions, text parts and facts is detected by sceneShowsHeld. Seam cases pass: held key, asking move, card opening while a scene is up, unknown key. The rung reveals scene:equal-parts for an animation want on c4-maths-ch05-t01, never builds a spec for it, and is blocked over a held 1/4. M4 replay unchanged (guard arm: 0 stale, 0.943 at preferred rung).
+
+
+<!-- integration 7: write-ups from the inbox entries (the stream’s prose did not name the id) -->
+## `ms-r7-games-recert-2026-11-05`
+
+Play recertification on integration 4/5 (PiP fix), forge3-qa@2 at p360 / p412 / l1366, seeds 2, every art and 3D theme: 2928 samples, each recording box and game=true; 2928/2928 pass at every size after three view fixes. Per family: naksha 72, todo-jodo 152, taraazu 64, nishana 212, kyun-lab 144, kaal 88, kila 72, kon 80, nazariya 224, stambh 56, vakya 48, yantra 84, arena 1632. p360 box 320x524, p412 372x639, l1366 720x520. (2026-11-05; from inbox/r7-games-3.json)
+
+## `ms-r7-pilot-scripts-boards`
+
+Round 7 F: Studio's full whiteboard gate (certifyBoardRef W-checks, int/r6 integration 6) on every board of the three pilot lesson scripts. Run in-session, no model calls. Stand-in lines: an explain beat's point; the worked example's problem + step results + answer; a check's prompt with its key and accepted forms withheld (W9); a remediation's move. First run: 67 boards, 21 failed. With the kit passed to the gate (its vocabulary and numbers): 16 failed. The gate found 4 real defects, all fixed. (1) c4 s1/c2, W9: the check's bar wrote 1/3, its own answer; the board was removed and the prompt is self-contained. (2) c4 s2/c1, W4: the check's equal-groups board drew 6 per plate, a number the question never says; the board was removed. (3) c4 s1/rem2, W8: a 'roti' whole was cut by lines through its centre; it is now a circle in 4 equal sectors, and the move says so. (4) c4 s2/rem2, W4: the compare board's '7, 3, 3, 3' did not read as the move's numbers; it is now '7 + 3 + 3 + 3' in both, with 2 rows per side. Left: only W6 timing (8 boards) and W19 where W6 was its only end-state failure. W6 compares the board's length with the stand-in's length, not her real line; Studio re-times and re-gates each board against her real line at turn time. So tests/r7-learning-lesson-scripts.test.mjs enforces every W-check except W6 in CI, and also runs Brain's validateTopicScript (9/9 skills walkable, 0 errors). Answer keys and thenKeys are unchanged, so the blind verification (ms-r7-pilot-scripts-blind) stands. Date 2026-11-05. (2026-11-05; from inbox/r7-learning-18.json)
+
+## `ms-r7-test-all-2026-11-05`
+
+499 suites at int/r6 4c5b4bed, one node --test process each, 4 at a time on the 4-core container: 532 s wall; serial total 1,986 s. Single-process npm test took about 32 min (main, integration 6). Slowest suites: kit-budget 312 s (15.7% of serial time), studio-stage-states 112 s, r4-latency-outbox-late 111 s, forge-g2 94 s, brain-turn 92 s, w2b-whiteboard-browser 84 s, migrations-applied 60 s (a 60 s reachability probe, now 10 s), studio-qa 49 s, and four DB suites at about 45 s each. The fixes went to the owners through main. Only r5-edit-supersede-db failed in isolation: it needs model keys when a TEST DB is set, and Brain is making it skip without them. (2026-11-05; from inbox/r7-platform-5.json)

@@ -8,7 +8,11 @@
   }
  ],
  "edges": [
-  { "src": "ms-r7-pilot-scripts-boards", "rel": "measured_by", "dst": "dc-r7-pilot-scripts-format" }
+  {
+   "src": "dc-r7-pilot-scripts-format",
+   "rel": "measured_by",
+   "dst": "ms-r7-pilot-scripts-boards"
+  }
  ],
  "md": {
   "decisions": "## dc-r7-script-pipeline (2026-11-05, F Learning)\n\nThe pilot path is now one pipeline per topic.\n\n**Check.** `scripts/lesson-scripts/check.mjs` runs three gates and exits 1 on any error:\n- **S, structure against the kit:** kit skills in kit order; real misconceptions and same-skill items; a full worked example; 2-3 checks that never print their key, including a one-character key; no counting remediation; every kit misconception checked; board params in range; number-line checks that ask, never show.\n- **W, Studio's certifyBoardRef W-checks** on every board, judged against a stand-in for her line. W6 timing is reported, not failed, because Studio re-times and re-gates against her real line at turn time.\n- **V, Brain's validateTopicScript.**\n\n`--blind` writes the key-free packet for the separate solver agent. `tests/r7-learning-lesson-scripts.test.mjs` runs the check on every file in data/lesson-scripts/, so a later kit, board or validator change that breaks a script turns CI red.\n\n**Ranking.** With no real usage yet, expected traffic is estimated from how the Conductor routes a child: the class sequence, plus prerequisite revisits. Topics are ranked by how many class 4-7 maths topics have them in their prerequisite closure, then class, then chapter order. The top of the list is c4 numbers up to 9999 (24 dependents), c4 right angles and circles (20) and c5 angles as turning (19). Replace it with real pick counts (lesson.topic_id) once lessons run.\n\n**Batch.** At most one more topic is authored now, as the pipeline test. The 30-topic batch waits for director4.",

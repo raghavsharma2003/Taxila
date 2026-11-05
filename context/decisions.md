@@ -7453,3 +7453,186 @@ scripts on today's walk would be thirty times as many beats walked and not taugh
 **Reverse if:** director5 still shows beats walked but not taught with R1–R4 in place. Then the reply model's freedom is the
 problem, and the next step is speaking the authored Hinglish lines nearly verbatim, with slots filled. The model would
 only handle off-script turns.
+
+
+<!-- merged from inbox/r7-app-10.json -->
+## dc-r7-app-notebook-jar
+When she says 'let's come back to that', the child can see that she meant it. The questions she parked wait in the Notebook, and once she has answered one in a later lesson it stays, struck through with the day. Nothing is counted, so the jar never turns into a to-do list.
+
+
+<!-- merged from inbox/r7-app-8.json -->
+## dc-r7-app-debrief-reflect-emote
+The end of a lesson now asks one optional question and offers one optional goodbye. 'What helped?' only appears when there was a real choice of supports, so it never asks about a lesson that was just talk. The answer is a preference that nudges her next comparable choice; it is not shown to parents and is never reported as what works for the child. The thank-you line makes no promise of memory, because the memory consent may be off. The goodbye has three closed options, one per lesson, and she may mention it once next time, never as a guilt hook.
+
+
+<!-- merged from inbox/r7-app-9.json -->
+## dc-r7-app-notebook-made
+What she builds for a child should not disappear when the lesson ends. Made for you is the child's shelf of those pieces: the games, animations and simulations she made for them, ready to play again. Plain boards stay on the Lessons page. The Home's and the Debrief's links now land on the piece itself. A replay is play, not a lesson: it opens no stream and records nothing.
+
+
+<!-- merged from inbox/r7-face-11.json -->
+## dc-r7-face-r8-extended-bilabials (2026-11-05)
+This is independent of the owner's look decision (main: "keep going on whatever doesn't depend on the route choice"). The owner's face-review page listed it as an open option.
+- **Before.** The extended b / m / p rule (visemes.ts `addBilabialsExtended`) seals every b / m / p word, including those that Azure's viseme stream and the base text rule miss: "dhoop", "carbon", "about", "tum", "lagbhag", "खुशबू", "Shabash", "Ab", "vaashpikaran". The stage switched it on for a key-rig look (lamp2) only. r8, the default for every child, kept the base rule.
+- **Now.** `VisemeScheduler.extendedBilabials` defaults to true (track.ts), so every look uses the extended rule. The stage only adds the key rig's own lead (KEY_LEAD_MS). `resolveVisemes` without options still uses the base rule (the battery and the tests use both).
+- **Why it is safe on r8.** On r8's own drawing path the extended rule adds no closure the audio does not ask for, and it does not move the mouth's timing (`ms-r7-face-r8-bilabial-battery-2026-11-05`).
+- **Reversal condition.** A real-phone or owner viewing finds r8's added closures read as stutters in fast speech. In that case set the default back to false. It is one line.
+
+
+<!-- merged from inbox/r7-games-3.json -->
+### Round 7 Games (C2), 2026-11-04/05
+
+- **E4 Kila** (factors, multiples, LCM) and **naksha** (maps and grids: lat/long, routes, compass, scale, grid shapes) are law families. Together they add 8 class 4-7 topics: 3 for Kila and 5 for naksha, one of them SST.
+- **Yantra 3D** renders beam, circuit and pendulum from one engine.
+- **Play under the PiP:** a play box keeps its whole size under the teacher's PiP. The PiP corner is a keep-out zone that PlayStage reads live from `.st-box` (Studio 4583e85c, Games 8b347c051).
+- **Certification certifies the game.** play-cert records the box and the mounted view per size and fails a twin (`twin:layout` / `twin:no-stage`). It checkpoints after each coverage entry and resumes with `--resume`.
+
+
+<!-- merged from inbox/r7-learning-19.json -->
+## dc-r7-script-pipeline (2026-11-05, F Learning)
+
+The pilot path is now one pipeline per topic.
+
+**Check.** `scripts/lesson-scripts/check.mjs` runs three gates and exits 1 on any error:
+- **S, structure against the kit:** kit skills in kit order; real misconceptions and same-skill items; a full worked example; 2-3 checks that never print their key, including a one-character key; no counting remediation; every kit misconception checked; board params in range; number-line checks that ask, never show.
+- **W, Studio's certifyBoardRef W-checks** on every board, judged against a stand-in for her line. W6 timing is reported, not failed, because Studio re-times and re-gates against her real line at turn time.
+- **V, Brain's validateTopicScript.**
+
+`--blind` writes the key-free packet for the separate solver agent. `tests/r7-learning-lesson-scripts.test.mjs` runs the check on every file in data/lesson-scripts/, so a later kit, board or validator change that breaks a script turns CI red.
+
+**Ranking.** With no real usage yet, expected traffic is estimated from how the Conductor routes a child: the class sequence, plus prerequisite revisits. Topics are ranked by how many class 4-7 maths topics have them in their prerequisite closure, then class, then chapter order. The top of the list is c4 numbers up to 9999 (24 dependents), c4 right angles and circles (20) and c5 angles as turning (19). Replace it with real pick counts (lesson.topic_id) once lessons run.
+
+**Batch.** At most one more topic is authored now, as the pipeline test. The 30-topic batch waits for director4.
+
+
+<!-- merged from inbox/r7-learning-21.json -->
+## dc-r7-question-jar-wired (2026-11-05, F Learning)
+
+Item 8's Learning half (migration 037, learner/jar.js, plan.jar, promisesDue, the promise_kept handler) has been in since week 2, but Brain never applied patch 004. Nothing called jarWriteStmts, answerStmts or keptEvents, and the Director never read learnerView.jar. That is the cross-lesson half of director3's 'promises not kept' finding.
+
+Patch 004b is a real diff against Brain's head, checked with git apply --check. Brain's full gates pass with it applied: tsc, vite and four shards. It changes:
+- **routes/lesson.js:** the start carries the hook in and keeps what the opening served; the end writes the jar, never from a safeguarded lesson, with its rows before the Conductor's.
+- **director/state.js:** the warm-up start serves the first carried entry.
+- **director/shapes.js:** a new returnJar shape.
+- **brain/turn.js:** a carried entry served at a later boundary is kept in the turn's transaction.
+- **tests/w2-seams.test.mjs:** the tx-order assertion allows the jar rows.
+
+tests/r7-brain-question-jar.test.mjs proves the three behaviours: a parked question reaches the jar; the next lesson opens on it; promise_kept closes the Conductor's promise. Main sends the patch to Brain with the director4 verdict, so director4 measures one change.
+
+
+<!-- merged from inbox/r7-learning-24.json -->
+## dc-r7-reactive-child (2026-11-05, F Learning)
+
+Director4's scripted child had 10 fixed replies, was never right in c4, and could not reach the later beats. Most of the 'answers ungraded' and 'remediation skipped' findings could not be judged with it.
+
+evals/child-sim/reactive.mjs replaces it for director5. Over 20 seeds the test shows each persona answers right, answers wrong from a kit misconception, and plays every event within 20 turns. The stuck child is right markedly less often than the steady one. The input shape is the one Brain offered from its harness, so wiring it is a one-call change per turn.
+
+
+<!-- merged from inbox/r7-learning-25.json -->
+## dc-r7-term-report (2026-11-05, F Learning)
+
+The term report is the monthly report stretched over a school term, plus S14 'Then → now' and a still-learning count.
+
+**Window.** T1 runs from 1 Apr to 30 Sep and T2 from 1 Oct to 31 Mar. A term is named by the year it starts (`2026-T2`). Learning days run from 04:00 to 04:00 local time, as every other cadence does. The night fold of 30 Sep or 31 Mar enqueues `parent.term:{child}:{term}`, once per child and term.
+
+**S14 rule (RP-D6, fixed before any child's data).** For each titled skill, it takes the scored answers in the term and groups them by learning month. The first and last months with at least 10 answers must be at least 2 calendar months apart. A row needs the first-try-unaided rate to RISE by at least 0.2, with P(now > then) ≥ .95. That threshold becomes .975 when more than 4 skills were compared, which corrects for multiple comparisons. P comes from independent Beta(1+k, 1+n−k) posteriors, computed exactly by a closed-form sum. A test pins it against a seeded Monte Carlo. Rows are sorted by rise and capped at 4. A fall is never a row, and neither is a rise below the floor. The line shows only the two months and their counts ('in Oct, 3 of 12 … in Dec, 11 of 12'). The admitting rule lives in the 'how this is counted' copy, never in a verdict word.
+
+**Still learning.** The still-learning line counts every other titled skill with scored answers in the term. It says nothing about direction.
+
+**Checker.** check.js re-reads the term's rows and groups them by month with its own code. It recomputes the comparison count, months, n/k, the cited set, the rise and P.
+
+**Deferred: S18 (the child's own reflection quote and the parent's reply).** The child's words need Brain to collect the reflection in the lesson and record consent for showing them. The parent line needs a free-text slot, which the P-STRUCT gate forbids by design. Both wait for an owner call.
+
+
+<!-- merged from inbox/r7-learning-26.json -->
+## dc-r7-jar-notebook-read (2026-11-05, F Learning)
+
+The Notebook's 'Questions in the jar' page shows the child's own kept questions and shares. The plan's jar summary carries only a waiting count, so App asked for the items themselves. `GET /api/child/jar` reads question_jar through `jarNotebook()` in server/learner/jar.js. Waiting items come oldest first, then up to 10 answered items newest first, each with its answered date. There are no counts. Under the Conductor's safety hold the list is empty, which matches the home screen hiding the jar. A missing table returns an empty page, not a 500.
+
+## dc-r7-kit-budget-split (2026-11-05, F Learning)
+
+The prompt-budget proof over every kit item is unchanged; only its packaging changed. The test now runs as nine per-class files and one lint file, so the shard runner can run them in parallel. The 1% drop bound stays global. Classes 8-9 alone are over 1% of their own items: a content finding to shorten those items, not a gate change.
+
+
+<!-- merged from inbox/r7-m3-1.json -->
+## dc-r7-m3-credit-unlock (2026-11-05, round 7 M3)
+
+Milestone 3 ($25,000 plus a 2-year extension) needs at least 5 Azure workloads, each at or above $1 every day for 60 continuous days (fd-r7-m3-rule-2026-11-05). On 2026-10-24 only Container Apps and PostgreSQL held that (ms-azure-spend-2026-10-24). We count a workload as one Cost Management ServiceName. Microsoft does not say how it counts, so this is a proxy. It is also why we carry 2 spares.
+
+The portfolio has 7 services:
+- **Container Apps.** taxila-web is always on. `apply` only checks minReplicas >= 1.
+- **PostgreSQL.** taxila-cin-pg, $6.30/day. An owner-gated `--pg-downsize` refuses any SKU under $1.25/day; B2s is $2.63.
+- **Container Registry.** taxilacr moves to Premium, $1.67/day. Standard is $0.67, too low.
+- **Foundry Models, Foundry Tools and Storage.** One ACA job, m3-keeper, runs at 03:17 and 15:17 UTC. It spends chat tokens on DEPLOY_FAST, Speech neural TTS characters, and List Blobs operations, to $1.35 / $1.35 / $1.25 under a $2 cap per lane.
+- **Virtual Machines.** Owner-gated: D2as_v5 at $1.33/day in a new RG, no public IP, no inbound rule.
+
+Rules for the keeper:
+- Spend is computed from what each API reports.
+- A per-day ledger blob carries write-ahead pending amounts, so a crash or a lost write can only under-spend.
+- An unreadable ledger means one blind spend in the am run and a skip in the pm run.
+
+m3-verify runs daily inside Azure and needs no Claude session:
+- It reads 66 days of Cost Management by ServiceName.
+- It computes the strict clock: one fixed set of >= 5 services, each >= $1, on every closed day.
+- It alerts the Owner role when fewer than 6 services held $1, a portfolio service was under $1.10, the keeper ledger was short, or the clock reset.
+
+Cost: +$5.51/day (6 services) to +$6.93/day (7). The downsize saves $3.67/day.
+
+Why this design:
+- Fixed resources are cheapest per service but give no per-day control.
+- A keeper job gives exact daily spend on the token- and operation-billed services.
+- The VM and the second AI service are the hedge against Microsoft counting differently.
+
+Reverse if:
+- Microsoft changes or clarifies the rule (counts by resource, meter or category);
+- Cost Management shows Foundry Models and Foundry Tools as one service;
+- the 180-day deadline has passed (open-r7-m3-verification-deadline);
+- or the remaining credit cannot cover the 60 days without converting the subscription to pay-as-you-go.
+
+Constrained by dc-owner-2026-10-27-azure-soft: the owner says yes to `--vm` and `--pg-downsize`; nothing is deleted.
+
+
+<!-- merged from inbox/r7-studio-23.json -->
+### 2026-11-05 Scenes never play over a live card (C1 Studio)
+A code-built scene can show a value or word a card asks, so it never comes up while a keyed card or check is live, never when the live key is unknown (fail closed), and never showing a held value (rational equality). It is enforced at every place a scene can appear: compose, pending slot, Stagecraft merge, reveal, and on screen. Reversal: a value-free scene proves necessary during a card.
+
+### 2026-11-05 Stagecraft scene rung (C1 Studio)
+The 20 pilot scenes are Stagecraft animation archetypes (no spec builds, $0), ranked ahead of the topic's Studio v2 animation, so a plan-led animation want shows the scene. Script-beat scenes (ExplainBeat.scene) wait for the director4 judgement; the schema patch to Brain (011) is drafted. Reversal: scenes crowd out the live board on explanation beats.
+
+
+<!-- integration 7: write-ups from the inbox entries (the stream’s prose did not name the id) -->
+## `dc-r7-games-kila`
+
+E4 Kila: turn-based tower defence over the periodicity law (a tower on square p fires on p, 2p, 3p…; the wave moves only on next / run). Modes multiples (mark / guard / common), factors (all), lcm (meet); budget = answers + 2 so 'build everything' cannot win. New law topics: c4-maths-ch03-t01, c5-maths-ch13-t01, c5-maths-ch13-t02. Why: factors/multiples was the largest maths gap served only by ITEM-ARENA. Reverse: a child pilot shows the tower frame hides the factor/multiple distinction. (2026-11-04; from inbox/r7-games-3.json)
+
+## `dc-r7-games-naksha`
+
+naksha (maps and grids) as one law family for SST lat/long and the maths grid/route/scale topics: locate (drone to a lat/long crossing), route (steps / compass with a rotated north / turns relative to heading), scale (fuel for road cm x scale; where D km runs out), shape (fence a copy on a dot plot; a turn counts, a flip does not). 5 topics: c6-sst-ch01-t01, c4-maths-ch01-t03, c4-maths-ch02-t02, c5-maths-ch14-t01, c5-maths-ch14-t02. Why: one mechanic serves the only class 4-7 SST grid topic and four uncovered maths topics. Reverse: the kits' grid skills split into mechanics that do not share a board. (2026-11-04; from inbox/r7-games-3.json)
+
+## `dc-r7-games-yantra3d-all`
+
+Yantra 3D renders all three laws (beam, circuit, pendulum) from one engine entry, dispatching by mode: circuit as a workbench of brass posts (current beads follow the law's loop; a spark plus the law's reason otherwise), pendulum as a lab stand with four bobs of visibly different mass and a beat bell (the law's own period, no formula). Why: one engine keeps the theme pack and certification in one place. Reverse: a mid-range Android cannot hold the three scenes in one chunk. (2026-11-04; from inbox/r7-games-3.json)
+
+## `dc-r7-games-pip-keep`
+
+A play piece keeps its whole box (>= MIN_BOX 300x440) under the teacher's PiP; StudioStage names the covered bottom-right corner on .st-box (data-pip-keep, --pip-keep-w/h) and PlayStage reads it live, the controls reserving that corner (right padding + min-height). Why: 6e1036a37's lift/fit handed play 263x432 at p360 and every game fell back to its text twin. Reverse: the PiP moves out of the slot on phones. (2026-11-04; from inbox/r7-games-3.json)
+
+## `dc-r7-games-cert-twin-guard`
+
+A play certificate certifies the GAME: play-cert judges each size on its own, records the box and whether the play stage mounted, and fails twin:layout / twin:no-stage; tests/r7-games-cert-twin.test.mjs holds it. play-cert checkpoints after every coverage entry and --resume skips entries already judged in this format (container restarts lost whole families). Why: the p360 twin passed as the game after 6e1036a37. Reverse: never; a twin that passes as a game is a silent lie. (2026-11-04; from inbox/r7-games-3.json)
+
+## `dc-r7-gate-test-all`
+
+The commit gate is `npx tsc -b && npx vite build && npm run test:all`. test:all runs every suite in its own node --test process, 4 at a time, about 9 minutes on 4 cores (532 s for 499 suites), against about 32 minutes for the single-process npm test. The two runs execute exactly the same tests. They differed in one way: state shared between files in one process. tests/test-isolation.test.mjs now refuses module-level env and global writes, and its known-debt list is empty. The main loop's integration step still runs single-process `DATABASE_URL= npm test`, which is what catches any remaining cross-file state (as the r7-brain-step-check and r1443 leaks showed). Main approved it on 2026-11-05. Reverse (go back to single-process npm test as the commit gate) if a cross-file leak reaches int/r6 more than once in a round after passing test:all but failing single-process npm test. (2026-11-05; from inbox/r7-platform-5.json)
+
+## `dc-r7-scene-withholding`
+
+Main: answer leaks are zero-visible-failure. A code-built scene never plays while a keyed card or check is live (asking move, or patch 010 itemOpen), never when the live key is unknown (L.held null: fail closed), never while any value is withheld, and never when it shows a held value (sceneShowsHeld, rational equality). Enforced at composeAsk, at the pending slot, at Stagecraft merge, at reveal and on screen. (2026-11-05; from inbox/r7-studio-23.json)
+
+reversal: a scene authored with no values and no answer words turns out to be needed during a card (then a scene-level 'valueFree' flag, still never over a word key)
+
+## `dc-r7-stagecraft-scene-rung`
+
+Each pilot scene is a Stagecraft animation archetype scene:<id> (noSpec: never a generated spec; boost: ranked ahead of the topic's Studio v2 animation), built by the instant rung, certified with the scene rule, slotted as a 'scene' artifact. Script-beat scenes (ExplainBeat.scene { topic }, Brain patch 011) wait for the director4 judgement. (2026-11-05; from inbox/r7-studio-23.json)
+
+reversal: director4 or the owner find scenes crowd out the live board on explanation beats (then drop boost, keep scenes for asks only)
