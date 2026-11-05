@@ -6,6 +6,8 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { normalizeScript, moveShift, settledScript, opGeometry } from "../shared/whiteboard.js";
 import { gateWhiteboard } from "../server/studio/qa/whiteboard.js";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 const base = (ops) => ({ v: 1, scriptId: "s", line: { lessonId: "L" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 2200, ops });
 const halves = [
@@ -63,6 +65,9 @@ test("withSplit: a whole cut into equal sectors splits outward after it is drawn
   assert.equal(withSplit(base([ring, ...halves, { id: "h", op: "highlight", target: "o", style: "pulse", startMs: 1200, endMs: 1500 }])).ops.some((o) => o.op === "erase"), false);
 });
 
+// (the kit path: c5-ch02-t02 has a lesson script since integration 7; this test is about the kit's board, scripts off)
+describe("the day-4 board that moves (kit path: lesson scripts off)", () => {
+kitPath();
 test("the day-4 board that moves: the fraction-parts board for 'fractions' is preselected SPLITTING (its answer masked as before)", async () => {
   const { initLessonState, step } = await import("../server/director/state.js");
   const { kitFromFile } = await import("../server/content/kits.js");
@@ -77,6 +82,7 @@ test("the day-4 board that moves: the fraction-parts board for 'fractions' is pr
   const p = bf.preselect(ask, { kit });
   assert.ok(p, "a board is preselected");
   assert.ok(p.script.ops.filter((o) => o.op === "move").length >= 2, "and it moves");
+});
 });
 
 test("the number-line jump: the dot hops along each arrow, the hops add up (there and back stays on the board), and the board passes the gate", async () => {
