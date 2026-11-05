@@ -1,4 +1,4 @@
-// Round 7 F (dc-r7-script-walk-v2): the four pilot scripts in schema v2, staged in data/lesson-scripts-v2/ until Brain's v2
+// Round 7 F (dc-r7-script-walk-v2): the four pilot scripts in schema v2, live in data/lesson-scripts/ since integration 8 (staged in -v2 until Brain's v2
 // validator reaches this tree (integration 7) and Studio's W10 gap count reads fraction-line@1; then they replace the v1
 // files in data/lesson-scripts/ and the full S/W/V check (tests/r7-learning-lesson-scripts.test.mjs) runs on them.
 // Here: Learning's v2 structure rules (F1 Hinglish Said fields, F2 a keyed ask ending every explain beat, F3 the worked
@@ -9,7 +9,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { kitTopic, structureErrors, leaks, saidErrors } from "../scripts/lesson-scripts/check.mjs";
 import { INTERESTS } from "../server/persona/signals.js";
 
-const DIR = new URL("../data/lesson-scripts-v2/", import.meta.url);
+const DIR = new URL("../data/lesson-scripts/", import.meta.url);
 const files = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort();
 
 test("the four v2 pilots are staged", () => {
