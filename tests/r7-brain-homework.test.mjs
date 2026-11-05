@@ -8,10 +8,14 @@ import * as SH from "../server/director/shapes.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const begin = (ctx) => step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", ...ctx }, seed: 3, now: 0 }), { event: "start", kit: K, now: 0 });
 
+describe("r7-brain-homework (kit path: lesson scripts off)", () => {
+kitPath();
 test("a homework start is let through like an Ask on a done day, and refused like every start on a safety hold", () => {
   assert.equal(startRefusal("done", "homework", { limits: true }), null);
   assert.equal(startRefusal("safety_hold", "homework", { limits: true }), "lessons are paused for now");
@@ -33,4 +37,5 @@ test("homework: the method first (never their answer), then a worked look-alike;
   // a plain Ask still answers their question
   const ask = begin({ purpose: "doubt", askText: "perimeter kya hota hai?" });
   assert.doesNotMatch(ask.move.shape, /never solve it/);
+});
 });

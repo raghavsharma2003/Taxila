@@ -19,6 +19,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts } from "../server/brain/say.js";
 import { saidMust } from "../server/director/script.js";
+import { createReactiveChild, MIN_TURNS } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
@@ -108,7 +109,9 @@ async function classOf(state, kit, text, classLevel) {
 }
 
 /** One lesson on one lane: the opening, then every scripted line. */
-async function lesson(lane, kit, classLevel, lines) {
+async function lesson(lane, kit, classLevel, lines, persona = null) {
+  // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit }) : null;
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
   let r = step(initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
@@ -133,7 +136,22 @@ async function lesson(lane, kit, classLevel, lines) {
   rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
-  for (const [i, text] of lines.entries()) {
+  const MAX = child ? MIN_TURNS + 10 : lines.length;
+  let lastBoardUp = false;
+  for (let i = 0; i < MAX; i++) {
+    let text = lines?.[i];
+    let leaving = false;
+    if (child) {
+      const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const card = live ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
+      const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: live.scriptAsk.wrongIfMis ?? null }
+        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null } : null;
+      const sb = s.lastMove?.scriptBeat;
+      const out = child.reply({ turn: i, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
+        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card, ask, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish" });
+      text = out.text; leaving = out.kind === "leave";
+    }
+    if (text == null) break;
     const now = (i + 1) * 20_000;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
@@ -221,6 +239,8 @@ async function lesson(lane, kit, classLevel, lines) {
       gate: { delivered, answered, verdictGiven, contradictions },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
+    lastBoardUp = boardUp;
+    if (child && (leaving || p.r.end)) break;
     if (p.r.end) break;
   }
   return rows;
@@ -233,21 +253,24 @@ const md = (name, topic, A, B) => {
 };
 
 const MATRIX = process.argv.includes("--matrix");
+// H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
+const REACTIVE = process.argv.includes("--reactive");
 const runs = MATRIX
-  ? MATRIX_TOPICS.flatMap(([topicId, classLevel]) => ["steady", "offtopic", "stuck", "steering"].map((name) => ({ topicId, classLevel, name })))
+  ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => ["steady", "offtopic", "stuck", "steering"].map((name) => ({ topicId, classLevel, name })))
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
 for (const { topicId, classLevel, name: scenario } of runs) {
   const kit = kitFromFile(getTopic(topicId));
-  const name = MATRIX ? `${scenario}-c${classLevel}` : scenario;
+  // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
+  const name = MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
   // one lane after the other, so neither lane's latency is measured while the other is calling
   // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
   const AGENT_ONLY = process.argv.includes("--agent-only");
-  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario]);
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
   // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
   const DIRECTOR_ONLY = process.argv.includes("--director-only");
-  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario]);
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));

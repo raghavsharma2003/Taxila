@@ -10,6 +10,8 @@ import { findItem } from "../server/director/items.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 const RANI = kitFromFile(getTopic("c6-maths-ch06-t01"));
 // the full worked example (no faded step planned), so the worked parts hand steps to the child
@@ -27,6 +29,8 @@ const reply = (r, text) => {
   return { r: step(r.state, { event: "turn", kit: K, cls: res, text, now: 999_000 }), item, outcome: res.outcome };
 };
 
+describe("r7-brain-step-check (kit path: lesson scripts off)", () => {
+kitPath();
 test("the keyed step: the next kit step's result is the key; a step with no result in code is not a check", () => {
   const we = RANI.workedExample;
   assert.equal(stepCheckItem(RANI, "s1", we, 0), null, "'One round is the perimeter of the park.' has no result");
@@ -74,4 +78,5 @@ test("kill switch TAXILA_R7_STEP_CHECK=off: the worked part asks in her own word
     assert.equal(r.move.itemId, undefined);
   } finally { delete process.env.TAXILA_R7_STEP_CHECK; }
   assert.equal(ackCloseOn({}), true);
+});
 });

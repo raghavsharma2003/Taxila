@@ -9,10 +9,13 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const FLAGS = ["TAXILA_R7_ONE_LIVE", "TAXILA_R7_PARK_TOPIC", "TAXILA_R7_FRUSTRATION", "TAXILA_R7_BYE_CHECKIN"];
 const KEEP = {};
+describe("r7-brain-s3-live (kit path: lesson scripts off)", () => {
+kitPath();
 describe("S3: one live item", () => {
   beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } });
   afterEach(() => { replyDeps.chat = chat; for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
@@ -57,4 +60,5 @@ describe("S3: one live item", () => {
     L.t("theek hai");
     assert.notEqual(L.r.move.itemId, card);
   });
+});
 });

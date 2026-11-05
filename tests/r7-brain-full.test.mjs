@@ -8,9 +8,12 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
 const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
 const R7_KEEP = {};
+describe("r7-brain-full (kit path: lesson scripts off)", () => {
+kitPath();
 describe("r7-brain-full: the Director block after the full hybrid run", () => {
 beforeEach(() => { for (const k of R7_FLAGS) { R7_KEEP[k] = process.env[k]; delete process.env[k]; } });
 afterEach(() => { replyDeps.chat = chat; for (const k of R7_FLAGS) { if (R7_KEEP[k] === undefined) delete process.env[k]; else process.env[k] = R7_KEEP[k]; } });
@@ -195,5 +198,6 @@ test("director2 c6: made-up diagnosis, mixed-script word, 'words mein dekho', un
   const st = { ...r.state, lastUi: { ...(r.state.lastUi ?? {}), chips: [{ id: "req:visual", label: "Picture" }, { id: "req:story", label: "Kahani" }, { id: "req:game", label: "Game" }] } };
   const two = step(st, { event: "turn", kit: C6, cls: NE, text: "2", now: (st.turn + 1) * 20_000 });
   assert.equal(two.move.request, "story");
+});
 });
 });

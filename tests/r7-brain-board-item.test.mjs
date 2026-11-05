@@ -9,7 +9,11 @@ import { preselect } from "../server/stagecraft/board-first.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
+describe("r7-brain-board-item (kit path: lesson scripts off)", () => {
+kitPath();
 test("a teach-phase picture ask is drawn from the worked example's faded step; the move's own card wins when there is one", () => {
   const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
   let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish" }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
@@ -22,4 +26,5 @@ test("a teach-phase picture ask is drawn from the worked example's faded step; t
   assert.equal(pick?.template, "measured@1");
   // no picture ask, no card: no item (the board as before)
   assert.equal(boardItemOf({ lastMove: { kind: "explain" }, fadeItem: r.state.fadeItem }, K, findItem), null);
+});
 });

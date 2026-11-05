@@ -265,10 +265,11 @@ export function scriptFor(kit) {
   if (!id || !scriptOn()) return null;
   if (!loaded.has(id)) {
     let sc = loaded.has(`test:${id}`) ? loaded.get(`test:${id}`) : undefined;
-    // under node --test the files are read only with TAXILA_R7_SCRIPT=on, so the kit-path suites stay as written when
-    // scripts land in data/lesson-scripts; a test that walks a script sets one with setScriptForTest
-    const fileOk = !process.env.NODE_TEST_CONTEXT || /^on$/i.test(String(process.env.TAXILA_R7_SCRIPT ?? ""));
-    if (sc === undefined && fileOk) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, SCRIPT_DIR), "utf8")); } catch { sc = null; } }
+    // (loading is decided by TAXILA_R7_SCRIPT alone, never by how the process was started: a kit-path test pins it off in its
+    // own hooks; a test that walks a script sets one with setScriptForTest)
+    // (TAXILA_R7_SCRIPT_DIR: another folder of scripts, e.g. a run on staged v2 scripts; explicit, never inferred)
+    const dir = process.env.TAXILA_R7_SCRIPT_DIR ? new URL(`file://${process.env.TAXILA_R7_SCRIPT_DIR.replace(/\/?$/, "/").replace(/^(?!\/)/, `${process.cwd()}/`)}`) : SCRIPT_DIR;
+    if (sc === undefined) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, dir), "utf8")); } catch { sc = null; } }
     sc ??= null;
     const v = sc ? validateTopicScript(sc, kit) : null;
     loaded.set(id, v?.ok.length && WALK_VERSIONS.has(Number(sc.version ?? 1)) ? { script: sc, ok: new Set(v.ok) } : null);
