@@ -16,6 +16,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -29,6 +30,9 @@ export const scriptOf = (topicId) => JSON.parse(readFileSync(join(SCRIPTS, `${to
 export const allTopics = () => readdirSync(SCRIPTS).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
 /** Board parameter ranges (Studio's templates, server/forge/explainer/templates.js and board-ref.js). */
+/** A board whose template has no range rule here is left to Studio's own resolver and gate (certifyBoardRef), as long as
+ *  Studio lists it as a maths template (BOARD_REFS): never refused only because this file does not know it yet. */
+export const rangeOk = (b) => (RANGE[b.template] ? RANGE[b.template](b.params ?? {}) : BOARD_REFS[b.template]?.subject === "maths");
 export const RANGE = {
   "fraction-parts@1": (p) => p.parts >= 2 && p.parts <= 12 && p.shade >= 0 && p.shade <= p.parts,
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
@@ -117,7 +121,7 @@ export function structureErrors(s, kit) {
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move)) e.push(at("remediation falls back to counting"));
     }
     for (const b of beatsOf(k, s.version ?? 1)) {
-      if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
+      if (!rangeOk(b.board)) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
     }
   }
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
@@ -277,7 +281,7 @@ export function structureErrorsV2(s, kit) {
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move ?? "")) e.push(at("remediation falls back to counting"));
     }
     if (k.bridgeToNext != null) e.push(...saidErrors(k.bridgeToNext, at("bridgeToNext")));
-    for (const b of beatsOf(k, 2)) if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
+    for (const b of beatsOf(k, 2)) if (!rangeOk(b.board)) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
   }
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
   const checked = new Set(s.skills.flatMap((k) => [...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)]).filter(Boolean));

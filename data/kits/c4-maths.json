@@ -9858,6 +9858,35 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch06-t01-i19",
+     "skillId": "c4-maths-ch06-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Which is longer: a rope 80 cm long or a rope 1 m long?",
+     "prompt_hi": "Kaunsi rassi lambi hai: 80 cm wali ya 1 m wali?",
+     "answer": "The 1 m rope (1 m = 100 cm, more than 80 cm)",
+     "acceptable": [
+      "1 m",
+      "1 m wali",
+      "the 1 m rope",
+      "1 m wali rassi"
+     ],
+     "targetsMisconception": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "hints": [
+      "Look at the units, not only the numbers.",
+      "How many cm make 1 m?",
+      "1 m = 100 cm. Compare 100 cm with 80 cm.",
+      "The 1 m rope: 100 cm is more than 80 cm."
+     ],
+     "verified": {
+      "solverAnswer": "1 m rope",
+      "agrees": true,
+      "note": "Learning in-session 2026-11-05 (staged script ladder needs a third s3 rung): 1 m = 100 cm > 80 cm."
+     },
+     "demand": "reason",
+     "tooEasy": false
     }
    ],
    "workedExample": {
@@ -14474,6 +14503,32 @@
       "solver": "DeepSeek-V4-Pro",
       "date": "2026-10-04"
      }
+    },
+    {
+     "id": "c4-maths-ch09-t01-i19",
+     "skillId": "c4-maths-ch09-t01-s3",
+     "kind": "predict",
+     "difficulty": 2,
+     "prompt_en": "6 × 7 = 42. Without multiplying again, what is 6 × 8?",
+     "prompt_hi": "6 × 7 = 42 hai. Dobara guna kiye bina batao: 6 × 8 kitna hoga?",
+     "answer": "48 (42 + 6)",
+     "acceptable": [
+      "48",
+      "42 + 6 = 48"
+     ],
+     "hints": [
+      "Going from × 7 to × 8 adds one more group.",
+      "How big is each group in the 6 table?",
+      "Add one more group of 6 to 42.",
+      "42 + 6 = 48."
+     ],
+     "verified": {
+      "solverAnswer": "48",
+      "agrees": true,
+      "note": "Learning in-session 2026-11-05 (staged script ladder needs a third s3 rung): 6 × 8 = 48 = 42 + 6."
+     },
+     "demand": "reason",
+     "tooEasy": false
     }
    ],
    "workedExample": {
