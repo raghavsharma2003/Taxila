@@ -576,15 +576,23 @@ export interface ChildMapSkill {
   state: MapState;
   /** A re-check the server scheduled (weave queue / a missed delayed check): the sunbird / return arrow. Never from time alone. */
   recheckScheduled: boolean;
+  /** Round 7 F (K-P5): when the map first saw this skill secure (ISO); null = not secure, or secure before 046 (time unknown). */
+  secureSince?: string | null;
 }
 export interface ChildMapResponse {
   mode: "garden" | "sky"; hidden: boolean;
   subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean; school?: boolean;
+    /** Round 7 F (B2-4): when the map FIRST saw this chapter sealed (ISO), kept on a dip; null = not sealed now, or unknown. */
+    sealedAt?: string | null;
     secure: number; total: number; topics: { id: string; title: string; skills: ChildMapSkill[] }[] }[] }[];
   /** Flat list (src/child/api.ts reads `skills`). */
   skills: ChildMapSkill[];
   empty: boolean;
 }
+
+/** GET/PUT /api/child/equip (round 7 F, app-world-hangar-depth): the Hangar cosmetics, catalog item ids per slot. */
+export type EquipSlot = "hull" | "trail" | "board" | "rim" | "emote";
+export interface ChildEquip { equipped: Partial<Record<EquipSlot, string>> }
 
 /** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
 export interface TtsRequest { lessonId: string; seq: number }

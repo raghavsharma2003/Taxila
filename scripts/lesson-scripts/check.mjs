@@ -70,7 +70,10 @@ export function beatsOf(skill, version = 1) {
       ...skill.explain.map((e) => ({ id: e.id, board: e.board, line: [said(e.point), ...(e.mustSay ?? []).map(said)].join(" "), withhold: { values: [e.ask?.key].filter(Boolean) }, check: false })),   // the beat's board shows the idea; only its exact key is withheld
       { id: "we", board: we.board, line: [said(we.problem), ...we.givens.map(said), ...we.steps.flatMap((x) => [said(x.do), x.result])].join(" "),
         withhold: { values: [we.yourStep?.key, ...(we.yourStep?.accept ?? [])].filter(Boolean) }, check: false },
-      ...skill.checks.map((c) => ({ id: c.id, board: c.board, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true })),
+      // a check with no board of its own borrows the last explain beat's board at runtime (Brain's cardBeatRef); certify the
+      // board the child will actually see against THAT check's answers (Studio 2026-11-05)
+      ...skill.checks.map((c) => { const own = !!c.board; const fb = [...skill.explain].reverse().find((e) => e.board)?.board;
+        return { id: own ? c.id : `${c.id} (borrows the last explain board)`, board: c.board ?? fb, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true }; }),
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
       // v2.1 (director5, dc-r7-script-walk-v3): the follow-up card after a remediation carries its own board, gated as a check
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}.then`, board: r.then?.board, line: said(r.then?.prompt), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: true })),
@@ -185,6 +188,39 @@ export function v21Errors(s) {
   return e;
 }
 
+/**
+ * v2.2 (director6 judgement, dc-r7-script-walk-v4; Brain's v4 runtime): then-card prompts ≤ THEN_MAX characters (a long one
+ * was cut to its last sentence 10/10 times); every check and then-card has its own board; a then-card never repeats the
+ * worked problem (same numbers); worked steps are spoken "<do>: <result>, kyunki <why>." and the answer "Toh poora jawab:
+ * <answer>, kyunki <why>.", so a result is Hinglish (no English words), a why does not start with "kyunki", and the
+ * answer carries neither "kyunki" nor a leading "Toh".
+ */
+export const THEN_MAX = 120;
+const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
+const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
+export function v22Errors(s) {
+  const e = [];
+  for (const k of s.skills) {
+    const at = (x) => `${k.skillId}/${x}`;
+    const we = k.workedExample ?? {};
+    const weNums = numsOf(we.problem?.hi);
+    k.checks.forEach((c, i) => { if (!c.board) e.push(at(`checks[${i}]: a check carries its own board`)); });
+    k.remediation.forEach((r, i) => {
+      const t = r.then ?? {};
+      if ([...String(t.prompt?.hi ?? "")].length > THEN_MAX) e.push(at(`remediation[${i}].then: prompt ${[...String(t.prompt?.hi ?? "")].length} > ${THEN_MAX} characters`));
+      if (!t.board) e.push(at(`remediation[${i}].then: a then-card carries its own board`));
+      if (weNums && numsOf(t.prompt?.hi) === weNums) e.push(at(`remediation[${i}].then: repeats the worked problem's numbers (${weNums})`));
+    });
+    for (const [i, st] of (we.steps ?? []).entries()) {
+      if (/[a-z]/i.test(String(st.result)) && EN_WORDS.test(String(st.result))) e.push(at(`workedExample.steps[${i}].result: '${st.result}' is spoken; write it in Hinglish`));
+      if (/^\s*kyunki\b/i.test(st.why?.hi ?? "")) e.push(at(`workedExample.steps[${i}].why: starts with "kyunki" (the runtime adds it)`));
+    }
+    if (/^\s*kyunki\b/i.test(we.why?.hi ?? "")) e.push(at(`workedExample.why: starts with "kyunki" (the runtime adds it)`));
+    if (/\bkyunki\b/i.test(we.answer?.hi ?? "") || /^\s*toh\b/i.test(we.answer?.hi ?? "")) e.push(at(`workedExample.answer: a clause with no "kyunki" and no leading "Toh" (the why says why)`));
+  }
+  return e;
+}
+
 export function structureErrorsV2(s, kit) {
   const e = [];
   if (!kit) return [`no kit topic ${s.topicId}`];
@@ -247,6 +283,7 @@ export function structureErrorsV2(s, kit) {
   const checked = new Set(s.skills.flatMap((k) => [...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)]).filter(Boolean));
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
+  if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s));
   return e;
 }
 

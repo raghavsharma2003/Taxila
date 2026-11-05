@@ -37,7 +37,8 @@ layer adds a visible drop on open vowels ("think", "about") and still closes ful
 - **r8:** nothing to change. The "one grown-up Asha" goal stays open.
 - **lamp2 or lamp2 + jaw:** we make it the default look (`TAXILA_FACE_LOOK`) after the real-phone pass (section 5).
   Then her stills, the parent badge and the light mouth are re-rendered in that look (no Azure spend: they come from
-  the live rig).
+  the live rig). The landing page's product screenshots (`public/site/home.webp`, `desk.webp`, `turn.webp`) have the
+  r8 face drawn into them, so they get re-captured too.
 - **Done on 2026-11-05, whichever look you pick:** r8 now uses lamp2's b / m / p rule too. On r8's own lip solver it
   closes her lips on all 132 b / m / p words in the battery (it used to miss "dhoop", "carbon", "about", "tum",
   "lagbhag", "खुशबू", "Shabash", "Ab" and "vaashpikaran"). It adds no closure the audio doesn't ask for and doesn't move
@@ -54,8 +55,10 @@ Once a day, after the child's first tap on Home, she says one short line (27 lin
 morning, afternoon and evening; no child's name; no gendered Hindi verbs). Her lips follow the clip. The strip above
 uses the existing Hello clip as a stand-in.
 
-The spend renders the 27 lines once in Diya's voice: `scripts/character/render-greetings.mjs`, then the lip-sync
-sidecars, which cost nothing. Without the clips she greets Home silently, with a glance at Start.
+The spend renders the 27 lines once in Diya's voice. It is one command once the keys are back:
+`node --env-file=.env.local scripts/character/greetings-pipeline.mjs --run`. That renders the clips (the only paid
+step), writes the lip-sync sidecars (free) and checks every clip, its lip seals and that the server serves it. Without
+`--run` it is a dry run that lists the 27 lines and calls nothing. Without the clips she greets Home silently, with a glance at Start.
 
 Lip-sync on pre-rendered clips (her b / m / p seals with the sidecar vs without it): English 6/6 (2/6 without),
 Hindi 15/15 (5/15), Hinglish 12/13 (5/13). Overall 33/34, up from 12/34.

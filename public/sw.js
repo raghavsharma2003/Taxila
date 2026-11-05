@@ -1,4 +1,4 @@
-// Taxila service worker (r7 app-pwa-install). It makes the installed app open like an app: an offline-safe SHELL, never
+// Taxila service worker (r7 app-pwa-install). Rollback / kill switch: docs/design/round7/app/PWA.md. It makes the installed app open like an app: an offline-safe SHELL, never
 // data. What it caches:
 //   - Vite's content-hashed build bundles (/assets/<name>-<hash>.<ext>): immutable, so cache-first is exact;
 //   - the app's fonts (/fonts/*) and the install icons (/site/app/*);
@@ -6,7 +6,11 @@
 // What it never touches (no respondWith, the network as if there were no worker): every /api/* request (lessons, plans,
 // children's data, speech), generated content (/assets/gen/*), audio, the parent corner's reads, anything cross-origin,
 // and anything that is not a GET. Nothing a child says, sees or makes is stored here.
-const VERSION = "taxila-shell-v1";
+// One cache per BUILD: the page registers /sw.js?v=<build id> (src/app/install.ts), so a deploy is a new script URL, the
+// browser installs the new worker, and activate deletes every other cache. Navigations are network-first, so the next
+// open after a deploy runs the new build even before the worker turns over.
+const BUILD = new URL(self.location.href).searchParams.get("v") || "dev";
+const VERSION = `taxila-shell-${BUILD}`;
 const SHELL = ["/", "/manifest.webmanifest", "/site/app/icon-192.png", "/site/app/icon-512.png"];
 const HASHED = /^\/assets\/[^/]+-[A-Za-z0-9_-]{8,}\.(js|css|woff2?)$/;
 

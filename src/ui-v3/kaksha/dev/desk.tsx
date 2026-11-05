@@ -1,7 +1,7 @@
 // Kaksha Desk dev page (never shipped): the REAL Desk (stream 2) under the Kaksha frame and skin, fed the Desk's own
 // fixture models (src/child/lesson/dev/DeskDev.tsx fixtureModel), plus the Debrief with fixture maps. For shots and the
 // rendered lint (tests/prod/r4-kaksha-desk-shots.mjs). No server, no child.
-//   ?class=4|6|7  &fixture=<DeskDev fixture>|summary|summary-secure|summary-made|summary-tried|summary-ending|intake-ask|intake-which|intake-mapped|intake-plan
+//   ?class=4|6|7  &fixture=<DeskDev fixture>|summary|summary-secure|summary-sealed|summary-made|summary-tried|summary-ending|intake-ask|intake-which|intake-mapped|intake-plan
 //   &face=plate|live  &motion=reduced  &title=<the lesson's short title> (≤ 24 chars from the server)
 //   ?live=1&skin=kaksha|none  the REAL lesson runtime (LessonRuntime, outbox, floor) on the Desk dev page's scripted Director
 //                             and clock link, instrumented for the K1 client-latency check (tests/prod/r4-kaksha-latency-client.mjs)
@@ -60,6 +60,10 @@ const readMade = async () => (fixture === "summary-made" && madeReads++ > 0 ? [
   { id: "m1", kind: "game", title: "Fraction pizza", topicTitle: "Fractions", at: "2026-11-05T10:05:00Z", still: null, because: null },
   { id: "m2", kind: "animation", title: "Halves and quarters", topicTitle: "Fractions", at: "2026-11-05T10:09:00Z", still: null, because: null },
 ] : []);
+// summary-sealed: the second map read has the chapter sealed by the ledger (the Debrief's Chapter sealed moment)
+let mapReads = 0;
+const sealFixture = (sealed: boolean) => ({ skills: SKILLS, subjects: [{ subject: "maths", chapters: [{ id: "c6-maths-ch07", title: "Fractions", sealed }] }] });
+const loadMapSeal: LoadMap = async () => (sealFixture(mapReads++ > 0) as unknown as MapLike);
 const loadMap: LoadMap = async (): Promise<MapLike | null> => {
   reads++;
   if (fixture !== "summary-secure") return { skills: SKILLS };
@@ -82,7 +86,7 @@ function App() {
   }
   const assertive = m.floor === "your_turn" && !m.strip && !m.sheet ? `Your turn. ${m.ask?.text ?? ""}` : "";
   return (
-    <KakshaLesson cid="dev-child" family={family} reducedMotion={reduced} loadMap={loadMap} readMade={readMade}>
+    <KakshaLesson cid="dev-child" family={family} reducedMotion={reduced} loadMap={fixture === "summary-sealed" ? loadMapSeal : loadMap} readMade={readMade}>
       {(skin) => (
         <Desk m={m} a={ACTIONS} media={{ meters: [silent], mic: silent, lang: "hinglish", ageBand: ageBandOf(band) }} live={{ assertive, polite: "" }}
           onSize={onSize} theme={null} phaseLine {...skin} />
@@ -123,7 +127,7 @@ function LiveApp() {
     <Desk m={m} a={a} media={{ meters: [runtime.levels.teacher], mic: runtime.levels.mic, modules: runtime.modules, lang: "hinglish", ageBand: ageBandOf(band) }}
       dockRef={dockRef} live={live} onSize={onSize} theme={null} notMeWindow={false} {...skin} />
   );
-  return q.get("skin") === "none" ? desk() : <KakshaLesson cid="dev-child" family={family} reducedMotion={reduced} loadMap={loadMap} readMade={readMade}>{desk}</KakshaLesson>;
+  return q.get("skin") === "none" ? desk() : <KakshaLesson cid="dev-child" family={family} reducedMotion={reduced} loadMap={fixture === "summary-sealed" ? loadMapSeal : loadMap} readMade={readMade}>{desk}</KakshaLesson>;
 }
 
 createRoot(document.getElementById("root")!).render(q.get("live") ? <LiveApp /> : <App />);
