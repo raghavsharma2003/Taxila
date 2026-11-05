@@ -68,3 +68,34 @@ test("the stuck child answers right less often than the steady one (over 40 seed
   const rate = (p) => { let r = 0, n = 0; for (let s = 1; s <= 40; s++) for (const x of runLesson(p, s)) if (x.kind === "right" || x.kind === "wrong") { n++; if (x.kind === "right") r++; } return r / n; };
   assert.ok(rate("stuck") < rate("steady") - 0.15, `stuck ${rate("stuck")} vs steady ${rate("steady")}`);
 });
+
+// ───────────── H1.1 (director5 judgement, dc-r7-script-walk-v3) ─────────────
+import { PROBE_RE, isGirlName, maxTurnsFor } from "../evals/child-sim/reactive.mjs";
+
+test("H1.1: a probe gets a short reason, never the card answer again (even with the card still on the table)", () => {
+  for (const teacher of ["Tumne kaise jaana?", "Achha, kyun?", "Apne shabdon mein samjhao.", "Golu ko samjhao na.", "How did you know?"]) {
+    assert.match(teacher, PROBE_RE, teacher);
+    for (let seed = 1; seed <= 10; seed++) {
+      const r = createReactiveChild({ persona: "steady", seed, kit }).reply({ turn: 6, teacher, card: { itemId: misItem.id, key: misItem.answer, accept: misItem.acceptable } });
+      assert.equal(r.kind, "reason", `${teacher}/${seed}`);
+      assert.ok(!/\d/.test(r.text), `a reason has no number: ${r.text}`);
+    }
+  }
+  // the harness can say so explicitly, either way
+  const c = createReactiveChild({ persona: "steady", seed: 2, kit });
+  assert.equal(c.reply({ turn: 6, teacher: "Dekho.", probe: true }).kind, "reason");
+  assert.notEqual(c.reply({ turn: 7, teacher: "Kaise pata chalega kaunsa bada hai?", probe: false, card: { itemId: "x", key: "3" } }).kind, "reason");
+  // a keyed question is not a probe
+  assert.doesNotMatch("Kaunsa bada hai, 1/4 ya 1/8?", PROBE_RE);
+});
+
+test("H1.1: verbs agree with the persona's name; the steady child stays 40 turns", () => {
+  assert.ok(isGirlName("Riya") && isGirlName("Zoya") && !isGirlName("Aarav") && !isGirlName("Krishna"));
+  const lines = (name) => { const c = createReactiveChild({ persona: "steady", seed: 5, kit, name }); const out = []; for (let t = 0; t < maxTurnsFor("steady"); t++) out.push(c.reply({ turn: t, teacher: "Theek hai." }).text); return out.join(" | "); };
+  assert.doesNotMatch(lines("Riya"), /\b(gaya|karta|jaata)\b/);
+  assert.doesNotMatch(lines("Aarav"), /\b(gayi|karti|jaati)\b/);
+  assert.equal(maxTurnsFor("steady"), 41);
+  const c = createReactiveChild({ persona: "steady", seed: 9, kit });
+  const kinds = Array.from({ length: maxTurnsFor("steady") }, (_, t) => c.reply({ turn: t, teacher: "Theek hai." }).kind);
+  assert.equal(kinds.indexOf("leave"), 40, "steady leaves at turn 40, not 24");
+});
