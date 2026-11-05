@@ -35,6 +35,10 @@ equivalence check, adjudication and level rating. Figures come from the scripts'
 | — | W2 relevel, all classes | 0 | $0 | Level match (OWNER-RESET #2): rated by Claude in-session, no approval needed |
 | — | Face: the 27 daily-greeting clips (DragonHD) | 27 | cents | Her spoken home greeting |
 | — | Face: painted pose stills (wave, reading, …) via Azure images | tbd | small | Replaces stand-in stills |
+| — | Studio gate services: Azure AI Vision OCR + Content Safety (image moderation) | recurring | ~₹4,500/month at cap | Lets generated pictures be checked, so they can ever be shown |
+| — | Studio image rung (needs the gate services) | per picture | $0.0066; ~$2.6 for a 200-lesson test; ~$13/day at 1,000 lessons/day | Pictures as lesson pieces |
+| — | Studio dedicated spec deployment (owner action: create `taxila-stagecraft`) | 0 extra tokens | — | Spec builds stop sharing quota with the reply model |
+| later | Studio Sora clips, a priced 5-clip test first | tbd | tbd | Only if code-built animation can't do it |
 | **All** | | **~815** | **~$26 (≈ ₹2,200)** | |
 
 Recommendation: approve it all. At ~$26 it is less than one test-battery day was in October. If you'd rather approve
