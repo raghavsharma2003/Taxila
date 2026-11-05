@@ -92,7 +92,10 @@ function limiter(max) {
 export function styleForChild(child, ageBand, pinnedTeacherId, pinnedName, opts = {}) {
   // The lesson's pinned teacher (state.ctx.teacherId) wins, so a tutor switch never changes an open lesson's voice.
   const teacher = pinnedTeacherId ? teacherForLesson(child, pinnedTeacherId, pinnedName) : teacherFor(child);
-  const base = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, spokenOptsForChild(child, ageBand));
+  // round 7 (name preview): the parent's spoken spelling of the name (child.name_spoken, F Learning's 038) for audio only
+  const cell = spokenOptsForChild(child, ageBand);
+  const sayName = child?.name_spoken && child?.first_name ? { written: String(child.first_name), spoken: String(child.name_spoken) } : null;
+  const base = speechStyle(teacher, VOICES.has(teacher.voice) ? teacher.voice : DEFAULT_VOICE, sayName ? { ...cell, sayName } : cell);
   // HUMAN-VOICE B1: the cascade voice from config (server/voice/voices.js): DragonHD when Azure Speech is configured,
   // the character's gpt-4o-mini-tts voice as the fallback (and the only voice when it is not).
   if (cascadeEngine() !== "dhd" || opts?.laneSwitched) return base;

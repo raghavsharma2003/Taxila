@@ -595,7 +595,21 @@ const RESIDUAL_RE = /\d+(?:\.\d+)?/g;
  * @param {string} text  written teacher text
  * @param {Parameters<typeof toSpoken>[1]} [opts]
  */
+/**
+ * Round 7 (name preview, F Learning's child.name_spoken, migration 038): the child's name said the way the parent spelled
+ * it ("Aa-rav"), whole word, any case. Audio only: speakable() output never reaches captions or stored turns. Pure.
+ * @param {string} text
+ * @param {{ written?: string, spoken?: string } | null | undefined} sayName
+ */
+export function sayChildName(text, sayName) {
+  const w = String(sayName?.written ?? "").trim(), s = String(sayName?.spoken ?? "").trim();
+  if (!w || !s || w === s) return String(text);
+  const esc = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return String(text).replace(new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])${esc}(?![\\p{L}\\p{M}\\p{N}])`, "giu"), s);
+}
+
 export function speakable(text, opts = {}) {
+  text = sayChildName(text, opts.sayName);
   const cell = cellFor(opts);
   const lang = cell.words === "hi" ? "hi" : "en";
   let x = toSpoken(text, opts);
