@@ -17,6 +17,7 @@ import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
 import { vakyaHidden } from "../../src/play/families/vakya/vakya.logic.ts";
 import { kilaHidden } from "../../src/play/families/kila/kila.logic.ts";
+import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
 import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
@@ -52,6 +53,9 @@ export function hiddenOf(level) {
   if (level.family === "kila") return kilaHidden(level);
   // r7 naksha: the route's run lengths, the fuel, the pump's cm and the plan's side lengths before the child produces them
   if (level.family === "naksha") return nakshaHidden(level);
+  // r7 ghadi: the time / trip length / date the child must produce (the minute hand's number, the arrival, the ticket, the
+  // flag's date, the winner's bib) is never said first. Checked by family first: ghadi's "set" and "run" are shared names
+  if (level.family === "ghadi") return ghadiHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

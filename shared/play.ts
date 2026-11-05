@@ -29,6 +29,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "vakya",      // round 7: English / Hindi grammar, a sentence built as a train of word wagons (one verified kit item per level)
   "kila",       // round 7 E4: turn-based tower defence on a numbered path (multiples, factors, LCM); a beat moves only on a press
   "naksha",     // round 7: maps and grids (lat / long, grid routes and directions, map scale, shapes on a dot grid)
+  "ghadi",      // round 7: time and clocks (a geared clock set by hand, bus trips, a race podium, a month calendar); never timed
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -46,6 +47,7 @@ export const MODES = {
   vakya: ["rail"],
   kila: ["multiples", "factors", "lcm", "divisibility"],
   naksha: ["locate", "route", "scale", "shape"],
+  ghadi: ["set", "run", "race", "calendar"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -252,7 +254,18 @@ export type NakshaAct =
   | { kind: "set"; value: number }                       // scale: the fuel in the tank (real units)
   | { kind: "run" }                                      // go: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct;
+// Ghadi (round 7, time and clocks): a geared clock (t = minutes since midnight; the hour hand follows the minute hand, and
+// passing 12 turns a.m. into p.m.), a trip ticket, a podium, a calendar flag; nothing moves on a clock, "run" lets the law answer
+export type GhadiAct =
+  | { kind: "wind"; by: number }                         // turn the minute hand by `by` minutes (signed; the hour hand follows)
+  | { kind: "hour"; h: number }                          // the hour hand dropped in hour sector h (0..11, 0 = 12): the minutes stay
+  | { kind: "half"; pm: boolean }                        // the day strip: a.m. (midnight to noon) or p.m. (noon to midnight)
+  | { kind: "ticket"; h: number; m: number }             // trip: the ticket's hours and minutes
+  | { kind: "put"; lane: number; at: number }            // race: runner `lane` onto podium step `at` (0 = first; swaps)
+  | { kind: "pick"; day: number }                        // calendar: the flag onto date `day`
+  | { kind: "run" }                                      // ring the bell / run the bus / run the race / hop the days: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -410,6 +423,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   vakya: ["kagaz", "chalk", "blueprint", "raat"],
   kila: ["kagaz", "blueprint", "chalk", "raat"],
   naksha: ["kagaz", "blueprint", "chalk", "raat"],
+  ghadi: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
