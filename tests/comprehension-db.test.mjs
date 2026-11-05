@@ -24,7 +24,7 @@ describe("comprehension store on Neon", { skip: !sql && "no TEST_DATABASE_URL (a
   const run = (stmts) => sql.transaction((t) => stmts.map((s) => t.query(s.text, s.params)));
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction; neonConfig.fetchFunction = nativeFetch;
-    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
+    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'comp-test') returning id", [`comp-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode", [guardian]))[0];
