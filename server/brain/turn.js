@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
 import { registerBroken } from "../director/register.js";
-import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
+import { verdictFor, k1On, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
 import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen, selfAnswer, unanswer } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
@@ -36,6 +36,7 @@ import { instructionsFor, instructionsAfter } from "../compiler/instructions.js"
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "../routes/voice.js";
 import { onTurnCommit } from "../conductor/hooks.js";
+import { emitJarEvents, jarServed } from "../learner/jar.js";
 import { awaitSettled } from "../comprehension/session.js";
 import { seamSafe as guardSeam } from "../seam-safe.js";
 import { duplexRegistry } from "../duplex/registry.js";
@@ -1400,6 +1401,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];
+  const jarKept = jarServed(prev.later, next.later, child.id, lesson.id);
   try {
     ({ seqs } = await runTurnTx(child, [
       guardStmt(`${guardSql}${notSuperseded} returning id`, [lesson.id, next, undo ? undo.turn : prev.turn, ...(notSuperseded ? [turnSeq] : [])]),
@@ -1424,6 +1426,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
       ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
         formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
+      // Learning patch 004b: a jar question served at a later boundary this turn is kept
+      ...jarKept.stmts,
       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
       ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
     ]));
@@ -1446,6 +1450,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
   mark("stored");
+  emitJarEvents(child.id, jarKept.events);
   // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. AFTER the commit and never awaited
   // by the reply on a hosted server (speed is never traded away); only when this spoken turn's voice read is shadow AND
   // would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its staged writes are
@@ -1670,6 +1675,11 @@ export async function planTurn(base, cls, c) {
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
   const gradedTarget = targetFor(state, kit, activeItem);
   next.lastVerdict = verdictFor(cls, gradedTarget, { childText: c.childText });
+  // dc-r7-script-walk-v3 K1: a key closes once affirmed: the same answer said again right after it was called right is never
+  // "not right" now (no verdict contradicts the previous turn's)
+  const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+  if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid) next.lastVerdict = "ungraded";
+  next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
   if (wrongShown.length) next.lastRight = { key: String(gradedTarget.key), wrong: wrongShown };

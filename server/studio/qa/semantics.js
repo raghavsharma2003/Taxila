@@ -68,7 +68,10 @@ export function screenClaims(line) {
   }
   for (const m of s.matchAll(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+|samaan\\s+|same\\s+)?(?:${GAP_WORDS})\\b`, "giu"))) {
     const n = toNum(m[1]);
-    if (/gap|jagah|interval|space/.test(m[0])) add(out.gaps, n); else add(out.parts, n);
+    // round 7 (director5): "6 gaps ka aadha 3 gaps", "3 gaps from 0" name a STRETCH of the line, not how it is cut: only an
+    // equal / barabar count claims the cut (an unqualified count holds when a drawn line has at least that many)
+    const equal = /equal|barabar|samaan|same/.test(m[0]);
+    if (/gap|jagah|interval|space/.test(m[0])) add(equal ? out.gaps : (out.gapsLoose ??= []), n); else add(out.parts, n);
   }
   for (const m of s.matchAll(new RegExp(`\\b${NUM_RE}\\s+(?:equal\\s+|barabar\\s+|samaan\\s+|same\\s+)(?:${PART_WORDS})\\b`, "giu"))) add(out.parts, toNum(m[1]));
   for (const m of s.matchAll(new RegExp(`\\b${NUM_RE}\\s+(?:${PART_WORDS})\\b\\s+(?:mein|in|into)\\b`, "giu"))) add(out.parts, toNum(m[1]));
@@ -163,7 +166,7 @@ function gridCut(ops, rows, cols) {
 /** W10: every count her line claims is on the screen is drawn. → string[] problems ([] = pass) */
 export function claimsNotDrawn(line, ops) {
   const claims = screenClaims(line);
-  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length && !claims.grids.length) return [];
+  if (!claims.parts.length && !claims.gaps.length && !claims.groups.length && !claims.grids.length && !claims.gapsLoose?.length) return [];
   const d = drawnCounts(ops);
   const out = [];
   // round 4 content: a rectangle cut into a grid shows its rows, its columns and its cells as equal parts
@@ -172,10 +175,15 @@ export function claimsNotDrawn(line, ops) {
     || grids.some((g) => g.rows === n || g.cols === n || g.rows * g.cols === n)
     // "har group mein 4 boxes": equal groups that each hold n show n parts per group
     || (d.groups.filter((x) => x.held > 0).length >= 2 && d.groups.filter((x) => x.held > 0).every((x) => x.held === n));
-  for (const n of claims.parts) if (!famHas(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
+  // round 7 (director5, c5 whole-number bias: "2 hisson mein kaato … 4 hisson mein … 8 hisson mein" over ONE line in eighths):
+  // a number line cut into G equal gaps draws every cut point of n equal parts when n divides G (halves and quarters sit on the
+  // eighths' ticks). Parts only: "4 gaps" over 8 gaps is still a contradiction
+  const lineHasParts = (n) => d.lines.some((l) => l.gaps > n && n >= 2 && l.gaps % n === 0);
+  for (const n of claims.parts) if (!famHas(n) && !lineHasParts(n) && d.groups.filter((x) => x.held > 0).length !== n) out.push(`${n} equal parts said, none drawn`);
   // a grid: rows x cols equal cells drawn (one family of that many equal boxes)
   for (const g of claims.grids) if (!d.families.some((f) => f.kind === "rect" && f.n === g.rows * g.cols) && !gridCut(ops, g.rows, g.cols)) out.push(`${g.cols} columns x ${g.rows} rows said, no ${g.rows * g.cols} equal cells drawn`);
   for (const n of claims.gaps) if (!d.lines.some((l) => l.gaps === n) && !d.families.some((f) => f.n === n && (f.kind === "rect" || f.kind === "sector"))) out.push(`${n} gaps said, the line shows ${d.lines.map((l) => l.gaps).join("/") || "no ticks"}`);
+  for (const n of claims.gapsLoose ?? []) if (!d.lines.some((l) => l.gaps >= n) && !d.families.some((f) => f.n === n && (f.kind === "rect" || f.kind === "sector"))) out.push(`${n} gaps said, the line shows ${d.lines.map((l) => l.gaps).join("/") || "no ticks"}`);
   for (const g of claims.groups) {
     const filled = d.groups.filter((x) => x.held > 0);
     const ok = g.each == null ? filled.length === g.n || d.families.some((f) => (f.kind === "ellipse" || f.kind === "ring" || f.kind === "rect") && f.n === g.n)

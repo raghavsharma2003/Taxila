@@ -125,10 +125,13 @@ function refNumbers(ref) {
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
-export function retime(script, fromMs, toMs) {
+export function retime(script, fromMs, toMs, maxK = 2) {
   if (!script?.ops?.length || !(fromMs > 0) || !(toMs > 0)) return script;
-  const k = Math.max(0.5, Math.min(2, toMs / fromMs));
-  const ops = script.ops.map((o) => ({ ...o, startMs: Math.round(o.startMs * k), endMs: Math.max(Math.round(o.startMs * k) + 120, Math.round(o.endMs * k)) }));
+  const k = Math.max(0.5, Math.min(maxK, toMs / fromMs));
+  // (past 2x — a script board under its long authored line — the starts spread over her line but each stroke is drawn at
+  // most 2x slower: a 6x stroke crawls, and W6 refuses one over 6 s)
+  const kd = Math.min(k, 2);
+  const ops = script.ops.map((o) => ({ ...o, startMs: Math.round(o.startMs * k), endMs: Math.max(Math.round(o.startMs * k) + 120, Math.round(o.startMs * k + (o.endMs - o.startMs) * kd)) }));
   const first = Math.min(...ops.map((o) => o.startMs));
   const shift = first > 800 ? first - 800 : 0;
   const shifted = shift ? ops.map((o) => ({ ...o, startMs: o.startMs - shift, endMs: o.endMs - shift })) : ops;

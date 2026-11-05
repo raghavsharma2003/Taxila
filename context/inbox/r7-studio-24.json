@@ -1,0 +1,45 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-test-app-server-dist",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "Browser suites that drive the real app serve the prebuilt dist/ from a static server (tests/support/app-server.mjs, SPA fallback) instead of booting a Vite dev server. The gate and CI's browser shard build dist/ first. A dist/ older than any file in src/, shared/ or public/ falls back to the dev server, so a local run never tests stale bytes; APP_SERVER=dev forces the dev server. Independent page cases run 4 at a time; timing measurements (anchor lag) stay sequential. Suites on a dev-only route (/dev/desk: r4-content-beat-desk) stay on the dev server. Main approved it on 2026-11-05. Reverse if a dist/-only difference (a production-build transform) hides a bug the dev server would show, or the stale check misses a client source outside src/, shared/ and public/."
+    },
+    {
+      "id": "ms-r7-studio-gate-speed-2026-11-05",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "title": "Seven Studio suites, serial seconds per suite (one node --test process each, this container), before → after, with the same assertions and nothing skipped: studio-stage-states 111 → 36, forge-g2 96 → 1.9 in the unit shard (its Chromium gate and harness moved to forge-g2-browser.test.mjs, 94 s in the browser shard), w2b-whiteboard-browser 79 → 41, studio-qa 48 → 17, studio-stage-geometry 31 → 7, module-tray-geometry 9.8 → 3.0, r4-content-beat-desk 23 (unchanged, dev-only route). Total about 374 s → 110 s. Browser shard locally: 124 pass, 0 fail, 120 s; CI browser shard 3m45s on 9dcfda1d. Repeat runs were within 1 s of each other."
+    },
+    {
+      "id": "dc-r7-board-screen-contract",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "Every revealed whiteboard slot artifact carries screen = { template, shape, numbers, labels } (studioSlot.artifact.screen; also pick.screen from preselect), for Brain's R4 check of her line against what is on screen. shape is one word of a closed set (SCREEN_SHAPES in server/stagecraft/board-first.js: rectangle, square, triangle, quadrilateral, pentagon, hexagon, octagon, polygon, circle, number line, then diagram kinds, else drawing). numbers are the facts row's plus every number the board writes (text and label ops, numwork, a fraction numwork read as a/b). A '?' is never reported as shown. Reverse if R4 needs a richer description (positions, which mark is which) than numbers and labels."
+    },
+    {
+      "id": "dc-r7-script-board-withholding",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "A scripted board's withholding follows its script beat's kind. explain and worked beats show the values the ref authors. A remediation withholds only its own item's key. A check withholds the full set. Before (director4 S2), every kit item's answer was withheld on every scripted board, so c4 compare showed '? pieces' and the c6 triangle showed '? cm'. A scripted ref's own expanded facts are also the predicted line, so the code's pick from the kit's first item no longer beats the ref. A scripted ref preselects even when Brain asks 'continue' (director4 S1: steps e1-e3 share one explain beat id, and all 11 c5 fraction-line boards drew nothing). Reverse if an explain beat's authored value turns out to be an item's answer asked later in the same lesson (then withhold that value on explain beats too)."
+    },
+    {
+      "id": "dc-r7-board-ref-certify-numbers",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "certifyBoardRef fails a ref whose board cannot show what it authors. numbers_not_shown:<v> fires when an authored value (sides, dims, mark labels, list items) is not drawn or is drawn as '?'. line_measures_not_on_board fires when the beat line states two or more measures ('4 m, 5 m') and the board draws none of them. To make the c6 worked pentagon certifiable, measured@1 draws pentagon, hexagon, octagon, quadrilateral and polygon with 3-8 labelled side lengths and corner names, regular and not to scale. Reverse if a legitimate ref authors a number that must not be drawn (then a per-param 'hidden' flag, never a silent pass)."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-test-app-server-dist", "rel": "measured_by", "dst": "ms-r7-studio-gate-speed-2026-11-05" },
+    { "src": "dc-r7-test-app-server-dist", "rel": "part_of", "dst": "dc-r7-gate-test-all" },
+    { "src": "dc-r7-script-board-withholding", "rel": "constrains", "dst": "dc-r7-teaching-scripts" },
+    { "src": "dc-r7-board-ref-certify-numbers", "rel": "constrains", "dst": "dc-r7-teaching-scripts" },
+    { "src": "dc-r7-board-screen-contract", "rel": "part_of", "dst": "dc-r7-script-walk-v2" }
+  ],
+  "md": {
+    "decisions": "## `dc-r7-test-app-server-dist`\n\nBrowser suites that drive the real app serve the prebuilt dist/ from a static server (tests/support/app-server.mjs) instead of a Vite dev server, which compiled the whole client on every page load. The gate and CI's browser shard build dist/ first. A dist/ older than any client source falls back to the dev server, so a local run never tests stale code; APP_SERVER=dev forces it. Independent page cases run 4 at a time, while timing measurements stay sequential. r4-content-beat-desk stays on the dev server because /dev/desk is a dev-only route. Reverse if a production-build-only difference hides a bug the dev server would show. (C1 Studio, 2026-11-05)\n\n## `dc-r7-board-screen-contract`\n\nEvery whiteboard on screen tells Brain what it shows: studioSlot.artifact.screen = { template, shape, numbers, labels }. shape comes from a closed list of words R4 can match against her Hinglish or English. numbers are what the board actually writes, never a '?'. Reverse if R4 needs positions or which mark is which. (C1 Studio, 2026-11-05)\n\n## `dc-r7-script-board-withholding`\n\nA scripted board hides answers by what its beat is for. Explain and worked beats show the numbers they teach; a remediation hides only its own item's answer; a check hides them all. The ref's own facts predict the board, and a scripted ref is drawn even on Brain's 'continue' asks. This fixes director4 S1, where 11 c5 explain boards showed nothing, and S2, where boards showed '? pieces' and '? cm'. Reverse if an explain beat's value is an answer asked later in the same lesson. (C1 Studio, 2026-11-05)\n\n## `dc-r7-board-ref-certify-numbers`\n\nA board ref that cannot show its own numbers fails certification (numbers_not_shown), and so does a board that draws none of the measures its line states (line_measures_not_on_board). measured@1 now draws labelled polygons (pentagon to octagon, 3-8 sides, corner names) so the c6 pentagon can show 4, 5, 3, 6, 2 m. Reverse if a ref must author a number that is not drawn. (C1 Studio, 2026-11-05)",
+    "measurements": "## `ms-r7-studio-gate-speed-2026-11-05`\n\nSerial seconds per suite, one node --test process each on this container, before → after, with the same assertions and nothing skipped:\n\n| Suite | Before | After |\n|---|---|---|\n| studio-stage-states | 111 | 36 |\n| forge-g2 (unit) | 96 | 1.9 |\n| forge-g2-browser (new, browser shard) | | 94 |\n| w2b-whiteboard-browser | 79 | 41 |\n| studio-qa | 48 | 17 |\n| studio-stage-geometry | 31 | 7 |\n| module-tray-geometry | 9.8 | 3.0 |\n| r4-content-beat-desk | 23 | 23 (dev-only route) |\n\nTotal about 374 s → 110 s. Local browser shard: 124 pass, 0 fail, 120 s. CI browser shard: 3m45s on 9dcfda1d. Repeat runs were within 1 s of each other. (C1 Studio, 2026-11-05)"
+  }
+}

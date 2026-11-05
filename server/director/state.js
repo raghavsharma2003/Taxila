@@ -34,7 +34,7 @@ import {
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
-import { scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, saidIn, saidMust } from "./script.js";
+import { scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, saidIn as saidIn0, saidMust, fillFriend } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -575,6 +575,18 @@ function walkNext(s, input, prefix) {
   }
   return null;
 }
+// v2.1 {friend}: a card character is a friend's name, never the child's (script.js fillFriend). The walk's spoken fields and
+// cards go through these (a module-level child name, set per step: the walk is synchronous)
+let friendOf = "";
+const saidIn = (x, lang) => { const t = saidIn0(x, lang); return t == null ? t : fillFriend(t, friendOf); };
+const friendly = (item) => {
+  if (!item) return item;
+  const f = (x) => fillFriend(x, friendOf);
+  // (Learning, c5-t02: the friend can be a card's key or its listed wrong pick, so graded fields are filled with the same name)
+  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: f(m.wrongIfMis) } : m);
+  return { ...item, prompt_en: f(item.prompt_en), prompt_hi: f(item.prompt_hi), answer: f(item.answer), acceptable: (item.acceptable ?? []).map(f),
+    ...(item.scriptAsk ? { scriptAsk: meta(item.scriptAsk) } : {}), ...(item.scriptCheck ? { scriptCheck: meta(item.scriptCheck) } : {}), ...(item.scriptThen ? { scriptThen: meta(item.scriptThen) } : {}) };
+};
 // ───────────── dc-r7-script-walk-v2: a beat is DONE, not shown (R1-R3) ─────────────
 // v2 beats teach and ask: each explain beat poses its keyed micro-question as the card, and the walk moves on only when that
 // card is answered right (or its remediation's follow-up is through). A diversion never uses a beat up: the card stays and is
@@ -588,6 +600,7 @@ export function hookSlot(sk, interests = []) {
 }
 function walkNextV2(s, input, prefix, sk) {
   const { kit } = input;
+  friendOf = s.ctx.firstName ?? "";
   const w = s.walk;
   const skillId = w.skillId;
   const lang = s.ctx.lang ?? "hinglish";
@@ -595,8 +608,10 @@ function walkNextV2(s, input, prefix, sk) {
   const gone = (id) => s.itemsDone.includes(id) || s.skipped.includes(id);
   // the worked example's answer and why, said in code on the move after their step (once)
   const gaveWorked = () => {
-    if (!w.sayWorked) return {};
+    if (w.sayWorked === false || w.sayWorked == null) return {};
+    const fresh = w.sayWorked === s.turn || w.sayWorked === true;
     w.sayWorked = false;
+    if (!fresh) return {};
     const we = sk.workedExample;
     const answer = saidIn(we.answer, lang), why = saidIn(we.why, lang);
     return answer ? { gave: { answer, why: why ?? "" } } : {};
@@ -616,7 +631,7 @@ function walkNextV2(s, input, prefix, sk) {
     }
     if (kind === "explain") {
       const b = sk.explain.find((x) => x.id === id);
-      const item = b ? scriptAskItem(skillId, b.id, b.ask) : null;
+      const item = b ? friendly(scriptAskItem(skillId, b.id, b.ask)) : null;
       if (!item || gone(item.id)) { w.i += 1; continue; }
       const smaller = w.smaller === b.id;
       const must = (b.mustSay ?? []).map((m) => saidIn(m, lang)).filter(Boolean);
@@ -625,12 +640,22 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...ref("explain", b.id, b.board), ...gaveWorked() });
+        mustSay: must, ...(point ? { point } : {}), ...ref("explain", b.id, b.board), ...gaveWorked() });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
-      const item = scriptAskItem(skillId, "worked", we.yourStep);
-      if (gone(item.id)) { w.i += 1; w.sayWorked = true; continue; }
+      const item = friendly(scriptAskItem(skillId, "worked", we.yourStep));
+      // (v3 K2: the worked answer and why are said on the move right after their step, and only when they missed it)
+      if (gone(item.id)) { w.i += 1; w.sayWorked = s.skipped.includes(item.id) || (s.misses?.[item.id] ?? 0) > 0 ? s.turn : false; continue; }
+      // v3 V1: the worked example across turns: the problem (what is given, what to find) first, then its steps and their step
+      if (!w.workedPosed) {
+        w.workedPosed = true;
+        const problem = [saidIn(we.problem, lang), (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
+          saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
+        return plan("worked_example", join(prefix, SH.scriptWorkedProblem()), { skillId, format: "F2", stuck: true,
+          content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
+          rendered: problem, ...ref("worked", "worked:problem", we.board) });
+      }
       const lines = scriptWorkedLinesV2(we, lang);
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);
@@ -641,7 +666,7 @@ function walkNextV2(s, input, prefix, sk) {
     if (kind === "check") {
       const c = sk.checks.find((x) => x.id === id);
       if (!c) { w.i += 1; continue; }
-      const item = scriptCheckItem(skillId, c);
+      const item = friendly(scriptCheckItem(skillId, c));
       if (gone(item.id)) { w.i += 1; continue; }
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);
@@ -662,6 +687,25 @@ function currentBeatRef(s, kit) {
   // a check with no board of its own shows the last explain beat's
   const fallback = [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
   return { scriptId: scriptIdOf(kit), skillId: w.skillId, beatId: id ?? kind, kind: kind || "explain", board: board ?? fallback };
+}
+/** SC2: a live script card's own beat ref, with its board (an ask: its explain beat's; a check: its own, else the last explain
+ *  beat's, as currentBeatRef; a follow-up: its then.board) or none. */
+function cardBeatRef(s, kit, item) {
+  const sk = skillScriptOf(kit, item.skillId);
+  if (!sk) return null;
+  const base = { scriptId: scriptIdOf(kit), skillId: item.skillId };
+  if (item.scriptAsk) {
+    const b = sk.explain?.find((x) => x.id === item.scriptAsk.beatId);
+    const board = item.scriptAsk.beatId === "worked" ? sk.workedExample?.board : b?.board;
+    return { ...base, beatId: item.scriptAsk.beatId, kind: item.scriptAsk.beatId === "worked" ? "worked" : "explain", ...(board ? { board } : {}) };
+  }
+  if (item.scriptCheck) {
+    const board = sk.checks?.find((c) => c.id === item.scriptCheck.checkId)?.board ?? [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
+    return { ...base, beatId: item.scriptCheck.checkId, kind: "check", ...(board ? { board } : {}) };
+  }
+  const r = sk.remediation?.find((x) => x.targets === item.scriptThen.targets);
+  const board = r?.then && typeof r.then === "object" ? r.then.board ?? null : null;
+  return { ...base, beatId: `then:${item.scriptThen.targets}`, kind: "check", ...(board ? { board } : {}) };
 }
 /** R1: their reply to a v2 beat's question. "pata nahi", or a beat whose must-say words her line left out, gets the SAME beat
  *  again, smaller, once; a right answer goes on; a wrong one gets its remediation (walkRemedy) or the hint ladder. */
@@ -699,8 +743,21 @@ function walkRemedy(s, input, item) {
   s.remedied = [...(s.remedied ?? []), targets];
   s.skipped.push(item.id);
   s.activeItemId = undefined; s.hintLevel = 0;
-  const then = scriptThenItem(item.skillId, r);
-  s.scriptCard = then; s.nextItemId = then.id;
+  friendOf = s.ctx.firstName ?? "";
+  const then = friendly(scriptThenItem(item.skillId, r));
+  s.scriptCard = then;
+  // v3 V1: a v2 remediation's authored explanation is spoken by code, and its follow-up card is posed on the same move
+  const sayLine = r.say ? saidIn(r.say, s.ctx.lang ?? "hinglish") : null;
+  if (sayLine) {
+    activate(s, then);
+    const mis0 = kit.misconceptions.find((m) => m.id === targets);
+    logReteach(s, "kit", item.skillId, mis0 ?? null);
+    return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
+      content: [`their question: ${s.ctx.lang === "english" ? item.prompt_en : item.prompt_hi}`, `its answer: ${item.answer}`],
+      rendered: [/[.!?।]$/.test(sayLine.trim()) ? sayLine.trim() : `${sayLine.trim()}.`],
+      scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}) } });
+  }
+  s.nextItemId = then.id;
   const mis = kit.misconceptions.find((m) => m.id === targets);
   logReteach(s, "kit", item.skillId, mis ?? null);
   const lang = s.ctx.lang ?? "hinglish";
@@ -762,7 +819,11 @@ function warmup(s, input, item) {
     // F4 (dc-r7-script-walk-v2): with a v2 script, the greet promises only an interest its hook's slots use
     const sk0 = scriptOn() ? skillScriptOf(input.kit, input.kit.skills[0]?.id) : null;
     const slotInterest = sk0?.explain?.[0]?.ask ? hookSlot(sk0, s.ctx.interests)?.interest ?? null : undefined;
-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: slotInterest !== undefined ? slotInterest ?? undefined : interestFor(input.kit, s.ctx.interests, 0) }), first ? { item: first, probe: "P10" } : {});
+    // Learning patch 004b: a question kept in the jar last time is the first thing she comes back to (a promise kept)
+    const jar = (s.later ?? []).find((p) => p.jarId && p.servedAt == null);
+    if (jar) s.later = serveLater(s.later, jar.id, s.turn);
+    const greet = SH.greet({ ...s.ctx, warmup: !!first, interest: slotInterest !== undefined ? slotInterest ?? undefined : interestFor(input.kit, s.ctx.interests, 0) });
+    return plan("greet", jar ? join(greet, SH.returnJar({ topic: jar.topic, share: !!jar.share })) : greet, first ? { item: first, probe: "P10" } : {});
   }
   if (!item) { s.phase = "teach"; return teach(s, input); }
   const v = verdict(input.cls);
@@ -940,6 +1001,10 @@ function leavePractice(s, kit) {
   // V1.4: every skill shown (settled) or parked → practice is done, however few items that took (a strong child moves on)
   const P = s.pace;
   const allSettled = !!P && kit.skills.every((sk) => P.settled.includes(sk.id) || P.parkedSkills.includes(sk.id));
+  // v3 (director5/6: skill 1's cards and ladder spent practiceMax, so skills 2-3 were never taught): in script mode item counts
+  // never end practice before every scripted skill has been walked; the clock and the brief still do
+  const unwalked = scriptIdOf(kit) && kit.skills.some((sk) => skillScriptOf(kit, sk.id) && !s.introduced.includes(sk.id));
+  if (unwalked) return s.minutes >= LIMITS.minutes[s.ctx.ageBand] || pastBrief(s, "wrapAt");
   return s.practiced >= LIMITS.practiceMax || (s.practiced >= LIMITS.practiceMin && allUnaided) || (s.practiced >= 2 && allSettled) || s.minutes >= LIMITS.minutes[s.ctx.ageBand]
     || pastBrief(s, "wrapAt"); // round 7 (Learning patch 006): the slot's target length reached → the next natural stop
 }
@@ -978,7 +1043,7 @@ function poseNext(s, input, prefix, preferred) {
     if (w) return w;
     ladder = walkLadder(s, kit);
   }
-  if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
+  if (leavePractice(s, kit)) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix, kit);
   if (ladder && !preferred) preferred = ladder;
   const skipped = new Set(s.skipped);
   const queued = s.nextItemId && !skipped.has(s.nextItemId) ? findItem(s, kit, s.nextItemId) : null;
@@ -986,7 +1051,7 @@ function poseNext(s, input, prefix, preferred) {
   const item = preferred ?? verifying ?? queued ?? selectNext(s, kit, { easier: s.easier });
   if (verifying && queued) s.queue = [queued.id, ...s.queue.filter((id) => id !== queued.id)];
   s.nextItemId = undefined; s.easier = false; s.verify = undefined;
-  if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix);
+  if (!item) return s.practiceSet ? practiceDone(s, prefix) : enterTeachback(s, prefix, kit);
   // A skill nobody has explained yet gets one short explain turn first (novices; experienced attempt first).
   if (!s.introduced.includes(item.skillId) && walkStart(s, kit, item.skillId)) {
     const w = walkNext(s, input, prefix);
@@ -1359,7 +1424,7 @@ function helpMove(s, input, item, help) {
   const kit = input.kit;
   if (s.phase === "teachback") {
     if (help === "skip") return toWrap(s, {});
-    return plan("teachback", join(SH.SLOWER, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
+    return plan("teachback", join(SH.SLOWER, SH.teachback({ protege: scriptIdOf(input.kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
   }
   // dc-r7-script-walk-v2 R3: "another way / an example / slower" during a v2 walk is answered on its OWN current beat (its board
   // and numbers, smaller), never the kit's worked example; the beat's question stays the card (R2: nothing is used up)
@@ -1429,7 +1494,7 @@ function resume(s, input, item, prefix) {
   if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
   if (s.phase === "teach") return teach(s, input, prefix);
   if (s.phase === "practice") return poseNext(s, input, prefix);
-  if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
+  if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: scriptIdOf(input.kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
   return toWrap(s, {});
 }
 
@@ -1886,7 +1951,7 @@ function practiceDone(s, prefix) {
   });
 }
 
-function enterTeachback(s, prefix) {
+function enterTeachback(s, prefix, kit) {
   // CONVERSATION-V2 §5: every open parked question is offered before the wrap
   if (p5Flag("STEER") && s.later?.length) {
     const due = dueParked(s.later, "before_wrap");
@@ -1895,7 +1960,7 @@ function enterTeachback(s, prefix) {
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
   s.pendingProbe = { skillId: s.introduced[0] ?? null, shapeId: "C01", facet: "U", mandatory: true, reason: "lesson_teachback", testWeight: testWeight(shapeById("C01")), family: "A", cls: "probe.teachback", longForm: true };
-  return plan("teachback", join(prefix, SH.teachback({ protege: s.ctx.protege })), { probe: "P1", format: "F7" });
+  return plan("teachback", join(prefix, SH.teachback({ protege: kit && scriptIdOf(kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
 }
 
 function teachback(s, input) {
@@ -1906,7 +1971,7 @@ function teachback(s, input) {
   const m = cls?.outcome === "misconception" ? kit.misconceptions.find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   const missing = m ? `whether "${m.belief}" is true` : cls?.missing?.[0] ?? "the main idea, in simple words";
-  return plan("teachback", SH.teachbackFollowup({ protege: s.ctx.protege, missing }), { probe: "P1", format: "F7" });
+  return plan("teachback", SH.teachbackFollowup({ protege: scriptIdOf(kit) ? null : s.ctx.protege, missing }), { probe: "P1", format: "F7" });
 }
 
 function toWrap(s, { prefix, stopping = false }) {
@@ -2352,8 +2417,11 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) } } : {}) };
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) } } : {}),
+    // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
 }
+const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 
 /**
  * One director step.
@@ -2529,12 +2597,17 @@ export function step(prev, input) {
   // round 7 T2: the script beat this move renders (brain/propose.js puts its board on Studio's ask as intent.boardRef)
   if (p.scriptBeat) move.scriptBeat = { ...p.scriptBeat };
   // dc-r7-script-walk-v2 R4: a picture asked for during a walk re-shows the current beat's board (never a board of another idea)
-  if (!move.scriptBeat && p.request === "visual" && p.visual !== "game" && s.walk && scriptOn()) {
-    const cur = currentBeatRef(s, input.kit);
-    if (cur?.board) move.scriptBeat = cur;
+  if (p.request === "visual" && p.visual !== "game" && scriptOn()) {
+    // (SC2, Studio: while a script card is live the picture is THAT card's board, never the beat a reteach routes to; a card
+    // with no board sends none, and Studio picks for the live item)
+    const live = s.activeItemId ? findItem(s, input.kit, s.activeItemId) ?? s.scriptCard ?? null : null;
+    const card = live && (live.scriptAsk || live.scriptCheck || live.scriptThen) ? cardBeatRef(s, input.kit, live) : null;
+    if (card) move.scriptBeat = card;
+    else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
   }
   // dc-r7-script-walk-v2 R1: the words this beat must say (brain/say.js holds her line to them; the next turn checks them)
   if (p.mustSay?.length) move.mustSay = [...p.mustSay];
+  if (p.point) move.point = String(p.point);
   s.lastMove = move;
   s.moveVoiced = false;
   if (s.persona) {

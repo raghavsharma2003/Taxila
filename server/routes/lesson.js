@@ -47,6 +47,7 @@ import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
 import { learnerViewOf } from "../learner/view.js";
+import { emitJarEvents, jarLaterEntries, jarServed, jarWriteStmts } from "../learner/jar.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -366,6 +367,8 @@ export async function lessonStart(req, body) {
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
   });
+  // Learning patch 004b: what she promised last time (the Question jar hook) rides in as Later entries; the opening serves one
+  if (view?.jar?.length) state0.later = jarLaterEntries(view.jar);
   const recent = askSafety.distress ? null : await carriedP;
   const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
@@ -373,6 +376,7 @@ export async function lessonStart(req, body) {
       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
     : step(state0, { event: "start", kit, now, ...(carried ? { carried } : {}) });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
+  const jarKept = jarServed(state0.later, first.state.later, child.id, lessonId);
   const state = r.state;
   if (vsb0) state.vsb = vsb0;
   if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
@@ -434,6 +438,8 @@ export async function lessonStart(req, body) {
     { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
     ...(openingIncident ? [openingIncident] : []),
+    // Learning patch 004b: the jar items the opening came back to are kept (answered by this lesson)
+    ...jarKept.stmts,
     // a disclosure in an Ask's first words leaves the same incident row a turn's predicate hit does (no transcript)
     ...(askSafety.distress ? [{ text: "insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
       params: [child.id, lessonId, { source: "predicate", family: askSafety.kind, at: "ask_start" }] }] : []),
@@ -443,6 +449,7 @@ export async function lessonStart(req, body) {
     ...onLessonStart({ child, lessonId, topicId: topic.id, purpose, mode, now }),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
+  emitJarEvents(child.id, jarKept.events);
   mark("tx");
   // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
   try {
@@ -811,7 +818,11 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   const relEnd = seamSafe("relational.onLessonEnd", () => relationalSeam.onLessonEnd(child, { lessonId: lesson.id, childId: child.id,
     endedBy, turns: state.turn ?? 0 }), []);
   const relStmts = Array.isArray(relEnd) ? relEnd : [];
-  const results = await tx([...writes, ...relStmts, ...hookStmts]);
+  // Learning patch 004b: the questions she parked and did not get back to go into the Question jar (a promise for next time);
+  // never from a safeguarded lesson (the same rule as memories)
+  const jar = held ? { stmts: [], events: [] } : jarWriteStmts(child, lesson.id, state, { teacherId: state.ctx?.teacherId ?? teacher.id });
+  const results = await tx([...writes, ...relStmts, ...jar.stmts, ...hookStmts]);
+  emitJarEvents(child.id, jar.events);
   // round 7 (Platform patch from-platform/001): the lesson's spend rollup into lesson.cost, fire-and-forget (never throws)
   rollupLesson(q, lesson.id).catch(() => {});
   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");

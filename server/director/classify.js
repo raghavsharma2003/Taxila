@@ -572,6 +572,18 @@ export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(H
 const STRAY_SHARE = 0.25;
 const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
 
+/** dc-r7-script-walk-v3 K2: script cards graded in code (TAXILA_R7_SCRIPT_GRADE=off: the model as before). */
+export const scriptGradeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT_GRADE ?? ""));
+const HI_NUMS = { shunya: 0, ek: 1, do: 2, teen: 3, chaar: 4, char: 4, paanch: 5, panch: 5, chhah: 6, chhe: 6, chah: 6, saat: 7, aath: 8, nau: 9, das: 10,
+  gyarah: 11, barah: 12, baarah: 12, terah: 13, chaudah: 14, pandrah: 15, solah: 16, satrah: 17, atharah: 18, unnees: 19, bees: 20, tees: 30, chalis: 40, chaalis: 40,
+  pachaas: 50, pachas: 50, saath: 60, sattar: 70, assi: 80, nabbe: 90, sau: 100 };
+/** "ek bata chaar" → "1/4", "bees" → "20" (whole words only). */
+export function hindiNumbers(t) {
+  const w = (x) => HI_NUMS[String(x).toLowerCase()];
+  return String(t ?? "").replace(/\b([a-z]+)\s+(?:bata|by|upon)\s+([a-z]+)\b/gi, (m, a, b) => (w(a) != null && w(b) != null ? `${w(a)}/${w(b)}` : m))
+    .replace(/\b[a-z]+\b/gi, (x) => (w(x) != null && x.toLowerCase() !== "do" ? String(w(x)) : x));
+}
+const denies0 = (t) => /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|nope|galat|wrong|isn'?t)(?![\p{L}])/iu.test(String(t));
 export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
   // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
@@ -723,6 +735,29 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
         if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, src, m); }
       }
     }
+  }
+  // dc-r7-script-walk-v3 K2: a lesson script's keyed card is graded in code against its own key: its key or an accepted form is
+  // right (also by value: "1/10" = "2/20" is NOT taken, the form must be the key's or a listed one), the script's listed wrong
+  // answer is that misconception, and any other answer-shaped reply (a number, a fraction, a word or two) is wrong. A don't-know,
+  // a request or a longer reply still goes to the model (its distress read stays). TAXILA_R7_SCRIPT_GRADE=off: as before.
+  const sg = target.mode === "item" && !other && scriptGradeOn() ? target.item?.scriptAsk ?? target.item?.scriptCheck ?? target.item?.scriptThen ?? null : null;
+  if (sg && !flags.dontKnow && !request) {
+    // (Hindi number words, "bees" = 20, "ek bata chaar" = 1/4: the reactive child's and a real child's forms)
+    const st = hindiNumbers(text);
+    const firstNumOf = (x) => String(x ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/)?.[0]?.replace(/\s+/g, "") ?? null;
+    const unitless = (x) => norm(String(x ?? "").replace(/\b(?:cm|m|km|mm|metre|metres|meter|meters|centimetre|kg|g|rupees|rs)\b\.?/gi, ""));
+    const forms = [target.key, ...(target.also || [])].filter(Boolean);
+    const n = firstNumOf(st), nums = String(st).match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? [];
+    const right = forms.some((k) => norm(k) === norm(st) || unitless(k) === unitless(st) || (n && nums.length === 1 && firstNumOf(k) === n && !denies0(st)));
+    if (right) return done("correct", "script_key");
+    const wrong = sg.wrongIfMis ? String(sg.wrongIfMis) : null;
+    if (wrong && (norm(wrong) === norm(st) || unitless(wrong) === unitless(st) || (n && nums.length === 1 && firstNumOf(wrong) === n))) {
+      return sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets }) : done("incorrect", "script_key");
+    }
+    // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
+    const yesNoKey = /^(?:yes|no|haan|nahi|nahin)$/i.test(String(target.key).trim());
+    const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(String(st).trim());
+    if ((nums.length === 1 || String(st).trim().split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) return done("incorrect", "script_key");
   }
   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
   // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number
