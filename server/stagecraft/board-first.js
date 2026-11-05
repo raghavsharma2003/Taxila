@@ -70,7 +70,9 @@ function shapeWord(raw, template) {
   if (SCREEN_SHAPES.includes(w)) return w;
   return SHAPE_OF[template] ?? "drawing";
 }
-/** → { template, shape (one of SCREEN_SHAPES), numbers: string[], labels: string[] } */
+/** A script board's authored line runs 3-6x the board's own drawing (c6: 33 s over 5.8 s): stretched up to this much to keep it in step (W6). */
+const SCRIPT_STRETCH = 6;
+/** → { template, shape (one of SCREEN_SHAPES), numbers: string[], labels: string[], counts? (shared/whiteboard.js cleanCounts) } */
 export function screenOf(c, facts, script = null) {
   const on = facts?.onScreen ?? {};
   const own = c?.facts?.onScreen ?? {};
@@ -79,7 +81,33 @@ export function screenOf(c, facts, script = null) {
   // (and every number the board itself writes: a template whose facts row names none still shows its numbers)
   const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [])
     : o.op === "numwork" ? (o.layout === "fraction" ? [(o.rows ?? []).flat().map(String).join("/")] : (o.rows ?? []).flat().map(String)).filter((x) => /^\d+(?:\.\d+)?(?:\/\d+)?$/.test(x)) : []));
-  return { template: c?.template ?? null, shape, numbers: [...new Set([...split(on.numbers).filter((x) => /\d/.test(x)), ...drawn])].slice(0, 24), labels: [...new Set(split(on.labels))] };
+  // round 7 (director5 SC1): what the template drew, counted (gaps, ticks, marks with labels, parts, sides with values)
+  const counts = script?.facts?.counts ?? facts?.counts ?? c?.facts?.counts ?? null;
+  return { template: c?.template ?? null, shape, numbers: [...new Set([...split(on.numbers).filter((x) => /\d/.test(x)), ...drawn])].slice(0, 24), labels: [...new Set(split(on.labels))], ...(counts ? { counts } : {}) };
+}
+/**
+ * round 7 (director5 SC2): a scripted REMEDIATION board goes up only on the turn its explanation is spoken (6 of c6's 10
+ * contradictions: the board went up while her line said something else). Spoken = her line carries every number the
+ * board writes (the axis ends 0 and 1 aside; a fraction as itself or its two counts), or, for a board of words only, two of
+ * its words. Any other beat → true.
+ */
+export function scriptBoardSpoken(ask) {
+  try {
+    const ref = ask?.intent?.boardRef, kind = ask?.intent?.scriptBeat?.kind;
+    if (!ref || kind !== "remediation") return true;
+    const r = resolveBoardRef(ref, {});
+    const x = r.ok ? expand(r.call) : null;
+    if (!x?.ok) return true;          // (a ref that does not render is the ladder's to replace, not this guard's)
+    const line = String(ask?.line?.text ?? "");
+    const said = new Set((line.match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((n) => n.replace(/\s+/g, "")));
+    const nums = screenOf({ template: r.call.template }, x.facts, x.script).numbers.filter((n) => n !== "0" && n !== "1");
+    // (a written fraction a/b is spoken as "a/b" or as its two counts: "4 barabar tukde … 1 tukda rangin" under 1/4)
+    const spoken = (n) => said.has(n) || (/^\d+\/\d+$/.test(n) && n.split("/").every((k) => said.has(k)));
+    if (nums.length) return nums.every(spoken);
+    const words = new Set((line.toLowerCase().match(/\p{L}{4,}/gu) ?? []));
+    const shown = [...new Set((x.script.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? String(o.text ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [] : [])))];
+    return shown.length < 2 || shown.filter((w) => words.has(w)).length >= 2;
+  } catch { return true; }
 }
 /** A script ref's own facts as a line ("shape triangle. sides 6, 5, 4 cm"), or null when it does not render. */
 function scriptRefFacts(ref, kit, ask) {
@@ -221,7 +249,10 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // answers it is the one on screen NOW: it is picked, her line is written from it, and the seam KEEPS it (studio/seam.js
       // requestIntent). Never for an example (the same page is the repeat), never a page from earlier in the lesson.
       const onScreenAnswer = !!request && request.kind !== "example" && !!avoid && samePage(c.script, avoid);
-      if (!onScreenAnswer && shownBefore(c.script, { avoid, seen })) continue;
+      // round 7 (director5 SC2): a picture asked for while a scripted card is live re-shows THAT card's board, even when it was
+      // up before (the never-repeat rule skipped it, and an older board took its place)
+      const reShow = !!request && c.by === "script";
+      if (!onScreenAnswer && !reShow && shownBefore(c.script, { avoid, seen })) continue;
       const s0 = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), ctx.speechMs), ctx.reply);
       // round 7 (motion ops): a whole cut into equal parts splits when the split passes the same gate (else the still board)
       const sp = withSplit(s0);
@@ -240,7 +271,9 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // a board that passed only once its answer was written "?" (board-sync maskReveals) is kept AS MASKED: her real line
       // is re-gated against what will be drawn
       const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : r.gate?.script?.ops ? { ...s, ops: r.gate.script.ops } : s;
-      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok, screen: screenOf(c, facts, kept) };
+      // round 7 (director5): a script's board keeps its own timing (raw): her authored line is 3-5x the short facts line it
+      // was fitted to here, and two capped retimes (≤ 2x each, from a compressed copy) never reached W6's spread
+      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok, screen: screenOf(c, facts, kept), ...(c.by === "script" ? { raw: c.script } : {}) };
       picks.set(id, pick);
       return pick;
     }
@@ -260,7 +293,8 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     if (p.ahead && p.ahead !== askSignature(ask)) { picks.delete(String(ask?.intent?.intentId ?? "")); prewarmed.stale++; return null; }
     p.used = true;
     if (p.ahead) prewarmed.used++;
-    const s0 = withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
+    const s0 = p.raw ? withSectors(retime(p.raw, Math.max(800, Number(p.raw.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH), ctx.reply)
+      : withSectors(retime(p.script, Math.max(800, Number(p.script.durationMs) || speechMsOf(p.predicted)), ctx.speechMs), ctx.reply);
     // round 7 (M3b): its named steps land on her words, when that board passes the gate (else the even pacing)
     const an = anchorSteps(s0, ctx.reply, ctx.speechMs);
     let s = s0, r = null;
