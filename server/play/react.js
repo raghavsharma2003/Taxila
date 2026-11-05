@@ -19,6 +19,7 @@ import { vakyaHidden } from "../../src/play/families/vakya/vakya.logic.ts";
 import { kilaHidden } from "../../src/play/families/kila/kila.logic.ts";
 import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
 import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
+import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -56,6 +57,8 @@ export function hiddenOf(level) {
   // r7 ghadi: the time / trip length / date the child must produce (the minute hand's number, the arrival, the ticket, the
   // flag's date, the winner's bib) is never said first. Checked by family first: ghadi's "set" and "run" are shared names
   if (level.family === "ghadi") return ghadiHidden(level);
+  // r7 darpan: the count of mirror lines, the smallest turn (degrees and the fraction) and the order before the child finds them
+  if (level.family === "darpan") return darpanHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
