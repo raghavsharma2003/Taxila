@@ -196,3 +196,7 @@
 .kx-hello-face .kx-who { white-space: nowrap; }
 .kx-hello-face[data-compact] .kx-who b { font-size: 16px; padding: 5px 7px; }
 .kx-hello-face[data-compact] .kx-ai { font-size: 14px; padding: 4px 6px; }
+/* Ask "Say it": the listening chip (ion edge, a live dot; still under reduced motion) */
+.kx-chip--live { color: var(--k-ink); border-color: var(--k-ion); box-shadow: inset 0 0 0 1px var(--k-ion); }
+.kx-rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--k-rose); animation: kx-blink 1.2s ease-in-out infinite; }
+.kx[data-motion="reduced"] .kx-rec-dot { animation: none; }

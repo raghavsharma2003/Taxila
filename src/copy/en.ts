@@ -256,6 +256,13 @@ export const R7 = {
   "nb.jar": "Questions",
   // r7 9-15 onboarding sweep: Hello for the older family
   "hello.likesOlder": "Your parent picked these. Still you?",
+  // r7 app-ask-voice: "Say it" on Ask
+  "ask.say": "Say it",
+  "ask.listening": "Listening… tap when done",
+  "ask.hearing": "Hearing you…",
+  "ask.heard": "This is what {T} heard. Fix anything, then Ask.",
+  "ask.none": "I didn't catch that. Say it again, or type it.",
+  "ask.failed": "Talking isn't working right now. Type your question instead.",
   "jar.waiting": "{T} will bring these back",
   "jar.answered": "Answered",
   "jar.answeredOn": "answered on {date}",
