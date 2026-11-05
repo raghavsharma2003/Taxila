@@ -9,7 +9,8 @@ import { schoolChaptersOf } from "../../../child/api.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { KakshaRoot } from "../Shell.tsx";
 import { HangarView, WorldView } from "../views.tsx";
-import { secureSet, world, type Catalog, type WorldSkill } from "../world.ts";
+import { secureSet, topicOfSkill, world, type Catalog, type WorldSkill } from "../world.ts";
+import { cachedHold } from "../../../child/plan.ts";
 import { readEquipped, rollSnapshot, writeEquipped } from "../memory.ts";
 import { useChildNav } from "./useNav.ts";
 
@@ -36,7 +37,9 @@ export function KakshaWorld() {
   return (
     <KakshaRoot family={family} reducedMotion={reducedMotion} screen="world">
       <WorldView childName={child.first_name} world={w.today} yesterday={w.yesterday} hidden={w.hidden} reducedMotion={reducedMotion}
-        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} school={w.school} />
+        backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={(to) => nav(to)} dock={kn.dock} meTo={kn.meTo} school={w.school}
+        // r7 app-practice-entry: a station's topic (its skill id without the -sN suffix) as a practice set; none on a hold
+        practiceTo={cachedHold(cid) ? null : (skillId) => { const t = topicOfSkill(skillId); return t ? `/c/${cid}/practice/${encodeURIComponent(t)}` : null; }} />
     </KakshaRoot>
   );
 }

@@ -32,22 +32,28 @@ C2's admission rules as of claude/r7-games @ 4ccd7d2eb (C2 tells F before any ch
 Acceptance for a run: `node server/play/tools/build-vakya.mjs --check` (C2's builder) reports `built >= 6` for every
 grammar skill in its index, and `lint-kits` is clean.
 
-### Size today (from C2's data/play/vakya/index.json, 2026-11-04)
+### Size today (2026-11-04, after the grammar tags; from data/play/vakya/index.json as build-vakya makes it)
 
-| class/subject | grammar skills | buildable items now | items short of 6 per skill |
-|---|---|---|---|
-| c4 English | 4 | 5 | 19 |
-| c4 Hindi | 7 | 5 | 37 |
-| c5 English | 6 | 4 | 32 |
-| c5 Hindi | 7 | 0 | 42 |
-| c6 English | 15 | 15 | 75 |
-| c7 English | 15 | 17 | 73 |
-| c7 Hindi | 1 | 0 | 6 |
-| **total** | **55** | **46** | **284** |
+`node scripts/kits/tag-grammar.mjs` tags every class 4-7 English/Hindi grammar skill with `kind: "grammar"`. That is 85
+skills: the 55 the builder's title patterns found, plus 30 it missed (listed with reasons in the script; c6 Hindi now
+has 3). Five skills that only ask the child to NAME a part of speech, or to tell practice from practise, stay untagged
+(`BORDERLINE` in the script). Tagging added c5-english-ch09 to the admitted topics (3 built items).
 
-c6 Hindi has no row: none of its skill titles match the builder's Hindi grammar pattern (HI_GRAMMAR). The workflow tags
-grammar skills explicitly (`skill.kind: "grammar"`) so the count does not depend on title wording. C2 is told this, so its
-builder can read the tag.
+| class/subject | grammar skills | built now | skills at >= 6 | items short of 6 |
+|---|---|---|---|---|
+| c4-english | 12 | 10 | 0 | 62 |
+| c4-hindi | 9 | 6 | 0 | 48 |
+| c5-english | 11 | 9 | 0 | 57 |
+| c5-hindi | 8 | 0 | 0 | 48 |
+| c6-english | 18 | 17 | 0 | 91 |
+| c6-hindi | 3 | 2 | 0 | 16 |
+| c7-english | 20 | 22 | 0 | 98 |
+| c7-hindi | 4 | 0 | 0 | 24 |
+| **total** | **85** | **66** | **0** | **444** |
+
+No grammar skill has 6 built items yet, so G1 authors for all 85: **128 author calls, ≈ $4.10** (dry run
+`node scripts/kits/run.mjs g1`). The cap was raised from 120 to 150 for the larger set. The per-skill list is in
+[G1-SHORTFALL.md](G1-SHORTFALL.md).
 
 ### Calls and cost per run (estimate; Azure Direct models, priced at about $1.25 per M input and $10 per M output tokens)
 
@@ -68,7 +74,7 @@ taxila-gpt6 ($2 per M input, $10 per M output).
 
 | # | workflow | script | Azure calls (exact) | ≈ cost | in-session Claude work |
 |---|---|---|---|---|---|
-| G1 | sentence-train grammar items (C2's vakya target) | `run.mjs g1` | 83 (cap 120) | $2.66 | blind-solve ~400 candidates |
+| G1 | sentence-train grammar items (C2's vakya target) | `run.mjs g1` | 128 (cap 150) | $4.10 | blind-solve ~620 candidates |
 | W1a | Hinglish + Devanagari complete answer forms (293 census items) | `run.mjs w1a` | 30 (cap 60) | $0.60 | equivalence check of the new forms |
 | W1b | Hindi worked-example steps, class 4-7 maths | `run.mjs w1b` | 141 (cap 160) | $2.62 | code checks the numbers match; read-through |
 | W1c | per-skill explain plans, class 4-7 maths | `run.mjs w1c` | 424 (cap 480) | $15.26 | blind-solve the 848 anchor and check answers |

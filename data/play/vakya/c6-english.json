@@ -1036,6 +1036,213 @@
    "seal": "0ab3c638"
   },
   {
+   "id": "c6-english-ch12-t01-i13",
+   "topicId": "c6-english-ch12-t01",
+   "skillId": "c6-english-ch12-t01-s5",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Put these steps in order and add first, then and finally: 'close your eyes / sit with your back straight / breathe slowly for one minute'.",
+    "hi": "In steps ko order mein lagao aur first, then, finally jodo: 'close your eyes / sit with your back straight / breathe slowly for one minute'."
+   },
+   "keyFrom": "acceptable",
+   "engine": "First",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "breathe",
+      "straight"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "straight",
+      "breathe"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "finally"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "then"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "your"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "sit",
+      "eyes"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "close"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "eyes",
+      "sit"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "first",
+     "sit",
+     "straight",
+     "then",
+     "close",
+     "your",
+     "eyes",
+     "finally",
+     "breathe"
+    ]
+   ],
+   "mals": [],
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "a29f5eee"
+  },
+  {
+   "id": "c6-english-ch13-t01-i11",
+   "topicId": "c6-english-ch13-t01",
+   "skillId": "c6-english-ch13-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'Chitra polish the shell and make bowls from it.'",
+    "hi": "Galti dhoondo aur theek karo: 'Chitra polish the shell and make bowls from it.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Chitra",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "polish",
+      "polishes"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "it"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "from"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "bowls"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "shell"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "make",
+      "makes"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "chitra",
+     "polishes",
+     "the",
+     "shell",
+     "and",
+     "makes",
+     "bowls",
+     "from",
+     "it"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "chitra",
+      "polish",
+      "the",
+      "shell",
+      "and",
+      "make",
+      "bowls",
+      "from",
+      "it"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch13-t01-m-third-person-s",
+   "malKit": "c6-english-ch13-t01-m-third-person-s",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "6370a96b"
+  },
+  {
    "id": "c6-english-ch14-t01-i15",
    "topicId": "c6-english-ch14-t01",
    "skillId": "c6-english-ch14-t01-s5",

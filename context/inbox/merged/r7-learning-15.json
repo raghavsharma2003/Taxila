@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-grammar-skill-tags",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (main 2026-11-04/05, for C2 Games' vakya and the G1 workflow): every class 4-7 English/Hindi grammar skill carries kind 'grammar' in data/kits (scripts/kits/tag-grammar.mjs; 85 skills: 55 found by build-vakya's title patterns plus 30 classified by hand, each with its reason). A skill counts as grammar when the child PRODUCES a sentence-level form (tense, agreement, articles, pronouns, modals, questions, conditionals, reported speech, voice, connectors, comparison, prepositions, quantity). Vocabulary, spelling or script, word formation, literary devices and recognition-only skills (naming a part of speech; 5 BORDERLINE) stay untagged: recognition is not production (main). The vakya bank and coverage map are regenerated with C2's builders in the same commit (main chose this; main re-runs every builder's --check at integration). c5-english-ch09 is newly admitted. All 85 skills are short of 6 built items (444 needed; docs/design/round7/learning/G1-SHORTFALL.md). G1's dry run is 128 author calls, about $4.10, with the cap raised from 120 to 150; it waits for the owner's yes. Reverse if: C2's builder starts reading a richer skill taxonomy (then the tag becomes one value of it), or a borderline skill gets production items worth training."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

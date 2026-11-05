@@ -5,7 +5,7 @@
 // the assembled report must then pass with zero violations, or it is not stored and not shown.
 import { bannedHits, lockedHits, severeHits } from "./lexicon.js";
 import { CAPS, VOICE_CHARS, VOICE_WORDS } from "./config.js";
-import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, SUBJECT_LABEL, fmtDate, renderFixed, renderShape } from "./templates.js";
+import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, SUBJECT_LABEL, WAY_LABEL, fmtDate, renderFixed, renderShape } from "./templates.js";
 
 export class ReportGateError extends Error {
   constructor(violations) {
@@ -29,6 +29,7 @@ function slotText(shapeSlots, slots, lang) {
     else if (type === "date") { out.numbers.add(String(v.d)); out.curriculum.push(fmtDate(lang, v)); }
     else if (type === "object") out.object.push(HOME_OBJECT[v]?.[lang] ?? "");
     else if (type === "subject") out.object.push(SUBJECT_LABEL[v]?.[lang] ?? "");
+    else if (type === "way") out.object.push(WAY_LABEL[v]?.[lang] ?? "");
     else out[type].push(String(v));
   }
   return out;
@@ -75,7 +76,7 @@ export function lineViolations(text, { shapeId, fixedId, slots = {}, lang, k7 = 
 /** Growth-edge shapes: each carries the task feature, [hedged reasoning past the gate], and Taxila's action (S11). */
 const TRICKY = new Set(["tricky.work", "tricky.mixup", "tricky.work_next", "tricky.mixup_next"]);
 /** Sections whose lines count against the body cap (the header is the S1 line, not body). */
-const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next"]);
+const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next", "ways"]);
 
 /**
  * Gate an assembled report in every language. Throws ReportGateError; returns true when clean.

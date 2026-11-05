@@ -5173,3 +5173,57 @@ At 360x800 the done state with both the day card and the made-for strip overflow
 ## ms-r7-isolation-debt-cleared-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
 
 Module-level env and global writes in tests/*.test.mjs: 21 at int/r6 5a5b2f45 when tests/test-isolation.test.mjs landed (Brain 11 TAXILA_R7_* lines in 8 files, Forge 7 in 3 files, 3 module-level globals). 2 after integration 3b (07185e93). 0 after integration 4 (6c3c3c95), and the known-debt list is now empty. Integration 4's single-process npm test: 4,265 tests, 0 fail (main).
+
+
+<!-- merged from inbox/r7-main-9.json -->
+## jd-r7-director3-2026-11-05 (main loop judge, 2026-11-05)
+
+Method: stream A's harness at 357cc407 (integration 5 + S1-S5 + Learning 008 + App 008 + the boardItemOf fix), results/2026-11-05-director3, against results/2026-11-04-director2. n = 12 lessons (c4/c5/c6 × steady/offtopic/stuck/steering), the same scripted Hinglish child, `screen` recorded per turn. Three Claude judges (one per class) read every teacher turn; the main loop combined their findings; not blind. Details and quotes: docs/design/round7/judgements/director3-2026-11-05.md.
+
+
+<!-- merged from inbox/r7-studio-18.json -->
+## ms-r7-zoom-reach (2026-11-05)
+
+The decimal zoom is drawn for 11 practice items across three class 7 decimal lessons.
+
+
+<!-- merged from inbox/r7-studio-19.json -->
+## ms-r7-steps-on-her-words (2026-11-05, n = 247 boards)
+
+168 of 241 explanation boards now draw each named step on the word that names it.
+
+
+<!-- integration 6: write-ups from the inbox entries (the stream sent no prose) -->
+## `ms-r7-pilot-scripts-blind`
+
+Round 7 F, pilot lesson scripts (dc-r7-teaching-scripts): blind verification of data/lesson-scripts/ (c4-maths-ch05-t01 equal shares, c5-maths-ch02-t01 fractions on a number line, c6-maths-ch06-t01 perimeter; 9 skills). Method: three Claude agents authored, one per topic, from the kit, to docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md. A SEPARATE Claude agent then saw only the prompts (keys stripped) and solved every check question and every remediation follow-up (n = 45), and checked every worked example step by step (n = 9). No Azure calls. Result: 42/45 matched the key's normalised form; the other 3 gave the same answer in other words or a simpler equivalent form (2/6 m = 1/3 m), so 45/45 agree in substance, and those keys now carry the equivalent forms. The solver flagged 3 questions: one relied on an undescribed picture (c4 s1/c2), one gave its answer away in the wording (c5 s1/rem3), one was ambiguous and referred to another question (c5 s3/rem3, which also had a board marking 7/5 against an 8/5 answer). All 3 were rewritten and blind re-solved by a fresh agent: 3/3 match, unambiguous, no giveaway. Worked examples: 9/9 correct; one board/problem mismatch (paratha drawn as roti) was fixed in the problem text. Structure is held by tests/r7-learning-lesson-scripts.test.mjs (kit order, real misconceptions and items, board ranges, c5 on fraction-line only, no faded blanks, no key printed in its prompt, every kit misconception checked). Date 2026-11-05. (2026-11-05; from inbox/r7-learning-16.json)
+
+## `ms-r7-stagecraft-replay`
+
+Production now: 67 reveals of another skill, 244/717 stage turns stale, stage active 0.516, 4.63 pieces/10 min. M4 (skill fix + feeds + guard + rest): 0 stale reveals, 0/643 stale stage turns, stage active 0.470 (0.554 without rest), 5.44 pieces/10 min, 55% of reveals built ahead, 0.84 specs/lesson (~$0.001). Per class active: c4 0.46, c5 0.50, c6 0.50, c7 0.39. (2026-11-05; from inbox/r7-studio-20.json)
+
+n: 94
+
+Method: evals/stagecraft/replay.mjs: 94 recorded conversation-r3 lessons (final6-after + heldout-after, c4-7, 469 min) through the production StagecraftHost + kernelPoint/feedPoint, virtual clock from recorded latencies and word counts, spec build time from calibration.json, recorded whiteboards as stage time; $0, no model call
+
+## `ms-r7-fraction-line-board`
+
+c5 fractions on a line: before 8 fraction-parts (shaded circle), 3 number-line-hop, 9 none; after 18 fraction-line, 2 none; 18/18 pass the full gate with the item's answers withheld. Also fires on c6-ch07-t02 (3), c6-ch07-t03 (1), c4-ch05-t02 (1); never on mixed numbers, decimal lines or a roti. (2026-11-05; from inbox/r7-studio-21.json)
+
+n: 20
+
+Method: codePick over c5-maths-ch02-t01 (worked example + 19 items), before vs after; each fraction-line board through the full gate on its item (retimeToLine, withheldValues); code only
+
+## `ms-r7-code-scenes`
+
+20 pilot scenes (10 maths c4-6, 10 science c6-7): 60/60 clean, 360/360 certified; captions at 18 stage units reach 14.8 px in the 360 phone box; delivered for 'animation dikhao' through composeAsk; strips for all 20 and videos for 3 recorded. (2026-11-05; from inbox/r7-studio-22.json)
+
+n: 20
+
+Method: sceneFor over the 20 pilot topics × en/hinglish/hi: normalizeScene + lintScene; certifyForTray at p360/p412/l1366 × young/older; real child route recordings (vite + playwright, API mocked); code only
+
+
+<!-- merged from inbox/r7-main-11.json -->
+## `jd-r7-director4-2026-11-05`
+
+n = 12 lessons (4 scenarios × c4/c5/c6, the same scripted child as director3), 375 calls on taxila-fast, ~$0.204. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only with TAXILA_R7_SCRIPT=on, on claude/r4-conversation e18c27ad (int/r6 c6c9ab91c + T2–T4 + patch 010) and Learning’s ec40168a3 scripts. Three Claude judges (one per class, not blind to the arm) read every teacher turn against the script and director3, attributing each defect to script data, runtime walk, reply rendering or harness. Date 2026-11-05. Full write-up: docs/design/round7/judgements/director4-2026-11-05.md. Reply-ready p50 per lesson 2.34–3.65 s (c4 2.3–2.8 s vs director3 3.3–3.5 s).

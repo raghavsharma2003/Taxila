@@ -143,6 +143,7 @@ function fakeDb(f, { testWindows = [] } = {}) {
   return { q: async (t, p) => {
     if (/from child c/.test(t)) return [{ id: f.child.id, first_name: f.child.firstName, tz: f.child.tz }];
     if (/conductor_state/.test(t)) return [{ tw: testWindows }];
+    if (/from decision_record/.test(t)) return (f.ways ?? []).map((d) => ({ id: d.id, lesson_id: d.lessonId, chosen: d.format }));
     if (/from question_jar/.test(t)) return jar.filter((j) => j.created_at >= p[1] && j.created_at < p[2]);
     if (/from kt_skill_state/.test(t)) return sks.filter((x) => p[1].includes(x.skill_id));
     if (/from lesson/.test(t)) return /any\(\$2/.test(t) ? lessons.filter((l) => p[1].includes(String(l.id))) : lessons.filter((l) => l.started_at >= p[1] && l.started_at < p[2]);
@@ -204,4 +205,21 @@ test("the night fold of a month's last learning day enqueues parent.monthly once
   assert.deepEqual(m.input, { month: "2026-10" });
   const mid = decide({ ...s, learningDay: "2026-10-14" }, { type: "app.opened", device: "web", replicaId: "r1", bootId: "b1" }, { now: new Date("2026-10-15T10:30:00Z"), view: view() });
   assert.ok(!mid.commands.some((c) => c.kind === "enqueue" && c.job.kind === "parent.monthly"));
+});
+
+test("S5 ways: counts of Taxila's own explain choices in the month, held below the minimum, re-derived by the checker", async () => {
+  const ways = [["w1", "L1", "F3"], ["w2", "L1", "F2"], ["w3", "L2", "F3"], ["w4", "L3", "F3"], ["w5", "Lx", "F1"]]
+    .map(([id, lessonId, format]) => ({ id, lessonId, format, skillId: "s" }));
+  const f = monthFacts({ ways });
+  const { body } = assembled(f);
+  const c = body.claims.find((x) => x.shapeId === "ways.used");
+  assert.deepEqual(c.slots, { n: 4, k: 2, way: "F3", t: 3 }, "a decision outside the month's lessons (Lx) is not counted");
+  assert.equal(c.factIds.length, 4);
+  for (const lang of LANGS) assert.ok(!/\bF[1-8]\b/.test(JSON.stringify(body.renders[lang])), "F-codes never render");
+  const r = await checkReport(fakeDb(f), stored(f, body), lookup(f));
+  assert.deepEqual(r.claims.filter((x) => !x.ok), []);
+  const claims = body.claims.map((x) => (x.shapeId === "ways.used" ? { ...x, slots: { ...x.slots, t: 2 } } : x));
+  assert.ok((await checkReport(fakeDb(f), stored(f, { ...body, claims }), lookup(f))).claims.some((x) => x.shapeId === "ways.used" && !x.ok));
+  const few = monthFacts({ ways: ways.slice(0, 3) });
+  assert.ok(!buildClaims(few, { now: NOW }).claims.some((x) => x.shapeId === "ways.used"), "3 explains are not a pattern");
 });

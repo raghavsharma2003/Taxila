@@ -3,7 +3,7 @@
 // (disclosure, close) are carried as lines with `voiceOnly` so the spoken script is built from lines only.
 import { renderFixed, renderShape } from "./templates.js";
 
-const ORDER = ["header", "exam", "strength", "row", "hold", "hard", "curious", "routine", "tricky", "interest", "next", "home"];
+const ORDER = ["header", "exam", "strength", "row", "hold", "hard", "curious", "routine", "ways", "tricky", "interest", "next", "home"];
 /** Lines Lane B may never drop from the spoken script. */
 const MUST_KEEP = new Set(["header", "strength", "home"]);
 

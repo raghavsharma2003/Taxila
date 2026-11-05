@@ -10,6 +10,7 @@ import { q as dbq } from "../db.js";
 import { getTopic } from "../content/curriculum.js";
 import { COUNTED_LESSON_SQL } from "./truth.js";
 import { madeForOf } from "./madeFor.js";
+import { WAY_LABEL } from "./templates.js";
 
 const n2 = (n) => (n === 1 ? "once" : n === 2 ? "twice" : `${n} times`);
 /** " twice" / " 3 times"; nothing for once (a single move needs no count). */
@@ -41,7 +42,7 @@ export const MAX_LINES = 4;
  * PURE. One lesson's brain_trace rows ({ move, reasons, misconception_id }) → its "why" lines.
  * @returns {{ code: string, n: number, text: string }[]}
  */
-export function whyLines(rows, { name, T }) {
+export function whyLines(rows, { name, T, ways = [] }) {
   const out = [];
   // the child's requests, counted once per turn, in ASKED order
   const asked = new Map();
@@ -52,6 +53,12 @@ export function whyLines(rows, { name, T }) {
   for (const t of Object.keys(ASKED)) {
     const n = asked.get(t);
     if (n) out.push({ code: `request.${t}`, n, text: `${name} asked for ${ASKED[t]}${n > 1 ? ` (${n2(n)})` : ""}, and ${T} did that.` });
+  }
+  // the way she explained each new idea (decision_record explain_format; what Taxila did, never how the child learns)
+  const per = new Map();
+  for (const w of ways) if (WAY_LABEL[w]) per.set(w, (per.get(w) ?? 0) + 1);
+  for (const [w, n] of [...per].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).slice(0, 2)) {
+    out.push({ code: `way.${w}`, n, text: `${T} explained ${n > 1 ? `${n} new ideas` : "a new idea"} with ${WAY_LABEL[w].en}.` });
   }
   for (const m of MOVES) {
     const hit = rows.filter((r) => `move.${r.move}` === m.code);
@@ -78,12 +85,15 @@ export async function teachingOf(child, { T, q = dbq } = {}) {
   const ids = lessons.map((l) => String(l.id));
   const trace = ids.length ? await q("select lesson_id, move, reasons, misconception_id from brain_trace where lesson_id = any($1::uuid[]) order by lesson_id, turn",
     [ids]).catch(() => []) : [];
+  const ways = ids.length ? await q("select lesson_id, chosen from decision_record where lesson_id = any($1::uuid[]) and point_id = 'explain_format' order by id",
+    [ids]).catch(() => []) : [];
   const madeFor = await madeForOf(child.id, { limit: 6, q }).catch(() => []);
   return {
     approach: APPROACH,
     lessons: lessons.map((l) => ({
       id: String(l.id), topic: getTopic(l.topic_id)?.title ?? null, startedAt: new Date(l.started_at).toISOString(),
-      why: whyLines(trace.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, T }),
+      why: whyLines(trace.filter((r) => String(r.lesson_id) === String(l.id)), { name: child.first_name, T,
+        ways: ways.filter((w) => String(w.lesson_id) === String(l.id)).map((w) => w.chosen) }),
     })),
     madeFor,
   };

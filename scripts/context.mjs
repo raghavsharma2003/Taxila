@@ -51,6 +51,11 @@ if (args.includes("--check")) {
       }
     }
   }
+  // Only the known documents live in context/. merge-inbox once wrote one file per character of a string `md`
+  // (rj-r7-inbox-md-string-per-char): 1,309 files that nothing reads and the check never saw.
+  const KNOWN = new Set(["architecture.md", "decisions.md", "measurements.md", "rejected.md", "open.md", "graph.json", "inbox"]);
+  const stray = readdirSync(CTX).filter((x) => !KNOWN.has(x));
+  if (stray.length) problems.push(`context/ holds ${stray.length} unexpected file(s), e.g. ${stray.slice(0, 3).join(", ")} (only the known documents belong here)`);
   // A decision or rejection that no prose file mentions is a title with nothing
   // behind it — exactly the kind of entry that reads as knowledge and is not.
   for (const n of g.nodes) {

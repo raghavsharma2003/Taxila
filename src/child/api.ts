@@ -2,7 +2,7 @@
 // (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
 // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
 import { takeEarlyMe } from "../app/boot.ts";
-import type { ChildMapResponse, ChildMapSkill, DidCard, LessonSummary, MapState } from "../../shared/contracts.ts";
+import type { ChildMapResponse, ChildMapSkill, DidCard, HomeworkMatch, HomeworkMatchRequest, HomeworkMatchResponse, LessonSummary, MapState } from "../../shared/contracts.ts";
 import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 
@@ -181,3 +181,21 @@ export async function forgetChildMemory(cid: string, id: string): Promise<boolea
     return false;
   }
 }
+
+/** r7 homework help: Learning's match ladder (POST /api/homework/match). Waits at most `ms`; a timeout, a refusal or no
+ *  match is null, and the lesson starts anyway with no topic (never a wait the child can see). */
+export async function homeworkMatch(cid: string, text: string, ms = 1500): Promise<HomeworkMatch | null> {
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), ms);
+  try {
+    const r = await postJson<HomeworkMatchResponse>("/api/homework/match", { childId: cid, text: text.slice(0, 500) } satisfies HomeworkMatchRequest, ac.signal);
+    return r?.match ?? null;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+/** The chip is asked only when the match names a topic (rungs kit_item and topic); "subject" or none starts at once. */
+export const homeworkAsks = (m: HomeworkMatch | null): m is HomeworkMatch & { topicId: string } =>
+  !!m && (m.rung === "kit_item" || m.rung === "topic") && !!m.topicId;

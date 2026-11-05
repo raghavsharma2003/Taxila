@@ -24773,6 +24773,204 @@
    "at": "2026-11-04",
    "title": "Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.",
    "source": "inbox/r7-main-8-remerge.json"
+  },
+  {
+   "id": "jd-r7-director3-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Director re-run after the structural block S1-S5 (director3, 357cc407): 12 lessons (c4/c5/c6 × 4 scenarios), ~$0.21, screen recorded per turn. Three Claude judges, one per class, every turn against director2; not blind. Fixed: costume labels, picture→real board and game, card closed after 2 misses, Hindi acknowledged, recitals mostly gone, arithmetic. Not fixed (the owner's core): answer inside the question (c4 ~9 per run), ignored answers in every class, worked examples one step and no 'toh jawab' (never in c4: gap at step 0), no class-level practice (c6's only item is '3 × 160'), unkept promises (cricket, Golu), speech disconnected from screen (the guard strips board references), rate-as-fraction in c5. ~0.5 s slower. docs/design/round7/judgements/director3-2026-11-05.md.",
+   "source": "inbox/r7-main-9.json"
+  },
+  {
+   "id": "dc-r7-teaching-scripts",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Replace per-turn improvisation with authored, verified lesson scripts per skill (hook, explain beats with board refs, a full worked example, keyed checks targeting misconceptions, a class-level practice ladder, class-level remediation, bridges), authored in-session by Claude agents and blind-verified by a separate Claude solver (no Azure). The Director walks the script; the reply model only paraphrases the beat and first answers the child's last turn. A listening contract (respond-first by turn type, always correct wrong answers, return parked promises before the wrap) and a screen contract (the reply sees and refers to what is up) are enforced in code. Pilot on the 3 judged topics, then director4. Why: dc-r7-brain-structural-block's reversal triggered (jd-r7-director3-2026-11-05). Reverse: director4 on scripted topics still shows the gaps (then the reply layer: stronger model on paraphrase only, or a code-rendered teaching voice).",
+   "source": "inbox/r7-main-9.json"
+  },
+  {
+   "id": "dc-r7-app-homework-lane",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Ask?homework=1 (Homework help) calls Learning's POST /api/homework/match (≤ 1.5 s; timeout/refusal/null start at once with no topic), asks 'Is this from <topic>?' only for rungs kit_item and topic, and starts with purpose 'homework': Yes sends topicId (+ matchItemId on kit_item), Not this sends matchTopicId null. Contracts: Brain 007 (LessonStartRequest.matchTopicId/matchItemId, HomeworkMatch*). Reverse: Learning changes the ladder or the chip proves a friction point in the owner's test.",
+   "source": "inbox/r7-app-6.json"
+  },
+  {
+   "id": "dc-r7-app-debrief-made",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Debrief's Made for you strip shows the pieces she built in THIS session: the plan's madeFor feed read when the lesson opens and again at the Debrief, the new ids shown (no clock: tests/r4-kaksha-desk), each replaying in the Notebook (?made=). An unknown first read shows nothing. 'What helped?' (Learning POST /api/child/reflect, df82b4a9) and the emote (Brain, after director3) are agreed and wired once their routes are in int. Reverse: MadeForItem gains a lessonId (filter by it instead).",
+   "source": "inbox/r7-app-6.json"
+  },
+  {
+   "id": "dc-r7-app-practice-entry",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Practice is reachable from the dock and from a World station ('Practise this' → /practice/<topic of the skill>, never on a hold), and practice talks like any lesson (it was forced to text; the child's Type instead and the parent's text-only still hold). Reverse: the practice lane cannot carry voice.",
+   "source": "inbox/r7-app-7.json"
+  },
+  {
+   "id": "ms-r7-app-sheet-offscreen",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "The World station sheet and the Hangar item sheet rendered below the page end on phones (360x800: sheet top at y=849, off-screen): `.kx-screen > :not(.kx-sky) { position: relative }` (0,2,0) beat `.kx-sheet { position: fixed }`. Fixed with `.kx-screen > .kx-sheet.kx-sheet`, and the sheet now rises above the phone dock (method: app-shots station, Playwright boundingBox; n=1 per size).",
+   "source": "inbox/r7-app-7.json"
+  },
+  {
+   "id": "dc-r7-child-reflect",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (for E App's app-debrief-made-later, STUDENT-FLOW §8.2): an older child's one tap after a lesson in which two or more supports were used is POST /api/child/reflect { childId, lessonId, choice } -> 204. choice is made:<madeForId> (a revealed, not hidden, non-whiteboard piece of THAT lesson), board, explain, self or unsure; anything else is 400, and a lesson that is not the child's own is 404. It is recorded as the Conductor event child.reflect (source device, idem reflect:<lessonId>, so the first tap per lesson wins). The fold keeps counts by kind and the last 5 { lessonId, kind } in s.adapt.helped, with no made-for ids. helpedLean() gives a kind chosen at least twice of the last 5 (never unsure, ties give none), for a later COMPARABLE choice inside the admissible set. It is a choice, never an effect claim or a learning style, and no parent surface reads it. Reverse if: the taps prove to be noise (most taps unsure, or the lean flips every few lessons); then keep the record and drop the lean.",
+   "source": "inbox/r7-learning-14.json"
+  },
+  {
+   "id": "dc-r7-grammar-skill-tags",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (main 2026-11-04/05, for C2 Games' vakya and the G1 workflow): every class 4-7 English/Hindi grammar skill carries kind 'grammar' in data/kits (scripts/kits/tag-grammar.mjs; 85 skills: 55 found by build-vakya's title patterns plus 30 classified by hand, each with its reason). A skill counts as grammar when the child PRODUCES a sentence-level form (tense, agreement, articles, pronouns, modals, questions, conditionals, reported speech, voice, connectors, comparison, prepositions, quantity). Vocabulary, spelling or script, word formation, literary devices and recognition-only skills (naming a part of speech; 5 BORDERLINE) stay untagged: recognition is not production (main). The vakya bank and coverage map are regenerated with C2's builders in the same commit (main chose this; main re-runs every builder's --check at integration). c5-english-ch09 is newly admitted. All 85 skills are short of 6 built items (444 needed; docs/design/round7/learning/G1-SHORTFALL.md). G1's dry run is 128 author calls, about $4.10, with the cap raised from 120 to 150; it waits for the owner's yes. Reverse if: C2's builder starts reading a richer skill taxonomy (then the tag becomes one value of it), or a borderline skill gets production items worth training.",
+   "source": "inbox/r7-learning-15.json"
+  },
+  {
+   "id": "ms-r7-pilot-scripts-blind",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F, pilot lesson scripts (dc-r7-teaching-scripts): blind verification of data/lesson-scripts/ (c4-maths-ch05-t01 equal shares, c5-maths-ch02-t01 fractions on a number line, c6-maths-ch06-t01 perimeter; 9 skills). Method: three Claude agents authored, one per topic, from the kit, to docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md. A SEPARATE Claude agent then saw only the prompts (keys stripped) and solved every check question and every remediation follow-up (n = 45), and checked every worked example step by step (n = 9). No Azure calls. Result: 42/45 matched the key's normalised form; the other 3 gave the same answer in other words or a simpler equivalent form (2/6 m = 1/3 m), so 45/45 agree in substance, and those keys now carry the equivalent forms. The solver flagged 3 questions: one relied on an undescribed picture (c4 s1/c2), one gave its answer away in the wording (c5 s1/rem3), one was ambiguous and referred to another question (c5 s3/rem3, which also had a board marking 7/5 against an 8/5 answer). All 3 were rewritten and blind re-solved by a fresh agent: 3/3 match, unambiguous, no giveaway. Worked examples: 9/9 correct; one board/problem mismatch (paratha drawn as roti) was fixed in the problem text. Structure is held by tests/r7-learning-lesson-scripts.test.mjs (kit order, real misconceptions and items, board ranges, c5 on fraction-line only, no faded blanks, no key printed in its prompt, every kit misconception checked). Date 2026-11-05.",
+   "source": "inbox/r7-learning-16.json"
+  },
+  {
+   "id": "dc-r7-pilot-scripts-format",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F: the pilot lesson scripts live in data/lesson-scripts/<topicId>.json, status 'draft', in Learning's authoring shape (per skill: hook {convey, interestSlots, slotUse}, explain beats {convey, board, point}, workedExample {problem, givens, find, steps[{do, result}], answer, why, board}, 2-3 checks {prompt, key, accept, targets, wrongIfMis, board}, ladder of kit itemIds, remediation per misconception {move, board, then, thenKey}, bridgeToNext). Every teaching text field is a SHAPE (note form), never a quotable line. Brain owns the runtime schema in shared/; when its sha lands, Learning maps these files onto it (a mechanical rename, not a rewrite). c5 boards all use fraction-line@1, which Studio is asked to build; the other boards are existing templates. Reverse if: Brain's schema needs content these files do not hold (then author the missing field, keeping the blind-verify step).",
+   "source": "inbox/r7-learning-16.json"
+  },
+  {
+   "id": "dc-r7-ways-parent-lines",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (learning-how-this-child-learns, part 2; main 2026-11-04: hedged and count-based until real data): parents see the explain formats Taxila CHOSE, from decision_record point explain_format (Brain applied patch 008 at b59a83e83), as counts of what Taxila did, never as a claim about how the child learns. Monthly report S5 'ways.used' { n new ideas explained, k ways, t of them with the most used way } in en, hinglish and hi. Formats render through WAY_LABEL plain words, and F-codes never render. It is held until the month has WAYS_MIN_N = 4 explain decisions in counted lessons (U), cap 1, ordered after routine, and dropped first when the body is over budget. check.js re-derives n, k, way and t from the raw decision rows of the month's counted lessons. RENDER_VERSION pr-4. The teaching page adds per lesson up to two lines '{T} explained N new ideas with <way>' after the child's requests. The drawer copy says it is what Taxila did, not how your child learns. The report lexicon rejected the superlative 'sabse', so the line states counts only. Reverse if: the population posterior shows a clear per-band winner (then the line may say which way Taxila is trying first, still never a child trait).",
+   "source": "inbox/r7-learning-17.json"
+  },
+  {
+   "id": "dc-r7-zoom-in-drawing",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "C1 item 6, M3a: the 'zoom' is drawn, not a camera. A camera op (animating the board's viewBox) was planned and rejected before building: an SVG zoom scales text with the drawing, so labels that overlap at full size still overlap zoomed (overlap is scale-invariant) and only legibility changes. number-line-zoom@1 instead draws the textbook magnified segment: the line a..a+3 (4 labels: an axis to W9), the unit [a, a+1] lit, its copy lifts off, stretches (scale about its left end) and lands as the full-width lower line (claim), guide lines below the labels, the lower line labelled in fifths (an axis) with ten tenth ticks and the value marked. pick.js: a decimal to locate/compare/order in a decimal-context kit, never an item's answer (it would be written '?'), never in a line doing arithmetic.",
+   "reversal": "a lesson needs to zoom something with no magnified-segment form (a map region, a microscope view): then a camera op judged in its own view",
+   "source": "inbox/r7-studio-18.json"
+  },
+  {
+   "id": "fx-r7-w9-zero-one-in-box",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "W9 (main): a bare '0' or '1' was skipped as a number-line origin or column label, so a place-value board could show a hidden 0 or 1. A 0/1 that ENDS inside a rect (its settled position: place-value digits rise into their boxes) is now judged like any digit, and the number containing it is masked too. Tested in r7-motion-templates.",
+   "source": "inbox/r7-studio-18.json"
+  },
+  {
+   "id": "ms-r7-zoom-reach",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "n": 250,
+   "method": "codePick over every class 4-7 maths kit and item; board-motion-coverage.mjs first-explain over 250 kits before/after; code only",
+   "title": "number-line-zoom@1 is the pick for 11 item boards across c7 ch03 t01-t03 (0 first-explain boards: every worked-example decimal there is also an item's answer). First explain: boards 247 → 247, moving 125 → 125 or 126 (c7-maths-ch06-t02 magic square: a combine-count junk pick from '1-9'-style text → shape@1).",
+   "source": "inbox/r7-studio-18.json"
+  },
+  {
+   "id": "dc-r7-steps-on-her-words",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "C1 item 6, M3b: a board's named steps land on the words that name them. board-sync anchorSteps: for each text/label op her real line names (a 4+ letter word, in order through the line), the step's group (the ops since the previous named step) is delayed so its word lands ~250 ms before its estimated onset (index in the line × the line's ms). Only delays, never reorders; the first step's box keeps a start by 1.2 s (W6), only its word waits; delays are scaled down so the board ends within her line + 1.5 s. Applied in takePreselected when the anchored board passes the full gate, else the even pacing. No client/Voice change; onsets are estimates (Voice word timings would make them exact).",
+   "reversal": "measured word timings show the estimated onsets miss by more than ~400 ms on real lines: then anchor on Voice's word timestamps instead",
+   "source": "inbox/r7-studio-19.json"
+  },
+  {
+   "id": "ms-r7-steps-on-her-words",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "n": 247,
+   "method": "first-explain boards over 250 class 4-7 kits (board-first preselect), her line stood in by a sentence naming each fact in turn ('Pehle dekho X, …'), takePreselected with gateCtxFor; code only",
+   "title": "168 of 241 taken boards have their named steps on her words (flow 88/91, label 12/12, cycle 4/4, compare 26/32, angle 6/9, shape 6/9); 16 anchored boards refused by the gate fell back to even pacing. Not anchored: boards whose words are numbers (fractions, column work) or places.",
+   "source": "inbox/r7-studio-19.json"
+  },
+  {
+   "id": "dc-r7-stagecraft-fed-never-stale",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "C1 item 9 (M4): Stagecraft's reveal point uses the skill being taught (state.lastMove.skillId, not kit.skills[0]); its sources are fed at the point (kernel-point feedPoint: a state input that invalidates on a topic, skill or beat change, the beat lookahead from server/stagecraft/lookahead.js on a change, the stuck signal from two non-correct graded answers; STAGECRAFT_FEEDS=off disables them); seam slotFor never reveals or keeps a Stagecraft piece whose skill differs from the move's skill (hint.skillId from Brain patch 009). Feeding at the point instead of after her reply needs no Brain hook (replay: 0.597 vs 0.590 built ahead).",
+   "reversal": "Brain's planBeat lookahead ships (replace lookahead.js NEXT_BEATS with it), or live traces show the guard dropping more than ~15% of reveals (then build the point after the move instead)",
+   "source": "inbox/r7-studio-20.json"
+  },
+  {
+   "id": "ms-r7-stagecraft-replay",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "n": 94,
+   "method": "evals/stagecraft/replay.mjs: 94 recorded conversation-r3 lessons (final6-after + heldout-after, c4-7, 469 min) through the production StagecraftHost + kernelPoint/feedPoint, virtual clock from recorded latencies and word counts, spec build time from calibration.json, recorded whiteboards as stage time; $0, no model call",
+   "title": "Production now: 67 reveals of another skill, 244/717 stage turns stale, stage active 0.516, 4.63 pieces/10 min. M4 (skill fix + feeds + guard + rest): 0 stale reveals, 0/643 stale stage turns, stage active 0.470 (0.554 without rest), 5.44 pieces/10 min, 55% of reveals built ahead, 0.84 specs/lesson (~$0.001). Per class active: c4 0.46, c5 0.50, c6 0.50, c7 0.39.",
+   "source": "inbox/r7-studio-20.json"
+  },
+  {
+   "id": "dc-r7-fraction-line-board",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Main (director3 judgement): a fraction ON A NUMBER LINE is drawn as fraction-line@1, never a shaded circle. Used by the code pick (pick.js fractionLineIn: 'number line', 'mark', 'gap', 'nishaan', '0 to 1', or a lesson whose worked example is on the line and a text asking where) and by the claims board (her line). The kit's solved example hops to its point and names it; a named mark asked for its fraction gets a tall tick and '?' (no dot: W9 reads a dot as the answer); an asked fraction is written above the line, never placed. W9: a line labelled with every whole number of its range is its axis.",
+   "reversal": "children read the '?' tick as pointing at the answer, or a fraction-of-a-whole lesson starts drawing lines (then narrow ON_A_LINE)",
+   "source": "inbox/r7-studio-21.json"
+  },
+  {
+   "id": "ms-r7-fraction-line-board",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "n": 20,
+   "method": "codePick over c5-maths-ch02-t01 (worked example + 19 items), before vs after; each fraction-line board through the full gate on its item (retimeToLine, withheldValues); code only",
+   "title": "c5 fractions on a line: before 8 fraction-parts (shaded circle), 3 number-line-hop, 9 none; after 18 fraction-line, 2 none; 18/18 pass the full gate with the item's answers withheld. Also fires on c6-ch07-t02 (3), c6-ch07-t03 (1), c4-ch05-t02 (1); never on mixed numbers, decimal lines or a roti.",
+   "source": "inbox/r7-studio-21.json"
+  },
+  {
+   "id": "dc-r7-board-refs",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Lesson-script board refs (dc-r7-teaching-scripts): BoardRef = { template, withhold?: 'item', ...params } | { auto: true }. The vocabulary is server/forge/explainer/board-ref.js BOARD_REFS (24 templates, each with param ranges and an example that renders). resolveBoardRef (pure, turn and author time) and certifyBoardRef (the full W0-W19 gate against the beat's stand-in line, answers withheld; Learning runs it in CI). Brain adopted it in shared/contracts.ts on explain[], worked, checks[] and remediation[]; preselect will read intent.boardRef. An absent or failing ref falls back to Studio's pick.",
+   "reversal": "scripts need boards no template can draw (then add a template, never free-form params)",
+   "source": "inbox/r7-studio-21.json"
+  },
+  {
+   "id": "dc-r7-code-scenes",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Main M5 decision: the owner's #4 (cinematic animation) starts as CODE-BUILT scenes at $0 (shared/scene.js format: props, keyframed tracks, captions, clause-bound beats; one interpolation sceneAt for player, lint and tests; tray-gate 'scene' rule; ScenePlayer as artifact kind 'scene'). 'animation dikhao' on a pilot topic gets the scene via studioSeam.composeAsk before the play ladder. Generated video (Sora on Azure) only after a priced 5-clip test, once code scenes show what they cannot do. Live codegen stays dormant; gate services, the image rung and O-1 are on the owner's decision list.",
+   "reversal": "children or the owner find the code scenes too plain for the idea (then the priced Sora 5-clip test), or scenes cannot be authored fast enough beyond the 20 pilots (then a scene DSL that Learning's scripts can name)",
+   "source": "inbox/r7-studio-22.json"
+  },
+  {
+   "id": "ms-r7-code-scenes",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "n": 20,
+   "method": "sceneFor over the 20 pilot topics × en/hinglish/hi: normalizeScene + lintScene; certifyForTray at p360/p412/l1366 × young/older; real child route recordings (vite + playwright, API mocked); code only",
+   "title": "20 pilot scenes (10 maths c4-6, 10 science c6-7): 60/60 clean, 360/360 certified; captions at 18 stage units reach 14.8 px in the 360 phone box; delivered for 'animation dikhao' through composeAsk; strips for all 20 and videos for 3 recorded.",
+   "source": "inbox/r7-studio-22.json"
+  },
+  {
+   "id": "rj-r7-inbox-md-string-per-char",
+   "kind": "rejection",
+   "at": "2026-11-05",
+   "title": "merge-inbox fed a string `md` to Object.entries: one context file per character (1,309 junk files at integration 5)",
+   "source": "inbox/r7-main-10.json"
+  },
+  {
+   "id": "jd-r7-director4-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director4 (Director walks the authored lesson scripts, 12 lessons, ~$0.20) judged by 3 Claude judges: maths model fixed and the lesson has a spine, but the walk is a clock: c5 beats delivered 5/19, c4 explain beats fully delivered 1/13 and answers graded 0/7, 9/12 lessons never reach a keyed question, kit sources still speak, English read aloud, speech contradicts screen (c6 6/8). Scores mostly 1→2.",
+   "source": "inbox/r7-main-11.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v2",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Keep the teaching-scripts architecture; no scale-out. Script format v2 (Hinglish for every spoken field, keyed micro-question per explain beat, <=2 explain beats before a keyed question, worked = problem + do/result/why with the last step the child’s, slots fit beats) and runtime v2 (beat completes only when said and answered, diversions do not consume beats, script mode silences kit sources, screen contract enforced in code, language request persists, question jar) plus a reactive scripted child; director5 gates the 30-topic scale-out (>=80% beats delivered, >=90% keyed answers get a verdict, 0 contradictions, every judge axis >=3.5).",
+   "source": "inbox/r7-main-11.json"
   }
  ],
  "edges": [
@@ -38860,6 +39058,41 @@
    "src": "dc-r7-voice-echo-residuals",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-teaching-scripts",
+   "rel": "measured_by",
+   "dst": "jd-r7-director3-2026-11-05"
+  },
+  {
+   "src": "dc-r7-teaching-scripts",
+   "rel": "supersedes",
+   "dst": "dc-r7-brain-structural-block"
+  },
+  {
+   "src": "dc-r7-zoom-in-drawing",
+   "rel": "measured_by",
+   "dst": "ms-r7-zoom-reach"
+  },
+  {
+   "src": "dc-r7-steps-on-her-words",
+   "rel": "measured_by",
+   "dst": "ms-r7-steps-on-her-words"
+  },
+  {
+   "src": "dc-r7-pilot-scripts-format",
+   "rel": "measured_by",
+   "dst": "ms-r7-pilot-scripts-blind"
+  },
+  {
+   "src": "dc-r7-script-walk-v2",
+   "rel": "measured_by",
+   "dst": "jd-r7-director4-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v2",
+   "rel": "part_of",
+   "dst": "dc-r7-teaching-scripts"
   }
  ]
 }

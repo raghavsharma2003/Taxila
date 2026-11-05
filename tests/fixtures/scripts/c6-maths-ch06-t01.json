@@ -1,0 +1,689 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "version": 1,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "parimap",
+   "en": "perimeter"
+  },
+  {
+   "hi": "bhuja",
+   "en": "side"
+  },
+  {
+   "hi": "lambai",
+   "en": "length"
+  },
+  {
+   "hi": "chaudai",
+   "en": "breadth"
+  },
+  {
+   "hi": "kinaara / seema",
+   "en": "edge / boundary"
+  },
+  {
+   "hi": "aayat",
+   "en": "rectangle"
+  },
+  {
+   "hi": "varg",
+   "en": "square"
+  },
+  {
+   "hi": "tribhuj",
+   "en": "triangle"
+  },
+  {
+   "hi": "bahubhuj",
+   "en": "polygon"
+  },
+  {
+   "hi": "kshetrafal",
+   "en": "area"
+  },
+  {
+   "hi": "baad / taar",
+   "en": "fence / wire"
+  },
+  {
+   "hi": "dar",
+   "en": "rate (per metre)"
+  },
+  {
+   "hi": "kharcha / laagat",
+   "en": "cost"
+  },
+  {
+   "hi": "chakkar",
+   "en": "round (of a park)"
+  }
+ ],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch06-t01-s1",
+   "hook": {
+    "convey": "closed shape → walk its edge from one corner, all the way back to the same corner → how far = perimeter; fence round a field, lace along a dupatta edge, rope round a ground",
+    "interestSlots": [
+     "border of a rangoli",
+     "lace on a dupatta",
+     "boundary of a cricket ground",
+     "fencing a vegetable patch"
+    ],
+    "slotUse": "the closed shape whose edge is walked, laced or bordered; its sides supply the lengths to add"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "perimeter (parimap) = total length of the boundary of a closed shape → start at a corner, go along every side, end at the start corner; triangle 4 cm, 5 cm, 6 cm → 4 + 5 + 6 = 15 cm",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "cm",
+       "sides": [
+        4,
+        5,
+        6
+       ],
+       "trace": true
+      }
+     },
+     "point": "the trace going round the triangle over its three labelled sides 4 cm, 5 cm and 6 cm, back to the start corner"
+    },
+    {
+     "id": "e2",
+     "convey": "any polygon (bahubhuj) → same rule: add every side, however many; hexagon = 6 sides → 6 lengths in the sum; a side with no label still belongs to the boundary → still added",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "hexagon",
+       "names": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ]
+      }
+     },
+     "point": "the six sides AB, BC, CD, DE, EF, FA, taken one after another from corner A back to A"
+    },
+    {
+     "id": "e3",
+     "convey": "perimeter = AROUND the shape (string on the edge) → a length → cm, m, km; area = INSIDE (tiles covering the surface) → a different quantity; 6 cm by 4 cm card → edge = 6 + 4 + 6 + 4 = 20 cm, not 6 × 4",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 6,
+       "h": 4,
+       "trace": true
+      }
+     },
+     "point": "the traced edge of the rectangle: top 6 cm, right 4 cm, bottom 6 cm, left 4 cm, versus the empty inside"
+    }
+   ],
+   "workedExample": {
+    "problem": "A five-sided flower bed has sides 4 m, 5 m, 3 m, 6 m and 2 m. How much fencing goes once around it?",
+    "givens": [
+     "the flower bed is a closed five-sided shape (pentagon)",
+     "sides: 4 m, 5 m, 3 m, 6 m, 2 m"
+    ],
+    "find": "the perimeter of the flower bed (fencing needed once around)",
+    "steps": [
+     {
+      "do": "fencing goes along the boundary → perimeter = sum of all sides",
+      "result": "P = 4 + 5 + 3 + 6 + 2"
+     },
+     {
+      "do": "add the first two sides",
+      "result": "4 + 5 = 9 m"
+     },
+     {
+      "do": "add the third side",
+      "result": "9 + 3 = 12 m"
+     },
+     {
+      "do": "add the fourth side",
+      "result": "12 + 6 = 18 m"
+     },
+     {
+      "do": "add the fifth side → all 5 sides used, back at the start corner",
+      "result": "18 + 2 = 20 m"
+     }
+    ],
+    "answer": "20 m",
+    "why": "fence runs along the edge → perimeter; 5 sides → 5 lengths in the sum, none left out; answer is a length → m, not square m",
+    "board": {
+     "template": "shape@1",
+     "params": {
+      "shape": "pentagon"
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "An L-shaped room has 6 sides. Going round from one corner, the sides are 8 m, 3 m, 5 m, 4 m, 3 m and 7 m. What is the perimeter of the room?",
+     "key": "30 m",
+     "accept": [
+      "30",
+      "30 metres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-missing-sides",
+     "wrongIfMis": "23 m",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "A card has sides 10 cm, 4 cm, 10 cm and 4 cm going round. How much lace is needed to go once around its edge?",
+     "key": "28 cm",
+     "accept": [
+      "28",
+      "28 centimetres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "wrongIfMis": "40 cm",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 10,
+       "h": 4
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c6-maths-ch06-t01-i03",
+     "why": "first straight use: triangle, three given sides → add all"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i09",
+     "why": "decide perimeter vs area from the situation: lace around vs cloth covering"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i10",
+     "why": "error-spot: Riya stops at 5 of 6 sides of an L-shape → find the left-out side and the true perimeter"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-rl-h1",
+     "why": "six unequal edges in a real context (exhibition board tape) → every edge, once"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch06-t01-m-missing-sides",
+     "move": "named-corner walk instead of a list of numbers: start at A, write each side's name as its length goes into the sum (AB, BC, … FA); sum is done only when the walk is back at A",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "hexagon",
+       "names": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F"
+       ]
+      }
+     },
+     "then": "A 6-sided field ABCDEF has AB = 10 m, BC = 4 m, CD = 6 m, DE = 5 m, EF = 4 m and FA = 9 m. What is its perimeter?",
+     "thenKey": "38 m"
+    },
+    {
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "move": "string vs tiles: string laid along the edge then straightened against a ruler = perimeter (cm); tiles laid inside = area; perimeter question → string, so add the edge lengths, never multiply them",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 5,
+       "h": 3,
+       "trace": true
+      }
+     },
+     "then": "Ribbon goes once around the edge of a label 5 cm long and 3 cm wide. How long is the ribbon?",
+     "thenKey": "16 cm"
+    }
+   ],
+   "bridgeToNext": "adding every side always works → rectangle: sides come in equal pairs (lambai, chaudai, lambai, chaudai) → shortcut 2 × (l + b); square: 4 equal sides → 4 × side"
+  },
+  {
+   "skillId": "c6-maths-ch06-t01-s2",
+   "hook": {
+    "convey": "rectangle and square boundaries everywhere → a quicker way than writing 4 numbers each time, because sides repeat",
+    "interestSlots": [
+     "boundary of a cricket ground",
+     "border of a rangoli",
+     "phone screen protector",
+     "fencing a vegetable patch"
+    ],
+    "slotUse": "the rectangular or square thing whose edge is measured; it supplies the length and breadth (or side)"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "rectangle (aayat) → opposite sides equal → going round: lambai, chaudai, lambai, chaudai → 10 + 6 + 10 + 6 = 32 m",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 10,
+       "h": 6,
+       "trace": true
+      }
+     },
+     "point": "the two 10 m lengths (top and bottom) and the two 6 m breadths (left and right)"
+    },
+    {
+     "id": "e2",
+     "convey": "one length + one breadth = corner to opposite corner = HALF the way round; full round = that half twice → P = 2 × (l + b) = 2 × (10 + 6) = 2 × 16 = 32 m; l + b alone = 16 m = only half the boundary",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 10,
+       "h": 6,
+       "trace": true
+      }
+     },
+     "point": "the trace from the bottom-left corner along the 10 m length and up the 6 m breadth to the opposite corner, then the second half back"
+    },
+    {
+     "id": "e3",
+     "convey": "square (varg) → all 4 sides equal → 6 + 6 + 6 + 6 = 4 × 6 = 24 cm → P = 4 × side; answer is a length → cm, not square cm",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "square",
+       "unit": "cm",
+       "w": 6,
+       "h": 6,
+       "trace": true
+      }
+     },
+     "point": "the four equal 6 cm sides of the square"
+    }
+   ],
+   "workedExample": {
+    "problem": "A rectangular notebook cover is 24 cm long and 18 cm wide. How much tape goes once around its edge?",
+    "givens": [
+     "shape: rectangle",
+     "length = 24 cm",
+     "breadth = 18 cm"
+    ],
+    "find": "the perimeter of the cover (tape needed once around the edge)",
+    "steps": [
+     {
+      "do": "tape goes along the edge → perimeter; rectangle sides go l, b, l, b → P = 2 × (l + b)",
+      "result": "P = 2 × (24 + 18)"
+     },
+     {
+      "do": "bracket first: one length + one breadth = half the edge",
+      "result": "24 + 18 = 42 cm"
+     },
+     {
+      "do": "double the half to get the full edge",
+      "result": "2 × 42 = 84 cm"
+     },
+     {
+      "do": "cross-check by adding all four sides",
+      "result": "24 + 18 + 24 + 18 = 84 cm"
+     }
+    ],
+    "answer": "84 cm",
+    "why": "rectangle edge = two lengths + two breadths → (l + b) taken twice; 42 cm alone is half the edge; 24 × 18 = 432 would be area (inside), not the edge",
+    "board": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "A rectangular playground is 40 m long and 25 m wide. What is its perimeter?",
+     "key": "130 m",
+     "accept": [
+      "130",
+      "130 metres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-l-plus-b",
+     "wrongIfMis": "65 m",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 40,
+       "h": 25
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": "Lace is sewn once around the edge of a rectangular table mat 9 cm long and 5 cm wide. How much lace is needed?",
+     "key": "28 cm",
+     "accept": [
+      "28",
+      "28 centimetres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "wrongIfMis": "45 cm",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 9,
+       "h": 5
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": "A square tile has side 11 cm. What is its perimeter?",
+     "key": "44 cm",
+     "accept": [
+      "44",
+      "44 centimetres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "wrongIfMis": "121 cm",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "square",
+       "unit": "cm",
+       "w": 11,
+       "h": 11
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c6-maths-ch06-t01-i01",
+     "why": "direct 2 × (l + b) on a small rectangle, 8 cm by 5 cm"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i02",
+     "why": "direct 4 × side on a square, in metres"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i04",
+     "why": "error-spot: Raj's 19 m for a 12 m by 7 m garden = l + b once → name the missing two sides, give 38 m"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i06",
+     "why": "explain the formula itself: why (l + b) is taken twice"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-rl-h2",
+     "why": "both formulas side by side (square rangoli vs rectangular mat) → compare, spot equal perimeters"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch06-t01-m-l-plus-b",
+     "move": "ant walk with a running counter instead of a formula: ant starts at a corner, counter after each side 14 → 20 → 34 → 40 m; l + b = 20 m = ant only at the opposite corner, halfway; sides walked 4, sides added in l + b only 2",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 14,
+       "h": 6,
+       "trace": true
+      }
+     },
+     "then": "An ant walks once round a rectangular field 20 m long and 9 m wide. What does its distance counter show at the end?",
+     "thenKey": "58 m"
+    },
+    {
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "move": "string around vs tiles inside the same rectangle: string along the edge → straightened on a ruler → cm (perimeter); tiles covering → square cm (area); 7 × 3 counts tiles, not string",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 7,
+       "h": 3,
+       "trace": true
+      }
+     },
+     "then": "String goes once around the edge of a bookmark 8 cm long and 2 cm wide. How long is the string?",
+     "thenKey": "20 cm"
+    }
+   ],
+   "bridgeToNext": "formula forward: sides → perimeter; real problems run it backward and onward: square side = P ÷ 4; rectangle P ÷ 2 = l + b → breadth = P ÷ 2 − l; perimeter × rate per metre → fencing cost; perimeter × rounds → distance run"
+  },
+  {
+   "skillId": "c6-maths-ch06-t01-s3",
+   "hook": {
+    "convey": "real boundary jobs → perimeter is the first number, then one more step: rounds × perimeter, metres × rate, or perimeter back to a side",
+    "interestSlots": [
+     "running rounds of a park",
+     "fencing a vegetable patch",
+     "boundary of a cricket ground",
+     "kabaddi ground"
+    ],
+    "slotUse": "the real ground being run round, fenced or marked, plus the rounds, the price per metre, or the known perimeter"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "backward for a square: perimeter 60 m shared by 4 equal sides → side = 60 ÷ 4 = 15 m; check: 4 × 15 = 60 m",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "square",
+       "unit": "m",
+       "w": 15,
+       "h": 15
+      }
+     },
+     "point": "the four equal 15 m sides that together make the 60 m boundary"
+    },
+    {
+     "id": "e2",
+     "convey": "backward for a rectangle: perimeter 60 m, length 20 m → half the perimeter = one length + one breadth = 30 m → breadth = 30 − 20 = 10 m; check: 2 × (20 + 10) = 60 m",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 20,
+       "h": 10,
+       "trace": true
+      }
+     },
+     "point": "one 20 m length plus one 10 m breadth = half of the traced boundary"
+    },
+    {
+     "id": "e3",
+     "convey": "fencing cost = perimeter (m) × rate (₹ per m); 12 m by 8 m plot → 2 × (12 + 8) = 40 m → at ₹10 per m → 40 × 10 = ₹400; a gate or gap with no wire → subtract its length from the perimeter before multiplying",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 12,
+       "h": 8,
+       "trace": true
+      }
+     },
+     "point": "the traced fence line all around the 12 m by 8 m rectangle"
+    }
+   ],
+   "workedExample": {
+    "problem": "Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How far does she run?",
+    "givens": [
+     "the park is a rectangle",
+     "length = 50 m",
+     "breadth = 30 m",
+     "number of rounds = 3"
+    ],
+    "find": "the total distance Rani runs",
+    "steps": [
+     {
+      "do": "one round = once along the whole boundary → perimeter of the park",
+      "result": "1 round = perimeter of the park"
+     },
+     {
+      "do": "rectangle → P = 2 × (l + b)",
+      "result": "P = 2 × (50 + 30)"
+     },
+     {
+      "do": "bracket first",
+      "result": "50 + 30 = 80 m"
+     },
+     {
+      "do": "double it → one full round",
+      "result": "2 × 80 = 160 m"
+     },
+     {
+      "do": "3 equal rounds → 3 × one round",
+      "result": "3 rounds = 3 × 160 m"
+     },
+     {
+      "do": "multiply",
+      "result": "3 × 160 = 480 m"
+     }
+    ],
+    "answer": "480 m",
+    "why": "each round covers the whole boundary once = 160 m; 3 equal rounds → multiply by 3; 3 × (50 + 30) = 240 m would be only half a round each time",
+    "board": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "A square garden has a perimeter of 84 m. How long is one side?",
+     "key": "21 m",
+     "accept": [
+      "21",
+      "21 metres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-l-plus-b",
+     "wrongIfMis": "42 m",
+     "board": null
+    },
+    {
+     "id": "c2",
+     "prompt": "A rectangular field is 30 m long and 20 m wide. Fencing wire costs ₹15 per metre. What does it cost to fence the field once around?",
+     "key": "₹1500",
+     "accept": [
+      "1500",
+      "Rs 1500",
+      "1500 rupees"
+     ],
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "wrongIfMis": "₹9000",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 30,
+       "h": 20
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": "A rectangular rangoli border has a perimeter of 70 cm and a length of 20 cm. What is its breadth?",
+     "key": "15 cm",
+     "accept": [
+      "15",
+      "15 centimetres"
+     ],
+     "targets": "c6-maths-ch06-t01-m-l-plus-b",
+     "wrongIfMis": "50 cm",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c6-maths-ch06-t01-i07",
+     "why": "backward for a square: perimeter 400 m → one side"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-rl-h3",
+     "why": "backward for a rectangle: perimeter and length known → halve, then subtract the length"
+    },
+    {
+     "itemId": "c6-maths-ch06-t01-i08",
+     "why": "fencing cost: perimeter × ₹ per metre, then the gate variant → subtract 2 m before multiplying"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch06-t01-m-l-plus-b",
+     "move": "ant walk run backward: full boundary = 2 lengths + 2 breadths; ant at the opposite corner = half the perimeter = 1 length + 1 breadth; 18 m by 12 m → 60 m round, half = 30 m = 18 + 12 → so halve the perimeter first, then take away the length",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 18,
+       "h": 12,
+       "trace": true
+      }
+     },
+     "then": "A rectangular pond has a perimeter of 80 m and a length of 25 m. What is its breadth?",
+     "thenKey": "15 m"
+    },
+    {
+     "targets": "c6-maths-ch06-t01-m-area-perimeter",
+     "move": "wire is bought by the metre of edge, not by the ground inside: string around the plot vs tiles inside it; cost = edge length (m) × ₹ per m; l × b = ground covered, not wire",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 10,
+       "h": 6,
+       "trace": true
+      }
+     },
+     "then": "Wire costing ₹20 per metre goes once around a plot 10 m long and 6 m wide. What does the wire cost?",
+     "thenKey": "₹640"
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ],
+ "verified": {
+  "by": "separate Claude agent, blind (prompts only)",
+  "on": "2026-11-05",
+  "checksAndRemediation": "45/45 agree (3 after a rewrite and re-solve)",
+  "workedExamples": "9/9 ok"
+ }
+}

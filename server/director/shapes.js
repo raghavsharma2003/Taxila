@@ -71,6 +71,34 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
 
+// round 7 T3: the turn that returns a parked promise before the wrap is for it alone
+export const returnedTurn = ({ share = false } = {}) => (share ? "this turn is for it alone: no goodbye yet and no lesson question"
+  : "this turn is for it alone: answer it properly, then ask if that answers it; no goodbye yet and no lesson question");
+// round 7 T2 (dc-r7-teaching-scripts): a lesson script's beats. The beat (LESSON NOW) is a shape to convey; the words are hers.
+export const scriptHook = ({ bridge = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  "open with the hook in LESSON NOW as one concrete situation in their world (the interest slot)",
+  "one small question to wonder about; no answer, no rule yet",
+);
+export const scriptExplain = ({ bridge = false, board = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  "one idea: the beat in LESSON NOW, in your own words; objects first, then the symbol",
+  board ? "point at what the board shows as you say it (the point in LESSON NOW)" : "point at the screen only at what the on-screen row lists",
+  // (T3: a question with an answer is a keyed check, never her own: a wrong answer to an unkeyed one cannot be corrected)
+  "end by asking them to notice or say back one part of it in their words — never a sum or number for them to work out, never 'samjha?'",
+);
+export const scriptWorked = () => join(
+  "worked example: the one in LESSON NOW with its own numbers and names, never an example of your own",
+  "say the problem and what each given number is, then every step with its result, then the answer and why it is right",
+  "a bracket is said sum first: 2 × (50 + 30) is '50 plus 30, that is 80, times 2'",
+  "nothing for them to work out this turn; their question comes next",
+);
+export const scriptRemedy = () => join(
+  "their answer fits the wrong idea in LESSON NOW: say plainly it is not right and the right answer to it, without blame",
+  "then show it the new way in LESSON NOW (a new picture of it; never counting one by one); no repeat of the earlier explanation",
+  "then the follow-up question in LESSON NOW, as written; wait",
+);
+
 // QA 14.4.1 (65fae3d0, 3e2fcb15): a garden of 5 and 3 of her own instead of the kit's park, and a "pata nahi" answered with
 // "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
 export const worked = ({ part, parts, stuck = false }) => join(

@@ -26,7 +26,7 @@ import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
-import { whiteboardIntentOf } from "../server/brain/propose.js";
+import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { preselect } from "../server/stagecraft/board-first.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -164,19 +164,28 @@ async function lesson(lane, kit, classLevel, lines) {
     // S4: what a picture / game request would put on the screen this turn (turn.js: the board pick, the play admission), and
     // her shape made true about it, as production does (boardTruthShape, askTruth); the screen is recorded on the row
     let screen = null, instructions = p.instructions;
-    if (lane === "director" && p.r.move?.request === "visual") {
-      const visual = String(p.r.move.visual ?? "diagram");
+    // T4 (screen contract): a scripted beat's board is drawn too (turn.js asks Studio on explain beats; intent.boardRef), and
+    // what is on the screen reaches her line as production's does (ui.studioSlot: the screen guard and the facts row)
+    let slot = null;
+    const scriptedBoard = !!next.lastMove?.scriptBeat?.board;
+    if (lane === "director" && (p.r.move?.request === "visual" || scriptedBoard)) {
+      const visual = p.r.move?.request === "visual" ? String(p.r.move.visual ?? "diagram") : "diagram";
       let shape = String(next.lastMove?.shape ?? "");
       if (visual === "game") {
         const e = entryFor({ skillId: next.lastMove?.skillId ?? null, topicId: kit.topicId });
         screen = e ? { kind: "game", game: `${e.family}/${e.mode}`, goal: e.goal ?? null } : { kind: "none", why: "no game for this skill" };
+        if (e) slot = { artifact: { kind: "play", game: `${e.family}/${e.mode}` } };
         shape = askTruth(shape, "game", e ? "engine" : "none");
       } else {
-        const item = next.activeItemId ? findItem(next, kit, next.activeItemId) : null;
-        const ask = whiteboardIntentOf({ lessonId: LESSON.id, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
+        // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
         const pick = preselect(ask, { kit });
+        if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
-          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null };
+          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
+            ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+          slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null } } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
         } else screen = { kind: "none", why: "no board for this ask" };
@@ -186,7 +195,7 @@ async function lesson(lane, kit, classLevel, lines) {
       instructions = instructionsFor(next, kit);
     }
     if (reply == null) {
-      const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui, module: null }));
+      const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
