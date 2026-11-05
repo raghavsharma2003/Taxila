@@ -5438,3 +5438,9 @@ Serial seconds per suite, one node --test process each on this container, before
 | r4-content-beat-desk | 23 | 23 (dev-only route) |
 
 Total about 374 s → 110 s. Local browser shard: 124 pass, 0 fail, 120 s. CI browser shard: 3m45s on 9dcfda1d. Repeat runs were within 1 s of each other. (C1 Studio, 2026-11-05)
+
+
+<!-- merged from inbox/r7-main-13.json -->
+## `jd-r7-director6-2026-11-05`
+
+n = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering; steady ~41 turns, others ~23), 1,190 calls on taxila-fast (~$0.807, incl. a 27-call aborted start), reply-ready p50 3.00 s. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on a run tree of int/r6 93b0e20c0 + Brain ea705f9d + Studio 190c77f1, v2.1 scripts (Learning 31b818f9c), H1.1 child. Four Claude judges (one per topic, not blind) counted by hand against the v2.1 script files. Hand totals: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 plus 6 stated-number "?" boards. Date 2026-11-05. Write-up: docs/design/round7/judgements/director6-2026-11-05.md.

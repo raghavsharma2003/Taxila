@@ -7806,3 +7806,60 @@ A scripted board hides answers by what its beat is for. Explain and worked beats
 ## `dc-r7-board-ref-certify-numbers`
 
 A board ref that cannot show its own numbers fails certification (numbers_not_shown), and so does a board that draws none of the measures its line states (line_measures_not_on_board). measured@1 now draws labelled polygons (pentagon to octagon, 3-8 sides, corner names) so the c6 pentagon can show 4, 5, 3, 6, 2 m. Reverse if a ref must author a number that is not drawn. (C1 Studio, 2026-11-05)
+
+
+<!-- merged from inbox/r7-main-13.json -->
+## `dc-r7-script-walk-v4`
+
+(close the runtime gaps; authoring may start, staged)
+
+The architecture is confirmed by three runs in a row (director4–6), each of which judged the content correct, and the gate moved from 39% to 79% taught and from 75% to 89% judged. **The reversal is not taken.** The remaining failures are runtime ordering and guard behaviour, plus small data rules.
+
+**Runtime** (Brain):
+- **W1. Authored text is immune to repair.**
+  - In script mode, no guard (long, uncorrected, noconfirm, twoq, leak, screenmismatch) may cut, drop or replace authored text (point, say, steps, then-prompt, key) or a code verdict. Guards act on the model's own clauses only.
+  - The output order is fixed: verdict → authored say or point → the card. The bare card alone is never a turn.
+- **W2. The worked example, one step per turn.**
+  - Each step is spoken as do → result → why, in its own turn.
+  - The child's step is the card.
+  - The answer and the why are spoken after it.
+  - The give-up reveal is one clean sentence with the key, said at once.
+- **W3. When code inserts the point, the model gets only a one-clause lead-in.** The point goes before the ask, and the ask is shown in full.
+- **W4. Grading.**
+  - The listed wrong answers (`wrongIfMis`) are matched before any by-value match.
+  - Anything on `accept` is graded right.
+  - Every graded answer gets the code verdict (e6c864ff).
+  - After remediation, the missed card is closed with its answer before the walk moves on.
+- **W5. Every scripted skill is walked in order,** with its hook or bridge. The kit ladder never runs in script mode while a skill is still unwalked.
+- **W6. Parks.** An aside is parked with a promise ("cricket baad mein, pakka") and returned to before the wrap. A language promise is a mode that holds (R5).
+
+**Data, v2.2** (Learning; Brain's validator):
+- then-card prompts are 120 characters or fewer;
+- every check and then-card carries its own board;
+- an explain beat's ask is self-contained and fits the beat's board;
+- a then-card never repeats the worked problem;
+- c5-t01 s1 e1 says "0 se 1";
+- kit items get the `{friend}` slot and lose masculine first-person lines.
+
+**Studio:**
+- a number the line states is never drawn as "?" (only an asked mark is "?");
+- every template emits `screen.counts`.
+
+**Harness H1.2** (Learning, with Brain's counters):
+- a card labelled "probe" that poses a keyed question is answered as a card;
+- answered cards are not re-answered;
+- the verdict count requires an explicit affirmation;
+- a new count: wrong called right.
+
+**Authoring may start, staged.** Learning may author the 30-topic batch in v2.2 now, in-session by Claude, blind-verified, at no Azure cost, into a staging folder. The batch goes live only when director7 passes. Rationale: the content layer has been judged correct three times, and the format changes left are small rules. **Reverse this if** director7 forces a format change beyond v2.2.
+
+**Next run: director7.** The same 16 lessons, H1.2, and a cap sized from the dry run (about $0.85).
+
+**The gate is unchanged, plus one line:**
+- at least 80% of beats taught;
+- at least 90% of answers given a verdict;
+- 0 contradictions;
+- 0 right answers called wrong;
+- **0 wrong answers called right;**
+- every judge axis at 3.5 or above;
+- judged by hand.
