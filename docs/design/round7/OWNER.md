@@ -94,6 +94,19 @@ in parts, start with tiers 1 and 2 (~$21).
     - The maths is right now, and the lesson has a spine.
     - But she still walks the beats like a clock: a beat counts whether or not she taught it, the explanation beats ask no keyed question, and English script text is read aloud.
   - Next: format v2 plus beat-completion rules (`dc-r7-script-walk-v2`). No scale-out to 30 topics until director5 passes a measured gate. Write-up: `judgements/director4-2026-11-05.md`.
+- 2026-11-05 evening: director5 (v2 scripts, a simulated child that answers right and wrong, 16 lessons, $0.65).
+  - Clearly better than before:
+    - Hinglish holds;
+    - she comes back to the lesson after the child's detours;
+    - every board shows;
+    - she gives most answers a verdict.
+  - Still failed the bar on every line, by hand count:
+    - 39% of beats really taught;
+    - 75% of answers judged;
+    - at least 14 right answers called wrong, because she graded the reply to her "kaise jaana?" against the next question;
+    - 25 places where her words don't match the screen.
+  - Two code checks were also deleting correct teaching, and the written corrections were never spoken.
+  - Decision (`dc-r7-script-walk-v3`): code now speaks the written corrections and worked examples nearly word for word. Explanations stay in her own words but fall back to the written line. Checks may never delete teaching. She grades only the question she just asked. Then director6. Write-up: `judgements/director5-2026-11-05.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

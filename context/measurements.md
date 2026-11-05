@@ -5401,3 +5401,9 @@ Round 7 F: Studio's full whiteboard gate (certifyBoardRef W-checks, int/r6 integ
 ## `ms-r7-test-all-2026-11-05`
 
 499 suites at int/r6 4c5b4bed, one node --test process each, 4 at a time on the 4-core container: 532 s wall; serial total 1,986 s. Single-process npm test took about 32 min (main, integration 6). Slowest suites: kit-budget 312 s (15.7% of serial time), studio-stage-states 112 s, r4-latency-outbox-late 111 s, forge-g2 94 s, brain-turn 92 s, w2b-whiteboard-browser 84 s, migrations-applied 60 s (a 60 s reachability probe, now 10 s), studio-qa 49 s, and four DB suites at about 45 s each. The fixes went to the owners through main. Only r5-edit-supersede-db failed in isolation: it needs model keys when a TEST DB is set, and Brain is making it skip without them. (2026-11-05; from inbox/r7-platform-5.json)
+
+
+<!-- merged from inbox/r7-main-12.json -->
+## `jd-r7-director5-2026-11-05`
+
+n = 16 lessons (4 topics: c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × 4 personas), 21–25 teacher turns each, 1,056 calls on taxila-fast, ~$0.654, reply-ready p50 2.86 s. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on and TAXILA_R7_SCRIPT_DIR=data/lesson-scripts-v2 on int/r6 f55de86f (part 2 at 05ceffdb); Learning’s rule-based reactive child H1. Four Claude judges (one per topic, not blind) counted the gate by hand and attributed defects to script / walk / rendering / harness. Hand counts: beats taught 32/82 (39%), verdicts 134/178 (75%), right answers called wrong ≥14, contradictions 25; code proxies 58% / 58% / 4. Date 2026-11-05. Write-up: docs/design/round7/judgements/director5-2026-11-05.md.
