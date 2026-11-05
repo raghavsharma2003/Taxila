@@ -33,3 +33,14 @@ Proposal from Studio (C1) to Brain (schema owner) and Learning (script author). 
 `ScriptBeat.board?: BoardRef`, where `BoardRef = { template: string; withhold?: "item"; [param: string]: unknown } | { auto: true }`.
 On the turn, the beat's ref replaces the code pick: Studio resolves it, then re-gates it against her real line as it
 does every board. If the ref is absent or fails, the turn falls back to today's pick.
+
+## Scenes in script beats (draft; lands after the director4 judgement, main 2026-11-05)
+
+- **Schema (Brain, `docs/patches/to-brain/011-script-scene-ref.patch`):** `ExplainBeat.scene?: { topic }`, separate from
+  `board`. The validator checks the topic id, the Director copies it to `lastMove.scriptBeat.scene`, and
+  `whiteboardIntentOf` puts it on the ask as `intent.sceneRef`. Explain beats only: never a check.
+- **Studio half (to land with it):** when `intent.sceneRef` names a topic with a built scene and
+  `sceneMayPlay(scene, { held, cardLive })` passes, board-first preselect makes no board for the beat. The seam then
+  stages the scene piece the way `composeAsk` does, and this turn's `slotFor` shows it. Withholding is the same at all
+  three points: pending, reveal and on screen. An absent, unbuilt or withheld scene falls back to the beat's board ref,
+  then Studio's own pick.
