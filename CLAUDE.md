@@ -49,5 +49,8 @@ grades — classify against verified keys; identity is an authenticated child id
 The Vercel project `taxila` is paused (Azure-only directive); `api/[...route].js` is kept only as a shim.
 
 ## Gates
-`npx tsc -b && npx vite build && npm test` must pass before any commit that touches code. Secrets live only in
-gitignored `.env.local` (and the hosting provider's secret store) — never commit or print them.
+`npx tsc -b && npx vite build && npm run test:all` must pass before any commit that touches code (`test:all` runs every
+suite in its own process, 4 at a time: ~9 min instead of ~32; `tests/test-isolation.test.mjs` keeps module-level env and
+global writes out of tests). The main loop's integration additionally runs single-process `DATABASE_URL= npm test`, which
+is what catches state leaking between files. Secrets live only in gitignored `.env.local` (and the hosting provider's
+secret store) — never commit or print them.
