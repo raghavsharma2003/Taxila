@@ -100,7 +100,10 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // kit's other items' keys masked "6 cm | ? cm" on c6); a remediation withholds only its own item's key; a check beat
   // keeps the full set (its card is live)
   const sk = ask?.intent?.boardRef ? ask?.intent?.scriptBeat?.kind ?? null : null;
-  const withhold = !sk || sk === "check" ? withhold1
+  // (a scripted CARD's board writes its authored labels on purpose — "2/4" on the 1/4-hops card, whose key is "before 2/4" —
+  // and Learning's check.mjs certifies each card's board against that card's own answers: those labels are not withheld,
+  // every other kit key still is; director5 then-cards)
+  const withhold = !sk ? withhold1 : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef)
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
   const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
@@ -110,6 +113,16 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
+}
+/** A withheld set without the values a board ref writes as its mark labels (rational equality: "2/4" frees "1/2"). */
+function withoutLabels(w, ref) {
+  try {
+    const params = { ...(ref ?? {}), ...(ref?.params ?? {}) };
+    const val = (t) => { const m = String(t).trim().match(/^(\d+(?:\.\d+)?)(?:\s*\/\s*(\d+))?$/); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+    const labels = (Array.isArray(params.marks) ? params.marks : []).flatMap((m) => String(m?.label ?? "").split(/\s*=\s*/)).map(val).filter((v) => v != null);
+    if (!labels.length || !w?.values?.length) return w;
+    return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !labels.some((l) => Math.abs(l - x) < 1e-9); }) };
+  } catch { return w; }
 }
 /** The numbers a script board ref authors (its params, nested or flat: sides, w, h, marks, labels …), as strings. */
 function refNumbers(ref) {

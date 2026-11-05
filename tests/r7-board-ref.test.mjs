@@ -202,3 +202,18 @@ test("director5: every v2 script board is preselected as the script's and drawn 
   assert.ok(n >= 60, `${n} script boards`);
   assert.deepEqual(misses.filter((m) => !KNOWN.has(m)), []);
 });
+
+test("director5 then-cards: a scripted card's own labels are drawn (2/4 on the 1/4-hops card), every other kit key stays withheld", async () => {
+  const BF = await import("../server/stagecraft/board-first.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
+  const card = (id, ref) => ({ intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "then1", kind: "check" } },
+    line: { lessonId: id, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } });
+  // Learning's then-card (claude/r7-learning 31b818f9c): "1/4 ke 2 hop 2/4 tak … 1/8 ke 2 hop 2/4 se pehle rukenge, ya baad?"
+  const p = BF.preselect(card("then-a", { template: "fraction-line@1", params: { den: 4, from: 0, to: 1, marks: [{ num: 2, label: "2/4" }], hop: { num: 2 } } }), { kit });
+  assert.equal(p?.by, "script", "2/4 = 1/2 is a kit key, but it is this card's authored given");
+  // an asked mark on a card is never labelled, so nothing is freed: still "?"
+  const q = BF.preselect(card("then-b", { template: "fraction-line@1", params: { den: 3, from: 0, to: 1, mark: 1 } }), { kit });
+  assert.ok(!q.screen.numbers.includes("1/3"));
+});
