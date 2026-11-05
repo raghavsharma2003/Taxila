@@ -7283,3 +7283,104 @@ pick.js text pick reads an operation's OWN operands ('4 + 3', 'add 4 and 3', '3 
 ## dc-r7-teaching-scripts (2026-11-05, main loop)
 
 Three fix rounds (11 items, then structural S1-S6) made her more truthful but did not make her teach. The core gaps persisted: the answer inside the question, ignored answers, no complete worked example, no class-level practice, unkept promises, speech disconnected from the screen. That is dc-r7-brain-structural-block's reversal condition. The diagnosis is that per-turn improvisation with guards cannot produce a coherent lesson. The teaching becomes authored data: lesson scripts per skill, written and blind-verified in-session by Claude agents (precedent: the 18 end-of-class items and the relevel ratings; no Azure calls). The Director walks the script; the reply model paraphrases and must first answer the child. Listening and screen contracts are enforced in code. Pilot: the three judged topics. Reversal: if director4 on scripted topics still shows the gaps, the reply layer is the next suspect.
+
+
+<!-- merged from inbox/r7-studio-18.json -->
+## dc-r7-zoom-in-drawing: zooming into a number line (2026-11-05)
+
+To show where a decimal lies, the board lifts the unit it lies in off the number line and stretches it into a big line split into tenths, as a textbook draws it. Labels stay readable because the drawing is enlarged, not the view.
+
+
+<!-- merged from inbox/r7-studio-19.json -->
+## dc-r7-steps-on-her-words: each step appears as she names it (2026-11-05)
+
+When the teacher's line names the steps on the board one by one, each step now appears just as she says it, instead of the board drawing at its own even pace.
+
+
+<!-- merged from inbox/r7-app-3.json (re-applied: a string md had been split per character, rj-r7-inbox-md-string-per-char) -->
+## dc-r7-app-home-plan-states
+The Conductor (Learning, PR #42) decides the child's day; the Home only shows it. Each state gets one main button so a child never has to choose between two equal actions: homework help when the parent turned it on, Revise in a test window, One more after the day's session. The secondary things (today's lesson instead of homework, the jar of waiting questions, what was made for her) are a link, a line or a strip, never a second big button. The 'Today you did' card shows one real answer with the verified tick from the verified-key classifier, not a score or a count. App codes to the existing ChildPlanResponse fields (homework, jar.waiting, did, madeFor); PR #42 doesn't change them, so nothing was needed from Learning.
+
+## ms-r7-app-home-done-fits-360
+The done state has the most on it. With her large portrait the made-for strip went under the dock at 360 wide. When there is a summary to show, the Home marks itself data-summary and the portrait shrinks, so the whole day fits above the dock without scrolling on a small phone.
+
+
+<!-- merged from inbox/r7-app-4.json (re-applied: a string md had been split per character, rj-r7-inbox-md-string-per-char) -->
+## dc-r7-app-kaksha-kit
+Before this change, the secondary screens were the old V2 components with Kaksha colours on top. The rounded cards, pill segments, round toggles and raster pictures were all still visible. Now one small kit draws them the Kaksha way: chamfered HUD panels with a mono eyebrow, a square HUD switch that says ON/OFF, segmented choices, rows with line glyphs, a calm state panel with a glowing ring in place of a picture, and one plasma button per screen state. The kit carries its own .kx root and does not import Shell.tsx, so the child shell's gate and Who can use it without loading her face rig. The screens keep all their logic, test ids and copy; only the Kaksha branch is new.
+
+## dc-r7-app-hello-boot
+The first meeting reads like a system coming online: 'Teacher online', 'AI teacher, not a person', 'Your picture', 'What you like', 'Voice check'. Each line gets a tick when its step is done. The log names steps in words, so no progress count is shown to the child. The AI disclosure is still the second step, still uses the same words, and still has only one way forward (Got it).
+
+## dc-r7-app-me-no-theme
+The Theme row looked like a setting but did nothing in Kaksha, because the look is chosen by the child's family (classes 1-3 dawn, 4-9 night). A control that does nothing is a placeholder, so it is gone from Kaksha Me. The classic Me keeps it.
+
+
+<!-- merged from inbox/r7-app-5.json (re-applied: a string md had been split per character, rj-r7-inbox-md-string-per-char) -->
+## dc-r7-app-child-memory
+Every child can see what their teacher keeps about them and make her forget it. The list shows only the memory rows written from the child's own words, never inferred learning notes or interests. Forgetting works one item at a time, so a child cannot wipe everything with a single tap. Deleting everything stays with the parent's Data page. Each forget leaves a note that the parent's memory page already lists as 'forgotten'. The note does not say what was forgotten. The route is child-scoped like the rest of /api/child and needs no parent PIN, because the record is the child's own.
+
+## dc-r7-app-bigger-text-desk
+Bigger text used to grow only the old screens' type. The Kaksha stage reads px sizes and the layout solver never knew about the setting, so the lesson, where the reading actually happens, stayed the same size. Now the same 1.18 factor applies there too. The solver gets it through fontScale, so the boxes grow with the text instead of clipping it.
+
+
+<!-- merged from inbox/r7-app-6.json (re-applied: a string md had been split per character, rj-r7-inbox-md-string-per-char) -->
+## dc-r7-app-homework-lane
+Homework help should feel like 'show Asha your question', not a form. So there is one tap to ask, at most one quick confirm when the book chapter is clear, and then the lesson. The child never sees the match or waits for it; if the match is slow or empty, the lesson just starts. The confirm uses the topic's own name. 'Not this' is respected: the start tells the server the child refused that topic rather than leaving it to guess.
+
+## dc-r7-app-debrief-made
+The child should leave a session seeing what was made for them: the game or animation, ready to play again. The made-for feed has no lesson id, and the lesson frame must not read a clock. So 'this session' means 'new since the lesson opened', using the same before/after reads the Debrief already does for 'Now secure'.
+
+
+<!-- merged from inbox/r7-app-7.json (re-applied: a string md had been split per character, rj-r7-inbox-md-string-per-char) -->
+## dc-r7-app-practice-entry
+A child who has secured an idea in their World can go straight to a short practice set on it. The set uses the existing practice route: retrieval of verified-key items, with feedback inside the run and nothing carried over. Practice used to be text-only for no recorded reason. It now follows the child's own Talk settings like every lesson.
+
+## ms-r7-app-sheet-offscreen
+This was found while shooting the new 'Practise this' button. Tapping a station on a phone seemed to do nothing, because the sheet opened at the very end of the page, below the fold. It is the same CSS specificity trap that had broken the dock earlier.
+
+
+<!-- integration 6: write-ups from the inbox entries (the stream sent no prose) -->
+## `dc-r7-child-reflect`
+
+Round 7 F (for E App's app-debrief-made-later, STUDENT-FLOW §8.2): an older child's one tap after a lesson in which two or more supports were used is POST /api/child/reflect { childId, lessonId, choice } -> 204. choice is made:<madeForId> (a revealed, not hidden, non-whiteboard piece of THAT lesson), board, explain, self or unsure; anything else is 400, and a lesson that is not the child's own is 404. It is recorded as the Conductor event child.reflect (source device, idem reflect:<lessonId>, so the first tap per lesson wins). The fold keeps counts by kind and the last 5 { lessonId, kind } in s.adapt.helped, with no made-for ids. helpedLean() gives a kind chosen at least twice of the last 5 (never unsure, ties give none), for a later COMPARABLE choice inside the admissible set. It is a choice, never an effect claim or a learning style, and no parent surface reads it. Reverse if: the taps prove to be noise (most taps unsure, or the lean flips every few lessons); then keep the record and drop the lean. (2026-11-05; from inbox/r7-learning-14.json)
+
+## `dc-r7-grammar-skill-tags`
+
+Round 7 F (main 2026-11-04/05, for C2 Games' vakya and the G1 workflow): every class 4-7 English/Hindi grammar skill carries kind 'grammar' in data/kits (scripts/kits/tag-grammar.mjs; 85 skills: 55 found by build-vakya's title patterns plus 30 classified by hand, each with its reason). A skill counts as grammar when the child PRODUCES a sentence-level form (tense, agreement, articles, pronouns, modals, questions, conditionals, reported speech, voice, connectors, comparison, prepositions, quantity). Vocabulary, spelling or script, word formation, literary devices and recognition-only skills (naming a part of speech; 5 BORDERLINE) stay untagged: recognition is not production (main). The vakya bank and coverage map are regenerated with C2's builders in the same commit (main chose this; main re-runs every builder's --check at integration). c5-english-ch09 is newly admitted. All 85 skills are short of 6 built items (444 needed; docs/design/round7/learning/G1-SHORTFALL.md). G1's dry run is 128 author calls, about $4.10, with the cap raised from 120 to 150; it waits for the owner's yes. Reverse if: C2's builder starts reading a richer skill taxonomy (then the tag becomes one value of it), or a borderline skill gets production items worth training. (2026-11-05; from inbox/r7-learning-15.json)
+
+## `dc-r7-pilot-scripts-format`
+
+Round 7 F: the pilot lesson scripts live in data/lesson-scripts/<topicId>.json, status 'draft', in Learning's authoring shape (per skill: hook {convey, interestSlots, slotUse}, explain beats {convey, board, point}, workedExample {problem, givens, find, steps[{do, result}], answer, why, board}, 2-3 checks {prompt, key, accept, targets, wrongIfMis, board}, ladder of kit itemIds, remediation per misconception {move, board, then, thenKey}, bridgeToNext). Every teaching text field is a SHAPE (note form), never a quotable line. Brain owns the runtime schema in shared/; when its sha lands, Learning maps these files onto it (a mechanical rename, not a rewrite). c5 boards all use fraction-line@1, which Studio is asked to build; the other boards are existing templates. Reverse if: Brain's schema needs content these files do not hold (then author the missing field, keeping the blind-verify step). (2026-11-05; from inbox/r7-learning-16.json)
+
+## `dc-r7-ways-parent-lines`
+
+Round 7 F (learning-how-this-child-learns, part 2; main 2026-11-04: hedged and count-based until real data): parents see the explain formats Taxila CHOSE, from decision_record point explain_format (Brain applied patch 008 at b59a83e83), as counts of what Taxila did, never as a claim about how the child learns. Monthly report S5 'ways.used' { n new ideas explained, k ways, t of them with the most used way } in en, hinglish and hi. Formats render through WAY_LABEL plain words, and F-codes never render. It is held until the month has WAYS_MIN_N = 4 explain decisions in counted lessons (U), cap 1, ordered after routine, and dropped first when the body is over budget. check.js re-derives n, k, way and t from the raw decision rows of the month's counted lessons. RENDER_VERSION pr-4. The teaching page adds per lesson up to two lines '{T} explained N new ideas with <way>' after the child's requests. The drawer copy says it is what Taxila did, not how your child learns. The report lexicon rejected the superlative 'sabse', so the line states counts only. Reverse if: the population posterior shows a clear per-band winner (then the line may say which way Taxila is trying first, still never a child trait). (2026-11-05; from inbox/r7-learning-17.json)
+
+## `fx-r7-w9-zero-one-in-box`
+
+W9 (main): a bare '0' or '1' was skipped as a number-line origin or column label, so a place-value board could show a hidden 0 or 1. A 0/1 that ENDS inside a rect (its settled position: place-value digits rise into their boxes) is now judged like any digit, and the number containing it is masked too. Tested in r7-motion-templates. (2026-11-05; from inbox/r7-studio-18.json)
+
+## `dc-r7-stagecraft-fed-never-stale`
+
+C1 item 9 (M4): Stagecraft's reveal point uses the skill being taught (state.lastMove.skillId, not kit.skills[0]); its sources are fed at the point (kernel-point feedPoint: a state input that invalidates on a topic, skill or beat change, the beat lookahead from server/stagecraft/lookahead.js on a change, the stuck signal from two non-correct graded answers; STAGECRAFT_FEEDS=off disables them); seam slotFor never reveals or keeps a Stagecraft piece whose skill differs from the move's skill (hint.skillId from Brain patch 009). Feeding at the point instead of after her reply needs no Brain hook (replay: 0.597 vs 0.590 built ahead). (2026-11-05; from inbox/r7-studio-20.json)
+
+Reverse if: Brain's planBeat lookahead ships (replace lookahead.js NEXT_BEATS with it), or live traces show the guard dropping more than ~15% of reveals (then build the point after the move instead)
+
+## `dc-r7-fraction-line-board`
+
+Main (director3 judgement): a fraction ON A NUMBER LINE is drawn as fraction-line@1, never a shaded circle. Used by the code pick (pick.js fractionLineIn: 'number line', 'mark', 'gap', 'nishaan', '0 to 1', or a lesson whose worked example is on the line and a text asking where) and by the claims board (her line). The kit's solved example hops to its point and names it; a named mark asked for its fraction gets a tall tick and '?' (no dot: W9 reads a dot as the answer); an asked fraction is written above the line, never placed. W9: a line labelled with every whole number of its range is its axis. (2026-11-05; from inbox/r7-studio-21.json)
+
+Reverse if: children read the '?' tick as pointing at the answer, or a fraction-of-a-whole lesson starts drawing lines (then narrow ON_A_LINE)
+
+## `dc-r7-board-refs`
+
+Lesson-script board refs (dc-r7-teaching-scripts): BoardRef = { template, withhold?: 'item', ...params } | { auto: true }. The vocabulary is server/forge/explainer/board-ref.js BOARD_REFS (24 templates, each with param ranges and an example that renders). resolveBoardRef (pure, turn and author time) and certifyBoardRef (the full W0-W19 gate against the beat's stand-in line, answers withheld; Learning runs it in CI). Brain adopted it in shared/contracts.ts on explain[], worked, checks[] and remediation[]; preselect will read intent.boardRef. An absent or failing ref falls back to Studio's pick. (2026-11-05; from inbox/r7-studio-21.json)
+
+Reverse if: scripts need boards no template can draw (then add a template, never free-form params)
+
+## `dc-r7-code-scenes`
+
+Main M5 decision: the owner's #4 (cinematic animation) starts as CODE-BUILT scenes at $0 (shared/scene.js format: props, keyframed tracks, captions, clause-bound beats; one interpolation sceneAt for player, lint and tests; tray-gate 'scene' rule; ScenePlayer as artifact kind 'scene'). 'animation dikhao' on a pilot topic gets the scene via studioSeam.composeAsk before the play ladder. Generated video (Sora on Azure) only after a priced 5-clip test, once code scenes show what they cannot do. Live codegen stays dormant; gate services, the image rung and O-1 are on the owner's decision list. (2026-11-05; from inbox/r7-studio-22.json)
+
+Reverse if: children or the owner find the code scenes too plain for the idea (then the priced Sora 5-clip test), or scenes cannot be authored fast enough beyond the 20 pilots (then a scene DSL that Learning's scripts can name)

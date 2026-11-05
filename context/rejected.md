@@ -2780,3 +2780,20 @@ What was tried: streams kept appending to their one inbox file (context/inbox/r7
 ## rj-r7-create-copies-all-secrets (2026-11-04, round 7, Platform; written up by main loop)
 
 Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.
+
+
+<!-- merged from inbox/r7-main-10.json -->
+## `rj-r7-inbox-md-string-per-char`
+
+What was tried: inbox files carry their prose in `md`, documented as an object keyed by document (`decisions`, `measurements`, `rejected`). App's r7-app-3..7 sent `md` as one plain string. `scripts/merge-inbox.mjs` ran `Object.entries(box.md)`, which on a string yields one entry per character. So each character was appended to a file named after its index: context/0.md … context/1308.md.
+
+What broke: integration 5 (425c1ae1a) committed all 1,309 of those files. App's prose never reached decisions.md, and `context.mjs --check` passed, because it only reads the four known documents. It flagged App's nodes as "written up nowhere", and they got title-only write-ups, which hid the cause. A Learning edge written as {from, to, kind} with relation `supports` was silently skipped too.
+
+Fix (integration 6):
+- merge-inbox routes a string `md` to the document of the file's most common node kind;
+- an unknown key goes to architecture.md with a warning, never to a new file;
+- edges are accepted as {from, to, kind} as well;
+- `context.mjs --check` fails on any file in context/ other than the known documents;
+- the junk was removed and App's five prose blocks re-applied to decisions.md.
+
+Lesson: a check that only reads the files it expects cannot see files it does not expect. It has to list the directory.
