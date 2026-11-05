@@ -108,8 +108,11 @@ async function classOf(state, kit, text, classLevel) {
   const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
   const target = targetFor(state, kit, item);
   const args = { target, childText: text, lang: state.ctx?.lang, classLevel, typed: true };
-  if (DRY) { const f = classifyFast(args); if (!f.result) dryCall("classify"); return f.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }; }
-  return classify(args);
+  // (latency fields: which path read the turn — code alone, or the model; production's speculation overlaps the model path)
+  const fast = classifyFast(args);
+  const path = fast.result ? "fast" : "model";
+  if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }), path }; }
+  return { ...(await classify(args)), path };
 }
 
 /** One lesson on one lane: the opening, then every scripted line. */
@@ -123,6 +126,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
   let s = { ...r.state, brief, mode: "text", kitVerified: kit.verified, kitHash: kit.hash };
   const rows = [];
+  let lastClassify = null;
   const agentLine = async (st, event, extra = {}) => {
     try {
       const out = await agentTurn({ state: st, kit, event, lessonId: LESSON.id, lane: "text", ...extra });
@@ -163,13 +167,14 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const now = (i + 1) * 20_000;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
-    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs });
+    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
+    lastClassify = { ms: classifyMs, path: c.path ?? null };
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null;
     // (as brain/turn.js: the stop check-in is the Director's on both lanes)
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
@@ -228,7 +233,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     if (reply == null) {
       const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
-      reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
+      reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
@@ -264,7 +269,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
       || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
     const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
+    // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
+    const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
+      rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };

@@ -188,6 +188,32 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
     assert.ok((L.r.state.later ?? []).some((x) => /virat/i.test(x.topic)), JSON.stringify(L.r.state.later));
   });
+
+  test("latency cut 1: a script draft whose only problems the assembly fixes is not rewritten; the turn equals the rewrite path's, but for her lead-in", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const card = L.r.ui.ask.text;
+    const draft = `Parimap ka matlab hai boundary ki lambai. ${card}`;   // the point left out (mustsay), nothing else wrong
+    const go = async (env) => {
+      const keep = process.env.TAXILA_R7_SKIP_REWRITE; if (env) process.env.TAXILA_R7_SKIP_REWRITE = env; else delete process.env.TAXILA_R7_SKIP_REWRITE;
+      let calls = 0;
+      replyDeps.chat = async () => { calls += 1; return { text: calls === 1 ? draft : `Chalo dekhte hain. ${card}` }; };
+      try { const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: L.r.ui, module: null }); return { out, calls }; }
+      finally { if (keep === undefined) delete process.env.TAXILA_R7_SKIP_REWRITE; else process.env.TAXILA_R7_SKIP_REWRITE = keep; }
+    };
+    const fast = await go(null), slow = await go("off");
+    assert.equal(fast.calls, 1, "no second model call");
+    assert.ok(slow.calls >= 2, "the kill switch keeps today's rewrite");
+    assert.deepEqual(fast.out.guard.rewriteSkipped, ["mustsay"]);
+    const tail = (t) => t.slice(t.indexOf(S1.explain[0].point.hi));
+    assert.equal(tail(fast.out.reply), tail(slow.out.reply), `${fast.out.reply}  ||  ${slow.out.reply}`);
+  });
+
+  test("latency cut 2 (TAXILA_R7_LONG_TRIM, off by default): long is trimmed in code only when switched on", async () => {
+    const { longTrimOn } = await import("../server/brain/say.js");
+    assert.equal(longTrimOn({}), false);
+    assert.equal(longTrimOn({ TAXILA_R7_LONG_TRIM: "on" }), true);
+  });
 });
 
 test("v2.1 validator: {friend} not the child or Asha, no '?' glyph, no echo ask, ≤3 worked steps (c4-5), follow-ups with a board", async () => {
@@ -290,4 +316,17 @@ test("v4 W4: the listed wrong answer beats a by-value match ('after 1/3' to a 'b
   const t2 = { mode: "item", item: it2, key: it2.answer, also: it2.acceptable };
   assert.equal(classifyFast({ target: t2, childText: "mujhe lagta hai 30 m", lang: "hinglish", typed: true }).result?.outcome, "correct", "a numeric key still grades by value");
   assert.equal(classifyFast({ target: t2, childText: "23", lang: "hinglish", typed: true }).result?.outcome, "misconception");
+});
+
+test("{friendF}/{friendM}: kit items are filled in every field, with names never the child's", async () => {
+  const { findItem } = await import("../server/director/items.js");
+  const { fillFriend } = await import("../server/director/script.js");
+  const kit = { items: [{ id: "k1", skillId: "s", prompt_hi: "{friendF} kehti hai ki 3/4 bada hai", prompt_en: "{friendF} says 3/4 is bigger", answer: "{friendF}", acceptable: ["{friendF} sahi hai"], hints: ["{friendM} se pucho"] }], misconceptions: [] };
+  const it = findItem({ ctx: { firstName: "Zoya" } }, kit, "k1");
+  assert.equal(it.prompt_hi, "Meera kehti hai ki 3/4 bada hai", "never the child's own name");
+  assert.equal(it.answer, "Meera");
+  assert.deepEqual(it.acceptable, ["Meera sahi hai"]);
+  assert.deepEqual(it.hints, ["Kabir se pucho"]);
+  assert.equal(findItem({ ctx: { firstName: "Riya" } }, kit, "k1").answer, "Zoya");
+  assert.equal(fillFriend("{friend} ne kaha", "Zoya"), "Kabir ne kaha", "the v2.1 slot is unchanged");
 });

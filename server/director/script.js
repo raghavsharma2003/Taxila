@@ -390,11 +390,5 @@ export function saidMust(line, mustSay = [], lang = "hinglish") {
   return (mustSay ?? []).every((m) => (typeof m === "string" ? [m] : [saidIn(m, lang), m?.hi, m?.en]).filter(Boolean).some((v) => t.replace(/\s+/g, " ").includes(norm(v))));
 }
 
-const FRIENDS = ["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara"];
-/** v2.1: a card character's {friend} slot, a name different from the child's (stable per child). */
-export function fillFriend(text, childName = "") {
-  if (!String(text ?? "").includes("{friend}")) return text;
-  const me = String(childName ?? "").trim().toLowerCase();
-  const pick = FRIENDS.find((n) => n.toLowerCase() !== me) ?? "Zoya";
-  return String(text).replaceAll("{friend}", pick);
-}
+// v2.1 / v2.2: the {friend}, {friendF} and {friendM} slots (server/director/friend.js)
+export { fillFriend } from "./friend.js";

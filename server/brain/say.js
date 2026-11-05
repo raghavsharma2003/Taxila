@@ -205,6 +205,8 @@ export function pointSaid(text, point) {
 }
 const REMEDY_FRAME = { hinglish: ["Chalo, ise ek naye tareeke se dekhte hain.", "Ek alag tarah se sochte hain.", "Isse aise samjho."],
   english: ["Let's look at it another way.", "Here is a different way to see it.", "Think of it like this."] };
+export const skipRewriteOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SKIP_REWRITE ?? ""));
+export const longTrimOn = (env = process.env) => /^(on|1|true)$/i.test(String(env.TAXILA_R7_LONG_TRIM ?? ""));
 // round 7 T3 (dc-r7-teaching-scripts, the listening contract; kill switch TAXILA_R7_LISTEN=off)
 export const listenOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_LISTEN ?? ""));
 /** A sentence that tells them their answer is not right (or not yet). */
@@ -1189,6 +1191,26 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   if (found.includes("register") && !state.ctx.address && address === "aap") {
     const fixed = toAap(reply);
     if (!registerBroken(fixed, address)) { reply = fixed; guard.repaired = true; found = problems(reply); }
+  }
+  // round 7 latency cut 1 (main, after director6: 44% of turns paid a second model call): in script mode, a draft whose only
+  // problems are ones the final assembly below fixes in code — the beat's point (mustsay, on an explain beat with a point),
+  // the missing "not right" (uncorrected) or the missing yes (noconfirm) — is not rewritten: the rewrite's words would be
+  // replaced by the assembly anyway. Any other problem keeps today's rewrite. Kill switch TAXILA_R7_SKIP_REWRITE=off.
+  const scriptTurnEarly = scripted || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  const ASSEMBLY_FIXES = (p) => p === "uncorrected" || p === "noconfirm" || (p === "mustsay" && !!point && kindNow === "explain");
+  if (found.length && skipRewriteOn() && scriptTurnEarly && listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin
+    && !forgetSafety && !clause.sent && found.every((p) => ASSEMBLY_FIXES(p) || (p === "long" && longTrimOn()))) {
+    guard.rewriteSkipped = [...found];
+    // cut 2 (TAXILA_R7_LONG_TRIM, default OFF until a judged A/B): "long" is her own words trimmed in code to the turn budget,
+    // the card kept whole; the assembly then puts the authored parts back in their places
+    if (found.includes("long")) {
+      const cardT = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
+      const own0 = cardT && String(reply).includes(cardT) ? String(reply).replace(cardT, " ").replace(/\s+/g, " ").trim() : String(reply).trim();
+      const budget = Math.max(8, (TURN_WORDS[state.ctx.ageBand] ?? 25) - (cardT ? words(cardT) : 0));
+      reply = [trimToWords(own0, budget), cardT].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+      guard.longTrimmed = true;
+    }
+    found = [];
   }
   if (found.length) {
     const asked = G && ["example", "story", "another"].includes(state.lastMove?.request);

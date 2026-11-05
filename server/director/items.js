@@ -1,6 +1,7 @@
 // Item bookkeeping for the director: probe mapping, the practice queue, isomorphic items, the spoken
 // diagnostic (P7) built from a kit misconception, and the code-level answer-leak predicate.
 import { toAap } from "./register.js";
+import { fillFriendDeep } from "./friend.js";
 import { p4pl, A_GE, C_OPEN, S_SLIP } from "../learner/kt/ability.js";
 
 /** Item kind → probe id from the catalogue (learning-science §7). Plain practice is P15, hint-ladder consumption. */
@@ -153,6 +154,12 @@ export function addressed(item, address) {
 
 /** Resolve an item id against the kit, its diagnostics, and the warm-up snapshot in the lesson state. */
 export function findItem(s, kit, id) {
+  // v2.2 kits: a card character is a {friend}/{friendF}/{friendM} slot, filled with a name that is never the child's, in every
+  // field an item carries (prompt, answer, acceptable, hints, options, diagnostics), so it is read, shown and graded filled
+  const it = findItem0(s, kit, id);
+  return it ? fillFriendDeep(it, s?.ctx?.firstName ?? "") : it;
+}
+function findItem0(s, kit, id) {
   if (!id) return null;
   const address = s?.ctx?.address;
   if (id.startsWith(DIAG_PREFIX)) return addressed(diagnosticItem(kit, kit.misconceptions.find((m) => m.id === id.slice(DIAG_PREFIX.length)), s.seed), address);
