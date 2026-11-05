@@ -24773,6 +24773,20 @@
    "at": "2026-11-04",
    "title": "Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads.",
    "source": "inbox/r7-main-8-remerge.json"
+  },
+  {
+   "id": "jd-r7-director3-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Director re-run after the structural block S1-S5 (director3, 357cc407): 12 lessons (c4/c5/c6 × 4 scenarios), ~$0.21, screen recorded per turn. Three Claude judges, one per class, every turn against director2; not blind. Fixed: costume labels, picture→real board and game, card closed after 2 misses, Hindi acknowledged, recitals mostly gone, arithmetic. Not fixed (the owner's core): answer inside the question (c4 ~9 per run), ignored answers in every class, worked examples one step and no 'toh jawab' (never in c4: gap at step 0), no class-level practice (c6's only item is '3 × 160'), unkept promises (cricket, Golu), speech disconnected from screen (the guard strips board references), rate-as-fraction in c5. ~0.5 s slower. docs/design/round7/judgements/director3-2026-11-05.md.",
+   "source": "inbox/r7-main-9.json"
+  },
+  {
+   "id": "dc-r7-teaching-scripts",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Replace per-turn improvisation with authored, verified lesson scripts per skill (hook, explain beats with board refs, a full worked example, keyed checks targeting misconceptions, a class-level practice ladder, class-level remediation, bridges), authored in-session by Claude agents and blind-verified by a separate Claude solver (no Azure). The Director walks the script; the reply model only paraphrases the beat and first answers the child's last turn. A listening contract (respond-first by turn type, always correct wrong answers, return parked promises before the wrap) and a screen contract (the reply sees and refers to what is up) are enforced in code. Pilot on the 3 judged topics, then director4. Why: dc-r7-brain-structural-block's reversal triggered (jd-r7-director3-2026-11-05). Reverse: director4 on scripted topics still shows the gaps (then the reply layer: stronger model on paraphrase only, or a code-rendered teaching voice).",
+   "source": "inbox/r7-main-9.json"
   }
  ],
  "edges": [
@@ -38860,6 +38874,16 @@
    "src": "dc-r7-voice-echo-residuals",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-teaching-scripts",
+   "rel": "measured_by",
+   "dst": "jd-r7-director3-2026-11-05"
+  },
+  {
+   "src": "dc-r7-teaching-scripts",
+   "rel": "supersedes",
+   "dst": "dc-r7-brain-structural-block"
   }
  ]
 }

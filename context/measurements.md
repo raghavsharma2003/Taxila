@@ -5173,3 +5173,9 @@ At 360x800 the done state with both the day card and the made-for strip overflow
 ## ms-r7-isolation-debt-cleared-2026-11-04 (2026-11-04, round 7; written up by main loop from the stream entry)
 
 Module-level env and global writes in tests/*.test.mjs: 21 at int/r6 5a5b2f45 when tests/test-isolation.test.mjs landed (Brain 11 TAXILA_R7_* lines in 8 files, Forge 7 in 3 files, 3 module-level globals). 2 after integration 3b (07185e93). 0 after integration 4 (6c3c3c95), and the known-debt list is now empty. Integration 4's single-process npm test: 4,265 tests, 0 fail (main).
+
+
+<!-- merged from inbox/r7-main-9.json -->
+## jd-r7-director3-2026-11-05 (main loop judge, 2026-11-05)
+
+Method: stream A's harness at 357cc407 (integration 5 + S1-S5 + Learning 008 + App 008 + the boardItemOf fix), results/2026-11-05-director3, against results/2026-11-04-director2. n = 12 lessons (c4/c5/c6 × steady/offtopic/stuck/steering), the same scripted Hinglish child, `screen` recorded per turn. Three Claude judges (one per class) read every teacher turn; the main loop combined their findings; not blind. Details and quotes: docs/design/round7/judgements/director3-2026-11-05.md.
