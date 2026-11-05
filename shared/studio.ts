@@ -52,7 +52,15 @@ export type StudioStatus =
   | { state: "failed"; intentId: string; fallback: StudioFallback };
 export type StudioState = StudioStatus["state"];
 /** The one facts shape the Brain reads for whatever is on screen (shared with W2-B's moduleFacts): values, never prose. */
-export interface StudioFacts { kind: StudioKind; archetype: string; onScreen: Record<string, string | number>; step?: number; itemId?: string }
+/** round 7 (director5 SC1): what a template board draws, counted by the template (shared/whiteboard.js cleanCounts). */
+export interface ScreenCounts {
+  lines?: { gaps?: number; gapsPerWhole?: number; ticks?: number; innerTicks?: number }[];
+  /** labelled points: `at` is the point ("1/4", or "mark 3" for an asked mark), `label` what is written ("?" asked, "" none) */
+  marks?: { at: string; label: string }[];
+  parts?: number; shaded?: number; rows?: number; cols?: number; groups?: number; each?: number;
+  sides?: number; corners?: number; sideValues?: string[]; radius?: string;
+}
+export interface StudioFacts { kind: StudioKind; archetype: string; onScreen: Record<string, string | number>; counts?: ScreenCounts; step?: number; itemId?: string }
 export interface BuildRecord {
   buildSha: string; identity: string; planId: string; builder: { dep: string; effort?: string };
   timings: { ttftMs: number; firstPaintMs?: number; genMs: number; qaMs: number; repairs: number; toPlayableMs: number };

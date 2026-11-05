@@ -296,8 +296,34 @@ function cleanFacts(f) {
     if (isNum(v)) onScreen[k] = v;
     else if (typeof v === "string" && v.length <= 40 && !/[<>{}\n]/.test(v)) onScreen[k] = v;
   }
+  const counts = cleanCounts(f.counts);
   return { kind: typeof f.kind === "string" ? f.kind : "diagram", archetype: typeof f.archetype === "string" ? f.archetype.slice(0, 40) : "whiteboard",
-    onScreen, ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+    onScreen, ...(counts ? { counts } : {}), ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+}
+/**
+ * round 7 (director5 SC1): what a template board DRAWS, counted by the template that drew it (never read back from pixels):
+ * lines [{ gaps, gapsPerWhole?, ticks, innerTicks }] (one per scale: a two-denominator line has two), marks [{ at, label }]
+ * (label "?" = the asked mark, "" = unlabelled), parts / shaded, rows / cols, groups / each, sides / corners / sideValues
+ * ["6 cm", …], radius. Unknown keys and bad values are dropped. → the counts, or null.
+ */
+const COUNT_INTS = ["parts", "shaded", "rows", "cols", "groups", "each", "sides", "corners"];
+const smallStr = (v) => typeof v === "string" && v.length <= 24 && !/[<>{}\n]/.test(v);
+function cleanCounts(c) {
+  if (!c || typeof c !== "object") return null;
+  const out = {};
+  for (const k of COUNT_INTS) if (Number.isInteger(c[k]) && c[k] >= 0 && c[k] <= 500) out[k] = c[k];
+  if (Array.isArray(c.lines)) {
+    const ls = c.lines.slice(0, 3).map((l) => Object.fromEntries(["gaps", "gapsPerWhole", "ticks", "innerTicks"].filter((k) => Number.isInteger(l?.[k]) && l[k] >= 0 && l[k] <= 500).map((k) => [k, l[k]])))
+      .filter((l) => Object.keys(l).length);
+    if (ls.length) out.lines = ls;
+  }
+  if (Array.isArray(c.marks)) {
+    const ms = c.marks.slice(0, 24).filter((m) => smallStr(m?.at) && (m.label === undefined || smallStr(m.label))).map((m) => ({ at: m.at, label: m.label ?? "" }));
+    if (ms.length) out.marks = ms;
+  }
+  if (Array.isArray(c.sideValues)) { const sv = c.sideValues.slice(0, 8).filter(smallStr); if (sv.length) out.sideValues = sv; }
+  if (smallStr(c.radius)) out.radius = c.radius;
+  return Object.keys(out).length ? out : null;
 }
 
 // ───────────────────────────── timeline ─────────────────────────────

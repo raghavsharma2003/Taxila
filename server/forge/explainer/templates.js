@@ -117,7 +117,7 @@ function fractionParts(c, tl) {
   // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
   if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
-  return { facts };
+  return { facts, counts: { parts, shaded: shade } };
 }
 
 /**
@@ -157,6 +157,9 @@ function fractionLine(c, tl) {
   const tick = Math.max(90, Math.min(320, Math.round(2400 / N)));
   for (let i = 1; i < N; i++) if (i % den) tl.add({ op: "line", from: [X(i / den), y - 7], to: [X(i / den), y + 7], weight: 1 }, tick, { gap: Math.round(tick / 2) });
   const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
+  // round 7 (director5 SC1): what the line DRAWS, counted (Brain's R4 reads these: "beech mein 2 marks" over 2 inner ticks)
+  const lineCount = { gaps: N, ...(w > 1 ? { gapsPerWhole: den } : {}), ticks: N + 1, innerTicks: N - 1 };
+  const counts = (pts) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}) });
   const claims = [];
   const hopTo = (n) => {
     const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
@@ -181,17 +184,20 @@ function fractionLine(c, tl) {
       if (p.r < 0) return { error: "fraction_line_marks_crowded" };
       // (a label at the board's edge is pulled in, never off it)
       const lx = Math.min(BOARD.w - 4 - p.half, Math.max(4 + p.half, p.x));
-      if (hop == null || p.m.num !== hop) tl.add({ op: "circle", c: [p.x, y], r: 6, fill: "mark", ink: "mark" }, 300, { gap: 300 });
+      // (a tall tick in mark ink, as on the two-denominator line: three dots read as a count of 3 against "1/8, 1/4, 1/2"
+      // — W8 — and the script's board lost to the code's one-mark line, director5 c5-t01 whole-number bias)
+      if (hop == null || p.m.num !== hop) tl.add({ op: "line", from: [p.x, y - 14], to: [p.x, y + 14], weight: 3, ink: "mark" }, 300, { gap: 300 });
       tl.add({ op: "line", from: [p.x, y - 12], to: [p.x, rows[p.r] + 6], weight: 1, ink: "soft" }, 200, { gap: 60 });
       tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark" }, 400, { gap: 60 });
     }
-    return { claims, facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
+    const pts = [...placed.map((p) => ({ at: `${p.m.num}/${den}`, label: p.label })), ...(hop != null && !marks.some((m) => m.num === hop) ? [{ at: `${hop}/${den}`, label: "" }] : [])];
+    return { claims, counts: counts(pts), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
   }
   if (c.show) {
     // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
     hopTo(tgt);
     tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
-    return { claims, facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
+    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }]), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
   }
   if (mark != null) {
     // (the mark the item NAMES is its given: a tall tick in mark ink and a "?" over it; never a dot on it, which is how a
@@ -199,13 +205,13 @@ function fractionLine(c, tl) {
     tl.add({ op: "line", from: [X(mark / den), y - 14], to: [X(mark / den), y + 14], weight: 3, ink: "mark" }, 500, { gap: 700 });
     tl.add({ op: "text", at: [X(mark / den), y - 30], text: "?", size: "l", ink: "mark" }, 400, { gap: 300 });
     // (no "each 1/den" here: for the first mark it IS the answer)
-    return { claims, facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)" } };
+    return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)" } };
   }
   if (tgt != null) {
     tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
-    return { claims, facts: { ...facts, find: `${tgt}/${den}`, where: "? (child works it out)" } };
+    return { claims, counts: counts([]), facts: { ...facts, find: `${tgt}/${den}`, where: "? (child works it out)" } };
   }
-  return { claims, facts };
+  return { claims, counts: counts([]), facts };
 }
 
 /**
@@ -238,7 +244,9 @@ function fractionLine2(c, tl) {
     tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 34 : 66)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
   }
   if (asks.length) tl.add({ op: "text", at: [200, 60], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
-  return { claims: [], facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
+  const counts = { lines: dens.map((d) => ({ gaps: d * w, ...(w > 1 ? { gapsPerWhole: d } : {}), ticks: d * w + 1, innerTicks: d * w - 1 })),
+    ...(pts.length ? { marks: pts.map(([a, d]) => ({ at: `${a}/${d}`, label: `${a}/${d}` })) } : {}) };
+  return { claims: [], counts, facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
 }
 
 /**
@@ -269,7 +277,7 @@ function shadeGrid(c, tl) {
   if (c.labels !== false && rows > 1) tl.add({ op: "text", at: [200, y0 + H + 18], text: `${rows} rows`, size: "s", ink: "soft" }, 400, { gap: 120 });
   const total = rows * cols;
   if (withFrac) tl.add({ id: "frac", op: "numwork", at: [186, y0 + H + (c.labels !== false && rows > 1 ? 34 : 14)], layout: "fraction", rows: [[String(shade)], [String(total)]], ink: "accent", weight: 2 }, 700, { gap: 300 });
-  return { facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
+  return { counts: { rows, cols, parts: total, shaded: shade }, facts: { rows, cols, cells: c.hideResult ? "? (child works it out)" : total, shaded: shade } };
 }
 
 /**
@@ -451,7 +459,7 @@ function equalGroups(c, tl) {
     }
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+  return { counts: { groups, each }, facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────
@@ -877,7 +885,7 @@ function shape(c, tl) {
     }
   }
   const k = SIDES[c.shape];
-  return { facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}) } };
+  return { counts: { sides: k, corners: k }, facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}) } };
 }
 
 function symmetry(c, tl) {
@@ -947,7 +955,8 @@ function areaGrid(c, tl) {
     : textBox(long.join(" "), "m").w <= 350 ? long : ["2", "×", String(w + h), "=", res];
   tl.add({ id: "eq", op: "numwork", at: [30, 262], layout: "equation", rows: [row], weight: 2 }, 1100, { gap: 300 });
   const val = c.hideResult ? "? (child works it out)" : `${result}${unit}${mode === "area" && unit ? " sq" : ""}`.trim();
-  return { facts: { length: `${w}${unit}`.trim(), breadth: `${h}${unit}`.trim(), ...(mode === "area" ? { squares: grid ? (c.hideResult ? "?" : w * h) : "not drawn", area: val } : { perimeter: val }) } };
+  return { counts: { sides: 4, corners: 4, sideValues: [`${w}${unit}`.trim(), `${h}${unit}`.trim(), `${w}${unit}`.trim(), `${h}${unit}`.trim()], ...(grid ? { rows: h, cols: w } : {}) },
+    facts: { length: `${w}${unit}`.trim(), breadth: `${h}${unit}`.trim(), ...(mode === "area" ? { squares: grid ? (c.hideResult ? "?" : w * h) : "not drawn", area: val } : { perimeter: val }) } };
 }
 
 /** The smallest friendly step that draws `max` in ≤ 6 gridlines. */
@@ -1285,7 +1294,7 @@ function measuredBoard(c, tl) {
     tl.add({ op: "text", at: [x + W / 2, y + H + 26], text: fmt(w), size: "m", ink: "accent" }, 400, { gap: 160 });
     tl.add({ op: "text", at: [x + W + 12, y + H / 2 + 7], text: fmt(h), size: "m", ink: "accent", align: "start" }, 400, { gap: 120 });
     const claims = c.trace ? traceBoundary(tl, [[x, y], [x + W, y], [x + W, y + H], [x, y + H]]) : [];
-    return { claims, facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }), ...named } };
+    return { claims, counts: { sides: 4, corners: 4, sideValues: [fmt(w), fmt(h), fmt(w), fmt(h)] }, facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }), ...named } };
   }
   if (c.shape === "triangle") {
     const [a, b, d] = Array.isArray(c.sides) ? c.sides.map(Number) : [];
@@ -1306,7 +1315,7 @@ function measuredBoard(c, tl) {
     label(A, B, base); label(A, C, s1); label(B, C, s2);
     const named = nameShape(tl, c, "triangle", { x: ox, y: C[1], w: base * k, h: oy - C[1] });
     const claims = c.trace ? traceBoundary(tl, [A, C, B]) : [];
-    return { claims, facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}`, ...named } };
+    return { claims, counts: { sides: 3, corners: 3, sideValues: [base, s1, s2].map(fmt) }, facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}`, ...named } };
   }
   // round 7 (main, director4 S2: the c6 pentagon showed no side lengths): a polygon with its side LENGTHS written along
   // its sides (drawn regular: a shape with these lengths has no single drawing, so it is labelled, not to scale), corner
@@ -1328,7 +1337,7 @@ function measuredBoard(c, tl) {
     names.forEach((nm, i) => { const [x, y] = P[i], dx = x - cx, dy = y - cy - 4, d = Math.hypot(dx, dy) || 1;
       tl.add({ op: "text", at: [round1(x + (dx / d) * 16), round1(y + (dy / d) * 16 + 6)], text: nm, size: "s", ink: "soft" }, 200, { gap: 40 }); });
     const claims = c.trace ? traceBoundary(tl, P) : [];
-    return { claims, facts: { shape: c.shape === "polygon" ? `${n}-sided shape` : c.shape, sides: sides.map(num).join(", ") + ` ${unit}`, ...(names.length ? { corners: names.join(" ") } : {}) } };
+    return { claims, counts: { sides: n, corners: n, sideValues: sides.map(fmt) }, facts: { shape: c.shape === "polygon" ? `${n}-sided shape` : c.shape, sides: sides.map(num).join(", ") + ` ${unit}`, ...(names.length ? { corners: names.join(" ") } : {}) } };
   }
   if (c.shape === "circle") {
     const r = Number(c.r);
@@ -1339,7 +1348,7 @@ function measuredBoard(c, tl) {
     tl.add({ op: "arrow", from: [cx, cy], to: [cx + R, cy], weight: 2, ink: "accent" }, 500, { gap: 120 });   // an arrow: a radius, not a cut (W8)
     // the label below the circle: text keeps its readable size while the drawing scales, so inside it can meet the rim
     tl.add({ op: "text", at: [cx, cy + R + 30], text: `r = ${fmt(r)}`, size: "m", ink: "accent" }, 420, { gap: 80 });
-    return { facts: { shape: "circle", radius: fmt(r) } };
+    return { counts: { sides: 0, radius: fmt(r) }, facts: { shape: "circle", radius: fmt(r) } };
   }
   return { error: "shape" };
 }
@@ -1380,7 +1389,7 @@ export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   let r;
   try { r = build(call, tl); } catch (e) { return { ok: false, script: null, facts: null, errors: [`build:${String(e?.message ?? e).slice(0, 60)}`] }; }
   if (r.error) return { ok: false, script: null, facts: null, errors: [r.error] };
-  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: r.facts };
+  const facts = { kind: KIND_OF[call.template] ?? "animation", archetype: call.template, onScreen: r.facts, ...(r.counts ? { counts: r.counts } : {}) };
   const raw = script(call, tl.ops, tl.t, facts, { lessonId, scriptId, ground: r.ground ?? "chalk" });
   const n = normalizeScript(raw, { strict: true });
   if (!n.ok) return { ok: false, script: null, facts: null, errors: n.errors.slice(0, 6) };
