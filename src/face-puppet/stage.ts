@@ -307,6 +307,20 @@ export class PuppetStage {
     return this.revealed && !this.disposed;
   }
 
+  /** Whether the rig draws in a worker (round 7: a frame costs the page's main thread almost nothing). */
+  get offThread(): boolean {
+    return this.rig instanceof RemoteRig;
+  }
+
+  /** Point her lips at other meters (round 7 face-prewarm, the warm hand-off: the home's live stage becomes the lesson's
+   *  face, and the lesson's meters are not the home's). The driver, the rig and its warm worker are kept. */
+  retarget(sources: TapSource[]): void {
+    if (this.disposed) return;
+    this.tap.dispose();
+    this.tap = new TeacherTap(sources);
+    this.o = { ...this.o, sources };
+  }
+
   set(p: { status?: FloorStatus | null; reducedMotion?: boolean; gentle?: boolean; childLevel?: number }): void {
     if (p.status !== undefined) this.status = p.status;
     if (p.childLevel !== undefined) this.childLevel = p.childLevel;
