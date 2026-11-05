@@ -1,0 +1,889 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "version": 1,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "bhinn",
+   "en": "fraction"
+  },
+  {
+   "hi": "sankhya rekha",
+   "en": "number line"
+  },
+  {
+   "hi": "barabar hisse",
+   "en": "equal parts"
+  },
+  {
+   "hi": "ansh",
+   "en": "numerator"
+  },
+  {
+   "hi": "har",
+   "en": "denominator"
+  },
+  {
+   "hi": "poora",
+   "en": "one whole"
+  },
+  {
+   "hi": "aadha",
+   "en": "one half"
+  },
+  {
+   "hi": "ek chauthai",
+   "en": "one quarter"
+  },
+  {
+   "hi": "teen chauthai",
+   "en": "three quarters"
+  },
+  {
+   "hi": "sava",
+   "en": "one and a quarter"
+  },
+  {
+   "hi": "dedh",
+   "en": "one and a half"
+  }
+ ],
+ "skills": [
+  {
+   "skillId": "c5-maths-ch02-t01-s1",
+   "hook": {
+    "convey": "path from start = 0 to finish = 1; walker stops exactly halfway → stands on a real spot → whole numbers 0, 1 have no name for it → fractions = numbers that live between 0 and 1",
+    "interestSlots": [
+     "road to the chai stall",
+     "km stones on a highway",
+     "cricket pitch length",
+     "running track laps",
+     "ribbon at a tailor's shop"
+    ],
+    "slotUse": "the one-whole length from start (0) to finish (1) that gets cut into equal gaps; the stopping point is a spot on that length, never a count of things"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "0 and 1 at the ends; one cut exactly in the middle → 2 equal gaps; the middle mark = 1/2 → 1/2 is a number with its own place, between 0 and 1, not at 2",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 2,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "point": "the single middle mark labelled 1/2, halfway between 0 and 1"
+    },
+    {
+     "id": "e2",
+     "convey": "same 0 to 1, now 3 marks inside → 4 equal gaps (gaps = marks inside + 1); bottom number = number of equal gaps in 0 to 1; first mark from 0 = end of 1 gap = 1/4; name comes from gaps, not marks",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/4"
+        }
+       ]
+      }
+     },
+     "point": "the 4 equal gaps between 0 and 1 and the first mark after 0 labelled 1/4"
+    },
+    {
+     "id": "e3",
+     "convey": "each quarter halved → 8 equal gaps → each gap smaller; 1/8 = first mark, right next to 0; 1/2 still at the middle (4 of 8 gaps); bigger bottom number → smaller gap → unit fraction sits closer to 0",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/8"
+        },
+        {
+         "num": 4,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "point": "the 1/8 mark hugging 0 against the 1/2 mark in the middle"
+    }
+   ],
+   "workedExample": {
+    "problem": "Mark 1/4 on a number line from 0 to 1.",
+    "givens": [
+     "number line from 0 to 1",
+     "fraction to mark: 1/4",
+     "bottom number 4",
+     "top number 1"
+    ],
+    "find": "the mark on the line that is 1/4",
+    "steps": [
+     {
+      "do": "draw the line; write 0 at the left end, 1 at the right end",
+      "result": "line from 0 to 1"
+     },
+     {
+      "do": "bottom number 4 → split 0 to 1 into 4 equal gaps",
+      "result": "4 equal gaps, made by 3 marks in between"
+     },
+     {
+      "do": "value of one gap = 1 whole ÷ 4 equal gaps",
+      "result": "each gap is 1/4"
+     },
+     {
+      "do": "top number 1 → move 1 gap from 0",
+      "result": "the first mark after 0 is 1/4"
+     },
+     {
+      "do": "check against the middle: 1/2 = 2 of the 4 gaps; 1 gap < 2 gaps",
+      "result": "1/4 is before the middle, between 0 and 1/2"
+     }
+    ],
+    "answer": "1/4 is the first of the 3 marks after 0, at the end of the first of 4 equal gaps",
+    "why": "bottom number = equal gaps in one whole → each gap = 1/4; top number = gaps moved from 0 → 1 gap → first mark; marks are only the cuts, gaps are the parts",
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ],
+      "hop": {
+       "num": 1
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "A line from 0 to 1 has 2 equally spaced marks in between. What fraction is the first mark after 0?",
+     "key": "1/3",
+     "accept": [
+      "one third",
+      "ek tihai",
+      "1 by 3"
+     ],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "1/2",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 1
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": "On a line from 0 to 1, which is closer to 0: 1/3 or 1/10?",
+     "key": "1/10",
+     "accept": [
+      "one tenth",
+      "1 by 10"
+     ],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "1/3",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "On a number line from 0 to 3, between which two whole numbers does 1/2 lie?",
+     "key": "between 0 and 1",
+     "accept": [
+      "0 and 1",
+      "0 aur 1 ke beech",
+      "halfway between 0 and 1"
+     ],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "at 2",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t01-i01",
+     "why": "den 2: one cut, gaps obvious → fraction as a place on the road; same den as e1"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i13",
+     "why": "den 4 (halves halved, as in e2 and the worked example) → 2nd mark = 2/4 → same spot as 1/2; gap-value thinking, not mark counting"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-o1",
+     "why": "den 6 given as gaps → apply bottom = gaps to a new den outside the halving family 2 → 4 → 8"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i08",
+     "why": "den 5 given only as marks (4 inside) → must convert marks to gaps; error-spot on the count-marks trap"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-h1",
+     "why": "den 6 again but given as 5 inside marks → contrasts with rl-o1 (same den, gaps given) → explain why the label is wrong"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "move": "ribbon at a tailor's shop, 0 to 1 m; marks = scissor cuts, gaps = ribbon pieces; cuts inside + 1 = pieces; fraction names a piece of length, so bottom number = pieces the metre falls into; 3 cuts → 4 pieces → first cut at 1/4 m",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/4"
+        }
+       ]
+      }
+     },
+     "then": "ribbon 0 to 1 m with 6 equally spaced cuts inside → length from 0 to the first cut, as a fraction of a metre",
+     "thenKey": "1/7 m"
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "two equal 0-to-1 strips laid on one line: one cut into 2, one into 5; first piece of each laid from 0; 1/5 stops at 2 of 10 tenths, 1/2 at 5 of 10 → more pieces in the same whole → each piece shorter → 1/5 stops sooner",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "1/5"
+        },
+        {
+         "num": 5,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "then": "two equal 0-to-1 strips: one cut into 3 equal pieces, one into 6 → which strip's first piece, laid from 0, stops sooner",
+     "thenKey": "the strip cut into 6",
+     "thenAccept": [
+      "1/6 wala",
+      "the 6 pieces strip",
+      "1/6"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "road from home (0) to chai stall (1 km), milestones every 1/4 km; toy walks from home and stops halfway, at the 2nd milestone → toy stands on one spot of the road → that spot has a number, 1/2 km = 2/4 km → numbers exist between 0 and 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "1/2"
+        }
+       ],
+       "hop": {
+        "num": 2
+       }
+      }
+     },
+     "then": "road from home (0) to chai stall (1 km) cut into 8 equal stretches; toy stops at the end of the first stretch → the number it stands on",
+     "thenKey": "1/8 km"
+    }
+   ],
+   "bridgeToNext": "1 gap from 0 = 1/bottom → keep moving more gaps from 0 → 2 gaps, 3 gaps → top number = gaps moved from 0"
+  },
+  {
+   "skillId": "c5-maths-ch02-t01-s2",
+   "hook": {
+    "convey": "same 0-to-1 path cut into equal stretches; stop is not at the first mark but several stretches on → name needs two facts: how many equal stretches make the whole, how many have been covered",
+    "interestSlots": [
+     "road to the chai stall",
+     "km stones on a highway",
+     "running track laps",
+     "train between two stations",
+     "ribbon at a tailor's shop"
+    ],
+    "slotUse": "the 0-to-1 length cut into equal stretches, and a stopping point several stretches from 0"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "thirds: bottom 3 → 0 to 1 in 3 equal gaps; top 2 → 2 hops of 1/3 from 0; landing mark = 2/3 → one point, one number, not 2 and 3 separately",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/3"
+        }
+       ],
+       "hop": {
+        "num": 2
+       }
+      }
+     },
+     "point": "the two hops from 0 ending at the mark labelled 2/3"
+    },
+    {
+     "id": "e2",
+     "convey": "still thirds: 3 hops of 1/3 → every gap used → land exactly on 1 → 3/3 = 1; top < bottom → stop before 1; top = bottom → reach 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/3 = 1"
+        }
+       ],
+       "hop": {
+        "num": 3
+       }
+      }
+     },
+     "point": "the third hop landing on 1, labelled 3/3 = 1"
+    },
+    {
+     "id": "e3",
+     "convey": "each third cut in 2 → 6 equal gaps; middle = half the gaps = 3/6 = 1/2; fewer than half the gaps (2/6) → before the middle; more than half (5/6) → after the middle",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 2,
+         "label": "2/6"
+        },
+        {
+         "num": 3,
+         "label": "3/6 = 1/2"
+        },
+        {
+         "num": 5,
+         "label": "5/6"
+        }
+       ]
+      }
+     },
+     "point": "the middle mark 3/6 = 1/2, with 2/6 to its left and 5/6 to its right"
+    }
+   ],
+   "workedExample": {
+    "problem": "Mark 2/5 on a number line from 0 to 1.",
+    "givens": [
+     "number line from 0 to 1",
+     "fraction to mark: 2/5",
+     "bottom number 5",
+     "top number 2"
+    ],
+    "find": "the mark on the line that is 2/5",
+    "steps": [
+     {
+      "do": "draw the line; 0 at the left end, 1 at the right end",
+      "result": "line from 0 to 1"
+     },
+     {
+      "do": "bottom number 5 → split 0 to 1 into 5 equal gaps",
+      "result": "5 equal gaps, made by 4 marks in between"
+     },
+     {
+      "do": "value of one gap = 1 whole ÷ 5 equal gaps",
+      "result": "each gap is 1/5"
+     },
+     {
+      "do": "top number 2 → move 2 gaps from 0",
+      "result": "the 2nd mark after 0 is 2/5"
+     },
+     {
+      "do": "check against the middle: half of 5 gaps = 2 and a half gaps; 2 gaps < 2 and a half gaps",
+      "result": "2/5 is before the middle, because 2/5 < 1/2"
+     }
+    ],
+    "answer": "2/5 is the 2nd mark after 0 when 0 to 1 is split into 5 equal gaps",
+    "why": "bottom number = equal gaps in the whole → each gap 1/5; top number = gaps moved from 0 → 2 gaps → 2nd mark; fewer than half the gaps → before 1/2",
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 2,
+        "label": "2/5"
+       }
+      ],
+      "hop": {
+       "num": 2
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "A line from 0 to 1 has 5 equally spaced marks in between. What fraction is the 4th mark after 0?",
+     "key": "4/6",
+     "accept": [
+      "2/3",
+      "four sixths",
+      "two thirds"
+     ],
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "wrongIfMis": "4/5",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": "On a line from 0 to 1, which is closer to 1: 3/4 or 3/8?",
+     "key": "3/4",
+     "accept": [
+      "three quarters",
+      "teen chauthai"
+     ],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "3/8",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "On a number line from 0 to 5, between which two whole numbers does 3/4 lie?",
+     "key": "between 0 and 1",
+     "accept": [
+      "0 and 1",
+      "0 aur 1 ke beech"
+     ],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "at 3 and 4 (reads 3/4 as the two numbers 3 and 4)",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t01-i11",
+     "why": "den 4: quarters already known from s1 and the c4 roti → carry a shaded 3 of 4 onto the line; top = gaps moved"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i03",
+     "why": "den 5: same den as the worked example → locate 3/5 by gaps moved from 0, now one step further than 2/5"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-o2",
+     "why": "den 5 reversed: given the mark, name the fraction → 4/5 km; read the line instead of marking it"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i09",
+     "why": "den 10: each fifth split in 2 → many small gaps, unit given as 1/10 km → 7 steps = 7/10"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-h2",
+     "why": "den 8 against den 4 → two different cuts, same stopping point (6/8 = 3/4); closes the loop back to quarters"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-count-marks",
+     "move": "hop arrows instead of marks: each hop = one equal gap = 1/6; hops start at 0, the start is not a hop; fraction = hops made over hops that fill 0 to 1; 4 hops of 1/6 → 4/6",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 6,
+       "from": 0,
+       "to": 1,
+       "hop": {
+        "num": 4
+       }
+      }
+     },
+     "then": "ribbon from 0 to 1 m with 5 equally spaced cuts inside; tailor measures from 0 to the 2nd cut → fraction of a metre",
+     "thenKey": "2/6 m",
+     "thenAccept": [
+      "1/3 m",
+      "2/6",
+      "1/3"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "same number of hops, different hop size: 3 hops of 1/10 vs 3 hops of 1/5 on one 0-to-1 line; tenth-hops are half as long as fifth-hops → 3/10 stops at 3 tenths, 3/5 at 6 tenths → bigger bottom number = shorter hops = stop nearer 0",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/10"
+        },
+        {
+         "num": 6,
+         "label": "3/5 = 6/10"
+        }
+       ]
+      }
+     },
+     "then": "from 0 on a 0-to-1 line: 2 hops of 1/4 or 2 hops of 1/8 → which stops sooner",
+     "thenKey": "2 hops of 1/8",
+     "thenAccept": [
+      "1/8 wale hops",
+      "2/8",
+      "1/4"
+     ]
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "km stones on a highway from 0 to 1 km, a stone every 1/4 km; toy walks 3 stretches and stops → stands on one single stone → that stone's number is 3/4 km, one point between 0 and 1, not two numbers",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/4"
+        }
+       ],
+       "hop": {
+        "num": 3
+       }
+      }
+     },
+     "then": "highway from 0 to 1 km with a stone every 1/5 km; toy stops at the 2nd stone after 0 → the one number it stands on",
+     "thenKey": "2/5 km"
+    }
+   ],
+   "bridgeToNext": "top < bottom → stop before 1; top = bottom → land on 1 (3/3); top > bottom → gaps run out at 1 → keep hopping past 1 on a longer line"
+  },
+  {
+   "skillId": "c5-maths-ch02-t01-s3",
+   "hook": {
+    "convey": "runner finishes one full lap and keeps going → stopping point past 1 → needs a fraction name bigger than 1 → line must go beyond 1",
+    "interestSlots": [
+     "running track laps",
+     "km stones on a highway",
+     "train between two stations",
+     "road to the chai stall",
+     "cricket pitch length"
+    ],
+    "slotUse": "the unit that repeats (one lap, one km, one station-to-station stretch) and a stopping point beyond the first unit"
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "line does not stop at 1 → carries on to 2; second whole cut the same way → 4 equal gaps per whole, all the same size; 4 gaps from 0 = 4/4 = 1; gap count from 0 keeps growing past 4",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 4,
+         "label": "4/4 = 1"
+        }
+       ]
+      }
+     },
+     "point": "the mark at 1 labelled 4/4 = 1, with the same-size quarter gaps continuing on to 2"
+    },
+    {
+     "id": "e2",
+     "convey": "6 hops of 1/4 from 0: first 4 hops fill one whole → reach 1; 2 more hops → past 1 → 6/4 = 1 and 2/4; top > bottom → beyond 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 6,
+         "label": "6/4"
+        }
+       ],
+       "hop": {
+        "num": 6
+       }
+      }
+     },
+     "point": "the six hops from 0, crossing 1 and landing on the mark labelled 6/4"
+    },
+    {
+     "id": "e3",
+     "convey": "thirds on a line to 3: every 3 gaps = one whole → 3/3 = 1; group gaps in threes to find which whole a fraction has passed; top above 3 → past 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 3,
+       "marks": [
+        {
+         "num": 3,
+         "label": "3/3 = 1"
+        }
+       ]
+      }
+     },
+     "point": "the first group of 3 third-gaps ending at 1, labelled 3/3 = 1, and the line continuing in thirds to 3"
+    }
+   ],
+   "workedExample": {
+    "problem": "Mark 7/4 on a number line from 0 to 2.",
+    "givens": [
+     "number line from 0 to 2",
+     "fraction to mark: 7/4",
+     "bottom number 4",
+     "top number 7"
+    ],
+    "find": "the mark on the line that is 7/4",
+    "steps": [
+     {
+      "do": "draw the line; write 0, 1 and 2",
+      "result": "line from 0 to 2 with 1 in the middle"
+     },
+     {
+      "do": "bottom number 4 → split each whole (0 to 1, 1 to 2) into 4 equal gaps",
+      "result": "8 equal gaps from 0 to 2, each 1/4"
+     },
+     {
+      "do": "top 7 > bottom 4 → fraction is more than 1",
+      "result": "7/4 lies past 1"
+     },
+     {
+      "do": "4 gaps from 0 fill the first whole",
+      "result": "4/4 = 1"
+     },
+     {
+      "do": "7 = 4 + 3 → move 3 more gaps past 1",
+      "result": "the 3rd mark after 1 is 7/4"
+     },
+     {
+      "do": "check against 2: 2 = 8/4; 7 gaps < 8 gaps",
+      "result": "7/4 is between 1 and 2, one gap before 2; 7/4 = 1 and 3/4"
+     }
+    ],
+    "answer": "7/4 is the 3rd mark after 1 (1 and 3/4), one quarter-gap before 2",
+    "why": "bottom number = equal gaps in each whole, so every whole holds 4 quarters; 4 quarters fill 1 → 3 quarters left over → 3 gaps past 1; a fraction is a length from 0 and lengths can be longer than one whole",
+    "board": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 2,
+      "marks": [
+       {
+        "num": 4,
+        "label": "1"
+       },
+       {
+        "num": 7,
+        "label": "7/4"
+       }
+      ],
+      "hop": {
+       "num": 7
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": "On a number line from 0 to 2, each whole is split into 3 equal gaps. Between which two whole numbers does 5/3 lie?",
+     "key": "between 1 and 2",
+     "accept": [
+      "1 and 2",
+      "1 aur 2 ke beech",
+      "after 1, before 2"
+     ],
+     "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+     "wrongIfMis": "between 0 and 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 3,
+       "from": 0,
+       "to": 2
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": "On a number line from 0 to 2, which is further from 0: 5/4 or 5/8?",
+     "key": "5/4",
+     "accept": [
+      "five quarters",
+      "sava",
+      "1 and 1/4"
+     ],
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "wrongIfMis": "5/8",
+     "board": null
+    },
+    {
+     "id": "c3",
+     "prompt": "Where is 6/3 on the number line?",
+     "key": "at 2",
+     "accept": [
+      "2",
+      "exactly on 2",
+      "on the 2"
+     ],
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "wrongIfMis": "it cannot go on the number line",
+     "board": null
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch02-t01-i04",
+     "why": "den 4 on 0 to 2, same den and line as e1, e2 and the worked example → 5/4 = one quarter past 1; smallest step beyond 1"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i14",
+     "why": "den 3, no line given → decide before/after 1 from top vs bottom alone (4 > 3); moves the rule off the picture"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-i10",
+     "why": "den 2 inside a story: 1 km + half km → count in halves → 3/2; build the improper fraction from a real distance"
+    },
+    {
+     "itemId": "c5-maths-ch02-t01-rl-h3",
+     "why": "den 3 again but out to 3 → 8 marks grouped in threes → past two wholes (between 2 and 3); hardest grouping"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch02-t01-m-all-less-than-one",
+     "move": "quarter-pieces laid end to end on a 0-to-2 line, no squeezing: 4 pieces fill 0 to 1 exactly → 1 is full → any further piece must go past 1; a fraction is a length, lengths can exceed one whole",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 4,
+         "label": "4/4 = 1"
+        }
+       ],
+       "hop": {
+        "num": 5
+       }
+      }
+     },
+     "then": "running track: one lap = 1, each lap cut into 6 equal stretches; runner covers 7 stretches from the start → between which two whole laps, and the fraction",
+     "thenKey": "between 1 and 2 laps; 7/6"
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-whole-number-bias",
+     "move": "same top, different hop size on one 0-to-2 line cut in eighths: 5 hops of 1/8 stop before 1 (5/8); 5 hops of 1/4 = 10 eighths, past 1 (5/4 = 10/8); quarter-hop = 2 eighth-hops → bigger bottom = shorter hops",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 5,
+         "label": "5/8"
+        },
+        {
+         "num": 10,
+         "label": "5/4 = 10/8"
+        }
+       ]
+      }
+     },
+     "then": "which is further from 0: 3/2 or 3/4",
+     "thenKey": "3/2"
+    },
+    {
+     "targets": "c5-maths-ch02-t01-m-not-numbers",
+     "move": "train between stations: station 0, station 1, station 2; each station-to-station stretch cut into 5 equal parts; train runs 7 parts and halts → it is at one real spot on the track → that spot is 7/5, a single number past station 1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 5,
+       "from": 0,
+       "to": 2,
+       "marks": [
+        {
+         "num": 5,
+         "label": "1 = 5/5"
+        }
+       ]
+      }
+     },
+     "then": "line from 0 to 2, each whole cut into 5 equal parts; a marker stands 3 marks after 1 → the single fraction naming that spot",
+     "thenKey": "8/5",
+     "thenAccept": [
+      "1 3/5"
+     ]
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ],
+ "verified": {
+  "by": "separate Claude agent, blind (prompts only)",
+  "on": "2026-11-05",
+  "checksAndRemediation": "45/45 agree (3 after a rewrite and re-solve)",
+  "workedExamples": "9/9 ok"
+ }
+}
