@@ -65,6 +65,7 @@ export const KX = {
   bootHi: K("Voice check", "Awaaz check", "आवाज़ जाँच"),
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   playAgain: K("Play again", "Phir se khelo", "फिर से खेलो"),
+  practiseThis: K("Practise this", "Isko practise karo", "इसका अभ्यास करो"),
   jarWaiting: K("Your questions from last time are waiting. She brings them back in the next lesson.", "Pichhli baar ke sawaal intezaar mein hain.", "पिछली बार के सवाल इंतज़ार में हैं।"),
   // r7 app-nav-unified: the one dock (nav.tsx)
   navHome: K("Home", "Home", "होम"),

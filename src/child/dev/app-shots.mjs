@@ -79,6 +79,7 @@ export const SCREENS = {
   hello: `/c/${CID}/hello`,
   who: `/who`,
   homework: `/c/${CID}/ask?homework=1`,
+  station: `/c/${CID}/map`,
 };
 
 async function main() {
@@ -102,6 +103,11 @@ async function main() {
       await page.goto(BASE + path, { waitUntil: "networkidle" }).catch(() => {});
       await page.waitForTimeout(900);
       // homework: type a question and ask, so the shot is the "Is this from <topic>?" chip
+      // station: the World with a station's sheet open (Practise this)
+      if (name === "station") {
+        await page.evaluate(() => document.querySelector(".kx-station")?.click()).catch(() => {});
+        await page.waitForTimeout(600);
+      }
       if (name === "homework") {
         await page.fill("textarea", "Riya ate 3/8 of a pizza and Aman ate 2/8. How much did they eat together?").catch(() => {});
         await page.click('[data-testid="ask-go"]').catch(() => {});

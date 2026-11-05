@@ -92,7 +92,8 @@ export function LessonScreen({ variant, topicId, firstText, homework }: LessonSc
     resumeLessonId,
     firstText,
     // the parent's per-child "Tap and type only" (Controls, server truth on every phone) or this device's "Type instead"
-    textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),
+    // r7 app-practice-entry: practice talks too (it was always text); the child's own Type instead still holds
+    textOnly: search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),
     pttNoteSeen: prefs.pttNoteSeen,
     markPttNoteSeen: () => setPrefs({ pttNoteSeen: true }),
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),

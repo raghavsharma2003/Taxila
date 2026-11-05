@@ -151,3 +151,9 @@ export function spiral(n: number): Array<[number, number]> {
 export function secureSet(skills: ReadonlyArray<WorldSkill>): Set<string> {
   return new Set(skills.filter((k) => k.state === "secure").map((k) => k.skillId));
 }
+
+/** A skill id's topic (c6-maths-ch07-t01-s1 → c6-maths-ch07-t01): the practice set is per topic. null: not a kit skill id. */
+export function topicOfSkill(skillId: string): string | null {
+  const m = /^(.+-t\d+)-s\d+$/.exec(skillId);
+  return m ? m[1] : null;
+}
