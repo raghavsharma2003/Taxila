@@ -16,6 +16,7 @@ import { kt } from "../../ui-v3/kaksha/copy.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { tr7, tw } from "../../copy/en.ts";
+import { useInstallOffer } from "../../app/install.ts";
 import { useHeadset } from "../lesson/headset.ts";
 import { AVATARS, Avatar, avatarName, avatarsFor, Icon, Picto, type IconName } from "../pictos.tsx";
 import { usePlan } from "../plan.ts";
@@ -62,6 +63,7 @@ export function Me() {
   const headset = useHeadset();
   const [picking, setPicking] = useState(false);
   const kx = useKx();
+  const installOffer = useInstallOffer();
   const ic = (name: IconName, picto: string) => (older ? <Icon name={name} size={24} /> : <Picto id={picto} size={40} />);
   const sounds = prefs.sounds ?? !older;
   const pick = async (a: string) => {
@@ -119,6 +121,7 @@ export function Me() {
               tail={<span className="kx-tagline">{kt("change")}</span>} />
             <LinkRow to={`/c/${cid}/teacher`} label={tr7("mem.row", { T: rec.name })} glyph="memory" testid="me-remembers" />
             <LinkRow to="/who" label={t("switchLearner")} glyph="switch" testid="switch-learner" />
+            {installOffer && <LinkRow onClick={() => void installOffer()} label={tr7("app.install")} note={tr7("app.installNote")} glyph="play" testid="install-app" />}
           </Rows>
         </Panel>
         <Panel eyebrow={kt("meSees")}>

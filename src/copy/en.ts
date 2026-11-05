@@ -257,6 +257,9 @@ export const R7 = {
   // r7 9-15 onboarding sweep: Hello for the older family
   "hello.likesOlder": "Your parent picked these. Still you?",
   // r7 app-ask-voice: "Say it" on Ask
+  // r7 app-pwa-install
+  "app.install": "Put Taxila on this phone",
+  "app.installNote": "It opens like an app, with its own icon.",
   "ask.say": "Say it",
   "ask.listening": "Listening… tap when done",
   "ask.hearing": "Hearing you…",
