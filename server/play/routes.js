@@ -30,11 +30,11 @@ const bad = (msg) => new HttpError(400, msg);
 const dbq = async (...a) => (await import("../db.js")).q(...a);
 
 function sessionOut(s) { return signSession(s); }
-function doorsFor(s, entry, lang) {
+function doorsFor(s, entry, lang, name = "") {
   const hint = (d) => (lang === "en" ? (d === "garam" ? "one more like this" : "a bit harder") : lang === "hi" ? (d === "garam" ? "इसी तरह का एक और" : "थोड़ा मुश्किल") : d === "garam" ? "isi tarah ka ek aur" : "thoda mushkil");
-  const garam = currentLevel(nextBody(s, entry, "garam"), entry);
+  const garam = currentLevel(nextBody(s, entry, "garam"), entry, name);
   if (!garam) return [];
-  const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry);
+  const t = nextBody(s, entry, "teekha"), teekha = currentLevel(t, entry, name);
   // a teekha that is the same level as garam is no choice (the fade could not go up): one door
   return [{ door: "garam", level: garam, hint: hint("garam") }, ...(teekha && (teekha.levelId !== garam.levelId || teekha.fade !== garam.fade) ? [{ door: "teekha", level: { ...teekha, door: "teekha" }, hint: hint("teekha") }] : [])];
 }
@@ -78,7 +78,7 @@ export const routes = {
     const { child } = await requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
-    const level = currentLevel(s, entry);
+    const level = currentLevel(s, entry, child?.first_name);
     if (!level) return send(res, 409, { error: "no_level" });
     send(res, 200, { sessionId: b.sessionId, level, art: artFor(s, entry), dress: baseSpec(s, level, await withVerb(child, dbq))?.spec ?? null, ...(play3dOff() ? { render: "2d" } : {}) });
   },
@@ -87,10 +87,10 @@ export const routes = {
     const b = body && typeof body === "object" ? body : await readJson(req);   // the router already read the body
     const s = verifySession(b?.sessionId);
     if (!s) throw bad("bad_session");
-    await requireChild(req, s.childId);
+    const { child } = await requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
-    const level = currentLevel(s, entry);
+    const level = currentLevel(s, entry, child?.first_name);
     if (!level || level.levelId !== b.levelId) return send(res, 409, { error: "level_mismatch" });
     const g = gradeActs(level, b.acts ?? [], { final: !!b.final });
     if (!g) throw bad("bad_level");
@@ -117,7 +117,7 @@ export const routes = {
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       moments: fresh.map((m) => m.kind), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
-    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
+    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(evidenceToken ? { evidenceToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };
     send(res, 200, out);
   },
@@ -132,7 +132,7 @@ export const routes = {
     const door = b.door === "teekha" ? "teekha" : "garam";
     const next = nextBody(s, entry, door);
     delete next.up;
-    const level = currentLevel(next, entry);
+    const level = currentLevel(next, entry, child?.first_name);
     if (!level) return send(res, 409, { error: "no_level" });
     const art = artFor(next, entry);
     next.lastArt = art.art;
@@ -146,7 +146,7 @@ export const routes = {
     const { child } = await requireChild(req, s.childId);
     const entry = entryByKey(s.key);
     if (!entry) throw bad("stale_session");
-    const level = currentLevel(s, entry);
+    const level = currentLevel(s, entry, child?.first_name);
     if (!level) return send(res, 409, { error: "no_level" });
     const r = await dressSpecFor({ s, level, child: await withVerb(child, dbq), topicTitle: entry.title, childMusicOn: b.music === "on" });
     if (!r) return send(res, 404, { error: "no_engine" });

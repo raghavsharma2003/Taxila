@@ -7,6 +7,7 @@ import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
+import { fillFriendDeep } from "../director/friend.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -91,10 +92,16 @@ export function levelsFor(s, entry) {
 }
 /** The level a session body points at (its door decides garam / teekha; a teekha body with no harder candidate at its
  *  fade was already moved one fade up by nextBody, so this never silently serves an easier level behind a "harder" door). */
-export function currentLevel(s, entry) {
+/**
+ * The level the child is served (and graded against: every route regenerates it). Kit-derived text (arena challenges,
+ * vakya trains) keeps its {friendF}/{friendM}/{friend} slots in the banks; they are filled HERE, at serve time, with a
+ * name that is never the child's own (server/director/friend.js) — the builders never fill. The fill touches strings only,
+ * so the levelId is the unfilled one and the same for every child.
+ */
+export function currentLevel(s, entry, childName = "") {
   const r = levelsFor(s, entry);
   if (!r) return null;
-  return s.door === "teekha" && r.teekha ? r.teekha : r.garam;
+  return fillFriendDeep(s.door === "teekha" && r.teekha ? r.teekha : r.garam, childName);
 }
 /**
  * The session body of the level behind a door (round 4 G1). ONE rule for the door preview (doorsFor) and /api/play/next,

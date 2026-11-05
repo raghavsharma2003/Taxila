@@ -51,7 +51,7 @@ export async function startSession(child, o = {}, q = undefined) {
   const s = { childId: String(child.id), key, skillId: o.skillId && entry.skillIds.includes(o.skillId) ? o.skillId : entry.skillId, lessonId: o.lessonId ?? null,
     classLevel, fade: fadeOf(o.fade ?? 1), lang: langOf(o.lang ?? child.language_pref), childArt: o.art ?? null, lastArt: o.lastArt ?? null,
     mis: inputs.mis, pL: inputs.pL, secure: !!inputs.secure, ...(inputs.focus ? { focus: inputs.focus } : {}), n: 0, seed: seedOf(child.id, key, 0), door: o.door === "teekha" ? "teekha" : "garam", recent: [], hist: null };
-  const level = currentLevel(s, entry);
+  const level = currentLevel(s, entry, child.first_name);
   if (!level) return null;
   const art = artFor(s, entry);
   s.lastArt = art.art;
