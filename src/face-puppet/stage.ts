@@ -146,9 +146,9 @@ export class PuppetStage {
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
     this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
-    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts)
-    // and seals every single b / m / p (the extended rule, owner-cohort lamp2 only; r8 keeps the base rule)
-    if (lookPack(o.look).rig === "keys") { this.driver.visemes.lead += KEY_LEAD_MS; this.driver.visemes.extendedBilabials = true; }
+    // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts).
+    // (Every look seals every single b / m / p: the scheduler's extended rule, track.ts.)
+    if (lookPack(o.look).rig === "keys") this.driver.visemes.lead += KEY_LEAD_MS;
     // a face mounted during a safety turn (the TroubleScreen's) is neutral from its first frame (latch.ts)
     if (pageInSafety()) { this.driver.safetyTurn(performance.now()); this.wasSafe = true; }
     this.tap = new TeacherTap(o.sources);
