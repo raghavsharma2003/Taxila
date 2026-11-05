@@ -55,6 +55,11 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Darpan (symmetry): lay the mirror lines and fold; turn the figure on the turntable and spin
   darpan: { mirror: { act: "place", hi: "aaine ki lakeerein rakho aur modo", en: "lay the mirror lines and fold" },
     turn: { act: "set", hi: "ghumao aur chakri chalao", en: "turn it and spin" } },
+  // r7 games: Feeta (length and distance): cut the ribbon / the rope / the fence, set the trip meter, put routes in order; then run
+  feeta: { measure: { act: "set", hi: "ruler se naapo aur feeta kaato", en: "measure with the ruler and cut the ribbon" },
+    fence: { act: "set", hi: "baad kaato aur bagiche ko ghero", en: "cut the fence and go round the garden" },
+    trip: { act: "set", hi: "meter set karo aur cycle chalao", en: "set the meter and ride the trip" },
+    compare: { act: "place", hi: "raaston ko chhote se bade kram mein rakho aur chalao", en: "put the routes from shortest to longest and ride them" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
