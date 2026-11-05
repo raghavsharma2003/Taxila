@@ -780,7 +780,7 @@ export interface TopicScriptV2 {
   classLevel: number;
   /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
    *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
-  version: 2 | 2.1;
+  version: 2 | 2.1 | 2.2;
   status: "draft" | "reviewed" | "live";
   terms: Array<{ hi: string; en: string }>;
   skills: SkillScriptV2[];

@@ -247,6 +247,18 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
     // a follow-up card shows a board
     for (const [i, r] of (sk?.remediation ?? []).entries()) if (!r?.board && !r?.then?.board) err(`remediation[${i}]: its follow-up card needs a board (board or then.board)`);
   }
+  // ── v2.2 (dc-r7-script-walk-v4 data rules), for scripts marked version 2.2 ──
+  if (Number(v21) >= 2.2) {
+    // a follow-up card is shown and read whole: 120 characters at most (ASK_MAX), for the Hinglish card the lessons show and
+    // read (Learning's check.mjs rule; an English overflow is reported to Learning, never a reason to drop the skill)
+    for (const [i, r] of (sk?.remediation ?? []).entries()) for (const f of ["hi"]) {
+      const t = String(r?.then?.prompt?.[f] ?? "");
+      if (t.length > 120) err(`remediation[${i}].then.prompt.${f}: ${t.length} characters; at most 120`);
+    }
+    // every check and every follow-up card carries its own board
+    for (const [i, c] of (sk?.checks ?? []).entries()) if (!c?.board) err(`checks[${i}]: needs its own board`);
+    for (const [i, r] of (sk?.remediation ?? []).entries()) if (r?.then && typeof r.then === "object" && !r.then.board) err(`remediation[${i}].then: needs its own board`);
+  }
   return errors;
 }
 
@@ -272,7 +284,7 @@ export function validateTopicScript(sc, kit) {
 
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
 /** The script versions the Director walks. */
-export const WALK_VERSIONS = new Set([1, 2, 2.1]);
+export const WALK_VERSIONS = new Set([1, 2, 2.1, 2.2]);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
 const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
 const loaded = new Map();

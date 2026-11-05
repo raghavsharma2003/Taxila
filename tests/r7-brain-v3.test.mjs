@@ -352,3 +352,14 @@ test("R4 reads compare@1 quantities (Studio 244936c8): a count said against a co
   assert.equal(countContradicts("Board par dekho, Roti A mein 4 tukde hain.", c), true);
   assert.equal(countContradicts("Dekho, 3 tukde hain.", c), true);
 });
+
+test("v2.2 scripts are walked (integration 9: the live scripts went to 2.2 while WALK_VERSIONS stopped at 2.1)", async () => {
+  const { WALK_VERSIONS, validateTopicScript } = await import("../server/director/script.js");
+  assert.ok(WALK_VERSIONS.has(2.2));
+  const s = structuredClone(SC); s.version = 2.2;
+  s.skills[0].checks.forEach((c) => { c.board = c.board ?? { template: "shape@1", params: { shape: "hexagon" } }; });
+  s.skills[0].remediation.forEach((r) => { r.then.board = r.then.board ?? { template: "shape@1", params: { shape: "hexagon" } }; });
+  assert.deepEqual(validateTopicScript(s, K).errors, []);
+  s.skills[0].remediation[0].then.prompt.hi = "x".repeat(121);
+  assert.match(validateTopicScript(s, K).errors.join(" "), /at most 120/);
+});
