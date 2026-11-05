@@ -122,9 +122,34 @@ async function deleteChildMemory(req, res, body) {
   send(res, 200, { deleted: rows.length });
 }
 
+// round 7 (App, the Debrief "made later"): an optional emote the child sends her at the end. Closed values, no text; at most one
+// per lesson; written through the relational writer (legal_mode M0 writes nothing). 204 whatever happens to the note: an emote
+// is never an error for a child (and until the migration admitting 'child_emote' is applied the insert simply fails silently).
+//   POST /api/child/emote { childId, lessonId, emote: "wave" | "thanks" | "fun" } → 204
+export const CHILD_EMOTES = Object.freeze(["wave", "thanks", "fun"]);
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+async function postChildEmote(req, res, body) {
+  const { child } = await requireChild(req, need(body, "childId").childId);
+  const emote = String(body?.emote ?? "");
+  const lessonId = String(body?.lessonId ?? "");
+  if (!CHILD_EMOTES.includes(emote)) throw bad("invalid emote");
+  if (!UUID_RE.test(lessonId)) throw bad("invalid lessonId");
+  const lesson = await one("select id from lesson where id = $1 and child_id = $2", [lessonId, child.id]);
+  if (!lesson) throw bad("unknown lesson");
+  const had = await one("select 1 as x from relational_note where child_id = $1 and lesson_id = $2 and kind = 'child_emote' limit 1", [child.id, lessonId]).catch(() => null);
+  if (!had) {
+    try {
+      const st = relNoteStmt(child, { agentId: String(child.teacher_id ?? "asha"), lessonId, kind: "child_emote", slots: { emote } });
+      await q(st.text, st.params).catch((e) => console.warn(`[relational] child emote not stored: ${String(e?.message ?? e).slice(0, 80)}`));
+    } catch { /* M0, or no legal_mode: no note */ }
+  }
+  send(res, 204, {});
+}
+
 export const routes = {
   "GET /api/parent/memory": getMemory,
   "DELETE /api/parent/memory": deleteMemory,
   "GET /api/child/memory": getChildMemory,
   "DELETE /api/child/memory": deleteChildMemory,
+  "POST /api/child/emote": postChildEmote,
 };

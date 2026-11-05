@@ -33,7 +33,7 @@ import {
 } from "../comprehension/index.js";
 import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
-import { renderWorked, chainOf as chainOfStep } from "./worked.js";
+import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -63,12 +63,27 @@ const stuckTurn = (cls) => !!cls && !cls.flags?.offTopic && !["back", "park", "d
 const ackToTeaching = (s, input, item) => s.lastMove?.itemId === item.id && ["hint", "reteach", "worked_example", "repair"].includes(s.lastMove?.kind)
   && /^(?:(?:achha|acha|accha|theek|thik|hai|haan|han|ha|ok|okay|ji|hmm+|samajh\s+gay[ai]|got\s+it|right|sure|chalo)[\s,.!]*)+$/i.test(String(input.text ?? "").trim());
 /** The why of a card's answer, language-free: a faded step's own calculation from the worked example, else null. */
-function whyOf(kit, item) {
+function whyOf(kit, item, lang = "hinglish") {
   const we = kit?.workedExample;
-  if (!we || !item?.fade) return null;
-  const i = Number(String(item.id).slice(FADE_PREFIX.length));
-  return chainOfStep(we.steps?.[i]) ?? null;
+  if (we && item?.fade) {
+    const i = Number(String(item.id).slice(FADE_PREFIX.length));
+    const c = stepLineOf(we.steps?.[i], lang);
+    if (c) return c;
+  }
+  // (director3: "Woh wala: jawab before." had no why) else the item's last hint, as a calculation or a step fact, never its words
+  for (const h of [...(item?.hints ?? [])].reverse()) { const c = stepLineOf(h, lang); if (c && /=|<|>/.test(c)) return c; }
+  return null;
 }
+/** A card's key in the lesson language: its number or fraction, else a non-English accepted form (aadha, paanch), else the key. */
+function keyInLang(item, lang) {
+  const a = String(item?.answer ?? "");
+  const n = a.match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?(?:\s*(?:cm|m|km|kg|g|l|ml|°))?/i)?.[0];
+  if (n) return n.replace(/\s*\/\s*/, "/");
+  if (lang === "english") return a;
+  const hi = (item?.acceptable ?? []).find((x) => !/^(?:[a-z]+\s*)+$/i.test(x) || /\b(?:aadha|paanch|chaar|teen|do|ek|chauthai|chauthaai|pehle|baad|zyada|kam|barabar|teesra|doosra|pehla|haan|nahi)\b/i.test(x));
+  return hi ?? WORD_HI[a.toLowerCase().trim()] ?? a;
+}
+const WORD_HI = { before: "pehle", after: "baad mein", more: "zyada", greater: "zyada", bigger: "bada", less: "kam", smaller: "chhota", equal: "barabar", same: "barabar", half: "aadha", middle: "beech", yes: "haan", no: "nahi", neither: "dono mein se koi nahi" };
 export const workedCodeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_WORKED_CODE ?? ""));
 const rendered = (we, o, s) => { if (!workedCodeOn()) return {}; const r = renderWorked(we, { ...o, lang: s.ctx.lang }); return r ? { rendered: r } : {}; };
 import { newTalk, noteChildTurn } from "./talk.js";
@@ -663,7 +678,7 @@ function teach(s, input, prefix) {
       return plan("worked_example", join(prefix, SH.worked({ part: 1, parts: 2, stuck })), { ...(stuck ? { stuck } : {}),
         skillId: kit.skills[0].id, format: "F2", content: workedLeadContent(we, i), whiteboard: { kind: "math", value: clip(we.problem) },
         // (the steps before the gap only, as workedLeadContent: the gap's key is never said before it is posed)
-        ...(i > 0 ? rendered(we, { part: 1, parts: 1, upTo: Math.min(i, Math.max(1, Math.ceil(i / 2))) }, s) : {}),
+        ...rendered(we, { part: 1, parts: 1, upTo: i > 0 ? Math.min(i, Math.max(1, Math.ceil(i / 2))) : 0 }, s),
       });
     }
     const parts = Math.min(LIMITS.workedParts, we.steps.length);
@@ -2076,7 +2091,7 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: String(item.answer ?? ""), why: whyOf(kit, item) } } : {}) };
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) } } : {}) };
 }
 
 /**

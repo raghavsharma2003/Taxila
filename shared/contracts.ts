@@ -475,6 +475,9 @@ export interface ChildMemoryItem { id: string; text: string; at: string }
 export interface ChildMemoryResponse { keeps: boolean; items: ChildMemoryItem[] }
 export interface ChildMemoryDeleteRequest { childId: string; id: string }
 export interface ChildMemoryDeleteResponse { deleted: number }
+/** round 7 (App, the Debrief): the child's closed end-of-lesson emote. POST /api/child/emote ChildEmoteRequest → 204 (one per lesson). */
+export type ChildEmote = "wave" | "thanks" | "fun";
+export interface ChildEmoteRequest { childId: string; lessonId: string; emote: ChildEmote }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
 export interface LessonStartResponse {
@@ -672,3 +675,82 @@ export interface LearnerView {
   minutesLeft: MinutesLeft;
 }
 /** GET /api/child/map chapters also carry `school?: boolean`: the chapter the parent said school is on (round 7 F item 2). */
+
+// ───────────────────────────── round 7: lesson scripts (dc-r7-teaching-scripts) ─────────────────────────────
+/**
+ * A teaching script for one kit topic (data/lesson-scripts/<topicId>.json; Learning authors them to
+ * docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md, the shape this type follows). The Director WALKS a skill's script beat by
+ * beat (T2): the move is the next beat, the reply model renders it after first answering what the child said. Every
+ * convey / slotUse / why / do / move / then-shape is a SHAPE (note form, never a quotable line: the inherited law, sentence-shaped
+ * prompt text gets recited); problems, givens, results, prompts and keys are exact data. Checked in code before it is walked
+ * (server/director/script.js validateTopicScript); a script that fails is never walked.
+ */
+export interface TopicScript {
+  topicId: string;
+  classLevel: number;
+  version: number;
+  status: "draft" | "reviewed" | "live";
+  /** the lesson's Hindi terms (the Hindi switch uses them: parimap, bhuja, bhinn …) */
+  terms: Array<{ hi: string; en: string }>;
+  skills: SkillScript[];
+  /** the blind check of every key (Learning's solver), if run */
+  verified?: unknown;
+}
+export interface SkillScript {
+  /** the kit's skill id */
+  skillId: string;
+  hook: { convey: string; interestSlots: string[]; slotUse: string };
+  /** 2-4 beats, in order; each names the board it speaks over and what on it to point at */
+  explain: ExplainBeat[];
+  /** the FULL worked example: stated, givens, every step, the answer and why (no faded blanks) */
+  workedExample: WorkedExampleScript;
+  /** 2-3 keyed checks, each built to catch one kit misconception */
+  checks: CheckQuestion[];
+  /** 3-5 class-level practice rungs, easy → hard, the kit's real items */
+  ladder: Array<{ itemId: string; why: string }>;
+  /** one per misconception the skill touches: a different representation, never counting, then a keyed follow-up */
+  remediation: Remediation[];
+  bridgeToNext: string | null;
+}
+export interface ExplainBeat { id: string; convey: string; board?: BoardRef | null; point?: string; terms?: string[] }
+export interface WorkedExampleScript {
+  problem: string;
+  givens: string[];
+  find: string;
+  steps: Array<{ do: string; result: string }>;
+  answer: string;
+  why: string;
+  board?: BoardRef | null;
+}
+export interface CheckQuestion {
+  id: string;
+  /** the question as data, complete and solvable on its own; never containing its key */
+  prompt: string;
+  key: string;
+  accept?: string[];
+  /** the kit misconception id it is built to catch */
+  targets: string;
+  /** the answer a child holding that misconception gives */
+  wrongIfMis: string;
+  board?: BoardRef | null;
+}
+export interface Remediation { targets: string; move: string; board?: BoardRef | null; then: string; thenKey: string }
+/**
+ * A board for a beat (Studio's BOARD-REFS, server/forge/explainer/board-ref.js): a code template with its params as SHAPES only
+ * (numbers, closed ids, short labels), written nested ({ template, params }, Learning's scripts) or flat ({ template, ...params }),
+ * withhold "item" showing the asked value as "?"; or { auto: true }, Studio's own pick on the beat. Checked by Studio's
+ * resolveBoardRef / certifyBoardRef; an absent or failing ref falls back to Studio's pick. On a turn the beat's board rides on
+ * the board ask as intent.boardRef (brain/propose.js whiteboardIntentOf, from lastMove.scriptBeat).
+ */
+export type BoardRef =
+  | { template: string; params?: Record<string, unknown>; withhold?: "item" }
+  | ({ template: string; withhold?: "item" } & Record<string, unknown>)
+  | { auto: true };
+/** On a move the Director took from a script (T2): which beat it is (Studio reads intent.boardRef / intent.scriptBeat). */
+export interface ScriptBeatRef {
+  scriptId: string;
+  skillId: string;
+  beatId: string;
+  kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
+  board?: BoardRef | null;
+}

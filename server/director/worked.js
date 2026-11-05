@@ -81,5 +81,7 @@ export function renderWorked(we, { part = 1, parts = 1, upTo = null, lang = "hin
   chains.forEach((c, i) => lines.push(`${i === 0 && part === 1 ? W.first : W.then}: ${c}.`));
   const last = upTo == null && to >= steps.length ? answerOf(we) : null;
   if (last) lines.push(`${W.answer}: ${last}.`);
-  return chains.length ? lines : null;
+  // (director3 c4: the gap at step 0 left the worked example unsaid) a part that stops before its first step still states the givens
+  if (!chains.length) return upTo === 0 && part === 1 && lines.length ? lines : null;
+  return lines;
 }

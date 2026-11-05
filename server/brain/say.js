@@ -16,6 +16,7 @@ import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, s
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
+import { renderWorked } from "../director/worked.js";
 import { p5Flag } from "../conversation/flags.js";
 import { leadSlotWanted, leadSlotNote, cleanLead, leadOk, composeTurn, requestNote, turnNote, LEAD_MAX_WORDS, LEAD_MIN_FIRST, LEAD_MAX_FIRST } from "../conversation/compose.js";
 import { fallbackLead } from "../conversation/fallback-lead.js";
@@ -27,8 +28,10 @@ import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
 // round 7 S1: the problems a shipped line may never carry (truth and teaching; style problems are repaired, not enforced)
-const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.", "Ek udaharan dekho, kadam se kadam.", "Isko ek baar poora karke dekhte hain."],
-  english: ["Let's solve one together.", "Here is one, step by step.", "Let's work through one."] };
+// (director3: "Isko ek baar poora karke dekhte hain" over ONE step) a frame never claims more than the lines that follow it
+const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.", "Ek udaharan dekho, kadam se kadam.", "Isko shuru se dekhte hain."],
+  english: ["Let's solve one together.", "Here is one, step by step.", "Let's start this one."] };
+const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati hissa dekhte hain.", "Pehle yeh hissa."], english: ["First, this part.", "Here is the first step.", "Start with this part."] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
 const GAVE_LINE = {
   hinglish: [(a, w) => `Pichhle sawaal ka jawab ${a} tha${w ? `, kyunki ${w}` : ""}.`, (a, w) => `Woh wala: jawab ${a}${w ? `; ${w}` : ""}.`, (a, w) => `Pichhla sawaal: ${w ? `${w}, ` : ""}yaani jawab ${a}.`],
@@ -38,7 +41,7 @@ const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein ba
 const PARK_ACK = { hinglish: [(t) => `${t}: iski baat is part ke baad karenge.`, (t) => `${t} yaad hai, yeh part khatam karke uspar aate hain.`, (t) => `${t}: pakka, thodi der mein uski baat.`],
   english: [(t) => `${t}: we'll talk about it after this part.`, (t) => `${t} — I'll come back to it once this part is done.`, (t) => `${t}: yes, right after this part.`] };
 export const ENFORCED = new Set(["leak", "praise", "deny", "claim", "corrects", "math", "invented", "screen", "parts", "affirms", "negates", "notheard",
-  "gameclaim", "cantshow", "level", "answerinq", "underived", "ignored", "readscard", "units"]);
+  "gameclaim", "cantshow", "level", "answerinq", "underived", "ignored", "readscard", "units", "ratefrac"]);
 // (samecard is not enforced: its repair is a fixed lead before the card, which still has the card in it)
 // an English card in a Hindi / Hinglish lesson: asked about without reading it and without sending their eyes to a screen
 const ENGLISH_CARD_LINE = { tum: "Is sawaal ka jawab socho aur batao.", aap: "Is sawaal ka jawab sochiye aur bataiye." };
@@ -156,10 +159,18 @@ const LEVEL_COUNT_ON = /\b(?:kadam\s+aage|aage\s+(?:teen|do|ek|chaar|paanch|\d+)
 const LEVEL_TINY_SUM = /(?<![\p{N}.])(?<!(?:\+|plus|jama|aur)\s*)[1-9]\s*(?:\+|plus|jama)\s*[1-9](?![\p{N}.])(?!\s*(?:\+|plus|jama)\s*\d)[^.?!।]*\?/iu;
 const LEVEL_SIDES = /\b(?:kitni|kitne)\s+(?:sides|bhuja(?:yein|en)?|kinare|kone|corners)\s+(?:hoti|hote|hai|hain)|\bhow\s+many\s+(?:sides|corners)\b|\bcount\s+the\s+(?:sides|corners)\b|\b(?:sides|bhujaayein)\s+gino\b/i;
 /** Is her line below the class's level? */
+// rate read as a fraction (director3 c5: "5 balls mein 2 runs = 2/5"): a "per" quantity is never a part of a whole
+// (also "5 balls mein 2 runs, score hua 2/5": the fraction a few words after the rate)
+const RATE_AS_FRACTION = /\b\d+\s+\p{L}+\s+(?:mein|me|in|per)\s+\d+\s+\p{L}+[^.?!।]{0,30}?\d+\s*\/\s*\d+/iu;
+/** Does a text read a rate ("N balls mein M runs") as a fraction? (director3 c5) */
+export const rateAsFraction = (t) => RATE_AS_FRACTION.test(String(t ?? ""));
+// (director3 c6: "chaar bhujayein hoti hain. Ab ginein: ek, do, teen, chaar") counting one by one aloud, or asking to count them
+const LEVEL_COUNT_SEQ = /\b(?:ek|one)\W+(?:do|two)\W+(?:teen|three)\b|\b(?:sides|bhuja\p{L}*|kinare|kone)\b[^.?!।]{0,30}\bgin(?:o|ein|en|enge|iye|te\s+hain)\b|\bgin(?:o|ein|en|enge|iye)\b[^.?!।]{0,30}\b(?:sides|bhuja\p{L}*|kinare|kone)\b/iu;
 export function belowLevel(t, classLevel, kitText = "") {
   const c = Number(classLevel);
   if (!(c >= 4)) return false;
   if (LEVEL_COUNT_ON.test(t)) return true;
+  if (c >= 5 && LEVEL_COUNT_SEQ.test(t)) return true;
   const m = String(t).match(LEVEL_TINY_SUM);
   if (m && !String(kitText).includes(m[0].replace(/\s+/g, " ").slice(0, 5))) return true;
   return c >= 5 && LEVEL_SIDES.test(t);
@@ -222,6 +233,12 @@ export const unmixWords = (t) => String(t ?? "").replace(/(\p{Script=Latin}+)([\
 const IN_WORDS = /\b(?:(?:picture|tasveer|photo|diagram)\s+ko\s+)?words\s+mein\s+(?:dekho|dekhte\s+hain|samjho|socho)\b\s*[:,—-]?\s*|\b(?:see|picture)\s+it\s+in\s+words\b\s*[:,—-]?\s*|\b(?:kalpana\s+karo|imagine(?:\s+it)?|man\s+mein\s+socho)\b\s*[:,—-]?\s*/gi;
 export const withoutInWords = (t) => String(t ?? "").replace(IN_WORDS, "").replace(/,\s*([.!?])/g, "$1").replace(/(^|[.!?]\s+)(\p{Ll})/gu, (_, a, c) => a + c.toUpperCase()).replace(/\s{2,}/g, " ").trim();
 const PARK_STOP = new Set(["mujhe", "baare", "mein", "baat", "karni", "karte", "hain", "about", "talk", "want", "pasand", "chahiye", "kuch"]);
+/** A fixed line with content for a turn with no card: the move's rendered lines, else the worked example's opening, in code. */
+function contentFallback(state, kit, lang) {
+  const lines = state.lastMove?.rendered?.length ? state.lastMove.rendered : renderWorked(kit?.workedExample, { part: 1, parts: 2, lang: lang === "english" ? "english" : "hinglish" });
+  if (!lines?.length) return null;
+  return [pickOf(WORKED_FRAME_PART[lang === "english" ? "english" : "hinglish"], state), ...lines.slice(0, 2), pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state)].join(" ");
+}
 export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
@@ -798,6 +815,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     showOnly && sentences(t).some(asksToCompute) && "quiz",
     readsOptions && optionsNamed(t, item) >= 2 && "options",
     foreignOf(t).length > 0 && "invented",
+    rateAsFraction(t) && "ratefrac",
     !scriptOk(t, lang) && "script",
     words(t) > max && !slotLength(t) && "long",
     pinned && !parityOf(t).endsOnAsk && "ask",
@@ -932,7 +950,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
   const workedLines = kindNow === "worked_example" && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
-  const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that sets the problem up (who, what, what we want to find), with no numbers and no question." : null;
+  const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
   const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
@@ -1099,6 +1117,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("bare") && (rePose || helpAsk ? "it is only the question again — first answer what they just said, or give the nudge or the step, in one short line of your own; then the question"
         : "it is only the question — say a short bridge of your own first (a few words to what they said), then the question"),
       found.includes("same") && "it repeats what you already said earlier, almost word for word — say something new (a different nudge, example or way in); then the question",
+      found.includes("ratefrac") && "it reads a rate (so many runs in so many balls) as a fraction; a fraction is a part of one whole split into equal parts — use a whole split into equal parts",
       found.includes("invented") && `it uses numbers that are not in the worked example (${foreignOf(reply).join(", ")}) — use only the worked example in LESSON NOW, with its own numbers`,
       found.includes("options") && "it lists the answer choices, but they are the buttons on the screen — do not list or read them; say your line, then ask the question",
       found.includes("quiz") && "they were stuck: say each step's result yourself and ask them to work out nothing — at most ask if they want to see the next step",
@@ -1192,6 +1211,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("gameclaim")) { reply = keepOr(withoutGameActs(reply)); guard.replaced = true; }
       // round 7 (main's director2 judgement: "your guards detect but don't prevent"): the block-2 guards had only the rewrite.
       // A rewrite that keeps the problem now gets a code repair, never ships as it is.
+      if (found.includes("ratefrac")) { reply = keepOr(sentences(reply).filter((x) => !rateAsFraction(x)).join(" ").trim()); guard.replaced = true; }
       if (found.includes("level")) { reply = keepOr(sentences(reply).filter((x) => !belowLevel(x, state.ctx?.classLevel, kitText)).join(" ").trim()); guard.replaced = true; }
       if (found.includes("answerinq")) { const s = sentences(reply); reply = keepOr(s.slice(0, -1).join(" ").trim()); guard.replaced = true; }
       if (found.includes("underived")) {
@@ -1341,6 +1361,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
       reply = `${pickOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
     }
+    // (director3: "Riya" in 8-9 of 11 lines) her name opens a line at most once in three turns
+    {
+      const nm = String(state.ctx?.firstName ?? "").trim().split(/\s+/)[0];
+      const recent = [...(history ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => t.text ?? "").join(" ");
+      if (nm && new RegExp(`\\b${nm}\\b`, "i").test(recent)) {
+        const cut = reply.replace(new RegExp(`^\\s*${nm}\\s*[,—–-]\\s*`, "i"), "");
+        if (cut !== reply && cut.trim()) { reply = cut.charAt(0).toUpperCase() + cut.slice(1); guard.repaired = true; }
+      }
+    }
     const tidied = tidyAround(reply, pinned ? askEnd : null);
     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
   }
@@ -1357,7 +1386,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // not that), the code lines, then the card when one is posed, else a fixed check-in question
   if (workedLines) {
     const first = sentences(reply)[0] ?? "";
-    const framing = first && !/\d|[?？]/.test(first) && words(first) <= 25 ? first.trim() : pickOf(WORKED_FRAME[lang === "english" ? "english" : "hinglish"], state);
+    const whole = workedLines.some((l) => /^(?:Toh jawab|So the answer is):/.test(l));
+    // her framing may state the problem with its own numbers (the invented guard holds them to the kit); never a question
+    const framing = first && !/[?？]/.test(first) && words(first) <= 30 && !foreignOf(first).length ? first.trim()
+      : pickOf((whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state);
     const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
     reply = [framing, ...workedLines, ask].join(" ").replace(/\s+/g, " ").trim();
     if (problems(reply).includes("bracket")) reply = sayBrackets(reply, state.lastContent ?? [], lang); // spoken: "50 plus 30, that is 80, times 2"
@@ -1381,6 +1413,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const cands = [
         bad.includes("underived") && card ? (() => { const l = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang); return l ? joinAsk(l, card) : null; })() : null,
         englishCard ? (address === "aap" ? ENGLISH_CARD_LINE.aap : ENGLISH_CARD_LINE.tum) : null,
+        // (director3: "Chalo, isko ek chhote step mein saath mein dekhte hain." alone, content-free) no card: the fixed line carries
+        // the lesson's own content, the worked example's first lines rendered in code
+        !item ? contentFallback(state, kit, lang) : null,
         fallbackReply(state, item),
       ].filter(Boolean);
       const fixed = cands.find((c) => !problems(c).some((p) => ENFORCED.has(p)));
