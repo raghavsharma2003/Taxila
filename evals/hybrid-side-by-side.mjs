@@ -203,7 +203,15 @@ async function lesson(lane, kit, classLevel, lines) {
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
     }
     // replyReadyMs: from the child's words to her whole line ready (the classifier, then her line): what first sound waits on
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
+    // director4 (main): per turn, the script beat, the board ref shown, whether a scene was up, the check state
+    const sb = next.lastMove?.scriptBeat ?? null;
+    const beat = sb ? `${sb.skillId?.split("-").at(-1) ?? "?"}:${sb.kind}:${sb.beatId}` : null;
+    const cardId = ui?.ask?.itemId ?? null;
+    const check = cardId ? { itemId: cardId, scripted: String(cardId).startsWith("script:"), misses: next.misses?.[cardId] ?? 0, gave: !!next.lastMove?.gave } : null;
+    // (a board or game on screen this turn; Studio's code-built scenes (M5a) are not simulated in-process: scene is always null)
+    const boardUp = !!(screen && screen.kind !== "none");
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     if (p.r.end) break;
   }
@@ -212,7 +220,7 @@ async function lesson(lane, kit, classLevel, lines) {
 
 const md = (name, topic, A, B) => {
   const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
-    : `**Asha** [${r.move}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
+    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
   return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
 };
 

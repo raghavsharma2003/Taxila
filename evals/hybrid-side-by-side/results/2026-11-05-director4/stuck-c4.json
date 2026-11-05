@@ -1,0 +1,341 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ke equal shares se fractions dekhenge. Tumhe cricket mein batting ya bowling pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1049
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, cricket pasand hona zaroori nahi. Socho: ek roti do siblings mein baantni hai—fair share ke liye pieces kaise honge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1367,
+   "replyReadyMs": 2416,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1013
+  },
+  {
+   "who": "teacher",
+   "text": "Roti ko beech se kaato: dono tukde bilkul same size honge. Fair share ka matlab equal pieces. Kya dono tukde same honge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1443,
+   "replyReadyMs": 2456,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 725
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere chalenge. Ek roti ko do same-size pieces mein kaato. Har sibling ko ek piece milega. Kya dono pieces barabar hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1415,
+   "replyReadyMs": 2140,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 955
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Roti ke do bilkul barabar tukde karo. Har vyakti ko ek hissa milega. Kya dono hisse ek jaise hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1443,
+   "replyReadyMs": 2398,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 884
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne “5” kaha. Kya tum paanch tukdon ki baat kar rahi ho, ya roti baantne wale logon ki?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2295,
+   "replyReadyMs": 3179,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    }
+   },
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1004
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Abhi sirf Cake B dekho: teenon tukde ek jaise hain. Ismein har tukda kya hai—barabar hissa ya alag hissa?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1342,
+   "replyReadyMs": 2346,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 pieces",
+       "1 big, 2 small",
+       "not thirds"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 pieces",
+       "all the same size",
+       "each piece = 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | ? pieces | ? pieces | "
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 pieces",
+        "1 big, 2 small",
+        "not thirds"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 pieces",
+        "all the same size",
+        "each piece = 1/3"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 992
+  },
+  {
+   "who": "teacher",
+   "text": "Dekho: 1/3 mein ek poori cheez ke 3 barabar hisse dikh rahe hain. Inmein se ek hissa kitna hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1774,
+   "replyReadyMs": 2766,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "catalogue",
+    "template": "catalogue:L4",
+    "onScreen": {
+     "labels": "one-half | one-quarter | more equal part"
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1029
+  },
+  {
+   "who": "teacher",
+   "text": "1/3 mein ek poori cheez ke teen barabar hisse hote hain; ek hissa unmein se ek hota hai. Tumhare hisaab se ek hissa kitna?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2885,
+   "replyReadyMs": 3914,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 926
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha—shayad tum tukdon ki ginti bata rahi ho. Board par kul barabar hisse kitne dikh rahe hain?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2892,
+   "replyReadyMs": 3818,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    }
+   },
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 964
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya. Teen vikalp hain: aage badhein, thodi der rukein, ya aaj ke liye rok dein. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2706,
+   "replyReadyMs": 3670,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}
