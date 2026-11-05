@@ -20,7 +20,8 @@ const T = "c6-maths-ch05-t02";
 const kit = (() => { try { return kitFromFile(getTopic(T)); } catch { return null; } })();
 const catalog = productionCatalog();
 const instantOnly = () => ({ instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) });
-_setDeps({ writeEvidence: async () => ({ written: true }), q: async () => [], gateAvailable: () => false });
+// (no writeEvidence here: in a single-process run a module-level override replaced p4-content-seam's evidence recorder)
+_setDeps({ q: async () => [], gateAvailable: () => false });
 const S1 = kit?.skills?.[0]?.id, S2 = kit?.skills?.[1]?.id;
 
 function lesson(id, rows) {

@@ -24957,6 +24957,20 @@
    "at": "2026-11-05",
    "title": "merge-inbox fed a string `md` to Object.entries: one context file per character (1,309 junk files at integration 5)",
    "source": "inbox/r7-main-10.json"
+  },
+  {
+   "id": "jd-r7-director4-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director4 (Director walks the authored lesson scripts, 12 lessons, ~$0.20) judged by 3 Claude judges: maths model fixed and the lesson has a spine, but the walk is a clock: c5 beats delivered 5/19, c4 explain beats fully delivered 1/13 and answers graded 0/7, 9/12 lessons never reach a keyed question, kit sources still speak, English read aloud, speech contradicts screen (c6 6/8). Scores mostly 1→2.",
+   "source": "inbox/r7-main-11.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v2",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Keep the teaching-scripts architecture; no scale-out. Script format v2 (Hinglish for every spoken field, keyed micro-question per explain beat, <=2 explain beats before a keyed question, worked = problem + do/result/why with the last step the child’s, slots fit beats) and runtime v2 (beat completes only when said and answered, diversions do not consume beats, script mode silences kit sources, screen contract enforced in code, language request persists, question jar) plus a reactive scripted child; director5 gates the 30-topic scale-out (>=80% beats delivered, >=90% keyed answers get a verdict, 0 contradictions, every judge axis >=3.5).",
+   "source": "inbox/r7-main-11.json"
   }
  ],
  "edges": [
@@ -39069,6 +39083,16 @@
    "src": "dc-r7-pilot-scripts-format",
    "rel": "measured_by",
    "dst": "ms-r7-pilot-scripts-blind"
+  },
+  {
+   "src": "dc-r7-script-walk-v2",
+   "rel": "measured_by",
+   "dst": "jd-r7-director4-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v2",
+   "rel": "part_of",
+   "dst": "dc-r7-teaching-scripts"
   }
  ]
 }

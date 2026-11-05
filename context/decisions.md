@@ -7384,3 +7384,72 @@ Reverse if: scripts need boards no template can draw (then add a template, never
 Main M5 decision: the owner's #4 (cinematic animation) starts as CODE-BUILT scenes at $0 (shared/scene.js format: props, keyframed tracks, captions, clause-bound beats; one interpolation sceneAt for player, lint and tests; tray-gate 'scene' rule; ScenePlayer as artifact kind 'scene'). 'animation dikhao' on a pilot topic gets the scene via studioSeam.composeAsk before the play ladder. Generated video (Sora on Azure) only after a priced 5-clip test, once code scenes show what they cannot do. Live codegen stays dormant; gate services, the image rung and O-1 are on the owner's decision list. (2026-11-05; from inbox/r7-studio-22.json)
 
 Reverse if: children or the owner find the code scenes too plain for the idea (then the priced Sora 5-clip test), or scenes cannot be authored fast enough beyond the 20 pilots (then a scene DSL that Learning's scripts can name)
+
+
+<!-- merged from inbox/r7-main-11.json -->
+## `dc-r7-script-walk-v2`
+
+`dc-r7-teaching-scripts` was to be reversed if "director4 on scripted topics still shows the gaps (then the reply layer:
+stronger model on paraphrase only, or a code-rendered teaching voice)". Read literally, that condition is met: the gaps
+remain. It was written, though, on the assumption that the walk did what the decision specified, and director4 shows it
+did not:
+- the listening contract ("always correct wrong answers") cannot fire, because explain beats have no keys;
+- the screen contract is not checked in code;
+- kit sources still speak.
+
+All three judges put most defects on the walk (b) and the script format (a), and judged the content class-level and
+correct. So the reply layer has not yet been tested on a faithful walk, and reversing now would blame the wrong layer.
+**The architecture stays. The reversal moves to director5, unchanged in substance.** **No scale-out to 30 topics** until a director5 run passes. Thirty
+scripts on today's walk would be thirty times as many beats walked and not taught.
+
+**Script format v2.** Brain owns the schema and validator; Learning rewrites the 4 pilot scripts.
+- **F1.** Every field that is spoken or shown is authored in Hinglish. The validator rejects a spoken field with no Hinglish form, and code never speaks an English-only field.
+- **F2.** Every explain beat ends in a keyed micro-question (key plus accepted forms). At most 2 explain beats come before the first keyed question; for class 4–5 the first beat starts at class level.
+- **F3.** The worked example is: the problem said aloud, then each step as do → result → why, with the last step left to the child as a keyed question.
+- **F4.**
+  - Check and worked-example boards carry the numbers, e.g. side lengths.
+  - Interest slots must fit the beat. A round ground has no corner.
+  - The greet promises only interests a slot actually uses.
+
+**Runtime v2** (Brain).
+- **R1. Beat completion.** A beat is done only when:
+  - its must-say terms were spoken (checked in code);
+  - its keyed question was answered and judged against the key.
+  
+  Then:
+  - right → advance;
+  - wrong → a verdict with its reason, then the beat's remediation and a re-ask;
+  - "pata nahi" → re-teach the same beat smaller.
+- **R2. Diversions don't consume beats.** Off-topic turns, requests and chat are handled, then the lesson returns to the same beat.
+- **R3. Script mode silences the kit.**
+  - No kit item, kit reteach or `renderWorked` fallback while a script is walked.
+  - Every repair draws on the current beat's board and numbers.
+  - A remediation says its explanation and poses its follow-up card.
+- **R4. The screen contract is enforced in code.**
+  - Shape names and numbers in her line must match the facts of the board or card on screen. A clause that doesn't match is regenerated or dropped.
+  - Check numbers are pinned to the card.
+  - A picture request re-shows the current beat's board.
+- **R5. A language request holds for the rest of the lesson.**
+- **R6.** Learning's patch 004b (the question jar): parked questions reach the next lesson, and promises close.
+
+**Studio.**
+- **S1.** Fix the c5 explain-board pick. The fraction-line refs on the explain beats rendered nothing.
+- **S2.** Boards show the authored rows and numbers. compare@1 showed "? pieces".
+
+**Harness (Brain).**
+- **H1.** A reactive scripted child: rule-based, no model calls.
+  - It runs 20 or more turns and answers keyed questions right or wrong according to its persona.
+  - It says "pata nahi", makes requests and goes off-topic at set points.
+  - It is sometimes right, so remediation and the ladder are reached.
+
+**Next run: director5.** The 3 pilot topics plus Learning's c5-ch02-t02 (the pipeline's test topic), in the 4 scenarios, with H1. It is judged the same way.
+
+**Scale to 30 only if director5 meets all of these:**
+- at least 80% of beat turns deliver their beat;
+- at least 90% of child answers to keyed questions get a verdict;
+- 0 cases of speech contradicting the screen;
+- every judge axis at 3.5 or above in all three classes.
+
+**Reverse if:** director5 still shows beats walked but not taught with R1–R4 in place. Then the reply model's freedom is the
+problem, and the next step is speaking the authored Hinglish lines nearly verbatim, with slots filled. The model would
+only handle off-script turns.
