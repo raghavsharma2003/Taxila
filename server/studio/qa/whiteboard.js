@@ -28,7 +28,7 @@
 //   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
-import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp } from "../../../shared/whiteboard.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
@@ -131,6 +131,10 @@ function valueTokens(text) {
  */
 export function withheldValues(kit, { itemId, line = "" } = {}) {
   const said = [...numbersIn(line)].map(rat).filter(Boolean);
+  // round 7 (M2, Brain's S4 c6 perimeter picture request): while the item IS the worked example (a faded step, "fade:N"),
+  // the numbers its problem STATES are its givens, taught openly ("a park 50 m long and 30 m wide"): never written "?" on
+  // its own picture because a later item's answer happens to be 50
+  if (/^fade:/.test(String(itemId ?? ""))) said.push(...[...numbersIn(String(kit?.workedExample?.problem ?? ""))].map(rat).filter(Boolean));
   const items = [...(kit?.items ?? [])].sort((a, b) => (b?.id === itemId) - (a?.id === itemId));
   const values = [], words = [], phrases = [];
   const lineWords = new Set(String(line).toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []);
@@ -378,6 +382,31 @@ export function segHitsBox(p, q, b) {
 /** A word box shrunk 2 units on each side (touching a line is fine, crossing it is not). */
 export const innerBox = (g) => ({ x: g.x + 2, y: g.y + 2, w: Math.max(0, g.w - 4), h: Math.max(0, g.h - 4) });
 /** Text / label boxes crossed by a line, an arrow shaft or a box edge. */
+/**
+ * round 7 (C1 maps, dc-r7-maps-no-outline): the degree labels of a latitude/longitude grid ("15°N", "20°N", "25°N") are the
+ * grid's AXIS, not claims: like a number line's evenly spaced ticks, ≥ 3 labels of one direction letter, each the whole
+ * text, every step equal. Their numbers are allowed (W4); a single "23.5°N" or an uneven set is still checked against
+ * her line and the kit. → canon number strings.
+ */
+function degreeAxes(ops) {
+  const by = { NS: [], EW: [] };
+  for (const o of ops) {
+    if (o.op !== "text") continue;
+    const m = String(o.text).trim().match(/^(\d{1,3})°([NSEW])$/);
+    if (m) by[/[NS]/.test(m[2]) ? "NS" : "EW"].push(Number(m[1]));
+  }
+  const out = [];
+  for (const vs of Object.values(by)) {
+    const u = [...new Set(vs)].sort((a, b) => a - b);
+    if (u.length < 3) continue;
+    const d = u[1] - u[0];
+    if (d > 0 && u.every((v, i) => !i || v - u[i - 1] === d)) out.push(...u.map((v) => canon(String(v))));
+  }
+  return out;
+}
+
+const END_JUDGED = new Set(["W8.counts_match_line", "W10.screen_claims_drawn", "W13.fractions_agree", "W15.named_shape_drawn"]);
+
 function textsCrossed(ops, byId) {
   const segs = segmentsOf(ops);
   const out = [];
@@ -422,6 +451,21 @@ export function revealsOf(ops, per, byId, texts, withhold) {
       const h = hit(tok); if (h) out.push(`${o.id}: ${tok} = answer ${h.t}`);
     }
   });
+  // round 7 (main: the c5 place-value board masked its hundreds digit "?" but wrote "10,500" under the boxes): when the
+  // board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on the board that
+  // CONTAINS that digit gives it away too and is a reveal (the whole number is masked "?"); a board that never splits a
+  // number into digits is unchanged ("15 cm" beside an answer of 5 is no reveal)
+  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim()))
+    .map((o) => String(o.text).trim()));
+  if (digitHits.size) {
+    for (const o of ops) {
+      const cells = o.op === "text" || o.op === "label" ? [String(o.text)] : o.op === "numwork" && Array.isArray(o.rows) ? o.rows.flat().map(String) : [];
+      for (const c of cells) for (const m of c.matchAll(/\d[\d,]*\d/g)) {
+        const d = [...digitHits].find((x) => m[0].replace(/,/g, "").includes(x));
+        if (d) out.push(`${o.id}: ${m[0]} = answer ${d}`);
+      }
+    }
+  }
   // a number line with its answer marked by position: a dot (small circle) or an arrow head at the answer's tick
   for (const nl of ops.filter((o) => o.op === "numwork" && o.layout === "number_line" && Array.isArray(o.range))) {
     let box; try { box = opGeometry(nl, byId).box; } catch { continue; }
@@ -507,6 +551,7 @@ export function gateWhiteboard(raw, ctx) {
   const derived = new Set();
   const per = ops.map((o) => opNumbers(o, allowed));
   for (const p of per) for (const d of p.derived) derived.add(d);
+  for (const d of degreeAxes(ops)) derived.add(d);
   const invented = [...new Set(per.flatMap((p) => p.nums).filter((t) => !numberAllowed(t, allowed, derived)))];
   const wrong = per.flatMap((p) => p.wrong);
   add("W4.numbers_from_truth", invented.length === 0 && wrong.length === 0, { invented: invented.slice(0, 5), wrong: wrong.slice(0, 3) });
@@ -601,9 +646,13 @@ export function gateWhiteboard(raw, ctx) {
   const advisories = off.length ? [{ id: "W14.about_her_line", detail: off[0] }] : [];
   // W19 (round 7, motion ops): a board that MOVES is also judged as it ends (every moved op at its final place): a part
   // that slides onto a word, a label left behind by its part, a jump that lands off the line is refused where it lands
-  if (ops.some((o) => o.op === "move")) {
+  if (ops.some(isMotionOp)) {
     const end = gateWhiteboard(settledScript(script), ctx);
     add("W19.settled", end.pass, end.checks.filter((c) => !c.pass).map((c) => c.id).slice(0, 6));
+    // M2: what the board SHOWS (her counts, her claims, her fractions, the shape she names) is judged where the motion
+    // leaves it: dots heaped then shared into 3 groups show "3 groups of 4" once shared, not while heaped. Layout checks
+    // (fit, overlap, words clear of lines) still judge the board as it starts, and W19 the end board in full.
+    for (const c of checks) if (END_JUDGED.has(c.id)) { const e = end.checks.find((x) => x.id === c.id); if (e) { c.pass = e.pass; c.detail = e.detail; } }
   }
   const pass = checks.every((c) => c.pass);
   return { pass, checks, advisories, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };

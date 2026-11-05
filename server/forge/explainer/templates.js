@@ -12,15 +12,18 @@
 // expand(call, { band, lessonId, scriptId }) → { ok, script, facts, errors }: the script is normalised STRICTLY and
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
-import { normalizeScript, lintScript, textBox, textProblem } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, textBox, textProblem, settledScript } from "../../../shared/whiteboard.js";
+import { placeNamed } from "./places.js";
+
+const round1 = (v) => Math.round(v * 10) / 10;
 
 export const BOARD = { w: 400, h: 300 };
 export const TEMPLATES = ["fraction-parts@1", "fraction-of@1", "combine-count@1", "number-line-hop@1", "column-op@1", "place-value@1", "equal-groups@1",
-  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1"];
+  "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram" };
-export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit"];
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram" };
+export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
 const PACE = { B1: 1.4, B2: 1.3, B3: 1.0, B4: 0.9 };
@@ -161,12 +164,12 @@ function fractionOf(c, tl) {
   tl.add({ id: "whole", op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 800);
   // step 1: the inner fraction c/d, column by column
   for (let i = 1; i < d; i++) tl.add({ op: "line", from: [x0 + i * cw, y0], to: [x0 + i * cw, y0 + H], weight: 1 }, 220, { gap: 50 });
-  for (let i = 0; i < cn; i++) tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 320, { gap: 100 });
+  for (let i = 0; i < cn; i++) { tl.add({ id: `c${i}`, op: "rect", at: [x0 + i * cw + 3, y0 + 3], w: cw - 6, h: H - 6, fill: "soft", ink: "accent", weight: 1 }, 200, { gap: 100 }); tl.add({ op: "sweep", target: `c${i}`, dir: "down" }, 480, { gap: 0 }); }
   tl.add({ id: "inner", op: "text", at: [x0 + (cn * cw) / 2, y0 - 16], text: `${cn}/${d}`, size: "m", ink: "accent" }, 380, { gap: 160 });
   // step 2: the outer fraction a/b of that part, row by row inside the shaded columns
   tl.pause(400);
   for (let j = 1; j < b; j++) tl.add({ op: "line", from: [x0, y0 + j * rh], to: [x0 + W, y0 + j * rh], weight: 1, ink: "soft" }, 220, { gap: 50 });
-  for (let j = 0; j < a; j++) tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 380, { gap: 140 });
+  for (let j = 0; j < a; j++) { tl.add({ id: `r${j}`, op: "rect", at: [x0 + 5, y0 + j * rh + 5], w: cn * cw - 10, h: rh - 10, fill: "accent", ink: "mark", weight: 1 }, 220, { gap: 140 }); tl.add({ op: "sweep", target: `r${j}`, dir: "right" }, 520, { gap: 0 }); }
   tl.add({ id: "outer", op: "text", at: [x0 + W + 12, y0 + (a * rh) / 2], text: `${a}/${b}`, size: "m", ink: "mark", align: "start" }, 380, { gap: 160 });
   // step 3: count the small parts: a × c of b × d
   const res = c.hideResult ? "?" : `${a * cn}/${b * d}`;
@@ -186,7 +189,7 @@ function combineCount(c, tl) {
   const dot = (i, x0, y0, id, ink) => ({ id, op: "circle", c: [x0 + (i % 5) * 30, y0 + Math.floor(i / 5) * 30], r: 10, fill: ink, ink });
   for (let i = 0; i < a; i++) tl.add(dot(i, op === "add" ? 40 : 110, 70, `a${i}`, "accent"), 160, { gap: 70 });
   if (op === "add") {
-    tl.add({ op: "text", at: [200, 85], text: "+", size: "l" }, 300);
+    tl.add({ id: "plus", op: "text", at: [200, 85], text: "+", size: "l" }, 300);
     for (let i = 0; i < b; i++) tl.add(dot(i, 245, 70, `b${i}`, "good"), 160, { gap: 70 });
   } else {
     // take away: cross out the last b dots, one by one
@@ -195,10 +198,21 @@ function combineCount(c, tl) {
       tl.add({ op: "line", from: [x - 12, y - 12], to: [x + 12, y + 12], ink: "mark", weight: 2 }, 220, { gap: 120 });
     }
   }
+  // round 7 (M2): adding is PUTTING TOGETHER: the second group slides over and joins the first, filling its rows of five
+  const claims = [];
+  if (op === "add" && b > 0) {
+    tl.pause(300);
+    for (let i = 0; i < b; i++) {
+      const k = a + i, tx = 40 + (k % 5) * 30, ty = 70 + Math.floor(k / 5) * 30, fx = 245 + (i % 5) * 30, fy = 70 + Math.floor(i / 5) * 30;
+      tl.add({ op: "move", target: `b${i}`, by: [tx - fx, ty - fy], arc: 18 }, 900, i ? { with: true } : { gap: 120 });
+      claims.push({ id: `b${i}`, c: [tx, ty] });
+    }
+    tl.add({ op: "erase", target: "plus" }, 300, { with: true });
+  }
   const sign = op === "add" ? "+" : "-";
   tl.add({ id: "eq", op: "numwork", at: [120, 220], layout: "equation", rows: [[String(a), sign, String(b), "=", res]], weight: 2 }, 1100, { gap: 350 });
   tl.add({ op: "highlight", target: "eq", style: "underline", ink: "mark" }, 500, { gap: 200 });
-  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "take away", result: c.hideResult ? "? (child works it out)" : result } };
+  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "take away", result: c.hideResult ? "? (child works it out)" : result }, claims };
 }
 
 function numberLineHop(c, tl) {
@@ -254,12 +268,20 @@ function columnOp(c, tl) {
   tl.add({ op: "text", at: [right - (width + 0.6) * cw, rowY[1]], text: op === "add" ? "+" : "-", size: "l" }, 200);
   tl.add({ op: "line", from: [right - (width + 1.1) * cw, 170], to: [right + 8, 170], weight: 2 }, 500, { gap: 150 });
   // then the answer, right to left, each column's carry written small above its column just before that column
+  const claims = [];
   for (let j = width - 1; j >= 0; j--) {
-    if (receives.has(j)) tl.add({ op: "text", at: [colX(j), 55], text: op === "add" ? "1" : "-1", size: "s", ink: "mark" }, 260, { gap: 200 });
+    if (op === "sub" && receives.has(j)) tl.add({ op: "text", at: [colX(j), 55], text: "-1", size: "s", ink: "mark" }, 260, { gap: 200 });
     // hideResult: each answer cell is "?" (the column method shown, the digits left to the child)
     if (dr[j].trim()) tl.add({ id: `r${j}`, op: "text", at: [colX(j), rowY[2]], text: c.hideResult ? "?" : dr[j], size: "l", ink: "accent" }, 300, { gap: 220 });
+    // round 7 (M2): adding, a column that makes ten sends its 1 UP to the next column: the small 1 appears beside this
+    // column's answer and rises to the top of the column on its left (ending where the still board wrote it)
+    if (op === "add" && receives.has(j - 1)) {
+      const id = tl.add({ op: "text", at: [colX(j) + 17, rowY[2] - 18], text: "1", size: "s", ink: "mark" }, 220, { gap: 160 });
+      tl.add({ op: "move", target: id, by: [round1(colX(j - 1) - colX(j) - 17), round1(55 - (rowY[2] - 18))], arc: 10 }, 900, { gap: 80 });
+      claims.push({ id, at: [colX(j - 1), 55] });
+    }
   }
-  return { facts: { first: a, second: b, operation: op === "add" ? "add" : "subtract", result: c.hideResult ? "? (child works it out)" : r, carries: receives.size } };
+  return { claims, facts: { first: a, second: b, operation: op === "add" ? "add" : "subtract", result: c.hideResult ? "? (child works it out)" : r, carries: receives.size } };
 }
 
 const PLACES = ["O", "T", "H", "Th", "TTh", "L", "TL"];
@@ -274,28 +296,41 @@ function placeValue(c, tl) {
     tl.add({ op: "rect", at: [x0 + i * cw, y0], w: cw - 4, h: 90, weight: 1 }, 260, { gap: 60 });
     tl.add({ op: "text", at: [x0 + i * cw + (cw - 4) / 2, y0 + 22], text: place, size: "s", ink: "soft" }, 200, { with: true });
   });
-  digits.forEach((d, i) => tl.add({ id: `d${i}`, op: "text", at: [x0 + i * cw + (cw - 4) / 2, y0 + 62], text: d, size: "l", ink: "accent" }, 300, { gap: 220 }));
-  // the Indian grouping, written under the boxes
+  // round 7 (M2): the number is written under the boxes digit by digit, then each digit RISES into its place box, ones
+  // first (a digit's value is the place it lands in); then the Indian grouping under it
+  const claims = [];
+  digits.forEach((d, i) => tl.add({ id: `d${i}`, op: "text", at: [x0 + i * cw + (cw - 4) / 2, 222], text: d, size: "l", ink: "accent" }, 200, { gap: 60 }));
+  for (let i = n - 1; i >= 0; i--) {
+    tl.add({ op: "move", target: `d${i}`, by: [0, y0 + 62 - 222] }, 600, { gap: 160 });
+    claims.push({ id: `d${i}`, at: [x0 + i * cw + (cw - 4) / 2, y0 + 62] });
+  }
   const indian = value.toLocaleString("en-IN");
-  tl.add({ id: "num", op: "text", at: [200, 230], text: indian, size: "l" }, 900, { gap: 300 });
-  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") } };
+  tl.add({ id: "num", op: "text", at: [200, 262], text: indian, size: "l" }, 900, { gap: 300 });
+  return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") }, claims };
 }
 
 function equalGroups(c, tl) {
   const { groups, each } = c;
   if (!isInt(groups, 2, 6) || !isInt(each, 1, 8)) return { error: "groups_range" };
   const gw = 340 / groups;
+  // round 7 (M2): all the dots first, in one heap under the groups; then they are SHARED OUT, one group at a time, each
+  // dot sliding to its place in its group (ending where the still board drew it): "equal groups" seen happening
+  const N = groups * each, hc = Math.min(12, N), claims = [];
+  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 62, weight: 1 }, 300, { gap: 80 });
+  const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 188 + Math.floor(k / hc) * 11];
+  for (let k = 0; k < N; k++) tl.add({ id: `g${k}`, op: "circle", c: heap(k), r: 4.5, fill: "accent", ink: "accent", weight: 1 }, 40, { gap: 10 });
   for (let g = 0; g < groups; g++) {
     const gx = 30 + g * gw;
-    tl.add({ op: "ellipse", c: [gx + gw / 2, 110], rx: gw / 2 - 6, ry: 62, weight: 1 }, 380, { gap: 120 });
     for (let i = 0; i < each; i++) {
-      const cols = each > 4 ? 2 : 1;
+      const cols = each > 4 ? 2 : 1, k = g * each + i;
       const x = gx + gw / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0), y = 110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13;
-      tl.add({ op: "circle", c: [x, y], r: 5, fill: "accent", ink: "accent", weight: 1 }, 110, { gap: 40 });
+      const [hx, hy] = heap(k);
+      tl.add({ op: "move", target: `g${k}`, by: [round1(x - hx), round1(y - hy)] }, 650, i ? { with: true } : { gap: 220 });
+      claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
     }
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each } };
+  return { facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────
@@ -321,6 +356,27 @@ function fitWidth(text, maxW) {
   return best;
 }
 
+/** A bent arrow's path as points (its quadratic curve sampled), the same curve shared/whiteboard.js draws. */
+function bentLeg(a, b, bend) {
+  const mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2, dx = b[0] - a[0], dy = b[1] - a[1], len = Math.hypot(dx, dy) || 1;
+  const ctl = [mx - (dy / len) * bend * len * 0.5, my + (dx / len) * bend * len * 0.5];
+  return [0, 0.25, 0.5, 0.75, 1].map((t) => [(1 - t) ** 2 * a[0] + 2 * (1 - t) * t * ctl[0] + t * t * b[0], (1 - t) ** 2 * a[1] + 2 * (1 - t) * t * ctl[1] + t * t * b[1]]);
+}
+/** A token that travels the legs in order (round 7, M2): it appears at the first leg's start, follows each leg, and steps
+ *  straight from one leg's end to the next's start. → the claim on where it ends. */
+function tour(tl, legs) {
+  if (!legs.length) return [];
+  const start = legs[0][0];
+  const id = tl.add({ op: "circle", c: [round1(start[0]), round1(start[1])], r: 5, fill: "mark", ink: "mark", weight: 1 }, 200, { gap: 260 });
+  let at = [round1(start[0]), round1(start[1])];
+  for (const leg of legs) {
+    const path = leg.map((q) => [round1(q[0] - at[0]), round1(q[1] - at[1])]).filter((q, i) => i || q[0] || q[1]);
+    if (path.length) tl.add({ op: "follow", target: id, path }, 800, { gap: 60 });
+    at = [at[0] + path.at(-1)[0], at[1] + path.at(-1)[1]];
+  }
+  return [{ id, c: [round1(at[0]), round1(at[1])] }];
+}
+
 function flow(c, tl) {
   const steps = c.steps;
   if (!Array.isArray(steps) || steps.length < 2 || steps.length > 6 || !steps.every(fitsLabel)) return { error: "steps" };
@@ -342,18 +398,26 @@ function flow(c, tl) {
       const sameRow = Math.abs(py - y) < 1, sameCol = Math.abs(px - x) < 1;
       const from = sameRow ? [px + bw / 2 + 3, py] : sameCol ? [px, py + bh / 2 + 3] : [px + bw / 2 + 3, py];
       const to = sameRow ? [x - bw / 2 - 3, y] : sameCol ? [x, y - bh / 2 - 3] : [x - bw / 2 - 3, y];
-      tl.add({ op: "arrow", from, to, ink: "accent", ...(sameRow || sameCol ? {} : { bend: 0.2 }) }, 450, { gap: 160 });
+      tl.add({ op: "arrow", from, to, ink: "accent", ...(sameRow || sameCol ? {} : { bend: 0.2 }), __step: i }, 450, { gap: 160 });
     }
     tl.add({ id: `b${i}`, op: "rect", at: [x - bw / 2, y - bh / 2], w: bw, h: bh, round: 10, weight: 2 }, 420, { gap: 80 });
     if (!writeFit(tl, steps[i], x, y + 2, bw - 10, {}, { id: `t${i}` })) return { error: `label_too_wide:${i}` };
   }
-  return { facts: Object.fromEntries([["steps", n], ...steps.map((s, i) => [`step${i + 1}`, s])]) };
+  // round 7 (M2): then the process RUNS: a token goes along every arrow in order, step to step, ending at the last step
+  const legs = [];
+  for (let i = 1; i < n; i++) {
+    const a = tl.ops.find((o) => o.op === "arrow" && o.__step === i);
+    if (a) legs.push(a.bend ? bentLeg(a.from, a.to, a.bend) : [a.from, a.to]);
+  }
+  for (const o of tl.ops) delete o.__step;
+  const claims = tour(tl, legs);
+  return { facts: Object.fromEntries([["steps", n], ...steps.map((s, i) => [`step${i + 1}`, s])]), claims };
 }
 
 function cycle(c, tl) {
   const stages = c.stages;
   if (!Array.isArray(stages) || stages.length < 3 || stages.length > 6 || !stages.every(fitsLabel)) return { error: "stages" };
-  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100;
+  const n = stages.length, cx = 200, cy = 152, rx = n <= 4 ? 130 : 128, ry = 100, legs = [];
   const at = (i) => { const a = -Math.PI / 2 + (2 * Math.PI * i) / n; return [cx + rx * Math.cos(a), cy + ry * Math.sin(a)]; };
   for (let i = 0; i < n; i++) {
     const maxW = n <= 4 ? 160 : 140;
@@ -369,13 +433,17 @@ function cycle(c, tl) {
     // the arrow runs between the two labels along the loop, shortened so it never touches either word
     const sx = x + (nx - x) * 0.32, sy = y + (ny - y) * 0.32, ex = x + (nx - x) * 0.68, ey = y + (ny - y) * 0.68;
     tl.add({ op: "arrow", from: [sx, sy], to: [ex, ey], bend: -0.25, ink: "accent" }, 450, { gap: 140 });
+    legs.push(bentLeg([sx, sy], [ex, ey], -0.25));
   }
   if (c.centre && fitsLabel(c.centre)) {
     const size = sizeFor(c.centre, 150);
     if (size) tl.add({ op: "text", at: [cx, cy], text: c.centre, size, ink: "soft" }, 500, { gap: 200 });
   }
   tl.add({ op: "highlight", target: "t0", style: "circle", ink: "mark" }, 600, { gap: 300 });
-  return { facts: Object.fromEntries([["stages", n], ...stages.map((s, i) => [`stage${i + 1}`, s])]) };
+  // round 7 (M2): then one turn of the cycle: a token travels every arrow in order, back to where it began (a cycle
+  // never ends: the last stage leads to the first)
+  const claims = tour(tl, legs);
+  return { facts: Object.fromEntries([["stages", n], ...stages.map((s, i) => [`stage${i + 1}`, s])]), claims };
 }
 
 function compare(c, tl) {
@@ -442,6 +510,9 @@ const SKETCH = {
     // leaves with midribs, a hanging fruit on its own stalk and a five-petal flower; every anchor ON the part it names
     strokes: [
       { op: "line", from: [128, 250], to: [272, 250], ink: "soft", weight: 2 },                             // soil
+      // the ground under it, hatched as a textbook does, clear of the roots; "soil" points at the first hatch, so its
+      // leader no longer runs along the soil line
+      ...[136, 152, 168, 236, 252, 268].map((x) => ({ op: "line", from: [x, 253], to: [x - 8, 263], ink: "soft", weight: 1 })),
       { op: "stroke", points: [[140, 256], [134, 262]], ink: "soft", weight: 1 },
       { op: "stroke", points: [[260, 256], [254, 262]], ink: "soft", weight: 1 },
       { op: "stroke", points: [[200, 250], [199, 268], [201, 286]], ink: "chalk", weight: 2 },               // tap root
@@ -461,7 +532,7 @@ const SKETCH = {
       { op: "circle", c: [188, 83], r: 8, fill: "accent", ink: "accent" },
       { op: "circle", c: [200, 87], r: 5, fill: "mark", ink: "mark" },                                       // its centre
     ],
-    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [150, 250], fruit: [176, 160] },
+    anchors: { flower: [212, 80], leaf: [240, 156], stem: [201, 220], root: [210, 276], soil: [128, 263], fruit: [176, 160] },
   },
   circuit: {
     // round 7 (C1 board richness): a closed circuit as a textbook draws it: a cell (long and short plate) on the left,
@@ -484,6 +555,46 @@ const SKETCH = {
       { op: "line", from: [250, 206], to: [266, 172], weight: 2, ink: "good" },                             // switch: the lever
     ],
     anchors: { cell: [140, 182], bulb: [200, 96], switch: [258, 189], wire: [200, 230] },   // the cell: on its long plate
+  },
+  cellPlant: {
+    // round 7 (C1 board richness): a plant cell as a textbook draws it: a wall, the membrane just inside it, a large
+    // vacuole, the nucleus, chloroplasts in the cytoplasm; every anchor on the part it names. 156 wide, so the label
+    // columns (x 58 and 342) stay clear of the wall
+    strokes: [
+      { op: "rect", at: [122, 70], w: 156, h: 160, weight: 3, ink: "good" },                                 // cell wall
+      { op: "rect", at: [129, 77], w: 142, h: 146, weight: 1, ink: "chalk" },                                // membrane
+      { op: "ellipse", c: [195, 160], rx: 40, ry: 45, fill: "soft", ink: "soft" },                            // vacuole
+      { op: "circle", c: [245, 108], r: 15, fill: "accent", ink: "accent" },                                  // nucleus
+      { op: "ellipse", c: [152, 98], rx: 10, ry: 6, fill: "good", ink: "good" },                              // chloroplasts
+      { op: "ellipse", c: [252, 198], rx: 10, ry: 6, fill: "good", ink: "good" },
+      { op: "ellipse", c: [152, 192], rx: 10, ry: 6, fill: "good", ink: "good" },
+    ],
+    anchors: { wall: [122, 150], membrane: [129, 214], vacuole: [195, 160], nucleus: [245, 108], chloroplast: [252, 198], cytoplasm: [258, 150] },
+  },
+  cellAnimal: {
+    // an animal cell: a rounded membrane (no wall), cytoplasm, a nucleus with its nucleolus
+    strokes: [
+      { op: "ellipse", c: [200, 150], rx: 80, ry: 82, weight: 2, ink: "chalk" },                              // membrane
+      { op: "circle", c: [207, 146], r: 22, fill: "accent", ink: "accent" },                                  // nucleus
+      { op: "circle", c: [211, 141], r: 6, fill: "mark", ink: "mark" },                                       // nucleolus
+    ],
+    anchors: { membrane: [120, 150], nucleus: [214, 158], cytoplasm: [165, 190] },
+  },
+  atom: {
+    // an atom (helium: 2 protons, 2 neutrons, 2 electrons, so it is neutral): the nucleus, one shell, two electrons on it
+    strokes: [
+      { op: "circle", c: [200, 150], r: 75, ink: "soft", weight: 1 },                                         // the shell
+      { op: "circle", c: [200, 150], r: 20, ink: "chalk", weight: 1 },                                        // the nucleus
+      { op: "circle", c: [193, 144], r: 6, fill: "accent", ink: "accent" },                                   // protons
+      { op: "circle", c: [207, 156], r: 6, fill: "accent", ink: "accent" },
+      { op: "circle", c: [207, 144], r: 6, fill: "chalk", ink: "chalk" },                                     // neutrons
+      { op: "circle", c: [193, 156], r: 6, fill: "chalk", ink: "chalk" },
+      { op: "circle", c: [253, 203], r: 5, fill: "mark", ink: "mark" },                                       // electrons, opposite on the shell
+      { op: "circle", c: [147, 97], r: 5, fill: "mark", ink: "mark" },
+    ],
+    // anchors spread down the right column in the order they are labelled (shell, nucleus, neutron, electron), so no two
+    // leaders cross; the electron's leader is the short one to the lower electron
+    anchors: { proton: [193, 144], neutron: [207, 144], nucleus: [200, 130], electron: [253, 203], shell: [200, 75] },
   },
   flower: {
     strokes: [
@@ -533,8 +644,11 @@ function label(c, tl) {
   const right = labels.filter((l) => sk.anchors[l.anchor][0] >= 200).sort((p, q) => sk.anchors[p.anchor][1] - sk.anchors[q.anchor][1]);
   const place = (list, x) => list.forEach((l, i) => {
     const y = 40 + (i * 230) / Math.max(1, list.length - 1 || 1) + (list.length === 1 ? 90 : 0);
-    if (textBox(l.text, "s").w > 112) throw new Error("label_too_wide");
-    tl.add({ id: `l_${l.anchor}`, op: "label", at: [x, Math.min(285, y)], text: l.text, to: sk.anchors[l.anchor], ink: "accent" }, 700, { gap: 220 });
+    // a label wider than its column is moved in from the board's edge (4 units clear), never off it
+    const w = textBox(l.text, "s").w;
+    if (w > 120) throw new Error("label_too_wide");
+    const lx = x < 200 ? Math.max(x, 4 + w / 2) : Math.min(x, 396 - w / 2);
+    tl.add({ id: `l_${l.anchor}`, op: "label", at: [lx, Math.min(285, y)], text: l.text, to: sk.anchors[l.anchor], ink: "accent" }, 700, { gap: 220 });
   });
   try { place(left, 58); place(right, 342); } catch { return { error: "label_too_wide" }; }
   return { facts: { sketch: c.sketch, labels: labels.length, ...Object.fromEntries(labels.map((l, i) => [`label${i + 1}`, l.text])) } };
@@ -556,7 +670,7 @@ function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
   if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
-  const facts = { angles: n };
+  const facts = { angles: n }, claims = [];
   list.forEach((a, i) => {
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
@@ -564,7 +678,11 @@ function angle(c, tl) {
     const xs = [0, L, L * Math.cos(th)], minX = Math.min(...xs), maxX = Math.max(...xs);
     const vx = i * colW + colW / 2 - (minX + maxX) / 2, vy = n === 1 ? 215 : 205;
     tl.add({ id: `h${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2 }, 520, { gap: i ? 260 : 120 });
-    tl.add({ id: `r${i}`, op: "line", from: [vx, vy], to: [vx + L * Math.cos(th), vy - L * Math.sin(th)], weight: 2 }, 520, { gap: 90 });
+    // round 7 (M2): the second arm is drawn along the first, then TURNS open by the angle (an angle is an amount of turn);
+    // it ends exactly where the still board drew it (a claim expand() checks)
+    tl.add({ id: `r${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2, ink: "accent" }, 420, { gap: 90 });
+    tl.add({ op: "rotate", target: `r${i}`, deg: -a.deg, about: [vx, vy] }, 700 + a.deg * 6, { gap: 120 });
+    claims.push({ id: `r${i}`, to: [vx + L * Math.cos(th), vy - L * Math.sin(th)] });
     tl.add({ op: "circle", c: [vx, vy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 40 });
     if (a.deg === 90) tl.add({ id: `m${i}`, op: "stroke", points: [[vx + 20, vy], [vx + 20, vy - 20], [vx, vy - 20]], ink: "mark", weight: 2 }, 420, { gap: 200 });
     else tl.add({ id: `m${i}`, op: "stroke", points: arcPts(vx, vy, n === 1 ? 34 : 26, a.deg), ink: "mark", weight: 2 }, 520, { gap: 200 });
@@ -577,7 +695,7 @@ function angle(c, tl) {
     if (n === 1 && c.arm && fitsLabel(c.arm)) tl.add({ op: "label", at: [vx + L * 0.72, vy + 34], text: c.arm, to: [vx + L * 0.72, vy + 4], ink: "soft" }, 520, { gap: 200 });
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
   });
-  return { facts };
+  return { facts, claims };
 }
 
 const SIDES = { triangle: 3, square: 4, rectangle: 4, quadrilateral: 4, pentagon: 5, hexagon: 6, octagon: 8, circle: 0 };
@@ -650,17 +768,24 @@ function symmetry(c, tl) {
     const d = c.dot, u = 25, y = 150;
     tl.add({ id: "dot", op: "circle", c: [200 - d * u, y], r: 8, fill: "accent", ink: "accent" }, 300, { gap: 300 });
     tl.add({ op: "text", at: [200 - (d * u) / 2, y - 26], text: String(d), size: "m", ink: "soft" }, 300, { gap: 200 });
-    tl.add({ op: "arrow", from: [200 - d * u + 10, y + 16], to: [200 + d * u - 10, y + 16], bend: 0.35, ink: "mark" }, 900, { gap: 300 });
+    // round 7 (M2): the image starts ON the dot and jumps across the line, as far again on the other side
+    tl.add({ id: "img", op: "circle", c: [200 - d * u, y], r: 8, fill: "good", ink: "good" }, 200, { gap: 200 });
+    tl.add({ op: "arrow", from: [200 - d * u + 10, y + 16], to: [200 + d * u - 10, y + 16], bend: 0.35, ink: "mark" }, 900, { gap: 120 });
+    tl.add({ op: "move", target: "img", by: [2 * d * u, 0], arc: 34 }, 900, { with: true });
     tl.add({ op: "text", at: [200 + (d * u) / 2, y - 26], text: String(d), size: "m", ink: "soft" }, 300, { gap: 200 });
-    tl.add({ id: "img", op: "circle", c: [200 + d * u, y], r: 8, fill: "good", ink: "good" }, 300, { gap: 120 });
-    return { facts: { line: c.line ?? "mirror line", left: d, right: d }, ground: "grid" };
+    return { facts: { line: c.line ?? "mirror line", left: d, right: d }, ground: "grid", claims: [{ id: "img", c: [200 + d * u, y] }] };
   }
   // a figure and its mirror half, drawn one half after the other
   tl.add({ id: "L", op: "stroke", points: [[200, 52], [150, 92], [118, 150], [150, 212], [200, 252]], weight: 2 }, 900, { gap: 260 });
   tl.add({ op: "circle", c: [164, 140], r: 9, fill: "accent", ink: "accent" }, 260, { gap: 80 });
-  tl.add({ id: "R", op: "stroke", points: [[200, 52], [250, 92], [282, 150], [250, 212], [200, 252]], weight: 2, ink: "good" }, 900, { gap: 320 });
-  tl.add({ op: "circle", c: [236, 140], r: 9, fill: "good", ink: "good" }, 260, { gap: 80 });
-  return { facts: { line: c.line ?? "mirror line", halves: "match" }, ground: "grid" };
+  // round 7 (M2): the mirror half is the first half FOLDED over the line: traced on top of it, then turned over the fold
+  // (a scale of -1 about the line: halfway through it lies flat along the fold)
+  tl.add({ id: "R", op: "stroke", points: [[200, 52], [150, 92], [118, 150], [150, 212], [200, 252]], weight: 2, ink: "good" }, 500, { gap: 320 });
+  tl.add({ id: "Rd", op: "circle", c: [164, 140], r: 9, fill: "good", ink: "good" }, 200, { gap: 40 });
+  tl.add({ op: "scale", target: "R", k: [-1, 1], about: [200, 150] }, 1500, { gap: 240 });
+  tl.add({ op: "move", target: "Rd", by: [72, 0], arc: 24 }, 1500, { with: true });
+  return { facts: { line: c.line ?? "mirror line", halves: "match" }, ground: "grid",
+    claims: [{ id: "R", points: [[200, 52], [250, 92], [282, 150], [250, 212], [200, 252]] }, { id: "Rd", c: [236, 140] }] };
 }
 
 const UNITS = ["cm", "m", "km", "mm", "units"];
@@ -678,7 +803,11 @@ function areaGrid(c, tl) {
   if (grid) {
     for (let i = 1; i < w; i++) tl.add({ op: "line", from: [x0 + i * cell, y0], to: [x0 + i * cell, y0 + H], weight: 1, ink: "soft" }, 160, { gap: 30 });
     for (let j = 1; j < h; j++) tl.add({ op: "line", from: [x0, y0 + j * cell], to: [x0 + W, y0 + j * cell], weight: 1, ink: "soft" }, 160, { gap: 30 });
-    if (mode === "area") for (let j = 0; j < h; j++) tl.add({ op: "rect", at: [x0 + 2, y0 + j * cell + 2], w: W - 4, h: cell - 4, fill: "accent", ink: "accent", weight: 1 }, 320, { gap: 140 });
+    // round 7 (M2): area is rows of squares: each row fills from the left, one after the other
+    if (mode === "area") for (let j = 0; j < h; j++) {
+      const id = tl.add({ op: "rect", at: [x0 + 2, y0 + j * cell + 2], w: W - 4, h: cell - 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 140 });
+      tl.add({ op: "sweep", target: id, dir: "right" }, 520, { gap: 0 });
+    }
   }
   tl.add({ op: "text", at: [x0 + W / 2, y0 - 14], text: `${w}${unit}`, size: "s", ink: "accent" }, 360, { gap: 200 });
   tl.add({ op: "text", at: [x0 + W + 8, y0 + H / 2], text: `${h}${unit}`, size: "s", ink: "accent", align: "start" }, 360, { gap: 120 });
@@ -724,7 +853,8 @@ function barChart(c, tl) {
   bars.forEach((b, i) => {
     const cx = x0 + (i + 0.5) * colW, hh = (b.value / top) * CH;
     if (!writeFit(tl, b.label, cx, y0 + 22, colW - 4, {}, { id: `l${i}`, size: "s", gap: i ? 120 : 240 })) throw new Error("label_too_wide");
-    if (hh >= 2) tl.add({ id: `b${i}`, op: "rect", at: [cx - bw / 2, y0 - hh], w: bw, h: hh, fill: "accent", ink: "accent", weight: 1 }, 520, { gap: 60 });
+    // round 7 (M2): each bar GROWS up from the axis to its value (its fill sweeps up)
+    if (hh >= 2) { tl.add({ id: `b${i}`, op: "rect", at: [cx - bw / 2, y0 - hh], w: bw, h: hh, fill: "accent", ink: "accent", weight: 1 }, 260, { gap: 60 }); tl.add({ op: "sweep", target: `b${i}`, dir: "up" }, 600, { gap: 0 }); }
     tl.add({ id: `v${i}`, op: "text", at: [cx, y0 - hh - 13], text: String(b.value), size: "s" }, 260, { gap: 60 });
   });
   return { facts: { bars: n, scale: `steps of ${step}`, ...Object.fromEntries(bars.map((b, i) => [`bar${i + 1}`, `${b.label} ${b.value}`])) } };
@@ -797,6 +927,132 @@ function timelineBoard(c, tl) {
 }
 
 /**
+ * round 7 (C1 studio-board-richness, maps decision dc-r7-maps-no-outline): places at their TRUE latitude/longitude on a
+ * labelled 5° grid with a compass, and nothing that could be read as a boundary (no outline, coastline or state shape).
+ * Every place must be in the gazetteer (places.js: its coordinates and their source); the name drawn is the call's (the
+ * kit's own word). The frame is the places' extent padded and snapped to 5°, one scale both ways (a degree of latitude is
+ * as tall as a degree of longitude is wide), then widened in 5° steps to the board's room. The grid is edge ticks and
+ * small crosses where grid lines meet, never lines a word would sit on (a cross a name needs the room of is left out).
+ * Each name sits beside its pin where that is clear, else further out on a leader line; laid out first, drawn after.
+ */
+function placesBoard(c, tl) {
+  const names = Array.isArray(c.places) ? c.places.filter((n) => fitsLabel(n)) : [];
+  const pins = [];
+  for (const n of names) { const p = placeNamed(n); if (p && !pins.some((q) => q.id === p.id)) pins.push({ ...p, name: n.trim() }); }
+  if (pins.length < 3 || pins.length > 6) return { error: "places" };
+  const TROPIC = 23.44, MERIDIAN = 82.5;
+  // a named line keeps 3° of frame on each side (its name goes beside it)
+  const lats = [...pins.map((p) => p.lat), ...(c.tropic ? [TROPIC - 2, TROPIC + 2] : [])], lons = [...pins.map((p) => p.lon), ...(c.meridian ? [MERIDIAN - 2, MERIDIAN + 2] : [])];
+  // the frame: padded 2.5° (a name needs room beside its pin), snapped out to 5°, at least 10° each way; then widened in
+  // 5° steps (10° at most, on the side the places are nearer) toward the board's room at that one scale
+  const snap = (lo, hi) => { let a = Math.floor((lo - 2.5) / 5) * 5, b = Math.ceil((hi + 2.5) / 5) * 5; while (b - a < 10) { a -= 5; if (b - a < 10) b += 5; } return [a, b]; };
+  let [la, lb] = snap(Math.min(...lats), Math.max(...lats)), [oa, ob] = snap(Math.min(...lons), Math.max(...lons));
+  const k = Math.min(286 / (ob - oa), 236 / (lb - la));
+  const grow = (a, b, lo, hi, room) => { const span = b - a; while ((b - a + 5) * k <= room && b - a + 5 <= span + 10) { if (lo - a <= b - hi) a -= 5; else b += 5; } return [a, b]; };
+  [oa, ob] = grow(oa, ob, Math.min(...lons), Math.max(...lons), 286);
+  [la, lb] = grow(la, lb, Math.min(...lats), Math.max(...lats), 236);
+  // (with the Tropic drawn, the frame sits left so the line's name can go in the margin beside its right end)
+  const w = (ob - oa) * k, h = (lb - la) * k, x0 = 54 + (c.tropic ? 0 : (286 - w) / 2), y0 = 18 + (236 - h) / 2;
+  const X = (lon) => x0 + (lon - oa) * k, Y = (lat) => y0 + (lb - lat) * k;
+  const box = (x, y, bw, bh) => ({ x, y, w: bw, h: bh });
+  const hits = (a, b, pad = 3) => a.x < b.x + b.w + pad && b.x < a.x + a.w + pad && a.y < b.y + b.h + pad && b.y < a.y + a.h + pad;
+  const inFrame = (b) => b.x > x0 + 2 && b.x + b.w < x0 + w - 2 && b.y > y0 + 2 && b.y + b.h < y0 + h - 2;
+  // a segment meets a box (sampled every 2 units: leaders are short)
+  const segHits = (a, b, r, pad = 2) => { const n = Math.max(2, Math.ceil(Math.hypot(b[0] - a[0], b[1] - a[1]) / 2)); for (let i = 0; i <= n; i++) { const x = a[0] + ((b[0] - a[0]) * i) / n, y = a[1] + ((b[1] - a[1]) * i) / n; if (x > r.x - pad && x < r.x + r.w + pad && y > r.y - pad && y < r.y + r.h + pad) return true; } return false; };
+  // the fixed marks: edge ticks, the named lines, the pins
+  const ticks = [], marks = [], segs = [];
+  for (let lat = la + 5; lat < lb; lat += 5) { const y = Y(lat); ticks.push([[x0, y], [x0 + 6, y]], [[x0 + w - 6, y], [x0 + w, y]]); marks.push(box(x0, y - 1, 6, 2), box(x0 + w - 6, y - 1, 6, 2)); }
+  for (let lon = oa + 5; lon < ob; lon += 5) { const x = X(lon); ticks.push([[x, y0 + h - 6], [x, y0 + h]], [[x, y0], [x, y0 + 6]]); marks.push(box(x - 1, y0 + h - 6, 2, 6), box(x - 1, y0, 2, 6)); }
+  const ty = Y(TROPIC), mx = X(MERIDIAN);
+  if (c.tropic) { marks.push(box(x0, ty - 1.5, w, 3)); segs.push([[x0, ty], [x0 + w, ty]]); }
+  if (c.meridian) { marks.push(box(mx - 1.5, y0, 3, h)); segs.push([[mx, y0], [mx, y0 + h]]); }
+  const pinBox = pins.map((p) => box(X(p.lon) - 6, Y(p.lat) - 6, 12, 12));
+  marks.push(...pinBox);
+  const clear = (b, except) => inFrame(b) && !marks.some((m) => m !== except && hits(b, m)) && !segs.some(([a, z]) => segHits(a, z, b));
+  // the named lines' own names, inside the frame
+  // (a name too long for the room either side of a crossing line breaks onto two lines: "Tropic of" / "Cancer")
+  const lineText = (text, cands) => {
+    const fhs = textBox("x", "s").h;
+    for (const parts of [[text], text.includes(" ") ? [text.slice(0, text.lastIndexOf(" ")), text.slice(text.lastIndexOf(" ") + 1)] : null].filter(Boolean)) {
+      for (const [x, y, align] of cands) {
+        const up = y < (c.tropic ? ty : y0 + h / 2);   // stacked away from the line
+        const rows = parts.map((t, r) => ({ t, at: [x, up ? y - (parts.length - 1 - r) * fhs : y + r * fhs] }));
+        const bs = rows.map((q) => textBox(q.t, "s", q.at, align));
+        const margin = x > x0 + w;   // a margin spot: on the board, outside the frame, clear of the compass
+        const ok = margin ? bs.every((b) => b.x + b.w <= 396 && b.y >= 2 && b.y + b.h <= 298 && b.y > y0 + 50) : bs.every((b) => clear(b));
+        if (ok) { marks.push(...bs); return { rows, align }; }
+      }
+    }
+    return null;
+  };
+  const tropicAt = c.tropic ? lineText("Tropic of Cancer", [[x0 + w + 6, ty + 5, "start"], [x0 + w - 12, ty - 11, "end"], [x0 + 12, ty - 11, "start"], [x0 + w - 12, ty + 22, "end"], [x0 + 12, ty + 22, "start"], [x0 + w / 2, ty - 11, "middle"], [x0 + w / 2, ty + 22, "middle"], [x0 + w / 4, ty - 11, "start"], [x0 + w / 4, ty + 22, "start"], [x0 + (3 * w) / 4, ty - 11, "end"], [x0 + (3 * w) / 4, ty + 22, "end"]]) : null;
+  // a named line whose name fits nowhere is left off (nothing is drawn yet: the board is laid out again without it)
+  if (c.tropic && !tropicAt) return placesBoard({ ...c, tropic: false }, tl);
+  const meridianAt = c.meridian ? lineText("82.5°E", [[mx + 7, y0 + 32, "start"], [mx - 7, y0 + 32, "end"], [mx + 7, y0 + h - 14, "start"], [mx - 7, y0 + h - 14, "end"], [mx + 7, y0 + h / 2, "start"], [mx - 7, y0 + h / 2, "end"]]) : null;
+  if (c.meridian && !meridianAt) return placesBoard({ ...c, meridian: false }, tl);
+  // each pin's name: beside it (no leader), else 30 or 52 units out on a leader that crosses nothing
+  const placed = [];
+  const fh = textBox("x", "s").h;
+  pins.forEach((p, i) => {
+    const [x, y] = [X(p.lon), Y(p.lat)], tw = textBox(p.name, "s").w;
+    const near = [[x + 9 + tw / 2, y], [x - 9 - tw / 2, y], [x, y - 8 - fh / 2], [x, y + 8 + fh / 2]];
+    const far = [];
+    for (const d of [30, 52]) for (const [ux, uy] of [[1, 0], [-1, 0], [0, -1], [0, 1], [0.7, -0.7], [-0.7, -0.7], [0.7, 0.7], [-0.7, 0.7]]) far.push([x + ux * (d + tw / 2), y + uy * d]);
+    for (const [cx, cy] of [...near, ...far]) {
+      const at = [cx, cy + fh * 0.25];                      // a label's `at` is its baseline; its box is centred on cy
+      const b = textBox(p.name, "s", at, "middle");
+      if (!clear(b, pinBox[i])) continue;
+      const lead = Math.hypot(cx - x, cy - y) > 30;
+      if (lead) {
+        const from = [Math.min(Math.max(x, b.x), b.x + b.w), y < b.y ? b.y - 2 : y > b.y + b.h ? b.y + b.h + 2 : Math.min(Math.max(y, b.y), b.y + b.h)];
+        if (marks.some((m) => m !== pinBox[i] && segHits(from, [x, y], m, 1))) continue;
+        segs.push([from, [x, y]]);
+      }
+      marks.push(b);
+      placed.push({ p, i, at, lead });
+      return;
+    }
+  });
+  if (placed.length < 3) return { error: `places_crowded:${placed.length}of${pins.length}` };
+  // the crosses where grid lines meet, except where a name or a leader is
+  const crosses = [];
+  for (let lat = la + 5; lat < lb; lat += 5) for (let lon = oa + 5; lon < ob; lon += 5) {
+    const r = box(X(lon) - 3, Y(lat) - 3, 6, 6);
+    if (!marks.some((m) => !pinBox.includes(m) && hits(r, m, 2)) && !segs.some(([a, z]) => segHits(a, z, r))) crosses.push([X(lon), Y(lat)]);
+  }
+  // draw: frame, ticks, degree labels, crosses, compass, named lines, pins and names
+  const latStep = 5 * k < 22 ? 10 : 5, lonStep = 5 * k < 40 ? 10 : 5;
+  tl.add({ op: "rect", at: [x0, y0], w, h, weight: 1, ink: "soft" }, 500);
+  for (const [a, z] of ticks) tl.add({ op: "line", from: a, to: z, weight: 1, ink: "soft" }, 50, { gap: 0 });
+  // the frame's own edges are labelled too (a 10° frame still shows 3 degrees each way: an axis, not a claim); at the
+  // bottom-left corner the latitude sits just above the corner and the longitude starts at it, so the two never touch
+  for (let lat = la; lat <= lb; lat += 5) if (lat % latStep === 0) tl.add({ op: "text", at: [x0 - 6, Y(lat) + (lat === la ? -2 : 5)], text: `${lat}°N`, size: "s", ink: "soft", align: "end" }, 140, { gap: 10 });
+  const lonLabels = []; for (let lon = oa + 5; lon <= ob; lon += 5) if (lon % lonStep === 0) lonLabels.push(lon);
+  if (lonLabels.length < 3) lonLabels.unshift(oa);   // the corner only when the axis needs it (it is never crowded then: 5° ≥ 47 units)
+  for (const lon of lonLabels) tl.add({ op: "text", at: [lon === oa ? x0 - 2 : X(lon), y0 + h + 17], text: `${lon}°E`, size: "s", ink: "soft", ...(lon === oa ? { align: "start" } : {}) }, 140, { gap: 10 });
+  for (const [x, y] of crosses) { tl.add({ op: "line", from: [x - 3, y], to: [x + 3, y], weight: 1, ink: "soft" }, 30, { gap: 0 }); tl.add({ op: "line", from: [x, y - 3], to: [x, y + 3], weight: 1, ink: "soft" }, 30, { gap: 0 }); }
+  const cx = Math.min(386, x0 + w + 26);
+  tl.add({ op: "arrow", from: [cx, y0 + 44], to: [cx, y0 + 14], weight: 2 }, 300, { gap: 120 });
+  tl.add({ op: "text", at: [cx, y0 + 8], text: "N", size: "s" }, 200, { gap: 20 });
+  if (c.tropic) {
+    tl.add({ id: "tropic", op: "line", from: [x0, ty], to: [x0 + w, ty], weight: 2, ink: "good", dashed: true }, 600, { gap: 200 });
+    for (const q of tropicAt.rows) tl.add({ op: "text", at: q.at, text: q.t, size: "s", ink: "good", align: tropicAt.align }, 300, { gap: 30 });
+  }
+  if (c.meridian) {
+    tl.add({ id: "meridian", op: "line", from: [mx, y0], to: [mx, y0 + h], weight: 2, ink: "good", dashed: true }, 600, { gap: 200 });
+    for (const q of meridianAt.rows) tl.add({ op: "text", at: q.at, text: q.t, size: "s", ink: "good", align: meridianAt.align }, 300, { gap: 30 });
+  }
+  tl.pause(200);
+  placed.sort((a, b) => a.i - b.i).forEach(({ p, at }, n) => {
+    tl.add({ id: `pin${n}`, op: "circle", c: [X(p.lon), Y(p.lat)], r: 4, fill: "accent", ink: "accent" }, 260, { gap: 260 });
+    tl.add({ id: `place${n}`, op: "label", at, text: p.name, to: [X(p.lon), Y(p.lat)], ink: "accent" }, 420, { gap: 30 });
+  });
+  const facts = Object.fromEntries(placed.map(({ p }, n) => [`place${n + 1}`, p.name]));
+  const north = placed.reduce((a, b) => (b.p.lat > a.p.lat ? b : a)), south = placed.reduce((a, b) => (b.p.lat < a.p.lat ? b : a));
+  return { facts: { ...facts, northmost: north.p.name, southmost: south.p.name, ...(c.tropic ? { line: "Tropic of Cancer" } : {}) } };
+}
+
+/**
  * round 7 (C1 studio-board-richness): a table (table.js: every cell computed). 2-4 columns, 1-10 rows; the rule it comes
  * from on top, the header in accent, then the rows one by one so the pattern is seen growing.
  */
@@ -821,10 +1077,97 @@ function tableBoard(c, tl) {
   return { facts: { ...(rule ? { rule } : {}), ...Object.fromEntries(rows.slice(0, 10).map((r, i) => [`row${i + 1}`, r.join(" | ")])) } };
 }
 
+/**
+ * round 7 (C1 studio-board-richness, geometry by constraint): a shape TO SCALE from the measures the kit states
+ * (geometry.js). A rectangle / square with its two dimensions on its sides, a triangle built from its three sides (the
+ * triangle inequality checked; each side's length outside its midpoint), a circle with a drawn radius "r = 5 cm".
+ */
+// round 7 (M2, main via Brain's S4 harness: a c6 perimeter child asked for a picture and got none): the shape's NAME in the
+// kit's word over its top-left corner, and "perimeter" over its top-right when the board traces it, so a request that names
+// the thing ("rectangle ki picture", "perimeter dikhao") is answered. → the facts it adds.
+function nameShape(tl, c, word, b) {
+  if (!c.name) return {};
+  const y = Math.max(20, b.y - 16);
+  tl.add({ op: "text", at: [b.x, y], text: word, size: "s", ink: "soft", align: "start" }, 300, { gap: 120 });
+  if (c.trace && textBox(word, "s").w + textBox("perimeter", "s").w + 16 <= b.w) {
+    tl.add({ op: "text", at: [b.x + b.w, y], text: "perimeter", size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
+    return { name: word, shows: "perimeter" };
+  }
+  return { name: word };
+}
+// the perimeter IS the walk round the boundary: a marker runs every side in turn, back to where it began (each side one
+// follow, so a line naming the sides one by one lands on each) → the claim that it ends where it started
+function traceBoundary(tl, corners) {
+  const [s0] = corners;
+  const id = tl.add({ op: "circle", c: [round1(s0[0]), round1(s0[1])], r: 6, fill: "mark", ink: "mark", weight: 1 }, 200, { gap: 260 });
+  let at = [round1(s0[0]), round1(s0[1])];
+  for (const q of [...corners.slice(1), s0]) {
+    const d = [round1(q[0] - at[0]), round1(q[1] - at[1])];
+    tl.add({ op: "follow", target: id, path: [d] }, 650, { gap: 40 });
+    at = [at[0] + d[0], at[1] + d[1]];
+  }
+  return [{ id, c: [round1(at[0]), round1(at[1])] }];
+}
+
+function measuredBoard(c, tl) {
+  const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
+  if (!unit) return { error: "unit" };
+  const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
+  const fmt = (v) => `${num(v)} ${unit}`;
+  const BW = 280, BH = 190, cx = 200, cy = 150;          // the drawing's box on the board (labels outside it)
+  if (c.shape === "rect" || c.shape === "square") {
+    const w = Number(c.w), h = Number(c.h);
+    if (!(w > 0 && h > 0) || w / h > 8 || h / w > 8) return { error: "rect_measures" };
+    // the side label needs its own width to the right of the shape: the shape is scaled into what is left
+    const sideW = textBox(fmt(h), "m").w + 14;
+    const k = Math.min((360 - sideW) / w, BH / h);
+    const W = w * k, H = h * k, x = (400 - (W + sideW)) / 2, y = cy - H / 2;
+    tl.add({ id: "shape", op: "rect", at: [x, y], w: W, h: H, weight: 2 }, 900);
+    const named = nameShape(tl, c, c.shape === "square" ? "square" : "rectangle", { x, y, w: W, h: H });
+    tl.add({ op: "text", at: [x + W / 2, y + H + 26], text: fmt(w), size: "m", ink: "accent" }, 400, { gap: 160 });
+    tl.add({ op: "text", at: [x + W + 12, y + H / 2 + 7], text: fmt(h), size: "m", ink: "accent", align: "start" }, 400, { gap: 120 });
+    const claims = c.trace ? traceBoundary(tl, [[x, y], [x + W, y], [x + W, y + H], [x, y + H]]) : [];
+    return { claims, facts: { shape: c.shape === "square" ? "square" : "rectangle", [c.shape === "square" ? "side" : "length"]: fmt(w), ...(c.shape === "square" ? {} : { breadth: fmt(h) }), ...named } };
+  }
+  if (c.shape === "triangle") {
+    const [a, b, d] = Array.isArray(c.sides) ? c.sides.map(Number) : [];
+    if (![a, b, d].every((v) => v > 0) || a + b <= d || a + d <= b || b + d <= a) return { error: "not_a_triangle" };
+    // base = the longest side, the apex from the other two (law of cosines)
+    const [base, s1, s2] = [a, b, d].sort((p, q) => q - p);
+    const px = (base * base + s1 * s1 - s2 * s2) / (2 * base), py = Math.sqrt(Math.max(0, s1 * s1 - px * px));
+    const k = Math.min(BW / base, BH / py);
+    const ox = cx - (base * k) / 2, oy = cy + (py * k) / 2;
+    const A = [ox, oy], B = [ox + base * k, oy], C = [ox + px * k, oy - py * k];
+    tl.add({ id: "shape", op: "polygon", points: [A, B, C], weight: 2 }, 1000);
+    const g = [(A[0] + B[0] + C[0]) / 3, (A[1] + B[1] + C[1]) / 3];
+    const label = (P, Q, len) => {
+      const m = [(P[0] + Q[0]) / 2, (P[1] + Q[1]) / 2];
+      const dx = m[0] - g[0], dy = m[1] - g[1], n = Math.hypot(dx, dy) || 1;
+      tl.add({ op: "text", at: [m[0] + (dx / n) * 38, m[1] + (dy / n) * 38 + 7], text: fmt(len), size: "m", ink: "accent" }, 380, { gap: 140 });
+    };
+    label(A, B, base); label(A, C, s1); label(B, C, s2);
+    const named = nameShape(tl, c, "triangle", { x: ox, y: C[1], w: base * k, h: oy - C[1] });
+    const claims = c.trace ? traceBoundary(tl, [A, C, B]) : [];
+    return { claims, facts: { shape: "triangle", sides: [base, s1, s2].map(num).join(", ") + ` ${unit}`, ...named } };
+  }
+  if (c.shape === "circle") {
+    const r = Number(c.r);
+    if (!(r > 0)) return { error: "radius" };
+    const R = 84;
+    tl.add({ id: "shape", op: "circle", c: [cx, cy], r: R, weight: 2 }, 900);
+    tl.add({ op: "circle", c: [cx, cy], r: 3, fill: "accent", ink: "accent" }, 200, { gap: 120 });
+    tl.add({ op: "arrow", from: [cx, cy], to: [cx + R, cy], weight: 2, ink: "accent" }, 500, { gap: 120 });   // an arrow: a radius, not a cut (W8)
+    // the label below the circle: text keeps its readable size while the drawing scales, so inside it can meet the rim
+    tl.add({ op: "text", at: [cx, cy + R + 30], text: `r = ${fmt(r)}`, size: "m", ink: "accent" }, 420, { gap: 80 });
+    return { facts: { shape: "circle", radius: fmt(r) } };
+  }
+  return { error: "shape" };
+}
+
 const BUILD = {
   "fraction-parts@1": fractionParts, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
-  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard,
+  "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
   "shade-grid@1": shadeGrid,
 };
@@ -835,6 +1178,21 @@ const BUILD = {
  * @param {{ band?: string, lessonId?: string, scriptId?: string }} [opts]
  * @returns {{ ok: boolean, script: any, facts: any, errors: string[] }}
  */
+/** The claims a settled board breaks (ids). Exported for tests as _claimsBroken. */
+export function _claimsBroken(script, claims) { return claimsBroken(script, claims); }
+function claimsBroken(script, claims) {
+  if (!claims.length) return [];
+  const end = new Map(settledScript(script).ops.map((o) => [o.id, o]));
+  const same = (p, q) => Array.isArray(p) && Array.isArray(q) && Math.abs(p[0] - q[0]) <= 1 && Math.abs(p[1] - q[1]) <= 1;
+  return claims.filter((cl) => {
+    const o = end.get(cl.id);
+    if (!o) return true;
+    for (const k of ["at", "c", "from", "to"]) if (cl[k] && !same(o[k], cl[k])) return true;
+    if (cl.points && (!Array.isArray(o.points) || o.points.length !== cl.points.length || o.points.some((q, i) => !same(q, cl.points[i])))) return true;
+    return false;
+  }).map((cl) => cl.id);
+}
+
 export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
@@ -846,6 +1204,11 @@ export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
   const raw = script(call, tl.ops, tl.t, facts, { lessonId, scriptId, ground: r.ground ?? "chalk" });
   const n = normalizeScript(raw, { strict: true });
   if (!n.ok) return { ok: false, script: null, facts: null, errors: n.errors.slice(0, 6) };
+  // round 7 (M2, "the motion's end is the explained state"): every motion a template adds claims where its op ENDS — the
+  // place the still board drew it (the turned arm at the angle, the carried 1 over its column, the shared-out dot in its
+  // group). The settled board must agree with every claim, or the template fails (the ladder steps down).
+  const bad = claimsBroken(n.script, r.claims ?? []);
+  if (bad.length) return { ok: false, script: null, facts: null, errors: bad.slice(0, 6).map((id) => `motion_claim:${id}`) };
   const lint = lintScript(n.script);
   if (lint.length) return { ok: false, script: null, facts: null, errors: lint.slice(0, 6).map((i) => `${i.check}:${i.id}`) };
   return { ok: true, script: n.script, facts: n.script.facts, errors: [] };
