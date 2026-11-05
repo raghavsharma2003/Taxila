@@ -63,6 +63,8 @@ export interface PuppetStageOptions {
   loader?: "chunked" | "judged";
   /** Route (b): the key rig's 2.5D jaw layer (rig-keys/keyrig.ts). */
   jaw?: boolean;
+  /** Round 7 face-reacts: the thinking breath (driver.ts THINK_INHALE; flag.ts faceReactEnabled). */
+  react?: boolean;
   /** Draw the rig in an OffscreenCanvas worker where supported (round 7; the product's default, PuppetFace). The evals'
    *  scripted clock (tick(now, force)) needs the synchronous main-thread path, so the stage's own default is off. */
   worker?: boolean;
@@ -145,7 +147,7 @@ export class PuppetStage {
     this.host = host;
     this.o = o;
     this.dpr = Math.min(2, typeof devicePixelRatio === "number" ? devicePixelRatio : 1);
-    this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle });
+    this.driver = new PuppetDriver({ band: o.band, seed: o.seed, reducedMotion: o.reducedMotion, gentle: o.gentle, react: o.react });
     // a key rig switches painted mouths a beat after a continuous mouth would open: its own lead (rig-keys/schedule.ts).
     // (Every look seals every single b / m / p: the scheduler's extended rule, track.ts.)
     if (lookPack(o.look).rig === "keys") this.driver.visemes.lead += KEY_LEAD_MS;

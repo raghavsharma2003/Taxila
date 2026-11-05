@@ -27,7 +27,7 @@ const opts = (lookup, more = {}) => ({ lookup, cohortLooks: ["cand"], timeoutMs:
 const asOwner = async () => ({ email: "Owner@Example.test" });
 
 test("server: only a signed-in guardian on the list gets the cohort look; everyone else the global one", async () => {
-  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
+  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8", react: false };
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env(), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" });
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env({ TAXILA_FACE_LOOK_FOR: sha(OWNER) }), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" }, "a hashed list works");
   assert.deepEqual(await faceConfigFor(req(""), { env: env(), ...opts(asOwner) }), base, "no session cookie");
@@ -86,7 +86,7 @@ const lamp2Env = (over = {}) => ({ TAXILA_FACE_LOOK_FOR: sha(OWNER), TAXILA_FACE
 test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, though the pack ships in public/", async () => {
   assert.deepEqual([...COHORT_FACE_LOOKS], ["lamp2"]);
   assert.ok(existsSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url)), "the pack ships");
-  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
+  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8", react: false };
   const lamp2 = (lookup, cookie = "tx_session=abc", env = lamp2Env()) => faceConfigFor(req(cookie), { env, lookup, timeoutMs: 200 });
   assert.deepEqual(await lamp2(asOwner), { ...base, look: "lamp2", cohort: "owner" }, "a cohort account gets lamp2");
   assert.deepEqual(await lamp2(async () => ({ email: "parent@else.test" })), base, "a non-cohort account gets r8");
