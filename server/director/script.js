@@ -130,7 +130,7 @@ export function saidIn(x, lang = "hinglish") {
 }
 const isSaid = (x) => !!x && typeof x === "object" && String(x.hi ?? "").trim() && String(x.en ?? "").trim();
 /** One v2 skill's script against its kit: the v1 checks that still apply, plus F1-F4. */
-export function validateSkillScriptV2(sk, kit, { classLevel } = {}) {
+export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } = {}) {
   const errors = [];
   const err = (m) => errors.push(`${sk?.skillId ?? "?"}: ${m}`);
   if (!(kit?.skills ?? []).some((k) => k.id === sk?.skillId)) err("skillId is not a skill of the kit");
@@ -225,6 +225,28 @@ export function validateSkillScriptV2(sk, kit, { classLevel } = {}) {
     asked(`remediation[${i}].then`, r?.then);
   }
   said("bridgeToNext", sk?.bridgeToNext, { optional: true });
+  // ── v2.1 (dc-r7-script-walk-v3, director5's data findings), for scripts marked version 2.1 ──
+  if (Number(v21) >= 2.1) {
+    const spoken = [];
+    const walk = (x, where) => { if (x && typeof x === "object" && "hi" in x && "en" in x) spoken.push([where, x]); else if (x && typeof x === "object") for (const [k, v] of Object.entries(x)) if (!["board", "convey", "move", "targets", "key", "accept", "wrongIfMis", "itemId", "why", "id", "skillId"].includes(k) || (k === "why" && typeof v === "object")) walk(v, `${where}.${k}`); };
+    walk(sk, "");
+    for (const [where, x] of spoken) for (const f of ["hi", "en"]) {
+      const t = String(x[f] ?? "");
+      // a card character is a {friend} slot, never the child's name or the teacher's
+      if (/(?<![\p{L}])(?:Asha|Riya)(?![\p{L}])/u.test(t)) err(`${where}.${f}: names "Asha"/"Riya"; a card character is the {friend} slot`);
+      // a "?" is never read aloud as a glyph ("1/4 = ?", "? cm")
+      if (/(?:^|\s|[=:(])\?(?=\s|$|[.,)])/.test(t) || /\?\s*(?:cm|m|km|kg|g)\b/.test(t)) err(`${where}.${f}: a "?" inside the sentence would be read aloud; write the gap in words`);
+    }
+    // a beat's keyed question is a transfer, never an echo of a number its point states
+    for (const [i, b] of (sk?.explain ?? []).entries()) {
+      const k = firstNum(b?.ask?.key);
+      if (k && [b?.point?.hi, b?.point?.en].some((t) => new RegExp(`(?<![\\d./])${k.replace(/[./]/g, "\\$&")}(?![\\d/])`).test(String(t ?? "")))) err(`explain[${i}].ask: its key ${k} is said in the beat's point (an echo, not a transfer)`);
+    }
+    // classes 4-5: at most 3 steps (the child's step counted)
+    if (cl <= 5 && ((sk?.workedExample?.steps ?? []).length + 1) > 3) err(`workedExample: ${(sk.workedExample.steps.length + 1)} steps; at most 3 for class ${cl}`);
+    // a follow-up card shows a board
+    for (const [i, r] of (sk?.remediation ?? []).entries()) if (!r?.board && !r?.then?.board) err(`remediation[${i}]: its follow-up card needs a board (board or then.board)`);
+  }
   return errors;
 }
 
@@ -241,7 +263,7 @@ export function validateTopicScript(sc, kit) {
   const ok = [];
   const topicBad = errors.length > 0;
   for (const sk of sc.skills ?? []) {
-    const e = (Number(sc.version) >= 2 ? validateSkillScriptV2 : validateSkillScript)(sk, kit, { classLevel: sc.classLevel });
+    const e = (Number(sc.version) >= 2 ? validateSkillScriptV2 : validateSkillScript)(sk, kit, { classLevel: sc.classLevel, version: Number(sc.version) });
     if (!e.length && !topicBad) ok.push(sk.skillId);
     errors.push(...e);
   }
@@ -298,7 +320,7 @@ export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`
   { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis } });
 /** A remediation's follow-up question as a keyed card. */
 export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
-  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets } })
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}) } })
   : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
 /** The script version of a skill (1 or 2). */
 export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;
@@ -341,4 +363,13 @@ export function saidMust(line, mustSay = [], lang = "hinglish") {
   const t = String(line ?? "").toLowerCase();
   const norm = (x) => String(x ?? "").toLowerCase().replace(/\s+/g, " ").trim();
   return (mustSay ?? []).every((m) => (typeof m === "string" ? [m] : [saidIn(m, lang), m?.hi, m?.en]).filter(Boolean).some((v) => t.replace(/\s+/g, " ").includes(norm(v))));
+}
+
+const FRIENDS = ["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara"];
+/** v2.1: a card character's {friend} slot, a name different from the child's (stable per child). */
+export function fillFriend(text, childName = "") {
+  if (!String(text ?? "").includes("{friend}")) return text;
+  const me = String(childName ?? "").trim().toLowerCase();
+  const pick = FRIENDS.find((n) => n.toLowerCase() !== me) ?? "Zoya";
+  return String(text).replaceAll("{friend}", pick);
 }

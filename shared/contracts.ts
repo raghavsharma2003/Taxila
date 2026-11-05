@@ -762,13 +762,17 @@ export interface KeyedAsk {
   /** the kit misconception a wrong answer most likely shows (its remediation runs), if any */
   targets?: string | null;
   wrongIfMis?: string | null;
+  /** v2.1: a follow-up card's board */
+  board?: BoardRef | null;
 }
 /** The closed interest list (server/persona/signals.js INTERESTS). */
 export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
 export interface TopicScriptV2 {
   topicId: string;
   classLevel: number;
-  version: 2;
+  /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
+   *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
+  version: 2 | 2.1;
   status: "draft" | "reviewed" | "live";
   terms: Array<{ hi: string; en: string }>;
   skills: SkillScriptV2[];

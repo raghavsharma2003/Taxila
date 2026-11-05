@@ -69,8 +69,8 @@ describe("script walk v2", () => {
     const L = run(); toBeat(L, "e1");
     L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
     assert.equal(L.r.move.scriptBeat.kind, "remediation");
-    assert.ok(L.r.state.lastContent.some((x) => /cheenti/.test(x)), "its spoken explanation, in Hinglish");
-    L.t("achha");
+    // v3 V1: code speaks the authored explanation, and the follow-up card is posed on the same move
+    assert.ok(L.r.move.rendered.some((x) => /cheenti/.test(x)), "its authored explanation, in Hinglish, spoken by code");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:then:c6-maths-ch06-t01-m-missing-sides`);
     L.t("38 m", cls("correct"));
     let i = 0; while (i++ < 3 && L.r.move.scriptBeat?.beatId !== "e2") L.t("haan");
@@ -95,13 +95,18 @@ describe("script walk v2", () => {
     const L = run();
     for (const b of ["e1", "e2"]) { toBeat(L, b); L.t("x", cls("correct")); }
     let i = 0; while (i++ < 4 && L.r.move.scriptBeat?.kind !== "worked") L.t("haan");
-    assert.equal(L.r.move.scriptBeat.kind, "worked");
+    // v3 V1: first the problem (what is given, what to find), on its own turn
+    assert.equal(L.r.move.scriptBeat.beatId, "worked:problem");
+    assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && L.r.move.rendered.some((x) => /^Dhoondhna hai/.test(x)), L.r.move.rendered.join(" | "));
+    assert.ok(!L.r.ui.ask?.itemId, "no card yet");
+    L.t("haan");
+    assert.equal(L.r.move.scriptBeat.beatId, "worked");
     assert.ok(L.r.move.rendered.some((x) => /kyunki/.test(x)), "the why");
     assert.ok(!L.r.move.rendered.some((x) => /closed five-sided/.test(x)), "no English given");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:worked`);
+    // K2: "gave" fires only after misses: a right step is confirmed, never followed by a replayed answer
     L.t("20 m", cls("correct"));
-    i = 0; while (i++ < 3 && !L.r.move.gave) L.t("haan");
-    assert.equal(L.r.move.gave?.answer, "20 m baad lagegi");
+    for (let k = 0; k < 3; k++) { assert.ok(!L.r.move.gave, "no replayed answer after a right step"); L.t("haan"); }
   });
 
   test("F4: the greet promises the slot's interest, not one the script cannot use", () => {
@@ -114,7 +119,7 @@ describe("script walk v2", () => {
 test("R4: a sentence naming another shape, or pointing at a number the board lacks, contradicts the screen", async () => {
   const { screenContradictions, screenFacts } = await import("../server/brain/say.js");
   const facts = screenFacts({ studioSlot: { artifact: { screen: { shape: "triangle", numbers: ["4", "5", "6"] } } } }, null);
-  assert.deepEqual(facts, { shape: "triangle", numbers: ["4", "5", "6"] });
+  assert.deepEqual(facts, { shape: "triangle", numbers: ["4", "5", "6"], counts: null });
   assert.deepEqual(screenContradictions("Board par triangle dekho: 4, 5 aur 6 cm.", facts), []);
   assert.equal(screenContradictions("Rectangle mein chaaron sides jodte hain.", facts).length, 1);
   assert.equal(screenContradictions("Screen par 2/5 dekho.", facts).length, 1);

@@ -25,6 +25,10 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
 );
 
+/** Learning patch 004b: the lesson OPENS on a question (or share) kept in the jar last time: a promise kept, then today's lesson. */
+export const returnJar = ({ topic, share = false }) => (share
+  ? `first: come back to what they told you last time (${clean(topic) || "it"}) in one warm line, no question about it; then today's lesson`
+  : `first: come back to what they asked last time (${clean(topic) || "their question"}): at most two sentences, or one guided question; then today's lesson`);
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 
@@ -101,6 +105,9 @@ export const scriptWorkedV2 = () => join(
   "then their step is the question on the card; never say its answer",
 );
 export const EXAMPLE_ON_BEAT = "they asked for an example: this beat's own board and numbers (LESSON NOW), one small case of it; never numbers of your own";
+// dc-r7-script-walk-v3 V1: code speaks the authored lines; her words are one short framing sentence
+export const scriptWorkedProblem = () => "worked example: ONE short sentence that introduces it (no numbers, no question); code then says the problem, what is given and what we find";
+export const scriptRemedyV2 = () => "their answer is not right yet: ONE short warm sentence that frames trying it another way (no numbers, no question, no blame); code then says the new explanation and the follow-up question";
 export const SMALLER_AFTER_STUCK = "they said they do not know: no verdict, warmly; the same idea again, smaller";
 export const scriptWorked = () => join(
   "worked example: the one in LESSON NOW with its own numbers and names, never an example of your own",
@@ -428,13 +435,17 @@ export const resumeAfterSafeguard = () =>"gently ask whether they want to carry 
 export const resumeAfterHelp = () => "help is in place now (a grown-up they trust knows, is calling or is with them): warmly, in a few words, that they did the right thing; no lesson content yet; never ask again if they are safe; then ask whether to carry on with the lesson or stop for today — either is fine";
 export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";
 
-export const teachback = ({ protege }) => join(
+export const teachback = ({ protege }) => protege?.name ? join(
   `${protege.name} (${protege.what}) wants to learn today's idea`,
   `ask the child to teach ${protege.name} the big idea in their own words`,
   `you voice ${protege.name} in one short line; no hints inside the asking`,
+) : join(
+  // (v3: a scripted lesson never set up a pretend learner; one met here for the first time is invented, director5 c4 "Golu")
+  "ask the child to explain today's big idea back to you in their own words, as if telling a friend",
+  "no new character, no hints inside the asking",
 );
 export const teachbackFollowup = ({ protege, missing }) => join(
-  `${protege.name} asks one naive question about: ${missing}`,
+  protege?.name ? `${protege.name} asks one naive question about: ${missing}` : `ask one curious question about: ${missing}`,
   "curious, not testing; let the child explain",
 );
 

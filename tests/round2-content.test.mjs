@@ -176,7 +176,8 @@ describe("seam: preselect, then requestIntent draws synchronously (patch 03)", (
     // round 7 (Brain R4): the slot artifact says what the board shows
     assert.equal(typeof ack.artifact.screen?.shape, "string");
     // (this board asks the fraction: its "?" is never reported as a number shown)
-    assert.deepEqual(ack.artifact.screen, { template: "fraction-parts@1", shape: "whole in parts", numbers: [], labels: [] });
+    // round 7 (director5 SC1): and what it draws, counted: 4 parts, 1 shaded (the count is drawn; only the fraction is asked)
+    assert.deepEqual(ack.artifact.screen, { template: "fraction-parts@1", shape: "whole in parts", numbers: [], labels: [], counts: { parts: 4, shaded: 1 } });
     const id2 = "r2c-2"; open(id2);
     seam.studioSeam.onSafety(id2);
     assert.equal(seam.studioSeam.preselectWhiteboard(c4Ask(`${id2}:wb:4`)), null);
