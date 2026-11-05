@@ -99,3 +99,38 @@ test("H1.1: verbs agree with the persona's name; the steady child stays 40 turns
   const kinds = Array.from({ length: maxTurnsFor("steady") }, (_, t) => c.reply({ turn: t, teacher: "Theek hai." }).kind);
   assert.equal(kinds.indexOf("leave"), 40, "steady leaves at turn 40, not 24");
 });
+
+// ───────────── H1.2 (director6 judgement, dc-r7-script-walk-v4) ─────────────
+test("H1.2: a card labelled probe that poses a keyed question is answered as a card; a how/why line still gets a reason", () => {
+  for (let seed = 1; seed <= 10; seed++) {
+    const c = createReactiveChild({ persona: "steady", seed, kit });
+    const r = c.reply({ turn: 6, teacher: "Number line par 1/8 kahan aayega?", probe: true, card: { itemId: "p1", key: "1/8" } });
+    assert.ok(["right", "wrong"].includes(r.kind), `${seed}: ${r.kind}`);
+    assert.equal(c.reply({ turn: 7, teacher: "Tumne kaise jaana?", probe: true, card: { itemId: "p2", key: "3" } }).kind, "reason");
+  }
+  assert.equal(createReactiveChild({ persona: "steady", seed: 1, kit }).reply({ turn: 6, teacher: "Achha.", probe: true }).kind, "reason");
+});
+
+test("H1.2: a card answered right is not answered again; a card she has not asked yet gets 'what is the question'", () => {
+  const c = createReactiveChild({ persona: "steady", seed: 3, kit });
+  let t = 5, first;
+  // answer the same card until it is right (steady gets there), then it is never re-answered
+  do first = c.reply({ turn: ++t, teacher: "Kitne hisse?", card: { itemId: "k1", key: "3" } }); while (first.kind !== "right" && t < 7);
+  if (first.kind === "right") {
+    const again = c.reply({ turn: ++t, teacher: "Kitne hisse?", card: { itemId: "k1", key: "3" } });
+    assert.equal(again.kind, "ack"); assert.doesNotMatch(again.text, /\b3\b|teen/);
+  }
+  const unposed = createReactiveChild({ persona: "steady", seed: 4, kit }).reply({ turn: 6, teacher: "Ek ant field ke chaaron taraf chalti hai.", card: { itemId: "c6", key: "58 m" } });
+  assert.equal(unposed.kind, "ack");
+  assert.doesNotMatch(unposed.text, /58/);
+});
+
+test("H1.2: no reply line reads as a picture request", () => {
+  for (let seed = 1; seed <= 20; seed++) {
+    const c = createReactiveChild({ persona: "steady", seed, kit });
+    for (let t = 0; t < 41; t++) {
+      const r = c.reply({ turn: t, teacher: t % 2 ? "Kaise jaana?" : "Kitne?", card: { itemId: `x${t}`, key: "2" } });
+      if (r.event !== "picture") assert.doesNotMatch(r.text, /picture|screen|dikhao|drawing/i, r.text);
+    }
+  }
+});

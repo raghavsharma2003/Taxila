@@ -22,6 +22,11 @@
 // H1.1 (director5 judgement, dc-r7-script-walk-v3): a probe ("kaise jaana?", "kyun?", "apne shabdon mein samjhao") gets a
 // short REASON, never a bare repeat of the card answer (that repeat was graded against the next key); verbs agree with
 // the persona's name ("thak gayi" for Riya); the steady child stays 40 turns so skills 2-3 are reached.
+//
+// H1.2 (director6 judgement, dc-r7-script-walk-v4): a card LABELLED probe (turnInput.probe: true) that poses a keyed question
+// is answered as a card (only a how/why line gets a reason: that loop was 4 turns in c5-t01); a card it already answered
+// right is not answered again; no reason line sounds like a picture request; and it never answers a card whose question
+// she has not asked (no "?" in her line): it asks for the question instead.
 
 export const MIN_TURNS = 20;
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
@@ -52,7 +57,7 @@ export const PROBE_RE = /\bkaise\s+(jaana|jana|pata|socha|kiya|nikala|samjha)|\b
 /** A probe answer: a short reason in a child's words, with no number (never the card answer repeated). */
 const REASONS = {
   right: ["kyunki hisse barabar the, maine wahi dekha", "maine line par aage-peeche dekh ke socha", "pehle wale step se pata chala", "neeche wala number dekha, phir socha",
-    "maine dono ko mila ke dekha", "kyunki pura ek hi hai, uske hisse hain", "maine screen wala picture dekh ke socha", "jodte jodte aaya"],
+    "maine dono ko mila ke dekha", "kyunki pura ek hi hai, uske hisse hain", "jo aapne dikhaya tha, usse socha", "jodte jodte aaya"],
   unsure: ["pata nahi kaise, bas laga", "thoda guess kiya, pakka nahi", "mujhe laga aisa hi hoga", "shayad hisse gin ke"],
 };
 
@@ -63,6 +68,8 @@ const LINES = {
   hindi: ["Hindi mein bolo", "hindi mein batao na", "thoda hindi mein samjhao"],
   selftry: ["mujhe khud try karne do", "ruko, main khud {karta|karti} hoon", "pehle main try karun?"],
   ack: ["haan", "achha", "theek hai", "hmm, achha", "haan samajh {gaya|gayi}"],
+  done: ["woh toh ho gaya na", "haan, woh maine bata diya", "woh wala ho gaya, aage chalo"],
+  which: ["sawaal kya hai?", "kya poochha, phir se bolo na", "kis cheez ka jawab dun?"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -131,6 +138,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     at.set(u, ev);
   }
   const misses = new Map();
+  const answered = new Set();                     // H1.2: cards answered right are not answered again
   const log = [];
   const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
   return {
@@ -140,17 +148,25 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (turn >= P.leaveAfter && turn >= MIN_TURNS) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       const ev = at.get(turn);
       if (ev) return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
-      // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again)
-      if (input.probe === true || (input.probe !== false && PROBE_RE.test(String(input.teacher ?? "")))) {
+      // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again).
+      // H1.2: a card merely LABELLED probe that poses a keyed question is a card: a reason only when her line asks how/why,
+      // or when the harness says probe and no keyed question is on the table.
+      const q0 = input.card ?? input.ask ?? null;
+      const keyed = !!(q0 && q0.key != null && String(q0.key).trim());
+      const howWhy = PROBE_RE.test(String(input.teacher ?? ""));
+      if (input.probe !== false && (howWhy || (input.probe === true && !keyed))) {
         const sure = rng() < P.right.open;
         return say({ text: pick(rng, REASONS[sure ? "right" : "unsure"]), kind: "reason" });
       }
       const q = input.card ?? input.ask ?? null;
       if (q && q.key != null && String(q.key).trim()) {
         const id = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
+        if (answered.has(id)) return say({ text: pick(rng, LINES.done), kind: "ack" });
+        // she has not asked it yet (no question in her line): the child cannot know its givens, so it asks
+        if (!/\?/.test(String(input.teacher ?? ""))) return say({ text: pick(rng, LINES.which), kind: "ack" });
         const tries = Number(input.card?.misses ?? misses.get(id) ?? 0);
         const p = Math.min(0.95, P.right[input.card ? "card" : "ask"] + P.learn * tries);
-        if (rng() < p) { misses.delete(id); return say({ text: pick(rng, rightForms(q.key, q.accept)), kind: "right" }); }
+        if (rng() < p) { misses.delete(id); answered.add(id); return say({ text: pick(rng, rightForms(q.key, q.accept)), kind: "right" }); }
         misses.set(id, tries + 1);
         const w = wrongAnswer(input, kit, rng);
         return say({ text: w.text, kind: "wrong", wrongFrom: w.from });
