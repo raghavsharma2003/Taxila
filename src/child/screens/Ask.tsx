@@ -1,10 +1,12 @@
 // /c/:cid/ask: "Ask {T} a question" (ages 10-15 only; Young has none, `rj-passive-tutor`) — PRODUCT-DESIGN-V2 §3.7,
 // §6.3.7; audit #10 ("the typed question vanishes behind a second start gate"). On Ask the Desk opens AT ONCE with the
 // child's question as the Question card ("Your question"); there is no start gate (the lesson's own rule).
-// Sources: Type is built. "Say it" (needs the Azure speech lane outside a lesson) and "Photo of the question" (needs a
-// photo upload route that keeps the image on the device and in this lesson only) are NOT shown until they exist: a
-// button that does nothing is a placeholder (P6). Empty field: Ask disabled with the reason beside it.
-import { useRef, useState } from "react";
+// Sources: Type, and (Kaksha, r7 app-ask-voice) "Say it": Voice's transcribe path hears the clip and the words go into
+// the field for the child to check before Ask. Hands-free (the default) starts listening as the screen opens once the mic
+// is already allowed; Tap to talk waits for the tap. If hearing fails, a line says to type instead (never a dead button).
+// "Photo of the question" is NOT shown until a photo route exists (P6). Empty field: Ask disabled with the reason beside it.
+import { useEffect, useRef, useState } from "react";
+import { canRecord, micGranted, startAskRecording, transcribeAsk, type AskRecording } from "../askVoice.ts";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import { ChildScreen, useKx } from "../chrome.tsx";
@@ -34,6 +36,41 @@ export function Ask() {
   const field = useRef<HTMLTextAreaElement>(null);
   const [search] = useSearchParams();
   const kx = useKx();
+  const { prefs } = useChild();
+  // "Say it": idle → listening (the clip records) → hearing (Voice transcribes) → idle with the words in the field
+  const [voice, setVoice] = useState<"idle" | "listening" | "hearing">("idle");
+  const [voiceNote, setVoiceNote] = useState<"heard" | "none" | "failed" | null>(null);
+  const recRef = useRef<AskRecording | null>(null);
+  const stopListening = async () => {
+    const r = recRef.current;
+    recRef.current = null;
+    if (!r) return;
+    setVoice("hearing");
+    const clip = await r.stop();
+    const heard = clip ? await transcribeAsk(cid, clip) : "";
+    setVoice("idle");
+    if (heard === null) { setVoiceNote("failed"); return; }
+    if (!heard) { setVoiceNote("none"); return; }
+    setText((t0) => (t0.trim() ? `${t0.trim()} ${heard}` : heard));
+    setVoiceNote("heard");
+    field.current?.focus();
+  };
+  const listen = async () => {
+    if (voice !== "idle") return;
+    setVoiceNote(null);
+    const r = await startAskRecording(() => void stopListening());
+    if (!r) { setVoiceNote("failed"); return; }
+    recRef.current = r;
+    setVoice("listening");
+  };
+  // hands-free (the default; Me → Tap to talk turns it off): listen as the screen opens, when the mic is already allowed
+  useEffect(() => {
+    if (!kx || prefs.handsFree === false || prefs.quiet || !canRecord()) return;
+    let live = true;
+    void micGranted().then((ok) => { if (live && ok) void listen(); });
+    return () => { live = false; recRef.current?.cancel(); recRef.current = null; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kx]);
   // Homework help (STUDENT-FLOW §4.2 `homework`, parent-switched) is open to every class; plain Ask is Older only
   const homework = search.get("homework") === "1";
   if (family === "young" && !homework) return <Navigate to={`/c/${cid}`} replace />;
@@ -80,8 +117,22 @@ export function Ask() {
           <textarea id="ask-q" ref={field} className="kx-field" rows={4} maxLength={600} value={text} aria-label={t("askField")}
             onChange={(e) => setText(e.target.value)} placeholder={t("askPlaceholder")} aria-describedby={ready ? undefined : "ask-why"} />
           <div className="kx-ask-src" role="group" aria-label={t("askField")}>
+            {canRecord() && (voice === "listening" ? (
+              <button type="button" className="kx-chip kx-cut kx-chip--live" onClick={() => void stopListening()} data-testid="ask-say-done" aria-live="polite">
+                <span className="kx-rec-dot" aria-hidden="true" /><span>{tr7("ask.listening")}</span>
+              </button>
+            ) : (
+              <button type="button" className="kx-chip kx-cut" onClick={() => void listen()} disabled={voice === "hearing"} data-testid="ask-say">
+                <Glyph name="mic" size={20} /><span>{voice === "hearing" ? tr7("ask.hearing") : tr7("ask.say")}</span>
+              </button>
+            ))}
             <button type="button" className="kx-chip kx-cut" onClick={() => field.current?.focus()}><Glyph name="type" size={20} /><span>{t("askType")}</span></button>
           </div>
+          {voiceNote && (
+            <p className="kx-tagline" role="status" data-testid="ask-voice-note">
+              {voiceNote === "heard" ? tr7("ask.heard", { T: rec.name }) : voiceNote === "none" ? tr7("ask.none") : tr7("ask.failed")}
+            </p>
+          )}
           {!ready && <p id="ask-why" className="kx-tagline">{t("askReason")}</p>}
           {matching && <p className="kx-tagline" role="status">{tr7("hw.checking")}</p>}
           <Cta type="submit" disabled={!ready || matching} testid="ask-go">{t("askGo")}</Cta>
