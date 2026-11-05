@@ -64,3 +64,15 @@ test("every c5 'fractions on a line' board passes the full gate on its item, the
   }
   assert.ok(n >= 15, `${n} boards`);
 });
+
+test("lesson-script form (Learning): to, labelled marks and a hop; a label of another value is refused", () => {
+  const x = expand({ template: "fraction-line@1", den: 4, from: 0, to: 2, marks: [{ num: 4, label: "1" }, { num: 7, label: "7/4" }], hop: { num: 7 } });
+  assert.ok(x.ok, x.errors?.join(","));
+  assert.equal(x.script.ops.filter((o) => o.op === "move").length, 7, "one jump per quarter");
+  assert.equal(x.facts.onScreen.hop, "7/4");
+  assert.equal(x.facts.onScreen.marks, "1, 7/4");
+  const crowd = expand({ template: "fraction-line@1", den: 6, to: 1, marks: [{ num: 2, label: "2/6" }, { num: 3, label: "3/6 = 1/2" }, { num: 5, label: "5/6" }] });
+  assert.ok(crowd.ok, crowd.errors?.join(","));
+  assert.match(expand({ template: "fraction-line@1", den: 4, marks: [{ num: 1, label: "1/2" }] }).errors.join(","), /label_value/, "1/4's point labelled 1/2 is false");
+  assert.equal(expand({ template: "fraction-line@1", den: 4, from: 1 }).ok, false);
+});

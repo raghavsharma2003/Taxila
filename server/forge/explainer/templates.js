@@ -129,29 +129,67 @@ function fractionParts(c, tl) {
  *   target  (the item names a/den and asks where it goes) a/den is written above the line, no point is drawn
  */
 function fractionLine(c, tl) {
-  const den = c.den, w = c.wholes ?? 1;
+  const den = c.den, w = c.wholes ?? c.to ?? 1;
+  if (c.from != null && c.from !== 0) return { error: "fraction_line_from" };
   if (!isInt(den, 2, 12) || !isInt(w, 1, 3) || den * w > 24) return { error: "fraction_line_range" };
-  const tgt = Array.isArray(c.target) && isInt(c.target[0], 0, den * w) && c.target[1] === den ? c.target[0] : null;
-  const mark = isInt(c.mark, 1, den * w) ? c.mark : null;
+  const N = den * w;
+  const tgt = Array.isArray(c.target) && isInt(c.target[0], 0, N) && c.target[1] === den ? c.target[0] : null;
+  const mark = isInt(c.mark, 1, N) ? c.mark : null;
   if (c.show && tgt == null) return { error: "fraction_line_show" };
+  // lesson scripts (Learning, dc-r7-teaching-scripts): `marks` [{ num, label? }] are points the explanation names, each
+  // labelled (default num/den) — a label must be the SAME value as its point ("3/6 = 1/2", "1", "4/4 = 1"), checked;
+  // `hop` { num } is the counting: one jump per 1/den from 0 to num/den
+  const marks = Array.isArray(c.marks) ? c.marks : [];
+  for (const m of marks) {
+    if (!isInt(m?.num, 1, N)) return { error: "fraction_line_mark" };
+    const label = m.label ?? `${m.num}/${den}`;
+    if (!fitsLabel(label) || textProblem(label)) return { error: "fraction_line_label" };
+    const vals = [...String(label).matchAll(/(\d+)\s*\/\s*(\d+)|(?<![\d/])(\d+)(?![\d/])/g)].map((x) => (x[1] ? Number(x[1]) / Number(x[2]) : Number(x[3])));
+    if (!vals.length || vals.some((v) => Math.abs(v - m.num / den) > 1e-9)) return { error: `fraction_line_label_value:${label}` };
+  }
+  const hop = c.hop == null ? null : isInt(c.hop?.num, 1, N) ? c.hop.num : -1;
+  if (hop === -1) return { error: "fraction_line_hop" };
   const x0 = 30, W = 340, y = 170;
   const X = (u) => round1(x0 + 12 + (u / w) * (W - 24));
   // (paced for her explanation: the line, then the gaps one by one, ~4-5 s before the point, so a ~12 s line keeps up — W6)
   tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: w + 1 }, (_, i) => String(i))], range: [0, w], w: W, weight: 2 }, 1200);
-  const tick = Math.max(90, Math.min(320, Math.round(2400 / (den * w))));
-  for (let i = 1; i < den * w; i++) if (i % den) tl.add({ op: "line", from: [X(i / den), y - 7], to: [X(i / den), y + 7], weight: 1 }, tick, { gap: Math.round(tick / 2) });
+  const tick = Math.max(90, Math.min(320, Math.round(2400 / N)));
+  for (let i = 1; i < N; i++) if (i % den) tl.add({ op: "line", from: [X(i / den), y - 7], to: [X(i / den), y + 7], weight: 1 }, tick, { gap: Math.round(tick / 2) });
   const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
   const claims = [];
-  if (c.show) {
-    // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
+  const hopTo = (n) => {
     const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
-    for (let k = 1; k <= tgt; k++) {
+    for (let k = 1; k <= n; k++) {
       const from = X((k - 1) / den), to = X(k / den);
       tl.add({ op: "arrow", from: [from, y - 10], to: [to, y - 10], bend: -0.6, ink: "accent" }, 650, { gap: k === 1 ? 400 : 150 });
       tl.add({ op: "move", target: dot, by: [round1(to - from), 0], arc: 12 }, 650, { with: true });
     }
+    claims.push({ id: dot, c: [X(n / den), y] });
+  };
+  if (marks.length || hop != null) {
+    if (hop != null) hopTo(hop);
+    // labels above the line in up to three rows: a label moves up a row when it would touch its left neighbour's
+    const rows = [y - 44, y - 70, y - 96], rightEdge = [-Infinity, -Infinity, -Infinity];
+    const placed = [...marks].sort((p, q) => p.num - q.num).map((m) => {
+      const label = String(m.label ?? `${m.num}/${den}`), x = X(m.num / den), half = textBox(label, "s").w / 2;
+      const r = rightEdge.findIndex((e) => x - half >= e + 6);
+      if (r >= 0) rightEdge[r] = x + half;
+      return { m, label, x, half, r };
+    });
+    for (const p of placed) {
+      if (p.r < 0) return { error: "fraction_line_marks_crowded" };
+      // (a label at the board's edge is pulled in, never off it)
+      const lx = Math.min(BOARD.w - 4 - p.half, Math.max(4 + p.half, p.x));
+      if (hop == null || p.m.num !== hop) tl.add({ op: "circle", c: [p.x, y], r: 6, fill: "mark", ink: "mark" }, 300, { gap: 300 });
+      tl.add({ op: "line", from: [p.x, y - 12], to: [p.x, rows[p.r] + 6], weight: 1, ink: "soft" }, 200, { gap: 60 });
+      tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark" }, 400, { gap: 60 });
+    }
+    return { claims, facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
+  }
+  if (c.show) {
+    // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
+    hopTo(tgt);
     tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
-    claims.push({ id: dot, c: [X(tgt / den), y] });
     return { claims, facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
   }
   if (mark != null) {
