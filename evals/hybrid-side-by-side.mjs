@@ -101,6 +101,8 @@ function stopWith(code, why) {
 const timed = async (fn) => { const t0 = performance.now(); const v = await fn(); return [v, Math.round(performance.now() - t0)]; };
 
 const say = (r) => r?.ui?.ask?.text ?? null;
+const NO_COUNTS = new Set();
+const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
 
 async function classOf(state, kit, text, classLevel) {
   const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
@@ -208,8 +210,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         const pick = preselect(ask, { kit });
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
+          // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
+          const counts = pick.screen?.counts ?? pick.facts?.counts ?? pick.script?.facts?.counts ?? null;
           screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
-            ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+            counts, ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+          // (Studio: word boards — compare, flow, cycle, table, timeline, label, parts — have nothing countable: not a miss)
+          if (!counts && pick.template && !WORD_BOARDS.test(pick.template) && !NO_COUNTS.has(pick.template)) { NO_COUNTS.add(pick.template); console.error(`NO COUNTS: ${pick.template} (${kit.topicId}) drew a board with no screen.counts`); }
           slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
@@ -243,15 +249,23 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const delivered = next.lastMove?.point ? pointSaid(reply, next.lastMove.point) : next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
     const graded = ["correct", "not_yet"].includes(next.lastVerdict) ? next.lastVerdict : null;
     const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
-    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(reply) || !NOT_RIGHT.test(firstS) : NOT_RIGHT.test(firstS)) : null;
+    // (H1.2: a right answer's verdict is an explicit affirmation; silence is not a verdict)
+    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(firstS) : NOT_RIGHT.test(firstS)) : null;
     const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
     // (a keyed right answer graded not_yet, or met with a not-right lead that does not affirm: "Sahi, … barabar nahi hain" to the
     // key "nahi" is an affirmation, director6's 3 false counts)
     const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim())
       && (graded === "not_yet" || (NOT_RIGHT.test(firstS) && !affirmsAnswer(reply)));
+    // (H1.2, a new count: a wrong answer called right: the script's listed wrong answer graded right, or a graded-wrong answer
+    // met with an affirmation and no not-right)
+    const meta = activeItem?.scriptAsk ?? activeItem?.scriptCheck ?? activeItem?.scriptThen ?? null;
+    const saidN = String(text).toLowerCase().replace(/\s+/g, " ").trim();
+    const wim = meta?.wrongIfMis ? String(meta.wrongIfMis).toLowerCase().replace(/\s+/g, " ").trim() : null;
+    const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
+      || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
     const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong },
+      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;

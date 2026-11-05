@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust } from "../director/script.js";
+import { saidMust, joinable } from "../director/script.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -1474,7 +1474,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     // round 7 (director2 c6 steering: "cricket ke baare mein" was parked by the Director, but her line never named it): a topic
     // parked this turn is said with its promise when her words left it out
-    if (state.lastMove?.request === "park" && kindNow !== "safeguard") {
+    // (v4 W6: any topic parked this turn, an aside kept by the Director included, not only an explicit park request)
+    if (kindNow !== "safeguard" && (state.later ?? []).some((p) => p.at === state.turn && p.servedAt == null)) {
       const e = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
       const key = e ? (String(e.topic).toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) : null;
       if (key && !new RegExp(`\\b${key}`, "i").test(reply)) {
@@ -1558,7 +1559,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   }
   // round 7 S3: a card let go after two misses plus help has its answer and why said, in code, when her line left them out
   const gave = state.lastMove?.gave;
-  if (gave?.answer && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
+  // (v4 W2: in script mode the give-up is one clean sentence said by the final assembly below, never glued here)
+  const scriptCardNow = !!state.lastMove?.scriptBeat || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  if (gave?.answer && !scriptCardNow && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
     reply = `${pickOf(GAVE_LINE[lang === "english" ? "english" : "hinglish"], state)(gave.answer, gave.why)} ${reply}`.trim();
     guard.gaveAnswer = true;
   }
@@ -1583,14 +1586,6 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       else guard.unenforced = bad;
     }
   }
-  // dc-r7-script-walk-v3 V2 / G1: a scripted explain beat's authored point is in what she says. When her line (or what a guard
-  // left of it) lacks it, code says the point verbatim before the card: a guard never leaves the card alone
-  if (point && kindNow === "explain" && !pointSaid(reply, point)) {
-    const card = ui?.ask?.text ?? askEnd ?? null;
-    const body = card && String(reply).includes(card) ? String(reply).replace(card, " ").replace(/\s+/g, " ").trim() : String(reply).trim();
-    reply = [body, /[.!?।]$/.test(point.trim()) ? point.trim() : `${point.trim()}.`, card].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
-    guard.pointSaid = true;
-  }
   // director6 (K1/K2, after every repair above): the verdict on a graded answer is the FIRST thing she says.
   // - wrong: the not-right sentence leads. A give-up reveal of the previous card ("Pichhle sawaal ka jawab …") or an S1 fixed
   //   line had pushed it second or dropped it (14 of director6's 16 verdict misses); a later one is moved up, a missing one
@@ -1613,6 +1608,65 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       reply = `${yes} ${neg ? withoutNegation(reply, saidNow) : reply}`.replace(/\s+/g, " ").trim();
       guard.verdictFirst = neg ? "unnegated" : "confirmed";
     }
+  }
+  // dc-r7-script-walk-v4 W1/W3 (director6: guards left the bare card 45 times, deleted authored says and steps, doubled the point,
+  // put it mid-ask): in script mode the turn is ASSEMBLED last, from parts no guard can cut. Guards above act on her own clauses;
+  // here the order is fixed: the verdict → one clean give-up sentence → the authored text → the card, whole.
+  // - authored text: the code-rendered remediation say or worked lines; on an explain beat her own lines when they carry the
+  //   point, else ONE short clause of hers then the point verbatim (never both, never mid-ask)
+  // - a turn that would be the bare card says the card's own authored line first ("Yaad karo: …")
+  const scriptTurn = !!state.lastMove?.scriptBeat || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  if (scriptTurn && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && !clause.sent && !forgetSafety) {
+    const norm = (x) => String(x ?? "").replace(/\s+/g, " ").trim();
+    const dot = (x) => (/[.!?।]$/.test(norm(x)) ? norm(x) : `${norm(x)}.`);
+    const card = ui?.ask?.text ? norm(ui.ask.text) : null;
+    const cardSs = card ? sentences(card).map(norm) : [];
+    const gaveA = state.lastMove?.gave?.answer ? norm(state.lastMove.gave.answer) : null;
+    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}.` : `Pichhle sawaal ka jawab ${gaveA} tha.`) : null;
+    const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|woh wala|the last|that one)/i.test(x);
+    let ss = sentences(reply).map(norm).filter(Boolean)
+      .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
+    const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
+    const lead = graded && ss.length ? ss.shift() : null;
+    // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
+    // short one when her words left it out); they come after the verdict, before the teaching
+    const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
+    const parkedNow = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
+    const ret = state.lastMove?.returned ?? null;
+    const aside = [];
+    for (const [topic, kind] of [[parkedNow?.topic, "park"], [ret?.topic, "return"]]) {
+      const k = keyOf(topic);
+      if (!k) continue;
+      const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, 2);
+      ss = ss.filter((x) => !mine.includes(x));
+      aside.push(...(mine.length ? mine : [kind === "park"
+        ? pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)
+        : (lang === "english" ? `And ${topic}: I remember what you told me.` : `Aur haan, ${topic} wali baat mujhe yaad hai.`)]));
+    }
+    const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
+    const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
+    let body;
+    if (workedLines?.length) {
+      // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
+      const frame = !lead && clean(ss[0]) && !(kindNow === "reteach" && /\d/.test(ss[0])) ? ss[0] : null;
+      body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
+    } else if (point && kindNow === "explain") {
+      if (ss.length && pointSaid(ss.join(" "), point)) body = ss;
+      else { const li = ss.find((x) => clean(x) && !/\d/.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true; }
+    } else {
+      body = ss;
+      if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
+    }
+    const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
+    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha.`) : null;
+    if (closedS) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
+    const wd = state.lastMove?.workedDone;
+    const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(wd.why, { lower: true }) : null;
+    const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
+    // (a worked step with no card ends on a short check-in, never mid-air)
+    const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
+    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }

@@ -370,6 +370,19 @@ export function scriptWorkedLinesV2(w, lang = "hinglish") {
   }
   return lines;
 }
+/** v4 W2: one worked step as one spoken line, "Do: result, kyunki why." (null when the step has no do or result). */
+export function scriptWorkedStepLine(st, lang = "hinglish") {
+  // (director7 dry: "jodo.: 7 + 9 = 16 m, kyunki Ek kone se…": the authored fields' own end stops and capitals are joined away)
+  const d = joinable(saidIn(st?.do, lang)), y = joinable(saidIn(st?.why, lang), { lower: true });
+  if (!d || !String(st?.result ?? "").trim()) return null;
+  return dot(`${d.charAt(0).toUpperCase()}${d.slice(1)}: ${String(st.result).trim()}${y ? `, ${BECAUSE[lang] ?? BECAUSE.hinglish} ${y}` : ""}`);
+}
+/** An authored clause made ready to join into a sentence: its end stop gone, its first letter lowered when asked (never "I"). */
+export function joinable(x, { lower = false } = {}) {
+  let t = String(x ?? "").replace(/\s+/g, " ").trim().replace(/[.!।;,]+$/, "");
+  if (lower && /^[A-Z][a-z]/.test(t) && !/^I\b/.test(t)) t = t.charAt(0).toLowerCase() + t.slice(1);
+  return t;
+}
 /** v2 (R1): did her line say the beat's must-say terms (each, in the lesson language's form or the other)? */
 export function saidMust(line, mustSay = [], lang = "hinglish") {
   const t = String(line ?? "").toLowerCase();

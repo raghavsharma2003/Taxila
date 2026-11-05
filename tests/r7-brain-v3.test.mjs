@@ -107,6 +107,87 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.match(c.reply, /^Haan, sahi hai\./, c.reply);
     assert.doesNotMatch(c.reply, /12 cm nahi/, c.reply);
   });
+
+  test("v4 W1: a remediation whose line a guard replaces still says the verdict, then the authored say, then the card", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    const card = L.r.ui.ask.text;
+    replyDeps.chat = async () => ({ text: "Iska jawab 38 m hai, kyunki sab bhujayein judti hain." });   // a leak of the then-card's key
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    assert.match(out.reply, /^7 cm sahi nahi hai\./, out.reply);
+    assert.ok(out.reply.includes("cheenti"), out.reply);
+    assert.ok(out.reply.trim().endsWith(card), out.reply);
+    assert.doesNotMatch(out.reply, /38 m hai/, "the leak is gone");
+  });
+
+  test("v4 W3: an explain paraphrase without the point keeps one short clause of hers, then the point once, then the card whole", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const card = L.r.ui.ask.text;
+    replyDeps.chat = async () => ({ text: `Parimap ka matlab hai poori boundary ki lambai, ek chakkar. Ab socho. ${card}` });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: L.r.ui, module: null });
+    const p = S1.explain[0].point.hi;
+    assert.equal(out.reply.split(p).length - 1, 1, out.reply);
+    assert.ok(out.reply.trim().endsWith(card), out.reply);
+    assert.ok(out.reply.indexOf(p) < out.reply.indexOf(card), "the point comes before the ask");
+  });
+
+  test("v4 W1: a turn that would be the bare card says the card's own authored line first", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("pata nahi", cls("dont_know"));
+    const card = L.r.ui.ask.text;
+    assert.ok(L.r.state.lastMove.cardPoint, JSON.stringify(L.r.state.lastMove));
+    replyDeps.chat = async () => ({ text: card });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "pata nahi", history: [], ui: L.r.ui, module: null });
+    assert.notEqual(out.reply.trim(), card.trim(), "never the bare card");
+    assert.ok(out.reply.trim().endsWith(card), out.reply);
+  });
+
+  test("v4: a then-card's authored prompt is never cut, and re-posing it shows its own board", () => {
+    const long = structuredClone(SC);
+    const r0 = long.skills[0].remediation[0];
+    r0.then.prompt.hi = "Ek kisaan ke khet ki chhe bhujayein hain jinki lambai 10 m, 4 m, 6 m, 5 m, 4 m aur 9 m hai. Woh poore khet ke chaaron taraf ek baar baad lagata hai. Uska parimap kitna hai?";
+    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    setScriptForTest(); setScriptForTest(K.topicId, long);
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.ok(r0.then.prompt.hi.length > 120);
+    assert.equal(L.r.ui.ask.text, r0.then.prompt.hi, "shown whole");
+    L.t("pata nahi", cls("dont_know"));
+    assert.equal(L.r.ui.ask?.itemId, L.r.state.activeItemId, "the then-card is still the card");
+    assert.deepEqual(L.r.move.scriptBeat?.board, r0.then.board, JSON.stringify(L.r.move));
+  });
+
+  test("v4 W4: after a remediation's follow-up, the card they missed is closed with its answer", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.match(L.r.state.activeItemId, /:then:/);
+    L.t("38", cls("correct"));
+    // (a right follow-up may get its why-probe first; the close comes on the move after the follow-up is done)
+    for (let i = 0; i < 3 && !L.r.move.closed; i++) L.t("har bhuja ek baar jodi", cls("correct"));
+    assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
+    replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, out.reply);
+  });
+
+  test("v4 W6: an aside is parked with a promise in her line (topic found in code), and kept until it is served", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("kal maine cricket khela, sixer maara", { ...cls("no_evidence"), request: { type: "uptake", kind: "personal_share" } });
+    const e = (L.r.state.later ?? []).find((x) => /cricket/i.test(x.topic));
+    assert.ok(e, JSON.stringify(L.r.state.later));
+    const card = L.r.ui.ask?.text ?? "";
+    replyDeps.chat = async () => ({ text: `Wah! ${card}` });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "kal maine cricket khela, sixer maara", history: [], ui: L.r.ui, module: null });
+    assert.match(out.reply, /cricket/i, out.reply);
+    L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
+    assert.ok((L.r.state.later ?? []).some((x) => /virat/i.test(x.topic)), JSON.stringify(L.r.state.later));
+  });
 });
 
 test("v2.1 validator: {friend} not the child or Asha, no '?' glyph, no echo ask, ≤3 worked steps (c4-5), follow-ups with a board", async () => {
@@ -194,4 +275,19 @@ test("SC1 (director6): authored lines that match their board are never flagged; 
   assert.equal(screenContradictions("Screen par dekho, beech mein 5 nishaan hain.", quarters).length, 1, "a wrong inner-mark count");
   assert.equal(screenContradictions("Is patti ke 6 barabar hisse hain.", bar).length, 1, "a wrong division");
   assert.equal(screenContradictions("Board par dekho, 2/3 ka nishaan hai.", eighths).length, 1, "a fraction off every tick");
+});
+
+test("v4 W4: the listed wrong answer beats a by-value match ('after 1/3' to a 'between 0 and 1/3' card)", async () => {
+  const { classifyFast } = await import("../server/director/classify.js");
+  const item = { id: "script:x:c1", answer: "between 0 and 1/3", acceptable: ["0 aur 1/3 ke beech", "1/3 se pehle", "before 1/3", "pehle"], scriptCheck: { checkId: "c1", targets: "m-x", wrongIfMis: "after 1/3" } };
+  const t = { mode: "item", item, key: item.answer, also: item.acceptable };
+  const g = (x) => classifyFast({ target: t, childText: x, lang: "hinglish", typed: true }).result?.outcome;
+  assert.equal(g("after 1/3"), "misconception");
+  assert.equal(g("1/3 ke baad"), "misconception");
+  assert.equal(g("before 1/3"), "correct");
+  assert.equal(g("1/3 se pehle"), "correct");
+  const it2 = { id: "script:x:c2", answer: "30 m", acceptable: ["30", "30 metre"], scriptCheck: { checkId: "c2", targets: "m-y", wrongIfMis: "23 m" } };
+  const t2 = { mode: "item", item: it2, key: it2.answer, also: it2.acceptable };
+  assert.equal(classifyFast({ target: t2, childText: "mujhe lagta hai 30 m", lang: "hinglish", typed: true }).result?.outcome, "correct", "a numeric key still grades by value");
+  assert.equal(classifyFast({ target: t2, childText: "23", lang: "hinglish", typed: true }).result?.outcome, "misconception");
 });
