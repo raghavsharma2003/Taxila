@@ -14,7 +14,7 @@ import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel } from "../../../child/lesson/model.ts";
 import type { DeskSkin } from "../../../child/lesson/Desk.tsx";
 import { getChildMap } from "../../../child/api.ts";
-import { madeSince, readMadeFor } from "./made.ts";
+import { madeSince, readMadeFor, sendEmote, sendReflect } from "./made.ts";
 import type { MadeForItem } from "../../../../shared/contracts.ts";
 import "../../tokens.css";
 import "../tokens.css";
@@ -77,7 +77,8 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
   const renderSummary = useCallback(
     (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)}
-      loadMade={() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a))} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} />,
+      loadMade={() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a))}
+      onReflect={(lessonId, choice) => void sendReflect(cid, lessonId, choice)} onEmote={(lessonId, e) => void sendEmote(cid, lessonId, e)} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} />,
     [before, loadMap, readMade, madeBefore, cid],
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);

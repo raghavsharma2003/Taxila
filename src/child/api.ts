@@ -2,7 +2,7 @@
 // (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
 // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
 import { takeEarlyMe } from "../app/boot.ts";
-import type { ChildMapResponse, ChildMapSkill, DidCard, HomeworkMatch, HomeworkMatchRequest, HomeworkMatchResponse, LessonSummary, MapState } from "../../shared/contracts.ts";
+import type { ChildMapResponse, ChildMapSkill, ChildMemoryDeleteRequest, ChildMemoryResponse, DidCard, HomeworkMatch, HomeworkMatchRequest, HomeworkMatchResponse, LessonSummary, MapState } from "../../shared/contracts.ts";
 import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 
@@ -163,7 +163,7 @@ export function schoolChaptersOf(map: { subjects?: Array<{ subject: string; chap
 
 /** r7 app-me-settings: What {T} remembers (GET/DELETE /api/child/memory, Brain to-brain/008). null: the route is not
  *  there yet or the read failed (the section is then not shown at all, never an empty promise). */
-export interface ChildMemory { keeps: boolean; items: { id: string; text: string; at: string }[] }
+export type ChildMemory = ChildMemoryResponse;
 export async function getChildMemory(cid: string, signal?: AbortSignal): Promise<ChildMemory | null> {
   try {
     const r = await getJson<ChildMemory>(`/api/child/memory?childId=${encodeURIComponent(cid)}`, signal);
@@ -175,7 +175,7 @@ export async function getChildMemory(cid: string, signal?: AbortSignal): Promise
 /** Forget one item (a hard delete on the server). true when it is gone. */
 export async function forgetChildMemory(cid: string, id: string): Promise<boolean> {
   try {
-    const res = await fetch("/api/child/memory", { method: "DELETE", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ childId: cid, id }) });
+    const res = await fetch("/api/child/memory", { method: "DELETE", credentials: "same-origin", headers: { "content-type": "application/json" }, body: JSON.stringify({ childId: cid, id } satisfies ChildMemoryDeleteRequest) });
     return res.ok;
   } catch {
     return false;

@@ -722,6 +722,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const keyboardUp = typingFocus && !young && size.w < 600 && (size.keyboardInset ?? 0) > 0;
   // round 3 play mode: a play piece in the Studio slot gets the Desk (docs/design/round3/play/patches/04)
   const playMode = trayKind === "studio" && (ui.studioSlot?.artifact?.kind as string | undefined) === "play";
+  // r7 app-debrief-made-later: a board was on the stage at some point this lesson (the Debrief's "What helped?" offers
+  // "The drawing" only when it was)
+  const boardSeen = useRef(false);
+  if (trayKind === "board" || (trayKind === "studio" && (ui.studioSlot?.artifact?.kind as string | undefined) === "whiteboard")) boardSeen.current = true;
   const layout: DeskLayout = solveDesk({
     width: size.w, height: keyboardUp ? size.h - (size.keyboardInset ?? 0) : size.h, family: ctx.family, geometry: effectiveGeometry,
     keyboard: keyboardUp, fontScale: size.fontScale,
@@ -785,6 +789,8 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   const captionsOn = facts.tts || t6 !== "no" || (captionsOverride ?? (ctx.captionsAlways || ctx.band !== "b1"));
 
   const m: DeskModel = {
+    lessonId: state.lessonId ?? null,
+    boardSeen: boardSeen.current,
     band: ctx.band,
     family: ctx.family,
     teacher: { id: state.teacher?.id ?? ctx.teacherId, name: state.teacher?.name ?? ctx.teacherName },

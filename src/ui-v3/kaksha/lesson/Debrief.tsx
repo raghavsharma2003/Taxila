@@ -10,7 +10,11 @@
 import { useEffect, useState } from "react";
 import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel, DidCard } from "../../../child/lesson/model.ts";
-import type { MadeForItem } from "../../../../shared/contracts.ts";
+import type { ChildEmote, MadeForItem } from "../../../../shared/contracts.ts";
+import type { ReflectChoice } from "./made.ts";
+import { Glyph, type GlyphName } from "../kit.tsx";
+
+const EMOTE_GLYPH: Record<ChildEmote, GlyphName> = { wave: "hand", thanks: "heart", fun: "face" };
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { Comms } from "../Shell.tsx";
 import { kt } from "../copy.ts";
@@ -33,9 +37,12 @@ export interface DebriefProps {
   loadMade?: () => Promise<MadeForItem[]>;
   /** Where a made-for piece replays (the Notebook). */
   madeTo?: (id: string) => string;
+  /** r7: "What helped?" and the emote, sent by the frame (no network in the Debrief); absent: the rows are not shown. */
+  onReflect?: (lessonId: string, choice: ReflectChoice) => void;
+  onEmote?: (lessonId: string, emote: ChildEmote) => void;
 }
 
-export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo }: DebriefProps) {
+export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo, onReflect, onEmote }: DebriefProps) {
   const [secure, setSecure] = useState<DebriefSecure[] | null>(null);
   const [made, setMade] = useState<MadeForItem[]>([]);
   // once, when the lesson has ended (the summary is up); not while it is still being saved
@@ -47,13 +54,18 @@ export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo }: De
     if (loadMade) void loadMade().then((xs) => { if (live) setMade(xs); }, () => {});
     return () => { live = false; };
   }, [ending, before, loadAfter, loadMade]);
-  return <DebriefView m={m} onFinish={onFinish} secure={secure} made={made} madeTo={madeTo} />;
+  return <DebriefView m={m} onFinish={onFinish} secure={secure} made={made} madeTo={madeTo} onReflect={onReflect} onEmote={onEmote} />;
 }
 
-export interface DebriefViewProps { m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string }
+export interface DebriefViewProps {
+  m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string;
+  onReflect?: (lessonId: string, choice: ReflectChoice) => void; onEmote?: (lessonId: string, emote: ChildEmote) => void;
+}
 
 /** Presentational (the dev page renders it with fixtures). */
-export function DebriefView({ m, onFinish, secure, made = [], madeTo }: DebriefViewProps) {
+export function DebriefView({ m, onFinish, secure, made = [], madeTo, onReflect, onEmote }: DebriefViewProps) {
+  const [helped, setHelped] = useState<ReflectChoice | null>(null);
+  const [emoted, setEmoted] = useState<ChildEmote | null>(null);
   const s = m.summary!;
   const young = m.family === "young";
   const [show, setShow] = useState<"ask" | "showing" | "no">("ask");
@@ -163,6 +175,39 @@ export function DebriefView({ m, onFinish, secure, made = [], madeTo }: DebriefV
       )}
 
       {!young && !s.ending && s.nextTopic && <p className="kx-db-next">{kt("next", { topic: s.nextTopic })}</p>}
+
+      {/* r7 "What helped?" (STUDENT-FLOW §8.2): Older, only when this lesson used two or more supports (her explanation is
+          always one; a board and each piece she built are the others); one tap, recorded as a choice */}
+      {!young && !s.ending && m.lessonId && onReflect && (made.length > 0 || m.boardSeen) && (
+        <section className="kx-db-sec" aria-labelledby="kx-db-helped" data-testid="debrief-helped">
+          <h2 id="kx-db-helped" className="kx-label">{kt("helpedQ")}</h2>
+          {helped ? <p className="kx-sub" role="status">{kt("helpedThanks", { T: m.teacher.name })}</p> : (
+            <div className="kx-db-chips">
+              {([...made.map((it) => [`made:${it.id}`, it.title] as const), ...(m.boardSeen ? [["board", kt("helpedBoard")] as const] : []),
+                ["explain", kt("helpedExplain", { T: m.teacher.name })] as const, ["self", kt("helpedSelf")] as const, ["unsure", kt("helpedUnsure")] as const] as const)
+                .map(([c, label]) => (
+                  <button key={c} type="button" className="kx-ghost kx-cut kx-db-chip" onClick={() => { setHelped(c as ReflectChoice); onReflect(m.lessonId!, c as ReflectChoice); }}>{label}</button>
+                ))}
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* r7: a goodbye to her (optional, one per lesson; she may acknowledge it next time, never a guilt hook) */}
+      {!s.ending && m.lessonId && onEmote && (
+        <section className="kx-db-sec" aria-labelledby="kx-db-emote" data-testid="debrief-emote">
+          <h2 id="kx-db-emote" className="kx-label">{kt("emoteQ", { T: m.teacher.name })}</h2>
+          {emoted ? <p className="kx-sub" role="status">{kt("emoteSent", { T: m.teacher.name })}</p> : (
+            <div className="kx-db-chips">
+              {(["wave", "thanks", "fun"] as const).map((e) => (
+                <button key={e} type="button" className="kx-ghost kx-cut kx-db-chip" onClick={() => { setEmoted(e); onEmote(m.lessonId!, e); }}>
+                  <Glyph name={EMOTE_GLYPH[e]} size={20} /> {kt(e === "wave" ? "emoteWave" : e === "thanks" ? "emoteThanks" : "emoteFun")}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {young && !s.ending && cards.length > 0 && show === "ask" && (
         <div className="kx-db-show">
