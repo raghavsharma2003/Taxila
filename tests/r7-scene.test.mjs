@@ -57,7 +57,7 @@ test("numbers on screen are computed: 12 laddoos in 3 plates end 4 to a plate; t
 
 test("seam: 'animation dikhao' on a pilot topic is answered by its scene; a topic with no scene is not", async () => {
   const { studioSeam, _lesson, _setDeps } = seam;
-  _setDeps({ writeEvidence: async () => ({ written: true }), q: async () => [], gateAvailable: () => false });
+  _setDeps({ q: async () => [], gateAvailable: () => false });
   const T = "c4-maths-ch05-t01";
   const kit = kitFromFile(getTopic(T));
   const id = "scene-ask-1";

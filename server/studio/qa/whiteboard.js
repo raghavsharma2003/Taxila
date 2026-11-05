@@ -56,7 +56,8 @@ const canon = (t) => String(t).replace(/^0+(?=\d)/, "");
 export function numbersIn(text) {
   const out = new Set();
   const s = String(text ?? "").toLowerCase();
-  for (const m of s.matchAll(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g)) {
+  // (a comma is a thousands group only before 2-3 digits: "45,000" / "1,00,000"; in "7, 3, 3, 3" it separates a list)
+  for (const m of s.matchAll(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\s*\/\s*\d+)?/g)) {
     const t = m[0].replace(/\s+/g, "");
     if (t.includes("/")) { out.add(canon(t)); const [n, d] = t.split("/"); out.add(canon(n.replace(/,/g, ""))); out.add(canon(d)); }
     else { const plain = t.replace(/,(?=\d{2,3}\b)/g, ""); out.add(canon(plain.replace(/,$/, ""))); }
@@ -180,7 +181,8 @@ const eqTokens = (s) => String(s).replace(/([+\-−×*÷=])/g, " $1 ").trim().sp
  */
 function opNumbers(o, allowed) {
   const nums = [], derived = [], wrong = [];
-  const tokensOf = (t) => String(t).match(/\d[\d,]*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
+  // round 7 (Learning: "7, 3, 3, 3" read as invented "7,"): a comma groups thousands only before 2-3 digits
+  const tokensOf = (t) => String(t).match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
   if (o.op === "text" || o.op === "label") {
     const t = String(o.text);
     for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{3}\b)/g, "")));

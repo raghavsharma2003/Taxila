@@ -54,3 +54,10 @@ test("board-first preselect builds the board a scripted beat names (intent.board
   assert.equal(BF.scriptRefStats().failed, before + 1);
   assert.notEqual(q?.by, "script");
 });
+
+test("W4 reads a list's commas as separators, a thousands comma as part of the number (Learning: '7, 3, 3, 3')", async () => {
+  const { numbersIn } = await import("../server/studio/qa/whiteboard.js");
+  const n = [...numbersIn("7, 3, 3, 3 and 45,000 and 1,00,000")];
+  for (const v of ["7", "3", "45000", "100000"]) assert.ok(n.includes(v), v);
+  assert.ok(!n.some((v) => v.includes(",")));
+});
