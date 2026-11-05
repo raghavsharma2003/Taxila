@@ -8,6 +8,8 @@ import { initLessonState, step, skillWorkedExample, hookKindFor } from "../serve
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const short = (id) => String(id ?? "").split("-").pop();
@@ -21,6 +23,8 @@ function run(seed = 2, n = 30) {
   return moves;
 }
 
+describe("r7-brain-arc (kit path: lesson scripts off)", () => {
+kitPath();
 test("every skill is explained, then shown with a worked example from its own verified item, which is never posed", () => {
   assert.ok(K.skills.length >= 3);
   for (const seed of [1, 2, 3]) {
@@ -74,4 +78,5 @@ test("the hook has kinds: the kit's own problem as a puzzle on alternate lessons
   const hook = m.find((x) => x.kind === "hook");
   assert.match(hook.shape, /the problem in LESSON NOW as a quick puzzle/);
   assert.ok(hook.content.some((l) => l.includes(K.workedExample.problem)), "the puzzle is the kit's worked problem, its own numbers");
+});
 });

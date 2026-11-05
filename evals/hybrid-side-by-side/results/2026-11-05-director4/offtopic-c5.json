@@ -1,0 +1,289 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket pitch jaise samjhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1261
+  },
+  {
+   "who": "teacher",
+   "text": "Badhiya, Riya—cricket pitch ki poori length ko 0 se 1 maano; batter aadhe raste ruk jaaye, toh woh spot ka naam kya hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1420,
+   "replyReadyMs": 2681,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1095
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute wait kar sakta hai. Kis baare mein baat karni hai? Phir fractions par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1277,
+   "replyReadyMs": 2372,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1610
+  },
+  {
+   "who": "teacher",
+   "text": "0 aur 1 ke beech ek hi middle mark hai—do equal gaps bante hain; yeh mark 1/2 dikhata hai. Iski jagah apne words mein batao.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 3464,
+   "replyReadyMs": 5074,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "leak"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1073
+  },
+  {
+   "who": "teacher",
+   "text": "Number line ko 0 se 1 tak barabar hisson mein baanto; neeche ka number batata hai ki kul kitne equal gaps bane. Tum apne words mein kaho.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2971,
+   "replyReadyMs": 4044,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "leak",
+    "script"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "flat"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1429
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par 0 aur 1 ke beech ke marks dekho; 2/5 tak pahunchne ke liye kitne equal steps ginogi, Riya?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1542,
+   "replyReadyMs": 2971,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "game",
+    "game": "nishana/place",
+    "goal": "place"
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1212
+  },
+  {
+   "who": "teacher",
+   "text": "Main number line par paanch equal steps bolkar ginti karti hoon; tum doosre step par 2/5 rakhne ki koshish karo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2814,
+   "replyReadyMs": 4026,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "gameclaim"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "flat"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 925
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, yeh boring lag raha hai—ab choose karo: 2/5 ko cricket scorecard, treasure map, ya jumping game se dikhayen?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1410,
+   "replyReadyMs": 2335,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1275
+  },
+  {
+   "who": "teacher",
+   "text": "Kaunsa choose karogi: cricket scorecard, treasure map, ya jumping game? Tum choice batao, phir usi style mein khelenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1562,
+   "replyReadyMs": 2837,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 943
+  },
+  {
+   "who": "teacher",
+   "text": "Treasure map mein 0 se 1 tak paanch barabar jumps hain; 2/5 matlab starting point se doosri jump. Map par 2/5 kahan hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1529,
+   "replyReadyMs": 2472,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 802
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho—bilkul theek. Choose karo: continue karein, short break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3017,
+   "replyReadyMs": 3819,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

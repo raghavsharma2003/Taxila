@@ -12,6 +12,8 @@ import { getTopic } from "../server/content/curriculum.js";
 import { textReply, replyDeps, asksToCompute } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const NE = cls("no_evidence");
@@ -31,6 +33,8 @@ const replay = (seed) => {
 const R2 = "Pehle 50 plus 30 kijiye, milta hai 80. Ab doosri same jodi bhi 80 hai—total kitna?";
 afterEach(() => { replyDeps.chat = chat; });
 
+describe("r1443-stuck-shown (kit path: lesson scripts off)", () => {
+kitPath();
 test("main's lines: the worked part after two don't-knows is shown, and the move says so (move.stuck)", () => {
   for (const seed of [1, 2, 3]) {
     const r = replay(seed);
@@ -65,4 +69,5 @@ test("an engaged child's worked part still hands the next step back (no quiz gua
   replyDeps.chat = async () => ({ text: R2 });
   const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "haan", verdict: "ungraded", history: [], ui: r.ui, module: null });
   assert.ok(!out.guard.caught.includes("quiz"), JSON.stringify(out.guard));
+});
 });

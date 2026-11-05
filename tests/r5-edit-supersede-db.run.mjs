@@ -1,6 +1,6 @@
 // Run by tests/r5-edit-supersede-db.test.mjs in its OWN process, against the real API in-process and a REAL Neon database
-// — the TEST branch only (CONDUCTOR_TEST_DATABASE_URL; skips otherwise and refuses the production endpoint). No model call:
-// every Azure endpoint is removed from the environment, the lessons run on the voice lane (the client writes her words)
+// — the TEST branch only (CONDUCTOR_TEST_DATABASE_URL; skips otherwise and refuses the production endpoint). It needs the
+// reply model (AZURE_OPENAI_*; skips without it); every other Azure endpoint is removed, the lessons run on the voice lane
 // and every child turn is a number answer to a posed kit item, decided in code (classifyFast: exact / number).
 // Round 5 truth bar (main 2026-10-15, server/brain/supersede.js): an edited re-send of the lesson's latest landed turn
 // supersedes it — one grade, the edit's, on the ORIGINAL item; the original's evidence moved to the archives; the cached
@@ -12,7 +12,9 @@ import http from "http";
 import { existsSync, readFileSync } from "fs";
 import { createHash, randomUUID } from "crypto";
 
-for (const k of Object.keys(process.env)) if (/^AZURE_|ENDPOINT$|_KEY$/.test(k)) delete process.env[k];
+// (Platform, 2026-11-05: the turn path now calls the reply model, so this suite needs it: skipped, naming the env, without it)
+const MODEL = process.env.AZURE_OPENAI_ENDPOINT || "";
+for (const k of Object.keys(process.env)) if (/^AZURE_|ENDPOINT$|_KEY$/.test(k) && !/^AZURE_OPENAI_/.test(k)) delete process.env[k];
 process.env.TAXILA_EDIT_UNDO = "1"; // the switch (off by default until main ships it)
 const envFile = new URL("../.env.local", import.meta.url);
 const fromEnvFile = (name) => (existsSync(envFile) ? (readFileSync(envFile, "utf8").split("\n").find((l) => l.startsWith(name + "=")) || "").slice(name.length + 1).replace(/^"(.*)"$/, "$1") : "");
@@ -20,7 +22,7 @@ const hostOf = (u) => { try { return new URL(u).hostname.replace(/-pooler\./, ".
 const TEST = process.env.CONDUCTOR_TEST_DATABASE_URL || fromEnvFile("CONDUCTOR_TEST_DATABASE_URL");
 const PROD = process.env.DATABASE_URL || fromEnvFile("DATABASE_URL");
 const TEST_ENV = (process.env.TAXILA_DB || fromEnvFile("TAXILA_DB")) === "test";
-const SKIP = !TEST ? "CONDUCTOR_TEST_DATABASE_URL not set" : !TEST_ENV && PROD && hostOf(TEST) === hostOf(PROD) ? "CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing" : false;
+const SKIP = !TEST ? "CONDUCTOR_TEST_DATABASE_URL not set" : !MODEL ? "AZURE_OPENAI_ENDPOINT not set (the turn path calls the reply model)" : !TEST_ENV && PROD && hostOf(TEST) === hostOf(PROD) ? "CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing" : false;
 const RUN = randomUUID().slice(0, 8);
 const TOPIC = "c3-maths-ch08-t01";
 

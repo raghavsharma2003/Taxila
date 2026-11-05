@@ -12,6 +12,8 @@ import { initLessonState, step } from "../server/director/state.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 afterEach(() => { replyDeps.chat = chat; replyDeps.chatStream = chatStream; delete process.env.TAXILA_R7_CLAUSE_STREAM; });
 
@@ -28,6 +30,8 @@ function fakeRes() {
 }
 const SSE = { headers: { accept: "text/event-stream" } };
 
+describe("r7-brain-clauses (kit path: lesson scripts off)", () => {
+kitPath();
 test("only a client that asks for the stream gets it", () => {
   assert.equal(wantsClauses(SSE), true);
   assert.equal(wantsClauses({ headers: { accept: "application/json" } }), false);
@@ -143,4 +147,5 @@ test("kill switch TAXILA_R7_CLAUSE_STREAM=off: the one-call path, nothing sent e
   const out = await textReply({ instructions: "x", state: { ...r.state, mode: "voice" }, kit: K, childText: "haan", verdict: "ungraded", history: [], ui: r.ui, module: null, onClause: (c) => got.push(c) });
   assert.equal(got.length, 0);
   assert.equal(out.guard.clause, undefined);
+});
 });

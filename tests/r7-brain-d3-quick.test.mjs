@@ -8,9 +8,12 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
 const FLAGS = ["TAXILA_R7_ONE_LIVE", "TAXILA_R7_PARK_TOPIC", "TAXILA_R7_FRUSTRATION", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_WORKED_CODE"];
 const KEEP = {};
+describe("r7-brain-d3-quick (kit path: lesson scripts off)", () => {
+kitPath();
 describe("director3 quick fixes", () => {
   beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } });
   afterEach(() => { replyDeps.chat = chat; for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
@@ -53,4 +56,5 @@ describe("director3 quick fixes", () => {
     const out = await textReply({ instructions: "x", state: { ...n.state, mode: "text" }, kit: K, childText: "haan", verdict: "ungraded", history: [{ who: "teacher", text: "Riya, aaj perimeter dekhenge." }], ui: n.ui, module: null });
     assert.doesNotMatch(out.reply, /^Riya/, out.reply);
   });
+});
 });

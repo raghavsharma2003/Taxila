@@ -11,11 +11,13 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
 const DIR = new URL("../evals/hybrid-side-by-side/results/2026-11-04-director2/", import.meta.url);
 const R7_FLAGS = ["TAXILA_R7_PARK_TOPIC", "TAXILA_R7_BYE_CHECKIN", "TAXILA_R7_FRUSTRATION"];
 const KEEP = {};
 describe("S1: no flagged line ships (director2 replayed through the guards)", () => {
+  kitPath(); // (director2 was recorded on the kit path: lesson scripts off)
   beforeEach(() => { for (const k of R7_FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } });
   afterEach(() => { replyDeps.chat = chat; for (const k of R7_FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
 

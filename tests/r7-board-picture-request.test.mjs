@@ -14,6 +14,8 @@ import { certifyForTray } from "../server/forge3/tray-gate.js";
 import { withheldValues } from "../server/studio/qa/whiteboard.js";
 import { codePick } from "../server/forge/explainer/pick.js";
 import { settledScript } from "../shared/whiteboard.js";
+import { kitPath } from "./fixtures/kit-path.mjs";
+import { describe } from "node:test";
 
 function askPicture(topicId, subject, tag) {
   const kit = kitFromFile(getTopic(topicId));
@@ -25,6 +27,8 @@ function askPicture(topicId, subject, tag) {
   return { kit, ask };
 }
 
+describe("r7-board-picture-request (kit path: lesson scripts off)", () => {
+kitPath();
 for (const subject of [null, "rectangle", "perimeter"]) {
   test(`c6 perimeter, a picture asked${subject ? ` for the ${subject}` : ""}: the park to scale, named, its sides written, walked round`, () => {
     const { kit, ask } = askPicture("c6-maths-ch06-t01", subject, subject ?? "plain");
@@ -51,4 +55,5 @@ test("a sign inside brackets after × is a rule's step, and 1-9 is a range: neit
   assert.equal(codePick({ kit: k, text: "Perimeter = 2 × (50 + 30) = 2 × 80 = 160 m" })?.template === "column-op@1", false);
   assert.equal(codePick({ kit: k, text: "Fill a 1-9 magic square, starting from the centre." })?.template === "combine-count@1", false);
   assert.deepEqual(codePick({ kit: k, text: "9 − 4 = ?" }), { template: "combine-count@1", a: 9, b: 4, op: "take_away" });
+});
 });

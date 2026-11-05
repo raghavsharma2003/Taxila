@@ -1,0 +1,326 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher hoon. Aaj rectangles, squares aur polygons ka perimeter, cricket ground ki boundary jaisa, dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 920
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai—badhiya! Socho boundary ke ek kone se chalkar poora ground ghoomkar wahi lautna: total distance ko kya kahenge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1375,
+   "replyReadyMs": 2295,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 924
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai, kuch words mein batao; phir perimeter par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1172,
+   "replyReadyMs": 2096,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1009
+  },
+  {
+   "who": "teacher",
+   "text": "Triangle ki boundary par 3 sides hain: 4 cm, 5 cm, 6 cm. Perimeter matlab in sab sides ki total length. Apne words mein bolo: perimeter kya hota hai?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2851,
+   "replyReadyMs": 3860,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 5 cm | ? cm",
+     "numbers": "6 5"
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1000
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Perimeter matlab shape ki poori boundary ki lambai—har side jodte hain. Rectangle ki boundary mein kaunsi sides chalogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1382,
+   "replyReadyMs": 2382,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "names": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "A"
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "names": [
+       "A",
+       "B",
+       "C",
+       "D",
+       "E",
+       "F"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1108
+  },
+  {
+   "who": "teacher",
+   "text": "Screen ke geoboard par shape trace karo, har side count karo; triangle mein kitni sides dikh rahi hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3068,
+   "replyReadyMs": 4176,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "game",
+    "game": "nazariya/floor",
+    "goal": "perimeter"
+   },
+   "guard": [
+    "level",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1186
+  },
+  {
+   "who": "teacher",
+   "text": "Triangle mein 3 sides hoti hain. Ab game mein kisi ek side ke points count karke uski length batao.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2532,
+   "replyReadyMs": 3718,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1028
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, boring lag raha hai—chalo tareeka badalte hain: boundary-walk story, cricket boundary, ya number game. Kis se shuru karein?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2710,
+   "replyReadyMs": 3738,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1211
+  },
+  {
+   "who": "teacher",
+   "text": "In teen options mein kaunsa chuno: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1286,
+   "replyReadyMs": 2497,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1053
+  },
+  {
+   "who": "teacher",
+   "text": "Ek din Riya rectangle ground ke chaaron taraf chali—50 metre aur 30 metre sides. Us poori boundary ki lambai ko kya kahenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1901,
+   "replyReadyMs": 2954,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 967
+  },
+  {
+   "who": "teacher",
+   "text": "Tum rukna chahti ho—main sun rahi hoon. Choose karo: lesson jaari rakhein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2608,
+   "replyReadyMs": 3575,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  }
+ ],
+ "agent": []
+}
