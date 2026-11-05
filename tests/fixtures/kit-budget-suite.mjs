@@ -1,3 +1,4 @@
+// Shared body of tests/kit-budget-c*.test.mjs (split by class band so shards run them in parallel; main 2026-11-05).
 // The prompt budget gate over REAL content: every queued item and diagnostic of every data/kits file,
 // compiled on both lanes × every language × both age bands, must fit — truncation is silent and eats the
 // end of the prompt, so the budget fails the build, never a child's lesson (inherited law). Kits are being
@@ -5,20 +6,22 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "fs";
-import { normalizeKit, RUNG_DEFAULTS } from "../server/content/kits.js";
-import { compileWithReport, BudgetError } from "../server/compiler/compile.js";
-import { CHARACTERS, sheetFor } from "../server/compiler/characters/index.js";
-import { initLessonState, branchesFor } from "../server/director/state.js";
-import { buildPracticeQueue, findItem, promptFor, revealsAnswer } from "../server/director/items.js";
-import * as SH from "../server/director/shapes.js";
+import { normalizeKit, RUNG_DEFAULTS } from "../../server/content/kits.js";
+import { compileWithReport, BudgetError } from "../../server/compiler/compile.js";
+import { CHARACTERS, sheetFor } from "../../server/compiler/characters/index.js";
+import { initLessonState, branchesFor } from "../../server/director/state.js";
+import { buildPracticeQueue, findItem, promptFor, revealsAnswer } from "../../server/director/items.js";
+import * as SH from "../../server/director/shapes.js";
 
-const DIR = new URL("../data/kits/", import.meta.url);
+const DIR = new URL("../../data/kits/", import.meta.url);
+/** One test file per class (tests/kit-budget-c<N>.test.mjs), so shards run them in parallel; kit-budget-lint covers all. */
+export const CLASSES = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 const LANGS = ["hinglish", "hindi", "english"];
 
-/** Every usable topic in every kit file that parses right now. */
-function kits() {
+/** Every usable topic in every kit file (of class `cls`, when given) that parses right now. */
+export function kits(cls = null) {
   const out = [];
-  for (const f of readdirSync(DIR).filter((n) => /^c\d+-[a-z]+\.json$/.test(n)).sort()) {
+  for (const f of readdirSync(DIR).filter((n) => /^c\d+-[a-z]+\.json$/.test(n) && (cls == null || n.startsWith(`c${cls}-`))).sort()) {
     let d;
     try { d = JSON.parse(readFileSync(new URL(f, DIR), "utf8")); } catch { continue; }
     for (const t of d.topics ?? []) {
@@ -28,7 +31,6 @@ function kits() {
   }
   return out;
 }
-const KITS = kits();
 
 /** A brief at its full size, so the total budget is tested where it is tightest. */
 const brief = (ageBand, languagePref) => ({
@@ -55,16 +57,29 @@ function stateOn(kit, item, { lang, ageBand, hintLevel, moveVoiced, correction }
   return s;
 }
 
-test("kit files normalize, and the load-time gates drop or replace almost nothing", () => {
-  assert.ok(KITS.length > 0, "at least one kit topic loads");
-  const items = KITS.reduce((n, k) => n + k.kit.items.length + k.kit.lint.itemsDropped, 0);
-  const dropped = KITS.reduce((n, k) => n + k.kit.lint.itemsDropped + k.kit.lint.diagnosticsDropped, 0);
-  const hints = KITS.reduce((n, k) => n + k.kit.lint.hintsReplaced, 0);
-  console.log(`# kits: ${KITS.length} topics, ${items} items; dropped for the prompt budget: ${dropped}; leaking or over-long hints replaced: ${hints}`);
-  assert.ok(dropped <= items * 0.01, `more than 1% of items dropped for the budget (${dropped}/${items}): shorten them in the kit`);
-});
+/** The load-time lint gate over ALL kits (the 1% bound is over every kit, as before the split) and class coverage. */
+export function kitLintSuite() {
+  const ALL = kits();
+  test("every kit file is a class the per-class files cover", () => {
+    assert.deepEqual(ALL.filter((k) => !CLASSES.includes(k.classLevel) || !k.file.startsWith(`c${k.classLevel}-`)).map((k) => k.file), []);
+  });
+  test("kit files normalize, and the load-time gates drop or replace almost nothing", () => {
+    assert.ok(ALL.length > 0, "at least one kit topic loads");
+    const items = ALL.reduce((n, k) => n + k.kit.items.length + k.kit.lint.itemsDropped, 0);
+    const dropped = ALL.reduce((n, k) => n + k.kit.lint.itemsDropped + k.kit.lint.diagnosticsDropped, 0);
+    const hints = ALL.reduce((n, k) => n + k.kit.lint.hintsReplaced, 0);
+    console.log(`# kits: ${ALL.length} topics, ${items} items; dropped for the prompt budget: ${dropped}; leaking or over-long hints replaced: ${hints}`);
+    assert.ok(dropped <= items * 0.01, `more than 1% of items dropped for the budget (${dropped}/${items}): shorten them in the kit`);
+  });
+}
 
-test("no rung 1-3 hint states the key, and no item's own prompt counts as a leak", () => {
+/** The leak and compile gates over one class's kits. */
+export function kitBudgetSuite(cls) {
+const band = `c${cls}`;
+const KITS = kits(cls);
+test(`${band}: at least one kit topic loads`, () => assert.ok(KITS.length > 0));
+
+test(`${band}: no rung 1-3 hint states the key, and no item's own prompt counts as a leak`, () => {
   for (const { kit } of KITS) {
     for (const item of kit.items) {
       for (const rung of [0, 1, 2]) {
@@ -76,7 +91,7 @@ test("no rung 1-3 hint states the key, and no item's own prompt counts as a leak
   }
 });
 
-test("every queued item and diagnostic compiles on both lanes, every language and age band", () => {
+test(`${band}: every queued item and diagnostic compiles on both lanes, every language and age band`, () => {
   let n = 0;
   for (const { kit, classLevel, subject } of KITS) {
     const topic = { title: kit.topicId, classLevel, subject };
@@ -115,3 +130,4 @@ test("every queued item and diagnostic compiles on both lanes, every language an
   }
   console.log(`# compiled ${n} lesson states without a BudgetError`);
 });
+}

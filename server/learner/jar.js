@@ -65,6 +65,25 @@ export async function openJar(childId, { limit = 10, q = dbq } = {}) {
   } catch { return []; }
 }
 
+/**
+ * The Notebook's "Questions in the jar" page (App app-notebook-log, STUDENT-FLOW §7): the waiting items oldest first, then
+ * up to `answered` answered ones newest first. No counts. Defensive: no table or a read error → [].
+ * @returns {Promise<{ id: string, topic: string, subject: string|null, share: boolean, at: string, state: 'waiting'|'answered', answeredAt: string|null }[]>}
+ */
+export async function jarNotebook(childId, { waiting = 30, answered = 10, q = dbq } = {}) {
+  try {
+    const [w, a] = await Promise.all([
+      q(`select id, topic, share, subject, created_at, answered_at from question_jar where child_id = $1 and answered_at is null
+          order by created_at, later_id limit $2`, [childId, waiting]),
+      q(`select id, topic, share, subject, created_at, answered_at from question_jar where child_id = $1 and answered_at is not null
+          order by answered_at desc, id limit $2`, [childId, answered]),
+    ]);
+    const out = (r, state) => ({ id: String(r.id), topic: r.topic, subject: r.subject ?? null, share: !!r.share, at: new Date(r.created_at).toISOString(),
+      state, answeredAt: r.answered_at ? new Date(r.answered_at).toISOString() : null });
+    return [...w.map((r) => out(r, "waiting")), ...a.map((r) => out(r, "answered"))];
+  } catch { return []; }
+}
+
 /** PURE. The next lesson's hook: the oldest learning questions first (a share only when no question waits), at most JAR_HOOK_MAX. */
 export function jarHook(items, { subject = null } = {}) {
   const pick = (xs) => [...xs].sort((a, b) => Number(b.learning) - Number(a.learning)
