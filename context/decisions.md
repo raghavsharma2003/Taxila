@@ -7636,3 +7636,69 @@ reversal: a scene authored with no values and no answer words turns out to be ne
 Each pilot scene is a Stagecraft animation archetype scene:<id> (noSpec: never a generated spec; boost: ranked ahead of the topic's Studio v2 animation), built by the instant rung, certified with the scene rule, slotted as a 'scene' artifact. Script-beat scenes (ExplainBeat.scene { topic }, Brain patch 011) wait for the director4 judgement. (2026-11-05; from inbox/r7-studio-23.json)
 
 reversal: director4 or the owner find scenes crowd out the live board on explanation beats (then drop boost, keep scenes for asks only)
+
+
+<!-- merged from inbox/r7-main-12.json -->
+## `dc-r7-script-walk-v3`
+
+(a partial authored voice, plus non-destructive guards)
+
+**Authored voice where the model failed every time** (Brain, rendering):
+- **V1.** The remediation `say`, the worked example and the answer reveal on giving up are **spoken by code from the authored Hinglish fields**, near-verbatim.
+  - The model may add one short lead-in that frames the verdict, and nothing after.
+  - The worked example is spoken across turns: first the problem, then each step as do → result → why, then the child's step as the card.
+  - Never one glued block, and never replaced by its last card.
+- **V2.** Explain beats stay **model-paraphrased**, with the authored `point` as must-say.
+  - If the model's line lacks it, or a guard has to drop a clause, code speaks the authored `point` verbatim. It never leaves the card alone.
+
+**Non-destructive guards** (Brain):
+- **G1.** In script mode no guard may delete teaching without putting the authored line in its place.
+- **G2.** The kit fallback (say.js `contentFallback` and the `renderWorked` path) is **off** in script mode.
+- **G3.** The leak guard exempts the beat's own authored `point`. The format also forbids questions whose answer the `point` states (see S below).
+
+**Grading and verdicts** (Brain):
+- **K1.** Grade only an answer to the keyed question asked in the immediately previous turn.
+  - Probes such as "kaise jaana?" and teach-backs are unkeyed and never graded against another key.
+  - A key closes once affirmed.
+  - Code's "not right" lead goes only on a graded wrong answer.
+  - No verdict ever contradicts the previous turn's verdict.
+- **K2.** For a keyed card:
+  - an answer not in `accept` is graded wrong;
+  - the script's listed wrong answer is graded as its misconception;
+  - the verdict is said before the board changes;
+  - giving up says the answer;
+  - "gave" fires only after misses.
+
+**Screen** (Studio, then Brain):
+- **SC1.** `artifact.screen` carries **counted facts**: gaps, ticks or marks with their labels, shaded and total parts, and sides with their values. The R4 check uses them.
+  - No false flag on "2 marks" when the board draws 2 ticks.
+  - No deleting correct lines.
+- **SC2.** A remediation board goes up only on the turn its `say` is spoken. A picture request re-shows the current card's board.
+
+**Script format v2.1** (Learning data; Brain validator; check.mjs):
+- No character in a card or line carries the child's name or "Asha". Card characters use a `{friend}` slot that runtime fills with a name different from the child's.
+- No "?" glyph inside a spoken sentence.
+- A beat's keyed question is not answered by any number its `point` states, so it is a transfer, not an echo.
+- Worked examples have at most 3 steps for classes 4–5, and the child's step follows from the steps said.
+- Follow-up and then-cards carry boards.
+
+**Harness H1.1** (Learning child; Brain wiring):
+- The child answers probes with a reason, not a bare repeat.
+- Verb gender follows the persona's name.
+- Steady runs 40 turns, so skills 2–3 are reached.
+- The gate counts become exact rather than proxies. "Delivered" = the authored `point` spoken (code-checked against V2's fallback). "Verdict" = the graded state plus the code verdict sentence. "Contradictions" = the SC1 counted facts.
+- A new count: right answers called wrong.
+
+**Next run: director6.** The same 16 lessons, with H1.1. The cap is sized from a dry-run call count: about 1,300 calls / $0.85.
+
+**The scale gate is unchanged, plus one line.**
+- At least 80% of beats taught.
+- At least 90% of keyed answers given a verdict.
+- 0 contradictions.
+- **0 right answers called wrong.**
+- Every judge axis at 3.5 or above.
+- The judges count by hand, as here.
+
+**Reverse if:** director6 meets K1, G1–G3 and SC1 and still delivers fewer than 80% of explain beats. Then explain beats also become near-verbatim authored speech, which is the full authored voice. The model would keep only verdict framing and diversions.
+
+Rationale and the judges’ split on the reversal: see the section "On reversing" in docs/design/round7/judgements/director5-2026-11-05.md.

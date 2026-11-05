@@ -25225,6 +25225,20 @@
    "title": "Each pilot scene is a Stagecraft animation archetype scene:<id> (noSpec: never a generated spec; boost: ranked ahead of the topic's Studio v2 animation), built by the instant rung, certified with the scene rule, slotted as a 'scene' artifact. Script-beat scenes (ExplainBeat.scene { topic }, Brain patch 011) wait for the director4 judgement.",
    "reversal": "director4 or the owner find scenes crowd out the live board on explanation beats (then drop boost, keep scenes for asks only)",
    "source": "inbox/r7-studio-23.json"
+  },
+  {
+   "id": "jd-r7-director5-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director5 (v2 scripts, R1–R5, reactive child; 16 lessons, 1,056 calls, ~$0.65) judged by 4 Claude judges counting by hand: beats taught 32/82 (39%), verdicts on keyed answers 134/178 (75%), ≥14 right answers called wrong, 25 contradictions; every axis ≤3. Scale gate failed on every line; code proxies wrong both ways (delivered 58% vs 39%; contradictions 0 vs 10 in c6).",
+   "source": "inbox/r7-main-12.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v3",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Partial authored voice plus non-destructive guards: code speaks remediation say, the worked example (across turns: problem, do/result/why, child step) and the give-up answer near-verbatim from authored Hinglish; explain beats stay model-paraphrased with the authored point as must-say and a verbatim fallback; in script mode no guard deletes teaching without the authored line, the kit fallback is off; grade only the keyed question asked last turn (probes never graded), verdict before board change; screen facts carry counted ticks/gaps/shading/sides; script v2.1 data rules; harness H1.1 and exact gate counts; director6 gates the scale-out with an added 0-right-called-wrong line.",
+   "source": "inbox/r7-main-12.json"
   }
  ],
  "edges": [
@@ -39487,6 +39501,16 @@
    "src": "dc-r7-stagecraft-scene-rung",
    "rel": "constrains",
    "dst": "dc-r7-stagecraft-fed-never-stale"
+  },
+  {
+   "src": "dc-r7-script-walk-v3",
+   "rel": "measured_by",
+   "dst": "jd-r7-director5-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v3",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v2"
   }
  ]
 }
