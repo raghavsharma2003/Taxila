@@ -18,7 +18,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
-export const SCRIPTS = join(ROOT, "data/lesson-scripts");
+// LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
+export const SCRIPTS = join(ROOT, process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts");
 
 export const kitTopic = (topicId) => {
   const f = join(ROOT, "data/kits", `${topicId.split("-").slice(0, 2).join("-")}.json`);
@@ -33,7 +34,11 @@ export const RANGE = {
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
   "equal-groups@1": (p) => p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8,
   "compare@1": (p) => p.left?.items?.length >= 1 && p.right?.items?.length >= 1,
-  "measured@1": (p) => ["m", "cm"].includes(p.unit) && ["rect", "square", "triangle", "circle"].includes(p.shape),
+  // Studio 3dc6208a: measured@1 also draws polygons (sides 3-8, all labelled; names one per corner, ≤ 3 chars)
+  "measured@1": (p) => ["m", "cm"].includes(p.unit) && (["rect", "square", "triangle", "circle"].includes(p.shape)
+    || (["pentagon", "hexagon", "octagon", "quadrilateral", "polygon"].includes(p.shape) && Array.isArray(p.sides)
+      && p.sides.length === ({ pentagon: 5, hexagon: 6, octagon: 8, quadrilateral: 4 }[p.shape] ?? p.sides.length) && p.sides.length >= 3 && p.sides.length <= 8
+      && p.sides.every((v) => Number(v) > 0) && (!p.names || (p.names.length === p.sides.length && p.names.every((x) => [...String(x)].length <= 3))))),
   "shape@1": (p) => typeof p.shape === "string",
   "number-line-hop@1": (p) => Number.isInteger(p.start) && Array.isArray(p.hops),
   // marks label points and hop draws the solved jumps; a CHECK uses mark k or target [a, den], never both
@@ -67,6 +72,8 @@ export function beatsOf(skill, version = 1) {
         withhold: { values: [we.yourStep?.key, ...(we.yourStep?.accept ?? [])].filter(Boolean) }, check: false },
       ...skill.checks.map((c) => ({ id: c.id, board: c.board, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true })),
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
+      // v2.1 (director5, dc-r7-script-walk-v3): the follow-up card after a remediation carries its own board, gated as a check
+      ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}.then`, board: r.then?.board, line: said(r.then?.prompt), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: true })),
     ].filter((b) => b.board);
   }
   return [
@@ -139,6 +146,45 @@ const keyedErrors = (a, at, mis) => {
 };
 
 /** S (v2, dc-r7-script-walk-v2): F1 Hinglish Said fields, F2 keyed explain beats, F3 worked yourStep, F4 slots that fit. */
+/**
+ * v2.1 (director5 judgement, dc-r7-script-walk-v3): Brain's validateSkillScriptV2 rules for version ≥ 2.1, mirrored with
+ * its error texts (Brain 2026-11-05): no "Asha"/"Riya" in a spoken field (a card character is the {friend} slot); no gap
+ * "?" read aloud; an explain ask's key is not a number its point says; ≤ 3 worked steps (yourStep counted) for class ≤ 5;
+ * every remediation has a board or a then.board.
+ */
+const SKIP = new Set(["board", "convey", "move", "targets", "key", "accept", "wrongIfMis", "itemId", "id"]);
+const NAME_RE = /(?<![\p{L}])(?:Asha|Riya)(?![\p{L}])/u;
+const GAP_RE = [/(?:^|\s|[=:(])\?(?=\s|$|[.,)])/, /\?\s*(?:cm|m|km|kg|g)\b/];
+const firstNum = (k) => (String(k ?? "").match(/\d+(?:\/\d+|\.\d+)?/) ?? [null])[0];
+export function v21Errors(s) {
+  const e = [];
+  const walk = (x, path) => {
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!x || typeof x !== "object") return;
+    if (typeof x.hi === "string" && typeof x.en === "string") {
+      for (const f of ["hi", "en"]) {
+        if (NAME_RE.test(x[f])) e.push(`${path}.${f}: names "Asha"/"Riya"; a card character is the {friend} slot`);
+        if (GAP_RE.some((re) => re.test(x[f]))) e.push(`${path}.${f}: a "?" inside the sentence would be read aloud; write the gap in words`);
+      }
+      return;
+    }
+    for (const [k, v] of Object.entries(x)) if (!SKIP.has(k)) walk(v, path ? `${path}.${k}` : k);
+  };
+  for (const k of s.skills) {
+    walk(k, k.skillId);
+    k.explain.forEach((b, i) => {
+      const n = firstNum(b.ask?.key);
+      const esc = n?.replace(/[./]/g, (c) => `\\${c}`);
+      if (n && [b.point?.hi, b.point?.en].some((t) => new RegExp(`(?<![\\d/.])${esc}(?![\\d/.])`).test(String(t ?? ""))))
+        e.push(`${k.skillId}/explain[${i}].ask: its key ${n} is said in the beat's point (an echo, not a transfer)`);
+    });
+    const steps = (k.workedExample?.steps?.length ?? 0) + 1;
+    if ((s.classLevel ?? 9) <= 5 && steps > 3) e.push(`${k.skillId}/workedExample: ${steps} steps; at most 3 for class ${s.classLevel}`);
+    k.remediation.forEach((r, i) => { if (!r.board && !r.then?.board) e.push(`${k.skillId}/remediation[${i}]: its follow-up card needs a board (board or then.board)`); });
+  }
+  return e;
+}
+
 export function structureErrorsV2(s, kit) {
   const e = [];
   if (!kit) return [`no kit topic ${s.topicId}`];
@@ -200,6 +246,7 @@ export function structureErrorsV2(s, kit) {
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
   const checked = new Set(s.skills.flatMap((k) => [...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)]).filter(Boolean));
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
+  if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   return e;
 }
 
