@@ -36,6 +36,7 @@ import { instructionsFor, instructionsAfter } from "../compiler/instructions.js"
 import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
 import { styleForChild } from "../routes/voice.js";
 import { onTurnCommit } from "../conductor/hooks.js";
+import { emitJarEvents, jarServed } from "../learner/jar.js";
 import { awaitSettled } from "../comprehension/session.js";
 import { seamSafe as guardSeam } from "../seam-safe.js";
 import { duplexRegistry } from "../duplex/registry.js";
@@ -1400,6 +1401,7 @@ export async function lessonTurn(req, body, hooks = {}) {
           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
           ...[...seamErrors].map((c) => `component_error.${c}`)];
   let seqs = [];
+  const jarKept = jarServed(prev.later, next.later, child.id, lesson.id);
   try {
     ({ seqs } = await runTurnTx(child, [
       guardStmt(`${guardSql}${notSuperseded} returning id`, [lesson.id, next, undo ? undo.turn : prev.turn, ...(notSuperseded ? [turnSeq] : [])]),
@@ -1424,6 +1426,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
       ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
         formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
+      // Learning patch 004b: a jar question served at a later boundary this turn is kept
+      ...jarKept.stmts,
       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
       ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
     ]));
@@ -1446,6 +1450,7 @@ export async function lessonTurn(req, body, hooks = {}) {
     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
   }
   mark("stored");
+  emitJarEvents(child.id, jarKept.events);
   // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. AFTER the commit and never awaited
   // by the reply on a hosted server (speed is never traded away); only when this spoken turn's voice read is shadow AND
   // would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its staged writes are

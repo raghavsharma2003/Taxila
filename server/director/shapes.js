@@ -25,6 +25,10 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
 );
 
+/** Learning patch 004b: the lesson OPENS on a question (or share) kept in the jar last time: a promise kept, then today's lesson. */
+export const returnJar = ({ topic, share = false }) => (share
+  ? `first: come back to what they told you last time (${clean(topic) || "it"}) in one warm line, no question about it; then today's lesson`
+  : `first: come back to what they asked last time (${clean(topic) || "their question"}): at most two sentences, or one guided question; then today's lesson`);
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 

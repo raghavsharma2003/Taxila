@@ -762,7 +762,11 @@ function warmup(s, input, item) {
     // F4 (dc-r7-script-walk-v2): with a v2 script, the greet promises only an interest its hook's slots use
     const sk0 = scriptOn() ? skillScriptOf(input.kit, input.kit.skills[0]?.id) : null;
     const slotInterest = sk0?.explain?.[0]?.ask ? hookSlot(sk0, s.ctx.interests)?.interest ?? null : undefined;
-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: slotInterest !== undefined ? slotInterest ?? undefined : interestFor(input.kit, s.ctx.interests, 0) }), first ? { item: first, probe: "P10" } : {});
+    // Learning patch 004b: a question kept in the jar last time is the first thing she comes back to (a promise kept)
+    const jar = (s.later ?? []).find((p) => p.jarId && p.servedAt == null);
+    if (jar) s.later = serveLater(s.later, jar.id, s.turn);
+    const greet = SH.greet({ ...s.ctx, warmup: !!first, interest: slotInterest !== undefined ? slotInterest ?? undefined : interestFor(input.kit, s.ctx.interests, 0) });
+    return plan("greet", jar ? join(greet, SH.returnJar({ topic: jar.topic, share: !!jar.share })) : greet, first ? { item: first, probe: "P10" } : {});
   }
   if (!item) { s.phase = "teach"; return teach(s, input); }
   const v = verdict(input.cls);
