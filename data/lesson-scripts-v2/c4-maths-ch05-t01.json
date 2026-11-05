@@ -1,7 +1,7 @@
 {
  "topicId": "c4-maths-ch05-t01",
  "classLevel": 4,
- "version": 2,
+ "version": 2.1,
  "status": "draft",
  "terms": [
   {
@@ -95,15 +95,16 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Ab socho, tumne roti ke dono tukde le liye. Tab fraction mein upar wala number kya hoga?",
-       "en": "Now think: you took both pieces of the roti. Then what will the top number of the fraction be?"
+       "hi": "Ab ek cake socho jiske 4 barabar tukde hain. 1 tukda bacha, baaki saare tumne kha liye. Khaye hue hisse ke fraction mein upar wala number kya hoga?",
+       "en": "Now think of a cake with 4 equal pieces. 1 piece is left, and you ate all the rest. For the fraction you ate, what will the top number be?"
       },
-      "key": "2",
+      "key": "3",
       "accept": [
-       "do",
-       "two",
-       "2 tukde",
-       "2/2"
+       "teen",
+       "three",
+       "3 tukde",
+       "teen tukde",
+       "3/4"
       ]
      }
     },
@@ -189,15 +190,17 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Ek roti ka ek tukda 1/3 hai, aur saare tukde barabar hain. Toh poori roti mein kitne tukde hain?",
-       "en": "One piece of a roti is 1/3, and all the pieces are equal. So how many pieces are in the whole roti?"
+       "hi": "Ek cake ka ek tukda 1/6 hai, aur saare tukde barabar hain. Toh poore cake mein kitne tukde hain?",
+       "en": "One piece of a cake is 1/6, and all the pieces are equal. So how many pieces are in the whole cake?"
       },
-      "key": "3",
+      "key": "6",
       "accept": [
-       "teen",
-       "three",
-       "3 tukde",
-       "teen tukde"
+       "chhe",
+       "chheh",
+       "chha",
+       "six",
+       "6 tukde",
+       "chhe tukde"
       ]
      }
     },
@@ -228,16 +231,16 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Ek pizza ke 4 barabar slice the. Riya ne 1 slice khaya, aur 3 slice bache. Riya kehti hai ki usne pizza ka 1/3 khaya, kyunki 3 slice bache. Kya Riya sahi hai?",
-       "en": "A pizza had 4 equal slices. Riya ate 1 slice, and 3 slices were left. Riya says she ate 1/3 of the pizza, because 3 slices were left. Is Riya right?"
+       "hi": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. {friend} ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+       "en": "A pizza had 4 equal slices. 1 slice was eaten, and 3 slices were left. {friend} says 1/3 of the pizza was eaten, because 3 slices were left. Is that right?"
       },
       "key": "No",
       "accept": [
        "nahi",
        "nahin",
        "no",
-       "nahi, 1/4 khaya",
-       "no, she ate 1/4"
+       "nahi, 1/4 khaya gaya",
+       "no, 1/4 was eaten"
       ],
       "targets": "c4-maths-ch05-t01-m-part-part",
       "wrongIfMis": "Yes"
@@ -270,24 +273,13 @@
     "steps": [
      {
       "do": {
-       "hi": "Pehle dekho ki tukde barabar hain ya nahi.",
-       "en": "First check whether the pieces are equal."
-      },
-      "result": "haan, 3 barabar tukde, har tukda 1/3",
-      "why": {
-       "hi": "Fraction sirf barabar tukdon ka hota hai.",
-       "en": "A fraction is only made of equal pieces."
-      }
-     },
-     {
-      "do": {
-       "hi": "Neeche wala number likho: poori roti ke barabar tukde.",
-       "en": "Write the bottom number: the equal pieces of the whole roti."
+       "hi": "Tukde barabar hain, toh neeche wala number likho: poori roti ke tukde.",
+       "en": "The pieces are equal, so write the bottom number: all the pieces of the roti."
       },
       "result": "3",
       "why": {
-       "hi": "Neeche wala number poori roti ke saare tukde batata hai, bacha hua tukda nahi.",
-       "en": "The bottom number tells all the pieces of the whole roti, not the piece left over."
+       "hi": "Fraction sirf barabar tukdon ka hota hai. Neeche wala number poori roti ke saare tukde batata hai.",
+       "en": "A fraction is only made of equal pieces. The bottom number tells all the pieces of the whole roti."
       }
      },
      {
@@ -372,8 +364,8 @@
     {
      "id": "c3",
      "prompt": {
-      "hi": "Ek cake ke 4 tukde kiye: 2 bade aur 2 chhote. Riya ne 1 chhota tukda liya. Kya Riya ne cake ka ek-chauthaai liya?",
-      "en": "A cake is cut into 4 pieces: 2 big and 2 small. Riya takes 1 small piece. Did Riya take one quarter of the cake?"
+      "hi": "Ek cake ke 4 tukde kiye: 2 bade aur 2 chhote. {friend} ne 1 chhota tukda liya. Kya yeh chhota tukda cake ka ek-chauthaai hai?",
+      "en": "A cake is cut into 4 pieces: 2 big and 2 small. {friend} takes 1 small piece. Is that small piece one quarter of the cake?"
      },
      "key": "No",
      "accept": [
@@ -414,8 +406,8 @@
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "move": "fair-sharing story: 3 friends, one watermelon cut as 1 big slice + 2 small → fair? no; then paper strip folded into 3 same-size parts beside it → only same-size parts carry the name third",
      "say": {
-      "hi": "Socho, 3 dost aur ek tarbooz. Tarbooz ka 1 bada slice aur 2 chhote slice kate. Yeh barabar nahi hai, isliye koi slice 1/3 nahi. Ab kaagaz ki patti ko 3 barabar hisse mein modo. Us patti ka har hissa 1/3 hai.",
-      "en": "Think of 3 friends and one watermelon. It is cut into 1 big slice and 2 small slices. That is not equal, so no slice is 1/3. Now fold a paper strip into 3 equal parts. Each part of that strip is 1/3."
+      "hi": "Tarbooz ka 1 bada slice aur 2 chhote slice barabar nahi hain, toh koi slice 1/3 nahi. Kaagaz ki patti ke 3 barabar hisse hain, toh har hissa 1/3 hai.",
+      "en": "A watermelon in 1 big slice and 2 small slices is not equal, so no slice is 1/3. A paper strip has 3 equal parts, so each part is 1/3."
      },
      "board": {
       "template": "compare@1",
@@ -450,15 +442,33 @@
        "nahi, tukde barabar nahi hain"
       ],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Roti",
+         "items": [
+          "2 tukde"
+         ]
+        },
+        "right": {
+         "title": "Tukde",
+         "items": [
+          "ek bada",
+          "ek chhota"
+         ]
+        }
+       }
+      }
      }
     },
     {
      "targets": "c4-maths-ch05-t01-m-part-part",
      "move": "switch from chocolate bar to a round roti cut into 4 equal sectors: whole roti first → its equal pieces give the bottom number; eaten pieces give the top; pieces left are a different question, never the bottom",
      "say": {
-      "hi": "Is roti ko dekho. Pehle poori roti: 4 barabar tukde. Yeh 4 neeche aata hai. 1 tukda rangin hai, woh khaya hua tukda hai, woh upar aata hai. Bache hue tukde neeche kabhi nahi aate.",
-      "en": "Look at this roti. First the whole roti: 4 equal pieces. This 4 goes at the bottom. 1 piece is shaded, that is the eaten piece, it goes on top. The pieces left over never go at the bottom."
+      "hi": "Poori roti ke 4 barabar tukde neeche aate hain, aur khaya hua 1 rangin tukda upar. Bache hue tukde neeche kabhi nahi aate.",
+      "en": "The 4 equal pieces of the whole roti go at the bottom, and the 1 shaded piece eaten goes on top. The pieces left over never go at the bottom."
      },
      "board": {
       "template": "fraction-parts@1",
@@ -481,7 +491,15 @@
        "two-thirds"
       ],
       "targets": "c4-maths-ch05-t01-m-part-part",
-      "wrongIfMis": "2/1"
+      "wrongIfMis": "2/1",
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 3,
+        "shade": 0,
+        "whole": "circle"
+       }
+      }
      }
     }
    ],
@@ -648,8 +666,8 @@
     "steps": [
      {
       "do": {
-       "hi": "1/3 ko padho: 3 ka matlab 3 barabar group banana, 1 ka matlab 1 group lena.",
-       "en": "Read 1/3: the 3 means make 3 equal groups, the 1 means take 1 group."
+       "hi": "1/3 ka matlab hai 3 barabar group, aur unme se 1 group lena.",
+       "en": "1/3 means 3 equal groups, and taking 1 group of them."
       },
       "result": "3 barabar group, 1 group lena",
       "why": {
@@ -692,7 +710,7 @@
       "right": {
        "title": "15 ka 1/3",
        "items": [
-        "1 group = ?"
+        "1 group"
        ]
       }
      }
@@ -760,8 +778,8 @@
      "targets": "c4-maths-ch05-t01-m-part-part",
      "move": "map the plates onto a bar: 3 plates ↔ bar of 3 equal parts; whole bar = all the laddoos = bottom; shaded part = Ravi's plate = top; plates left are not the bottom",
      "say": {
-      "hi": "In plates ko ek patti ki tarah dekho. Patti ke 3 barabar hisse hain, jaise 3 plate. Poori patti matlab saare laddoo, woh neeche ka 3 hai. 1 rangin hissa Ravi ki plate hai, woh upar ka 1 hai. Bachi hui plates neeche nahi aati.",
-      "en": "See these plates as a bar. The bar has 3 equal parts, like 3 plates. The whole bar means all the laddoos, that is the bottom 3. The 1 shaded part is Ravi's plate, that is the top 1. The plates left over do not go at the bottom."
+      "hi": "Poori patti saare laddoo hain, aur iske 3 barabar hisse neeche ka 3 hain. Ravi ki 1 rangin plate upar ka 1 hai.",
+      "en": "The whole bar is all the laddoos, and its 3 equal parts are the bottom 3. Ravi's 1 shaded plate is the top 1."
      },
      "board": {
       "template": "fraction-parts@1",
@@ -785,15 +803,23 @@
        "one fourth"
       ],
       "targets": "c4-maths-ch05-t01-m-part-part",
-      "wrongIfMis": "1/3"
+      "wrongIfMis": "1/3",
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 4,
+        "shade": 0,
+        "whole": "bar"
+       }
+      }
      }
     },
     {
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "move": "fair-share test on the same 16 marbles: uneven groups 7 + 3 + 3 + 3 beside equal groups 4 + 4 + 4 + 4 → only equal groups make quarters",
      "say": {
-      "hi": "Wahi 16 kanche dekho. 7 + 3 + 3 + 3 wale alag group barabar nahi hain. 4 + 4 + 4 + 4 wale group barabar hain. Sirf barabar group mein har group 1/4 hota hai.",
-      "en": "Look at the same 16 marbles. The groups 7 + 3 + 3 + 3 are not equal. The groups 4 + 4 + 4 + 4 are equal. Only with equal groups is each group 1/4."
+      "hi": "16 kanche ke alag group 7 + 3 + 3 + 3 barabar nahi hain. 16 ke barabar group 4 + 4 + 4 + 4 hain, toh sirf wahan har group 1/4 hai.",
+      "en": "The 16 marbles in groups 7 + 3 + 3 + 3 are not equal. The equal groups of 16 are 4 + 4 + 4 + 4, so only there each group is 1/4."
      },
      "board": {
       "template": "compare@1",
@@ -827,7 +853,24 @@
        "nahi, group barabar nahi hain"
       ],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "12 pencil",
+         "items": [
+          "6 + 3 + 3"
+         ]
+        },
+        "right": {
+         "title": "6 wala group",
+         "items": [
+          "6 pencil"
+         ]
+        }
+       }
+      }
      }
     }
    ],
@@ -1024,30 +1067,19 @@
     "steps": [
      {
       "do": {
-       "hi": "Pehle check karo ki dono ke liye wahi bar hai.",
-       "en": "First check that it is the same bar for both."
-      },
-      "result": "haan, wahi bar, toh tukdon ki tulna ho sakti hai",
-      "why": {
-       "hi": "Tulna sirf ek hi poori cheez ke hisson mein hoti hai.",
-       "en": "We can only compare parts of the same whole."
-      }
-     },
-     {
-      "do": {
-       "hi": "1/3 ka matlab: bar ke 3 barabar hisse, usme se 1 hissa.",
-       "en": "1/3 means: the bar in 3 equal parts, and 1 part of them."
+       "hi": "Dono ke liye wahi bar hai. 1/3 matlab bar ke 3 barabar hisse, aur unme se 1 hissa.",
+       "en": "It is the same bar for both. 1/3 means the bar in 3 equal parts, and 1 part of them."
       },
       "result": "3 barabar hisson mein se 1 hissa",
       "why": {
-       "hi": "Neeche ka 3 batata hai bar kitne barabar hisson mein kata.",
-       "en": "The bottom 3 tells how many equal parts the bar is cut into."
+       "hi": "Tulna sirf ek hi poori cheez ke hisson mein hoti hai. Neeche ka 3 batata hai bar kitne barabar hisson mein kata.",
+       "en": "We can only compare parts of the same whole. The bottom 3 tells how many equal parts the bar is cut into."
       }
      },
      {
       "do": {
-       "hi": "1/4 ka matlab: wahi bar 4 barabar hisson mein, usme se 1 hissa.",
-       "en": "1/4 means: the same bar in 4 equal parts, and 1 part of them."
+       "hi": "1/4 matlab wahi bar ke 4 barabar hisse, aur unme se 1 hissa.",
+       "en": "1/4 means the same bar in 4 equal parts, and 1 part of them."
       },
       "result": "4 barabar hisson mein se 1 hissa",
       "why": {
@@ -1178,8 +1210,8 @@
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "move": "fraction bars of the same length, one in 2 equal parts, one in 3 → predict the longer single piece → lay one piece from each side by side → more cuts of the same bar → each piece shorter",
      "say": {
-      "hi": "Do barabar lambi patti lo. Ek ke 2 barabar hisse, toh 1 hissa = 1/2, lamba tukda. Wahi lambai ki doosri patti ke 3 barabar hisse, toh 1 hissa = 1/3, chhota tukda. Dono tukde saath rakho. Zyada hisse kiye, toh har tukda chhota hua.",
-      "en": "Take two bars of the same length. One in 2 equal parts, so 1 part = 1/2, a long piece. The other bar of the same length in 3 equal parts, so 1 part = 1/3, a short piece. Put both pieces side by side. More parts made each piece shorter."
+      "hi": "Patti ke 2 barabar hisse karo, toh 1 hissa 1/2 hai, lamba tukda. Wahi patti ke 3 hisse karo, toh 1 hissa 1/3 hai, chhota tukda.",
+      "en": "Make 2 equal parts of a bar, and 1 part is 1/2, a long piece. Make 3 parts of the same bar, and 1 part is 1/3, a short piece."
      },
      "board": {
       "template": "compare@1",
@@ -1214,7 +1246,24 @@
        "no, 1/3 is bigger"
       ],
       "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Ek tarbooz",
+         "items": [
+          "4 barabar slice"
+         ]
+        },
+        "right": {
+         "title": "Doosre tarbooz",
+         "items": [
+          "3 barabar slice"
+         ]
+        }
+       }
+      }
      }
     }
    ],
