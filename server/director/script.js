@@ -272,6 +272,8 @@ export function validateTopicScript(sc, kit) {
   const errors = [];
   if (sc.topicId !== kit?.topicId) errors.push(`topicId ${sc.topicId} is not the kit's ${kit?.topicId}`);
   if (!Array.isArray(sc.skills) || !sc.skills.length) errors.push("skills: at least one");
+  // one list (SCRIPT_VERSIONS) decides both what validates and what the Director walks: a version bump in the data fails here
+  if (!SCRIPT_VERSIONS.includes(Number(sc.version ?? 1))) errors.push(`version ${sc.version} is not a known script version (SCRIPT_VERSIONS: ${SCRIPT_VERSIONS.join(", ")})`);
   const ok = [];
   const topicBad = errors.length > 0;
   for (const sk of sc.skills ?? []) {
@@ -283,8 +285,11 @@ export function validateTopicScript(sc, kit) {
 }
 
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
-/** The script versions the Director walks. */
-export const WALK_VERSIONS = new Set([1, 2, 2.1, 2.2]);
+/** The one list of script versions: the validator accepts these and the Director walks these. A new data version is added here,
+ *  with its validator rules, before any script carries it (tests/r7-brain-live-scripts.test.mjs fails otherwise). */
+export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2]);
+/** The script versions the Director walks: SCRIPT_VERSIONS (the validator's accepted versions), never a second list. */
+export const WALK_VERSIONS = new Set(SCRIPT_VERSIONS);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
 const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
 const loaded = new Map();
