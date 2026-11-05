@@ -5444,3 +5444,53 @@ Total about 374 s → 110 s. Local browser shard: 124 pass, 0 fail, 120 s. CI br
 ## `jd-r7-director6-2026-11-05`
 
 n = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering; steady ~41 turns, others ~23), 1,190 calls on taxila-fast (~$0.807, incl. a 27-call aborted start), reply-ready p50 3.00 s. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on a run tree of int/r6 93b0e20c0 + Brain ea705f9d + Studio 190c77f1, v2.1 scripts (Learning 31b818f9c), H1.1 child. Four Claude judges (one per topic, not blind) counted by hand against the v2.1 script files. Hand totals: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 plus 6 stated-number "?" boards. Date 2026-11-05. Write-up: docs/design/round7/judgements/director6-2026-11-05.md.
+
+
+<!-- merged from inbox/r7-brain-13.json -->
+## `ms-r7-brain-reply-latency-quiet-hour` (2026-11-05, stream A Brain)
+
+Method: `node --env-file=.env.local evals/latency/reply-replay.mjs --n 20 --label quiet`, with no DB. Each run replays the same captured Director reply call (worked_example move, about 5.1k prompt characters) 20 times against taxila-fast.
+
+Results:
+- `reply-replay-2026-11-05T20-36-37-829Z-quiet.json`: n = 20, p50 1,424 ms, p90 2,560 ms, min 1,111, max 2,772.
+- Baseline `reply-replay-2026-11-05T07-43-46-063Z-now.json` (13:13 IST): n = 20, p50 1,479 ms, p90 2,086 ms.
+
+The p50 difference (−55 ms) is noise at n = 20. The quiet run's p90 is higher, from a few slow calls.
+
+Conclusion: deployment load by time of day is not a lever. director5/6's reply-ready p50 of about 3 s per lesson comes from the turn pipeline (classify, then reply, then guards), so latency work goes there.
+
+Cost: 20 calls, about $0.02 (main approved).
+
+
+<!-- merged from inbox/r7-face-12.json -->
+## `ms-r7-face-stills-sweep-2026-11-05` (2026-11-05)
+`evals/face-puppet/stills-sweep.mjs` → `docs/design/round7/face/stills-sweep/` (`sweep.json` plus one screenshot per surface). It uses a production build with dev routes, mocked `/api/*` (one class-6 child, Asha, the r8 look), SwiftShader and a 412×915 viewport. On each surface it records every visible `[data-face]` host (kind, phase, look, the images it paints, whether a live canvas is present) and every image outside a face whose URL names her.
+- **The 7 surfaces that show her all pass,** and every face shown is her rig or a still rendered from it: hello, home (Kaksha), the teacher screen, and the lesson desk, summary, help and trouble screens. There are 0 stragglers: no Plate2D vector and no old portrait.
+- **8 surfaces show no face, and that is correct** for 6 of them (onboarding step 1, who, me, world map, ask, notebook). For parent, the sweep has no guardian session, so it redirects to onboarding; the parent badge was covered earlier by `stills-parent-badge.png`. The landing page is the eighth (next point).
+- **The landing hero** draws her only inside hand-captured product screenshots (`public/site/home.webp`, `desk.webp`, `turn.webp`), with the r8 face baked in. They are correct today. If the owner picks lamp2 they have to be re-captured (noted on the owner's face-review page).
+
+## `ms-r7-face-timing-i8-2026-11-05` (2026-11-05)
+This is a regression check after integrations 5-8, on int/r6 93b0e20c0. It uses headless Chromium with SwiftShader, CDP CPU throttling and n=8 per arm.
+- **The hand-off** (`handoff-start-i8-cpu6.json`, `-cpu4.json`). Her lesson face is live at a p50 of 860 ms (×6) and 807 ms (×4). It comes before her first sound in all 16 runs (worst case 171 ms before) and is adopted in 16/16. Without the hand-off it goes live 1.7-1.9 s after her first sound. First sound p50, face on vs off: 1441 vs 1381 ms (×6), 1292 vs 1138 ms (×4). That is +60 / +154 ms, inside the ~300 ms target.
+- **Cold load** (`start-latency-i8-cpu6.json`). Every arm is slower than the integration-3b numbers from the earlier machine: face off 2380 vs 1562 ms. On this same machine, integration 3b gives face off 2098 ms and long tasks 1796 ms, against 2380 / 1887 ms now (`start-latency-i3b-samebox-cpu6.json`). So most of the rise is the machine. The remainder (+282 ms first sound with a noisy p90, +91 ms long tasks) is within run-to-run spread at n=8, so it cannot be called a code regression. The face's own cost against face off is unchanged (live −165 ms).
+
+
+<!-- merged from inbox/r7-games-darpan.json -->
+## `ms-r7-games-darpan-cert`
+
+darpan play-cert (forge3-qa, FORGE3_QA_LOCAL=1, p360/p412/l1366, 4 arts, 2026-11-05): 48/48 darpan samples pass at p360, p412 and l1366 with the game mounted (6 coverage entries x 4 arts x 2 seeds; boxes p360 320x524, p412 372x639, l1366 720x520; whole table 3000/3000); generator p95 under 50 ms per case (tests/r7-games-darpan.test.mjs, 6 cases x 40 seeds); independent point-set oracle agrees with the law on every judged go of >= 2000 random acts per case and on every subset of up to 8 fold lines of every generated figure (seeds 1-3, fades 1-3).
+
+
+<!-- merged from inbox/r7-games-ghadi.json -->
+## `ms-r7-games-ghadi-cert`
+
+ghadi play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every ghadi sample passes at every size (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-ghadi.test.mjs, 48 tests. An independent checker winds its own hour / minute / half clock one minute at a time and agrees with the law over at least 2000 random acts per case. Generator p95 is under 5 ms.
+
+
+<!-- merged from inbox/r7-voice-8.json -->
+## `ms-r7-voice-opus-transport` — Opus transport: CPU and first audio (2026-11-05)
+
+Main's condition 2, measured before shipping. CPU: 0.41 ms p50, 0.68 ms p95 per 20 ms frame (n = 8,742 frames of real speech), ~23 real-time streams per 0.5 vCPU. First audio, throttled real Chromium: Opus matches or beats ADPCM on every profile (Slow 3G 432 vs 436 ms), and delivers a QA-D12-sized line 3× faster than ADPCM and 10× faster than PCM on Slow 3G (1.2 s vs 3.5 s vs 12.8 s). Found and fixed during the run: the first cut encoded synchronously, which held the first byte ~300 ms and blocked the event loop. Files: evals/tts-transport/results/{cpu,first-audio,first-audio-long}-2026-11-05.json.
