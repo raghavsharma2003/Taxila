@@ -27,3 +27,27 @@ test("the World lists the sealed chapters from the map's own flag; nothing in th
     assert.doesNotMatch(read(f), /every\(\(x\) => x\.state === "got_it"/, `${f}: the seal rule belongs to the server`);
   }
 });
+
+test("an equipped board theme and rim reach the lesson only while the item is open (colour only)", async () => {
+  const { lessonLook } = await import("../src/ui-v3/kaksha/play/cosmetics.ts");
+  const items = [
+    { id: "board-nebula", kind: "board", hue: "ion", open: true },
+    { id: "rim-light", kind: "rim", hue: "her", open: false },
+    { id: "hull-thirds", kind: "hull", hue: "plasma", open: true },
+  ];
+  assert.deepEqual(lessonLook({ board: "board-nebula", rim: "rim-light" }, items), { board: "ion", rim: null }, "a closed rim never shows");
+  assert.deepEqual(lessonLook({ board: "hull-thirds" }, items), { board: null, rim: null }, "a hull in the board slot is ignored");
+  assert.match(read("src/ui-v3/kaksha/lesson/KakshaLesson.tsx"), /setLook\(lessonLook\(eq, items\)\)/);
+});
+
+test("the catalog grows per subject with unique ids, known kinds and hues that have a --k-hue var", () => {
+  const c = JSON.parse(read("data/kaksha/catalog.json"));
+  const ids = c.items.map((i) => i.id);
+  assert.equal(new Set(ids).size, ids.length);
+  for (const i of c.items) {
+    assert.ok(["hull", "trail", "board", "rim", "emote"].includes(i.kind), i.id);
+    assert.match(read("src/ui-v3/kaksha/kaksha.css"), new RegExp(`--k-hue-${i.hue}:`), `${i.id}: --k-hue-${i.hue}`);
+    assert.doesNotThrow(() => new RegExp(i.match), i.id);
+  }
+  for (const kind of ["hull", "trail", "board", "rim", "emote"]) assert.ok(c.items.filter((i) => i.kind === kind).length >= 2, kind);
+});
