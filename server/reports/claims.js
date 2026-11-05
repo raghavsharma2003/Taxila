@@ -5,14 +5,14 @@
 import { createHash } from "crypto";
 import { learningDay } from "../conductor/clock.js";
 import { subjectOfSkill } from "../learner/kt/ability.js";
-import { CAPS, CALIBRATION, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, ROUTINE_MIN_LESSONS, TRICKY_MIN_N } from "./config.js";
+import { CAPS, CALIBRATION, HARD_MIN_N, HOLD_GAP_DAYS, HOLD_MIN_N, LANGS, MIXUP_MIN_K, MIXUP_MIN_N, ROUTINE_MIN_LESSONS, TRICKY_MIN_N, WAYS_MIN_N } from "./config.js";
 import { bySkill, delayedSuccesses, inWindow, isAttempt, isErrorspotFixed, isExplained, isFirstTryUnaided, isTransferPass } from "./derive.js";
 import { dateParts } from "./facts.js";
 import { lineViolations } from "./gate.js";
-import { HOME_OBJECT, renderShape } from "./templates.js";
+import { HOME_OBJECT, WAY_LABEL, renderShape } from "./templates.js";
 
 export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}`,
-  jar: (id) => `question_jar:${id}`, test: (t) => `test_window:${t.subject}:${t.from}:${t.to}` };
+  jar: (id) => `question_jar:${id}`, test: (t) => `test_window:${t.subject}:${t.from}:${t.to}`, way: (id) => `decision_record:${id}` };
 /** S6: item answers that needed one or more hints (item.open C1-C4, solo C1), and of those the ones then solved (C1, C2, solo C1). */
 const HINTED = { "item.open": new Set([1, 2, 3, 4]), solo: new Set([1]) };
 const SOLVED_AFTER_HINT = { "item.open": new Set([1, 2]), solo: new Set([1]) };
@@ -230,6 +230,20 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
     const r = admit(claim("routine", "routine.days", { n: new Set(facts.lessons.map((l) => learningDay(new Date(l.startedAt), tz))).size, d: days, m: med },
       facts.lessons.map((l) => F.lesson(l.id)), "n = distinct learning days with a lesson; d = days in the month; m = median lesson minutes (the header's rule)"));
     if (r) claims.push(r);
+  }
+  if (caps.ways) {
+    // S5: how Taxila explained new ideas this month: counts of its own explain_format choices (WAY_LABEL), never a claim
+    // about the child. Held back until the month has WAYS_MIN_N explains, so one lesson never reads as a pattern.
+    const lessonIds = new Set(facts.lessons.map((l) => l.id));
+    const ways = (facts.ways ?? []).filter((d) => lessonIds.has(d.lessonId) && WAY_LABEL[d.format]);
+    if (ways.length >= WAYS_MIN_N) {
+      const per = new Map();
+      for (const d of ways) per.set(d.format, (per.get(d.format) ?? 0) + 1);
+      const [top, t] = [...per].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
+      const c = admit(claim("ways", "ways.used", { n: ways.length, k: per.size, way: top, t }, ways.map((d) => F.way(d.id)),
+        "n = explain_format decisions in the month's lessons; k = distinct formats; way = the most used (ties: lowest F-code); t = its count"));
+      if (c) claims.push(c);
+    }
   }
   let fixedNext = false;
   if (caps.next) {

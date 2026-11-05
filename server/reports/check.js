@@ -5,6 +5,9 @@
 // by the same bug. It also checks COMPLETENESS (a count claim must cite every row that counts, not a convenient
 // subset) and that every rendered line maps to an admitted claim or registered fixed copy.
 import { NOT_PLACEMENT } from "../learner/kt/placement.js";
+import { WAYS_MIN_N } from "./config.js";
+/** S5: the explain formats a parent line may name (written out here, not taken from the generator). */
+const WAY_CODES = new Set(["F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]);
 
 const ITEM = { "item.open": ["C0", "C1", "C2", "C3", "C4", "IDK", "NA"], "item.mcq2": ["first_correct", "wrong"], "item.mcq3": ["first_correct", "wrong"],
   "item.mcq4": ["first_correct", "wrong"], solo: ["C0", "C1", "fail"] };
@@ -41,7 +44,7 @@ export async function checkReport(db, report, lookup) {
   const out = [];
   for (const c of report.claims) {
     const why = [];
-    const ids = { ev: [], lesson: [], skill: [], jar: [], test: [] };
+    const ids = { ev: [], lesson: [], skill: [], jar: [], test: [], way: [] };
     for (const f of c.factIds) {
       const [kind, ...rest] = String(f).split(":");
       const id = rest.join(":");
@@ -49,6 +52,7 @@ export async function checkReport(db, report, lookup) {
       else if (kind === "kt_skill_state") ids.skill.push(id);
       else if (kind === "question_jar") ids.jar.push(id);
       else if (kind === "test_window") ids.test.push(id);
+      else if (kind === "decision_record") ids.way.push(id);
       else why.push(`unknown fact kind ${kind}`);
     }
     const ev = ids.ev.length ? await db.q("select * from kt_evidence where child_id = $1 and id = any($2::text[]) order by seq", [report.child_id, ids.ev]) : [];
@@ -200,6 +204,22 @@ export async function checkReport(db, report, lookup) {
         const made = report.created_at ? ms(report.created_at) : to;
         const back = asked.filter((j) => j.answered_at && ms(j.answered_at) <= made).length;
         if (c.shapeId === "curious.asked" ? s.k !== back || back < 1 : back !== 0) why.push("k slot ≠ questions answered by the time of the report");
+        break;
+      }
+      case "ways.used": {
+        // S5, re-derived: the month's explain_format decisions in the child's counted lessons (the routine line's rule)
+        const win0 = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3", [report.child_id, report.window_from, report.window_to]);
+        const counted = new Set(win0.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; }).map((l) => String(l.id)));
+        const all = await db.q(`select d.id, d.lesson_id, d.chosen from decision_record d join lesson l on l.id = d.lesson_id
+            where l.child_id = $1 and d.point_id = 'explain_format' and d.at >= $2 and d.at < $3`, [report.child_id, report.window_from, report.window_to]);
+        const ways = all.filter((d) => counted.has(String(d.lesson_id)) && WAY_CODES.has(d.chosen));
+        if (ways.map((d) => String(d.id)).sort().join(",") !== [...ids.way].sort().join(",")) why.push("ways line does not cite exactly the month's explain decisions");
+        const per = new Map();
+        for (const d of ways) per.set(d.chosen, (per.get(d.chosen) ?? 0) + 1);
+        const top = [...per].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0];
+        if (s.n !== ways.length || ways.length < WAYS_MIN_N) why.push(`n slot ${s.n} ≠ ${ways.length} decisions (min ${WAYS_MIN_N})`);
+        if (s.k !== per.size) why.push(`k slot ≠ ${per.size} distinct ways`);
+        if (!top || s.way !== top[0] || s.t !== top[1]) why.push("way/t slots ≠ the most used way and its count");
         break;
       }
       case "routine.days": {
