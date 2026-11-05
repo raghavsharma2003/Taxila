@@ -8,21 +8,35 @@ import { secureSet, world, type Catalog, type WorldSkill } from "../world.ts";
 
 export interface MapLike {
   hidden?: boolean; skills: ReadonlyArray<WorldSkill>;
-  /** The chapters, with the ledger's seal (server/routes/child.js buildMap: every skill Got it or Secure). */
-  subjects?: ReadonlyArray<{ subject: string; chapters: ReadonlyArray<{ id: string; title: string; sealed?: boolean }> }>;
+  /** The chapters, with the seal from the ledger (server/routes/child.js buildMap: every skill Got it or Secure). */
+  subjects?: ReadonlyArray<{ subject: string; chapters: ReadonlyArray<{ id: string; title: string; sealed?: boolean; sealedAt?: string | null }> }>;
+}
+
+/** The newest ledger stamp a map read carries (secureSince on skills, sealedAt on chapters; Learning, migration 046). */
+function newestStamp(m: MapLike): string | null {
+  let best: string | null = null;
+  const see = (v: unknown) => { if (typeof v === "string" && v && (!best || v > best)) best = v; };
+  for (const k of m.skills) see((k as { secureSince?: unknown }).secureSince);
+  for (const s of m.subjects ?? []) for (const c of s.chapters) see(c.sealedAt);
+  return best;
 }
 
 export interface DebriefSeal { chapterId: string; title: string; subject: string }
 
 /**
  * r7 (PIPELINE §14 B2-4): chapters the LEDGER sealed during this lesson: sealed in the end read, not sealed in the start
- * read. The seal is the server's (never an app count); either read missing, hidden or without chapters → [] (no claim).
+ * read. The seal is decided by the server (never an app count); either read missing, hidden or without chapters → [] (no claim).
  * A seal therefore fires once, in the lesson that sealed it.
  */
 export function nowSealed(before: MapLike | null, after: MapLike | null): DebriefSeal[] {
   if (!before?.subjects?.length || !after?.subjects?.length || before.hidden || after.hidden) return [];
   const was = new Set(before.subjects.flatMap((s) => s.chapters.filter((c) => c.sealed).map((c) => c.id)));
-  return after.subjects.flatMap((s) => s.chapters.filter((c) => c.sealed && !was.has(c.id)).map((c) => ({ chapterId: c.id, title: c.title, subject: s.subject })));
+  // a chapter that dipped and re-sealed keeps its FIRST sealedAt: when the start read already holds a newer stamp, the
+  // seal predates this lesson and is not its moment (no clock: two server stamps compared, ISO strings sort by time)
+  const before0 = newestStamp(before);
+  return after.subjects.flatMap((s) => s.chapters
+    .filter((c) => c.sealed && !was.has(c.id) && !(c.sealedAt && before0 && before0 > c.sealedAt))
+    .map((c) => ({ chapterId: c.id, title: c.title, subject: s.subject })));
 }
 
 export interface DebriefSecure { skillId: string; title: string; subject: string; structure: string | null; items: string[] }

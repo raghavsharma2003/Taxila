@@ -26,6 +26,7 @@ import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../.
 import { Briefing } from "../play/Briefing.tsx";
 import { cosmeticsFor, lessonLook, type LessonLook } from "../play/cosmetics.ts";
 import { readEquipped } from "../memory.ts";
+import { syncEquipped } from "../equipSync.ts";
 import { world, type Catalog } from "../world.ts";
 import "../play/play.kaksha.css";
 import { Debrief } from "./Debrief.tsx";
@@ -73,10 +74,11 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   const [look, setLook] = useState<LessonLook>({ board: null, rim: null });
   useEffect(() => {
     let live = true;
-    void before.then((m) => {
+    // the server's equip set first (another device's choice), else this device's
+    void Promise.all([before, syncEquipped(cid)]).then(([m, server]) => {
       if (!live || !m || m.hidden) return;
       const items = world(m.skills, catalogJson as unknown as Catalog).items;
-      const eq = readEquipped(cid);
+      const eq = server ?? readEquipped(cid);
       setCosmetics(cosmeticsFor(eq, items));
       setLook(lessonLook(eq, items));
     }, () => {});

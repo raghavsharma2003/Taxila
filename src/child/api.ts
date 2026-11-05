@@ -202,6 +202,8 @@ export const homeworkAsks = (m: HomeworkMatch | null): m is HomeworkMatch & { to
 
 /** r7 app-world-hangar-depth: the chapters the ledger has sealed (every skill Got it or Secure; server/routes/child.js
  *  buildMap decides `sealed`, never the app). */
-export function sealedChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ id: string; title: string; sealed?: boolean }> }> } | null): Array<{ id: string; subject: string; title: string }> {
-  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.sealed).map((c) => ({ id: c.id, subject: s.subject, title: c.title })));
+export function sealedChaptersOf(map: { subjects?: Array<{ subject: string; chapters: Array<{ id: string; title: string; sealed?: boolean; sealedAt?: string | null }> }> } | null):
+  Array<{ id: string; subject: string; title: string; sealedAt?: string | null }> {
+  // sealedAt (Learning, migration 046): the first time the map saw it sealed; null = sealed before the stamp existed
+  return (map?.subjects ?? []).flatMap((s) => s.chapters.filter((c) => c.sealed).map((c) => ({ id: c.id, subject: s.subject, title: c.title, ...(c.sealedAt ? { sealedAt: c.sealedAt } : {}) })));
 }

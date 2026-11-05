@@ -51,3 +51,40 @@ test("the catalog grows per subject with unique ids, known kinds and hues that h
   }
   for (const kind of ["hull", "trail", "board", "rim", "emote"]) assert.ok(c.items.filter((i) => i.kind === kind).length >= 2, kind);
 });
+
+test("equip follows the child across devices through Learning's route, kept apart from device memory", async () => {
+  const real = globalThis.fetch;
+  const store = new Map();
+  globalThis.localStorage = { getItem: (k) => store.get(k) ?? null, setItem: (k, v) => store.set(k, v) };
+  try {
+    const { syncEquipped, pushEquipped } = await import("../src/ui-v3/kaksha/equipSync.ts");
+    globalThis.fetch = async () => new Response(JSON.stringify({ equipped: { hull: "hull-thirds", board: null } }), { status: 200 });
+    assert.deepEqual(await syncEquipped("c1"), { hull: "hull-thirds" });
+    assert.equal(store.get("kx.hangar.c1.equipped"), JSON.stringify({ hull: "hull-thirds" }), "the server's set is kept on the device");
+    globalThis.fetch = async () => new Response("{}", { status: 404 });
+    assert.equal(await syncEquipped("c1"), null, "no route yet: the device's choice stands");
+    let sent = null;
+    globalThis.fetch = async (url, init) => { sent = JSON.parse(init.body); return new Response(JSON.stringify({ equipped: {} }), { status: 200 }); };
+    assert.equal(await pushEquipped("c1", { hull: "hull-thirds", emote: "Bad Slug!" }), true);
+    assert.deepEqual(sent, { childId: "c1", equipped: { hull: "hull-thirds", trail: null, board: null, rim: null, emote: null } }, "a bad emote slug is never sent");
+  } finally {
+    globalThis.fetch = real;
+    delete globalThis.localStorage;
+  }
+});
+
+test("a seal shows 'since' only with the ledger's stamp", async () => {
+  const { sealedChaptersOf } = await import("../src/child/api.ts");
+  const m = { subjects: [{ subject: "maths", chapters: [{ id: "a", title: "A", sealed: true, sealedAt: "2026-11-02T10:00:00Z" }, { id: "b", title: "B", sealed: true, sealedAt: null }] }] };
+  assert.deepEqual(sealedChaptersOf(m), [{ id: "a", subject: "maths", title: "A", sealedAt: "2026-11-02T10:00:00Z" }, { id: "b", subject: "maths", title: "B" }]);
+});
+
+test("a chapter that dipped and re-sealed is not this lesson's moment (its first sealedAt predates the start read)", async () => {
+  const { nowSealed } = await import("../src/ui-v3/kaksha/lesson/debrief.ts");
+  const before = { skills: [{ skillId: "s9", title: "x", subject: "maths", state: "secure", secureSince: "2026-11-04T09:00:00Z" }],
+    subjects: [{ subject: "maths", chapters: [{ id: "ch7", title: "Fractions", sealed: false, sealedAt: null }] }] };
+  const resealed = { ...before, subjects: [{ subject: "maths", chapters: [{ id: "ch7", title: "Fractions", sealed: true, sealedAt: "2026-11-01T10:00:00Z" }] }] };
+  const fresh = { ...before, subjects: [{ subject: "maths", chapters: [{ id: "ch7", title: "Fractions", sealed: true, sealedAt: "2026-11-05T10:30:00Z" }] }] };
+  assert.deepEqual(nowSealed(before, resealed), []);
+  assert.deepEqual(nowSealed(before, fresh).map((c) => c.chapterId), ["ch7"]);
+});

@@ -173,7 +173,7 @@ export interface WorldViewProps extends NavProps {
   backTo: string;
   hangarTo: string;
   /** r7 app-world-hangar-depth: the chapters the ledger has sealed (empty: no row). */
-  seals?: Array<{ id: string; subject: string; title: string }>;
+  seals?: Array<{ id: string; subject: string; title: string; sealedAt?: string | null }>;
   /** r7 app-practice-entry: where "Practise this" on a station goes (its topic's practice set); null: not offered (hold). */
   practiceTo?: ((skillId: string) => string | null) | null;
   go?: Go;
@@ -260,6 +260,7 @@ export function WorldView(p: WorldViewProps) {
                   <li key={c.id} className="kx-seal kx-cut" style={{ ["--c" as string]: `var(--k-r-${c.subject === "sst" ? "social" : c.subject})` }}>
                     <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l14 6v10c0 9-6 15-14 18C12 34 6 28 6 19V9z" fill="none" stroke="currentColor" strokeWidth="2.4" /><path d="M13 20l5 5 9-10" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round" /></svg>
                     <span>{c.title}</span>
+                    {c.sealedAt && <span className="kx-seal-since">{kt("sealedSince", { date: new Date(c.sealedAt).toLocaleDateString(undefined, { day: "numeric", month: "short" }) })}</span>}
                   </li>
                 ))}
               </ul>
