@@ -46,7 +46,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -58,7 +58,7 @@ import { relationalViolations, relationalHits, repairSelfGender, safetyPreface, 
 import { characterForState } from "../compiler/characters/index.js";
 import { nextBeat, uiBeatOf } from "./beat.js";
 import { momentOf } from "./moment.js";
-import { brainTraceStmt, columnReady, comprehensionReasons, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
+import { brainTraceStmt, columnReady, comprehensionReasons, formatDecisionOf, inputsHashOf, reteachDecisionOf, tableReady } from "./trace.js";
 import { FACTS_ROW_PREFIX } from "../director/modules.js";
 import { engagementOf, frustrationLoop, initialAffect } from "../learner/affect.js";
 import { turnSignals } from "../persona/signals.js";
@@ -703,7 +703,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // her line is written from), so it can be in when her line is; requestIntent below re-gates it against her real line.
   if (!late && textLane && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.prepareWhiteboard === "function") {
     seamSafe("studio.prepareWhiteboard", () => studioSeam.prepareWhiteboard(whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } })), false);
+      item: boardItemOf(next, kit, findItem), line: { text: "" } })), false);
   }
   // round 2 content, board-first: the board for an accepted whiteboard ask is chosen NOW (kit code / library / catalogue,
   // gated on everything that does not depend on her exact words), and its facts row joins the move's content below, so her
@@ -711,7 +711,7 @@ export async function lessonTurn(req, body, hooks = {}) {
   // request included). null = nothing preselected, the turn is exactly as before.
   const wbFirstRow = !late && kernel.arb.accepted.some((p) => p.kind === "ask_whiteboard") && typeof studioSeam.preselectWhiteboard === "function"
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-      item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
+      item: boardItemOf(next, kit, findItem), line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
@@ -781,6 +781,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   let studioSlot = agentApplied ? agentApplied.studioSlot : late || clearing ? null
     : seamSafe("studio.slotFor", () => (typeof studioSeam.slotFor === "function" ? studioSeam.slotFor(lesson.id, turnStudioOf(kernel.arb),
       { beat: kernel.beat?.type ?? null, tray: r.ui?.tray ?? null, safety: r.move.kind === "safeguard" || !!incident,
+        // round 7 M4 (Studio's patch 009): the move's skill, so a Stagecraft piece decided for the skill before this move is
+        // never revealed under her line about another skill, and one still up leaves with this reply (seam.js slotFor)
+        skillId: r.move?.skillId ?? next.lastMove?.skillId ?? null,
         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
         rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,
@@ -1416,7 +1419,8 @@ export async function lessonTurn(req, body, hooks = {}) {
         proposals: kernel.proposals, arb: kernel.arb, reasons: traceReasons,
         serverMs: performance.now() - t0, kernelUs: kernel.us, legalMode: child.legal_mode ?? "M1",
         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
-      ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
+      ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
+        formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
       ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
     ]));

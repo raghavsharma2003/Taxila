@@ -122,6 +122,18 @@ const STUDIO_LANG = { hinglish: "hinglish", english: "en", hindi: "hi" };
  * `mode` is "continue" while the same explanation beat goes on (a worked example drawn across turns), else "fresh".
  * @returns {import("../../shared/brain").StudioAsk}
  */
+/**
+ * round 7 (S4, director3 prep): the item a board is drawn from. The move's own card; else, on a picture ask with no card up
+ * (the teach phase: "picture dikhao" while she explains), the worked example's faded step, so the board draws the lesson's
+ * own shape (c6 perimeter: measured@1 on the 50 m × 30 m park) instead of nothing. null otherwise (the board as before).
+ * @param {(state: object, kit: object, id: string) => object|null} find  director/items.js findItem
+ */
+export function boardItemOf(next, kit, find) {
+  if (next?.lastMove?.itemId) return find(next, kit, next.lastMove.itemId) ?? null;
+  if (next?.lastMove?.request === "visual" && next?.fadeItem?.id) return find(next, kit, next.fadeItem.id) ?? null;
+  return null;
+}
+
 export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line }) {
   const band = BANDS[next?.ctx?.classLevel]?.b4 ?? "B3"; // the one bands table (BUILD-PLAN §1.10)
   const mis = beat.type === "contrast" && next?.lastReteach?.turn === next?.turn ? next.lastReteach.misId ?? null : null;
@@ -137,6 +149,10 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       need: mis ? "contrast_misconception" : "explain", ...(mis ? { misconceptionId: mis } : {}), beat: beat.type, neededAtMs: 0, priority: "on_cue",
       style: { band, lang: STUDIO_LANG[next?.ctx?.lang] ?? "hinglish", motion: band === "B1" ? "calm" : "lively" },
       ...(request ? { request } : {}),
+      // round 7 (dc-r7-teaching-scripts; Studio's BOARD-REFS): the scripted beat's board, explicit on the ask, so Studio's
+      // preselect reads one field and never the Director's state shape (an absent or failing ref: Studio's own pick)
+      ...(next?.lastMove?.scriptBeat?.board ? { boardRef: next.lastMove.scriptBeat.board } : {}),
+      ...(next?.lastMove?.scriptBeat ? { scriptBeat: { scriptId: next.lastMove.scriptBeat.scriptId, beatId: next.lastMove.scriptBeat.beatId, kind: next.lastMove.scriptBeat.kind } } : {}),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)

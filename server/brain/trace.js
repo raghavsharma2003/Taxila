@@ -108,6 +108,17 @@ export function reteachDecisionOf(next, { lessonId, legalMode }) {
     seedRef: randomised ? `${next.seed ?? ""}:reteach:${d.skillId ?? ""}` : null, reasons: ["move.reteach"], legalMode });
 }
 
+/** round 7 (Learning patch 008): the explain format chosen this turn (director/state.js formatFor) as a decision record, or null.
+ * options carry what the night join (learner/formats.js joinFormatOutcomes) reads: eligible, skillId, topicType, band. */
+export function formatDecisionOf(next, { lessonId, legalMode }) {
+  const d = next?.formatDecision;
+  if (!d || d.turn !== next.turn || !d.skillId || !d.format) return null;
+  return decisionRecordStmt({ lessonId, turn: next.turn, pointId: d.pointId ?? "explain_format",
+    options: { eligible: d.eligible ?? [], skillId: d.skillId, topicType: d.topicType ?? null, band: d.band ?? null },
+    chosen: d.format, chosenBy: d.explored ? "explore" : "thompson", randomised: true, propensity: d.propensity ?? null,
+    seedRef: `${lessonId}:${d.skillId}`, reasons: ["move.explain"], legalMode });
+}
+
 /**
  * Whether a 016 table exists in this database: a turn never writes into a table the deploy has not migrated yet (that
  * would fail the whole turn's transaction). Probed once per process (the turn starts the probe beside its kit read); a
