@@ -7,9 +7,11 @@ import { execFileSync } from "node:child_process";
 import * as P from "../infra/m3/plan.js";
 import { CHAT } from "../server/cost/prices.js";
 
-// the jobs read their env at load: set it before importing them (M3_ROLE stays unset, so their main does not run)
-Object.assign(process.env, { M3_STORAGE_ACCOUNT: "acct", M3_STORAGE_KEY: Buffer.from("k".repeat(32)).toString("base64"), M3_CONTAINER: "m3", M3_BACKOFF_MS: "1" });
-delete process.env.M3_ROLE;
+// the jobs read their env at load AND at run time: set it before importing them (M3_ROLE stays unset, so their main does
+// not run) and keep it for this file's tests. Only M3_* names: no other suite reads them, so sharing npm test's one
+// process with them is safe (tests/test-isolation.test.mjs requires the marker below for a module-level env write).
+Object.assign(process.env, { M3_STORAGE_ACCOUNT: "acct", M3_STORAGE_KEY: Buffer.from("k".repeat(32)).toString("base64"), M3_CONTAINER: "m3", M3_BACKOFF_MS: "1" });   // one-process-safe: M3_* names only, read by no other suite
+delete process.env.M3_ROLE;   // one-process-safe: M3_* names only, read by no other suite
 const K = await import("../infra/m3/keeper-job.mjs");
 const V = await import("../infra/m3/verify-job.mjs");
 
