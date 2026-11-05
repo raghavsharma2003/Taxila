@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 89,
-  "entries": 340,
-  "withMisconceptionMap": 91,
-  "mappedMisconceptions": 156,
+  "topicsCovered": 90,
+  "entries": 343,
+  "withMisconceptionMap": 92,
+  "mappedMisconceptions": 159,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 70
+    "covered": 71
    },
    "science": {
     "inScope": 146,
@@ -44,7 +44,7 @@
    },
    "6": {
     "inScope": 69,
-    "covered": 26
+    "covered": 27
    },
    "7": {
     "inScope": 79,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 103,
+  "topicsCoveredAll": 104,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 70
+    "covered": 71
    },
    "science": {
     "topics": 146,
@@ -87,15 +87,15 @@
     "covered": 7
    }
   },
-  "arenaOnly": 148,
-  "arenaOnlyClass4to7": 61,
+  "arenaOnly": 147,
+  "arenaOnlyClass4to7": 60,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 8,
    "nishana": 14,
    "kyun-lab": 14,
    "kaal": 6,
-   "kila": 5,
+   "kila": 6,
    "kon": 9,
    "naksha": 5,
    "nazariya": 11,
@@ -1902,6 +1902,81 @@
    },
    "contexts": [],
    "why": "RULES c6-maths-ch05-t01 kila/factors/all · ACTS"
+  },
+  "c6-maths-ch05-t05-s1": {
+   "topicId": "c6-maths-ch05-t05",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "ones",
+   "grammar": {
+    "divisors": [
+     2,
+     5,
+     10
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c6-maths-ch05-t05 kila/divisibility/ones · ACTS"
+  },
+  "c6-maths-ch05-t05-s2": {
+   "topicId": "c6-maths-ch05-t05",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "tail",
+   "grammar": {
+    "divisors": [
+     4,
+     8
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {
+    "ends-in-four": "c6-maths-ch05-t05-m-four-last-digit"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch05-t05 kila/divisibility/tail · ACTS"
+  },
+  "c6-maths-ch05-t05-s3": {
+   "topicId": "c6-maths-ch05-t05",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "sum",
+   "grammar": {
+    "divisors": [
+     3,
+     9
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {
+    "last-digit-for-3": "c6-maths-ch05-t05-m-three-last-digit",
+    "three-for-nine": "c6-maths-ch05-t05-m-nine-implies"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch05-t05 kila/divisibility/sum · ACTS"
   },
   "c7-maths-ch11-t02-s1": {
    "topicId": "c7-maths-ch11-t02",
@@ -6574,42 +6649,6 @@
    "contexts": [],
    "why": "RULES c6-maths-ch05-t03 arena/pick/pick · ACTS"
   },
-  "c6-maths-ch05-t05-s1": {
-   "topicId": "c6-maths-ch05-t05",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t05 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch05-t05-s2": {
-   "topicId": "c6-maths-ch05-t05",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t05 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch05-t05-s3": {
-   "topicId": "c6-maths-ch05-t05",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch05-t05 arena/pick/pick · ACTS"
-  },
   "c6-maths-ch06-t02-s2": {
    "topicId": "c6-maths-ch06-t02",
    "family": "arena",
@@ -9231,7 +9270,6 @@
   "c6-maths-ch02-t01",
   "c6-maths-ch03-t02",
   "c6-maths-ch04-t01",
-  "c6-maths-ch05-t05",
   "c6-maths-ch06-t03",
   "c6-maths-ch08-t03",
   "c6-maths-ch09-t02",
@@ -11059,6 +11097,96 @@
    "misMap": {
     "product": "c6-maths-ch05-t01-m-common-product",
     "gcd-for-lcm": "c6-maths-ch05-t01-m-factor-multiple"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch05-t05",
+   "title": "Divisibility tests",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "ones",
+   "skillId": "c6-maths-ch05-t05-s1",
+   "skillIds": [
+    "c6-maths-ch05-t05-s1"
+   ],
+   "grammar": {
+    "divisors": [
+     2,
+     5,
+     10
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c6-maths-ch05-t05",
+   "title": "Divisibility tests",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "tail",
+   "skillId": "c6-maths-ch05-t05-s2",
+   "skillIds": [
+    "c6-maths-ch05-t05-s2"
+   ],
+   "grammar": {
+    "divisors": [
+     4,
+     8
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {
+    "ends-in-four": "c6-maths-ch05-t05-m-four-last-digit"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch05-t05",
+   "title": "Divisibility tests",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kila",
+   "mode": "divisibility",
+   "goal": "sum",
+   "skillId": "c6-maths-ch05-t05-s3",
+   "skillIds": [
+    "c6-maths-ch05-t05-s3"
+   ],
+   "grammar": {
+    "divisors": [
+     3,
+     9
+    ],
+    "digits": [
+     3,
+     5
+    ],
+    "foes": [
+     8,
+     10
+    ]
+   },
+   "misMap": {
+    "last-digit-for-3": "c6-maths-ch05-t05-m-three-last-digit",
+    "three-for-nine": "c6-maths-ch05-t05-m-nine-implies"
    }
   },
   {

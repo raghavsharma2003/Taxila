@@ -44,7 +44,7 @@ export const MODES = {
   yantra: ["beam", "circuit", "pendulum"],
   kaal: ["place", "order"],
   vakya: ["rail"],
-  kila: ["multiples", "factors", "lcm"],
+  kila: ["multiples", "factors", "lcm", "divisibility"],
   naksha: ["locate", "route", "scale", "shape"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
