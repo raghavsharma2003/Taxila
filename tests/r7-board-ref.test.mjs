@@ -32,3 +32,25 @@ test("board refs: certify runs the full gate (the line must say what the board s
   assert.equal(leak.ok, false, "a ref that places the asked fraction is refused");
   assert.ok(leak.failed.includes("W9.no_reveal"));
 });
+
+test("board-first preselect builds the board a scripted beat names (intent.boardRef), else the code's own pick", async () => {
+  const BF = await import("../server/stagecraft/board-first.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const k6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const ask = (id, boardRef) => ({ intent: { intentId: id, lessonId: id.split(":wb:")[0], kind: "whiteboard", beat: "explain", style: { band: "B3" }, ...(boardRef ? { boardRef } : {}) },
+    line: { lessonId: id.split(":wb:")[0], text: "" }, mode: "fresh", kit: { topicId: k6.topicId, content: [k6.expectations[0]] } });
+  const ref = { template: "measured@1", shape: "rect", w: 50, h: 30, unit: "m", trace: true };
+  const p = BF.preselect(ask("sref1:wb:1", ref), { kit: k6 });
+  assert.equal(p?.by, "script", JSON.stringify(p && { by: p.by, template: p.template }));
+  assert.equal(p.template, "measured@1");
+  // (gated like any board: a side that is some item's answer is written "?" until her line says it)
+  assert.match(JSON.stringify(p.facts), /m/);
+  // Brain's nested form is the same ref
+  assert.equal(resolveBoardRef({ template: "measured@1", params: { shape: "rect", w: 50, h: 30, unit: "m" } }).ok, true);
+  // a ref that cannot render falls back to the code's pick (never no board because of a bad ref)
+  const before = BF.scriptRefStats().failed;
+  const q = BF.preselect(ask("sref2:wb:1", { template: "measured@1", shape: "rect", w: -1, h: 3, unit: "m" }), { kit: k6 });
+  assert.equal(BF.scriptRefStats().failed, before + 1);
+  assert.notEqual(q?.by, "script");
+});

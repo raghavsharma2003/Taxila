@@ -51,7 +51,9 @@ export function resolveBoardRef(ref, ctx = {}) {
       const call = codePick({ kit: ctx.kit ?? null, item: ctx.item ?? null, ...(ctx.text ? { text: ctx.text } : {}) });
       return call ? { ok: true, call } : { ok: false, why: "no_code_pick" };
     }
-    const { template, withhold, ...params } = ref;
+    // (both shapes Brain's BoardRef allows: flat { template, ...params } and { template, params: {...} })
+    const { template, withhold, params: nested, ...flat } = ref;
+    const params = { ...flat, ...(nested && typeof nested === "object" ? nested : {}) };
     if (!Object.hasOwn(BOARD_REFS, template)) return { ok: false, why: `unknown_template:${template}` };
     const call = { template, ...params, ...(withhold === "item" ? { hideResult: true } : {}) };
     const x = expand(call);

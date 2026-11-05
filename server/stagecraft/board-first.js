@@ -27,6 +27,8 @@ import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { scriptFacts, isMotionOp } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
+import { resolveBoardRef } from "../forge/explainer/board-ref.js";
+import { expand } from "../forge/explainer/templates.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -52,6 +54,9 @@ export function askSignature(ask) {
 const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · served to the real turn's pick · shown · dropped (another move)
 /** Board-first lookahead counters for this replica (GET /api/studio/timing). */
 export const prewarmStats = () => ({ ...prewarmed });
+// round 7 (dc-r7-teaching-scripts): script board refs that did not render (the turn fell back to the code's pick)
+const scriptRefs = { failed: 0 };
+export const scriptRefStats = () => ({ ...scriptRefs });
 /** Tests only. */
 export function _resetPrewarm() { prewarmed.made = prewarmed.hit = prewarmed.used = prewarmed.stale = 0; }
 
@@ -112,6 +117,17 @@ export function rowOfFacts(facts, counts = {}) {
 function candidates(ask, kit, lessonId, band, predicted) {
   const out = [];
   const item = ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? null : null;
+  // round 7 (dc-r7-teaching-scripts): a scripted beat NAMES its board (intent.boardRef, Brain's whiteboardIntentOf from the
+  // lesson script). It is tried first and gated like any other; a ref that fails falls through to the code's own pick
+  const ref = ask?.intent?.boardRef;
+  if (ref) {
+    try {
+      const r = resolveBoardRef(ref, { kit, item, text: predicted });
+      const x = r.ok ? expand(r.call, { band, lessonId }) : null;
+      if (x?.ok) out.push({ script: fitLegible(x.script), by: "script", template: r.call.template, facts: x.facts });
+      else scriptRefs.failed++;
+    } catch { scriptRefs.failed++; }
+  }
   for (const t of [{ text: predicted }, {}]) {
     try {
       const x = explainerFor({ lessonId, kit, item, openItem: item, band, ...t });
