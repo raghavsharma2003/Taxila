@@ -19,6 +19,7 @@ import { makeKaalView } from "./kaal/kaal.view.ts";
 import { makeVakyaView } from "./vakya/vakya.view.ts";
 import { makeKilaView } from "./kila/kila.view.ts";
 import { makeNakshaView } from "./naksha/naksha.view.ts";
+import { makeDarpanView } from "./darpan/darpan.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -59,5 +60,7 @@ export const VIEWS: Record<string, MakeView> = {
   "naksha/route": makeNakshaView,
   "naksha/scale": makeNakshaView,
   "naksha/shape": makeNakshaView,
+  "darpan/mirror": makeDarpanView,
+  "darpan/turn": makeDarpanView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

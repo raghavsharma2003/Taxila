@@ -47,6 +47,9 @@ export const PLAY_ACTS = Object.freeze({
     route: { act: "build", hi: "raasta banao aur chalao", en: "plan the route and run it" },
     scale: { act: "set", hi: "scale se naapo aur truck chalao", en: "measure with the scale and drive the truck" },
     shape: { act: "build", hi: "naksha jaisi baad lagao", en: "fence it like the plan" } },
+  // r7 games: Darpan (symmetry): lay the mirror lines and fold; turn the figure on the turntable and spin
+  darpan: { mirror: { act: "place", hi: "aaine ki lakeerein rakho aur modo", en: "lay the mirror lines and fold" },
+    turn: { act: "set", hi: "ghumao aur chakri chalao", en: "turn it and spin" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
