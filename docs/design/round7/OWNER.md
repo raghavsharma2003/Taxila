@@ -84,6 +84,12 @@ in parts, start with tiers 1 and 2 (~$21).
   
   Write-up: `judgements/director2-2026-11-04.md`.
 - A stronger reply model (taxila-gpt6) was tried: no teaching gain, +0.7 s, about 6× the cost. Kept the fast model (`dc-r7-reply-model-fast`).
+- 2026-11-05: **authored lesson scripts** (`dc-r7-teaching-scripts`). Claude writes the teaching per skill, a second
+  Claude checks every answer blind, and the Director walks the script.
+  - Pilot run (director4, 12 lessons, $0.20):
+    - The maths is right now, and the lesson has a spine.
+    - But she still walks the beats like a clock: a beat counts whether or not she taught it, the explanation beats ask no keyed question, and English script text is read aloud.
+  - Next: format v2 plus beat-completion rules (`dc-r7-script-walk-v2`). No scale-out to 30 topics until director5 passes a measured gate. Write-up: `judgements/director4-2026-11-05.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 
