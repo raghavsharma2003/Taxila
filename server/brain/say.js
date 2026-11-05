@@ -1591,6 +1591,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     reply = [body, /[.!?।]$/.test(point.trim()) ? point.trim() : `${point.trim()}.`, card].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
     guard.pointSaid = true;
   }
+  // director6 (K1/K2, after every repair above): the verdict on a graded answer is the FIRST thing she says.
+  // - wrong: the not-right sentence leads. A give-up reveal of the previous card ("Pichhle sawaal ka jawab …") or an S1 fixed
+  //   line had pushed it second or dropped it (14 of director6's 16 verdict misses); a later one is moved up, a missing one
+  //   added by code (never the key)
+  // - right: her line never negates their answer ("Riya, 1/8 nahi; …" to a graded-right 1/8, director6's one right answer
+  //   called wrong); the negation goes and the line leads with a plain yes
+  if (listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && answeredNow && !clause.sent) {
+    const ss = sentences(reply);
+    const isLead = (x) => NOT_RIGHT.test(String(x).replace(/\bkoi\s+baat\s+nahi?n?\b/gi, "")) && !affirmsAnswer(x);
+    if (verdict === "not_yet" && ss.length && !isLead(ss[0])) {
+      const key = String(item?.answer ?? "").trim();
+      const at = ss.findIndex((x) => isLead(x) && words(x) <= 12 && !(key && x.includes(key)));
+      reply = at > 0 ? [ss[at], ...ss.filter((_, i) => i !== at)].join(" ").replace(/\s+/g, " ").trim()
+        : `${notRightLead(key && saidNow.includes(key) ? "" : saidNow, lang)} ${reply}`.trim();
+      guard.verdictFirst = at > 0 ? "moved" : "added";
+    } else if (verdict === "correct" && (negatesAnswer(reply, saidNow) || !affirmsAnswer(ss[0] ?? ""))) {
+      // (an S1 fixed line or the card alone carries no yes: the graded-right answer is still confirmed first)
+      const yes = lang === "english" ? "Yes, that's right." : "Haan, sahi hai.";
+      const neg = negatesAnswer(reply, saidNow);
+      reply = `${yes} ${neg ? withoutNegation(reply, saidNow) : reply}`.replace(/\s+/g, " ").trim();
+      guard.verdictFirst = neg ? "unnegated" : "confirmed";
+    }
+  }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.

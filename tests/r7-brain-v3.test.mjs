@@ -86,6 +86,27 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(L.r.move.scriptBeat?.beatId, "e1", JSON.stringify(L.r.move.scriptBeat));
     assert.deepEqual(L.r.move.scriptBeat?.board, S1.explain[0].board);
   });
+
+  test("director6: the verdict leads, even after a give-up reveal or an S1 fixed line; a graded-right answer is never negated", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const card = L.r.ui.ask.text;
+    const st = { ...L.r.state, mode: "text" };
+    // a wrong answer with the previous card's give-up reveal on the move: the reveal never comes before the verdict
+    replyDeps.chat = async () => ({ text: `9 sahi nahi hai. Chalo phir se dekhte hain. ${card}` });
+    const a = await textReply({ instructions: "x", state: { ...st, lastMove: { ...st.lastMove, gave: { answer: "38 m", why: "" } } }, kit: K, childText: "9", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    assert.match(a.reply, /^9 sahi nahi hai\./, a.reply);
+    assert.ok(a.reply.includes("38 m"), "the reveal is still said");
+    // a wrong answer whose line has no verdict at all: code adds it
+    replyDeps.chat = async () => ({ text: card });
+    const b = await textReply({ instructions: "x", state: st, kit: K, childText: "9", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    assert.match(b.reply, /^(?:9 sahi nahi hai|Nahi, yeh jawab nahi hai)\./, b.reply);
+    // a graded-right answer negated by her line ("1/8 nahi"): the negation goes, a plain yes leads
+    replyDeps.chat = async () => ({ text: `Riya, 12 cm nahi; teeno bhujayein jodo. ${card}` });
+    const c = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.match(c.reply, /^Haan, sahi hai\./, c.reply);
+    assert.doesNotMatch(c.reply, /12 cm nahi/, c.reply);
+  });
 });
 
 test("v2.1 validator: {friend} not the child or Asha, no '?' glyph, no echo ask, ≤3 worked steps (c4-5), follow-ups with a board", async () => {
