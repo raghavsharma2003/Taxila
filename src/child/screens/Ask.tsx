@@ -7,7 +7,9 @@
 import { useRef, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
-import { ChildScreen } from "../chrome.tsx";
+import { ChildScreen, useKx } from "../chrome.tsx";
+import { Cta, Glyph, Panel } from "../../ui-v3/kaksha/kit.tsx";
+import { kt } from "../../ui-v3/kaksha/copy.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { LessonScreen } from "../lesson/LessonScreen.tsx";
@@ -22,6 +24,7 @@ export function Ask() {
   const [asked, setAsked] = useState<string | null>(null);
   const field = useRef<HTMLTextAreaElement>(null);
   const [search] = useSearchParams();
+  const kx = useKx();
   // Homework help (STUDENT-FLOW §4.2 `homework`, parent-switched) is open to every class; plain Ask is Older only
   const homework = search.get("homework") === "1";
   if (family === "young" && !homework) return <Navigate to={`/c/${cid}`} replace />;
@@ -29,6 +32,23 @@ export function Ask() {
   if (plan.state === "safety_hold" || cachedHold(cid)) return <Navigate to={`/c/${cid}`} replace />;
   if (asked) return <LessonScreen variant="doubt" firstText={asked} />;
   const ready = text.trim().length > 0;
+  const submit = (e: { preventDefault: () => void }) => { e.preventDefault(); if (ready) setAsked(text.trim()); };
+  if (kx) {
+    // Kaksha: one HUD panel, the field as a console, the one plasma action. Homework help names itself.
+    return (
+      <ChildScreen testid="ask" ground="ask" title={homework ? kt("homeworkCta") : t("askTitle", { T: rec.name })} surfaces={plan.surfaces} className="kx-ask">
+        <Panel as="form" eyebrow={t("askField")} className="kx-ask-card" testid="ask-card" onSubmit={submit}>
+          <textarea id="ask-q" ref={field} className="kx-field" rows={4} maxLength={600} value={text} aria-label={t("askField")}
+            onChange={(e) => setText(e.target.value)} placeholder={t("askPlaceholder")} aria-describedby={ready ? undefined : "ask-why"} />
+          <div className="kx-ask-src" role="group" aria-label={t("askField")}>
+            <button type="button" className="kx-chip kx-cut" onClick={() => field.current?.focus()}><Glyph name="type" size={20} /><span>{t("askType")}</span></button>
+          </div>
+          {!ready && <p id="ask-why" className="kx-tagline">{t("askReason")}</p>}
+          <Cta type="submit" disabled={!ready} testid="ask-go">{t("askGo")}</Cta>
+        </Panel>
+      </ChildScreen>
+    );
+  }
   return (
     <ChildScreen testid="ask" ground="ask" title={t("askTitle", { T: rec.name })} surfaces={plan.surfaces} className="ask">
       <form className="cs-card ask-card" onSubmit={(e) => { e.preventDefault(); if (ready) setAsked(text.trim()); }}>
