@@ -130,25 +130,35 @@ const HI_COUNT = { ek: 1, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, panch: 5
 const NUM_W = "(\\d+|ek|do|teen|chaa?r|paa?nch|chhe|chhah|saat|aath|nau|das)";
 const countOf = (w) => /^\d+$/.test(w) ? Number(w) : HI_COUNT[w.toLowerCase()] ?? null;
 const COUNTED = [
-  ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:chhote\\s+)?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
-  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups]],
-  ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => (c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps])],
+  // (director6: "beech mein 3 chalk ke nishaan": up to two words between the count and the marks)
+  ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:[\\p{L}]+\\s+){0,2}?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
+  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups, c.shaded]],
+  // ("teen mark hain: 1/2, 1/4 aur 1/8": the labelled marks count too)
+  ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps]), ...(Array.isArray(c.marks) && c.marks.length ? [c.marks.length] : [])]],
   ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
   ["shaded", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hisse\\s+|parts?\\s+|tukde\\s+)?(?:shaded|rangi\\w*|rangee\\w*|colou?red)(?![\\p{L}])`, "giu"), (c) => [c.shaded]],
 ];
 const DEICTIC = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye|\b(?:yahan|is|iss|ye|yeh)\s+(?:line|rekha|shape|aakar|chitra?|figure|rectangle|triangle|square|circle|pentagon|hexagon|patti|strip|kyaari)/i;
+/** Every number a board counted (SC1), for the pointed-number check: a count said is never "a number the board lacks". */
+const countNumbers = (c) => !c ? [] : [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole, l.ticks, l.innerTicks]), c.parts, c.shaded, c.rows, c.cols, c.groups, c.each,
+  c.sides, c.corners, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
 /** SC1: does this sentence state a count the board's counted facts contradict? */
 export function countContradicts(x, counts) {
   if (!counts || !DEICTIC.test(x)) return false;
   // "beech mein N" claims are inner marks only; the plain "N marks" rule then skips them
   const t = String(x);
+  const lineMax = Math.max(0, ...(counts.lines ?? []).map((l) => l.gaps ?? 0));
   for (const [kind, re, allowed] of COUNTED) {
     for (const m of t.matchAll(re)) {
       if (kind === "ticks" && /beech\s+mein\s*$/i.test(t.slice(0, m.index))) continue;
       if (kind === "gaps" && /^\s*(?:hisse\s+|parts?\s+|tukde\s+)?(?:shaded|rangi|rangee|colou?red)/i.test(t.slice(m.index + m[0].length))) continue;
+      const n = countOf(m[1]);
+      // ("ek gap ki value", "ek kone se": one of them, never a count of the board)
+      if (n === 1 && /^ek$/i.test(m[1])) continue;
+      // (on a line, "3 tukde … 3/8 tak" is a stretch of it, as Studio's W10 reads it; only "N barabar …" names the division)
+      if (kind === "gaps" && lineMax && !m[2] && n != null && n <= lineMax) continue;
       const ok = allowed(counts).filter((v) => typeof v === "number");
       if (!ok.length) continue;                       // not counted by this board: never flagged
-      const n = countOf(m[1]);
       if (n != null && !ok.includes(n)) return true;
     }
   }
@@ -173,7 +183,12 @@ export function screenContradictions(text, facts) {
       // (SC1: a number that is a count — "4 hisse", "beech mein 3 nishaan" — is the counts' business, never this check's:
       // director5's false flags were counts the board drew but never wrote)
       const bare = COUNTED.reduce((acc, [, re]) => acc.replace(re, " "), x);
-      const ns = (bare.match(/\d+(?:\/\d+)?/g) ?? []);
+      const counted = countNumbers(facts.counts);
+      // (a fraction that lands on what is drawn, a/b × D whole for the board's parts or gaps D, is the board's own: "1/2" over a
+      // roti in 2, "1/4" over a line in eighths; director6's last 2 false flags)
+      const units = facts.counts ? [facts.counts.parts, ...(facts.counts.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole])].filter((v) => typeof v === "number" && v > 0) : [];
+      const onBoard = (n) => { const m = /^(\d+)\/(\d+)$/.exec(n); return !!m && Number(m[2]) > 0 && units.some((D) => Number.isInteger((Number(m[1]) * D) / Number(m[2]))); };
+      const ns = (bare.match(/\d+(?:\/\d+)?/g) ?? []).filter((n) => !counted.includes(n) && !onBoard(n));
       if (ns.some((n) => !facts.numbers.some((m) => m === n || m.startsWith(`${n} `) || m.split(/[^\d/]+/).includes(n)))) return true;
     }
     return false;

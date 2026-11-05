@@ -245,7 +245,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
     const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(reply) || !NOT_RIGHT.test(firstS) : NOT_RIGHT.test(firstS)) : null;
     const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
-    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim()) && NOT_RIGHT.test(firstS);
+    // (a keyed right answer graded not_yet, or met with a not-right lead that does not affirm: "Sahi, … barabar nahi hain" to the
+    // key "nahi" is an affirmation, director6's 3 false counts)
+    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim())
+      && (graded === "not_yet" || (NOT_RIGHT.test(firstS) && !affirmsAnswer(reply)));
     const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong },

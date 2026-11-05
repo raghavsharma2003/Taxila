@@ -154,3 +154,23 @@ test("scriptWhyNot names why a topic has no walkable script (version, missing fi
     for (const [k, v] of [["TAXILA_R7_SCRIPT", keep.s], ["TAXILA_R7_SCRIPT_DIR", keep.d]]) if (v === undefined) delete process.env[k]; else process.env[k] = v;
   }
 });
+
+test("SC1 (director6): authored lines that match their board are never flagged; real miscounts still are", async () => {
+  const { screenContradictions } = await import("../server/brain/say.js");
+  const f = (numbers, counts) => ({ shape: null, numbers, counts });
+  const eighths = f(["0", "1", "1/8", "1/4", "1/2"], { lines: [{ gaps: 8, ticks: 9, innerTicks: 7 }], marks: [{ at: "1/8", label: "1/8" }, { at: "2/8", label: "1/4" }, { at: "4/8", label: "1/2" }] });
+  const quarters = f(["0", "1", "1/4"], { lines: [{ gaps: 4, ticks: 5, innerTicks: 3 }], marks: [{ at: "1/4", label: "1/4" }] });
+  const bar = f(["8", "2"], { parts: 8, shaded: 2 });
+  const roti = f(["1", "2"], { parts: 2, shaded: 1 });
+  const rect = f(["14", "6"], { sides: 4, corners: 4, sideValues: ["14 m", "6 m", "14 m", "6 m"] });
+  for (const [t, facts] of [
+    ["Screen par 0 se 1 ki ek hi line par teen mark hain: 1/2, 1/4 aur 1/8, aur 1/8 bilkul 0 ke paas hai.", eighths],
+    ["Screen par 0 se 1 metre tak ka ribbon hai, beech mein 3 chalk ke nishaan hain, aur ribbon 4 barabar hisson mein bata hai.", quarters],
+    ["Is patti ke 8 barabar hisse hain, aur rang wale 2 hisse milkar theek ek 1/4 jitne lambe hain.", bar],
+    ["Board par 2 barabar tukde hain: har tukda aadha, yaani 1/2.", roti],
+    ["Ek cheenti is rectangle ke ek kone se chalti hai, uske paas ek meter hai.", rect],
+  ]) assert.deepEqual(screenContradictions(t, facts), [], t);
+  assert.equal(screenContradictions("Screen par dekho, beech mein 5 nishaan hain.", quarters).length, 1, "a wrong inner-mark count");
+  assert.equal(screenContradictions("Is patti ke 6 barabar hisse hain.", bar).length, 1, "a wrong division");
+  assert.equal(screenContradictions("Board par dekho, 2/3 ka nishaan hai.", eighths).length, 1, "a fraction off every tick");
+});
