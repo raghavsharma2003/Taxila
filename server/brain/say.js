@@ -138,6 +138,17 @@ export function screenContradictions(text, facts) {
     return false;
   });
 }
+/** Did her line say the authored point (most of its content words; numbers all)? (dc-r7-script-walk-v3 V2) */
+export function pointSaid(text, point) {
+  const t = String(text ?? "").toLowerCase();
+  const ws = (String(point ?? "").toLowerCase().match(/[\p{L}\p{N}/]+/gu) ?? []).filter((w) => w.length >= 3 || /\d/.test(w));
+  if (!ws.length) return true;
+  const nums = ws.filter((w) => /\d/.test(w));
+  if (nums.some((n) => !new RegExp(`(?<![\\d/])${n.replace(/[/]/g, "\\/")}(?![\\d/])`).test(t))) return false;
+  return ws.filter((w) => t.includes(w)).length / ws.length >= 0.7;
+}
+const REMEDY_FRAME = { hinglish: ["Chalo, ise ek naye tareeke se dekhte hain.", "Ek alag tarah se sochte hain.", "Isse aise samjho."],
+  english: ["Let's look at it another way.", "Here is a different way to see it.", "Think of it like this."] };
 // round 7 T3 (dc-r7-teaching-scripts, the listening contract; kill switch TAXILA_R7_LISTEN=off)
 export const listenOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_LISTEN ?? ""));
 /** A sentence that tells them their answer is not right (or not yet). */
@@ -279,6 +290,8 @@ export const withoutInWords = (t) => String(t ?? "").replace(IN_WORDS, "").repla
 const PARK_STOP = new Set(["mujhe", "baare", "mein", "baat", "karni", "karte", "hain", "about", "talk", "want", "pasand", "chahiye", "kuch"]);
 /** A fixed line with content for a turn with no card: the move's rendered lines, else the worked example's opening, in code. */
 function contentFallback(state, kit, lang) {
+  // (dc-r7-script-walk-v3 G2: while a script is walked the kit's worked example never speaks; the beat's own lines or its point)
+  if (state.lastMove?.scriptBeat && !state.lastMove?.rendered?.length) return state.lastMove?.point ?? null;
   const lines = state.lastMove?.rendered?.length ? state.lastMove.rendered : renderWorked(kit?.workedExample, { part: 1, parts: 2, lang: lang === "english" ? "english" : "hinglish" });
   if (!lines?.length) return null;
   return [pickOf(WORKED_FRAME_PART[lang === "english" ? "english" : "hinglish"], state), ...lines.slice(0, 2), pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state)].join(" ");
@@ -809,6 +822,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     && words(String(t).trim().slice(0, String(t).trim().length - String(askEnd).trim().length)) <= (LEAD_MAX_WORDS[state.ctx.ageBand] ?? 30);
   // G-PRAISE-2: after a right answer the acknowledgement never states a wrong option as the result (say.js correctsRight).
   const right = verdict === "correct" && state.lastRight?.wrong?.length ? { ...state.lastRight, nextPrompt: item ? promptFor(item, lang) : ahead ? promptFor(ahead, lang) : "" } : null;
+  // dc-r7-script-walk-v3: a scripted move (G2: no kit derivation; G3: its authored point never counts as a leak)
+  const scripted = !!state.lastMove?.scriptBeat;
+  const point = state.lastMove?.point ?? null;
+  const notPoint = (t) => (point ? String(t).split(point).join(" ") : String(t));
   const problems = (t) => [
     floorOf(t).length && "floor",
     !talkOk && harmTalk(t) && "harmtalk",
@@ -849,8 +866,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (full-run judgement #6, #5)
     kindNow !== "safeguard" && belowLevel(t, state.ctx?.classLevel, kitText) && "level",
     !CLOSING_MOVES.has(kindNow) && answerInQuestion(t) && "answerinq",
-    !CLOSING_MOVES.has(kindNow) && underived(t, item, kit?.workedExample?.problem) && "underived",
-    (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
+    !scripted && !CLOSING_MOVES.has(kindNow) && underived(t, item, kit?.workedExample?.problem) && "underived",
+    (guardable && revealsAnswer(notPoint(t), item) || ahead && revealsAnswer(notPoint(t), ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
     !!arithmeticSlip(own(t)) && "math",
@@ -998,7 +1015,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const repeatNote = cardRepeat && !CLOSING_MOVES.has(kindNow) ? "Your last turn already read the question on the screen word for word: ask it again in fresh words (shorter, or from another side), keeping its numbers, never the same sentence and never its answer." : null;
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
-  const workedLines = kindNow === "worked_example" && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
+  // (dc-r7-script-walk-v3 V1: a scripted remediation's authored explanation is spoken by code the same way)
+  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && state.lastMove?.scriptBeat?.kind === "remediation")) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
   const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
   try {
@@ -1437,11 +1455,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     // round 7 T3 (listening contract): a wrong answer is ALWAYS corrected, first: graded wrong (or wrong to her own closed sum),
     // and her first sentence does not say it is not right → code says it before her line (never on a safeguard or closing turn)
-    if (listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && answeredNow && (verdict === "not_yet" || selfV === "incorrect")
+    // (K1: only a GRADED wrong answer to the keyed question just asked; never her own unkeyed question's check)
+    if (listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && answeredNow && verdict === "not_yet"
       && !NOT_RIGHT.test(sentences(reply)[0] ?? reply)) {
       // (their words carrying the key — "1/3" said of a 1/3 card in a wrong form — are never repeated: that would say the key)
       const key = String(item?.answer ?? "").trim();
-      reply = `${notRightLead(key && saidNow.includes(key) ? "" : saidNow, lang)} ${reply}`.trim();
+      // (director5: "1/2 sahi nahi hai. 1/2? Achha, dekhte hain…": the model's echo of their answer and its hedge contradict the
+      // lead; they go)
+      const echo = saidNow.replace(/[?？!.]+$/, "").trim().toLowerCase();
+      const kept = sentences(reply).filter((x) => { const t = x.trim().toLowerCase().replace(/[?？!.]+$/, "");
+        return !(echo && t === echo) && !/^(?:achha|accha|acha|hmm+|chalo|theek hai),?\s*(?:dekhte|dekhtey)\s+hain/i.test(x.trim()); });
+      reply = `${notRightLead(key && saidNow.includes(key) ? "" : saidNow, lang)} ${kept.join(" ")}`.trim();
       guard.repaired = true; guard.caught = [...guard.caught, "uncorrected"];
     }
     const tidied = tidyAround(reply, pinned ? askEnd : null);
@@ -1462,10 +1486,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const first = sentences(reply)[0] ?? "";
     const whole = workedLines.some((l) => /^(?:Toh jawab|So the answer is):/.test(l));
     // her framing may state the problem with its own numbers (the invented guard holds them to the kit); never a question
-    const framing = first && !/[?？]/.test(first) && words(first) <= 30 && !foreignOf(first).length ? first.trim()
-      : pickOf((whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state);
+    const remedy = kindNow === "reteach";
+    const framing = first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !(remedy && /\d/.test(first)) ? first.trim()
+      : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state);
     const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
-    reply = [framing, ...workedLines, ask].join(" ").replace(/\s+/g, " ").trim();
+    // v3 K2: a remediation follows a graded wrong answer, and its board goes up on this turn, so the verdict is said first:
+    // her lead when it says "not right" (and not the key), else code's
+    const key0 = String(state.lastMove?.content?.find((c) => /^its answer: /.test(c))?.slice(12) ?? "").trim();
+    const lead = remedy && verdict === "not_yet" ? (NOT_RIGHT.test(first.replace(/\bkoi\s+baat\s+nahi?n?\b/gi, "")) && words(first) <= 15 && !(key0 && first.includes(key0)) ? first.trim()
+      : notRightLead(key0 && saidNow.includes(key0) ? "" : saidNow, lang)) : null;
+    reply = [lead ?? framing, ...workedLines, ask].join(" ").replace(/\s+/g, " ").trim();
     if (problems(reply).includes("bracket")) reply = sayBrackets(reply, state.lastContent ?? [], lang); // spoken: "50 plus 30, that is 80, times 2"
     if (problems(reply).includes("ignored") && bareNumberSaid != null) reply = `${ignoredLead(bareNumberSaid, lang, state)} ${reply}`;
     guard.workedCode = true;
@@ -1485,7 +1515,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (bad.length) {
       const card = ui?.ask?.text ?? askEnd ?? null;
       const cands = [
-        bad.includes("underived") && card ? (() => { const l = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang); return l ? joinAsk(l, card) : null; })() : null,
+        !scripted && bad.includes("underived") && card ? (() => { const l = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang); return l ? joinAsk(l, card) : null; })() : null,
         englishCard ? (address === "aap" ? ENGLISH_CARD_LINE.aap : ENGLISH_CARD_LINE.tum) : null,
         // (director3: "Chalo, isko ek chhote step mein saath mein dekhte hain." alone, content-free) no card: the fixed line carries
         // the lesson's own content, the worked example's first lines rendered in code
@@ -1496,6 +1526,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (fixed) { guard.enforced = bad; reply = fixed; guard.replaced = true; }
       else guard.unenforced = bad;
     }
+  }
+  // dc-r7-script-walk-v3 V2 / G1: a scripted explain beat's authored point is in what she says. When her line (or what a guard
+  // left of it) lacks it, code says the point verbatim before the card: a guard never leaves the card alone
+  if (point && kindNow === "explain" && !pointSaid(reply, point)) {
+    const card = ui?.ask?.text ?? askEnd ?? null;
+    const body = card && String(reply).includes(card) ? String(reply).replace(card, " ").replace(/\s+/g, " ").trim() : String(reply).trim();
+    reply = [body, /[.!?।]$/.test(point.trim()) ? point.trim() : `${point.trim()}.`, card].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+    guard.pointSaid = true;
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }

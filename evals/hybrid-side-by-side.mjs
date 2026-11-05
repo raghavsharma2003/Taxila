@@ -17,7 +17,7 @@ import { classify, classifyFast, targetFor } from "../server/director/classify.j
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
-import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts } from "../server/brain/say.js";
+import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust } from "../server/director/script.js";
 import { createReactiveChild, MIN_TURNS } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
@@ -60,8 +60,9 @@ const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Dat
 
 if (DRY) {
   // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
-  replyDeps.chat = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" });
-  replyDeps.chatStream = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" });
+  // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
+  replyDeps.chat = async () => { dryCall("reply"); return { text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }; };
+  replyDeps.chatStream = async () => { dryCall("reply"); return { text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }; };
 } else if (!process.env.AZURE_OPENAI_ENDPOINT) {
   console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
   process.exit(2);
@@ -74,6 +75,7 @@ const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOStri
 const CAP = Number(arg("cap", "150"));
 const USD_CAP = Number(arg("usd", "2"));
 export const meter = { calls: 0, usd: 0, byDeployment: {} };
+function dryCall(kind) { meter.calls++; meter.byDeployment[kind] = (meter.byDeployment[kind] ?? 0) + 1; }
 if (!DRY) {
   const { usdOf } = await import("../server/azure.js");
   const real = globalThis.fetch;
@@ -104,7 +106,7 @@ async function classOf(state, kit, text, classLevel) {
   const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
   const target = targetFor(state, kit, item);
   const args = { target, childText: text, lang: state.ctx?.lang, classLevel, typed: true };
-  if (DRY) { const f = classifyFast(args); return f.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }; }
+  if (DRY) { const f = classifyFast(args); if (!f.result) dryCall("classify"); return f.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }; }
   return classify(args);
 }
 
@@ -136,7 +138,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
-  const MAX = child ? MIN_TURNS + 10 : lines.length;
+  // (H1.1: steady runs 40 turns, so skills 2-3 are reached)
+  const MAX = child ? (persona === "steady" ? 40 : MIN_TURNS + 10) : lines.length;
   let lastBoardUp = false;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
@@ -231,12 +234,18 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const boardUp = !!(screen && screen.kind !== "none");
     // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
     // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
-    const delivered = next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
-    const answered = activeItem && ["correct", "incorrect", "misconception"].includes(c.outcome) ? c.outcome : null;
-    const verdictGiven = answered ? (answered === "correct" ? affirmsAnswer(reply) : NOT_RIGHT.test((String(reply).match(/[^.!?।]+[.!?।]*/) ?? [""])[0])) : null;
+    // (dc-r7-script-walk-v3 exact counts) delivered = the authored point spoken (explain beats); the verdict = the GRADED state
+    // (next.lastVerdict: a keyed answer graded correct / not_yet) plus the code verdict sentence; and right answers called wrong
+    const firstS = (String(reply).match(/[^.!?।]+[.!?।]*/) ?? [""])[0];
+    const delivered = next.lastMove?.point ? pointSaid(reply, next.lastMove.point) : next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
+    const graded = ["correct", "not_yet"].includes(next.lastVerdict) ? next.lastVerdict : null;
+    const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
+    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(reply) || !NOT_RIGHT.test(firstS) : NOT_RIGHT.test(firstS)) : null;
+    const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
+    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim()) && NOT_RIGHT.test(firstS);
     const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions },
+      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;

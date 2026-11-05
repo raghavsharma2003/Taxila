@@ -28,7 +28,7 @@ import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
 import { registerBroken } from "../director/register.js";
-import { verdictFor, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
+import { verdictFor, k1On, uiVerdict, askText, refersToScreen, wrongAnswersOf, boardClaimProblem, kitWordsOf, stripScreenRefs } from "../director/say.js";
 import { answersRequest, pointsAtStage, unpointGently, pictureSubjectOf, announcesGame, ungame, unassumeVisual, refersToBoard, boardPointer, seeNotImagine, stayOnScreen, selfAnswer, unanswer } from "../studio/request.js";
 import { drawableSubject } from "../director/state.js";
 import { mixedUnitComparison } from "../director/units.js";
@@ -1675,6 +1675,11 @@ export async function planTurn(base, cls, c) {
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
   const gradedTarget = targetFor(state, kit, activeItem);
   next.lastVerdict = verdictFor(cls, gradedTarget, { childText: c.childText });
+  // dc-r7-script-walk-v3 K1: a key closes once affirmed: the same answer said again right after it was called right is never
+  // "not right" now (no verdict contradicts the previous turn's)
+  const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
+  if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid) next.lastVerdict = "ungraded";
+  next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
   if (wrongShown.length) next.lastRight = { key: String(gradedTarget.key), wrong: wrongShown };
