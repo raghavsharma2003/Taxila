@@ -1,0 +1,169 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko cricket shares jaise samjhenge. Tumhe cricket mein batting pasand hai ya bowling?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1184
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—cricket pasand hai. Socho ek paratha ko 4 equal shares mein baanta; tum ek share logi ya do?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1107,
+   "replyReadyMs": 2291
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1444
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Ek share 4 mein se 1 hota hai—use one-fourth kehte hain. Agar 2 shares lo, kitne shares honge?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1008,
+   "replyReadyMs": 2452
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1710
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne “4” kaha—shayad tum total equal shares bata rahi ho. Kya tum 4 total shares kehna chahti ho?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2477,
+   "replyReadyMs": 4187,
+   "guard": [
+    "negates"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1385
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 1/4 mein 4 equal shares hote hain. Ab isi pattern se try karo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1802,
+   "replyReadyMs": 3187,
+   "guard": [
+    "answerinq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1402
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya. Blank mein kaunsa number aayega?",
+   "move": "repair",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1131,
+   "replyReadyMs": 2533,
+   "guard": [
+    "twoq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1273
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 6 likha. Ab 1/3 ko teen equal parts mein socho: 1 part, total kitne parts? Try karo.",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1055,
+   "replyReadyMs": 2328
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 1257
+  },
+  {
+   "who": "teacher",
+   "text": "Jaise 1/5 matlab pizza ke 5 equal pieces mein se 1 piece. Ab 1/3 mein total equal groups kitne hain—try karo.",
+   "move": "reteach",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1067,
+   "replyReadyMs": 2324
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1414
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, ab equal shares ko ek naye tareeke se practice karte hain. Main tumhare answer ka wait karungi. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1151,
+   "replyReadyMs": 2565
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1277
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 8 kaha. Roti ke total kitne equal tukde hain—4 ya 8? Ab sahi number chuno.",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1262,
+   "replyReadyMs": 2539
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1368
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum aaj ke liye rukna chahti ho. Screen par teen choices hain: continue, short break, ya aaj stop. Tum kya choose karogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1172,
+   "replyReadyMs": 2540
+  }
+ ],
+ "agent": []
+}

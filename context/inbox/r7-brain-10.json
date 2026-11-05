@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-director-block2",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 Director block 2 (main's full-run judgement, 11 items): code guards on the Director lane's line. Her line affirms only what the verified-key classifier graded correct this turn. An English card is never read aloud in a Hinglish lesson. A posed question stays live until it is answered, until two misses plus help, or until it is skipped. A worked example states its givens and never holds its answer. There is a class level floor. A promise is kept on the Later list. 'pata nahi' gets help, never 'didn't hear'. A game claim needs a game event. A card she already read word for word is asked in fresh words, and never re-read bare."
+  },
+  {
+   "id": "dc-r7-brain-lesson-brief",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (Learning patch 006): the lesson start reads the Conductor's plan through conductor/slot.js lessonBriefFor. Before this, planPrior only ever saw the home summary, which has no slots. planPrior also takes R5's prereqCheck (decideSegment opens foundation_first on it when the segment teaches its topic) and R9's foundationShare (capped at .6). The Director wraps at the next natural stop after brief.wrapAt and never runs past hardStopAt. With a null brief, the start behaves exactly as before."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-brain-director-block2 (2026-11-04, stream A Brain)\n\nMain judged the full hybrid run and named 11 Director-lane defects. The Director is the default lane, and the agent lane is frozen behind its flag. Each fix is a code guard or note in server/brain/say.js, server/director/shapes.js or server/director/later.js. Each has a test on the transcript turn (tests/r7-brain-full.test.mjs).\n\n1. affirms: an affirming opener on an answer the classifier did not grade correct or partial is cut.\n2. and 3. looksEnglish / readscard: an English card is never read aloud in a Hinglish lesson, and the card is unbound so she paraphrases it.\n4. ignored: a bare number off the target answer is addressed, never passed over.\n5. answerinq / underived: a worked example states every given before using it, and never puts the answer inside the question.\n6. level: no counting-on, tiny sums or 'kitni sides' from class 5 up, unless the kit says it.\n7. and 8. Diversions and promises: a diversion is parked and comes back, never with 'button dabakar'. Promises such as 'yaad rakhenge' and 'examples banaungi' are put on the Later list.\n9. A heard 'pata nahi' is a stuck signal and gets the help line.\n10. gameclaim: a game claim needs a game event, also on an answered turn.\n11. samecard: when the card was already read word for word on a pinned run, she is asked to rephrase. If the model still returns only the card, the fixed code lead she has not said yet goes before it, so a bare re-read never ships. VISUAL_NOT_YET says 'help them imagine it' and never 'in words'. steer:picture maps to request visual/diagram (director/steer.js), which goes to the board/Studio path.\n\nReversal: the Director-half rerun shows a guard firing on correct lines (false positives) at a rate the judge flags.\n\n## dc-r7-brain-lesson-brief (2026-11-04, stream A Brain)\n\nLearning found that routes/lesson.js passed the home's day-plan summary to sessionStartCtx, so planPrior never saw a live_lesson slot. Every lesson therefore opened on the defaults (standard_retrieval, no success-first, budget 1). The start now reads `lessonBriefFor(child.id)` next to the plan read and passes its plan. The brief's wrapAt and hardStopAt go on ctx.lessonBrief (only the clock, never prompt text). state.js leavePractice ends practice once wrapAt has passed. Any turn after hardStopAt wraps. The import is dynamic until server/conductor/slot.js reaches this branch (null → today's start). foundationShare is carried on the prior; nothing yet sizes foundation segments in minutes, so it is not yet enforced anywhere.\n\nReversal: a lesson cut short at wrapAt while the child is mid-item. leavePractice runs only between items, and a test covers this."
+ }
+}

@@ -289,8 +289,8 @@ describe("round3 conversation", () => {
   });
 
   test("stop check-in and boredom say back what they asked before the choices (the acknowledgement is explicit)", () => {
-    assert.match(SH.stopCheck(), /say back in a few warm words, in their words, that they want to stop/);
-    assert.match(SH.boredOffer(), /say back in a few words, in their words, that this part is boring/);
+    assert.match(SH.stopCheck(), /first show in a few warm words that you heard exactly that/);   // (round 7 S5: de-recited)
+    assert.match(SH.boredOffer(), /first show in a few words that you heard this part is boring/);
     process.env.TAXILA_P5_R3CONV = "off";
     assert.match(SH.stopCheck(), /acknowledge it warmly in one short line/);
   });
@@ -336,7 +336,11 @@ describe("round3 conversation", () => {
     assert.equal(readIntent("ye wala skip karo"), null);
   });
 
-  test("card cap: an ask to hear THIS question again is honoured on the capped turn; their next answer turn leaves it", () => {
+  test("card cap: an ask to hear THIS question again is honoured on the capped turn; their next answer turn leaves it", (t) => {
+    // (round 7 S3 replaced the turn-count cap with "two misses plus help"; this is the earlier cap, behind its kill switch)
+    const was = process.env.TAXILA_R7_ONE_LIVE;
+    process.env.TAXILA_R7_ONE_LIVE = "off";
+    t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_ONE_LIVE; else process.env.TAXILA_R7_ONE_LIVE = was; });
     const capped = (m) => /on the table long enough/.test(m.shape ?? "");
     let r = toPractice();
     while (!capped(r.state.lastMove) && (r.state.pinRun ?? 0) < 3) r = turn(r, cls("no_evidence"));

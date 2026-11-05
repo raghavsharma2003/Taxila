@@ -120,4 +120,80 @@ test("#7/#8 (c5 offtopic, c4 steering): no 'button' park; her promises ('yaad ra
   await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: C4, childText: "story", verdict: "ungraded", history: [], ui: r.ui, module: null });
   assert.ok(n >= 1);
 });
+
+test("#5/#6 (c6 steady, c5 stuck, c4 steady): class level held; no answer inside her question; a card's derived number is derived first", async () => {
+  const { belowLevel, answerInQuestion, underived } = await import("../server/brain/say.js");
+  assert.equal(belowLevel("Rectangle mein kitni sides hoti hain?", 6), true);
+  assert.equal(belowLevel("Rectangle mein kitni sides hoti hain?", 3), false, "fine for class 3");
+  assert.equal(belowLevel("Aage teen gino, kitna hua?", 5), true);
+  assert.equal(belowLevel("Teenon sides jodo: 5 + 6 + 9, kitna hua?", 6, "5 + 6 + 9"), false, "the kit's own sum");
+  assert.equal(answerInQuestion("Line ko 5 barabar gaps mein baanto. Kitne gaps?"), true);
+  assert.equal(answerInQuestion("Line ko barabar gaps mein baanto. Kitne gaps banenge?"), false);
+  const it = { fade: true, prompt_en: "Fill the gap: 3 × 160 = ___ m." };
+  const pr = "Rani runs 3 rounds of a rectangular park 50 m long and 30 m wide. How far does she run?";
+  assert.equal(underived("Ab batao: 3 × 160 = ___ m.", it, pr), "160");
+  assert.equal(underived("Ek round 2 × (50 + 30) = 160 m. Ab 3 × 160 = ___ m.", it, pr), null);
+});
+
+test("#11 (c4/c5): a card her last line already read is asked again in fresh words; 'show it in words' is never said for a picture", async () => {
+  const SH = await import("../server/director/shapes.js");
+  assert.doesNotMatch(SH.VISUAL_NOT_YET, /show it in words/);
+  const { readsCard } = await import("../server/brain/say.js");
+  let r = start(C4, 4);
+  for (let i = 0; i < 14 && !(r.state.activeItemId && !String(r.state.activeItemId).includes(":")); i++) r = turn(C4, r, "haan");
+  const card = r.ui.ask?.text;
+  assert.ok(card);
+  r = turn(C4, r, "8", cls("incorrect"));
+  const st = { ...r.state, mode: "text", pinItem: r.state.activeItemId, pinRun: 2 };
+  const calls = [];
+  replyDeps.chat = async (_d, msgs) => { calls.push(msgs.at(-1).content); return { text: calls.length === 1 ? `Dekho dhyaan se. ${card}` : "Roti ke chaar barabar hisse socho: unmein se ek hissa kya kehlata hai?" }; };
+  const out = await textReply({ instructions: "x", state: st, kit: C4, childText: "8", verdict: "incorrect", history: [{ who: "teacher", text: `Chalo. ${card}` }], ui: r.ui, module: null });
+  assert.match(calls[0], /already read the question on the screen word for word/);
+  assert.equal(readsCard(out.reply, card), false, out.reply);
+});
+// main's director2 judgement: "your guards DETECT but don't PREVENT" — a rewrite that repeats the problem is repaired in code
+test("director2: a rewrite that keeps a block-2 problem is repaired in code (level, ignored), and a derived number gets its step", async () => {
+  const { belowLevel, derivationLead, ignoredLead } = await import("../server/brain/say.js");
+  const C6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  // c6 stuck: four turns counting a rectangle's sides; every model call returns the same line
+  let r = start(C6, 6);
+  for (let i = 0; i < 3; i++) r = turn(C6, r, "pata nahi");
+  const bad = "Riya, aur dheere: rectangle ki 4 sides hoti hain. Tum count karke batao: kitni sides hoti hain?";
+  const a = await replyTo(C6, r, "pata nahi", bad);
+  assert.ok(a.guard.caught.includes("level"), JSON.stringify(a.guard));
+  assert.equal(belowLevel(a.reply, 6), false, a.reply);
+  // "Tum bharo… 3 × 160" with 160 never derived: the kit's own step leads
+  assert.equal(derivationLead("160", C6.workedExample, "hinglish"), "Pehle dekho: 2 × (50 + 30) = 2 × 80 = 160.");
+  assert.equal(derivationLead("999", C6.workedExample, "hinglish"), null);
+  // "7" passed over by a model that keeps passing over it: said back first
+  let q = start(C4, 4);
+  for (let i = 0; i < 2; i++) q = turn(C4, q, "haan");
+  q = turn(C4, q, "4");
+  replyDeps.chat = async () => ({ text: "Riya, 15 pencils total hain. Ab batao, problem humse kya pooch rahi hai?" });
+  const out = await textReply({ instructions: "x", state: { ...q.state, mode: "text", activeItemId: undefined, lastMove: { kind: "explain" } }, kit: C4, childText: "4", verdict: "ungraded", history: [{ who: "teacher", text: "1/3 ka matlab kya hai, kitne barabar groups banenge?" }], ui: {}, module: null });
+  assert.ok(out.guard.caught.includes("ignored"));
+  assert.ok(out.reply.startsWith(ignoredLead("4", "hinglish")), out.reply);
+});
+test("director2 c6: made-up diagnosis, mixed-script word, 'words mein dekho', unsaid language switch and park, '2' to the offered ways", async () => {
+  const { madeUpDiagnosis, unmixWords, withoutInWords } = await import("../server/brain/say.js");
+  assert.equal(madeUpDiagnosis("Riya, tumne 160 ko 3 se multiply karne ke bajay 3 plus 3 kiya."), true);
+  assert.equal(madeUpDiagnosis("Riya, 160 ko teen baar jodo."), false);
+  assert.equal(unmixWords("Ab ginें: ek, do"), "Ab ginein: ek, do");
+  assert.equal(unmixWords("आयत की चार भुजाएँ"), "आयत की चार भुजाएँ", "a Devanagari word is untouched");
+  assert.doesNotMatch(withoutInWords("Riya, picture ko words mein dekho: do lambi sides 50 m.", "hinglish"), /words mein/);
+  const C6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  let r = start(C6, 6);
+  for (const x of ["haan", "4", "pata nahi"]) r = turn(C6, r, x);
+  r = turn(C6, r, "kuch aur baat karte hain", { ...NE, request: { type: "change_topic", whole: true } });
+  r = turn(C6, r, "cricket ke baare mein");
+  assert.equal(r.move.request, "park");
+  const parked = await replyTo(C6, r, "cricket ke baare mein", "Ek round ka perimeter 160 m bana. Ab socho, 3 round mein kitna hoga?");
+  assert.match(parked.reply, /cricket/i, parked.reply);
+  const lang = await textReply({ instructions: "x", state: { ...r.state, mode: "text", lastMove: { ...r.state.lastMove, request: "language" } }, kit: C6, childText: "hindi mein batao", verdict: "ungraded", history: [], ui: r.ui, module: null });
+  assert.match(lang.reply, /Hindi/, lang.reply);
+  // "Picture, Kahani, ya Game?" → "2" is the story
+  const st = { ...r.state, lastUi: { ...(r.state.lastUi ?? {}), chips: [{ id: "req:visual", label: "Picture" }, { id: "req:story", label: "Kahani" }, { id: "req:game", label: "Game" }] } };
+  const two = step(st, { event: "turn", kit: C6, cls: NE, text: "2", now: (st.turn + 1) * 20_000 });
+  assert.equal(two.move.request, "story");
+});
 });

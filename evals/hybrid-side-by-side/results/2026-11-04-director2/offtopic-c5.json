@@ -1,0 +1,181 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket pitch jaise number line par fractions dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 973
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, pitch par stumps se boundary tak ka raasta socho; use chaar barabar hisson mein baanto. Tumhare hisaab se pehla hissa kya dikhayega?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2300,
+   "replyReadyMs": 3273,
+   "guard": [
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 940
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson thodi der ruk sakta hai. Kis baare mein baat karna chahti ho? Phir fractions par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1096,
+   "replyReadyMs": 2036
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 924
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo Riya, cricket pitch ko 5 barabar gaps mein baanto; 0 se pehla gap kis fraction ko dikhayega?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 948,
+   "replyReadyMs": 1872
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 781
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak 5 equal gaps honge; 2/5 ke liye 0 se 2 gaps aage mark karenge. Agla step dikhaun?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1950,
+   "replyReadyMs": 2731,
+   "guard": [
+    "answerinq",
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 581
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, game: 0 se 2 jumps ke baad tum number line par kis point par land karogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1810,
+   "replyReadyMs": 2391,
+   "guard": [
+    "answerinq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 949
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne “3” bola—shayad 3rd mark keh rahi ho? Yahan 2 jumps ka point 2/5 hai; game mein phir se 2 jumps try karo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1915,
+   "replyReadyMs": 2864,
+   "guard": [
+    "negates"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1009
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ye part boring lag raha hai—chalo tareeka badalte hain: picture, story, ya game mein se kya choose karogi?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1920,
+   "replyReadyMs": 2929,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 990
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 791,
+   "replyReadyMs": 1781
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 903
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kahani: 0 se 1 tak paanch barabar kadam hain. 2/5 wala dost beech se pehle khada hai ya baad?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1211,
+   "replyReadyMs": 2114
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 866
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rukna hai toh teen choices hain: continue karein, chhota break lein, ya aaj ke liye stop karein. Tum kya choose karogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1869,
+   "replyReadyMs": 2735,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ]
+  }
+ ],
+ "agent": []
+}
