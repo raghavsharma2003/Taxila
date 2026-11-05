@@ -29,7 +29,8 @@ import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
-import { preselect } from "../server/stagecraft/board-first.js";
+import { preselect, takePreselected } from "../server/stagecraft/board-first.js";
+import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
 
@@ -174,7 +175,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null;
     // (as brain/turn.js: the stop check-in is the Director's on both lanes)
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
@@ -213,6 +214,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
         const pick = preselect(ask, { kit });
+        pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
           // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
@@ -246,6 +248,18 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const check = cardId ? { itemId: cardId, scripted: String(cardId).startsWith("script:"), misses: next.misses?.[cardId] ?? 0, gave: !!next.lastMove?.gave } : null;
     // (a board or game on screen this turn; Studio's code-built scenes (M5a) are not simulated in-process: scene is always null)
     const boardUp = !!(screen && screen.kind !== "none");
+    // (Studio, director6 #1: the board the child SAW is the preselect TAKEN on her real line, re-gated: a value she states is
+    // drawn, no longer "?"; production's seam.js does the same take. The record and the contradiction count use it, falling
+    // back to the preselect's masked board only when the take returns nothing)
+    if (pickAsk && screen?.kind === "whiteboard" && reply) {
+      const askR = { ...pickAsk, line: { ...(pickAsk.line ?? {}), text: reply } };
+      let took = null;
+      try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
+      if (took?.screen) {
+        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null };
+        slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+      } else screen = { ...screen, drawn: "preselect" };
+    }
     // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
     // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
     // (dc-r7-script-walk-v3 exact counts) delivered = the authored point spoken (explain beats); the verdict = the GRADED state

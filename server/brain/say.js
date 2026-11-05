@@ -132,7 +132,9 @@ const countOf = (w) => /^\d+$/.test(w) ? Number(w) : HI_COUNT[w.toLowerCase()] ?
 const COUNTED = [
   // (director6: "beech mein 3 chalk ke nishaan": up to two words between the count and the marks)
   ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:[\\p{L}]+\\s+){0,2}?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
-  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups, c.shaded]],
+  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups, c.shaded,
+    // (compare@1, Studio 244936c8: each column's stated quantities, "2 tukde")
+    ...(c.columns ?? []).flatMap((col) => (col.quantities ?? []).map((q) => q.n))]],
   // ("teen mark hain: 1/2, 1/4 aur 1/8": the labelled marks count too)
   ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps]), ...(Array.isArray(c.marks) && c.marks.length ? [c.marks.length] : [])]],
   ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
@@ -161,6 +163,14 @@ export function countContradicts(x, counts) {
       if (!ok.length) continue;                       // not counted by this board: never flagged
       if (n != null && !ok.includes(n)) return true;
     }
+  }
+  // compare@1: a number said right after a column's title ("Cake A mein 3") is one of THAT column's stated quantities
+  for (const col of counts.columns ?? []) {
+    const title = String(col?.title ?? "").trim();
+    const qs = (col?.quantities ?? []).map((q) => q.n).filter((n) => typeof n === "number");
+    if (title.length < 3 || !qs.length) continue;
+    const m = new RegExp(`${title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s+\\p{L}+){0,3}?\\s+${NUM_W}(?![\\d/])`, "iu").exec(t);
+    if (m) { const n = countOf(m[1]); if (n != null && n !== 1 && !qs.includes(n)) return true; }
   }
   // a side value with a unit, said of a side, must be one the board wrote
   if (Array.isArray(counts.sideValues) && counts.sideValues.length && /\b(?:sides?|bhuja\w*)\b/i.test(t) && !/parimap|perimeter|\bkul\b|total|jod/i.test(t)) {

@@ -534,7 +534,9 @@ function walkNext(s, input, prefix) {
   if (!sk) { s.walk = undefined; return null; }
   if (sk.explain?.[0]?.ask) return walkNextV2(s, input, prefix, sk);
   const skillId = w.skillId;
-  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}) } });
+  // (Studio, director6 #1: a check drawing its OWN board says so — ownBoard — so every number it authors is drawn; a check that
+  // borrows its explain beat's board frees only its mark labels, since that board can teach the check's key)
+  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}), ...(kind === "check" && board ? { ownBoard: true } : {}) } });
   while (w.i < w.beats.length) {
     const [kind, id] = w.beats[w.i].split(":");
     w.i += 1;
@@ -604,7 +606,9 @@ function walkNextV2(s, input, prefix, sk) {
   const w = s.walk;
   const skillId = w.skillId;
   const lang = s.ctx.lang ?? "hinglish";
-  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}) } });
+  // (Studio, director6 #1: a check drawing its OWN board says so — ownBoard — so every number it authors is drawn; a check that
+  // borrows its explain beat's board frees only its mark labels, since that board can teach the check's key)
+  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}), ...(kind === "check" && board ? { ownBoard: true } : {}) } });
   const gone = (id) => s.itemsDone.includes(id) || s.skipped.includes(id);
   // the worked example's answer and why, said in code on the move after their step (once)
   const gaveWorked = () => {
@@ -738,8 +742,9 @@ function cardBeatRef(s, kit, item) {
     return { ...base, beatId: item.scriptAsk.beatId, kind: item.scriptAsk.beatId === "worked" ? "worked" : "explain", ...(board ? { board } : {}) };
   }
   if (item.scriptCheck) {
-    const board = sk.checks?.find((c) => c.id === item.scriptCheck.checkId)?.board ?? [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
-    return { ...base, beatId: item.scriptCheck.checkId, kind: "check", ...(board ? { board } : {}) };
+    const own = sk.checks?.find((c) => c.id === item.scriptCheck.checkId)?.board ?? null;
+    const board = own ?? [...(sk.explain ?? [])].reverse().find((b) => b.board)?.board ?? null;
+    return { ...base, beatId: item.scriptCheck.checkId, kind: "check", ...(board ? { board } : {}), ...(own ? { ownBoard: true } : {}) };
   }
   const r = sk.remediation?.find((x) => x.targets === item.scriptThen.targets);
   const board = r?.then && typeof r.then === "object" ? r.then.board ?? null : null;

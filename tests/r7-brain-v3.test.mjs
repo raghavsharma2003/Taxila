@@ -214,6 +214,20 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(longTrimOn({}), false);
     assert.equal(longTrimOn({ TAXILA_R7_LONG_TRIM: "on" }), true);
   });
+
+  test("Studio director6 #1: a check drawing its OWN board carries ownBoard; one borrowing the explain board does not", () => {
+    const own = structuredClone(SC);
+    own.skills[0].checks[0].board = { template: "shape@1", params: { shape: "hexagon" } };
+    setScriptForTest(); setScriptForTest(K.topicId, own);
+    const L = run();
+    let ref = null;
+    for (let i = 0; i < 30 && !ref; i++) { L.t("x", cls("correct")); if (L.r.move.scriptBeat?.kind === "check" && L.r.move.scriptBeat.beatId === "c1") ref = L.r.move.scriptBeat; }
+    assert.ok(ref, "reached c1");
+    assert.equal(ref.ownBoard, true);
+    let ref2 = null;
+    for (let i = 0; i < 6 && !ref2; i++) { L.t("x", cls("correct")); if (L.r.move.scriptBeat?.kind === "check" && L.r.move.scriptBeat.beatId === "c2") ref2 = L.r.move.scriptBeat; }
+    if (ref2) assert.ok(!ref2.ownBoard, "c2 has no board of its own");
+  });
 });
 
 test("v2.1 validator: {friend} not the child or Asha, no '?' glyph, no echo ask, ≤3 worked steps (c4-5), follow-ups with a board", async () => {
@@ -329,4 +343,12 @@ test("{friendF}/{friendM}: kit items are filled in every field, with names never
   assert.deepEqual(it.hints, ["Kabir se pucho"]);
   assert.equal(findItem({ ctx: { firstName: "Riya" } }, kit, "k1").answer, "Zoya");
   assert.equal(fillFriend("{friend} ne kaha", "Zoya"), "Kabir ne kaha", "the v2.1 slot is unchanged");
+});
+
+test("R4 reads compare@1 quantities (Studio 244936c8): a count said against a column must be that column's", async () => {
+  const { countContradicts } = await import("../server/brain/say.js");
+  const c = { columns: [{ title: "Roti A", items: ["2 tukde"], quantities: [{ n: 2, what: "tukde" }] }, { title: "Roti B", items: ["4 tukde"], quantities: [{ n: 4, what: "tukde" }] }] };
+  assert.equal(countContradicts("Board par dekho, Roti A mein 2 tukde hain.", c), false);
+  assert.equal(countContradicts("Board par dekho, Roti A mein 4 tukde hain.", c), true);
+  assert.equal(countContradicts("Dekho, 3 tukde hain.", c), true);
 });
