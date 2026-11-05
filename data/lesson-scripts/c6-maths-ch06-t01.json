@@ -1,7 +1,7 @@
 {
  "topicId": "c6-maths-ch06-t01",
  "classLevel": 6,
- "version": 2.1,
+ "version": 2.2,
  "status": "draft",
  "terms": [
   { "hi": "parimap", "en": "perimeter" },
@@ -125,14 +125,14 @@
     "find": { "hi": "baad ki lambai, yaani kyari ka parimap", "en": "the length of the fence, that is, the perimeter of the bed" },
     "steps": [
      {
-      "do": { "hi": "Baad kinaare par lagti hai, toh yeh parimap ka sawaal hai. Teeno bhujayein jodni hain.", "en": "The fence goes along the edge, so this is a perimeter question. All three sides must be added." },
+      "do": { "hi": "Baad kinaare par lagti hai, toh teeno bhujayein jodo", "en": "The fence goes along the edge, so add all three sides" },
       "result": "P = 7 + 9 + 12",
-      "why": { "hi": "Koi bhi bhuja chhooti toh baad adhoori reh jaayegi.", "en": "If any side is left out, the fence will be incomplete." }
+      "why": { "hi": "koi bhi bhuja chhooti toh baad adhoori reh jaayegi", "en": "if any side is left out, the fence will be incomplete" }
      },
      {
-      "do": { "hi": "Pehle do bhujayein jodo.", "en": "First add two of the sides." },
+      "do": { "hi": "Pehle do bhujayein jodo", "en": "First add two of the sides" },
       "result": "7 + 9 = 16 m",
-      "why": { "hi": "Ek kone se chalke do bhujayein poori hui, teesri abhi baaki hai.", "en": "From one corner, two sides are done; the third is still left." }
+      "why": { "hi": "ek kone se chalke do bhujayein poori hui, teesri abhi baaki hai", "en": "from one corner two sides are done, and the third is still left" }
      }
     ],
     "yourStep": {
@@ -142,10 +142,10 @@
      "targets": "c6-maths-ch06-t01-m-missing-sides",
      "wrongIfMis": "16 m"
     },
-    "answer": { "hi": "Toh kyari ke liye 28 m lambi baad lagegi.", "en": "So the flower bed needs 28 m of fencing." },
+    "answer": { "hi": "kyari ke liye 28 m lambi baad lagegi", "en": "the flower bed needs 28 m of fencing" },
     "why": {
-     "hi": "Baad kinaare par chalti hai, isliye parimap. Teeno bhujayein judi, koi nahi chhooti. Jawab ek lambai hai, isliye metre mein aata hai, square metre mein nahi.",
-     "en": "The fence runs along the edge, so it is the perimeter. All three sides were added and none was left out. The answer is a length, so it is in metres, not square metres."
+     "hi": "baad kinaare par chalti hai aur teeno bhujayein judi hain, koi nahi chhooti, aur yeh lambai hai, isliye metre mein",
+     "en": "the fence runs along the edge and all three sides were added with none left out, and it is a length, so it is in metres"
     },
     "board": { "template": "measured@1", "params": { "shape": "triangle", "unit": "m", "sides": [7, 9, 12], "trace": true } }
    },
@@ -159,7 +159,8 @@
      "key": "30 m",
      "accept": ["30", "30 metre", "30 metres"],
      "targets": "c6-maths-ch06-t01-m-missing-sides",
-     "wrongIfMis": "23 m"
+     "wrongIfMis": "23 m",
+     "board": { "template": "measured@1", "params": { "shape": "polygon", "unit": "m", "sides": [8, 3, 5, 4, 3, 7] } }
     },
     {
      "id": "c2",
@@ -177,7 +178,7 @@
    "ladder": [
     { "itemId": "c6-maths-ch06-t01-i03", "why": "first straight use: triangle, three given sides → add all" },
     { "itemId": "c6-maths-ch06-t01-i09", "why": "decide perimeter vs area from the situation: lace around vs cloth covering" },
-    { "itemId": "c6-maths-ch06-t01-i10", "why": "error-spot: Riya stops at 5 of 6 sides of an L-shape → find the left-out side and the true perimeter" },
+    { "itemId": "c6-maths-ch06-t01-i10", "why": "error-spot: {friend} stops at 5 of 6 sides of an L-shape → find the left-out side and the true perimeter" },
     { "itemId": "c6-maths-ch06-t01-rl-h1", "why": "six unequal edges in a real context (exhibition board tape) → every edge, once" }
    ],
    "remediation": [
@@ -191,8 +192,8 @@
      "board": { "template": "measured@1", "params": { "shape": "hexagon", "unit": "m", "sides": [10, 4, 6, 5, 4, 9], "names": ["A", "B", "C", "D", "E", "F"], "trace": true } },
      "then": {
       "prompt": {
-       "hi": "Ek chhah bhujaon wale khet ABCDEF mein AB = 10 m, BC = 4 m, CD = 6 m, DE = 5 m, EF = 4 m aur FA = 9 m hai. Khet ka parimap kitna hai?",
-       "en": "A 6-sided field ABCDEF has AB = 10 m, BC = 4 m, CD = 6 m, DE = 5 m, EF = 4 m and FA = 9 m. What is its perimeter?"
+       "hi": "Khet ABCDEF mein AB 10 m, BC 4 m, CD 6 m, DE 5 m, EF 4 m aur FA 9 m hai. Khet ka parimap kitna hai?",
+       "en": "Field ABCDEF has AB 10 m, BC 4 m, CD 6 m, DE 5 m, EF 4 m and FA 9 m. What is the field's perimeter?"
       },
       "key": "38 m",
       "accept": ["38", "38 metre", "38 metres"],
@@ -272,18 +273,18 @@
     },
     {
      "id": "e2",
-     "convey": "one length + one breadth = corner to the opposite corner = HALF the way round; the full round = that half twice → P = 2 × (l + b) = 2 × (10 + 6) = 2 × 16 = 32 m; l + b alone = 16 m = only half the boundary",
+     "convey": "one length + one breadth = corner to the opposite corner = HALF the way round; the full round = that half twice → P = 2 × (l + b); on a new 12 m by 5 m rectangle the child does 2 × (12 + 5) = 34 m; l + b alone = 17 m = only half the boundary",
      "mustSay": [
       { "hi": "aadha raasta", "en": "half the way" },
       { "hi": "2 × (lambai + chaudai)", "en": "2 × (length + breadth)" }
      ],
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 10, "h": 6, "trace": true } },
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 12, "h": 5, "trace": true } },
      "point": {
-      "hi": "Neeche baayein kone se chalo: 10 m lambai, phir 6 m chaudai, aur tum saamne wale kone par ho. Yeh sirf aadha raasta hai, 10 + 6 = 16 m. Baaki aadha raasta bhi utna hi hai. Isliye rectangle ka parimap = 2 × (lambai + chaudai), yaani 2 × 16 = 32 m.",
-      "en": "Start at the bottom-left corner: 10 m of length, then 6 m of breadth, and you are at the opposite corner. That is only half the way, 10 + 6 = 16 m. The other half is just as long. So a rectangle's perimeter = 2 × (length + breadth), that is 2 × 16 = 32 m."
+      "hi": "Yeh rectangle 12 m lamba aur 5 m chauda hai. Neeche baayein kone se chalo: 12 m lambai, phir 5 m chaudai, aur tum saamne wale kone par ho. Yeh sirf aadha raasta hai. Baaki aadha raasta bhi utna hi hai. Isliye rectangle ka parimap = 2 × (lambai + chaudai).",
+      "en": "This rectangle is 12 m long and 5 m wide. Start at the bottom-left corner: 12 m of length, then 5 m of breadth, and you are at the opposite corner. That is only half the way. The other half is just as long. So a rectangle's perimeter = 2 × (length + breadth)."
      },
      "ask": {
-      "prompt": { "hi": "Ek rectangle 12 m lamba aur 5 m chauda hai. 2 × (lambai + chaudai) se iska parimap kitna hai?", "en": "A rectangle is 12 m long and 5 m wide. Using 2 × (length + breadth), what is its perimeter?" },
+      "prompt": { "hi": "Is rectangle ki lambai 12 m aur chaudai 5 m hai. 2 × (lambai + chaudai) se iska parimap kitna hai?", "en": "This rectangle is 12 m long and 5 m wide. Using 2 × (length + breadth), what is its perimeter?" },
       "key": "34 m",
       "accept": ["34", "34 metre", "34 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
@@ -325,14 +326,14 @@
     "find": { "hi": "tape ki lambai, yaani cover ka parimap", "en": "the length of tape, that is, the perimeter of the cover" },
     "steps": [
      {
-      "do": { "hi": "Tape kinaare par lagti hai, toh parimap chahiye. Cover rectangle hai, toh parimap = 2 × (lambai + chaudai).", "en": "Tape goes along the edge, so we need the perimeter. The cover is a rectangle, so perimeter = 2 × (length + breadth)." },
+      "do": { "hi": "Tape kinaare par lagti hai aur cover rectangle hai, toh parimap 2 × (lambai + chaudai) se nikalo", "en": "Tape goes along the edge and the cover is a rectangle, so find the perimeter with 2 × (length + breadth)" },
       "result": "P = 2 × (24 + 18)",
-      "why": { "hi": "Kinaare par lambai do baar aati hai aur chaudai bhi do baar.", "en": "Along the edge the length comes twice and the breadth comes twice." }
+      "why": { "hi": "kinaare par lambai do baar aati hai aur chaudai bhi do baar", "en": "along the edge the length comes twice and the breadth comes twice" }
      },
      {
-      "do": { "hi": "Pehle bracket: ek lambai aur ek chaudai jodo.", "en": "Bracket first: add one length and one breadth." },
+      "do": { "hi": "Pehle bracket mein ek lambai aur ek chaudai jodo", "en": "Bracket first: add one length and one breadth" },
       "result": "24 + 18 = 42 cm",
-      "why": { "hi": "42 cm sirf aadha kinaara hai, ek kone se saamne wale kone tak.", "en": "42 cm is only half the edge, from one corner to the opposite corner." }
+      "why": { "hi": "42 cm sirf aadha kinaara hai, ek kone se saamne wale kone tak", "en": "42 cm is only half the edge, from one corner to the opposite corner" }
      }
     ],
     "yourStep": {
@@ -342,10 +343,10 @@
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
      "wrongIfMis": "42 cm"
     },
-    "answer": { "hi": "Toh cover par 84 cm tape lagegi.", "en": "So the cover needs 84 cm of tape." },
+    "answer": { "hi": "cover par 84 cm tape lagegi", "en": "the cover needs 84 cm of tape" },
     "why": {
-     "hi": "Jaanch ke liye chaaron bhujayein jodo: 24 + 18 + 24 + 18 bhi 84 cm aata hai. 42 cm akela sirf aadha kinaara hai. Aur 24 × 18 = 432 andar ka area hota, kinaara nahi.",
-     "en": "To check, add all four sides: 24 + 18 + 24 + 18 also gives 84 cm. 42 cm alone is only half the edge. And 24 × 18 = 432 would be the area inside, not the edge."
+     "hi": "chaaron bhujayein jodne par bhi 24 + 18 + 24 + 18 = 84 cm aata hai, jabki 42 cm sirf aadha kinaara hai aur 24 × 18 andar ka area hota",
+     "en": "adding all four sides also gives 24 + 18 + 24 + 18 = 84 cm, while 42 cm is only half the edge and 24 × 18 would be the area inside"
     },
     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 24, "h": 18, "trace": true } }
    },
@@ -405,8 +406,8 @@
      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 14, "h": 6, "trace": true } },
      "then": {
       "prompt": {
-       "hi": "Ek cheenti 20 m lambe aur 9 m chaude rectangle khet ka ek poora chakkar lagati hai. Aakhir mein uska meter kitna dikhayega?",
-       "en": "An ant walks once round a rectangular field 20 m long and 9 m wide. What does its distance counter show at the end?"
+       "hi": "Cheenti 20 m lambe aur 9 m chaude rectangle khet ka ek poora chakkar lagati hai. Uska meter kitna dikhayega?",
+       "en": "An ant walks once round a rectangular field 20 m long and 9 m wide. What does its counter show?"
       },
       "key": "58 m",
       "accept": ["58", "58 metre", "58 metres"],
@@ -472,44 +473,44 @@
    "explain": [
     {
      "id": "e1",
-     "convey": "backward for a square: perimeter 60 m shared by 4 equal sides → side = 60 ÷ 4 = 15 m; check: 4 × 15 = 60 m",
+     "convey": "backward for a square: perimeter 60 m shared by 4 equal sides → one side = perimeter ÷ 4 (not ÷ 2); the child does 60 ÷ 4 = 15 m on the board's square",
      "mustSay": [
       { "hi": "square", "en": "square" },
       { "hi": "60 m", "en": "60 m" },
       { "hi": "chaar barabar bhuja", "en": "four equal sides" }
      ],
-     "board": { "template": "measured@1", "params": { "shape": "square", "unit": "m", "w": 15, "h": 15 } },
+     "board": { "template": "shape@1", "params": { "shape": "square", "name": "parimap 60 m" } },
      "point": {
-      "hi": "Is square ka parimap 60 m hai, aur yeh 60 m chaar barabar bhujaon mein bata hua hai. Isliye ek bhuja = 60 ÷ 4 = 15 m. Jaanch karo: 4 × 15 = 60 m.",
-      "en": "This square's perimeter is 60 m, and that 60 m is shared by four equal sides. So one side = 60 ÷ 4 = 15 m. Check: 4 × 15 = 60 m."
+      "hi": "Is square ka parimap 60 m hai, aur yeh 60 m chaar barabar bhujaon mein bata hua hai. Isliye ek bhuja nikalne ke liye parimap ko 4 se bhaag karte hain, 2 se nahi.",
+      "en": "This square's perimeter is 60 m, and that 60 m is shared by four equal sides. So to find one side we divide the perimeter by 4, not by 2."
      },
      "ask": {
-      "prompt": { "hi": "Ek square ka parimap 40 m hai. Uski ek bhuja kitni lambi hai?", "en": "A square has a perimeter of 40 m. How long is one side?" },
-      "key": "10 m",
-      "accept": ["10", "10 metre", "10 metres"],
+      "prompt": { "hi": "Toh is square ki ek bhuja kitni lambi hai?", "en": "So how long is one side of this square?" },
+      "key": "15 m",
+      "accept": ["15", "15 metre", "15 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "20 m"
+      "wrongIfMis": "30 m"
      }
     },
     {
      "id": "e2",
-     "convey": "backward for a rectangle: perimeter 60 m, length 20 m → half the perimeter = one length + one breadth = 30 m → breadth = 30 − 20 = 10 m; check: 2 × (20 + 10) = 60 m",
+     "convey": "backward for a rectangle: perimeter 60 m, length 20 m → half the perimeter = one length + one breadth = 30 m → then take away the length; the child does 30 − 20 = 10 m on the board's rectangle",
      "mustSay": [
       { "hi": "aadha parimap", "en": "half the perimeter" },
       { "hi": "ek lambai aur ek chaudai", "en": "one length and one breadth" },
       { "hi": "30 m", "en": "30 m" }
      ],
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 20, "h": 10, "trace": true } },
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "20 m", "name": "parimap 60 m" } },
      "point": {
-      "hi": "Is rectangle ka parimap 60 m hai aur lambai 20 m. Aadha parimap, yaani 30 m, ek lambai aur ek chaudai ke barabar hota hai. Toh chaudai = 30 − 20 = 10 m. Jaanch: 2 × (20 + 10) = 60 m.",
-      "en": "This rectangle's perimeter is 60 m and its length is 20 m. Half the perimeter, 30 m, equals one length and one breadth. So the breadth = 30 − 20 = 10 m. Check: 2 × (20 + 10) = 60 m."
+      "hi": "Is rectangle ka parimap 60 m hai aur lambai 20 m. Aadha parimap, yaani 30 m, ek lambai aur ek chaudai ke barabar hota hai. Isliye chaudai ke liye 30 m mein se lambai ghatate hain.",
+      "en": "This rectangle's perimeter is 60 m and its length is 20 m. Half the perimeter, 30 m, equals one length and one breadth. So for the breadth we take the length away from 30 m."
      },
      "ask": {
-      "prompt": { "hi": "Ek rectangle ka parimap 50 m hai aur lambai 18 m. Iski chaudai kitni hai?", "en": "A rectangle has a perimeter of 50 m and a length of 18 m. What is its breadth?" },
-      "key": "7 m",
-      "accept": ["7", "7 metre", "7 metres"],
+      "prompt": { "hi": "Toh is rectangle ki chaudai kitni hai?", "en": "So what is the breadth of this rectangle?" },
+      "key": "10 m",
+      "accept": ["10", "10 metre", "10 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "32 m"
+      "wrongIfMis": "40 m"
      }
     },
     {
@@ -546,29 +547,29 @@
     "find": { "hi": "Rani kul kitni doori daudti hai", "en": "the total distance Rani runs" },
     "steps": [
      {
-      "do": { "hi": "Ek chakkar matlab park ke poore kinaare par ek baar daudna, yaani park ka parimap.", "en": "One round means running once along the whole edge of the park, that is, the park's perimeter." },
+      "do": { "hi": "Ek chakkar ko park ke poore kinaare par ek baar daudna samjho", "en": "Take one round as running once along the whole edge of the park" },
       "result": "1 chakkar = park ka parimap",
-      "why": { "hi": "Chakkar kinaare par lagta hai, park ke andar nahi.", "en": "A round goes along the edge, not across the inside of the park." }
+      "why": { "hi": "chakkar kinaare par lagta hai, park ke andar nahi", "en": "a round goes along the edge, not across the inside of the park" }
      },
      {
-      "do": { "hi": "Park rectangle hai, toh parimap = 2 × (lambai + chaudai).", "en": "The park is a rectangle, so perimeter = 2 × (length + breadth)." },
+      "do": { "hi": "Park rectangle hai, toh parimap 2 × (lambai + chaudai) se likho", "en": "The park is a rectangle, so write the perimeter as 2 × (length + breadth)" },
       "result": "P = 2 × (50 + 30)",
-      "why": { "hi": "Kinaare par lambai do baar aati hai aur chaudai bhi do baar.", "en": "Along the edge the length comes twice and the breadth comes twice." }
+      "why": { "hi": "kinaare par lambai do baar aati hai aur chaudai bhi do baar", "en": "along the edge the length comes twice and the breadth comes twice" }
      },
      {
-      "do": { "hi": "Pehle bracket jodo.", "en": "Add the bracket first." },
+      "do": { "hi": "Pehle bracket jodo", "en": "Add the bracket first" },
       "result": "50 + 30 = 80 m",
-      "why": { "hi": "80 m sirf aadha chakkar hai, ek kone se saamne wale kone tak.", "en": "80 m is only half a round, from one corner to the opposite corner." }
+      "why": { "hi": "80 m sirf aadha chakkar hai, ek kone se saamne wale kone tak", "en": "80 m is only half a round, from one corner to the opposite corner" }
      },
      {
-      "do": { "hi": "Ise do baar lo, tab ek poora chakkar banta hai.", "en": "Take it twice; that makes one full round." },
+      "do": { "hi": "Ise do baar lo", "en": "Take it twice" },
       "result": "2 × 80 = 160 m",
-      "why": { "hi": "Aadha chakkar do baar, toh poora chakkar.", "en": "Half a round twice is a full round." }
+      "why": { "hi": "aadha chakkar do baar lene se poora chakkar banta hai", "en": "half a round taken twice makes a full round" }
      },
      {
-      "do": { "hi": "Teeno chakkar barabar hain, toh ek chakkar ko 3 se guna karna hai.", "en": "The three rounds are equal, so one round is multiplied by 3." },
+      "do": { "hi": "Teeno chakkar barabar hain, toh ek chakkar ko 3 se guna karo", "en": "The three rounds are equal, so multiply one round by 3" },
       "result": "3 chakkar = 3 × 160 m",
-      "why": { "hi": "Har chakkar mein utni hi doori hai, 160 m.", "en": "Every round covers the same distance, 160 m." }
+      "why": { "hi": "har chakkar mein utni hi doori hai, 160 m", "en": "every round covers the same distance, 160 m" }
      }
     ],
     "yourStep": {
@@ -578,10 +579,10 @@
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
      "wrongIfMis": "240 m"
     },
-    "answer": { "hi": "Toh Rani kul 480 m daudti hai.", "en": "So Rani runs 480 m in all." },
+    "answer": { "hi": "Rani kul 480 m daudti hai", "en": "Rani runs 480 m in all" },
     "why": {
-     "hi": "Har chakkar poora kinaara hai, 160 m. Teen barabar chakkar hain, isliye 3 se guna. Agar 3 × (50 + 30) = 240 m karte, toh har baar sirf aadha chakkar judta.",
-     "en": "Each round is the whole edge, 160 m. There are three equal rounds, so multiply by 3. Doing 3 × (50 + 30) = 240 m would add only half a round each time."
+     "hi": "har chakkar poora kinaara hai, 160 m, aur teen barabar chakkar hain, jabki 3 × (50 + 30) = 240 m mein har baar sirf aadha chakkar judta",
+     "en": "each round is the whole edge, 160 m, and there are three equal rounds, while 3 × (50 + 30) = 240 m would add only half a round each time"
     },
     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 50, "h": 30, "trace": true } }
    },
@@ -595,7 +596,8 @@
      "key": "21 m",
      "accept": ["21", "21 metre", "21 metres"],
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
-     "wrongIfMis": "42 m"
+     "wrongIfMis": "42 m",
+     "board": { "template": "shape@1", "params": { "shape": "square", "name": "parimap 84 m" } }
     },
     {
      "id": "c2",
@@ -618,7 +620,8 @@
      "key": "15 cm",
      "accept": ["15", "15 centimetre", "15 centimetres"],
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
-     "wrongIfMis": "50 cm"
+     "wrongIfMis": "50 cm",
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "20 cm", "name": "parimap 70 cm" } }
     }
    ],
    "ladder": [
@@ -644,7 +647,7 @@
       "accept": ["15", "15 metre", "15 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
       "wrongIfMis": "55 m",
-      "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "25 m" } }
+      "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "25 m", "name": "parimap 80 m" } }
      }
     },
     {

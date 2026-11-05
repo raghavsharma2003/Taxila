@@ -19,7 +19,7 @@ test("the four v2 pilots are staged", () => {
 for (const f of files) {
   test(`${f}: v2 structure (F1-F4) against its kit`, () => {
     const s = JSON.parse(readFileSync(new URL(f, DIR), "utf8"));
-    assert.equal(s.version, 2.1, "v2.1 (director5 judgement)");
+    assert.equal(s.version, 2.2, "v2.2 (director6 judgement)");
     Object.defineProperty(s, "__interests", { value: INTERESTS, enumerable: false });
     assert.deepEqual(structureErrors(s, kitTopic(s.topicId)), []);
   });

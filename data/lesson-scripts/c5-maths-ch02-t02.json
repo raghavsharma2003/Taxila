@@ -1,7 +1,7 @@
 {
  "topicId": "c5-maths-ch02-t02",
  "classLevel": 5,
- "version": 2.1,
+ "version": 2.2,
  "status": "draft",
  "terms": [
   { "hi": "bhinn", "en": "fraction" },
@@ -77,8 +77,8 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Toh ek hissa kaunsa bada hai, 1/4 ya 1/8?",
-       "en": "So which single part is bigger, 1/4 or 1/8?"
+       "hi": "Isi size ki patti mein ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+       "en": "In a bar of this same size, which single part is bigger, 1/4 or 1/8?"
       },
       "key": "1/4",
       "accept": ["one quarter", "ek chauthai", "1/4 bada hai", "1/4 is bigger"],
@@ -103,8 +103,8 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Do ek jaise cake hain. Ek cake ka 1/3 tukda, doosre ka 1/7 tukda. Kaunsa tukda bada hai, 1/3 ya 1/7?",
-       "en": "There are two identical cakes: a 1/3 piece of one, a 1/7 piece of the other. Which piece is bigger, 1/3 or 1/7?"
+       "hi": "Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+       "en": "On a 0-to-1 number line like this one, which is further from zero, 1/3 or 1/7?"
       },
       "key": "1/3",
       "accept": ["one third", "ek tihai", "1/3 wala", "1/3 bada hai"],
@@ -127,16 +127,16 @@
     "steps": [
      {
       "do": {
-       "hi": "Dono bhinnon ka upar ka number 1 hai, toh dono ko ek-ek tukda milta hai. Ab sirf tukde ka size dekhna hai.",
-       "en": "Both top numbers are 1, so each gets one piece. Now we only compare the size of a piece."
+       "hi": "Dono bhinnon ka upar ka number dekho",
+       "en": "Look at the top number of both fractions"
       },
-      "result": "1 piece each",
-      "why": { "hi": "Ginti barabar hai, isliye size hi faisla karega.", "en": "The count is the same, so size decides." }
+      "result": "dono mein 1, yaani dono ko ek-ek tukda",
+      "why": { "hi": "upar ka number batata hai ki kitne tukde mile, toh ab sirf tukde ka size dekhna hai", "en": "the top number tells how many pieces each got, so now only the size of a piece matters" }
      },
      {
-      "do": { "hi": "Aman ka bar 6 barabar hisson mein kata hai, toh uska tukda 1/6 hai. Zoya ka bar sirf 3 barabar hisson mein kata hai, toh uska tukda 1/3 hai.", "en": "Aman's bar is cut into 6 equal parts, so the piece is 1/6. Zoya's bar is cut into only 3 equal parts, so the piece is 1/3." },
-      "result": "Aman's piece 1/6, Zoya's piece 1/3",
-      "why": { "hi": "Ek hi size ka bar kam hisson mein bante, toh har hissa bada hota hai.", "en": "When a bar of the same size is cut into fewer parts, each part is bigger." }
+      "do": { "hi": "Ab dono ke tukde ka size likho", "en": "Now write the size of each one's piece" },
+      "result": "Aman ka tukda 1/6, Zoya ka tukda 1/3",
+      "why": { "hi": "Aman ka bar 6 barabar hisson mein kata hai aur Zoya ka sirf 3 barabar hisson mein", "en": "Aman's bar is cut into 6 equal parts and Zoya's into only 3 equal parts" }
      }
     ],
     "yourStep": {
@@ -149,10 +149,10 @@
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "Aman"
     },
-    "answer": { "hi": "Zoya ko bada tukda mila, kyunki 1/3 > 1/6.", "en": "Zoya got the bigger piece, because 1/3 > 1/6." },
+    "answer": { "hi": "Zoya ko bada tukda mila, 1/3 wala", "en": "Zoya got the bigger piece, the 1/3 one" },
     "why": {
-     "hi": "Ek hi size ke bar ko jitne zyada hisson mein kaato, har hissa utna chhota. 1/6 toh 1/3 ka aadha hai, isliye 6 bada number hote hue bhi 1/6 chhota tukda hai.",
-     "en": "The more parts a bar of the same size is cut into, the smaller each part. 1/6 is half of 1/3, so even though 6 is the bigger number, 1/6 is the smaller piece."
+     "hi": "ek hi size ke bar ke jitne zyada hisse, har hissa utna chhota, isliye 6 bada number hote hue bhi 1/6 chhota tukda hai",
+     "en": "the more parts a bar of the same size has, the smaller each part, so even though 6 is the bigger number, 1/6 is the smaller piece"
     },
     "board": {
      "template": "fraction-line@1",
@@ -170,7 +170,13 @@
      "accept": ["one fifth", "1/5 wala", "5 wali roti ka tukda", "the piece from the roti cut into 5"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "1/10",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "10 tukdon mein", "items": ["ek jaisi roti"] },
+       "right": { "title": "5 tukdon mein", "items": ["ek jaisi roti"] }
+      }
+     }
     },
     {
      "id": "c2",
@@ -182,7 +188,13 @@
      "accept": ["1/12 < 1/6 < 1/3", "1/12 1/6 1/3", "1/12, phir 1/6, phir 1/3"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "1/3, 1/6, 1/12",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "ek hi poore ke", "items": ["1/3", "1/12", "1/6"] },
+       "right": { "title": "kram", "items": ["chhote se bade"] }
+      }
+     }
     },
     {
      "id": "c3",
@@ -215,8 +227,8 @@
      "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 2, "whole": "bar" } },
      "then": {
       "prompt": {
-       "hi": "Ravi aur {friend} ke paas ek jaisi juice ki bottle hai. Ravi ne apni bottle ka 1/5 juice nikala, {friend} ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya {friend} ne?",
-       "en": "Ravi and {friend} have identical juice bottles. Ravi pours out 1/5 of one bottle, {friend} pours out 1/10 of the other. Who poured out more juice, Ravi or {friend}?"
+       "hi": "Do ek jaisi bottle: Ravi ne ek ka 1/5 nikala, {friend} ne doosri ka 1/10. Zyada kisne nikala, Ravi ne ya {friend} ne?",
+       "en": "Two identical bottles: Ravi pours out 1/5 of one, {friend} 1/10 of the other. Who poured out more, Ravi or {friend}?"
       },
       "key": "Ravi",
       "accept": ["Ravi ne", "Ravi, 1/5", "1/5 wali"],
@@ -320,8 +332,8 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Do ek jaisi roti hain. Ek roti ka 2/5 hissa, doosri ka 4/5 hissa. Kismein zyada roti hai, 2/5 ya 4/5?",
-       "en": "Two identical rotis: 2/5 of one, 4/5 of the other. Which is more roti, 2/5 or 4/5?"
+       "hi": "Ab sankhya rekha 0 se 1 tak 5 barabar hisson mein bati ho. Zero se zyada door kaunsa hoga, 2/5 ya 4/5?",
+       "en": "Now the number line from 0 to 1 is cut into 5 equal parts. Which is further from zero, 2/5 or 4/5?"
       },
       "key": "4/5",
       "accept": ["four fifths", "4/5 wala", "4/5 zyada hai"],
@@ -373,16 +385,16 @@
     "steps": [
      {
       "do": {
-       "hi": "Dono bhinnon ka neeche ka number 8 hai, matlab dono cake ke tukde ek hi size ke hain. Har tukda 1/8 hai.",
-       "en": "Both bottom numbers are 8, so the pieces of both cakes are the same size. Each piece is 1/8."
+       "hi": "Dono bhinnon ka neeche ka number dekho",
+       "en": "Look at the bottom number of both fractions"
       },
-      "result": "each piece 1/8",
-      "why": { "hi": "Neeche ka number same hai, toh tukdon ka size bhi same hai.", "en": "Same bottom number, so the pieces are the same size." }
+      "result": "dono mein 8, toh har tukda 1/8",
+      "why": { "hi": "dono cake ek jaise hain aur dono 8 barabar tukdon mein bante hain", "en": "both cakes are the same size and both are in 8 equal pieces" }
      },
      {
-      "do": { "hi": "Meena ka 5/8 matlab 1/8 wale 5 tukde. Raju ka 3/8 matlab 1/8 wale 3 tukde.", "en": "Meena's 5/8 means 5 pieces of 1/8. Raju's 3/8 means 3 pieces of 1/8." },
-      "result": "Meena 5 pieces of 1/8, Raju 3 pieces of 1/8",
-      "why": { "hi": "Upar ka number batata hai ki kitne tukde khaye.", "en": "The top number tells how many pieces were eaten." }
+      "do": { "hi": "Ab upar ka number dekho", "en": "Now look at the top number" },
+      "result": "Meena ke 1/8 wale 5 tukde, Raju ke 3 tukde",
+      "why": { "hi": "upar ka number batata hai ki kitne tukde khaye", "en": "the top number tells how many pieces were eaten" }
      }
     ],
     "yourStep": {
@@ -395,10 +407,10 @@
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
      "wrongIfMis": "they ate the same"
     },
-    "answer": { "hi": "Raju ne kam cake khaya, kyunki 3/8 < 5/8.", "en": "Raju ate less cake, because 3/8 < 5/8." },
+    "answer": { "hi": "Raju ne kam cake khaya, sirf 3/8", "en": "Raju ate less cake, only 3/8" },
     "why": {
-     "hi": "Neeche ka number same hai, toh tukde same size ke hain. Phir jiske tukde kam, uska cake kam. Sankhya rekha par bhi 3/8, 5/8 se pehle aata hai.",
-     "en": "The bottom number is the same, so the pieces are the same size. Then fewer pieces means less cake. On the number line too, 3/8 comes before 5/8."
+     "hi": "tukde same size ke hain aur Raju ke tukde kam hain, isliye sankhya rekha par bhi 3/8, 5/8 se pehle aata hai",
+     "en": "the pieces are the same size and Raju has fewer of them, so on the number line too 3/8 comes before 5/8"
     },
     "board": {
      "template": "fraction-line@1",
@@ -416,7 +428,13 @@
      "accept": ["brother", "bhai", "bhai ne", "uske bhai ne", "her brother, 4/6"],
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
      "wrongIfMis": "the same amount",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "Meena", "items": ["2/6"] },
+       "right": { "title": "uske bhai", "items": ["4/6"] }
+      }
+     }
     },
     {
      "id": "c1",
@@ -428,19 +446,31 @@
      "accept": ["Ben ke paas", "Ben ke", "Ben has more", "Ben, 2/4"],
      "targets": "c5-maths-ch02-t02-m-tops-only",
      "wrongIfMis": "{friend}",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "4 barabar tukdon", "items": ["2 tukde liye"] },
+       "right": { "title": "12 barabar tukdon", "items": ["3 tukde liye"] }
+      }
+     }
     },
     {
      "id": "c2",
      "prompt": {
-      "hi": "Ek hi cake ka 3/4 bada hai ya 5/6? Dono mein poore cake se ek tukda kam hai.",
-      "en": "Which is bigger of the same cake, 3/4 or 5/6? Both are one piece short of the whole cake."
+      "hi": "Do ek jaise cake hain: ek ke 4 barabar tukdon mein se 3, doosre ke 6 barabar tukdon mein se 5. Dono mein poore cake se ek tukda kam hai. Kaunsa bada hai, 3/4 ya 5/6?",
+      "en": "Two identical cakes: 3 of 4 equal pieces of one, 5 of 6 equal pieces of the other. Both are one piece short of the whole cake. Which is bigger, 3/4 or 5/6?"
      },
      "key": "5/6",
      "accept": ["five sixths", "5/6 bada hai", "not equal, 5/6 is bigger"],
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "wrongIfMis": "they are equal",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "4 barabar tukdon", "items": ["3 tukdon", "ek tukda kam"] },
+       "right": { "title": "6 barabar tukdon", "items": ["5 tukdon", "ek tukda kam"] }
+      }
+     }
     }
    ],
    "ladder": [
@@ -464,11 +494,11 @@
      },
      "then": {
       "prompt": {
-       "hi": "Ek ribbon 1 m lamba hai aur 8 barabar tukdon mein kata hai. {friend} ne 3 tukde liye, Gopi ne 5 tukde. Zyada ribbon kiske paas hai, {friend} ke ya Gopi ke?",
-       "en": "A ribbon 1 m long is cut into 8 equal pieces. {friend} takes 3 pieces, Gopi takes 5. Who has more ribbon, {friend} or Gopi?"
+       "hi": "Ek ribbon ke 8 barabar tukde hain. {friend} ne 3 tukde liye, Gopi ne 5. Zyada kiske paas hai, {friend} ke ya Gopi ke?",
+       "en": "A ribbon has 8 equal pieces. {friend} takes 3 pieces, Gopi takes 5. Who has more, {friend} or Gopi?"
       },
       "key": "Gopi",
-      "accept": ["Gopi ke paas", "Gopi, 5/8 m", "Gopi ke"],
+      "accept": ["Gopi ke paas", "Gopi, 5/8", "Gopi ke"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
       "wrongIfMis": "they have the same",
       "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 0, "whole": "bar" } }
@@ -487,8 +517,8 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar hain. Ek bar 3 barabar tukdon mein kata hai, usme se 2 tukde lo. Doosra 12 barabar tukdon mein kata hai, usme se 4 tukde lo. Kaun zyada hai, 2/3 ya 4/12?",
-       "en": "Two identical bars. One is cut into 3 equal pieces and you take 2. The other is cut into 12 equal pieces and you take 4. Which is more, 2/3 or 4/12?"
+       "hi": "Do ek jaise bar: ek ke 3 barabar tukdon mein se 2 tukde lo, doosre ke 12 mein se 4. Kaun zyada hai, 2/3 ya 4/12?",
+       "en": "Two identical bars: take 2 of 3 equal pieces of one, 4 of 12 of the other. Which is more, 2/3 or 4/12?"
       },
       "key": "2/3",
       "accept": ["two thirds", "2/3 wala", "3 wale bar ke 2 tukde", "2 pieces of the bar cut into 3"],
@@ -497,8 +527,8 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "3 barabar tukde", "items": ["2 tukde lo"] },
-        "right": { "title": "12 barabar tukde", "items": ["4 tukde lo"] }
+        "left": { "title": "3 barabar tukdon", "items": ["2 tukde lo"] },
+        "right": { "title": "12 tukdon", "items": ["4 lo"] }
        }
       }
      }
@@ -516,8 +546,8 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar hain. Ek bar ke 5 barabar tukde hain aur uska 4/5 lo. Doosre bar ke 10 barabar tukde hain aur uska 9/10 lo. Dono mein poore se ek tukda kam hai. Kaunsa bada hai, 4/5 ya 9/10?",
-       "en": "Two identical bars. One is cut into 5 equal pieces and you take 4/5. The other is cut into 10 equal pieces and you take 9/10. Each is one piece short of a whole. Which is bigger, 4/5 or 9/10?"
+       "hi": "Ek bar ke 5 barabar tukdon mein se 4, waise hi bar ke 10 mein se 9. Dono mein ek tukda kam. Kaunsa bada, 4/5 ya 9/10?",
+       "en": "4 of 5 equal pieces of one bar, 9 of 10 of a bar just like it. Each is one piece short. Which is bigger, 4/5 or 9/10?"
       },
       "key": "9/10",
       "accept": ["nine tenths", "9/10 bada hai"],
@@ -526,8 +556,8 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "5 barabar tukde", "items": ["ek tukda kam"] },
-        "right": { "title": "10 barabar tukde", "items": ["ek tukda kam"] }
+        "left": { "title": "5 barabar tukdon", "items": ["ek tukda kam"] },
+        "right": { "title": "10 tukdon", "items": ["ek tukda kam"] }
        }
       }
      }
@@ -624,8 +654,8 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Do ek jaise cake hain: ek ka 2/9, doosre ka 2/5. Kismein zyada cake hai, 2/9 ya 2/5?",
-       "en": "Two identical cakes: 2/9 of one, 2/5 of the other. Which is more cake, 2/9 or 2/5?"
+       "hi": "Ab do aisi hi patti lo: ek mein 1/9 wale 2 hisse, doosri mein 1/5 wale 2 hisse. Kaunsa zyada hai, 2/9 ya 2/5?",
+       "en": "Now take two bars like these: two 1/9 parts in one, two 1/5 parts in the other. Which is more, 2/9 or 2/5?"
       },
       "key": "2/5",
       "accept": ["two fifths", "2/5 wala", "2/5 zyada hai"],
@@ -672,16 +702,16 @@
     "steps": [
      {
       "do": {
-       "hi": "Dono bhinnon ka upar ka number 2 hai, matlab dono ne 2 tukde khaye. Ab sirf tukde ka size dekhna hai.",
-       "en": "Both top numbers are 2, so each ate 2 pieces. Now we only compare the size of a piece."
+       "hi": "Dono bhinnon ka upar ka number dekho",
+       "en": "Look at the top number of both fractions"
       },
-      "result": "2 pieces each",
-      "why": { "hi": "Ginti same hai, isliye tukde ka size faisla karega.", "en": "The count is the same, so the piece size decides." }
+      "result": "dono mein 2, yaani dono ne 2-2 tukde khaye",
+      "why": { "hi": "upar ka number tukdon ki ginti batata hai, toh ab sirf tukde ka size dekhna hai", "en": "the top number tells the count of pieces, so now only the size of a piece matters" }
      },
      {
-      "do": { "hi": "Kabir ka bar 5 barabar hisson mein kata hai, toh har tukda 1/5 hai. Isha ka bar usi size ka hai aur 3 barabar hisson mein kata hai, toh har tukda 1/3 hai.", "en": "Kabir's bar is cut into 5 equal parts, so each piece is 1/5. Isha's bar is the same size and cut into 3 equal parts, so each piece is 1/3." },
-      "result": "Kabir: each piece 1/5; Isha: each piece 1/3",
-      "why": { "hi": "Ek hi size ka bar kam hisson mein bante, toh har tukda bada hota hai.", "en": "When a bar of the same size is cut into fewer parts, each piece is bigger." }
+      "do": { "hi": "Ab har tukde ka size likho", "en": "Now write the size of each piece" },
+      "result": "Kabir ka har tukda 1/5, Isha ka har tukda 1/3",
+      "why": { "hi": "Kabir ka bar 5 barabar hisson mein kata hai aur Isha ka usi size ka bar 3 barabar hisson mein", "en": "Kabir's bar is cut into 5 equal parts and Isha's bar of the same size into 3 equal parts" }
      }
     ],
     "yourStep": {
@@ -694,10 +724,10 @@
      "targets": "c5-maths-ch02-t02-m-tops-only",
      "wrongIfMis": "they ate the same"
     },
-    "answer": { "hi": "Isha ne zyada khaya, kyunki 2/3 > 2/5.", "en": "Isha ate more, because 2/3 > 2/5." },
+    "answer": { "hi": "Isha ne zyada khaya, 2/3", "en": "Isha ate more, 2/3" },
     "why": {
-     "hi": "Upar ka number same hai, toh tukdon ki ginti same hai. Ek hi size ka bar kam hisson mein kata ho toh tukde bade hote hain, isliye 1/3 wale tukde 1/5 wale tukdon se bade hain.",
-     "en": "The top number is the same, so the count of pieces is the same. A bar of the same size cut into fewer parts has bigger pieces, so the 1/3 pieces are bigger than the 1/5 pieces."
+     "hi": "dono ke tukde 2-2 hain, aur 1/3 wale tukde 1/5 wale tukdon se bade hain",
+     "en": "both have 2 pieces, and the 1/3 pieces are bigger than the 1/5 pieces"
     },
     "board": {
      "template": "compare@1",
@@ -711,38 +741,56 @@
     {
      "id": "c1",
      "prompt": {
-      "hi": "Ek hi chocolate bar ka 4/7 zyada hai ya 4/9?",
-      "en": "Which is more of the same chocolate bar, 4/7 or 4/9?"
+      "hi": "Do ek jaise chocolate bar hain: ek ke 7 barabar tukdon mein se 4, doosre ke 9 barabar tukdon mein se 4. Kaunsa zyada hai, 4/7 ya 4/9?",
+      "en": "Two identical chocolate bars: 4 of 7 equal pieces of one, 4 of 9 equal pieces of the other. Which is more, 4/7 or 4/9?"
      },
      "key": "4/7",
      "accept": ["four sevenths", "4/7 zyada hai"],
      "targets": "c5-maths-ch02-t02-m-tops-only",
      "wrongIfMis": "the same, both are 4 pieces",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "7 barabar tukdon", "items": ["4 tukdon"] },
+       "right": { "title": "9 barabar tukdon", "items": ["4 tukdon"] }
+      }
+     }
     },
     {
      "id": "c2",
      "prompt": {
-      "hi": "Tara aur Gopi ke paas ek jaise ribbon hain. Tara apne ribbon ka 5/12 kaatti hai, Gopi apne ribbon ka 5/6. Lamba tukda kisne kaata, Tara ne ya Gopi ne?",
-      "en": "Tara and Gopi have same-size ribbons. Tara cuts off 5/12 of hers and Gopi cuts off 5/6 of his. Who cuts off the longer piece, Tara or Gopi?"
+      "hi": "Tara aur Gopi ke paas ek jaise ribbon hain. Tara apne ribbon ke 12 barabar tukdon mein se 5 kaatti hai, Gopi apne ribbon ke 6 barabar tukdon mein se 5. Lamba tukda kisne kaata, Tara ne ya Gopi ne?",
+      "en": "Tara and Gopi have same-size ribbons. Tara cuts off 5 of 12 equal pieces of hers, and Gopi cuts off 5 of 6 equal pieces of his. Who cuts off the longer piece, Tara or Gopi?"
      },
      "key": "Gopi",
      "accept": ["Gopi ne", "Gopi, 5/6", "5/6 wala"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "Tara",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "Tara", "items": ["12 barabar tukdon", "5 tukdon"] },
+       "right": { "title": "Gopi", "items": ["6 barabar tukdon", "5 tukdon"] }
+      }
+     }
     },
     {
      "id": "c3",
      "prompt": {
-      "hi": "Ek hi pizza ka 4/5 bada hai ya 5/6? Dono mein poore pizza se ek slice kam hai.",
-      "en": "Which is bigger of the same pizza, 4/5 or 5/6? Both are one slice short of the whole pizza."
+      "hi": "Do ek jaise pizza hain: ek ke 5 barabar slice mein se 4, doosre ke 6 barabar slice mein se 5. Dono mein poore pizza se ek slice kam hai. Kaunsa bada hai, 4/5 ya 5/6?",
+      "en": "Two identical pizzas: 4 of 5 equal slices of one, 5 of 6 equal slices of the other. Both are one slice short of the whole pizza. Which is bigger, 4/5 or 5/6?"
      },
      "key": "5/6",
      "accept": ["five sixths", "5/6 bada hai", "not equal, 5/6 is bigger"],
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
      "wrongIfMis": "they are equal",
-     "board": null
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": { "title": "5 barabar slice", "items": ["4 slice", "ek slice kam"] },
+       "right": { "title": "6 barabar slice", "items": ["5 slice", "ek slice kam"] }
+      }
+     }
     }
    ],
    "ladder": [
@@ -766,8 +814,8 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar hain. Ek bar 5 barabar tukdon mein kata hai aur uske 4 tukde rang wale hain, yeh 4/5 hai. Doosra 10 barabar tukdon mein kata hai aur uske bhi 4 tukde rang wale hain, yeh 4/10 hai. Kiska rang zyada lamba hai: 4/5 wale ka ya 4/10 wale ka, ya dono barabar?",
-       "en": "Two identical bars. One is cut into 5 equal pieces and 4 pieces are shaded; that is 4/5. The other is cut into 10 equal pieces and 4 pieces are shaded too; that is 4/10. Whose shading is longer: the 4/5 or the 4/10, or are they equal?"
+       "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 4 rang wale, doosre ke 10 mein se 4. Zyada rang kismein, 4/5 ya 4/10?",
+       "en": "Two identical bars: 4 of 5 equal pieces shaded in one, 4 of 10 in the other. Which has more shading, 4/5 or 4/10?"
       },
       "key": "4/5",
       "accept": ["four fifths", "4/5 wala", "4/5 wale ka"],
@@ -776,8 +824,8 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "5 barabar tukde", "items": ["4 tukde rang wale"] },
-        "right": { "title": "10 barabar tukde", "items": ["4 tukde rang wale"] }
+        "left": { "title": "5 barabar tukdon", "items": ["4 rang wale"] },
+        "right": { "title": "10 tukdon", "items": ["4 rang wale"] }
        }
       }
      }
@@ -795,18 +843,18 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ribbon hain, dono 1 m lambe. Ek ribbon ke 3 barabar hisse hain, usme se 2 hisse kaate, yeh 2/3 hai. Doosre ke 6 barabar hisse hain, usme se bhi 2 hisse kaate, yeh 2/6 hai. Kaunsa kata hua tukda lamba hai, 2/3 ya 2/6?",
-       "en": "Two ribbons, each 1 m long. One ribbon has 3 equal parts and 2 parts are cut off; that is 2/3. The other has 6 equal parts and 2 parts are cut off too; that is 2/6. Which cut piece is longer, 2/3 or 2/6?"
+       "hi": "Do ek jaise ribbon: ek ke 3 barabar hisson mein se 2 hisse liye, doosre ke 6 mein se 2. Kaunsa lamba hai, 2/3 ya 2/6?",
+       "en": "Two identical ribbons: 2 of 3 equal parts taken from one, 2 of 6 from the other. Which is longer, 2/3 or 2/6?"
       },
       "key": "2/3",
-      "accept": ["2/3 m", "the 2/3 piece", "2/3 wala"],
+      "accept": ["2/3 wala", "the 2/3 piece", "2/3 lamba hai"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "2/6",
       "board": {
        "template": "compare@1",
        "params": {
         "left": { "title": "3 barabar hisse", "items": ["2 hisse"] },
-        "right": { "title": "6 barabar hisse", "items": ["2 hisse"] }
+        "right": { "title": "6 hisse", "items": ["2 hisse"] }
        }
       }
      }
@@ -827,8 +875,8 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar hain. Ek bar ke 3 barabar tukde hain aur uska 2/3 lo. Doosre bar ke 4 barabar tukde hain aur uska 3/4 lo. Dono mein poore se ek tukda kam hai. Kaunsa bada hai, 2/3 ya 3/4?",
-       "en": "Two identical bars. One is cut into 3 equal pieces and you take 2/3. The other is cut into 4 equal pieces and you take 3/4. Each is one piece short of a whole. Which is bigger, 2/3 or 3/4?"
+       "hi": "Ek bar ke 3 barabar tukdon mein se 2, waise hi bar ke 4 mein se 3. Dono mein ek tukda kam. Kaunsa bada, 2/3 ya 3/4?",
+       "en": "2 of 3 equal pieces of one bar, 3 of 4 of a bar just like it. Each is one piece short. Which is bigger, 2/3 or 3/4?"
       },
       "key": "3/4",
       "accept": ["three quarters", "teen chauthai", "3/4 bada hai"],
@@ -837,8 +885,8 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "3 barabar tukde", "items": ["ek tukda kam"] },
-        "right": { "title": "4 barabar tukde", "items": ["ek tukda kam"] }
+        "left": { "title": "3 barabar tukdon", "items": ["ek tukda kam"] },
+        "right": { "title": "4 tukdon", "items": ["ek tukda kam"] }
        }
       }
      }

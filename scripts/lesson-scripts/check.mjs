@@ -70,7 +70,10 @@ export function beatsOf(skill, version = 1) {
       ...skill.explain.map((e) => ({ id: e.id, board: e.board, line: [said(e.point), ...(e.mustSay ?? []).map(said)].join(" "), withhold: { values: [e.ask?.key].filter(Boolean) }, check: false })),   // the beat's board shows the idea; only its exact key is withheld
       { id: "we", board: we.board, line: [said(we.problem), ...we.givens.map(said), ...we.steps.flatMap((x) => [said(x.do), x.result])].join(" "),
         withhold: { values: [we.yourStep?.key, ...(we.yourStep?.accept ?? [])].filter(Boolean) }, check: false },
-      ...skill.checks.map((c) => ({ id: c.id, board: c.board, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true })),
+      // a check with no board of its own borrows the last explain beat's board at runtime (Brain's cardBeatRef); certify the
+      // board the child will actually see against THAT check's answers (Studio 2026-11-05)
+      ...skill.checks.map((c) => { const own = !!c.board; const fb = [...skill.explain].reverse().find((e) => e.board)?.board;
+        return { id: own ? c.id : `${c.id} (borrows the last explain board)`, board: c.board ?? fb, line: said(c.prompt), withhold: { values: [c.key, ...(c.accept ?? [])] }, check: true }; }),
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
       // v2.1 (director5, dc-r7-script-walk-v3): the follow-up card after a remediation carries its own board, gated as a check
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}.then`, board: r.then?.board, line: said(r.then?.prompt), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: true })),

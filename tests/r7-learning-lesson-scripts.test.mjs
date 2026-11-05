@@ -21,7 +21,9 @@ test("the c5 pilot draws every board on the fraction number line, and its checks
   const s = scriptOf("c5-maths-ch02-t01");
   for (const k of s.skills) {
     for (const b of [...k.explain.map((e) => e.board), k.workedExample.board, ...k.remediation.map((r) => r.board)]) if (b) assert.equal(b.template, "fraction-line@1");
-    for (const c of k.checks) if (c.board) assert.ok(c.board.params.mark !== undefined || c.board.params.target, `${k.skillId}/${c.id}`);
+    // v2.2: a "which is closer" check may use a two-column compare board; a fraction-line check board asks (mark / target),
+    // never shows. (check.mjs certifies every check board against its own answers.)
+    for (const c of k.checks) if (c.board?.template === "fraction-line@1") assert.ok(c.board.params.mark !== undefined || c.board.params.target, `${k.skillId}/${c.id}`);
   }
 });
 
