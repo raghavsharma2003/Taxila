@@ -746,6 +746,96 @@ export type BoardRef =
   | { template: string; params?: Record<string, unknown>; withhold?: "item" }
   | ({ template: string; withhold?: "item" } & Record<string, unknown>)
   | { auto: true };
+// ── script v2 (dc-r7-script-walk-v2, main's director4 judgement: "the walk is a clock, not a teacher") ──
+// version: 2. Every field the child HEARS or SEES is a Said (F1): code speaks the lesson language's form and never an
+// English-only field in a Hinglish lesson. Every explain beat ends in a keyed micro-question (F2): a beat is done only when
+// its must-say terms were spoken AND its question was answered and judged against its key (R1). The worked example's last
+// step is the child's, keyed (F3). Interest slots name a closed interest and its spoken situation (F4); the greet promises
+// only an interest a slot uses. Shapes (convey, move) stay note-form strings for the reply model; they are never spoken.
+/** A spoken or shown field in both lesson languages: hi is Roman Hinglish (the Hinglish and Hindi lanes), en English. */
+export interface Said { hi: string; en: string }
+/** A keyed question the child answers (graded by the classifier against `key` / `accept`, never by a model). */
+export interface KeyedAsk {
+  prompt: Said;
+  key: string;
+  accept?: string[];
+  /** the kit misconception a wrong answer most likely shows (its remediation runs), if any */
+  targets?: string | null;
+  wrongIfMis?: string | null;
+}
+/** The closed interest list (server/persona/signals.js INTERESTS). */
+export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
+export interface TopicScriptV2 {
+  topicId: string;
+  classLevel: number;
+  version: 2;
+  status: "draft" | "reviewed" | "live";
+  terms: Array<{ hi: string; en: string }>;
+  skills: SkillScriptV2[];
+  verified?: unknown;
+}
+export interface SkillScriptV2 {
+  skillId: string;
+  hook: {
+    /** the shape of the hook (note form, not spoken) */
+    convey: string;
+    /** 1+ worlds the hook can be set in; the child's interest picks one (else the first) */
+    interestSlots: Array<{ interest: InterestKey; use: Said }>;
+  };
+  /** 1-4 beats; each ENDS in its keyed micro-question, so at most one beat of telling comes before a question */
+  explain: ExplainBeatV2[];
+  workedExample: WorkedExampleV2;
+  /** 2-3 keyed checks, each built to catch one kit misconception */
+  checks: CheckQuestionV2[];
+  ladder: Array<{ itemId: string; why: string }>;
+  remediation: RemediationV2[];
+  bridgeToNext: Said | null;
+}
+export interface ExplainBeatV2 {
+  id: string;
+  /** the idea, as a shape for the reply model (never spoken as written) */
+  convey: string;
+  /** 1-3 short terms or numbers her line MUST contain for the beat to count as delivered (checked in code) */
+  mustSay: Said[];
+  board?: BoardRef | null;
+  /** what on the board to point at */
+  point?: Said;
+  /** the beat's keyed micro-question: the beat is done only when it is answered and judged */
+  ask: KeyedAsk;
+}
+export interface WorkedExampleV2 {
+  problem: Said;
+  givens: Said[];
+  find: Said;
+  /** every step but the last, each said with its result and why */
+  steps: Array<{ do: Said; result: string; why: Said }>;
+  /** the last step, asked of the child (its key is that step's result) */
+  yourStep: KeyedAsk;
+  /** said after their step: the answer and why it is right */
+  answer: Said;
+  why: Said;
+  board?: BoardRef | null;
+}
+export interface CheckQuestionV2 {
+  id: string;
+  /** complete and solvable on its own; never containing its key; shown on the card and asked in the lesson language */
+  prompt: Said;
+  key: string;
+  accept?: string[];
+  targets: string;
+  wrongIfMis: string;
+  board?: BoardRef | null;
+}
+export interface RemediationV2 {
+  targets: string;
+  /** the new representation, as a shape (never counting) */
+  move: string;
+  /** the explanation she says (spoken, in the lesson language) */
+  say: Said;
+  board?: BoardRef | null;
+  /** the follow-up card, keyed */
+  then: KeyedAsk;
+}
 /** On a move the Director took from a script (T2): which beat it is (Studio reads intent.boardRef / intent.scriptBeat). */
 export interface ScriptBeatRef {
   scriptId: string;
