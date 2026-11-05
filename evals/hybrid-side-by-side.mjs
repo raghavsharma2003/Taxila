@@ -18,7 +18,7 @@ import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
-import { saidMust } from "../server/director/script.js";
+import { saidMust, scriptOn, scriptWhyNot } from "../server/director/script.js";
 import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
@@ -29,7 +29,8 @@ import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
-import { preselect } from "../server/stagecraft/board-first.js";
+import { preselect, takePreselected } from "../server/stagecraft/board-first.js";
+import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
 
@@ -101,13 +102,18 @@ function stopWith(code, why) {
 const timed = async (fn) => { const t0 = performance.now(); const v = await fn(); return [v, Math.round(performance.now() - t0)]; };
 
 const say = (r) => r?.ui?.ask?.text ?? null;
+const NO_COUNTS = new Set();
+const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
 
 async function classOf(state, kit, text, classLevel) {
   const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
   const target = targetFor(state, kit, item);
   const args = { target, childText: text, lang: state.ctx?.lang, classLevel, typed: true };
-  if (DRY) { const f = classifyFast(args); if (!f.result) dryCall("classify"); return f.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }; }
-  return classify(args);
+  // (latency fields: which path read the turn — code alone, or the model; production's speculation overlaps the model path)
+  const fast = classifyFast(args);
+  const path = fast.result ? "fast" : "model";
+  if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }), path }; }
+  return { ...(await classify(args)), path };
 }
 
 /** One lesson on one lane: the opening, then every scripted line. */
@@ -121,6 +127,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
   let s = { ...r.state, brief, mode: "text", kitVerified: kit.verified, kitHash: kit.hash };
   const rows = [];
+  let lastClassify = null;
   const agentLine = async (st, event, extra = {}) => {
     try {
       const out = await agentTurn({ state: st, kit, event, lessonId: LESSON.id, lane: "text", ...extra });
@@ -161,13 +168,14 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const now = (i + 1) * 20_000;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
-    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs });
+    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
+    lastClassify = { ms: classifyMs, path: c.path ?? null };
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     let next = { ...p.r.state, mode: "text" };
-    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0;
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null;
     // (as brain/turn.js: the stop check-in is the Director's on both lanes)
     if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
       const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
@@ -206,10 +214,15 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
         const pick = preselect(ask, { kit });
+        pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
+          // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
+          const counts = pick.screen?.counts ?? pick.facts?.counts ?? pick.script?.facts?.counts ?? null;
           screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
-            ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+            counts, ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+          // (Studio: word boards — compare, flow, cycle, table, timeline, label, parts — have nothing countable: not a miss)
+          if (!counts && pick.template && !WORD_BOARDS.test(pick.template) && !NO_COUNTS.has(pick.template)) { NO_COUNTS.add(pick.template); console.error(`NO COUNTS: ${pick.template} (${kit.topicId}) drew a board with no screen.counts`); }
           slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
@@ -222,7 +235,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     if (reply == null) {
       const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
-      reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null;
+      reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
       // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
       // whether code replaced or repaired the line
       if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
@@ -235,6 +248,18 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const check = cardId ? { itemId: cardId, scripted: String(cardId).startsWith("script:"), misses: next.misses?.[cardId] ?? 0, gave: !!next.lastMove?.gave } : null;
     // (a board or game on screen this turn; Studio's code-built scenes (M5a) are not simulated in-process: scene is always null)
     const boardUp = !!(screen && screen.kind !== "none");
+    // (Studio, director6 #1: the board the child SAW is the preselect TAKEN on her real line, re-gated: a value she states is
+    // drawn, no longer "?"; production's seam.js does the same take. The record and the contradiction count use it, falling
+    // back to the preselect's masked board only when the take returns nothing)
+    if (pickAsk && screen?.kind === "whiteboard" && reply) {
+      const askR = { ...pickAsk, line: { ...(pickAsk.line ?? {}), text: reply } };
+      let took = null;
+      try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
+      if (took?.screen) {
+        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null };
+        slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+      } else screen = { ...screen, drawn: "preselect" };
+    }
     // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
     // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
     // (dc-r7-script-walk-v3 exact counts) delivered = the authored point spoken (explain beats); the verdict = the GRADED state
@@ -243,12 +268,27 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const delivered = next.lastMove?.point ? pointSaid(reply, next.lastMove.point) : next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
     const graded = ["correct", "not_yet"].includes(next.lastVerdict) ? next.lastVerdict : null;
     const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
-    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(reply) || !NOT_RIGHT.test(firstS) : NOT_RIGHT.test(firstS)) : null;
+    // (H1.2: a right answer's verdict is an explicit affirmation; silence is not a verdict)
+    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(firstS) : NOT_RIGHT.test(firstS)) : null;
     const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
-    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim()) && NOT_RIGHT.test(firstS);
+    // (a keyed right answer graded not_yet, or met with a not-right lead that does not affirm: "Sahi, … barabar nahi hain" to the
+    // key "nahi" is an affirmation, director6's 3 false counts)
+    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim())
+      && (graded === "not_yet" || (NOT_RIGHT.test(firstS) && !affirmsAnswer(reply)));
+    // (H1.2, a new count: a wrong answer called right: the script's listed wrong answer graded right, or a graded-wrong answer
+    // met with an affirmation and no not-right)
+    const meta = activeItem?.scriptAsk ?? activeItem?.scriptCheck ?? activeItem?.scriptThen ?? null;
+    const saidN = String(text).toLowerCase().replace(/\s+/g, " ").trim();
+    const wim = meta?.wrongIfMis ? String(meta.wrongIfMis).toLowerCase().replace(/\s+/g, " ").trim() : null;
+    const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
+      || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
     const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong },
+    // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
+    // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
+    const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
+      rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight },
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
@@ -272,6 +312,12 @@ const runs = MATRIX
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
 const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
+// (main, after director6's first start walked no script at all: a script run never starts on a topic with no walkable script;
+// it says which topic and why, and spends nothing)
+if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
+  const bad = [...new Set(runs.map((r) => r.topicId))].map((t) => [t, scriptWhyNot(kitFromFile(getTopic(t)))]).filter(([, why]) => why);
+  if (bad.length) { for (const [t, why] of bad) console.error(`NO SCRIPT: ${t}: ${why}`); console.error("refusing to run: TAXILA_R7_SCRIPT=on and a topic would fall back to the kit"); process.exit(5); }
+}
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
 for (const { topicId, classLevel, name: scenario } of runs) {
@@ -288,6 +334,10 @@ for (const { topicId, classLevel, name: scenario } of runs) {
   const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
+  if (process.env.TAXILA_R7_SCRIPT && scriptOn() && A?.length && !A.some((r) => r.beat)) {
+    console.error(`NO SCRIPT BEATS: ${name} walked no script beat (${topicId}); stopping`); stopWith(6, "no script beats");
+  }
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
   const fell = B.filter((r) => r.fellBack).length;
   const p50 = (rows) => { const v = rows.filter((r) => r.replyReadyMs != null).map((r) => r.replyReadyMs).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };

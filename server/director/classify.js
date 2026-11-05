@@ -572,6 +572,18 @@ export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(H
 const STRAY_SHARE = 0.25;
 const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
 
+// v4 W4: the same answer in other words ("after 1/3" = "1/3 ke baad"): the numbers and the content words, with English and
+// Hinglish direction / size words on one footing and fillers left out, as an unordered set
+const WORD_SAME = { after: "baad", before: "pehle", between: "beech", bigger: "bada", larger: "bada", greater: "bada", smaller: "chhota",
+  less: "chhota", more: "zyada", equal: "barabar", same: "barabar", yes: "haan", no: "nahi", nahin: "nahi", han: "haan", ha: "haan" };
+const WORD_FILL = new Set(["ke", "ki", "ka", "se", "mein", "me", "par", "hai", "hain", "the", "a", "an", "of", "is", "it", "to", "and", "aur", "wala", "wali", "na", "toh", "to"]);
+const wordSet = (x) => new Set((String(x ?? "").toLowerCase().match(/\d+(?:\.\d+)?(?:\/\d+)?|[\p{L}]+/gu) ?? []).map((w) => WORD_SAME[w] ?? w).filter((w) => !WORD_FILL.has(w)));
+export function sameWords(a, b) {
+  const A = wordSet(a), B = wordSet(b);
+  if (!A.size || A.size !== B.size) return false;
+  for (const w of A) if (!B.has(w)) return false;
+  return true;
+}
 /** dc-r7-script-walk-v3 K2: script cards graded in code (TAXILA_R7_SCRIPT_GRADE=off: the model as before). */
 export const scriptGradeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT_GRADE ?? ""));
 const HI_NUMS = { shunya: 0, ek: 1, do: 2, teen: 3, chaar: 4, char: 4, paanch: 5, panch: 5, chhah: 6, chhe: 6, chah: 6, saat: 7, aath: 8, nau: 9, das: 10,
@@ -748,12 +760,18 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const unitless = (x) => norm(String(x ?? "").replace(/\b(?:cm|m|km|mm|metre|metres|meter|meters|centimetre|kg|g|rupees|rs)\b\.?/gi, ""));
     const forms = [target.key, ...(target.also || [])].filter(Boolean);
     const n = firstNumOf(st), nums = String(st).match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? [];
-    const right = forms.some((k) => norm(k) === norm(st) || unitless(k) === unitless(st) || (n && nums.length === 1 && firstNumOf(k) === n && !denies0(st)));
-    if (right) return done("correct", "script_key");
+    // v4 W4 (director6: "after 1/3" to a card keyed "between 0 and 1/3" whose listed wrong answer IS "after 1/3" was graded
+    // right twice, by its lone number): the order is exact form → the listed wrong answer → the same words → by value, and by
+    // value only for a key that is a number (with a unit at most)
     const wrong = sg.wrongIfMis ? String(sg.wrongIfMis) : null;
-    if (wrong && (norm(wrong) === norm(st) || unitless(wrong) === unitless(st) || (n && nums.length === 1 && firstNumOf(wrong) === n))) {
-      return sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets }) : done("incorrect", "script_key");
-    }
+    const misOf = () => (sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets }) : done("incorrect", "script_key"));
+    if (forms.some((k) => norm(k) === norm(st) || unitless(k) === unitless(st))) return done("correct", "script_key");
+    if (wrong && (norm(wrong) === norm(st) || unitless(wrong) === unitless(st))) return misOf();
+    if (wrong && sameWords(wrong, st)) return misOf();
+    if (forms.some((k) => sameWords(k, st))) return done("correct", "script_key");
+    const numericKey = (k) => !/\p{L}/u.test(unitless(k).replace(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g, ""));
+    if (wrong && numericKey(wrong) && n && nums.length === 1 && firstNumOf(wrong) === n) return misOf();
+    if (forms.some((k) => numericKey(k) && n && nums.length === 1 && firstNumOf(k) === n && !denies0(st))) return done("correct", "script_key");
     // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
     const yesNoKey = /^(?:yes|no|haan|nahi|nahin)$/i.test(String(target.key).trim());
     const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(String(st).trim());

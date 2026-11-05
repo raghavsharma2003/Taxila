@@ -36,6 +36,13 @@ test("Ask: hands-free listens on open only when the mic is already allowed; Tap 
   assert.match(a, /setText\(\(t0\) => \(t0\.trim\(\) \? `\$\{t0\.trim\(\)\} \$\{heard\}` : heard\)\)/, "what she heard goes into the field, never straight to Ask");
 });
 
-test("Voice's seam (to-voice/003) applies to the tree", () => {
-  execFileSync("git", ["apply", "--check", "docs/patches/to-voice/003-app-ask-transcribe-childid.patch"], { cwd: new URL("..", import.meta.url) });
+test("Voice's seam (to-voice/003) applies to the tree, or Voice has applied it", () => {
+  const cwd = new URL("..", import.meta.url);
+  const patch = "docs/patches/to-voice/003-app-ask-transcribe-childid.patch";
+  try {
+    execFileSync("git", ["apply", "--check", patch], { cwd, stdio: "pipe" });
+  } catch {
+    // Voice applied it (claude/r4-duplex 16c9bf2e): the patch now reverses cleanly instead
+    execFileSync("git", ["apply", "--check", "--reverse", patch], { cwd, stdio: "pipe" });
+  }
 });

@@ -3,7 +3,7 @@
 // CTA. The safety hold, offline and signed-out states render today's Home unchanged, so their copy, the help sheet
 // and the 1098 / 14416 floor stay exactly as integrated.
 import { useEffect } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { preloadLessonRoute } from "../../../child/preload.ts";
 import { useChild } from "../../../child/ChildShell.tsx";
 import { usePlan } from "../../../child/plan.ts";
@@ -21,6 +21,7 @@ import { kt, RING_LABEL } from "../copy.ts";
 /** A subject id in words (the World's ring names: Maths, Science, …). */
 const subjectName = (s: string | null): string | null => (s ? (RING_LABEL[s] ? kt(RING_LABEL[s]) : s) : null);
 import { useChildNav } from "./useNav.ts";
+import { useKxGo } from "./go.ts";
 
 export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
   const h = d.getHours();
@@ -31,7 +32,7 @@ export function greetingFor(d = new Date()): HomeViewProps["greeting"] {
 export function KakshaHome() {
   const { cid, child, band, family, prefs, reducedMotion, me } = useChild();
   const { plan, reload } = usePlan(cid);
-  const nav = useNavigate();
+  const go = useKxGo(reducedMotion);
   const rec = useTeacher(child.teacher_id, band);
   // her once-a-day greeting (Face to-app/004): spoken after the child's first tap, then a glance at Start
   const hello = useDailyGreeting(cid, { enabled: prefs.face !== "voice" });
@@ -44,10 +45,10 @@ export function KakshaHome() {
     const kind = plan.signedOut ? "signedout" : plan.state === "safety_hold" ? "hold" : "offline";
     return (
       <KxPage family={family} reducedMotion={reducedMotion} screen="home" testid="home" title={null} backTo={null} meTo={kn.meTo} parentTo="/parent"
-        dock={kind === "hold" ? kn.dock.filter((d) => d.key !== "ask" && d.key !== "practice") : kind === "offline" ? kn.dock.filter((d) => d.key !== "ask") : kn.dock} active="home" go={(to) => nav(to)}>
+        dock={kind === "hold" ? kn.dock.filter((d) => d.key !== "ask" && d.key !== "practice") : kind === "offline" ? kn.dock.filter((d) => d.key !== "ask") : kn.dock} active="home" go={go}>
         <div data-plan-state={kind === "signedout" ? "signedout" : plan.state} data-plan-source={plan.source} className="kx-home-state">
           <HomeStateView kind={kind} packReady={plan.packReady} practiceTo={`/c/${cid}/practice`} signInTo={`/start/phone?login=1&next=${encodeURIComponent(`/c/${cid}`)}`}
-            onRetry={reload} go={(to) => nav(to)}
+            onRetry={reload} go={go}
             help={(close, grownUp, setGrownUp) => (
               <HelpSheet teacherId={child.teacher_id ?? ""} band={band} childName={child.first_name} backVisible grownUp={grownUp} faceForm={faceFormOf(prefs.face).form}
                 onGrownUp={() => setGrownUp(true)} onGrownUpBack={() => setGrownUp(false)} onGrownUpHere={() => { setGrownUp(false); close(); }} onBack={close} />
@@ -78,7 +79,7 @@ export function KakshaHome() {
           did={plan.did[0] ? { ask: plan.did[0].ask, answer: plan.did[0].answer, withHelp: plan.did[0].withHelp } : null}
           madeFor={plan.madeFor.map((it) => ({ id: it.id, title: it.title, still: it.still, to: `/c/${cid}/notebook?made=${encodeURIComponent(it.id)}` }))}
           jarWaiting={(plan.jarWaiting ?? 0) > 0}
-          startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)}
+          startTo={state === "homework" ? `/c/${cid}/ask?homework=1` : continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={go}
           dock={kn.dock} meTo={kn.meTo} />
       </div>
     </KakshaRoot>

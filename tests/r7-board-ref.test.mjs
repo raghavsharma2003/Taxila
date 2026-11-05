@@ -129,8 +129,10 @@ test("director5 SC1: the screen carries what the board draws, counted by the tem
   assert.deepEqual(scr({ template: "equal-groups@1", groups: 3, each: 4 }).counts, { groups: 3, each: 4 });
   // two denominators: one line count per scale
   assert.equal(scr({ template: "fraction-line@1", dens: [5, 8], marks: [[3, 5]] }).counts.lines.length, 2);
-  // a board with nothing to count carries no counts
-  assert.equal(scr({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }).counts, undefined);
+  // director6 #2: every template counts, word boards too (a flow's steps, a compare board's columns and stated quantities)
+  assert.deepEqual(scr({ template: "flow@1", steps: ["sunlight", "leaf", "food"] }).counts, { steps: 3 });
+  assert.deepEqual(scr({ template: "compare@1", left: { title: "Roti", items: ["2 tukde"] }, right: { title: "Tukde", items: ["ek bada", "ek chhota"] } }).counts,
+    { columns: [{ title: "Roti", items: 1, quantities: [{ n: 2, what: "tukde" }] }, { title: "Tukde", items: 2, quantities: [] }] });
 });
 
 test("director5 SC2: a scripted remediation board goes up only on the turn its explanation is spoken; a picture asked for re-shows the card's board", async () => {
@@ -180,9 +182,8 @@ test("director5: every v2 script board is preselected as the script's and drawn 
   assert.deepEqual(claimsNotDrawn("Screen par line ko 2 hisson mein kaato, phir 4 hisson mein kaato.", eighths), []);
   assert.deepEqual(claimsNotDrawn("Screen par line 8 barabar gaps mein hai; 3 gaps 0 se.", eighths), []);
   assert.equal(claimsNotDrawn("Screen par line 4 barabar gaps mein bati hai.", eighths).length, 1);
-  // Learning's data still to change (told): s2 remediation 2 says the train stops at 7/5, its board draws no hop to it;
-  // c5-t02 s1 explain 3's compare board is written in English under a Hinglish line
-  const KNOWN = new Set(["c5-maths-ch02-t01 s2 remediation2", "c5-maths-ch02-t02 s1 explain3"]);
+  // (Learning's v2.1 fixed the last two: the train's hop to 7/5, the compare board in the line's Hinglish)
+  const KNOWN = new Set();
   const misses = [];
   let n = 0;
   for (const f of fs.readdirSync("data/lesson-scripts")) {
@@ -201,4 +202,55 @@ test("director5: every v2 script board is preselected as the script's and drawn 
   }
   assert.ok(n >= 60, `${n} script boards`);
   assert.deepEqual(misses.filter((m) => !KNOWN.has(m)), []);
+});
+
+test("director5 then-cards: a scripted card's own labels are drawn (2/4 on the 1/4-hops card), every other kit key stays withheld", async () => {
+  const BF = await import("../server/stagecraft/board-first.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
+  const card = (id, ref) => ({ intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "then1", kind: "check" } },
+    line: { lessonId: id, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } });
+  // Learning's then-card (claude/r7-learning 31b818f9c): "1/4 ke 2 hop 2/4 tak … 1/8 ke 2 hop 2/4 se pehle rukenge, ya baad?"
+  const p = BF.preselect(card("then-a", { template: "fraction-line@1", params: { den: 4, from: 0, to: 1, marks: [{ num: 2, label: "2/4" }], hop: { num: 2 } } }), { kit });
+  assert.equal(p?.by, "script", "2/4 = 1/2 is a kit key, but it is this card's authored given");
+  // an asked mark on a card is never labelled, so nothing is freed: still "?"
+  const q = BF.preselect(card("then-b", { template: "fraction-line@1", params: { den: 3, from: 0, to: 1, mark: 1 } }), { kit });
+  assert.ok(!q.screen.numbers.includes("1/3"));
+});
+
+test("director6 #1: a number her line states is never drawn '?' — the take's screen is the drawn board; a card's own board shows its givens; certify fails '?' over a stated number", async () => {
+  const BF = await import("../server/stagecraft/board-first.js");
+  const { gateCtxFor } = await import("../server/stagecraft/board-sync.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const c6 = kitFromFile(getTopic("c6-maths-ch06-t01")), c4 = kitFromFile(getTopic("c4-maths-ch05-t01"));
+  const rect = { template: "measured@1", params: { shape: "rect", unit: "m", w: 40, h: 25 } };
+  const ask = (id, T, ref, beat = {}) => ({ intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { scriptId: "s", beatId: "c1", kind: "check", ...beat } }, line: { lessonId: id, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } });
+  const line = "Ek rectangle playground 40 m lamba aur 25 m chauda hai. Iska parimap kitna hai?";
+  // c6 steady T38: a check whose board may be borrowed: 40 (a kit key) is "?" before her line exists...
+  const a = ask("d6-a", "c6-maths-ch06-t01", rect);
+  const p = BF.preselect(a, { kit: c6 });
+  assert.ok(!p.screen.numbers.includes("40"));
+  assert.deepEqual(p.screen.counts.sideValues, ["?", "25 m", "?", "25 m"], "the counts follow the mask");
+  // ...and on her line that states it, the board draws 40 m and the screen Brain reads SAYS so (it said 25 alone before)
+  const real = { ...a, line: { lessonId: "d6-a", text: line } };
+  const t = BF.takePreselected(real, gateCtxFor(real, { kit: c6, redact: [], prior: [] }));
+  assert.ok(t.script.ops.some((o) => o.op === "text" && o.text === "40 m"));
+  assert.deepEqual(t.screen.numbers, ["40", "25"]);
+  assert.deepEqual(t.screen.counts.sideValues, ["40 m", "25 m", "40 m", "25 m"]);
+  // a card's OWN board (Brain: ownBoard) and a then-card show their givens from the start (c4 steady T10: "? tukde")
+  assert.ok(BF.preselect(ask("d6-b", "c6-maths-ch06-t01", rect, { ownBoard: true }), { kit: c6 }).screen.numbers.includes("40"));
+  const tukde = { template: "compare@1", params: { left: { title: "Roti", items: ["2 tukde"] }, right: { title: "Tukde", items: ["ek bada", "ek chhota"] } } };
+  const q = BF.preselect(ask("d6-c", "c4-maths-ch05-t01", tukde, { beatId: "then:c4-maths-ch05-t01-m-unequal-parts" }), { kit: c4 });
+  assert.ok(q.script.ops.some((o) => o.op === "text" && o.text === "2 tukde"));
+  // a check that BORROWS its explain beat's board keeps that board's taught answer hidden (c4 s3 c1: key 1/2)
+  const taught = { template: "compare@1", params: { left: { title: "Patti ke 2 hisse", items: ["2 barabar hisse", "1 hissa = 1/2"] }, right: { title: "Wahi patti, 4 hisse", items: ["4 barabar hisse", "1 hissa = 1/4"] } } };
+  const b = BF.preselect(ask("d6-d", "c4-maths-ch05-t01", taught), { kit: c4 });
+  assert.ok(!b?.screen?.numbers?.includes("1/2"));
+  // certify: a board that would write a number the line states as "?" fails the ref
+  const r = await certifyBoardRef({ template: "measured@1", shape: "rect", unit: "m", w: 40, h: 25 }, { line, withhold: { values: ["40"], words: [] } });
+  assert.ok(r.failed.includes("stated_drawn_as_unknown:40"), JSON.stringify(r.failed));
+  assert.equal((await certifyBoardRef({ template: "measured@1", shape: "rect", unit: "m", w: 40, h: 25 }, { line, withhold: { values: ["130"], words: [] } })).ok, true);
 });

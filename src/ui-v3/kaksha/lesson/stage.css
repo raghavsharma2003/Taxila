@@ -132,3 +132,11 @@ button.ks-later-item:hover span { text-decoration: underline; text-underline-off
 .ks-later-due { margin-left: auto; font: 600 14px/1 var(--k-mono); color: var(--k-her); }
 .ks-moment--returned { border-color: color-mix(in srgb, var(--k-secure) 60%, transparent); }
 .ks-moment--returned .ks-moment-ic { color: var(--k-secure); }
+/* r7 app-motion-transitions: her window on the stage is the one Home showed (Start morphs it into place) */
+.ks-face--stage { view-transition-name: kx-asha; }
+/* r7 app-world-hangar-depth: an equipped board theme tints the stage's slot behind the piece; a rim colours her frame
+   (both only while the item is open in the child's world: cosmetics.ts lessonLook). Colour only. */
+.kx-lesson[data-kboard] .ks-slot { background: radial-gradient(120% 90% at 50% 0%, color-mix(in srgb, var(--kboard) 16%, var(--k-deep)) 0, var(--k-deep) 70%); }
+.kx-lesson[data-kboard] .ks-stage { border-color: color-mix(in srgb, var(--kboard) 45%, var(--k-line-2)); }
+.kx-lesson[data-krim] .ks-face .teacher-window, .kx-lesson[data-krim] .ks-face--pip { border-color: var(--krim); }
+.kx-lesson[data-krim] .ks-face--pip { box-shadow: 0 0 0 1px var(--krim), 0 10px 28px -12px color-mix(in srgb, var(--k-void) 90%, transparent); }

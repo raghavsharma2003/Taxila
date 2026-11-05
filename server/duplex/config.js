@@ -24,6 +24,7 @@
 // TAXILA_DUPLEX_LANE=d4 pins D4. The cohort is now an OVERRIDE, not the gate: it only matters while the global mode is
 // "shadow" (a staging or incident setting), where it still turns hands-free on for the listed guardians. The kill switch
 // TAXILA_DUPLEX=off still wins over everything. The client's fallback order stays invisible: D5, D4, push-to-talk, typed.
+import { partialPostOn } from "./childText.js";
 import { createHash } from "node:crypto";
 import { voiceLiveConfig } from "./voicelive.js";
 
@@ -107,8 +108,17 @@ export const duplexConfigRoutes = {
     res.setHeader("cache-control", "no-store");
     res.end(JSON.stringify(out));
   },
+  /** Round 7 (Studio M4): the child's live partials for in-process listeners (server/duplex/childText.js). */
+  "POST /api/duplex/child-text": async (req, res, body) => {
+    const { childTextRoute } = await import("./childText.js");
+    res.statusCode = await childTextRoute(req, body);
+    res.setHeader("cache-control", "no-store");
+    res.end();
+  },
   "GET /api/duplex/config": async (req, res) => {
-    const body = await modeFor(req);
+    const mode = await modeFor(req);
+    // round 7 (Studio M4, server/duplex/childText.js): the device posts the child's live partials only when asked
+    const body = mode.duplex === "on" && partialPostOn() ? { ...mode, partialPost: true } : mode;
     res.statusCode = 200;
     res.setHeader("content-type", "application/json; charset=utf-8");
     res.setHeader("cache-control", "no-store");

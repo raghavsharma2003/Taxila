@@ -1586,7 +1586,7 @@ export function noteDid(next, { cls, target, activeItem, kit, childText, tapped,
   const answer = String(childText || tapped || "").replace(/\s+/g, " ").trim().slice(0, 80);
   let entry = null;
   if (target.mode === "item" && activeItem && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) {
-    entry = { kind: "item", itemId: activeItem.id, ask: askText(promptFor(activeItem, lang)), answer, verdict: uiVerdict(cls, target),
+    entry = { kind: "item", itemId: activeItem.id, ask: activeItem.scriptAsk || activeItem.scriptCheck || activeItem.scriptThen ? String(promptFor(activeItem, lang) ?? "").replace(/\s+/g, " ").trim() : askText(promptFor(activeItem, lang)), answer, verdict: uiVerdict(cls, target),
       withHelp: hintLevel > 0, verified: (activeItem.kitVerified ?? kit.verified) !== false && !leaked && !next.spoiled?.includes(activeItem.id), seq, turn: next.turn };
   } else if (target.mode === "teachback" && answer && cls.outcome !== "no_evidence") {
     entry = { kind: "teachback", itemId: null, ask: null, answer, verdict: cls.outcome === "correct" ? "correct" : undefined, withHelp: false,

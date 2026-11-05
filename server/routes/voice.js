@@ -5,6 +5,7 @@
 // The child's turn itself goes through POST /api/lesson/turn like a text-lane turn: the Director writes the
 // reply there (one compile() for every lane), and the client speaks it through tts-stream by seq.
 // Like /api/tts, nothing here speaks free text: only lines the Director stored for that lesson.
+import { emitChildText } from "../duplex/childText.js";
 import { takeAgentSpec, settleAgentSpec } from "../latency/agentSpec.js";
 import { one } from "../db.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
@@ -149,8 +150,11 @@ const allowClip = limiter(CLIP_PER_MINUTE);
  * @type {(req: any, res: any, body: { lessonId: string, audio: string, mime?: string }) => Promise<void>}
  */
 async function transcribe(req, res, body) {
-  const { lessonId, audio } = need(body, "lessonId", "audio");
-  const { lesson, guardian, child } = await lessonFor(req, lessonId);
+  // r7 App (app-ask-voice): Ask "Say it" transcribes BEFORE a lesson exists, so a body with childId and no lessonId is the
+  // child's own clip (requireChild; the same consent, limiter, size checks and age-band prompt by the child's class)
+  const ask = !body?.lessonId && body?.childId;
+  const { audio } = need(body, "audio");
+  const { lesson, guardian, child } = ask ? { lesson: null, ...(await requireChild(req, String(body.childId))) } : await lessonFor(req, need(body, "lessonId").lessonId);
   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for voice");
   if (!allowClip(guardian.id)) throw new HttpError(429, "too many transcription requests");
   if (typeof audio !== "string" || audio.length > (MAX_CLIP_BYTES * 4) / 3 + 4) throw bad("audio missing or too large");
@@ -273,7 +277,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     }
     if (!headerFramed) {
       headerFramed = true;
-      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec === "adpcm" ? { codec: "adpcm" } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec !== "pcm" ? { codec: out.codec } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
       record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
@@ -388,6 +392,8 @@ async function turnAudio(req, res, body) {
   // round 7 (B5 ↔ Brain A5): the Director's locked first clause (brain/say.js streamAsk) is spoken HERE the moment it is
   // guarded, while the rest of the reply is written: the fold opens at that clause, exactly as for the agent lane
   const hooks = { onAgentSay: early.onAgentSay, onClause: (ev) => early.onDirectorClause(ev) };
+  // round 7 (Studio M4, server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
+  if (body?.lessonId && typeof body?.childText === "string") emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true });
   const specP = !body?.typed && !body?.chipId ? Promise.resolve((turnAudioDeps.takeAgentSpec ?? takeAgentSpec)(body?.lessonId, body?.childText)).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
   const settleSpec = async (why) => settleAgentSpec(body?.lessonId, await specP, why);
@@ -414,7 +420,7 @@ async function turnAudio(req, res, body) {
   const codec = codecOf(req); // round 5 (QA D12)
   const w = frameWriter(res, true, { codec });
   // the header first (does audio follow?), then the turn, so the client knows whether to wait for this response's audio
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
@@ -451,7 +457,7 @@ function streamingSay(req, res, body, t0) {
     res.writeHead(200, { "content-type": FRAMES_CONTENT_TYPE, "cache-control": "no-store" });
     res.flushHeaders?.();
     w = frameWriter(res, true, { codec: codecOf(req) });
-    w.json(FRAME.header, { v: 2, audio: "streaming", format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}) });
+    w.json(FRAME.header, { v: 2, audio: "streaming", format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}) });
     return w;
   };
   const say = (clauses, signal) => speakStreamed({ deltas: (async function* () { for (const c of clauses) yield `${c} `; })(), synth, signal,
@@ -537,7 +543,7 @@ async function startAudio(req, res, body) {
   res.flushHeaders?.();
   const codec = codecOf(req);
   const w = frameWriter(res, true, { codec });
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }

@@ -70,6 +70,15 @@ function shapeWord(raw, template) {
   if (SCREEN_SHAPES.includes(w)) return w;
   return SHAPE_OF[template] ?? "drawing";
 }
+/** Counts with every value the board does not write (masked "?") as "?": sideValues and mark labels. */
+function maskedCounts(counts, drawn) {
+  const shown = new Set(drawn);
+  const num = (t) => String(t ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [];
+  const out = { ...counts };
+  if (Array.isArray(counts.sideValues)) out.sideValues = counts.sideValues.map((v) => (num(v).every((n) => shown.has(n)) ? v : "?"));
+  if (Array.isArray(counts.marks)) out.marks = counts.marks.map((m) => (m.label && m.label !== "?" && !num(m.label).every((n) => shown.has(n)) ? { ...m, label: "?" } : m));
+  return out;
+}
 /** A script board's authored line runs 3-6x the board's own drawing (c6: 33 s over 5.8 s): stretched up to this much to keep it in step (W6). */
 const SCRIPT_STRETCH = 6;
 /** → { template, shape (one of SCREEN_SHAPES), numbers: string[], labels: string[], counts? (shared/whiteboard.js cleanCounts) } */
@@ -82,7 +91,9 @@ export function screenOf(c, facts, script = null) {
   const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [])
     : o.op === "numwork" ? (o.layout === "fraction" ? [(o.rows ?? []).flat().map(String).join("/")] : (o.rows ?? []).flat().map(String)).filter((x) => /^\d+(?:\.\d+)?(?:\/\d+)?$/.test(x)) : []));
   // round 7 (director5 SC1): what the template drew, counted (gaps, ticks, marks with labels, parts, sides with values)
-  const counts = script?.facts?.counts ?? facts?.counts ?? c?.facts?.counts ?? null;
+  const counts0 = c?.facts?.counts ?? script?.facts?.counts ?? facts?.counts ?? null;   // (the template's own first: a re-gate rebuilds the facts row)
+  // (and the counts follow a mask: a side value or mark label the board writes as "?" is "?" in the counts too)
+  const counts = counts0 && script?.ops ? maskedCounts(counts0, drawn) : counts0;
   return { template: c?.template ?? null, shape, numbers: [...new Set([...split(on.numbers).filter((x) => /\d/.test(x)), ...drawn])].slice(0, 24), labels: [...new Set(split(on.labels))], ...(counts ? { counts } : {}) };
 }
 /**
@@ -273,7 +284,9 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       const kept = r.ok && r.script?.ops ? { ...s, ops: r.script.ops } : r.gate?.script?.ops ? { ...s, ops: r.gate.script.ops } : s;
       // round 7 (director5): a script's board keeps its own timing (raw): her authored line is 3-5x the short facts line it
       // was fitted to here, and two capped retimes (≤ 2x each, from a compressed copy) never reached W6's spread
-      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok, screen: screenOf(c, facts, kept), ...(c.by === "script" ? { raw: c.script } : {}) };
+      // (counts: the template's own, unmasked — the take re-masks them against the board it draws)
+      const counts = c.facts?.counts ?? c.script?.facts?.counts ?? null;
+      const pick = { at: now, script: kept, facts, by: c.by, template: c.template, row, predicted, strict: r.ok, screen: screenOf({ ...c, facts: { ...(c.facts ?? {}), ...(counts ? { counts } : {}) } }, facts, kept), ...(counts ? { counts } : {}), ...(c.by === "script" ? { raw: c.script } : {}) };
       picks.set(id, pick);
       return pick;
     }
@@ -307,7 +320,10 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
       r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
     }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
-    return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, screen: p.screen ?? null, syncMs: Date.now() - t0 };
+    // round 7 (director6 #1): the screen is what is DRAWN now: re-gated on her real line, a value she states is no longer "?"
+    // (the pick's screen was computed before her line existed, masked: R4 read "40 m lamba" against a screen with no 40)
+    return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template,
+      screen: screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), syncMs: Date.now() - t0 };
   } catch { return null; }
 }
 
