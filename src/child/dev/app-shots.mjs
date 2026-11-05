@@ -66,6 +66,7 @@ const API = {
     { id: "j2", topic: "Is zero a fraction?", subject: "maths", share: false, at: "2026-11-04T10:00:00Z", state: "waiting", answeredAt: null },
     { id: "j3", topic: "What is half of a half?", subject: "maths", share: false, at: "2026-11-01T10:00:00Z", state: "answered", answeredAt: "2026-11-04T10:20:00Z" },
   ] },
+  "/api/voice/transcribe": { text: "Why does a magnet not stick to a steel spoon?", asrConfidence: 0.92 },
   "/api/homework/match": { match: { rung: "topic", topicId: `c${CLS}-maths-ch07-t01`, subject: "maths", chapter: 7, topicTitle: "Fractions" } },
   "/api/child/memory": arg("memory", "on") === "off" ? { keeps: false, items: [] } : { keeps: true, items: [
     { id: "11", text: "I like bowling more than batting.", at: "2026-11-03T10:00:00Z" },
@@ -90,16 +91,23 @@ export const SCREENS = {
   who: `/who`,
   homework: `/c/${CID}/ask?homework=1`,
   station: `/c/${CID}/map`,
+  "ask-heard": `/c/${CID}/ask`,
   "notebook-made": `/c/${CID}/notebook?made=m1`,
   "notebook-jar": `/c/${CID}/notebook`,
+  // r7 onboarding sweep: the parent set-up (Learning's src/onboarding, shot for review) and the child's first meeting
+  "start-class": `/start/class`, "start-promises": `/start/promises`, "start-phone": `/start/phone`, "start-child": `/start/child`,
+  "start-controls": `/start/controls`, "start-handover": `/start/handover`, "start-student": `/start/student`,
+  "hello-ai": `/c/${CID}/hello`, "hello-picture": `/c/${CID}/hello`, "hello-likes": `/c/${CID}/hello`, "hello-hi": `/c/${CID}/hello`,
 };
 
 async function main() {
   mkdirSync(OUT, { recursive: true });
-  const browser = await chromium.launch();
+  // a fake mic (Ask "Say it"): the permission is granted and the device is Chromium's test tone
+  const browser = await chromium.launch({ args: ["--use-fake-ui-for-media-stream", "--use-fake-device-for-media-stream"] });
   for (const [w, h] of SIZES) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, deviceScaleFactor: 1, reducedMotion: "reduce" });
     await ctx.addCookies([{ name: "tx_in", value: "1", url: BASE }]);
+    await ctx.grantPermissions(["microphone"], { origin: BASE }).catch(() => {});
     await ctx.addInitScript(() => { try { localStorage.setItem("taxila.child.6fc3f68e-0000-4000-8000-000000000001.prefs", JSON.stringify({ hello: true })); } catch { /* */ } });
     await ctx.route("**/api/**", (route) => {
       const u = new URL(route.request().url());
@@ -120,9 +128,22 @@ async function main() {
         await page.evaluate(() => document.querySelector(".kx-station")?.click()).catch(() => {});
         await page.waitForTimeout(600);
       }
+      // Hello steps: click through to the step named (greet → ai → picture → likes/change → hi)
+      const STEPS = { "hello-ai": ["hello-hear", "hello-next"], "hello-picture": ["hello-hear", "hello-next", "hello-gotit"], "hello-likes": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme"],
+        "hello-hi": ["hello-hear", "hello-next", "hello-gotit", "PIC", "hello-thatsme", "hello-done", "hello-right"] };
+      for (const tid of STEPS[name] ?? []) {
+        if (tid === "PIC") await page.evaluate(() => document.querySelector('[role="radio"]')?.click()).catch(() => {});
+        else await page.evaluate((t) => document.querySelector(`[data-testid="${t}"]`)?.click(), tid).catch(() => {});
+        await page.waitForTimeout(350);
+      }
       if (name === "notebook-jar") {
         await page.click('[data-testid="nb-tab-jar"]').catch(() => {});
         await page.waitForTimeout(400);
+      }
+      if (name === "ask-heard") {
+        await page.waitForTimeout(1200);
+        await page.evaluate(() => document.querySelector('[data-testid="ask-say-done"]')?.click()).catch(() => {});
+        await page.waitForTimeout(1200);
       }
       if (name === "homework") {
         await page.fill("textarea", "Riya ate 3/8 of a pizza and Aman ate 2/8. How much did they eat together?").catch(() => {});

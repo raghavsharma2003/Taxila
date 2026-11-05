@@ -5,7 +5,8 @@
 // events (a "pata nahi", a picture request, a cricket aside, "Hindi mein bolo", "mujhe khud try karne do") and it stays at
 // least MIN_TURNS turns before it may leave.
 //
-//   const child = createReactiveChild({ persona: "steady", seed: 7, kit });     // kit: the topic's kit (misconceptions)
+//   const child = createReactiveChild({ persona: "steady", seed: 7, kit, name: "Riya" });   // kit: the topic's kit; name: the persona's
+//   for (let turn = 0; turn < maxTurnsFor("steady"); turn++) …                               // the harness's turn budget per persona
 //   const { text, kind, wrongFrom } = child.reply(turnInput);
 //
 // turnInput (Brain's harness passes what it already records each turn; agreed shape, 2026-11-05):
@@ -14,8 +15,13 @@
 //     beat?: { skillId, kind, beatId },    // the script beat being walked (null outside a script)
 //     card?: { itemId, key, accept?: string[], misses?: number } | null,       // the live keyed card / check
 //     ask?: { key, accept?: string[], targets?, wrongIfMis? } | null,          // the v2 beat's micro-question (KeyedAsk)
-//     boardUp?: boolean, lang?: "hinglish"|"hindi"|"english" }
-// → { text, kind: "right"|"wrong"|"dontknow"|"event"|"ack"|"leave", event?, wrongFrom? }
+//     boardUp?: boolean, lang?: "hinglish"|"hindi"|"english",
+//     probe?: boolean }                    // optional: the harness knows her line is an unkeyed probe ("kaise jaana?", teach-back)
+// → { text, kind: "right"|"wrong"|"dontknow"|"event"|"ack"|"reason"|"leave", event?, wrongFrom? }
+//
+// H1.1 (director5 judgement, dc-r7-script-walk-v3): a probe ("kaise jaana?", "kyun?", "apne shabdon mein samjhao") gets a
+// short REASON, never a bare repeat of the card answer (that repeat was graded against the next key); verbs agree with
+// the persona's name ("thak gayi" for Riya); the steady child stays 40 turns so skills 2-3 are reached.
 
 export const MIN_TURNS = 20;
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
@@ -24,10 +30,30 @@ export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", 
 /** Per persona: the odds of a right answer per question kind, and the turns its events land on (a seed shifts each by 0-1;
  *  the last one is scheduled by turn 17 so every event lands inside MIN_TURNS). */
 const PROFILE = {
-  steady:   { right: { card: 0.7, ask: 0.75, open: 0.8 }, learn: 0.15, events: { dontknow: [3], picture: [8], selftry: [12], cricket: [14], hindi: [16] }, leaveAfter: 24 },
+  steady:   { right: { card: 0.7, ask: 0.75, open: 0.8 }, learn: 0.15, events: { dontknow: [3], picture: [8], selftry: [12], cricket: [14], hindi: [16] }, leaveAfter: 40 },
   stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, leaveAfter: 22 },
   offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 22 },
   steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, leaveAfter: 24 },
+};
+
+/** The turns a harness should run per persona: past its leaveAfter, so the "bye" is played (H1.1: steady 40 + 1). */
+export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1;
+
+/** Names the harness uses for a girl (verbs agree: "gayi", "karti"); any other name gets the masculine forms. [U] extend with the
+ *  harness's personas. A trailing -a / -i / -ee is read as a girl's name unless listed as a boy's. */
+const GIRLS = new Set(["riya", "zoya", "ananya", "priya", "aisha", "diya", "meera", "sara", "kavya", "isha", "saanvi", "anika", "pooja", "neha", "aditi", "myra", "kiara", "tara", "nisha", "sneha"]);
+const BOYS = new Set(["krishna", "aditya", "surya", "shiva", "vihaan", "arjun", "aarav", "kabir", "rohan", "rahul", "golu", "ravi", "hari", "ali", "sunny", "bunty"]);
+export const isGirlName = (name) => { const n = String(name ?? "").trim().toLowerCase(); return GIRLS.has(n) || (!BOYS.has(n) && /(a|i|ee)$/.test(n)); };
+/** {m|f} in a line → the form for this child. */
+const gendered = (line, girl) => line.replace(/\{([^|{}]*)\|([^|{}]*)\}/g, (_, m, f) => (girl ? f : m));
+
+/** An unkeyed probe in her line: how did you know, why, explain it in your words (Hinglish and English). */
+export const PROBE_RE = /\bkaise\s+(jaana|jana|pata|socha|kiya|nikala|samjha)|\bkyun\b|\bkyon\b|\bkyu\b|apne shabdon|samjha(o|na|aogi|aoge)\s*(mujhe|na)?|mujhe\s+samjhao|explain|\bwhy\b|how did you|in your (own )?words|teach (me|golu)|golu ko (samjhao|batao|sikhao)/i;
+/** A probe answer: a short reason in a child's words, with no number (never the card answer repeated). */
+const REASONS = {
+  right: ["kyunki hisse barabar the, maine wahi dekha", "maine line par aage-peeche dekh ke socha", "pehle wale step se pata chala", "neeche wala number dekha, phir socha",
+    "maine dono ko mila ke dekha", "kyunki pura ek hi hai, uske hisse hain", "maine screen wala picture dekh ke socha", "jodte jodte aaya"],
+  unsure: ["pata nahi kaise, bas laga", "thoda guess kiya, pakka nahi", "mujhe laga aisa hi hoga", "shayad hisse gin ke"],
 };
 
 const LINES = {
@@ -35,9 +61,9 @@ const LINES = {
   picture: ["picture dikhao", "screen par dikhao na", "drawing karke samjhao"],
   cricket: ["mujhe cricket pasand hai", "kal maine cricket khela, sixer maara", "aapko virat pasand hai?"],
   hindi: ["Hindi mein bolo", "hindi mein batao na", "thoda hindi mein samjhao"],
-  selftry: ["mujhe khud try karne do", "ruko, main khud karta hoon", "pehle main try karun?"],
-  ack: ["haan", "achha", "theek hai", "hmm, achha", "haan samajh gaya"],
-  leave: ["bas aaj ke liye itna hi", "ab main jaata hoon, bye", "thak gaya, bye"],
+  selftry: ["mujhe khud try karne do", "ruko, main khud {karta|karti} hoon", "pehle main try karun?"],
+  ack: ["haan", "achha", "theek hai", "hmm, achha", "haan samajh {gaya|gayi}"],
+  leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
 const HI_NUM = ["shunya", "ek", "do", "teen", "chaar", "paanch", "chhah", "saat", "aath", "nau", "das", "gyarah", "barah", "terah", "chaudah",
@@ -94,9 +120,9 @@ export function wrongAnswer({ card, ask }, kit, rng) {
   return { text: nearMiss(card?.key ?? ask?.key ?? "", rng), from: null };
 }
 
-export function createReactiveChild({ persona = "steady", seed = 1, kit = null } = {}) {
+export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya" } = {}) {
   if (!PROFILE[persona]) throw new Error(`reactive child: unknown persona ${persona}`);
-  const P = PROFILE[persona], rng = rngOf(seed, persona);
+  const P = PROFILE[persona], rng = rngOf(seed, persona), girl = isGirlName(name);
   // the event schedule, each turn shifted 0-1 by the seed (deterministic), never two events on one turn
   const at = new Map();
   for (const [ev, turns] of Object.entries(P.events)) for (const t of turns) {
@@ -106,14 +132,19 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null }
   }
   const misses = new Map();
   const log = [];
-  const say = (out) => { log.push(out); return out; };
+  const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
   return {
-    persona, seed, schedule: at, log,
+    persona, seed, name, girl, schedule: at, log,
     reply(input = {}) {
       const turn = Number(input.turn ?? log.length);
       if (turn >= P.leaveAfter && turn >= MIN_TURNS) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       const ev = at.get(turn);
       if (ev) return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
+      // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again)
+      if (input.probe === true || (input.probe !== false && PROBE_RE.test(String(input.teacher ?? "")))) {
+        const sure = rng() < P.right.open;
+        return say({ text: pick(rng, REASONS[sure ? "right" : "unsure"]), kind: "reason" });
+      }
       const q = input.card ?? input.ask ?? null;
       if (q && q.key != null && String(q.key).trim()) {
         const id = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;

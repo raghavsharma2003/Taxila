@@ -86,7 +86,7 @@ test("it starts WITH the labels (order, not time): the label call is answered on
   let asked; const besideAsked = new Promise((r) => { asked = r; });
   const { out } = await run({
     labels: async () => {
-      const ok = await Promise.race([besideAsked.then(() => true), new Promise((r) => setTimeout(() => r(false), 2000))]);
+      const ok = await Promise.race([besideAsked.then(() => true), new Promise((r) => setTimeout(() => r(false), 2000).unref())]);
       assert.ok(ok, "the words' read was not asked while the label call was open");
       return json(label());
     },

@@ -5,16 +5,8 @@
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { Scene, ScenePart } from "../../../shared/scene.js";
 import { actorParts, CAPTION_SIZE, lineWarp, sceneAt, stillAt, textW } from "../../../shared/scene.js";
+import { CAPTION_PILL, GROUND, INK, INK_ON, PAINT } from "./palette";
 
-/** Colour tokens → paint (one flat, friendly palette; the stage ground is the scene's background). */
-const PAINT: Record<string, string> = {
-  sky: "#CDE8F6", night: "#1B2340", sea: "#3D8BD9", water: "#5BA8E8", land: "#8FBF6A", soil: "#8A5A3B", leaf: "#4CA35A", stem: "#3E7D3C",
-  sun: "#F7C548", fire: "#E9762B", cloud: "#FFFFFF", ice: "#DDF1FB", earth: "#3D8BD9", moon: "#E7E3D3", metal: "#9AA5B1", copper: "#C8743A",
-  wood: "#A86B3C", food: "#F2D29B", crust: "#C98B46", blood: "#D64550", paper: "#FFFBF2", ink: "#2B2620", soft: "#9AA5B1", accent: "#1F5FBF",
-  mark: "#C8641A", good: "#2E7D4F", white: "#FFFFFF", shadow: "#1B2340",
-};
-const GROUND: Record<string, string> = { sky: "#E6F4FC", night: "#151B33", paper: "#FFFBF2", lab: "#F2F4F7", field: "#EAF5E1" };
-const INK_ON: Record<string, string> = { night: "#F5F2E8" };
 const paint = (k?: string) => (k ? PAINT[k] ?? "none" : "none");
 
 function partEl(p: ScenePart, i: number, ink: string) {
@@ -71,7 +63,7 @@ export const ScenePlayer = memo(function ScenePlayer({ scene, startAt, clauseOns
   const t = reducedMotion ? stillAt(scene, t0) : t0;
   const { actors, captions } = sceneAt(scene, t);
   const { w: W, h: H } = scene.stage;
-  const ink = INK_ON[scene.bg] ?? "#2B2620";
+  const ink = INK_ON[scene.bg] ?? INK;
   return (
     <svg viewBox={`0 0 ${W} ${H}`} width={width} height={height} role="img" aria-label={scene.beats.map((b) => b.says).join(", ")} style={{ display: "block", background: GROUND[scene.bg] ?? GROUND.paper, fontFamily: '"Noto Sans Devanagari", system-ui, sans-serif' }}>
       {actors.map((s) => (s.opacity < 0.01 ? null : (
@@ -83,7 +75,7 @@ export const ScenePlayer = memo(function ScenePlayer({ scene, startAt, clauseOns
         const w = Math.min(W - 8, textW(c.text, CAPTION_SIZE) + 20), y = c.at === "top" ? 6 : H - 38;
         return (
           <g key={`${c.t}:${c.text}`} data-caption={c.at}>
-            <rect x={(W - w) / 2} y={y} width={w} height={32} rx={16} fill={scene.bg === "night" ? "#2B3560" : "#FFFFFF"} opacity={0.92} />
+            <rect x={(W - w) / 2} y={y} width={w} height={32} rx={16} fill={scene.bg === "night" ? CAPTION_PILL.night : CAPTION_PILL.day} opacity={0.92} />
             <text x={W / 2} y={y + 22} fontSize={CAPTION_SIZE} fontWeight={600} textAnchor="middle" fill={ink}>{c.text}</text>
           </g>
         );

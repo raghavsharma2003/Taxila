@@ -164,7 +164,10 @@ export function StageBody({ m, a, media, topBar, card, dock, strip, renderTray, 
 function heroRect(slot: Rect): Rect {
   const h = Math.round(Math.min(slot.h - 96, slot.w * 1.1));
   const w = Math.round(Math.min(slot.w - 16, h * 0.86));
-  return { x: slot.x + Math.round((slot.w - w) / 2), y: slot.y + 8, w, h: Math.max(120, h) };
+  // r7 stage polish: centred in the room above the caption's 96 px (she sat at the top with an empty band under her
+  // whenever her width, not the slot's height, set her size)
+  const hh = Math.max(120, h);
+  return { x: slot.x + Math.round((slot.w - w) / 2), y: slot.y + 8 + Math.max(0, Math.round((slot.h - 96 - hh) / 2)), w, h: hh };
 }
 
 function pieceKey(t: TrayModel): string {

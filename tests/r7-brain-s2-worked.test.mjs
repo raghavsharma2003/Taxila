@@ -9,10 +9,13 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
 const C6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const C4 = kitFromFile(getTopic("c4-maths-ch05-t01"));
 
+describe("r7-brain-s2-worked (kit path: lesson scripts off)", () => {
+kitPath();
 test("the kit's worked example as code lines: givens, each calculation, the answer (Hinglish and English)", () => {
   assert.deepEqual(givensOf(C6.workedExample.problem), ["3", "50 m", "30 m"]);
   assert.equal(chainOf("Perimeter = 2 × (50 + 30) = 2 × 80 = 160 m."), "2 × (50 + 30) = 2 × 80 = 160 m");
@@ -54,4 +57,5 @@ describe("S2 in the lesson", () => {
     for (let i = 0; i < 8 && r.move.kind !== "worked_example"; i++) r = step(r.state, { event: "turn", kit: C6, cls: cls("no_evidence"), text: "haan", now: (i + 1) * 20_000 });
     assert.equal(r.move.rendered, undefined);
   });
+});
 });

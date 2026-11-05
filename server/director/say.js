@@ -82,10 +82,15 @@ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incor
  * "partial" | "unverified" (an attempt the classifier could not label: praise would be praise on an unverified answer).
  * @param {{ outcome?: string } | null | undefined} cls  @param {{ mode: string }} target
  */
+export const k1On = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_K1 ?? ""));
 export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
   if (!cls || !target || moduleOnly) return "ungraded";
   // no keyed item, but the child wrote an answer-shaped reply (F5): "attempt" — no "you got it right" for it
   if (target.mode === "none") return childText && !childAsks(childText) && !cls.request && String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
+  // dc-r7-script-walk-v3 K1 (director5: >= 14 right answers called wrong): a probe ("kaise jaana?") or a teach-back is unkeyed; a
+  // reply to it is never a wrong answer (a repeat of the card's right answer is not "not right"). Only a wrong BELIEF voiced in
+  // it is still named (the trap). TAXILA_R7_K1=off: graded as before.
+  if (k1On() && (target.mode === "why" || target.mode === "teachback")) return cls.outcome === "correct" ? "correct" : cls.outcome === "misconception" ? "not_yet" : "ungraded";
   if (cls.outcome === "correct") return "correct";
   if (cls.outcome === "partial") return "partial";
   if (cls.outcome === "incorrect" || cls.outcome === "misconception") return "not_yet";
@@ -486,6 +491,8 @@ export function sharedRun(x, y) {
 }
 /** `lead` then the question, with every lead sentence that repeats (part of) the question dropped (F20). Pure. */
 export function joinAsk(lead, askFull) {
+  // (director5 c5-t01 steering T16: a null card read "Null" aloud)
+  askFull = askFull == null ? "" : String(askFull);
   const a = normQ(askFull);
   const kept = sentencesOf(lead).filter((x) => !(a && normQ(x) && (a.includes(normQ(x)) || sharedRun(x, askFull) >= SHARED_RUN_MIN)));
   return `${kept.join(" ").trim()} ${askFull}`.replace(/\s{2,}/g, " ").trim();

@@ -28,7 +28,7 @@ describe("relational writers on Neon", { skip: !sql && "no TEST_DATABASE_URL (a 
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction;
     neonConfig.fetchFunction = nativeFetch;
-    ready = await Promise.race([sql.query("select to_regclass('public.rel_bond') is not null as ok").then((r) => !!r[0]?.ok, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
+    ready = await Promise.race([sql.query("select to_regclass('public.rel_bond') is not null as ok").then((r) => !!r[0]?.ok, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
     if (!ready) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'relational-test') returning id", [`relational-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level, teacher_id) values ($1, 'Test', 5, 'asha') returning id, legal_mode, class_level, teacher_id", [guardian]))[0];

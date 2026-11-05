@@ -1,7 +1,7 @@
 {
  "topicId": "c6-maths-ch06-t01",
  "classLevel": 6,
- "version": 2,
+ "version": 2.1,
  "status": "draft",
  "terms": [
   { "hi": "parimap", "en": "perimeter" },
@@ -185,10 +185,10 @@
      "targets": "c6-maths-ch06-t01-m-missing-sides",
      "move": "named-corner walk instead of a list of numbers: start at A, name each side as its length goes into the sum (AB, BC, … FA); the sum is done only when the walk is back at A",
      "say": {
-      "hi": "Is hexagon ke kono ke naam A se F tak hain. A se shuru karo, aur har bhuja ki lambai jodte waqt uska naam bolo: AB, BC, CD, DE, EF, aur aakhir mein FA. Jod tabhi poora hota hai jab tum wapas A par pahunchte ho.",
-      "en": "The corners of this hexagon are named A to F. Start at A, and say each side's name as you add its length: AB, BC, CD, DE, EF, and last of all FA. The sum is complete only when you are back at A."
+      "hi": "Is khet ke kono ke naam A se F tak hain. A se shuru karo, aur har bhuja ka naam aur uski lambai bolo: AB 10 m, BC 4 m, CD 6 m, DE 5 m, EF 4 m, aur aakhir mein FA 9 m. Jod tabhi poora hota hai jab tum wapas A par pahunchte ho.",
+      "en": "The corners of this field are named A to F. Start at A, and say each side's name and its length: AB 10 m, BC 4 m, CD 6 m, DE 5 m, EF 4 m, and last of all FA 9 m. The sum is complete only when you are back at A."
      },
-     "board": { "template": "shape@1", "params": { "shape": "hexagon", "names": ["A", "B", "C", "D", "E", "F"] } },
+     "board": { "template": "measured@1", "params": { "shape": "hexagon", "unit": "m", "sides": [10, 4, 6, 5, 4, 9], "names": ["A", "B", "C", "D", "E", "F"], "trace": true } },
      "then": {
       "prompt": {
        "hi": "Ek chhah bhujaon wale khet ABCDEF mein AB = 10 m, BC = 4 m, CD = 6 m, DE = 5 m, EF = 4 m aur FA = 9 m hai. Khet ka parimap kitna hai?",
@@ -197,7 +197,8 @@
       "key": "38 m",
       "accept": ["38", "38 metre", "38 metres"],
       "targets": "c6-maths-ch06-t01-m-missing-sides",
-      "wrongIfMis": "29 m"
+      "wrongIfMis": "29 m",
+      "board": { "template": "measured@1", "params": { "shape": "hexagon", "unit": "m", "sides": [10, 4, 6, 5, 4, 9], "names": ["A", "B", "C", "D", "E", "F"] } }
      }
     },
     {
@@ -216,7 +217,8 @@
       "key": "16 cm",
       "accept": ["16", "16 centimetre", "16 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "15 cm"
+      "wrongIfMis": "15 cm",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 5, "h": 3 } }
      }
     }
    ],
@@ -409,7 +411,8 @@
       "key": "58 m",
       "accept": ["58", "58 metre", "58 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "29 m"
+      "wrongIfMis": "29 m",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 20, "h": 9 } }
      }
     },
     {
@@ -428,7 +431,8 @@
       "key": "20 cm",
       "accept": ["20", "20 centimetre", "20 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "16 cm"
+      "wrongIfMis": "16 cm",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 8, "h": 2 } }
      }
     }
    ],
@@ -639,7 +643,8 @@
       "key": "15 m",
       "accept": ["15", "15 metre", "15 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "55 m"
+      "wrongIfMis": "55 m",
+      "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "25 m" } }
      }
     },
     {
@@ -658,7 +663,8 @@
       "key": "₹640",
       "accept": ["640", "₹ 640", "Rs 640", "640 rupees", "640 rupaye"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "₹1200"
+      "wrongIfMis": "₹1200",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 10, "h": 6 } }
      }
     }
    ],

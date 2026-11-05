@@ -915,6 +915,8 @@ export const studioSeam = {
     // the router's whiteboard rule (rule 2): a parent's "Only ready-made ones" means no model-written board either
     const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
     if (decision.action !== "whiteboard") return null;
+    // round 7 (director5 SC2): a scripted remediation board only on the turn its explanation is spoken; the page on screen stays
+    if (!boardFirst.scriptBoardSpoken(ask)) { L.unspokenBoards = (L.unspokenBoards ?? 0) + 1; console.info(`[studio] remediation board held: its explanation is not in her line (beat=${ask?.intent?.scriptBeat?.beatId ?? "-"})`); return null; }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     const onPrev = L.onScreen ?? null;
     // (a piece the turn's accepted retire takes down does not hold the tray: the child asked for the board)
@@ -1020,7 +1022,8 @@ export const studioSeam = {
       const r = r0?.script ? { ...r0, script: dress(r0.script) } : r0;
       if (!r?.script) return false;
       // round 5 (stream 2): never the same page twice in a row (a kept board is the same board on purpose, not a new page)
-      if (r.source !== "kept" && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
+      // (director5 SC2: a picture asked for re-shows the live scripted card's own board, even a page shown before)
+      if (r.source !== "kept" && !(request && r.by === "script") && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
       // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
       // (a page drawn for what the CHILD asked to see is held to the ask, answersRequest, not to her line's words: battery
       // iter11 lost 3 such asks, "baraf / bhaap" vs "Ice / Steam", a Devanagari story page under her romanised line)
