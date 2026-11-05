@@ -58,6 +58,16 @@ test("the real suites: the three groups partition tests/*.test.mjs, and every gr
   assert.deepEqual(planShards(by.unit, weights, 4).flat().sort(), by.unit);
 });
 
+test("shard-weights.json: only at, method and seconds at the top level; every weight a finite number of seconds", () => {
+  // integration 7: a merge left kit-budget-c* weights beside `seconds`, where the planner never reads them
+  const w = JSON.parse(readFileSync(DIR + "shard-weights.json", "utf8"));
+  assert.deepEqual(Object.keys(w).sort(), ["at", "method", "seconds"], "per-suite weights belong inside `seconds`");
+  for (const [f, s] of Object.entries(w.seconds)) {
+    assert.match(f, /\.test\.mjs$/, f);
+    assert.ok(Number.isFinite(s) && s >= 0, `${f}: ${s}`);
+  }
+});
+
 test("ciVerdict: `gates` green AND build AND every shard green (any attempt); pre-matrix shas judged on `gates` alone", async () => {
   const { ciVerdict } = await import("../infra/gate.mjs");
   const ok = (name) => ({ name, conclusion: "success" }), bad = (name) => ({ name, conclusion: "failure" });
