@@ -46,6 +46,7 @@ export const ALLOW = {
     ["src/styles/tokens.css", "the palette is defined here"],
     ["src/modules/frame/", "the sandboxed engine frame is its own document with its own kit palette"],
     ["src/avatar/three/", "WebGL material and shader colours (not CSS)"],
+    ["src/modules/scene/palette.ts", "the scene's drawing palette (sky, sea, leaf, fire …): art painted inside the stage box, like the whiteboard palette (round 7 M5a)"],
     ["src/modules/whiteboard/palette.ts", "the board's drawing palette (chalk / paper inks), drawn inside the sandboxed engine frame (engines/explainer.tsx) like the frame's own kit palette"],
     ["src/pages/LessonDev.tsx", "dev route only (/dev/lesson, VITE_DEV_ROUTES=1): never in a production build"],
     ["src/pages/AvatarDev.tsx", "dev route only (/dev/avatar, VITE_DEV_ROUTES=1): never in a production build"],
