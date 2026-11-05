@@ -1,0 +1,43 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-face-stills-sweep-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Stills sweep (15 surfaces, r8, phone viewport): every face shown is her rig or a rig still on all 7 surfaces that show her (hello, home, teacher, lesson desk, summary, help, trouble); 0 stragglers. The landing hero's product screenshots have r8 drawn in (re-capture if the look changes)."
+  },
+  {
+   "id": "dc-r7-face-greetings-pipeline",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The daily greeting clips are one command (scripts/character/greetings-pipeline.mjs): dry run by default; --run renders the missing clips (the only paid step), writes the viseme sidecars and checks every clip, its lip seals and that the server serves it; exits 1 on a half-made set."
+  },
+  {
+   "id": "ms-r7-face-timing-i8-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Low-end timing on int/r6 93b0e20c0 (SwiftShader, n=8): the hand-off holds (face live ~0.8-0.9 s, before her first sound in 16/16 runs, adopted 16/16); the face costs +60 ms (CPU x6) / +154 ms (x4) of first sound vs off. A same-machine rerun of integration 3b shows the higher absolute start numbers are mostly this machine, not integrations 5-8."
+  }
+ ],
+ "edges": [
+  {
+   "src": "ms-r7-face-timing-i8-2026-11-05",
+   "rel": "caused_by",
+   "dst": "dc-r7-face-prewarm-handoff"
+  },
+  {
+   "src": "dc-r7-face-greetings-pipeline",
+   "rel": "part_of",
+   "dst": "dc-r7-face-home-daily-greeting"
+  },
+  {
+   "src": "ms-r7-face-stills-sweep-2026-11-05",
+   "rel": "caused_by",
+   "dst": "dc-r7-face-stills-from-rig"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-face-greetings-pipeline` (2026-11-05)\nMain asked for the greeting clip path to be ready for when the keys return, so the owner's \"yes\" on the spend is a single run.\n- **One command.** `scripts/character/greetings-pipeline.mjs`. Without flags it is a dry run: it lists the 27 lines (1015 characters), says which clips exist, and says whether this machine has the Azure speech key and region, python torch/transformers and ffmpeg. It calls nothing.\n- **What `--run` does,** in order: render the missing clips (`render-greetings.mjs`, now importable; Diya DragonHD; the only paid step); write a viseme sidecar for every clip that lacks one (`clip-visemes.py`, CPU, free); then check every line. A line passes when it has a clip and a sidecar with visemes, and when every b / m / p word in the sidecar has a lip seal (viseme 21) inside it. Finally it checks that `greetingFor` hands a child a clip URL. It exits 1 on any failed check, so a half-made set never looks finished.\n- **Checked today without keys:** the same checks pass on the three existing Hello clips (seals 5/5, 12/12 and 10/10). Tests: `tests/r7-face-greeting-pipeline.test.mjs`.\n- **Reversal condition:** none needed; it is tooling. If the clips are never approved, the home greets with a silent glance, as it does now.\n",
+  "measurements": "## `ms-r7-face-stills-sweep-2026-11-05` (2026-11-05)\n`evals/face-puppet/stills-sweep.mjs` → `docs/design/round7/face/stills-sweep/` (`sweep.json` plus one screenshot per surface). It uses a production build with dev routes, mocked `/api/*` (one class-6 child, Asha, the r8 look), SwiftShader and a 412×915 viewport. On each surface it records every visible `[data-face]` host (kind, phase, look, the images it paints, whether a live canvas is present) and every image outside a face whose URL names her.\n- **The 7 surfaces that show her all pass,** and every face shown is her rig or a still rendered from it: hello, home (Kaksha), the teacher screen, and the lesson desk, summary, help and trouble screens. There are 0 stragglers: no Plate2D vector and no old portrait.\n- **8 surfaces show no face, and that is correct** for 6 of them (onboarding step 1, who, me, world map, ask, notebook). For parent, the sweep has no guardian session, so it redirects to onboarding; the parent badge was covered earlier by `stills-parent-badge.png`. The landing page is the eighth (next point).\n- **The landing hero** draws her only inside hand-captured product screenshots (`public/site/home.webp`, `desk.webp`, `turn.webp`), with the r8 face baked in. They are correct today. If the owner picks lamp2 they have to be re-captured (noted on the owner's face-review page).\n\n## `ms-r7-face-timing-i8-2026-11-05` (2026-11-05)\nThis is a regression check after integrations 5-8, on int/r6 93b0e20c0. It uses headless Chromium with SwiftShader, CDP CPU throttling and n=8 per arm.\n- **The hand-off** (`handoff-start-i8-cpu6.json`, `-cpu4.json`). Her lesson face is live at a p50 of 860 ms (×6) and 807 ms (×4). It comes before her first sound in all 16 runs (worst case 171 ms before) and is adopted in 16/16. Without the hand-off it goes live 1.7-1.9 s after her first sound. First sound p50, face on vs off: 1441 vs 1381 ms (×6), 1292 vs 1138 ms (×4). That is +60 / +154 ms, inside the ~300 ms target.\n- **Cold load** (`start-latency-i8-cpu6.json`). Every arm is slower than the integration-3b numbers from the earlier machine: face off 2380 vs 1562 ms. On this same machine, integration 3b gives face off 2098 ms and long tasks 1796 ms, against 2380 / 1887 ms now (`start-latency-i3b-samebox-cpu6.json`). So most of the rise is the machine. The remainder (+282 ms first sound with a noisy p90, +91 ms long tasks) is within run-to-run spread at n=8, so it cannot be called a code regression. The face's own cost against face off is unchanged (live −165 ms).\n"
+ }
+}
