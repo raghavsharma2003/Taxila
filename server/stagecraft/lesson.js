@@ -18,6 +18,7 @@ import { buildCatalog } from "./catalog.js";
 import { createBuilders } from "./builders.js";
 import { catalogueTopicsByArchetype, loadCatalogue } from "./catalogue.js";
 import { PERSONAL_NEEDS } from "./config.js";
+import { SCENES } from "../forge/animate/scenes.js";
 import "./kernel-point.js";            // registers the kernel view's hooks on the bridge (detach forgets the view)
 import { ENGINE_SPECS } from "../../shared/studio-spec.ts";
 import { ENGINE_SPECS_EXT } from "../../shared/studio-spec-ext/index.ts";
@@ -43,6 +44,12 @@ export function productionCatalog({ fresh = false } = {}) {
     specs[id] = { kind: d.kind, subject: d.subjects[0], outcomes: { classes: d.outcomes.classes, topics: [...rows[id]], misconceptions: d.outcomes.misconceptions } };
   }
   catalogMemo = buildCatalog(specs, {});
+  // round 7 M5a: the code-built scenes (server/forge/animate/scenes.js), one "animation" archetype per pilot topic. Built by
+  // the instant rung only (noSpec: never a generated spec, never spend)
+  for (const [topicId, b] of Object.entries(SCENES)) {
+    const id = `scene:${b("en").id}`;
+    catalogMemo.rs4[id] = { kind: "animation", subject: topicId.split("-")[1], classes: [Number(topicId.slice(1, 2))], topics: [topicId], misconceptions: [], noSpec: true, boost: 1 };
+  }
   return catalogMemo;
 }
 export const _resetProductionCatalog = () => { catalogMemo = null; };

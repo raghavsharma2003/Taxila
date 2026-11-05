@@ -17,6 +17,7 @@ import { ENGINE_SPECS, validateSpec, specJsonSchema } from "../../shared/studio-
 import { ENGINE_SPECS_EXT, validateAny } from "../../shared/studio-spec-ext/index.ts";
 import { authoredSpec, kitTopicAny, unknownKitIds, titleOf, stringsOfSpec } from "./catalogue.js";
 import { keyTerms } from "../forge/explainer/terms.js";
+import { sceneFor } from "../forge/animate/scenes.js";
 
 /** topicId → kit topic (data/kits/c4-c7, every subject since ship5 p4-content: the catalogue covers all six), read once. */
 export function kitTopic(topicId) { return kitTopicAny(topicId); }
@@ -109,6 +110,13 @@ export function createBuilders(deps = {}) {
     // catalogue.js) when there is one; else, for a base RS-4 archetype whose reviewed outcomes list the topic, the reviewed
     // default. An extension archetype has no topic-free default: without an authored spec it is not on-topic (never shown).
     engineDefault(c, key) {
+      // round 7 M5a: a code-built scene (scene:<id>) for the topic, in the lesson's language: correct by construction
+      if (String(c.archetype).startsWith("scene:")) {
+        const r = key?.topicId ? sceneFor(key.topicId, { lang: key.lang === "en" || key.lang === "hi" ? key.lang : "hinglish" }) : null;
+        if (!r?.ok || `scene:${r.scene.id}` !== c.archetype) return { payload: null, checks: ok({ onTopic: false }), facts: facts(c) };
+        return { payload: { rung: "engine_default", archetype: c.archetype, spec: null, scene: r.scene, lateBind: [], source: "scene" }, checks: ok({ spec: { ok: true, repairs: 0, fellBack: false } }),
+          facts: { kind: "animation", archetype: c.archetype, onScreen: { ...Object.fromEntries(Object.entries(r.scene.facts).map(([k, v]) => [k, String(v)])), steps: r.scene.beats.map((b) => b.says).join(", ") } } };
+      }
       const base = ENGINE_SPECS[c.archetype], ext = ENGINE_SPECS_EXT[c.archetype];
       const d = base ?? ext;
       if (!d) return { payload: null, checks: ok({ truth: false }), facts: facts(c) };

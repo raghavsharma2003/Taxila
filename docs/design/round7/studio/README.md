@@ -305,8 +305,11 @@ Recordings: `docs/design/round7/studio/scenes/` holds one strip per scene at p41
 settles), plus videos of the water cycle, day and night, and equal sharing.
 
 Not yet:
-- a Stagecraft rung, so scenes come only from the child's ask (a plan-led "animation" want still gets the Studio v2
-  explainer or the board);
+- ~~a Stagecraft rung~~ DONE: each pilot scene is an "animation" archetype `scene:<id>` in productionCatalog. It is
+  noSpec (never a generated spec), and boost puts it ahead of the topic's Studio v2 animation. The instant rung builds
+  it in ~0 ms, and seam-bridge certifies it with the scene rule and serves it as a `scene` artifact. The same
+  withholding applies at merge, at reveal and on screen. M4 replay re-run: guard arm unchanged, at preferred rung
+  0.940 → 0.943, specs per lesson 0.84 → 0.83;
 - ~~per-item withholding~~ DONE (main: answer leaks are zero-visible-failure). `shared/scene.js` sceneMayPlay: a
   scene never comes up while a keyed card or check is live (the turn's asking move, or patch 010's `itemOpen`), never
   when the live key could not be computed (`L.held === null`, fail closed), and never while any value is withheld. A
