@@ -36,7 +36,7 @@ describe("r5 edit supersede (test branch)", { skip: SKIP, concurrency: false, ti
   const item = (id) => kit.items.find((i) => i.id === id);
   /** A voice lesson with `itemId` posed (the Director's own probe state), and a turn helper that answers it. */
   const lesson = async (kid, itemId) => {
-    const s = await call("/api/lesson/start", { childId: kid, mode: "voice", purpose: "practice" });
+    const s = await call("/api/lesson/start", { childId: kid, mode: "voice", purpose: "practice", topicId: TOPIC });
     assert.equal(s.status, 201, JSON.stringify(s.body));
     const lessonId = s.body.lessonId;
     const pose = (id) => q("update lesson set state = state || jsonb_build_object('activeItemId', $2::text, 'hintLevel', 0, 'phase', 'practice') - 'pendingWhy' where id = $1", [lessonId, id]);
