@@ -54,6 +54,7 @@ export const VIEWS: Record<string, MakeView> = {
   "kila/multiples": makeKilaView,
   "kila/factors": makeKilaView,
   "kila/lcm": makeKilaView,
+  "kila/divisibility": makeKilaView,
   "naksha/locate": makeNakshaView,
   "naksha/route": makeNakshaView,
   "naksha/scale": makeNakshaView,

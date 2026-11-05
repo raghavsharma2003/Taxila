@@ -9,6 +9,12 @@
 //           flower square is hit
 //   all     build every tower that hits the gate(s): exactly the factors (two gates: the common factors)
 //   meet    two towers stand; set the trap on the first square both fire on together (the LCM)
+//   ones / tail / sum  (mode divisibility) a wave of numbered foes (3-5 digit numbers) stands on the path; the fort's ÷d
+//           tower breaks exactly the foes d divides. Net every foe it will break BEFORE the wave runs: the numbers are too big
+//           to divide by eye, so the divisibility test is the move. The goal names only bin the divisors by the kit's skill
+//           (ones: 2, 5, 10 · tail: 4, 8 · sum: 3, 6, 9); the judgement is one and the same. Decoys make every wrong test
+//           fail (ends in 4 but not ÷4, a multiple of 3 that is not ÷9, …), and a net on a survivor is a miss, so "net
+//           everything" never wins.
 // Building and netting are locked while a wave rolls (undo too): the set-up is committed before the law answers.
 // Mal-rules (each with a deterministic malActs; a level serves one only where its acts differ from every other's):
 //   factor-for-multiple  mark: nets on the factors of p instead of its multiples ("1, 2, 3, 6 are the multiples of 6")
@@ -19,12 +25,20 @@
 //   sum                  meet: trap at a + b (adds instead of multiplying)
 //   one-and-self         all: every factor but 1 and the number itself
 //   miss-pairs           all: only the pairs found from 1, 2 and 3 (1 × G, 2 × G/2, 3 × G/3); the middle pairs missed
+//   (divisibility: each nets the foes a wrong test passes)
+//   ends-in-four         ÷4: the numbers ending in 4          even-for-4        ÷4: every even number
+//   digit-sum-for-4      ÷4: digit sum a multiple of 4        four-test-for-8   ÷8: the ÷4 test (last two digits)
+//   last-digit-for-3     ÷3: ending in 3, 6 or 9              last-digit-for-9  ÷9: ending in 9
+//   three-for-nine       ÷9: every multiple of 3              either-for-6      ÷6: even OR digit sum ÷3 (needs both)
+//   five-for-ten         ÷10: ending in 0 or 5                only-zero-for-5   ÷5: only the ones ending in 0
+//   any-odd-digit        ÷2: an even number with any odd digit is left out
 import type { Candidate, Facts, FamilyLogic, GenRequest, KilaAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
-export type KilaMode = "multiples" | "factors" | "lcm";
-export type KilaGoal = "mark" | "guard" | "common" | "all" | "meet";
+export type KilaMode = "multiples" | "factors" | "lcm" | "divisibility";
+export type DivGoal = "ones" | "tail" | "sum";
+export type KilaGoal = "mark" | "guard" | "common" | "all" | "meet" | DivGoal;
 export interface KilaParams {
   goal: KilaGoal;
   /** the path's squares 1..n (the gate stands after n) */
@@ -43,6 +57,10 @@ export interface KilaParams {
   decoys: number[];
   /** path numbers (fade): 1 every square, 2 every other square, 3 every fifth */
   labels: 1 | 2 | 3;
+  /** divisibility: the fort tower's divisor (it breaks exactly the foes it divides) */
+  d?: number;
+  /** divisibility: the foe on each square 1..n (foes[s - 1]); n = foes.length */
+  foes?: number[];
 }
 export interface KilaState extends Undoable<KilaState> {
   /** the towers the child built (squares, ascending) */
@@ -53,15 +71,41 @@ export interface KilaState extends Undoable<KilaState> {
   beat: number;
   ended: boolean; waves: number; done: boolean; acts: number;
 }
-export const KILA_MAL = ["factor-for-multiple", "finite-multiples", "any-odd-digit", "product", "gcd-for-lcm", "sum", "one-and-self", "miss-pairs"] as const;
+const digitSum = (x: number) => String(x).split("").reduce((a, c) => a + Number(c), 0);
+const lastDigit = (x: number) => x % 10;
+/**
+ * divisibility mal-rules: the divisors each belief is about, the foes it nets, and the probes (number shapes) a level needs
+ * so that the belief nets a different set from the law's (a survivor it nets, or a broken foe it leaves out)
+ */
+export const DIV_MAL: Record<string, { d: readonly number[]; nets: (x: number, d: number) => boolean; probes: ((x: number, d: number) => boolean)[] }> = {
+  "ends-in-four": { d: [4], nets: (x) => lastDigit(x) === 4, probes: [(x) => lastDigit(x) === 4 && x % 4 !== 0, (x) => x % 4 === 0 && lastDigit(x) !== 4] },
+  "even-for-4": { d: [4], nets: (x) => x % 2 === 0, probes: [(x) => x % 2 === 0 && x % 4 !== 0 && lastDigit(x) !== 4] },
+  "digit-sum-for-4": { d: [4], nets: (x) => digitSum(x) % 4 === 0, probes: [(x) => digitSum(x) % 4 === 0 && x % 4 !== 0, (x) => x % 4 === 0 && digitSum(x) % 4 !== 0] },
+  "four-test-for-8": { d: [8], nets: (x) => x % 4 === 0, probes: [(x) => x % 4 === 0 && x % 8 !== 0, (x) => x % 4 === 0 && x % 8 !== 0] },
+  "last-digit-for-3": { d: [3], nets: (x) => [3, 6, 9].includes(lastDigit(x)), probes: [(x) => [3, 6, 9].includes(lastDigit(x)) && x % 3 !== 0, (x) => x % 3 === 0 && ![3, 6, 9].includes(lastDigit(x))] },
+  "last-digit-for-9": { d: [9], nets: (x) => lastDigit(x) === 9, probes: [(x) => lastDigit(x) === 9 && x % 9 !== 0, (x) => x % 9 === 0 && lastDigit(x) !== 9] },
+  "three-for-nine": { d: [9], nets: (x) => x % 3 === 0, probes: [(x) => x % 3 === 0 && x % 9 !== 0, (x) => x % 3 === 0 && x % 9 !== 0] },
+  "either-for-6": { d: [6], nets: (x) => x % 2 === 0 || x % 3 === 0, probes: [(x) => x % 2 === 0 && x % 3 !== 0, (x) => x % 3 === 0 && x % 2 !== 0] },
+  "five-for-ten": { d: [10], nets: (x) => lastDigit(x) === 0 || lastDigit(x) === 5, probes: [(x) => lastDigit(x) === 5] },
+  "only-zero-for-5": { d: [5], nets: (x) => lastDigit(x) === 0, probes: [(x) => lastDigit(x) === 5, (x) => lastDigit(x) === 0] },
+  "any-odd-digit": { d: [2], nets: (x) => x % 2 === 0 && !/[13579]/.test(String(x)), probes: [(x) => x % 2 === 0 && !/[13579]/.test(String(x)), (x) => x % 2 === 0 && /[13579]/.test(String(x))] },
+};
+export const KILA_MAL = ["factor-for-multiple", "finite-multiples", "any-odd-digit", "product", "gcd-for-lcm", "sum", "one-and-self", "miss-pairs",
+  "ends-in-four", "even-for-4", "digit-sum-for-4", "four-test-for-8", "last-digit-for-3", "last-digit-for-9", "three-for-nine", "either-for-6", "five-for-ten", "only-zero-for-5"] as const;
+const DIV_MALS = Object.keys(DIV_MAL);
 const MAL_OF: Record<KilaGoal, readonly string[]> = {
   mark: ["factor-for-multiple", "finite-multiples", "any-odd-digit"],
   guard: [],
   common: ["product"],
   all: ["one-and-self", "miss-pairs"],
   meet: ["product", "gcd-for-lcm", "sum"],
+  ones: DIV_MALS, tail: DIV_MALS, sum: DIV_MALS,
 };
-const GOALS_OF: Record<KilaMode, readonly KilaGoal[]> = { multiples: ["mark", "guard", "common"], factors: ["all"], lcm: ["meet"] };
+const GOALS_OF: Record<KilaMode, readonly KilaGoal[]> = { multiples: ["mark", "guard", "common"], factors: ["all"], lcm: ["meet"], divisibility: ["ones", "tail", "sum"] };
+/** divisibility: the divisors each goal serves (the kit's skills: last digit · last two / three digits · digit sum) */
+export const DIVS_OF: Record<DivGoal, readonly number[]> = { ones: [2, 5, 10], tail: [4, 8], sum: [3, 6, 9] };
+export const divGoal = (g: KilaGoal): g is DivGoal => g === "ones" || g === "tail" || g === "sum";
+export const DIV_MIN_FOES = 6, DIV_MAX_FOES = 12;
 export const MAX_N = 36;
 const TOWER_GOALS: readonly KilaGoal[] = ["guard", "common", "all"];
 export const towerGoal = (g: KilaGoal) => TOWER_GOALS.includes(g);
@@ -81,6 +125,10 @@ export const allTowers = (p: KilaParams, s: Pick<KilaState, "towers">) => asc([.
 export const markWant = (p: KilaParams) => range(1, p.n).filter((s) => hitsOn(p.fixed, s) > 0);
 /** all: the towers to build (every menu square that divides every gate) */
 export const allWant = (p: KilaParams) => p.menu.filter((q) => p.targets.every((t) => t % q === 0));
+/** divisibility: does the ÷d tower break the foe on square s? */
+export const divBreaks = (p: KilaParams, s: number) => !!p.foes && !!p.d && s >= 1 && s <= p.foes.length && p.foes[s - 1] % p.d === 0;
+/** divisibility: the squares whose foe the tower breaks (the nets the law wants) */
+export const divWant = (p: KilaParams) => range(1, p.n).filter((s) => divBreaks(p, s));
 /** meet: the first square both standing towers fire on */
 export const meetAt = (p: KilaParams) => lcm(p.fixed[0], p.fixed[1]);
 
@@ -88,6 +136,7 @@ export const meetAt = (p: KilaParams) => lcm(p.fixed[0], p.fixed[1]);
 export function judge(p: KilaParams, towers: readonly number[], marks: readonly number[]): boolean {
   switch (p.goal) {
     case "mark": return sameSet(asc([...marks]), markWant(p));
+    case "ones": case "tail": case "sum": return sameSet(asc([...marks]), divWant(p));
     case "meet": return marks.length === 1 && marks[0] === meetAt(p);
     case "all": return sameSet(asc([...towers]), allWant(p));
     case "guard": case "common": {
@@ -100,6 +149,7 @@ export function judge(p: KilaParams, towers: readonly number[], marks: readonly 
 function wrongCount(p: KilaParams, towers: readonly number[], marks: readonly number[]): number {
   const diff = (a: readonly number[], b: readonly number[]) => a.filter((x) => !b.includes(x)).length + b.filter((x) => !a.includes(x)).length;
   if (p.goal === "mark") return diff(marks, markWant(p));
+  if (divGoal(p.goal)) return diff(marks, divWant(p));
   if (p.goal === "all") return diff(towers, allWant(p));
   if (p.goal === "meet") return marks[0] === meetAt(p) ? 0 : 1;
   const all = asc([...p.fixed, ...towers]);
@@ -116,6 +166,11 @@ function legal(p: KilaParams, s: Setup): boolean {
 function rawMal(p: KilaParams, mal: string): Setup | null {
   if (!MAL_OF[p.goal].includes(mal)) return null;
   const T = (towers: number[]): Setup => ({ towers: asc(towers), marks: [] }), M = (marks: number[]): Setup => ({ towers: [], marks: asc(marks) });
+  if (divGoal(p.goal)) {
+    const rule = DIV_MAL[mal], d = p.d ?? 0, foes = p.foes ?? [];
+    if (!rule || !rule.d.includes(d)) return null;
+    return M(range(1, p.n).filter((s) => rule.nets(foes[s - 1], d)));
+  }
   const [a, b] = p.fixed;
   switch (mal) {
     case "factor-for-multiple": return M(range(1, Math.min(a, p.n)).filter((d) => a % d === 0));
@@ -152,6 +207,7 @@ export function kilaHidden(level: PlayLevel<unknown>): number[] {
   if (!p || typeof p.goal !== "string" || !Array.isArray(p.fixed)) return [];
   try {
     if (p.goal === "mark") return markWant(p);
+    if (divGoal(p.goal)) return divWant(p).map((s) => p.foes![s - 1]);
     if (p.goal === "meet") return [meetAt(p)];
     if (p.goal === "all") return allWant(p);
     return asc(solutions(p).flatMap((s) => s.towers));
@@ -169,6 +225,7 @@ function validate(level: PlayLevel<unknown>): PlayLevel<KilaParams> | null {
   const p = level.params as Partial<KilaParams> | null, mode = level.mode as KilaMode;
   if (!p || !GOALS_OF[mode] || !GOALS_OF[mode].includes(p.goal as KilaGoal)) return null;
   const goal = p.goal as KilaGoal, n = Number(p.n);
+  if (divGoal(goal)) return validateDiv(level, p, goal);
   if (!isInt(n) || n < 8 || n > MAX_N) return null;
   const fixed = intList(p.fixed, 2, n), menu = intList(p.menu, 1, n), targets = intList(p.targets, 1, n), armoured = intList(p.armoured, 1, n), decoys = intList(p.decoys, 1, n);
   if (!fixed || !menu || !targets || !armoured || !decoys) return null;
@@ -201,6 +258,21 @@ function validate(level: PlayLevel<unknown>): PlayLevel<KilaParams> | null {
     }
   }
   return { ...level, params: base } as PlayLevel<KilaParams>;
+}
+/** divisibility: a ÷d tower (d one of the goal's divisors), 6-12 distinct foes of 3-5 digits, n = the foe count; at least two
+ *  foes break and two survive (so neither "net nothing" nor "net everything" can win); nothing else on the path */
+function validateDiv(level: PlayLevel<unknown>, p: Partial<KilaParams>, goal: DivGoal): PlayLevel<KilaParams> | null {
+  const d = Number(p.d), n = Number(p.n), foes = p.foes;
+  if (!isInt(d) || !DIVS_OF[goal].includes(d)) return null;
+  if (!Array.isArray(foes) || foes.length < DIV_MIN_FOES || foes.length > DIV_MAX_FOES || n !== foes.length) return null;
+  if (!foes.every((x) => isInt(x) && x >= 100 && x <= 99999) || new Set(foes).size !== foes.length) return null;
+  for (const k of ["fixed", "menu", "targets", "armoured", "decoys"] as const) if (!Array.isArray(p[k]) || (p[k] as unknown[]).length) return null;
+  if (Number(p.budget) !== 0) return null;
+  const breaks = foes.filter((x) => x % d === 0).length;
+  if (breaks < 2 || foes.length - breaks < 2) return null;
+  const labels = p.labels === 2 || p.labels === 3 ? p.labels : 1;
+  const params: KilaParams = { goal, n, fixed: [], menu: [], budget: 0, targets: [], armoured: [], decoys: [], labels, d, foes: [...foes] };
+  return { ...level, params } as PlayLevel<KilaParams>;
 }
 function init(_level: PlayLevel<KilaParams>): KilaState {
   return { towers: [], marks: [], beat: 0, ended: false, waves: 0, done: false, acts: 0, prev: null, depth: 0 };
@@ -253,7 +325,7 @@ function apply(level: PlayLevel<KilaParams>, s: KilaState, act: KilaAct, seq: nu
       const m = malSetup(p, mal);
       if (m && sameSet(m.towers, s.towers) && sameSet(m.marks, s.marks)) { out.push(mom("misconception_consequence", seq, f, mal)); return { state: end, moments: out, refused: "missed" }; }
     }
-    const near = (p.goal === "mark" || p.goal === "all") && wrong === 1;
+    const near = (p.goal === "mark" || p.goal === "all" || divGoal(p.goal)) && wrong === 1;
     out.push(mom(near ? "near_miss" : "law_refused", seq, { ...f, why: "wave_missed" }));
     return { state: end, moments: out, refused: "missed" };
   }
@@ -269,6 +341,7 @@ function setupActs(p: KilaParams, su: Setup): KilaAct[] {
 export function solutions(p: KilaParams): Setup[] {
   if (p.goal === "all") return [{ towers: allWant(p), marks: [] }];
   if (p.goal === "mark") return [{ towers: [], marks: markWant(p) }];
+  if (divGoal(p.goal)) return [{ towers: [], marks: divWant(p) }];
   if (p.goal === "meet") return [{ towers: [], marks: [meetAt(p)] }];
   const out: Setup[] = [];
   for (let i = 0; i < p.menu.length; i++) {
@@ -297,6 +370,12 @@ function shortcut(level: PlayLevel<KilaParams>): KilaAct[] | null {
     if (on.length) tries.push(T(on.slice(0, p.budget)));
     if (p.menu.length <= p.budget) tries.push(T(p.menu));
   } else if (p.goal === "mark") tries.push(M(range(1, p.n)), M(p.fixed));
+  else if (divGoal(p.goal)) {
+    // net every foe, every other foe (either half), the first / last half, or the foes ending in the digit d (not a test for 10)
+    const all = range(1, p.n), d = p.d ?? 0, foes = p.foes ?? [];
+    tries.push(M(all), M(all.filter((s) => s % 2 === 1)), M(all.filter((s) => s % 2 === 0)), M(all.slice(0, Math.ceil(p.n / 2))), M(all.slice(Math.floor(p.n / 2))));
+    if (d !== 10) tries.push(M(all.filter((s) => lastDigit(foes[s - 1]) === d)));
+  }
   else tries.push(...[...p.fixed, p.n].map((x) => M([x])));
   for (const t of tries) if (legal(p, t) && judge(p, t.towers, t.marks)) return setupActs(p, t);
   return null;
@@ -306,7 +385,9 @@ function malActs(level: PlayLevel<KilaParams>, mal: string): KilaAct[] | null {
   return m ? setupActs(level.params, m) : null;
 }
 
-interface KilaGrammar { periods?: number[]; n?: [number, number]; gates?: 1 | 2; g?: [number, number]; menu?: number[]; coprime?: boolean }
+interface KilaGrammar { periods?: number[]; n?: [number, number]; gates?: 1 | 2; g?: [number, number]; menu?: number[]; coprime?: boolean;
+  /** divisibility: the tower's divisors (each must be one of the goal's), the foes' digit counts, the foe count */
+  divisors?: number[]; digits?: [number, number]; foes?: [number, number] }
 function difficultyOf(p: KilaParams): number {
   const lab = 0.07 * (p.labels - 1);
   switch (p.goal) {
@@ -315,11 +396,15 @@ function difficultyOf(p: KilaParams): number {
     case "common": return Math.min(1, 0.45 + lab + 0.05 * p.decoys.length + (gcd(p.fixed[0], p.armoured[0] / p.fixed[0]) > 1 ? 0.05 : 0));
     case "all": return Math.min(1, 0.3 + lab + 0.04 * allWant(p).length + (p.targets.length > 1 ? 0.15 : 0));
     case "meet": { const [a, b] = p.fixed; return Math.min(1, 0.3 + lab + (gcd(a, b) > 1 ? 0.15 : 0) + 0.01 * lcm(a, b)); }
+    case "ones": case "tail": case "sum": {
+      const big = Math.max(...(p.foes ?? [100]).map((x) => String(x).length));
+      return Math.min(1, 0.25 + 0.05 * (big - 3) + 0.02 * p.n + ({ 2: 0, 5: 0, 10: 0, 3: 0.1, 9: 0.15, 4: 0.15, 6: 0.2, 8: 0.2 }[p.d ?? 2] ?? 0));
+    }
   }
 }
 function generate(req: GenRequest): Candidate<KilaParams>[] {
   const g = req.grammar as KilaGrammar;
-  const mode = (["multiples", "factors", "lcm"] as const).find((m) => m === req.mode) ?? "multiples";
+  const mode = (["multiples", "factors", "lcm", "divisibility"] as const).find((m) => m === req.mode) ?? "multiples";
   const goal = (GOALS_OF[mode].includes(req.goal as KilaGoal) ? req.goal : GOALS_OF[mode][0]) as KilaGoal;
   const rnd = mulberry32(req.seed), out: Candidate<KilaParams>[] = [], seen = new Set<string>();
   const int = (lo: number, hi: number) => lo + Math.floor(rnd() * (hi - lo + 1));
@@ -348,9 +433,47 @@ function generate(req: GenRequest): Candidate<KilaParams>[] {
     if (!ds.length) { const opts = range(2, n).filter(free); if (!opts.length) return null; ds.push(pickOf(opts)); }
     return asc(ds);
   };
+  /** a foe of `len` digits that `pred` holds for (rejection; the even-digit probe is built digit by digit), or null */
+  const foeOf = (len: number, pred: (x: number) => boolean, taken: readonly number[]): number | null => {
+    for (let t = 0; t < 400; t++) {
+      const evenDigits = t >= 300;   // the last tries draw all-even digits (the any-odd-digit probe: rare by chance at 5 digits)
+      let x = 0;
+      for (let i = 0; i < len; i++) x = x * 10 + (evenDigits ? 2 * int(i === 0 ? 1 : 0, 4) : int(i === 0 ? 1 : 0, 9));
+      if (pred(x) && !taken.includes(x)) return x;
+    }
+    return null;
+  };
   for (let k = 0; k < 80 && out.length < 24; k++) {
     let params: KilaParams | null = null, sig = "";
-    if (goal === "mark") {
+    if (divGoal(goal)) {
+      const ds = (g.divisors ?? DIVS_OF[goal]).filter((x) => DIVS_OF[goal].includes(x));
+      if (!ds.length) break;
+      const d = pickOf(ds);
+      const [dLo, dHi] = (g.digits ?? [3, 5]).map((x) => Math.max(3, Math.min(5, x)));
+      const [fLo, fHi] = (g.foes ?? [8, 10]).map((x) => Math.max(DIV_MIN_FOES, Math.min(DIV_MAX_FOES, x)));
+      const count = int(fLo, Math.max(fLo, fHi)), len = () => int(dLo, Math.max(dLo, dHi));
+      // the probes first: for every belief about d, the foes that make it net a different set from the law's
+      const foes: number[] = [];
+      let ok = true;
+      for (const rule of Object.values(DIV_MAL)) if (rule.d.includes(d)) for (const pr of rule.probes) {
+        if (foes.length >= count) break;
+        const x = foeOf(len(), (v) => pr(v, d), foes);
+        if (x === null) { ok = false; break; } foes.push(x);
+      }
+      if (!ok) continue;
+      // then fill: about half the wave breaks (at least two foes break and two survive)
+      const want = Math.max(2, Math.min(count - 2, Math.round(count * (0.35 + 0.25 * rnd()))));
+      while (foes.length < count) {
+        const breaks = foes.filter((x) => x % d === 0).length, needBreak = breaks < want;
+        const x = foeOf(len(), (v) => (v % d === 0) === needBreak, foes);
+        if (x === null) { ok = false; break; } foes.push(x);
+      }
+      if (!ok) continue;
+      for (let i = foes.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [foes[i], foes[j]] = [foes[j], foes[i]]; }
+      const breaks = foes.filter((x) => x % d === 0).length;
+      if (breaks < 2 || count - breaks < 2) continue;
+      params = { ...base({ n: count }), d, foes }; sig = `${goal}:${d}:${foes.join(",")}`;
+    } else if (goal === "mark") {
       const a = pickOf(periods), lo = Math.max(nLo, 4 * a), hi = Math.min(nHi, 12 * a);
       if (lo > hi) continue;
       // a third of the levels run past 10 × a where the path allows it (multiples do not stop at the tenth)
@@ -420,6 +543,7 @@ function facts(level: PlayLevel<KilaParams>, s: KilaState): Facts {
   const p = level.params;
   const f: Facts = { goal: p.goal, path: p.n, towers: allTowers(p, s).length };
   if (!towerGoal(p.goal)) f.nets = s.marks.length;
+  if (divGoal(p.goal)) f.divisor = p.d ?? 0;
   if (s.beat) f.beat = s.beat;
   if (s.waves) f.waves = s.waves;
   if (s.done) f.done = "yes";
@@ -427,6 +551,11 @@ function facts(level: PlayLevel<KilaParams>, s: KilaState): Facts {
 }
 function board(level: PlayLevel<KilaParams>, s: KilaState) {
   const p = level.params, list = (xs: number[]) => (xs.length ? xs.join(", ") : "–");
+  if (divGoal(p.goal)) {
+    const foes = p.foes ?? [], lines = [`tower ÷ ${p.d}`, `wave: ${foes.join(", ")}`, `nets: ${list(s.marks.map((m) => foes[m - 1]))}`];
+    if (s.beat) lines.push(`wave: ${s.beat} / ${p.n}`);
+    return { title: "Kila", lines };
+  }
   const lines = [`1 … ${p.n}`, `towers: ${list(allTowers(p, s))}`];
   if (p.targets.length) lines.push(`${p.goal === "all" ? "gate" : "flags"}: ${list(p.targets)}`);
   if (p.armoured.length) lines.push(`shield: ${list(p.armoured)}`);
@@ -440,6 +569,6 @@ function grade(level: PlayLevel<KilaParams>, acts: PlayActEnvelope<KilaAct>[]): 
 }
 
 export const kilaLogic: FamilyLogic<KilaParams, KilaState, KilaAct> = {
-  family: "kila", modes: ["multiples", "factors", "lcm"], malRules: KILA_MAL,
+  family: "kila", modes: ["multiples", "factors", "lcm", "divisibility"], malRules: KILA_MAL,
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

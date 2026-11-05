@@ -54,7 +54,7 @@ function oracle(p, towers, marks) {
 
 test("kila: the family is registered (FAMILIES, MODES, arts, logic for every mode, a verb that never chooses)", () => {
   assert.ok(FAMILIES.includes("kila"));
-  assert.deepEqual([...MODES.kila], ["multiples", "factors", "lcm"]);
+  assert.deepEqual([...MODES.kila], ["multiples", "factors", "lcm", "divisibility"]);
   assert.ok(FAMILY_ARTS.kila.length === 4);
   for (const m of MODES.kila) {
     assert.equal(LOGIC[`kila/${m}`], kilaLogic);
@@ -250,10 +250,11 @@ const KE = () => coverage().entries.filter((e) => e.family === "kila");
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 
-test("kila coverage: the nine authored entries, mapped to real kit misconceptions; new topics admitted by skill", () => {
+test("kila coverage: the twelve authored entries, mapped to real kit misconceptions; new topics admitted by skill", () => {
   assert.deepEqual(KE().map((e) => `${e.topicId}|${e.mode}|${e.goal}`), [
     "c4-maths-ch03-t01|multiples|mark", "c5-maths-ch13-t01|multiples|mark", "c5-maths-ch13-t01|multiples|guard", "c5-maths-ch13-t01|multiples|common",
-    "c5-maths-ch13-t01|lcm|meet", "c5-maths-ch13-t02|factors|all", "c6-maths-ch05-t01|factors|all", "c6-maths-ch05-t01|lcm|meet", "c7-maths-ch11-t02|lcm|meet"]);
+    "c5-maths-ch13-t01|lcm|meet", "c5-maths-ch13-t02|factors|all", "c6-maths-ch05-t01|factors|all", "c6-maths-ch05-t01|lcm|meet",
+    "c6-maths-ch05-t05|divisibility|ones", "c6-maths-ch05-t05|divisibility|tail", "c6-maths-ch05-t05|divisibility|sum", "c7-maths-ch11-t02|lcm|meet"]);
   for (const e of KE()) for (const kit of Object.values(e.misMap)) assert.ok(kit.startsWith(`${e.topicId}-m-`), kit);
   // the topics no law family had before (ITEM-ARENA alone, or nothing) are kila's now
   for (const sk of ["c4-maths-ch03-t01-s1", "c4-maths-ch03-t01-s2", "c5-maths-ch13-t01-s1", "c5-maths-ch13-t01-s2", "c5-maths-ch13-t01-s3", "c5-maths-ch13-t02-s2", "c5-maths-ch13-t02-s3"]) {
