@@ -18,7 +18,7 @@ import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
-import { saidMust } from "../server/director/script.js";
+import { saidMust, scriptOn, scriptWhyNot } from "../server/director/script.js";
 import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
@@ -272,6 +272,12 @@ const runs = MATRIX
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
 const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
+// (main, after director6's first start walked no script at all: a script run never starts on a topic with no walkable script;
+// it says which topic and why, and spends nothing)
+if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
+  const bad = [...new Set(runs.map((r) => r.topicId))].map((t) => [t, scriptWhyNot(kitFromFile(getTopic(t)))]).filter(([, why]) => why);
+  if (bad.length) { for (const [t, why] of bad) console.error(`NO SCRIPT: ${t}: ${why}`); console.error("refusing to run: TAXILA_R7_SCRIPT=on and a topic would fall back to the kit"); process.exit(5); }
+}
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
 for (const { topicId, classLevel, name: scenario } of runs) {
@@ -288,6 +294,10 @@ for (const { topicId, classLevel, name: scenario } of runs) {
   const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null);
   const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
   writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
+  if (process.env.TAXILA_R7_SCRIPT && scriptOn() && A?.length && !A.some((r) => r.beat)) {
+    console.error(`NO SCRIPT BEATS: ${name} walked no script beat (${topicId}); stopping`); stopWith(6, "no script beats");
+  }
   writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
   const fell = B.filter((r) => r.fellBack).length;
   const p50 = (rows) => { const v = rows.filter((r) => r.replyReadyMs != null).map((r) => r.replyReadyMs).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };

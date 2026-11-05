@@ -272,7 +272,7 @@ export function validateTopicScript(sc, kit) {
 
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
 /** The script versions the Director walks. */
-export const WALK_VERSIONS = new Set([1, 2]);
+export const WALK_VERSIONS = new Set([1, 2, 2.1]);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
 const SCRIPT_DIR = new URL("../../data/lesson-scripts/", import.meta.url);
 const loaded = new Map();
@@ -282,6 +282,19 @@ export function setScriptForTest(topicId, script) { if (topicId === undefined) {
  * The topic's validated script: { script, ok } (ok: the skill ids the Director may walk), or null (no script, or none walkable).
  * Read once per topic per process.
  */
+const scriptDir = () => (process.env.TAXILA_R7_SCRIPT_DIR ? new URL(`file://${process.env.TAXILA_R7_SCRIPT_DIR.replace(/\/?$/, "/").replace(/^(?!\/)/, `${process.cwd()}/`)}`) : SCRIPT_DIR);
+/** Why a topic has no walkable script (null when it has one): the file is missing or unreadable, its version is not walkable,
+ *  or no skill validated. Runs check this before spending (director6's first start walked nothing, silently). */
+export function scriptWhyNot(kit) {
+  if (!scriptOn()) return "TAXILA_R7_SCRIPT is off";
+  if (scriptFor(kit)) return null;
+  const at = new URL(`${kit?.topicId}.json`, scriptDir());
+  let sc;
+  try { sc = JSON.parse(readScriptFile(at, "utf8")); } catch (e) { return `no readable script at ${at.pathname} (${e?.code ?? e?.message ?? e})`; }
+  if (!WALK_VERSIONS.has(Number(sc.version ?? 1))) return `version ${sc.version} is not walkable (WALK_VERSIONS: ${[...WALK_VERSIONS].join(", ")})`;
+  const v = validateTopicScript(sc, kit);
+  return v.ok.length ? "loaded but not walkable (unknown)" : `no skill validated: ${v.errors.slice(0, 3).join(" | ")}${v.errors.length > 3 ? ` (+${v.errors.length - 3})` : ""}`;
+}
 export function scriptFor(kit) {
   const id = kit?.topicId;
   if (!id || !scriptOn()) return null;
@@ -290,8 +303,7 @@ export function scriptFor(kit) {
     // (loading is decided by TAXILA_R7_SCRIPT alone, never by how the process was started: a kit-path test pins it off in its
     // own hooks; a test that walks a script sets one with setScriptForTest)
     // (TAXILA_R7_SCRIPT_DIR: another folder of scripts, e.g. a run on staged v2 scripts; explicit, never inferred)
-    const dir = process.env.TAXILA_R7_SCRIPT_DIR ? new URL(`file://${process.env.TAXILA_R7_SCRIPT_DIR.replace(/\/?$/, "/").replace(/^(?!\/)/, `${process.cwd()}/`)}`) : SCRIPT_DIR;
-    if (sc === undefined) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, dir), "utf8")); } catch { sc = null; } }
+    if (sc === undefined) { try { sc = JSON.parse(readScriptFile(new URL(`${id}.json`, scriptDir()), "utf8")); } catch { sc = null; } }
     sc ??= null;
     const v = sc ? validateTopicScript(sc, kit) : null;
     loaded.set(id, v?.ok.length && WALK_VERSIONS.has(Number(sc.version ?? 1)) ? { script: sc, ok: new Set(v.ok) } : null);

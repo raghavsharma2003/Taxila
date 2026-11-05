@@ -128,3 +128,29 @@ test("{friend} fills a card's graded fields too: the friend's wrong pick is grad
   const it = scriptThenItem("s1", { targets: "m-x", then: { prompt: { hi: "{friend} ya Ravi, kaun sahi hai", en: "{friend} or Ravi, who is right" }, key: "Ravi", accept: [], wrongIfMis: "{friend}" } });
   assert.equal(it.scriptThen.wrongIfMis, "{friend}", "the then-card carries its listed wrong pick");
 });
+
+test("a version 2.1 script is walked, not only validated (director6 first start: every 2.1 script fell back to the kit)", async () => {
+  const { setScriptForTest, scriptIdOf, WALK_VERSIONS } = await import("../server/director/script.js");
+  const keep = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+  try {
+    const s = structuredClone(SC); s.version = 2.1;
+    setScriptForTest(); setScriptForTest(K.topicId, s);
+    assert.ok(WALK_VERSIONS.has(2.1));
+    assert.equal(scriptIdOf(K), `${K.topicId}@2.1`);
+  } finally { setScriptForTest(); if (keep === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = keep; }
+});
+
+test("scriptWhyNot names why a topic has no walkable script (version, missing file, validation)", async () => {
+  const { setScriptForTest, scriptWhyNot } = await import("../server/director/script.js");
+  const keep = { s: process.env.TAXILA_R7_SCRIPT, d: process.env.TAXILA_R7_SCRIPT_DIR };
+  try {
+    process.env.TAXILA_R7_SCRIPT = "on"; process.env.TAXILA_R7_SCRIPT_DIR = "/nonexistent-scripts";
+    setScriptForTest();
+    assert.match(scriptWhyNot(K), /no readable script/);
+    setScriptForTest(K.topicId, structuredClone(SC));
+    assert.equal(scriptWhyNot(K), null, "a walkable script: no reason");
+  } finally {
+    setScriptForTest();
+    for (const [k, v] of [["TAXILA_R7_SCRIPT", keep.s], ["TAXILA_R7_SCRIPT_DIR", keep.d]]) if (v === undefined) delete process.env[k]; else process.env[k] = v;
+  }
+});
