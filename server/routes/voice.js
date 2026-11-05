@@ -273,7 +273,7 @@ async function streamParts(res, { entry, t0, setupMs, prewarmed, framed = false,
     }
     if (!headerFramed) {
       headerFramed = true;
-      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec === "adpcm" ? { codec: "adpcm" } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
+      out.json(FRAME.header, { v: 2, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(out.codec !== "pcm" ? { codec: out.codec } : {}), sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
       record("tts.first", { sentences: parts.length, firstMs: Math.round(performance.now() - t0), setupMs,
         cache: jobs[0]?.cached ? "hit" : "miss", engine: entry.renders?.[0]?.engine ?? "oai", framed, ...(prewarmed !== undefined ? { prewarmedMs: prewarmed } : {}) });
@@ -414,7 +414,7 @@ async function turnAudio(req, res, body) {
   const codec = codecOf(req); // round 5 (QA D12)
   const w = frameWriter(res, true, { codec });
   // the header first (does audio follow?), then the turn, so the client knows whether to wait for this response's audio
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
@@ -451,7 +451,7 @@ function streamingSay(req, res, body, t0) {
     res.writeHead(200, { "content-type": FRAMES_CONTENT_TYPE, "cache-control": "no-store" });
     res.flushHeaders?.();
     w = frameWriter(res, true, { codec: codecOf(req) });
-    w.json(FRAME.header, { v: 2, audio: "streaming", format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}) });
+    w.json(FRAME.header, { v: 2, audio: "streaming", format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}) });
     return w;
   };
   const say = (clauses, signal) => speakStreamed({ deltas: (async function* () { for (const c of clauses) yield `${c} `; })(), synth, signal,
@@ -537,7 +537,7 @@ async function startAudio(req, res, body) {
   res.flushHeaders?.();
   const codec = codecOf(req);
   const w = frameWriter(res, true, { codec });
-  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec === "adpcm" ? { codec: "adpcm" } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
+  w.json(FRAME.header, { v: 2, audio, format: `pcm_s16le;rate=${PCM_RATE};channels=1`, ...(w.codec !== "pcm" ? { codec: w.codec } : {}), ...(warm ? { seq, sentences: warm.parts.length, prewarmedMs: Math.round(performance.now() - warm.at),
     engine: warm.renders?.[0]?.engine ?? "oai" } : {}) });
   w.json(FRAME.turn, out);
   if (!warm) { w.json(FRAME.end, { t: "end", status: "ok", audio }); res.end(); return; }
