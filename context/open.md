@@ -148,3 +148,9 @@ The idea is to keep the subject visualAskOf reads before freeSubjectOf's guess (
 ## open-r1442-board-truth-unmeasured — not measured on sim-lab (2026-10-22)
 
 The two board-truth fixes rest on QA's three lessons and tests that fail on base. Sim-lab cannot measure them as it stands. The shape fix needs a re-run to count 'picture nahi hai' under a board, and the sim-lab records do not carry the board-to-board sequences at slot level. A QA re-run of 7545d1fd, 13ec94a7 and 897a7453's shapes is the measurement.
+
+
+<!-- merged from inbox/r7-m3-1.json -->
+## open-r7-m3-verification-deadline (2026-11-05)
+
+The Learn page (2026-11-03) says not qualifying for Milestone 3 within 180 days of business verification cancels the sponsorship. The sponsorship started 2026-07-08. If that was the verification day, the deadline is 2027-01-04, and the 60-day clock must start by 2026-11-06. The keeper cannot make day 1 earlier than the first full day after `apply`. Unknown: the real verification date, and whether the clause applies to sponsorships granted before it was published. The owner reads it in the Founders Hub portal (docs/design/round7/M3.md §1).
