@@ -7,6 +7,8 @@
 //   openJar(childId, { limit })               the waiting items, oldest first (the next lesson's hook, the home count)
 //   answerStmts(childId, ids, lessonId)       PURE: mark items kept (the next lesson answered them)
 //   jarSummary(items)                         PURE: { waiting } for the child home's plan.jar
+//   jarLaterEntries(hook)                     PURE: the next lesson's hook as Later entries (jarId), served by the opening
+//   jarServed(prevLater, nextLater, lessonId) PURE: carried entries served this turn → answerStmts + keptEvents
 // Brain calls jarWriteStmts at lesson end (inside its end transaction) and answerStmts when the hook is served; Learning
 // owns the table, the reads and the Conductor promise. Never throws on read: a missing table (037 not applied) is an empty jar.
 
@@ -24,7 +26,8 @@ const SUBJ = /^c\d-([a-z]+)-/;
 export function jarItemsFromLesson(state) {
   const subject = SUBJ.exec(String(state?.topicId ?? state?.ctx?.topicId ?? ""))?.[1] ?? null;
   return (state?.later ?? [])
-    .filter((p) => p && p.servedAt == null && typeof p.topic === "string" && p.topic.trim() && p.topic.trim() !== "their question")
+    // an entry carried in from the jar (jarId) already has its row: it is never written twice
+    .filter((p) => p && p.servedAt == null && !p.jarId && typeof p.topic === "string" && p.topic.trim() && p.topic.trim() !== "their question")
     .sort((a, b) => Number(!!b.learning) - Number(!!a.learning) || (a.at ?? 0) - (b.at ?? 0))
     .slice(0, 5)
     .map((p) => ({ laterId: String(p.id), topic: p.topic.trim().slice(0, 60), learning: !!p.learning, share: !!p.share, subject }));
@@ -84,3 +87,36 @@ export function answerStmts(childId, ids, lessonId) {
 
 /** PURE. The child home's jar: { waiting } (null when nothing waits, so the home shows no empty jar). */
 export const jarSummary = (items) => ((items?.length ?? 0) > 0 ? { waiting: items.length } : null);
+
+/**
+ * PURE. The next lesson's hook (learnerView.jar, ≤ JAR_HOOK_MAX) as Later entries the Director serves like any parked
+ * question: the opening comes back to the first one (state.js warmup start, SH.returnJar), a later boundary to the rest.
+ * Each keeps its jar row's id, lesson and Later id so the turn that serves it can mark it kept (jarServed).
+ */
+export function jarLaterEntries(hook) {
+  return (hook ?? []).slice(0, JAR_HOOK_MAX).filter((x) => x && x.id && typeof x.topic === "string" && x.topic.trim()).map((x, i) => ({
+    id: `j${i}`, topic: x.topic.trim().slice(0, 60), learning: !!x.learning, ...(x.share ? { share: true } : {}), at: 0,
+    promise: "after_question", insist: 0, jarId: String(x.id), jarLesson: String(x.lessonId ?? ""), jarLater: String(x.laterId ?? ""),
+  }));
+}
+
+/**
+ * PURE. The jar entries a step served (servedAt set now, not before): the statements that mark their rows kept and the
+ * Conductor events (teacher.promise_kept) for after the commit. Nothing served → { stmts: [], events: [] }.
+ */
+export function jarServed(prevLater, nextLater, childId, lessonId) {
+  const before = new Set((prevLater ?? []).filter((p) => p?.jarId && p.servedAt != null).map((p) => p.jarId));
+  const served = (nextLater ?? []).filter((p) => p?.jarId && p.servedAt != null && !before.has(p.jarId));
+  if (!served.length) return { stmts: [], events: [] };
+  return {
+    stmts: answerStmts(childId, served.map((p) => p.jarId), lessonId),
+    events: keptEvents(served.map((p) => ({ lessonId: p.jarLesson, laterId: p.jarLater })), lessonId),
+  };
+}
+
+/** The jar's Conductor events after a commit, fire-and-forget: a promise event never fails a start, a turn or an end. */
+export function emitJarEvents(childId, events) {
+  if (!events?.length) return;
+  import("../conductor/index.js").then(({ emit }) => Promise.all(events.map((e) => emit(childId, e))))
+    .catch((e) => console.warn("[jar] promise events not emitted:", e?.message));
+}

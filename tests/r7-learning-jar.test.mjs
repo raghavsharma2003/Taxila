@@ -57,3 +57,24 @@ test("answerStmts, keptEvents, jarSummary", () => {
 test("openJar never throws (no table → [])", async () => {
   assert.deepEqual(await openJar("c1", { q: async () => { throw Object.assign(new Error("x"), { code: "42P01" }); } }), []);
 });
+
+// Patch 004b: the hook carried into the next lesson as Later entries, served by the opening and marked kept.
+import { jarLaterEntries, jarServed, jarItemsFromLesson as fromLesson } from "../server/learner/jar.js";
+
+test("004b: the hook becomes Later entries; serving one yields its kept statement and teacher.promise_kept, once", () => {
+  const J1 = "11111111-1111-4111-8111-111111111111", J2 = "22222222-2222-4222-8222-222222222222";
+  const hook = [{ id: J1, topic: "why the moon changes shape", learning: true, share: false, lessonId: "L0", laterId: "p3" },
+    { id: J2, topic: "my new cycle", learning: false, share: true, lessonId: "L0", laterId: "p5" }, { id: "x", topic: " " }];
+  const later = jarLaterEntries(hook);
+  assert.deepEqual(later.map((p) => [p.id, p.jarId, p.promise, p.at]), [["j0", J1, "after_question", 0], ["j1", J2, "after_question", 0]]);
+  assert.equal(later[1].share, true);
+  const served = later.map((p) => (p.id === "j0" ? { ...p, servedAt: 0 } : p));
+  const r = jarServed(later, served, "child-1", "L1");
+  assert.equal(r.stmts.length, 1);
+  assert.deepEqual(r.stmts[0].params, ["child-1", [J1], "L1"]);
+  assert.deepEqual(r.events, [{ type: "teacher.promise_kept", promiseId: "jar:L0:p3", lessonId: "L1" }]);
+  assert.deepEqual(jarServed(served, served, "child-1", "L1"), { stmts: [], events: [] }, "a served entry is kept once");
+  // an unserved carried entry is never written into the jar again at this lesson's end
+  assert.deepEqual(fromLesson({ topicId: "c5-maths-ch02-t01", later: [...served, { id: "p9", topic: "fractions of money", learning: true, at: 4 }] })
+    .map((x) => x.laterId), ["p9"]);
+});
