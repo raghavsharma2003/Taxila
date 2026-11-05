@@ -1,0 +1,619 @@
+{
+ "topicId": "c4-maths-ch06-t01",
+ "classLevel": 4,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "lambai", "en": "length" },
+  { "hi": "naapna", "en": "to measure" },
+  { "hi": "scale (paimana)", "en": "ruler" },
+  { "hi": "nishaan", "en": "mark (on the ruler)" },
+  { "hi": "1 cm ka khaana", "en": "a 1 cm space" },
+  { "hi": "centimetre (cm)", "en": "centimetre (cm)" },
+  { "hi": "metre (m)", "en": "metre (m)" },
+  { "hi": "ikai", "en": "unit" },
+  { "hi": "andaaza", "en": "estimate" }
+ ],
+ "skills": [
+  {
+   "skillId": "c4-maths-ch06-t01-s1",
+   "hook": {
+    "convey": "a ruler measures length as the number of 1 cm spaces from one end to the other; start at 0 and the end mark is the length; start anywhere else and take the start mark away from the end mark",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing mein tum scale se seedhi line kheenchte ho. Aaj usi scale se cheezein naapna seekhenge: kahan se shuru karein aur lambai kaise padhein.",
+       "en": "In drawing you use a ruler to draw straight lines. Today we learn to measure things with that same ruler: where to start and how to read the length."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket bat ka grip kitna lamba hai, yeh scale se naap sakte hain. Agar scale ka shuru wala hissa toota ho, tab bhi sahi lambai nikal sakti hai.",
+       "en": "We can measure how long a cricket bat's grip is with a ruler. Even if the start of the ruler is broken, we can still find the right length."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "pencil from the 0 mark to the 7 mark → 7 spaces of 1 cm → 7 cm; from 0 the end mark is the length",
+     "mustSay": [
+      { "hi": "0 se shuru", "en": "start at 0" },
+      { "hi": "7 cm", "en": "7 cm" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pencil", "items": ["0 se shuru", "7 pe khatam"] }, "right": { "title": "Lambai", "items": ["7 cm"] } } },
+     "point": {
+      "hi": "Dekho, pencil scale ke 0 se shuru hoti hai aur 7 pe khatam hoti hai. Toh pencil 7 cm lambi hai. 0 se shuru karo, toh aakhri nishaan hi lambai batata hai.",
+      "en": "Look, the pencil starts at 0 on the ruler and ends at 7. So the pencil is 7 cm long. Start at 0, and the end mark tells the length."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ab doosri pencil scale pe 2 ke nishaan se 8 ke nishaan tak rakhi hai. Kya yeh pencil 8 cm lambi hai, haan ya nahi?",
+       "en": "Now another pencil lies on the ruler from the 2 mark to the 8 mark. Is this pencil 8 cm long, yes or no?"
+      },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, 6 cm", "no, 6 cm"],
+      "targets": "c4-maths-ch06-t01-m-edge-start",
+      "wrongIfMis": "Yes"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "crayon from the 3 mark to the 9 mark → count the 1 cm spaces, not the marks → 6 spaces → 9 − 3 = 6 → 6 cm, not 9 cm",
+     "mustSay": [
+      { "hi": "khaane gino", "en": "count the spaces" },
+      { "hi": "9 − 3 = 6", "en": "9 − 3 = 6" }
+     ],
+     "board": { "template": "number-line-hop@1", "params": { "start": 3, "hops": [6] } },
+     "point": {
+      "hi": "Yeh crayon scale pe 3 se shuru hota hai aur 9 pe khatam. Nishaan nahi, khaane gino: 3 se 9 tak 1-1 cm ke 6 khaane hain, yaani 9 − 3 = 6. Toh crayon 6 cm lamba hai, 9 cm nahi.",
+      "en": "This crayon starts at 3 on the ruler and ends at 9. Count the spaces, not the marks: from 3 to 9 there are 6 spaces of 1 cm, that is 9 − 3 = 6. So the crayon is 6 cm long, not 9 cm."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ab ek doosra crayon scale pe 5 ke nishaan se 12 ke nishaan tak hai. Yeh crayon kitna lamba hai?",
+       "en": "Now another crayon lies on the ruler from the 5 mark to the 12 mark. How long is this crayon?"
+      },
+      "key": "7 cm",
+      "accept": ["7", "saat", "seven", "7 centimetre", "saat cm"],
+      "targets": "c4-maths-ch06-t01-m-edge-start",
+      "wrongIfMis": "12 cm"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "starting at 1 instead of 0: object from 1 to 6 covers 5 spaces, not 6 → reading the end mark from 1 gives 1 cm too much",
+     "mustSay": [
+      { "hi": "1 cm zyada", "en": "1 cm too much" },
+      { "hi": "5 khaane", "en": "5 spaces" }
+     ],
+     "board": { "template": "number-line-hop@1", "params": { "start": 1, "hops": [5] } },
+     "point": {
+      "hi": "Agar pencil 1 ke nishaan se shuru ho aur 6 pe khatam, toh beech mein sirf 5 khaane hain, 6 nahi. 1 se shuru karke sirf aakhri nishaan padhoge, toh lambai 1 cm zyada aayegi.",
+      "en": "If a pencil starts at the 1 mark and ends at 6, there are only 5 spaces in between, not 6. If you start at 1 and read only the end mark, the length comes out 1 cm too much."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "{friend} ne ek patta scale ke 1 ke nishaan se 9 ke nishaan tak rakha aur lambai 9 cm likhi. Patte ki sahi lambai kitni hai?",
+       "en": "{friend} placed a leaf from the 1 mark to the 9 mark on a ruler and wrote the length as 9 cm. What is the leaf's correct length?"
+      },
+      "key": "8 cm",
+      "accept": ["8", "aath", "eight", "8 centimetre", "aath cm"],
+      "targets": "c4-maths-ch06-t01-m-edge-start",
+      "wrongIfMis": "9 cm"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek lakdi scale pe 2 ke nishaan se 11 ke nishaan tak rakhi hai. Lakdi kitni lambi hai?",
+     "en": "A stick lies on a ruler from the 2 mark to the 11 mark. How long is the stick?"
+    },
+    "givens": [
+     { "hi": "lakdi ka shuru 2 ke nishaan pe hai", "en": "the stick starts at the 2 mark" },
+     { "hi": "lakdi ka aakhri sira 11 ke nishaan pe hai", "en": "the stick ends at the 11 mark" }
+    ],
+    "find": { "hi": "lakdi ki lambai, cm mein", "en": "the length of the stick, in cm" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle dekho lakdi kahan se shuru hoti hai", "en": "First see where the stick starts" },
+      "result": "2 ke nishaan se, 0 se nahi",
+      "why": { "hi": "0 se shuru na ho toh sirf aakhri nishaan lambai nahi batata", "en": "when it does not start at 0, the end mark alone does not give the length" }
+     },
+     {
+      "do": { "hi": "Ab tay karo ki kya karna hai", "en": "Now decide what to do" },
+      "result": "aakhri nishaan 11 mein se shuru ka nishaan 2 ghatana hai",
+      "why": { "hi": "ghatane se 2 se 11 tak ke 1-1 cm ke khaane gine jaate hain", "en": "taking away counts the 1 cm spaces from 2 to 11" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab 11 mein se 2 ghatao. Lakdi kitni lambi hai?",
+      "en": "Now take 2 away from 11. How long is the stick?"
+     },
+     "key": "9 cm",
+     "accept": ["9", "nau", "nine", "9 centimetre", "nau cm"],
+     "targets": "c4-maths-ch06-t01-m-edge-start",
+     "wrongIfMis": "11 cm"
+    },
+    "answer": { "hi": "lakdi 9 cm lambi hai", "en": "the stick is 9 cm long" },
+    "why": { "hi": "2 se 11 tak 1-1 cm ke 9 khaane hain, aur 11 − 2 = 9", "en": "from 2 to 11 there are 9 spaces of 1 cm, and 11 − 2 = 9" },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Lakdi", "items": ["shuru: 2", "aakhri: 11"] }, "right": { "title": "Kitni lambi", "items": ["11 − 2"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek rubber scale pe 4 ke nishaan se 10 ke nishaan tak rakha hai. Rubber ki lambai cm mein batao.",
+      "en": "An eraser lies on a ruler from the 4 mark to the 10 mark. Give the eraser's length in cm."
+     },
+     "key": "6 cm",
+     "accept": ["6", "chhe", "chheh", "six", "6 centimetre", "chhe cm"],
+     "targets": "c4-maths-ch06-t01-m-edge-start",
+     "wrongIfMis": "10 cm",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rubber", "items": ["4 ke nishaan se", "10 ke nishaan tak"] }, "right": { "title": "Rubber ki lambai", "items": ["cm mein"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Laal crayon scale pe 0 se 8 ke nishaan tak hai. Neela crayon 3 se 10 ke nishaan tak hai. Kaunsa lamba hai, laal ya neela?",
+      "en": "The red crayon lies on a ruler from 0 to the 8 mark. The blue crayon lies from 3 to the 10 mark. Which is longer, red or blue?"
+     },
+     "key": "laal",
+     "accept": ["laal", "laal crayon", "laal wala", "red", "the red crayon", "red crayon"],
+     "targets": "c4-maths-ch06-t01-m-edge-start",
+     "wrongIfMis": "neela",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Laal crayon", "items": ["0 se 8 tak"] }, "right": { "title": "Neela crayon", "items": ["3 se 10 tak"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch06-t01-i01", "why": "warm-up: object from 0 → the end mark is the length" },
+    { "itemId": "c4-maths-ch06-t01-rl-o1", "why": "same idea on a real object, an ID card from the 0 cm mark" },
+    { "itemId": "c4-maths-ch06-t01-i04", "why": "predict for a crayon from 3 to 9 → 6 cm, not the end mark 9" },
+    { "itemId": "c4-maths-ch06-t01-rl-h1", "why": "broken ruler, bigger numbers → 23 − 6 = 17 cm" },
+    { "itemId": "c4-maths-ch06-t01-i05", "why": "say why: length counts the 1 cm spaces, so starting at 1 gives 1 cm too much" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch06-t01-m-edge-start",
+     "move": "broken ruler that starts at 4, a key from 4 to 9 with each 1 cm space shown as one hop → length is the spaces, not the marks → check by end mark − start mark",
+     "say": {
+      "hi": "Lambai khaane ginkar nikalti hai, nishaan ginkar nahi. 4 se 9 tak 1-1 cm ke 5 khaane hain, aur 9 − 4 = 5 bhi hai.",
+      "en": "Length comes from counting the spaces, not the marks. From 4 to 9 there are 5 spaces of 1 cm, and 9 − 4 = 5 too."
+     },
+     "board": { "template": "number-line-hop@1", "params": { "start": 4, "hops": [5] } },
+     "then": {
+      "prompt": {
+       "hi": "Toote scale pe ek chabi 6 ke nishaan se 13 ke nishaan tak hai. Chabi kitni lambi hai?",
+       "en": "On a broken ruler a key lies from the 6 mark to the 13 mark. How long is the key?"
+      },
+      "key": "7 cm",
+      "accept": ["7", "saat", "seven", "7 centimetre", "saat cm"],
+      "targets": "c4-maths-ch06-t01-m-edge-start",
+      "wrongIfMis": "13 cm",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Chabi", "items": ["6 ke nishaan se", "13 ke nishaan tak"] }, "right": { "title": "Toote scale pe", "items": ["chabi kitni lambi"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Chhoti cheezein hum cm mein naapte hain. Par rassi ya kamra bahut lamba hota hai, uske liye metre hai. Ab dekhenge ki 1 metre mein kitne cm hote hain.",
+    "en": "We measure small things in cm. But a rope or a room is very long, and for that there is the metre. Next we see how many cm make 1 metre."
+   }
+  },
+  {
+   "skillId": "c4-maths-ch06-t01-s2",
+   "hook": {
+    "convey": "long things are measured in metres, and 1 m = 100 cm; m → cm: each metre is 100 cm, then add the extra cm; cm → m and cm: every 100 cm is 1 m, the rest stays cm",
+    "interestSlots": [
+     {
+      "interest": "football",
+      "use": {
+       "hi": "Football ke goal ke saamne line banane ke liye rassi chahiye. Rassi metre mein milti hai, par dukaan wala tape se cm mein naapta hai. Dono ka rishta aaj samjhenge.",
+       "en": "To mark a line in front of the football goal we need a rope. The rope is sold in metres, but the shopkeeper measures in cm with a tape. Today we understand how the two are linked."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Rangoli ki drawing ke border ke liye ribbon lagana hai. Kuch ribbon m mein likhe hain aur kuch cm mein. Jodne se pehle sab ko ek hi ikai mein badalna seekhenge.",
+       "en": "We want ribbon for the border of a rangoli drawing. Some ribbons are written in m and some in cm. We will learn to change them all to one unit before adding."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "a metre scale has 100 spaces of 1 cm → 1 m = 100 cm; 10 cm is only a short piece of a metre, not a metre",
+     "mustSay": [
+      { "hi": "1 m = 100 cm", "en": "1 m = 100 cm" },
+      { "hi": "10 cm metre nahi", "en": "10 cm is not a metre" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 metre", "items": ["100 khaane", "100 cm"] }, "right": { "title": "10 cm", "items": ["chhota tukda", "metre nahi"] } } },
+     "point": {
+      "hi": "Metre scale pe 1-1 cm ke 100 khaane hote hain, toh 1 m = 100 cm. 10 cm toh metre ka bas ek chhota tukda hai, 10 cm metre nahi hai.",
+      "en": "A metre scale has 100 spaces of 1 cm each, so 1 m = 100 cm. 10 cm is just a short piece of a metre; 10 cm is not a metre."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek rassi 3 metre scale jitni lambi hai, yaani 3 m. Rassi kitne cm lambi hai?",
+       "en": "A rope is as long as 3 metre scales, that is 3 m. How many cm long is the rope?"
+      },
+      "key": "300 cm",
+      "accept": ["300", "teen sau", "three hundred", "300 centimetre", "teen sau cm"],
+      "targets": "c4-maths-ch06-t01-m-m-is-10cm",
+      "wrongIfMis": "30 cm"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "2 m 8 cm → metres first: 2 m = 200 cm → add 8 → 208 cm; the metres fill the hundreds place, so it is never 28",
+     "mustSay": [
+      { "hi": "pehle metre ko cm banao", "en": "change the metres to cm first" },
+      { "hi": "208 cm", "en": "208 cm" }
+     ],
+     "board": { "template": "place-value@1", "params": { "value": 208 } },
+     "point": {
+      "hi": "2 m 8 cm mein pehle metre ko cm banao: 2 m = 200 cm. Phir 8 cm jodo: 200 + 8 = 208. Dekho, 2 metre sau ke khaane mein baithte hain, isliye 2 m 8 cm = 208 cm, 28 cm nahi.",
+      "en": "In 2 m 8 cm, change the metres to cm first: 2 m = 200 cm. Then add 8 cm: 200 + 8 = 208. See, the 2 metres sit in the hundreds place, so 2 m 8 cm = 208 cm, not 28 cm."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek ribbon 3 m 6 cm lamba hai. Isi tarah socho: ribbon kitne cm lamba hai?",
+       "en": "A ribbon is 3 m 6 cm long. Thinking the same way, how many cm long is the ribbon?"
+      },
+      "key": "306 cm",
+      "accept": ["306", "teen sau chhe", "three hundred six", "306 centimetre"],
+      "targets": "c4-maths-ch06-t01-m-concat-units",
+      "wrongIfMis": "36 cm"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "250 cm → take out each full 100 cm as 1 m → 200 cm = 2 m, 50 cm left → 2 m 50 cm",
+     "mustSay": [
+      { "hi": "har 100 cm = 1 m", "en": "every 100 cm = 1 m" },
+      { "hi": "2 m 50 cm", "en": "2 m 50 cm" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "250 cm", "items": ["200 cm + 50 cm"] }, "right": { "title": "m aur cm", "items": ["2 m 50 cm"] } } },
+     "point": {
+      "hi": "Ulta bhi kar sakte hain. 250 cm mein 200 cm hain, aur har 100 cm = 1 m, toh 200 cm = 2 m. Bache 50 cm. Toh 250 cm = 2 m 50 cm.",
+      "en": "We can go the other way too. 250 cm has 200 cm in it, and every 100 cm = 1 m, so 200 cm = 2 m. 50 cm are left. So 250 cm = 2 m 50 cm."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek kapda 460 cm lamba hai. Uski lambai metre aur cm mein batao.",
+       "en": "A cloth is 460 cm long. Give its length in metres and centimetres."
+      },
+      "key": "4 m 60 cm",
+      "accept": ["4 metre 60 cm", "4 metre 60 centimetre", "4 m 60", "chaar metre saath cm"]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "{friend} ke paas patang ki 6 m 25 cm dor hai. Usme se 75 cm dor patang baandhne mein lag gayi. Kitni dor bachi? Jawab metre aur cm mein do.",
+     "en": "{friend} has 6 m 25 cm of kite string. 75 cm of it is used to tie the kite. How much string is left? Give the answer in metres and centimetres."
+    },
+    "givens": [
+     { "hi": "kul dor 6 m 25 cm hai", "en": "string: 6 m 25 cm" },
+     { "hi": "75 cm dor patang mein lag gayi", "en": "used: 75 cm" },
+     { "hi": "1 m = 100 cm hota hai", "en": "1 m = 100 cm" }
+    ],
+    "find": { "hi": "bachi hui dor, metre aur cm mein", "en": "the string left, in m and cm" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle 6 m 25 cm ko cm mein badlo", "en": "First change 6 m 25 cm to cm" },
+      "result": "600 + 25 = 625 cm",
+      "why": { "hi": "1 m = 100 cm hai, toh 6 m = 600 cm", "en": "1 m = 100 cm, so 6 m = 600 cm" }
+     },
+     {
+      "do": { "hi": "Ab lagi hui dor ghatao", "en": "Now take away the string used" },
+      "result": "625 − 75 = 550 cm",
+      "why": { "hi": "ghatane se pehle dono lambai ek hi ikai cm mein honi chahiye", "en": "both lengths must be in the same unit, cm, before taking away" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab 550 cm ko metre aur cm mein badlo. Kitni dor bachi?",
+      "en": "Now change 550 cm to metres and centimetres. How much string is left?"
+     },
+     "key": "5 m 50 cm",
+     "accept": ["5 metre 50 cm", "5 metre 50 centimetre", "5 m 50", "paanch metre pachaas cm"]
+    },
+    "answer": { "hi": "5 m 50 cm dor bachi hai", "en": "5 m 50 cm of string is left" },
+    "why": { "hi": "625 − 75 = 550 cm, aur 550 cm mein 500 cm yaani 5 m hain, aur 50 cm bache", "en": "625 − 75 = 550 cm, and 550 cm has 500 cm, that is 5 m, with 50 cm left" },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Kul dor", "items": ["6 m 25 cm", "625 cm"] }, "right": { "title": "Lag gayi", "items": ["75 cm"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek kamre ki deewar 4 m lambi hai. Deewar kitne cm lambi hai?",
+      "en": "A wall of a room is 4 m long. How many cm long is the wall?"
+     },
+     "key": "400 cm",
+     "accept": ["400", "chaar sau", "four hundred", "400 centimetre", "chaar sau cm"],
+     "targets": "c4-maths-ch06-t01-m-m-is-10cm",
+     "wrongIfMis": "40 cm",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Deewar", "items": ["4 m lambi"] }, "right": { "title": "cm mein", "items": ["kitne cm"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek rassi 2 m 7 cm lambi hai. Rassi kitne cm lambi hai?",
+      "en": "A rope is 2 m 7 cm long. How many cm long is the rope?"
+     },
+     "key": "207 cm",
+     "accept": ["207", "do sau saat", "two hundred seven", "207 centimetre"],
+     "targets": "c4-maths-ch06-t01-m-concat-units",
+     "wrongIfMis": "27 cm",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rassi", "items": ["2 m 7 cm"] }, "right": { "title": "cm mein", "items": ["kitne cm"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek ribbon 1 m 10 cm lamba hai, doosra ribbon 95 cm. Kaunsa lamba hai, pehla ya doosra?",
+      "en": "One ribbon is 1 m 10 cm long, the other ribbon is 95 cm. Which is longer, the first or the second?"
+     },
+     "key": "pehla",
+     "accept": ["pehla", "pehla ribbon", "first", "the first", "the first ribbon", "1 m 10 cm wala"],
+     "targets": "c4-maths-ch06-t01-m-m-is-10cm",
+     "wrongIfMis": "doosra",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pehla ribbon", "items": ["1 m 10 cm"] }, "right": { "title": "Doosra ribbon", "items": ["95 cm"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch06-t01-i03", "why": "warm-up: 2 m → 200 cm, each metre is 100 cm" },
+    { "itemId": "c4-maths-ch06-t01-rl-o2", "why": "1 m plus 20 cm in a story → change the metre first → 120 cm" },
+    { "itemId": "c4-maths-ch06-t01-i08", "why": "error spot: 1 m 5 cm written as 15 cm → it is 105 cm" },
+    { "itemId": "c4-maths-ch06-t01-i09", "why": "the other way: 150 cm → 1 m 50 cm" },
+    { "itemId": "c4-maths-ch06-t01-rl-h2", "why": "compare 4 m 35 cm with 390 cm → change to one unit first" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch06-t01-m-m-is-10cm",
+     "move": "metre tape beside a 10 cm piece → the 10 cm piece is short → 10 such pieces fill the metre → 10 × 10 = 100 cm",
+     "say": {
+      "hi": "10 cm toh metre scale ka ek chhota tukda hai. Aise 10 tukde milkar, yaani 10 × 10 = 100 cm, 1 m bante hain.",
+      "en": "10 cm is only a short piece of the metre scale. 10 such pieces together, that is 10 × 10 = 100 cm, make 1 m."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "10 cm", "items": ["chhota tukda"] }, "right": { "title": "1 m", "items": ["10 tukde", "10 × 10 = 100 cm"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek rassi 5 m lambi hai. Woh kitne cm lambi hai?",
+       "en": "A rope is 5 m long. How many cm long is it?"
+      },
+      "key": "500 cm",
+      "accept": ["500", "paanch sau", "five hundred", "500 centimetre", "paanch sau cm"],
+      "targets": "c4-maths-ch06-t01-m-m-is-10cm",
+      "wrongIfMis": "50 cm",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Rassi", "items": ["5 m lambi"] }, "right": { "title": "cm mein", "items": ["kitne cm"] } } }
+     }
+    },
+    {
+     "targets": "c4-maths-ch06-t01-m-concat-units",
+     "move": "place-value chart where the metre fills the hundreds place: 1 m 5 cm → 100 + 5 → 105; joining the digits as 15 drops the hundred",
+     "say": {
+      "hi": "Pehle metre ko cm banao, phir bache hue cm jodo. 1 m 5 cm = 100 + 5 = 105 cm, 15 cm nahi.",
+      "en": "First change the metre to cm, then add the extra cm. 1 m 5 cm = 100 + 5 = 105 cm, not 15 cm."
+     },
+     "board": { "template": "place-value@1", "params": { "value": 105 } },
+     "then": {
+      "prompt": {
+       "hi": "Ek dupatta 2 m 9 cm lamba hai. Woh kitne cm lamba hai?",
+       "en": "A dupatta is 2 m 9 cm long. How many cm long is it?"
+      },
+      "key": "209 cm",
+      "accept": ["209", "do sau nau", "two hundred nine", "209 centimetre"],
+      "targets": "c4-maths-ch06-t01-m-concat-units",
+      "wrongIfMis": "29 cm",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Dupatta", "items": ["2 m 9 cm"] }, "right": { "title": "cm mein", "items": ["kitne cm"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab hum cm aur m dono jaante hain. Agla sawaal yeh hai ki kis cheez ke liye cm theek hai aur kis ke liye m. Ab andaaza lagana seekhenge.",
+    "en": "Now we know both cm and m. The next question is which things suit cm and which suit m. Next we learn to estimate."
+   }
+  },
+  {
+   "skillId": "c4-maths-ch06-t01-s3",
+   "hook": {
+    "convey": "benchmarks: 1 cm ≈ a fingertip's width, 1 m ≈ one big step of an adult; small things in cm, big things in m; a number means nothing without its unit, so compare lengths only in one unit",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket ki pitch bahut lambi hoti hai, aur wicket usse kaafi chhote. Dono ki lambai alag ikai mein batate hain. Aaj sahi ikai chunna seekhenge.",
+       "en": "A cricket pitch is very long, and the wickets are much shorter. Their lengths are told in different units. Today we learn to choose the right unit."
+      }
+     },
+     {
+      "interest": "animals",
+      "use": {
+       "hi": "Billi ki poonchh aur haathi ki oonchai, dono ek hi ikai mein naapna theek nahi lagta. Billi ki poonchh cm mein aur haathi m mein. Aaj dekhenge kyun.",
+       "en": "A cat's tail and an elephant's height do not suit the same unit. The cat's tail goes in cm and the elephant in m. Today we see why."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "benchmarks: 1 cm ≈ the width of a fingertip, 1 m ≈ one big step of an adult → small things in cm, big things in m",
+     "mustSay": [
+      { "hi": "ungli jitna", "en": "about a fingertip" },
+      { "hi": "bada kadam", "en": "a big step" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 cm", "items": ["ungli jitna", "chhoti cheezein"] }, "right": { "title": "1 m", "items": ["bada kadam", "badi cheezein"] } } },
+     "point": {
+      "hi": "1 cm lagbhag tumhari ungli ki chaudai jitna hai, ungli jitna. 1 m lagbhag ek bade aadmi ka ek bada kadam hai. Chhoti cheezein cm mein naapte hain, badi cheezein m mein.",
+      "en": "1 cm is about the width of your fingertip, about a fingertip. 1 m is about one big step of a grown-up. Small things are measured in cm, big things in m."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek rubber lagbhag 4 ungliyon jitna lamba hai. Uski lambai ke liye kaunsa theek hai, 4 cm ya 4 m?",
+       "en": "An eraser is about as long as 4 fingertips. Which suits its length, 4 cm or 4 m?"
+      },
+      "key": "4 cm",
+      "accept": ["4 centimetre", "cm", "4 cm wala"],
+      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+      "wrongIfMis": "4 m"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "a cricket pitch is about 20 m long and 3 m wide → about 20 big steps; 20 cm would be a little more than a pencil",
+     "mustSay": [
+      { "hi": "20 m", "en": "20 m" },
+      { "hi": "20 bade kadam", "en": "20 big steps" }
+     ],
+     "board": { "template": "measured@1", "params": { "shape": "rect", "w": 20, "h": 3, "unit": "m" } },
+     "point": {
+      "hi": "Cricket ki pitch lagbhag 20 m lambi aur 3 m chaudi hoti hai, yaani lagbhag 20 bade kadam. Agar koi 20 cm likhe, toh woh bas ek pencil se thoda bada hoga.",
+      "en": "A cricket pitch is about 20 m long and 3 m wide, that is about 20 big steps. If someone wrote 20 cm, it would be just a little longer than a pencil."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Isi pitch ke dono sire pe wicket lagte hain. Wicket ki oonchai lagbhag kitni hogi, 70 cm ya 70 m?",
+       "en": "Wickets stand at both ends of this pitch. About how tall is a wicket, 70 cm or 70 m?"
+      },
+      "key": "70 cm",
+      "accept": ["70 centimetre", "cm", "70 cm wala"],
+      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+      "wrongIfMis": "70 m"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "30 cm ruler vs 1 m stick: 30 is the bigger number but the units differ → 1 m = 100 cm → 100 cm > 30 cm → change to one unit, then compare",
+     "mustSay": [
+      { "hi": "ek hi ikai", "en": "one unit" },
+      { "hi": "1 m = 100 cm", "en": "1 m = 100 cm" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Scale", "items": ["30 cm"] }, "right": { "title": "Danda", "items": ["1 m", "1 m = 100 cm"] } } },
+     "point": {
+      "hi": "30 bada number hai aur 1 chhota, par dono ki ikai alag hai. 1 m = 100 cm, toh 1 m ka danda 100 cm ka hai, 30 cm ke scale se lamba. Pehle dono ko ek hi ikai mein badlo, phir tulna karo.",
+      "en": "30 is a bigger number and 1 is smaller, but their units are different. 1 m = 100 cm, so the 1 m stick is 100 cm, longer than the 30 cm ruler. First change both to one unit, then compare."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek rassi 150 cm ki hai, doosri rassi 2 m ki. Kaunsi lambi hai, 150 cm wali ya 2 m wali?",
+       "en": "One rope is 150 cm, the other rope is 2 m. Which is longer, the 150 cm one or the 2 m one?"
+      },
+      "key": "2 m wali",
+      "accept": ["2 m", "2 m wali rassi", "doosri", "the 2 m rope", "the 2 m one", "2 metre wali"],
+      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+      "wrongIfMis": "150 cm wali"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Har cheez ke liye sahi andaaza chuno. School bus ki lambai 10 cm hai ya 10 m? Nayi pencil 15 cm hai ya 15 m? School desk lagbhag 1 m hai ya 10 m?",
+     "en": "Choose the sensible estimate for each. Is a school bus 10 cm or 10 m long? Is a new pencil 15 cm or 15 m? Is a school desk about 1 m or 10 m?"
+    },
+    "givens": [
+     { "hi": "1 cm lagbhag ek ungli ki chaudai hai", "en": "1 cm ≈ the width of a fingertip" },
+     { "hi": "1 m lagbhag ek bada kadam hai", "en": "1 m ≈ one big step" }
+    ],
+    "find": { "hi": "bus, pencil aur desk ke liye sahi andaaza", "en": "the sensible estimate for the bus, the pencil and the desk" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle bus ko bade kadam se socho", "en": "First think of the bus in big steps" },
+      "result": "bus lagbhag 10 bade kadam lambi, toh 10 m",
+      "why": { "hi": "har bada kadam lagbhag 1 m hota hai, isliye 10 bade kadam lagbhag 10 m hain", "en": "each big step is about 1 m, so 10 big steps are about 10 m" }
+     },
+     {
+      "do": { "hi": "Ab pencil ko ungli ki chaudai se milao", "en": "Now match the pencil with fingertip widths" },
+      "result": "pencil lagbhag 15 ungliyon jitni, toh 15 cm",
+      "why": { "hi": "har ungli ki chaudai lagbhag 1 cm hoti hai, isliye 15 ungliyon jitni lambai lagbhag 15 cm hai", "en": "each fingertip width is about 1 cm, so a length of 15 fingertips is about 15 cm" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab desk ki baari. Desk lagbhag ek bada kadam hai ya 10 bade kadam? Toh desk lagbhag 1 m hai ya 10 m?",
+      "en": "Now the desk. Is the desk about one big step or 10 big steps? So is the desk about 1 m or 10 m?"
+     },
+     "key": "1 m",
+     "accept": ["lagbhag 1 m", "1 metre", "about 1 m", "ek metre"],
+     "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "wrongIfMis": "10 m"
+    },
+    "answer": { "hi": "bus 10 m, pencil 15 cm, aur desk lagbhag 1 m", "en": "bus 10 m, pencil 15 cm, and desk about 1 m" },
+    "why": { "hi": "chhoti cheez ko ungli ki chaudai se aur badi cheez ko bade kadam se milaate hain, aur ikai hi batati hai ki lambai kitni badi hai", "en": "we match a small thing with fingertips and a big thing with big steps, and the unit tells how big the length is" },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Bus", "items": ["10 m"] }, "right": { "title": "Pencil", "items": ["15 cm"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek kitaab 25 cm lambi hai aur ek palang 2 m lamba. Kaun zyada lamba hai, kitaab ya palang?",
+      "en": "A book is 25 cm long and a bed is 2 m long. Which is longer, the book or the bed?"
+     },
+     "key": "palang",
+     "accept": ["palang", "bed", "the bed", "2 m wala palang"],
+     "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "wrongIfMis": "kitaab",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Kitaab", "items": ["25 cm"] }, "right": { "title": "Palang", "items": ["2 m"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "{friend} ne likha ki ek kamre ki lambai 6 cm hai. Kya yeh andaaza theek hai, haan ya nahi?",
+      "en": "{friend} wrote that a room is 6 cm long. Is this estimate sensible, yes or no?"
+     },
+     "key": "No",
+     "accept": ["nahi", "nahin", "no", "nahi, 6 m hoga", "no, 6 m"],
+     "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "wrongIfMis": "Yes",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Kamre ki lambai", "items": ["6 cm"] }, "right": { "title": "Andaaza", "items": ["theek ya nahi"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek seedhi 3 m lambi hai aur ek rassi 250 cm lambi. Kaun zyada lamba hai, seedhi ya rassi?",
+      "en": "A ladder is 3 m long and a rope is 250 cm long. Which is longer, the ladder or the rope?"
+     },
+     "key": "seedhi",
+     "accept": ["seedhi", "ladder", "the ladder", "3 m wali seedhi"],
+     "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "wrongIfMis": "rassi",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Seedhi", "items": ["3 m"] }, "right": { "title": "Rassi", "items": ["250 cm"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c4-maths-ch06-t01-i11", "why": "warm-up estimate: a door is about 2 m, not 2 cm" },
+    { "itemId": "c4-maths-ch06-t01-i19", "why": "80 cm vs 1 m → change to one unit, the 1 m rope is longer" },
+    { "itemId": "c4-maths-ch06-t01-rl-h3", "why": "judge an estimate: a corridor is 25 m, not 25 cm" }
+   ],
+   "remediation": [
+    {
+     "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+     "move": "metre tape stood against a door with a 15 cm pencil at its foot → 15 vs 2 → change to one unit: 2 m = 200 cm → 15 cm vs 200 cm → the door is far longer; a number means nothing without its unit",
+     "say": {
+      "hi": "Sirf number mat dekho, ikai bhi dekho. 2 m = 200 cm hai, toh 2 m ka darwaza 15 cm ki pencil se bahut lamba hai.",
+      "en": "Do not look only at the number; look at the unit too. 2 m = 200 cm, so a 2 m door is much longer than a 15 cm pencil."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pencil", "items": ["15 cm"] }, "right": { "title": "Darwaza", "items": ["2 m = 200 cm"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek mez 1 m lambi hai aur ek kitaab 40 cm. Kaun zyada lamba hai, mez ya kitaab?",
+       "en": "A table is 1 m long and a book is 40 cm. Which is longer, the table or the book?"
+      },
+      "key": "mez",
+      "accept": ["mez", "table", "the table", "1 m wali mez"],
+      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
+      "wrongIfMis": "kitaab",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Mez", "items": ["1 m"] }, "right": { "title": "Kitaab", "items": ["40 cm"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}
