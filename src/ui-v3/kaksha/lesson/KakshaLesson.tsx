@@ -14,6 +14,8 @@ import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel } from "../../../child/lesson/model.ts";
 import type { DeskSkin } from "../../../child/lesson/Desk.tsx";
 import { getChildMap } from "../../../child/api.ts";
+import { madeSince, readMadeFor } from "./made.ts";
+import type { MadeForItem } from "../../../../shared/contracts.ts";
 import "../../tokens.css";
 import "../tokens.css";
 import "../kaksha.css";
@@ -57,11 +59,15 @@ export interface KakshaLessonProps {
   children: (skin: DeskSkin) => ReactNode;
   /** The map read (tests and the dev page pass fixtures). */
   loadMap?: LoadMap;
+  /** The made-for feed read (the dev page passes fixtures). */
+  readMade?: (cid: string) => Promise<MadeForItem[] | null>;
 }
 
-export default function KakshaLesson({ cid, family, reducedMotion, children, loadMap = loadChildMap }: KakshaLessonProps) {
+export default function KakshaLesson({ cid, family, reducedMotion, children, loadMap = loadChildMap, readMade = readMadeFor }: KakshaLessonProps) {
   // once, at lesson start: never re-read during the lesson
   const [before] = useState(() => loadMap(cid));
+  // r7 app-debrief-made-later: the made-for feed as the lesson opens (the Debrief shows the pieces new since)
+  const [madeBefore] = useState(() => readMade(cid));
   const [cosmetics, setCosmetics] = useState<PlayCosmetics | null>(null);
   useEffect(() => {
     let live = true;
@@ -70,8 +76,9 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   }, [before, cid]);
   const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
   const renderSummary = useCallback(
-    (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)} />,
-    [before, loadMap, cid],
+    (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => <Debrief {...p} before={before} loadAfter={() => loadMap(cid)}
+      loadMade={() => Promise.all([madeBefore, readMade(cid)]).then(([b, a]) => madeSince(b, a))} madeTo={(id) => `/c/${cid}/notebook?made=${encodeURIComponent(id)}`} />,
+    [before, loadMap, readMade, madeBefore, cid],
   );
   const renderIntake = useCallback((m: DeskModel) => (m.intake ? <IntakeCard intake={m.intake} /> : null), []);
   // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison

@@ -128,6 +128,10 @@
 .kx-sheet { --k-cut: 16px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-width: 560px; margin: 0 auto; padding: 18px 16px 24px; background: var(--k-panel-solid);
   border: 1px solid var(--k-line-2); transform: translateY(110%); transition: transform .45s var(--k-e-out); visibility: hidden; }
 .kx-sheet.is-on { transform: none; visibility: visible; }
+/* r7: the sheet is a direct child of .kx-screen, whose `> :not(.kx-sky) { position: relative }` (0,2,0) beat its
+   position: fixed, so on a phone the World's station sheet and the Hangar's item sheet opened BELOW the page's end,
+   off-screen (found shooting app-practice-entry). Same fix as the dock (nav.css). */
+.kx-screen > .kx-sheet.kx-sheet { position: fixed; }
 
 /* reduced motion: the consequence shows, the motion does not */
 .kx[data-motion="reduced"] *, .kx[data-motion="reduced"] *::before, .kx[data-motion="reduced"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -173,3 +177,7 @@
 @media (min-width: 900px) {
   .kx-home-copy .kx-did, .kx-home-copy .kx-madefor { margin-left: 0; width: 340px; }
 }
+/* r7 app-practice-entry: the station sheet's "Practise this" (a quiet frame with the ion edge, not a second volt) */
+.kx-ghost--go { display: inline-flex; align-items: center; gap: 8px; border-color: var(--k-ion); color: var(--k-ink); }
+/* on phones the dock is a bottom bar: the sheet rises above it (from 1024 px the dock is a left rail) */
+@media (max-width: 1023px) { .kx-hasdock > .kx-sheet.kx-sheet { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); max-height: calc(100dvh - 140px); overflow-y: auto; } }

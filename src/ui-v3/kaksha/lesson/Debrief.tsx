@@ -10,6 +10,7 @@
 import { useEffect, useState } from "react";
 import type { TapSource } from "../../../avatar/tap.ts";
 import type { DeskModel, DidCard } from "../../../child/lesson/model.ts";
+import type { MadeForItem } from "../../../../shared/contracts.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { Comms } from "../Shell.tsx";
 import { kt } from "../copy.ts";
@@ -28,25 +29,31 @@ export interface DebriefProps {
   before: Promise<MapLike | null>;
   /** Reads the map now. */
   loadAfter: () => Promise<MapLike | null>;
+  /** r7: the made-for pieces built in this session (absent: no strip). */
+  loadMade?: () => Promise<MadeForItem[]>;
+  /** Where a made-for piece replays (the Notebook). */
+  madeTo?: (id: string) => string;
 }
 
-export function Debrief({ m, onFinish, before, loadAfter }: DebriefProps) {
+export function Debrief({ m, onFinish, before, loadAfter, loadMade, madeTo }: DebriefProps) {
   const [secure, setSecure] = useState<DebriefSecure[] | null>(null);
+  const [made, setMade] = useState<MadeForItem[]>([]);
   // once, when the lesson has ended (the summary is up); not while it is still being saved
   const ending = !!m.summary?.ending;
   useEffect(() => {
     if (ending) return;
     let live = true;
     void Promise.all([before, loadAfter()]).then(([b, a]) => { if (live) setSecure(nowSecure(b, a, CATALOG)); }, () => {});
+    if (loadMade) void loadMade().then((xs) => { if (live) setMade(xs); }, () => {});
     return () => { live = false; };
-  }, [ending, before, loadAfter]);
-  return <DebriefView m={m} onFinish={onFinish} secure={secure} />;
+  }, [ending, before, loadAfter, loadMade]);
+  return <DebriefView m={m} onFinish={onFinish} secure={secure} made={made} madeTo={madeTo} />;
 }
 
-export interface DebriefViewProps { m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null }
+export interface DebriefViewProps { m: DeskModel; onFinish: () => void; secure: DebriefSecure[] | null; made?: MadeForItem[]; madeTo?: (id: string) => string }
 
 /** Presentational (the dev page renders it with fixtures). */
-export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
+export function DebriefView({ m, onFinish, secure, made = [], madeTo }: DebriefViewProps) {
   const s = m.summary!;
   const young = m.family === "young";
   const [show, setShow] = useState<"ask" | "showing" | "no">("ask");
@@ -121,6 +128,28 @@ export function DebriefView({ m, onFinish, secure }: DebriefViewProps) {
                 </div>
               </li>
             ))}
+          </ul>
+        </section>
+      )}
+
+      {/* r7 app-debrief-made-later: what she built for the child in this session, to play again (newest first, no counts) */}
+      {!s.ending && made.length > 0 && (
+        <section className="kx-db-sec" aria-labelledby="kx-db-made" data-testid="debrief-made">
+          <h2 id="kx-db-made" className="kx-label">{kt("madeForYou")}</h2>
+          <ul className="kx-db-made">
+            {made.map((it) => {
+              const tile = (
+                <>
+                  {it.still ? <img src={it.still} alt="" width={120} height={90} loading="lazy" /> : <i className="kx-db-made-blank" aria-hidden="true" />}
+                  <span>{it.title}</span>
+                </>
+              );
+              return (
+                <li key={it.id}>
+                  {madeTo ? <a className="kx-db-made-item kx-cut" href={madeTo(it.id)} aria-label={`${kt("playAgain")}: ${it.title}`}>{tile}</a> : <span className="kx-db-made-item kx-cut">{tile}</span>}
+                </li>
+              );
+            })}
           </ul>
         </section>
       )}

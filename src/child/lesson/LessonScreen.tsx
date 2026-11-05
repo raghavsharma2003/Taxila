@@ -36,6 +36,9 @@ export interface LessonScreenProps {
   topicId?: string;
   /** Doubt: the child's own problem, sent with the start (routing) and as the first typed turn once the lesson is live. */
   firstText?: string;
+  /** r7 homework help (Ask?homework=1): the start's purpose is "homework", with the match the child confirmed or refused
+   *  (contracts LessonStartRequest.matchTopicId / matchItemId). The confirmed topic itself goes as `topicId`. */
+  homework?: Pick<LessonStartRequest, "matchTopicId" | "matchItemId">;
 }
 
 function isEditable(el: Element | null): boolean {
@@ -43,7 +46,7 @@ function isEditable(el: Element | null): boolean {
   return el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT" || el.isContentEditable;
 }
 
-export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps) {
+export function LessonScreen({ variant, topicId, firstText, homework }: LessonScreenProps) {
   const { cid, child, me, band, family, lang, prefs, setPrefs, reducedMotion } = useChild();
   const navigate = useNavigate();
   const [search] = useSearchParams();
@@ -56,7 +59,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
   // LessonStartRefused becomes the designed done / capped / resting screen (Refused.tsx), never the generic error.
   const [refusal, setRefusal] = useState<StartRefusal | null>(null);
   const onRefused = useRef(setRefusal);
-  const [deps] = useState<RuntimeDeps>(() => withPurpose(bridge.deps, purposeOf(variant), (r) => onRefused.current(r), variant === "doubt" ? firstText : undefined));
+  const [deps] = useState<RuntimeDeps>(() => withPurpose(bridge.deps, homework ? "homework" : purposeOf(variant), (r) => onRefused.current(r),
+    variant === "doubt" ? firstText : undefined, homework));
   const { runtime } = useLesson(deps);
   const bs = useSyncExternalStore(bridge.store.subscribe, bridge.store.get, bridge.store.get);
   const headset = useHeadset();
@@ -88,7 +92,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
     resumeLessonId,
     firstText,
     // the parent's per-child "Tap and type only" (Controls, server truth on every phone) or this device's "Type instead"
-    textOnly: variant === "practice" || search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),
+    // r7 app-practice-entry: practice talks too (it was always text); the child's own Type instead still holds
+    textOnly: search.get("mode") === "text" || prefs.quiet || cachedTextOnly(cid),
     pttNoteSeen: prefs.pttNoteSeen,
     markPttNoteSeen: () => setPrefs({ pttNoteSeen: true }),
     openMic: openMicAllowed({ older: family === "older", wanted: prefs.talk === "open", headset, echoDemoted: bs.echoFlags >= ECHO_DEMOTE_FLAGS }),
@@ -174,7 +179,8 @@ export function LessonScreen({ variant, topicId, firstText }: LessonScreenProps)
  * The runtime's deps with every start carrying `purpose`, and a 409 refusal body handed to `onRefused` (the runtime
  * still records the failure; the screen shows the refusal instead of the trouble screen). Pure wrapper (tested).
  */
-export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartRequest["purpose"]>, onRefused: (r: StartRefusal) => void, firstText?: string): RuntimeDeps {
+export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartRequest["purpose"]>, onRefused: (r: StartRefusal) => void, firstText?: string,
+  extra?: Pick<LessonStartRequest, "matchTopicId" | "matchItemId">): RuntimeDeps {
   const api = deps.api;
   if (!api) return deps;
   return {
@@ -182,7 +188,7 @@ export function withPurpose(deps: RuntimeDeps, purpose: NonNullable<LessonStartR
     api: {
       ...api,
       // Ask sends the child's question WITH the start (flows G11): the server routes the lesson to its topic
-      start: (req: LessonStartRequest) => api.start({ ...req, purpose, ...(firstText ? { firstText: firstText.slice(0, 500) } : {}) }).catch((e: unknown) => {
+      start: (req: LessonStartRequest) => api.start({ ...req, purpose, ...(firstText ? { firstText: firstText.slice(0, 500) } : {}), ...(extra ?? {}) }).catch((e: unknown) => {
         const r = e instanceof ApiError && e.status === 409 ? refusalOf(e.body) : null;
         if (r) onRefused(r);
         throw e;
