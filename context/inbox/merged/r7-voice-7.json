@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-echo-residuals",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (voice-echo-filter-residuals, 4b open items 3-4). (1) Echo filter: her echo is captured while she is audible and the child answers after her, so in an item it comes BEFORE the child's own words. A run of hers holding a negation that follows >= 2 of the child's own words is the child quoting her and is kept whole; a lone negation is never removed on arrival time alone. Sim lab, 52,376 (her line → reply) pairs: negations lost 207 → 30 of 25,766; same-script floor unchanged (2,524 tokens); cross-script floor 19,441 → 19,813 (+1.9 %, no new leaking line); quoteOwn 1 measured 17 lost but cross-script floor +64 %. (2) Fan-in: an item of the epoch being closed (her line) whose audio reaches into the CARRY_PRE_MS before the device's onset joins the carried turn: a short burst can end before the device sees it under her echo (phone f7-stop-0386). Bake replay, 132 runs: 2 phone barge / fold-in turns gain their words (both still mis-heard by the ear), 0 other commits change. Reverse (1) if live lessons show her echoed negation leaking after a child's preface (a stray 'nahi' flipping the child's 'haan'); reverse (2) if a carried turn picks up her echo items as words."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-echo-residuals",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-echo-residuals — the child quoting her keeps the negation; a burst that ended before the device saw it still counts (2026-11-04)\n\n4B left two leftovers in the echo filter and fan-in. A dropped 'nahi' is the 'does not listen' failure (PIPELINE.md #16 / #5).\n\n**Negations.** The 207 replies still losing a negation almost all have the same shape: the child says something of their own, then repeats her phrase, negation and all ('Haan… matlab 8,870 toh 9,000 nahi hai na?'). Echo cannot come after the child's own words in the same item, because it is captured while she is audible and the child answers after her. So a dropped run with a negation, preceded by at least two of the child's own words, is put back. A lone negation ('umm… nahin?') is no longer removed by the arrival-time 'fresh' rule. Result: 207 → 30 lost of 25,766; floors as in the title. The rejected literal bar (rj-r144-negation-never-subtracted) stays rejected: her echoed negation at the START of an item is still removed.\n\n**f7-stop-0386.** 'एक मिनट दीदी' spoken over her line on the phone: the ear's item ran 2,784-4,064 ms, and the device saw the onset at 4,120 ms, after the child had finished. The carried-burst rule required the item to be open at the onset and opened at most 1.2 s before it, so the words never reached the turn. Now an item from her-line epoch whose audio reaches into the 1.2 s before the onset joins too. Items from earlier epochs (the child's previous turn) never rejoin. Measured as in the title; results in evals/duplex-2026-10/results/negation-echo-r7.json.\n"
+ }
+}

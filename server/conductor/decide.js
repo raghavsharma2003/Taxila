@@ -168,11 +168,19 @@ function enqueueReports(s, day, H, active) {
     // Forge G2 end-of-day (server/forge/g2/conductor-job.js): ingest finished builds, deliver approved ones, ask for
     // tomorrow's. One per child per learning day; same window as the daily note.
     H.enqueue("forge.g2.nightly", `forge.g2.nightly:${s.childId}:${day}`, { day }, { runAfter }); H.rule("forge_g2_nightly");
+    // round 7 F: the day's explain-format outcomes into the population posterior (server/learner/formatJobs.js)
+    H.enqueue("format.join", `format.join:${s.childId}:${day}`, { day }, { runAfter }); H.rule("format_join");
   }
   if (weekday(day) === 0) {
     const wk = isoWeek(day);
     H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });
     H.rule("parent_letter");
+  }
+  // round 7 F: the monthly report (PARENT-REPORT §2), on the fold of the month's last learning day; one per child and month
+  if (addDays(day, 1).endsWith("-01")) {
+    const month = day.slice(0, 7);
+    H.enqueue("parent.monthly", `parent.monthly:${s.childId}:${month}`, { month }, { runAfter });
+    H.rule("parent_monthly");
   }
 }
 
@@ -282,6 +290,8 @@ const HANDLERS = {
       case "wakeTime": s.routine.wakeTime = String(v); break;
       case "tz": s.tz = String(v); s.routine.tz = String(v); break;
       case "sharedPhone": if (v === true) s.household = { shared: true }; else delete s.household; break;
+      case "anchor": s.routine.anchor = String(v); break;
+      case "lessonMin": s.routine.lessonMin = v; break;          // int 10-60 (events.SETTING_VALUE)
     }
     // a lowered cap or earlier bedtime reaches a live lesson at its next segment boundary (dc AR-5 R8)
     if (lowers && s.mode === "in_lesson" && s.lesson) H.cmd({ kind: "brief.refresh", lessonId: s.lesson.lessonId });
@@ -315,8 +325,12 @@ const HANDLERS = {
     if (ev.date === t.today) H.replanNow("replan:day_override");
   },
   "school.test_announced"(s, ev, H) {
-    const w = { subject: ev.subject, from: addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
+    const w = { subject: ev.subject, from: ev.from && ev.from <= ev.on ? ev.from : addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
     s.school.testWindows = [...s.school.testWindows.filter((x) => !(x.subject === w.subject && x.to === w.to)), w];
+    H.replanSoon("test_window");
+  },
+  "school.test_cleared"(s, ev, H) {
+    s.school.testWindows = s.school.testWindows.filter((x) => x.subject !== ev.subject);
     H.replanSoon("test_window");
   },
   // round 7 F: the school's position and timetable live in their own tables (child.school_chapter, child_timetable);

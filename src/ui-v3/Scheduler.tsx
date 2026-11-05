@@ -260,3 +260,24 @@ export function ChoiceChips<T extends string>({ options, value, onChange, label 
     </div>
   );
 }
+
+/**
+ * Many-of choice chips (round 7 F: the test's chapters). Each chip is a toggle (aria-pressed); none chosen is allowed.
+ * Same look as ChoiceChips; no native control.
+ */
+export function ManyChips<T extends string | number>({ options, value, onChange, label, max }: {
+  options: { value: T; label: string }[]; value: T[]; onChange: (v: T[]) => void; label: string; max?: number;
+}) {
+  const on = new Set(value);
+  const toggle = (v: T) => {
+    if (on.has(v)) onChange(value.filter((x) => x !== v));
+    else if (max === undefined || value.length < max) onChange([...value, v]);
+  };
+  return (
+    <div className="sch sch-choices" role="group" aria-label={label}>
+      {options.map((o) => (
+        <button key={String(o.value)} type="button" aria-pressed={on.has(o.value)} className="sch-chip" onClick={() => toggle(o.value)}>{o.label}</button>
+      ))}
+    </div>
+  );
+}

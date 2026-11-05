@@ -274,8 +274,12 @@ test("board sync: the line plan wins inside the deadline; a slow line plan yield
   await withSyncMs(300, async () => {
     const ask = askFor("bs-3", "Teen boxes.");
     boardSync.prepare(ask, { kit, planWhiteboard: async () => (await delay(30), { ok: true, script: okScript(), usd: 0 }) });
-    const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => (await delay(2000), { ok: true, script: okScript(), usd: 0 }) });
-    assert.equal(r2.source, "spec"); assert.ok(r2.syncMs < 900, `synced at ${r2.syncMs} ms`);
+    // order, not wall-clock: the spec board answers before the slow line plan has landed (a "< 900 ms" bound failed under
+    // the single-process npm test load, where the event loop itself lags)
+    let lineLanded = false;
+    const r2 = await boardSync.plan(ask, { kit, planWhiteboard: async () => { await delay(2000); lineLanded = true; return { ok: true, script: okScript(), usd: 0 }; } });
+    assert.equal(r2.source, "spec");
+    assert.equal(lineLanded, false, `the spec board answered (at ${r2.syncMs} ms) without waiting for the 2 s line plan`);
   });
 });
 test("board sync: nothing by the deadline and no code board → the line plan whenever it lands (the pre-ship5 path)", async () => {

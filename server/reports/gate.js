@@ -5,7 +5,7 @@
 // the assembled report must then pass with zero violations, or it is not stored and not shown.
 import { bannedHits, lockedHits, severeHits } from "./lexicon.js";
 import { CAPS, VOICE_CHARS, VOICE_WORDS } from "./config.js";
-import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, fmtDate, renderFixed, renderShape } from "./templates.js";
+import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, SUBJECT_LABEL, fmtDate, renderFixed, renderShape } from "./templates.js";
 
 export class ReportGateError extends Error {
   constructor(violations) {
@@ -28,6 +28,7 @@ function slotText(shapeSlots, slots, lang) {
     if (type === "number") out.numbers.add(String(v));
     else if (type === "date") { out.numbers.add(String(v.d)); out.curriculum.push(fmtDate(lang, v)); }
     else if (type === "object") out.object.push(HOME_OBJECT[v]?.[lang] ?? "");
+    else if (type === "subject") out.object.push(SUBJECT_LABEL[v]?.[lang] ?? "");
     else out[type].push(String(v));
   }
   return out;
@@ -74,7 +75,7 @@ export function lineViolations(text, { shapeId, fixedId, slots = {}, lang, k7 = 
 /** Growth-edge shapes: each carries the task feature, [hedged reasoning past the gate], and Taxila's action (S11). */
 const TRICKY = new Set(["tricky.work", "tricky.mixup", "tricky.work_next", "tricky.mixup_next"]);
 /** Sections whose lines count against the body cap (the header is the S1 line, not body). */
-const BODY = new Set(["strength", "row", "tricky", "interest", "home"]);
+const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next"]);
 
 /**
  * Gate an assembled report in every language. Throws ReportGateError; returns true when clean.
@@ -111,7 +112,9 @@ export function gateReport(r, { k7 = false, firstName }) {
     for (const [s, n] of Object.entries(perSection)) if (BODY.has(s) && n > (caps[s] ?? 0)) v.push(tag({ rule: "cap", detail: `${s} ${n} > ${caps[s] ?? 0}` }));
     const body = Object.entries(perSection).filter(([s]) => BODY.has(s)).reduce((a, [, n]) => a + n, 0);
     if (body > caps.body) v.push(tag({ rule: "cap", detail: `body ${body} > ${caps.body}` }));
-    if (r.cadence === "weekly" && perSection.home !== 1) v.push(tag({ rule: "home_activity", detail: String(perSection.home || 0) }));
+    if ((r.cadence === "weekly" || r.cadence === "monthly") && perSection.home !== 1) v.push(tag({ rule: "home_activity", detail: String(perSection.home || 0) }));
+    // S13 is required monthly (a re-check claim or its fixed fallback)
+    if (r.cadence === "monthly" && perSection.next !== 1) v.push(tag({ rule: "next_section", detail: String(perSection.next || 0) }));
     if (R.voice) v.push(...voiceViolations(R, r.cadence, lang).map(tag));
   }
   if (v.length) throw new ReportGateError(v);

@@ -31,7 +31,9 @@ const argv = process.argv.slice(2);
 const flag = (f) => argv.includes(f);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
 const DRY = flag("--dry-run"), FORCE = flag("--force"), JOBS = flag("--jobs") || flag("--jobs-only"), JOBS_ONLY = flag("--jobs-only");
-const APP = opt("--app", "taxila-worker"), WEB = "taxila-web", ACR = "taxilacr", API = "api-version=2024-03-01";
+// --web: the web app whose env, registries and model/storage secrets the worker copies (round 7: taxila-staging's own
+// worker copies taxila-staging, never production's taxila-web)
+const APP = opt("--app", "taxila-worker"), WEB = opt("--web", "taxila-web"), ACR = "taxilacr", API = "api-version=2024-03-01";
 const TEST_DB = opt("--db", "prod") === "test", LOCAL = flag("--local");
 if (LOCAL && !TEST_DB) throw new Error("--local builds an unpushed, ungated tree: only with --db test (never against production data)");
 // --from-tree: build the image from this checkout's files instead of the branch tip, for pinning the worker to the exact
@@ -41,6 +43,7 @@ const FROM_TREE = flag("--from-tree");
 const PROD = !TEST_DB;
 const MANUAL = flag("--manual");
 if (MANUAL && PROD) throw new Error("--manual (unscheduled jobs) is for --db test proof runs only");
+if (WEB !== "taxila-web" && PROD) throw new Error(`--web ${WEB} with a production database: only taxila-web's worker runs on production`);
 
 // X37 deploy freeze, evaluated in IST whatever the machine's timezone.
 const istMin = (() => { const d = new Date(Date.now() + 330 * 60_000); return d.getUTCHours() * 60 + d.getUTCMinutes(); })();

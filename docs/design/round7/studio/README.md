@@ -73,6 +73,116 @@ The table recording showed that with App's stage-first layout (D7) the teacher's
 - **Who gets one:** a kit that is about a thing's parts (`label-pick.js`): it names the thing and at least 3 of its parts. A plant also needs both stem and root, so "Kinds of waste: flowers, leaves, soil" is not a plant diagram. Each label is the kit's own word.
 - **Reach:** 15 science and EVS kits (14 plant, 1 flower), all drawn by the explain rung and all passing every W gate (timed to her line). Before, they showed a key-terms bubble board.
 - **Truth fix:** the old plant sketch drew no fruit, and its "fruit" anchor sat on a leaf. It is redrawn with a real fruit, leaves with midribs, a five-petal flower and branching roots, and a test now checks every label points at a drawn part.
-- **Known flaw:** the soil leader runs along the soil line. To be refined.
+- **Soil (fixed):** the ground under the soil line is now hatched, clear of the roots, and "soil" points at the first hatch, so its leader is short and no longer runs along the soil line.
 
 `label-circuit-*.mp4 / -strip.png`: c5-evs-ch07-t01 "Energy makes things work". A closed circuit as a textbook draws it: the cell (long and short plate), wires, a bulb with its filament and a switch, each labelled in the kit's word ("battery" here). 8 kits get it (c5 EVS, c7 circuits and conductors, c8 heating effect and batteries, c9 conduction by ionic compounds); a bulb must be named.
+
+`label-cell-plant-*`: c8-science-ch02-t01 (also c9 ch02 t01). A plant cell as a textbook draws it: the cell wall, the membrane just inside it, a large vacuole, the nucleus and chloroplasts in the cytoplasm, each labelled. "cell membrane" shows as "membrane", the part's short name, because the long name would not fit its column.
+
+`label-cell-animal-*`: an animal cell with a round membrane, cytoplasm, and a nucleus with its nucleolus. It is picked when a kit names the cell's parts but no cell wall. No current kit does, so this one is recorded from a direct call.
+
+`label-atom-*`: c9-science-ch08-t02 "Subatomic particles" (also t01, t03, t04). A helium atom: a nucleus with 2 protons and 2 neutrons, one shell, and 2 electrons on it, labelled down the right column so no two leaders cross.
+
+- **Reach now:** 29 kits get a labelled diagram (14 plant, 8 circuit, 4 atom, 2 plant cell, 1 flower). All 29 pass every W gate, with every anchor on a drawn part.
+- **Word fix:** a label is singular only through the part's own word list, so "nucleus" no longer clips to "nucleu" and "batteries" becomes "battery".
+
+## Geometry to scale (C1 item 5, "geometry by constraint")
+
+`geo-rect-*`, `geo-triangle-*`, `geo-circle-*`: a shape the kit states with its measures, drawn to scale.
+
+| file | lesson | what's drawn |
+|---|---|---|
+| `geo-rect-*` | c4 "Distance around a shape" | 150 cm by 100 cm |
+| `geo-triangle-*` | c7 "Constructing triangles" | sides 6, 5 and 4 cm, built from the three sides |
+| `geo-circle-*` | c6 "Circles with a compass" | r = 5 cm |
+
+- **Labels:** every measure is written outside the shape. The recordings caught labels touching a side and the rim, and both were fixed.
+- **Reach:** 22 maths kits state a measured shape (8 rectangles, 4 squares, 5 triangles, 5 circles). All 22 pass every W gate. It is the drawn board in 11; before, those got a model-written flowchart, a key-terms board or a generic shape.
+- **Refusals:** mixed units are never drawn, and an impossible triangle (2, 3, 9) is refused.
+
+## India map places (C1 item 5, decision dc-r7-maps-no-outline)
+
+Places are pinned at their true latitude and longitude on a labelled 5° grid with a compass. Nothing is drawn that could be read as a boundary: no outline of India, its states or its coast. An official Survey of India outline waits on the owner.
+
+| file | lesson | what's drawn |
+|---|---|---|
+| `map-c6-sst-ch01-t01-*` | c6 "Locating Places on the Earth" | New Delhi, Ujjain, Mumbai, Kolkata, the Tropic of Cancer and the 82.5°E meridian |
+| `map-c7-sst-ch03-t01-*` | c7 "Climates of India" | Leh, Delhi, Mumbai, Chennai and the Tropic of Cancer (its name in the margin) |
+| `map-c6-sst-ch06-t01-*` | c6 "Beginnings of Indian Civilisation" | Harappa, Mohenjo-daro, Kalibangan, Dholavira, Lothal |
+| `map-c5-evs-ch02-t01-*` | c5 "From source to sea" | Prayagraj, Varanasi, Patna: close together, so one name sits out on a leader |
+
+- **Where the positions come from:** `data/geo/india-places.json` (61 places). Cities come from Natural Earth 1:10m populated places (public domain). Heritage sites, Kanyakumari and Darjeeling come from Wikidata's coordinate location (CC0). Each row names its source record, and `scripts/build-india-places.mjs` rebuilds the file.
+- **Scale:** one scale both ways, so a degree north is as long as a degree east. North is up.
+- **Names:** the lesson's own word ("Bombay" stays Bombay). A name sits beside its pin, or further out on a leader line that crosses nothing. A grid cross where a name needs the room is left out.
+- **Reach:** 33 lessons name 3 or more places, and all 33 boards pass every W gate. The map is the board drawn in 29 of them. 138 of the 147 named places are pinned; the rest are too close to a neighbour to label (Delhi and Panipat, Ajanta and Ellora). Her line names only what is drawn.
+- **Gate change:** W4 counts 3 or more evenly spaced degree labels ("15°N", "20°N", "25°N") as the grid's axis, like a number line's ticks. A single "23.5°N" is still checked against her line and the kit.
+
+## Motion ops (C1 item 6, M1: the motion family)
+
+Board motion used to be `move` only (a slide or a hop). M1 adds five more motions. Each acts on an earlier op of the same board, is judged where it ends (W19), and has a reduced-motion form that jumps to the end state.
+
+| op | what it does | may act on |
+|---|---|---|
+| `rotate` | turns `deg` about a point | stroke, line, arrow, polygon, circle, sector |
+| `scale` | scales by `k = [kx, ky]` about a point; a negative k mirrors (a fold) | stroke, line, arrow, polygon, rect, ellipse, circle (uniform) |
+| `follow` | travels a path of offsets, at even speed along its length | anything, words included (only ever translated) |
+| `sweep` | a filled shape's fill comes in from one side | a filled rect, circle, ellipse, polygon or sector |
+| `morph` | a stroke's or polygon's points move to new ones | stroke, polygon |
+
+- **Never off the board:** a motion that would carry its target off the board is refused, not clamped.
+- **Composition:** motions on one op compose in script order. The Player draws the target under one `matrix(...)`, with stroke width held steady under a scale.
+- **Recordings:** `motion-angle-*` shows a protractor arm turning to 60°, then the arc and "60°". `motion-area-*` shows a 5 × 3 area whose rows sweep in one by one, then "5 × 3 = 15". `motion-cycle-*` shows a droplet travelling sea → evaporation → cloud → rain → sea. These are hand-built demo boards (`evals/studio-timing/motion-demos.mjs`). M2 puts the same motion into the code templates children get.
+
+## M2: the templates children get now move (C1 item 6)
+
+Each code template animates its idea, timed inside its board. Each motion also ends exactly where the still board drew it: every template returns claims, and `expand()` checks them on the settled board. A motion that does not end on the explained state fails the template.
+
+| template | the motion |
+|---|---|
+| angle@1 | the second arm is drawn along the first, then turns open by the angle |
+| symmetry@1 | the mirror half is the first half folded over the line; a dot's image jumps across |
+| column-op@1 (add) | a column that makes ten sends its 1 up to the next column |
+| equal-groups@1 | a heap of dots is shared out group by group |
+| place-value@1 | each digit rises into its place box, ones first |
+| combine-count@1 (add) | the second group slides over and joins the first |
+| area-grid@1, fraction-of@1, bar-chart@1 | rows / columns fill in, bars grow up from the axis |
+| flow@1, cycle@1 | a token runs the process, arrow by arrow |
+
+**Reach** (board-first explain beats, classes 4-7, 250 kits; `evals/studio-timing/board-motion-coverage.mjs`):
+
+| | boards | moving before | moving after |
+|---|---|---|---|
+| all | 245 | 4 | 122 |
+| maths | 138 | 4 | 61 |
+| science | 67 | 0 | 35 |
+| EVS | 40 | 0 | 26 |
+| class 4 / 5 / 6 / 7 | 49 / 52 / 67 / 77 | 0 / 1 / 2 / 1 | 28 / 28 / 33 / 33 |
+
+Still boards today: compare@1 (32), the catalogue library (≈54), label@1 (12), shape@1 (10), places, measured.
+
+**Before and after, same kits** (`m2/<topic>-before-*` and `m2/<topic>-after-*`, p412 + w1280):
+- c6-maths-ch06-t03 (angle)
+- c5-maths-ch10-t01 (symmetry fold)
+- c6-science-ch02-t04 (flow)
+- c6-science-ch10-t03 (frog cycle)
+- c4-maths-ch09-t01 (equal groups)
+- c5-maths-ch11-t03 (area)
+- c5-maths-ch01-t01 (place value)
+
+**Fixes found on the way:**
+- **Gate:** what a moving board shows (W8 counts, W10 claims drawn, W13 fractions, W15 named shape) is judged where it ends. Layout checks still judge the start, and W19 judges the whole end board.
+- **Text pick:** the arithmetic text pick (pick.js) now reads an operation's own operands. It used to take the line's first two numbers, which drew "2 + 2" dots for a perimeter formula, "3 + 4" for "3 + 4 × 2 = 11", and "2 + 3" for the Collatz rule. Motion made those boards long enough to pass W6, which exposed it.
+- **Products on the number line:** a product there is that many equal jumps from 0.
+- **Bar charts from text:** these need a graph word or name labels.
+
+## Perimeter picture request (main via Brain's S4 harness)
+
+`perimeter-picture-*`: c6-maths-ch06-t01, where a child asks for a picture of the rectangle. Before this, no board came up. Now the worked example's park is drawn to scale (50 m × 30 m) and named "rectangle", "perimeter" is written, and a marker walks the boundary side by side, back to where it began.
+
+- **measured@1:** now names the shape and, in a perimeter lesson, walks its boundary. It reads "12 m by 7 m" or "50 m long and 30 m wide" without the word rectangle.
+- **Which source wins:** a shape from her line, the item or the worked example now outranks a perimeter-mode area-grid. A shape from some other item never shadows the board her line is about.
+- **Masking:** a reveal is masked as "?" even while the timing check (W6) waits for her real line. While the item is the worked example, its stated givens (50, 30) are never masked, even when a later item's answer happens to match.
+- **Picture requests in perimeter/area lessons** (asked plain, as "picture", as "perimeter"):
+  - c5 ch11 t02: none → measured@1 (all three ways)
+  - c6 ch06 t01: catalogue / catalogue / none → measured@1 (all three ways)
+  - c6 ch06 t02: none → measured@1 (asked plain and as "picture")

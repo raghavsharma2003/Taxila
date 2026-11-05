@@ -22,7 +22,9 @@ test("run 8: a picture ask whose live board fails gets the kit's template board,
     const script = r.state.module?.params?.script;
     assert.ok(script?.ops?.some((o) => o.op === "rect"), "precondition: the Director's rung is the rect field board");
     const id = "r8-seam";
-    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    // (the lesson's kit, as routes/lesson.js prefetches it: the board's words are judged against the kit — round 7 M2's
+    // named, traced perimeter board writes "perimeter", the kit's word, which this line does not say)
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: kit.topicId });
     seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
     const line = "picture: ek rectangle ki opposite sides 50 metre aur 30 metre hain. Aap boundary ki chaar sides kaise likhenge?";
     const intent = { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", skillId: "s", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue",
@@ -86,7 +88,7 @@ test("38aad918: a board that draws over a picture still retires the picture (as 
     let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: { ...CTX, classLevel: 6, ageBand: "10-12" }, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
     r = step(r.state, { event: "turn", kit, cls: { ...cls("no_evidence"), request: { type: "visual", kind: "picture", whole: true } }, text: "picture dikhao", now: 20000 });
     const id = "r8-draw-over-pic";
-    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+    seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: kit.topicId });   // as routes/lesson.js does
     seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
     const pic = seam.studioSeam.showImage(id, { src: PNG, alt: "field", subject: "field", jobId: "j1" });
     const ack = seam.studioSeam.requestIntent(wbAsk(id, { kit, fallback: { script: r.state.module?.params?.script },

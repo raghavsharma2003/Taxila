@@ -301,6 +301,11 @@ async function createApp(image, placement) {
   c0.resources = { cpu: 1, memory: "2Gi" };
   applyPlacement(c0, placement);
   const sc = src.properties.configuration;
+  // round 7 (staging): copy ONLY the secrets the new app's env and registries reference. A staging app created from
+  // taxila-web must not carry production values it no longer reads (e.g. the prod DATABASE_URL after --secret
+  // DATABASE_URL=CONDUCTOR_TEST_DATABASE_URL replaced the reference)
+  const used = new Set([...c0.env.filter((e) => e.secretRef).map((e) => e.secretRef), ...(sc.registries || []).map((r) => r.passwordSecretRef).filter(Boolean)]);
+  for (const name of [...secrets.keys()]) if (!used.has(name)) secrets.delete(name);
   const body = { location: env.location, properties: { environmentId: env.id, configuration: {
     activeRevisionsMode: "Multiple", maxInactiveRevisions: 20, secrets: [...secrets].map(([name, value]) => ({ name, value })),
     registries: sc.registries, ingress: { external: true, targetPort: sc.ingress.targetPort, transport: sc.ingress.transport, allowInsecure: false } },

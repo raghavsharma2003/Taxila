@@ -68,6 +68,8 @@ export function buildPlannerInputs(state, ctx) {
     day: { learningDay: day, dayKind, weekday: weekday(day) },
     window: { from: win.from, to: win.to, effFrom },
     routine: { bedtime: r.bedtime },
+    // round 7 F (app-parent-schedule): the parent's lesson time and length, only when set (an unscheduled child hashes as before)
+    ...(r.anchor || r.lessonMin ? { schedule: { ...(r.anchor ? { anchor: r.anchor } : {}), ...(r.lessonMin ? { lessonMin: r.lessonMin } : {}) } } : {}),
     limits: { capMin: Math.min(l.dailyMinutes, b.capMin), hwSubCapMin: b.hwSubCapMin, restDay: (l.restDays || []).includes(weekday(day)) },
     mode: state.mode, consentCore: !!state.consent.core_tutoring,
     school: { testWindows, subjects: subjectsInput(ctx.view.get("school.subjects")) },
@@ -169,6 +171,13 @@ export function planDay(inputs) {
     endDM = Math.min(endDM, dayMin(hh.to));
     fire("HH", "limits", "window", hh.from, ["household.window"]);
   }
+  // the parent's lesson time (app-parent-schedule): a future anchor inside the window is where the sitting starts (a
+  // household window, above, already decided the start: it wins). Never earlier than now; never a raised length.
+  const anchor = inputs.schedule?.anchor;
+  if (anchor && !(hh && dayMin(hh.from) >= startDM) && dayMin(anchor) > startDM && dayMin(anchor) < endDM) {
+    startDM = dayMin(anchor);
+    fire("SCH", "limits", "window", anchor, ["routine.anchor"]);
+  }
   const timeLeft = Math.max(0, endDM - startDM);   // learning-day minutes: 00:30 is after 20:30
   const lessonToday = slots.some((s) => s.kind === "live_lesson");
   const due = inputs.view["kt.dueCount"];
@@ -177,9 +186,10 @@ export function planDay(inputs) {
 
   if (!lessonToday && timeLeft > 0) {
     const aim = Math.max(b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0), Math.floor(PLAN.capShare * limits.capMin));
-    let budget = Math.min(b.sessionMin, aim, remaining, timeLeft);
-    // R2: a sitting at or after 20:00, latched on this child's own late-vs-early closes, gets the minimum segment set
     const minSetMin = b.segments.filter((s) => s[3]).reduce((a, s) => a + s[1], 0);
+    // the parent's lesson length caps the sitting, never below the band's minimum segment set (a shorter choice would plan none)
+    let budget = Math.min(b.sessionMin, aim, remaining, timeLeft, Math.max(minSetMin, inputs.schedule?.lessonMin ?? Infinity));
+    // R2: a sitting at or after 20:00, latched on this child's own late-vs-early closes, gets the minimum segment set
     const lateSitting = !!adapt.lateMinSet && startDM >= dayMin(LATE_SITTING_FROM);
     if (lateSitting && budget > minSetMin) budget = minSetMin;
     let segments = fitSegments(b.segments, budget);

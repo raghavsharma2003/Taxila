@@ -10,10 +10,11 @@ tsc + build + 4265 unit tests green, single process). Live model calls so far: o
 |---|---|---|
 | 1 | **Azure keys (the blocker).** Nothing has been tried live and nothing can be released without them. | Re-add the keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
 | 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
-| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Side by side: `face/route-b-vs-r8-sheet.png`. Try it yourself with `?jaw=1` once your account is re-keyed. |
+| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
 | 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
 | 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
 | 6 | Volt-emblem avatars; on-device speaker matching | Parked until you decide. |
+| 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
 | 7 | The Founders Hub Milestone-3 usage plan; whether the subscription spending limit is back on | From the cost work on 2026-10-24. |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
@@ -25,7 +26,7 @@ equivalence check, adjudication and level rating. Figures come from the scripts'
 
 | Tier | Work | Azure calls | ~Cost | Unblocks |
 |---|---|---|---|---|
-| 1 | G1 sentence-train grammar items (55 skills) | 83 | $2.66 | English and Hindi grammar games (Games) |
+| 1 | G1 sentence-train grammar items (85 tagged skills, 444 items short) | 128 | $4.10 | English and Hindi grammar games (Games) |
 | 1 | W1a Hinglish/Devanagari answer forms | 30 | $0.60 | Hinglish answers graded correctly |
 | 2 | W1b Hindi worked-example steps, class 4-7 maths | 141 | $2.62 | Worked examples in Hindi |
 | 2 | W1c explain plans per skill, class 4-7 maths (424 skills) | 424 | $15.26 | Richer explanations (Brain) |
@@ -70,7 +71,14 @@ in parts, start with tiers 1 and 2 (~$21).
   - The agent dropped class-6 children to counting drills.
   - Neither met the bar, and the worst defect was praising a wrong answer.
   - Write-up: `judgements/hybrid-full-2026-11-04.md`.
-- Brain then fixed all 11 defects as code rules. A 12-lesson re-run is being judged now.
+- Brain then fixed the 11 defects. The re-run showed the fixes were shallow, because the guards detected bad lines but didn't stop them. The next block is structural:
+  - guards enforce;
+  - worked examples are rendered from the kit;
+  - one question is live at a time;
+  - picture and game requests are real.
+  
+  Write-up: `judgements/director2-2026-11-04.md`.
+- A stronger reply model (taxila-gpt6) was tried: no teaching gain, +0.7 s, about 6× the cost. Kept the fast model (`dc-r7-reply-model-fast`).
 
 ## 4. Calls the main loop took that you may want to reverse
 

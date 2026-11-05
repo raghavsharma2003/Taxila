@@ -26,6 +26,22 @@ import { lessonHyperbole, lessonIdiom } from "../safety/idioms.js";
 
 /** p5-interaction: problems a gutted teaching turn's one retry may still carry, because code repairs them (never truth). */
 const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "frustration", "easier"]);
+// round 7 S1: the problems a shipped line may never carry (truth and teaching; style problems are repaired, not enforced)
+const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.", "Ek udaharan dekho, kadam se kadam.", "Isko ek baar poora karke dekhte hain."],
+  english: ["Let's solve one together.", "Here is one, step by step.", "Let's work through one."] };
+const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
+const GAVE_LINE = {
+  hinglish: [(a, w) => `Pichhle sawaal ka jawab ${a} tha${w ? `, kyunki ${w}` : ""}.`, (a, w) => `Woh wala: jawab ${a}${w ? `; ${w}` : ""}.`, (a, w) => `Pichhla sawaal: ${w ? `${w}, ` : ""}yaani jawab ${a}.`],
+  english: [(a, w) => `The last one's answer was ${a}${w ? `, because ${w}` : ""}.`, (a, w) => `That one: the answer is ${a}${w ? `; ${w}` : ""}.`, (a, w) => `The last question: ${w ? `${w}, ` : ""}so the answer is ${a}.`],
+};
+const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Hindi mein? Zaroor."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
+const PARK_ACK = { hinglish: [(t) => `${t}: iski baat is part ke baad karenge.`, (t) => `${t} yaad hai, yeh part khatam karke uspar aate hain.`, (t) => `${t}: pakka, thodi der mein uski baat.`],
+  english: [(t) => `${t}: we'll talk about it after this part.`, (t) => `${t} — I'll come back to it once this part is done.`, (t) => `${t}: yes, right after this part.`] };
+export const ENFORCED = new Set(["leak", "praise", "deny", "claim", "corrects", "math", "invented", "screen", "parts", "affirms", "negates", "notheard",
+  "gameclaim", "cantshow", "level", "answerinq", "underived", "ignored", "readscard", "units"]);
+// (samecard is not enforced: its repair is a fixed lead before the card, which still has the card in it)
+// an English card in a Hindi / Hinglish lesson: asked about without reading it and without sending their eyes to a screen
+const ENGLISH_CARD_LINE = { tum: "Is sawaal ka jawab socho aur batao.", aap: "Is sawaal ka jawab sochiye aur bataiye." };
 const SOFT_FIX = new Set(["long", "twoq", "wrap", "script", "register", "stage", "cantshow", "uiword", "notheard", "bracket", "negates", "gameclaim", "affirms"]);
 // round 3 fix (experience B10 / B2): her words never name a screen part by its internal name. The review heard "Chips mein
 // chuno: keep going, short break, ya stop for today" (c4-10) and "bar1 ke 4 parts", "bar2 ko … kijiye" over strips labelled
@@ -133,6 +149,79 @@ export function readsCard(t, card) {
   for (let i = 0; i + 5 <= c.length; i++) if (said.includes(` ${c.slice(i, i + 5).join(" ")} `)) return true;
   return false;
 }
+// round 7 (main's full-run judgement #6: at class 6, "Rectangle mein kitni sides hoti hain?" and "count the sides" four times):
+// remediation stays at the class's level. From class 4 up: no counting-on and no bare single-digit sum of her own; from
+// class 5 up: no asking how many sides a shape has.
+const LEVEL_COUNT_ON = /\b(?:kadam\s+aage|aage\s+(?:teen|do|ek|chaar|paanch|\d+)?\s*gin|ungli(?:yon)?\s+(?:pe|par|se|ke\s+baad)|on\s+your\s+fingers|count\s+(?:on|up)\s+(?:from|by)|ek\s+ek\s+karke\s+gin)/i;
+const LEVEL_TINY_SUM = /(?<![\p{N}.])(?<!(?:\+|plus|jama|aur)\s*)[1-9]\s*(?:\+|plus|jama)\s*[1-9](?![\p{N}.])(?!\s*(?:\+|plus|jama)\s*\d)[^.?!।]*\?/iu;
+const LEVEL_SIDES = /\b(?:kitni|kitne)\s+(?:sides|bhuja(?:yein|en)?|kinare|kone|corners)\s+(?:hoti|hote|hai|hain)|\bhow\s+many\s+(?:sides|corners)\b|\bcount\s+the\s+(?:sides|corners)\b|\b(?:sides|bhujaayein)\s+gino\b/i;
+/** Is her line below the class's level? */
+export function belowLevel(t, classLevel, kitText = "") {
+  const c = Number(classLevel);
+  if (!(c >= 4)) return false;
+  if (LEVEL_COUNT_ON.test(t)) return true;
+  const m = String(t).match(LEVEL_TINY_SUM);
+  if (m && !String(kitText).includes(m[0].replace(/\s+/g, " ").slice(0, 5))) return true;
+  return c >= 5 && LEVEL_SIDES.test(t);
+}
+// round 7 (full-run judgement #5: "5 barabar gaps mein baanto. Kitne gaps?"): her closing question never asks for what her line
+// just said
+export function answerInQuestion(t) {
+  const sents = String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? [];
+  const q = sents.at(-1) ?? "";
+  if (!/[?？]/.test(q)) return false;
+  const m = q.match(/(?:kitne|kitni|kitna|how\s+many)\s+(?:barabar\s+)?(\p{L}{3,})/iu);
+  if (!m) return false;
+  const noun = m[1].toLowerCase().replace(/(?:on|en|ein|s)$/, "");
+  // (the count must be one her line SET, "5 barabar gaps" / "3 equal parts" / "4 hisson mein baanto": a quantity in a story,
+  // "12 mangoes … kitne mangoes milenge?", asks for a result the line never stated)
+  return sents.slice(0, -1).some((x) => new RegExp(`(?<![\\p{L}])\\d+\\s+(?:barabar|equal)\\s+${noun}`, "iu").test(x)
+    || (new RegExp(`(?<![\\p{L}])\\d+\\s+${noun}`, "iu").test(x) && /\b(?:baant|baanto|baato|divide|kaato|cut\s+into|mein\s+baan)/i.test(x)));
+}
+// round 7 (full-run judgement #5: "3 × 160 = ___" when 160 was never derived): on a faded or step-check card, a number of the
+// card that the problem never gave is one an earlier step made: her line says where it came from before the card
+export function underived(t, item, problem) {
+  if (!item || !(item.fade || item.stepCheck)) return null;
+  const card = String(item.prompt_en ?? "");
+  const given = new Set(String(problem ?? "").match(/\d+(?:\.\d+)?/g) ?? []);
+  const nums = (card.match(/\d+(?:\.\d+)?/g) ?? []).filter((n) => !given.has(n) && Number(n) >= 10);
+  if (!nums.length) return null;
+  // (her line without the gap sentence itself: the card carries the number, so it proves nothing)
+  const lead = (String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? []).filter((x) => !/_{2,}/.test(x)).join(" ");
+  return nums.find((n) => !new RegExp(`(?<![\\d.])${n.replace(".", "\\.")}(?![\\d])`).test(lead)) ?? null;
+}
+/**
+ * round 7 (director2: "Tum bharo… 3 × 160" kept 160 underived after the rewrite): the worked example's own step that made the
+ * number, as a code lead ("Pehle dekho: 2 × (50 + 30) = 2 × 80 = 160."): the calculation only, never the step's English words.
+ * null when no step of the kit states it.
+ */
+export function derivationLead(n, workedExample, lang) {
+  if (!n) return null;
+  for (const st of workedExample?.steps ?? []) {
+    const m = String(st).match(new RegExp(`([\\d(][\\d\\s×x*+\\-−/().=]*=\\s*${n.replace(".", "\\.")})(?![\\d.])`));
+    if (m) return `${lang === "english" ? "First:" : "Pehle dekho:"} ${m[1].replace(/\s+/g, " ").trim()}.`;
+  }
+  return null;
+}
+/** round 7 (director2: "7" got only "Tum bharo"): a bare number the line passed over is said back first. Code words only. */
+// (main's S6 verdict: one fixed lead said the same way every lesson is a tic) each code lead has a few forms, picked by lesson seed and turn
+const IGNORED_LEAD = { english: [(n) => `You said ${n}. Let's check it together.`, (n) => `${n}, you said. Let's see if it fits.`, (n) => `Okay, ${n}. Let's test that.`],
+  hinglish: [(n) => `Tumne ${n} kaha. Chalo, ise saath mein check karte hain.`, (n) => `${n}? Achha, dekhte hain yeh baithta hai ya nahi.`, (n) => `${n} bola tumne. Ek baar milake dekhte hain.`] };
+export const pickOf = (xs, state) => xs[(((state?.seed ?? 0) >>> 0) + (state?.turn ?? 0)) % xs.length];
+export const ignoredLead = (n, lang, state = null) => pickOf(IGNORED_LEAD[lang === "english" ? "english" : "hinglish"], state)(n);
+/** round 7 (director2 c6: "tumne 160 ko 3 se multiply karne ke bajay 3 plus 3 kiya" on a plain "6"): HOW they went wrong, said
+ * when no misconception was matched, is a guess about the child: those sentences go. */
+const DIAGNOSIS = /\b(?:tumne|aapne|you)\b[^.!?।]{0,80}\b(?:ke\s+bajay|ke\s+bajaye|ki\s+jagah|instead\s+of)\b/i;
+export const madeUpDiagnosis = (t) => sentences(t).some((x) => DIAGNOSIS.test(x));
+export const withoutDiagnosis = (t) => sentences(t).filter((x) => !DIAGNOSIS.test(x)).join(" ").trim();
+/** round 7 (director2 c6: "Ab ginें"): a Roman word carrying Devanagari vowel signs is written out in Roman. */
+const MATRA = { "\u093E": "a", "\u093F": "i", "\u0940": "i", "\u0941": "u", "\u0942": "u", "\u0947": "e", "\u0948": "ai", "\u094B": "o", "\u094C": "au", "\u0902": "n", "\u0901": "n", "\u0947\u0902": "ein", "\u094B\u0902": "on", "\u093E\u0902": "aan", "\u0940\u0902": "een" };
+export const unmixWords = (t) => String(t ?? "").replace(/(\p{Script=Latin}+)([\u0900-\u0903\u093A-\u094F]+)/gu, (_, w, m) => w + (MATRA[m] ?? [...m].map((c) => MATRA[c] ?? "").join("")));
+/** round 7 (director2 c6 steering: "picture ko words mein dekho" twice): "see it in words" is never said; she has them imagine it. */
+// (main, director2: "kalpana karo" / "imagine" is the same failure: a picture asked, words given) the phrase goes, never a stand-in
+const IN_WORDS = /\b(?:(?:picture|tasveer|photo|diagram)\s+ko\s+)?words\s+mein\s+(?:dekho|dekhte\s+hain|samjho|socho)\b\s*[:,—-]?\s*|\b(?:see|picture)\s+it\s+in\s+words\b\s*[:,—-]?\s*|\b(?:kalpana\s+karo|imagine(?:\s+it)?|man\s+mein\s+socho)\b\s*[:,—-]?\s*/gi;
+export const withoutInWords = (t) => String(t ?? "").replace(IN_WORDS, "").replace(/,\s*([.!?])/g, "$1").replace(/(^|[.!?]\s+)(\p{Ll})/gu, (_, a, c) => a + c.toUpperCase()).replace(/\s{2,}/g, " ").trim();
+const PARK_STOP = new Set(["mujhe", "baare", "mein", "baat", "karni", "karte", "hain", "about", "talk", "want", "pasand", "chahiye", "kuch"]);
 export const withoutNotHeard = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => !claimsNotHeard(x)).join("").trim();
 /** The copy a reply-side model call reads: scrubbed, and the Hindi number "teen" as 3 (safety.js filterSafe). */
 export const forModel = (t) => filterSafe(scrubbed(t));
@@ -449,7 +538,7 @@ export function fallbackReply(state, item) {
   if (item && !CLOSING_MOVES.has(kind)) {
     // round 7 (full-run judgement #2): an English card in a Hindi / Hinglish lesson is shown, never read: point to it instead
     const english = lang !== "english" && looksEnglish(promptFor(item, lang));
-    const q = english ? (state.ctx.address === "aap" ? "Screen par jo sawaal hai, uska jawab sochiye aur bataiye." : "Screen par jo sawaal hai, uska jawab socho aur batao.") : promptFor(item, lang);
+    const q = english ? (state.ctx.address === "aap" ? ENGLISH_CARD_LINE.aap : ENGLISH_CARD_LINE.tum) : promptFor(item, lang);
     // round 2 (conversation): a model outage (429 / timeout / every repair failed) on a turn that answers a request or puts
     // the question again is no longer a bare re-ask: a fixed code lead for what the move is doing, then the question
     // (conversation/fallback-lead.js; owner-2 prod R3 x4 + R2). Same kill switch as the lead slot.
@@ -549,6 +638,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const gameUp = !!(state.playOn || module?.id || state.module?.id);
   // round 7 (full-run judgement #1): the child said something this turn (an answer to be graded, or not)
   const answeredNow = /[\p{L}\p{N}]/u.test(String(childText ?? ""));
+  const kitText = (kit?.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " ");
   // round 7 (main's full-run judgement #4: her own question "kitne groups?" got "4", and her next line asked something new):
   // with no card on the table, a short answer to the question her last line asked is answered first, never skipped
   const herLastQ = [...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
@@ -598,7 +688,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // language, and a line that reads the English card is caught (readscard).
   const cardText = item ? promptFor(item, lang) : null;
   const englishCard = !!cardText && lang !== "english" && looksEnglish(cardText);
-  const pinned = englishCard ? null : item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
+  // round 7 (main's full-run judgement #11: the same card read word for word three or four turns running): when her last line
+  // already read the card, a re-pose asks it in fresh words (the card stays on the screen), never the same sentence again
+  const herLast = [...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
+  const cardRepeat = !englishCard && !!item && ui?.ask?.itemId === item.id && !!ui.ask.text && readsCard(herLast, ui.ask.text)
+    && (state.pinItem === item.id && (state.pinRun ?? 0) > 1);
+  const pinned = englishCard || cardRepeat ? null : item && ui?.ask?.itemId === item.id ? ui.ask.text : null;
   const parityOf = (t) => askParity(t, pinned);
   // a check-in that SAYS goodbye ("aaj ke liye yahin rok dete hain") while the child has not chosen yet is a mixed signal
   // (owner-3: the lesson goes on after it); it is still caught, but its repair is the check-in's own (below), never
@@ -623,7 +718,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // p5-interaction (owner-2 R4: a 40-word question re-read in full on every hint turn): once the question has been posed,
   // a re-pose ends on the card's form of it (UiDirectives.ask.text, ≤ 120 characters: the question sentence itself)
   const rePose = !!item && state.pinItem === item.id && (state.pinRun ?? 0) > 1;
-  const askEnd = englishCard ? null : item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
+  const askEnd = englishCard || cardRepeat ? null : item ? (G && pinned && rePose ? pinned : promptFor(item, lang)) : null;
   // Round 3 (conversation stream; kill switch TAXILA_P5_R3CONV=off): the question was posed on the last turn (a re-pose),
   // so a turn that ends on the card's form of it has posed it; the "drift" check (half the full prompt's content words)
   // asks only for a FIRST pose. Before this, a re-pose at rung 0 (a request answered, a question of theirs, small talk)
@@ -685,11 +780,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     (!gameUp || answeredNow) && gameActs(t) && "gameclaim",
     // (full-run judgement #4) their number answer to her own question is answered, never ignored
     ownQAnswered && bareNumberSaid && !String(t).includes(bareNumberSaid) && "ignored",
+    // (full-run judgement #6, #5)
+    kindNow !== "safeguard" && belowLevel(t, state.ctx?.classLevel, kitText) && "level",
+    !CLOSING_MOVES.has(kindNow) && answerInQuestion(t) && "answerinq",
+    !CLOSING_MOVES.has(kindNow) && underived(t, item, kit?.workedExample?.problem) && "underived",
     (guardable && revealsAnswer(t, item) || ahead && revealsAnswer(t, ahead)) && "leak",
     mixedUnitComparison(own(t)) && "units",
     // round 3 fix (experience B6): an arithmetic result she states that is false ("1 by 4 ko 3 se multiply karne par 3 by 12")
     !!arithmeticSlip(own(t)) && "math",
-    mustPose && !englishCard && !posesItem(t, item, lang) && "drift",
+    mustPose && !englishCard && !cardRepeat && !posesItem(t, item, lang) && "drift",
+    cardRepeat && readsCard(t, ui.ask.text) && "samecard",
     englishCard && readsCard(t, cardText) && "readscard",
     whyProbe && !asksWhy(t) && "nowhy",
     // round 3: a turn that ends on the pinned kit question has handed the floor back, whatever its verb ("…sabse bade
@@ -808,7 +908,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // byte for byte (conversation/compose.js). A lead that comes back unusable falls through to the one-call path.
   // (full-run judgement #8: "story" got a fill-in-the-blank: the lead slot's word cap squeezed the story out; a story turn takes
   // the one-call path, with its own room)
-  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && state.lastMove?.request !== "story" && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
+  const slot = G && p5Flag("LEADSLOT") && !!item && !englishCard && !cardRepeat && state.lastMove?.request !== "story" && leadSlotWanted({ request: state.lastMove?.request ?? null, rePose, pinned, diagnostic: !!item?.diagnostic,
     whyProbe, closing: CLOSING_MOVES.has(kindNow), firstPose: firstPose && !checkin });
   // round 3: a first pose with no request is a bridge into a new question (shorter lead, a right answer confirmed first)
   const bridge = firstPose && !state.lastMove?.request;
@@ -828,8 +928,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const shapeNote = R3 && !CLOSING_MOVES.has(kindNow) && !checkin && !restBreak && !thinkingWait && !whyProbe && !item?.diagnostic && mustHandBack
     ? turnNote({ ask: pinned ? askEnd : null, maxWords: TURN_WORDS[state.ctx.ageBand] ?? 25 }) : null;
   const cardNote = englishCard && !CLOSING_MOVES.has(kindNow) ? `The question on the screen is in English: never read it out; ask the same question in your own words in their language (${lang === "hindi" ? "simple Hindi" : "Hinglish"}), keeping its numbers, and never its answer.` : null;
-  const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it; then the move.` : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, ownQNote].filter(Boolean).join(" ");
+  const repeatNote = cardRepeat && !CLOSING_MOVES.has(kindNow) ? "Your last turn already read the question on the screen word for word: ask it again in fresh words (shorter, or from another side), keeping its numbers, never the same sentence and never its answer." : null;
+  const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
+  // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
+  const workedLines = kindNow === "worked_example" && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
+  const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that sets the problem up (who, what, what we want to find), with no numbers and no question." : null;
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -971,14 +1075,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       found.includes("deny") && "it says their answer is wrong, but it was right — confirm it plainly",
       found.includes("claim") && "it says they made a mistake, but nothing checked their answer as wrong — say nothing about right or wrong or what they did; go straight on with the move",
       found.includes("corrects") && `it implies their answer was wrong or that the answer is something else, but their answer ${JSON.stringify(String(right.key))} was right — confirm it plainly and do not name any other answer as the result`,
-      found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — say it in words, or ask them to say it",
+      found.includes("screen") && "it sends them to the screen (to tap or pick something, or to look at a picture or diagram), but nothing of that is on the screen this turn — talk about the thing itself, its parts and its numbers, plainly as across a table; never mention a picture, the screen, words or imagining",
       found.includes("parts") && `it names parts the screen does not show — ${screenContradiction(aboutScreen(own(reply)), module, partsLines)?.onScreen ?? ""}`,
       found.includes("cantshow") && "it says you cannot show or draw — never say that; talk about the idea itself in words, and point at the screen only at what is on it now",
-      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: say back what they said and what part of it fits, or ask what they mean",
-      found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — say it back and respond to it first (what fits, what does not, the right one if it is not), then go on`,
+      found.includes("negates") && "it tells them their answer is wrong (like '4 nahi'), but nothing checked it against a key — no verdict either way: respond to the point of what they said and what part of it fits, or ask what they mean",
+      found.includes("level") && `it is below class ${state.ctx?.classLevel} (counting on, a tiny sum of your own, or how many sides a shape has) — help at their class's level: show the step itself, then back to the question`,
+      found.includes("answerinq") && "its question asks for what your line just said (the answer is inside the question) — ask for the next thing they work out, not what you told them",
+      found.includes("underived") && `it puts a number on the card (${underived(reply, item, kit?.workedExample?.problem)}) that they never saw come from anywhere — first say in one line the step that made it, then the card`,
+      found.includes("ignored") && `it ignores their answer (${bareNumberSaid}) to your last question — respond to it first (what fits, what does not, the right one if it is not), then go on`,
+      found.includes("samecard") && "it reads the question on the screen word for word again, as your last turn did — ask it in fresh words, keeping its numbers",
       found.includes("readscard") && `it reads the English question card aloud — ask that question in your own words in their language instead, keeping its numbers`,
-      found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: say back what they said, then the next step",
-      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; say back what they said and ask what they mean",
+      found.includes("affirms") && "it tells them their answer is right (sahi, haan wahi, correct), but nothing checked it as right this turn — no verdict word: respond to the point of what they said, then the next step",
+      found.includes("notheard") && "it says you could not hear them, but you heard their words — never say that; respond to what they said and ask what they mean",
       found.includes("gameclaim") && "it says a game did or showed something, but no game is on the screen — it is a spoken game between you two: say what YOU and THEY do",
       found.includes("bracket") && "it says a bracketed step so it is misheard (like '2 times 50 plus 30' for 2 × (50 + 30)) — say the bracket first, then the multiple ('50 plus 30, that is 80, times 2')",
       found.includes("stage") && "it reads out a field name, markup or a text picture (like 'Whiteboard:', brackets or rows of symbols like ●●●) — plain spoken words only; the board draws pictures, never your words",
@@ -1082,6 +1190,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (found.includes("affirms")) { reply = keepOr(withoutAffirm(reply)); guard.replaced = true; }
       if (found.includes("bracket")) { reply = sayBrackets(reply, state.lastContent ?? [], lang); guard.repaired = true; }
       if (found.includes("gameclaim")) { reply = keepOr(withoutGameActs(reply)); guard.replaced = true; }
+      // round 7 (main's director2 judgement: "your guards detect but don't prevent"): the block-2 guards had only the rewrite.
+      // A rewrite that keeps the problem now gets a code repair, never ships as it is.
+      if (found.includes("level")) { reply = keepOr(sentences(reply).filter((x) => !belowLevel(x, state.ctx?.classLevel, kitText)).join(" ").trim()); guard.replaced = true; }
+      if (found.includes("answerinq")) { const s = sentences(reply); reply = keepOr(s.slice(0, -1).join(" ").trim()); guard.replaced = true; }
+      if (found.includes("underived")) {
+        const lead = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang);
+        if (lead) { reply = joinAsk(lead, askEnd ?? pinned ?? ""); guard.replaced = true; }
+      }
+      if (found.includes("ignored") && bareNumberSaid != null) { reply = `${ignoredLead(bareNumberSaid, lang, state)} ${reply}`.trim(); guard.repaired = true; }
+      if (found.includes("readscard")) { reply = fallbackReply(state, item); guard.replaced = true; }
       if (found.includes("long")) reply = trimToWords(reply, max);
       // Last: the turn's shape (goodbye words out, the pinned question at the end, one question), in code.
       const left = problems(reply).filter((p) => SHAPE.has(p));
@@ -1188,7 +1306,41 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         if (!now.includes("bare") && now.every((p) => was.has(p))) { reply = joined; guard.codeLead = true; } else slotState.on = prevOn;
       }
     }
+    // round 7 (main's block 2 #11): a card she already read word for word, and the model STILL gave back only the card after
+    // the samecard repair: never a bare re-read. The fixed code lead she has not said yet goes before it (as above).
+    if (R3 && cardRepeat && item && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
+      && isBare(reply, promptFor(item, lang), ui.ask.text)) {
+      const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
+      if (fixedLead) { reply = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, ui.ask.text); guard.codeLead = true; }
+    }
     // the cut marks the repairs leave (an orphan quote, an empty fragment) and a lead sentence that re-poses the question
+    // round 7 (director2): deterministic repairs on every turn — a made-up diagnosis of their mistake, a mixed-script word,
+    // "see it in words"
+    if (kindNow !== "safeguard" && verdict !== "misconception" && madeUpDiagnosis(reply)) {
+      const left = withoutDiagnosis(reply);
+      reply = left && handsBack(left) ? left : item && !CLOSING_MOVES.has(kindNow) ? joinAsk(left, askEnd ?? pinned ?? "") : left || fallbackReply(state, item);
+      guard.replaced = true; guard.caught = [...guard.caught, "diagnosis"];
+    }
+    { const u = withoutInWords(unmixWords(reply)); if (u !== reply) { reply = u; guard.repaired = true; } }
+    // (director2 c6: "Tum bharo. Khaali jagah bharo: …"): a bare "fill it" sentence before a card that says it already goes
+    if (/^(?:khaali\s+jagah\s+bharo|fill\s+(?:in\s+)?the\s+(?:gap|blank))/i.test(String(askEnd ?? pinned ?? "").trim())) {
+      const kept = sentences(reply).filter((x) => !/^\s*(?:(?:ab|chalo|tum|aap)\s+)*(?:bharo|bhariye|fill\s+it(?:\s+in)?)\s*[.!]?\s*$/i.test(x));
+      if (kept.length && kept.join(" ").trim() !== reply.trim()) { reply = kept.join(" ").trim(); guard.repaired = true; }
+    }
+    // round 7 (director2 c6 steering: "cricket ke baare mein" was parked by the Director, but her line never named it): a topic
+    // parked this turn is said with its promise when her words left it out
+    if (state.lastMove?.request === "park" && kindNow !== "safeguard") {
+      const e = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
+      const key = e ? (String(e.topic).toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) : null;
+      if (key && !new RegExp(`\\b${key}`, "i").test(reply)) {
+        reply = `${pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(e.topic)} ${reply}`.trim();
+        guard.repaired = true;
+      }
+    }
+    // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
+      reply = `${pickOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
+    }
     const tidied = tidyAround(reply, pinned ? askEnd : null);
     if (tidied && tidied !== reply) { reply = tidied; guard.tidied = true; }
   }
@@ -1201,6 +1353,41 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // 14.4 (QA TEST a9c3136d t8, 9ad86661): the goodbye strip took her only sentence ("…padhai rok dete hain—…?"), the full-turn
   // retry raised self-harm again and was refused, and the child got "" and a module tray. A turn is never empty: the fixed line.
   if (!String(reply ?? "").trim()) { reply = fallbackReply(state, item); guard.replaced = true; guard.emptied = true; }
+  // round 7 S2: a code-rendered worked part is one framing sentence of hers (no numbers, no question; a fixed one when hers is
+  // not that), the code lines, then the card when one is posed, else a fixed check-in question
+  if (workedLines) {
+    const first = sentences(reply)[0] ?? "";
+    const framing = first && !/\d|[?？]/.test(first) && words(first) <= 25 ? first.trim() : pickOf(WORKED_FRAME[lang === "english" ? "english" : "hinglish"], state);
+    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
+    reply = [framing, ...workedLines, ask].join(" ").replace(/\s+/g, " ").trim();
+    if (problems(reply).includes("bracket")) reply = sayBrackets(reply, state.lastContent ?? [], lang); // spoken: "50 plus 30, that is 80, times 2"
+    if (problems(reply).includes("ignored") && bareNumberSaid != null) reply = `${ignoredLead(bareNumberSaid, lang, state)} ${reply}`;
+    guard.workedCode = true;
+  }
+  // round 7 S3: a card let go after two misses plus help has its answer and why said, in code, when her line left them out
+  const gave = state.lastMove?.gave;
+  if (gave?.answer && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
+    reply = `${pickOf(GAVE_LINE[lang === "english" ? "english" : "hinglish"], state)(gave.answer, gave.why)} ${reply}`.trim();
+    guard.gaveAnswer = true;
+  }
+  // round 7 S1 (main's director2 decision: "guards ENFORCE, a flagged draft never ships"): after the rewrite and every code
+  // repair, a line still carrying a truth or teaching problem is replaced by the move's fixed code line (built from the item's
+  // fields), when that line is itself clean of them. Never on a safeguard turn (rj-r1442).
+  if (kindNow !== "safeguard" && !forgetSafety) {
+    // (a leak the design let stand, a requested example whose next item is marked spoiled instead, is not enforced)
+    const bad = problems(reply).filter((p) => ENFORCED.has(p) && !(p === "leak" && guard.spoilsAhead && state.lastMove?.request));
+    if (bad.length) {
+      const card = ui?.ask?.text ?? askEnd ?? null;
+      const cands = [
+        bad.includes("underived") && card ? (() => { const l = derivationLead(underived(reply, item, kit?.workedExample?.problem), kit?.workedExample, lang); return l ? joinAsk(l, card) : null; })() : null,
+        englishCard ? (address === "aap" ? ENGLISH_CARD_LINE.aap : ENGLISH_CARD_LINE.tum) : null,
+        fallbackReply(state, item),
+      ].filter(Boolean);
+      const fixed = cands.find((c) => !problems(c).some((p) => ENFORCED.has(p)));
+      if (fixed) { guard.enforced = bad; reply = fixed; guard.replaced = true; }
+      else guard.unenforced = bad;
+    }
+  }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
   // The final words, checked once more (debug and the evals read it): what reached the child.

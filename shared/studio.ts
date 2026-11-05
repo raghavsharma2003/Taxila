@@ -173,7 +173,17 @@ export type WbOp =
   | (WbBase & { op: "highlight"; target: string; style: "circle" | "underline" | "pulse" })
   | (WbBase & { op: "erase"; target: string })
   /** round 7: an earlier op slides by `by` over [startMs, endMs], hopping `arc` units high (a jump); never off the board. */
-  | (WbBase & { op: "move"; target: string; by: WbPoint; arc?: number });
+  | (WbBase & { op: "move"; target: string; by: WbPoint; arc?: number })
+  /** round 7 (M1): an earlier stroke / line / arrow / polygon / circle / sector turns `deg` (clockwise) about a point. */
+  | (WbBase & { op: "rotate"; target: string; deg: number; about: WbPoint })
+  /** round 7 (M1): an earlier shape scales by k = [kx, ky] about a point (a negative k mirrors it: a fold). */
+  | (WbBase & { op: "scale"; target: string; k: [number, number]; about: WbPoint })
+  /** round 7 (M1): an earlier op travels a path of offsets from where it is ([0,0] implied first). */
+  | (WbBase & { op: "follow"; target: string; path: WbPoint[] })
+  /** round 7 (M1): an earlier filled shape's fill sweeps in from one side. */
+  | (WbBase & { op: "sweep"; target: string; dir: "up" | "down" | "left" | "right" })
+  /** round 7 (M1): an earlier stroke's / polygon's points move to `to` (same count). */
+  | (WbBase & { op: "morph"; target: string; to: WbPoint[] });
 export type WbOpKind = WbOp["op"];
 export interface WhiteboardScript {
   v: 1;
