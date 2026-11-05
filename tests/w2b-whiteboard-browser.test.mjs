@@ -3,7 +3,7 @@
 //      and 1280 x 800: every drawn word and stroke lies inside the box, nothing scrolls; it starts on the line's audio
 //      anchor (markLineAudioStart's event) and, with no anchor, on its own after the grace;
 //   2. the frame's explainer@1 engine (the explain rung) fills the module tray, and every drawn word lies inside the frame.
-// Drives the REAL child route (Vite dev server: ChildShell, LessonScreen, useDesk, Desk, WorkTray, StudioStage / ModuleHost
+// Drives the REAL child route (the built app from dist/, or the Vite dev server when dist/ is stale: ChildShell, LessonScreen, useDesk, Desk, WorkTray, StudioStage / ModuleHost
 // and the sandboxed frame) with the API mocked by page.route. Runs in `npm test` when Chromium is installed;
 // WHITEBOARD_BROWSER=0 skips it. W2B_SHOTS=<dir> also writes screenshots.
 import { test, before, after } from "node:test";
@@ -18,25 +18,37 @@ const SKIP = process.env.WHITEBOARD_BROWSER === "0" ? "WHITEBOARD_BROWSER=0" : !
 const KID = { id: "kid-wb", first_name: "Kabir", class_level: 6, language_pref: "hinglish", teacher_id: "arjun" };
 const SHOTS = process.env.W2B_SHOTS;
 
-let vite, browser, base;
+let app, browser, base;
+// gate speed (main, 2026-11-05): the prebuilt dist/ from a static server (tests/support/app-server.mjs; the dev server
+// when dist/ is stale), ONE browser for the file and one context per (viewport, motion), its pages opened per case
+const contexts = new Map();
 before(async () => {
   if (SKIP) return;
-  const { createServer } = await import("vite");
-  vite = await createServer({ root: ROOT, configFile: ROOT + "vite.config.ts", logLevel: "error", server: { port: 0, strictPort: false, host: "127.0.0.1", hmr: false } });
-  await vite.listen();
-  base = vite.resolvedUrls.local[0].replace(/\/$/, "");
+  const { appServer } = await import("./support/app-server.mjs");
+  app = await appServer();
+  base = app.url;
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
   if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 });
 after(async () => {
+  for (const c of contexts.values()) await c.close().catch(() => {});
   await browser?.close();
-  await vite?.close();
+  await app?.close();
 });
+/** Each case is its own page: independent geometry cases run side by side (never the anchor-lag measurements). */
+const allCases = (items, fn) => Promise.all(items.map(fn));
+async function contextFor(viewport, reducedMotion) {
+  const key = `${viewport.width}x${viewport.height}:${reducedMotion}`;
+  if (!contexts.has(key)) {
+    const mobile = viewport.width < 600;
+    contexts.set(key, await browser.newContext({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile, reducedMotion }));
+  }
+  return contexts.get(key);
+}
 
 async function lessonWith(viewport, { ui, moduleCommands = [], turn = null }, { reducedMotion = "no-preference" } = {}) {
-  const mobile = viewport.width < 600;
-  const page = await browser.newPage({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile, reducedMotion });
+  const page = await (await contextFor(viewport, reducedMotion)).newPage();
   await page.route("**/api/**", async (route) => {
     const p = new URL(route.request().url()).pathname;
     const json = (status, body) => route.fulfill({ status, contentType: "application/json", body: JSON.stringify(body) });
@@ -93,9 +105,9 @@ function assertAnchored(lags, what) {
 
 test("the whiteboard renderer draws a template script inside the Studio box (360 x 800, 1280 x 800); nothing outside it", { skip: SKIP, timeout: 180_000 }, async () => {
   const fails = [];
-  for (const [vp, call] of [[{ width: 360, height: 800 }, { template: "cycle@1", stages: ["evaporation", "condensation", "rain", "collection"], centre: "water cycle" }],
+  await allCases([[{ width: 360, height: 800 }, { template: "cycle@1", stages: ["evaporation", "condensation", "rain", "collection"], centre: "water cycle" }],
     [{ width: 1280, height: 800 }, { template: "compare@1", left: { title: "natural forest", items: ["many plant kinds", "many birds"] }, right: { title: "plantation", items: ["one tree kind", "few birds"] } }],
-    [{ width: 360, height: 800 }, { template: "column-op@1", a: 4587, b: 2675, op: "add" }]]) {
+    [{ width: 360, height: 800 }, { template: "column-op@1", a: 4587, b: 2675, op: "add" }]], async ([vp, call]) => {
     const x = expand(call, { lessonId: "L-wb", scriptId: "s-" + call.template });
     assert.ok(x.ok, call.template);
     // reduced motion: every op appears complete at its startMs, so the final board is reached on the script's own clock
@@ -120,7 +132,7 @@ test("the whiteboard renderer draws a template script inside the Studio box (360
       if (m.scroll > 1) fails.push(`${tag}: the tray scrolls`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/studio-${call.template.replace("@", "-")}-${vp.width}.png` });
     } finally { await page.close(); }
-  }
+  });
   assert.deepEqual(fails, []);
 });
 
@@ -253,8 +265,8 @@ test("a re-sent page that draws exactly what the board shows is not wiped and re
     };
     tick();
   }), id);
-  for (const [what, next, frozen] of [["same page, new id", { ...a.script, scriptId: "s-same-b" }, true],
-    ["a different page", expand({ template: "flow@1", steps: ["rain", "river", "sea"] }, { lessonId: "L-wb", scriptId: "s-same-c" }).script, false]]) {
+  await allCases([["same page, new id", { ...a.script, scriptId: "s-same-b" }, true],
+    ["a different page", expand({ template: "flow@1", steps: ["rain", "river", "sea"] }, { lessonId: "L-wb", scriptId: "s-same-c" }).script, false]], async ([what, next, frozen]) => {
     const page = await lessonWith({ width: 360, height: 800 }, { ui: slot(a.script, 1), turn: { ui: slot(next, 2) } });
     try {
       await page.waitForSelector('[data-testid="studio-box"] svg', { timeout: 30_000 });
@@ -273,5 +285,5 @@ test("a re-sent page that draws exactly what the board shows is not wiped and re
         assert.ok(t0 <= 0, `${what}: waits for her line's anchor (t=${t0})`);
       }
     } finally { await page.close(); }
-  }
+  });
 });
