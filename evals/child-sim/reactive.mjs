@@ -147,6 +147,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
   // turn waits (in schedule order) for the first turn that fits; one event per turn.
   const pending = [];
   const fits = (ev, c) => {
+    if (c.greeting) return false;                                            // (Brain v6) nothing but a reply to the greeting
     if (ev === "selftry") return c.keyed && c.asks && !c.howWhy && !c.done;  // "pehle main try karun?": a question she just asked
     if (ev === "dontknow") return c.keyed && c.asks && !c.done && !c.howWhy; // "pata nahi": to a keyed question still open, never a greeting
     if (ev === "cricket") return !c.howWhy && !(c.keyed && c.asks && !c.done); // an aside on a telling turn, never as the reply to "kaise mila?"
@@ -168,7 +169,8 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         const c0 = input.card ?? input.ask ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
         const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: /\?/.test(String(input.teacher ?? "")),
-          howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid) };
+          howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid),
+          greeting: turn === 0 || (!input.beat && !c0 && /\b(?:namaste|hi|hello)\b/i.test(String(input.teacher ?? ""))) };
         const i = pending.findIndex((e) => fits(e, ctx));
         if (i >= 0) {
           const [ev] = pending.splice(i, 1);

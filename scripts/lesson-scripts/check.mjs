@@ -206,6 +206,7 @@ export function v21Errors(s) {
  * answer carries neither "kyunki" nor a leading "Toh".
  */
 export const THEN_MAX = 120;
+export const SAY_MAX_WORDS = 45;
 const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
 const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
 /**
@@ -239,6 +240,11 @@ export function v22Errors(s) {
         if (len > THEN_MAX) e.push(at(`remediation[${i}].then: prompt${lang === "en" ? " (en)" : ""} ${len} > ${THEN_MAX} characters`));
       }
       if (!t.board) e.push(at(`remediation[${i}].then: a then-card carries its own board`));
+      // director8 / Brain v6: the runtime splits a long turn (say, then card) but never cuts authored text, so a say is short
+      for (const lang of ["hi", "en"]) {
+        const w = String(r.say?.[lang] ?? "").split(/\s+/).filter(Boolean).length;
+        if (w > SAY_MAX_WORDS) e.push(at(`remediation[${i}].say${lang === "en" ? " (en)" : ""}: ${w} words > ${SAY_MAX_WORDS}`));
+      }
       if (weNums && numsOf(t.prompt?.hi) === weNums) e.push(at(`remediation[${i}].then: repeats the worked problem's numbers (${weNums})`));
     });
     for (const [i, st] of (we.steps ?? []).entries()) {
