@@ -299,7 +299,8 @@ const SHAPE_NAMES = [
   ["rectangle", /\b(?:rectangle|rectangular|aayat|aayatakar)\b|आयत/iu],
   // (not the instrument — "set-square", "set square" — nor a unit: "square cm", "varg metre"; Learning's c7 card on a
   // set-square tripped W15 on a picture request)
-  ["square", /(?<!set[- ])\b(?:square|varg|vargakar)\b(?!\s*(?:cm|mm|km|m|metre|meter|centimet\w*|unit|ikaai)\b)|वर्ग/iu],
+  // (nor "square corner" / "square kona": NCERT c4's name for a right angle, Learning's staged angles topic)
+  ["square", /(?<!set[- ])\b(?:square|varg|vargakar)\b(?!\s*(?:cm|mm|km|m|metre|meter|centimet\w*|unit|ikaai|corners?|kona|kone|cornered)\b)|वर्ग/iu],
   ["triangle", /\b(?:triangle|tribhuj|trikon)\b|त्रिभुज/iu],
   ["circle", /\b(?:circle|gola|vritt|vrutt)\b|वृत्त/iu],
 ];

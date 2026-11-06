@@ -299,7 +299,8 @@ test("Learning's template asks: 4-digit place value, a 0-10000 scale, short/long
   // W15: "set-square" (the instrument) and "square cm" (a unit) name no square
   const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
   const lines = expand({ template: "lines@1", kind: "parallel", names: ["AB", "CD"], gap: "5 cm" });
-  for (const line of ["Set-square se do lines AB aur CD kheenchi; beech ki doori 5 cm hai.", "AB aur CD ke beech 5 cm; area 12 square cm nahi, yeh doori hai."]) {
+  for (const line of ["Set-square se do lines AB aur CD kheenchi; beech ki doori 5 cm hai.", "AB aur CD ke beech 5 cm; area 12 square cm nahi, yeh doori hai.",
+    "AB aur CD ke beech 5 cm, aur yahan koi square corner nahi bana.", "Square kona matlab right angle: AB aur CD ke beech 5 cm."]) {
     const g = gateWhiteboard(lines.script, { reply: line, speechMs: 9000, withhold: { values: [] }, asked: true });
     assert.ok(g.checks.find((c) => c.id === "W15.named_shape_drawn")?.pass !== false, line);
   }
