@@ -20,7 +20,9 @@ import { makeVakyaView } from "./vakya/vakya.view.ts";
 import { makeKilaView } from "./kila/kila.view.ts";
 import { makeGhadiView } from "./ghadi/ghadi.view.ts";
 import { makeNakshaView } from "./naksha/naksha.view.ts";
+import { makeGunaView } from "./guna/guna.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
+import { makeFeetaView } from "./feeta/feeta.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
   "todo-jodo/atoms": makeAtomsView,
@@ -67,5 +69,12 @@ export const VIEWS: Record<string, MakeView> = {
   "ghadi/calendar": makeGhadiView,
   "darpan/mirror": makeDarpanView,
   "darpan/turn": makeDarpanView,
+  "feeta/measure": makeFeetaView,
+  "feeta/fence": makeFeetaView,
+  "feeta/trip": makeFeetaView,
+  "feeta/compare": makeFeetaView,
+  "guna/field": makeGunaView,
+  "guna/pack": makeGunaView,
+  "guna/story": makeGunaView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

@@ -19,7 +19,9 @@ import { vakyaLogic } from "./vakya/vakya.logic.ts";
 import { kilaLogic } from "./kila/kila.logic.ts";
 import { ghadiLogic } from "./ghadi/ghadi.logic.ts";
 import { nakshaLogic } from "./naksha/naksha.logic.ts";
+import { gunaLogic } from "./guna/guna.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
+import { feetaLogic } from "./feeta/feeta.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
 const asAny = (l: unknown) => l as AnyLogic;
@@ -78,5 +80,15 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7: Darpan, symmetry (lines of symmetry laid and folded; the smallest turn and the order of turn symmetry)
   "darpan/mirror": asAny(darpanLogic),
   "darpan/turn": asAny(darpanLogic),
+  // round 7: Feeta, length and distance (a ruler, a cm tape, a garden fence, a trip meter, routes in order); never timed
+  "feeta/measure": asAny(feetaLogic),
+  "feeta/fence": asAny(feetaLogic),
+  "feeta/trip": asAny(feetaLogic),
+  "feeta/compare": asAny(feetaLogic),
+  // round 7: Guna, multi-digit multiplication and division (a field cut into place-value pieces and a weighed truck, a godown
+  // shared into equal trucks, stories whose leftovers decide); nothing runs on a clock
+  "guna/field": asAny(gunaLogic),
+  "guna/pack": asAny(gunaLogic),
+  "guna/story": asAny(gunaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
