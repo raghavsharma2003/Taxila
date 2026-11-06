@@ -1,0 +1,613 @@
+{
+ "topicId": "c7-maths-ch05-t02",
+ "classLevel": 7,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "samaantar rekhayein / parallel lines", "en": "parallel lines" },
+  { "hi": "lamb rekhayein / perpendicular lines", "en": "perpendicular lines" },
+  { "hi": "samkon (90°)", "en": "right angle (90°)" },
+  { "hi": "doori / faasla", "en": "gap / distance between lines" },
+  { "hi": "disha", "en": "direction" },
+  { "hi": "rekhakhand / segment", "en": "line segment" },
+  { "hi": "crossing bindu", "en": "point where lines meet" },
+  { "hi": "tirchhi", "en": "slanting / tilted" },
+  { "hi": "set-square", "en": "set-square" },
+  { "hi": "mod / crease", "en": "fold / crease" }
+ ],
+ "skills": [
+  {
+   "skillId": "c7-maths-ch05-t02-s1",
+   "hook": {
+    "convey": "two straight lines going the same way side by side → the gap between them never changes → they never meet however far they go; rail tracks, the two creases at a cricket pitch end (different lengths, still side by side), ruled lines of a drawing copy",
+    "interestSlots": [
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Train ki do patriyan hamesha ek hi disha mein chalti hain. Unke beech ki doori har jagah ek jaisi rehti hai, isliye kitni bhi door jaao, patriyan kabhi nahi milti.",
+       "en": "The two rails of a train track always run in the same direction. The gap between them is the same everywhere, so however far you go, the rails never meet."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket pitch ke ek sire par bowling crease aur popping crease ek hi disha mein kheenchi jaati hain, aur unke beech har jagah barabar doori hoti hai. Popping crease zyada lambi hoti hai, phir bhi dono saath-saath chalti hain.",
+       "en": "At one end of a cricket pitch the bowling crease and the popping crease are drawn in the same direction, with the same gap between them everywhere. The popping crease is longer, yet the two still run side by side."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing copy ki lines dekho: har line agli line se barabar doori par hai, page ke baayein kinaare se daayein kinaare tak.",
+       "en": "Look at the lines of a drawing copy: each line is the same distance from the next, from the left edge of the page to the right edge."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "parallel = same direction + gap the same everywhere → never meet, however far extended; AB above CD, gap 3 cm at the left edge and 3 cm at the right edge; the child then adds a third parallel line EF 2 cm below CD → AB to EF = 3 + 2 = 5 cm",
+     "mustSay": [
+      { "hi": "parallel lines", "en": "parallel lines" },
+      { "hi": "ek hi disha", "en": "the same direction" },
+      { "hi": "doori har jagah barabar", "en": "the gap is the same everywhere" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "baayein kinaare", "items": ["AB se CD 3 cm"] }, "right": { "title": "daayein kinaare", "items": ["AB se CD 3 cm"] } } },
+     "point": {
+      "hi": "Page par do seedhi lines hain, upar AB aur neeche CD. Baayein kinaare par AB se CD tak doori 3 cm hai, aur daayein kinaare par bhi 3 cm. Doori har jagah barabar hai, toh dono ek hi disha mein chalti hain, aur page kitna bhi lamba karo, kabhi nahi milengi. Aisi lines ko parallel lines kehte hain.",
+      "en": "There are two straight lines on the page, AB on top and CD below. At the left edge the gap from AB to CD is 3 cm, and at the right edge it is also 3 cm. The gap is the same everywhere, so both run in the same direction, and however long you make the page, they will never meet. Such lines are called parallel lines."
+     },
+     "ask": {
+      "prompt": { "hi": "AB aur CD ke beech doori 3 cm hai. CD ke neeche ek teesri line EF kheenchi, jo CD ke parallel hai aur CD se 2 cm door hai. AB aur EF ke beech doori kitni hai?", "en": "The gap between AB and CD is 3 cm. Below CD a third line EF is drawn, parallel to CD and 2 cm away from it. What is the gap between AB and EF?" },
+      "key": "5 cm",
+      "accept": ["5", "5 centimetre", "5 centimetres"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "length plays no part: segment PQ 2 cm, RS 7 cm, same direction, gap from PQ's two ends to RS 4 cm both times → the child decides parallel from direction and gap, not from length",
+     "mustSay": [
+      { "hi": "lambai", "en": "length" },
+      { "hi": "disha", "en": "direction" },
+      { "hi": "doori", "en": "gap" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "segment PQ", "items": ["lambai 2 cm"] }, "right": { "title": "segment RS", "items": ["lambai 7 cm"] } } },
+     "point": {
+      "hi": "Segment PQ sirf 2 cm lamba hai aur segment RS 7 cm. Dono ek hi disha mein jaate hain. PQ ke dono siron se RS tak doori naapi, aur dono jagah 4 cm aayi. Ab socho, PQ ko usi disha mein aage badhao toh kya hota hai.",
+      "en": "Segment PQ is only 2 cm long and segment RS is 7 cm. Both go in the same direction. The gap from each end of PQ to RS was measured, and it came out 4 cm both times. Now think about what happens if PQ is extended in the same direction."
+     },
+     "ask": {
+      "prompt": { "hi": "PQ 2 cm aur RS 7 cm lamba hai, disha ek hai aur doori dono jagah 4 cm hai. Kya PQ aur RS parallel hain, haan ya nahi?", "en": "PQ is 2 cm long and RS is 7 cm; the direction is the same and the gap is 4 cm at both places. Are PQ and RS parallel, yes or no?" },
+      "key": "haan",
+      "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
+      "targets": "c7-maths-ch05-t02-m-same-length",
+      "wrongIfMis": "nahi"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "not meeting on the page is not enough: gap 6 cm at the left edge, 4 cm at the right edge of a 20 cm page → the gap shrinks 1 cm every 10 cm → it reaches 0 off the page, so the lines meet; the child works out where",
+     "mustSay": [
+      { "hi": "doori ghat rahi hai", "en": "the gap is shrinking" },
+      { "hi": "page ke bahar", "en": "beyond the page" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "baayein kinaare", "items": ["doori 6 cm"] }, "right": { "title": "daayein kinaare", "items": ["doori 4 cm"] } } },
+     "point": {
+      "hi": "Yeh do seedhi lines bhi page par kahin nahi milti. Par baayein kinaare par unke beech doori 6 cm hai aur daayein kinaare par sirf 4 cm. Doori ghat rahi hai, matlab lines dheere-dheere ek-doosre ki taraf aa rahi hain, aur page ke bahar bhi aati rahengi.",
+      "en": "These two straight lines also never meet on the page. But at the left edge the gap between them is 6 cm, and at the right edge only 4 cm. The gap is shrinking, which means the lines are slowly coming towards each other, and they keep coming beyond the page too."
+     },
+     "ask": {
+      "prompt": { "hi": "Page 20 cm chauda hai, toh baayein se daayein jaate hue doori har 10 cm par 1 cm ghatti hai. Daayein kinaare ke aage kitne cm jaakar yeh lines milengi?", "en": "The page is 20 cm wide, so going from left to right the gap shrinks by 1 cm every 10 cm. How many cm beyond the right edge will these lines meet?" },
+      "key": "40 cm",
+      "accept": ["40", "40 centimetre", "40 centimetres"],
+      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+      "wrongIfMis": "kabhi nahi"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek deewar par do seedhi shelves lagi hain, upar wali 90 cm lambi aur neeche wali 60 cm. Inke beech doori naapi gayi: baayein taraf 25 cm, beech mein 25 cm, aur daayein taraf bhi 25 cm. Kya dono shelves parallel hain?",
+     "en": "Two straight shelves are fixed on a wall, the upper one 90 cm long and the lower one 60 cm. The gap between them was measured: 25 cm on the left, 25 cm in the middle and 25 cm on the right as well. Are the two shelves parallel?"
+    },
+    "givens": [
+     { "hi": "upar wali shelf 90 cm aur neeche wali 60 cm lambi hai", "en": "the upper shelf is 90 cm long and the lower one 60 cm" },
+     { "hi": "doori baayein taraf, beech mein aur daayein taraf, teeno taraf 25 cm hai", "en": "the gap is 25 cm on the left, in the middle and on the right" }
+    ],
+    "find": { "hi": "dono shelves parallel hain ya nahi", "en": "whether the two shelves are parallel" },
+    "steps": [
+     {
+      "do": { "hi": "Teeno taraf ki doori aapas mein milao", "en": "Compare the three measured gaps" },
+      "result": "teeno taraf doori 25 cm, koi badlaav nahi",
+      "why": { "hi": "doori na ghati na badhi, toh shelves na paas aa rahi hain na door ja rahi hain", "en": "the gap neither shrank nor grew, so the shelves are neither coming closer nor moving apart" }
+     },
+     {
+      "do": { "hi": "Ab dono shelves ki lambai dekho", "en": "Now look at the lengths of the two shelves" },
+      "result": "upar wali 90 cm, neeche wali 60 cm, lambai alag",
+      "why": { "hi": "60 cm wali shelf ko usi disha mein aage badhao toh woh 90 cm wali ke saath-saath hi chalegi", "en": "if the 60 cm shelf is extended in the same direction, it just runs alongside the 90 cm one" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Doori har jagah 25 cm hai aur lambai alag hai. Toh kya yeh shelves parallel hain, haan ya nahi?", "en": "The gap is 25 cm everywhere and the lengths differ. So are these shelves parallel, yes or no?" },
+     "key": "haan",
+     "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
+     "targets": "c7-maths-ch05-t02-m-same-length",
+     "wrongIfMis": "nahi"
+    },
+    "answer": { "hi": "haan, dono shelves parallel hain", "en": "yes, the two shelves are parallel" },
+    "why": {
+     "hi": "dono ek hi disha mein hain aur doori har jagah 25 cm hai, aur shelf ki lambai se parallel hone par koi farak nahi padta",
+     "en": "both go in the same direction and the gap is 25 cm everywhere, and a shelf's length makes no difference to being parallel"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "upar wali shelf", "items": ["90 cm", "doori 25 cm"] }, "right": { "title": "neeche wali shelf", "items": ["60 cm", "doori 25 cm"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Segment EF 5 cm lamba hai aur segment GH 11 cm. Dono ek hi disha mein hain, aur EF ke dono siron se GH tak doori 3 cm hai. Kya EF aur GH parallel hain, haan ya nahi?",
+      "en": "Segment EF is 5 cm long and segment GH is 11 cm. Both go in the same direction, and the gap from each end of EF to GH is 3 cm. Are EF and GH parallel, yes or no?"
+     },
+     "key": "haan",
+     "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
+     "targets": "c7-maths-ch05-t02-m-same-length",
+     "wrongIfMis": "nahi",
+     "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Lines ke do jode hain, aur koi bhi joda page par nahi milta. Joda A ki doori baayein 5 cm aur daayein 5 cm hai. Joda B ki doori baayein 5 cm aur daayein 4 cm hai. Kaunsa joda parallel hai, A ya B?",
+      "en": "There are two pairs of lines, and neither pair meets on the page. Pair A's gap is 5 cm on the left and 5 cm on the right. Pair B's gap is 5 cm on the left and 4 cm on the right. Which pair is parallel, A or B?"
+     },
+     "key": "joda A",
+     "accept": ["A", "pair A", "joda A", "A wala"],
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+     "wrongIfMis": "dono",
+     "board": { "template": "compare@1", "params": { "left": { "title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"] }, "right": { "title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch05-t02-i01", "why": "first look around the room: edges that run side by side with a steady gap" },
+    { "itemId": "c7-maths-ch05-t02-i06", "why": "say why a 2 cm and a 10 cm segment can still be parallel: direction, not length" },
+    { "itemId": "c7-maths-ch05-t02-i04", "why": "predict: gap 4 cm then 3 cm across the page → they meet off the page, not parallel" },
+    { "itemId": "c7-maths-ch05-t02-i05", "why": "contrast ruled lines (steady gap) with lines 2 cm then 1 cm apart; neither touches on the page" },
+    { "itemId": "c7-maths-ch05-t02-rl-h1", "why": "real court boundaries 5 m and 4.8 m apart: a small change in the gap still means not parallel" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch05-t02-m-same-length",
+     "move": "extend the short segment along its own direction: it grows as long as the other while the gap stays put → length can always be changed, so it cannot decide parallel; only direction and gap do",
+     "say": {
+      "hi": "Chhote segment ko usi disha mein aage badhao, woh lamba hota jaata hai par doori wahi rehti hai. Lambai toh hum kabhi bhi badha sakte hain, isliye parallel hona sirf disha aur doori se tay hota hai.",
+      "en": "Extend the short segment in the same direction: it keeps getting longer but the gap stays the same. We can always change a length, so being parallel is decided only by direction and gap."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "chhote segment ko", "items": ["aage badhao"] }, "right": { "title": "doori", "items": ["wahi rehti hai"] } } },
+     "then": {
+      "prompt": { "hi": "AB 3 cm, CD 3 cm, EF 9 cm. AB se CD ki doori 2 cm se 1 cm hai, EF tak har jagah 2 cm. AB ke parallel kaun, CD ya EF?", "en": "AB, CD, EF are 3 cm, 3 cm, 9 cm. Gap AB to CD: 2 cm then 1 cm; AB to EF: 2 cm everywhere. Parallel to AB: CD or EF?" },
+      "key": "EF",
+      "accept": ["segment EF", "EF wala"],
+      "targets": "c7-maths-ch05-t02-m-same-length",
+      "wrongIfMis": "CD",
+      "board": { "template": "compare@1", "params": { "left": { "title": "CD 3 cm", "items": ["2 cm se 1 cm"] }, "right": { "title": "EF 9 cm", "items": ["har jagah 2 cm"] } } }
+     }
+    },
+    {
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+     "move": "the page edge is not the end of a line: zoom out past the edge; a shrinking gap keeps shrinking until it is 0, and there the lines meet → measure the gap at two places, don't just look for a touch",
+     "say": {
+      "hi": "Page ka kinaara line ka ant nahi hai, line aage bhi chalti hai. Agar doori ghat rahi hai, toh aage chalte-chalte woh khatam ho jaayegi, aur wahin dono lines milengi.",
+      "en": "The edge of the page is not the end of a line; the line goes on. If the gap is shrinking, it will run out further along, and right there the two lines will meet."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "doori ghat rahi", "items": ["lines milengi"] }, "right": { "title": "page ka kinaara", "items": ["line ka ant nahi"] } } },
+     "then": {
+      "prompt": { "hi": "Do lines ki doori ek jagah 8 cm hai, 10 cm aage 7 cm. Isi tarah ghatti rahe toh 7 cm wali jagah se kitna aage milengi?", "en": "Two lines are 8 cm apart, and 7 cm apart 10 cm further on. Shrinking so, how far past the 7 cm point do they meet?" },
+      "key": "70 cm",
+      "accept": ["70", "70 centimetre", "70 centimetres"],
+      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+      "wrongIfMis": "kabhi nahi",
+      "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 8 cm"] }, "right": { "title": "10 cm aage", "items": ["doori 7 cm"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Parallel lines kabhi nahi milti. Ab hum woh lines dekhenge jo milti hain, aur ek khaas tarah se milti hain, theek samkon par.",
+    "en": "Parallel lines never meet. Now we will look at lines that do meet, and meet in a special way, exactly at a right angle."
+   }
+  },
+  {
+   "skillId": "c7-maths-ch05-t02-s2",
+   "hook": {
+    "convey": "lines that meet at exactly 90° are everywhere, and turning the picture never changes the angle; a road crossing a railway track square-on, the corner of a drawing sheet turned any way",
+    "interestSlots": [
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Railway crossing par sadak aksar train ki patri ko theek 90° par paar karti hai, taaki car aur bus seedhe nikal sakein.",
+       "en": "At a railway crossing the road often crosses the train track at exactly 90°, so that cars and buses can go straight across."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet ko kisi bhi taraf ghuma do, uske har kone par do kinaare 90° par hi milte hain. Sheet tirchhi ho jaaye toh bhi kone ka angle wahi rehta hai.",
+       "en": "Turn a drawing sheet any way you like: at each corner two edges still meet at 90°. Even when the sheet is tilted, the corner's angle stays the same."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "perpendicular = two lines meeting at 90° (samkon); the small square mark shows it; extend both lines through the meeting point → the child works out how many of the four angles at the crossing are 90° (linear pairs: 180 − 90 = 90 each)",
+     "mustSay": [
+      { "hi": "perpendicular", "en": "perpendicular" },
+      { "hi": "samkon", "en": "right angle" },
+      { "hi": "90°", "en": "90°" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } },
+     "point": {
+      "hi": "Yeh do lines ek bindu par milti hain, aur unke beech ka angle 90° hai, yaani samkon. Kone par yeh chhota square ka nishaan samkon dikhata hai. Jo do lines 90° par milti hain, unhe perpendicular lines kehte hain.",
+      "en": "These two lines meet at a point, and the angle between them is 90°, that is, a right angle. The small square mark at the corner shows the right angle. Two lines that meet at 90° are called perpendicular lines."
+     },
+     "ask": {
+      "prompt": { "hi": "In dono lines ko milne wale bindu ke aar-paar aage badhao, toh ek crossing banegi. Crossing par bane angles mein se kitne angle 90° ke honge?", "en": "Extend both lines through the meeting point and a crossing forms. How many of the angles at the crossing will be 90°?" },
+      "key": "4",
+      "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "tilt does not matter: an upright square and the same square turned → every corner still a right angle; pick one side of the tilted square → the child finds how many other sides are perpendicular to it (the 2 neighbours; the opposite side is parallel)",
+     "mustSay": [
+      { "hi": "tircha", "en": "tilted" },
+      { "hi": "kone ka angle", "en": "the corner's angle" }
+     ],
+     "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["seedha square", "tircha square"] } },
+     "point": {
+      "hi": "Board par do square hain. Pehla seedha rakha hai, aur doosre ko ghuma kar tircha kar diya hai. Ghumaane se kone ka angle nahi badalta, har kone par angle samkon hi rehta hai, chahe koi bhuja seedhi khadi na ho.",
+      "en": "There are two squares on the board. The first stands straight, and the second has been turned so it is tilted. Turning does not change the corner's angle; every corner stays a right angle, even though no side stands straight up."
+     },
+     "ask": {
+      "prompt": { "hi": "Tirche square ki koi ek bhuja chuno. Baaki bhujaon mein se kitni bhujayein us bhuja ke perpendicular hain?", "en": "Pick any one side of the tilted square. How many of the other sides are perpendicular to that side?" },
+      "key": "2",
+      "accept": ["do", "two", "2 bhujayein", "do bhujayein", "two sides"],
+      "targets": "c7-maths-ch05-t02-m-perp-upright",
+      "wrongIfMis": "0"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "nearly 90° is not 90°: lines meeting at 88° look square but are not perpendicular → the child finds how much more the angle must open (2°)",
+     "mustSay": [
+      { "hi": "88°", "en": "88°" },
+      { "hi": "theek 90°", "en": "exactly 90°" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 88 }] } },
+     "point": {
+      "hi": "Yeh do lines 88° par milti hain. Dekhne mein lagbhag samkon lagta hai, par perpendicular ke liye angle theek 90° hona chahiye, lagbhag se kaam nahi chalta.",
+      "en": "These two lines meet at 88°. It looks almost like a right angle, but for perpendicular lines the angle must be exactly 90°; almost is not enough."
+     },
+     "ask": {
+      "prompt": { "hi": "Ek line ko ghuma kar angle thoda aur kholna hai, taaki yeh lines perpendicular ban jaayein. Angle ko kitne degree aur kholna hoga?", "en": "One line is to be turned to open the angle a little more, so that these lines become perpendicular. By how many more degrees must the angle open?" },
+      "key": "2°",
+      "accept": ["2", "2 degree", "2 degrees", "do degree"]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek ghadi deewar par thodi tirchhi tangi hai. Ghadi par 12 barabar nishaan hain, aur 3:00 baje aur 4:00 baje minute ki sooi 12 par hoti hai. In dono samay par ghante aur minute ki sooiyan perpendicular hain ya nahi?",
+     "en": "A clock hangs slightly tilted on a wall. The clock has 12 equal marks, and at 3:00 and at 4:00 the minute hand is on 12. At each of these times, are the hour hand and the minute hand perpendicular or not?"
+    },
+    "givens": [
+     { "hi": "ghadi par 12 barabar nishaan hain", "en": "the clock has 12 equal marks" },
+     { "hi": "samay 3:00 aur 4:00 hai, minute ki sooi dono baar 12 par", "en": "the times are 3:00 and 4:00, with the minute hand on 12 both times" },
+     { "hi": "ghadi tirchhi tangi hai", "en": "the clock hangs tilted" }
+    ],
+    "find": { "hi": "3:00 aur 4:00 par sooiyan perpendicular hain ya nahi", "en": "whether the hands are perpendicular at 3:00 and at 4:00" },
+    "steps": [
+     {
+      "do": { "hi": "Poore chakkar ko 12 barabar hisson mein baanto", "en": "Share the full turn into 12 equal parts" },
+      "result": "360° ÷ 12 = 30°, do paas wale nishaanon ke beech",
+      "why": { "hi": "ghadi par 12 barabar nishaan hain aur poora chakkar 360° ka hota hai", "en": "the clock has 12 equal marks and a full turn is 360°" }
+     },
+     {
+      "do": { "hi": "3:00 par sooiyan 12 aur 3 par hain, unke beech 3 hisse hain", "en": "At 3:00 the hands are on 12 and 3, with 3 parts between them" },
+      "result": "3 × 30° = 90°, sooiyan perpendicular",
+      "why": { "hi": "angle theek 90° hai, aur ghadi tirchhi ho toh bhi sooiyon ke beech ka angle nahi badalta", "en": "the angle is exactly 90°, and tilting the clock does not change the angle between the hands" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "4:00 par sooiyan 12 aur 4 par hain. Har hissa 30° ka hai. Sooiyon ke beech angle kitna hai?", "en": "At 4:00 the hands are on 12 and 4. Each part is 30°. What is the angle between the hands?" },
+     "key": "120°",
+     "accept": ["120", "120 degree", "120 degrees"]
+    },
+    "answer": {
+     "hi": "3:00 par angle 90° hai, isliye sooiyan perpendicular hain, aur 4:00 par angle 120° hai, isliye nahi",
+     "en": "at 3:00 the angle is 90°, so the hands are perpendicular, and at 4:00 the angle is 120°, so they are not"
+    },
+    "why": {
+     "hi": "perpendicular ke liye milne ka angle theek 90° chahiye, sooiyan kis taraf jhuki hain isse koi farak nahi padta",
+     "en": "perpendicular needs the meeting angle to be exactly 90°; which way the hands lean makes no difference"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "3:00" }] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek 3 cm lamba segment aur ek 8 cm lamba segment ek bindu par 90° ka angle banate hain. Kya yeh dono perpendicular hain, haan ya nahi?",
+      "en": "A 3 cm segment and an 8 cm segment meet at a point at an angle of 90°. Are they perpendicular, yes or no?"
+     },
+     "key": "haan",
+     "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
+     "targets": "c7-maths-ch05-t02-m-same-length",
+     "wrongIfMis": "nahi",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Plus ke nishaan ki dono lines perpendicular hain. Is nishaan ko ghuma kar X jaisa tircha kar diya. Kya X ki dono lines ab bhi perpendicular hain, haan ya nahi?",
+      "en": "The two lines of a plus sign are perpendicular. The sign is turned so it is tilted like an X. Are the two lines of the X still perpendicular, yes or no?"
+     },
+     "key": "haan",
+     "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
+     "targets": "c7-maths-ch05-t02-m-perp-upright",
+     "wrongIfMis": "nahi",
+     "board": { "template": "compare@1", "params": { "left": { "title": "plus ka nishaan", "items": ["perpendicular lines"] }, "right": { "title": "ghuma kar X", "items": ["X jaisa tircha"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek rectangle photo frame pehle seedha tanga tha, phir deewar par tircha latak gaya. Tirche frame ke kono par bhujayein perpendicular milti hain: sab kono par, kuch par, ya kisi par nahi?",
+      "en": "A rectangular photo frame first hung straight, then slipped and hangs tilted on the wall. At the tilted frame's corners, do the sides meet perpendicularly at all corners, some, or none?"
+     },
+     "key": "sab kono par",
+     "accept": ["sab", "all", "all corners", "all four", "chaaron", "chaaron kono par", "sab par"],
+     "targets": "c7-maths-ch05-t02-m-perp-upright",
+     "wrongIfMis": "kisi par nahi",
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["seedha frame", "tircha frame"] } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch05-t02-i02", "why": "the defining angle: perpendicular lines make 90°" },
+    { "itemId": "c7-maths-ch05-t02-i13", "why": "from memory: all four angles at a perpendicular crossing are 90°" },
+    { "itemId": "c7-maths-ch05-t02-i11", "why": "paper folding: the second fold onto the first crease makes perpendicular creases" },
+    { "itemId": "c7-maths-ch05-t02-i07", "why": "error-spot: tilted lines at 90° called not perpendicular → the angle decides, not the tilt" },
+    { "itemId": "c7-maths-ch05-t02-rl-h2", "why": "railway tracks at 88°: nearly square is not perpendicular" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch05-t02-m-perp-upright",
+     "move": "set-square rotated onto a tilted crossing: its corner is a fixed right angle whichever way it points → turn the set-square until one edge lies on one line; if the other line lies on the other edge, the lines are perpendicular",
+     "say": {
+      "hi": "Set-square ka kona samkon hai. Use kitna bhi ghumao, kone ka angle wahi rehta hai. Isliye tirchhi crossing par set-square ko bhi ghuma kar rakho, kona fit ho jaaye toh lines perpendicular hain.",
+      "en": "The corner of a set-square is a right angle. However much you turn it, the corner's angle stays the same. So on a tilted crossing, turn the set-square too; if the corner fits, the lines are perpendicular."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "set-square ka kona" }] } },
+     "then": {
+      "prompt": { "hi": "Crossing A: ek line khadi, ek leti, angle 85°. Crossing B: dono lines tirchhi, angle 90°. Perpendicular kaunsi, A ya B?", "en": "Crossing A: one line upright, one flat, 85°. Crossing B: both tilted, 90°. Which is perpendicular, A or B?" },
+      "key": "crossing B",
+      "accept": ["B", "B wali", "the B one"],
+      "targets": "c7-maths-ch05-t02-m-perp-upright",
+      "wrongIfMis": "crossing A",
+      "board": { "template": "compare@1", "params": { "left": { "title": "crossing A", "items": ["khadi aur leti", "angle 85°"] }, "right": { "title": "crossing B", "items": ["dono tirchhi", "angle 90°"] } } }
+     }
+    },
+    {
+     "targets": "c7-maths-ch05-t02-m-same-length",
+     "move": "stretch or shrink one line while the meeting angle stays fixed → length changes, the angle does not → perpendicular is read from the angle alone",
+     "say": {
+      "hi": "Perpendicular hone ke liye sirf milne ka angle dekho. Kisi line ko lamba ya chhota karo, milne ka angle wahi rehta hai, aur woh 90° ho toh bas.",
+      "en": "For perpendicular, look only at the angle where the lines meet. Make a line longer or shorter and the meeting angle stays the same; if it is 90°, that is all it takes."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "line lamba karo", "items": ["angle wahi"] }, "right": { "title": "perpendicular", "items": ["angle 90°"] } } },
+     "then": {
+      "prompt": { "hi": "Joda P: 5 cm aur 5 cm ke segment, 80° par milte. Joda Q: 2 cm aur 9 cm ke, 90° par. Perpendicular kaunsa, P ya Q?", "en": "Pair P: 5 cm and 5 cm segments meeting at 80°. Pair Q: 2 cm and 9 cm, at 90°. Which is perpendicular, P or Q?" },
+      "key": "joda Q",
+      "accept": ["Q", "pair Q", "Q wala"],
+      "targets": "c7-maths-ch05-t02-m-same-length",
+      "wrongIfMis": "joda P",
+      "board": { "template": "compare@1", "params": { "left": { "title": "joda P", "items": ["5 cm aur 5 cm", "80°"] }, "right": { "title": "joda Q", "items": ["2 cm aur 9 cm", "90°"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab parallel aur perpendicular lines pehchaan li. Agle hisse mein inhe set-square aur kaagaz ke mod se khud banayenge, aur jaanchenge bhi.",
+    "en": "Now we can recognise parallel and perpendicular lines. In the next part we will draw them ourselves with a set-square and paper folds, and check them too."
+   }
+  },
+  {
+   "skillId": "c7-maths-ch05-t02-s3",
+   "hook": {
+    "convey": "making the lines, not just spotting them: a window grill in a drawing needs parallel bars (set-square slid along a ruler), and zebra-crossing stripes are checked by measuring the gap at both ends",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing mein khidki ki grill banani ho toh saari khadi pattiyan parallel chahiye. Ruler aur set-square se yeh kaam aasaan ho jaata hai.",
+       "en": "To draw a window grill, all the upright bars need to be parallel. A ruler and a set-square make that easy."
+      }
+     },
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Sadak par zebra crossing ki safed pattiyan parallel hoti hain. Painter har patti ke dono siron par doori naap kar jaanchta hai, taaki car aur bus waalon ko seedhi pattiyan dikhein.",
+       "en": "The white stripes of a zebra crossing on a road are parallel. The painter measures the gap at both ends of each stripe, so that car and bus drivers see straight stripes."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "paper folding makes a right angle: fold once → a straight crease (a straight angle, 180°); fold again so the crease lies on itself → the 180° is shared into two equal halves → the child works out each angle at the crossing (90°)",
+     "mustSay": [
+      { "hi": "mod", "en": "fold" },
+      { "hi": "crease", "en": "crease" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "ek baar modo", "items": ["seedhi crease"] }, "right": { "title": "dobara modo", "items": ["usi ke upar"] } } },
+     "point": {
+      "hi": "Kaagaz ko ek baar modo, toh ek seedhi crease banti hai. Ab is crease ko usi ke upar rakh kar kaagaz ko dobara modo, taaki crease ke dono hisse ek-doosre par barabar baithein. Kholo toh do creases ek bindu par milti hain.",
+      "en": "Fold a paper once and a straight crease forms. Now fold the paper again so that the crease lies on top of itself, with its two halves sitting exactly on each other. Open it and two creases meet at a point."
+     },
+     "ask": {
+      "prompt": { "hi": "Pehli crease ek seedhi line hai, yaani 180°. Doosre mod ne use do barabar hisson mein baant diya. Creases ke milne par har angle kitne degree ka hai?", "en": "The first crease is a straight line, that is 180°. The second fold shared it into two equal halves. How many degrees is each angle where the creases meet?" },
+      "key": "90°",
+      "accept": ["90", "90 degree", "90 degrees", "samkon"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "checking a crossing with a set-square: corner on the meeting point, one edge along one line → the other line along the other edge = right angle; if the other line opens past the edge, the angle is bigger than 90° → the child adds the extra",
+     "mustSay": [
+      { "hi": "set-square ka kona", "en": "the set-square's corner" },
+      { "hi": "bhuja", "en": "edge" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "set-square ka kona" }] } },
+     "point": {
+      "hi": "Set-square ke ek kone par uski do bhujayein samkon banati hain. Jaanchne ke liye yeh kona crossing bindu par rakho aur ek bhuja ko ek line par bithao. Doosri line doosri bhuja ke saath-saath chale toh angle samkon hai, warna nahi.",
+      "en": "At one corner of a set-square its two edges make a right angle. To check, put this corner on the meeting point and lay one edge along one line. If the other line runs along the other edge, the angle is a right angle; if not, it isn't."
+     },
+     "ask": {
+      "prompt": { "hi": "Set-square ka kona ek crossing par rakha. Ek line ek bhuja par theek baithi, par doosri line doosri bhuja se 5° aur bahar khuli hai. Crossing ka angle kitna hai?", "en": "A set-square's corner is put on a crossing. One line sits exactly on one edge, but the other line opens 5° further out than the other edge. What is the angle at the crossing?" },
+      "key": "95°",
+      "accept": ["95", "95 degree", "95 degrees"]
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "drawing parallels: one set-square edge on the line, ruler held against another edge, slide the set-square along the ruler → it does not turn, so the drawing edge keeps its direction → every line drawn is parallel to the first; lines drawn 2 cm apart each time → the child finds the first-to-third gap",
+     "mustSay": [
+      { "hi": "ruler ke saath khiskao", "en": "slide along the ruler" },
+      { "hi": "disha nahi badalti", "en": "the direction does not change" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "set-square", "items": ["ruler ke saath khiskao"] }, "right": { "title": "bhuja ki disha", "items": ["nahi badalti"] } } },
+     "point": {
+      "hi": "Set-square ki ek bhuja ko ruler se sata kar rakho, aur ruler ko kas kar pakdo. Ab set-square ko ruler ke saath khiskao. Woh ghumta nahi, isliye uski doosri bhuja ki disha bhi nahi badalti, aur har jagah kheenchi line pichhli line ke parallel hoti hai.",
+      "en": "Put one edge of the set-square against a ruler and hold the ruler firmly. Now slide the set-square along the ruler. It does not turn, so the direction of its other edge does not change either, and every line drawn is parallel to the one before."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi tarah set-square khiska kar teen parallel lines kheenchi, har agli line pichhli se 2 cm neeche. Pehli aur teesri line ke beech doori kitni hai?", "en": "Sliding the set-square this way, three parallel lines are drawn, each one 2 cm below the one before. What is the gap between the first and the third line?" },
+      "key": "4 cm",
+      "accept": ["4", "4 centimetre", "4 centimetres"]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Page par ek line l kheenchi hai, aur l se 6 cm upar ek bindu P hai. Ruler aur set-square se P se hokar l ke parallel ek line m kheencho, aur jaancho ki woh sach mein parallel hai.",
+     "en": "A line l is drawn on a page, and a point P is 6 cm above l. Using a ruler and a set-square, draw a line m through P parallel to l, and check that it really is parallel."
+    },
+    "givens": [
+     { "hi": "page par line l hai", "en": "there is a line l on the page" },
+     { "hi": "bindu P, l se 6 cm upar hai", "en": "point P is 6 cm above l" },
+     { "hi": "ruler aur set-square hain", "en": "a ruler and a set-square are available" }
+    ],
+    "find": { "hi": "P se hokar l ke parallel line m, aur uski jaanch", "en": "a line m through P parallel to l, and a check" },
+    "steps": [
+     {
+      "do": { "hi": "Set-square ki ek bhuja line l par theek rakho", "en": "Place one edge of the set-square exactly on line l" },
+      "result": "set-square ki bhuja l ke upar",
+      "why": { "hi": "isi bhuja ki disha nayi line ko deni hai", "en": "this edge's direction is what the new line must have" }
+     },
+     {
+      "do": { "hi": "Ruler ko set-square ki doosri bhuja se sata kar kas kar pakdo", "en": "Hold the ruler firmly against another edge of the set-square" },
+      "result": "ruler sthir, set-square ke liye raasta",
+      "why": { "hi": "ruler ke saath khiskaane par set-square ghumta nahi", "en": "sliding along the ruler, the set-square does not turn" }
+     },
+     {
+      "do": { "hi": "Set-square ko ruler ke saath khiskao jab tak wahi bhuja P tak na pahunche, phir us bhuja ke saath line m kheencho", "en": "Slide the set-square along the ruler until that same edge reaches P, then draw line m along that edge" },
+      "result": "line m, P se hokar, l ki disha mein",
+      "why": { "hi": "khiskaane se bhuja ki disha nahi badli", "en": "sliding did not change the edge's direction" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab jaanch karo: l aur m ke beech do door-door jagah doori naapi. Agar m sach mein parallel hai, toh dono jagah doori kitni aani chahiye?", "en": "Now check: the gap between l and m is measured at two places far apart. If m really is parallel, what should the gap be at both places?" },
+     "key": "6 cm",
+     "accept": ["6", "6 centimetre", "6 centimetres", "6 cm dono jagah"],
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+     "wrongIfMis": "alag-alag"
+    },
+    "answer": {
+     "hi": "line m, P se hokar l ke parallel hai, aur dono jagah doori 6 cm aati hai",
+     "en": "line m passes through P parallel to l, and the gap is 6 cm at both places"
+    },
+    "why": {
+     "hi": "khiskaane par set-square ki bhuja ki disha nahi badli, aur doori har jagah barabar hai toh l aur m kabhi nahi milengi",
+     "en": "sliding did not change the direction of the set-square's edge, and with the gap equal everywhere, l and m will never meet"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "line l", "items": ["set-square ki bhuja"] }, "right": { "title": "bindu P", "items": ["l ke upar"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "{friend} ne set-square ko seedha rakh kar ek tirchhi crossing jaanchi, aur kona fit nahi hua. Phir set-square ghumaya toh kona theek fit ho gaya. Kya lines perpendicular hain, haan ya nahi?",
+      "en": "{friend} checked a tilted crossing with the set-square held straight, and the corner did not fit. Then {friend} turned the set-square and the corner fitted exactly. Are the lines perpendicular, yes or no?"
+     },
+     "key": "haan",
+     "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
+     "targets": "c7-maths-ch05-t02-m-perp-upright",
+     "wrongIfMis": "nahi",
+     "board": { "template": "compare@1", "params": { "left": { "title": "seedha set-square", "items": ["fit nahi"] }, "right": { "title": "ghumaya set-square", "items": ["theek fit"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Set-square se do lines kheenchi. Jaanch mein ek jagah unke beech doori 5 cm aayi aur doosri jagah 5.5 cm. Page par lines nahi milti. Kya lines parallel bani, haan ya nahi?",
+      "en": "Two lines were drawn with a set-square. On checking, the gap between them was 5 cm at one place and 5.5 cm at another. The lines do not meet on the page. Did the lines come out parallel, yes or no?"
+     },
+     "key": "nahi",
+     "accept": ["no", "nahi, parallel nahi", "not parallel", "nahin"],
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+     "wrongIfMis": "haan",
+     "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 5 cm"] }, "right": { "title": "doosri jagah", "items": ["doori 5.5 cm"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch05-t02-i09", "why": "say how a set-square or folded paper corner checks a crossing for 90°" },
+    { "itemId": "c7-maths-ch05-t02-rl-h3", "why": "choose the set-square move that draws a perpendicular through a marked point" },
+    { "itemId": "c7-maths-ch05-t02-i10", "why": "real shelves 30 cm and 31.5 cm apart: not parallel, and say what to fix" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch05-t02-m-perp-upright",
+     "move": "a right-angle tester (set-square or a twice-folded paper corner) is turned to match the crossing, never the crossing to match the page; the corner fits → perpendicular, whatever the tilt",
+     "say": {
+      "hi": "Samkon jaanchne wala kona, chahe set-square ka ho ya mode hue kaagaz ka, crossing ke hisaab se ghumate hain. Lines kitni bhi tirchhi hon, kona fit ho jaaye toh woh perpendicular hain.",
+      "en": "A right-angle corner, whether a set-square's or a folded paper's, is turned to match the crossing. However tilted the lines are, if the corner fits, they are perpendicular."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "kaagaz ka kona" }] } },
+     "then": {
+      "prompt": { "hi": "Tirchhi crossing par ghumaya kaagaz ka kona: ek line kinaare par, doosri kinaare se 3° andar. Angle kitna hai?", "en": "A turned paper corner on a tilted crossing: one line on an edge, the other 3° inside the other edge. What is the angle?" },
+      "key": "87°",
+      "accept": ["87", "87 degree", "87 degrees"],
+      "board": { "template": "compare@1", "params": { "left": { "title": "tirchhi crossing", "items": ["kaagaz ka kona"] }, "right": { "title": "doosri line", "items": ["3° andar"] } } }
+     }
+    },
+    {
+     "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+     "move": "measure the gap at two places far apart, never just look for a touch: equal gaps → parallel; any difference, however small → the lines close in and meet beyond the page",
+     "say": {
+      "hi": "Jaanch ke liye do door-door jagah doori naapo. Doori thodi si bhi alag ho, toh lines aage jaakar milengi, chahe page par na milein.",
+      "en": "To check, measure the gap at two places far apart. If the gap differs even a little, the lines will meet further on, even if they don't meet on the page."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "door-door", "items": ["doori naapo"] }, "right": { "title": "doori alag", "items": ["aage milengi"] } } },
+     "then": {
+      "prompt": { "hi": "Do lines ki doori baayein 7 cm aur daayein 6.8 cm hai. Parallel banane ke liye daayein doori kitni aur badhani hogi?", "en": "Two lines are 7 cm apart on the left and 6.8 cm on the right. By how much must the right gap grow to make them parallel?" },
+      "key": "0.2 cm",
+      "accept": ["0.2", "0.2 centimetre", "2 mm", "2 millimetre"],
+      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
+      "wrongIfMis": "kuch nahi",
+      "board": { "template": "compare@1", "params": { "left": { "title": "baayein", "items": ["doori 7 cm"] }, "right": { "title": "daayein", "items": ["doori 6.8 cm"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}
