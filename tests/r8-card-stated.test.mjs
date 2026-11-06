@@ -155,8 +155,12 @@ test(`director8 S3′: on every check and then-card (${DIRS.join(" + ")}), a pic
     // (her picture line: Brain writes it from the preselected row — the second view's bars, when that is what was picked —
     // and speaks the card's prompt whole, last)
     const p = s.turn(c.text, { request: { kind: "picture" } }, (row) => {
-      const bars = [...String(row ?? "").matchAll(/bar\d (\d+) equal parts, (?:(\d+) shaded = (\d+\/\d+)|\? \(asked\))/g)];
-      return bars.length ? `${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] ? `, ${b[2]} rangin (${b[3]})` : ""}`).join("; ")}. ${c.text}` : c.text;
+      const r = String(row ?? "");
+      const bars = [...r.matchAll(/bar\d (\d+) equal parts, (\d+) shaded = (\d+\/\d+|\?)/g)];
+      if (bars.length) return `${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] !== "0" ? `, ${b[2]} rangin${b[3] === "?" ? "" : ` (${b[3]})`}` : ""}`).join("; ")}. ${c.text}`;
+      const ws = [...r.matchAll(/whole\d (\d+) (equal|unequal) parts(?:, (\d+) shaded)?/g)];
+      if (ws.length) return `Yeh dekho: ${ws.map((w) => `${w[1]} ${w[2] === "equal" ? "barabar" : "alag-alag"} tukde${w[3] ? `, ${w[3]} rangin` : ""}`).join("; ")}. ${c.text}`;
+      return c.text;
     });
     if (p?.state !== "revealed" || !p.artifact?.script?.ops?.length) none.push(`${c.dir.replace("data/", "")} ${c.T} ${c.where}: ${p?.state ?? "null"}`);
   }
@@ -249,23 +253,29 @@ test("director9 S3′ on the run path: every picture request of the run, with th
     ["c5-maths-ch02-t01", "steady T34 / offtopic T28", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 4, label: "1/2" }] } }, "parts", "fraction-bars@1"],
     ["c5-maths-ch02-t01", "stuck T18 / steering T14", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "parts", "fraction-bars@1"],
     ["c4-maths-ch05-t01", "stuck T18 / steering T14", { template: "shade-grid@1", params: { rows: 1, cols: 4, shade: 3, labels: false, hideResult: true } }, "parts", "fraction-bars@1"],
+    ["c4-maths-ch05-t01", "offtopic T26 / steady T18", { template: "compare@1", params: { left: { title: "Cake A", items: ["3 tukde", "1 bada, 2 chhote", "1/3 nahi"] }, right: { title: "Cake B", items: ["3 tukde", "sab barabar", "har tukda 1/3"] } } }, "wholes", "wholes@1",
+      "Screen par Cake A aur Cake B: dono ke 3 tukde. Cake A mein 1 bada, 2 chhote, isliye 1/3 nahi; Cake B mein sab barabar, har tukda 1/3."],
   ];
   const lineFor = (row) => {
     const bars = [...String(row ?? "").matchAll(/bar\d (\d+) equal parts, (\d+) shaded = (\d+\/\d+|\?)/g)];
     if (bars.length) return `Yeh dekho: ${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] !== "0" ? `, ${b[2]} rangin${b[3] === "?" ? "" : ` (${b[3]})`}` : ""}`).join("; ")}.`;
+    const ws = [...String(row ?? "").matchAll(/whole\d (\d+) (equal|unequal) parts/g)];
+    if (ws.length) return `Yeh dekho: ${ws.map((w, i) => `Cake ${"AB"[i]}: ${w[1]} ${w[2] === "equal" ? "barabar" : "alag-alag"} tukde`).join("; ")}.`;
     const m = /gaps (\d+) equal gaps.*marks ([\d/ ,]+)/.exec(String(row ?? ""));
     return m ? `Yeh dekho: 0 se 1 ki sankhya rekha, ${m[1]} barabar gaps, aur nishaan ${m[2].trim()} par.` : "Yeh dekho.";
   };
-  for (const [T, where, ref, view, template] of ROWS) {
+  for (const [T, where, ref, view, template, firstLine] of ROWS) {
     const kit = kitOf(T);
     const L = `d9pic-${lessonN++}`;
     seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: T, child: { id: `c-${L}`, class_level: 5, language_pref: "hinglish" } });
     const mk = (n, t, more = {}) => ({ intent: { intentId: `${L}:wb:${n}`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "b", kind: "explain" }, ...more },
       line: { lessonId: L, teacherReplySeq: n, text: t }, mode: "fresh", kit: { topicId: T, content: [] } });
     const up = mk(1, "");
-    up.line.text = `Screen par dekho. ${String(seam.studioSeam.preselectWhiteboard({ ...up }) ?? "").replace(/^.*?board · /, "").replace(/ · /g, ". ")}`;
+    const upRow = seam.studioSeam.preselectWhiteboard({ ...up });
+    up.line.text = firstLine ?? `Screen par dekho. ${String(upRow ?? "").replace(/^.*?board · /, "").replace(/ · /g, ". ")}`;
     assert.equal(seam.studioSeam.requestIntent(up)?.state, "revealed", `${T} ${where}: the card's board is up`);
-    const ask = mk(2, "", { request: { kind: "picture" } });
+    // (Brain sends { kind: "picture" }, or { kind: "show" } when the child names nothing: both take the second view)
+    const ask = mk(2, "", { request: { kind: lessonN % 2 ? "show" : "picture" } });
     const row = seam.studioSeam.preselectWhiteboard({ ...ask });
     assert.equal(seam.studioSeam.preselectedAltView(L), view, `${T} ${where}: ${row}`);
     ask.line.text = lineFor(row);
@@ -274,4 +284,22 @@ test("director9 S3′ on the run path: every picture request of the run, with th
     assert.equal(k.artifact.altView, view);
     assert.equal(k.artifact.screen.template, template, `${T} ${where}`);
   }
+});
+
+test("director9 (Brain's replay of c5-t01 steady T21): a later page whose own take fails is dropped, not the whole turn — the verdict page's revealed 1/8 still reaches the screen", () => {
+  const T = "c5-maths-ch02-t01", kit = kitOf(T);
+  const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
+  const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+  const answers = [rem.then.key, ...(rem.then.accept ?? [])].map(String);
+  const card = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
+  const e1 = { template: "fraction-line@1", params: { den: 2, from: 0, to: 1, marks: [{ num: 1, label: "1/2" }] } };
+  const cb = { scriptId: "s", beatId: "then:c5-maths-ch02-t01-m-not-numbers", kind: "check", ownBoard: true, answers };
+  const say = "Bilkul, Riya: pehla hissa 1/8 km hai.", closed = " Aur pehle wale sawaal ka jawab isi line par tha, kyunki 1/2 ka matlab 0 se 1 ke 2 barabar gaps mein se pehla gap.", tail = " Ab agla hissa.";
+  const text = `${say}${closed}${tail}`;
+  const s = showCard(T, kit, card, "check", answers, rem.then.prompt.hi);
+  const v = s.turn(text, { scriptBeat: cb, segments: [{ atChar: say.length + 1, boardRef: e1, scriptBeat: { scriptId: "s", beatId: "e1", kind: "explain" } }, { atChar: say.length + closed.length + 1, boardRef: card, scriptBeat: cb }] });
+  assert.equal(v?.state, "revealed", "the turn draws");
+  assert.deepEqual(v.artifact.screens[0].counts.marks, [{ at: "mark 1", label: "1/8" }]);
+  assert.ok(v.artifact.script.ops.some((o) => o.op === "text" && o.text === "1/8"), "the verdict page's 1/8 is drawn");
+  assert.ok(v.artifact.screens.length >= 1 && v.artifact.screens.length <= 3);
 });

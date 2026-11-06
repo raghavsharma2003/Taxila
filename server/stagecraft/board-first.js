@@ -59,7 +59,7 @@ const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · ser
 export const prewarmStats = () => ({ ...prewarmed });
 // round 7 (main, director4: Brain's R4 screen contract): what the board shows, for her line to be checked against: the shape
 // kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
-const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
+const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts", "wholes@1": "whole in parts",
   "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
   "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "lines@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
 /** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
@@ -266,9 +266,9 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       const { view, ...ac } = ac0 ?? {};
       const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
-      const say = !ac0 ? "" : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
+      const say = !ac0 ? "" : ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ") : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
         : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
-      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: view === "line" ? "line" : "parts", say });
+      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: view === "line" || view === "wholes" ? view : "parts", say });
     }
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
       const A2 = c.say ? { ...ask, line: { ...(ask.line ?? {}), text: c.say } } : a2, CTX = c.say ? { ...gateCtxFor(A2, { kit, redact }), withhold: ctx.withhold } : ctx;
@@ -428,10 +428,28 @@ export function altView(ask, ctx) {
     const s = retime(x.script, Math.max(800, Number(x.script.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH);
     const g = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     if (!g.ok) return null;
-    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: view === "line" ? "line" : "parts", syncMs: 0,
+    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: view === "line" || view === "wholes" ? view : "parts", syncMs: 0,
       screen: screenOf({ template: call.template, facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
   } catch { return null; }
 }
+/** compare@1 → wholes@1 when BOTH columns name a whole cut into pieces ("3 tukde") and whether they are equal; else null. */
+function wholesOfCompare(c) {
+  const col = (side) => {
+    if (!side) return null;
+    const words = [side.title, ...(side.items ?? [])].map((v) => String(v ?? "")).join(" | ").toLowerCase();
+    const m = /(?<![\d/])(\d+)\s+(?:barabar\s+)?(?:tukde|tukdon|hisse|hisson|parts?|bhaag|pieces?|slice)\b/.exec(words);
+    if (!m || +m[1] < 2 || +m[1] > 12) return null;
+    const unequal = /\b(?:bada|bade|chhot[ae]|unequal|not equal)\b|barabar\s+nahi/.test(words);
+    const equal = /\b(?:barabar|equal|same)\b/.test(words) && !unequal;
+    if (!unequal && !equal) return null;
+    const sh = /(?<![\d/])(\d+)\s+(?:rangin|rang wale|shaded|coloured|colored)\b/.exec(words);
+    const title = String(side.title ?? "").trim();
+    return { parts: +m[1], equal: !unequal, ...(sh && +sh[1] <= +m[1] ? { shade: +sh[1] } : {}), ...(title && title.length <= 18 ? { title } : {}) };
+  };
+  const a = col(c.left), b = col(c.right);
+  return a && b && (a.parts >= 3 || a.equal) && (b.parts >= 3 || b.equal) ? { template: "wholes@1", wholes: [a, b], view: "wholes" } : null;
+}
+
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
 export function altCall(ref, { line = "", withheld = [] } = {}) {
   try {
@@ -450,6 +468,9 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       if (n < 2 || n > 12 || sh < 1 || sh > n) return null;
       return { template: "fraction-bars@1", bars: [c.hideResult || withheldOf(sh, n) ? { parts: n, shade: sh, label: "?" } : { parts: n, shade: sh, label: `${sh}/${n}` }] };
     }
+    // (a compare of two wholes in pieces — "Cake A: 3 tukde, 1 bada 2 chhote | Cake B: 3 tukde, sab barabar" — is drawn as
+    // the two wholes themselves; one with fractions of its own still becomes bars, below)
+    if (c.template === "compare@1") { const w2 = wholesOfCompare(c); if (w2) return w2; }
     if (!["fraction-line@1", "compare@1"].includes(c.template)) return null;
     const frac = (t) => { const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t ?? "")); return m && Number(m[2]) >= 1 && Number(m[2]) <= 12 && Number(m[1]) <= Number(m[2]) ? [Number(m[1]), Number(m[2])] : null; };
     const fs = [];   // [a, b], or { at: [a, b] } for the asked mark
@@ -550,12 +571,15 @@ const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "
  * each later page onto its segment's real onset. → a board-first result ({ ok, script, screen (the last page), screens
  * [{ from, screen }], by, template, source }) or null (one board, as before).
  */
+/** How many later pages a paged turn dropped because their own take failed (the page before them stayed up). */
+let pagesDropped = 0;
+export const pagesDroppedCount = () => pagesDropped;
 export function pagesBoard(ask, { kit, redact = [] } = {}) {
   try {
-    const sg = segmentsOf(ask);
+    let sg = segmentsOf(ask);
     if (!sg || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
-    const takes = sg.map((g, i) => {
+    const takes0 = sg.map((g, i) => {
       const beat = { ...(i ? {} : ask.intent.scriptBeat ?? {}), ...(g.scriptBeat ?? {}) };
       if (i && !beat.kind) beat.kind = "check";
       if (i && beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
@@ -565,7 +589,15 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
       if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
       return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }));
     });
-    if (takes.some((t) => !t?.script)) return null;
+    // (director9, Brain's replay of c5-t01 steady T21: a 3-word tail page failed W6 and took the whole turn down with it —
+    // the verdict page's revealed 1/8 never reached the screen. A LATER page that fails is dropped: the page before it
+    // stays up through its words. The first page failing still fails the turn: there is nothing to stand on)
+    if (!takes0[0]?.script) return null;
+    const kept = takes0.map((t, i) => (i === 0 || t?.script ? i : -1)).filter((i) => i >= 0);
+    if (kept.length < takes0.length) pagesDropped += takes0.length - kept.length;
+    const takes = kept.map((i) => takes0[i]);
+    sg = kept.map((i) => sg[i]);
+    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }] };
     const b0 = takes[0].script.board ?? WB_BOARD;
     if (takes.some((t) => (t.script.board ?? WB_BOARD).w !== b0.w || (t.script.board ?? WB_BOARD).h !== b0.h)) return null;
     const rename = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));

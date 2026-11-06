@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "fraction-bars@1": "diagram", "wholes@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -155,6 +155,36 @@ function fractionBars(c, tl) {
   });
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
   return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+}
+
+/**
+ * director9 P2 (main: "every picture request draws something new", c4's Cake A / Cake B compare): up to two WHOLES side by
+ * side, each a circle cut into `parts` (2-12) pieces — equal, or not (`equal: false`: one half and the rest of the pieces in
+ * the other half: "1 bada, 2 chhote") — `shade` pieces coloured, a short title under each. counts.wholes [{ parts, shaded,
+ * label: title }]; facts say equal / not equal per whole.
+ */
+function wholes(c, tl) {
+  const list = Array.isArray(c.wholes) ? c.wholes : [];
+  if (list.length < 1 || list.length > 2) return { error: "wholes_count" };
+  for (const w of list) {
+    if (!isInt(w?.parts, 2, 12) || !isInt(w.shade ?? 0, 0, w.parts) || (w.title !== undefined && (!fitsLabel(String(w.title)) || textProblem(String(w.title))))) return { error: "wholes_range" };
+    if (w.equal === false && w.parts < 3) return { error: "wholes_unequal_parts" };
+  }
+  const n = list.length, colW = 400 / n, r = n === 1 ? 95 : 72, cy = 128, counts = [], facts = {};
+  list.forEach((w, k) => {
+    const cx = round1(colW * k + colW / 2), shade = w.shade ?? 0;
+    // the cuts, in degrees from 12 o'clock: equal pieces, or one half and the other half shared by the rest
+    const cuts = w.equal === false ? [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
+    tl.add({ id: `w${k}`, op: "circle", c: [cx, cy], r, weight: 2 }, 800, { gap: k ? 300 : 0 });
+    for (const a of cuts) tl.add({ op: "line", from: [cx, cy], to: [round1(cx + r * Math.sin(rad(a))), round1(cy - r * Math.cos(rad(a)))], weight: 1 }, 220, { gap: 60 });
+    const edges = [...cuts, 360];
+    for (let i = 0; i < shade; i++) tl.add({ op: "sector", c: [cx, cy], r: r - 2, fromDeg: edges[i], toDeg: edges[i + 1], fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
+    const title = w.title !== undefined ? String(w.title) : "";
+    if (title) writeFit(tl, title, cx, cy + r + 34, colW - 12, {}, { id: `t${k}`, ink: "accent", gap: 160, size: "s" });
+    counts.push({ parts: w.parts, shaded: shade, label: title });
+    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+  });
+  return { counts: { wholes: counts }, facts };
 }
 
 function fractionLine(c, tl) {
@@ -1453,6 +1483,12 @@ function traceBoundary(tl, corners) {
   return [{ id, c: [round1(at[0]), round1(at[1])] }];
 }
 
+/** Does a right-angled walk (R D L U per side) with these lengths come back to where it started? */
+function closes(sides, walk) {
+  let x = 0, y = 0;
+  for (let i = 0; i < sides.length; i++) { const d = sides[i], w = walk[i]; if (w === "R") x += d; else if (w === "L") x -= d; else if (w === "D") y += d; else if (w === "U") y -= d; else return false; }
+  return Math.abs(x) < 1e-9 && Math.abs(y) < 1e-9;
+}
 function measuredBoard(c, tl) {
   const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
   if (!unit) return { error: "unit" };
@@ -1504,6 +1540,47 @@ function measuredBoard(c, tl) {
     if (n < 3 || n > 8 || sides.length !== n || !sides.every((v) => v > 0)) return { error: "polygon_sides" };
     const names = Array.isArray(c.names) ? c.names.map(String) : [];
     if (names.length && (names.length !== n || names.some((x) => !fitsLabel(x) || [...x].length > 3))) return { error: "polygon_names" };
+    // director9 (c6 "L-shape kamra", 8 contradictions: drawn as a regular hexagon): a right-angled outline is drawn TO SCALE.
+    // `walk` names each side's direction (R D L U, clockwise from the top-left corner); a 6-sided shape whose sides close as
+    // an L (R D L D L U: 8, 3, 5, 4, 3, 7) is one without being told. A walk that does not close is refused.
+    const walk = typeof c.walk === "string" ? c.walk.toUpperCase() : n === 6 && closes(sides, "RDLDLU") ? "RDLDLU" : null;
+    if (walk !== null) {
+      if (walk.length !== n || !/^[RDLU]+$/.test(walk) || !closes(sides, walk)) return { error: "polygon_walk" };
+      const V = [[0, 0]];
+      for (let i = 0; i < n - 1; i++) { const [x, y] = V[i], d = sides[i]; V.push(walk[i] === "R" ? [x + d, y] : walk[i] === "L" ? [x - d, y] : walk[i] === "D" ? [x, y + d] : [x, y - d]); }
+      const xs = V.map((v) => v[0]), ys = V.map((v) => v[1]), w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+      const k = Math.min((BW - 40) / w, (BH - 20) / h), ox = cx - (w * k) / 2 - Math.min(...xs) * k, oy = cy - (h * k) / 2 - Math.min(...ys) * k;
+      const P = V.map(([x, y]) => [round1(ox + x * k), round1(oy + y * k)]);
+      tl.add({ id: "shape", op: "polygon", points: P, weight: 2 }, 1000);
+      const boxes = [];
+      const boxOf = (t, at) => { const b = textBox(t, "s"); return { x0: at[0] - b.w / 2 - 2, x1: at[0] + b.w / 2 + 2, y0: at[1] - b.h, y1: at[1] + 3 }; };
+      const hits = (q) => boxes.some((b) => q.x0 < b.x1 && b.x0 < q.x1 && q.y0 < b.y1 && b.y0 < q.y1);
+      // the outward normal of side i (a clockwise walk's outside is to its left)
+      const normal = (i) => { const A = P[i], B = P[(i + 1) % n]; return [Math.sign(B[1] - A[1]), -Math.sign(B[0] - A[0])]; };
+      for (let i = 0; i < n; i++) {
+        const A = P[i], B = P[(i + 1) % n], m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+        const [nx, ny] = normal(i), t = fmt(sides[i]), half = textBox(t, "s").w / 2;
+        const at = [round1(m[0] + nx * (half + 10)), round1(m[1] + ny * 16 + 5)];
+        boxes.push(boxOf(t, at));
+        tl.add({ op: "text", at, text: t, size: "s", ink: "accent" }, 320, { gap: 120 });
+      }
+      // a corner's name on its outward diagonal (the sum of its two sides' outward normals: into the notch at the inner
+      // corner), pushed out
+      // until it is clear of every side's length
+      names.forEach((nm, i) => {
+        const [x, y] = P[i], a = normal((i + n - 1) % n), b = normal(i);
+        let d = [a[0] + b[0], a[1] + b[1]];
+        if (!d[0] && !d[1]) d = a;
+        let at = null;
+        for (const r of [12, 20, 28, 36]) { const q = [round1(x + d[0] * r), round1(y + d[1] * r + 5)]; if (!hits(boxOf(nm, q))) { at = q; break; } }
+        if (!at) return;
+        boxes.push(boxOf(nm, at));
+        tl.add({ op: "text", at, text: nm, size: "s", ink: "soft" }, 200, { gap: 40 });
+      });
+      const claims = c.trace ? traceBoundary(tl, P) : [];
+      return { claims, counts: { sides: n, corners: n, sideValues: sides.map(fmt) },
+        facts: { shape: `${n}-sided shape`, outline: walk === "RDLDLU" ? "L-shape, right angles" : "right angles", sides: sides.map(num).join(", ") + ` ${unit}`, ...(names.length ? { corners: names.join(" ") } : {}) } };
+    }
     const P = Array.from({ length: n }, (_, i) => { const a = ((-90 + 180 / n + (360 * i) / n) * Math.PI) / 180; return [round1(cx + 92 * Math.cos(a)), round1(cy + 4 + 92 * Math.sin(a))]; });
     tl.add({ id: "shape", op: "polygon", points: P, weight: 2 }, 1000);
     for (let i = 0; i < n; i++) {
@@ -1531,7 +1608,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "wholes@1": wholes, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
