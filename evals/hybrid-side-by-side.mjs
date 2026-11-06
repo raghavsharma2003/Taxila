@@ -77,6 +77,9 @@ const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOStri
 const CAP = Number(arg("cap", "150"));
 const USD_CAP = Number(arg("usd", "2"));
 export const meter = { calls: 0, usd: 0, byDeployment: {} };
+// (a segment ask's id is unique across lessons: Studio's preselect caches its pick by intentId, and two lessons at the same
+// row once shared one, so a segment was checked against another lesson's board)
+let SEG_N = 0;
 /** Every authored key and accept form of the topic's script (lower case), for the false-key count. */
 const _keys = new Map();
 function AUTHORED_KEYS(kit) {
@@ -303,7 +306,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     let segs = null;
     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
       const item = boardItemOf(next, kit, findItem);
-      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${rows.length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply } });
+      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply } });
       const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (parts.length > 1) {
         const text = String(reply).replace(/\s+/g, " ").trim();
