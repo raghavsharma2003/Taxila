@@ -85,17 +85,29 @@ export class RemoteRig {
     this.w.postMessage(m);
   }
 
-  /** The worker's answer to one frame. */
-  drawn(d: { rigMs: number; gap: number; name: string }): void {
-    this.rigMs.push(d.rigMs);
-    if (this.rigMs.length > 120) this.rigMs.shift();
-    this.mouth.name = d.name;
-    this.mouth.p.g = d.gap;
-    this.onDrawn?.();
+  /** The worker's answer to one frame (`skipped`: it had no rig, e.g. during a context loss: nothing was drawn). */
+  drawn(d: { rigMs: number; gap: number; name: string; skipped?: boolean }): void {
+    if (!d.skipped) {
+      this.rigMs.push(d.rigMs);
+      if (this.rigMs.length > 120) this.rigMs.shift();
+      this.mouth.name = d.name;
+      this.mouth.p.g = d.gap;
+      this.onDrawn?.();
+    }
     const next = this.pending;
     this.pending = null;
     this.busy = false;
     if (next && !this.disposed) { this.busy = true; this.sent++; this.w.postMessage(next); }
+  }
+
+  /** The worker rebuilt the rig on a restored context: its timings start again (the stage re-reveals on them). */
+  restored(): void {
+    this.rigMs = [];
+  }
+
+  /** Evals only: lose the worker's GL context now and restore it after `restoreAfterMs` (WEBGL_lose_context). */
+  debugLoseContext(restoreAfterMs: number): void {
+    this.w.postMessage({ t: "lose", restoreAfterMs });
   }
 
   stats(): { triangles: number; meshes: number } { return { triangles: 0, meshes: 0 }; }
@@ -118,7 +130,7 @@ export interface WorkerRigStart { rig: RemoteRig; warmFrameMs: number; path: str
  * worker's later messages (drawn frames, context loss, errors).
  */
 export function startWorkerRig(canvas: HTMLCanvasElement, kind: RigKind, base: string, opts: Record<string, unknown>, cssBox: [number, number],
-  onLater: (m: { t: "lost" } | { t: "error"; message: string }) => void, timeoutMs = 8000): Promise<WorkerRigStart> {
+  onLater: (m: { t: "lost" } | { t: "restored" } | { t: "error"; message: string }) => void, timeoutMs = 8000): Promise<WorkerRigStart> {
   return new Promise((resolve, reject) => {
     let w: Worker;
     try {
@@ -142,6 +154,7 @@ export function startWorkerRig(canvas: HTMLCanvasElement, kind: RigKind, base: s
         if (!settled) { settled = true; clearTimeout(timer); w.terminate(); reject(new Error(String(m.message))); }
         else onLater({ t: "error", message: String(m.message) });
       } else if (m.t === "lost") onLater({ t: "lost" });
+      else if (m.t === "restored") { rig?.restored(); onLater({ t: "restored" }); }
     };
     w.onerror = (e) => {
       if (!settled) { settled = true; clearTimeout(timer); w.terminate(); reject(new Error(`worker: ${e.message}`)); }

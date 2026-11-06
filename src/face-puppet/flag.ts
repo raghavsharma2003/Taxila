@@ -61,7 +61,7 @@ export function puppetForcedOn(): boolean {
 
 export const FACE_CONFIG_URL = "/api/face/config";
 /** What GET /api/face/config answers (server/face-puppet/config.js); `look` since round 4 (TAXILA_FACE_LOOK). */
-export interface FaceServerConfig { puppet2d: boolean; look: string | null; cohort?: boolean }
+export interface FaceServerConfig { puppet2d: boolean; look: string | null; cohort?: boolean; react?: boolean }
 const OPEN: FaceServerConfig = { puppet2d: true, look: null };
 let serverAsk: Promise<FaceServerConfig> | null = null;
 let serverKnown: FaceServerConfig | null = null;
@@ -76,8 +76,8 @@ export function faceServerConfig(fetchImpl: typeof fetch | undefined = typeof fe
     try {
       const r = await fetchImpl(FACE_CONFIG_URL, { signal: ctl?.signal, credentials: "same-origin" });
       if (!r.ok) return OPEN;
-      const j = (await r.json()) as { puppet2d?: unknown; look?: unknown; cohort?: unknown };
-      return { puppet2d: j?.puppet2d !== false, look: typeof j?.look === "string" ? j.look : null, cohort: j?.cohort === "owner" };
+      const j = (await r.json()) as { puppet2d?: unknown; look?: unknown; cohort?: unknown; react?: unknown };
+      return { puppet2d: j?.puppet2d !== false, look: typeof j?.look === "string" ? j.look : null, cohort: j?.cohort === "owner", react: j?.react === true };
     } catch {
       return OPEN;
     } finally {
@@ -150,4 +150,24 @@ export function faceHandoffEnabled(): boolean {
   } catch {
     return true;
   }
+}
+
+/** Round 7 face-reacts: between the child's last word and her first audio the face THINKS (it starts at the end of the
+ *  child's speech, not at the transcript, with one breath), instead of holding the listening face through the wait.
+ *  The server's TAXILA_R7_FACE_REACT (GET /api/face/config `react`), off by default; ?react=1 / ?react=0 set it on this
+ *  device (the A/B and the evals), ?react=default clears the device's choice. False until the server has answered. */
+export const FACE_REACT_KEY = "tx.flag.face.react";
+export function faceReactEnabled(): boolean {
+  try {
+    if (typeof location !== "undefined") {
+      const v = new URLSearchParams(location.search).get("react");
+      if (v === "0" || v === "1") localStorage.setItem(FACE_REACT_KEY, v);
+      else if (v === "default") localStorage.removeItem(FACE_REACT_KEY);
+    }
+    const dev = typeof localStorage !== "undefined" ? localStorage.getItem(FACE_REACT_KEY) : null;
+    if (dev === "1" || dev === "0") return dev === "1";
+  } catch {
+    /* storage blocked: the server's answer */
+  }
+  return serverKnown?.react === true;
 }
