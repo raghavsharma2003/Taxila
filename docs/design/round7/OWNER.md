@@ -1,12 +1,11 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-05 evening UTC, at integration 7 (`int/r6`).
+Updated by the main loop at each integration. Last update: 2026-11-06 morning UTC, at integration 9 (`int/r6` 8f461ae0b).
 - **Build checks:** tsc and the build are green.
-- **Unit tests:** 4598 of 4611 pass, both in the new 9-minute per-file gate and single-process.
-  - 1 failure: a test that wrongly walked a new lesson script. Fixed in tests only, and re-proved.
-  - 11 skipped; 1 is a known todo.
-- **Live model calls so far:** only the lesson-brain runs, about $3.5 plus director5 (capped at $0.70), on the stream's 2026-10-10 AI keys.
+- **Unit tests:** 4771 of 4783 pass, both in the per-file gate and single-process; 0 failures, 11 skipped, 1 known todo.
+- **Live model calls so far:** only the lesson-brain runs (director1–7), about $6 in total, on the stream's 2026-10-10 AI keys.
 - **Nothing is released:** deploying needs the full key set.
+- **The Founders Hub item (row 7) is now at or past its likely start date.** If business verification was 2026-07-08, today (2026-11-06) is the last day the 60-day run can start. The automation is built and merged (`scripts/m3.mjs`); it needs only the keys and your two yes/no answers.
 
 ## 1. Decisions only you can make
 
