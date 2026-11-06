@@ -160,14 +160,9 @@ test(`director8 S3′: on every check and then-card (${DIRS.join(" + ")}), a pic
   }
   assert.ok(n >= 20, `cards up: ${n}`);
   // Learning's staged data, 2026-11-06: a card whose prompt names a shape (a circle, a chord) over a words-only compare board
-  // fails W15 (named shape drawn) once the child asks to SEE it — the board, not Studio, is the fix (told Learning). The list
-  // only shrinks: a new failure, or any pilot card, fails this test.
-  const KNOWN = new Set(["lesson-scripts-staged c4-maths-ch01-t02 s3 c1", "lesson-scripts-staged c4-maths-ch01-t02 s3 c2", "lesson-scripts-staged c4-maths-ch01-t02 s3 c3",
-    "lesson-scripts-staged c4-maths-ch01-t02 s3 then:m-round-is-circle", "lesson-scripts-staged c5-maths-ch13-t02 s1 then:m-miss-pairs",
-    "lesson-scripts-staged c6-maths-ch08-t01 s1 c2", "lesson-scripts-staged c6-maths-ch08-t01 s1 then:m-chord-diameter",
-    // integration 11 (main): Learning's 30th staged topic (c7 parallel/perpendicular lines) asks to see two lines; no template
-    // draws crossing or parallel lines yet (queued at Studio). Leaves this list when that template lands.
-    "lesson-scripts-staged c7-maths-ch05-t02 s3 c2"]);
+  // failed W15 (named shape drawn) once the child asked to SEE it — the board, not Studio, was the fix. Learning drew all 7
+  // (2cbe45a85), so the list is empty; it only shrinks: a new failure, or any pilot card, fails this test.
+  const KNOWN = new Set([]);
   assert.deepEqual(none.filter((x) => !KNOWN.has(x.replace(/: [a-z]+$/, ""))), []);
 });
 
