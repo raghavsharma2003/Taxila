@@ -53,7 +53,8 @@ describe("R1: segments from the assembled parts", () => {
 
   test("without parts (Studio re-placing a line it replaced) the closure sentences place it as before", () => {
     const plan = [{ part: "close", boardRef: B(9), scriptBeat: {} }, { part: "body", boardRef: B(4), scriptBeat: {} }];
-    const line = "Pichhle sawaal ka jawab 30 m tha. Ab naya sawaal.";
+    // (a body of its own words: a bare 3-word tail is no page since v6.1 P1)
+    const line = "Pichhle sawaal ka jawab 30 m tha. Ab naya sawaal: is shape ka parimap kitna hai?";
     assert.deepEqual(segmentsAt(plan, line, null).map((x) => x.atChar), [0, line.indexOf("Ab naya")]);
   });
 

@@ -250,6 +250,7 @@ function spanOf(text, part) {
  * drop. With no text (a preselect before her line exists) the parts cannot be placed: the beat's (else the first) alone.
  * v6: with `parts` (say.js guard.parts) the closure, the missed card's close and the bridge are found by their own texts.
  */
+export const PAGE_MIN_WORDS = 5;
 export function segmentsAt(plan, line, card, parts = null) {
   const text = norm1(line);
   const closePart = plan.find((p) => p.part === "close");
@@ -282,6 +283,16 @@ export function segmentsAt(plan, line, card, parts = null) {
   }
   if (!out.length) out.push({ atChar: 0, atClause: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
   out[0] = { ...out[0], atChar: 0, atClause: 0 };
+  // (dc-r7-script-walk-v6-1 P1, replay of director9 c5-t01 steady T21: a page whose own words are a bare transition — "Ab agla
+  // hissa.", 3 words, back on the answered card's board — cannot be drawn in its time (Studio W6.timing), so the whole paged
+  // turn failed and the verdict page's revealed 1/8 never reached the screen. A page switch with fewer than PAGE_MIN_WORDS
+  // words and no card of its own is no page: the board before it stays up while it is said)
+  for (let i = out.length - 1; i > 0; i--) {
+    const seg = text.slice(out[i].atChar, out[i + 1]?.atChar ?? text.length);
+    const hasCard = at.card != null && at.card >= out[i].atChar && at.card < (out[i + 1]?.atChar ?? text.length + 1);
+    if (!hasCard && seg.split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) out.splice(i, 1);
+  }
+  for (let i = out.length - 1; i > 0; i--) if (JSON.stringify(out[i].boardRef) === JSON.stringify(out[i - 1].boardRef)) out.splice(i, 1);
   return out;
 }
 
