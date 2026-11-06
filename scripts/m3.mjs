@@ -263,7 +263,10 @@ async function image() {
     const op = r.headers.get("azure-asyncoperation") || r.headers.get("location");
     if (!op) return say("image", "import accepted");
     const st = await until(async () => {
-      const s = await arm("GET", op.replace("https://management.azure.com", ""), undefined, { raw: true });
+      // 2026-11-06 live: with the tag present, ACR's async-operation poll itself answers 409 "Tag … already exists" (a
+      // NoForce import that has nothing to do), which arm() throws; read it as the Failed+exists outcome it is
+      const s = await arm("GET", op.replace("https://management.azure.com", ""), undefined, { raw: true })
+        .catch((e) => (/already exists/i.test(e.message) ? { status: 409, body: { status: "Failed", error: { message: String(e.message) } } } : Promise.reject(e)));
       const v = s.body?.status || (s.status === 200 || s.status === 204 ? "Succeeded" : "");
       return /^(Succeeded|Failed|Canceled)$/.test(v) && { status: v, error: s.body?.error };
     }, { everyMs: 5000, maxMs: 600_000, what: "image import" });
