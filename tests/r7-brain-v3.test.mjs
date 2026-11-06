@@ -39,8 +39,9 @@ test("pointSaid: most content words and every number of the point", () => {
 
 describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
   const KEEP = {};
-  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
-  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  // (v6 R5: these pin one-turn shapes, a remediation's say with its card; the split of a long turn is pinned in r7-brain-v6)
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; KEEP.split = process.env.TAXILA_R7_SPLIT; process.env.TAXILA_R7_SPLIT = "off"; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; if (KEEP.split === undefined) delete process.env.TAXILA_R7_SPLIT; else process.env.TAXILA_R7_SPLIT = KEEP.split; });
   const run = () => {
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: [r.move.point, ...(r.move.mustSay ?? [])].filter(Boolean).join(" ") }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
@@ -236,7 +237,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
-    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha, kyunki \S/, "v5 B5: the close says its why: " + out.reply);
+    // (v6, director8 judges: a why is only the card's own authored why; this fixture's card has none, so none is borrowed from
+    // the remediation's last sentence)
+    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, "v6: the close says its answer, with no borrowed why: " + out.reply);
   });
 
   test("v5 B5: one verdict sentence; a sentence putting a method in the child's mouth goes; a long turn keeps its authored parts", async () => {

@@ -62,7 +62,11 @@ const REASONS = {
     "maine ek ek karke gina", "jaise aapne samjhaya tha, waise hi kiya", "maine pehle chhota wala socha, phir bada", "maine dobara check kiya"],
   unsure: ["pata nahi kaise, bas laga", "thoda guess kiya, pakka nahi", "mujhe laga aisa hi hoga", "shayad gin ke"],
 };
-
+// (v6 harness, main on director8: "number-line reasoning in a roti lesson"): a reason that names a thing is said only where that
+// thing is in her line or the topic; the rest fit anywhere
+const REASON_NEEDS = [[/\bline\b/, /\b(?:line|rekha|number line)\b/i], [/\bhisse\b/, /\b(?:hiss[ae]|tukd[ae]|parts?|fraction|bhinn)\b/i],
+  [/neeche wala number/, /\b(?:neeche|upar|fraction|bhinn|\d+\/\d+)\b/i], [/\bjodte\b/, /\b(?:jod|plus|\+|parimap|perimeter|kul)\w*/i]];
+const fitsReason = (r, context) => REASON_NEEDS.every(([said, need]) => !said.test(r) || need.test(context));
 const LINES = {
   dontknow: ["pata nahi", "mujhe nahi pata", "samajh nahi aaya", "pata nahi, aap batao"],
   picture: ["picture dikhao", "screen par dikhao na", "drawing karke samjhao"],
@@ -179,7 +183,9 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       const howWhy = PROBE_RE.test(String(input.teacher ?? ""));
       if (input.probe !== false && (howWhy || (input.probe === true && !keyed))) {
         const sure = rng() < P.right.open;
-        return say({ text: pick(rng, REASONS[sure ? "right" : "unsure"]), kind: "reason" });
+        const context = `${input.teacher ?? ""} ${kit?.title ?? ""} ${kit?.topicId ?? ""} ${(kit?.skills ?? []).map((k) => k.title ?? "").join(" ")}`;
+        const pool = REASONS[sure ? "right" : "unsure"].filter((r) => fitsReason(r, context));
+        return say({ text: pick(rng, pool.length ? pool : ["jo aapne dikhaya tha, usse socha"]), kind: "reason" });
       }
       const q = input.card ?? input.ask ?? null;
       if (q && q.key != null && String(q.key).trim()) {

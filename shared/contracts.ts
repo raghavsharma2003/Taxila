@@ -772,6 +772,9 @@ export interface KeyedAsk {
   wrongIfMis?: string | null;
   /** v2.1: a follow-up card's board */
   board?: BoardRef | null;
+  /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
+   *  Absent: the close says the answer alone (never a sentence borrowed from a point or a remediation) */
+  why?: Said;
 }
 /** The closed interest list (server/persona/signals.js INTERESTS). */
 export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
@@ -802,6 +805,8 @@ export interface SkillScriptV2 {
   ladder: Array<{ itemId: string; why: string }>;
   remediation: RemediationV2[];
   bridgeToNext: Said | null;
+  /** v6: the bridge's own board, when it shows something (it is then its own segment; with none the bridge points at nothing) */
+  bridgeBoard?: BoardRef | null;
 }
 export interface ExplainBeatV2 {
   id: string;
@@ -837,6 +842,8 @@ export interface CheckQuestionV2 {
   targets: string;
   wrongIfMis: string;
   board?: BoardRef | null;
+  /** v6: why the key is right (see KeyedAsk.why) */
+  why?: Said;
 }
 export interface RemediationV2 {
   targets: string;
@@ -867,4 +874,4 @@ export interface ScriptBeatOnAsk {
  * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
  */
 export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
-export interface BoardSegmentPart { part: "close" | "closed" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }
+export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

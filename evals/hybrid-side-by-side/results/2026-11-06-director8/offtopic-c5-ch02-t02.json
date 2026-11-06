@@ -1,0 +1,2352 @@
+{
+ "topicId": "c5-maths-ch02-t02",
+ "classLevel": 5,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj fractions compare karenge—jaise cricket scores ya cooking portions. Tumhe cooking mein kya banana pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1169,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Socho, do ek jaise cake hain. Ek cake 4 barabar tukdon mein kata hai, doosra 8 barabar tukdon mein. Tumhe kisi ek cake se sirf ek tukda lena hai. Theek hai, Riya. Do same-size cakes: ek 4 tukdon mein, doosra 8 mein. Sirf ek tukda lena ho, kis cake ka tukda bada hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 959,
+   "replyReadyMs": 2128,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1169,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "classifyMs": 1342,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh ek poori patti hai. Iske 4 barabar hisse hain, aur ek hissa rang wala hai, woh 1/4 hai. Neeche wala 4 batata hai ki poori patti kitne barabar hisson mein kati hai. Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "move": "explain",
+   "card": "Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "replyMs": 3469,
+   "replyReadyMs": 4811,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3469,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "4 equal parts",
+     "numbers": "4 1"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "bar"
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "mustsay"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "classifyMs": 973,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Virat ke cover drives cricket ki patti jaise seedhe lagte hain; is sawaal ke turant baad us par lautungi. 4 ya 8 tukdon mein ek tukda bada hoga? Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "move": "practice",
+   "card": "Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "replyMs": 919,
+   "replyReadyMs": 1892,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1892,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "4 equal parts",
+     "numbers": "4 1"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "bar"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "4",
+     "1",
+     "1/4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "bigger",
+   "read": "misconception",
+   "classifyMs": 974,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bigger nahi: ek hi patti ko zyada hisson mein kaatoge, toh har hissa chhota hoga. Is patti ke 8 barabar hisse hain, aur rang wale 2 hisse milkar theek ek 1/4 jitne lambe hain. Toh 8 bada number hai, par 1/8 chhota hissa hai. Do ek jaisi bottle: Ravi ne ek ka 1/7 nikala, Zoya ne doosri ka 1/9. Zyada kisne nikala, Ravi ne ya Zoya ne?",
+   "move": "reteach",
+   "card": "Do ek jaisi bottle: Ravi ne ek ka 1/7 nikala, Zoya ne doosri ka 1/9. Zyada kisne nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 2160,
+   "replyReadyMs": 3134,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3134,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c5-maths-ch02-t02-m-bigger-denominator",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 8,
+     "shade": 2,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c5-maths-ch02-t02-m-bigger-denominator",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    },
+    {
+     "from": 225,
+     "beat": "then:c5-maths-ch02-t02-m-bigger-denominator",
+     "template": "compare@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "8 equal parts",
+     "numbers": "8 2"
+    },
+    "counts": {
+     "parts": 8,
+     "shaded": 2
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 8,
+      "shade": 2,
+      "whole": "bar"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "8",
+     "2",
+     "2/8"
+    ]
+   },
+   "guard": [
+    "leak",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Ravi",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi—Ravi. Tumne kaise jaana ki same bottle mein 1/7, 1/9 se zyada hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 830,
+   "replyReadyMs": 831,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 831,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t02-m-bigger-denominator",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "1/7",
+      "items": [
+       "ek jaisi bottle"
+      ]
+     },
+     "right": {
+      "title": "1/9",
+      "items": [
+       "ek jaisi bottle"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "? | 1/9 | ek jaisi bottle | ek jaisi bot",
+     "numbers": "1/9"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "1/7",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "1/9",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "1/7",
+       "items": [
+        "ek jaisi bottle"
+       ]
+      },
+      "right": {
+       "title": "1/9",
+       "items": [
+        "ek jaisi bottle"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1/9"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "neeche wala number dekha, phir socha",
+   "read": "incorrect",
+   "classifyMs": 1891,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aur pehle wale sawaal ka jawab chhota tha, kyunki neeche wala 4 batata hai ki poori patti kitne barabar hisson mein kati hai. Ab wahi patti dekho. Iske 8 barabar hisse hain, aur ek hissa rang wala hai, woh 1/8 hai. Pehle wala har hissa ab aadha-aadha bant gaya hai. Isi size ki patti mein ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "move": "explain",
+   "card": "Isi size ki patti mein ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "replyMs": 2128,
+   "replyReadyMs": 4019,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2128,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 8,
+     "shade": 1,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e1",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    },
+    {
+     "from": 126,
+     "beat": "e2",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "8 equal parts",
+     "numbers": "8 1"
+    },
+    "counts": {
+     "parts": 8,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 8,
+      "shade": 1,
+      "whole": "bar"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "8",
+     "1",
+     "1/8"
+    ]
+   },
+   "guard": [
+    "affirms",
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek chauthai",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya: tumne sahi dekha—4 tukdon ka ek hissa, 8 tukdon ke ek hisse se bada hai. Yeh sankhya rekha 0 se 1 tak hai, aur is par 2 nishaan hain. 1/8 zero ke paas hai, aur 1/4 usse aage. Toh 1/8 < 1/4. Ek hi poore ke jitne zyada barabar hisse, har hissa utna chhota. Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "move": "explain",
+   "card": "Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "replyMs": 1281,
+   "replyReadyMs": 1281,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1281,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/4",
+     "numbers": "0 1 1/8 1/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      },
+      {
+       "at": "2/8",
+       "label": "1/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/8",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/7",
+   "read": "misconception",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/7 sahi nahi hai. Tumne 7 ko dekha; par same poore mein 3 tukde hon ya 7, ek tukda kahan bada hoga? Number line par dobara try karo. Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "move": "hint",
+   "card": "Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "replyMs": 1154,
+   "replyReadyMs": 1155,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1155,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/4",
+     "numbers": "0 1 1/8 1/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      },
+      {
+       "at": "2/8",
+       "label": "1/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/8",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "classifyMs": 943,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Virat ke cover drives yaad reh jaate hain; ab fraction par: 0 se 1 tak, 1/3 aur 1/7 mein kaunsa nishaan aage hoga? Try karo. Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "move": "practice",
+   "card": "Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?",
+   "replyMs": 1848,
+   "replyReadyMs": 2791,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2791,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/4",
+     "numbers": "0 1 1/8 1/4"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      },
+      {
+       "at": "2/8",
+       "label": "1/4"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/8",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "dodged"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek tihai",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Virat ka cover drive cricket mein clean example hai. Do ek jaise chocolate bar hain. Rahul ko ek bar ka 1/6 milta hai, Sana ko doosre bar ka 1/3. Kise bada tukda milta hai? Diya hai: do ek jaise chocolate bar, Rahul ka hissa: 1/6, Sana ka hissa: 1/3. Dhoondhna hai: kise bada tukda milta hai. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2524,
+   "replyReadyMs": 2524,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2524,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1045,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek, Riya. Dono bhinnon ka upar ka number dekho: dono mein 1, yaani dono ko ek-ek tukda, kyunki upar ka number batata hai ki kitne tukde mile, toh ab sirf tukde ka size dekhna hai. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1270,
+   "replyReadyMs": 2315,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1270,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1054,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ab dono ke tukde ka size likho: Rahul ka tukda 1/6, Sana ka tukda 1/3, kyunki rahul ka bar 6 barabar hisson mein kata hai aur Sana ka sirf 3 barabar hisson mein. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1304,
+   "replyReadyMs": 2358,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1304,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 937,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par 1/6 aur 1/3 dekho: same bar mein 6 tukde chhote, 3 tukde bade. Isliye 1/3 bada. Kaunsa fraction bada: 1/5 ya 1/8?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1142,
+   "replyReadyMs": 2079,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2079,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "classifyMs": 1171,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Sixer maara—accha cricket moment! Ab fraction wale sawaal par dhyaan: Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "move": "worked_example",
+   "card": "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "replyMs": 1004,
+   "replyReadyMs": 2175,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1171,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Rahul",
+   "read": "misconception",
+   "classifyMs": 961,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Rahul sahi nahi hai. Riya, 6 tukde karne par har tukda chhota hota hai; 3 tukde karne par bada. 1/6 ya 1/3 mein bada tukda kaunsa? Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "move": "hint",
+   "card": "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "replyMs": 1073,
+   "replyReadyMs": 2034,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2034,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "classifyMs": 793,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Ek jaisi poori cheez ko 6 hisson mein baantoge toh tukde chhote; 3 hisson mein baantoge toh tukde bade. 1/6 ya 1/3 mein bada kaunsa? Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "move": "practice",
+   "card": "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+   "replyMs": 2837,
+   "replyReadyMs": 3630,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3630,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/6",
+       "label": "1/6"
+      },
+      {
+       "at": "2/6",
+       "label": "1/3"
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "0",
+     "1",
+     "1/6",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Sana hai na",
+   "read": "correct",
+   "classifyMs": 1027,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Toh poora jawab: Sana ko bada tukda mila, 1/3 wala, kyunki ek hi size ke bar ke jitne zyada hisse, har hissa utna chhota, isliye 6 bada number hote hue bhi 1/6 chhota tukda hai. Do ek jaisi roti hain. Ek 10 barabar tukdon mein kati hai, doosri 5 barabar tukdon mein. Kaunsa ek tukda bada hai, 1/10 ya 1/5?",
+   "move": "practice",
+   "card": "Do ek jaisi roti hain. Ek 10 barabar tukdon mein kati hai, doosri 5 barabar tukdon mein. Kaunsa ek tukda bada hai, 1/10 ya 1/5?",
+   "replyMs": 1144,
+   "replyReadyMs": 2171,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2171,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "10 tukdon mein",
+      "items": [
+       "ek jaisi roti"
+      ]
+     },
+     "right": {
+      "title": "5 tukdon mein",
+      "items": [
+       "ek jaisi roti"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "worked",
+     "template": "fraction-line@1",
+     "contradictions": 0
+    },
+    {
+     "from": 194,
+     "beat": "c1",
+     "template": "compare@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "10 tukdon mein | ? tukdon mein | ek jais",
+     "numbers": "10"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "10 tukdon mein",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "5 tukdon mein",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "10 tukdon mein",
+       "items": [
+        "ek jaisi roti"
+       ]
+      },
+      "right": {
+       "title": "5 tukdon mein",
+       "items": [
+        "ek jaisi roti"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "5 wali roti ka tukda",
+   "read": "correct",
+   "classifyMs": 1220,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Haan, 5 tukdon wali roti ka ek tukda bada hai. Tumne kaise jaana ki 1/5, 1/10 se bada hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 995,
+   "replyReadyMs": 2215,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2215,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "10 tukdon mein",
+      "items": [
+       "ek jaisi roti"
+      ]
+     },
+     "right": {
+      "title": "5 tukdon mein",
+      "items": [
+       "ek jaisi roti"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "10 tukdon mein | ? tukdon mein | ek jais",
+     "numbers": "10"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "10 tukdon mein",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "5 tukdon mein",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "10 tukdon mein",
+       "items": [
+        "ek jaisi roti"
+       ]
+      },
+      "right": {
+       "title": "5 tukdon mein",
+       "items": [
+        "ek jaisi roti"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe laga aisa hi hoga",
+   "read": "incorrect",
+   "classifyMs": 1159,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Sirf andaaza nahi—tumne dekha ki zyada hisse hone par har tukda chhota hota hai. Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "move": "practice",
+   "card": "Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "replyMs": 971,
+   "replyReadyMs": 2130,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1159,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "ek hi poore ke",
+      "items": [
+       "1/3",
+       "1/12",
+       "1/6"
+      ]
+     },
+     "right": {
+      "title": "kram",
+      "items": [
+       "chhote se bade"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "ek hi poore ke | kram | ? | chhote se ba"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "ek hi poore ke",
+       "items": 3,
+       "quantities": []
+      },
+      {
+       "title": "kram",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "ek hi poore ke",
+       "items": [
+        "1/3",
+        "1/12",
+        "1/6"
+       ]
+      },
+      "right": {
+       "title": "kram",
+       "items": [
+        "chhote se bade"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "sawaal kya hai?",
+   "read": "no_evidence · repeat",
+   "classifyMs": 960,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumhe bhinnon ko chhote se bade kram mein rakhna hai. Pehle har bhinn ka neeche wala number dekho. Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "move": "practice",
+   "card": "Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "replyMs": 972,
+   "replyReadyMs": 1932,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1932,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "ek hi poore ke",
+      "items": [
+       "1/3",
+       "1/12",
+       "1/6"
+      ]
+     },
+     "right": {
+      "title": "kram",
+      "items": [
+       "chhote se bade"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "ek hi poore ke | kram | ? | chhote se ba"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "ek hi poore ke",
+       "items": 3,
+       "quantities": []
+      },
+      {
+       "title": "kram",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "ek hi poore ke",
+       "items": [
+        "1/3",
+        "1/12",
+        "1/6"
+       ]
+      },
+      "right": {
+       "title": "kram",
+       "items": [
+        "chhote se bade"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "sawaal kya hai?",
+   "read": "no_evidence · repeat",
+   "classifyMs": 880,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sawaal mein bhinnon ko chhote se bade kram mein rakhna hai. Har bhinn mein neeche wala number dekho; woh batata hai poora kitne barabar hisson mein banta hai. Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "move": "practice",
+   "card": "Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "replyMs": 963,
+   "replyReadyMs": 1843,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1843,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "ek hi poore ke",
+      "items": [
+       "1/3",
+       "1/12",
+       "1/6"
+      ]
+     },
+     "right": {
+      "title": "kram",
+      "items": [
+       "chhote se bade"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "ek hi poore ke | kram | ? | chhote se ba"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "ek hi poore ke",
+       "items": 3,
+       "quantities": []
+      },
+      {
+       "title": "kram",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "ek hi poore ke",
+       "items": [
+        "1/3",
+        "1/12",
+        "1/6"
+       ]
+      },
+      "right": {
+       "title": "kram",
+       "items": [
+        "chhote se bade"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "kya poochha, phir se bolo na",
+   "read": "no_evidence",
+   "classifyMs": 1266,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "In teen fractions ko size ke hisaab se chhote se bade lagao: 1/3, 1/12, 1/6. Tumhari pehli choice kya hai? Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "move": "repair",
+   "card": "Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "replyMs": 2091,
+   "replyReadyMs": 3357,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2091,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "ek hi poore ke",
+      "items": [
+       "1/3",
+       "1/12",
+       "1/6"
+      ]
+     },
+     "right": {
+      "title": "kram",
+      "items": [
+       "chhote se bade"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "ek hi poore ke | kram | ? | chhote se ba"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "ek hi poore ke",
+       "items": 3,
+       "quantities": []
+      },
+      {
+       "title": "kram",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "ek hi poore ke",
+       "items": [
+        "1/3",
+        "1/12",
+        "1/6"
+       ]
+      },
+      "right": {
+       "title": "kram",
+       "items": [
+        "chhote se bade"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   },
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1231,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1953,
+   "replyReadyMs": 3184,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1953,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "ek hi poore ke",
+      "items": [
+       "1/3",
+       "1/12",
+       "1/6"
+      ]
+     },
+     "right": {
+      "title": "kram",
+      "items": [
+       "chhote se bade"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "ek hi poore ke | kram | ? | chhote se ba"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "ek hi poore ke",
+       "items": 3,
+       "quantities": []
+      },
+      {
+       "title": "kram",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "ek hi poore ke",
+       "items": [
+        "1/3",
+        "1/12",
+        "1/6"
+       ]
+      },
+      "right": {
+       "title": "kram",
+       "items": [
+        "chhote se bade"
+       ]
+      }
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "wrap"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

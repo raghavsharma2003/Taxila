@@ -341,15 +341,18 @@ export function walkBeats(sk, { hook = false } = {}) {
 const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind: "practice", difficulty: 1,
   prompt_en: typeof prompt === "object" && prompt ? prompt.en : prompt, prompt_hi: typeof prompt === "object" && prompt ? prompt.hi : prompt,
   answer: String(key), acceptable: [...(accept ?? [])].map(String), hints: [], ...extra });
+// v6 (main, director8 judges: a close's why from the point's or remediation's last sentence contradicted the card): a card's
+// own authored why (KeyedAsk.why / CheckQuestionV2.why, a Said), carried on the card for the close; absent → no why is said
+const whyField = (a) => (a?.why && typeof a.why === "object" && (a.why.hi || a.why.en) ? { why: { hi: String(a.why.hi ?? ""), en: String(a.why.en ?? "") } } : {});
 /** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
 export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
-  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null } });
+  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a) } });
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
-  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis } });
+  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c) } });
 /** A remediation's follow-up question as a keyed card. */
 export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
-  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}) } })
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then) } })
   : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
 /** The script version of a skill (1 or 2). */
 export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;
@@ -393,6 +396,16 @@ export function scriptWorkedStepLine(st, lang = "hinglish") {
   const d = joinable(saidIn(st?.do, lang)), y = joinable(saidIn(st?.why, lang), { lower: true });
   if (!d || !String(st?.result ?? "").trim()) return null;
   return dot(`${d.charAt(0).toUpperCase()}${d.slice(1)}: ${String(st.result).trim()}${y ? `, ${BECAUSE[lang] ?? BECAUSE.hinglish} ${y}` : ""}`);
+}
+/**
+ * v6 R3 (main, director8: "samajh nahi aaya" on a worked step got the next step, or the same words again): the SAME step
+ * said smaller and in another order: its reason first, on its own, then the step and its result. Authored words only.
+ */
+export function scriptWorkedStepSmaller(st, lang = "hinglish") {
+  const d = joinable(saidIn(st?.do, lang), { lower: true }), y = joinable(saidIn(st?.why, lang));
+  if (!d || !String(st?.result ?? "").trim()) return null;
+  if (!y) return dot(`${lang === "english" ? "Just this one step" : "Bas yeh ek kadam"}: ${d}, ${lang === "english" ? "and that gives" : "aur milta hai"} ${String(st.result).trim()}`);
+  return `${dot(`${lang === "english" ? "Look" : "Dekho"}, ${y.charAt(0).toLowerCase()}${y.slice(1)}`)} ${dot(`${lang === "english" ? "So" : "Isliye"} ${d}: ${String(st.result).trim()}`)}`;
 }
 /** An authored clause made ready to join into a sentence: its end stop gone, its first letter lowered when asked (never "I"). */
 export function joinable(x, { lower = false } = {}) {

@@ -21,6 +21,7 @@ import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, s
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
+import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "./hybrid-side-by-side/checks.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
@@ -77,6 +78,9 @@ const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOStri
 const CAP = Number(arg("cap", "150"));
 const USD_CAP = Number(arg("usd", "2"));
 export const meter = { calls: 0, usd: 0, byDeployment: {} };
+// (a segment ask's id is unique across lessons: Studio's preselect caches its pick by intentId, and two lessons at the same
+// row once shared one, so a segment was checked against another lesson's board)
+let SEG_N = 0;
 /** Every authored key and accept form of the topic's script (lower case), for the false-key count. */
 const _keys = new Map();
 function AUTHORED_KEYS(kit) {
@@ -90,6 +94,15 @@ function AUTHORED_KEYS(kit) {
   for (const it of kit.items ?? []) for (const k of [it.answer, ...(it.acceptable ?? [])]) if (k != null) set.add(String(k).trim().toLowerCase());
   _keys.set(kit.topicId, set);
   return set;
+}
+/** v6 checker: the topic's authored whys and the sentences a why could be borrowed from (checks.mjs authoredWhys). */
+const _whys = new Map();
+function WHYS(kit) {
+  if (_whys.has(kit.topicId)) return _whys.get(kit.topicId);
+  const sc = scriptOn() ? (scriptWhyNot(kit) == null ? scriptForKit(kit) : null) : null;
+  const w = sc ? authoredWhys(sc) : null;
+  _whys.set(kit.topicId, w);
+  return w;
 }
 function dryCall(kind) { meter.calls++; meter.byDeployment[kind] = (meter.byDeployment[kind] ?? 0) + 1; }
 if (!DRY) {
@@ -303,7 +316,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     let segs = null;
     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
       const item = boardItemOf(next, kit, findItem);
-      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${rows.length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply } });
+      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
       const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (parts.length > 1) {
         const text = String(reply).replace(/\s+/g, " ").trim();
@@ -314,21 +327,40 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           let scr = pk?.screen ?? null;
           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
           const n = scr ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
-          return { from: pt.atChar, beat: pt.scriptBeat?.beatId ?? null, template: pk?.template ?? null, contradictions: n };
+          // v6 checker (a): a value the board shows as "?" that this part states
+          const wh = scr ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
+          // v6 harness: each part's own board and when it starts (its clause; ~380 ms a word before it, the S2 timing check)
+          const before = text.slice(0, pt.atChar).split(/\s+/).filter(Boolean).length;
+          return { from: pt.atChar, atClause: pt.atClause ?? null, estMs: before * 380, beat: pt.scriptBeat?.beatId ?? null, template: pk?.template ?? null, board: pt.boardRef,
+            contradictions: n + (wh.length ? 1 : 0), ...(wh.length ? { withheld: wh } : {}) };
         });
       }
     }
-    const contradictions = segs ? segs.reduce((a, x) => a + x.contradictions, 0)
-      : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
+    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
+      + (screen?.kind === "whiteboard" && withheldStated(reply, screen).length ? 1 : 0) : 0;
+    // v6 checker (main on director8: the code saw 1, 0, 0 of 10, 4, 45): (b) a picture asked for, described as something the board
+    // does not draw; (c) a close's why borrowed from a point or a remediation; (d) a verdict with content said over a board
+    // other than the answered card's
+    const v6 = {
+      picture: p.r.move?.request === "visual" && screen?.kind === "whiteboard" ? pictureMismatch(reply, screen.boardRef ?? null).length : 0,
+      borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
+      verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
+        firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
+    };
+    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
     const saidKeys = [...String(reply).matchAll(/jawab\s+(.+?)\s+tha\b|answer was\s+(.+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase());
-    const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length;
+    // v6 (main: widen beyond "jawab X tha"): any number stated as an answer that no authored key or accept form, nor the
+    // question being answered or asked, nor their own words carry
+    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x))].filter(Boolean).join(" ");
+    const statedFalse = falseAnswerNumbers(reply, { keys: AUTHORED_KEYS(kit), given });
+    const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length + (statedFalse.length ? 1 : 0);
     // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
     // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight, falseKeys }, ...(segs ? { segments: segs } : {}),
+      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
