@@ -215,3 +215,18 @@ test("split policy B (main): closures never split a turn on their own; only auth
   assert.equal(r.move.splitClose, undefined, "no closing split");
   assert.equal(r.move.kind, "explain");
 });
+
+test("v2.3 answerBoard (director9 item 4): a card answered right shows its authored answer-state board over its close, never while live", async () => {
+  const sc = runScript(T1);
+  const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
+  const ab = { template: "fraction-line@1", params: { den: 3, from: 0, to: 1, marks: [{ num: 1, label: "1/3" }] } };
+  e1.ask.answerBoard = ab;
+  setScriptForTest(T1, { ...sc, version: 2.3 });
+  const L = walkOf(T1);
+  for (let i = 0; i < 8 && L.r.state.activeItemId !== `script:${sc.skills[0].skillId}:ask:e1`; i++) L.t("haan");
+  assert.equal(L.r.state.activeItemId, `script:${sc.skills[0].skillId}:ask:e1`, "e1's card is live");
+  assert.notDeepEqual(L.r.move.scriptBeat?.board, ab, "not while live");
+  L.t(String(e1.ask.key), cls("correct"));
+  assert.deepEqual(L.r.move.closeBeat?.board, ab, JSON.stringify(L.r.move.closeBeat));
+  assert.equal(L.r.move.closeBeat?.answerBoard, true);
+});

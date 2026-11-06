@@ -832,6 +832,8 @@ function cardPointOf(s, kit, item) {
 const answersOf = (item) => (item?.answer != null && String(item.answer).trim() ? { answers: [String(item.answer), ...(item.acceptable ?? []).map(String)] } : {});
 /** SC2: a live script card's own beat ref, with its board (an ask: its explain beat's; a check: its own, else the last explain
  *  beat's, as currentBeatRef; a follow-up: its then.board) or none. */
+/** v2.3: a script card's authored answer-state board (KeyedAsk / CheckQuestionV2 answerBoard), or null. */
+const answerBoardOf = (item) => (item?.scriptAsk ?? item?.scriptCheck ?? item?.scriptThen)?.answerBoard ?? null;
 function cardBeatRef(s, kit, item) {
   const sk = skillScriptOf(kit, item.skillId);
   if (!sk) return null;
@@ -895,7 +897,8 @@ function walkRemedy(s, input, item) {
     activate(s, then);
     // v4 W4 (director6 c6: 8 missed cards never answered): the card they missed is closed with its answer once the follow-up
     // is done (brain/say.js says it after the verdict)
-    s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "", beat: cardBeatRef(s, kit, item) ?? null };
+    { const b0 = cardBeatRef(s, kit, item) ?? null, ab = answerBoardOf(item);
+      s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "", beat: ab ? { ...(b0 ?? {}), board: ab, answerBoard: true } : b0 }; }
     const mis0 = kit.misconceptions.find((m) => m.id === targets);
     logReteach(s, "kit", item.skillId, mis0 ?? null);
     return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
@@ -2896,6 +2899,10 @@ export function step(prev, input) {
   if (scriptOn()) {
     const end = prev?.lastMove?.cardBeat ?? prev?.lastMove?.scriptBeat ?? null;
     if (end?.board) move.closeBeat = end;
+    // v2.3 (director9 item 4): the card just answered right, or let go, shows its authored answer-state board over its close
+    const was = prev?.activeItemId ? findItem(prev, input.kit, prev.activeItemId) ?? null : null;
+    const ab = answerBoardOf(was);
+    if (ab && (move.gave || input.cls?.outcome === "correct")) move.closeBeat = { ...(end ?? cardBeatRef(prev, input.kit, was) ?? {}), board: ab, answerBoard: true };
   }
   s.lastMove = move;
   s.moveVoiced = false;
