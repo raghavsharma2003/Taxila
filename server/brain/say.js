@@ -1053,12 +1053,32 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // the lesson): a block on a REWRITE or REPAIR call (the brief, her draft and the child's words) is judged as every other
   // reply-side block. A non-harm detector: a neutral line. Otherwise the child's own words alone decide: clear, a neutral
   // line; a harm block, the safeguard; a probe that could not run, the check-in.
+  // v6.1 (director9 c5-t02 offtopic T7: a filtered rewrite spoke only the card, dropping the beat's explanation and the aside):
+  // in a scripted turn the neutral line is the move's own authored words (the closures, the point or rendered lines, a parked
+  // aside's acknowledgement) and then the card; anything else keeps the fixed neutral line
+  const scriptNeutral = () => {
+    const lm = state.lastMove ?? {};
+    if (!(lm.scriptBeat || lm.splitClose) || CLOSING_MOVES.has(lm.kind)) return null;
+    const en = state.ctx?.lang === "english";
+    const d = (x) => { const t = String(x ?? "").replace(/\s+/g, " ").trim(); return t ? (/[.!?\u0964]$/.test(t) ? t : `${t}.`) : null; };
+    const parked = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
+    const parts = [
+      lm.gave?.answer ? (en ? `The last question's answer was ${lm.gave.answer}.` : `Pichhle sawaal ka jawab ${lm.gave.answer} tha.`) : null,
+      lm.closed?.answer ? (en ? `And the earlier question's answer was ${lm.closed.answer}.` : `Aur pehle wale sawaal ka jawab ${lm.closed.answer} tha.`) : null,
+      parked ? pickOf(PARK_ACK[en ? "english" : "hinglish"], state)(parked.topic) : null,
+      ...(lm.rendered?.length ? lm.rendered.map(d) : [d(lm.point)]),
+      ui?.ask?.text ? String(ui.ask.text).trim() : null,
+    ].filter(Boolean);
+    const line = parts.join(" ").replace(/\s+/g, " ").trim();
+    return line && !problems(line).some((p) => ENFORCED.has(p)) ? line : null;
+  };
+  const neutralLine = () => scriptNeutral() ?? filterNeutralReply(state, item);
   const blockedAfterDraft = async (e, code) => {
-    if (nonHarmFilter(e)) return { reply: filterNeutralReply(state, item), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
+    if (nonHarmFilter(e)) return { reply: neutralLine(), guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true } };
     const probe = await childWordsTrip(probeWords(history, childText), { trace });
     if (probe === "clear") {
       console.warn(`[lesson] ${code} blocked but the child's own words pass: a neutral line`);
-      return { reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } };
+      return { reply: neutralLine(), guard: { caught: [code], rewritten: false, replaced: true } };
     }
     console.warn(`[lesson] ${code} blocked; the child's own words ${probe === "harm" ? "trip the filter" : "could not be cleared"}`);
     return blocked(probe);
@@ -1147,7 +1167,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // One retry on the system prompt and this turn only (the history may carry what tripped it); if that is blocked too, a
     // neutral fallback line, never the helplines. Harm categories (sexual, self_harm, violence, hate) and unreadable blocks
     // still fail CLOSED below, exactly as before.
-    const neutral = (code) => ({ reply: filterNeutralReply(state, item), guard: { caught: [code], rewritten: false, replaced: true } });
+    const neutral = (code) => ({ reply: neutralLine(), guard: { caught: [code], rewritten: false, replaced: true } });
     const lone = [messages[0], messages[messages.length - 1], ...(lastNotes ? [{ role: "system", content: lastNotes }] : [])];
     // 14.4.1 (sim lab p26h on 5c127d1a, QA 4b3d875c: a class 8 answer about the British, blocked on hate on the prompt and on
     // this turn alone, got only the fixed carry-on, with no question): one more try with their words NOT shown, so her line is
@@ -1825,7 +1845,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // (Studio's alternate view, main/Studio on director8 c5-t02: when the live card's board was already up, a second view of the
     // same numbers is drawn and flagged; her words then say it is the same numbers in the new view. A board code cannot describe
     // still gets an acknowledgement: a picture ask is never ignored, and the beat and card stay)
-    const visualAsk = state.lastMove?.request === "visual" && state.lastMove?.visual !== "game";
+    const visualAsk = (state.lastMove?.request === "visual" || !!state.lastMove?.visual) && state.lastMove?.visual !== "game";
     const alt = visualAsk ? state.lastMove?.altView ?? null : null;
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"] };
     const asked = !visualAsk ? null

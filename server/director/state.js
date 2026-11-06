@@ -2986,9 +2986,10 @@ function heldTurn(prev, input) {
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
-  // (the teaching half asked "is that clear?": not following it is answered by the walk, with the card live)
-  if (h.teach && (c?.flags?.dontKnow || c?.help || ["confused", "clarify", "another", "example", "slower", "repeat"].includes(c?.request?.type)
-    || readIntent(String(input.text ?? ""))?.type === "confused")) return null;
+  // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
+  // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
+  // following it is such a request too)
+  if (c?.help || c?.request || (h.teach && (c?.flags?.dontKnow || readIntent(String(input.text ?? ""))?.type === "confused"))) return null;
   const s = structuredClone(prev);
   s.turn += 1;
   s.splitHold = undefined;

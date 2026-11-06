@@ -80,7 +80,9 @@ export function whiteboardAskOf({ beat, lane, late, strained, move = null, studi
   // release 13 (A): a picture nothing can make was asked for: no board this turn (the release-13 replay drew the maths table
   // beside "aloo gol, bhura hota hai")
   if (move?.request === "visual_unavailable") return { proposals: [], declined: "studio_rejected.not_explain" };
-  if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
+  // (v6.1, director9 c5-t02 offtopic T26: "drawing karke samjhao" over a live card is a `practice` move, the card re-posed;
+  // the child's own picture ask is honoured on it, as on any beat, never declined as "not an explanation")
+  if (move && !WHITEBOARD_MOVES.has(move.kind) && !(requested && move.request === "visual")) return { proposals: [], declined: "studio_rejected.not_explain" };
   if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
   if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };
   const on = studioView?.onScreen;
@@ -143,7 +145,10 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // named), this turn only. Studio draws THAT; it is never the child's words, only the request's shape and subject.
   // (state.js sets lastMove on every step, so a see from an earlier turn never rides on a later move)
   // an example asked for ("ek example do") is drawn as her worked example, on a new page
-  const request = requestOfSee(next?.lastMove?.request === "visual" ? next.lastMove.see : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
+  // (v6.1, director9 c5-t02: "picture dikhao" with nothing named carries no `see`, so the ask carried no request and Studio's
+  // second view — keyed on a request — never came: a picture ask is always a request, at least "show")
+  const visualNow = next?.lastMove?.request === "visual" || (!!next?.lastMove?.visual && next.lastMove.visual !== "game");
+  const request = (visualNow ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
       intentId: `${lessonId}:wb:${turn}`, lessonId, kind: "whiteboard", skillId, ...(item?.id ? { itemIds: [item.id] } : {}),

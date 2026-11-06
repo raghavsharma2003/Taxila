@@ -45,3 +45,34 @@ test("cross-seam: picture asked with the card's board up → Studio's row names 
     assert.ok(out.reply.endsWith(card), "the card stays, last");
   } finally { replyDeps.chat = chat; }
 });
+
+import * as BF from "../server/stagecraft/board-first.js";
+import { whiteboardAskOf } from "../server/brain/propose.js";
+
+test("replay director9 c5-t02 offtopic T26 ('drawing karke samjhao' with e3's line board up): the ask is proposed on the practice move, Studio picks the second view, her line names it", async () => {
+  // 1. arbitration: the card re-posed is a `practice` move; the child's picture ask is still proposed (it was declined)
+  const wb = whiteboardAskOf({ beat: { id: "b", type: "practice" }, lane: "text", late: false, strained: false, move: { kind: "practice", request: "visual", visual: "diagram" }, requested: true });
+  assert.equal(wb.proposals.length, 1, `declined: ${wb.declined}`);
+  // 2. the board on screen at T25 (the row's own ref), then the picture ask at T27 with it as the page on screen
+  const T = "c5-maths-ch02-t02", kit = kitFromFile(getTopic(T)), L = `d9t26-${Date.now()}`;
+  const ref = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 2, label: "1/4" }] } };
+  const card = "Aisi hi 0 se 1 wali sankhya rekha par zero se zyada door kaunsa hoga, 1/3 ya 1/7?";
+  const ask = (n, more = {}) => ({ intent: { intentId: `${L}:wb:${n}`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { scriptId: "s", beatId: "e3", kind: "explain" }, ...more }, line: { lessonId: L, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } });
+  const up = BF.preselect(ask(25), { kit });
+  assert.ok(up?.script, "T25's board is drawn");
+  const pic = BF.preselect(ask(27, { request: { kind: "picture" } }), { kit, avoid: up.script });
+  assert.equal(pic?.altView, "parts", `the second view is picked (template ${pic?.template})`);
+  const alt = altViewOfRow(pic.row);
+  assert.deepEqual(alt?.labels, ["1/8", "1/4"], String(pic.row).slice(0, 200));
+  // 3. her line: the same numbers on the new view, the card kept
+  const state = { ...initLessonState({ topicId: T, kit, ctx: { ...CTX, classLevel: 5, lang: "hinglish" }, seed: 7, now: 0 }), mode: "text",
+    lastMove: { kind: "practice", request: "visual", visual: "diagram", altView: alt, scriptBeat: { scriptId: "s", skillId: "x", beatId: "e3", kind: "explain", board: ref } } };
+  try {
+    replyDeps.chat = async () => ({ text: `Riya, ek 0 se 1 tak seedhi line banao. ${card}` });
+    const out = await textReply({ instructions: "x", state, kit, childText: "drawing karke samjhao", history: [], ui: { ask: { itemId: "x", text: card } }, module: null });
+    assert.match(out.reply, /^Dekho, yahi 1\/8 aur 1\/4 ab patti par\./, out.reply);
+    assert.doesNotMatch(out.reply, /line banao/, "never tells the child to draw it");
+    assert.ok(out.reply.endsWith(card));
+  } finally { replyDeps.chat = chat; }
+});

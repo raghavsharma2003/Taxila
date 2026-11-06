@@ -30,7 +30,7 @@ import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
-import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
+import { whiteboardIntentOf, boardItemOf, altViewOfRow } from "../server/brain/propose.js";
 import { preselect, takePreselected } from "../server/stagecraft/board-first.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
@@ -176,6 +176,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
   const MAX = child ? maxTurnsFor(persona) : lines.length;
   let lastBoardUp = false;
+  // (director9 c5-t02: S3′'s second view drew 0/3 here because the board already on screen was never given to the preselect,
+  // as production's seam does through boardFirstOpts.avoid: the page drawn last is passed on, like the lesson's wbPrev)
+  let shownScript = null;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
     let leaving = false;
@@ -241,19 +244,21 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
         const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
-        const pick = preselect(ask, { kit });
+        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}) });
         pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
           // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
           const counts = pick.screen?.counts ?? pick.facts?.counts ?? pick.script?.facts?.counts ?? null;
-          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
+          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null, ...(pick.altView ? { altView: pick.altView } : {}),
             counts, ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
           // (Studio: word boards — compare, flow, cycle, table, timeline, label, parts — have nothing countable: not a miss)
           if (!counts && pick.template && !WORD_BOARDS.test(pick.template) && !NO_COUNTS.has(pick.template)) { NO_COUNTS.add(pick.template); console.error(`NO COUNTS: ${pick.template} (${kit.topicId}) drew a board with no screen.counts`); }
           slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
+          // (as brain/turn.js: a picture asked with the card's board up names Studio's second view in her line)
+          if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row) ?? pick.altView } };
         } else screen = { kind: "none", why: "no board for this ask" };
         if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
       }
@@ -285,8 +290,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
       if (took?.screen) {
         screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null };
+        shownScript = took.script ?? shownScript;
         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
-      } else screen = { ...screen, drawn: "preselect" };
+      } else { screen = { ...screen, drawn: "preselect" }; }
     }
     // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
     // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen

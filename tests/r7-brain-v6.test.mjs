@@ -144,12 +144,13 @@ describe("R3: requests as moves", () => {
     assert.equal(missingPieces("Ek cake ke 4 tukde, 3 khaye.", "1/4", "3/4"), null, "not an adding card");
   });
 
-  test("a worked step said smaller: its reason first, then the step and result; never the same words", () => {
+  test("a worked step said smaller: the step and its result alone, fewer words; never the same words", () => {
     const st = S1.workedExample.steps[0];
     const small = scriptWorkedStepSmaller(st, "hinglish"), same = scriptWorkedStepLine(st, "hinglish");
     assert.notEqual(small, same);
     assert.ok(small.includes(String(st.result)), small);
-    assert.match(small, /^Dekho, /);
+    assert.doesNotMatch(small, /Dekho/, "v6.1: never 'Dekho' (it made the story read as the board)");
+    assert.ok(small.split(/\s+/).length < same.split(/\s+/).length, "smaller: fewer words than the step");
   });
 
   test("the board's own words: what the params draw, never the card's key", () => {
@@ -339,6 +340,18 @@ describe("R5: a turn too long for one is split, never cut", () => {
     assert.equal(L2.r.state.splitHold, undefined);
   });
 
+  test("a picture asked over 'shall we go on?' is answered as a picture with the card live, never by the held beat (director9 c5-t02)", () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    const split = splitLong({ ...L.r, state: structuredClone(L.r.state), move: { ...L.r.move, closed: { answer: "12 cm", why: long } } }, { event: "turn", kit: K });
+    assert.equal(split.move.splitClose, true);
+    const r = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: { ...cls("no_evidence"), request: { type: "visual", kind: "picture", whole: true } }, text: "picture dikhao", now: 9e6 });
+    assert.equal(r.move.request, "visual", JSON.stringify(r.move).slice(0, 200));
+    assert.equal(r.state.splitHold, undefined);
+    assert.equal(r.state.activeItemId, split.state.splitHold.activeItemId, "the card is live again");
+  });
+
   test("a stop said over the closing half lets the held half go", () => {
     const s0 = { splitHold: { move: { kind: "explain" }, ui: { ask: { itemId: "x" } }, activeItemId: "x" } };
     const L = run();
@@ -452,5 +465,21 @@ describe("v6 after director9: the split covers what it missed", () => {
     assert.equal(out.move.splitClose, true);
     const again = splitLong(out, { event: "turn", kit: K });
     assert.equal(again.state.splitHold, out.state.splitHold, "the closing half itself is never split again");
+  });
+});
+
+import { CONTENT_FILTER } from "../server/azure.js";
+
+describe("v6.1: a filtered turn in a script keeps its authored words", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  test("a non-harm filter on her draft: the beat's point and the card (director9 c5-t02 offtopic T7 spoke the card alone)", async () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
+    replyDeps.chat = async () => { const e = new Error("filtered"); e.code = CONTENT_FILTER; e.filterCats = ["jailbreak"]; throw e; };
+    const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: K, childText: "kal maine cricket khela", history: [], ui: r.ui, module: null });
+    assert.ok(out.reply.includes(S1.explain[0].point.hi), out.reply);
+    assert.ok(out.reply.endsWith(r.ui.ask.text), out.reply);
   });
 });

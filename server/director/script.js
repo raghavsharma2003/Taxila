@@ -402,10 +402,11 @@ export function scriptWorkedStepLine(st, lang = "hinglish") {
  * said smaller and in another order: its reason first, on its own, then the step and its result. Authored words only.
  */
 export function scriptWorkedStepSmaller(st, lang = "hinglish") {
-  const d = joinable(saidIn(st?.do, lang), { lower: true }), y = joinable(saidIn(st?.why, lang));
+  // v6.1 (director9 c5-t02: "Dekho, rahul ka bar 6 hisson mein…" turned the story's reference into a description of the board,
+  // and re-ordering the same step is not smaller): only the step and its result, without its reason, and never "Dekho"
+  const d = joinable(saidIn(st?.do, lang), { lower: true });
   if (!d || !String(st?.result ?? "").trim()) return null;
-  if (!y) return dot(`${lang === "english" ? "Just this one step" : "Bas yeh ek kadam"}: ${d}, ${lang === "english" ? "and that gives" : "aur milta hai"} ${String(st.result).trim()}`);
-  return `${dot(`${lang === "english" ? "Look" : "Dekho"}, ${y.charAt(0).toLowerCase()}${y.slice(1)}`)} ${dot(`${lang === "english" ? "So" : "Isliye"} ${d}: ${String(st.result).trim()}`)}`;
+  return dot(`${lang === "english" ? "Just this one step" : "Bas yeh ek kadam"}: ${d}, ${lang === "english" ? "and that gives" : "aur milta hai"} ${String(st.result).trim()}`);
 }
 /** An authored clause made ready to join into a sentence: its end stop gone, its first letter lowered when asked (never "I"). */
 export function joinable(x, { lower = false } = {}) {
