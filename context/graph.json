@@ -25820,6 +25820,62 @@
    "at": "2026-11-06",
    "title": "Script walk v6.1.\n- P1: replay director9's rows through the real turn path to find why confirm-reveal and S3' are dead there; fix and pin them with run-path tests.\n- P2: every picture request draws something new, with a second view for compare and shade-grid too.\n- R7: no model-written teaching in script mode (authored `simpler` and whys; model sentences stating rules or numbers are checked against the key and the misconception).\n- R8: requests as moves; never give away the live answer.\n- R9: one check-in per beat, after new teaching, and a non-yes is acted on.\n- R10: parks, and the language mode extends to cards.\n- R11: rendering.\n- Data v2.3 (additive): `simpler` on every explain beat, worked step and card; prompt shape words checked against the board.\n- Harness: the child treats an imperative as a question; the checker models confirm-reveal and picture draws.\n- Next: director10 on integration 12. The gate is unchanged, plus a stated wrong rule counts as a false key.\n- Reverse if: director10 has P1-P2 in place and still more than 10 runtime-class contradictions; then board-describing sentences go to a code-rendered voice. The 30-topic batch stays held.",
    "source": "inbox/r7-main-20.json"
+  },
+  {
+   "id": "dc-r7-app-signin-code",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Guardians can sign in with a 6-digit code sent by email, at /signin. The server is server/signin/code.js: POST /api/auth/code and /api/auth/code/verify, with the same createSession as password login. One provider interface: email goes through ACS Email (the existing sendAcsEmail, Azure-managed domain); phone has the same shape and refuses with 501 phone.unavailable, because ACS SMS does not reach Indian numbers. There is no migration: codes are password_reset rows keyed code:+sha256(guardian, code), so reset links and codes share the 5-an-hour mail limit and a password reset spends open codes. A code lives 10 minutes, and 5 wrong tries spend it. An unknown email gets the same answers as a known one. Platform registers the routes (to-platform/002); Learning adds the links (to-learning/004). Reverse: an Indian SMS or WhatsApp route on Azure fills PROVIDERS.phone, or Learning wants a dedicated table (then a migration number from Platform).",
+   "source": "inbox/r7-app-21.json"
+  },
+  {
+   "id": "dc-r7-app-pricing-page",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "/pricing shows three plan cards, Set-up (free), One child (PRICES.monthly) and Brother or sister (PRICES.sibling), all built from src/app/site.ts PLANS. There is no payment step: every action is the free set-up, a TBD price reads 'Not set yet' on its card, and a callout says paying is not open and no card is asked for. The cards list only what the product does today; cancellation is described as future, never as a feature. Linked from the site header, the footer and the landing's price section. Reverse: the owner chooses a payment provider (then a checkout seam from Platform), or renames or drops a plan in PLANS.",
+   "source": "inbox/r7-app-22.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-1-brain",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6.1, Brain's half of main's dc-r7-script-walk-v6-1 (director9 hand judgement). P1: run-path replays through planTurn → textReply → whiteboardIntentOf → Studio's seam. c5-t01 T21's dropped confirm-reveal was Brain's: a 3-word tail page that Studio could not draw failed the whole paged turn. A page under 5 words with no card is now no page. R7: no model-written teaching in script mode (authored simpler / point / why only; her rule sentences and wrongIfMis statements go). R8: dodges never let a scripted card go with its key; probe acknowledgement only when it takes up their words. R9: one check-in per beat; a 'nahi' to it gets the same teaching smaller. R10: asides with no request read are parked; cards in Hindi words in the Hindi mode. R11: step labels, 'Is sawaal' vs 'Pichhle sawaal', code not-right verdict, no Devanagari switch. Format 2.3 (`simpler`) is read and validated. Reverse a part if director10's hand count shows it adds a contradiction, a lost card or a longer skill 1.",
+   "source": "inbox/r7-brain-19.json"
+  },
+  {
+   "id": "ms-r7-run-path-replay-d9",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Run-path replay of director9 rows (tests/fixtures/replay.mjs: recorded child turns read by classifyFast or the run's recorded model read, planned by turn.js planTurn). The replay matches all 10 of the run's moves up to c5-t01 steady T21. T21 through Studio's seam (Studio a402e724 merged): before the fix 'planning' (no page; take of the 3-word tail page rejected W6.timing); after it 'revealed', page 0 counts.marks [mark 1 = 1/8]. c5-t02 stuck T18: the second view (number line, 8 gaps, 1/8) is drawn and named; in the run tree Studio's a402e724 was missing.",
+   "source": "inbox/r7-brain-19.json"
+  },
+  {
+   "id": "dc-r7-games-guna2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "guna extended to c7-maths-ch01-t03 (round × round to 7 racks, big estimates), c5-maths-ch04-t02 (field/check: the estimate built, then dockets marked) and c4-maths-ch09-t02 (pack/each sharing; story full / all at small numbers); rack limit 7, existing levels unchanged. Reverse: dockets marked without the estimate, or the column truck read as labels.",
+   "source": "inbox/r7-games-guna2.json"
+  },
+  {
+   "id": "ms-r7-games-guna2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "guna play-cert after guna2: 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px); 97 guna law and server tests pass.",
+   "source": "inbox/r7-games-guna2.json"
+  },
+  {
+   "id": "dc-r7-games-koshtak",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "koshtak (expressions: terms, brackets, order of evaluation, like terms) as one never-timed law family for class 7: tray (walls snapped between the terms of a row and a counter that works each tray then joins them; one lid laid so the row makes a value; a bracket after a minus opened into jumps whose directions the child turns, walked against the bracketed row on one number line), bin (term cards with their signs put into bins that close into one term only when every card has the same letter part, checked against the belt with numbers for the letters). 2 topics: c7-maths-ch02-t02, c7-maths-ch04-t02. Why: both were served only by ITEM-ARENA. Reverse: a child pilot shows walls / lids / turns set by trial runs rather than by reading the signs.",
+   "source": "inbox/r7-games-koshtak.json"
+  },
+  {
+   "id": "ms-r7-games-koshtak-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "koshtak play-cert (forge3-qa, p360/p412/l1366, game mounted): 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px); 32 law and server tests pass.",
+   "source": "inbox/r7-games-koshtak.json"
   }
  ],
  "edges": [
@@ -40432,6 +40488,26 @@
    "src": "dc-r7-script-walk-v6-1",
    "rel": "measured_by",
    "dst": "ms-r7-director9-hand-2026-11-06"
+  },
+  {
+   "src": "dc-r7-app-pricing-page",
+   "rel": "part_of",
+   "dst": "dc-r7-app-site-config"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1-brain",
+   "rel": "caused_by",
+   "dst": "ms-r7-run-path-replay-d9"
+  },
+  {
+   "src": "dc-r7-games-guna2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-guna2-cert"
+  },
+  {
+   "src": "dc-r7-games-koshtak",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-koshtak-cert"
   }
  ]
 }
