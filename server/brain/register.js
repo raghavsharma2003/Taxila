@@ -21,5 +21,7 @@ export function inHindiWords(line, { keep = [], card = null } = {}) {
   const kept = keep.map((k) => String(k ?? "").trim().toLowerCase()).filter(Boolean);
   let out = head;
   for (const [re, to] of HINDI) out = out.replace(re, (m) => (kept.some((k) => k === m.toLowerCase() || k.includes(m.toLowerCase())) ? m : keepCase(m, to)));
-  return out + tail;
+  // v6.1 R11 (director9: "Parimap (parimap)"): an English word glossed in brackets becomes the same word twice once it is in
+  // Hindi words; the bracket goes
+  return out.replace(/(?<![\p{L}])(\p{L}+)\s*\(\s*\1\s*\)/giu, "$1") + tail;
 }

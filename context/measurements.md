@@ -5834,3 +5834,38 @@ Where the contradictions come from:
 - runtime: 6.
 
 Requests got a real smaller re-explanation 16 times out of 58. Cost: ~$0.94. Reply-ready p50 2.33 s. Full write-up: docs/design/round7/judgements/director9-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-brain-19.json -->
+## `ms-r7-run-path-replay-d9` (2026-11-06, stream A Brain)
+
+**Method:**
+- tests/fixtures/replay.mjs walks the run's recorded child turns from evals/hybrid-side-by-side/results/2026-11-06-director9/.
+- Each turn is read by classifyFast, or by the run's recorded model read (outcome · request type).
+- Each turn is planned by turn.js planTurn, with the run's own scripts.
+- No model calls: her line uses a fixed draft and code assembly.
+
+**Results:**
+- **c5-t01 steady:** the replay matches all 10 recorded moves up to T21.
+- **T21 through Studio's seam:** before the fix 'planning' (the tail page's take rejected W6.timing); after it 'revealed' with page 0 counts.marks [mark 1 = 1/8].
+- **c5-t02 stuck T18:** the alt view is 'line' (8 gaps, 1/8), and her line is "Dekho, yahi 0 se 1 ki sankhya rekha par, 8 barabar gaps, nishaan 1/8 par."
+- **Caveat:** a replay past the first turn whose move changes no longer follows the run (the recorded child answered the run's teacher).
+
+
+<!-- merged from inbox/r7-games-guna2.json -->
+## `ms-r7-games-guna2-cert`
+
+guna play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-guna.test.mjs has 97 tests, including the new cases: BIG area, big round, check, each, and small full / all. The independent plain-arithmetic checker judges check by the band the rounded sides allow (both down … both up). Each new mal-rule lands on its own misconception. Generator p95 is under 50 ms. Every new coverage entry serves through currentLevel at every fade. 43 gate files: 828 tests pass. lint-ui is 354 before and after.
+
+
+<!-- merged from inbox/r7-games-koshtak.json -->
+## `ms-r7-games-koshtak-cert`
+
+koshtak play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Run states:** the solved and the believed run of each goal were driven in the harness by taps and looked at (the cert itself shoots the opening state).
+- **Tests:** tests/r7-games-koshtak.test.mjs, 32 tests. An independent checker has its own tokenizer and recursive-descent parser for + − × and brackets, its own tray counter and its own copy of the set-up fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.

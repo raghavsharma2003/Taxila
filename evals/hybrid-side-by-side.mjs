@@ -30,8 +30,8 @@ import { teacherDeployment } from "../server/agent/flags.js";
 import { __test } from "../server/routes/lesson.js";
 // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
 // on screen each turn"): the pure parts of turn.js's visual path
-import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
-import { preselect, takePreselected } from "../server/stagecraft/board-first.js";
+import { whiteboardIntentOf, boardItemOf, altViewOfRow } from "../server/brain/propose.js";
+import { preselect, takePreselected, pagesBoard } from "../server/stagecraft/board-first.js";
 import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
@@ -130,6 +130,8 @@ function stopWith(code, why) {
 const timed = async (fn) => { const t0 = performance.now(); const v = await fn(); return [v, Math.round(performance.now() - t0)]; };
 
 const say = (r) => r?.ui?.ask?.text ?? null;
+/** (v6.1) one drawn board, as a key: its template and params (a second view is its own board) */
+const screenKeyOf = (scr) => JSON.stringify([scr?.template ?? null, scr?.boardRef?.params ?? null, scr?.altView ?? null]);
 const NO_COUNTS = new Set();
 const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
 
@@ -176,6 +178,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
   const MAX = child ? maxTurnsFor(persona) : lines.length;
   let lastBoardUp = false;
+  // (v6.1 harness: the board the child saw last turn, to tell a picture ask that drew something new from one that re-drew it)
+  let lastScreenKey = null;
+  // (director9 c5-t02: S3′'s second view drew 0/3 here because the board already on screen was never given to the preselect,
+  // as production's seam does through boardFirstOpts.avoid: the page drawn last is passed on, like the lesson's wbPrev)
+  let shownScript = null;
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
     let leaving = false;
@@ -240,20 +247,23 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       } else {
         const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
-        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
-        const pick = preselect(ask, { kit });
+        // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}) });
         pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
         if (pick) {
           // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
           const counts = pick.screen?.counts ?? pick.facts?.counts ?? pick.script?.facts?.counts ?? null;
-          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null,
+          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null, ...(pick.altView ? { altView: pick.altView } : {}),
             counts, ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
           // (Studio: word boards — compare, flow, cycle, table, timeline, label, parts — have nothing countable: not a miss)
           if (!counts && pick.template && !WORD_BOARDS.test(pick.template) && !NO_COUNTS.has(pick.template)) { NO_COUNTS.add(pick.template); console.error(`NO COUNTS: ${pick.template} (${kit.topicId}) drew a board with no screen.counts`); }
           slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
+          // (as brain/turn.js: a picture asked with the card's board up names Studio's second view in her line)
+          if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row, pick.altView) ?? pick.altView } };
         } else screen = { kind: "none", why: "no board for this ask" };
         if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
       }
@@ -284,9 +294,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       let took = null;
       try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
       if (took?.screen) {
-        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null };
+        // (Studio 608a0e90: a value her line confirms is revealed in the take's counts, labels and numbers: take all three)
+        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null,
+          ...(took.screen.labels != null ? { onScreen: { ...(screen.onScreen ?? {}), labels: Array.isArray(took.screen.labels) ? took.screen.labels.join(" | ") : String(took.screen.labels) } } : {}) };
+        shownScript = took.script ?? shownScript;
         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
-      } else screen = { ...screen, drawn: "preselect" };
+      } else { screen = { ...screen, drawn: "preselect" }; }
     }
     // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
     // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
@@ -313,12 +326,16 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
     // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's
     // board preselected and taken on that part's own words, as Studio pages it)
-    let segs = null;
+    let segs = null, unpaged = 0;
     if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
       const item = boardItemOf(next, kit, findItem);
       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
       const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (parts.length > 1) {
+        // (v6.1, main on director9: model the seam's PAGED turn, not only each part on its own: production pages all parts in one
+        // take (seam.js → pagesBoard); when one page cannot be drawn the whole turn falls back and no part's board — the
+        // verdict's revealed mark included — reaches the screen. c5-t01 steady T21: a 3-word tail page failed W6.timing)
+        try { unpaged = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit }) ? 0 : 1; } catch { unpaged = 1; }
         const text = String(reply).replace(/\s+/g, " ").trim();
         segs = parts.map((pt, i) => {
           const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
@@ -344,15 +361,24 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const v6 = {
       picture: p.r.move?.request === "visual" && screen?.kind === "whiteboard" ? pictureMismatch(reply, screen.boardRef ?? null).length : 0,
       borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
+      // (v6.1) a turn in parts that Studio could not page; a picture asked for that drew the board already up, no second view
+      unpaged,
+      nothingNew: p.r.move?.request === "visual" && screen?.kind === "whiteboard" && !screen.altView && !!lastScreenKey && lastScreenKey === screenKeyOf(screen) ? 1 : 0,
       verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
         firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
     };
-    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg;
+    const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
-    const saidKeys = [...String(reply).matchAll(/jawab\s+(.+?)\s+tha\b|answer was\s+(.+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase());
+    // (one sentence at a time; "tumhara jawab sahi tha" states no key)
+    const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())
+      .filter((k) => !/^(?:sahi|galat|theek|bilkul sahi)$/.test(k));
     // v6 (main: widen beyond "jawab X tha"): any number stated as an answer that no authored key or accept form, nor the
     // question being answered or asked, nor their own words carry
-    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x))].filter(Boolean).join(" ");
+    // (director9: 15 of 17 flags were numbers inside an authored close, "kyunki … 6 + 4 + 6 + 4 = 20 cm": every authored why and
+    // the move's own closures are given too)
+    const lm = next.lastMove ?? {};
+    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x)),
+      ...(WHYS(kit)?.own ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, ...(lm.sayFirst ?? []), lm.point, ...(lm.rendered ?? [])].filter(Boolean).join(" ");
     const statedFalse = falseAnswerNumbers(reply, { keys: AUTHORED_KEYS(kit), given });
     const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length + (statedFalse.length ? 1 : 0);
     // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
@@ -364,6 +390,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
+    if (screen?.kind === "whiteboard") lastScreenKey = screenKeyOf(screen);
     if (child && (leaving || p.r.end)) break;
     if (p.r.end) break;
   }

@@ -119,7 +119,10 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // 2/4 its board labels — that label is the card's given, never the "?")
   const withhold = !sk ? withhold1 : cardAnswers ? withoutLabels({ values: cardAnswers, words: [], phrases: [] }, ask.intent.boardRef, { authored: ownCard }) : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
-  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
+  // (a card's OWN board writes the numbers Learning authored — "70°" given beside the asked "?" — as an explain board does:
+  // they are not invented (W4); the values it withholds stay out)
+  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef)
+    : sk === "check" && ownCard ? refNumbers(ask.intent.boardRef).filter((v) => !(withhold?.values ?? []).map(String).includes(v)) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   // main 14.4: the answer her own question asks for, when her line already states it (selfAnswer): never drawn (W18)
@@ -152,6 +155,8 @@ function withoutLabels(w, ref, { authored = false } = {}) {
     const shown = [];
     for (const m of Array.isArray(params.marks) ? params.marks : []) if (m && typeof m === "object" && !Array.isArray(m)) shown.push(...nums(m.label));
     if (authored) for (const k of ["sides", "w", "h", "r", "value"]) for (const v of [params[k]].flat()) if (v != null) shown.push(...nums(v));
+    // (lines@1: an angle the card's board writes as a value — the asked one is authored "?", never a value)
+    if (authored && Array.isArray(params.angles) && params.angles.some((a) => a && "at" in a)) for (const a of Array.isArray(params.angles) ? params.angles : []) if (typeof a?.value === "number") shown.push(String(a.value));
     if (authored) for (const k of ["items", "steps", "stages", "parts", "names"]) for (const v of [params[k], params.left?.[k], params.right?.[k]].flat()) if (typeof v === "string") shown.push(...nums(v));
     if (authored) for (const t of [params.left?.title, params.right?.title, params.whole, params.centre]) if (typeof t === "string") shown.push(...nums(t));
     const vals = shown.map(val).filter((v) => v != null);

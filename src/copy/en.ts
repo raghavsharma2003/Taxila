@@ -270,6 +270,26 @@ export const R7 = {
   "jar.answered": "Answered",
   "jar.answeredOn": "answered on {date}",
   "jar.empty": "When {T} saves a question for later, it waits here.",
+  // r7 app-auth-email-otp: sign in with a code sent by email
+  "code.title": "Sign in with a code",
+  "code.why": "We email you a 6-digit code. No password needed.",
+  "code.email": "Email",
+  "code.send": "Email me a code",
+  "code.sent": "If {email} has a Taxila account, a code is on its way. It works for {min} minutes.",
+  "code.field": "The 6-digit code",
+  "code.go": "Sign in",
+  "code.again": "Send a new code",
+  "code.other": "Use a different email",
+  "code.password": "Sign in with a password instead",
+  "code.instead": "Email me a code instead",
+  "code.err.bad": "That code is not right. Check the email and type it again.",
+  "code.err.tries": "Too many tries with that code. Ask for a new one.",
+  "code.err.shape": "The code is 6 digits.",
+  "code.err.unavailable": "Codes by email are not working right now. Sign in with your password instead.",
+  "code.err.phone": "Codes by phone are not ready yet. Use your email.",
+  "code.err.wait": "Too many tries. Wait a minute, then try again.",
+  "code.err.network": "You seem to be offline. Check the internet and try again.",
+  "code.err.generic": "Something went wrong. Try again.",
 } as const;
 export type R7Key = keyof typeof R7;
 export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {

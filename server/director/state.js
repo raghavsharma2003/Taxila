@@ -17,6 +17,7 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
+import { inHindiWords } from "../brain/register.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
@@ -59,6 +60,20 @@ function formatFor(s, kit, skillId) {
   return chosen;
 }
 /** A stuck turn (S3's stall split): a don't-know, a stuck read, or a silence while working; never a distraction or an aside. */
+// v6.1 R9 (main, director9: 52 of 136 turns ended in a check-in; a "samajh nahi aaya" reply was ignored every time; skill 1 took
+// 66 turns): a check-in ("Yahan tak theek hai?") is asked at most once per beat, and only on a turn of new teaching; an answer
+// to it that is not a yes is acted on (the same teaching, smaller), never passed over
+const CHECKIN_NO = /^\s*(?:nahi|nahin|nai|na|no|nope|nahi\s+samjh?[ae]?|samajh\s+nahi|not\s+really|thoda\s+nahi)\b/i;
+const CHECKIN_YES = /^\s*(?:haan|ha|han|hmm+|ji|yes|yeah|ok|okay|theek|thik|samajh\s+(?:aaya|aa\s+gaya|gaya|gayi)|clear|got\s+it)\b/i;
+/** A reply to a check-in that is not a yes (a no, "nahi samjha"), as code reads it. */
+export const notYes = (t) => { const x = String(t ?? "").trim(); return !!x && CHECKIN_NO.test(x) && !CHECKIN_YES.test(x); };
+/** May this teaching move end on a check-in? Once per beat (a worked example's steps are one beat); records it. */
+function checkinFor(s, move) {
+  const id = move?.scriptBeat?.beatId ? `${move.skillId ?? move.scriptBeat.skillId ?? ""}:${String(move.scriptBeat.beatId).replace(/:step\d+$|:problem$/, "")}` : null;
+  if (!id || (s.checkins ?? []).includes(id)) return false;
+  s.checkins = [...(s.checkins ?? []), id].slice(-24);
+  return true;
+}
 const stuckTurn = (cls) => !!cls && !cls.flags?.offTopic && !["back", "park", "detour", "change_topic", "side_chat", "uptake"].includes(cls.request?.type)
   && (!!cls.flags?.dontKnow || verdict(cls) === "stuck" || cls.request?.type === "thinking");
 /** An okay right after she taught on THIS card (a hint, a re-teach, an example): engaged with the card, never a distraction. */
@@ -679,7 +694,7 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
+        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
@@ -699,7 +714,7 @@ function walkNextV2(s, input, prefix, sk) {
       // v6 R3: "pata nahi" / "samajh nahi aaya" to a step just shown is that step again, smaller, once (never the next one)
       const ws = w.workedStep ?? 0;
       if (ws > 0 && ws !== Number.MAX_SAFE_INTEGER && s.lastMove?.scriptBeat?.beatId === `worked:step${ws}` && w.smallerStep !== ws - 1
-        && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) { w.workedStep = ws - 1; w.smallerStep = ws - 1; }
+        && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused" || (s.lastMove?.checkinOk && notYes(input?.text)))) { w.workedStep = ws - 1; w.smallerStep = ws - 1; }
       // v4 W2 (director6: steps glued into one block, the givens re-read): each step is its own turn, do → result → why
       const steps = (we.steps ?? []).map((st) => scriptWorkedStepLine(st, lang)).filter(Boolean);
       if ((w.workedStep ?? 0) < steps.length) {
@@ -2569,8 +2584,14 @@ function capPlan(s, input, p) {
   // ("ek min... haan bolo" read as "slower") never holds a card past the cap
   const noteGuess = p5Flag("R4CONV") && input.cls?.request?.src === "note";
   if (s.safeguard || !p.item || p.capped || p.request === "visual" || (p5Flag("R3CONV") && RE_PRESENT.has(p.request) && !noteGuess)) return p;
+  // v6.1 R8 (main, director9: c6 steering T21 "pehle main try karun?" → "Pichhle sawaal ka jawab 30 cm tha"; c4 the third "kis
+  // cheez" 4/4): a dodge — a try-first, a "which question?", a "didn't understand" — is never the turn a card is let go with its
+  // answer; the card stays live (the request is served)
   const kit = input.kit;
   const item = findItem(s, kit, p.item.id) ?? p.item;
+  // (scripted cards only, where letting go says the key; never on the model's guessed request, a note)
+  { const rq = input.cls?.request?.type ?? readIntent(String(input?.text ?? ""))?.type ?? null;
+    if (scriptOn() && scriptCardOf(item) && !noteGuess && ["selftry", "repeat", "clarify", "confused"].includes(rq)) return p; }
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
   // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
@@ -2615,6 +2636,14 @@ const isScriptCard = scriptCardOf;
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
 export function step(prev, input) {
+  // v6.1 R10 (main, director9: 0 parks across four topics; "kal maine cricket khela, sixer maara" came with no request and got
+  // a cricket-fractions analogy): in a scripted lesson a turn that answers nothing and names an aside topic of theirs is a share,
+  // parked and returned to (never the card's answer: a graded turn, a request or a stuck turn is left as it is)
+  if (input.event === "turn" && scriptOn() && scriptIdOf(input.kit) && input.cls && input.cls.outcome === "no_evidence" && !input.cls.request
+    && !input.cls.flags?.dontKnow && !input.cls.flags?.distress && !input.cls.flags?.wantsToStop) {
+    const topic = asideTopic(input.text ?? "", prev.ctx?.interests);
+    if (topic && !unsafeChildPhrase(topic)) input = { ...input, cls: { ...input.cls, request: { type: "uptake", kind: "personal_share", topic, src: "code" } } };
+  }
   // v6 R5: the second half of a split turn (splitLong) comes first
   const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
   if (heldOut) return heldOut;
@@ -2804,6 +2833,18 @@ export function step(prev, input) {
   if (p.point) move.point = String(p.point);
   // v6 R3: the same beat or step again, smaller (brain/say.js never says it in the same words)
   if (p.smaller) move.smaller = true;
+  // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
+  if (p.simpler) move.simpler = String(p.simpler);
+  // v6.1 R9: a worked step's own turn (new teaching, no card) may end on a check-in, once per beat
+  if (scriptOn() && move.kind === "worked_example" && move.rendered?.length && !item && /^worked:step\d+$/.test(String(move.scriptBeat?.beatId ?? "")) && checkinFor(s, move)) move.checkinOk = true;
+  // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
+  // scripted card, a don't-know or a "didn't understand" gets the card's AUTHORED simpler (a one-step hint, never its key)
+  if (!move.simpler && scriptOn() && item && isScriptCard(item) && ["hint", "reteach", "repair", "practice"].includes(move.kind)
+    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) {
+    const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
+    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : null;
+    if (sm && String(sm).trim()) move.simpler = String(sm).trim();
+  }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
@@ -2841,7 +2882,9 @@ export function step(prev, input) {
     const line = asideFactOf(s.servedNow.topic, s.ctx.lang ?? "hinglish");
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
-  if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard") {
+  // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for
+  // the next turn instead of making that turn too long)
+  if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard" && !(p.request && scriptOn())) {
     move.closed = { answer: s.pendingClose.answer, ...(s.pendingClose.why ? { why: s.pendingClose.why } : {}) };
     if (s.pendingClose.beat?.board) move.closedBeat = s.pendingClose.beat;
     s.pendingClose = undefined;
@@ -2935,12 +2978,16 @@ const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split
 export function splitLong(out, input) {
   const { state: s, move, ui } = out;
   if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
-  if (["safeguard", "wrap", "break", "repair"].includes(move.kind) || move.request || move.checkin) return out;
+  // (director9: a repair after a right answer carried closures and a bridge, 128 words; only the split's own halves are exempt)
+  if (["safeguard", "wrap", "break"].includes(move.kind) || move.splitClose || move.splitTeach || move.request || move.checkin) return out;
   const closing = [move.gave?.answer, move.gave?.why, move.closed?.answer, move.closed?.why, move.workedDone?.answer, move.workedDone?.why, move.bridgeSaid, move.returned?.line];
   const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
   if (!teaching.some(Boolean)) return out;
   const cap = s.ctx?.plainWords ? 45 : 60;
-  if (!closing.some(Boolean)) return splitTeach(out, input, cap);
+  // v6.1 (main's split policy B, on director9: 45 split turns slowed skill 1 to 66 turns): closures never cause a split on
+  // their own; they stay in the beat's turn (brain/say.js trims her own words first). Only authored teaching plus its card
+  // that still do not fit is split. TAXILA_R7_SPLIT_CLOSE=on brings back the closing split.
+  if (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on") return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
   if (wordsIn(closing, teaching) + 12 <= cap) return out;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
@@ -2966,7 +3013,7 @@ function splitTeach(out, input, cap) {
   const card = ui?.ask?.text;
   const body = [move.point, ...(move.rendered ?? [])];
   if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 <= cap) return out;
-  const teach = { ...move, splitTeach: true };
+  const teach = { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) };
   const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,
     ...(move.cardBeat ?? move.scriptBeat ? { scriptBeat: move.cardBeat ?? move.scriptBeat } : {}), ...(move.cardBeat ? { cardBeat: move.cardBeat } : {}),
     ...(move.probe ? { probe: move.probe } : {}), ...(move.format ? { format: move.format } : {}), ...(move.methods ? { methods: move.methods } : {}), ...(move.prefs ? { prefs: move.prefs } : {}) };
@@ -2977,15 +3024,37 @@ function splitTeach(out, input, cap) {
   s.lastUi = teachUi;
   return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
 }
+/** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
+function simplerOfBeat(s, kit, move) {
+  const sb = move?.scriptBeat;
+  if (!sb?.beatId || sb.kind !== "explain") return null;
+  const sk = skillScriptOf(kit, sb.skillId ?? move.skillId);
+  const b = sk?.explain?.find((x) => x.id === sb.beatId);
+  const t = b?.simpler ? saidIn(b.simpler, s.ctx?.lang ?? "hinglish") : null;
+  return t && String(t).trim() ? String(t).trim() : null;
+}
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
   const h = prev.splitHold;
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
-  // (the teaching half asked "is that clear?": not following it is answered by the walk, with the card live)
-  if (h.teach && (c?.flags?.dontKnow || c?.help || ["confused", "clarify", "another", "example", "slower", "repeat"].includes(c?.request?.type)
-    || readIntent(String(input.text ?? ""))?.type === "confused")) return null;
+  // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
+  // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
+  // following it is such a request too)
+  if (c?.help || c?.request || (h.teach && (c?.flags?.dontKnow || readIntent(String(input.text ?? ""))?.type === "confused"))) return null;
+  // v6.1 R9: "nahi" to the teaching half's check-in is acted on: the same teaching again, smaller (the beat's authored simpler,
+  // else one sentence of its point), the card still held for the next turn; asked once, so no second check-in follows
+  if (h.teach && prev.lastMove?.checkinOk && notYes(input.text) && !prev.lastMove?.smaller) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    const simpler = simplerOfBeat(s, input.kit, prev.lastMove);
+    const again = { ...prev.lastMove, smaller: true, checkinOk: false, ...(simpler ? { simpler } : {}) };
+    s.lastMove = again; s.moveVoiced = false;
+    const ui0 = { status: "your_turn", ...(prev.lastUi?.later ? { later: prev.lastUi.later } : {}) };
+    s.lastUi = ui0;
+    return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   const s = structuredClone(prev);
   s.turn += 1;
   s.splitHold = undefined;
@@ -3122,7 +3191,10 @@ function uiFor(s, p, move, item, kit) {
     // (v4: a script card's authored prompt is shown and read whole, never cut to its last sentence: director6 c5-t01 cut
     // 10/10 then-cards and the child never heard their setup; v2.2 caps them at 120 characters at the source)
     const full = String(promptFor(item, s.ctx.lang) ?? "").replace(/\s+/g, " ").trim();
-    const text = isScriptCard(item) ? full : askText(full);
+    const text0 = isScriptCard(item) ? full : askText(full);
+    // v6.1 R10 (main, director9: Hindi asked for, the card still said "fraction mein batao", c6 0/4): in the Hindi mode a scripted
+    // card is shown and read in Hindi words too (brain/register.js; its numbers, and its key's and accept forms' words, as they are)
+    const text = s.ctx.lang === "hindi" && s.ctx.langPinned && isScriptCard(item) ? inHindiWords(text0, { keep: [item.answer, ...(item.acceptable ?? [])].map(String) }) : text0;
     if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
   }
   // Choices on screen always take the tray: a choice item is never left with its options only in speech behind an

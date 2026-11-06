@@ -8417,3 +8417,85 @@ Reverse if such a partition is ever seen (offlineUsd next to ACA spend on the sa
 Next: director10 on integration 12. The gate is unchanged.
 
 **Reverse if:** P1-P2 are in place and there are still more than 10 runtime contradictions. Then move to a code-rendered board voice.
+
+
+<!-- merged from inbox/r7-app-21.json -->
+## `dc-r7-app-signin-code`
+A parent who forgot the password, or never wants one, types their email, gets a code, and is in. The sent line reads the same whether or not the email has an account. Phone codes keep their place in the interface and say plainly that they are not ready, so the day an Azure route reaches Indian numbers only `PROVIDERS.phone.send` changes.
+
+
+<!-- merged from inbox/r7-app-22.json -->
+## `dc-r7-app-pricing-page`
+The owner's prices drop into one file, and the plan cards, the landing line and the header link all follow. Until then the page is honest: set-up is free, lesson prices are not set, and nothing can be paid.
+
+
+<!-- merged from inbox/r7-brain-19.json -->
+## `dc-r7-script-walk-v6-1-brain` (2026-11-06, stream A Brain; main's dc-r7-script-walk-v6-1)
+
+**P1 run path (with Studio)**
+- tests/fixtures/replay.mjs replays a recorded lesson through turn.js planTurn. tests/r7-brain-v61-replay.test.mjs carries both rows through textReply, whiteboardIntentOf and Studio's seam.
+- c5-t01 steady T21 (confirm-reveal): the dropping side was Brain. A 3-word tail ("Ab agla hissa.") was its own page back on the answered card's board. Studio's take rejected it (W6.timing), the paged turn fell back, and the verdict page's revealed 1/8 never reached the screen. Fix: propose.js segmentsAt folds a page under PAGE_MIN_WORDS (5) with no card into the page before it.
+- c5-t02 stuck T18 (picture): works once Studio's a402e724 is in; that commit was missing from the run tree.
+- Harness: `gate.v6.unpaged` (the seam's pagesBoard over the whole line) and `gate.v6.nothingNew` (a picture ask that re-draws the board already up).
+
+**R7 no model-written teaching (script mode)**
+- A "smaller" re-explanation is the beat's authored `simpler` (format 2.3), else one sentence of the point. It is never her own lines.
+- An explain point is said in its authored words, never her paraphrase.
+- A right answer's reason is the card's authored why (turn.js lastGraded.why), else none.
+- A rule or reason in her words (say.js RULE_SAID) goes from every scripted turn, and so does a sentence stating the card's wrongIfMis as true.
+
+**R8 requests**
+- A card's `simpler` answers "pata nahi" / "samajh nahi aaya".
+- Try-first, repeat, clarify and confused turns never let a scripted card go with its key. This never applies to a model's guessed request.
+- Her first sentence is the probe acknowledgement only when it takes up their words; else code's.
+
+**R9 check-ins**
+- A worked step's turn, or a split teaching half, may end on a check-in once per beat (state.js checkinFor). Otherwise it ends on a statement.
+- A "nahi" to a check-in gets the same step or teaching smaller, with the card still held.
+
+**R10**
+- In a scripted lesson, a turn that answers nothing and names an aside topic is a share: it is parked, and read before a held split half.
+- Her park line is the promise alone, never an analogy.
+- In the Hindi mode a scripted card is in Hindi words, except its key's and accept forms' words.
+
+**R11**
+- Worked steps are labelled by their own step.
+- "Is sawaal ka jawab … hai" when no new card follows; "Pichhle sawaal" only once another card is up.
+- A not-right verdict is code's. A Devanagari sentence of hers goes. "X (x)" loses its bracket.
+
+**Format 2.3**
+- SCRIPT_VERSIONS gains 2.3.
+- `simpler` is on explain beats, worked steps, checks and follow-up cards.
+- The validator checks it is a statement of at most 2 sentences and never its card's key.
+
+**Reverse if:** director10's hand count shows a part adds a contradiction, a lost card, or a longer skill 1. Reverse that part alone.
+
+
+<!-- merged from inbox/r7-games-guna2.json -->
+## `dc-r7-games-guna2`
+
+**guna** (multi-digit multiplication and division) is extended to three more arena-only topics, with no new mode and every earlier guna level unchanged. Before the change, the generator's output for every existing grammar was hashed over seeds 1..60 × fades 1..3 (73,440 candidates: params, solver, every mal set-up). After the change the hash is identical, and a test pins a levelId per existing entry. Nothing in it is timed.
+
+- **c7-maths-ch01-t03 (patterns in products).** field/area with both sides round and a truck of 6 or 7 racks, e.g. 3000 × 400. The field fills with 3 × 4 tiles of 1000 × 100 each, and the truck must weigh exactly 12,00,000. The zeros of both sides set the tile's size, so the rack the child picks is the zero count (s1), and the racks used are the product's digits (s3). field/round with 4-digit × 2- or 3-digit sides (4872 × 312 → 5000 × 300) is a large estimate (s2). Mal-rules: zero-count → hidden-zero (the basic fact's own zero lost). The new zero-less (one attached zero too few, only where the fact does not end in 0) and zero-more (one too many, where it fits) → zero-miscount.
+- **Rack limit.** RACKS = 7 (crates up to 10^6), only as far as c7-ch01-t03 needs. A test pins it: every c7 product fits, some need all 7, and every earlier entry still uses at most 5. A truck of more than 5 racks is drawn as columns (+ above, nine crates, − below, 44 px wide) so seven fit a 324 px phone tray. Places from 10^4 up are labelled as powers (10⁴, 10⁵, 10⁶).
+- **c5-maths-ch04-t02 (checking reasonableness).** New goal field/check. The child pulls the sides to round lengths and loads the estimate, then marks three dockets someone wrote for a × b: the true product, ten times it, and a tenth of it. Each docket is marked could-be-right or send-back. The law checks the estimate and every mark. Every docket kept → steps-mean-right; every docket sent back (none equals the estimate) → estimate-must-equal. Admits s1 only. s2 (inverse operations for + and −) and s3 (sense in a story) stay with the arena; inverse-wrong has no set-up.
+- **c4-maths-ch09-t02 (grouping and sharing).** Small numbers. New goal pack/each is equal SHARING: loose things, and one deal gives one to every friend until a round cannot go (s1, s3). story/full is equal GROUPING: packets of b, how many b's in a (s2, s3). story/all covers a leftover that still needs a vehicle (s3). Mal-rules: short → remainder-too-big; drop → no-remainder. order-doesnt-matter has no honest set-up here.
+
+**Reverse if** children solve check levels by marking dockets without loading the estimate first (watch mark changes between runs), or the 7-column truck reads as a quiz of labels rather than a load (watch rack corrections on c7 levels).
+
+
+<!-- merged from inbox/r7-games-koshtak.json -->
+## `dc-r7-games-koshtak`
+
+**koshtak** (expressions, class 7) is a law family. Nothing in it runs on a clock: every wall, lid, jump and card moves only on a touch, and the law answers only on run. It is a different mechanic from kram's rule machine (a × n + b fed the stage number), taraazu's balance (solving for a hidden bag) and nishana's hops (integer operations on a line): here the child decides the STRUCTURE of an expression (where its terms are, where its bracket goes, which way each opened term points, which terms are like) and a machine that only follows that structure does the arithmetic.
+
+- **tray/terms** (c7-maths-ch02-t02 s1, s2): a row of numbers joined by + − × stands on trays; the child snaps tray walls into gaps. The counter works each tray on its own (left to right inside it) and then joins the trays left to right. Every level is built so that ONLY walls at the + and − gaps make what the row is worth, so a wall IS splitting into terms.
+- **tray/lid** (c7-maths-ch02-t02 s2): a value to make and a row; the child lays one lid (a bracket) over a run of numbers; the lid's inside is worked out first. Built so exactly one lid makes the value (and the row without a lid never does).
+- **tray/open** (c7-maths-ch02-t02 s3): a − (b ± c …) ± d; the bracket opens into jumps that keep their written signs (the minus stays on the first). The child turns jumps forward / back; two walks run on one number line (the bracket as one big jump back, and the opened jumps) and must land together. Built so only the true signs land.
+- **bin/like** (c7-maths-ch04-t02 s2): term cards with their signs printed on a belt; bins close into ONE term only when every card has the same letter part (a lone letter counts as one of it). Every card binned, every bin closed, one bin per kind; the shelf is tried against the belt with numbers for the letters.
+
+Mal-rules map only to the topic's own kit ids: left-to-right (one tray per number; or no lid where the row read left to right makes the value), minus-first-only (no jump turned), unlike-combine (letter cards of different kinds in one bin), lone-letter (the lone letters left on the belt as if they were nothing: 6k − k → 6k; the kit's own sign is "6", which needs a typed answer).
+
+Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch02-t02-s4 (swapping and grouping smartly; cards that carry their signs cannot show the sign-detach belief), c7-maths-ch04-t02-s1 (substituting a value: the answer is a number the child would type; concatenate has no physical set-up), c7-maths-ch04-t02-s3 (growing patterns; kram serves c7-maths-ch04-t03).
+
+**Reverse if** a child pilot shows walls, lids or turns set by trying runs until one passes rather than by reading the signs (watch runs per level and changes between runs).

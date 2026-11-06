@@ -168,3 +168,18 @@ test("director8: a greeting gets no event-reply; probe reasons name no topic; st
   }
   for (const persona of ["stuck", "offtopic"]) assert.ok(maxTurnsFor(persona) >= 30, `${persona}: ${maxTurnsFor(persona)} turns`);
 });
+
+test("director9: an imperative ask is a question; 'which question?' is capped per card, so no persona loops", async () => {
+  const { WHICH_MAX } = await import("../evals/child-sim/reactive.mjs");
+  for (const persona of PERSONAS) for (let seed = 1; seed <= 10; seed++) {
+    const c = createReactiveChild({ persona, seed, kit });
+    // a then-card posed with "batao." and no "?"
+    const r = c.reply({ turn: 25, teacher: "Ek roti ke 6 barabar hisse hain, 1 hissa khaya. Kitna khaya, fraction mein batao.", card: { itemId: "t1", key: "1/6" } });
+    assert.notEqual(r.kind, "ack", `${persona}/${seed}: '${r.text}' to a batao card`);
+    // a line with no ask at all: at most WHICH_MAX "which question?" replies on one card, then an answer
+    const replies = [];
+    for (let turn = 26; turn < 26 + WHICH_MAX + 2; turn++) replies.push(c.reply({ turn, teacher: "Dekho, yeh 6 hisse hain.", card: { itemId: "t2", key: "6" } }));
+    const whichRun = replies.findIndex((x) => x.kind !== "ack");
+    assert.ok(whichRun !== -1 && whichRun <= WHICH_MAX, `${persona}/${seed}: ${replies.map((x) => x.text).join(" | ")}`);
+  }
+});
