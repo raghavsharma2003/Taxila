@@ -282,8 +282,10 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
 
 describe("R5: a turn too long for one is split, never cut", () => {
   const KEEP = {};
-  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
-  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  // (the closing split is opt-in since v6.1, main's split policy B: these tests pin the opt-in path)
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; KEEP.c = process.env.TAXILA_R7_SPLIT_CLOSE; delete process.env.TAXILA_R7_SCRIPT; process.env.TAXILA_R7_SPLIT_CLOSE = "on"; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s;
+    if (KEEP.c === undefined) delete process.env.TAXILA_R7_SPLIT_CLOSE; else process.env.TAXILA_R7_SPLIT_CLOSE = KEEP.c; });
   const run = () => {
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
@@ -458,7 +460,9 @@ describe("v6 after director9: the split covers what it missed", () => {
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
   afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
-  test("a repair move carrying closures over the cap is split (stuck c6 T65, 128 words)", () => {
+  test("a repair move carrying closures over the cap is split (stuck c6 T65, 128 words; opt-in since v6.1 policy B)", (t) => {
+    const was = process.env.TAXILA_R7_SPLIT_CLOSE; process.env.TAXILA_R7_SPLIT_CLOSE = "on";
+    t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_SPLIT_CLOSE; else process.env.TAXILA_R7_SPLIT_CLOSE = was; });
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
     const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";

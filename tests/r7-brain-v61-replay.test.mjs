@@ -35,8 +35,9 @@ test("P1 replay director9 c5-t01 steady T21 (confirm-reveal): 'Bilkul — pehla 
   setScriptForTest(T, runScript(T));
   const { kit, rows, plans, last } = await replay(RUN, "steady", T, 21);
   assert.equal(last.child, "ek bata aath km");
-  assert.equal(last.p.r.move.kind, "repair", "the run's own move");
-  assert.equal(last.state.lastMove?.scriptBeat?.beatId, "then:c5-maths-ch02-t01-m-not-numbers");
+  // (the run's move was a closing repair; under main's split policy B the closures ride with the next beat in one turn)
+  assert.ok(["repair", "explain"].includes(last.p.r.move.kind), last.p.r.move.kind);
+  assert.equal(last.state.lastMove?.closeBeat?.beatId ?? last.state.lastMove?.scriptBeat?.beatId, "then:c5-maths-ch02-t01-m-not-numbers");
   const L = lessonOf(kit, "d9t21");
   // T19: the then-card's board is up, its asked mark "?"
   const t19 = show(intentAt(L, plans.at(-2), kit, rows[18].text)).ack;
