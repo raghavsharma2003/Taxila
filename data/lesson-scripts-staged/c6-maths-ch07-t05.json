@@ -56,7 +56,8 @@
       "key": "7/8",
       "accept": ["7 by 8", "seven eighths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
-      "wrongIfMis": "7/16"
+      "wrongIfMis": "7/16",
+      "why": { "hi": "3 hisse aur 4 hisse milkar 7 aathve hisse rangin hote hain", "en": "3 parts and 4 parts make 7 eighths coloured" }
      }
     },
     {
@@ -74,7 +75,8 @@
      "ask": {
       "prompt": { "hi": "Isi line par 8/10 mein se 6/10 ghatao. Kitna bacha?", "en": "On this same line, take 6/10 away from 8/10. How much is left?" },
       "key": "2/10",
-      "accept": ["1/5", "2 by 10", "two tenths"]
+      "accept": ["1/5", "2 by 10", "two tenths"],
+      "why": { "hi": "8 gap mein se 6 gap peeche aao toh 2 gap bachte hain, har gap 1/10", "en": "go back 6 gaps from 8 gaps and 2 gaps are left, each gap 1/10" }
      }
     }
    ],
@@ -123,7 +125,8 @@
      "accept": ["7 by 9", "seven ninths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "7/18",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Salma", "items": ["2/9"] }, "right": { "title": "Deepak", "items": ["5/9"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Salma", "items": ["2/9"] }, "right": { "title": "Deepak", "items": ["5/9"] } } },
+     "why": { "hi": "2 naven hisse aur 5 naven hisse milkar 7 naven hisse hote hain", "en": "2 ninths and 5 ninths make 7 ninths" }
     },
     {
      "id": "c2",
@@ -135,7 +138,8 @@
      "accept": ["3/4", "6 by 8", "six eighths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "6/24",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Kyari", "items": ["gende 1/8", "gulab 2/8", "tulsi 3/8"] }, "right": { "title": "Bhar gaya", "items": ["kitna"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Kyari", "items": ["gende 1/8", "gulab 2/8", "tulsi 3/8"] }, "right": { "title": "Bhar gaya", "items": ["kitna"] } } },
+     "why": { "hi": "1 + 2 + 3 = 6 aathve hisse, aur hisse ka size wahi hai", "en": "1 + 2 + 3 = 6 eighths, and the part size stays the same" }
     }
    ],
    "ladder": [
@@ -162,14 +166,16 @@
       "accept": ["6/7", "6 by 7", "six sevenths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
       "wrongIfMis": "6/14 litre",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Tha", "items": ["2/7 litre"] }, "right": { "title": "Daala", "items": ["4/7 litre"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Tha", "items": ["2/7 litre"] }, "right": { "title": "Daala", "items": ["4/7 litre"] } } },
+      "why": { "hi": "2 saatve hisse aur 4 saatve hisse milkar 6 saatve hisse hote hain", "en": "2 sevenths and 4 sevenths make 6 sevenths" }
      }
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab tak saare hisse ek hi size ke the. Agle hisse mein aise bhinn jodenge jinke hisse alag size ke hain, jaise aadha aur tihai.",
-    "en": "So far all the parts were the same size. In the next part we will add fractions whose parts are different sizes, like a half and a third."
-   }
+    "hi": "Ab tak saare hisse ek hi size ke the. Agle hisse mein aise bhinn jodenge jinke hisse alag size ke hain, jaise aadha aur tihai, 1/2 aur 1/3.",
+    "en": "So far all the parts were the same size. In the next part we will add fractions whose parts are different sizes, like a half and a third, 1/2 and 1/3."
+   },
+   "bridgeBoard": { "template": "fraction-line@1", "params": { "dens": [2, 3], "from": 0, "to": 1, "marks": [[1, 2], [1, 3]] } }
   },
   {
    "skillId": "c6-maths-ch07-t05-s2",
@@ -210,7 +216,8 @@
       "key": "6/8",
       "accept": ["6 by 8", "6 eighths", "six eighths"],
       "targets": "c6-maths-ch07-t05-m-change-only-den",
-      "wrongIfMis": "3/8"
+      "wrongIfMis": "3/8",
+      "why": { "hi": "1/4 = 2/8, toh 3/4 = 3 × 2 = 6 aathve hisse", "en": "1/4 = 2/8, so 3/4 = 3 × 2 = 6 eighths" }
      }
     },
     {
@@ -231,7 +238,8 @@
       "key": "4/6",
       "accept": ["2/3", "4 by 6", "four sixths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
-      "wrongIfMis": "2/8"
+      "wrongIfMis": "2/8",
+      "why": { "hi": "1/2 = 3/6, aur 3/6 + 1/6 = 4/6", "en": "1/2 = 3/6, and 3/6 + 1/6 = 4/6" }
      }
     },
     {
@@ -252,7 +260,8 @@
       "key": "7/20",
       "accept": ["7 by 20", "seven twentieths"],
       "targets": "c6-maths-ch07-t05-m-change-only-den",
-      "wrongIfMis": "2/20"
+      "wrongIfMis": "2/20",
+      "why": { "hi": "3/5 = 12/20 aur 1/4 = 5/20, aur 12/20 − 5/20 = 7/20", "en": "3/5 = 12/20 and 1/4 = 5/20, and 12/20 − 5/20 = 7/20" }
      }
     }
    ],
@@ -308,7 +317,8 @@
      "accept": ["11/15", "11 by 15", "eleven fifteenths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "3/8 litre",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["2/5 litre"] }, "right": { "title": "Daala", "items": ["1/3 litre"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["2/5 litre"] }, "right": { "title": "Daala", "items": ["1/3 litre"] } } },
+     "why": { "hi": "2/5 = 6/15 aur 1/3 = 5/15, aur 6/15 + 5/15 = 11/15", "en": "2/5 = 6/15 and 1/3 = 5/15, and 6/15 + 5/15 = 11/15" }
     },
     {
      "id": "c2",
@@ -320,7 +330,8 @@
      "accept": ["3/8", "3 by 8", "three eighths"],
      "targets": "c6-maths-ch07-t05-m-change-only-den",
      "wrongIfMis": "6/8 litre",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Bottle mein", "items": ["7/8 litre"] }, "right": { "title": "Chai mein", "items": ["1/2 litre"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Bottle mein", "items": ["7/8 litre"] }, "right": { "title": "Chai mein", "items": ["1/2 litre"] } } },
+     "why": { "hi": "1/2 = 4/8, aur 7/8 − 4/8 = 3/8", "en": "1/2 = 4/8, and 7/8 − 4/8 = 3/8" }
     },
     {
      "id": "c3",
@@ -332,7 +343,8 @@
      "accept": ["7 by 12", "seven twelfths"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "2/7",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Sawaal", "items": ["1/3 + 1/4"] }, "right": { "title": "Likha", "items": ["2/7"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Sawaal", "items": ["1/3 + 1/4"] }, "right": { "title": "Likha", "items": ["2/7"] } } },
+     "why": { "hi": "1/3 = 4/12 aur 1/4 = 3/12, aur 4/12 + 3/12 = 7/12", "en": "1/3 = 4/12 and 1/4 = 3/12, and 4/12 + 3/12 = 7/12" }
     }
    ],
    "ladder": [
@@ -360,7 +372,8 @@
       "accept": ["7/10", "7 by 10", "seven tenths"],
       "targets": "c6-maths-ch07-t05-m-add-across",
       "wrongIfMis": "2/7 litre",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["1/5 litre"] }, "right": { "title": "Daala", "items": ["1/2 litre"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["1/5 litre"] }, "right": { "title": "Daala", "items": ["1/2 litre"] } } },
+      "why": { "hi": "1/5 = 2/10 aur 1/2 = 5/10, aur 2/10 + 5/10 = 7/10", "en": "1/5 = 2/10 and 1/2 = 5/10, and 2/10 + 5/10 = 7/10" }
      }
     },
     {
@@ -380,14 +393,16 @@
       "accept": ["4 by 9", "four ninths"],
       "targets": "c6-maths-ch07-t05-m-change-only-den",
       "wrongIfMis": "2/9",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Jodo", "items": ["1/3", "1/9"] }, "right": { "title": "Badlo", "items": ["naven hisson mein"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Jodo", "items": ["1/3", "1/9"] }, "right": { "title": "Badlo", "items": ["naven hisson mein"] } } },
+      "why": { "hi": "1/3 = 3/9, aur 3/9 + 1/9 = 4/9", "en": "1/3 = 3/9, and 3/9 + 1/9 = 4/9" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak sirf 1 se chhote bhinn the. Agle hisse mein mishrit bhinn jodenge aur ghatayenge, jinmein poore bhi hote hain aur ek hissa bhi.",
     "en": "So far the fractions were all less than 1. In the next part we will add and subtract mixed fractions, which have wholes and a part too."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Mishrit bhinn", "items": ["poore", "ek hissa"] }, "right": { "title": "Jodenge", "items": ["ghatayenge"] } } }
   },
   {
    "skillId": "c6-maths-ch07-t05-s3",
@@ -426,7 +441,8 @@
      "ask": {
       "prompt": { "hi": "Isi tarah 3 1/6 aur 2 4/6 ko jodo. Jod kitna hai?", "en": "In the same way, add 3 1/6 and 2 4/6. What is the sum?" },
       "key": "5 5/6",
-      "accept": ["35/6", "5 and 5/6"]
+      "accept": ["35/6", "5 and 5/6"],
+      "why": { "hi": "poore 3 + 2 = 5 aur hisse 1/6 + 4/6 = 5/6", "en": "wholes 3 + 2 = 5 and parts 1/6 + 4/6 = 5/6" }
      }
     },
     {
@@ -444,7 +460,8 @@
      "ask": {
       "prompt": { "hi": "Ab 1 3/4 aur 1 3/4 ko jodo. Jod kitna hai?", "en": "Now add 1 3/4 and 1 3/4. What is the sum?" },
       "key": "3 2/4",
-      "accept": ["3 1/2", "14/4", "7/2", "3 and a half"]
+      "accept": ["3 1/2", "14/4", "7/2", "3 and a half"],
+      "why": { "hi": "poore 1 + 1 = 2, hisse 3/4 + 3/4 = 6/4 = 1 2/4, aur 2 + 1 2/4 = 3 2/4", "en": "wholes 1 + 1 = 2, parts 3/4 + 3/4 = 6/4 = 1 2/4, and 2 + 1 2/4 = 3 2/4" }
      }
     },
     {
@@ -464,7 +481,8 @@
       "key": "4 4/7",
       "accept": ["32/7", "4 and 4/7"],
       "targets": "c6-maths-ch07-t05-m-mixed-wholes",
-      "wrongIfMis": "5 3/7"
+      "wrongIfMis": "5 3/7",
+      "why": { "hi": "6 2/7 = 5 9/7, toh poore 5 − 1 = 4 aur hisse 9/7 − 5/7 = 4/7", "en": "6 2/7 = 5 9/7, so wholes 5 − 1 = 4 and parts 9/7 − 5/7 = 4/7" }
      }
     }
    ],
@@ -518,7 +536,8 @@
      "accept": ["2 2/3", "8/3", "8/3 kg"],
      "targets": "c6-maths-ch07-t05-m-mixed-wholes",
      "wrongIfMis": "3 1/3 kg",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Bori mein", "items": ["4 1/3 kg"] }, "right": { "title": "Pakaya", "items": ["1 2/3 kg"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Bori mein", "items": ["4 1/3 kg"] }, "right": { "title": "Pakaya", "items": ["1 2/3 kg"] } } },
+     "why": { "hi": "4 1/3 = 3 4/3, toh poore 3 − 1 = 2 aur hisse 4/3 − 2/3 = 2/3", "en": "4 1/3 = 3 4/3, so wholes 3 − 1 = 2 and parts 4/3 − 2/3 = 2/3" }
     },
     {
      "id": "c2",
@@ -530,7 +549,8 @@
      "accept": ["4 5/12", "53/12", "53/12 km"],
      "targets": "c6-maths-ch07-t05-m-add-across",
      "wrongIfMis": "3 5/7 km",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Pehle din", "items": ["1 3/4 km"] }, "right": { "title": "Doosre din", "items": ["2 2/3 km"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pehle din", "items": ["1 3/4 km"] }, "right": { "title": "Doosre din", "items": ["2 2/3 km"] } } },
+     "why": { "hi": "poore 1 + 2 = 3, hisse 9/12 + 8/12 = 17/12 = 1 5/12, aur 3 + 1 5/12 = 4 5/12", "en": "wholes 1 + 2 = 3, parts 9/12 + 8/12 = 17/12 = 1 5/12, and 3 + 1 5/12 = 4 5/12" }
     },
     {
      "id": "c3",
@@ -542,7 +562,8 @@
      "accept": ["2 5/8", "21/8", "21/8 m"],
      "targets": "c6-maths-ch07-t05-m-mixed-wholes",
      "wrongIfMis": "3 3/8 m",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Pipe", "items": ["5 m"] }, "right": { "title": "Alag kiya", "items": ["2 3/8 m"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pipe", "items": ["5 m"] }, "right": { "title": "Alag kiya", "items": ["2 3/8 m"] } } },
+     "why": { "hi": "5 = 4 8/8, toh poore 4 − 2 = 2 aur hisse 8/8 − 3/8 = 5/8", "en": "5 = 4 8/8, so wholes 4 − 2 = 2 and parts 8/8 − 3/8 = 5/8" }
     }
    ],
    "ladder": [
@@ -568,7 +589,8 @@
       "accept": ["2 1/3 m", "2 2/6", "2 1/3", "7/3", "14/6"],
       "targets": "c6-maths-ch07-t05-m-mixed-wholes",
       "wrongIfMis": "3 4/6 m",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Rassi", "items": ["4 1/6 m"] }, "right": { "title": "Istemaal", "items": ["1 5/6 m"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Rassi", "items": ["4 1/6 m"] }, "right": { "title": "Istemaal", "items": ["1 5/6 m"] } } },
+      "why": { "hi": "4 1/6 = 3 7/6, toh poore 3 − 1 = 2 aur hisse 7/6 − 5/6 = 2/6", "en": "4 1/6 = 3 7/6, so wholes 3 − 1 = 2 and parts 7/6 − 5/6 = 2/6" }
      }
     },
     {
@@ -588,7 +610,8 @@
       "accept": ["3 3/4", "15/4", "15/4 litre"],
       "targets": "c6-maths-ch07-t05-m-add-across",
       "wrongIfMis": "3 2/6 litre",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Pehli bottle", "items": ["1 1/4 litre"] }, "right": { "title": "Doosri bottle", "items": ["2 1/2 litre"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Pehli bottle", "items": ["1 1/4 litre"] }, "right": { "title": "Doosri bottle", "items": ["2 1/2 litre"] } } },
+      "why": { "hi": "poore 1 + 2 = 3, aur 1/2 = 2/4 toh hisse 1/4 + 2/4 = 3/4", "en": "wholes 1 + 2 = 3, and 1/2 = 2/4 so parts 1/4 + 2/4 = 3/4" }
      }
     }
    ],

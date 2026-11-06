@@ -21,7 +21,9 @@ import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
 import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
 import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
 import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
+import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
 import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
+import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -67,6 +69,12 @@ export function hiddenOf(level) {
   // r7 guna: the product (or the estimate), the quotient and its leftover, a story's answer are never said first. Checked by
   // family first: modes may share names with other families
   if (level.family === "guna") return gunaHidden(level);
+  // r7 kram: the next / far count, the list's next numbers and its step, the rule (and its far output), the rhythm count and
+  // the square the pieces fill are never said first. Checked by family first: kram's goal names are its own, its modes too
+  if (level.family === "kram") return kramHidden(level);
+  // r7 hissa: the product, the quotient (and its part-cup), the slid number, the second spend and the scaled amount are never
+  // said first. Checked by family first: "story" is also guna's mode name
+  if (level.family === "hissa") return hissaHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

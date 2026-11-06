@@ -62,6 +62,7 @@
        "en": "The bottom edge of the blackboard goes from one corner to the other corner, and we can measure it with a ruler. Is it a point or a line segment?"
       },
       "key": "line segment",
+      "why": { "hi": "kinaara ek kone se shuru hokar doosre kone par rukta hai aur ruler se naapa jaata hai, yaani do endpoints aur ek lambai", "en": "the edge starts at one corner, stops at the other and can be measured with a ruler: two endpoints and a length" },
       "accept": ["rekhakhand", "segment", "a line segment"]
      }
     },
@@ -84,6 +85,7 @@
        "en": "The part of line MN drawn in a notebook is 5 cm, and the part drawn on the blackboard is 50 cm. Is the blackboard's line MN a longer line, yes or no?"
       },
       "key": "nahi",
+      "why": { "hi": "5 cm aur 50 cm sirf banaye gaye hisse hain, line MN khud dono taraf bina ruke chalti hai", "en": "5 cm and 50 cm are only the drawn parts; line MN itself goes on both ways without stopping" },
       "accept": ["no", "nahin", "same line", "ek hi line"],
       "targets": "c6-maths-ch02-t01-m-longer-line",
       "wrongIfMis": "haan"
@@ -108,6 +110,7 @@
        "en": "Sunlight comes out of the sun and keeps going in one direction. Is it like a line segment, a line or a ray?"
       },
       "key": "ray",
+      "why": { "hi": "roshni ek jagah, suraj, se shuru hoti hai aur sirf ek disha mein aage jaati hai", "en": "the light starts at one place, the sun, and goes on in just one direction" },
       "accept": ["kiran", "a ray"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "line segment"
@@ -168,6 +171,7 @@
       "en": "Line AB has arrows at both ends and its drawing on paper is 7 cm. Is the length of line AB 7 cm, yes or no?"
      },
      "key": "nahi",
+     "why": { "hi": "dono taraf arrows ka matlab line AB kahin nahi rukti, 7 cm sirf uski drawing hai", "en": "arrows at both ends mean line AB never stops; 7 cm is only its drawing" },
      "accept": ["no", "nahin"],
      "targets": "c6-maths-ch02-t01-m-longer-line",
      "wrongIfMis": "haan",
@@ -180,6 +184,7 @@
       "en": "The light of a car's headlight starts at the headlight and keeps going forward. Is it like a line segment, a line or a ray?"
      },
      "key": "ray",
+     "why": { "hi": "roshni headlight se shuru hoti hai aur ek hi disha mein aage jaati rehti hai, toh ek hi endpoint hai", "en": "the light starts at the headlight and keeps going in one direction, so it has just one endpoint" },
      "accept": ["kiran", "a ray"],
      "targets": "c6-maths-ch02-t01-m-ray-two-ends",
      "wrongIfMis": "line segment",
@@ -208,6 +213,7 @@
        "en": "The same line CD has two drawings, 5 cm and 9 cm. Is line CD longer in the 9 cm drawing, yes or no?"
       },
       "key": "nahi",
+      "why": { "hi": "5 cm aur 9 cm, dono ek hi line CD ki drawings hain, aur line khud kahin nahi rukti", "en": "the 5 cm and 9 cm drawings are both of the same line CD, and the line itself never stops" },
       "accept": ["no", "nahin", "barabar", "same line"],
       "targets": "c6-maths-ch02-t01-m-longer-line",
       "wrongIfMis": "haan",
@@ -228,6 +234,7 @@
        "en": "A lighthouse's light starts at the lighthouse and keeps going out over the sea. How many endpoints does it have?"
       },
       "key": "1",
+      "why": { "hi": "roshni sirf lighthouse par shuru hoti hai, aur samundar ki taraf kahin rukti nahi", "en": "the light starts only at the lighthouse and never stops out over the sea" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
@@ -236,9 +243,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab in sabke naam letters se likhna seekhenge, aur dekhenge ki ray ke naam mein pehla letter kyun itna zaroori hai.",
-    "en": "Next we learn to name all of these with letters, and see why the first letter in a ray's name matters so much."
-   }
+    "hi": "Ab in sabke naam letters se likhna seekhenge, jaise line segment AB aur ray AB, aur dekhenge ki ray ke naam mein pehla letter kyun itna zaroori hai.",
+    "en": "Next we learn to name all of these with letters, like line segment AB and ray AB, and see why the first letter in a ray's name matters so much."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "line segment AB", "items": ["letters se naam"] }, "right": { "title": "ray AB", "items": ["pehla letter"] } } }
   },
   {
    "skillId": "c6-maths-ch02-t01-s2",
@@ -280,6 +288,7 @@
        "en": "A line segment has endpoints M and N. One name for it is MN. What is its other name?"
       },
       "key": "NM",
+      "why": { "hi": "segment ke dono endpoints M aur N hain, toh ulta likha NM bhi wahi segment hai", "en": "the segment's two endpoints are M and N, so written the other way round, NM names the same segment" },
       "accept": ["segment NM", "line segment NM", "N M"]
      }
     },
@@ -298,6 +307,7 @@
      "ask": {
       "prompt": { "hi": "Ray QP kis point se shuru hoti hai, P ya Q?", "en": "Which point does ray QP start from, P or Q?" },
       "key": "Q",
+      "why": { "hi": "ray QP ke naam ka pehla letter Q hai, aur ray wahin se shuru hoti hai", "en": "the first letter of ray QP is Q, and that is where the ray starts" },
       "accept": ["point Q", "Q se"],
       "targets": "c6-maths-ch02-t01-m-ray-order",
       "wrongIfMis": "P"
@@ -318,6 +328,7 @@
      "ask": {
       "prompt": { "hi": "Ray KL ke naam mein bhi do letters hain. Iske kitne endpoints hain?", "en": "Ray KL's name also has two letters. How many endpoints does it have?" },
       "key": "1",
+      "why": { "hi": "ray KL sirf K se shuru hoti hai, L par rukti nahi, aage chalti rehti hai", "en": "ray KL starts only at K; it does not stop at L but keeps going" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2"
@@ -369,6 +380,7 @@
       "en": "On a game map, ray ST starts at S and passes through T. Which point does ray TS start from, S or T?"
      },
      "key": "T",
+     "why": { "hi": "ray TS ka naam T se shuru hota hai, toh woh T se chalkar S ki taraf jaati hai", "en": "ray TS's name begins with T, so it starts at T and goes towards S" },
      "accept": ["point T", "T se"],
      "targets": "c6-maths-ch02-t01-m-ray-order",
      "wrongIfMis": "S",
@@ -381,6 +393,7 @@
       "en": "A ray starts at point G and passes through H. How many endpoints does this ray have?"
      },
      "key": "1",
+     "why": { "hi": "ray sirf G par shuru hoti hai, aur H se guzarkar aage chalti rehti hai", "en": "the ray starts only at G, then passes through H and keeps going" },
      "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
      "targets": "c6-maths-ch02-t01-m-ray-two-ends",
      "wrongIfMis": "2",
@@ -393,6 +406,7 @@
       "en": "Are ray MN and ray NM the same ray, yes or no?"
      },
      "key": "nahi",
+     "why": { "hi": "ray MN, M se N ki taraf jaati hai, aur ray NM, N se M ki taraf, ulti disha mein", "en": "ray MN goes from M towards N, and ray NM from N towards M, the opposite way" },
      "accept": ["no", "nahin", "alag rays", "different rays"],
      "targets": "c6-maths-ch02-t01-m-ray-order",
      "wrongIfMis": "haan",
@@ -418,6 +432,7 @@
      "then": {
       "prompt": { "hi": "Ray DE mein torch kis point par hogi, D ya E?", "en": "In ray DE, at which point is the torch, D or E?" },
       "key": "D",
+      "why": { "hi": "ray DE ka pehla letter D hai, toh roshni D se E ki taraf chalti hai", "en": "ray DE's first letter is D, so the light goes from D towards E" },
       "accept": ["point D", "D par"],
       "targets": "c6-maths-ch02-t01-m-ray-order",
       "wrongIfMis": "E",
@@ -438,6 +453,7 @@
        "en": "In a game a laser comes out of U, passes through V and keeps going. How many endpoints does this ray have?"
       },
       "key": "1",
+      "why": { "hi": "laser sirf U se nikalta hai, aur V par rukta nahi, aage chalta rehta hai", "en": "the laser comes out only at U and does not stop at V but keeps going" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
@@ -446,9 +462,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab tak humne do points ko jodkar ek line segment banaya. Agle hisse mein dekhenge ki bahut saare points hon, toh unhe jodne se kitne line segments bante hain.",
-    "en": "So far we joined two points to make one line segment. In the next part we will see how many line segments we get by joining many points."
-   }
+    "hi": "Ab tak humne do points ko jodkar ek line segment banaya. Agle hisse mein dekhenge ki bahut saare points hon, jaise 4 points, toh unhe jodne se kitne line segments bante hain.",
+    "en": "So far we joined two points to make one line segment. In the next part we will see how many line segments we get by joining many points, like 4 points."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "do points", "items": ["ek line segment"] }, "right": { "title": "4 points", "items": ["kitne line segments"] } } }
   },
   {
    "skillId": "c6-maths-ch02-t01-s3",
@@ -488,6 +505,7 @@
      "ask": {
       "prompt": { "hi": "Toh in 4 points ki har jodi ko jodo, toh kul kitne line segments bante hain?", "en": "So if you join every pair of these 4 points, how many line segments are there in all?" },
       "key": "6",
+      "why": { "hi": "4 kinaare wale segments aur aamne-saamne ke konon ke 2, kul 4 + 2 = 6", "en": "4 along the edges and 2 between opposite corners, 4 + 2 = 6 in all" },
       "accept": ["6 line segments", "chhe", "six"],
       "targets": "c6-maths-ch02-t01-m-only-sides",
       "wrongIfMis": "4"
@@ -500,7 +518,7 @@
       { "hi": "nayi jodi", "en": "new pair" },
       { "hi": "BA toh AB hi hai", "en": "BA is the same as AB" }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "A, B", "items": ["A se 4 nayi", "B se 3 nayi"] }, "right": { "title": "C, D, E", "items": ["C se 2 nayi", "D se 1 nayi", "E se 0"] } } },
+     "board": { "template": "shape@1", "params": { "shape": "pentagon", "names": ["A", "B", "C", "D", "E"] } },
      "point": {
       "hi": "Ab 5 points A, B, C, D aur E hain. A se 4 nayi jodi banti hain: AB, AC, AD, AE. B se sirf 3 nayi jodi, BC, BD, BE, kyunki BA toh AB hi hai. C se 2 nayi jodi, D se 1 nayi jodi, aur E se 0, kyunki uski saari jodiyan pehle aa chuki hain.",
       "en": "Now there are 5 points A, B, C, D and E. A gives 4 new pairs: AB, AC, AD, AE. B gives only 3 new pairs, BC, BD, BE, because BA is the same as AB. C gives 2 new pairs, D gives 1 new pair, and E gives 0, because all its pairs are already listed."
@@ -508,6 +526,7 @@
      "ask": {
       "prompt": { "hi": "Toh in 5 points ko har jodi mein jodne se kul kitne line segments bante hain?", "en": "So joining these 5 points in every pair, how many line segments are there in all?" },
       "key": "10",
+      "why": { "hi": "nayi jodiyan 4 + 3 + 2 + 1 + 0 = 10 hain", "en": "the new pairs add up to 4 + 3 + 2 + 1 + 0 = 10" },
       "accept": ["10 line segments", "das", "ten"],
       "targets": "c6-maths-ch02-t01-m-only-sides",
       "wrongIfMis": "5"
@@ -564,6 +583,7 @@
       "en": "A square park has 4 trees at its 4 corners. A straight rope is tied between every two trees. How many ropes are needed in all?"
      },
      "key": "6",
+     "why": { "hi": "4 kinaare ki rassiyan aur 2 aamne-saamne ke pedon ke beech, 4 + 2 = 6", "en": "4 ropes along the sides and 2 between opposite trees, 4 + 2 = 6" },
      "accept": ["6 rassiyan", "6 ropes", "chhe", "six"],
      "targets": "c6-maths-ch02-t01-m-only-sides",
      "wrongIfMis": "4",
@@ -576,6 +596,7 @@
       "en": "An octagon has 8 corners. Join every two corners with a line segment. How many line segments are there in all?"
      },
      "key": "28",
+     "why": { "hi": "pehle kone se 7 nayi jodi, phir 6, 5, 4, 3, 2, 1, aur 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28", "en": "the first corner gives 7 new pairs, then 6, 5, 4, 3, 2, 1, and 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28" },
      "accept": ["28 line segments", "attaais", "twenty-eight"],
      "targets": "c6-maths-ch02-t01-m-only-sides",
      "wrongIfMis": "8",
@@ -595,13 +616,14 @@
       "hi": "Sirf kinaare ginna kaafi nahi hai. A ko dekho, woh C ke saath bhi ek jodi hai, aur AC beech se jaata hai. Pehle A ki saari jodiyan likho, phir B ki sirf nayi, phir C ki nayi.",
       "en": "Counting only the edges is not enough. Look at A: it also makes a pair with C, and AC goes across the middle. First list all of A's pairs, then only B's new ones, then C's new ones."
      },
-     "board": { "template": "shape@1", "params": { "shape": "quadrilateral" } },
+     "board": { "template": "shape@1", "params": { "shape": "quadrilateral", "names": ["A", "B", "C", "D"] } },
      "then": {
       "prompt": {
        "hi": "Ek pentagon ke 5 kone hain. Har do konon ko jodo. Kul kitne line segments bante hain?",
        "en": "A pentagon has 5 corners. Join every two corners. How many line segments are there in all?"
       },
       "key": "10",
+      "why": { "hi": "pehle kone se 4 nayi jodi, phir 3, 2, 1, aur 4 + 3 + 2 + 1 = 10", "en": "the first corner gives 4 new pairs, then 3, 2, 1, and 4 + 3 + 2 + 1 = 10" },
       "accept": ["10 line segments", "das", "ten"],
       "targets": "c6-maths-ch02-t01-m-only-sides",
       "wrongIfMis": "5",

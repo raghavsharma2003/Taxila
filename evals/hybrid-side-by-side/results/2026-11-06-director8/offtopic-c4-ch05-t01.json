@@ -1,0 +1,1956 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions mein equal shares dekhenge. Tumhe cooking mein kya banana pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1657,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Maa ne kitchen mein ek garam roti banayi, aur tum do bhai-behen ho. Roti ke 2 tukde honge. Aaj dekhenge ki dono ka hissa kab sach mein barabar hota hai. Theek hai, Riya—ab socho: Maa ki ek roti tum aur tumhari behen baantoge; barabar hissa ke liye roti kaise kaatoge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 973,
+   "replyReadyMs": 2630,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1657,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "classifyMs": 1225,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Dekho, roti ke 2 barabar tukde hain, aur 1 tukda rangin hai. Yeh tukda roti ka aadha hai, yaani 1/2. Neeche wala 2 batata hai ki poori roti ke kitne barabar tukde bane. Upar wala 1 batata hai ki humne kitne tukde liye. Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "move": "explain",
+   "card": "Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "replyMs": 820,
+   "replyReadyMs": 2045,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1225,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 2"
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "2",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "classifyMs": 1227,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Virat ke straight drives kaafi crisp hain. Ab roti ke 2 barabar tukdon mein 1 rangin tukda hai—kya rangin hissa 1/1 hai, haan ya nahi? Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "move": "practice",
+   "card": "Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?",
+   "replyMs": 2032,
+   "replyReadyMs": 3259,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3259,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 2"
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "2",
+     "1/2"
+    ]
+   },
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1514,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. Poori roti ke 4 barabar tukde neeche aate hain, aur khaya hua 1 rangin tukda upar. Bache hue tukde neeche kabhi nahi aate. Ek cake ke 4 barabar tukde kiye, aur 3 tukde kha liye. Cake ka kitna hissa khaya, fraction mein batao.",
+   "move": "reteach",
+   "card": "Ek cake ke 4 barabar tukde kiye, aur 3 tukde kha liye. Cake ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 1032,
+   "replyReadyMs": 2546,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2546,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    },
+    {
+     "from": 142,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "kya poochha, phir se bolo na",
+   "read": "no_evidence",
+   "classifyMs": 1096,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cake ko 4 equal parts mein baanta; unmein se 3 khaaye. Fraction mein khaya hua hissa kya hoga? Ek cake ke 4 barabar tukde kiye, aur 3 tukde kha liye. Cake ka kitna hissa khaya, fraction mein batao.",
+   "move": "repair",
+   "card": "Ek cake ke 4 barabar tukde kiye, aur 3 tukde kha liye. Cake ka kitna hissa khaya, fraction mein batao.",
+   "replyMs": 878,
+   "replyReadyMs": 1974,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1096,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 0,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 0
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 0,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "3/4 hai na",
+   "read": "correct",
+   "classifyMs": 1011,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Tumne 3/4 kaise decide kiya—upar 3 aur neeche 4 kyun rakhe?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 2094,
+   "replyReadyMs": 3105,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3105,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 0,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 4,
+     "shaded": 0
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 0,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   },
+   "guard": [
+    "nowhy"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "maine line par aage-peeche dekh ke socha",
+   "read": "incorrect",
+   "classifyMs": 1968,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aur pehle wale sawaal ka jawab nahi tha, kyunki upar wala 1 batata hai ki humne kitne tukde liye. Cake A ke bhi 3 tukde hain, Cake B ke bhi 3 tukde. Par Cake A mein 1 bada, 2 chhote hain, toh uska tukda 1/3 nahi hai. Cake B mein sab barabar hain, isliye wahan har tukda 1/3 hai, yaani ek-tihaai. Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "move": "explain",
+   "card": "Ek pizza ke 3 tukde kiye: ek bada aur do chhote. Kya chhota tukda pizza ka ek-tihaai hai, haan ya nahi?",
+   "replyMs": 1157,
+   "replyReadyMs": 3125,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1968,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 tukde",
+       "1 bada, 2 chhote",
+       "1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 tukde",
+       "sab barabar",
+       "har tukda 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e1",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    },
+    {
+     "from": 98,
+     "beat": "e2",
+     "template": "compare@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | 3 tukde | 3 tukde | 1 ",
+     "numbers": "3 1 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Cake A",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        },
+        {
+         "n": 1,
+         "what": "bada"
+        }
+       ]
+      },
+      {
+       "title": "Cake B",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "tukde"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 tukde",
+        "1 bada, 2 chhote",
+        "1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 tukde",
+        "sab barabar",
+        "har tukda 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "3",
+     "1",
+     "2",
+     "1/3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 911,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. Tarbooz ka 1 bada slice aur 2 chhote slice barabar nahi hain, toh koi slice 1/3 nahi. Kaagaz ki patti ke 3 barabar hisse hain, toh har hissa 1/3 hai. Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "move": "reteach",
+   "card": "Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "replyMs": 2045,
+   "replyReadyMs": 2956,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2956,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch05-t01-m-unequal-parts",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Tarbooz",
+      "items": [
+       "1 bada slice",
+       "2 chhote slice",
+       "barabar nahi, 1/3 nahi"
+      ]
+     },
+     "right": {
+      "title": "Kaagaz ki patti",
+      "items": [
+       "3 barabar hisse",
+       "har hissa 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-unequal-parts",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c4-maths-ch05-t01-m-unequal-parts",
+     "template": "compare@1",
+     "contradictions": 0
+    },
+    {
+     "from": 169,
+     "beat": "then:c4-maths-ch05-t01-m-unequal-parts",
+     "template": "compare@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Tarbooz | Kaagaz ki patti | 1 bada slice",
+     "numbers": "1 3 2 1/3"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Tarbooz",
+       "items": 3,
+       "quantities": [
+        {
+         "n": 1,
+         "what": "bada slice"
+        },
+        {
+         "n": 2,
+         "what": "chhote slice"
+        }
+       ]
+      },
+      {
+       "title": "Kaagaz ki patti",
+       "items": 2,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "barabar hisse"
+        }
+       ]
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Tarbooz",
+       "items": [
+        "1 bada slice",
+        "2 chhote slice",
+        "barabar nahi, 1/3 nahi"
+       ]
+      },
+      "right": {
+       "title": "Kaagaz ki patti",
+       "items": [
+        "3 barabar hisse",
+        "har hissa 1/3"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "2",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "leak",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "classifyMs": 1180,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Virat ke cover drives waali timing mast lagti hai; is baat par roti ke baad lautenge. Kya chhota tukda 1/2 hai? Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "move": "practice",
+   "card": "Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "replyMs": 1103,
+   "replyReadyMs": 2283,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2283,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-unequal-parts",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Roti",
+      "items": [
+       "2 tukde"
+      ]
+     },
+     "right": {
+      "title": "Tukde",
+      "items": [
+       "ek bada",
+       "ek chhota"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-unequal-parts",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Roti | Tukde | 2 tukde | ek bada | ek ch",
+     "numbers": "2"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Roti",
+       "items": 1,
+       "quantities": [
+        {
+         "n": 2,
+         "what": "tukde"
+        }
+       ]
+      },
+      {
+       "title": "Tukde",
+       "items": 2,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Roti",
+       "items": [
+        "2 tukde"
+       ]
+      },
+      "right": {
+       "title": "Tukde",
+       "items": [
+        "ek bada",
+        "ek chhota"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "2"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1068,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. Riya, aadha hone ke liye dono tukde barabar hone chahiye. Yahan ek bada, ek chhota hai—kya chhota tukda aadha hai? Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "move": "hint",
+   "card": "Ek roti ke 2 tukde hue, ek bada aur ek chhota. Kya chhota tukda roti ka aadha hai?",
+   "replyMs": 973,
+   "replyReadyMs": 2041,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2041,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-unequal-parts",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Roti",
+      "items": [
+       "2 tukde"
+      ]
+     },
+     "right": {
+      "title": "Tukde",
+      "items": [
+       "ek bada",
+       "ek chhota"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-unequal-parts",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Roti | Tukde | 2 tukde | ek bada | ek ch",
+     "numbers": "2"
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Roti",
+       "items": 1,
+       "quantities": [
+        {
+         "n": 2,
+         "what": "tukde"
+        }
+       ]
+      },
+      {
+       "title": "Tukde",
+       "items": 2,
+       "quantities": []
+      }
+     ]
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Roti",
+       "items": [
+        "2 tukde"
+       ]
+      },
+      "right": {
+       "title": "Tukde",
+       "items": [
+        "ek bada",
+        "ek chhota"
+       ]
+      }
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "2"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "no",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, kyunki dono tukde barabar nahi hain. Aur pehle wale sawaal ka jawab nahi tha, kyunki cake B mein sab barabar hain, isliye wahan har tukda 1/3 hai, yaani ek-tihaai. Is circle ke 3 barabar hisse hain, aur 1 hissa rangin hai. Yeh rangin hissa ek-tihaai hai, yaani 1/3. Neeche ka 3 poore circle ke saare barabar hisse batata hai. Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "explain",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 1214,
+   "replyReadyMs": 1214,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1214,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e2",
+     "template": "compare@1",
+     "contradictions": 0
+    },
+    {
+     "from": 172,
+     "beat": "e3",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "classifyMs": 1046,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Fraction mein likho. Is circle ke 3 barabar hisse hain, aur 1 hissa rangin hai. Yeh rangin hissa ek-tihaai hai, yaani 1/3. Neeche ka 3 poore circle ke saare barabar hisse batata hai. Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "explain",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 998,
+   "replyReadyMs": 2044,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2044,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1294,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par circle dekho: 3 equal parts hain, 1 rangin. Ek aur part rangne par fraction mein rangin hissa kaise likhogi? Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "reteach",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 2386,
+   "replyReadyMs": 3680,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3680,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1470,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein circle ke 3 equal parts socho; ab 2 parts rangin hain. Fraction mein ise kaise likhogi, Riya? Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "move": "repair",
+   "card": "Agar is circle ka ek aur hissa bhi rang dein, toh circle ka kitna hissa rangin hoga, fraction mein?",
+   "replyMs": 1899,
+   "replyReadyMs": 3369,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1899,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "3",
+     "1/3"
+    ]
+   },
+   "guard": [
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "2/1",
+   "read": "misconception",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "2/1 sahi nahi hai. Pichhle sawaal ka jawab 2/3 tha, kyunki neeche ka 3 poore circle ke saare barabar hisse batata hai. Ab circle ke 4 barabar hisse hain. 1 hissa rangin hai, 3 bina rang ke. Rangin hissa ek-chauthaai hai, yaani 1/4. Neeche poore circle ke 4 hisse aate hain, bache hue 3 nahi. Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "explain",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 1999,
+   "replyReadyMs": 2000,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2000,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 0,
+    "gave": true
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e3",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    },
+    {
+     "from": 119,
+     "beat": "e4",
+     "template": "fraction-parts@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "praise",
+    "affirms",
+    "mustsay",
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao na",
+   "read": "no_evidence · language",
+   "classifyMs": 1102,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, pizza ke kul 4 barabar tukde the. 1 tukda khaaya gaya aur 3 bache. Zoya kehti hai khaya hissa 1/3 hai. Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "practice",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 2088,
+   "replyReadyMs": 3190,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3190,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "affirms",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1279,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. 3 tukde bachna alag baat hai. Pizza ka khaya hissa kya hoga? Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "hint",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 919,
+   "replyReadyMs": 2198,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2198,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "twoq",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "classifyMs": 1153,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yes sahi nahi hai. Khaya hua tukda 1 hai aur pizza ke kul tukde 4. Toh khaya hissa 1/3 hai ya 1/4? Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "hint",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 1192,
+   "replyReadyMs": 2345,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2345,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karti hoon",
+   "read": "no_evidence · thinking",
+   "classifyMs": 1184,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Tum khud karke batao.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 675,
+   "replyReadyMs": 1859,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1859,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "sawaal kya hai?",
+   "read": "no_evidence · repeat",
+   "classifyMs": 1166,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sawaal yeh hai: 4 barabar tukdon mein se 1 khaaya gaya. Apna jawab batao. Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "move": "practice",
+   "card": "Ek pizza ke 4 barabar slice the. 1 slice kha liya gaya, aur 3 slice bache. Zoya ka kehna hai ki pizza ka 1/3 khaya gaya, kyunki 3 slice bache. Kya yeh sahi hai?",
+   "replyMs": 1789,
+   "replyReadyMs": 2955,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2955,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 4"
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 1
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "1",
+     "4",
+     "1/4"
+    ]
+   },
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "nahi, 1/4 khaya gaya",
+   "read": "correct",
+   "classifyMs": 1381,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, Riya: 1 tukda khaaya aur kul 4 barabar tukde the, isliye khaya hissa 1/4 hai. Ek roti ke 3 barabar tukde kiye. Usme se 2 tukde kha liye. Roti ka kitna hissa khaya gaya? Diya hai: ek poori roti, roti ke 3 barabar tukde, 2 tukde khaye gaye hain. Dhoondhna hai: roti ka kitna hissa khaya, fraction mein. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1118,
+   "replyReadyMs": 2499,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2499,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 0,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 3,
+     "shaded": 0
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 0,
+      "whole": "roti"
+     }
+    },
+    "drawn": "take",
+    "numbers": []
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1427,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle neeche wala number likho: 3, kyunki neeche poori roti ke saare barabar tukde aate hain. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1174,
+   "replyReadyMs": 2601,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2601,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 0,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "counts": {
+     "parts": 3,
+     "shaded": 0
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 0,
+      "whole": "roti"
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1236,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Chuno: aage badhein, thodi der rukhein, ya aaj ke liye band karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2023,
+   "replyReadyMs": 3259,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2023,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

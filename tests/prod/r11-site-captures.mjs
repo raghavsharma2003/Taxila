@@ -18,8 +18,10 @@ const HOST = `http://localhost:${PORT}/src/ui-v3/kaksha/dev`;
 const SHOTS = [
   ["home", `index.html?screen=home&state=start&theme=night&look=volt&motion=reduced`],
   ["world", `index.html?screen=world&theme=night&look=volt&motion=reduced`],
-  ["desk", `desk.html?class=7&fixture=work-beat&look=volt&motion=reduced`],
-  ["turn", `desk.html?class=7&fixture=work-your_turn&look=volt&motion=reduced`],
+  // r7 app-landing-refresh: the stage-first lesson (the board is the biggest thing, her face a PiP) and the hands-free
+  // dock (no Talk button) in place of release 11's tap-to-talk Desk
+  ["desk", `desk.html?class=7&fixture=hf-beat&look=volt&motion=reduced`],
+  ["turn", `desk.html?class=7&fixture=hf&look=volt&motion=reduced`],
 ];
 const stop = await startVite(ROOT, PORT);
 const browser = await chromium.launch();

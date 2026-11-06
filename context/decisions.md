@@ -8207,3 +8207,152 @@ Every sentence on its own board, and requests and parks done for real.
 Next run: director9 on integration 11. The gate is unchanged, and the 30-topic batch stays held.
 
 **Reverse if:** director9 has R1-R6 and S1'/S3' in place and still more than 10 contradictions by hand. Then move to a code-rendered voice for every board-describing sentence.
+
+
+<!-- merged from inbox/r7-app-20.json -->
+## `dc-r7-app-site-config`
+The owner's price goes into one value, `PRICES.monthly` in src/app/site.ts, and the landing picks it up with no other code change. Until then the page says plainly that no price is set. The canonical origin is taxila.dev for every public page, so the eastus2 container FQDN is never indexed. The landing captures were re-shot from the r7 lesson shell: a stage-first board, the teacher in a corner, and the hands-free dock.
+
+
+<!-- merged from inbox/r7-brain-16.json -->
+## `dc-r7-code-spec` (2026-11-06, stream A Brain; approved by main)
+
+**What:** on a turn the bytes decided (classifyFast has a result: an exact key, a script key, a request, a lexical read), her reply for that result's plan starts at once, alongside the model distress read. Before this, it waited for the read.
+
+- Mechanism: server/latency/perceive.js rule 6.
+- Flag: `TAXILA_CODE_SPEC`. Off by default in production; on in the eval tree (evals/turn-replay.mjs) until a turn replay confirms it.
+
+**Why:** ms-r7-turn-replay-int10. On 275 of 432 turns `@classified` sat at a p50 of 799 ms, waiting on grok's distress read (p50 781 ms), before the plan and her reply.
+
+**Safety (unchanged, pinned by tests/r7-brain-code-spec.test.mjs):**
+- The turn plans only after it awaits classify(), and so the distress read.
+- It uses a speculated reply only through pickSpeculation's exact reply-key match.
+- A distress read changes the plan (safeguard), so the speculated key never matches and the reply is discarded.
+- The speculated call carries no clause hook, so nothing streams to TTS or the client before the read.
+- The safety code itself is untouched.
+
+**Reverse if:** any release (a clause, TTS or the client response) happens before the distress read has returned, on any turn.
+
+
+<!-- merged from inbox/r7-brain-18.json -->
+## `dc-r7-script-walk-v6` (2026-11-06, stream A Brain; main's director8 hand judgement, three of four judges)
+
+**R1 segment assembly**
+- Everything about the card just answered is said first and together: the verdict with its reason, a give-up, the worked answer. It is the first segment, on that card's board (state.js closeBeat on every scripted move; say.js guard.parts; propose.js places parts by their texts).
+- A missed card's close is its own segment on its own board.
+- A bridge with an authored board (SkillScriptV2.bridgeBoard) is its own segment. With none, it stays on the board before it and its screen pointer is removed.
+- A close's why is only the card's authored why: KeyedAsk.why / CheckQuestionV2.why, or the worked example's why. Never the last sentence of a point or a remediation.
+- A worked close is said once.
+- A yes/no key is named ("sahi jawab: nahi"), never "jawab nahi tha".
+
+**R2 false keys**
+- In a scripted turn, every number she says must be carried by this turn's authored text, the card just graded (its key once graded right), or the child's words.
+- A stray number drops her sentence. A verdict lead with one is replaced by code's verdict.
+- A draft the invented guard caught keeps none of her sentences.
+
+**R3 requests**
+- "kya poochha, phir se bolo na" is a repeat.
+- "pata nahi" or "samajh nahi aaya" re-says the same explain beat smaller (her new lines, else one sentence of the point). On a worked step it re-says that step reason-first, never the next step.
+- No sentence of her last turn is said again.
+- A probe answered gets one line taking it up.
+- A repeated miss on an adding card names the piece left out (only when unique).
+- A picture asked for is described in code from the board sent (brain/board-words.js).
+
+**R4 returns and register**
+- An aside parked on one turn is returned to on the next, with a short true fact for common asides (asideFactOf), or her own sentence when it is about the thing. Never an analogy to the lesson, never words put in their mouth.
+- After "hindi mein batao", her English words become Hindi in code (brain/register.js). The card and must-say words are kept.
+
+**R5 hygiene**
+- A closing turn over the cap is two turns: the closures with no card live, ending on "shall we go on?", then the beat. Authored teaching plus its card over the cap is also two turns: the teaching, ending on a check-in, then the card on its own board.
+- A confused reply or a stop lets the held half go.
+- Kill switch: TAXILA_R7_SPLIT=off.
+- One verdict sentence; a sentence is said once; the card is the one question; a scripted worked frame carries no number; their English phrase is never echoed.
+
+**Reverse if:** director9's hand judges count more contradictions, more lost cards, or a held half said after a stop, on any of these. Reverse that part alone.
+
+
+<!-- merged from inbox/r7-games-hissa.json -->
+## `dc-r7-games-hissa`
+
+**hissa** (multiplying and dividing fractions and decimals, class 7) is a law family. Nothing in it runs on a clock: every fold, shade, pour, slide and tag moves only on a touch, and the law answers only on run. It is a different mechanic from todo-jodo's strips (one bar cut into equal parts for naming, comparing and adding), guna's field (whole-number place-value area model and truck) and nishana (placing on a line). Every value is exact (integer numerators and denominators; decimals as tenths and hundredths).
+
+- **fold/of** (c7-maths-ch08-t01 s2): a unit sheet is folded across and shaded (the first fraction), then folded down and only the shaded part is taken (the second). The overlap is the product; the child tags it by counting pieces taken twice over pieces in the whole sheet (any equal tag; finer folds are allowed).
+- **fold/times** (c7-maths-ch08-t01 s1): w rope pieces of a/b m are laid end to end on a metre track marked in b parts, and the rope's length is tagged.
+- **pour/fit, pour/part, pour/deci** (c7-maths-ch08-t02 s1/s2/s3, c7-maths-ch12-t02 s3): a jug is poured into full cups one at a time; the jug refuses a cup it cannot fill. The part-cup left is tagged as a fraction OF A CUP; on run the rest pours into the last cup, the jug must be empty and the tag must be that cup's level. Pouring every full cup IS the division (how many fit), so it is not a shortcut.
+- **grid/mul** (c7-maths-ch12-t01 s2): a grid of units cut in tenths; a/10 shaded across, c/10 down. The overlap's small squares are counted onto a label and the child moves its decimal point.
+- **grid/shift** (c7-maths-ch12-t01 s1, c7-maths-ch12-t02 s2): digits on a place-value chart (hundreds to thousandths), the point fixed; the child slides the digits one place per push. A zero may be written at the end; it moves nothing.
+- **story/rest** (c7-maths-ch08-t03 s2): a bar (rupees or a ribbon) is folded and shaded for the first spend; the child picks the bar the second fold lies on (the piece left, or the whole) and folds and shades it.
+- **story/scale** (c7-maths-ch08-t03 s1): a recipe's amount is folded into one share per person it was for, and one share is laid into the pot per person eating now.
+
+Mal-rules map only to the topic's own kit ids: keep-denominator, whole-both, mult-bigger (ch08-t01); div-smaller, no-flip, flip-first (ch08-t02); fraction-of-original, scale-flip (ch08-t03); point-03, times10-zero (ch12-t01); div-half, div-smaller, scale-one (ch12-t02). ÷ 10 / 100 / 1000 on the chart maps no belief (the kit has none for it).
+
+Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch08-t01-s3 (predicting bigger or smaller), c7-maths-ch08-t03-s3 (checking size and units), c7-maths-ch12-t01-s3 (estimating products), c7-maths-ch12-t02-s1 (a decimal ÷ a whole number, which is sharing, not how many fit). Kit beliefs with no honest set-up: last-op (the story's action is done, never chosen as an operation word), half-bigger.
+
+**Reverse if** a child pilot shows the tag is set by trying numbers until the run passes rather than by counting the sheet, the cups or the grid (watch for runs per level and tag changes between runs).
+
+
+<!-- merged from inbox/r7-games-kram.json -->
+## `dc-r7-games-kram`
+
+**kram** (growing patterns and number sequences, classes 4-7) is a law family. Nothing in it runs on a clock: the child builds the pattern's next stage, a bag for a far stage, a machine's rule, a shelf of rhythms or a choice of pieces, presses run, and the law answers with plain counting. No answer box anywhere: the tiles, the bag, the dials and the pieces ARE the answer.
+
+- **grow/next** (c5-maths-ch07-t02 s1 with L / plus / staircase / oblong tiles; c6-maths-ch01-t02 s1/s2 with dot squares and staircases): stages n-3..n-1 stand built; the build board starts as a copy of the last one; the child lays / lifts tiles until it is stage n (any turn, flip or slide of it counts).
+- **grow/far** (c5-maths-ch07-t02 s3 and c7-maths-ch04-t03 s2 with stick houses / rows of squares / rows of triangles; c6-maths-ch01-t04 s2/s3 with points joined in every pair and the snowflake): fill a bag (racks of 1, 10, 100, 1000; nine to a rack) with exactly the pieces stage N needs; the run grows the figure stage by stage out of the bag.
+- **machine/step** (c4-maths-ch03-t02 s1-s3: going up, going down, doubling, halving, a calendar column; c5-maths-ch07-t02 s2: a stick figure's counts): set the machine's sign and number; the run walks it from the first number along every given step, then fills the two blanks.
+- **machine/rule** (c7-maths-ch04-t03 s1): set a and b in "a × n + b", fed the stage number; the run makes stages 1-4, then the far stage.
+- **beats/lay** (c7-maths-ch06-t03 s1/s3): lay every rhythm of n beats; a rhythm one shelf up goes on with S in front, two shelves up with L in front (the recursion is the move); pads compose one by hand. **beats/count** (s2): a bag for the rhythms of N beats.
+- **nest/odd** (c6-maths-ch01-t03 s1): pick the L-pieces that fill a k × k frame; **nest/pair** (s2): pick the two staircases that fill it.
+
+Mal-rules map only to the topic's own kit ids:
+
+| Mal-rule | Kit id |
+|---|---|
+| only-increase (+ for −, × for ÷) | only-increase |
+| first-step (+ (t2 − t1) for a doubling / halving list) | first-step-only |
+| plus-one (+ 1 down a calendar column) | calendar-plus-one |
+| copy (the last stage run unchanged) | guess-next |
+| times-first (N × stage 1) | whole-object (c5) / proportional (c7 far) |
+| step-only (N × the step) | forget-start |
+| corner (row + column, no corner) | corner |
+| rows-only (k rows of k + 1) | any-arrangement |
+| double (lines from both ends), same-step (last step again) | line-jump |
+| sides-plus (snowflake sides added) | sides-plus |
+| recursive (n + d) | recursive-only |
+| proportional (a × n, b = 0) | proportional |
+| order-ignored (one rhythm per mix of S and L) | order-ignored |
+| add-one, doubling (rhythm counts) | add-one |
+| skip-start (odd pieces from 3) | skip-start |
+
+**Not admitted** (no honest mechanic yet): c4-maths-ch03-t02 changing-step lists (1, 2, 4, 7, 11); c6-maths-ch01-t02-s3, c6-maths-ch01-t03-s3, c6-maths-ch01-t04-s1, c7-maths-ch04-t03-s3; and the whole of c7-maths-ch01-t03 (patterns in products): its kit beliefs are zero-counting in round products, which is guna's field of round sides, so it stays with ITEM-ARENA (a guna rule is the honest home). Kit beliefs with no honest set-up: decoration, three-cases, odd-sum-odd, unrelated, cant-generalise, europe-first.
+
+**Why:** the seven pattern topics were served only by ITEM-ARENA.
+
+**Reverse if** a child pilot shows the bag and the dials are used as answer boxes (typed, trial-and-error) rather than read off the figure, so the far-stage and rule beliefs never surface.
+
+
+<!-- merged from inbox/r7-learning-29.json -->
+## `dc-r7-staged-batch-30` (2026-11-06, F Learning)
+
+The 30 highest-ranked next topics (next-topics.mjs) are written in v2.2 and staged, not live. Gate per script: `check.mjs` ok, then a blind solve — a solver sees only each keyed question and the line said just before it, answers it, and flags LEAK / AMBIGUOUS / MISSING; its answers are compared with keys kept in a separate folder. All 30 matched every key. The flags were mostly a point that stated the rule the ask only had to repeat, and "the fourth mark from 0" read two ways; all were fixed, and the lessons went into SPEC-AUTHOR's wave notes. Two kit items were added for 3-rung ladders. **Reverse if:** director8 shows a defect class the blind solve cannot see; add that check before promotion.
+
+## `dc-r7-friend-pool-names` (2026-11-06, F Learning)
+
+A script character named Tara and a `{friend}` slot that filled with Tara gave one lesson two Taras, and a "who has more" key that names one of them. `check.mjs` now rejects the slot's names anywhere in a v2.2 script (keys too); a test fails if its list drifts from `server/director/friend.js`. **Reverse if:** the slot learns to skip names already on the card.
+
+## `dc-r7-kit-friendf` (2026-11-06, F Learning)
+
+Kit card characters Riya/Asha → `{friendF}` (237 units, 35 kits); pool names already on a unit renamed first (7); unfilled fields → Nisha (13). Pushed only after Games' serve-time fill was in base; the Games banks were regenerated in the same commit. **Reverse if:** a served surface shows the raw slot — fill it there.
+
+## `dc-r7-child-events-in-context` (2026-11-06, F Learning)
+
+Director7 found the reactive child firing events out of context ("pehle main try karun?" right after a why-probe; "let me try" after the answer was given). Events now wait for a turn that fits. **Reverse if:** events cluster late and a request kind drops out of MIN_TURNS.
+
+
+<!-- merged from inbox/r7-studio-25.json -->
+## `dc-r7-card-board-asked-only`
+
+A scripted card's board shows every number the card states; only the asked value is "?". The key's numbers are withheld unless her line states them (the spoken card is in her line) or the card's own board authors them as labels; accept forms quote the givens and withhold nothing. An asked mark on a fraction line is labelled once her line states its value, and the card's board still on screen on her confirming turn is re-taken (so the confirmed value appears) or kept, never replaced by the code's bare line. Reverse if a card's key is a given its own board must hide.
+
+## `dc-r7-picture-second-view`
+
+Amends SC2. A picture asked for while the card's own board is already up draws the same numbers as equal bars (fraction-bars@1, counts.wholes per bar, artifact.altView "parts"); the asked value is an unshaded "?" bar. Only for a fraction line within one whole or a compare whose entries are fractions; otherwise the card's board is re-shown, and with another board up the card's board is drawn (SC2 unchanged). The card's own board always answers a picture request. Reverse if judges find the second view confuses a child more than it helps.

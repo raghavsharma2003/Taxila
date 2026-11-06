@@ -28,8 +28,8 @@
      {
       "interest": "cricket",
       "use": {
-       "hi": "Cricket pitch ek lamba rectangle hoti hai, 22 m lambi aur 3 m chaudi. Groundsman pitch ke ek kone se chalna shuru kare, kinaare-kinaare chale aur wapas usi kone par pahunche, toh jitna woh chala, wahi pitch ka parimap hai.",
-       "en": "A cricket pitch is a long rectangle, 22 m long and 3 m wide. If the groundsman starts at one corner of the pitch, walks along its edge and comes back to the same corner, the distance he walked is the pitch's perimeter."
+       "hi": "Cricket pitch ek lamba rectangle hoti hai, lagbhag 20 m lambi aur 3 m chaudi. Pitch ke ek kone se chalna shuru karo, kinaare-kinaare chalo aur wapas usi kone par pahuncho, toh jitni doori tay hui, wahi pitch ka parimap hai.",
+       "en": "A cricket pitch is a long rectangle, about 20 m long and 3 m wide. Start at one corner of the pitch, walk along its edge and come back to the same corner: the distance walked is the pitch's perimeter."
       }
      },
      {
@@ -67,7 +67,8 @@
       "key": "15 cm",
       "accept": ["15", "15 centimetre", "15 centimetres"],
       "targets": "c6-maths-ch06-t01-m-missing-sides",
-      "wrongIfMis": "9 cm"
+      "wrongIfMis": "9 cm",
+      "why": { "hi": "teeno bhujayein judti hain, 4 + 5 + 6 = 15 cm", "en": "all three sides are added, 4 + 5 + 6 = 15 cm" }
      }
     },
     {
@@ -88,7 +89,8 @@
       "key": "30 cm",
       "accept": ["30", "30 centimetre", "30 centimetres"],
       "targets": "c6-maths-ch06-t01-m-missing-sides",
-      "wrongIfMis": "5 cm"
+      "wrongIfMis": "5 cm",
+      "why": { "hi": "hexagon ki chhah barabar bhujayein 5 cm ki hain, 6 × 5 = 30 cm", "en": "the hexagon's six equal sides are 5 cm each, 6 × 5 = 30 cm" }
      }
     },
     {
@@ -109,7 +111,8 @@
       "key": "20 cm",
       "accept": ["20", "20 centimetre", "20 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "24 cm"
+      "wrongIfMis": "24 cm",
+      "why": { "hi": "dhaaga kinaare par chalta hai, 6 + 4 + 6 + 4 = 20 cm", "en": "the thread runs along the edge, 6 + 4 + 6 + 4 = 20 cm" }
      }
     }
    ],
@@ -160,7 +163,8 @@
      "accept": ["30", "30 metre", "30 metres"],
      "targets": "c6-maths-ch06-t01-m-missing-sides",
      "wrongIfMis": "23 m",
-     "board": { "template": "measured@1", "params": { "shape": "polygon", "unit": "m", "sides": [8, 3, 5, 4, 3, 7] } }
+     "board": { "template": "measured@1", "params": { "shape": "polygon", "unit": "m", "sides": [8, 3, 5, 4, 3, 7] } },
+     "why": { "hi": "kamre ki chhah bhujayein judti hain, 8 + 3 + 5 + 4 + 3 + 7 = 30 m", "en": "all six sides of the room are added, 8 + 3 + 5 + 4 + 3 + 7 = 30 m" }
     },
     {
      "id": "c2",
@@ -172,7 +176,8 @@
      "accept": ["28", "28 centimetre", "28 centimetres"],
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
      "wrongIfMis": "40 cm",
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 10, "h": 4 } }
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 10, "h": 4 } },
+     "why": { "hi": "lace kinaare par lagti hai, 10 + 4 + 10 + 4 = 28 cm", "en": "the lace goes along the edge, 10 + 4 + 10 + 4 = 28 cm" }
     }
    ],
    "ladder": [
@@ -199,7 +204,8 @@
       "accept": ["29", "29 metre", "29 metres"],
       "targets": "c6-maths-ch06-t01-m-missing-sides",
       "wrongIfMis": "26 m",
-      "board": { "template": "measured@1", "params": { "shape": "pentagon", "unit": "m", "sides": [8, 5, 7, 6, 3], "names": ["P", "Q", "R", "S", "T"] } }
+      "board": { "template": "measured@1", "params": { "shape": "pentagon", "unit": "m", "sides": [8, 5, 7, 6, 3], "names": ["P", "Q", "R", "S", "T"] } },
+      "why": { "hi": "paanchon bhujayein judti hain, 8 + 5 + 7 + 6 + 3 = 29 m", "en": "all five sides are added, 8 + 5 + 7 + 6 + 3 = 29 m" }
      }
     },
     {
@@ -212,21 +218,20 @@
      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 5, "h": 3, "trace": true } },
      "then": {
       "prompt": {
-       "hi": "9 cm lambe aur 2 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
-       "en": "Ribbon goes once around the edge of a label 9 cm long and 2 cm wide. How long is the ribbon?"
+       "hi": "9 cm lambe aur 4 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
+       "en": "Ribbon goes once around the edge of a label 9 cm long and 4 cm wide. How long is the ribbon?"
       },
-      "key": "22 cm",
-      "accept": ["22", "22 centimetre", "22 centimetres"],
+      "key": "26 cm",
+      "accept": ["26", "26 centimetre", "26 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "18 cm",
-      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 9, "h": 2 } }
+      "wrongIfMis": "36 cm",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 9, "h": 4 } },
+      "why": { "hi": "ribbon kinaare par lagta hai, 9 + 4 + 9 + 4 = 26 cm", "en": "the ribbon goes along the edge, 9 + 4 + 9 + 4 = 26 cm" }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Har bhuja jodna hamesha kaam karta hai. Rectangle mein lambai do baar aati hai aur chaudai bhi do baar, isliye agle hisse mein uska ek chhota tareeka dekhenge.",
-    "en": "Adding every side always works. In a rectangle the length comes twice and the breadth comes twice, so in the next part we will see a shorter way for it."
-   }
+   "bridgeToNext": { "hi": "Har bhuja jodna hamesha kaam karta hai. Is 6 cm lambe aur 4 cm chaude rectangle mein lambai 6 cm do baar aati hai aur chaudai 4 cm bhi do baar, isliye agle hisse mein uska ek chhota tareeka dekhenge.", "en": "Adding every side always works. In this rectangle, 6 cm long and 4 cm wide, the length 6 cm comes twice and the breadth 4 cm comes twice too, so in the next part we will see a shorter way for it." },
+   "bridgeBoard": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 6, "h": 4, "trace": true } }
   },
   {
    "skillId": "c6-maths-ch06-t01-s2",
@@ -236,8 +241,8 @@
      {
       "interest": "cricket",
       "use": {
-       "hi": "Cricket pitch 22 m lambi aur 3 m chaudi hoti hai. Uske kinaare par chalo toh 22 m do baar aata hai aur 3 m bhi do baar. Isi jodi se rectangle ka chhota tareeka banta hai.",
-       "en": "A cricket pitch is 22 m long and 3 m wide. Walk along its edge and 22 m comes twice, and 3 m comes twice too. This pairing gives the rectangle its shortcut."
+       "hi": "Cricket pitch lagbhag 20 m lambi aur 3 m chaudi hoti hai. Uske kinaare par chalo toh 20 m do baar aata hai aur 3 m bhi do baar. Isi jodi se rectangle ka chhota tareeka banta hai.",
+       "en": "A cricket pitch is about 20 m long and 3 m wide. Walk along its edge and 20 m comes twice, and 3 m comes twice too. This pairing gives the rectangle its shortcut."
       }
      },
      {
@@ -268,7 +273,8 @@
       "key": "32 m",
       "accept": ["32", "32 metre", "32 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "16 m"
+      "wrongIfMis": "16 m",
+      "why": { "hi": "kinaare par lambai do baar aur chaudai do baar aati hai, 10 + 6 + 10 + 6 = 32 m", "en": "along the edge the length comes twice and the breadth twice, 10 + 6 + 10 + 6 = 32 m" }
      }
     },
     {
@@ -288,7 +294,8 @@
       "key": "34 m",
       "accept": ["34", "34 metre", "34 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "17 m"
+      "wrongIfMis": "17 m",
+      "why": { "hi": "2 × (12 + 5) = 2 × 17 = 34 m", "en": "2 × (12 + 5) = 2 × 17 = 34 m" }
      }
     },
     {
@@ -309,7 +316,8 @@
       "key": "24 cm",
       "accept": ["24", "24 centimetre", "24 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "36 cm"
+      "wrongIfMis": "36 cm",
+      "why": { "hi": "square ki chaaron bhujayein 6 cm ki hain, 4 × 6 = 24 cm", "en": "all four sides of the square are 6 cm, 4 × 6 = 24 cm" }
      }
     }
    ],
@@ -361,7 +369,8 @@
      "accept": ["130", "130 metre", "130 metres"],
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
      "wrongIfMis": "65 m",
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 40, "h": 25 } }
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 40, "h": 25 } },
+     "why": { "hi": "2 × (40 + 25) = 2 × 65 = 130 m", "en": "2 × (40 + 25) = 2 × 65 = 130 m" }
     },
     {
      "id": "c2",
@@ -373,7 +382,8 @@
      "accept": ["28", "28 centimetre", "28 centimetres"],
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
      "wrongIfMis": "45 cm",
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 9, "h": 5 } }
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 9, "h": 5 } },
+     "why": { "hi": "lace kinaare par silti hai, 2 × (9 + 5) = 2 × 14 = 28 cm", "en": "the lace is sewn along the edge, 2 × (9 + 5) = 2 × 14 = 28 cm" }
     },
     {
      "id": "c3",
@@ -385,7 +395,8 @@
      "accept": ["44", "44 centimetre", "44 centimetres"],
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
      "wrongIfMis": "121 cm",
-     "board": { "template": "measured@1", "params": { "shape": "square", "unit": "cm", "w": 11, "h": 11 } }
+     "board": { "template": "measured@1", "params": { "shape": "square", "unit": "cm", "w": 11, "h": 11 } },
+     "why": { "hi": "square ki chaaron bhujayein 11 cm ki hain, 4 × 11 = 44 cm", "en": "all four sides of the square are 11 cm, 4 × 11 = 44 cm" }
     }
    ],
    "ladder": [
@@ -413,7 +424,8 @@
       "accept": ["58", "58 metre", "58 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
       "wrongIfMis": "29 m",
-      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 20, "h": 9 } }
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 20, "h": 9 } },
+      "why": { "hi": "poore chakkar mein do lambai aur do chaudai hain, 2 × (20 + 9) = 58 m", "en": "a full round is two lengths and two breadths, 2 × (20 + 9) = 58 m" }
      }
     },
     {
@@ -426,21 +438,20 @@
      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 7, "h": 3, "trace": true } },
      "then": {
       "prompt": {
-       "hi": "8 cm lambe aur 2 cm chaude bookmark ke kinaare par ek baar dhaaga lagta hai. Dhaaga kitna lamba hai?",
-       "en": "A thread goes once around the edge of a bookmark 8 cm long and 2 cm wide. How long is the thread?"
+       "hi": "8 cm lambe aur 3 cm chaude bookmark ke kinaare par ek baar dhaaga lagta hai. Dhaaga kitna lamba hai?",
+       "en": "A thread goes once around the edge of a bookmark 8 cm long and 3 cm wide. How long is the thread?"
       },
-      "key": "20 cm",
-      "accept": ["20", "20 centimetre", "20 centimetres"],
+      "key": "22 cm",
+      "accept": ["22", "22 centimetre", "22 centimetres"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "16 cm",
-      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 8, "h": 2 } }
+      "wrongIfMis": "24 cm",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 8, "h": 3 } },
+      "why": { "hi": "dhaaga kinaare par chalta hai, 8 + 3 + 8 + 3 = 22 cm", "en": "the thread runs along the edge, 8 + 3 + 8 + 3 = 22 cm" }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab tak humne bhujaon se parimap nikala. Agle hisse mein ulta bhi chalenge: parimap pata ho toh bhuja nikalna, aur chakkar aur baad ka kharcha bhi.",
-    "en": "So far we found the perimeter from the sides. In the next part we will also go backwards, finding a side from the perimeter, and work out rounds and the cost of a fence."
-   }
+   "bridgeToNext": { "hi": "Ab tak humne bhujaon se parimap nikala. Agle hisse mein ulta chalenge, parimap se bhuja nikalenge, aur chakkar aur baad ka kharcha bhi.", "en": "So far we found the perimeter from the sides. In the next part we go backwards, finding a side from the perimeter, and also work out rounds and the cost of a fence." },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Ab tak", "items": ["bhujaon se parimap"] }, "right": { "title": "Agle hisse mein", "items": ["parimap se bhuja", "chakkar", "kharcha"] } } }
   },
   {
    "skillId": "c6-maths-ch06-t01-s3",
@@ -464,8 +475,8 @@
      {
       "interest": "cricket",
       "use": {
-       "hi": "Cricket pitch 22 m lambi aur 3 m chaudi hai. Uske kinaare par rassi lagani ho toh pehle parimap nikalte hain, 2 × (22 + 3) = 50 m, phir rassi ka daam.",
-       "en": "A cricket pitch is 22 m long and 3 m wide. To put a rope along its edge, first we find the perimeter, 2 × (22 + 3) = 50 m, then the price of the rope."
+       "hi": "Cricket pitch lagbhag 20 m lambi aur 3 m chaudi hai. Uske kinaare par rassi lagani ho toh pehle parimap nikalte hain, 2 × (20 + 3) = 46 m, phir rassi ka daam.",
+       "en": "A cricket pitch is about 20 m long and 3 m wide. To put a rope along its edge, first we find the perimeter, 2 × (20 + 3) = 46 m, then the price of the rope."
       }
      }
     ]
@@ -489,7 +500,8 @@
       "key": "15 m",
       "accept": ["15", "15 metre", "15 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "30 m"
+      "wrongIfMis": "30 m",
+      "why": { "hi": "60 m chaar barabar bhujaon mein bata hai, 60 ÷ 4 = 15 m", "en": "60 m is shared by four equal sides, 60 ÷ 4 = 15 m" }
      }
     },
     {
@@ -510,7 +522,8 @@
       "key": "10 m",
       "accept": ["10", "10 metre", "10 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
-      "wrongIfMis": "40 m"
+      "wrongIfMis": "40 m",
+      "why": { "hi": "aadha parimap 30 m hai, aur usme se lambai 20 m ghatane par 10 m bachta hai", "en": "half the perimeter is 30 m, and taking away the 20 m length leaves 10 m" }
      }
     },
     {
@@ -521,15 +534,16 @@
       { "hi": "₹10 per metre", "en": "₹10 per metre" },
       { "hi": "kharcha", "en": "cost" }
      ],
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 12, "h": 8, "trace": true } },
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "2 m gate", "name": "plot 12 m × 8 m" } },
      "point": {
-      "hi": "Is rectangle plot ki lambai 12 m aur chaudai 8 m hai. Taar poore kinaare par lagegi, toh parimap 2 × (12 + 8) = 40 m. Taar ₹10 per metre hai, toh kharcha 40 × 10 = ₹400. Agar kahin gate ho jahan taar nahi lagti, toh pehle uski lambai parimap se ghatate hain, phir guna karte hain.",
-      "en": "This rectangular plot is 12 m long and 8 m wide. The wire goes along the whole edge, so the perimeter is 2 × (12 + 8) = 40 m. Wire is ₹10 per metre, so the cost is 40 × 10 = ₹400. If there is a gate where no wire goes, we first subtract its length from the perimeter, then multiply."
+      "hi": "Is rectangle plot ki lambai 12 m aur chaudai 8 m hai. Taar poore kinaare par lagegi, toh parimap 2 × (12 + 8) = 40 m. Taar ₹10 per metre hai, toh kharcha 40 × 10 = ₹400. Board par plot ki ek bhuja par 2 m ka gate bana hai. Gate par taar nahi lagti, toh pehle uski lambai parimap se ghatate hain, phir guna karte hain.",
+      "en": "This rectangular plot is 12 m long and 8 m wide. The wire goes along the whole edge, so the perimeter is 2 × (12 + 8) = 40 m. Wire is ₹10 per metre, so the cost is 40 × 10 = ₹400. On the board, one side of the plot has a 2 m gate. No wire goes on a gate, so we first subtract its length from the perimeter, then multiply."
      },
      "ask": {
       "prompt": { "hi": "Isi plot mein 2 m ka gate hai jahan taar nahi lagegi. Ab kitne metre taar lagegi?", "en": "This same plot has a 2 m gate where no wire goes. How many metres of wire are needed now?" },
       "key": "38 m",
-      "accept": ["38", "38 metre", "38 metres"]
+      "accept": ["38", "38 metre", "38 metres"],
+      "why": { "hi": "poora kinaara 40 m hai, aur 2 m ke gate par taar nahi lagti, toh 40 - 2 = 38 m", "en": "the whole edge is 40 m, and no wire goes on the 2 m gate, so 40 - 2 = 38 m" }
      }
     }
    ],
@@ -597,7 +611,8 @@
      "accept": ["21", "21 metre", "21 metres"],
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
      "wrongIfMis": "42 m",
-     "board": { "template": "shape@1", "params": { "shape": "square", "name": "parimap 84 m" } }
+     "board": { "template": "shape@1", "params": { "shape": "square", "name": "parimap 84 m" } },
+     "why": { "hi": "84 m chaar barabar bhujaon mein bata hai, 84 ÷ 4 = 21 m", "en": "84 m is shared by four equal sides, 84 ÷ 4 = 21 m" }
     },
     {
      "id": "c2",
@@ -609,7 +624,8 @@
      "accept": ["1500", "₹ 1500", "Rs 1500", "1500 rupees", "1500 rupaye"],
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
      "wrongIfMis": "₹9000",
-     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 30, "h": 20 } }
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 30, "h": 20 } },
+     "why": { "hi": "kinaara 2 × (30 + 20) = 100 m hai, aur 100 × 15 = ₹1500", "en": "the edge is 2 × (30 + 20) = 100 m, and 100 × 15 = ₹1500" }
     },
     {
      "id": "c3",
@@ -621,7 +637,8 @@
      "accept": ["15", "15 centimetre", "15 centimetres"],
      "targets": "c6-maths-ch06-t01-m-l-plus-b",
      "wrongIfMis": "50 cm",
-     "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "20 cm", "name": "parimap 70 cm" } }
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "20 cm", "name": "parimap 70 cm" } },
+     "why": { "hi": "aadha parimap 35 cm hai, aur usme se lambai 20 cm ghatane par 15 cm bachta hai", "en": "half the perimeter is 35 cm, and taking away the 20 cm length leaves 15 cm" }
     }
    ],
    "ladder": [
@@ -647,7 +664,8 @@
       "accept": ["15", "15 metre", "15 metres"],
       "targets": "c6-maths-ch06-t01-m-l-plus-b",
       "wrongIfMis": "55 m",
-      "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "25 m", "name": "parimap 80 m" } }
+      "board": { "template": "shape@1", "params": { "shape": "rectangle", "side": "25 m", "name": "parimap 80 m" } },
+      "why": { "hi": "aadha parimap 40 m hai, aur usme se lambai 25 m ghatane par 15 m bachta hai", "en": "half the perimeter is 40 m, and taking away the 25 m length leaves 15 m" }
      }
     },
     {
@@ -660,14 +678,15 @@
      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 10, "h": 6, "trace": true } },
      "then": {
       "prompt": {
-       "hi": "₹20 per metre wali taar 10 m lambe aur 6 m chaude plot ke kinaare par ek baar lagti hai. Taar ka kharcha kitna hai?",
-       "en": "Wire costing ₹20 per metre goes once around a plot 10 m long and 6 m wide. What does the wire cost?"
+       "hi": "₹20 per metre wali taar 9 m lambe aur 6 m chaude plot ke kinaare par ek baar lagti hai. Taar ka kharcha kitna hai?",
+       "en": "Wire costing ₹20 per metre goes once around a plot 9 m long and 6 m wide. What does the wire cost?"
       },
-      "key": "₹640",
-      "accept": ["640", "₹ 640", "Rs 640", "640 rupees", "640 rupaye"],
+      "key": "₹600",
+      "accept": ["600", "₹ 600", "Rs 600", "600 rupees", "600 rupaye"],
       "targets": "c6-maths-ch06-t01-m-area-perimeter",
-      "wrongIfMis": "₹1200",
-      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 10, "h": 6 } }
+      "wrongIfMis": "₹1080",
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "m", "w": 9, "h": 6 } },
+      "why": { "hi": "taar kinaare par lagti hai, 2 × (9 + 6) = 30 m, aur 30 × 20 = ₹600", "en": "the wire goes along the edge, 2 × (9 + 6) = 30 m, and 30 × 20 = ₹600" }
      }
     }
    ],

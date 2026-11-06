@@ -44,6 +44,7 @@ process.env.DB_DRIVER = "pg";
 // no TTS: first-audio-ready is measured to the first guarded clause (what TTS starts on); Voice owns the TTS first byte, and
 // the server's TTS prewarm (server/voice/prewarm.js) would only add a paid speech call per turn here
 process.env.TAXILA_TTS_PREWARM = "0";
+// dc-r7-code-spec: off unless the run sets TAXILA_CODE_SPEC=on (its A/B, 2026-11-06-int10-codespec, measured no gain as built)
 // only the chat models are reachable: speech, storage, search and every other Azure service are removed (no TTS, no blobs)
 for (const k of Object.keys(process.env)) if (/^AZURE_|ENDPOINT$|_KEY$/.test(k) && !/^AZURE_OPENAI_/.test(k)) delete process.env[k];
 if (DRY) { process.env.AZURE_OPENAI_ENDPOINT = "https://dry.invalid/openai/v1"; process.env.AZURE_OPENAI_API_KEY = "dry"; for (const k of Object.keys(process.env)) if (/^AZURE_OPENAI_ENDPOINT_/.test(k)) delete process.env[k]; }
@@ -189,7 +190,7 @@ const q50 = (v, p) => { const s = v.filter(Number.isFinite).sort((a, b) => a - b
 const flat = all.flatMap((x) => x.rows);
 const cat = (f) => { const r = flat.filter(f); return { turns: r.length, firstAudioReady: { p50: q50(r.map((x) => x.firstAudioReadyMs), 0.5), p90: q50(r.map((x) => x.firstAudioReadyMs), 0.9) }, turn: { p50: q50(r.map((x) => x.turnMs), 0.5), p90: q50(r.map((x) => x.turnMs), 0.9) } }; };
 const summary = { dry: DRY, lessons: all.length, all: cat(() => true), earlyClause: cat((x) => x.earlyClause), noEarlyClause: cat((x) => !x.earlyClause),
-  speculationHit: cat((x) => /hit/.test(JSON.stringify(x.speculation ?? ""))), rewritten: cat((x) => x.rewrite), rewriteSkipped: cat((x) => !!x.rewriteSkipped), meter: meterOut() };
+  speculationHit: cat((x) => x.speculation?.hit === true), speculationMiss: cat((x) => x.speculation?.hit === false), rewritten: cat((x) => x.rewrite), rewriteSkipped: cat((x) => !!x.rewriteSkipped), meter: meterOut() };
 writeFileSync(`${OUT}/summary.json`, JSON.stringify(summary, null, 1) + "\n");
 writeFileSync(`${OUT}/meter.json`, JSON.stringify({ dry: DRY, ...meterOut() }, null, 1) + "\n");
 console.log(`done: ${meter.calls} model calls, ~$${meter.usd.toFixed(3)} estimated`);

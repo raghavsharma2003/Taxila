@@ -20,6 +20,8 @@ import { kilaLogic } from "./kila/kila.logic.ts";
 import { ghadiLogic } from "./ghadi/ghadi.logic.ts";
 import { nakshaLogic } from "./naksha/naksha.logic.ts";
 import { gunaLogic } from "./guna/guna.logic.ts";
+import { kramLogic } from "./kram/kram.logic.ts";
+import { hissaLogic } from "./hissa/hissa.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -90,5 +92,17 @@ export const LOGIC: Record<string, AnyLogic> = {
   "guna/field": asAny(gunaLogic),
   "guna/pack": asAny(gunaLogic),
   "guna/story": asAny(gunaLogic),
+  // round 7: Kram, growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines,
+  // rhythms of short and long beats, L-pieces and staircases nested into a square); never timed
+  "kram/grow": asAny(kramLogic),
+  "kram/machine": asAny(kramLogic),
+  "kram/beats": asAny(kramLogic),
+  "kram/nest": asAny(kramLogic),
+  // round 7: Hissa, multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths
+  // grid and a place-value slide, stories spent and scaled); nothing runs on a clock
+  "hissa/fold": asAny(hissaLogic),
+  "hissa/pour": asAny(hissaLogic),
+  "hissa/grid": asAny(hissaLogic),
+  "hissa/story": asAny(hissaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

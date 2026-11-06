@@ -25617,6 +25617,125 @@
    "at": "2026-11-06",
    "title": "Rejected: speculating the reply on code-classified turns in parallel with the distress read, without the clause stream (TAXILA_CODE_SPEC, Brain 61fb6850).\n- A/B on the 4 steady lessons (160 turns, 939 calls, ~$0.62): first-audio-ready p50/p90 was 1,954/3,498 ms against a baseline of 1,852/3,123.\n- Why it lost: the speculated reply has no clause stream, so it displaced the early-first-clause path (970 ms); 19% of speculations missed on the on-screen facts row; and model-classified turns were slower.\n- The flag stays off. Proposed instead: stream the speculation and hold its first guarded clause until the read is clean.",
    "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "ms-r7-m3-owner-facts-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Owner-read facts for M3/M4, 2026-11-06.\n- Credit: ₹230,490.71 remaining (MCA billing profile 'Raghav Sharma'; the detailed Azure credits panel would not load). The Startups dashboard says '$5,000 of $150,000 unlocked', with $4,770 in credits expiring 2027-04-04.\n- ARM billingProperty: StartupSponsorship of $5,000, start 2026-07-08T10:58Z, end 2027-04-04, status LimitRemoved. Subscription quotaId Sponsored_2016-01-01; billing type Benefit.\n- The deploy SP is 'sales-enabler-deployer'. Its secret expires 2027-03-30.\n- The Milestones card was not reachable, so the verification date is still unconfirmed by the portal.\n- microsoftazuresponsorships.com shows 'no sponsorship', because this sponsorship sits on an MCA billing profile.\n\nAt 09:55 UTC the owner granted the SP User Access Administrator, conditioned to exclude the Owner, UAA and RBAC Admin roles. The main loop then placed CanNotDelete locks 'm3-credit-do-not-delete' on taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, m3-keeper, m3-verify, m3-owner, m3-alert-lines and m3-verify-silent.",
+   "source": "inbox/r7-main-18.json"
+  },
+  {
+   "id": "dc-r7-app-site-config",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "The public site reads one config, src/app/site.ts. SITE.origin is https://taxila.dev, confirmed from the trace default and the Front Door plan. PRICES holds every price and is \"TBD\" until the owner sets it. With TBD the landing says no price is set yet; with a number it shows ₹ per month. No literal amount is allowed in the landing source. The canonical link and og:url are set per public path from SITE.origin. Reverse: the owner picks another domain, or pricing moves to a server-served plan table.",
+   "source": "inbox/r7-app-20.json"
+  },
+  {
+   "id": "dc-r7-code-spec",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "On a turn the bytes decided (classifyFast has a result), her reply starts alongside the model distress read instead of after it (server/latency/perceive.js rule 6, TAXILA_CODE_SPEC: off in production, on in the turn replay). Release is unchanged: the turn plans only after the read, uses the reply only on an exact reply-key match, and a distress read's plan never matches; nothing streams from it. Reverse if any release beats the read.",
+   "source": "inbox/r7-brain-16.json"
+  },
+  {
+   "id": "ms-r7-turn-replay-int10",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Turn replay on integration 10 (int/r6 7e2d7eea7, director8's 16 lessons, real lesson start + turn path, throwaway local Postgres, 432 turns, 2,265 calls, about $1.42): first-audio-ready (first guarded clause, no TTS) p50 1,896 ms, p90 3,055 ms. Code-classified turns (275) waited about 800 ms for the model distress read before planning. 3 script cards were skipped on a move-section budget overflow (fixed in 9b2c3b4d).",
+   "source": "inbox/r7-brain-16.json"
+  },
+  {
+   "id": "ms-r7-code-spec-ab",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Turn-replay A/B of dc-r7-code-spec on integration 10 (4 steady lessons, 160 turns, 939 calls, about $0.62): first-audio-ready p50/p90 1,852/3,123 ms → 1,954/3,498 ms with the flag on. On code turns the speculated reply cut the read's wait (used replies 1,490 ms) but gave up the streamed early clause (baseline early-clause code turns 970 ms) and missed on 19%. No gain as built; the flag stays off.",
+   "source": "inbox/r7-brain-17.json"
+  },
+  {
+   "id": "ms-r7-checker-v6-offline",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "The v6 checker kinds (evals/hybrid-side-by-side/checks.mjs) re-run offline on director8's saved rows, no model calls: c5-t02 '?' draws stated 31 turns (judges: 40 of 45 firm, the old checker 0); c4 / c6 '?' 0 (judges: none). Borrowed whys 9 / 8 / 10 / 9 per topic; verdicts with content over another board 8 / 10 / 11 / 2 (c4, c5-t01, c5-t02, c6); picture lines naming an undrawn thing 2 / 0 / 1 / 2. Approximate: the saved rows hold one screen per turn, not per segment.",
+   "source": "inbox/r7-brain-18.json"
+  },
+  {
+   "id": "dc-r7-games-hissa",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "hissa (multiplying and dividing fractions and decimals) as one never-timed law family for class 7: fold (a sheet folded across and down, the overlap tagged by counting; rope pieces laid on a metre track), pour (a jug poured into full cups, the part-cup tagged as a fraction of a cup; fractions and decimals), grid (a tenths grid shaded both ways and the label's point placed; digits slid past a fixed point), story (a bar spent twice, the second fold on what is left; a recipe folded into shares per person). 5 topics: c7-maths-ch08-t01, c7-maths-ch08-t02, c7-maths-ch08-t03, c7-maths-ch12-t01, c7-maths-ch12-t02. Why: the five topics were served only by ITEM-ARENA. Reverse: a child pilot shows tags set by trial runs rather than by counting.",
+   "source": "inbox/r7-games-hissa.json"
+  },
+  {
+   "id": "ms-r7-games-hissa-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "hissa play-cert (forge3-qa, p360/p412/l1366, game mounted): 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px); 64 law and server tests pass.",
+   "source": "inbox/r7-games-hissa.json"
+  },
+  {
+   "id": "dc-r7-games-kram",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "kram (growing patterns and number sequences) as one never-timed law family for classes 4-7: grow (a tile figure grown to its next stage on a copy of the last; a bag filled with exactly the pieces a far stage needs, grown stage by stage out of it), machine (a step machine walked along a list; a rule machine a × n + b fed the stage number), beats (every rhythm of n beats laid from the shelves above, S or L in front; a bag for a far beat count), nest (L-pieces or two staircases picked to fill a square). 7 topics: c4-maths-ch03-t02, c5-maths-ch07-t02, c6-maths-ch01-t02, c6-maths-ch01-t03, c6-maths-ch01-t04, c7-maths-ch04-t03, c7-maths-ch06-t03. Why: the pattern topics were served only by ITEM-ARENA. Reverse: a child pilot shows the bag and dials used as answer boxes, so the beliefs never surface.",
+   "source": "inbox/r7-games-kram.json"
+  },
+  {
+   "id": "ms-r7-games-kram-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "kram play-cert (forge3-qa, p360/p412/l1366, game mounted): every kram sample passes at every size; 73 law and server tests pass.",
+   "source": "inbox/r7-games-kram.json"
+  },
+  {
+   "id": "dc-r7-staged-batch-30",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (dc-r7-script-walk-v4): the next-30 ranked topics are authored in script format v2.2 into data/lesson-scripts-staged/ (not live). Each one passes check.mjs (structure, boards, runtime) and a blind solve: a Claude solver that sees only each ask's prompt and the line said just before answers every keyed question, flags leaks, ambiguity and missing givens, and its answers are compared with the separately kept keys. All 30 matched every key; every flag was fixed before commit. Two kit items were added where a ladder lacked 3 practice rungs (c5-ch05-t01 i19, c4-ch14-t01 i19). Held until director8 passes. Reverse if: director8 shows a staged-script defect class the blind solve cannot see (board/speech timing, child requests); add that check before promotion.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-friend-pool-names",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: a v2.2 script never writes a name the {friend} slot can fill (server/director/friend.js: Zoya, Kabir, Meera, Arjun, Ishaan, Tara, Diya, Aman), keys and accepts included. When the slot filled with the same name, two characters shared it ('Tara painted 3/5 … {friend} painted …; who painted more? Tara'). check.mjs poolNameErrors enforces it, and a test keeps its list in step with friend.js. 2 live and 10 staged scripts were renamed (same gender). Reverse if: friend.js learns to skip names already in the card text, so a fixed character can share the pool.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-kit-friendf",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director6): kit card characters Riya/Asha become the {friendF} slot (237 units in 35 kits). A unit already naming Zoya/Meera/Tara/Diya renames that character first (7 units). Fields the runtime does not fill (worked examples, passages) say Nisha (13). Pushed only once Games' serve-time fill (cefab3548) was in base, so the slot never reaches a child unfilled; data/arena, vakya and coverage regenerated in the same commit. Reverse if: a served surface shows '{friendF}' raw; fill it there rather than revert the kits.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-child-events-in-context",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director7, dc-r7-script-walk-v5): the H1.2 reactive child plays a scheduled event only on a turn where it fits. A self-try ('pehle main try karun?') only while a question she just asked is open, never after a why-probe or once answered; a pata-nahi only to an open question; a picture request never in place of a reason. An event that does not fit waits for the first turn that does. Reverse if: events then cluster at lesson ends and the walk loses coverage of a request kind inside MIN_TURNS.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-card-board-asked-only",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "A scripted card's board writes \"?\" only over the value the card asks: board-sync answerValues withholds the numbers of the KEY (scriptBeat.answers[0]) that her line does not state (as itself or an equal fraction), and never a label the card's own board authors (\"before 2/4\" over the card's 2/4 mark). Accept forms withhold nothing: they quote the card's givens (\"5 wali roti ka tukda\", \"her brother, 4/6\"); director7's rule withheld every number in key and accept forms and drew c5-t02's givens as \"?\". A fraction-line@1 asked `mark` whose value her line states is labelled with it (board-first statedMark); the card's board still on screen on her confirming turn stays a candidate (sameCard): re-taken, a value she now states is drawn, else it is kept. Reverse if a card's key is a given its own board must hide (Learning's check.mjs would then need a withhold field on the card).",
+   "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "dc-r7-picture-second-view",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Amends director5 SC2 (a picture request re-shows the live card's own board): when the card's own board is ALREADY the page on screen, a picture request draws a second view of the same numbers instead: fraction-bars@1 (1-3 equal bars, parts and shaded parts per bar, counts.wholes), chosen at preselect so her line is written from its row, and flagged artifact.altView = \"parts\" for Brain. Only a fraction line within one whole (marks, an asked mark, a hop) or a compare whose title or item IS a fraction gives one; the value the card withholds is an unshaded \"?\" bar. Anything else is re-shown as before, and with another board on screen SC2 stands unchanged (the card's board). The card's own board always answers a picture request, a words-only compare included (answersRequest skipped it, nothing was picked and the ladder drew an unrelated code board). Main approved 2026-11-06. Reverse if judges find the second view confuses a child more than it helps: go back to re-showing the card's board.",
+   "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "ms-r7-director8-card-question-replay-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director8's own card turns (results on claude/r4-conversation 9dbf3101a: per-turn boardRef, card, screen) re-drawn with dc-r7-card-board-asked-only: turns whose board wrote \"?\" over a number the card states and its board authors, before → after: c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 0/30 → 0, c6 0/28 → 0. Of all 81 director8 turns that drew a \"?\", 42 still do: each an open question whose value her line has not stated. tests/r8-card-stated.test.mjs: every check and then-card of the 4 pilot scripts and Learning's 29 staged scripts draws no stated number as \"?\"; a picture request returns a figure on every pilot card and on all staged cards but 7, each a card whose prompt names a shape (circle, chord) over a words-only compare board (W15.named_shape_drawn; Learning data).",
+   "source": "inbox/r7-studio-25.json"
   }
  ],
  "edges": [
@@ -40094,6 +40213,61 @@
    "src": "rj-r7-code-spec-unstreamed",
    "rel": "constrains",
    "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-owner-facts-2026-11-06"
+  },
+  {
+   "src": "dc-r7-code-spec",
+   "rel": "caused_by",
+   "dst": "ms-r7-turn-replay-int10"
+  },
+  {
+   "src": "dc-r7-code-spec",
+   "rel": "measured_by",
+   "dst": "ms-r7-code-spec-ab"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "caused_by",
+   "dst": "ms-r7-checker-v6-offline"
+  },
+  {
+   "src": "dc-r7-games-hissa",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-hissa-cert"
+  },
+  {
+   "src": "dc-r7-games-kram",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kram-cert"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "constrains",
+   "dst": "dc-r7-script-board-withholding"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-card-question-replay-2026-11-06"
+  },
+  {
+   "src": "dc-r7-picture-second-view",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-picture-second-view",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-card-question-replay-2026-11-06"
   }
  ]
 }

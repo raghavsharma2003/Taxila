@@ -176,6 +176,8 @@ export interface WorldViewProps extends NavProps {
   seals?: Array<{ id: string; subject: string; title: string; sealedAt?: string | null }>;
   /** r7 app-practice-entry: where "Practise this" on a station goes (its topic's practice set); null: not offered (hold). */
   practiceTo?: ((skillId: string) => string | null) | null;
+  /** r7 app-world-hangar-depth: "Revisit with {T}": a lesson back on the station's topic (the plan still decides); null: none. */
+  revisitTo?: ((skillId: string) => string | null) | null;
   go?: Go;
 }
 
@@ -280,6 +282,9 @@ export function WorldView(p: WorldViewProps) {
               {/* r7 app-practice-entry: a quick retrieval set on this idea (in-run feedback only, nothing carried) */}
               {station && p.practiceTo?.(station.skillId) && (
                 <A to={p.practiceTo(station.skillId)!} go={p.go} className="kx-ghost kx-cut kx-ghost--go" testid="station-practise"><Icon d={I.practice} />{kt("practiseThis")}</A>
+              )}
+              {station && p.revisitTo?.(station.skillId) && (
+                <A to={p.revisitTo(station.skillId)!} go={p.go} className="kx-ghost kx-cut kx-ghost--go" testid="station-revisit"><Icon d={I.play} />{kt("revisit")}</A>
               )}
               <button type="button" className="kx-ghost kx-cut" onClick={() => setPick(null)}>{kt("close")}</button>
             </div>
