@@ -289,3 +289,21 @@ test("director9 S3′ on the run path: every picture request of the run, with th
     assert.equal(k.artifact.screen.template, template, `${T} ${where}`);
   }
 });
+
+test("director9 (Brain's replay of c5-t01 steady T21): a later page whose own take fails is dropped, not the whole turn — the verdict page's revealed 1/8 still reaches the screen", () => {
+  const T = "c5-maths-ch02-t01", kit = kitOf(T);
+  const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
+  const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+  const answers = [rem.then.key, ...(rem.then.accept ?? [])].map(String);
+  const card = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
+  const e1 = { template: "fraction-line@1", params: { den: 2, from: 0, to: 1, marks: [{ num: 1, label: "1/2" }] } };
+  const cb = { scriptId: "s", beatId: "then:c5-maths-ch02-t01-m-not-numbers", kind: "check", ownBoard: true, answers };
+  const say = "Bilkul, Riya: pehla hissa 1/8 km hai.", closed = " Aur pehle wale sawaal ka jawab isi line par tha, kyunki 1/2 ka matlab 0 se 1 ke 2 barabar gaps mein se pehla gap.", tail = " Ab agla hissa.";
+  const text = `${say}${closed}${tail}`;
+  const s = showCard(T, kit, card, "check", answers, rem.then.prompt.hi);
+  const v = s.turn(text, { scriptBeat: cb, segments: [{ atChar: say.length + 1, boardRef: e1, scriptBeat: { scriptId: "s", beatId: "e1", kind: "explain" } }, { atChar: say.length + closed.length + 1, boardRef: card, scriptBeat: cb }] });
+  assert.equal(v?.state, "revealed", "the turn draws");
+  assert.deepEqual(v.artifact.screens[0].counts.marks, [{ at: "mark 1", label: "1/8" }]);
+  assert.ok(v.artifact.script.ops.some((o) => o.op === "text" && o.text === "1/8"), "the verdict page's 1/8 is drawn");
+  assert.ok(v.artifact.screens.length >= 1 && v.artifact.screens.length <= 3);
+});

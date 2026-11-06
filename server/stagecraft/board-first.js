@@ -571,12 +571,15 @@ const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "
  * each later page onto its segment's real onset. → a board-first result ({ ok, script, screen (the last page), screens
  * [{ from, screen }], by, template, source }) or null (one board, as before).
  */
+/** How many later pages a paged turn dropped because their own take failed (the page before them stayed up). */
+let pagesDropped = 0;
+export const pagesDroppedCount = () => pagesDropped;
 export function pagesBoard(ask, { kit, redact = [] } = {}) {
   try {
-    const sg = segmentsOf(ask);
+    let sg = segmentsOf(ask);
     if (!sg || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
-    const takes = sg.map((g, i) => {
+    const takes0 = sg.map((g, i) => {
       const beat = { ...(i ? {} : ask.intent.scriptBeat ?? {}), ...(g.scriptBeat ?? {}) };
       if (i && !beat.kind) beat.kind = "check";
       if (i && beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
@@ -586,7 +589,15 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
       if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
       return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }));
     });
-    if (takes.some((t) => !t?.script)) return null;
+    // (director9, Brain's replay of c5-t01 steady T21: a 3-word tail page failed W6 and took the whole turn down with it —
+    // the verdict page's revealed 1/8 never reached the screen. A LATER page that fails is dropped: the page before it
+    // stays up through its words. The first page failing still fails the turn: there is nothing to stand on)
+    if (!takes0[0]?.script) return null;
+    const kept = takes0.map((t, i) => (i === 0 || t?.script ? i : -1)).filter((i) => i >= 0);
+    if (kept.length < takes0.length) pagesDropped += takes0.length - kept.length;
+    const takes = kept.map((i) => takes0[i]);
+    sg = kept.map((i) => sg[i]);
+    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }] };
     const b0 = takes[0].script.board ?? WB_BOARD;
     if (takes.some((t) => (t.script.board ?? WB_BOARD).w !== b0.w || (t.script.board ?? WB_BOARD).h !== b0.h)) return null;
     const rename = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
