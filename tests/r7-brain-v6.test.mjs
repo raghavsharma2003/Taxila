@@ -439,3 +439,18 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
     assert.ok(alt.reply.endsWith(card));
   });
 });
+
+describe("v6 after director9: the split covers what it missed", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  test("a repair move carrying closures over the cap is split (stuck c6 T65, 128 words)", () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    const out = splitLong({ ...r, state: structuredClone(r.state), move: { ...r.move, kind: "repair", closed: { answer: "12 cm", why: long } } }, { event: "turn", kit: K });
+    assert.equal(out.move.splitClose, true);
+    const again = splitLong(out, { event: "turn", kit: K });
+    assert.equal(again.state.splitHold, out.state.splitHold, "the closing half itself is never split again");
+  });
+});

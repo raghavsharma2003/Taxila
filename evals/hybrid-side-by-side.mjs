@@ -349,10 +349,16 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     };
     const contradictions = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
-    const saidKeys = [...String(reply).matchAll(/jawab\s+(.+?)\s+tha\b|answer was\s+(.+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase());
+    // (one sentence at a time; "tumhara jawab sahi tha" states no key)
+    const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())
+      .filter((k) => !/^(?:sahi|galat|theek|bilkul sahi)$/.test(k));
     // v6 (main: widen beyond "jawab X tha"): any number stated as an answer that no authored key or accept form, nor the
     // question being answered or asked, nor their own words carry
-    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x))].filter(Boolean).join(" ");
+    // (director9: 15 of 17 flags were numbers inside an authored close, "kyunki … 6 + 4 + 6 + 4 = 20 cm": every authored why and
+    // the move's own closures are given too)
+    const lm = next.lastMove ?? {};
+    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x)),
+      ...(WHYS(kit)?.own ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, ...(lm.sayFirst ?? []), lm.point, ...(lm.rendered ?? [])].filter(Boolean).join(" ");
     const statedFalse = falseAnswerNumbers(reply, { keys: AUTHORED_KEYS(kit), given });
     const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length + (statedFalse.length ? 1 : 0);
     // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,

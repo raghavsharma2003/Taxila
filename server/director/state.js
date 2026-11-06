@@ -2841,7 +2841,9 @@ export function step(prev, input) {
     const line = asideFactOf(s.servedNow.topic, s.ctx.lang ?? "hinglish");
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
-  if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard") {
+  // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for
+  // the next turn instead of making that turn too long)
+  if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard" && !(p.request && scriptOn())) {
     move.closed = { answer: s.pendingClose.answer, ...(s.pendingClose.why ? { why: s.pendingClose.why } : {}) };
     if (s.pendingClose.beat?.board) move.closedBeat = s.pendingClose.beat;
     s.pendingClose = undefined;
@@ -2935,7 +2937,8 @@ const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split
 export function splitLong(out, input) {
   const { state: s, move, ui } = out;
   if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
-  if (["safeguard", "wrap", "break", "repair"].includes(move.kind) || move.request || move.checkin) return out;
+  // (director9: a repair after a right answer carried closures and a bridge, 128 words; only the split's own halves are exempt)
+  if (["safeguard", "wrap", "break"].includes(move.kind) || move.splitClose || move.splitTeach || move.request || move.checkin) return out;
   const closing = [move.gave?.answer, move.gave?.why, move.closed?.answer, move.closed?.why, move.workedDone?.answer, move.workedDone?.why, move.bridgeSaid, move.returned?.line];
   const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
   if (!teaching.some(Boolean)) return out;
