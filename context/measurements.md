@@ -5729,3 +5729,108 @@ kram play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366,
 ## `ms-r7-director8-card-question-replay-2026-11-06`
 
 director8's card turns re-drawn with the asked-only rule: "?" over a stated, authored number c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 and c6 0 → 0; 42 of 81 "?" turns remain, each an open question. tests/r8-card-stated.test.mjs covers the 4 pilot and 29 staged scripts; 7 staged cards (shape named in the prompt, words-only compare board) fail a picture request on W15 — Learning data.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## ms-r7-m4-price-lb-pip-2026-11-06 (2026-11-06, Retail Prices API + Cost Management actuals)
+
+The filter that finds the LB rows: `serviceName eq 'Load Balancer' and armRegionName eq 'Global' and skuName eq 'Standard' and priceType eq 'Consumption'`. The regional filter returns nothing because the Standard LB meters are Global.
+- Standard Included LB Rules and Outbound Rules (first 5): $0.025/h, meter 27827eb0-7f60-4928-940b-f5fe15e7a4cb.
+- Standard Overage LB Rules and Outbound Rules: $0.01 per rule-hour, meter c36503b7-0df1-4de0-af90-ea407086432c.
+- Standard IPv4 Static Public IP, centralindia: $0.005/h, meter 9c150bf9-2bad-430e-a53c-c213804f49ef. The filter is `serviceName eq 'Virtual Network' and armRegionName eq 'centralindia'`. There is no separate idle meter for Standard.
+
+Cost Management, by ServiceName and Meter, 2026-10-30 to 2026-11-05 (7 closed days):
+- Load Balancer: 24 Included hours = $0.60/day (capp-svc-lb, 2 rules, IP-based pool of 2).
+- Virtual Network: 48 IP-hours = $0.24/day (Vyakti's vl-ip and taxila-sin-env's capp-svc-lb-ip, both attached).
+
+So 8 rules = $1.32/day and 11 IPs = $1.32/day.
+
+## ms-r7-m4-price-fallbacks-2026-11-06 (2026-11-06, Retail Prices API)
+
+- gpt-5.6-luna ShortCo Std Gl, southindia: input $0.20, cached $0.02, output $1.20 per 1M tokens (a05ffb45 / 5489ae4f / d01c83fd). The same as eastus2. The filter is `armRegionName eq 'southindia' and contains(meterName,'5.6 luna')`.
+- S1 Neural Text To Speech Characters (0f98e708): $15 per 1M in 34 regions, including swedencentral; 0 rows in southindia.
+- `node scripts/m3.mjs prices` re-read all 26 rows by meter id: 26/26 unchanged. The first attempt hit a 429 on acr:Premium; the throttled reply is plain text and escaped retail()'s retry. Fixed in the same commit.
+
+## ms-r7-m4-break-tests-2026-11-06 (2026-11-06, node --test)
+
+- tests/m4-break.test.mjs: 22/22. tests/m3-plan.test.mjs: 18/18, updated to the v2 keeper.
+- The fake: tests/fixtures/m3-fake-azure.mjs has blob leases on a settable clock, per-endpoint fault hooks, a storage-down switch and a slow-reply hook. tests/fixtures/m3-fake-arm.mjs runs the CLI's dry run in a child process and throws on any write.
+
+Keeper:
+- A run killed after a paid batch: its retry 30 s later waits and spends $0. The VM slot adopts the orphan (= that batch's worst case, $0.0436) and finishes, with models within one batch of target and every lane under its cap.
+- Two runners at once: the VM run started mid ACA batch saw the lease and spent nothing.
+- When every ACA run fails, the VM alone reaches all targets, and the verifier then reports runner-missing aca.
+- With eastus2 down all day, ACA and the VM before 22:00 spend nothing. The 22:47 local fallback reaches models via fallback2 and TTS; a re-run spends $0; the next day folds it into the old ledger, where only storage is short.
+- Storms: a primary 404 moves on after 1 batch (6 calls, $0 billed). A 429 storm moves on after 3 batches. Both reach target under the cap.
+- A TTS 401 alerts before the lane ends, and is recorded for the verifier.
+- A corrupt ledger (truncated JSON, wrong date) spends $0. A ledger seen and then unreachable: the 22:47 fallback spends $0.
+- Closed loop: actual 1.0 → 1.82; 0 → 2.50 (cap 2.65); 1.19 → 1.53; 1.20 → no raise; a day before M3_SINCE → no raise; a healthier later report does not lower a raise. End to end: models 1.82-2.00 and TTS 2.50-2.65 spent.
+- Boundary: no batch at 23:45 (no ledger created). A run starting at 23:39:59.999 stops before its first batch. 00:01 starts the next ledger and leaves the old one untouched.
+- After M3_UNTIL: 0 requests of any kind.
+
+Verifier, M4:
+- 9 → OK; 8 → OK + WARN; 7 → ALERT with the 7-service clock still at 18 days.
+- A dip to 6 → streak-reset. An M3-era previous report → no reset.
+- Runway: ₹230,490.71 → OK; ₹120,000 → runway-low, from 68 days at each day's INR cost.
+- Burst on the last closed day → alert; 5 days back → none.
+- A failed cost query → alert, exit 1.
+- runner-missing and keeper-auth-failed fire; no runner alert before M3_RUNNERS_SINCE.
+- The secret's expiry alerts at 20 days, not at 22, and after M3_UNTIL.
+
+CLI dry run against a fake ARM, 4 scenarios: fresh, done, rights, open-nsg (refuses). No write, no secret.
+
+Not measured: anything live.
+
+## ms-r7-m4-live-dry-run-2026-11-06 (2026-11-06, read-only against live Azure)
+
+The command was `NODE_USE_ENV_PROXY=1 node --env-file=<.env.local> scripts/m3.mjs apply --vm --only pips,lb,runner,locks`. An in-memory scan for 14 secret values found none in the output.
+- VM: ok and running.
+- pips: live $1.320/day; the NSG denies internet inbound (0 custom rules); WOULD create 11 IPs and attach pip-01.
+- lb: live $1.320/day; WOULD create the subnet, the LB and the NIC pool membership.
+- runner: VM agent Ready; WOULD create m3-runner, with fallback2 taxila-ai-southindia/taxila-fast-bg and TTS fallback taxila-ai-swc.
+- locks: 11/11 present.
+
+On the same day, a jobs/actiongroup/alerts dry run would update m3-keeper (cron, script, env, secrets) and m3-verify (cron, script, env). actiongroup and alerts are unchanged.
+
+
+<!-- merged from inbox/r7-main-19.json -->
+## `ms-r7-m4-applied-2026-11-06` (2026-11-06)
+
+M4 hardening applied live at ~10:55 UTC from int/r6 725ead5e9.
+
+**What was created or changed**
+- Spares: 11 public IPs, plus taxila-m3-lb (8 rules, with the VM in its pool).
+- VM runner installed (M3-RUNNER-OK): node 22.23.4, a timer every 3 h at :47.
+- Keeper changed to every 3 h; verifier runs twice a day in M4 mode.
+- Alerts go to 2 emails plus the Owner role.
+- Locks verified.
+
+**Live break test, 11:02 UTC**
+- 2 ACA keeper executions and the VM runner started at once.
+- The ledger shows one VM run and one ACA run; the third found the lease held.
+- Lane totals were unchanged at $1.35 / $1.35 / $1.25: no double spend.
+- A test notification was sent.
+
+**Not yet live-tested:** a full ACA-down day. tests/m4-break.test.mjs covers it (22/22).
+
+
+<!-- merged from inbox/r7-main-20.json -->
+## `ms-r7-director9-hand-2026-11-06` (2026-11-06)
+
+director9: script walk v6, 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 96% |
+| Verdicts | 99% |
+| Right called wrong / wrong called right | 0/0 |
+| False keys | 1 (a stated wrong rule) |
+| Contradictions, by hand | 41 (code: 10; director8: 73) |
+
+Where the contradictions come from:
+- confirm-reveal dead on the run path: 14;
+- picture requests that draw nothing new: 13;
+- the L-shape card's data: 8;
+- runtime: 6.
+
+Requests got a real smaller re-explanation 16 times out of 58. Cost: ~$0.94. Reply-ready p50 2.33 s. Full write-up: docs/design/round7/judgements/director9-2026-11-06.md.

@@ -2819,3 +2819,13 @@ Rejected: speculating the reply in parallel with the distress read on code-class
 - 19% of speculations missed on the facts row.
 
 The flag stays off. Next, if pursued: stream the speculation and hold its first clause until the read returns.
+
+
+<!-- merged from inbox/r7-main-19.json -->
+## `rj-r7-m3-image-409` (2026-11-06)
+
+Rejected: treating ACR's async-poll 409 "Tag … already exists" as a failure. It aborted the first M4 apply.
+
+Now read as "already present", and verified live.
+
+Lesson: fakes must model a provider's async-poll error codes.

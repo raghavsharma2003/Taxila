@@ -8356,3 +8356,64 @@ A scripted card's board shows every number the card states; only the asked value
 ## `dc-r7-picture-second-view`
 
 Amends SC2. A picture asked for while the card's own board is already up draws the same numbers as equal bars (fraction-bars@1, counts.wholes per bar, artifact.altView "parts"); the asked value is an unshaded "?" bar. Only for a fraction line within one whole or a compare whose entries are fractions; otherwise the card's board is re-shown, and with another board up the card's board is drawn (SC2 unchanged). The card's own board always answers a picture request. Reverse if judges find the second view confuses a child more than it helps.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## dc-r7-m4-without-fail (2026-11-06, round 7 M4 hardening)
+
+The owner's requirement: whatever happens (Taxila or Vyakti development stops, a service fails, a job does not run), at least 7 Azure services each stay above $1 on every UTC day for 60 days. One gap day resets the clock and loses Milestone 4 ($50,000). M3 went live on 2026-11-06 with 7 candidates, so M4 had 0 spares.
+
+The design (docs/design/round7/M3.md):
+
+- **9 services.** Two new spares sit in taxila-m3-rg, and each holds $1.25 by itself:
+  - Load Balancer: taxila-m3-lb, a Standard internal LB with 8 TCP rules, $1.32/day. The VM's NIC is in its pool, because Microsoft's pricing page is silent on empty pools.
+  - Virtual Network: 11 Standard static public IPs, $1.32/day. pip-01 is the VM's only outbound; the NSG keeps Azure's default inbound denial.
+- **Two keeper runners on one ledger.** The ACA job runs every 3 h at :17 (eastus2). taxila-m3-vm runs from a systemd timer every 3 h at :47 past 01, 04, ... (centralindia), installed over Run Command with Node sha256-pinned and the env in a root-only file sent as a protectedParameter.
+  - A 60 s blob lease lets one runner spend at a time.
+  - The write-ahead rule stays. The next lease holder adopts a dead run's pending as orphanUsd.
+- **Closed loop.** A lane whose service billed < $1.20 on the last closed day gets today's target x target/actual, capped at $2.50; that day's cap is target + $0.15. The raise is recorded in the ledger and never drops within a day.
+- **Faults.** A 401/403 raises M3-ALERT naming the lane at once and moves to the next endpoint; a 404 does the same. Models fall back to taxila-brain, then taxila-ai-southindia/taxila-fast-bg; TTS falls back from centralindia to swedencentral.
+- **No batch in the last 20 minutes of a UTC day.**
+- **m3-verify in M4 mode, twice a day.**
+  - Alerts: 7 required, alert under 8; runner-missing; recorded keeper 401s; a whole-subscription day > $60; INR runway < ₹15,000 at M3_SINCE + 66 (default balance ₹230,490.71 on 2026-11-06); the principal's secret within 21 days (default 2027-03-30); a streak reset, never against an M3-era report.
+  - A single spare under $1.10 prints M3-WARN only: the owner's '8 → OK'.
+- **Locks.** CanNotDelete 'm3-credit-do-not-delete' on 11 targets. The owner made them; the `locks` step reads them, creates missing ones when permitted, and otherwise prints portal steps.
+
+Why this design:
+- Fixed resources are the cheapest per service and need no runtime.
+- Two runners in two regions remove the single job as a point of failure.
+- The lease and the write-ahead keep two runners from ever spending the same dollar twice.
+
+Reverse or change if:
+- the first closed day shows Load Balancer or Virtual Network under $1.25 from the m3 resources (open-r7-m4-billing-assumptions);
+- lease waits leave lanes short (seen in the ledger's runs);
+- Microsoft defines a workload other than as a ServiceName;
+- or the runway alarm fires.
+
+## dc-r7-m4-no-spend-without-ledger (2026-11-06)
+
+With two runners, nothing spends without the shared ledger, except the VM in its last slot (22:47 UTC). There it spends to target against its local mirror of the last shared ledger it saw. The spend is kept offline and folded in later as offlineUsd. A corrupt ledger never spends.
+
+This supersedes M3's blind rule (the 03:17 run spent each target once without the ledger; the 15:17 run skipped). That rule was right for one runner and 2 runs a day. With 2 runners and 16 runs a day it can double-spend, and the retry density makes it unnecessary for transient faults.
+
+Why the exception is safe: ACA never spends without a write-ahead to the shared ledger, so if the ledger is really down, nobody has spent since the VM last saw it. The one double-spend left is a one-sided partition (the VM cannot reach the ledger while ACA can) lasting to 22:47. It is bounded by each lane's target, and runner-missing reports it.
+
+Reverse if such a partition is ever seen (offlineUsd next to ACA spend on the same lane and day), or if a full-day eastus2 storage outage costs a day that a blind ACA spend would have saved.
+
+
+<!-- merged from inbox/r7-main-20.json -->
+## `dc-r7-script-walk-v6-1` (2026-11-06)
+
+- **Run path (P1-P2):** fix confirm-reveal and picture drawing where they actually run, pinned by replay tests on director9's rows. Every picture request draws something new.
+- **Brain (R7-R11):**
+  - no model-written teaching in script mode;
+  - requests as moves, never giving away the live answer;
+  - one check-in per beat, and a non-yes is acted on;
+  - parks, and Hindi extended to cards;
+  - rendering.
+- **Learning, data v2.3 (additive):** an authored `simpler` everywhere; prompt shape words checked against the board.
+- **Harness:** the imperative-ask fix; the checker models confirm-reveal and picture draws.
+
+Next: director10 on integration 12. The gate is unchanged.
+
+**Reverse if:** P1-P2 are in place and there are still more than 10 runtime contradictions. Then move to a code-rendered board voice.
