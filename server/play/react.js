@@ -24,6 +24,7 @@ import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
 import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
 import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
 import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
+import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -75,6 +76,9 @@ export function hiddenOf(level) {
   // r7 hissa: the product, the quotient (and its part-cup), the slid number, the second spend and the scaled amount are never
   // said first. Checked by family first: "story" is also guna's mode name
   if (level.family === "hissa") return hissaHidden(level);
+  // r7 koshtak: the row's worth, the lid's run of numbers, the bracket's worth and its opened row, the simplest form are
+  // never said first. Checked by family first: modes may share names with other families
+  if (level.family === "koshtak") return koshtakHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
