@@ -8181,3 +8181,29 @@ Go for Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) by holding 9
 - Microsoft's counting drops us below 7;
 - the credit cannot cover 60 days at ~$20-24/day;
 - the owner declines the spares.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `dc-r7-script-walk-v6` (2026-11-06)
+
+Every sentence on its own board, and requests and parks done for real.
+
+**Brain:**
+- R1: segment assembly for verdicts, closes and bridges.
+- R2: a close's why only from the closed card.
+- R3: the invented guard replaces the line; keys are checked in every phrasing.
+- R4: requests as moves.
+- R5: real returns, and a language mode that holds.
+- R6: render hygiene.
+
+**Studio:**
+- S1': only the asked value may be "?", and confirmed answers are revealed.
+- S3': a picture request draws the live card's figure.
+
+**Learning:** v2.2 data fixes (a why per key, a board per bridge, and the rest).
+
+**Harness:** the checker models what the judges found.
+
+Next run: director9 on integration 11. The gate is unchanged, and the 30-topic batch stays held.
+
+**Reverse if:** director9 has R1-R6 and S1'/S3' in place and still more than 10 contradictions by hand. Then move to a code-rendered voice for every board-describing sentence.

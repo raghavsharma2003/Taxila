@@ -140,6 +140,18 @@ in parts, start with tiers 1 and 2 (~$21).
   - What still fails is what's on screen while she speaks: 51 places, because one board shows while she describes the next. Plus a "?" over numbers she says, and not acting on "samajh nahi aaya", "phir se bolo", "pehle main try karun" or a promised return to cricket.
   - Decision (`dc-r7-script-walk-v5`): switch the board mid-turn at the exact words, and treat those child requests as moves.
   - Write-up: `judgements/director7-2026-11-06.md`.
+- 2026-11-06: director8 (16 lessons, $0.80). The teaching still works: 96% of beats taught, 99% of answers judged, 0 false "wrong"s. Bridges between skills are now spoken every time.
+  - Screen/speech fails worse overall: 73 mismatches.
+    - About 45 are a new Studio bug: its "?" rule now hides numbers she says.
+    - About 22 are sentences shown on the wrong board (director7 had 51 of this kind).
+  - One wrong answer key was spoken, and one right answer was called wrong.
+  - She still doesn't act on "samajh nahi aaya", and never really comes back to cricket.
+  - Faster:
+    - Reply-ready time: 2.29 s.
+    - In the real app path, the first spoken words are ready in 1.90 s (p50).
+  - Decision (`dc-r7-script-walk-v6`): fix Studio's "?" rule; put every sentence on its own board; make requests and promised returns real.
+  - The 30 new topics stay held.
+  - Write-up: `judgements/director8-2026-11-06.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

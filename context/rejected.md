@@ -2805,3 +2805,17 @@ Lesson: a check that only reads the files it expects cannot see files it does no
 Rejected: the ledger container name "m3".
 
 Azure blob container names must be 3-63 characters, and the fake Azure in the test never checked that. The first live dry run failed with 400 OutOfRangeInput. It was renamed to m3-ledger, and a test pins the rule. Lesson: a fake must enforce the real service's input rules.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `rj-r7-code-spec-unstreamed` (2026-11-06)
+
+Rejected: speculating the reply in parallel with the distress read on code-classified turns, without streaming (`TAXILA_CODE_SPEC`).
+
+**Result:** first-audio-ready p50 was 1,954 ms with the change against 1,852 ms without it (p90 3,498 vs 3,123), over 160 turns.
+
+**Why it lost:**
+- It displaced the 970 ms early-clause path.
+- 19% of speculations missed on the facts row.
+
+The flag stays off. Next, if pursued: stream the speculation and hold its first clause until the read returns.
