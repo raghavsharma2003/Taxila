@@ -798,23 +798,23 @@
      "skillId": "c8-science-ch01-t02-s3",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Compare two claims. Riya: 'In our survey of 40 students, those who ate breakfast more often felt less sleepy in first period.' Aman: 'My uncle skips breakfast and is fine, so breakfast does not matter.' Whose evidence is stronger, and what can it still not prove?",
-     "prompt_hi": "Do claims compare karo. Riya: '40 students ke survey mein, jo zyada baar naashta karte the, unhe pehle period mein kam neend aati thi.' Aman: 'Mere chacha naashta nahi karte aur theek hain, toh naashte se fark nahi padta.' Kiska evidence zyada mazboot hai, aur woh kya ab bhi prove nahi kar sakta?",
-     "answer": "Riya's: it uses data from 40 students and shows a pattern; Aman's is one person. But Riya's survey still shows a link, not proof that breakfast is the cause; other habits (like sleep) could differ between the groups.",
+     "prompt_en": "Compare two claims. {friendF}: 'In our survey of 40 students, those who ate breakfast more often felt less sleepy in first period.' Aman: 'My uncle skips breakfast and is fine, so breakfast does not matter.' Whose evidence is stronger, and what can it still not prove?",
+     "prompt_hi": "Do claims compare karo. {friendF}: '40 students ke survey mein, jo zyada baar naashta karte the, unhe pehle period mein kam neend aati thi.' Aman: 'Mere chacha naashta nahi karte aur theek hain, toh naashte se fark nahi padta.' Kiska evidence zyada mazboot hai, aur woh kya ab bhi prove nahi kar sakta?",
+     "answer": "{friendF}'s: it uses data from 40 students and shows a pattern; Aman's is one person. But {friendF}'s survey still shows a link, not proof that breakfast is the cause; other habits (like sleep) could differ between the groups.",
      "acceptable": [
       "riya",
-      "Riya ka",
+      "{friendF} ka",
       "a link, not proof of cause"
      ],
      "hints": [
       "Ask how many people each claim is based on",
       "Point to the word 'survey'",
       "Prompt: 40 students beats ___ person, but it shows a link, not ___",
-      "Assert: Riya's is stronger, yet it shows correlation, not cause"
+      "Assert: {friendF}'s is stronger, yet it shows correlation, not cause"
      ],
      "targetsMisconception": "c8-science-ch01-t02-m2",
      "verified": {
-      "solverAnswer": "Riya's survey is stronger (larger sample) but only shows association, not cause; Aman is a single anecdote",
+      "solverAnswer": "{friendF}'s survey is stronger (larger sample) but only shows association, not cause; Aman is a single anecdote",
       "agrees": true,
       "note": "Independent blind solve matches key; science, hints, Hindi fidelity and class-8 level checked, no issues."
      }
@@ -1423,8 +1423,8 @@
      "skillId": "c8-science-ch02-t01-s1",
      "kind": "error_spot",
      "difficulty": 2,
-     "prompt_en": "Riya says, 'Plants are not made of cells. Cells are only in animals and humans.' Correct her with one piece of evidence.",
-     "prompt_hi": "Riya kehti hai, 'Paudhe cells se nahi bane. Cells sirf jaanwaron aur insaanon mein hoti hain.' Ek saboot de kar use theek karo.",
+     "prompt_en": "{friendF} says, 'Plants are not made of cells. Cells are only in animals and humans.' Correct her with one piece of evidence.",
+     "prompt_hi": "{friendF} kehti hai, 'Paudhe cells se nahi bane. Cells sirf jaanwaron aur insaanon mein hoti hain.' Ek saboot de kar use theek karo.",
      "answer": "Plants are made of cells: an onion peel under a microscope shows plant cells with cell walls, and Robert Hooke first saw cells in cork, which comes from a tree.",
      "acceptable": [
       "onion peel shows cells",
@@ -3046,8 +3046,8 @@
       "Uses leftover tablets for a cold"
      ],
      "diagnostic": {
-      "prompt_en": "Riya has a common cold. A friend says, 'Take an antibiotic, it will cure it fast.' What is correct?",
-      "prompt_hi": "Riya ko zukaam hai. Ek dost kehta hai, 'Antibiotic le lo, jaldi theek ho jaogi.' Sahi kya hai?",
+      "prompt_en": "{friendF} has a common cold. A friend says, 'Take an antibiotic, it will cure it fast.' What is correct?",
+      "prompt_hi": "{friendF} ko zukaam hai. Ek dost kehta hai, 'Antibiotic le lo, jaldi theek ho jaogi.' Sahi kya hai?",
       "options": [
        {
         "text": "No; a cold is a virus, and antibiotics only work on bacteria",
@@ -3604,8 +3604,8 @@
       "Shares antibiotics with family"
      ],
      "diagnostic": {
-      "prompt_en": "A doctor prescribed a 5-day antibiotic course for Riya's bacterial throat infection. On day 3 she feels fine. What should she do?",
-      "prompt_hi": "Doctor ne Riya ke bacterial gale ke infection ke liye 5 din ka antibiotic course diya. Teesre din woh theek mehsoos karti hai. Use kya karna chahiye?",
+      "prompt_en": "A doctor prescribed a 5-day antibiotic course for {friendF}'s bacterial throat infection. On day 3 she feels fine. What should she do?",
+      "prompt_hi": "Doctor ne {friendF} ke bacterial gale ke infection ke liye 5 din ka antibiotic course diya. Teesre din woh theek mehsoos karti hai. Use kya karna chahiye?",
       "options": [
        {
         "text": "Stop taking it now, because feeling fine means she is fully cured",
@@ -5850,8 +5850,8 @@
      "skillId": "c8-science-ch05-t01-s3",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya says, 'A table cannot push anything; only people and animals can push.' What would you tell her?",
-     "prompt_hi": "Riya kehti hai, 'Mez kisi cheez ko dhakel nahi sakti; sirf insaan aur jaanwar dhakel sakte hain.' Tum use kya bataoge?",
+     "prompt_en": "{friendF} says, 'A table cannot push anything; only people and animals can push.' What would you tell her?",
+     "prompt_hi": "{friendF} kehti hai, 'Mez kisi cheez ko dhakel nahi sakti; sirf insaan aur jaanwar dhakel sakte hain.' Tum use kya bataoge?",
      "answer": "Non-living things exert forces too: the table pushes up on a book, a magnet pulls a pin, the Earth pulls everything, and a stretched rubber band pushes a paper ball.",
      "acceptable": [
       "non-living things exert forces",
@@ -6362,8 +6362,8 @@
      "skillId": "c8-science-ch05-t02-s3",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya says, 'Gravity acts only when things fall. A book on a shelf has no gravity on it.' What is wrong?",
-     "prompt_hi": "Riya kehti hai, 'Gravity sirf girti cheezon pe lagti hai. Shelf pe rakhi kitaab pe gravity nahi lagti.' Kya galat hai?",
+     "prompt_en": "{friendF} says, 'Gravity acts only when things fall. A book on a shelf has no gravity on it.' What is wrong?",
+     "prompt_hi": "{friendF} kehti hai, 'Gravity sirf girti cheezon pe lagti hai. Shelf pe rakhi kitaab pe gravity nahi lagti.' Kya galat hai?",
      "answer": "Gravity acts on the book all the time; the shelf pushes up with an equal force, so the forces balance and the book stays still. Remove the shelf and it falls at once.",
      "acceptable": [
       "gravity always acts",

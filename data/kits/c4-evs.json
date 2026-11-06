@@ -2795,23 +2795,23 @@
      "skillId": "c4-evs-ch02-t02-s1",
      "kind": "contrast",
      "difficulty": 3,
-     "prompt_en": "Two children each get ₹50 a week. Asha spends ₹30 and saves ₹20. Bunty spends all ₹50. After 5 weeks, how much has each saved? Does saving mean not spending at all?",
-     "prompt_hi": "Do bachchon ko har hafte ₹50 milte hain. Asha ₹30 kharch karke ₹20 bachaati hai. Bunty poore ₹50 kharch kar deta hai. 5 hafte baad kisne kitna bachaya? Kya saving ka matlab bilkul kharch na karna hai?",
-     "answer": "Asha has saved ₹100 and Bunty ₹0. Asha still spent money, so saving means keeping some aside regularly, not never spending.",
+     "prompt_en": "Two children each get ₹50 a week. {friendF} spends ₹30 and saves ₹20. Bunty spends all ₹50. After 5 weeks, how much has each saved? Does saving mean not spending at all?",
+     "prompt_hi": "Do bachchon ko har hafte ₹50 milte hain. {friendF} ₹30 kharch karke ₹20 bachaati hai. Bunty poore ₹50 kharch kar deta hai. 5 hafte baad kisne kitna bachaya? Kya saving ka matlab bilkul kharch na karna hai?",
+     "answer": "{friendF} has saved ₹100 and Bunty ₹0. {friendF} still spent money, so saving means keeping some aside regularly, not never spending.",
      "acceptable": [
-      "Asha ₹100",
+      "{friendF} ₹100",
       "Bunty ₹0",
       "thoda-thoda bachana"
      ],
      "hints": [
-      "Ask how much Asha keeps each week",
+      "Ask how much {friendF} keeps each week",
       "Point to 20 × 5",
-      "Prompt: Asha saved ₹___ and still spent some each week",
-      "Assert: Asha saved ₹100 while still spending; saving is keeping some aside"
+      "Prompt: {friendF} saved ₹___ and still spent some each week",
+      "Assert: {friendF} saved ₹100 while still spending; saving is keeping some aside"
      ],
      "targetsMisconception": "c4-evs-ch02-t02-m2",
      "verified": {
-      "solverAnswer": "Asha 100, Bunty 0; no, saving means spending wisely and keeping a part",
+      "solverAnswer": "{friendF} 100, Bunty 0; no, saving means spending wisely and keeping a part",
       "agrees": true,
       "note": "Science correct, activity safe for class 4, Hindi prompt faithful to English."
      },
@@ -2994,8 +2994,8 @@
      "skillId": "c4-evs-ch02-t02-s4",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "Riya has ₹40 saved for a ₹240 school fair pass. She saves ₹35 each week for six weeks. How much more than the pass price will she have?",
-     "prompt_hi": "Riya ne ₹240 ke school fair pass ke liye ₹40 bachaye hain. Woh chhe hafton tak har hafte ₹35 bachati hai. Pass ki keemat se uske paas kitne rupaye zyada honge?",
+     "prompt_en": "{friendF} has ₹40 saved for a ₹240 school fair pass. She saves ₹35 each week for six weeks. How much more than the pass price will she have?",
+     "prompt_hi": "{friendF} ne ₹240 ke school fair pass ke liye ₹40 bachaye hain. Woh chhe hafton tak har hafte ₹35 bachati hai. Pass ki keemat se uske paas kitne rupaye zyada honge?",
      "answer": "₹10",
      "acceptable": [
       "10",
@@ -3004,7 +3004,7 @@
       "₹10 more"
      ],
      "hints": [
-      "How much does Riya save across all six weeks?",
+      "How much does {friendF} save across all six weeks?",
       "Add the weekly savings to what she already has, then compare.",
       "Her extra money is (₹40 + 6 × ₹35) − ₹240 = ___.",
       "₹10; her total is ₹250, which is ₹10 above the price."
@@ -7546,8 +7546,8 @@
      "skillId": "c4-evs-ch05-t02-s3",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "Riya eats cream biscuits instead of a home-cooked snack every afternoon. Why would roasted makhana be a better regular choice: more nutrition with less added sugar, or more added sugar?",
-     "prompt_hi": "Riya har dopahar ghar ke bane snack ki jagah cream biscuits khati hai. Roz ke liye bhuna makhana behtar kyun hoga: zyada poshan aur kam added sugar, ya zyada added sugar?",
+     "prompt_en": "{friendF} eats cream biscuits instead of a home-cooked snack every afternoon. Why would roasted makhana be a better regular choice: more nutrition with less added sugar, or more added sugar?",
+     "prompt_hi": "{friendF} har dopahar ghar ke bane snack ki jagah cream biscuits khati hai. Roz ke liye bhuna makhana behtar kyun hoga: zyada poshan aur kam added sugar, ya zyada added sugar?",
      "answer": "More nutrition with less added sugar",
      "acceptable": [
       "more nutritious and less sugary",
@@ -8094,8 +8094,8 @@
      "skillId": "c4-evs-ch06-t01-s1",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "Here is Riya's sleep chart: Monday 10 hours, Tuesday 7, Wednesday 10, Thursday 6, Friday 10. Which days did she probably feel tired, and why?",
-     "prompt_hi": "Ye Riya ka sleep chart hai: Somvaar 10 ghante, Mangalvaar 7, Budhvaar 10, Guruvaar 6, Shukravaar 10. Kis din use shayad thakaan lagi hogi, aur kyon?",
+     "prompt_en": "Here is {friendF}'s sleep chart: Monday 10 hours, Tuesday 7, Wednesday 10, Thursday 6, Friday 10. Which days did she probably feel tired, and why?",
+     "prompt_hi": "Ye {friendF} ka sleep chart hai: Somvaar 10 ghante, Mangalvaar 7, Budhvaar 10, Guruvaar 6, Shukravaar 10. Kis din use shayad thakaan lagi hogi, aur kyon?",
      "answer": "Tuesday and Thursday, because she slept much less than the 9 to 12 hours a child needs.",
      "acceptable": [
       "Tuesday aur Thursday",
