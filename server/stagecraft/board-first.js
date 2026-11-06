@@ -467,6 +467,15 @@ export function segmentsOf(ask) {
   }
   return out.length >= 2 ? out : null;
 }
+/** #44: the first spoken word of her line from character `from` (normalised as lineClock.normWord) and how many words
+ *  come before it — the page lands on that word's onset when the voice sends word timings. */
+export function firstWordOf(text, from) {
+  const t = String(text ?? ""), i = Math.max(0, Math.min(t.length, Number(from) || 0));
+  const norm = (w) => String(w).toLowerCase().normalize("NFKC").replace(/[^\p{L}\p{N}/]+/gu, "");
+  const before = t.slice(0, i).split(/\s+/).map(norm).filter(Boolean).length;
+  const w = t.slice(i).split(/\s+/).map(norm).find(Boolean);
+  return w ? { word: w.slice(0, 24), wordIndex: before } : {};
+}
 /** (director7's first form, kept for its callers) → { say, then, clause, th } or null. */
 export function thenSplit(ask) {
   const sg = ask?.intent?.then ? segmentsOf({ ...ask, intent: { ...ask.intent, segments: [ask.intent.then] } }) : null;
@@ -517,7 +526,7 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
     if (ops.length > WB_LIMITS.maxOps) return null;
     const first = takes[0].script, last = takes.at(-1);
     const raw = { ...first, scriptId: `${first.scriptId ?? id}:pg`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
-      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1] })) };
+      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from) })) };
     delete raw.card;
     const n = normalizeScript(raw, { strict: false });
     if (!n.ok || !n.script?.switches?.length) return null;

@@ -162,3 +162,30 @@ test("director7 S1 live guard: a '?' drawn over a number her line states is flag
   assert.equal(sg?.length, 2);
   assert.equal(sg[1].from, say.length + 1);
 });
+
+test("#44 word timings: a page turns on its segment's first WORD onset; with no word timings, on the clause onset; with neither, the estimate", async () => {
+  const { switchOnsets, normWord } = await import("../src/modules/whiteboard/lineClock.ts");
+  const id = "d7-words";
+  seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-d7w", class_level: 5, language_pref: "hinglish" } });
+  const ack = seam.studioSeam.requestIntent(ask(id));
+  const s = ack.artifact.script, sw = s.switches[0];
+  // the server stamps the switch with the then-prompt's first word and how many of her words come before it
+  assert.equal(sw.word, normWord(then.split(/\s+/)[0]));
+  assert.equal(sw.wordIndex, say.split(/\s+/).filter((w) => normWord(w)).length);
+  const startB = (sc) => Math.min(...sc.ops.filter((o) => o.id.startsWith("b.")).map((o) => o.startMs));
+  const b0 = startB(s);
+  // the voice's words (her line as spoken, onsets on the board's clock): the then-prompt's first word sounds 1,250 ms late
+  const spoken = line.split(/\s+/).map((w, i) => ({ w, at: 300 + i * 280 }));
+  const k = sw.wordIndex; spoken[k] = { ...spoken[k], at: sw.atMs + 1250 };
+  const clauses = []; clauses[sw.clause] = sw.atMs + 900;
+  const at = switchOnsets(s, spoken, clauses);
+  assert.equal(at[0], sw.atMs + 1250, "the word onset");
+  assert.equal(startB(onLineClock(s, clauses, at)), b0 + 1250, "page B on the word");
+  // no word timings (the voice sent none, or none matched): the clause onset
+  assert.deepEqual(switchOnsets(s, [], clauses), [undefined]);
+  assert.equal(startB(onLineClock(s, clauses, switchOnsets(s, undefined, clauses))), b0 + 900, "page B on the clause");
+  // a words list that never says the switch's word: the clause onset still
+  assert.equal(startB(onLineClock(s, clauses, switchOnsets(s, [{ w: "kuch", at: 50 }], clauses))), b0 + 900);
+  // neither: the estimate stands
+  assert.equal(onLineClock(s, [], switchOnsets(s, undefined, [])), s);
+});
