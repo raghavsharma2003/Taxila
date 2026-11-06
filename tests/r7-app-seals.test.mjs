@@ -88,3 +88,17 @@ test("a chapter that dipped and re-sealed is not this lesson's moment (its first
   assert.deepEqual(nowSealed(before, resealed), []);
   assert.deepEqual(nowSealed(before, fresh).map((c) => c.chapterId), ["ch7"]);
 });
+
+test("Yesterday/Today from the ledger's secureSince; the device snapshot only when the map has no stamps", async () => {
+  const { secureBeforeToday, localDay } = await import("../src/ui-v3/kaksha/memory.ts");
+  const today = localDay(new Date("2026-11-06T12:00:00"));
+  const skills = [
+    { skillId: "a", state: "secure", secureSince: new Date("2026-11-06T09:00:00").toISOString() },
+    { skillId: "b", state: "secure", secureSince: new Date("2026-11-02T09:00:00").toISOString() },
+    { skillId: "c", state: "secure", secureSince: null },
+    { skillId: "d", state: "got_it", secureSince: null },
+  ];
+  assert.deepEqual([...secureBeforeToday(skills, today)].sort(), ["b", "c"], "a is new today; an unstamped secure skill is old");
+  assert.equal(secureBeforeToday([{ skillId: "a", state: "secure" }], today), null, "no stamps at all: fall back to the device");
+  assert.match(read("src/ui-v3/kaksha/screens/KakshaWorld.tsx"), /secureBeforeToday\(skills\) \?\? rollSnapshot\(cid, now\)/);
+});
