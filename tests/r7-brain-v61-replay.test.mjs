@@ -45,7 +45,8 @@ test("P1 replay director9 c5-t01 steady T21 (confirm-reveal): 'Bilkul — pehla 
   // T21: her line (the model's draft is the verdict alone; code adds the closed card's close and the hold)
   replyDeps.chat = async () => ({ text: "Bilkul, Riya: pehla hissa 1/8 km hai." });
   const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-  assert.match(out.reply, /^Bilkul, Riya: pehla hissa 1\/8 km hai\./, out.reply);
+  // (R7: the right answer's reason is the card's authored why, said by code)
+  assert.match(out.reply, /^Bilkul, Riya: pehla hissa 1\/8 km hai, kyunki sadak 8 barabar hisson mein hai/, out.reply);
   const a21 = intentAt(L, last, kit, out.reply, out.guard?.parts);
   // the dropping side (Brain): a 3-word tail ("Ab agla hissa.") was its own page back on the answered card's board; Studio could
   // not draw that page in its time (W6.timing), the paged turn failed and the revealed verdict page never reached the screen

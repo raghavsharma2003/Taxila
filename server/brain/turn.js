@@ -23,7 +23,7 @@ import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
-import { step, evidenceFrom, upcomingItem } from "../director/state.js";
+import { step, evidenceFrom, upcomingItem, scriptWhyOf } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
@@ -1692,7 +1692,11 @@ export async function planTurn(base, cls, c) {
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
   if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
-    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400) };
+    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
+    // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
+    // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception
+    ...((() => { const w = scriptWhyOf(kit, activeItem, next.ctx?.lang ?? "hinglish"); return w ? { why: w } : {}; })()),
+    ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: String((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
   else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];

@@ -225,6 +225,23 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
     asked(`remediation[${i}].then`, r?.then);
   }
   said("bridgeToNext", sk?.bridgeToNext, { optional: true });
+  // v2.3 (dc-r7-script-walk-v6-1): an optional authored `simpler` on explain beats, worked steps, checks and follow-up cards:
+  // spoken in place of anything model-written, so it is a statement (no "?"), at most 2 sentences, and on a card never its key
+  const simplerOk = (where, x, key = null) => {
+    if (x == null) return;
+    said(where, x);
+    for (const f of ["hi", "en"]) {
+      const t = String(x?.[f] ?? "");
+      if (/[?？]/.test(t)) err(`${where}.${f}: a statement, never a question`);
+      if ((t.match(/[.!।]+(?:\s|$)/g) ?? []).length > 2) err(`${where}.${f}: at most 2 sentences`);
+      const k = key != null ? keyLeaks(key, t) : null;
+      if (k && new RegExp(`(?<![\\d./])${k.replace(/[./]/g, "\\$&")}(?![\\d/])`).test(t)) err(`${where}.${f}: states its card's key ${k}`);
+    }
+  };
+  for (const [i, b] of (sk?.explain ?? []).entries()) simplerOk(`explain[${i}].simpler`, b?.simpler);
+  for (const [i, st] of (sk?.workedExample?.steps ?? []).entries()) simplerOk(`workedExample.steps[${i}].simpler`, st?.simpler);
+  for (const [i, c] of (sk?.checks ?? []).entries()) simplerOk(`checks[${i}].simpler`, c?.simpler, c?.key);
+  for (const [i, r] of (sk?.remediation ?? []).entries()) simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key);
   // ── v2.1 (dc-r7-script-walk-v3, director5's data findings), for scripts marked version 2.1 ──
   if (Number(v21) >= 2.1) {
     const spoken = [];
@@ -287,7 +304,7 @@ export function validateTopicScript(sc, kit) {
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
 /** The one list of script versions: the validator accepts these and the Director walks these. A new data version is added here,
  *  with its validator rules, before any script carries it (tests/r7-brain-live-scripts.test.mjs fails otherwise). */
-export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2]);
+export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2, 2.3]);
 /** The script versions the Director walks: SCRIPT_VERSIONS (the validator's accepted versions), never a second list. */
 export const WALK_VERSIONS = new Set(SCRIPT_VERSIONS);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));
@@ -343,16 +360,18 @@ const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind:
   answer: String(key), acceptable: [...(accept ?? [])].map(String), hints: [], ...extra });
 // v6 (main, director8 judges: a close's why from the point's or remediation's last sentence contradicted the card): a card's
 // own authored why (KeyedAsk.why / CheckQuestionV2.why, a Said), carried on the card for the close; absent → no why is said
+// v2.3 (dc-r7-script-walk-v6-1 R8): a card's authored one-step hint, said on "pata nahi" / "samajh nahi aaya" instead of a model hint
+const simplerField = (a) => (a?.simpler && typeof a.simpler === "object" && (a.simpler.hi || a.simpler.en) ? { simpler: { hi: String(a.simpler.hi ?? ""), en: String(a.simpler.en ?? "") } } : {});
 const whyField = (a) => (a?.why && typeof a.why === "object" && (a.why.hi || a.why.en) ? { why: { hi: String(a.why.hi ?? ""), en: String(a.why.en ?? "") } } : {});
 /** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
 export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
-  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a) } });
+  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a), ...simplerField(a) } });
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
-  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c) } });
+  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c), ...simplerField(c) } });
 /** A remediation's follow-up question as a keyed card. */
 export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
-  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then) } })
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then), ...simplerField(r.then) } })
   : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
 /** The script version of a skill (1 or 2). */
 export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;
@@ -402,6 +421,9 @@ export function scriptWorkedStepLine(st, lang = "hinglish") {
  * said smaller and in another order: its reason first, on its own, then the step and its result. Authored words only.
  */
 export function scriptWorkedStepSmaller(st, lang = "hinglish") {
+  // v6.1 R7 (format 2.3): the step's authored simpler, when the script has one
+  const auth = st?.simpler ? saidIn(st.simpler, lang) : null;
+  if (auth && String(auth).trim()) return dot(String(auth).trim());
   // v6.1 (director9 c5-t02: "Dekho, rahul ka bar 6 hisson mein…" turned the story's reference into a description of the board,
   // and re-ordering the same step is not smaller): only the step and its result, without its reason, and never "Dekho"
   const d = joinable(saidIn(st?.do, lang), { lower: true });

@@ -78,6 +78,8 @@ const GAVE_LINE = {
 const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Hindi mein? Zaroor."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
 const PARK_ACK = { hinglish: [(t) => `${t}: iski baat is part ke baad karenge.`, (t) => `${t} yaad hai, yeh part khatam karke uspar aate hain.`, (t) => `${t}: pakka, thodi der mein uski baat.`],
   english: [(t) => `${t}: we'll talk about it after this part.`, (t) => `${t} — I'll come back to it once this part is done.`, (t) => `${t}: yes, right after this part.`] };
+/** v6.1 R7: a sentence that states a rule or a reason (a teaching claim), not a framing line. */
+export const RULE_SAID = /(?<![\p{L}])(?:kyunki|kyonki|isliye|matlab|yaani|hamesha|because|means|therefore|always)(?![\p{L}])|(?<![\p{L}])(?:hota|hoti|hote|aata|aati|aate|banta|banti|bante|guzarta|guzarti|guzarte|milta|milti|milte)\s+(?:hai|hain)(?![\p{L}])/iu;
 export const ENFORCED = new Set(["leak", "praise", "deny", "claim", "corrects", "math", "invented", "screen", "parts", "affirms", "negates", "notheard",
   "gameclaim", "cantshow", "level", "answerinq", "underived", "ignored", "readscard", "units", "ratefrac"]);
 // (samecard is not enforced: its repair is a fixed lead before the card, which still has the card in it)
@@ -1794,6 +1796,27 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         : ss.filter((x) => polarity(x) !== "yes");
       if (ss.length < n0) guard.verdictContradiction = n0 - ss.length;
     }
+    // v6.1 R7 (main, director9: "chhota denominator wala fraction pehle aata hai", "Cheenti har kinaare se do baar guzarti hai",
+    // right verdicts with wrong reasons ×4): no model-written teaching in script mode.
+    // - a right answer's reason is the card's AUTHORED why (turn.js lastGraded.why), else none: her reason goes, code says it
+    // - a sentence of hers that states a rule ("… kyunki …", "… hota hai") is no part of a turn whose teaching is authored
+    // - any sentence of hers that states the card's listed wrong answer (wrongIfMis) as true goes
+    const wims = [graded0?.wrongIfMis, (item?.scriptAsk ?? item?.scriptCheck ?? item?.scriptThen)?.wrongIfMis].filter((x) => x != null && String(x).trim()).map((x) => String(x).trim().toLowerCase());
+    const statesMis = (x) => { const t = ` ${String(x).toLowerCase()} `; return wims.some((w) => new RegExp(`(?<![\\p{L}\\p{N}/])${w.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\p{L}\\p{N}/])`, "u").test(t))
+      && !/(?<![\p{L}])(?:nahi|nahin|not|galat|sahi\s+nahi)(?![\p{L}])/iu.test(t); };
+    { const n0 = ss.length; ss = ss.filter((x) => !statesMis(x)); if (ss.length < n0) guard.misStated = n0 - ss.length; }
+    if (lead && verdict === "correct" && graded) {
+      const bare = String(lead).split(/(?<![\p{L}])(?:kyunki|because|isliye|matlab|since)(?![\p{L}])/iu)[0].replace(/[\s,;]+$/, "").trim();
+      const why = graded0?.why ? String(graded0.why).trim() : null;
+      const hadWhy = bare.length < String(lead).replace(/[.!?।]+$/, "").trim().length;
+      if (hadWhy || why) {
+        const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
+        lead = dot(`${(bare && affirmsAnswer(bare) ? bare : lang === "english" ? "Yes, that's right" : "Haan, sahi hai").replace(/[.!?।]+$/, "")}${why1}`);
+        guard.rightWhy = why ? "authored" : "none";
+      }
+    }
+    // (every scripted turn: the teaching is the script's; a rule or reason in her words is model-written teaching)
+    { const n0 = ss.length; ss = ss.filter((x) => !RULE_SAID.test(x)); if (ss.length < n0) guard.ruleDropped = n0 - ss.length; }
     // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
     // short one when her words left it out); they come after the verdict, before the teaching
     const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
@@ -1865,19 +1888,26 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
       // (v6 R5, director8 c6 T51/T73: "Pehla joda: 24 cm plus 18 cm barabar 42 cm." before the step derived it): her framing on a
       // scripted worked or remediation turn carries no number; the code lines carry them, in order
-      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) ? ss[0] : null;
+      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
     } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
       // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
       // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
-      const mine = ss.filter((x) => !/[?？]/.test(x) && words(x) <= 22).slice(0, 2);
+      // v6.1 R7/R8 (director9: c5-t01 T27 "chhota denominator wala fraction pehle aata hai", a misconception stated as a rule, came
+      // from her own "smaller" lines): the beat's AUTHORED simpler (format 2.3), else ONE sentence of the authored point; never hers
+      const simpler = state.lastMove?.simpler ? norm(state.lastMove.simpler) : null;
       const ps = sentences(point).map(norm).filter(Boolean);
       const p1 = ps.find((x) => !saidBefore(x)) ?? ps[0] ?? point;
-      body = mine.length ? mine : [dot(p1)];
-      guard.smaller = mine.length ? "hers" : "point";
+      body = simpler ? sentences(simpler).map(norm).filter(Boolean).map(dot) : [dot(p1)];
+      guard.smaller = simpler ? "authored" : "point";
     } else if (point && kindNow === "explain") {
-      if (ss.length && pointSaid(ss.join(" "), point)) body = ss;
-      else { const li = ss.find((x) => clean(x) && !/\d/.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true; }
+      // v6.1 R7: the point is said in its authored words (her paraphrase of it is model-written teaching); one short framing
+      // clause of hers may lead in
+      const li = ss.find((x) => clean(x) && !/\d/.test(x) && !RULE_SAID.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true;
+    } else if (state.lastMove?.simpler) {
+      // v6.1 R8: the live card's authored simpler on "pata nahi" / "samajh nahi aaya" (never a model-written hint)
+      body = sentences(norm(state.lastMove.simpler)).map(norm).filter(Boolean).map(dot);
+      guard.smaller = "authored";
     } else {
       body = ss;
       if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }

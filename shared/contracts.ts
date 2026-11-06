@@ -775,6 +775,9 @@ export interface KeyedAsk {
   /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
    *  Absent: the close says the answer alone (never a sentence borrowed from a point or a remediation) */
   why?: Said;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 /** The closed interest list (server/persona/signals.js INTERESTS). */
 export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
@@ -783,7 +786,7 @@ export interface TopicScriptV2 {
   classLevel: number;
   /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
    *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
-  version: 2 | 2.1 | 2.2;
+  version: 2 | 2.1 | 2.2 | 2.3;
   status: "draft" | "reviewed" | "live";
   terms: Array<{ hi: string; en: string }>;
   skills: SkillScriptV2[];
@@ -819,13 +822,16 @@ export interface ExplainBeatV2 {
   point?: Said;
   /** the beat's keyed micro-question: the beat is done only when it is answered and judged */
   ask: KeyedAsk;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 export interface WorkedExampleV2 {
   problem: Said;
   givens: Said[];
   find: Said;
   /** every step but the last, each said with its result and why */
-  steps: Array<{ do: Said; result: string; why: Said }>;
+  steps: Array<{ do: Said; result: string; why: Said; /** v2.3: the step said smaller */ simpler?: Said }>;
   /** the last step, asked of the child (its key is that step's result) */
   yourStep: KeyedAsk;
   /** said after their step: the answer and why it is right */
@@ -844,6 +850,9 @@ export interface CheckQuestionV2 {
   board?: BoardRef | null;
   /** v6: why the key is right (see KeyedAsk.why) */
   why?: Said;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 export interface RemediationV2 {
   targets: string;

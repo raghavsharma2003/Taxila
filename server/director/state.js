@@ -679,7 +679,7 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
+        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
@@ -2804,6 +2804,16 @@ export function step(prev, input) {
   if (p.point) move.point = String(p.point);
   // v6 R3: the same beat or step again, smaller (brain/say.js never says it in the same words)
   if (p.smaller) move.smaller = true;
+  // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
+  if (p.simpler) move.simpler = String(p.simpler);
+  // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
+  // scripted card, a don't-know or a "didn't understand" gets the card's AUTHORED simpler (a one-step hint, never its key)
+  if (!move.simpler && scriptOn() && item && isScriptCard(item) && ["hint", "reteach", "repair", "practice"].includes(move.kind)
+    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) {
+    const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
+    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : null;
+    if (sm && String(sm).trim()) move.simpler = String(sm).trim();
+  }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
