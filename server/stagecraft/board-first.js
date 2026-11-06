@@ -323,10 +323,31 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
       r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
     }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
+    // (director8 c5-t02 c3: "pehla nishaan 1/4 hai" over the asked mark's "?": a mark whose value her line states is labelled)
+    const shown = statedMark(r.script, ask?.intent?.boardRef, ctx.reply);
+    if (shown) r = { ...r, script: shown };
     // round 7 (director6 #1): the screen is what is DRAWN now: re-gated on her real line, a value she states is no longer "?"
     // (the pick's screen was computed before her line existed, masked: R4 read "40 m lamba" against a screen with no 40)
     return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template,
       screen: screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), syncMs: Date.now() - t0 };
+  } catch { return null; }
+}
+
+/**
+ * director8 (c5-t02 c3): fraction-line@1's asked `mark` is drawn "?" — the card asks for it. When her line STATES that mark's
+ * value ("pehla nishaan 1/4 hai", or an equal fraction 2/8), the "?" is that value, as she says it. → the script, or null.
+ */
+export function statedMark(script, ref, line) {
+  try {
+    const r = resolveBoardRef(ref, {});
+    if (!r.ok || r.call.template !== "fraction-line@1" || !Number.isInteger(r.call.mark) || !Number.isInteger(r.call.den)) return null;
+    const v = r.call.mark / r.call.den;
+    const said = (String(line ?? "").match(/(?<![\d/])\d+\s*\/\s*\d+(?![\d/])/g) ?? []).map((m) => m.replace(/\s+/g, ""))
+      .find((f) => { const [a, b] = f.split("/").map(Number); return b > 0 && Math.abs(a / b - v) < 1e-9; });
+    if (!said || !Array.isArray(script?.ops)) return null;
+    let hit = false;
+    const ops = script.ops.map((o) => (!hit && o.op === "text" && String(o.text).trim() === "?" ? ((hit = true), { ...o, text: said, size: "m" }) : o));
+    return hit ? { ...script, ops } : null;
   } catch { return null; }
 }
 

@@ -62,7 +62,7 @@ export function resolveBoardRef(ref, ctx = {}) {
 }
 
 /** The numbers a call authors as values to show (labels, sides, dims, marks), never ids, counts of parts or flags. */
-function refNumbersOf(call) {
+export function refNumbersOf(call) {
   const out = new Set();
   const add = (v) => { if (typeof v === "number" && Number.isFinite(v)) out.add(String(v)); else if (typeof v === "string") for (const m of v.match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []) out.add(m); };
   for (const k of ["sides", "w", "h", "r", "value"]) { const v = call[k]; (Array.isArray(v) ? v : [v]).forEach(add); }
