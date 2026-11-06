@@ -5494,3 +5494,79 @@ ghadi play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366
 ## `ms-r7-voice-opus-transport` — Opus transport: CPU and first audio (2026-11-05)
 
 Main's condition 2, measured before shipping. CPU: 0.41 ms p50, 0.68 ms p95 per 20 ms frame (n = 8,742 frames of real speech), ~23 real-time streams per 0.5 vCPU. First audio, throttled real Chromium: Opus matches or beats ADPCM on every profile (Slow 3G 432 vs 436 ms), and delivers a QA-D12-sized line 3× faster than ADPCM and 10× faster than PCM on Slow 3G (1.2 s vs 3.5 s vs 12.8 s). Found and fixed during the run: the first cut encoded synchronously, which held the first byte ~300 ms and blocked the event loop. Files: evals/tts-transport/results/{cpu,first-audio,first-audio-long}-2026-11-05.json.
+
+
+<!-- merged from inbox/r7-main-14.json -->
+## `jd-r7-director7-2026-11-06`
+
+n = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering), 1,161 calls on taxila-fast (~$0.794), median lesson reply-ready p50 2.65 s (director6 3.00 s). Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on int/r6 8f461ae0b + Brain 32492218 (live v2.2 scripts, H1.2 child). Four Claude judges (one per topic, not blind) counted by hand. Totals: taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, contradictions 51 (code proxy 13), stated-number "?" board turns ≥38, false keys spoken 2. Date 2026-11-06. Write-up: docs/design/round7/judgements/director7-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-brain-15.json -->
+## `ms-r7-director7` (2026-11-05, stream A Brain)
+
+What was run:
+- **Method:** evals/hybrid-side-by-side.mjs `--matrix --director-only --reactive`. The lessons were 4 topics (c4 ch05-t01, c5 ch02-t01, c5 ch02-t02, c6 ch06-t01) × 4 personas.
+- **Run tree:** int/r6 8f461ae0b plus Brain 32492218, using the live v2.2 scripts.
+- **n:** 16 lessons, 448 teacher turns, 230 keyed answers.
+- **Cost:** 1,161 calls, about $0.794, against a cap of 1,300 / $0.85. The dry count was 968, so live was 1.20 × dry.
+- **Source:** evals/hybrid-side-by-side/results/2026-11-05-director7/README.md.
+
+Code counts (the hand judgement is main's):
+- Delivered: 82/82.
+- Verdicts: 229/230. The one miss had two earlier cards' give-up reveals spoken before the verdict.
+- Right called wrong: 0. Wrong called right: 0.
+- Contradictions against the drawn board: 13 flags in 11 turns. Read by hand against each board, they are real and come from two causes:
+  1. A "Yaad karo" recap (the card's W1 `cardPoint`) describing a different board than the card's own: 5 turns.
+  2. The remediation say and its then-card in one turn, with only the say's board drawn: 5 turns.
+  - One more turn is borderline: an ask about an imagined line.
+
+Latency, sequential classify + reply:
+- p50 2,990 → 2,681 ms; p90 4,763 → 4,392 ms.
+- Cut 1 skipped the rewrite on 40 turns, with a p50 of 1,770 ms; rewritten turns had a p50 of 3,816 ms.
+- The fast path took 289 turns, against 124 in director6.
+- The harness parallel bound is not the production figure. A turn.js replay is next.
+
+
+<!-- merged from inbox/r7-face-13.json -->
+## `ms-r7-face-react-2026-11-05` (2026-11-05)
+`evals/face-puppet/react-turns.mjs` → `docs/design/round7/face/react/`: `summary.json`, the per-run JSON with the per-frame face log, and recordings at 412 px (`react-on-412.webm`, `react-off-412.webm`). The page is the real lesson runtime on /dev/desk?live=1, with the scripted Director thinking 1.5 s (`?slow=1500`) and the live puppet. The harness uses SwiftShader and a 412×915 viewport. Each run has two child turns: the child talks for 1.6 s through the link's own talkStart / talkEnd, and the script's replies are "correct" then "not yet". Times are measured from the floor's own changes, not the harness's polling. There is 1 run per arm at ×1 and 3 runs per arm at CPU ×4 and ×6 (2 turns each).
+
+| | ×1 off / on | ×4 off / on | ×6 off / on |
+|---|---|---|---|
+| face thinking after the child stops (p50) | 429 / **14** ms | 514 / **93** ms | 594 / **132** ms |
+| share of the wait spent thinking | 0.80 / **1.00** | 0.82 / **1.00** | 0.82 / **1.00** |
+| her first sound after the child stops (p50) | 2222 / 2234 ms | 2485 / 2431 ms | 2596 / 2537 ms |
+| face speaking after her first audio (p50) | 71 / 77 ms | 67 / 66 ms | 96 / 75 ms |
+| driver work p95 while thinking | 0.9 / 0.7 ms | 8.4 / 7.6 ms | 8.6 / 10.7 ms |
+| jaw while thinking (max) | 0.13 / 0 | 0.13 / 0 | 0.13 / 0 |
+
+Her first sound does not move: the differences are +12 / −54 / −59 ms, which is noise. Driver work is the whole frame's JS. It is inflated by the CPU throttle, and the on and off arms are within each other's noise. The 66-96 ms to the speaking face is the page's own main-thread work when the reply arrives: the face changes on its first drawn frame after her audio starts, so thinking never runs into her speech.
+
+
+<!-- merged from inbox/r7-face-14.json -->
+## `ms-r7-face-context-loss-2026-11-06` (2026-11-06)
+`evals/face-puppet/context-loss.mjs` → `docs/design/round7/face/context-loss.json`. It runs /dev/desk?live=1 with the live puppet forced on, SwiftShader and 412×915, with 3 runs per arm (worker, `?rigworker=1`, path `worker-bitmap`; main thread, `?rigworker=0`, path `bitmap`). Each run forces a context loss with `WEBGL_lose_context` and restores it after 400 ms, then forces a second loss.
+- **After the first loss she is back live** in 3/3 runs on both paths. Loss → re-reveal p50 is 1655 ms on the worker and 1658 ms on the main thread (max 1709 / 1744), including the 400 ms before the restore.
+- **After the second loss she is on her still** in 3/3 runs on both paths, with the poster painted.
+- **0 page errors.**
+- **Before the change** the worker path fell back on the first loss. That is from the code: the old build has no hook to force a loss, so there is no "before" run.
+- **Limits.** This is a desktop browser with SwiftShader. A real Android context loss, and how long its restore takes, is row 8 of `needs-live-low-end-phone.md`.
+
+
+<!-- merged from inbox/r7-games-feeta.json -->
+## `ms-r7-games-feeta-cert`
+
+feeta play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every feeta sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-feeta.test.mjs, 38 tests. An independent checker in millimetres agrees with the law over at least 2000 random acts per case. It walks the ruler's spaces, counts the garden's unit edges square by square, and turns every written length into mm with its own table. Generator p95 is under 5 ms.
+
+
+<!-- merged from inbox/r7-games-guna.json -->
+## `ms-r7-games-guna-cert`
+
+guna play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every guna sample passes at every size (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-guna.test.mjs, 65 tests. An independent checker uses plain arithmetic (a * b, Math.floor(a / b), a % b, Math.ceil, its own nearest-round reading) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms (measured runs are a few ms).

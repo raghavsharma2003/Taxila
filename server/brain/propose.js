@@ -12,6 +12,7 @@ import { AUTHORITY, proposal } from "./kernel.js";
 import { relationalProposals } from "./relational-adapter.js";
 import { EXPLAIN_BEATS } from "./beat.js";
 import { BANDS } from "../learner/bands.js";
+import { splitSentences } from "../voice/sentences.js";
 
 /** The Director's proposal with the kernel's turn rules: one move (mandatory in its rank), safety freezes the rest. */
 export function directorProposalOf(r) {
@@ -151,8 +152,10 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       ...(request ? { request } : {}),
       // round 7 (dc-r7-teaching-scripts; Studio's BOARD-REFS): the scripted beat's board, explicit on the ask, so Studio's
       // preselect reads one field and never the Director's state shape (an absent or failing ref: Studio's own pick)
-      ...(next?.lastMove?.scriptBeat?.board ? { boardRef: next.lastMove.scriptBeat.board } : {}),
-      ...(next?.lastMove?.scriptBeat ? { scriptBeat: { scriptId: next.lastMove.scriptBeat.scriptId, beatId: next.lastMove.scriptBeat.beatId, kind: next.lastMove.scriptBeat.kind } } : {}),
+      // v5 B1 (main; Studio's segments): the line's parts each have the board they describe. The first part's board is
+      // boardRef/scriptBeat (as before: the beat's board when nothing is closed and the card shares it); each later part is a
+      // segment from its character offset in the FINAL line (a closure → the beat's board → the card's own board)
+      ...boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -163,4 +166,93 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       ...(item ? { item: { id: item.id, prompt_en: item.prompt_en ?? "", prompt_hi: item.prompt_hi ?? "" } } : {}),
       ...(next?.module ? { onScreen: true } : {}) },
   };
+}
+
+/**
+ * The clause (0-based, as brain/clauses.js numbers the reply: voice/sentences.js splitSentences) that holds character `at`
+ * of the reply, or null. A part that starts inside a merged piece switches at that piece's start (a moment early, never late).
+ */
+export function clauseAt(reply, at) {
+  const r = String(reply ?? "").replace(/\s+/g, " ").trim();
+  if (!r || !(at >= 0)) return null;
+  let pos = 0;
+  for (const [i, p] of splitSentences(r).entries()) {
+    const start = r.indexOf(p, pos);
+    const end = start + p.length;
+    if (at < end) return i;
+    pos = end;
+  }
+  return null;
+}
+/** Where the card (her line's last part) starts in the reply, or null when it is not in it. */
+export function cardAt(reply, card) {
+  const r = String(reply ?? "").replace(/\s+/g, " ").trim(), c = String(card ?? "").replace(/\s+/g, " ").trim();
+  if (!r || !c) return null;
+  const at = r.lastIndexOf(c);
+  return at >= 0 ? at : (() => { const h = r.lastIndexOf(c.slice(0, Math.min(40, c.length))); return h >= 0 ? h : null; })();
+}
+/** The clause where the card starts (cardAt → clauseAt). */
+export const cardClauseOf = (reply, card) => { const at = cardAt(reply, card); return at == null ? null : clauseAt(reply, at); };
+// the closure sentences say.js assembles (the give-up reveal, "Toh poora jawab", the missed card's close), in either language
+const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
+const CLOSED = /(?:Aur pehle wale sawaal ka jawab|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/;
+const norm1 = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
+const skipSpace = (r, i) => { while (i < r.length && r[i] === " ") i++; return i; };
+/** The end of the last closure sentence in the reply (0 when there is none). */
+export function closureEnd(reply) {
+  const r = norm1(reply);
+  let end = 0;
+  for (const m of r.matchAll(CLOSURE)) end = m.index + m[0].length;
+  return end ? skipSpace(r, end) : 0;
+}
+const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ...(b.ownBoard ? { ownBoard: true } : {}), ...(b.answers?.length ? { answers: [...b.answers] } : {}) });
+/**
+ * v5 B1: the parts of a scripted line and their boards, from the move (state.js closeBeat / closedBeat / scriptBeat / cardBeat):
+ * a closure, a give-up and the skill's bridge on the board the last turn ended on; a missed card's close on that card's own
+ * board; the beat; the card. `segmentPlan` [{ part, boardRef, scriptBeat, said? }] always when there is more than one part
+ * (Studio places it on a line it replaces with segmentsAt); on a line with text: boardRef/scriptBeat = the first part's,
+ * `segments` [{ atChar, atClause, boardRef, scriptBeat }] = each later part whose board differs. {} with no scripted board.
+ */
+export function boardPartsOf(move, line, card) {
+  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length;
+  const plan = [
+    ...(closing && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat), ...(move?.sayFirst?.length ? { said: [...move.sayFirst] } : {}) }] : []),
+    ...(move?.closed && (move?.closedBeat ?? move?.closeBeat)?.board ? [{ part: "closed", boardRef: (move.closedBeat ?? move.closeBeat).board, scriptBeat: refOf(move.closedBeat ?? move.closeBeat) }] : []),
+    ...(move?.scriptBeat?.board ? [{ part: "body", boardRef: move.scriptBeat.board, scriptBeat: refOf(move.scriptBeat) }] : []),
+    ...(move?.cardBeat?.board ? [{ part: "card", boardRef: move.cardBeat.board, scriptBeat: refOf(move.cardBeat) }] : []),
+  ];
+  if (!plan.length) return move?.scriptBeat ? { scriptBeat: refOf(move.scriptBeat) } : {};
+  const placed = segmentsAt(plan, line, card);
+  const first = placed[0];
+  return { boardRef: first.boardRef, scriptBeat: first.scriptBeat, ...(placed.length > 1 ? { segments: placed.slice(1) } : {}), ...(plan.length > 1 ? { segmentPlan: plan } : {}) };
+}
+/**
+ * A segment plan placed on a line: the closure part from 0; a missed card's close from its sentence; the beat after the last
+ * closure sentence and any bridge line; the card where its text starts. Consecutive parts on the same board merge, empty parts
+ * drop. With no text (a preselect before her line exists) the parts cannot be placed: the beat's (else the first) alone.
+ */
+export function segmentsAt(plan, line, card) {
+  const text = norm1(line);
+  const closePart = plan.find((p) => p.part === "close");
+  let bodyAt = closureEnd(text);
+  for (const said of closePart?.said ?? []) { const t = norm1(said).replace(/[.!?\u0964]+$/, ""); const i = t ? text.indexOf(t) : -1; if (i >= 0) bodyAt = Math.max(bodyAt, skipSpace(text, text.indexOf(" ", i + t.length) < 0 ? text.length : i + t.length + 1)); }
+  const cm = CLOSED.exec(text);
+  const at = { close: 0, closed: cm ? cm.index : null, body: bodyAt, card: cardAt(text, card) };
+  if (!text) {
+    const one = plan.find((p) => p.part === "body") ?? plan.find((p) => p.part === "card") ?? plan[0];
+    return [{ atChar: 0, boardRef: one.boardRef, scriptBeat: one.scriptBeat }];
+  }
+  const out = [];
+  for (const p of plan) {
+    const a = at[p.part];
+    if (a == null || (p.part === "close" && !bodyAt && !cm)) continue;
+    const prev = out.at(-1);
+    if (prev && a <= prev.atChar) out.pop();
+    const keep = out.at(-1);
+    if (keep && JSON.stringify(keep.boardRef) === JSON.stringify(p.boardRef)) continue;
+    out.push({ atChar: out.length ? a : 0, atClause: clauseAt(text, out.length ? a : 0), boardRef: p.boardRef, scriptBeat: p.scriptBeat });
+  }
+  if (!out.length) out.push({ atChar: 0, atClause: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
+  out[0] = { ...out[0], atChar: 0, atClause: 0 };
+  return out;
 }

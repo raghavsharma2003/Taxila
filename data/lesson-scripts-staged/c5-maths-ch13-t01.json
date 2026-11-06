@@ -1,0 +1,1342 @@
+{
+ "topicId": "c5-maths-ch13-t01",
+ "classLevel": 5,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  {
+   "hi": "multiple / gunaj",
+   "en": "multiple"
+  },
+  {
+   "hi": "common multiple / samaapvartya",
+   "en": "common multiple"
+  },
+  {
+   "hi": "sabse chhota common multiple",
+   "en": "smallest common multiple"
+  },
+  {
+   "hi": "factor / gunankhand",
+   "en": "factor"
+  },
+  {
+   "hi": "skip counting / chhalaang wali ginti",
+   "en": "skip counting"
+  },
+  {
+   "hi": "chhalaang",
+   "en": "jump"
+  }
+ ],
+ "skills": [
+  {
+   "skillId": "c5-maths-ch13-t01-s1",
+   "hook": {
+    "convey": "a jumper that always jumps the same size from 0 lands only on certain numbers → those landing spots are the number's multiples; the jumping never has to stop",
+    "interestSlots": [
+     {
+      "interest": "animals",
+      "use": {
+       "hi": "Ek chhota animal, mendhak, 0 se shuru karke hamesha 3 kadam ki chhalaang lagata hai. Woh har number par nahi girta, sirf kuch khaas numbers par. Aaj dekhenge ki woh kahaan-kahaan girta hai.",
+       "en": "A small animal, a frog, starts at 0 and always jumps 3 steps. It does not land on every number, only on some special numbers. Today we see where it lands."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket mein ek over mein 6 ball hoti hain. Har over ke baad ball ki ginti 6 se badh jaati hai. Yeh ginti ek khaas list banati hai, aur aaj hum us list ka naam seekhenge.",
+       "en": "In cricket one over has 6 balls. After every over the ball count grows by 6. This count makes a special list, and today we learn the name of that list."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "frog jumps 3 at a time from 0 → lands on 3, 6, 9, 12 → these landing spots = multiples of 3 = skip counting by 3",
+     "mustSay": [
+      {
+       "hi": "3 ke multiples",
+       "en": "multiples of 3"
+      },
+      {
+       "hi": "skip counting",
+       "en": "skip counting"
+      }
+     ],
+     "board": {
+      "template": "number-line-hop@1",
+      "params": {
+       "start": 0,
+       "hops": [
+        3,
+        3,
+        3,
+        3
+       ]
+      }
+     },
+     "point": {
+      "hi": "Dekho, mendhak 0 se 3-3 ki chhalaang lagata hai. Woh 3, 6, 9 aur 12 par girta hai. Yeh sab 3 ke multiples hain, yaani 3 ki skip counting mein jin numbers par hum pahunchte hain.",
+      "en": "Look, the frog jumps 3 at a time from 0. It lands on 3, 6, 9 and 12. These are all multiples of 3, that is the numbers we reach when we skip count by 3."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Yeh mendhak 0 se 3-3 ki chhalaang lagata hai. Paanchvi chhalaang ke baad woh kis number par hoga?",
+       "en": "This frog jumps 3 at a time from 0. On which number will it be after its fifth jump?"
+      },
+      "key": "15",
+      "accept": [
+       "pandrah",
+       "fifteen",
+       "15 par"
+      ]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "factors of 8 divide 8 exactly (1, 2, 4, 8); multiples of 8 come from skip counting by 8 (8, 16, 24, 32) and keep growing → two different lists",
+     "mustSay": [
+      {
+       "hi": "factors",
+       "en": "factors"
+      },
+      {
+       "hi": "multiples",
+       "en": "multiples"
+      }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "8 ke factors",
+        "items": [
+         "1, 2, 4, 8"
+        ]
+       },
+       "right": {
+        "title": "8 ke multiples",
+        "items": [
+         "8, 16, 24, 32"
+        ]
+       }
+      }
+     },
+     "point": {
+      "hi": "Board par 8 ki do list hain. 8 ke factors 1, 2, 4, 8 hain, yeh 8 ko poora baant dete hain. 8 ke multiples 8, 16, 24, 32 hain, yeh 8 ki skip counting se aate hain aur badhte jaate hain.",
+      "en": "The board has two lists for 8. The factors of 8 are 1, 2, 4, 8; they divide 8 exactly. The multiples of 8 are 8, 16, 24, 32; they come from skip counting by 8 and keep growing."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "8 ke multiples wali list aage badhao. 32 ke baad 8 ka agla multiple kaunsa hai?",
+       "en": "Continue the list of multiples of 8. What is the next multiple of 8 after 32?"
+      },
+      "key": "40",
+      "accept": [
+       "chaalis",
+       "chalis",
+       "forty"
+      ]
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "the jumper of 5 does not stop at 50: 50, 55, 60 … one more jump is always possible → a number has endless multiples",
+     "mustSay": [
+      {
+       "hi": "kabhi khatam nahi",
+       "en": "never ends"
+      }
+     ],
+     "board": {
+      "template": "number-line-hop@1",
+      "params": {
+       "start": 50,
+       "hops": [
+        5,
+        5
+       ]
+      }
+     },
+     "point": {
+      "hi": "Yeh mendhak 5-5 ki chhalaang lagata hai. 50 par pahunch kar bhi woh rukta nahi, 55 aur 60 par girta hai. Har baar ek aur chhalaang lag sakti hai. Isliye multiples ki list kabhi khatam nahi hoti.",
+      "en": "This frog jumps 5 at a time. Even after reaching 50 it does not stop; it lands on 55 and 60. One more jump is always possible. So the list of multiples never ends."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Yeh 5-5 wala mendhak aise hi koodta rahe, toh kya woh kabhi theek 100 par girega, haan ya nahi?",
+       "en": "If this frog keeps jumping 5 at a time, will it ever land exactly on 100, yes or no?"
+      },
+      "key": "Yes",
+      "accept": [
+       "haan",
+       "han",
+       "yes",
+       "ha",
+       "haan, 5 × 20 = 100"
+      ],
+      "targets": "c5-maths-ch13-t01-m-finite-multiples",
+      "wrongIfMis": "No"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Rekha ki gullak khaali hai. Woh roz usme ₹7 daalti hai. Kya kisi din gullak mein theek ₹50 honge?",
+     "en": "Rekha's piggy bank is empty. Every day she puts ₹7 in it. Will there ever be exactly ₹50 in the piggy bank?"
+    },
+    "givens": [
+     {
+      "hi": "gullak shuru mein khaali",
+      "en": "the piggy bank starts empty"
+     },
+     {
+      "hi": "roz ₹7 judte hain",
+      "en": "₹7 is added every day"
+     }
+    ],
+    "find": {
+     "hi": "kya gullak mein kabhi theek ₹50 honge",
+     "en": "whether the piggy bank ever holds exactly ₹50"
+    },
+    "steps": [
+     {
+      "do": {
+       "hi": "7 ki skip counting karo",
+       "en": "Skip count by 7"
+      },
+      "result": "₹7, ₹14, ₹21, ₹28, ₹35, ₹42, ₹49",
+      "why": {
+       "hi": "roz ₹7 judte hain, toh gullak mein hamesha 7 ka multiple hota hai",
+       "en": "₹7 is added each day, so the piggy bank always holds a multiple of 7"
+      }
+     },
+     {
+      "do": {
+       "hi": "₹49 ke baad agla din dekho",
+       "en": "Look at the day after ₹49"
+      },
+      "result": "₹56",
+      "why": {
+       "hi": "49 mein 7 jodne se 56 banta hai",
+       "en": "49 plus 7 makes 56"
+      }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab dono steps ki list dekho. Kya kisi din gullak mein theek ₹50 honge, haan ya nahi?",
+      "en": "Now look at the lists from both steps. Will the piggy bank ever hold exactly ₹50, yes or no?"
+     },
+     "key": "No",
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "kabhi nahi",
+      "never"
+     ]
+    },
+    "answer": {
+     "hi": "gullak mein kabhi theek ₹50 nahi honge",
+     "en": "the piggy bank will never hold exactly ₹50"
+    },
+    "why": {
+     "hi": "50, 49 aur 56 ke beech aata hai, aur 7 ki skip counting use chhod deti hai",
+     "en": "50 lies between 49 and 56, and skip counting by 7 jumps over it"
+    },
+    "board": {
+     "template": "number-line-hop@1",
+     "params": {
+      "start": 42,
+      "hops": [
+       7,
+       7
+      ]
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "List A mein 1, 3, 9 hain. List B mein 9, 18, 27, 36 hain. Kaunsi list 9 ke multiples ki hai, A ya B?",
+      "en": "List A has 1, 3, 9. List B has 9, 18, 27, 36. Which list shows the multiples of 9, A or B?"
+     },
+     "key": "B",
+     "accept": [
+      "List B",
+      "list b",
+      "b"
+     ],
+     "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+     "wrongIfMis": "A",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "List A",
+        "items": [
+         "1, 3, 9"
+        ]
+       },
+       "right": {
+        "title": "List B",
+        "items": [
+         "9, 18, 27, 36"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "3 ke multiples 3, 6, 9, 12 se shuru hote hain. Kya 300 bhi 3 ka multiple hai, haan ya nahi?",
+      "en": "The multiples of 3 begin 3, 6, 9, 12. Is 300 also a multiple of 3, yes or no?"
+     },
+     "key": "Yes",
+     "accept": [
+      "haan",
+      "han",
+      "yes",
+      "ha",
+      "haan, 3 × 100 = 300"
+     ],
+     "targets": "c5-maths-ch13-t01-m-finite-multiples",
+     "wrongIfMis": "No",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "3 ke multiples",
+        "items": [
+         "3, 6, 9, 12"
+        ]
+       },
+       "right": {
+        "title": "300",
+        "items": [
+         "haan ya nahi"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "{friend} ka kehna hai ki 10 ke multiples 1, 2, 5 aur 10 hain. Sach mein 10 ka doosra multiple kitna hai?",
+      "en": "{friend} says the multiples of 10 are 1, 2, 5 and 10. What really is the second multiple of 10?"
+     },
+     "key": "20",
+     "accept": [
+      "bees",
+      "twenty"
+     ],
+     "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+     "wrongIfMis": "2",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Kehna hai",
+        "items": [
+         "1, 2, 5, 10"
+        ]
+       },
+       "right": {
+        "title": "Doosra multiple",
+        "items": [
+         "kitna"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch13-t01-i01",
+     "why": "warm-up: continue a skip count by 3 → next two landing spots"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i13",
+     "why": "write the first four multiples of 9 from scratch"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i02",
+     "why": "test membership: is 42 a multiple of 7 → skip count or 7 × 6"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i08",
+     "why": "error spot: a factor list called multiples → multiples of 12 grow"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-rl-h1",
+     "why": "harder: fourth multiple of 12 in a train-coach story → 48"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+     "move": "number line, frog jumping 6 at a time from 0, landing spots coloured → child lists landings; could the frog ever land on 2 or 3 → no, those divide 6 (factors), multiples are landings",
+     "say": {
+      "hi": "Mendhak 0 se 6-6 ki chhalaang lagata hai, toh woh 6, 12, 18 par girta hai. 2 aur 3 par woh kabhi nahi girta, woh 6 ke factors hain, multiples nahi.",
+      "en": "The frog jumps 6 at a time from 0, so it lands on 6, 12, 18. It never lands on 2 or 3; those are factors of 6, not multiples."
+     },
+     "board": {
+      "template": "number-line-hop@1",
+      "params": {
+       "start": 0,
+       "hops": [
+        6,
+        6
+       ]
+      }
+     },
+     "then": {
+      "prompt": {
+       "hi": "Ek mendhak 0 se 4-4 ki chhalaang lagata hai. Kya woh kabhi 2 par girega, haan ya nahi?",
+       "en": "A frog jumps 4 at a time from 0. Will it ever land on 2, yes or no?"
+      },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "kabhi nahi",
+       "never"
+      ],
+      "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Mendhak",
+         "items": [
+          "4-4 ki chhalaang"
+         ]
+        },
+        "right": {
+         "title": "Number",
+         "items": [
+          "2"
+         ]
+        }
+       }
+      }
+     }
+    },
+    {
+     "targets": "c5-maths-ch13-t01-m-finite-multiples",
+     "move": "number line that keeps going: frog by 3 reaches 30 and jumps on to 33, 36 → it never has to stop; the list goes past 30 and 100",
+     "say": {
+      "hi": "Mendhak 3-3 karke 24, 27, 30 tak aaya, par 30 par rukna zaroori nahi. Woh 33, 36 aur aage bhi koodta hai, multiples kabhi khatam nahi hote.",
+      "en": "The frog came by 3s to 24, 27, 30, but it does not have to stop at 30. It jumps on to 33, 36 and beyond; multiples never end."
+     },
+     "board": {
+      "template": "number-line-hop@1",
+      "params": {
+       "start": 24,
+       "hops": [
+        3,
+        3,
+        3,
+        3
+       ]
+      }
+     },
+     "then": {
+      "prompt": {
+       "hi": "{friend} ka kehna hai ki 6 ke multiples 60 par khatam ho jaate hain. 60 ke baad 6 ka agla multiple kaunsa hai?",
+       "en": "{friend} says the multiples of 6 end at 60. What is the next multiple of 6 after 60?"
+      },
+      "key": "66",
+      "accept": [
+       "chhiyasath",
+       "chhiyaasath",
+       "sixty-six",
+       "sixty six"
+      ],
+      "targets": "c5-maths-ch13-t01-m-finite-multiples",
+      "wrongIfMis": "koi nahi",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "6 ke multiples",
+         "items": [
+          "60 par khatam"
+         ]
+        },
+        "right": {
+         "title": "60 ke baad",
+         "items": [
+          "agla multiple"
+         ]
+        }
+       }
+      }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab ek ke bajaye do mendhak saath koodenge. Dekhenge ki dono kin numbers par ek saath girte hain.",
+    "en": "Now two frogs will jump together instead of one. We will see on which numbers both land together."
+   }
+  },
+  {
+   "skillId": "c5-maths-ch13-t01-s2",
+   "hook": {
+    "convey": "two jumpers of different sizes from 0 → some numbers are on both lists → those are common multiples; the first one is often smaller than the two numbers multiplied",
+    "interestSlots": [
+     {
+      "interest": "animals",
+      "use": {
+       "hi": "Do animal race kar rahe hain, ek mendhak aur ek khargosh. Dono 0 se shuru karte hain, par unki chhalaang alag size ki hai. Kuch numbers par dono ke pair ek hi jagah padte hain.",
+       "en": "Two animals are racing, a frog and a rabbit. Both start at 0, but their jumps are different sizes. On some numbers both of them land on the same spot."
+      }
+     },
+     {
+      "interest": "music",
+      "use": {
+       "hi": "Music class mein dholak har 2nd beat par bajti hai aur ghanti har 3rd beat par. Kuch beats par dono ek saath bajti hain. Woh beats kaunsi hain, yeh aaj dhoondhenge.",
+       "en": "In music class the dholak plays on every 2nd beat and the bell on every 3rd beat. On some beats both play together. Today we find which beats those are."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "list multiples of 2 and of 3 → 6 and 12 are in both lists → common multiples of 2 and 3",
+     "mustSay": [
+      {
+       "hi": "common multiple",
+       "en": "common multiple"
+      },
+      {
+       "hi": "dono liston mein",
+       "en": "in both lists"
+      }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "2 ki chhalaang",
+        "items": [
+         "2, 4, 6, 8",
+         "10, 12"
+        ]
+       },
+       "right": {
+        "title": "3 ki chhalaang",
+        "items": [
+         "3, 6, 9, 12"
+        ]
+       }
+      }
+     },
+     "point": {
+      "hi": "2 ki chhalaang wala 2, 4, 6, 8, 10, 12 par girta hai. 3 ki chhalaang wala 3, 6, 9, 12 par girta hai. 6 aur 12 dono liston mein hain, isliye yeh 2 aur 3 ke common multiples hain.",
+      "en": "The 2-jumper lands on 2, 4, 6, 8, 10, 12. The 3-jumper lands on 3, 6, 9, 12. 6 and 12 are in both lists, so they are common multiples of 2 and 3."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Yeh 2 wala aur 3 wala aise hi aage koodte rahe. 12 ke baad agla number kaunsa hai jahan dono girenge?",
+       "en": "The 2-jumper and the 3-jumper keep jumping on. After 12, what is the next number where both land?"
+      },
+      "key": "18",
+      "accept": [
+       "athaarah",
+       "atharah",
+       "eighteen"
+      ]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "multiples of 4: 4, 8, 12, 16, 20, 24; of 6: 6, 12, 18, 24 → common: 12, 24 → the first is 12; 4 × 6 = 24 is common but not first",
+     "mustSay": [
+      {
+       "hi": "pehla common multiple",
+       "en": "first common multiple"
+      },
+      {
+       "hi": "4 × 6",
+       "en": "4 × 6"
+      }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "4 ke multiples",
+        "items": [
+         "4, 8, 12",
+         "16, 20, 24"
+        ]
+       },
+       "right": {
+        "title": "6 ke multiples",
+        "items": [
+         "6, 12",
+         "18, 24"
+        ]
+       }
+      }
+     },
+     "point": {
+      "hi": "4 ke multiples 4, 8, 12, 16, 20, 24 hain, aur 6 ke multiples 6, 12, 18, 24. Dono mein 12 aur 24 hain. Pehla common multiple 12 hai. 4 × 6 = 24 bhi common hai, par pehla nahi.",
+      "en": "The multiples of 4 are 4, 8, 12, 16, 20, 24, and of 6 are 6, 12, 18, 24. Both have 12 and 24. The first common multiple is 12. 4 × 6 = 24 is also common, but not the first."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "4 aur 6 ki dono list aage badhao. Inka teesra common multiple kaunsa hai?",
+       "en": "Continue both lists, for 4 and for 6. What is their third common multiple?"
+      },
+      "key": "36",
+      "accept": [
+       "chhattees",
+       "chhattis",
+       "thirty-six",
+       "thirty six"
+      ]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek mendhak 6-6 aur ek tidda 8-8 ki chhalaang lagata hai, dono 0 se. Pehli baar dono ek hi number par kahaan girenge?",
+     "en": "A frog jumps 6 at a time and a grasshopper 8 at a time, both from 0. Where do they first land on the same number?"
+    },
+    "givens": [
+     {
+      "hi": "mendhak ki chhalaang 6",
+      "en": "the frog jumps 6"
+     },
+     {
+      "hi": "tidde ki chhalaang 8",
+      "en": "the grasshopper jumps 8"
+     },
+     {
+      "hi": "dono 0 se shuru",
+      "en": "both start at 0"
+     }
+    ],
+    "find": {
+     "hi": "pehla number jis par dono girte hain",
+     "en": "the first number both land on"
+    },
+    "steps": [
+     {
+      "do": {
+       "hi": "6 ke multiples likho",
+       "en": "Write the multiples of 6"
+      },
+      "result": "6, 12, 18, 24, 30",
+      "why": {
+       "hi": "mendhak 6 ki skip counting wale numbers par girta hai",
+       "en": "the frog lands on the numbers of skip counting by 6"
+      }
+     },
+     {
+      "do": {
+       "hi": "8 ke multiples likho",
+       "en": "Write the multiples of 8"
+      },
+      "result": "8, 16, 24, 32",
+      "why": {
+       "hi": "tidda 8 ki skip counting wale numbers par girta hai",
+       "en": "the grasshopper lands on the numbers of skip counting by 8"
+      }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab dono list dekho. Dono mein sabse pehle aane wala number kaunsa hai?",
+      "en": "Now look at both lists. Which number comes first in both?"
+     },
+     "key": "24",
+     "accept": [
+      "chaubees",
+      "chaubis",
+      "twenty-four",
+      "twenty four"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "48"
+    },
+    "answer": {
+     "hi": "dono pehli baar 24 par saath girenge, 48 par nahi",
+     "en": "they first land together on 24, not on 48"
+    },
+    "why": {
+     "hi": "24 dono liston mein sabse pehle aata hai, aur 6 × 8 = 48 common hai par pehla nahi",
+     "en": "24 is the first number in both lists; 6 × 8 = 48 is common but not the first"
+    },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Mendhak",
+       "items": [
+        "6-6 ki chhalaang"
+       ]
+      },
+      "right": {
+       "title": "Tidda",
+       "items": [
+        "8-8 ki chhalaang"
+       ]
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek mendhak 6-6 aur ek khargosh 10-10 ki chhalaang lagata hai, dono 0 se. Pehli baar dono ek hi number par kahaan girenge?",
+      "en": "A frog jumps 6 at a time and a rabbit 10 at a time, both from 0. Where do they first land on the same number?"
+     },
+     "key": "30",
+     "accept": [
+      "tees",
+      "thirty",
+      "30 par"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "60",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Mendhak",
+        "items": [
+         "6-6 ki chhalaang"
+        ]
+       },
+       "right": {
+        "title": "Khargosh",
+        "items": [
+         "10-10 ki chhalaang"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "{friend} ka kehna hai ki 4 aur 6 ka ek common multiple 2 hai. Kya yeh sahi hai, haan ya nahi?",
+      "en": "{friend} says 2 is a common multiple of 4 and 6. Is that right, yes or no?"
+     },
+     "key": "No",
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, 2 factor hai",
+      "no, 2 is a factor"
+     ],
+     "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+     "wrongIfMis": "Yes",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "2",
+        "items": [
+         "common multiple"
+        ]
+       },
+       "right": {
+        "title": "4 aur 6",
+        "items": [
+         "haan ya nahi"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "6 aur 9 ka ek common multiple batao jo 50 se chhota ho.",
+      "en": "Name a common multiple of 6 and 9 that is less than 50."
+     },
+     "key": "18",
+     "accept": [
+      "36",
+      "athaarah",
+      "eighteen",
+      "chhattees",
+      "thirty-six",
+      "18 ya 36",
+      "18 or 36"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "54",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "6 aur 9",
+        "items": [
+         "common multiple"
+        ]
+       },
+       "right": {
+        "title": "50 se chhota",
+        "items": [
+         "batao"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch13-t01-i03",
+     "why": "first meeting of jumpers 3 and 4 → 12; list both, spot the first match"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i11",
+     "why": "mark both jumps on a 0-24 line → every number with two marks: 12, 24"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i04",
+     "why": "two common multiples of 4 and 6 → 12 and 24, not only the product"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-rl-o2",
+     "why": "chairs in rows of 4 or 6 → pick the total that is a common multiple"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-rl-h2",
+     "why": "harder: bonus scores at multiples of 8 and of 12 → test each choice in both lists"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "move": "two rows of a hundred chart, multiples of 4 marked in one and of 6 in the other → first number marked twice is 12 → ask whether it came before 24",
+     "say": {
+      "hi": "4 ki list 4, 8, 12 hai aur 6 ki list 6, 12. 12 dono mein aa gaya, toh 24 tak rukna hi nahi pada.",
+      "en": "The list for 4 is 4, 8, 12 and for 6 it is 6, 12. 12 is already in both, so we never had to wait for 24."
+     },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "4 ke multiples",
+        "items": [
+         "4, 8, 12"
+        ]
+       },
+       "right": {
+        "title": "6 ke multiples",
+        "items": [
+         "6, 12"
+        ]
+       }
+      }
+     },
+     "then": {
+      "prompt": {
+       "hi": "Ek mendhak 9-9 aur ek khargosh 12-12 ki chhalaang lagata hai, dono 0 se. Pehli baar dono kis number par milenge?",
+       "en": "A frog jumps 9 at a time and a rabbit 12, both from 0. On which number do they first meet?"
+      },
+      "key": "36",
+      "accept": [
+       "chhattees",
+       "chhattis",
+       "thirty-six",
+       "thirty six"
+      ],
+      "targets": "c5-maths-ch13-t01-m-product-only",
+      "wrongIfMis": "108",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Mendhak",
+         "items": [
+          "9-9 ki chhalaang"
+         ]
+        },
+        "right": {
+         "title": "Khargosh",
+         "items": [
+          "12-12 ki chhalaang"
+         ]
+        }
+       }
+      }
+     }
+    },
+    {
+     "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+     "move": "contrast: 2 divides 4 and 6 (a common factor, smaller) vs a common multiple sits in both skip-count lists (12, bigger) → multiples of 4 and 6 are never smaller than 6",
+     "say": {
+      "hi": "2 se 4 aur 6 poore bant jaate hain, isliye 2 dono ka factor hai. Common multiple dono ki skip counting list mein aata hai, jaise 12.",
+      "en": "4 and 6 both divide exactly by 2, so 2 is a factor of both. A common multiple is in both skip-counting lists, like 12."
+     },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "4 aur 6 ka factor",
+        "items": [
+         "2"
+        ]
+       },
+       "right": {
+        "title": "4 aur 6 ka multiple",
+        "items": [
+         "12"
+        ]
+       }
+      }
+     },
+     "then": {
+      "prompt": {
+       "hi": "Kya 3, 6 aur 9 ka common multiple hai, haan ya nahi?",
+       "en": "Is 3 a common multiple of 6 and 9, yes or no?"
+      },
+      "key": "No",
+      "accept": [
+       "nahi",
+       "nahin",
+       "no",
+       "nahi, 3 factor hai",
+       "no, 3 is a factor"
+      ],
+      "targets": "c5-maths-ch13-t01-m-factor-multiple-confuse",
+      "wrongIfMis": "Yes",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "3",
+         "items": [
+          "common multiple"
+         ]
+        },
+        "right": {
+         "title": "6 aur 9",
+         "items": [
+          "haan ya nahi"
+         ]
+        }
+       }
+      }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab yahi common multiple ghantiyon aur bus jaisi cheezon ke time mein dhoondhenge, ki dono phir kab saath honge.",
+    "en": "Now we will find this same common multiple in the timing of things like bells and buses: when will both happen together again."
+   }
+  },
+  {
+   "skillId": "c5-maths-ch13-t01-s3",
+   "hook": {
+    "convey": "two things repeating every few minutes or days, starting together → they are together again at the smallest common multiple of the two gaps, not always at the product",
+    "interestSlots": [
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Ek bus stop par ek bus har 4 minute mein aati hai aur doosri bus har 6 minute mein. Abhi dono saath khadi hain. Dono phir kab saath milengi, yeh multiples batate hain.",
+       "en": "At a bus stop one bus comes every 4 minutes and another every 6 minutes. Right now both are standing together. Multiples tell us when both will meet again."
+      }
+     },
+     {
+      "interest": "nature",
+      "use": {
+       "hi": "School garden mein ek plant ko ek bachcha har 4 din paani deta hai, aur ek doosra bachcha har 10 din. Aaj dono ne saath paani diya. Agli baar saath kab denge, yeh hum nikaalenge.",
+       "en": "In the school garden one child waters a plant every 4 days, and another child every 10 days. Today both watered it together. We will work out when they next do it together."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bell A every 4 min, bell B every 6 min, ring together now → A: 4, 8, 12, 16; B: 6, 12 → together again after 12 min = the smallest common multiple",
+     "mustSay": [
+      {
+       "hi": "sabse chhota common multiple",
+       "en": "smallest common multiple"
+      },
+      {
+       "hi": "12 minute",
+       "en": "12 minutes"
+      }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ghanti A: har 4 minute",
+        "items": [
+         "4, 8, 12, 16"
+        ]
+       },
+       "right": {
+        "title": "Ghanti B: har 6 minute",
+        "items": [
+         "6, 12"
+        ]
+       }
+      }
+     },
+     "point": {
+      "hi": "Ghanti A har 4 minute par bajti hai: 4, 8, 12, 16. Ghanti B har 6 minute par: 6, 12. Dono abhi saath baji, aur agli baar 12 minute baad saath bajengi. 12, 4 aur 6 ka sabse chhota common multiple hai.",
+      "en": "Bell A rings every 4 minutes: 4, 8, 12, 16. Bell B every 6 minutes: 6, 12. Both just rang together, and they ring together next after 12 minutes. 12 is the smallest common multiple of 4 and 6."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "12 minute ke baad, yeh dono ghantiyan shuru se kitne minute par phir saath bajengi?",
+       "en": "After the 12-minute mark, how many minutes from the start will these two bells next ring together?"
+      },
+      "key": "24",
+      "accept": [
+       "chaubees",
+       "chaubis",
+       "twenty-four",
+       "twenty four",
+       "24 minute"
+      ]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "bus every 8 min, bus every 12 min → lists start 8, 16, … and 12, … → the child continues both lists to the first common number; 8 × 12 = 96 is common but far later → add the smallest common multiple to the start time",
+     "mustSay": [
+      {
+       "hi": "8 × 12 = 96",
+       "en": "8 × 12 = 96"
+      },
+      {
+       "hi": "pehla common number",
+       "en": "first common number"
+      }
+     ],
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bus 1: har 8 minute",
+        "items": [
+         "8, 16"
+        ]
+       },
+       "right": {
+        "title": "Bus 2: har 12 minute",
+        "items": [
+         "12"
+        ]
+       }
+      }
+     },
+     "point": {
+      "hi": "Bus 1 har 8 minute par chalti hai: 8, 16, aur aage. Bus 2 har 12 minute par: 12, aur aage. 8 × 12 = 96 bhi common hai, par hum 96 tak nahi rukte. Dono liston ko aage badhao aur pehla common number dhoondho.",
+      "en": "Bus 1 leaves every 8 minutes: 8, 16, and on. Bus 2 every 12 minutes: 12, and on. 8 × 12 = 96 is also common, but we do not wait till 96. Continue both lists and find the first common number."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Har 8 minute aur har 12 minute wali yeh dono bus 10:00 baje saath chali. Agli baar dono kitne baje saath chalengi?",
+       "en": "These two buses, every 8 minutes and every 12 minutes, left together at 10:00. At what time will both next leave together?"
+      },
+      "key": "10:24",
+      "accept": [
+       "24 minute baad",
+       "10 baj kar 24 minute",
+       "10:24 am",
+       "24 minutes later"
+      ],
+      "targets": "c5-maths-ch13-t01-m-product-only",
+      "wrongIfMis": "11:36"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Vikram school garden ko har 4 din paani deta hai aur Sana har 10 din. Dono ne 1 June ko saath paani diya. Agli baar dono kis date ko saath paani denge?",
+     "en": "Vikram waters the school garden every 4 days and Sana every 10 days. Both watered it on 1 June. On which date will they next water it on the same day?"
+    },
+    "givens": [
+     {
+      "hi": "Vikram ka gap har 4 din",
+      "en": "Vikram: every 4 days"
+     },
+     {
+      "hi": "Sana ka gap har 10 din",
+      "en": "Sana: every 10 days"
+     },
+     {
+      "hi": "1 June ko dono saath",
+      "en": "together on 1 June"
+     }
+    ],
+    "find": {
+     "hi": "agli date jab dono saath paani denge",
+     "en": "the next date both water on the same day"
+    },
+    "steps": [
+     {
+      "do": {
+       "hi": "dono ke din likho, 4 ke multiples aur 10 ke multiples",
+       "en": "Write both lists of days, multiples of 4 and multiples of 10"
+      },
+      "result": "Vikram: 4, 8, 12, 16, 20; Sana: 10, 20",
+      "why": {
+       "hi": "har ek ka paani dene ka din uski gap ka multiple hota hai",
+       "en": "each child's watering day is a multiple of their gap"
+      }
+     },
+     {
+      "do": {
+       "hi": "dono liston ka pehla common number lo",
+       "en": "Take the first common number of both lists"
+      },
+      "result": "20 din, 40 nahi",
+      "why": {
+       "hi": "20 dono mein pehle aata hai, 4 × 10 = 40 baad mein",
+       "en": "20 comes first in both; 4 × 10 = 40 comes later"
+      }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Ab 1 June mein 20 din jodo. Kaunsi date aayegi?",
+      "en": "Now add 20 days to 1 June. Which date is it?"
+     },
+     "key": "21 June",
+     "accept": [
+      "21",
+      "21 june",
+      "21 tareekh",
+      "21st June"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "11 July"
+    },
+    "answer": {
+     "hi": "Vikram aur Sana agli baar 21 June ko saath paani denge",
+     "en": "Vikram and Sana next water the garden together on 21 June"
+    },
+    "why": {
+     "hi": "20, 4 aur 10 ka sabse chhota common multiple hai, aur 1 June ke 20 din baad 21 June aata hai",
+     "en": "20 is the smallest common multiple of 4 and 10, and 20 days after 1 June is 21 June"
+    },
+    "board": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Vikram: har 4 din",
+       "items": [
+        "4, 8, 12, 16, 20"
+       ]
+      },
+      "right": {
+       "title": "Sana: har 10 din",
+       "items": [
+        "10, 20"
+       ]
+      }
+     }
+    }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Diwali ki ek light har 6 second aur doosri har 15 second par jalti hai. Abhi dono saath jali. Kitne second baad dono phir saath jalengi?",
+      "en": "One Diwali light flashes every 6 seconds and another every 15 seconds. Both just flashed together. After how many seconds will both flash together again?"
+     },
+     "key": "30",
+     "accept": [
+      "tees",
+      "thirty",
+      "30 second",
+      "30 seconds"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "90",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Light 1",
+        "items": [
+         "har 6 second"
+        ]
+       },
+       "right": {
+        "title": "Light 2",
+        "items": [
+         "har 15 second"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Stand se ek bus har 12 minute aur ek auto har 18 minute par chalta hai. Dono 8:00 baje saath chale. Agli baar kitne baje saath chalenge?",
+      "en": "A bus leaves the stand every 12 minutes and an auto every 18 minutes. Both left together at 8:00. At what time will they next leave together?"
+     },
+     "key": "8:36",
+     "accept": [
+      "36 minute baad",
+      "8 baj kar 36 minute",
+      "8:36 am",
+      "36 minutes later"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "11:36",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Bus",
+        "items": [
+         "har 12 minute"
+        ]
+       },
+       "right": {
+        "title": "Auto",
+        "items": [
+         "har 18 minute"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek ghanti har 5 minute aur doosri ghanti har 10 minute par bajti hai, aur abhi dono saath baji. Kya woh agli baar 50 minute baad hi saath bajengi, haan ya nahi?",
+      "en": "One bell rings every 5 minutes and another bell every 10 minutes, and both just rang together. Will they next ring together only after 50 minutes, yes or no?"
+     },
+     "key": "No",
+     "accept": [
+      "nahi",
+      "nahin",
+      "no",
+      "nahi, 10 minute baad",
+      "no, after 10 minutes"
+     ],
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "wrongIfMis": "Yes",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ghanti 1",
+        "items": [
+         "har 5 minute"
+        ]
+       },
+       "right": {
+        "title": "Ghanti 2",
+        "items": [
+         "har 10 minute"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "ladder": [
+    {
+     "itemId": "c5-maths-ch13-t01-i05",
+     "why": "predict before listing: jumpers 4 and 6 meet at 24 → no, at 12"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i09",
+     "why": "bells every 6 and 9 minutes from 10:00 → next together at 10:18"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-i10",
+     "why": "far transfer: bus every 15, auto every 10 from 9:00 → 9:30"
+    },
+    {
+     "itemId": "c5-maths-ch13-t01-rl-h3",
+     "why": "harder: displays every 8 and 14 minutes → 56 minutes → 9:56"
+    }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch13-t01-m-product-only",
+     "move": "two timelines side by side, bell every 4 and bell every 6 → write both lists only until a number repeats → 12 comes before 24 → stop at the first match, not at the product",
+     "say": {
+      "hi": "Dono ki list saath likho aur pehla common number milte hi ruk jao. har 4 minute aur har 6 minute wali ghantiyan 12 minute par hi mil jaati hain, 24 tak rukna nahi padta.",
+      "en": "Write both lists side by side and stop at the first common number. The 4-minute and 6-minute bells meet at 12 minutes already; we do not wait till 24."
+     },
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Har 4 minute",
+        "items": [
+         "4, 8, 12"
+        ]
+       },
+       "right": {
+        "title": "Har 6 minute",
+        "items": [
+         "6, 12"
+        ]
+       }
+      }
+     },
+     "then": {
+      "prompt": {
+       "hi": "Ek bus har 8 minute aur ek train har 10 minute par aati hai. Abhi dono saath aayi. Kitne minute baad phir saath aayengi?",
+       "en": "A bus comes every 8 minutes, a train every 10. Both just came together. After how many minutes again together?"
+      },
+      "key": "40",
+      "accept": [
+       "chaalis",
+       "chalis",
+       "forty",
+       "40 minute",
+       "40 minutes"
+      ],
+      "targets": "c5-maths-ch13-t01-m-product-only",
+      "wrongIfMis": "80",
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Bus",
+         "items": [
+          "har 8 minute"
+         ]
+        },
+        "right": {
+         "title": "Train",
+         "items": [
+          "har 10 minute"
+         ]
+        }
+       }
+      }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

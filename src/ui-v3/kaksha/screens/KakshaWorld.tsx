@@ -11,7 +11,7 @@ import { KakshaRoot } from "../Shell.tsx";
 import { HangarView, WorldView } from "../views.tsx";
 import { secureSet, topicOfSkill, world, type Catalog, type WorldSkill } from "../world.ts";
 import { cachedHold } from "../../../child/plan.ts";
-import { readEquipped, rollSnapshot, writeEquipped } from "../memory.ts";
+import { readEquipped, rollSnapshot, secureBeforeToday, writeEquipped } from "../memory.ts";
 import { pushEquipped, syncEquipped } from "../equipSync.ts";
 import { useChildNav } from "./useNav.ts";
 import { useKxGo } from "./go.ts";
@@ -24,7 +24,8 @@ function useWorld() {
   return useMemo(() => {
     const skills: WorldSkill[] = map && !map.hidden ? map.skills : [];
     const now = secureSet(skills);
-    const before = map && !map.hidden ? rollSnapshot(cid, now) : null;
+    // the ledger's stamps when the map carries them (secureSince); the device snapshot only until then
+    const before = map && !map.hidden ? (secureBeforeToday(skills) ?? rollSnapshot(cid, now)) : null;
     const today = world(skills, CATALOG, before ?? undefined);
     const yesterday = before ? world(skills.map((k) => (k.state === "secure" && !before.has(k.skillId) ? { ...k, state: "got_it" as const } : k)), CATALOG) : null;
     return { today, yesterday, hidden: !!map?.hidden, loading, school: map && !map.hidden ? schoolChaptersOf(map) : [],

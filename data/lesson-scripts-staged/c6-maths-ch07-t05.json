@@ -1,0 +1,598 @@
+{
+ "topicId": "c6-maths-ch07-t05",
+ "classLevel": 6,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "bhinn", "en": "fraction" },
+  { "hi": "ansh (upar ka number)", "en": "numerator" },
+  { "hi": "har (neeche ka number)", "en": "denominator" },
+  { "hi": "barabar hisse", "en": "equal parts" },
+  { "hi": "samaan har / common denominator", "en": "common denominator" },
+  { "hi": "barabar bhinn", "en": "equivalent fraction" },
+  { "hi": "jodna", "en": "add" },
+  { "hi": "ghatana", "en": "subtract" },
+  { "hi": "mishrit bhinn", "en": "mixed fraction" },
+  { "hi": "poora", "en": "whole" },
+  { "hi": "bacha hua", "en": "left over" }
+ ],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch07-t05-s1",
+   "hook": {
+    "convey": "same whole in equal parts → every part the same size → adding or taking away = counting parts; the part's name (denominator) never changes; a cake in equal pieces, a drawing sheet in equal boxes",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Ek cake 8 barabar tukdon mein bata hai. Do log usme se tukde lete hain, toh har tukda ek hi size ka hai, isliye bas tukde ginne se pata chal jaata hai ki kitna cake gaya.",
+       "en": "A cake is shared into 8 equal pieces. Two people take pieces from it, and every piece is the same size, so just counting the pieces tells how much cake has gone."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet ko 10 barabar khaanon mein baanto aur kuch khaane colour karo. Har khaana sheet ka 1/10 hai, chahe jitne bhi khaane colour karo.",
+       "en": "Split a drawing sheet into 10 equal boxes and colour some of them. Each box is 1/10 of the sheet, however many boxes you colour."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "bar in 8 equal parts, 3 shaded = 3/8; each part 1/8, all the same size → adding eighths = counting eighths, the denominator stays 8; the child shades 4 more and names the total (not 7/16)",
+     "mustSay": [
+      { "hi": "8 barabar hisse", "en": "8 equal parts" },
+      { "hi": "har hissa 1/8", "en": "each part 1/8" }
+     ],
+     "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 3, "whole": "bar" } },
+     "point": {
+      "hi": "Is bar ke 8 barabar hisse hain aur 3 hisse rangin hain, yaani 3/8. Har hissa 1/8 hai, aur sab hisse ek hi size ke hain. Jab hisse ek size ke hon, toh jodne ka matlab hai hisse ginna, aur hisse ka naam, yaani denominator, wahi rehta hai.",
+      "en": "This bar has 8 equal parts and 3 parts are coloured, that is 3/8. Each part is 1/8, and all the parts are the same size. When the parts are the same size, adding means counting parts, and the name of the part, the denominator, stays the same."
+     },
+     "ask": {
+      "prompt": { "hi": "Is bar ke 4 aur hisse bhi rang do, yaani 3/8 mein 4/8 jodo. Ab bar ka kitna hissa rangin hai?", "en": "Colour 4 more parts of this bar, that is, add 4/8 to 3/8. How much of the bar is coloured now?" },
+      "key": "7/8",
+      "accept": ["7 by 8", "seven eighths"],
+      "targets": "c6-maths-ch07-t05-m-add-across",
+      "wrongIfMis": "7/16"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "taking away on a 0-1 line in tenths: 7/10 is the 7th mark after 0; taking away 3/10 = going back 3 gaps; the gap size does not change, so the denominator stays 10; the child takes 6/10 from 8/10",
+     "mustSay": [
+      { "hi": "10 barabar gap", "en": "10 equal gaps" },
+      { "hi": "denominator wahi rehta hai", "en": "the denominator stays the same" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "den": 10, "from": 0, "to": 1, "marks": [{ "num": 7, "label": "7/10" }] } },
+     "point": {
+      "hi": "Is line par 0 se 1 tak 10 barabar gap hain, har gap 1/10. 7/10 ka nishaan 0 ke baad saatvaan nishaan hai. Isme se 3 gap peeche aao, toh tumne teen dasve hisse ghataye. Gap ka size nahi badla, isliye denominator wahi rehta hai, 10.",
+      "en": "On this line there are 10 equal gaps from 0 to 1, each gap 1/10. The 7/10 mark is the 7th mark after 0. Go back 3 gaps from it, and you have taken away three tenths. The size of a gap did not change, so the denominator stays the same, 10."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi line par 8/10 mein se 6/10 ghatao. Kitna bacha?", "en": "On this same line, take 6/10 away from 8/10. How much is left?" },
+      "key": "2/10",
+      "accept": ["1/5", "2 by 10", "two tenths"]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Gopal ne ek deewar ka 2/11 hissa subah paint kiya aur usi deewar ka 5/11 hissa dopahar mein. Deewar ka kitna hissa paint hua, aur kitna abhi bacha hai?",
+     "en": "Gopal painted 2/11 of a wall in the morning and 5/11 of the same wall in the afternoon. How much of the wall is painted, and how much is still left?"
+    },
+    "givens": [
+     { "hi": "deewar 11 barabar hisson mein bati hai", "en": "the wall is in 11 equal parts" },
+     { "hi": "subah 2/11 aur dopahar mein 5/11 paint hua", "en": "2/11 was painted in the morning and 5/11 in the afternoon" }
+    ],
+    "find": { "hi": "paint hua hissa aur bacha hua hissa", "en": "the part painted and the part left" },
+    "steps": [
+     {
+      "do": { "hi": "Subah aur dopahar ka kaam jodo", "en": "Add the morning's and the afternoon's work" },
+      "result": "paint hua: 2/11 + 5/11 = 7/11",
+      "why": { "hi": "dono gyarahve hisse hain, ek hi size ke, toh sirf upar ke number jodte hain", "en": "both are elevenths, the same size, so only the top numbers are added" }
+     },
+     {
+      "do": { "hi": "Poori deewar ko gyarahve hisson mein likho", "en": "Write the whole wall in elevenths" },
+      "result": "poori deewar = 11/11",
+      "why": { "hi": "poori deewar mein saare 11 barabar hisse aate hain", "en": "the whole wall has all 11 equal parts in it" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Poori deewar 11/11 hai aur 7/11 paint ho chuki hai. Deewar ka kitna hissa bacha hai?", "en": "The whole wall is 11/11 and 7/11 is already painted. How much of the wall is left?" },
+     "key": "4/11",
+     "accept": ["4 by 11", "four elevenths"]
+    },
+    "answer": { "hi": "deewar ka 7/11 hissa paint hua aur 4/11 hissa bacha hai", "en": "7/11 of the wall is painted and 4/11 is left" },
+    "why": {
+     "hi": "hisse ek hi size ke hain, isliye sirf hisson ki ginti jodi aur ghatayi, aur denominator 11 wahi raha",
+     "en": "the parts are the same size, so only the count of parts was added and taken away, and the denominator stayed 11"
+    },
+    "board": { "template": "fraction-parts@1", "params": { "parts": 11, "shade": 7, "whole": "bar" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Salma ne ek bottle ka 2/9 juice piya aur Deepak ne usi bottle ka 5/9. Dono ne milkar bottle ka kitna hissa piya?",
+      "en": "Salma drank 2/9 of a bottle of juice and Deepak drank 5/9 of the same bottle. How much of the bottle did they drink together?"
+     },
+     "key": "7/9",
+     "accept": ["7 by 9", "seven ninths"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "7/18",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Salma", "items": ["2/9"] }, "right": { "title": "Deepak", "items": ["5/9"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek kyari ke 1/8 hisse mein gende lage hain, 2/8 mein gulab aur 3/8 mein tulsi. Kyari ka kitna hissa bhar gaya?",
+      "en": "In a flower bed, marigolds fill 1/8, roses 2/8 and tulsi 3/8. How much of the bed is filled?"
+     },
+     "key": "6/8",
+     "accept": ["3/4", "6 by 8", "six eighths"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "6/24",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Kyari", "items": ["gende 1/8", "gulab 2/8", "tulsi 3/8"] }, "right": { "title": "Bhar gaya", "items": ["kitna"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t05-i01", "why": "plainest same-denominator sum: sevenths, count the parts" },
+    { "itemId": "c6-maths-ch07-t05-i02", "why": "same denominator, taking away: eighths" },
+    { "itemId": "c6-maths-ch07-t05-rl-o1", "why": "same denominator in a situation: two amounts of phone data in tenths of a GB" },
+    { "itemId": "c6-maths-ch07-t05-rl-h1", "why": "two steps in fifteenths: take away a trip, add back a refund, then simplify" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "move": "same bar, shading grows: 1/5 then 2/5 more → 3 parts shaded, each part still a fifth → the part size never doubles, so the denominator stays 5",
+     "say": {
+      "hi": "Is bar ke 5 barabar hisse hain: 1/5 aur 2/5 milkar 3 hisse rangte hain, aur har hissa ab bhi 1/5 hi hai. Isliye jawab 3/5 hai, 3/10 nahi, kyunki hisse ka size nahi badla.",
+      "en": "This bar has 5 equal parts: 1/5 and 2/5 together colour 3 parts, and each part is still 1/5. So the answer is 3/5, not 3/10, because the size of a part did not change."
+     },
+     "board": { "template": "fraction-parts@1", "params": { "parts": 5, "shade": 3, "whole": "bar" } },
+     "then": {
+      "prompt": {
+       "hi": "Jug mein 2/7 litre doodh tha aur 4/7 litre aur daala. Ab jug mein kitna doodh hai?",
+       "en": "A jug had 2/7 litre of milk and 4/7 litre more was poured in. How much milk is in the jug now?"
+      },
+      "key": "6/7 litre",
+      "accept": ["6/7", "6 by 7", "six sevenths"],
+      "targets": "c6-maths-ch07-t05-m-add-across",
+      "wrongIfMis": "6/14 litre",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Tha", "items": ["2/7 litre"] }, "right": { "title": "Daala", "items": ["4/7 litre"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab tak saare hisse ek hi size ke the. Agle hisse mein aise bhinn jodenge jinke hisse alag size ke hain, jaise aadha aur tihai.",
+    "en": "So far all the parts were the same size. In the next part we will add fractions whose parts are different sizes, like a half and a third."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch07-t05-s2",
+   "hook": {
+    "convey": "parts of different sizes cannot be counted together → first change both into the same-size parts (common denominator), changing top and bottom by the same factor, then add or take away; half a cup and a quarter cup in a recipe, part of a game level",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Recipe mein aadha cup doodh aur chauthai cup paani daalna hai. Aadha aur chauthai alag size ke hisse hain, isliye kul kitna hua, yeh jaanne ke liye dono ko ek jaise hisson mein badalna padta hai.",
+       "en": "A recipe needs half a cup of milk and a quarter cup of water. A half and a quarter are different-size parts, so to know the total, both have to be changed into the same kind of parts."
+      }
+     },
+     {
+      "interest": "games",
+      "use": {
+       "hi": "Game ka ek level kal thoda aur aaj thoda khela. Kal tihai hissa poora hua aur aaj aadha, toh dono ko ek jaise hisson mein likhkar hi pata chalega ki level ka kitna hissa ho gaya.",
+       "en": "You played some of a game level yesterday and some today. Yesterday a third got done and today a half, so only by writing both in the same kind of parts will you know how much of the level is done."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "one 0-1 line, quarters above, eighths below: the 1/4 mark sits on the 2/8 mark → 1/4 = 2/8; each quarter = 2 eighths, so the top changes by the same factor as the bottom; the child renames 3/4 in eighths (not 3/8)",
+     "mustSay": [
+      { "hi": "1/4 = 2/8", "en": "1/4 = 2/8" },
+      { "hi": "upar aur neeche dono", "en": "both the top and the bottom" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "dens": [4, 8], "from": 0, "to": 1, "marks": [[1, 4], [2, 8]] } },
+     "point": {
+      "hi": "Is line par upar 0 se 1 tak 4 barabar hisse hain, aur neeche 8. Dekho, 1/4 ka nishaan aur 2/8 ka nishaan ek hi jagah par hain, yaani 1/4 = 2/8. Neeche ka 4 do guna hokar 8 bana, toh upar ka 1 bhi do guna hua. Upar aur neeche dono ko ek hi number se guna karte hain.",
+      "en": "On this line there are 4 equal parts from 0 to 1 above, and 8 below. Look, the 1/4 mark and the 2/8 mark are at the same place, that is, 1/4 = 2/8. The bottom 4 doubled to become 8, so the top 1 doubled too. Both the top and the bottom are multiplied by the same number."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi line par 3/4 kitne aathve hisson ke barabar hai? Jawab aathve hisson wali bhinn mein do.", "en": "On this same line, 3/4 equals how many eighths? Give the answer as a fraction in eighths." },
+      "key": "6/8",
+      "accept": ["6 by 8", "6 eighths", "six eighths"],
+      "targets": "c6-maths-ch07-t05-m-change-only-den",
+      "wrongIfMis": "3/8"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "1/2 + 1/3: a half and a third are different sizes → on a line in sixths 1/2 = 3/6 and 1/3 = 2/6 → 3/6 + 2/6 = 5/6, never 2/5; the child adds 1/2 + 1/6 on the same line",
+     "mustSay": [
+      { "hi": "1/2 = 3/6", "en": "1/2 = 3/6" },
+      { "hi": "1/3 = 2/6", "en": "1/3 = 2/6" },
+      { "hi": "chhathe hisse", "en": "sixths" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "den": 6, "from": 0, "to": 1, "marks": [{ "num": 2, "label": "2/6 = 1/3" }, { "num": 3, "label": "3/6 = 1/2" }] } },
+     "point": {
+      "hi": "Ab 1/2 + 1/3 jodna hai. Aadha aur tihai alag size ke hisse hain, isliye seedha nahi jud sakte. Is line par 0 se 1 tak 6 barabar gap hain: 1/2 yahan 3/6 par hai aur 1/3, 2/6 par. Ab dono chhathe hisse hain, toh 3/6 + 2/6 = 5/6. Neeche ke number kabhi nahi jodte.",
+      "en": "Now we add 1/2 + 1/3. A half and a third are different-size parts, so they cannot be added straight away. On this line there are 6 equal gaps from 0 to 1: 1/2 is at 3/6 here and 1/3 at 2/6. Now both are sixths, so 3/6 + 2/6 = 5/6. The bottom numbers are never added."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi line par 1/2 + 1/6 kitna hai?", "en": "On this same line, what is 1/2 + 1/6?" },
+      "key": "4/6",
+      "accept": ["2/3", "4 by 6", "four sixths"],
+      "targets": "c6-maths-ch07-t05-m-add-across",
+      "wrongIfMis": "2/8"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "no line at hand → find the common denominator from the tables: 5 and 4 both reach 20 → 2/5 = 8/20 (× 4 top and bottom), 1/4 = 5/20 (× 5) → 8/20 + 5/20 = 13/20; the child does 3/5 − 1/4 the same way (not 2/20)",
+     "mustSay": [
+      { "hi": "20", "en": "20" },
+      { "hi": "2/5 = 8/20", "en": "2/5 = 8/20" },
+      { "hi": "1/4 = 5/20", "en": "1/4 = 5/20" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "2/5", "items": ["8/20"] }, "right": { "title": "1/4", "items": ["5/20"] } } },
+     "point": {
+      "hi": "Jab line na ho, tab tables se samaan har dhoondho. 2/5 + 1/4 mein 5 aur 4 dono ki table mein 20 aata hai. 2/5 ke upar aur neeche ko 4 se guna karo, toh 2/5 = 8/20. 1/4 ke upar aur neeche ko 5 se guna karo, toh 1/4 = 5/20. Ab 8/20 + 5/20 = 13/20.",
+      "en": "When there is no line, find the common denominator from the tables. In 2/5 + 1/4, 20 comes in the tables of both 5 and 4. Multiply the top and bottom of 2/5 by 4, and 2/5 = 8/20. Multiply the top and bottom of 1/4 by 5, and 1/4 = 5/20. Now 8/20 + 5/20 = 13/20."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi tarah 3/5 − 1/4 kitna hai?", "en": "In the same way, what is 3/5 − 1/4?" },
+      "key": "7/20",
+      "accept": ["7 by 20", "seven twentieths"],
+      "targets": "c6-maths-ch07-t05-m-change-only-den",
+      "wrongIfMis": "2/20"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Kheer mein 3/4 cup doodh aur 1/6 cup malai daali gayi. Kheer mein kul kitne cup doodh aur malai hai?",
+     "en": "3/4 cup of milk and 1/6 cup of cream went into the kheer. How many cups of milk and cream are in the kheer altogether?"
+    },
+    "givens": [
+     { "hi": "doodh 3/4 cup hai", "en": "the milk is 3/4 cup" },
+     { "hi": "malai 1/6 cup hai", "en": "the cream is 1/6 cup" }
+    ],
+    "find": { "hi": "3/4 + 1/6, yaani kul kitne cup", "en": "3/4 + 1/6, that is, how many cups in all" },
+    "steps": [
+     {
+      "do": { "hi": "4 aur 6 dono ki table mein aane wala sabse chhota number dhoondho", "en": "Find the smallest number in the tables of both 4 and 6" },
+      "result": "samaan har 12",
+      "why": { "hi": "4 × 3 = 12 aur 6 × 2 = 12", "en": "4 × 3 = 12 and 6 × 2 = 12" }
+     },
+     {
+      "do": { "hi": "3/4 ke upar aur neeche dono ko 3 se guna karo", "en": "Multiply both the top and the bottom of 3/4 by 3" },
+      "result": "3/4 = 9/12",
+      "why": { "hi": "neeche 3 guna hua toh upar bhi 3 guna hona chahiye, tabhi bhinn ki value wahi rehti hai", "en": "the bottom was multiplied by 3, so the top must be too; only then does the fraction keep its value" }
+     },
+     {
+      "do": { "hi": "1/6 ke upar aur neeche dono ko 2 se guna karo", "en": "Multiply both the top and the bottom of 1/6 by 2" },
+      "result": "1/6 = 2/12",
+      "why": { "hi": "6 ko 12 banane ke liye 2 se guna karna padta hai", "en": "6 has to be multiplied by 2 to make 12" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab dono barahve hisse hain. 9/12 aur 2/12 jodo. Kitna hua?", "en": "Now both are twelfths. Add 9/12 and 2/12. How much is it?" },
+     "key": "11/12",
+     "accept": ["11 by 12", "eleven twelfths"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "11/24"
+    },
+    "answer": { "hi": "kheer mein kul 11/12 cup doodh aur malai hai", "en": "there are 11/12 cup of milk and cream in the kheer altogether" },
+    "why": {
+     "hi": "dono ko barahve hisson mein badal kar hi joda, aur 11/12, 3/4 se zyada aur 1 se kam hai, jo theek baithta hai",
+     "en": "both were changed into twelfths before adding, and 11/12 is more than 3/4 and less than 1, which makes sense"
+    },
+    "board": { "template": "fraction-line@1", "params": { "den": 12, "from": 0, "to": 1, "marks": [{ "num": 2, "label": "2/12 = 1/6" }, { "num": 9, "label": "9/12 = 3/4" }] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek jug mein 2/5 litre paani hai. Usme 1/3 litre paani aur daala. Ab jug mein kitna paani hai?",
+      "en": "A jug has 2/5 litre of water. 1/3 litre more water is poured in. How much water is in the jug now?"
+     },
+     "key": "11/15 litre",
+     "accept": ["11/15", "11 by 15", "eleven fifteenths"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "3/8 litre",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["2/5 litre"] }, "right": { "title": "Daala", "items": ["1/3 litre"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek bottle mein 7/8 litre doodh tha. Chai mein 1/2 litre doodh lag gaya. Bottle mein kitna doodh bacha?",
+      "en": "A bottle had 7/8 litre of milk. 1/2 litre of milk went into the tea. How much milk is left in the bottle?"
+     },
+     "key": "3/8 litre",
+     "accept": ["3/8", "3 by 8", "three eighths"],
+     "targets": "c6-maths-ch07-t05-m-change-only-den",
+     "wrongIfMis": "6/8 litre",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Bottle mein", "items": ["7/8 litre"] }, "right": { "title": "Chai mein", "items": ["1/2 litre"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "{friend} ne sawaal 1/3 + 1/4 ka jawab 2/7 likha. Sahi jawab kitna hai?",
+      "en": "{friend} wrote 2/7 as the answer to the question 1/3 + 1/4. What is the correct answer?"
+     },
+     "key": "7/12",
+     "accept": ["7 by 12", "seven twelfths"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "2/7",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Sawaal", "items": ["1/3 + 1/4"] }, "right": { "title": "Likha", "items": ["2/7"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t05-i03", "why": "first unlike sum: one denominator already fits the other, 1/2 + 1/4" },
+    { "itemId": "c6-maths-ch07-t05-i12", "why": "same idea on a fraction strip in eighths: 1/4 covers 2 eighths" },
+    { "itemId": "c6-maths-ch07-t05-i05", "why": "error-spot: 2/5 for 1/2 + 1/3, judged by sense (less than 1/2) and redone" },
+    { "itemId": "c6-maths-ch07-t05-i07", "why": "taking away with twelfths: 2/3 − 1/4, both fractions renamed" },
+    { "itemId": "c6-maths-ch07-t05-rl-h2", "why": "unlike take-away in a recipe: how much more oats to add" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "move": "sense first, on a line with halves above and fifths below: 2/5 sits before 1/2, but 1/2 litre plus 1/3 litre must be more than 1/2 litre → adding the bottoms cannot be right → change to same-size parts first",
+     "say": {
+      "hi": "Is line par 2/5 ka nishaan 1/2 se pehle hai, par 1/2 litre mein 1/3 litre aur daalne par paani 1/2 litre se zyada hi hoga. Isliye neeche ke number nahi jodte, pehle dono ko ek size ke hisson mein badalte hain.",
+      "en": "On this line the 2/5 mark comes before 1/2, but pouring 1/3 litre more into 1/2 litre must give more than 1/2 litre. So the bottom numbers are not added; first both are changed into same-size parts."
+     },
+     "board": { "template": "fraction-line@1", "params": { "dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 2], [2, 5]] } },
+     "then": {
+      "prompt": {
+       "hi": "Jug mein 1/5 litre paani hai. Usme 1/2 litre aur daala. Ab jug mein kitna paani hai?",
+       "en": "A jug has 1/5 litre of water. 1/2 litre more is poured in. How much water is in the jug now?"
+      },
+      "key": "7/10 litre",
+      "accept": ["7/10", "7 by 10", "seven tenths"],
+      "targets": "c6-maths-ch07-t05-m-add-across",
+      "wrongIfMis": "2/7 litre",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Jug mein", "items": ["1/5 litre"] }, "right": { "title": "Daala", "items": ["1/2 litre"] } } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch07-t05-m-change-only-den",
+     "move": "a half laid over a line in sixths: the half covers 3 sixths, not 1 → 1/2 = 3/6; the bottom × 3 means the top × 3 too",
+     "say": {
+      "hi": "Line par dekho, 1/2 ka nishaan 3/6 par aata hai, 1/6 par nahi, kyunki ek aadhe mein 3 chhathe hisse samaate hain. Neeche ko 3 se guna kiya, toh upar ko bhi 3 se guna karna padta hai.",
+      "en": "Look at the line: the 1/2 mark comes at 3/6, not at 1/6, because 3 sixths fit in one half. The bottom was multiplied by 3, so the top has to be multiplied by 3 too."
+     },
+     "board": { "template": "fraction-line@1", "params": { "dens": [2, 6], "from": 0, "to": 1, "marks": [[1, 2], [3, 6]] } },
+     "then": {
+      "prompt": {
+       "hi": "1/3 aur 1/9 jodo. Pehle 1/3 ko naven hisson mein badlo. Jod kitna hai?",
+       "en": "Add 1/3 and 1/9. First change 1/3 into ninths. What is the sum?"
+      },
+      "key": "4/9",
+      "accept": ["4 by 9", "four ninths"],
+      "targets": "c6-maths-ch07-t05-m-change-only-den",
+      "wrongIfMis": "2/9",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Jodo", "items": ["1/3", "1/9"] }, "right": { "title": "Badlo", "items": ["naven hisson mein"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab tak sirf 1 se chhote bhinn the. Agle hisse mein mishrit bhinn jodenge aur ghatayenge, jinmein poore bhi hote hain aur ek hissa bhi.",
+    "en": "So far the fractions were all less than 1. In the next part we will add and subtract mixed fractions, which have wholes and a part too."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch07-t05-s3",
+   "hook": {
+    "convey": "mixed fraction = wholes + a part → wholes with wholes, parts with parts (same-size parts first); a part sum past 1 gives one more whole; a part too small to take from borrows one whole; a mountain trek in km, a recipe in cups",
+    "interestSlots": [
+     {
+      "interest": "nature",
+      "use": {
+       "hi": "Pahad ki trekking mein pehle din 2 1/2 km aur doosre din 1 3/4 km chalna hai. Kul doori mein poore km aur km ke hisse, dono alag-alag judte hain.",
+       "en": "On a mountain trek you walk 2 1/2 km on the first day and 1 3/4 km on the second. In the total distance, the whole km and the parts of a km are added separately."
+      }
+     },
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Halwa ki recipe mein 1 1/2 cup sooji aur 3/4 cup cheeni lagti hai. Rasoi mein aise mishrit bhinn roz jode aur ghataye jaate hain.",
+       "en": "A halwa recipe takes 1 1/2 cups of semolina and 3/4 cup of sugar. In the kitchen, mixed fractions like these are added and taken away every day."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "2 1/5 + 1 2/5: wholes 2 + 1 = 3, parts 1/5 + 2/5 = 3/5 → 3 3/5; the child adds 3 1/6 + 2 4/6 the same way",
+     "mustSay": [
+      { "hi": "mishrit bhinn", "en": "mixed fraction" },
+      { "hi": "poore aur hisse", "en": "wholes and parts" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Poore", "items": ["2", "1"] }, "right": { "title": "Hisse", "items": ["1/5", "2/5"] } } },
+     "point": {
+      "hi": "Mishrit bhinn mein poore bhi hote hain aur ek hissa bhi. 2 1/5 + 1 2/5 mein pehle poore jodo: 2 aur 1 se 3 poore. Phir hisse jodo: 1/5 + 2/5 = 3/5. Dono milakar jawab 3 3/5.",
+      "en": "A mixed fraction has wholes and a part too. In 2 1/5 + 1 2/5, first add the wholes: 2 and 1 make 3 wholes. Then add the parts: 1/5 + 2/5 = 3/5. Together the answer is 3 3/5."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi tarah 3 1/6 aur 2 4/6 ko jodo. Jod kitna hai?", "en": "In the same way, add 3 1/6 and 2 4/6. What is the sum?" },
+      "key": "5 5/6",
+      "accept": ["35/6", "5 and 5/6"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "parts that add past 1: 1 3/4 + 2 2/4 → wholes make three, parts 3/4 + 2/4 = 5/4; on the line 4/4 is one whole and 5/4 is one gap past it → 5/4 = 1 1/4 → that new whole joins the wholes → 4 1/4; the child does 1 3/4 + 1 3/4",
+     "mustSay": [
+      { "hi": "4/4 = 1", "en": "4/4 = 1" },
+      { "hi": "5/4 = 1 1/4", "en": "5/4 = 1 1/4" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 2, "marks": [{ "num": 4, "label": "4/4 = 1" }, { "num": 5, "label": "5/4" }] } },
+     "point": {
+      "hi": "1 3/4 + 2 2/4 mein poore jodo toh teen poore hue. Hisse jodo toh 3/4 + 2/4 = 5/4. Line par dekho: 4/4 par ek poora ho jaata hai, aur 5/4 uske baad ek gap aage hai. Yaani 5/4 = 1 1/4, ek naya poora aur 1/4. Yeh naya poora baaki poore mein jodo, toh jawab 4 1/4.",
+      "en": "In 1 3/4 + 2 2/4, adding the wholes gives three wholes. Adding the parts gives 3/4 + 2/4 = 5/4. Look at the line: at 4/4 one whole is complete, and 5/4 is one gap past it. So 5/4 = 1 1/4, a new whole and 1/4. Add this new whole to the other wholes, and the answer is 4 1/4."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab 1 3/4 aur 1 3/4 ko jodo. Jod kitna hai?", "en": "Now add 1 3/4 and 1 3/4. What is the sum?" },
+      "key": "3 2/4",
+      "accept": ["3 1/2", "14/4", "7/2", "3 and a half"]
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "taking away when the part on top is too small: 3 1/5 − 1 3/5 → 3/5 cannot come out of 1/5 → open one whole into 5/5: 3 1/5 = 2 6/5 → wholes 2 − 1 = 1, parts 6/5 − 3/5 = 3/5 → 1 3/5; the child does 6 2/7 − 1 5/7 (not 5 3/7)",
+     "mustSay": [
+      { "hi": "ek poora kholo", "en": "open one whole" },
+      { "hi": "3 1/5 = 2 6/5", "en": "3 1/5 = 2 6/5" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "3 1/5", "items": ["= 2 6/5"] }, "right": { "title": "Nikalo", "items": ["1 3/5"] } } },
+     "point": {
+      "hi": "3 1/5 − 1 3/5 mein 1/5 mein se 3/5 nahi nikal sakta. Isliye 3 poore mein se ek poora kholo, woh 5/5 ban jaata hai: 3 1/5 = 2 6/5. Ab 2 6/5 mein se 1 3/5 nikalo: poore 2 − 1 = 1, aur hisse 6/5 − 3/5 = 3/5. Toh jawab 1 3/5.",
+      "en": "In 3 1/5 − 1 3/5, 3/5 cannot come out of 1/5. So open one of the 3 wholes; it becomes 5/5: 3 1/5 = 2 6/5. Now take 1 3/5 out of 2 6/5: the wholes 2 − 1 = 1, and the parts 6/5 − 3/5 = 3/5. So the answer is 1 3/5."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi tarah 6 2/7 − 1 5/7 kitna hai?", "en": "In the same way, what is 6 2/7 − 1 5/7?" },
+      "key": "4 4/7",
+      "accept": ["32/7", "4 and 4/7"],
+      "targets": "c6-maths-ch07-t05-m-mixed-wholes",
+      "wrongIfMis": "5 3/7"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Sunita ghar se school tak 1 2/3 km paidal gayi, phir school se market tak 2 1/2 km. Usne kul kitni doori tay ki?",
+     "en": "Sunita walked 1 2/3 km from home to school, then 2 1/2 km from school to the market. How far did she go in all?"
+    },
+    "givens": [
+     { "hi": "ghar se school 1 2/3 km", "en": "home to school 1 2/3 km" },
+     { "hi": "school se market 2 1/2 km", "en": "school to market 2 1/2 km" }
+    ],
+    "find": { "hi": "kul doori kitni hai, yaani 1 2/3 + 2 1/2 ka jod", "en": "the total distance, that is, 1 2/3 + 2 1/2" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle poore km jodo", "en": "First add the whole km" },
+      "result": "poore: 1 + 2 = 3",
+      "why": { "hi": "poore aur hisse alag-alag jode ja sakte hain", "en": "the wholes and the parts can be added separately" }
+     },
+     {
+      "do": { "hi": "Hisson ko chhathe hisson mein badlo", "en": "Change the parts into sixths" },
+      "result": "2/3 = 4/6 aur 1/2 = 3/6",
+      "why": { "hi": "3 aur 2 dono ki table mein 6 aata hai, toh dono ek size ke hisse ban jaate hain", "en": "6 comes in the tables of both 3 and 2, so both become same-size parts" }
+     },
+     {
+      "do": { "hi": "Ab hisse jodo", "en": "Now add the parts" },
+      "result": "4/6 + 3/6 = 7/6 = 1 1/6",
+      "why": { "hi": "6/6 se ek poora km banta hai aur 1/6 bachta hai", "en": "6/6 makes one whole km and 1/6 is left over" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 3 poore km mein 1 1/6 km jodo. Kul doori kitni hui?", "en": "Now add 1 1/6 km to the 3 whole km. What is the total distance?" },
+     "key": "4 1/6 km",
+     "accept": ["4 1/6", "25/6", "25/6 km"]
+    },
+    "answer": { "hi": "Sunita ne kul 4 1/6 km doori tay ki", "en": "Sunita went 4 1/6 km in all" },
+    "why": {
+     "hi": "poore alag jode, hisse chhathe hisson mein badal kar jode, aur 7/6 ka ek poora km baaki poore mein mila, aur jawab 3 aur 5 ke beech hai, jo theek baithta hai",
+     "en": "the wholes were added separately, the parts were changed into sixths and added, the whole km from 7/6 joined the other wholes, and the answer is between 3 and 5, which makes sense"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Poore", "items": ["1 + 2 = 3"] }, "right": { "title": "Hisse", "items": ["4/6 + 3/6 = 7/6"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek bori mein 4 1/3 kg chawal tha. Usme se 1 2/3 kg chawal pakaya gaya. Bori mein kitna chawal bacha?",
+      "en": "A sack had 4 1/3 kg of rice. 1 2/3 kg of the rice was cooked. How much rice is left in the sack?"
+     },
+     "key": "2 2/3 kg",
+     "accept": ["2 2/3", "8/3", "8/3 kg"],
+     "targets": "c6-maths-ch07-t05-m-mixed-wholes",
+     "wrongIfMis": "3 1/3 kg",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Bori mein", "items": ["4 1/3 kg"] }, "right": { "title": "Pakaya", "items": ["1 2/3 kg"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Mohan ne pehle din 1 3/4 km aur doosre din 2 2/3 km cycle chalayi. Dono din milakar kitni doori hui?",
+      "en": "Mohan cycled 1 3/4 km on the first day and 2 2/3 km on the second day. What is the distance for both days together?"
+     },
+     "key": "4 5/12 km",
+     "accept": ["4 5/12", "53/12", "53/12 km"],
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "wrongIfMis": "3 5/7 km",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pehle din", "items": ["1 3/4 km"] }, "right": { "title": "Doosre din", "items": ["2 2/3 km"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek pipe 5 m lamba hai. Usme se 2 3/8 m ka tukda alag kiya gaya. Kitna pipe bacha?",
+      "en": "A pipe is 5 m long. A piece 2 3/8 m long was taken off it. How much pipe is left?"
+     },
+     "key": "2 5/8 m",
+     "accept": ["2 5/8", "21/8", "21/8 m"],
+     "targets": "c6-maths-ch07-t05-m-mixed-wholes",
+     "wrongIfMis": "3 3/8 m",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Pipe", "items": ["5 m"] }, "right": { "title": "Alag kiya", "items": ["2 3/8 m"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t05-i09", "why": "unlike parts in a mix: milk and water in litres, a sum under 1" },
+    { "itemId": "c6-maths-ch07-t05-i10", "why": "mixed take-away where the part on top is too small: ribbon for a rakhi stall" },
+    { "itemId": "c6-maths-ch07-t05-rl-h3", "why": "mixed take-away with unlike parts and a borrowed whole: cloth for team flags" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t05-m-mixed-wholes",
+     "move": "ribbons: 2 whole ribbons and a quarter; 3 quarters cannot come from 1 quarter → open one whole ribbon into 4 quarters → 2 1/4 = 1 5/4 → now 3/4 comes out of 5/4",
+     "say": {
+      "hi": "2 1/4 − 3/4 mein 1/4 mein se 3/4 nahi nikalta, toh ek poore ko 4/4 mein kholo: 2 1/4 = 1 5/4. Ab 5/4 mein se 3/4 nikalo, woh aaram se nikal jaata hai.",
+      "en": "In 2 1/4 − 3/4, 3/4 does not come out of 1/4, so open one whole into 4/4: 2 1/4 = 1 5/4. Now take 3/4 out of 5/4; it comes out easily."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "2 1/4", "items": ["= 1 5/4"] }, "right": { "title": "Nikalo", "items": ["3/4"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek rassi 4 1/6 m lambi thi. Usme se 1 5/6 m istemaal hui. Kitni rassi bachi?",
+       "en": "A rope was 4 1/6 m long. 1 5/6 m of it was used. How much rope is left?"
+      },
+      "key": "2 2/6 m",
+      "accept": ["2 1/3 m", "2 2/6", "2 1/3", "7/3", "14/6"],
+      "targets": "c6-maths-ch07-t05-m-mixed-wholes",
+      "wrongIfMis": "3 4/6 m",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Rassi", "items": ["4 1/6 m"] }, "right": { "title": "Istemaal", "items": ["1 5/6 m"] } } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch07-t05-m-add-across",
+     "move": "mixed fractions keep the same rule: wholes with wholes; parts into same-size parts first (halves and thirds into sixths), never bottom + bottom",
+     "say": {
+      "hi": "Mishrit bhinn mein bhi neeche ke number nahi jodte. Poore alag jodo, aur hisson ko pehle ek size ke hisson mein badlo, jaise line par 1/2 = 3/6.",
+      "en": "In mixed fractions too, the bottom numbers are not added. Add the wholes separately, and first change the parts into same-size parts, like 1/2 = 3/6 on the line."
+     },
+     "board": { "template": "fraction-line@1", "params": { "dens": [2, 6], "from": 0, "to": 1, "marks": [[1, 2], [3, 6]] } },
+     "then": {
+      "prompt": {
+       "hi": "Pehli bottle mein 1 1/4 litre aur doosri bottle mein 2 1/2 litre paani hai. Kul kitna paani hai?",
+       "en": "The first bottle has 1 1/4 litres of water and the second bottle 2 1/2 litres. How much water is there in all?"
+      },
+      "key": "3 3/4 litre",
+      "accept": ["3 3/4", "15/4", "15/4 litre"],
+      "targets": "c6-maths-ch07-t05-m-add-across",
+      "wrongIfMis": "3 2/6 litre",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Pehli bottle", "items": ["1 1/4 litre"] }, "right": { "title": "Doosri bottle", "items": ["2 1/2 litre"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

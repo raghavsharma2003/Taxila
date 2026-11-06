@@ -7978,3 +7978,175 @@ The encoder is `opusscript` (MIT, libopus in WASM). Adding it is a dependency pa
 ## `dc-r7-voice-child-text-seam` — the child's words, in-process, for Studio's speculative builds (2026-11-05)
 
 Studio's M4 policy re-ranks and invalidates pre-built pieces from what the child is saying. Its build decisions live server-side, so the seam is a server emitter, not a client event. Finals are the reliable source on every lane. D5's default ear gives one final per turn, so partials are a pure speed-up where the ear provides them (D4, or a delta-streaming D5 ear); they are off by default because each one is a request. Nothing distress-shaped is ever passed on, so nothing is built from a disclosure. Tests: tests/r7-voice-child-text.test.mjs.
+
+
+<!-- merged from inbox/r7-main-14.json -->
+## `dc-r7-script-walk-v5`
+
+(board/speech sync, and child requests as moves)
+
+Nothing here needs a format change beyond v2.2 (all four judges agree). **The reversal is not relevant**: the teaching layer passes.
+
+**Runtime** (Brain, with Studio):
+- **B1. One board per description.**
+  - A turn's speech is split into segments, each tagged with the board it describes: remediation say, then-card, closure, recap.
+  - Brain sends segment boundaries (clause index + board ref); Studio switches the board at each boundary, timed by Voice's word onsets (PR #62) or the clause boundary.
+  - The "Toh poora jawab" closure is spoken before the switch to the next card's board.
+  - A recap is spoken only when its board is the one on screen; otherwise it is dropped.
+- **B2. Child requests are moves, never grades.**
+  - "samajh nahi aaya" → a smaller re-explanation, in other words or on another board, not a repeat.
+  - "phir se bolo" or "sawaal kya hai" → re-pose the card, with no verdict.
+  - "pehle main try karun" → the next step is handed over as a card.
+  - A picture request → the live card's board is redrawn (never nothing).
+- **B3. Real returns.**
+  - A parked aside is answered with one line of real content before the wrap, tied back to the lesson when it fits. No stub.
+  - A language promise is a mode that holds for the lesson.
+- **B4. The authored bridge or hook is spoken** at every change of skill.
+- **B5. Render hygiene.**
+  - One verdict sentence per turn.
+  - Keys are spoken from the authored key or accept forms (the `keyInLang` fix, with a test over every key).
+  - A close says the answer and its why.
+  - A turn is at most about 60 words, except a worked step.
+  - Her lead-in never restates a wrong method as her own.
+
+**Studio:**
+- **S1.** Check and compare boards never draw a stated number as "?". Only the asked value is "?".
+- **S2.** Segment-timed board switching, as in B1.
+- **S3.** A picture request always draws the live card's board.
+
+**Data, v2.2 fixes** (Learning; no format change):
+- c4 s1-e3's ask fits its board.
+- c5-t02's remediation pairs differ from its check pairs.
+- c5-t01 s2 e2's point carries its must-say, and s3's then-card is written as speech.
+- c6 skill-1 then-cards use a fresh figure.
+
+**Harness** (Brain, with Learning):
+- the contradiction checker is per segment, against the board shown during that segment;
+- "sawaal kya hai" and "phir se bolo" are never counted as keyed answers;
+- the child's events fire only in context.
+
+**Next run: director8.** The same 16 lessons, and a cap sized from the dry run (about $0.85).
+
+**The gate:**
+- unchanged:
+  - ≥ 80% taught;
+  - ≥ 90% verdicts;
+  - 0 contradictions;
+  - 0 right called wrong;
+  - 0 wrong called right;
+  - every judge axis ≥ 3.5;
+- **plus: 0 false keys spoken.**
+
+Learning's staged batch and Studio's 011 stay held until director8 passes.
+
+
+<!-- merged from inbox/r7-app-19.json -->
+## `dc-r7-app-secure-since`
+What became pakka today is now the ledger's fact, not one device's memory. A child who learns on the tablet sees the same 'new today' on the phone. Until the migration is applied everywhere, the device snapshot still fills in.
+
+
+<!-- merged from inbox/r7-brain-15.json -->
+## `dc-r7-script-versions-one-list` (2026-11-05, stream A Brain)
+
+Script versions now come from one exported list, SCRIPT_VERSIONS.
+- validateTopicScript rejects any version outside SCRIPT_VERSIONS.
+- WALK_VERSIONS is built from SCRIPT_VERSIONS.
+- tests/r7-brain-live-scripts.test.mjs runs scriptWhyNot over every file in data/lesson-scripts.
+
+**Why:** director6 and director7 both reached their run start on a script version the Director did not walk.
+
+**Effect:** a new data version must add its SCRIPT_VERSIONS entry and its validator rules in the same change, or CI fails on that branch.
+
+**Reverse this if** scripts ever need a version the Director validates but deliberately does not walk. That would need a second, named list with its own test.
+
+
+<!-- merged from inbox/r7-face-13.json -->
+## `dc-r7-face-react-think-from-speech-end` (2026-11-05)
+Main's ask: the wait between the child's last word and her reply should read as listening and then thinking. Brain measured about 3 s from the child's last word to her reply, about 1.5 s of which cannot easily be removed.
+- **What already existed.** Without any change, the face already listens while the child talks: the listening state for the whole utterance, eye contact (gaze yaw range about 3°), small nods (the mic-level Listener), a tilt, blinks at the listening rate, and a held parted-lips pose (jaw 0.13, still, not speech). It already thinks once the floor reads thinking: expressions released within 300 ms, then a cognitive look-away (gaze pitch swings about 25°) and the K1 receipt nod.
+- **The gap.** The lesson floor reads `heard` from the end of the child's speech until the transcript lands, about 0.4 s in the scripted lesson and often longer live. `faceStatusOf` mapped `heard` to listening. So for the first ~20% of every wait her face still held the listening face, parted lips included.
+- **Now, behind `TAXILA_R7_FACE_REACT`** (server env, exactly `1`, sent as `react` on GET /api/face/config; `?react=1` / `?react=0` set it per device; off by default):
+  - `heard` maps to thinking (`src/ui/teacher/floor.ts`, moved out of `Teacher.tsx` so it is unit-testable). Thinking now starts within 1-2 frames of the end of the child's speech.
+  - Entering thinking takes one breath (`driver.ts` `THINK_INHALE`: +0.9 of the idle breath's amplitude over 1.4 s, a raised sine). It never runs under reduced motion or in a safety turn, and it is cut at her first audio frame.
+  - Weak phones on the lite path have no live stage, so none of this runs there.
+- **Verdict-blind, and proven.** Nothing in the face path reads an answer. `tests/r7-face-verdict-blind.test.mjs` (AT-F12, the face-side sibling of AT-U12) shows three things. First, the face is a pure function of its inputs: two drivers fed the same listen → heard → thinking → reply sequence draw byte-identical frames (pose, timing, magnitude, breath), with the flag on and off. Second, no input carries the answer: the driver's input is {nowMs, tap, status, childLevel}, the floor mapping takes the floor and the flag only, and no face-path module names a verdict in code. Third, on the real runtime the script's "correct" and "not yet" turns think alike. Main's third item, a verdict-coloured face, was **dropped** (main, option a, 2026-11-05). It contradicted `design-v2-face-verdict-neutral` and `design-v2-rejected-correctness-face`: it is a farmable social reward and leaks covert checks, and that decision's reversal condition (a pilot with ≥ 20% unsure) has not been met. The verdict stays on the work and in her words.
+- **Reversal condition.** A child pilot reads the early thinking face as "she isn't listening any more" (for example, the child starts again more often after a `heard`). In that case keep the flag off.
+
+
+<!-- merged from inbox/r7-face-14.json -->
+## `dc-r7-face-worker-context-loss-rebuild` (2026-11-06)
+This helps every look (main: "keep improving whatever helps every look"). It is row 8 of the low-end-phone needs-live list.
+- **The gap.** Since `dc-r7-face-rig-worker` the rig draws in an OffscreenCanvas worker by default. The worker reported a GL context loss as `lost`, and the stage turned that into an immediate fallback. Android routinely loses GL contexts when the child switches apps. So one trip to another app put her on her still for the rest of the page, and `failedThisPage` kept later mounts on it too. The main-thread path already rebuilds once (`stage.ts` `onRestored`).
+- **Now.**
+  - On a loss, the worker drops its rig. On `webglcontextrestored` it rebuilds the rig on the same canvas with `loadRigChunked` (the pack is in the HTTP cache) and posts `restored`.
+  - The worker answers every frame. A frame that arrives without a rig is answered as skipped, so the main side's one-in-flight queue (`remoteRig.ts`) can never stick.
+  - The stage's loss handling is now one `lost(where)` for both paths: hide the canvas (her poster is under it), wait up to 3 s for the restore, and fall back on a second loss.
+  - `restoredInWorker()` starts the stage again, and she re-reveals by the usual rule.
+  - An eval-only hook, `stage.debugLoseContext(ms)` (`WEBGL_lose_context`), forces a loss on either path.
+- **Reversal condition.** A real phone shows the worker rebuild failing or taking much longer than the main thread's. In that case fall back on the first worker loss, as before.
+
+
+<!-- merged from inbox/r7-games-feeta.json -->
+## `dc-r7-games-feeta`
+
+**feeta** (length and distance, classes 4-5) is a law family. Nothing in it runs on a clock: the child sets a measuring instrument (or racks lengths), presses go, and the law answers with plain arithmetic in one unit (cm for ribbons and ropes, m for fences and trips). Every length is written as a person writes it (2 m 8 cm, 1 km 50 m, 150 cm), while the instrument counts in one unit only, so changing units IS the act.
+
+- **measure/ribbon** (c4-maths-ch06-t01 s1): a pencil lies from one mark to another on a ruler. From look 2 the ruler is broken and starts past 0. The child cuts a ribbon just as long on a whole ruler from 0. The run lays the ribbon beside the pencil.
+- **measure/rope** (c4-maths-ch06-t01 s2): a rope ordered in m + cm is cut off a tape marked in cm only. The run hangs it beside metre sticks.
+- **compare/order** (c4-maths-ch06-t01 s2 with cm / m; c5-maths-ch05-t02 s1/s2 with km / m / km + m): rack 3-4 lengths shortest first. The run rolls them all out to one scale.
+- **fence/fence** (c4-maths-ch06-t02 s1-s3): fence a rectangle, square or L-shaped garden:
+  - look 1: 1 m squares only;
+  - look 2: squares and some lengths;
+  - look 3: some lengths only, the rest follow from equal sides.
+  The child cuts the fence off a roll in m; the run walks it round from the gate.
+- **trip/odo** (c5-maths-ch05-t01 s1/s2): set a metre-only trip meter, one digit wheel per place, to a trip written in km + m. The cycle rides and stops where the meter runs out.
+
+Mal-rules map only to the topic's own kit ids:
+
+| Mal-rule | Kit id |
+|---|---|
+| end-number, count-marks | edge-start |
+| m-is-10 | m-is-10cm |
+| ignore-units | number-ignores-unit (c4) / ignore-units (c5) |
+| labelled-only | two-sides |
+| area | area-confusion |
+| border-squares | border-squares |
+| km-100 | km-100m |
+| concat | mixed-concat (c5 t01 and t02) |
+
+A shared set-up names no belief. So the c4 joined-units belief (2 m 8 cm as 28 cm, the same rope as 1 m = 10 cm) is never claimed.
+
+**Not admitted** (no honest mechanic yet):
+- c4-maths-ch06-t01-s3 (estimate and choose cm or m)
+- c5-maths-ch05-t01-s3 (choose a unit)
+- c5-maths-ch05-t02-s3 (how much farther; subtract-separately)
+
+**Why:** the four length topics were served only by ITEM-ARENA.
+
+**Reverse if** a child pilot shows the instruments' counters are entered as answers (a quiz in costume) rather than read off the tape, so the unit beliefs never surface.
+
+
+<!-- merged from inbox/r7-games-friend.json -->
+## `dec-r7-games-friend-fill-at-serve`
+
+Learning's kit units carry `{friendF}`/`{friendM}`/`{friend}` slots; data/arena and data/play/vakya are built from the kits and keep the slot text. Main chose option (a): fill at serve time, because the friend's name must differ from the child's and only the serve path knows the child. `currentLevel(s, entry, childName)` in server/play/levels.js now returns `fillFriendDeep(level, childName)` (server/director/friend.js). Every play route (start, level, act + its doors, next, dress) passes `child.first_name` from `requireChild`. The fill touches strings only, so the levelId stays the unfilled one, and grading runs on the same filled level the child saw (acts that name words match). Held by tests/r7-games-friend-fill.test.mjs: slotted arena and vakya banks serve no `{friend` string at start or behind either door, never the child's own name, and the filled level still grades solved; every currentLevel call in routes.js passes the name. Reversal: if a kit-derived string ever reaches the child outside currentLevel (a new route, a bank read on the client), that path must call the fill too.
+
+
+<!-- merged from inbox/r7-games-guna.json -->
+## `dc-r7-games-guna`
+
+**guna** (multi-digit multiplication and division, classes 4-5) is a law family. Nothing in it runs on a clock: every cut, crate, deal and count moves only on a touch, and the law answers only on run. It is a different mechanic from todo-jodo's bundles (place-value adding / subtracting), nazariya's array (times-table facts) and kila (multiples, factors, divisibility).
+
+- **field/area** (c4-maths-ch13-t01, c5-maths-ch06-t01, c5-maths-ch06-t02 s1): the child cuts the field's sides into place-value strips (34 = 30 + 4). A piece whose two sides are each one place fills with its tiles (30 × 6 is 3 × 6 ten-tiles); any other piece stays bare, and the truck cannot drive until every piece is tiled. The truck's racks take crates of 1, 10, 100, 1000, 10000, nine to a rack, so the partial products are added with their regrouping. The weighbridge must read exactly a × b. There is no readout of the load.
+- **field/round** (c5-maths-ch06-t02 s3): the sides are pulled to a round length (only the two either side are allowed), then the truck is loaded with about that much. Each level rounds one side up and the other down, so neither "always up" nor "always down" wins.
+- **pack/share** (c4-maths-ch13-t02 s1/s3, c5-maths-ch09-t01 s1/s3): a godown's crates by place. A deal puts one crate into every truck, so the trucks are always equal. Opening a crate turns it into ten of the next place down, and that regrouping is the move. On send, the dock must hold less than one share. Every served level needs a crate opened somewhere above the ones.
+- **story** (c4-maths-ch13-t02 s3, c5-maths-ch09-t01 s2, c5-maths-ch09-t02):
+  - **all**: everyone must go; no one is left and no vehicle leaves empty.
+  - **full**: only full packets count.
+  - **left**: the jar gets exactly what will not fill a packet. The machine's packets show only on the run, so the jar is never checked by a preview.
+
+Mal-rules map only to the topic's own kit ids: ones-only, no-carry, times-ten-adds-ten (c4), shift-error, place-by-place, forget-carry (c5-t01), zero-count (c5-t02), digitwise, remainder-ignored-in-story (c4-t02), remainder-too-big (c5-t01), always-drop, always-up, quotient-always (c5-t02).
+
+Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c4-maths-ch13-t02-s2 (repeated subtraction of big chunks), c5-maths-ch06-t01-s3 (the written column method), c5-maths-ch06-t02-s2 (doubling and halving). Kit beliefs with no honest set-up: drop-zero-quotient / zero-in-quotient (the trucks hold the crates, so a place cannot be dropped), remainder-as-decimal, ignore-remainder, mult-makes-bigger, double-both.
+
+**Reverse if** a child pilot shows that the field's tiles do the multiplying for the child, so the partial-product beliefs never show.

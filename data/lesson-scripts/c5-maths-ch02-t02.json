@@ -115,13 +115,13 @@
    ],
    "workedExample": {
     "problem": {
-     "hi": "Do ek jaise chocolate bar hain. Aman ko ek bar ka 1/6 milta hai, Zoya ko doosre bar ka 1/3. Kise bada tukda milta hai?",
-     "en": "There are two identical chocolate bars. Aman gets 1/6 of one bar, Zoya gets 1/3 of the other. Who gets the bigger piece?"
+     "hi": "Do ek jaise chocolate bar hain. Rahul ko ek bar ka 1/6 milta hai, Sana ko doosre bar ka 1/3. Kise bada tukda milta hai?",
+     "en": "There are two identical chocolate bars. Rahul gets 1/6 of one bar, Sana gets 1/3 of the other. Who gets the bigger piece?"
     },
     "givens": [
      { "hi": "do ek jaise chocolate bar", "en": "two identical chocolate bars" },
-     { "hi": "Aman ka hissa: 1/6", "en": "Aman's share: 1/6" },
-     { "hi": "Zoya ka hissa: 1/3", "en": "Zoya's share: 1/3" }
+     { "hi": "Rahul ka hissa: 1/6", "en": "Rahul's share: 1/6" },
+     { "hi": "Sana ka hissa: 1/3", "en": "Sana's share: 1/3" }
     ],
     "find": { "hi": "kise bada tukda milta hai", "en": "who gets the bigger piece" },
     "steps": [
@@ -135,21 +135,21 @@
      },
      {
       "do": { "hi": "Ab dono ke tukde ka size likho", "en": "Now write the size of each one's piece" },
-      "result": "Aman ka tukda 1/6, Zoya ka tukda 1/3",
-      "why": { "hi": "Aman ka bar 6 barabar hisson mein kata hai aur Zoya ka sirf 3 barabar hisson mein", "en": "Aman's bar is cut into 6 equal parts and Zoya's into only 3 equal parts" }
+      "result": "Rahul ka tukda 1/6, Sana ka tukda 1/3",
+      "why": { "hi": "Rahul ka bar 6 barabar hisson mein kata hai aur Sana ka sirf 3 barabar hisson mein", "en": "Rahul's bar is cut into 6 equal parts and Sana's into only 3 equal parts" }
      }
     ],
     "yourStep": {
      "prompt": {
-      "hi": "Aman ka tukda 1/6 hai, Zoya ka tukda 1/3. Toh bada tukda kise mila, Aman ko ya Zoya ko?",
-      "en": "Aman's piece is 1/6, Zoya's piece is 1/3. So who got the bigger piece, Aman or Zoya?"
+      "hi": "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3. Toh bada tukda kise mila, Rahul ko ya Sana ko?",
+      "en": "Rahul's piece is 1/6, Sana's piece is 1/3. So who got the bigger piece, Rahul or Sana?"
      },
-     "key": "Zoya",
-     "accept": ["Zoya ko", "Zoya ka", "Zoya, 1/3", "Zoya ko bada tukda mila"],
+     "key": "Sana",
+     "accept": ["Sana ko", "Sana ka", "Sana, 1/3", "Sana ko bada tukda mila"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-     "wrongIfMis": "Aman"
+     "wrongIfMis": "Rahul"
     },
-    "answer": { "hi": "Zoya ko bada tukda mila, 1/3 wala", "en": "Zoya got the bigger piece, the 1/3 one" },
+    "answer": { "hi": "Sana ko bada tukda mila, 1/3 wala", "en": "Sana got the bigger piece, the 1/3 one" },
     "why": {
      "hi": "ek hi size ke bar ke jitne zyada hisse, har hissa utna chhota, isliye 6 bada number hote hue bhi 1/6 chhota tukda hai",
      "en": "the more parts a bar of the same size has, the smaller each part, so even though 6 is the bigger number, 1/6 is the smaller piece"
@@ -227,18 +227,18 @@
      "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 2, "whole": "bar" } },
      "then": {
       "prompt": {
-       "hi": "Do ek jaisi bottle: Ravi ne ek ka 1/5 nikala, {friend} ne doosri ka 1/10. Zyada kisne nikala, Ravi ne ya {friend} ne?",
-       "en": "Two identical bottles: Ravi pours out 1/5 of one, {friend} 1/10 of the other. Who poured out more, Ravi or {friend}?"
+       "hi": "Do ek jaisi bottle: Ravi ne ek ka 1/7 nikala, {friend} ne doosri ka 1/9. Zyada kisne nikala, Ravi ne ya {friend} ne?",
+       "en": "Two identical bottles: Ravi pours out 1/7 of one, {friend} 1/9 of the other. Who poured out more, Ravi or {friend}?"
       },
       "key": "Ravi",
-      "accept": ["Ravi ne", "Ravi, 1/5", "1/5 wali"],
+      "accept": ["Ravi ne", "Ravi, 1/7", "1/7 wali"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "{friend}",
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "1/5", "items": ["ek jaisi bottle"] },
-        "right": { "title": "1/10", "items": ["ek jaisi bottle"] }
+        "left": { "title": "1/7", "items": ["ek jaisi bottle"] },
+        "right": { "title": "1/9", "items": ["ek jaisi bottle"] }
        }
       }
      }
@@ -264,8 +264,8 @@
      {
       "interest": "nature",
       "use": {
-       "hi": "Do ek jaise garden hain, dono 7 barabar kyariyon mein bante hain. Meera apne garden ki 3 kyariyon mein flower lagati hai, Arjun apne garden ki 5 kyariyon mein.",
-       "en": "Two identical gardens, each divided into 7 equal beds. Meera plants flowers in 3 beds of her garden, Arjun in 5 beds of his."
+       "hi": "Do ek jaise garden hain, dono 7 barabar kyariyon mein bante hain. Ritu apne garden ki 3 kyariyon mein flower lagati hai, Vikram apne garden ki 5 kyariyon mein.",
+       "en": "Two identical gardens, each divided into 7 equal beds. Ritu plants flowers in 3 beds of her garden, Vikram in 5 beds of his."
       }
      }
     ]
@@ -483,71 +483,71 @@
    "remediation": [
     {
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
-     "move": "same denominator = same SIZE of part, not the same amount → line 0 to 1 in 6 equal parts; 2/6 = 2 parts from 0, 4/6 = 4 parts from 0 → same-size parts, more of them = further from 0 = bigger",
+     "move": "same denominator = same SIZE of part, not the same amount → line 0 to 1 in 7 equal parts; 2/7 = 2 parts from 0, 5/7 = 5 parts from 0 → same-size parts, more of them = further from 0 = bigger",
      "say": {
-      "hi": "Neeche ka 6 sirf hisse ka size batata hai, toh 2/6 aur 4/6 ke hisse ek hi size ke hain. 4/6 mein aise zyada hisse hain, isliye sankhya rekha par woh zero se zyada door hai aur bada hai.",
-      "en": "The bottom 6 only tells the size of a part, so the parts of 2/6 and 4/6 are the same size. 4/6 has more of those parts, so on the number line it is further from zero and bigger."
+      "hi": "Neeche ka 7 sirf hisse ka size batata hai, toh 2/7 aur 5/7 ke hisse ek hi size ke hain. 5/7 mein aise zyada hisse hain, isliye sankhya rekha par woh zero se zyada door hai aur bada hai.",
+      "en": "The bottom 7 only tells the size of a part, so the parts of 2/7 and 5/7 are the same size. 5/7 has more of those parts, so on the number line it is further from zero and bigger."
      },
      "board": {
       "template": "fraction-line@1",
-      "params": { "den": 6, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/6" }, { "num": 4, "label": "4/6" } ] }
+      "params": { "den": 7, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/7" }, { "num": 5, "label": "5/7" } ] }
      },
      "then": {
       "prompt": {
-       "hi": "Ek ribbon ke 8 barabar tukde hain. {friend} ne 3 tukde liye, Gopi ne 5. Zyada kiske paas hai, {friend} ke ya Gopi ke?",
-       "en": "A ribbon has 8 equal pieces. {friend} takes 3 pieces, Gopi takes 5. Who has more, {friend} or Gopi?"
+       "hi": "Ek ribbon ke 10 barabar tukde hain. {friend} ne 3 tukde liye, Gopi ne 7. Zyada kiske paas hai, {friend} ke ya Gopi ke?",
+       "en": "A ribbon has 10 equal pieces. {friend} takes 3 pieces, Gopi takes 7. Who has more, {friend} or Gopi?"
       },
       "key": "Gopi",
-      "accept": ["Gopi ke paas", "Gopi, 5/8", "Gopi ke"],
+      "accept": ["Gopi ke paas", "Gopi, 7/10", "Gopi ke"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
       "wrongIfMis": "they have the same",
-      "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 0, "whole": "bar" } }
+      "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } }
      }
     },
     {
      "targets": "c5-maths-ch02-t02-m-tops-only",
-     "move": "both shares on one 0-to-1 line in twelfths: 3/12 = 3 twelfths, 2/4 = 6 twelfths → 2 quarter-pieces reach further than 3 twelfth-pieces → the count of pieces decides only when the pieces are the same size, i.e. same bottom number",
+     "move": "both shares on one 0-to-1 line in ninths: 2/9 = 2 ninths, 1/3 = 3 ninths → 1 third-piece reaches further than 2 ninth-pieces → the count of pieces decides only when the pieces are the same size, i.e. same bottom number",
      "say": {
-      "hi": "Ek 1/4 teen 1/12 ke barabar hai, isliye sankhya rekha par 2/4 chhe chhote hisson tak jaata hai, aur 3/12 sirf teen tak. Hisse tabhi gino jab unka size same ho.",
-      "en": "One 1/4 equals three 1/12, so on the number line 2/4 reaches six small parts, and 3/12 only three. Count pieces only when they are the same size."
+      "hi": "Ek 1/3 teen 1/9 ke barabar hai, isliye sankhya rekha par 1/3 teen chhote hisson tak jaata hai, aur 2/9 sirf do tak. Hisse tabhi gino jab unka size same ho.",
+      "en": "One 1/3 equals three 1/9, so on the number line 1/3 reaches three small parts, and 2/9 only two. Count pieces only when they are the same size."
      },
      "board": {
       "template": "fraction-line@1",
-      "params": { "den": 12, "from": 0, "to": 1, "marks": [ { "num": 3, "label": "3/12" }, { "num": 6, "label": "2/4" } ] }
+      "params": { "den": 9, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/9" }, { "num": 3, "label": "1/3" } ] }
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar: ek ke 3 barabar tukdon mein se 2 tukde lo, doosre ke 12 mein se 4. Kaun zyada hai, 2/3 ya 4/12?",
-       "en": "Two identical bars: take 2 of 3 equal pieces of one, 4 of 12 of the other. Which is more, 2/3 or 4/12?"
+       "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 3 tukde lo, doosre ke 10 mein se 4. Kaun zyada hai, 3/5 ya 4/10?",
+       "en": "Two identical bars: take 3 of 5 equal pieces of one, 4 of 10 of the other. Which is more, 3/5 or 4/10?"
       },
-      "key": "2/3",
-      "accept": ["two thirds", "2/3 wala", "3 wale bar ke 2 tukde", "2 pieces of the bar cut into 3"],
+      "key": "3/5",
+      "accept": ["three fifths", "3/5 wala", "5 wale bar ke 3 tukde", "3 pieces of the bar cut into 5", "6/10"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
-      "wrongIfMis": "4/12",
+      "wrongIfMis": "4/10",
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "3 barabar tukdon", "items": ["2 tukde lo"] },
-        "right": { "title": "12 tukdon", "items": ["4 lo"] }
+        "left": { "title": "5 barabar tukdon", "items": ["3 tukde lo"] },
+        "right": { "title": "10 tukdon", "items": ["4 lo"] }
        }
       }
      }
     },
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
-     "move": "one 0-to-1 line in twelfths: 3/4 = 9 twelfths, gap to 1 = 3 twelfths; 5/6 = 10 twelfths, gap to 1 = 2 twelfths → both one piece short, but the missing pieces differ in size → smaller gap = closer to the whole = bigger",
+     "move": "one 0-to-1 line in tenths: 1/2 = 5 tenths, gap to 1 = 5 tenths; 4/5 = 8 tenths, gap to 1 = 2 tenths → both one piece short, but the missing pieces differ in size → smaller gap = closer to the whole = bigger",
      "say": {
-      "hi": "Sankhya rekha ke 2 nishaan dekho: 3/4 utna hai jitna 9/12, aur 5/6 utna jitna 10/12, toh 5/6 ka gap chhota hai. Dono mein ek tukda kam hai, par jiska gap chhota, woh 1 ke zyada paas hai aur wahi bada hai.",
-      "en": "Look at the 2 marks on the number line: 3/4 is as much as 9/12, and 5/6 as much as 10/12, so 5/6 has the smaller gap. Both are one piece short, but the one with the smaller gap is closer to 1, and that one is bigger."
+      "hi": "Sankhya rekha ke 2 nishaan dekho: 1/2 utna hai jitna 5/10, aur 4/5 utna jitna 8/10, toh 4/5 ka gap chhota hai. Dono mein ek tukda kam hai, par jiska gap chhota, woh 1 ke zyada paas hai aur wahi bada hai.",
+      "en": "Look at the 2 marks on the number line: 1/2 is as much as 5/10, and 4/5 as much as 8/10, so 4/5 has the smaller gap. Both are one piece short, but the one with the smaller gap is closer to 1, and that one is bigger."
      },
      "board": {
       "template": "fraction-line@1",
-      "params": { "den": 12, "from": 0, "to": 1, "marks": [ { "num": 9, "label": "3/4" }, { "num": 10, "label": "5/6" } ] }
+      "params": { "den": 10, "from": 0, "to": 1, "marks": [ { "num": 5, "label": "1/2" }, { "num": 8, "label": "4/5" } ] }
      },
      "then": {
       "prompt": {
-       "hi": "Ek bar ke 5 barabar tukdon mein se 4, waise hi bar ke 10 mein se 9. Dono mein ek tukda kam. Kaunsa bada, 4/5 ya 9/10?",
-       "en": "4 of 5 equal pieces of one bar, 9 of 10 of a bar just like it. Each is one piece short. Which is bigger, 4/5 or 9/10?"
+       "hi": "Ek bar ke 8 barabar tukdon mein se 7, waise hi bar ke 10 mein se 9. Dono mein ek tukda kam. Kaunsa bada, 7/8 ya 9/10?",
+       "en": "7 of 8 equal pieces of one bar, 9 of 10 of a bar just like it. Each is one piece short. Which is bigger, 7/8 or 9/10?"
       },
       "key": "9/10",
       "accept": ["nine tenths", "9/10 bada hai"],
@@ -556,7 +556,7 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "5 barabar tukdon", "items": ["ek tukda kam"] },
+        "left": { "title": "8 barabar tukdon", "items": ["ek tukda kam"] },
         "right": { "title": "10 tukdon", "items": ["ek tukda kam"] }
        }
       }
@@ -690,12 +690,12 @@
    ],
    "workedExample": {
     "problem": {
-     "hi": "Do ek jaise chocolate bar hain. Kabir ek bar ka 2/5 khaata hai, Isha doosre bar ka 2/3. Kisne zyada khaya?",
-     "en": "There are two identical chocolate bars. Kabir eats 2/5 of one bar, Isha eats 2/3 of the other. Who ate more?"
+     "hi": "Do ek jaise chocolate bar hain. Farhan ek bar ka 2/5 khaata hai, Isha doosre bar ka 2/3. Kisne zyada khaya?",
+     "en": "There are two identical chocolate bars. Farhan eats 2/5 of one bar, Isha eats 2/3 of the other. Who ate more?"
     },
     "givens": [
      { "hi": "do ek jaise chocolate bar", "en": "two identical chocolate bars" },
-     { "hi": "Kabir ka hissa: 2/5", "en": "Kabir's share: 2/5" },
+     { "hi": "Farhan ka hissa: 2/5", "en": "Farhan's share: 2/5" },
      { "hi": "Isha ka hissa: 2/3", "en": "Isha's share: 2/3" }
     ],
     "find": { "hi": "kisne zyada khaya", "en": "who ate more" },
@@ -710,14 +710,14 @@
      },
      {
       "do": { "hi": "Ab har tukde ka size likho", "en": "Now write the size of each piece" },
-      "result": "Kabir ka har tukda 1/5, Isha ka har tukda 1/3",
-      "why": { "hi": "Kabir ka bar 5 barabar hisson mein kata hai aur Isha ka usi size ka bar 3 barabar hisson mein", "en": "Kabir's bar is cut into 5 equal parts and Isha's bar of the same size into 3 equal parts" }
+      "result": "Farhan ka har tukda 1/5, Isha ka har tukda 1/3",
+      "why": { "hi": "Farhan ka bar 5 barabar hisson mein kata hai aur Isha ka usi size ka bar 3 barabar hisson mein", "en": "Farhan's bar is cut into 5 equal parts and Isha's bar of the same size into 3 equal parts" }
      }
     ],
     "yourStep": {
      "prompt": {
-      "hi": "Isha ke 2 tukde 1/3 wale hain, Kabir ke 2 tukde 1/5 wale. Toh zyada kisne khaya, Kabir ne ya Isha ne?",
-      "en": "Isha's 2 pieces are thirds, Kabir's 2 pieces are fifths. So who ate more, Kabir or Isha?"
+      "hi": "Isha ne 2/3 khaya, yaani 1/3 wale 2 tukde; Farhan ne 2/5, yaani 1/5 wale 2 tukde. Toh zyada kisne khaya, Farhan ne ya Isha ne?",
+      "en": "Isha's 2 pieces are thirds, Farhan's 2 pieces are fifths. So who ate more, Farhan or Isha?"
      },
      "key": "Isha",
      "accept": ["Isha ne", "Isha ne zyada khaya", "Isha, 2/3"],
@@ -759,17 +759,17 @@
     {
      "id": "c2",
      "prompt": {
-      "hi": "Tara aur Gopi ke paas ek jaise ribbon hain. Tara apne ribbon ke 12 barabar tukdon mein se 5 kaatti hai, Gopi apne ribbon ke 6 barabar tukdon mein se 5. Lamba tukda kisne kaata, Tara ne ya Gopi ne?",
-      "en": "Tara and Gopi have same-size ribbons. Tara cuts off 5 of 12 equal pieces of hers, and Gopi cuts off 5 of 6 equal pieces of his. Who cuts off the longer piece, Tara or Gopi?"
+      "hi": "Anjali aur Gopi ke paas ek jaise ribbon hain. Anjali apne ribbon ke 12 barabar tukdon mein se 5 kaatti hai, Gopi apne ribbon ke 6 barabar tukdon mein se 5. Lamba tukda kisne kaata, Anjali ne ya Gopi ne?",
+      "en": "Anjali and Gopi have same-size ribbons. Anjali cuts off 5 of 12 equal pieces of hers, and Gopi cuts off 5 of 6 equal pieces of his. Who cuts off the longer piece, Anjali or Gopi?"
      },
      "key": "Gopi",
      "accept": ["Gopi ne", "Gopi, 5/6", "5/6 wala"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-     "wrongIfMis": "Tara",
+     "wrongIfMis": "Anjali",
      "board": {
       "template": "compare@1",
       "params": {
-       "left": { "title": "Tara", "items": ["12 barabar tukdon", "5 tukdon"] },
+       "left": { "title": "Anjali", "items": ["12 barabar tukdon", "5 tukdon"] },
        "right": { "title": "Gopi", "items": ["6 barabar tukdon", "5 tukdon"] }
       }
      }
@@ -814,79 +814,79 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 4 rang wale, doosre ke 10 mein se 4. Zyada rang kismein, 4/5 ya 4/10?",
-       "en": "Two identical bars: 4 of 5 equal pieces shaded in one, 4 of 10 in the other. Which has more shading, 4/5 or 4/10?"
+       "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 3 rang wale, doosre ke 10 mein se 3. Zyada rang kismein, 3/5 ya 3/10?",
+       "en": "Two identical bars: 3 of 5 equal pieces shaded in one, 3 of 10 in the other. Which has more shading, 3/5 or 3/10?"
       },
-      "key": "4/5",
-      "accept": ["four fifths", "4/5 wala", "4/5 wale ka"],
+      "key": "3/5",
+      "accept": ["three fifths", "3/5 wala", "3/5 wale ka"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "they are equal",
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "5 barabar tukdon", "items": ["4 rang wale"] },
-        "right": { "title": "10 tukdon", "items": ["4 rang wale"] }
+        "left": { "title": "5 barabar tukdon", "items": ["3 rang wale"] },
+        "right": { "title": "10 tukdon", "items": ["3 rang wale"] }
        }
       }
      }
     },
     {
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-     "move": "two same-size ribbons on one 0-to-1 line in twelfths: a sixth = 2 twelfths → 5/6 = 10 twelfths; 5/12 stops at 5 twelfths → bigger bottom number → smaller pieces → with the same top, 5/12 is shorter",
+     "move": "two same-size ribbons on one 0-to-1 line in eighths: a quarter = 2 eighths → 2/4 = 4 eighths; 2/8 stops at 2 eighths → bigger bottom number → smaller pieces → with the same top, 2/8 is shorter",
      "say": {
-      "hi": "Ek 1/6 do 1/12 ke barabar hai, isliye sankhya rekha par 5/6 utna hi hai jitna 10/12, aur 5/12 usse kaafi pehle hai. Upar ka number same ho, toh jiska neeche ka number bada, woh bhinn chhota hai.",
-      "en": "One 1/6 equals two 1/12, so on the number line 5/6 is as much as 10/12, and 5/12 is well before it. With the same top number, the fraction with the bigger bottom number is smaller."
+      "hi": "Ek 1/4 do 1/8 ke barabar hai, isliye sankhya rekha par 2/4 utna hi hai jitna 4/8, aur 2/8 usse kaafi pehle hai. Upar ka number same ho, toh jiska neeche ka number bada, woh bhinn chhota hai.",
+      "en": "One 1/4 equals two 1/8, so on the number line 2/4 is as much as 4/8, and 2/8 is well before it. With the same top number, the fraction with the bigger bottom number is smaller."
      },
      "board": {
       "template": "fraction-line@1",
-      "params": { "den": 12, "from": 0, "to": 1, "marks": [ { "num": 5, "label": "5/12" }, { "num": 10, "label": "5/6" } ] }
+      "params": { "den": 8, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/8" }, { "num": 4, "label": "2/4" } ] }
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise ribbon: ek ke 3 barabar hisson mein se 2 hisse liye, doosre ke 6 mein se 2. Kaunsa lamba hai, 2/3 ya 2/6?",
-       "en": "Two identical ribbons: 2 of 3 equal parts taken from one, 2 of 6 from the other. Which is longer, 2/3 or 2/6?"
+       "hi": "Do ek jaise ribbon: ek ke 4 barabar hisson mein se 3 hisse liye, doosre ke 7 mein se 3. Kaunsa lamba hai, 3/4 ya 3/7?",
+       "en": "Two identical ribbons: 3 of 4 equal parts taken from one, 3 of 7 from the other. Which is longer, 3/4 or 3/7?"
       },
-      "key": "2/3",
-      "accept": ["2/3 wala", "the 2/3 piece", "2/3 lamba hai"],
+      "key": "3/4",
+      "accept": ["3/4 wala", "the 3/4 piece", "3/4 lamba hai", "three quarters"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-      "wrongIfMis": "2/6",
+      "wrongIfMis": "3/7",
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "3 barabar hisse", "items": ["2 hisse"] },
-        "right": { "title": "6 hisse", "items": ["2 hisse"] }
+        "left": { "title": "4 barabar hisse", "items": ["3 hisse"] },
+        "right": { "title": "7 hisse", "items": ["3 hisse"] }
        }
       }
      }
     },
     {
      "targets": "c5-maths-ch02-t02-m-gap-thinking",
-     "move": "two same-size bars with the missing piece of each named: 4/5 is missing 1/5, a bigger gap; 5/6 is missing 1/6, a smaller gap → compare the size of the missing pieces, not their number → 1/6 < 1/5 → 5/6 is missing less → 5/6 bigger",
+     "move": "two same-size bars with the missing piece of each named: 9/10 is missing 1/10, a bigger gap; 11/12 is missing 1/12, a smaller gap → compare the size of the missing pieces, not their number → 1/12 < 1/10 → 11/12 is missing less → 11/12 bigger",
      "say": {
-      "hi": "Baayein 4/5 mein 1/5 kam hai, yeh bada gap hai, aur daayein 5/6 mein 1/6 kam hai, yeh chhota gap hai. 1/6 chhota hai 1/5 se, isliye 5/6 bada hai.",
-      "en": "On the left, 4/5 is missing 1/5, a bigger gap, and on the right, 5/6 is missing 1/6, a smaller gap. 1/6 is smaller than 1/5, so 5/6 is bigger."
+      "hi": "Baayein 9/10 mein 1/10 kam hai, yeh bada gap hai, aur daayein 11/12 mein 1/12 kam hai, yeh chhota gap hai. 1/12 chhota hai 1/10 se, isliye 11/12 bada hai.",
+      "en": "On the left, 9/10 is missing 1/10, a bigger gap, and on the right, 11/12 is missing 1/12, a smaller gap. 1/12 is smaller than 1/10, so 11/12 is bigger."
      },
      "board": {
       "template": "compare@1",
       "params": {
-       "left": { "title": "4/5", "items": ["1/5 kam", "bada gap"] },
-       "right": { "title": "5/6", "items": ["1/6 kam", "chhota gap"] }
+       "left": { "title": "9/10", "items": ["1/10 kam", "bada gap"] },
+       "right": { "title": "11/12", "items": ["1/12 kam", "chhota gap"] }
       }
      },
      "then": {
       "prompt": {
-       "hi": "Ek bar ke 3 barabar tukdon mein se 2, waise hi bar ke 4 mein se 3. Dono mein ek tukda kam. Kaunsa bada, 2/3 ya 3/4?",
-       "en": "2 of 3 equal pieces of one bar, 3 of 4 of a bar just like it. Each is one piece short. Which is bigger, 2/3 or 3/4?"
+       "hi": "Ek bar ke 7 barabar tukdon mein se 6, waise hi bar ke 9 mein se 8. Dono mein ek tukda kam. Kaunsa bada, 6/7 ya 8/9?",
+       "en": "6 of 7 equal pieces of one bar, 8 of 9 of a bar just like it. Each is one piece short. Which is bigger, 6/7 or 8/9?"
       },
-      "key": "3/4",
-      "accept": ["three quarters", "teen chauthai", "3/4 bada hai"],
+      "key": "8/9",
+      "accept": ["eight ninths", "8/9 bada hai", "8/9 wala"],
       "targets": "c5-maths-ch02-t02-m-gap-thinking",
       "wrongIfMis": "they are equal",
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "3 barabar tukdon", "items": ["ek tukda kam"] },
-        "right": { "title": "4 tukdon", "items": ["ek tukda kam"] }
+        "left": { "title": "7 barabar tukdon", "items": ["ek tukda kam"] },
+        "right": { "title": "9 tukdon", "items": ["ek tukda kam"] }
        }
       }
      }

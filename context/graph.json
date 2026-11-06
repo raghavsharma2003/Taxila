@@ -25456,6 +25456,104 @@
    "at": "2026-11-05",
    "title": "Round 7 (Voice → C1 Studio M4): the child's words reach server code in-process through server/duplex/childText.js: onChildText(lessonId, fn) → unsubscribe; events { lessonId, itemId, seq, text (the turn's cumulative, echo-filtered text), final, t, at }. Finals come from every turn route: /api/lesson/turn-audio here, /api/lesson/turn through docs/patches/to-brain/012. Each is emitted before the turn runs, so one source works on every lane, including D5's default ear, which has no partials. Live partials come from the device (cascadeLink, ≤ 1 post / 400 ms, the newest text) to POST /api/duplex/child-text only when /api/duplex/config says partialPost: true, which needs TAXILA_DUPLEX_PARTIAL_POST=on and duplex on. With no listener, that route answers 204 without reading the database; otherwise it allows only the caller's own child's open lesson and ≤ 1 post per 300 ms. Safety by predicate: text scanSafety reads as distress is never handed to a listener. The registered route is new because /api/duplex/partial sits in the unregistered slice table. Reverse (unset TAXILA_DUPLEX_PARTIAL_POST) if the extra posts show up in replica load or D4 first-sound.",
    "source": "inbox/r7-voice-9.json"
+  },
+  {
+   "id": "jd-r7-director7-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director7 (v4 walk, v2.2 scripts, H1.2; 16 lessons, 1,161 calls, ~$0.794) judged by 4 Claude judges by hand: beats taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, but contradictions 51 (code proxy 13) and ≥38 stated-number \"?\" board turns; screen axis 2, promises 2–2.5; 2 false keys spoken on closing a missed card.",
+   "source": "inbox/r7-main-14.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v5",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Board/speech sync and child requests as moves: segment-tagged turns with board switches at segment boundaries (closure before switch, recap only over its own board); samajh nahi aaya / phir se bolo / try-first / picture as moves never grades; parks answered with real content before the wrap and language promise held; bridges spoken; one verdict sentence, keys from authored forms (keyInLang fix), close with why, ≤60-word turns; Studio never draws a stated number as \"?\", picture request always draws; v2.2 data fixes; per-segment contradiction checker; gate adds 0 false keys.",
+   "source": "inbox/r7-main-14.json"
+  },
+  {
+   "id": "dc-r7-app-secure-since",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "The World's Yesterday/Today reads the ledger's secureSince (Learning, migration 046) instead of the device snapshot: a skill is new today when its stamp falls on today's local day, an unstamped secure skill is old; the device snapshot (rollSnapshot) stays only for a map with no stamps at all (046 not applied). Reverse: Learning drops secureSince.",
+   "source": "inbox/r7-app-19.json"
+  },
+  {
+   "id": "ms-r7-director7",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director7 (script walk v4, v2.2 scripts, H1.2 child; 16 lessons, 448 teacher turns; run tree int/r6 8f461ae0b + Brain 32492218), code counts:\n- 1,161 calls, about $0.794 (dry 968);\n- verdicts 229/230;\n- 0 right answers called wrong;\n- 0 wrong answers called right;\n- 13 contradiction flags in 11 turns, all real, from two runtime causes;\n- reply-ready p50 2.68 s, against 3.00 s in director6;\n- cut 1 skipped the rewrite on 40 turns.",
+   "source": "inbox/r7-brain-15.json"
+  },
+  {
+   "id": "dc-r7-script-versions-one-list",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "One script version list (SCRIPT_VERSIONS in server/director/script.js): the validator rejects any other version and WALK_VERSIONS is built from it; tests/r7-brain-live-scripts.test.mjs runs the preflight over every live script, so a data version bump fails CI on the bumping branch.",
+   "source": "inbox/r7-brain-15.json"
+  },
+  {
+   "id": "dc-r7-face-react-think-from-speech-end",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Behind TAXILA_R7_FACE_REACT (off by default; ?react=1/0 per device): the lesson floor's heard maps to the face's THINKING, so her thinking face starts when the child stops talking, not when the transcript lands, and entering thinking takes one breath (off under reduced motion and in a safety turn, cut at her first audio). Verdict-blind, proven by AT-F12; the verdict-colour ask was dropped (main, option a: design-v2-face-verdict-neutral stands).",
+   "source": "inbox/r7-face-13.json"
+  },
+  {
+   "id": "ms-r7-face-react-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Face-reacts on vs off (react-turns.mjs, real desk runtime, SwiftShader, 2 child turns per run; x1 n=2, x4/x6 n=6 turns per arm): face thinking after the child stops 14/93/132 ms vs 429/514/594 ms; thinking covers 100% of the gap vs ~80%; her first sound after the child stops +12/-54/-59 ms (no move); face speaking 66-77 ms after her first audio (vs 67-96); driver work p95 unchanged within noise.",
+   "source": "inbox/r7-face-13.json"
+  },
+  {
+   "id": "dc-r7-face-worker-context-loss-rebuild",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "A GL context loss on the worker rig is handled like one on the main thread: the worker drops the rig, rebuilds it on the restored OffscreenCanvas and she comes back live; a second loss (or no restore within 3 s) holds her still. Before, the first worker loss held her still for the rest of the page (a phone switching apps).",
+   "source": "inbox/r7-face-14.json"
+  },
+  {
+   "id": "ms-r7-face-context-loss-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Context loss (context-loss.mjs, desk lesson, SwiftShader, n=3 per arm, restore after 400 ms): back live after the first loss 3/3 worker (p50 1655 ms) and 3/3 main thread (p50 1658 ms); her still after a second loss 3/3 on both; 0 page errors.",
+   "source": "inbox/r7-face-14.json"
+  },
+  {
+   "id": "dc-r7-games-feeta",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "feeta (length and distance) as one never-timed law family for classes 4-5: measure (a ribbon cut against a ruler that may be broken; a rope in m + cm cut off a cm tape), compare (lengths racked shortest first, rolled out to one scale), fence (a garden fenced from a roll in m; squares, some lengths, equal sides), trip (a metre-only trip meter set to km + m). 4 topics: c4-maths-ch06-t01, c4-maths-ch06-t02, c5-maths-ch05-t01, c5-maths-ch05-t02. Why: the four length topics were served only by ITEM-ARENA. Reverse: a child pilot shows the counters are typed as answers rather than read off the tape.",
+   "source": "inbox/r7-games-feeta.json"
+  },
+  {
+   "id": "ms-r7-games-feeta-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "feeta play-cert (forge3-qa, p360/p412/l1366, game mounted): every feeta sample passes at every size; 38 law and server tests pass.",
+   "source": "inbox/r7-games-feeta.json"
+  },
+  {
+   "id": "dec-r7-games-friend-fill-at-serve",
+   "kind": "decision",
+   "title": "Kit {friend} slots in arena/vakya are filled at play serve time, never by the builders",
+   "at": "2026-11-05",
+   "source": "inbox/r7-games-friend.json"
+  },
+  {
+   "id": "dc-r7-games-guna",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "guna (multi-digit multiplication and division) as one never-timed law family for classes 4-5: field (a field a × b cut into place-value strips whose pieces fill with their tiles, then a truck loaded with place-value crates, nine to a rack, that must weigh exactly the product; or the field's sides pulled to their nearest round lengths for an estimate), pack (a godown shared one round into every truck, a crate opened into ten of the next place when it cannot go round; the dock left must be less than a share), story (vehicles / packets / a jar set out, then the story runs: round up, round down, the leftover itself). 6 topics: c4-maths-ch13-t01, c4-maths-ch13-t02, c5-maths-ch06-t01, c5-maths-ch06-t02, c5-maths-ch09-t01, c5-maths-ch09-t02. Why: the six multiply / divide topics were served only by ITEM-ARENA. Reverse: a child pilot shows the tiles the field shows do the multiplying for the child, so the partial-product beliefs never surface.",
+   "source": "inbox/r7-games-guna.json"
+  },
+  {
+   "id": "ms-r7-games-guna-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "guna play-cert (forge3-qa, p360/p412/l1366, game mounted): every guna sample passes at every size; 65 law and server tests pass.",
+   "source": "inbox/r7-games-guna.json"
   }
  ],
  "edges": [
@@ -39828,6 +39926,61 @@
    "src": "dc-r7-voice-child-text-seam",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "measured_by",
+   "dst": "jd-r7-director7-2026-11-06"
+  },
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v4"
+  },
+  {
+   "src": "dc-r7-app-secure-since",
+   "rel": "part_of",
+   "dst": "dc-r7-app-chapter-seals"
+  },
+  {
+   "src": "dc-r7-brain-script-walk-v4",
+   "rel": "measured_by",
+   "dst": "ms-r7-director7"
+  },
+  {
+   "src": "dc-r7-script-versions-one-list",
+   "rel": "caused_by",
+   "dst": "ms-r7-director7"
+  },
+  {
+   "src": "dc-r7-face-react-think-from-speech-end",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-react-2026-11-05"
+  },
+  {
+   "src": "dc-r7-face-react-think-from-speech-end",
+   "rel": "constrains",
+   "dst": "design-v2-face-verdict-neutral"
+  },
+  {
+   "src": "dc-r7-face-worker-context-loss-rebuild",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-context-loss-2026-11-06"
+  },
+  {
+   "src": "dc-r7-face-worker-context-loss-rebuild",
+   "rel": "part_of",
+   "dst": "dc-r7-face-rig-worker"
+  },
+  {
+   "src": "dc-r7-games-feeta",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-feeta-cert"
+  },
+  {
+   "src": "dc-r7-games-guna",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-guna-cert"
   }
  ]
 }

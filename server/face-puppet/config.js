@@ -36,12 +36,15 @@ export const faceLookOf = (env = process.env) => {
   return FACE_LOOKS.includes(v) ? v : PUPPET_REV;
 };
 
-/** @returns {{ puppet2d: boolean, visemes: boolean, rev: string, look: string }} */
+/** @returns {{ puppet2d: boolean, visemes: boolean, rev: string, look: string, react: boolean }} */
 export const faceConfig = (env = process.env) => ({
   puppet2d: env.TAXILA_FACE_PUPPET2D !== "0",
   visemes: env.TAXILA_DHD_VISEMES !== "0",
   rev: PUPPET_REV,
   look: faceLookOf(env),
+  // round 7 face-reacts (src/face-puppet/flag.ts faceReactEnabled): her face starts THINKING the moment the child stops
+  // talking, with one breath. Off unless TAXILA_R7_FACE_REACT=1.
+  react: env.TAXILA_R7_FACE_REACT === "1",
 });
 
 /** How long the cohort lookup may take before the global look is answered (the duplex cohort's budget). */

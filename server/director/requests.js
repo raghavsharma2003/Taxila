@@ -419,6 +419,11 @@ function requestOfLine(text) {
   // 14.4.2 (QA 3a1d1e60 "mujhe koi aur topic padhna hai" ×3): "some other topic" names no subject: an explicit ask for
   // ANOTHER TOPIC (real topics of their class at once), never a subject to look for
   if (switchTo && OTHER_TOPIC.test(switchTo)) return { type: "change_topic", topic: true, whole };
+  // (v5: "ab se hindi mein padhao" is a language ask, never a subject called "se hindi mein")
+  if (switchTo && /^(?:(?:ab\s+)?se\s+)?(?:simple\s+|aasan\s+|asaan\s+)?(?:hindi|english|hinglish|angrezi)(?:\s+(?:mein|me|main))?$/i.test(String(switchTo).trim())) {
+    const lang = /english|angrezi/i.test(switchTo) ? "english" : /hinglish/i.test(switchTo) ? "hinglish" : "hindi";
+    return { type: "language", lang, whole };
+  }
   if (switchTo) return { type: "switch", subject: switchTo, whole };
   // round 2 safety floor: the relational lexicon's anchored end_request reading too (en / hl / Devanagari; safety.js
   // wantsToStop reads the same), so "bas, aaj ke liye itna hi" is a stop in code with no model (stop-drill 4/8 → 8/8)

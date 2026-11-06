@@ -32,6 +32,9 @@ export interface StudioIntent {
   // round 5 (stream 2, RCA-1): what the child asked to SEE this turn (brain/propose.js requestOfSee): how, the thing named
   // (a short noun phrase, code-gated), the numbers named for a number line. The board draws this; never the child's words.
   request?: StudioRequest;
+  /** v5 B1: each later part of her line and the board it is spoken over (contracts.ts BoardSegment), in order */
+  segments?: import("./contracts.ts").BoardSegment[];
+  segmentPlan?: import("./contracts.ts").BoardSegmentPart[];
 }
 export interface StudioRequest { kind: "number_line" | "picture" | "draw" | "show" | "example"; subject?: string; said?: string[]; offKit?: boolean }
 
@@ -216,6 +219,9 @@ export interface WhiteboardScript {
   /** round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD; server/stagecraft/beat-card.js): the card this beat's
    *  board is, its beat number in the lesson, and whether a check follows it. Absent with the flag off. */
   card?: BeatCard;
+  /** round 7 (director7 B1/S2): one board per segment of a turn — at each switch (in order) a new page starts; ops from
+   *  `atMs` (the estimate) to the next switch move onto clause `clause`'s real onset when the voice reports it. */
+  switches?: { clause: number; atMs: number }[];
 }
 export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */

@@ -17,7 +17,7 @@ function runLesson(persona, seed) {
     const kind = turn % 4;
     const input = kind === 0 ? { turn, teacher: "Dekho, yeh 1/8 hai." }
       : kind === 1 ? { turn, teacher: "Batao?", card: { itemId: misItem.id, key: misItem.answer, accept: misItem.acceptable } }
-        : kind === 2 ? { turn, teacher: "Kaunsa bada hai, 1/4 ya 1/8?", ask: { key: "1/4", accept: ["ek bata chaar"], targets: kit.misconceptions[0].id, wrongIfMis: "1/8" }, beat: { skillId: "s1", beatId: "e1" } }
+        : kind === 2 ? { turn, teacher: "Kaunsa bada hai, 1/4 ya 1/8?", ask: { key: "1/4", accept: ["ek bata chaar"], targets: kit.misconceptions[0].id, wrongIfMis: "1/8" }, beat: { skillId: "s1", beatId: `e${turn}` } }
           : { turn, teacher: "Kitne hisse?", card: { itemId: "x", key: "3" } };
     const r = c.reply(input);
     out.push(r);
@@ -132,5 +132,25 @@ test("H1.2: no reply line reads as a picture request", () => {
       const r = c.reply({ turn: t, teacher: t % 2 ? "Kaise jaana?" : "Kitne?", card: { itemId: `x${t}`, key: "2" } });
       if (r.event !== "picture") assert.doesNotMatch(r.text, /picture|screen|dikhao|drawing/i, r.text);
     }
+  }
+});
+
+test("director7: events fire only in context: no self-try after a why-probe or once answered; no pata-nahi without an open question", () => {
+  for (const persona of PERSONAS) for (let seed = 1; seed <= 20; seed++) {
+    const c = createReactiveChild({ persona, seed, kit });
+    const lines = ["Dekho, yeh 1/8 hai.", "Tumne yeh kaise socha?", "Kaunsa bada hai, 1/4 ya 1/8?", "Bahut badiya, yeh sahi hai."];
+    let fired = 0;
+    for (let turn = 0; turn < 30; turn++) {
+      const teacher = lines[turn % 4];
+      const ask = turn % 4 === 2 ? { key: "1/4", accept: [] } : turn % 4 === 3 ? { key: "1/4", accept: [] } : null;
+      const r = c.reply({ turn, teacher, ask, beat: { skillId: "s1", beatId: `e${Math.floor(turn / 4)}` } });
+      if (!r.event) continue;
+      fired++;
+      if (r.event === "selftry") assert.match(teacher, /\?/, `${persona}/${seed} T${turn}: self-try without a question`);
+      if (r.event === "selftry") assert.doesNotMatch(teacher, /kaise|kyun|why|how/i, `${persona}/${seed} T${turn}: self-try after a why-probe`);
+      if (r.event === "dontknow") assert.match(teacher, /\?/, `${persona}/${seed} T${turn}: pata nahi without a question`);
+      if (r.event === "picture") assert.doesNotMatch(teacher, /kaise socha/i, `${persona}/${seed} T${turn}: picture request as a reason`);
+    }
+    assert.ok(fired >= 3, `${persona}/${seed}: only ${fired} events`);
   }
 });

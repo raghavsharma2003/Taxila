@@ -133,7 +133,15 @@ export interface TtsFrame {
 export interface TtsClauseEvent { t: "clause"; clause: number; part: number; atSample: number; atMs: number; playAt?: number }
 /** What the frame stream tells listeners: the reply it belongs to, plus the frame's JSON. */
 export type TtsEvent = { req: TtsRequest } & ({ kind: "header"; data: Record<string, unknown> } | { kind: "clause"; data: TtsClauseEvent }
-  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> } | { kind: "visemes"; data: TtsVisemeFrame });
+  | { kind: "voice"; data: Record<string, unknown> } | { kind: "end"; data: Record<string, unknown> } | { kind: "visemes"; data: TtsVisemeFrame }
+  | { kind: "words"; data: TtsWordsEvent });
+/**
+ * Round 7 (Studio board-sync anchorSteps): her words' REAL onsets, from Azure Speech word boundaries (DragonHD over the
+ * websocket; mini-tts gives none, so no event). `playAt` / `endAt` are performance.now() ms at which the word sounds, on
+ * the player's own timeline (start lead, board hold, underrun gaps and resumes included), like a clause's playAt. A
+ * timeline that moves (an underrun, a resume) re-sends the part's words with `reanchored: true`: the latest one wins.
+ */
+export interface TtsWordsEvent { part: number; words: { w: string; playAt: number; endAt: number }[]; reanchored?: boolean }
 
 const listeners = new Set<(e: TtsEvent) => void>();
 /** Subscribe to framed-TTS events (clause onsets, header, end); returns the unsubscribe. */
@@ -566,16 +574,22 @@ export class PcmStreamPlayer {
         vSent.add(f);
         try {
           if (vAnchor?.ref !== anchor) vAnchor = { ref: anchor, perf: anchorPerfTime(anchor.at, ctx) };
-          puppetVisemes(f, partPlayAt(f, anchor.pos, vAnchor.perf), reqKey);
+          const partAt = partPlayAt(f, anchor.pos, vAnchor.perf);
+          puppetVisemes(f, partAt, reqKey);
+          if (req && f.w?.length) {
+            emit({ req, kind: "words", data: { part: f.part, words: f.w.map(([ms, dur, w]) => ({ w, playAt: partAt + ms, endAt: partAt + ms + Math.max(0, dur) })), ...(reanchored ? { reanchored: true } : {}) } });
+          }
         } catch {
           /* the face never stops the voice */
         }
       }
     };
+    let reanchored = false;
     const reanchorVisemes = () => {
       if (!vSent.size) return;
       puppetCut();
       vSent.clear();
+      reanchored = true;
     };
     const sink: ClauseSink = {
       visemes: (f) => {

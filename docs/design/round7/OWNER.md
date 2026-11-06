@@ -1,12 +1,11 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-05 evening UTC, at integration 7 (`int/r6`).
+Updated by the main loop at each integration. Last update: 2026-11-06 morning UTC, at integration 9 (`int/r6` 8f461ae0b).
 - **Build checks:** tsc and the build are green.
-- **Unit tests:** 4598 of 4611 pass, both in the new 9-minute per-file gate and single-process.
-  - 1 failure: a test that wrongly walked a new lesson script. Fixed in tests only, and re-proved.
-  - 11 skipped; 1 is a known todo.
-- **Live model calls so far:** only the lesson-brain runs, about $3.5 plus director5 (capped at $0.70), on the stream's 2026-10-10 AI keys.
+- **Unit tests:** 4771 of 4783 pass, both in the per-file gate and single-process; 0 failures, 11 skipped, 1 known todo.
+- **Live model calls so far:** only the lesson-brain runs (director1–7), about $6 in total, on the stream's 2026-10-10 AI keys.
 - **Nothing is released:** deploying needs the full key set.
+- **The Founders Hub item (row 7) is now at or past its likely start date.** If business verification was 2026-07-08, today (2026-11-06) is the last day the 60-day run can start. The automation is built and merged (`scripts/m3.mjs`); it needs only the keys and your two yes/no answers.
 
 ## 1. Decisions only you can make
 
@@ -127,6 +126,20 @@ in parts, start with tiers 1 and 2 (~$21).
   - Decision (`dc-r7-script-walk-v4`): fix those. Learning may now start writing the next 30 topics in the final format, held back from children until director7 passes.
   - Write-up: `judgements/director6-2026-11-05.md`.
   - Separately, a quiet-hour re-test showed Azure's model answers in about 1.4 s at any hour. Her ~3 s reply time is our own pipeline, so it's ours to cut.
+- 2026-11-06: director7 (16 lessons, $0.79). **The teaching itself now works.**
+
+  | Measure | director7 | Bar |
+  |---|---|---|
+  | Beats really taught | 97% | ≥ 80% |
+  | Answers judged | 99% | ≥ 90% |
+  | Answers marked wrongly, either way | 0 | 0 |
+
+  - The worked example is real.
+  - She walks all three skills in order.
+  - Reply time is down to 2.65 s.
+  - What still fails is what's on screen while she speaks: 51 places, because one board shows while she describes the next. Plus a "?" over numbers she says, and not acting on "samajh nahi aaya", "phir se bolo", "pehle main try karun" or a promised return to cricket.
+  - Decision (`dc-r7-script-walk-v5`): switch the board mid-turn at the exact words, and treat those child requests as moves.
+  - Write-up: `judgements/director7-2026-11-06.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

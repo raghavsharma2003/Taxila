@@ -1,0 +1,560 @@
+{
+ "topicId": "c6-maths-ch02-t03",
+ "classLevel": 6,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "kon / angle", "en": "angle" },
+  { "hi": "shirsh / vertex", "en": "vertex" },
+  { "hi": "bhuja / arm", "en": "arm (of an angle)" },
+  { "hi": "chaanda / protractor", "en": "protractor" },
+  { "hi": "ansh / degree (°)", "en": "degree" },
+  { "hi": "centre mark / beech ka nishaan", "en": "centre mark of the protractor" },
+  { "hi": "aadhaar rekha / baseline", "en": "baseline" },
+  { "hi": "scale / numbers ki line", "en": "scale (on the protractor)" },
+  { "hi": "chauthai chakkar", "en": "quarter turn (90°)" },
+  { "hi": "aadha chakkar", "en": "half turn (180°)" },
+  { "hi": "poora chakkar", "en": "full turn (360°)" },
+  { "hi": "samkon", "en": "right angle" },
+  { "hi": "patla angle / chauda angle", "en": "narrow angle / wide angle" },
+  { "hi": "bindu", "en": "point / dot" }
+ ],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch02-t03-s1",
+   "hook": {
+    "convey": "an angle drawn on paper or on a field diagram → to measure it, the protractor must sit in one exact place: its small centre mark on the point both arms leave from, its straight edge (baseline) along one arm",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet par tumne ek angle banaya hai aur ab use protractor se naapna hai. Protractor ke seedhe kinaare ke beech mein ek chhota centre mark hota hai, aur pehla kaam yahi hai ki woh angle ke vertex par baithe.",
+       "en": "You have drawn an angle on a drawing sheet and now you measure it with a protractor. In the middle of the protractor's straight edge there is a small centre mark, and the first job is to make it sit on the angle's vertex."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket field ke diagram mein bowler ke point se do seedhi lines nikalti hain, ek wicket tak aur ek fielder tak. Is angle ko naapne ke liye protractor ka centre bowler wale point par rakhte hain, kyunki dono lines wahin se shuru hoti hain.",
+       "en": "On a cricket field diagram two straight lines leave the bowler's point, one to the wicket and one to a fielder. To measure this angle the protractor's centre goes on the bowler's point, because both lines start there."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "the protractor's scale is drawn round its centre mark → the centre mark goes exactly on the vertex, the point both arms start from; in a three-letter name the vertex is the middle letter → angle XYZ: centre on the middle letter",
+     "mustSay": [
+      { "hi": "centre mark", "en": "centre mark" },
+      { "hi": "vertex", "en": "vertex" },
+      { "hi": "beech wala letter", "en": "the middle letter" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle XYZ" }] } },
+     "point": {
+      "hi": "Board par angle XYZ hai. Protractor ke seedhe kinaare ke beech mein ek chhota centre mark hota hai. Yeh centre mark angle ke vertex par baithta hai, yaani us point par jahan se dono arms shuru hoti hain. Teen letters ke naam mein vertex hamesha beech wala letter hota hai.",
+      "en": "The board shows angle XYZ. In the middle of the protractor's straight edge there is a small centre mark. This centre mark sits on the angle's vertex, that is, the point both arms start from. In a three-letter name the vertex is always the middle letter."
+     },
+     "ask": {
+      "prompt": { "hi": "Toh angle XYZ naapte waqt protractor ka centre mark kis point par rakhoge?", "en": "So when you measure angle XYZ, on which point do you put the protractor's centre mark?" },
+      "key": "Y",
+      "accept": ["point Y", "Y par", "vertex Y", "on Y"],
+      "targets": "c6-maths-ch02-t03-m-vertex-off",
+      "wrongIfMis": "X"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "centre on the vertex first, then turn the protractor about that point until the baseline lies along one arm (QR); either arm may be the baseline arm, but the centre never leaves the vertex",
+     "mustSay": [
+      { "hi": "baseline", "en": "baseline" },
+      { "hi": "arm QR", "en": "arm QR" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "angle PQR" }], "arm": "QR" } },
+     "point": {
+      "hi": "Angle PQR ka vertex Q hai. Centre mark Q par rakhkar protractor ko ghumao, jab tak uski baseline arm QR ke upar seedhi na baith jaaye. Centre vertex par aur baseline ek arm par, tabhi protractor sahi jagah par hai.",
+      "en": "The vertex of angle PQR is Q. Keep the centre mark on Q and turn the protractor until its baseline lies straight along arm QR. Centre on the vertex and baseline on one arm: only then is the protractor in the right place."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab baseline doosri arm QP ke upar rakhni hai. Tab centre mark kahan rahega, Q par ya P par?", "en": "Now the baseline is to go along the other arm, QP. Where does the centre mark stay then, on Q or on P?" },
+      "key": "Q",
+      "accept": ["Q par", "vertex Q", "point Q", "on Q"],
+      "targets": "c6-maths-ch02-t03-m-vertex-off",
+      "wrongIfMis": "P"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "a degree measures the amount of turn between the arms, not the length of the arms or the size of the tool → the same angle under a small protractor and under the big blackboard protractor gives the same reading",
+     "mustSay": [
+      { "hi": "ghumaav", "en": "turn" },
+      { "hi": "chhota protractor", "en": "small protractor" },
+      { "hi": "bada protractor", "en": "big protractor" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 35, "name": "chhota protractor" }, { "deg": 35, "name": "bada protractor" }] } },
+     "point": {
+      "hi": "Board par ek hi angle do baar bana hai, dono ka khulapan bilkul barabar. Baayein wale par chhota protractor rakha hai, daayein wale par blackboard ka bada protractor. Bade protractor ki arms aur numbers lambe hain, par angle ka ghumaav wahi hai. Degree ghumaav ko naapti hai, protractor ka size nahi.",
+      "en": "The board shows the same angle twice, both opened exactly the same. The left one has a small protractor on it, the right one the big blackboard protractor. The big protractor's arms and numbers are longer, but the angle's turn is the same. A degree measures the turn, not the size of the protractor."
+     },
+     "ask": {
+      "prompt": { "hi": "Chhote protractor par is angle ki reading 35° aayi. Bade protractor par isi angle ki reading zyada aayegi, kam aayegi, ya utni hi?", "en": "On the small protractor this angle reads 35°. On the big protractor, will this same angle read more, less, or the same?" },
+      "key": "same",
+      "accept": ["utni hi", "barabar", "same reading", "35°", "35", "utni hi, 35°"],
+      "targets": "c6-maths-ch02-t03-m-tool-size",
+      "wrongIfMis": "more"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Angle PQR naapna hai. Iska vertex Q hai aur arm QR daayein ki taraf jaati hai. Protractor rakhne par arm QP ke paas dono scale 70 aur 110 dikhate hain, aur angle patla dikhta hai. Angle PQR kitne degree ka hai?",
+     "en": "Measure angle PQR. Its vertex is Q and arm QR points to the right. With the protractor in place, the two scales show 70 and 110 at arm QP, and the angle looks narrow. How many degrees is angle PQR?"
+    },
+    "givens": [
+     { "hi": "vertex Q hai", "en": "the vertex is Q" },
+     { "hi": "arm QR daayein ki taraf jaati hai", "en": "arm QR points to the right" },
+     { "hi": "arm QP ke paas dono scale 70 aur 110 dikhate hain", "en": "at arm QP the two scales show 70 and 110" },
+     { "hi": "angle patla dikhta hai", "en": "the angle looks narrow" }
+    ],
+    "find": { "hi": "angle PQR kitne degree ka hai", "en": "how many degrees angle PQR is" },
+    "steps": [
+     {
+      "do": { "hi": "Protractor ka centre mark theek Q par rakho", "en": "Put the protractor's centre mark exactly on Q" },
+      "result": "centre mark vertex Q par",
+      "why": { "hi": "dono arms Q se shuru hoti hain aur scale centre ke chaaron taraf bana hai", "en": "both arms start at Q and the scale is drawn round the centre" }
+     },
+     {
+      "do": { "hi": "Baseline ko arm QR ke upar seedha rakho", "en": "Lay the baseline straight along arm QR" },
+      "result": "baseline arm QR par",
+      "why": { "hi": "ghumaav arm QR se shuru hota hai", "en": "the turn starts from arm QR" }
+     },
+     {
+      "do": { "hi": "Woh scale chuno jo QR wali taraf 0 se shuru hota hai", "en": "Choose the scale that starts at 0 on the QR side" },
+      "result": "daayein 0 se shuru hone wala scale",
+      "why": { "hi": "R daayein taraf hai, toh ginti wahin ke 0 se shuru hogi", "en": "R is on the right, so the counting starts from the 0 there" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Arm QP ke paas 70 aur 110 hain, aur patla angle samkon se chhota hota hai. Daayein 0 se ginne par angle PQR kitna hai, 70° ya 110°?", "en": "At arm QP there are 70 and 110, and a narrow angle is smaller than a right angle. Counting from the right-hand 0, what is angle PQR, 70° or 110°?" },
+     "key": "70°",
+     "accept": ["70", "70 degree", "70 degrees"],
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "wrongIfMis": "110°"
+    },
+    "answer": { "hi": "angle PQR 70° ka hai", "en": "angle PQR is 70°" },
+    "why": {
+     "hi": "centre vertex Q par aur baseline QR par rakhne se ginti QR ke 0 se shuru hui, aur patla angle 90° se kam hi hota hai",
+     "en": "with the centre on vertex Q and the baseline on QR, the counting started from the 0 on QR, and a narrow angle is always less than 90°"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70, "name": "angle PQR" }], "arm": "QR" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Angle LMN naapna hai. Protractor ka centre mark kis point par rakhna chahiye?", "en": "Angle LMN is to be measured. On which point must the protractor's centre mark go?" },
+     "key": "M",
+     "accept": ["point M", "M par", "vertex M", "on M"],
+     "targets": "c6-maths-ch02-t03-m-vertex-off",
+     "wrongIfMis": "L",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle LMN" }] } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Ek hi angle par pehle chhota protractor rakha toh 40° aaya. Ab blackboard ka bada protractor rakho. Reading zyada aayegi, kam, ya utni hi?", "en": "A small protractor on one angle reads 40°. Now put the big blackboard protractor on it. Will the reading be more, less, or the same?" },
+     "key": "same",
+     "accept": ["utni hi", "barabar", "same reading", "40°", "40", "utni hi, 40°"],
+     "targets": "c6-maths-ch02-t03-m-tool-size",
+     "wrongIfMis": "more",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "ek hi angle" }] } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t03-i02", "why": "straight recall of the placement rule: centre on the vertex, baseline along one arm" },
+    { "itemId": "c6-maths-ch02-t03-rl-o1", "why": "named points on a poster: baseline already on PQ, centre on the wrong point Q → move it to the vertex P" },
+    { "itemId": "c6-maths-ch02-t03-i11", "why": "predict small vs blackboard protractor on one angle → the reading stays the same" },
+    { "itemId": "c6-maths-ch02-t03-i10", "why": "error-spot: Sameer puts the bottom edge, not the centre mark, at the vertex → reading off" },
+    { "itemId": "c6-maths-ch02-t03-rl-h1", "why": "explain why a centre 1 cm away from vertex M makes the measurement unreliable" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t03-m-vertex-off",
+     "move": "magnified centre over the vertex: the scale is drawn round the centre mark → the centre dot must cover the vertex exactly; edge corner at the vertex instead → the arm meets the scale at a different number",
+     "say": {
+      "hi": "Protractor ke saare numbers centre mark ke chaaron taraf bane hain, isliye centre mark angle ke vertex ke theek upar rakho, yaani naam ke beech wale letter par. Centre kahin aur ho toh reading kuch degree galat aati hai.",
+      "en": "All the protractor's numbers are drawn round its centre mark, so put the centre mark exactly over the angle's vertex, the middle letter of its name. If the centre is anywhere else, the reading comes out a few degrees wrong."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle" }] } },
+     "then": {
+      "prompt": { "hi": "Angle STU naapna hai aur baseline arm TU par hai. Centre mark kis point par hona chahiye?", "en": "Angle STU is to be measured and the baseline is on arm TU. On which point must the centre mark be?" },
+      "key": "T",
+      "accept": ["point T", "T par", "vertex T", "on T"],
+      "targets": "c6-maths-ch02-t03-m-vertex-off",
+      "wrongIfMis": "U",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 55, "name": "angle STU" }], "arm": "TU" } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch02-t03-m-tool-size",
+     "move": "two protractors of different sizes over the same angle: predict both readings, then see them match; 1 degree is a part of a full turn, not a length on the tool",
+     "say": {
+      "hi": "Degree ghumaav naapti hai, arms ki lambai ya protractor ka size nahi. Chhota ho ya bada, har protractor aadhe chakkar ko 180 barabar hisson mein baantta hai, toh ek hi angle par dono ki reading barabar aati hai.",
+      "en": "A degree measures turn, not the length of the arms or the size of the protractor. Small or big, every protractor shares a half turn into 180 equal parts, so on one angle both give the same reading."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "ek hi angle" }] } },
+     "then": {
+      "prompt": { "hi": "Do angle ek jaise khule hain; ek ki arms 3 cm, doosre ki 8 cm. Kiski reading zyada hogi, 8 cm wale ki ya dono barabar?", "en": "Two angles open the same amount; one has 3 cm arms, the other 8 cm. Whose reading is more, the 8 cm one's, or equal?" },
+      "key": "barabar",
+      "accept": ["dono ki barabar", "equal", "same", "dono barabar", "they are equal"],
+      "targets": "c6-maths-ch02-t03-m-tool-size",
+      "wrongIfMis": "8 cm wale ki",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "3 cm arms" }, { "deg": 50, "name": "8 cm arms" }] } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Protractor ab sahi jagah baith gaya. Agle hisse mein dekhenge ki uske do scale mein se kaunsa padhna hai, aur degree mein ghumaav kaise ginte hain.",
+    "en": "The protractor now sits in the right place. In the next part we see which of its two scales to read, and how turns are counted in degrees."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch02-t03-s2",
+   "hook": {
+    "convey": "turns have sizes: full turn 360°, half turn 180°, quarter turn 90° → a round cake shared into 4 equal slices from the centre, a steering wheel turned round → then the protractor's two scales, read from the 0 on the arm where the turn starts",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Ek gol cake ko beech se 4 barabar slice mein baanto, toh beech mein chaar barabar kone bante hain. Chaaron milkar ek poora chakkar hain, 360°.",
+       "en": "Share a round cake from its centre into 4 equal slices, and four equal corners form at the centre. All four together make one full turn, 360°."
+      }
+     },
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Car ka steering wheel ek poora chakkar ghoome toh 360° ghoomta hai, aur aadha chakkar ghoome toh 180°. Protractor yahi aadha chakkar hai.",
+       "en": "A car's steering wheel turned one full round turns 360°, and half a round turns 180°. A protractor is exactly this half turn."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "an angle = an amount of turn; full turn = 360°, quarter turn = 90° (a right angle, samkon); two quarter turns = half turn → the child adds the next quarter turn",
+     "mustSay": [
+      { "hi": "360°", "en": "360°" },
+      { "hi": "chauthai chakkar", "en": "quarter turn" },
+      { "hi": "90°", "en": "90°" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "chauthai chakkar" }] } },
+     "point": {
+      "hi": "Angle ek ghumaav hai. Poora chakkar 360° ka hota hai. Board par arm sirf chauthai chakkar ghoomi hai, yeh 90° hai, aur ise samkon kehte hain.",
+      "en": "An angle is a turn. A full turn is 360°. On the board the arm has turned only a quarter turn; that is 90°, and it is called a right angle."
+     },
+     "ask": {
+      "prompt": { "hi": "Board wali arm ek chauthai chakkar aur ghoome, toh shuru se kul kitne degree ghoomegi?", "en": "If the arm on the board turns one more quarter turn, how many degrees will it have turned in all from the start?" },
+      "key": "180°",
+      "accept": ["180", "180 degree", "180 degrees", "aadha chakkar"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "a protractor has two scales running opposite ways: one from 0 on the right, one from 0 on the left → read the one whose 0 lies on the baseline arm; arm BC points right → the right-hand 0; narrow angle → under 90°",
+     "mustSay": [
+      { "hi": "do scale", "en": "two scales" },
+      { "hi": "daayein 0", "en": "the 0 on the right" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle ABC" }], "vertex": "B", "arm": "BC" } },
+     "point": {
+      "hi": "Protractor par numbers ke do scale hote hain. Ek daayein 0 se shuru hota hai, doosra baayein 0 se. Is angle ABC mein vertex B hai aur arm BC daayein ki taraf baseline par hai, toh woh scale padho jo daayein 0 se shuru hota hai. Yeh angle patla hai, toh reading 90° se kam aani chahiye.",
+      "en": "A protractor has two scales of numbers. One starts from 0 on the right, the other from 0 on the left. In this angle ABC the vertex is B and arm BC lies on the baseline pointing right, so read the scale that starts from 0 on the right. This angle is narrow, so the reading must be under 90°."
+     },
+     "ask": {
+      "prompt": { "hi": "Arm BA ke paas dono scale 50 aur 130 dikhate hain. Daayein 0 wale scale se angle ABC kitna hai, 50° ya 130°?", "en": "At arm BA the two scales show 50 and 130. On the scale from the right-hand 0, what is angle ABC, 50° or 130°?" },
+      "key": "50°",
+      "accept": ["50", "50 degree", "50 degrees"],
+      "targets": "c6-maths-ch02-t03-m-wrong-scale",
+      "wrongIfMis": "130°"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "sense check: wide angle (more than a right angle) → reading above 90°; the two numbers at one arm always add to 180 because both scales count the same half turn from opposite ends → from one number find the other and pick by narrow/wide",
+     "mustSay": [
+      { "hi": "chauda angle", "en": "wide angle" },
+      { "hi": "milkar 180", "en": "together 180" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 120, "name": "chauda angle" }] } },
+     "point": {
+      "hi": "Yeh chauda angle hai, samkon se bada, toh iski reading 90° se zyada honi chahiye. Ek hi arm ke paas dono scale ke number milkar hamesha 180 banate hain, kyunki dono scale ek hi aadhe chakkar ko ulti dishaon se ginte hain.",
+      "en": "This is a wide angle, bigger than a right angle, so its reading must be more than 90°. At one arm the numbers on the two scales always make 180 together, because both scales count the same half turn from opposite ends."
+     },
+     "ask": {
+      "prompt": { "hi": "Is chaude angle ki arm ke paas ek scale 60 dikhata hai. Toh yeh angle kitne degree ka hai?", "en": "At this wide angle's arm one scale shows 60. So how many degrees is this angle?" },
+      "key": "120°",
+      "accept": ["120", "120 degree", "120 degrees"],
+      "targets": "c6-maths-ch02-t03-m-wrong-scale",
+      "wrongIfMis": "60°"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Farhan angle XYZ naapta hai. Centre Y par hai aur baseline arm YZ par, jo daayein ki taraf jaati hai. Arm YX ke paas ek scale 145 dikhata hai aur doosra 35. Angle page ke kone se chauda dikhta hai. Angle XYZ kitna hai?",
+     "en": "Farhan measures angle XYZ. The centre is on Y and the baseline on arm YZ, which points to the right. At arm YX one scale shows 145 and the other 35. The angle looks wider than the corner of a page. What is angle XYZ?"
+    },
+    "givens": [
+     { "hi": "centre Y par, baseline arm YZ par", "en": "centre on Y, baseline along YZ" },
+     { "hi": "arm YZ daayein ki taraf jaati hai", "en": "arm YZ points to the right" },
+     { "hi": "arm YX ke paas 145 aur 35 dikhte hain", "en": "at arm YX the scales show 145 and 35" },
+     { "hi": "angle page ke kone se chauda hai", "en": "the angle is wider than a page corner" }
+    ],
+    "find": { "hi": "angle XYZ kitne degree ka hai", "en": "the measure of angle XYZ" },
+    "steps": [
+     {
+      "do": { "hi": "Woh scale chuno jiska 0 arm YZ wali taraf hai", "en": "Choose the scale whose 0 is on the side of arm YZ" },
+      "result": "daayein 0 se shuru hone wala scale",
+      "why": { "hi": "ghumaav arm YZ se shuru hota hai, toh ginti bhi wahin ke 0 se hogi", "en": "the turn starts from arm YZ, so the counting starts from the 0 there" }
+     },
+     {
+      "do": { "hi": "Sense check karo: angle page ke kone se chauda hai", "en": "Sense check: the angle is wider than a page corner" },
+      "result": "angle 90° se zyada aur 180° se kam",
+      "why": { "hi": "page ka kona samkon hai, 90°, aur seedhi line aadha chakkar hai, 180°", "en": "a page corner is a right angle, 90°, and a straight line is a half turn, 180°" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Arm YX ke paas 145 aur 35 hain, aur angle 90° se zyada hona chahiye. Angle XYZ kitna hai, 145° ya 35°?", "en": "At arm YX there are 145 and 35, and the angle must be more than 90°. What is angle XYZ, 145° or 35°?" },
+     "key": "145°",
+     "accept": ["145", "145 degree", "145 degrees"],
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "wrongIfMis": "35°"
+    },
+    "answer": { "hi": "angle XYZ 145° ka hai", "en": "angle XYZ is 145°" },
+    "why": {
+     "hi": "ginti arm YZ ke 0 se shuru hui, chauda angle 90° se zyada hota hai, aur 35 doosre scale ki reading hai, 180 − 145",
+     "en": "the counting started from the 0 on arm YZ, a wide angle is more than 90°, and 35 is the other scale's reading, 180 − 145"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 145, "name": "angle XYZ" }], "arm": "YZ" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Ek patla angle protractor par rakha hai. Doosri arm ke paas dono scale 40 aur 140 dikhate hain. Angle kitna hai, 40° ya 140°?", "en": "A narrow angle sits on a protractor. At the second arm the two scales show 40 and 140. What is the angle, 40° or 140°?" },
+     "key": "40°",
+     "accept": ["40", "40 degree", "40 degrees"],
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "wrongIfMis": "140°",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "patla angle" }] } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Ek chauda angle hai, samkon se bada. Uski arm ke paas dono scale 75 aur 105 dikhate hain. Angle kitna hai, 75° ya 105°?", "en": "An angle is wide, bigger than a right angle. At its arm the two scales show 75 and 105. What is the angle, 75° or 105°?" },
+     "key": "105°",
+     "accept": ["105", "105 degree", "105 degrees"],
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "wrongIfMis": "75°",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 105, "name": "chauda angle" }] } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t03-i01", "why": "the turn sizes first: quarter, half and full turn in degrees" },
+    { "itemId": "c6-maths-ch02-t03-rl-o2", "why": "choose the scale whose 0 sits on the baseline arm (arm pointing left)" },
+    { "itemId": "c6-maths-ch02-t03-i03", "why": "predict before reading: a narrow angle with 40 and 140 → under 90°" },
+    { "itemId": "c6-maths-ch02-t03-i05", "why": "error-spot: a gentle slide written as 150° → wrong scale, really 30°" },
+    { "itemId": "c6-maths-ch02-t03-rl-h2", "why": "arm pointing right, 125 and 55 at the other arm → read from the right-hand 0, a wide angle" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "move": "say 'narrow or wide?' first, then trace from the 0 on the baseline arm along that one lit scale to the other arm; check the number against the guess (narrow → under 90°)",
+     "say": {
+      "hi": "Pehle socho, angle patla hai ya chauda. Phir baseline wali arm ke 0 se ginti shuru karo aur usi scale par doosri arm tak chalo. Patla angle ho toh reading 90° se kam honi chahiye.",
+      "en": "First think: is the angle narrow or wide? Then start counting from the 0 on the baseline arm and follow that same scale to the other arm. For a narrow angle the reading must be under 90°."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "patla angle" }] } },
+     "then": {
+      "prompt": { "hi": "Ek ramp zameen ke saath patla angle banata hai. Arm ke paas 25 aur 155 dikhte hain. Angle kitna hai, 25° ya 155°?", "en": "A ramp makes a narrow angle with the ground. At the arm the scales show 25 and 155. What is the angle, 25° or 155°?" },
+      "key": "25°",
+      "accept": ["25", "25 degree", "25 degrees"],
+      "targets": "c6-maths-ch02-t03-m-wrong-scale",
+      "wrongIfMis": "155°",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 25, "name": "patla angle" }] } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab angle naapna aa gaya. Agle hisse mein ulta karenge: diye hue degree ka angle khud banayenge, wahi protractor aur wahi 0 wala scale lekar.",
+    "en": "Now you can measure an angle. In the next part we go the other way: we draw an angle of a given size ourselves, with the same protractor and the same 0 scale."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch02-t03-s3",
+   "hook": {
+    "convey": "drawing = measuring in reverse: first arm with a ruler, protractor centre on its endpoint (the vertex), dot at the degree on the scale from 0 on that arm, then join the dot to the vertex; a drawing sheet, a game cannon aimed at a set angle",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet par 60° ka angle banana hai. Ruler se ek arm kheencho, phir protractor se sahi degree par ek bindu lagao, aur aakhir mein ek aur arm.",
+       "en": "You have to draw a 60° angle on a drawing sheet. Draw one arm with a ruler, then put a dot at the right degree with the protractor, and last of all one more arm."
+      }
+     },
+     {
+      "interest": "games",
+      "use": {
+       "hi": "Ek video game mein cannon zameen se 40° upar aim karni hai. Zameen pehli arm hai, cannon ki nali doosri, aur dono cannon ke pair wale point se nikalti hain.",
+       "en": "In a video game a cannon must be aimed 40° above the ground. The ground is the first arm, the cannon's barrel the second, and both leave from the point at the cannon's foot."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "to draw angle ABC: ruler → arm BC; protractor centre on B, baseline along BC; count from the 0 on the C side to the degree → dot A; arm BC points right → the right-hand 0",
+     "mustSay": [
+      { "hi": "arm BC", "en": "arm BC" },
+      { "hi": "centre B par", "en": "centre on B" },
+      { "hi": "bindu A", "en": "dot A" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle ABC" }], "vertex": "B", "arm": "BC" } },
+     "point": {
+      "hi": "Angle ABC banane ke liye pehle ruler se arm BC kheencho. Phir protractor ka centre B par aur baseline BC par rakho. C wali taraf ke 0 se ginti shuru karo, aur jitne degree chahiye, wahan ek bindu A lagao.",
+      "en": "To draw angle ABC, first draw arm BC with a ruler. Then put the protractor's centre on B and its baseline along BC. Start counting from the 0 on the C side, and at the degree you need, put a dot A."
+     },
+     "ask": {
+      "prompt": { "hi": "Is board par arm BC daayein ki taraf hai. 60 kis scale par dhoondhoge, daayein se shuru hone wale par ya baayein se?", "en": "On this board arm BC points to the right. On which scale do you look for 60, the one starting on the right or the one starting on the left?" },
+      "key": "daayein wala",
+      "accept": ["daayein", "daayein se", "daayein se shuru hone wala", "right", "the right one", "right-hand scale"],
+      "targets": "c6-maths-ch02-t03-m-wrong-scale",
+      "wrongIfMis": "baayein wala"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "the vertex is the middle letter of the name, where the protractor's centre sat → both arms leave the vertex → the new arm always starts at the vertex; the child names which point dot A joins (B, not the far end C)",
+     "mustSay": [
+      { "hi": "vertex", "en": "vertex" },
+      { "hi": "nayi arm", "en": "the new arm" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle ABC" }], "arm": "BC" } },
+     "point": {
+      "hi": "Board par angle ABC hai, aur arm BC pehle kheenchi gayi thi. Teen letters ke naam mein beech wala letter vertex hota hai. Angle ki dono arms vertex se hi nikalti hain, aur protractor ka centre bhi vertex par hi tha. Isliye nayi arm hamesha vertex se shuru hoti hai.",
+      "en": "The board shows angle ABC, and arm BC was drawn first. In a three-letter name the middle letter is the vertex. Both arms of an angle leave from the vertex, and the protractor's centre was on the vertex too. So the new arm always starts at the vertex."
+     },
+     "ask": {
+      "prompt": { "hi": "Is angle ABC mein bindu A lag gaya hai. Nayi arm ke liye A ko kis point se jodoge, B se ya C se?", "en": "In this angle ABC, dot A has been marked. For the new arm, which point do you join A to, B or C?" },
+      "key": "B",
+      "accept": ["B se", "point B", "vertex B", "A ko B se", "to B"],
+      "targets": "c6-maths-ch02-t03-m-join-wrong-end",
+      "wrongIfMis": "C"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Angle PQR = 125° banana hai. Arm QR 6 cm lambi hai aur Q se daayein ki taraf jaati hai. Angle kaise banaoge?",
+     "en": "Draw angle PQR = 125°. Arm QR is 6 cm long and points to the right from Q. How do you draw the angle?"
+    },
+    "givens": [
+     { "hi": "angle PQR 125° ka banana hai", "en": "angle PQR is to be 125°" },
+     { "hi": "arm QR 6 cm ki hai, Q se daayein ki taraf", "en": "arm QR is 6 cm, pointing right from Q" },
+     { "hi": "vertex Q hai", "en": "the vertex is Q" }
+    ],
+    "find": { "hi": "125° ka bana hua angle PQR", "en": "the drawn angle PQR of 125°" },
+    "steps": [
+     {
+      "do": { "hi": "Ruler se 6 cm ki line QR kheencho, Q baayein sire par", "en": "With a ruler draw a 6 cm line QR, with Q at the left end" },
+      "result": "arm QR, 6 cm",
+      "why": { "hi": "pehli arm chahiye jiska ek sira vertex Q ho", "en": "we need a first arm with one end at the vertex Q" }
+     },
+     {
+      "do": { "hi": "Protractor ka centre Q par aur baseline QR par rakho", "en": "Put the protractor's centre on Q and its baseline along QR" },
+      "result": "protractor Q par baitha",
+      "why": { "hi": "angle Q par banna hai, toh scale ka centre wahin chahiye", "en": "the angle is made at Q, so the scale's centre must be there" }
+     },
+     {
+      "do": { "hi": "R wali taraf ke 0 se gino aur 125 par bindu P lagao", "en": "Count from the 0 on the R side and put dot P at 125" },
+      "result": "daayein 0 wale scale par 125 pe bindu P",
+      "why": { "hi": "R daayein taraf hai, toh ghumaav wahin ke 0 se shuru hota hai", "en": "R is on the right, so the turn starts from the 0 there" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Protractor hata diya. Ab ruler se bindu P ko kis point se jodoge, Q se ya R se?", "en": "The protractor is removed. Now, with a ruler, which point do you join dot P to, Q or R?" },
+     "key": "Q",
+     "accept": ["Q se", "point Q", "vertex Q", "P ko Q se", "to Q"],
+     "targets": "c6-maths-ch02-t03-m-join-wrong-end",
+     "wrongIfMis": "R"
+    },
+    "answer": { "hi": "P ko Q se jodne par angle PQR 125° ka ban jaata hai", "en": "joining P to Q makes angle PQR of 125°" },
+    "why": {
+     "hi": "dono arms vertex Q se nikalti hain, aur doosre scale par P ke paas 55 dikhta hai, jo 180 − 125 hai, toh chauda angle sahi bana",
+     "en": "both arms leave the vertex Q, and the other scale shows 55 at P, which is 180 − 125, so the wide angle is right"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 125, "name": "angle PQR" }], "arm": "QR" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Arm daayein ki taraf hai. 40° banana tha, par galti se baayein 0 wale scale par 40 dekha. Bana hua angle kitne degree ka hai?", "en": "The arm points to the right. The angle was to be 40°, but by mistake 40 was taken on the scale from the left-hand 0. How many degrees is the angle that got drawn?" },
+     "key": "140°",
+     "accept": ["140", "140 degree", "140 degrees"],
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "wrongIfMis": "40°",
+     "board": { "template": "compare@1", "params": { "left": { "title": "arm", "items": ["daayein ki taraf"] }, "right": { "title": "baayein 0 wale scale", "items": ["40"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Angle DEF = 80° banana hai. Pehle arm EF kheenchi, centre E par rakha, 80 par bindu D lagaya. D ko kis point se jodoge, E se ya F se?", "en": "Angle DEF = 80° is to be drawn. First arm EF was drawn, the centre put on E, and dot D marked at 80. Which point do you join D to, E or F?" },
+     "key": "E",
+     "accept": ["E se", "point E", "vertex E", "D ko E se", "to E"],
+     "targets": "c6-maths-ch02-t03-m-join-wrong-end",
+     "wrongIfMis": "F",
+     "board": { "template": "compare@1", "params": { "left": { "title": "arm EF", "items": ["pehle kheenchi"] }, "right": { "title": "bindu D", "items": ["80 par"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t03-i19", "why": "angle ABC = 60°: arm BC, centre on B, dot A at 60 → join A to the vertex B, not to C" },
+    { "itemId": "c6-maths-ch02-t03-i06", "why": "say all the steps to draw 70° at point A: arm, centre, mark from 0, join" },
+    { "itemId": "c6-maths-ch02-t03-rl-h3", "why": "110° from an arm pointing left → mark it on the scale that starts at 0 on the left" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t03-m-wrong-scale",
+     "move": "the arm already drawn decides the scale: find the 0 on the arm's side, count from there; then sense-check the drawn angle against the asked size (under 90° → narrow, over 90° → wide)",
+     "say": {
+      "hi": "Arm jis taraf hai, usi taraf ka 0 dhoondho aur ginti wahin se shuru karo. Bindu lagane ke baad dekho: chhota degree ho toh angle patla dikhna chahiye, bada ho toh chauda.",
+      "en": "Find the 0 on the side the arm points to and start counting there. After marking the dot, look: a small number of degrees should look narrow, a big one wide."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "patla angle" }], "arm": "arm" } },
+     "then": {
+      "prompt": { "hi": "Arm daayein ki taraf hai. 65° ke liye galti se baayein 0 wale scale par 65 dekha. Bana angle kitne degree ka hai?", "en": "The arm points right. For 65°, 65 was read by mistake on the left-hand 0 scale. How many degrees is the drawn angle?" },
+      "key": "115°",
+      "accept": ["115", "115 degree", "115 degrees"],
+      "targets": "c6-maths-ch02-t03-m-wrong-scale",
+      "wrongIfMis": "65°",
+      "board": { "template": "compare@1", "params": { "left": { "title": "arm", "items": ["daayein ki taraf"] }, "right": { "title": "baayein 0 wale scale", "items": ["65"] } } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch02-t03-m-join-wrong-end",
+     "move": "two paper strips pinned at B (pin = protractor centre = vertex): one strip lies on BC, the other swings round to the dot → both arms leave the pin → rule from B along the swung strip; the middle letter names the pin",
+     "say": {
+      "hi": "Kaagaz ki do patti socho jo ek pin se B par judi hain. Ek patti BC par padi hai, doosri ghoomkar bindu A tak jaati hai. Dono patti pin se hi nikalti hain, isliye nayi arm hamesha vertex B se kheenchte hain.",
+      "en": "Think of two paper strips pinned together at B. One strip lies on BC, the other swings round to dot A. Both strips leave from the pin, so the new arm is always drawn from the vertex B."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "angle ABC" }], "vertex": "B", "arm": "BC" } },
+     "then": {
+      "prompt": { "hi": "Angle LMN = 35° banana hai. Pehle arm MN kheenchi, centre M par rakha, 35 par bindu L lagaya. L ko M se jodoge ya N se?", "en": "Angle LMN = 35° is to be drawn. First arm MN was drawn, the centre put on M, dot L marked at 35. Join L to M or to N?" },
+      "key": "M",
+      "accept": ["M se", "point M", "vertex M", "L ko M se", "to M"],
+      "targets": "c6-maths-ch02-t03-m-join-wrong-end",
+      "wrongIfMis": "N",
+      "board": { "template": "compare@1", "params": { "left": { "title": "arm MN", "items": ["pehle kheenchi"] }, "right": { "title": "bindu L", "items": ["35 par"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}
