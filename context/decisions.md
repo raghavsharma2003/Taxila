@@ -8162,3 +8162,22 @@ Apply `node scripts/m3.mjs apply --apply --start-now --vm` by 2026-11-07, so tha
 - **Blocked on:** the Azure keys. This environment has no environment variables and no network secrets.
 
 **Reverse if** the Founders Hub portal shows a different verification date, or the owner declines the VM.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `dc-r7-m4-without-fail` (2026-11-06)
+
+Go for Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) by holding 9 services, so 2 are spare, with no single point of failure. The owner's words: "without fail", "totally autonomous and fully scheduled, and fully break tested".
+
+**What gets built:**
+- **Spares:** a Load Balancer (an internal Standard LB with 8 rules) and Virtual Network (Standard public IPs), both in taxila-m3-rg.
+- **Two independent runners on one leased ledger:** the ACA jobs every 3 h, and a systemd timer on taxila-m3-vm offset by 90 minutes.
+- **Closed-loop lane targets** from Cost Management actuals.
+- **The verifier,** twice a day, in M4 mode (it alerts below 8 services), plus a runway alarm and a burst alarm.
+- **Multi-address alert email.**
+- **CanNotDelete locks** on the M3 resources, made by the owner, since the service principal is Contributor only.
+
+**Reverse if:**
+- Microsoft's counting drops us below 7;
+- the credit cannot cover 60 days at ~$20-24/day;
+- the owner declines the spares.

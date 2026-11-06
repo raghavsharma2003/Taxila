@@ -169,3 +169,21 @@ Resolves `open-r7-m3-verification-deadline`.
 | 2026-07-10, ticket opened (worst case) | 2027-01-06 | 2026-11-08 |
 
 The earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-11-05 and was a week too early. The portal's own recorded date has not been read.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `fd-r7-m3-subscription-inventory-2026-11-06` (2026-11-06)
+
+**Projects in the subscription:** Taxila, Vyakti, and the companion and sales-enabler projects. The milestones count services across all of them.
+
+**Cost Management, closed days 10-22 to 11-04:**
+- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's), Virtual Machines 1.33 (Vyakti's vl-vm-cin only).
+- Fluctuating: Foundry Models and Foundry Tools.
+- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage 0.15, Azure Monitor 0.15.
+
+**Limits:**
+- The service principal is Contributor only: no role assignments, no locks.
+- Container Instances has 0 core quota.
+- Public IPs: 100 per region.
+
+**taxila-cin-pg over 30 days:** ~11 connections, CPU ~8% on average (62% at peak), ~2.4 of 8 GB memory. taxila-sin-staging has a DATABASE_URL.

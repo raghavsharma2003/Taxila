@@ -5570,3 +5570,24 @@ guna play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366,
 
 - **Cert:** every guna sample passes at every size (counts in server/forge3/certs/play.json).
 - **Tests:** tests/r7-games-guna.test.mjs, 65 tests. An independent checker uses plain arithmetic (a * b, Math.floor(a / b), a % b, Math.ceil, its own nearest-round reading) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms (measured runs are a few ms).
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `ms-r7-m3-applied-2026-11-06` (2026-11-06)
+
+M3 went live on 2026-11-06 at 08:24 UTC with the owner's keys, from int/r6 plus the m3-ledger fix (49e45cb44). Command: `apply --apply --start-now --vm`.
+
+**Created or changed:**
+- taxilacr: Basic → Premium.
+- taxilaforge/m3-ledger: new container.
+- In taxila-env, the ACA jobs m3-keeper (`17 3,15 * * *`) and m3-verify (`41 6 * * *`).
+- Action group m3-owner, and the alert rules m3-alert-lines and m3-verify-silent.
+- taxila-m3-rg, containing taxila-m3-vm.
+
+**Dates:** M3_SINCE is 2026-11-07, so day 60 is 2027-01-05.
+
+**Database:** at 09:10 UTC, taxila-cin-pg was moved to B2s ($6.30 → $2.63/day).
+
+**Probes before applying:** taxila-fast, taxila-brain and the speech token each returned 200.
+
+**First keeper run:** at 08:51, its ledger showed $1.25 on the models lane.

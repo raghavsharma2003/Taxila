@@ -2797,3 +2797,11 @@ Fix (integration 6):
 - the junk was removed and App's five prose blocks re-applied to decisions.md.
 
 Lesson: a check that only reads the files it expects cannot see files it does not expect. It has to list the directory.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `rj-r7-m3-container-name-m3` (2026-11-06)
+
+Rejected: the ledger container name "m3".
+
+Azure blob container names must be 3-63 characters, and the fake Azure in the test never checked that. The first live dry run failed with 400 OutOfRangeInput. It was renamed to m3-ledger, and a test pins the rule. Lesson: a fake must enforce the real service's input rules.

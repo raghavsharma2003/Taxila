@@ -25568,6 +25568,34 @@
    "at": "2026-11-06",
    "title": "Apply the M3 automation (scripts/m3.mjs apply --apply --start-now --vm) by 2026-11-07, so that day 1 is 2026-11-08 at the latest, which fits even the worst-case deadline. The VM is taken as a yes from the owner's 2026-11-06 message ('rent or whatever we need'): 7 services, 2 spare. The PostgreSQL downsize stays off until the owner says yes, because it touches a database and is not needed to qualify. Blocked: this environment has no Azure keys. Reverse if the Founders Hub portal shows a different verification date, or if the owner declines the VM.",
    "source": "inbox/r7-main-15.json"
+  },
+  {
+   "id": "ms-r7-m3-applied-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "M3 applied live on 2026-11-06 at 08:24 UTC, with the owner's keys, from int/r6 plus the m3-ledger fix (49e45cb44): `apply --apply --start-now --vm`. Created or changed: taxilacr Basic → Premium; container taxilaforge/m3-ledger; ACA jobs m3-keeper (17 3,15 * * *) and m3-verify (41 6 * * *) in taxila-env; action group m3-owner (Owner role + team@vyakti.ai); alert rules m3-alert-lines and m3-verify-silent; RG taxila-m3-rg with taxila-m3-vm (D2as_v5, private, no public IP). M3_SINCE = 2026-11-07, so day 60 = 2027-01-05. At 09:10 UTC taxila-cin-pg was downsized D2ds_v5 → B2s (owner yes), $6.30 → $2.63/day. Before applying, a 1-call probe each: taxila-fast 200, taxila-brain 200, centralindia speech token 200. The first keeper execution (m3-keeper-wlth24y) had $1.25 on the models lane in the ledger at 08:51. Method: m3.mjs output and ARM reads. n = 1 apply.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "fd-r7-m3-subscription-inventory-2026-11-06",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "The subscription hosts Taxila (rg-raghavsharma1729-7190, taxila-sin), Vyakti (vyakti-voice; vp-research-rg with VM vl-vm-cin, D2as_v5) and the companion and sales-enabler projects (Foundry projects on raghavsharma1729-compan-resource). Milestones count services across the whole subscription. Cost Management, 2026-10-22 to 11-04, closed days:\n- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's apps), Virtual Machines 1.33 (Vyakti's VM only).\n- Fluctuating: Foundry Models (−0.06 to 7.84) and Foundry Tools (0.02 to 5.14).\n- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage ~0.15, Azure Monitor 0.15.\n\nThe deploy service principal is Contributor at the subscription (plus Foundry Owner on compan-resource). It cannot create role assignments or resource locks. Container Instances has 0 core quota on this sponsorship. Public IP quota is 100 per region.\n\ntaxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory ~30% of 8 GB. The India staging app taxila-sin-staging carries a DATABASE_URL.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "rj-r7-m3-container-name-m3",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "The M3 ledger container was named \"m3\". Azure blob container names must be 3-63 characters, so the first live dry run failed with 400 OutOfRangeInput. tests/m3-plan.test.mjs passed because its fake Azure never validated names. It was renamed to m3-ledger before anything was applied, and a test now pins the name as legal and the same in all three files. Lesson: a fake must enforce the real service's input rules, or the first live run is the real test.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "dc-r7-m4-without-fail",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Target Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) rather than M3 alone, holding 9 services (2 spare) with no single point of failure, independent of whether anyone keeps developing Taxila or Vyakti. Owner, 2026-11-06: \"without fail\", fully autonomous and break-tested.\n- Spares: Load Balancer (an internal Standard LB with 8 rules) and Virtual Network (Standard public IPs), both in taxila-m3-rg.\n- Two independent runners share one leased ledger: ACA jobs every 3 h (eastus2), plus a systemd timer on taxila-m3-vm (centralindia), offset by 90 minutes.\n- Closed-loop lane targets come from Cost Management actuals.\n- The verifier runs twice a day in M4 mode (alert below 8 services), with a credit-runway alarm and a burst alarm.\n- Multi-address alert email.\n- Owner-made CanNotDelete locks on the M3 resources.\n\nBuilt on claude/r7-m4; the main loop applies it live and break-tests it live. Reverse if: Microsoft counts workloads by something other than ServiceName in a way that drops us below 7; the credit cannot cover 60 days at ~$20-24/day; or the owner declines the spares.",
+   "source": "inbox/r7-main-16.json"
   }
  ],
  "edges": [
@@ -40009,6 +40037,26 @@
   {
    "src": "dc-r7-m3-apply-by-2026-11-07",
    "rel": "part_of",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "part_of",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-subscription-inventory-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m3-apply-by-2026-11-07",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-applied-2026-11-06"
+  },
+  {
+   "src": "rj-r7-m3-container-name-m3",
+   "rel": "constrains",
    "dst": "dc-r7-m3-credit-unlock"
   }
  ]
