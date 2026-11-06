@@ -211,7 +211,10 @@ export function v22Errors(s) {
     k.checks.forEach((c, i) => { if (!c.board) e.push(at(`checks[${i}]: a check carries its own board`)); });
     k.remediation.forEach((r, i) => {
       const t = r.then ?? {};
-      if ([...String(t.prompt?.hi ?? "")].length > THEN_MAX) e.push(at(`remediation[${i}].then: prompt ${[...String(t.prompt?.hi ?? "")].length} > ${THEN_MAX} characters`));
+      for (const lang of ["hi", "en"]) {
+        const len = [...String(t.prompt?.[lang] ?? "")].length;
+        if (len > THEN_MAX) e.push(at(`remediation[${i}].then: prompt${lang === "en" ? " (en)" : ""} ${len} > ${THEN_MAX} characters`));
+      }
       if (!t.board) e.push(at(`remediation[${i}].then: a then-card carries its own board`));
       if (weNums && numsOf(t.prompt?.hi) === weNums) e.push(at(`remediation[${i}].then: repeats the worked problem's numbers (${weNums})`));
     });
