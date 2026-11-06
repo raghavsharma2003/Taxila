@@ -5591,3 +5591,26 @@ M3 went live on 2026-11-06 at 08:24 UTC with the owner's keys, from int/r6 plus 
 **Probes before applying:** taxila-fast, taxila-brain and the speech token each returned 200.
 
 **First keeper run:** at 08:51, its ledger showed $1.25 on the models lane.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `ms-r7-director8-hand-2026-11-06` (2026-11-06)
+
+director8: script walk v5, v2.2 scripts, H1.2 child, int/r6 7e2d7eea7. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 174/182 (96%) |
+| Verdicts | 200/202 (99%) |
+| Right called wrong | 1 |
+| Wrong called right | 0 |
+| False keys | 1 |
+| Contradictions, by hand | 73 (code checker: 2) |
+
+Where the contradictions come from: about 45 Studio "?", 6 empty picture requests, about 22 runtime segment placement (director7: 51).
+
+Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register 2.5-3; promises 2.5-3.
+
+Cost and speed: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.
+
+Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns. Full write-up: docs/design/round7/judgements/director8-2026-11-06.md.

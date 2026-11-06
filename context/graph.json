@@ -25596,6 +25596,27 @@
    "at": "2026-11-06",
    "title": "Target Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) rather than M3 alone, holding 9 services (2 spare) with no single point of failure, independent of whether anyone keeps developing Taxila or Vyakti. Owner, 2026-11-06: \"without fail\", fully autonomous and break-tested.\n- Spares: Load Balancer (an internal Standard LB with 8 rules) and Virtual Network (Standard public IPs), both in taxila-m3-rg.\n- Two independent runners share one leased ledger: ACA jobs every 3 h (eastus2), plus a systemd timer on taxila-m3-vm (centralindia), offset by 90 minutes.\n- Closed-loop lane targets come from Cost Management actuals.\n- The verifier runs twice a day in M4 mode (alert below 8 services), with a credit-runway alarm and a burst alarm.\n- Multi-address alert email.\n- Owner-made CanNotDelete locks on the M3 resources.\n\nBuilt on claude/r7-m4; the main loop applies it live and break-tests it live. Reverse if: Microsoft counts workloads by something other than ServiceName in a way that drops us below 7; the credit cannot cover 60 days at ~$20-24/day; or the owner declines the spares.",
    "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "ms-r7-director8-hand-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director8 (script walk v5, v2.2 scripts, H1.2; int/r6 7e2d7eea7 + harness fbaa0f4c), 16 lessons, judged by hand by 4 Claude judges.\n- Beats taught 174/182 (96%); verdicts 200/202 (99%).\n- Right called wrong: 1. Wrong called right: 0. False keys: 1.\n- Contradictions per segment by hand: 73 (code checker: 2). About 45 are Studio's \"?\" over stated numbers, 6 are empty picture requests, and about 22 come from runtime segment assembly; director7 had 51 runtime contradictions.\n- Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register 2.5-3; promises 2.5-3.\n- Cost: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.\n- Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns, 2,265 calls, ~$1.42.",
+   "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6: every sentence on its own board, and requests and parks done for real.\n- Brain R1-R6: segment assembly for verdicts, closes and bridges; a close's why only from the closed card; the invented guard replaces the line and keys are checked in every phrasing; requests as moves (smaller re-explanation, picture redraw, specific hint, probe acknowledgement); real returns and a language mode that holds; render hygiene (one verdict, no duplicates or double questions, no early results, ~60 words split into turns).\n- Studio S1'/S3': only the asked value may be '?'; a confirmed answer is revealed; a picture request draws the live card's figure.\n- Learning: v2.2 data fixes (a why per key, a board per bridge, asked figures drawn, shading, must-says, distractors).\n- Harness: the checker models '?', picture lines, foreign whys and misplaced verdicts; per-segment board and time logged; events in context.\n- Next run: director9 on integration 11. The gate is unchanged. The 30-topic batch stays held.\n- Reverse if: director9 implements R1-R6 and S1'/S3' and still has more than 10 hand-counted contradictions. Then contradictions are not a sentence-placement problem: move to a code-rendered teaching voice for every sentence that describes the board, with the model kept to verdict framing and diversions.",
+   "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "rj-r7-code-spec-unstreamed",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "Rejected: speculating the reply on code-classified turns in parallel with the distress read, without the clause stream (TAXILA_CODE_SPEC, Brain 61fb6850).\n- A/B on the 4 steady lessons (160 turns, 939 calls, ~$0.62): first-audio-ready p50/p90 was 1,954/3,498 ms against a baseline of 1,852/3,123.\n- Why it lost: the speculated reply has no clause stream, so it displaced the early-first-clause path (970 ms); 19% of speculations missed on the on-screen facts row; and model-classified turns were slower.\n- The flag stays off. Proposed instead: stream the speculation and hold its first guarded clause until the read is clean.",
+   "source": "inbox/r7-main-17.json"
   }
  ],
  "edges": [
@@ -40058,6 +40079,21 @@
    "src": "rj-r7-m3-container-name-m3",
    "rel": "constrains",
    "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v5"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-hand-2026-11-06"
+  },
+  {
+   "src": "rj-r7-code-spec-unstreamed",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6"
   }
  ]
 }
