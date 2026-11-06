@@ -208,7 +208,11 @@ export class PuppetStage {
         const box: [number, number] = [this.canvas.clientWidth || this.host.clientWidth || 1, this.canvas.clientHeight || this.host.clientHeight || 1];
         const res = await startWorkerRig(this.canvas, kind, base, { ...ropts, jaw: this.o.jaw }, box, (m) => {
           if (this.disposed) return;
-          this.emit({ type: "fallback", reason: m.t === "lost" ? "webgl context lost (worker)" : `worker rig: ${m.message}` });
+          // round 7: a context loss in the worker is handled like one on the main thread (onLost / onRestored): the
+          // first is rebuilt in the worker and she comes back live; a second, or no restore within 3 s, holds her still
+          if (m.t === "lost") this.lost("worker");
+          else if (m.t === "restored") this.restoredInWorker();
+          else this.emit({ type: "fallback", reason: `worker rig: ${m.message}` });
         }, this.o.loadTimeoutMs ?? 8000);
         if (this.disposed) { res.rig.dispose(); return; }
         this.rig = res.rig;
@@ -490,18 +494,42 @@ export class PuppetStage {
 
   private onLost = (e: Event) => {
     e.preventDefault();
+    this.lost("main");
+  };
+
+  /** A lost GL context (the canvas's, or the worker's OffscreenCanvas's): hide the canvas (the rest still under it
+   *  shows), then wait for the restore once; a second loss, or no restore within 3 s, falls back to her still. */
+  private lost(where: "main" | "worker"): void {
+    if (this.disposed) return;
     this.losses++;
     this.stop();
     this.canvas.style.opacity = "0";
     this.revealed = false;
     this.emit({ type: "contextlost" });
-    if (this.losses > 1) this.emit({ type: "fallback", reason: "webgl context lost twice" });
+    if (this.losses > 1) this.emit({ type: "fallback", reason: `webgl context lost twice (${where})` });
     else {
       // the restore may never come (the GPU process died): give it 3 s, then fall back
-      const id = window.setTimeout(() => { this.timers.delete(id); if (!this.running && !this.disposed) this.emit({ type: "fallback", reason: "webgl context not restored" }); }, 3000);
+      const id = window.setTimeout(() => { this.timers.delete(id); if (!this.running && !this.disposed) this.emit({ type: "fallback", reason: `webgl context not restored (${where})` }); }, 3000);
       this.timers.add(id);
     }
-  };
+  }
+
+  /** The worker rebuilt the rig on its restored context: draw again; she re-reveals by the usual rule. */
+  private restoredInWorker(): void {
+    if (this.disposed || this.losses > 1 || !(this.rig instanceof RemoteRig)) return;
+    this.t0 = performance.now();
+    this.frames = 0;
+    this.start();
+  }
+
+  /** Evals only: lose the GL context now (worker or main thread) and restore it after `restoreAfterMs`. */
+  debugLoseContext(restoreAfterMs = 300): void {
+    if (this.rig instanceof RemoteRig) { this.rig.debugLoseContext(restoreAfterMs); return; }
+    const gl = this.canvas.getContext("webgl2") as WebGL2RenderingContext | null;
+    const ext = gl?.getExtension("WEBGL_lose_context");
+    ext?.loseContext();
+    window.setTimeout(() => ext?.restoreContext(), restoreAfterMs);
+  }
 
   private onRestored = () => {
     if (this.disposed || this.losses > 1) return;

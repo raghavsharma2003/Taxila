@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-worker-context-loss-rebuild",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "A GL context loss on the worker rig is handled like one on the main thread: the worker drops the rig, rebuilds it on the restored OffscreenCanvas and she comes back live; a second loss (or no restore within 3 s) holds her still. Before, the first worker loss held her still for the rest of the page (a phone switching apps)."
+  },
+  {
+   "id": "ms-r7-face-context-loss-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Context loss (context-loss.mjs, desk lesson, SwiftShader, n=3 per arm, restore after 400 ms): back live after the first loss 3/3 worker (p50 1655 ms) and 3/3 main thread (p50 1658 ms); her still after a second loss 3/3 on both; 0 page errors."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-face-worker-context-loss-rebuild",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-context-loss-2026-11-06"
+  },
+  {
+   "src": "dc-r7-face-worker-context-loss-rebuild",
+   "rel": "part_of",
+   "dst": "dc-r7-face-rig-worker"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-face-worker-context-loss-rebuild` (2026-11-06)\nThis helps every look (main: \"keep improving whatever helps every look\"). It is row 8 of the low-end-phone needs-live list.\n- **The gap.** Since `dc-r7-face-rig-worker` the rig draws in an OffscreenCanvas worker by default. The worker reported a GL context loss as `lost`, and the stage turned that into an immediate fallback. Android routinely loses GL contexts when the child switches apps. So one trip to another app put her on her still for the rest of the page, and `failedThisPage` kept later mounts on it too. The main-thread path already rebuilds once (`stage.ts` `onRestored`).\n- **Now.**\n  - On a loss, the worker drops its rig. On `webglcontextrestored` it rebuilds the rig on the same canvas with `loadRigChunked` (the pack is in the HTTP cache) and posts `restored`.\n  - The worker answers every frame. A frame that arrives without a rig is answered as skipped, so the main side's one-in-flight queue (`remoteRig.ts`) can never stick.\n  - The stage's loss handling is now one `lost(where)` for both paths: hide the canvas (her poster is under it), wait up to 3 s for the restore, and fall back on a second loss.\n  - `restoredInWorker()` starts the stage again, and she re-reveals by the usual rule.\n  - An eval-only hook, `stage.debugLoseContext(ms)` (`WEBGL_lose_context`), forces a loss on either path.\n- **Reversal condition.** A real phone shows the worker rebuild failing or taking much longer than the main thread's. In that case fall back on the first worker loss, as before.\n",
+  "measurements": "## `ms-r7-face-context-loss-2026-11-06` (2026-11-06)\n`evals/face-puppet/context-loss.mjs` → `docs/design/round7/face/context-loss.json`. It runs /dev/desk?live=1 with the live puppet forced on, SwiftShader and 412×915, with 3 runs per arm (worker, `?rigworker=1`, path `worker-bitmap`; main thread, `?rigworker=0`, path `bitmap`). Each run forces a context loss with `WEBGL_lose_context` and restores it after 400 ms, then forces a second loss.\n- **After the first loss she is back live** in 3/3 runs on both paths. Loss → re-reveal p50 is 1655 ms on the worker and 1658 ms on the main thread (max 1709 / 1744), including the 400 ms before the restore.\n- **After the second loss she is on her still** in 3/3 runs on both paths, with the poster painted.\n- **0 page errors.**\n- **Before the change** the worker path fell back on the first loss. That is from the code: the old build has no hook to force a loss, so there is no \"before\" run.\n- **Limits.** This is a desktop browser with SwiftShader. A real Android context loss, and how long its restore takes, is row 8 of `needs-live-low-end-phone.md`.\n"
+ }
+}
