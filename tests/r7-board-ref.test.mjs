@@ -304,3 +304,25 @@ test("Learning's template asks: 4-digit place value, a 0-10000 scale, short/long
     assert.ok(g.checks.find((c) => c.id === "W15.named_shape_drawn")?.pass !== false, line);
   }
 });
+
+test("director9: an L-shaped room (6 sides that close as an L) is drawn TO SCALE with right angles; a walk that does not close is refused; wholes@1 draws equal and unequal pieces", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const L = expand({ template: "measured@1", shape: "polygon", unit: "m", sides: [8, 3, 5, 4, 3, 7] });
+  assert.ok(L.ok, String(L.errors));
+  const P = L.script.ops.find((o) => o.op === "polygon").points;
+  assert.equal(P.length, 6);
+  for (let i = 0; i < 6; i++) { const A = P[i], B = P[(i + 1) % 6]; assert.ok(A[0] === B[0] || A[1] === B[1], `side ${i} is not straight across or down`); }
+  const len = (i) => Math.hypot(P[(i + 1) % 6][0] - P[i][0], P[(i + 1) % 6][1] - P[i][1]);
+  assert.ok(Math.abs(len(0) / len(1) - 8 / 3) < 0.02, "to scale: 8 against 3");
+  assert.equal(L.script.facts.onScreen.outline, "L-shape, right angles");
+  assert.deepEqual(L.script.facts.counts.sideValues, ["8 m", "3 m", "5 m", "4 m", "3 m", "7 m"]);
+  assert.ok(expand({ template: "measured@1", shape: "polygon", unit: "cm", sides: [6, 2, 4, 3, 2, 5], names: ["A", "B", "C", "D", "E", "F"] }).ok, "corner names clear of the side lengths");
+  assert.deepEqual(expand({ template: "measured@1", shape: "polygon", unit: "m", sides: [8, 3, 5, 4, 3, 6], walk: "RDLDLU" }).errors, ["polygon_walk"]);
+  // a hexagon whose sides do not close as an L is still drawn regular, labelled
+  const H = expand({ template: "measured@1", shape: "polygon", unit: "m", sides: [5, 4, 6, 3, 4, 6] });
+  assert.ok(H.ok && H.script.facts.onScreen.outline === undefined);
+  const W = expand({ template: "wholes@1", wholes: [{ parts: 3, equal: false, title: "Cake A" }, { parts: 3, equal: true, title: "Cake B" }] });
+  assert.ok(W.ok, String(W.errors));
+  assert.deepEqual(W.script.facts.counts.wholes, [{ parts: 3, shaded: 0, label: "Cake A" }, { parts: 3, shaded: 0, label: "Cake B" }]);
+  assert.deepEqual(W.script.facts.onScreen, { whole1: "3 unequal parts", whole2: "3 equal parts" });
+});
