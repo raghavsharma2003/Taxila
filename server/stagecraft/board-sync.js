@@ -284,18 +284,43 @@ export function regate(script, ask, ctx) {
     if (!failing.length || !failing.some((c) => MASKABLE(c.id))
       || failing.some((c) => !OTHER_OK(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(OTHER_OK)))) break;
     const reveals = failing.filter((c) => MASKABLE(c.id)).flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
-    const masked = maskReveals(g.script ?? raw, reveals);
+    const hits = [];
+    const masked = maskReveals(g.script ?? raw, reveals, hits);
     if (!masked) break;
+    noteMasked(ask?.intent?.intentId, hits);
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
   }
   return g.pass ? { ok: true, script: { ...g.script, facts: g.facts }, gate: g } : { ok: false, script: null, gate: g };
 }
 
 /**
+ * round 7 (main, director7 S1, the live guard): which value each "?" this lesson's gate wrote stands for, per intent (a
+ * paged board's pages are `${intentId}:p${i}`), keyed by the op's text AS MASKED ("? m", a numwork's rows): the drawn board
+ * is matched by that text, so a candidate board the gate masked but the stage never drew flags nothing. Bounded.
+ */
+const maskLog = new Map();
+function noteMasked(intentId, hits) {
+  if (!hits.length || intentId == null) return;
+  const id = String(intentId);
+  maskLog.set(id, [...(maskLog.get(id) ?? []), ...hits].slice(-40));
+  while (maskLog.size > 300) maskLog.delete(maskLog.keys().next().value);
+}
+/** The numbers her line STATES that the drawn board writes as "?" (a check's own answer she has not said is not one). */
+export function statedAsUnknown(script, lineText, intentId) {
+  const id = String(intentId ?? "");
+  const log = [...maskLog].filter(([k]) => k === id || k.startsWith(`${id}:`)).flatMap(([, v]) => v);
+  if (!log.length || !Array.isArray(script?.ops)) return [];
+  const shown = new Set(script.ops.flatMap((o) => (o.op === "text" || o.op === "label") && /\?/.test(String(o.text ?? "")) ? [String(o.text)]
+    : o.op === "numwork" && Array.isArray(o.rows) && o.rows.flat().some((c) => String(c) === "?") ? [JSON.stringify(o.rows)] : []));
+  const stated = new Set(String(lineText ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
+  return [...new Set(log.filter((h) => shown.has(h.text) && stated.has(String(h.value))).map((h) => String(h.value)))];
+}
+
+/**
  * The script with every W9 reveal written as "?": "o7: 12 = answer 12" → that op's token; "o3: marks 3/4 on o2" → the
  * marker dropped; "word: scale" → the word replaced. null when nothing could be masked.
  */
-export function maskReveals(script, reveals) {
+export function maskReveals(script, reveals, log = null) {
   if (!script?.ops?.length || !Array.isArray(reveals) || !reveals.length) return null;
   const esc = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   let ops = script.ops.map((o) => ({ ...o }));
@@ -314,16 +339,17 @@ export function maskReveals(script, reveals) {
     const o = ops.find((x) => x.id === tok[1]);
     if (!o) continue;
     const src = `(^|[^\\d/.])${esc(tok[2])}($|[^\\d/.])`;
-    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; }
+    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; log?.push({ text: o.text, value: tok[2] }); }
     else if (o.op === "numwork" && o.layout === "fraction" && /^\d+\/\d+$/.test(tok[2]) && Array.isArray(o.rows) && String(o.rows?.[0]?.[0]) === tok[2].split("/")[0] && String(o.rows?.[1]?.[0]) === tok[2].split("/")[1]) {
       // a stacked fraction a over b: its top written "?" (the whole stays, so the question is still what she asked)
       o.rows = [["?"], ...o.rows.slice(1)];
       changed = true;
+      log?.push({ text: JSON.stringify(o.rows), value: tok[2] });
     }
     else if (o.op === "numwork" && Array.isArray(o.rows)) {
       const before = JSON.stringify(o.rows);
       o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
-      changed ||= JSON.stringify(o.rows) !== before;
+      if (JSON.stringify(o.rows) !== before) { changed = true; log?.push({ text: JSON.stringify(o.rows), value: tok[2] }); }
     }
   }
   return changed ? { ...script, ops } : null;

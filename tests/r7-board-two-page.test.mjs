@@ -115,3 +115,42 @@ test("director7 S1: a card that sends its answers withholds THOSE only — every
   // and the card's own answer is still never drawn: a board that wrote 30 would be masked
   assert.deepEqual(gateCtxFor(real, { kit: c6 }).withhold.values, ["30"]);
 });
+
+test("director7 S1 live guard: a '?' drawn over a number her line states is flagged (artifact.statedAsUnknown + a trace row); a withheld answer she has not said is not", async () => {
+  const { gateCtxFor, statedAsUnknown } = await import("../server/stagecraft/board-sync.js");
+  const c6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const ref = { template: "measured@1", params: { shape: "polygon", unit: "m", sides: [8, 3, 5, 4, 3, 7] } };
+  const run = (id, answers, text) => {
+    const a = { intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+      scriptBeat: { scriptId: "s", beatId: "c1", kind: "check", answers } }, line: { lessonId: id, text }, mode: "fresh", kit: { topicId: "c6-maths-ch06-t01", content: [] } };
+    BF.preselect({ ...a, line: { lessonId: id, text: "" } }, { kit: c6 });
+    const t = BF.takePreselected(a, gateCtxFor(a, { kit: c6, redact: [], prior: [] }));
+    return { t, flagged: statedAsUnknown(t.script, text, a.intent.intentId) };
+  };
+  // a card whose answer (8) her line states: the board writes "? m" over it — flagged
+  const bad = run("d7g1", ["8"], "Ek side 8 m hai, baaki dekho. Parimap kitna hai?");
+  assert.ok(texts(bad.t.script.ops).includes("? m"));
+  assert.deepEqual(bad.flagged, ["8"]);
+  // the card's real answer (30), unsaid: nothing is "?" over a stated number
+  const ok = run("d7g2", ["30"], "Ek side 8 m hai. Parimap kitna hai?");
+  assert.deepEqual(ok.flagged, []);
+  // a "?" over a value her line does NOT state is the question, not a flag
+  const q = run("d7g3", ["8"], "Ek side ki lambai kitni hai?");
+  assert.deepEqual(q.flagged, []);
+  // through the seam: the drawn artifact carries statedAsUnknown (director runs read it beside the screen)
+  const T6 = "c6-maths-ch06-t01", sid = "d7g-seam";
+  seam.studioSeam.prefetch({ lessonId: sid, purpose: "practice", kit: c6, topicId: T6, child: { id: "child-d7g", class_level: 6, language_pref: "hinglish" } });
+  const A = { intent: { intentId: `${sid}:wb:1`, lessonId: sid, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { scriptId: "s", beatId: "c1", kind: "check", answers: ["8"] } },
+    line: { lessonId: sid, teacherReplySeq: 3, text: "Ek side 8 m hai, ek 3 m aur ek 5 m. Parimap kitna hai?" }, mode: "fresh", kit: { topicId: T6, content: [] } };
+  BF.preselect({ ...A, line: { ...A.line, text: "" } }, { kit: c6 });
+  const ack = seam.studioSeam.requestIntent(A);
+  assert.equal(ack?.state, "revealed");
+  assert.deepEqual(ack.artifact.statedAsUnknown, ["8"]);
+  // (Brain's interim cardBoard, should one arrive, pages like a then-marker: the say at 0, the card where its text starts)
+  const cb = ask("d7-cb"); const th = cb.intent.then; delete cb.intent.then;
+  cb.intent.cardBoard = { boardRef: th.boardRef, scriptBeat: th.scriptBeat, cardText: then };
+  const sg = BF.segmentsOf(cb);
+  assert.equal(sg?.length, 2);
+  assert.equal(sg[1].from, say.length + 1);
+});

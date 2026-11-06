@@ -352,7 +352,11 @@ export const _picks = picks;
  */
 export function segmentsOf(ask) {
   const text = String(ask?.line?.text ?? "");
-  const marks = Array.isArray(ask?.intent?.segments) ? ask.intent.segments : ask?.intent?.then ? [ask.intent.then] : [];
+  // (main, director7: Brain's interim intent.cardBoard { boardRef, scriptBeat, cardText, atClause }, if one still arrives,
+  // is the say at 0 and the card where its text starts in her line)
+  const cb = ask?.intent?.cardBoard, cbAt = cb?.boardRef && cb.cardText ? text.lastIndexOf(String(cb.cardText).trim()) : -1;
+  const marks = Array.isArray(ask?.intent?.segments) ? ask.intent.segments : ask?.intent?.then ? [ask.intent.then]
+    : cbAt > 0 ? [{ atChar: cbAt, atClause: cb.atClause, boardRef: cb.boardRef, scriptBeat: cb.scriptBeat }] : [];
   const cuts = marks.filter((m) => m?.boardRef && Number.isInteger(m.atChar) && m.atChar > 0 && m.atChar < text.length).sort((x, y) => x.atChar - y.atChar);
   if (!cuts.length || !ask?.intent?.boardRef) return null;
   const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause }))];
@@ -392,7 +396,7 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
       if (i && !beat.kind) beat.kind = "check";
       if (i && beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
       const intent = { ...ask.intent, intentId: i ? `${id}:p${i}` : id, boardRef: g.boardRef, scriptBeat: beat };
-      delete intent.then; delete intent.segments; if (i) delete intent.request;
+      delete intent.then; delete intent.segments; delete intent.cardBoard; if (i) delete intent.request;
       const a = { ...ask, intent, mode: i ? "fresh" : ask.mode, line: { ...(ask.line ?? {}), text: g.text } };
       if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
       return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }));

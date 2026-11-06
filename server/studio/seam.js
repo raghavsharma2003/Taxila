@@ -1039,9 +1039,16 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
       const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
+      // (director7 S1, the live guard: a "?" drawn over a number her line states is flagged, never silently shown: a trace
+      // row and the artifact's statedAsUnknown, which director runs read beside the screen)
+      const statedUnknown = boardSync.statedAsUnknown(r.script, ask?.line?.text, intentId);
+      if (statedUnknown.length) {
+        traceRecord("studio.board_stated_unknown", { intentId, values: statedUnknown, source: r.source ?? "line", template: r.template ?? null });
+        console.warn(`[studio] board writes "?" over a number her line states: ${statedUnknown.join(",")} (source=${r.source ?? "line"})`);
+      }
       // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
-        ...(r.screens ? { screens: r.screens } : {}) };
+        ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}) };
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -1083,7 +1090,7 @@ export const studioSeam = {
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
     // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
-    const two = ask?.intent?.then || ask?.intent?.segments?.length ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
+    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
     if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
