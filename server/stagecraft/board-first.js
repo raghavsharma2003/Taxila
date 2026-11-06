@@ -29,6 +29,9 @@ import { scriptFacts, isMotionOp } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 import { resolveBoardRef } from "../forge/explainer/board-ref.js";
 import { expand } from "../forge/explainer/templates.js";
+import { splitSentences } from "../voice/sentences.js";
+import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
+import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -338,3 +341,98 @@ export function pickState(ask) {
   return p.used ? "used" : "pending";
 }
 export const _picks = picks;
+
+// ───────────────────────────── director7: one board per segment of a turn ─────────────────────────────
+/**
+ * round 7 (main, director7 B1/S2: "1/3 ka mark hai" asked over the 1/8 | 1/4 | 1/2 board; one board per turn while a turn
+ * describes two or three): a turn's speech in SEGMENTS, each with the board it describes — the remediation say (the ask's
+ * own boardRef, from the start), then the then-card, a closure, a recap … Brain marks each later segment:
+ * intent.segments [{ atChar, atClause?, boardRef, scriptBeat }] (intent.then = one segment, the director7 first form).
+ * → [{ from, to, text, clause, boardRef, scriptBeat }] (≥ 2 pages) or null (one board, as before).
+ */
+export function segmentsOf(ask) {
+  const text = String(ask?.line?.text ?? "");
+  // (main, director7: Brain's interim intent.cardBoard { boardRef, scriptBeat, cardText, atClause }, if one still arrives,
+  // is the say at 0 and the card where its text starts in her line)
+  const cb = ask?.intent?.cardBoard, cbAt = cb?.boardRef && cb.cardText ? text.lastIndexOf(String(cb.cardText).trim()) : -1;
+  const marks = Array.isArray(ask?.intent?.segments) ? ask.intent.segments : ask?.intent?.then ? [ask.intent.then]
+    : cbAt > 0 ? [{ atChar: cbAt, atClause: cb.atClause, boardRef: cb.boardRef, scriptBeat: cb.scriptBeat }] : [];
+  const cuts = marks.filter((m) => m?.boardRef && Number.isInteger(m.atChar) && m.atChar > 0 && m.atChar < text.length).sort((x, y) => x.atChar - y.atChar);
+  if (!cuts.length || !ask?.intent?.boardRef) return null;
+  const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause }))];
+  const out = [];
+  for (let i = 0; i < pages.length; i++) {
+    const to = i + 1 < pages.length ? pages[i + 1].from : text.length;
+    const seg = text.slice(pages[i].from, to).trim();
+    if (!seg) return null;
+    // the voice's own clause numbering (server/voice/expressive/align.js: sentences, then clauses): a segment's first clause
+    // is the number of clauses before it; Brain's atClause, when sent, wins
+    const before = text.slice(0, pages[i].from).trim();
+    const clause = Number.isInteger(pages[i].atClause) && pages[i].atClause >= 0 ? pages[i].atClause : before ? splitSentences(before).reduce((n, part) => n + voiceClausesOf(part).length, 0) : 0;
+    out.push({ from: pages[i].from, to, text: seg, clause, boardRef: pages[i].boardRef, scriptBeat: pages[i].scriptBeat });
+  }
+  return out.length >= 2 ? out : null;
+}
+/** (director7's first form, kept for its callers) → { say, then, clause, th } or null. */
+export function thenSplit(ask) {
+  const sg = ask?.intent?.then ? segmentsOf({ ...ask, intent: { ...ask.intent, segments: [ask.intent.then] } }) : null;
+  return sg ? { say: sg[0].text, then: sg[1].text, clause: sg[1].clause, th: ask.intent.then } : null;
+}
+const TARGETED = new Set(["highlight", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
+const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork"]);
+/**
+ * The board for such a turn: each page gated on its own segment, composed in order — a page is erased where the next one
+ * starts (its estimated onset), the next drawn from there. The script's `switches` [{ clause, atMs }] let the player move
+ * each later page onto its segment's real onset. → a board-first result ({ ok, script, screen (the last page), screens
+ * [{ from, screen }], by, template, source }) or null (one board, as before).
+ */
+export function pagesBoard(ask, { kit, redact = [] } = {}) {
+  try {
+    const sg = segmentsOf(ask);
+    if (!sg || !kit) return null;
+    const id = String(ask?.intent?.intentId ?? "");
+    const takes = sg.map((g, i) => {
+      const beat = { ...(i ? {} : ask.intent.scriptBeat ?? {}), ...(g.scriptBeat ?? {}) };
+      if (i && !beat.kind) beat.kind = "check";
+      if (i && beat.kind === "check" && beat.ownBoard === undefined) beat.ownBoard = true;
+      const intent = { ...ask.intent, intentId: i ? `${id}:p${i}` : id, boardRef: g.boardRef, scriptBeat: beat };
+      delete intent.then; delete intent.segments; delete intent.cardBoard; if (i) delete intent.request;
+      const a = { ...ask, intent, mode: i ? "fresh" : ask.mode, line: { ...(ask.line ?? {}), text: g.text } };
+      if (!picks.has(String(intent.intentId))) preselect(a, { kit, redact });
+      return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] }));
+    });
+    if (takes.some((t) => !t?.script)) return null;
+    const b0 = takes[0].script.board ?? WB_BOARD;
+    if (takes.some((t) => (t.script.board ?? WB_BOARD).w !== b0.w || (t.script.board ?? WB_BOARD).h !== b0.h)) return null;
+    const rename = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
+      return ops.map((o) => ({ ...o, id: m.get(o.id), ...(TARGETED.has(o.op) && m.has(o.target) ? { target: m.get(o.target) } : {}) })); };
+    // each page's start: the estimated onset of its segment (the line's own clock), never before the last one
+    const starts = sg.map((g, i) => (i ? Math.max(800, speechMsOf(String(ask.line.text).slice(0, g.from))) : 0));
+    for (let i = 1; i < starts.length; i++) starts[i] = Math.max(starts[i], starts[i - 1] + 600);
+    const ops = [];
+    takes.forEach((t, i) => {
+      const at = starts[i], next = starts[i + 1];
+      const pre = i ? `${"abcdefgh"[i]}.` : "a.";
+      const page = rename(t.script.ops, pre).map((o) => {
+        const s0 = o.startMs + at, e0 = o.endMs + at;
+        return next !== undefined ? { ...o, startMs: Math.min(s0, Math.max(at, next - 120)), endMs: Math.min(e0, next) } : { ...o, startMs: s0, endMs: e0 };
+      });
+      ops.push(...page);
+      if (next !== undefined) ops.push(...page.filter((o) => DRAWN.has(o.op)).map((o, k) => ({ id: `${pre}x${k}`.slice(0, 32), op: "erase", target: o.id, startMs: next, endMs: next + 200 })));
+    });
+    if (ops.length > WB_LIMITS.maxOps) return null;
+    const first = takes[0].script, last = takes.at(-1);
+    const raw = { ...first, scriptId: `${first.scriptId ?? id}:pg`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
+      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1] })) };
+    delete raw.card;
+    const n = normalizeScript(raw, { strict: false });
+    if (!n.ok || !n.script?.switches?.length) return null;
+    pageStats.drawn++;
+    return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0,
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })) };
+  } catch { return null; }
+}
+/** (director7's first form) */
+export const twoPageBoard = pagesBoard;
+const pageStats = { drawn: 0 };
+export const twoPageStats = () => ({ ...pageStats });

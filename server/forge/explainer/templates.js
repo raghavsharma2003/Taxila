@@ -159,7 +159,8 @@ function fractionLine(c, tl) {
   const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
   // round 7 (director5 SC1): what the line DRAWS, counted (Brain's R4 reads these: "beech mein 2 marks" over 2 inner ticks)
   const lineCount = { gaps: N, ...(w > 1 ? { gapsPerWhole: den } : {}), ticks: N + 1, innerTicks: N - 1 };
-  const counts = (pts) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}) });
+  // (director8 prep: the hops the dot DRAWS are counted too — "0 se 6 hop" over a line it hops 6 times, Brain's dry-run flags)
+  const counts = (pts, hops = null) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}), ...(hops != null ? { hops } : {}) });
   const claims = [];
   const hopTo = (n) => {
     const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
@@ -191,13 +192,13 @@ function fractionLine(c, tl) {
       tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark" }, 400, { gap: 60 });
     }
     const pts = [...placed.map((p) => ({ at: `${p.m.num}/${den}`, label: p.label })), ...(hop != null && !marks.some((m) => m.num === hop) ? [{ at: `${hop}/${den}`, label: "" }] : [])];
-    return { claims, counts: counts(pts), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
+    return { claims, counts: counts(pts, hop), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
   }
   if (c.show) {
     // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
     hopTo(tgt);
     tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
-    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }]), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
+    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }], tgt), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
   }
   if (mark != null) {
     // (the mark the item NAMES is its given: a tall tick in mark ink and a "?" over it; never a dot on it, which is how a
@@ -840,7 +841,7 @@ function corners(shape, cx, cy, R, turn = 0) {
 function shape(c, tl) {
   if (!(c.shape in SIDES)) return { error: "shape" };
   const copies = c.copies === 2 ? 2 : 1;
-  for (const k of ["name", "side", "corner", "centre", "radius", "diameter"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  for (const k of ["name", "side", "corner", "centre", "radius", "diameter", "chord", "arc"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
   const names = Array.isArray(c.names) ? c.names : [];
   if (names.some((x) => !fitsLabel(x))) return { error: "names" };
   if (c.shape === "circle") {
@@ -848,18 +849,35 @@ function shape(c, tl) {
     const cx = 200, cy = 138, r = 100;
     tl.add({ id: "o", op: "circle", c: [cx, cy], r, weight: 2 }, 1000);
     tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+    // round 7 (Learning, c6 circles: "a circle can't show a radius or diameter"): a radius and a diameter are drawn as
+    // ARROWS (a measure, not a cut: W8 refuses a round whole cut by lines through its centre), each label beside its segment,
+    // never on it (W2); a chord is a line clear of the centre (it cuts nothing W8 counts); an arc is a stroke just outside the rim
+    const at = (deg, rr = r) => [round1(cx + rr * Math.cos(rad(deg))), round1(cy + rr * Math.sin(rad(deg)))];
     if (c.diameter) {
-      tl.add({ id: "dia", op: "line", from: [cx - r, cy], to: [cx + r, cy], ink: "good", weight: 2 }, 600, { gap: 200 });
-      tl.add({ op: "text", at: [cx + 50, cy + 18], text: c.diameter, size: "s", ink: "good" }, 420, { gap: 60 });
+      tl.add({ id: "dia", op: "arrow", from: at(180), to: at(0), ink: "good", weight: 2 }, 600, { gap: 200 });
+      tl.add({ op: "text", at: [cx - 46, cy + 20], text: c.diameter, size: "s", ink: "good" }, 420, { gap: 60 });
     }
     if (c.radius) {
-      const ex = cx + r * Math.cos(rad(-50)), ey = cy + r * Math.sin(rad(-50));
-      tl.add({ id: "rad", op: "line", from: [cx, cy], to: [ex, ey], ink: "accent", weight: 2 }, 520, { gap: 200 });
-      tl.add({ op: "text", at: [(cx + ex) / 2 + 30, (cy + ey) / 2 - 4], text: c.radius, size: "s", ink: "accent" }, 420, { gap: 60 });
+      const e = at(-50), hw = textBox(c.radius, "s").w / 2;
+      tl.add({ id: "rad", op: "arrow", from: [cx, cy], to: e, ink: "accent", weight: 2 }, 520, { gap: 200 });
+      // (beyond the radius's end, outside the rim: clear of the segment and of the circle, pulled in at the board's edge)
+      tl.add({ op: "text", at: [round1(Math.min(400 - hw - 4, e[0] + hw + 10)), round1(e[1] + 4)], text: c.radius, size: "s", ink: "accent" }, 420, { gap: 60 });
+    }
+    if (c.chord) {
+      const a = at(150), b = at(30);
+      tl.add({ id: "chord", op: "line", from: a, to: b, ink: "mark", weight: 2 }, 520, { gap: 200 });
+      tl.add({ op: "text", at: [cx, round1(a[1] + 22)], text: c.chord, size: "s", ink: "mark" }, 420, { gap: 60 });
+    }
+    if (c.arc) {
+      const pts = Array.from({ length: 9 }, (_, i) => at(200 + i * 7.5, r + 9));
+      tl.add({ id: "arc", op: "stroke", points: pts, ink: "accent", weight: 3 }, 600, { gap: 200 });
+      const m = at(230, r + 30);
+      tl.add({ op: "text", at: [Math.max(m[0], textBox(c.arc, "s").w / 2 + 6), m[1]], text: c.arc, size: "s", ink: "accent" }, 420, { gap: 60 });
     }
     if (c.centre) tl.add({ op: "label", at: [Math.max(textBox(c.centre, "s").w / 2 + 6, 62), 262], text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
     if (c.name) tl.add({ op: "text", at: [300, 270], text: c.name, size: sizeFor(c.name, 180) ?? "s", ink: "accent" }, 500, { gap: 200 });
-    return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}) } };
+    return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}),
+      ...(c.chord ? { chord: "drawn" } : {}), ...(c.arc ? { arc: "drawn" } : {}) } };
   }
   const R = copies === 1 ? 100 : 70;
   for (let k = 0; k < copies; k++) {

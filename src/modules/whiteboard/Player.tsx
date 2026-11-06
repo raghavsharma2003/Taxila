@@ -45,16 +45,8 @@ export interface WhiteboardPlayerProps {
   skin?: BoardSkin | null;
 }
 
-/** The script with clause-relative ops moved onto the line's clock (and its duration stretched to cover them). */
-export function onLineClock(script: WhiteboardScript, clauseOnsets?: readonly number[]): WhiteboardScript {
-  if (!clauseOnsets?.length || !script.ops.some((o) => o.clause !== undefined)) return script;
-  const ops = script.ops.map((o) => {
-    const on = o.clause !== undefined ? clauseOnsets[o.clause] : undefined;
-    return typeof on === "number" && Number.isFinite(on) && on > 0 ? { ...o, startMs: o.startMs + on, endMs: o.endMs + on } : o;
-  });
-  const end = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
-  return { ...script, ops, durationMs: Math.max(script.durationMs, end) };
-}
+export { onLineClock } from "./lineClock.ts";
+import { onLineClock } from "./lineClock.ts";
 
 /** The clock: t (ms since startAt), advanced on animation frames only while the script is still drawing. */
 function useTimeline(startAt: number | null, endMs: number, frozenAt: number | undefined, onDone?: () => void): number {
