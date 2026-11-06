@@ -34,6 +34,9 @@ const HELP_ASKS = new Set(["another", "clarify", "slower", "example", "story", "
 // (director3: "Isko ek baar poora karke dekhte hain" over ONE step) a frame never claims more than the lines that follow it
 const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.", "Ek udaharan dekho, kadam se kadam.", "Isko shuru se dekhte hain."],
   english: ["Let's solve one together.", "Here is one, step by step.", "Let's start this one."] };
+/** v6.1 R11: a worked step's own label ("Pehla kadam" only for step 1). */
+const stepLabel = (n, lang) => (lang === "english" ? ["First step.", "Now the second step.", "Now the third step."][n - 1] ?? "Now the next step."
+  : ["Pehla kadam dekho.", "Ab doosra kadam.", "Ab teesra kadam."][n - 1] ?? "Ab agla kadam.");
 const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati hissa dekhte hain.", "Pehle yeh hissa."], english: ["First, this part.", "Here is the first step.", "Start with this part."] };
 // v6 R5: the end of the first half of a split turn
 // (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
@@ -1647,9 +1650,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const whole = workedLines.some((l) => /^(?:Toh jawab|So the answer is):/.test(l));
     // her framing may state the problem with its own numbers (the invented guard holds them to the kit); never a question
     const remedy = kindNow === "reteach";
-    const framing = first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) ? first.trim()
-      : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state);
-    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
+    // v6.1 R11 (director9: "Pehla kadam dekho" introduced step 2): a scripted worked step is framed by code with ITS step's
+    // label (R7: never her words about which step it is)
+    const stepN = Number(/^worked:step(\d+)$/.exec(String(state.lastMove?.scriptBeat?.beatId ?? ""))?.[1]) || null;
+    const stepFrame = scripted && stepN && !remedy ? stepLabel(stepN, lang) : null;
+    const framing = stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()
+      : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state));
+    // (v6.1 R9: a scripted step's check-in only where state.js allowed one; else a statement)
+    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : pickOf((scripted && !state.lastMove?.checkinOk ? WORKED_GO : WORKED_ASK)[lang === "english" ? "english" : "hinglish"], state);
     // v3 K2: a remediation follows a graded wrong answer, and its board goes up on this turn, so the verdict is said first:
     // her lead when it says "not right" (and not the key), else code's
     const key0 = String(state.lastMove?.content?.find((c) => /^its answer: /.test(c))?.slice(12) ?? "").trim();
@@ -1731,9 +1739,15 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v6 (director8 c4 ×6: "Pichhle sawaal ka jawab nahi tha" heard as "there was no answer"): a yes/no key is said as the
     // right answer named, never as "<nahi> tha"
     const yesNo = (a) => /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(a ?? "").trim());
-    const gaveS = gaveA ? (lang === "english" ? (yesNo(gaveA) ? `The last question's right answer: ${gaveA}${whyS(state.lastMove?.gave?.why)}.` : `The last question's answer was ${gaveA}${whyS(state.lastMove?.gave?.why)}.`)
-      : yesNo(gaveA) ? `Pichhle sawaal ka sahi jawab: ${gaveA}${whyS(state.lastMove?.gave?.why)}.` : `Pichhle sawaal ka jawab ${gaveA} tha${whyS(state.lastMove?.gave?.why)}.`) : null;
-    const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|woh wala|the last|that one)/i.test(x);
+    // v6.1 R11 (director9 c6 steering T21: "Pichhle sawaal ka jawab 30 cm tha" for the card still in front of them): the card let
+    // go is "the last question" only once another card is posed in its place; otherwise it is "this question"
+    const nextCard = !!card;
+    const gw = whyS(state.lastMove?.gave?.why);
+    const gaveS = gaveA ? (lang === "english" ? (nextCard ? (yesNo(gaveA) ? `The last question's right answer: ${gaveA}${gw}.` : `The last question's answer was ${gaveA}${gw}.`)
+        : yesNo(gaveA) ? `This question's right answer: ${gaveA}${gw}.` : `This question's answer is ${gaveA}${gw}.`)
+      : nextCard ? (yesNo(gaveA) ? `Pichhle sawaal ka sahi jawab: ${gaveA}${gw}.` : `Pichhle sawaal ka jawab ${gaveA} tha${gw}.`)
+        : yesNo(gaveA) ? `Is sawaal ka sahi jawab: ${gaveA}${gw}.` : `Is sawaal ka jawab ${gaveA} hai${gw}.`) : null;
+    const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
     const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
@@ -1758,6 +1772,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const inventedDraft = (guard.caught ?? []).includes("invented");
     const codeVerdict = () => (verdict === "not_yet" ? notRightLead(key0s && saidNow.includes(key0s) ? "" : saidNow, lang) : lang === "english" ? "Yes, that's right." : "Haan, sahi hai.");
     if (lead && (inventedDraft || strayNums(lead).length)) { guard.falseNumbers = [...(guard.falseNumbers ?? []), ...strayNums(lead)]; lead = codeVerdict(); guard.verdictCode = true; }
+    // v6.1 R11 (director9 c4 ×8: "Yes sahi nahi hai", their English said back): a not-right verdict in a scripted turn is code's
+    if (lead && verdict === "not_yet" && !guard.verdictCode) { const cv = codeVerdict(); if (norm(lead) !== norm(cv)) { lead = cv; guard.verdictCode = "notRight"; } }
+    // v6.1 R11 (director9: a stray Devanagari switch mid-lesson): her lines are in the lesson's script, never a sudden Devanagari one
+    { const n0 = ss.length; ss = ss.filter((x) => !/\p{Script=Devanagari}/u.test(x)); if (ss.length < n0) guard.scriptSwitch = n0 - ss.length; }
     const before = ss.length;
     ss = inventedDraft ? [] : ss.filter((x) => { const bad = strayNums(x); if (bad.length) guard.falseNumbers = [...(guard.falseNumbers ?? []), ...bad]; return !bad.length; });
     if (ss.length < before) guard.strayDropped = before - ss.length;
@@ -1839,7 +1857,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         && !/(?<![\p{L}])(?:jaisa|jaise|jaisi|ki\s+tarah|socho|like\s+(?:a|the)|just\s+like)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)|tumhe\s+\S+(?:\s+\S+)?\s+pasand|you\s+like/iu.test(x));
       if (kind === "return" && mine.length > real.length) guard.returnFiltered = mine.length - real.length;
-      aside.push(...(kind === "park" ? (mine.length ? mine : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
+      // v6.1 R10 (director9: "Sixer ke baad ball boundary ke paar—wah, cricket mein fractions bhi gaps gin-gin kar…"): a park of
+      // hers is the promise alone, never an analogy to the lesson (no lesson words, no numbers); else code's promise
+      const LESSON_W = /(?<![\p{L}])(?:fraction\w*|bhinn|line|rekha|gap\w*|mark\w*|nishaan|hiss\w*|tukd\w*|bhuja\w*|parimap|perimeter|denominator|numerator|sawaal)(?![\p{L}])/iu;
+      const parkOk = mine.filter((x) => !/\d/.test(x) && !LESSON_W.test(x) && !/(?<![\p{L}])(?:jaisa|jaise|jaisi|ki\s+tarah|bhi|like)(?![\p{L}])/iu.test(x) && !RULE_SAID.test(x));
+      if (kind === "park" && mine.length > parkOk.length) guard.parkFiltered = mine.length - parkOk.length;
+      aside.push(...(kind === "park" ? (parkOk.length ? parkOk : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
         : real.length ? real : authoredReturn ? [authoredReturn] : []));
       if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
     }

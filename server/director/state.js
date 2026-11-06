@@ -17,6 +17,7 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
+import { inHindiWords } from "../brain/register.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
@@ -2635,6 +2636,14 @@ const isScriptCard = scriptCardOf;
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
 export function step(prev, input) {
+  // v6.1 R10 (main, director9: 0 parks across four topics; "kal maine cricket khela, sixer maara" came with no request and got
+  // a cricket-fractions analogy): in a scripted lesson a turn that answers nothing and names an aside topic of theirs is a share,
+  // parked and returned to (never the card's answer: a graded turn, a request or a stuck turn is left as it is)
+  if (input.event === "turn" && scriptOn() && scriptIdOf(input.kit) && input.cls && input.cls.outcome === "no_evidence" && !input.cls.request
+    && !input.cls.flags?.dontKnow && !input.cls.flags?.distress && !input.cls.flags?.wantsToStop) {
+    const topic = asideTopic(input.text ?? "", prev.ctx?.interests);
+    if (topic && !unsafeChildPhrase(topic)) input = { ...input, cls: { ...input.cls, request: { type: "uptake", kind: "personal_share", topic, src: "code" } } };
+  }
   // v6 R5: the second half of a split turn (splitLong) comes first
   const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
   if (heldOut) return heldOut;
@@ -3179,7 +3188,10 @@ function uiFor(s, p, move, item, kit) {
     // (v4: a script card's authored prompt is shown and read whole, never cut to its last sentence: director6 c5-t01 cut
     // 10/10 then-cards and the child never heard their setup; v2.2 caps them at 120 characters at the source)
     const full = String(promptFor(item, s.ctx.lang) ?? "").replace(/\s+/g, " ").trim();
-    const text = isScriptCard(item) ? full : askText(full);
+    const text0 = isScriptCard(item) ? full : askText(full);
+    // v6.1 R10 (main, director9: Hindi asked for, the card still said "fraction mein batao", c6 0/4): in the Hindi mode a scripted
+    // card is shown and read in Hindi words too (brain/register.js; its numbers, and its key's and accept forms' words, as they are)
+    const text = s.ctx.lang === "hindi" && s.ctx.langPinned && isScriptCard(item) ? inHindiWords(text0, { keep: [item.answer, ...(item.acceptable ?? [])].map(String) }) : text0;
     if (!isObjective(text, kit, topic)) ui.ask = { text, itemId: item.id };
   }
   // Choices on screen always take the tray: a choice item is never left with its options only in speech behind an

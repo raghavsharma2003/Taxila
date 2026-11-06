@@ -30,7 +30,9 @@ export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
     const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel, typed: true });
-    const c = fast.result ?? { outcome: String(rows[i].read).split(" ")[0], confidence: 0.9, source: "replay", flags: { ...fast.flags } };
+    // (the model's read as the run recorded it: its outcome, and its request type after " · ")
+    const [o, rq] = String(rows[i].read).split(" · ");
+    const c = fast.result ?? { outcome: o.trim(), confidence: 0.9, source: "replay", flags: { ...fast.flags }, ...(rq ? { request: { type: rq.trim() } } : {}) };
     const before = s;
     const p = await planTurn(s, c, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now: (i + 1) * 20_000 });
     live = { state: p.learner.after, maxSeq: 0 };

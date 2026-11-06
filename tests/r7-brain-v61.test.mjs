@@ -32,13 +32,15 @@ test("R7 replay director9 c5-t01 offtopic T27: 'samajh nahi aaya' on e3 never ge
 
 test("R7/R8 (format 2.3): an explain beat's authored simpler is what 'samajh nahi aaya' gets", async () => {
   const sc = runScript(T1);
-  const e3 = sc.skills[0].explain.find((b) => b.id === "e3");
-  e3.simpler = { hi: "Ek roti ko 10 tukdon mein kaato, har tukda chhota hoga. 5 tukdon wala har tukda usse bada hai.", en: "Cut one roti into 10 pieces and each is small. A piece of 5 is bigger." };
+  const simplerOf = (id) => ({ hi: `Ek roti ko barabar tukdon mein kaato, ${id} wala tukda dekho. Jitne zyada tukde, utna chhota har tukda.`, en: `Cut a roti into equal pieces and look at piece ${id}. More pieces, smaller each.` });
+  for (const b of sc.skills[0].explain) b.simpler = simplerOf(b.id);
   setScriptForTest(T1, { ...sc, version: 2.3 });
   const { kit, last } = await replay(RUN, "offtopic", T1, 27);
-  assert.equal(last.state.lastMove?.simpler, e3.simpler.hi);
+  const beat = last.state.lastMove?.scriptBeat?.beatId;
+  assert.equal(last.state.lastMove?.smaller, true, `smaller on ${beat}`);
+  assert.equal(last.state.lastMove?.simpler, simplerOf(beat).hi);
   const out = await sayAt(kit, last, T27_DRAFT);
-  assert.ok(out.reply.startsWith("Ek roti ko 10 tukdon mein kaato, har tukda chhota hoga. 5 tukdon wala har tukda usse bada hai."), out.reply);
+  assert.ok(out.reply.startsWith(simplerOf(beat).hi), out.reply);
   assert.equal(out.guard.smaller, "authored");
   assert.ok(SCRIPT_VERSIONS.includes(2.3));
 });
@@ -142,4 +144,50 @@ test("R9: a worked example's steps end on at most one check-in; 'nahi' to it is 
   const out = await (async () => { replyDeps.chat = async () => ({ text: "Chalo." }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: L.K, childText: "haan", history: [], ui: L.r.ui, module: null }); })();
   if (!L.r.state.activeItemId) assert.doesNotMatch(out.reply, /[?？]\s*$/, out.reply);
   assert.ok(notYes("nahi samjha") && notYes("no") && !notYes("haan") && !notYes("haan, samajh aaya"));
+});
+
+test("R10 replay director9 c5-t01 offtopic T7: 'kal maine cricket khela, sixer maara' (no request read) is parked, her analogy goes, it is returned to", async () => {
+  setScriptForTest(T1, runScript(T1));
+  const { kit, rows, plans } = await replay(RUN, "offtopic", T1, 9);
+  const p7 = plans.find((p) => p.row === 7);
+  assert.deepEqual((p7.state.later ?? []).map((l) => l.topic), ["cricket"], "parked");
+  const out = await sayAt(kit, p7, rows[6].text); // the run's own line: "Sixer ke baad ball boundary ke paar—wah, cricket mein fractions bhi …"
+  assert.doesNotMatch(out.reply, /cricket mein fractions/, out.reply);
+  assert.match(out.reply, /cricket/i, "a promise about it");
+  const p9 = plans.find((p) => p.row === 9);
+  assert.equal(p9.state.lastMove?.returned?.topic, "cricket", "returned to on the next turn");
+});
+
+test("R10: in the Hindi mode a scripted card is shown and read in Hindi words", async () => {
+  setScriptForTest(T1, runScript(T1));
+  const L = walkOf(T1);
+  for (let i = 0; i < 4 && !L.r.state.activeItemId; i++) L.t("haan");
+  const lang = { ...cls("no_evidence"), request: { type: "language", lang: "hindi" } };
+  L.t("Hindi mein bolo", lang);
+  assert.equal(L.r.state.ctx.lang, "hindi");
+  L.t("haan");
+  const card = L.r.ui?.ask?.text ?? "";
+  assert.ok(card, "a card is up");
+  assert.doesNotMatch(card, /\b(?:fraction|equal|parts?)\b/i, card);
+  // (a word of the card's own key or accept forms stays: "isi line par" is how they answer it)
+  const { inHindiWords } = await import("../server/brain/register.js");
+  assert.equal(inHindiWords("Kitne equal parts hain? isi line par", { keep: ["on this line", "isi line par"] }), "Kitne barabar hisse hain? isi line par");
+});
+
+test("R11: a worked step is labelled as its own step; a card let go with no new card is 'this question'; a not-right verdict is code's; no stray Devanagari", async () => {
+  setScriptForTest(T1, runScript(T1));
+  const L = walkOf(T1);
+  const answer = () => { const id = L.r.state.activeItemId; const it = id && L.r.state.scriptCard?.id === id ? L.r.state.scriptCard : null; return it ? String(it.answer) : "haan"; };
+  for (let i = 0; i < 40 && L.r.move.scriptBeat?.beatId !== "worked:step2"; i++) L.t(answer(), L.r.state.activeItemId ? cls("correct") : cls("no_evidence"));
+  assert.equal(L.r.move.scriptBeat?.beatId, "worked:step2");
+  replyDeps.chat = async () => ({ text: "Pehla kadam dekho. हिंदी में: 3 और 1 जोड़ो।" });
+  const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: L.K, childText: "haan", history: [], ui: L.r.ui, module: null });
+  assert.match(out.reply, /^Ab doosra kadam\./, out.reply);
+  assert.doesNotMatch(out.reply, /\p{Script=Devanagari}/u);
+  // a card let go with no next card: "Is sawaal ka jawab … hai"
+  const st = { ...L.r.state, mode: "text", lastMove: { ...L.r.state.lastMove, gave: { answer: "30 cm", why: "" } } };
+  replyDeps.chat = async () => ({ text: "Chalo." });
+  const g = await textReply({ instructions: "x", state: st, kit: L.K, childText: "pehle main try karun?", history: [], ui: { status: "your_turn" }, module: null });
+  assert.match(g.reply, /Is sawaal ka jawab 30 cm hai/, g.reply);
+  assert.doesNotMatch(g.reply, /Pichhle sawaal/);
 });
