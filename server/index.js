@@ -38,6 +38,8 @@ import { routes as play } from "./play/routes.js";
 import { routes as trace } from "./trace/routes.js";
 // round 7, stream G: the owner ops page (TAXILA_OPS_FOR)
 import { routes as ops } from "./ops/routes.js";
+// r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
+import { routes as signin } from "./signin/code.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };
