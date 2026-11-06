@@ -28,7 +28,8 @@ test("director7: the say plays over the remediation board, the then-prompt over 
   const ack = seam.studioSeam.requestIntent(ask(id));
   assert.equal(ack?.state, "revealed");
   const s = ack.artifact.script;
-  const { clause, atMs } = s.switchAt;
+  assert.equal(s.switches.length, 1);
+  const { clause, atMs } = s.switches[0];
   assert.ok(atMs > 2000, `the turn is after the say (${atMs} ms)`);
   // page A, under the say: the three marks; page B, from the then-prompt: its 1/3 mark (not 1/8 | 1/4 | 1/2)
   const before = s.ops.filter((o) => o.startMs < atMs), after = s.ops.filter((o) => o.startMs >= atMs && o.op !== "erase");
@@ -37,10 +38,10 @@ test("director7: the say plays over the remediation board, the then-prompt over 
   // page A is erased at the turn, every op of it
   const drawnA = before.filter((o) => !["erase", "highlight"].includes(o.op)).map((o) => o.id);
   assert.deepEqual(s.ops.filter((o) => o.op === "erase" && o.startMs === atMs).map((o) => o.target).sort(), [...drawnA].sort());
-  // the screen is the then-card's page; the say's page is screenBefore, up to her line's switch character
+  // the screen is the then-card's page; `screens` gives each page from her line's character `from`
   assert.ok(ack.artifact.screen.numbers.includes("1/3"));
-  assert.ok(ack.artifact.screenBefore.numbers.includes("1/8"));
-  assert.equal(line.slice(ack.artifact.switchChar).startsWith(then), true);
+  assert.ok(ack.artifact.screens[0].numbers.includes("1/8") && ack.artifact.screens[0].from === 0);
+  assert.equal(line.slice(ack.artifact.screens[1].from).startsWith(then), true);
   // the turn is the voice's own clause index of the then-prompt (sentences, then clauses)
   assert.ok(Number.isInteger(clause) && clause >= 2, `clause ${clause}`);
   // the player: the then-prompt clause sounds 900 ms later than estimated → page B (and its erase of A) moves with it
@@ -48,7 +49,8 @@ test("director7: the say plays over the remediation board, the then-prompt over 
   const moved = onLineClock(s, onsets);
   const firstB = Math.min(...moved.ops.filter((o) => o.id.startsWith("b.")).map((o) => o.startMs));
   assert.equal(firstB, Math.min(...s.ops.filter((o) => o.id.startsWith("b.")).map((o) => o.startMs)) + 900);
-  assert.ok(moved.ops.filter((o) => o.id.startsWith("a.")).every((o, i) => o.startMs === s.ops.filter((q) => q.id.startsWith("a."))[i].startMs), "page A stays put");
+  const drawA = (sc) => sc.ops.filter((o) => o.id.startsWith("a.") && o.op !== "erase").map((o) => o.startMs);
+  assert.deepEqual(drawA(moved), drawA(s), "page A stays put (its erase turns with page B)");
   // with no onset reported, the estimate stands
   assert.equal(onLineClock(s, []), s);
 });
@@ -64,6 +66,52 @@ test("director7: without a then marker (or with a bad one) the turn draws one pa
   seam.studioSeam.preselectWhiteboard({ ...a, line: { ...a.line, text: "" } });
   const ack = seam.studioSeam.requestIntent(a);
   assert.equal(ack?.state, "revealed");
-  assert.equal(ack.artifact.script.switchAt, undefined);
-  assert.equal(ack.artifact.screenBefore, undefined);
+  assert.equal(ack.artifact.script.switches, undefined);
+  assert.equal(ack.artifact.screens, undefined);
+});
+
+test("director7 B1/S2: three segments (say, then-card, closure) — each segment's clauses play over its own board; each page turns on its own clause onset", () => {
+  const id = "d7-three";
+  seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-d7c", class_level: 5, language_pref: "hinglish" } });
+  const closure = "Toh poora jawab: 1/6, 0 aur 1/3 ke beech aata hai.";
+  const closureRef = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
+  const full = `${line} ${closure}`;
+  const a = ask(id);
+  delete a.intent.then;
+  a.intent.segments = [{ atChar: say.length + 1, boardRef: rem.then.board, scriptBeat: { scriptId: "s", beatId: `then:${rem.targets}`, kind: "check", ownBoard: true } },
+    { atChar: line.length + 1, boardRef: closureRef, scriptBeat: { scriptId: "s", beatId: "closure", kind: "explain" } }];
+  a.line = { ...a.line, text: full };
+  const ack = seam.studioSeam.requestIntent(a);
+  assert.equal(ack?.state, "revealed");
+  const s = ack.artifact.script;
+  assert.equal(s.switches.length, 2);
+  const [s1, s2] = s.switches;
+  assert.ok(s1.atMs < s2.atMs && s1.clause < s2.clause);
+  const page = (lo, hi) => texts(s.ops.filter((o) => o.op !== "erase" && o.startMs >= lo && o.startMs < hi));
+  assert.ok(page(0, s1.atMs).includes("1/8"), "the say over its 3-mark board");
+  assert.ok(page(s1.atMs, s2.atMs).includes("1/3") && !page(s1.atMs, s2.atMs).includes("1/8"), "the then-prompt over the then-card's board");
+  assert.ok(page(s2.atMs, Infinity).includes("1/6"), "the closure over its own board");
+  assert.deepEqual(ack.artifact.screens.map((x) => x.from), [0, say.length + 1, line.length + 1]);
+  // the player: each page moves with its own clause's onset (the second 500 ms early, the third 700 ms late)
+  const onsets = []; onsets[s1.clause] = s1.atMs - 500; onsets[s2.clause] = s2.atMs + 700;
+  const m = onLineClock(s, onsets);
+  const startOf = (sc, pre) => Math.min(...sc.ops.filter((o) => o.id.startsWith(pre) && o.op !== "erase").map((o) => o.startMs));
+  assert.equal(startOf(m, "b."), startOf(s, "b.") - 500);
+  assert.equal(startOf(m, "c."), startOf(s, "c.") + 700);
+  assert.equal(startOf(m, "a."), startOf(s, "a."));
+});
+
+test("director7 S1: a card that sends its answers withholds THOSE only — every other number it states is drawn, whatever her line says", async () => {
+  const { gateCtxFor } = await import("../server/stagecraft/board-sync.js");
+  const c6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const ref = { template: "measured@1", params: { shape: "polygon", unit: "m", sides: [8, 3, 5, 4, 3, 7] } };
+  const a = { intent: { intentId: "d7s1:wb:1", lessonId: "d7s1", kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { scriptId: "s", beatId: "c1", kind: "check", answers: ["30 m", "30"] } }, line: { lessonId: "d7s1", text: "" }, mode: "fresh", kit: { topicId: "c6-maths-ch06-t01", content: [] } };
+  const p = BF.preselect(a, { kit: c6 });
+  assert.deepEqual(texts(p.script.ops), ["8 m", "3 m", "5 m", "4 m", "3 m", "7 m"], "no '? m' (4 and 7 are kit keys elsewhere, not this card's)");
+  const real = { ...a, line: { lessonId: "d7s1", text: "Ek L-shape kamre ki 6 bhujayein hain. Kamre ka parimap kitna hai?" } };
+  const t = BF.takePreselected(real, gateCtxFor(real, { kit: c6, redact: [], prior: [] }));
+  assert.deepEqual(texts(t.script.ops), ["8 m", "3 m", "5 m", "4 m", "3 m", "7 m"]);
+  // and the card's own answer is still never drawn: a board that wrote 30 would be masked
+  assert.deepEqual(gateCtxFor(real, { kit: c6 }).withhold.values, ["30"]);
 });

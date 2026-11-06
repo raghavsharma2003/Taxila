@@ -1039,9 +1039,9 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
       const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
-      // (a two-page board: the screen is the then-card's page; the say's page is screenBefore, up to her line's switchChar)
+      // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
-        ...(r.screenBefore ? { screenBefore: r.screenBefore, switchChar: r.switchChar } : {}) };
+        ...(r.screens ? { screens: r.screens } : {}) };
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -1082,8 +1082,8 @@ export const studioSeam = {
       const failing = (given ? [{ id: shownBefore(given.script, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : "tray" }] : boardSync.regate(boardSync.retime(ask.script, Math.max(800, Number(ask.script.durationMs) || 0), ctx0.speechMs), ask, ctx0).gate?.checks ?? []).filter((c) => c.pass !== true).map((c) => c.id);
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
-    // round 7 (director7): a remediation say and its then-card in one turn: two pages, turning at the then-prompt
-    const two = ask?.intent?.then ? boardFirst.twoPageBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
+    // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
+    const two = ask?.intent?.then || ask?.intent?.segments?.length ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
     if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };

@@ -104,7 +104,7 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   // read before this script is remembered (the effect below): is it the page already on the board?
   const same = useMemo(() => sameAsBoard(script), [script]);
   const [startAt, setStartAt] = useState<number | null>(null);
-  // round 7 (director7): a two-page script (switchAt) turns its page on the then-prompt's REAL onset: the reply's clause
+  // round 7 (director7): a paged script (switches) turns each page on the then-prompt's REAL onset: the reply's clause
   // events, on the player's clock (playAt), relative to this board's anchor
   const [onsets, setOnsets] = useState<number[] | undefined>(undefined);
   const emitted = useRef(false);
@@ -137,7 +137,7 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   }, [script, norm.errors]);
 
   useEffect(() => {
-    const sw = script?.switchAt, seq = script?.line?.teacherReplySeq, lid = script?.line?.lessonId;
+    const sw = script?.switches?.length, seq = script?.line?.teacherReplySeq, lid = script?.line?.lessonId;
     setOnsets(undefined);
     if (!sw || startAt === null || seq === undefined) return;
     return onTtsEvent((e) => {

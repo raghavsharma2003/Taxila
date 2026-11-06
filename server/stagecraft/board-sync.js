@@ -107,7 +107,12 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // authors; a check that BORROWS its explain beat's board, which may teach the answer — c4 s3 c1, "1 hissa = 1/2" under
   // "the bigger piece's fraction?" — frees only its mark labels)
   const ownCard = String(ask?.intent?.scriptBeat?.beatId ?? "").startsWith("then:") || ask?.intent?.scriptBeat?.ownBoard === true;
-  const withhold = !sk ? withhold1 : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
+  // round 7 (main, director7 S1: "? equal parts", "7 + ? + ? + ?" on 36 check boards): a scripted card whose answers Brain
+  // sends (scriptBeat.answers: its key and accept forms) withholds THOSE only — the asked value is the one "?"; every other
+  // number its board writes is drawn, whatever her line happens to say this turn (the card's numbers are on the card, not
+  // always in line.text)
+  const cardAnswers = sk === "check" && Array.isArray(ask?.intent?.scriptBeat?.answers) ? answerValues(ask.intent.scriptBeat.answers) : null;
+  const withhold = !sk ? withhold1 : cardAnswers ? { values: cardAnswers, words: [], phrases: [] } : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
   const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
@@ -117,6 +122,12 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
+}
+/** A card's answers as withheld values: every number in its key and accept forms ("between 0 and 1/3" → "0", "1/3"). */
+function answerValues(answers) {
+  const out = new Set();
+  for (const a of answers.slice(0, 12)) for (const m of String(a ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []) out.add(m.replace(/\s+/g, ""));
+  return [...out];
 }
 /**
  * A withheld set without the values a board ref AUTHORS to show (rational equality: "2/4" frees "1/2"): mark labels, side
