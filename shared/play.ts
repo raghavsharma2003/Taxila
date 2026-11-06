@@ -33,6 +33,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "darpan",     // round 7: symmetry (mirror lines laid and folded; a turntable's smallest turn and order of turn symmetry)
   "feeta",      // round 7: length and distance (a ribbon cut against a ruler, a rope off a cm tape, a garden fence, a trip meter, routes in order)
   "guna",       // round 7: multi-digit multiplication and division (a field cut into place-value pieces, a godown shared into trucks, stories with leftovers)
+  "kram",       // round 7: growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines, rhythms, L-pieces)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -54,6 +55,7 @@ export const MODES = {
   darpan: ["mirror", "turn"],
   feeta: ["measure", "fence", "trip", "compare"],
   guna: ["field", "pack", "story"],
+  kram: ["grow", "machine", "beats", "nest"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -298,7 +300,17 @@ export type GunaAct =
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct;
+// Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step
+// or rule machine's dials set, rhythms laid on a shelf, L-pieces / staircases picked for a frame; the law answers on "run"
+export type KramAct =
+  | { kind: "cell"; x: number; y: number }                // next: a tile laid on (or lifted off) the build board at (x, y)
+  | { kind: "bag"; place: number; by: number }            // far / count: one piece of 10^place into (+1) or out of (−1) the bag
+  | { kind: "dial"; which: number; to: number }           // machine: dial 0 (step: the sign · rule: a) or 1 (the number · b) set to `to`
+  | { kind: "lay"; r: string }                            // lay: a rhythm of S / L laid on the new shelf (again = lifted)
+  | { kind: "pick"; i: number }                           // nest: tray piece i picked (again = put back)
+  | { kind: "run" }                                       // grow it / run the machine / play the rhythms / nest the pieces: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct;
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -460,6 +472,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   darpan: ["kagaz", "blueprint", "chalk", "raat"],
   feeta: ["kagaz", "chalk", "blueprint", "raat"],
   guna: ["kagaz", "chalk", "blueprint", "raat"],
+  kram: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
