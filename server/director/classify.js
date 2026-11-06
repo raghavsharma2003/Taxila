@@ -770,6 +770,21 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     if (wrong && sameWords(wrong, st)) return misOf();
     if (forms.some((k) => sameWords(k, st))) return done("correct", "script_key");
     const numericKey = (k) => !/\p{L}/u.test(unitless(k).replace(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g, ""));
+    // (Learning, staged batch: "Zyada kisne khaya: Gopi ne ya Anjali ne?" is keyed by the name; a child who answers with the
+    // fraction the prompt states beside a name — "6/7" — answered with that name, the way "the bigger one" maps to a choice.
+    // Only for a key that is not a number, only one fraction said, and only when exactly one name carries that value)
+    if (!numericKey(target.key) && nums.length === 1 && nums[0].includes("/")) {
+      const named = nameFractions(lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en);
+      const val = fractionValue(nums[0]);
+      const hits = named.filter((x) => val != null && x.value === val);
+      if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length) {
+        const name = hits[0].name.toLowerCase();
+        const says = (k) => norm(k).split(/\s+/).includes(name);
+        if (forms.some(says)) return done("correct", "script_key");
+        if (wrong && says(wrong)) return misOf();
+        return done("incorrect", "script_key");
+      }
+    }
     if (wrong && numericKey(wrong) && n && nums.length === 1 && firstNumOf(wrong) === n) return misOf();
     if (forms.some((k) => numericKey(k) && n && nums.length === 1 && firstNumOf(k) === n && !denies0(st))) return done("correct", "script_key");
     // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
@@ -1023,4 +1038,24 @@ async function classifyModel(args, target, text, flags, trace, done, fast = {}) 
     if (fast.bareWrongNumber && !flags.distress && !flags.wantsToStop && numberFloorOn()) return done("incorrect", "number");
     return done("no_evidence", "error");
   }
+}
+
+/** a/b as a number (rational compare by value), or null. */
+export function fractionValue(t) {
+  const m = String(t ?? "").replace(/\s+/g, "").match(/^(\d+)\/(\d+)$/);
+  return m && Number(m[2]) ? Number(m[1]) / Number(m[2]) : null;
+}
+/**
+ * The names a prompt sets beside a fraction ("Gopi ne 5/6 roti khayi, Anjali ne 6/7 roti khayi" → Gopi 5/6, Anjali 6/7): a
+ * capitalised name, then within a few words its fraction, before the next name. PURE.
+ */
+export function nameFractions(prompt) {
+  const t = String(prompt ?? "");
+  const out = [];
+  const re = /(?<![\p{L}])(\p{Lu}\p{Ll}{2,})(?![\p{L}])([^\p{Lu}\d]{0,30}?)(\d+\s*\/\s*\d+)/gu;
+  for (const m of t.matchAll(re)) {
+    const v = fractionValue(m[3]);
+    if (v != null && !out.some((x) => x.name === m[1])) out.push({ name: m[1], value: v });
+  }
+  return out;
 }
