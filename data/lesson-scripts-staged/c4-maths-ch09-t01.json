@@ -57,7 +57,8 @@
       "key": "30",
       "accept": ["tees", "thirty", "30 ande", "30 eggs"],
       "targets": "c4-maths-ch09-t01-m-times-as-add",
-      "wrongIfMis": "11"
+      "wrongIfMis": "11",
+      "why": { "hi": "5 tray mein 6-6 ande hain: 5 × 6 = 30", "en": "5 trays of 6 eggs each: 5 × 6 = 30" }
      }
     },
     {
@@ -86,7 +87,8 @@
       "key": "18",
       "accept": ["athaarah", "atharah", "eighteen", "18 par"],
       "targets": "c4-maths-ch09-t01-m-times-as-add",
-      "wrongIfMis": "9"
+      "wrongIfMis": "9",
+      "why": { "hi": "3-3 ki 6 chhalaang 3, 6, 9, 12, 15, 18 par pahunchti hain", "en": "6 jumps of 3 go 3, 6, 9, 12, 15, 18" }
      }
     },
     {
@@ -113,7 +115,8 @@
        "en": "Find 9 × 4 the same way. Start from 10 × 4 = 40. What is 9 × 4?"
       },
       "key": "36",
-      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"]
+      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"],
+      "why": { "hi": "9 × 4 mein 10 × 4 se 1 group kam hai: 40 − 4 = 36", "en": "9 × 4 is 1 group fewer than 10 × 4: 40 − 4 = 36" }
      }
     }
    ],
@@ -171,7 +174,8 @@
      "accept": ["chaubees", "chaubis", "twenty-four", "twenty four", "24 bachche", "24 children"],
      "targets": "c4-maths-ch09-t01-m-times-as-add",
      "wrongIfMis": "10",
-     "board": { "template": "equal-groups@1", "params": { "groups": 6, "each": 4, "hideResult": true } }
+     "board": { "template": "equal-groups@1", "params": { "groups": 6, "each": 4, "hideResult": true } },
+     "why": { "hi": "6 auto mein 4-4 bachche: 6 × 4 = 24", "en": "6 autos with 4 children each: 6 × 4 = 24" }
     },
     {
      "id": "c2",
@@ -189,7 +193,8 @@
        "left": { "title": "Ek over", "items": ["6 ball"] },
        "right": { "title": "9 over", "items": ["kitni ball"] }
       }
-     }
+     },
+     "why": { "hi": "9 over mein 6-6 ball: 9 × 6 = 54", "en": "9 overs of 6 balls each: 9 × 6 = 54" }
     },
     {
      "id": "c3",
@@ -207,7 +212,8 @@
        "left": { "title": "7 row", "items": ["har row mein 8 kursi"] },
        "right": { "title": "Kul kursi", "items": ["kitni"] }
       }
-     }
+     },
+     "why": { "hi": "7 row mein 8-8 kursi: 7 × 8 = 56", "en": "7 rows of 8 chairs each: 7 × 8 = 56" }
     }
    ],
    "ladder": [
@@ -241,14 +247,16 @@
       "accept": ["battees", "batees", "thirty-two", "thirty two", "32 pencil", "32 pencils"],
       "targets": "c4-maths-ch09-t01-m-times-as-add",
       "wrongIfMis": "12",
-      "board": { "template": "equal-groups@1", "params": { "groups": 4, "each": 8, "hideResult": true } }
+      "board": { "template": "equal-groups@1", "params": { "groups": 4, "each": 8, "hideResult": true } },
+      "why": { "hi": "4 dabbon mein 8-8 pencil: 4 × 8 = 32", "en": "4 boxes of 8 pencils each: 4 × 8 = 32" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak humne pahade ke facts nikale. Ab kuch khaas facts dekhenge: 0 se guna, 1 se guna, kram badalna aur double karna.",
     "en": "So far we worked out times-table facts. Next we look at some special facts: times 0, times 1, changing the order, and doubling."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Khaas facts", "items": ["0 se guna", "1 se guna"] }, "right": { "title": "Aur", "items": ["kram badalna", "double karna"] } } }
   },
   {
    "skillId": "c4-maths-ch09-t01-s2",
@@ -298,7 +306,8 @@
       "key": "No",
       "accept": ["nahi", "nahin", "no", "nahi, 0 hoga", "no, it is 0"],
       "targets": "c4-maths-ch09-t01-m-times-zero",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "why": { "hi": "har plate khaali hai, toh 5 plate mein bhi 0 laddoo, 5 × 0 = 0", "en": "every plate is empty, so 5 plates hold 0 laddoos: 5 × 0 = 0" }
      }
     },
     {
@@ -327,7 +336,8 @@
       "key": "utna hi",
       "accept": ["utna hi", "utne hi", "barabar", "same", "the same", "9", "9 hi"],
       "targets": "c4-maths-ch09-t01-m-mult-makes-bigger",
-      "wrongIfMis": "zyada"
+      "wrongIfMis": "zyada",
+      "why": { "hi": "1 dibbe mein 9 crayon matlab kul 9 hi, 1 × 9 = 9", "en": "1 box of 9 crayons is just 9 in all: 1 × 9 = 9" }
      }
     },
     {
@@ -356,7 +366,8 @@
       "key": "No",
       "accept": ["nahi", "nahin", "no", "nahi, 54 hi hoga", "no, it is 54"],
       "targets": "c4-maths-ch09-t01-m-order-changes",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "why": { "hi": "kram badalne se kul nahi badalta, 9 × 6 bhi 54 hai", "en": "changing the order does not change the total; 9 × 6 is also 54" }
      }
     },
     {
@@ -383,7 +394,8 @@
        "en": "4 × 8 = 32. So what is 8 × 8?"
       },
       "key": "64",
-      "accept": ["chausath", "chaunsath", "sixty-four", "sixty four"]
+      "accept": ["chausath", "chaunsath", "sixty-four", "sixty four"],
+      "why": { "hi": "8 group, 4 group ke dugne hain, toh 8 × 8 = 32 + 32 = 64", "en": "8 groups are twice 4 groups, so 8 × 8 = 32 + 32 = 64" }
      }
     }
    ],
@@ -446,7 +458,8 @@
        "left": { "title": "Bowler", "items": ["4 over"] },
        "right": { "title": "Kisi bhi over mein", "items": ["ek bhi run nahi"] }
       }
-     }
+     },
+     "why": { "hi": "har over mein 0 run, toh 4 × 0 = 0", "en": "0 runs in every over, so 4 × 0 = 0" }
     },
     {
      "id": "c2",
@@ -464,7 +477,8 @@
        "left": { "title": "7 × 8", "items": ["8-8 ke 7 group"] },
        "right": { "title": "8 × 7", "items": ["7-7 ke 8 group"] }
       }
-     }
+     },
+     "why": { "hi": "7 × 8 aur 8 × 7 dono 56 hain, kram badalne se kul nahi badalta", "en": "7 × 8 and 8 × 7 are both 56; changing the order does not change the total" }
     },
     {
      "id": "c3",
@@ -482,7 +496,8 @@
        "left": { "title": "8 × 1", "items": ["8 bachchon ke paas", "1-1 pencil"] },
        "right": { "title": "Farhan", "items": ["9 pencil"] }
       }
-     }
+     },
+     "why": { "hi": "8 bachchon ke paas 1-1 pencil hai, toh 8 × 1 = 8, 9 nahi", "en": "8 children with 1 pencil each make 8 × 1 = 8, not 9" }
     }
    ],
    "ladder": [
@@ -522,7 +537,8 @@
         "left": { "title": "6 dibbe", "items": ["har dibba khaali"] },
         "right": { "title": "Kul laddoo", "items": ["kitne"] }
        }
-      }
+      },
+      "why": { "hi": "har dibba khaali hai, toh 6 × 0 = 0", "en": "every box is empty, so 6 × 0 = 0" }
      }
     },
     {
@@ -548,7 +564,8 @@
         "left": { "title": "3 row", "items": ["har row mein 5"] },
         "right": { "title": "5 row", "items": ["har row mein 3"] }
        }
-      }
+      },
+      "why": { "hi": "3 × 5 aur 5 × 3 dono 15 hain, sirf row aur column badle", "en": "3 × 5 and 5 × 3 are both 15; only the rows and columns swapped" }
      }
     },
     {
@@ -580,14 +597,16 @@
         "left": { "title": "1 dibbe mein", "items": ["6 crayon"] },
         "right": { "title": "1 × 6", "items": ["1 dibbe mein 6"] }
        }
-      }
+      },
+      "why": { "hi": "1 dibbe mein 6 crayon matlab kul 6, toh 1 × 6 = 6", "en": "1 box of 6 crayons is 6 in all, so 1 × 6 = 6" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab saare pahade ek saath guna chart mein dekhenge. Wahan har row mein ek pattern chhupa hai.",
     "en": "Next we see all the tables together in the multiplication chart. Every row there hides a pattern."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Guna chart", "items": ["saare pahade"] }, "right": { "title": "Har row", "items": ["ek pattern"] } } }
   },
   {
    "skillId": "c4-maths-ch09-t01-s3",
@@ -631,7 +650,8 @@
       "key": "45",
       "accept": ["paintaalees", "paintalis", "forty-five", "forty five"],
       "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
-      "wrongIfMis": "41"
+      "wrongIfMis": "41",
+      "why": { "hi": "5 ke pahade mein agla number 5 badhta hai: 40 + 5 = 45", "en": "in the 5 table the next number grows by 5: 40 + 5 = 45" }
      }
     },
     {
@@ -658,7 +678,8 @@
        "en": "Without multiplying, tell me: will the answer to 5 × 7 end in 0, yes or no?"
       },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, 5 par", "no, it ends in 5"]
+      "accept": ["nahi", "nahin", "no", "nahi, 5 par", "no, it ends in 5"],
+      "why": { "hi": "7 odd hai, aur 5 ko odd number se guna karne par aakhri ank 5 aata hai", "en": "7 is odd, and 5 times an odd number ends in 5" }
      }
     },
     {
@@ -685,7 +706,8 @@
        "en": "2 × 9 = 18. So what is 4 × 9?"
       },
       "key": "36",
-      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"]
+      "accept": ["chhattees", "chhatees", "thirty-six", "thirty six"],
+      "why": { "hi": "4 ke pahade ka number 2 ke pahade ka double hai: 18 + 18 = 36", "en": "a 4-table number is double the 2-table number: 18 + 18 = 36" }
      }
     }
    ],
@@ -750,7 +772,8 @@
        "left": { "title": "4 × 6", "items": ["24"] },
        "right": { "title": "Agla fact", "items": ["4 × 7"] }
       }
-     }
+     },
+     "why": { "hi": "4 ke pahade mein agla number 4 badhta hai: 24 + 4 = 28", "en": "in the 4 table the next number grows by 4: 24 + 4 = 28" }
     },
     {
      "id": "c2",
@@ -768,7 +791,8 @@
        "left": { "title": "3 wali row", "items": ["3, 6, 9, 12"] },
        "right": { "title": "12 ke baad", "items": ["agla number"] }
       }
-     }
+     },
+     "why": { "hi": "3 wali row har baar 3 badhti hai: 12 + 3 = 15", "en": "the 3 row grows by 3 each time: 12 + 3 = 15" }
     },
     {
      "id": "c3",
@@ -786,7 +810,8 @@
        "left": { "title": "7 over", "items": ["42 ball"] },
        "right": { "title": "8 over", "items": ["kitni ball"] }
       }
-     }
+     },
+     "why": { "hi": "ek over aur matlab 6 ball aur: 42 + 6 = 48", "en": "one more over means 6 more balls: 42 + 6 = 48" }
     }
    ],
    "ladder": [
@@ -818,7 +843,8 @@
       "accept": ["ikkees", "ikkis", "twenty-one", "twenty one"],
       "targets": "c4-maths-ch09-t01-m-next-fact-plus-one",
       "wrongIfMis": "19",
-      "board": { "template": "equal-groups@1", "params": { "groups": 3, "each": 7, "hideResult": true } }
+      "board": { "template": "equal-groups@1", "params": { "groups": 3, "each": 7, "hideResult": true } },
+      "why": { "hi": "3 ke pahade mein agla number 3 badhta hai: 18 + 3 = 21", "en": "in the 3 table the next number grows by 3: 18 + 3 = 21" }
      }
     }
    ],

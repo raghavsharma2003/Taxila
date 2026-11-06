@@ -57,7 +57,8 @@
      "ask": {
       "prompt": { "hi": "Isi roti ko 4 ki jagah 8 barabar hisson mein baanto. Tab ek hissa poori roti ka kaunsa fractional unit hoga?", "en": "Share this same roti into 8 equal parts instead of 4. Then which fractional unit of the whole roti is one part?" },
       "key": "1/8",
-      "accept": ["one eighth", "ek bata aath", "1 by 8", "ek-aathvaan"]
+      "accept": ["one eighth", "ek bata aath", "1 by 8", "ek-aathvaan"],
+      "why": { "hi": "roti 8 barabar hisson mein bati, aur ek hissa un 8 mein se 1 hai", "en": "the roti is in 8 equal parts, and one part is 1 of those 8" }
      }
     },
     {
@@ -77,7 +78,8 @@
       "key": "5 cm",
       "accept": ["5", "5 cm wala", "5 cm wala hissa", "the 5 cm piece", "5 centimetre"],
       "targets": "c6-maths-ch07-t01-m-unequal-parts",
-      "wrongIfMis": "every piece"
+      "wrongIfMis": "every piece",
+      "why": { "hi": "15 ÷ 3 = 5, toh 15 cm ka 1/3 5 cm hai", "en": "15 ÷ 3 = 5, so 1/3 of 15 cm is 5 cm" }
      }
     },
     {
@@ -97,7 +99,8 @@
       "key": "2 cm",
       "accept": ["2", "2 centimetre", "2 cm zyada", "2 cm lamba"],
       "targets": "c6-maths-ch07-t01-m-whole-dependence",
-      "wrongIfMis": "0 cm"
+      "wrongIfMis": "0 cm",
+      "why": { "hi": "20 ÷ 4 = 5 cm aur 12 ÷ 4 = 3 cm, aur 5 − 3 = 2", "en": "20 ÷ 4 = 5 cm and 12 ÷ 4 = 3 cm, and 5 − 3 = 2" }
      }
     }
    ],
@@ -146,7 +149,8 @@
      "accept": ["none", "koi nahi", "koi bhi nahi", "ek bhi nahi", "zero", "0 tukde"],
      "targets": "c6-maths-ch07-t01-m-unequal-parts",
      "wrongIfMis": "4",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Chocolate bar", "items": ["16 cm", "4 tukde"] }, "right": { "title": "Tukde", "items": ["6 cm, 6 cm", "2 cm, 2 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Chocolate bar", "items": ["16 cm", "4 tukde"] }, "right": { "title": "Tukde", "items": ["6 cm, 6 cm", "2 cm, 2 cm"] } } },
+     "why": { "hi": "16 cm ka 1/4 4 cm hai, aur koi bhi tukda 4 cm ka nahi", "en": "1/4 of 16 cm is 4 cm, and no piece is 4 cm" }
     },
     {
      "id": "c2",
@@ -158,7 +162,8 @@
      "accept": ["10", "10 centimetre", "10 cm zyada", "10 cm lamba"],
      "targets": "c6-maths-ch07-t01-m-whole-dependence",
      "wrongIfMis": "0 cm",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["60 cm ribbon", "1/3"] }, "right": { "title": "Sana", "items": ["30 cm ribbon", "1/3"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["60 cm ribbon", "1/3"] }, "right": { "title": "Sana", "items": ["30 cm ribbon", "1/3"] } } },
+     "why": { "hi": "60 ÷ 3 = 20 cm aur 30 ÷ 3 = 10 cm, aur 20 − 10 = 10", "en": "60 ÷ 3 = 20 cm and 30 ÷ 3 = 10 cm, and 20 − 10 = 10" }
     }
    ],
    "ladder": [
@@ -186,7 +191,8 @@
       "accept": ["6", "6 cm wala", "6 cm wala hissa", "the 6 cm piece", "6 centimetre"],
       "targets": "c6-maths-ch07-t01-m-unequal-parts",
       "wrongIfMis": "every piece",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Patti", "items": ["18 cm"] }, "right": { "title": "Hisse", "items": ["3 hisse"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Patti", "items": ["18 cm"] }, "right": { "title": "Hisse", "items": ["3 hisse"] } } },
+      "why": { "hi": "18 ÷ 3 = 6, toh 18 cm ka 1/3 6 cm hai", "en": "18 ÷ 3 = 6, so 1/3 of 18 cm is 6 cm" }
      }
     },
     {
@@ -206,14 +212,16 @@
       "accept": ["6", "6 centimetre", "6 cm zyada", "6 cm lamba"],
       "targets": "c6-maths-ch07-t01-m-whole-dependence",
       "wrongIfMis": "0 cm",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Patti A", "items": ["36 cm", "1/3"] }, "right": { "title": "Patti B", "items": ["18 cm", "1/3"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Patti A", "items": ["36 cm", "1/3"] }, "right": { "title": "Patti B", "items": ["18 cm", "1/3"] } } },
+      "why": { "hi": "36 ÷ 3 = 12 cm aur 18 ÷ 3 = 6 cm, aur 12 − 6 = 6", "en": "36 ÷ 3 = 12 cm and 18 ÷ 3 = 6 cm, and 12 − 6 = 6" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak humne ek poore ko barabar hisson mein baanta aur har hisse ko naam diya. Agle hisse mein ek hi roti ko kam ya zyada hisson mein baant kar unke tukdon ki tulna karenge.",
     "en": "So far we shared one whole into equal parts and named each part. Next we will share the same roti into fewer or more parts and compare the pieces."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Kam hisson mein", "items": ["ek hi roti"] }, "right": { "title": "Zyada hisson mein", "items": ["ek hi roti"] } } }
   },
   {
    "skillId": "c6-maths-ch07-t01-s2",
@@ -255,7 +263,8 @@
       "key": "1/4",
       "accept": ["one quarter", "ek-chauthaai", "ek chauthaai", "1 by 4"],
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
-      "wrongIfMis": "1/5"
+      "wrongIfMis": "1/5",
+      "why": { "hi": "wahi line kam hisson mein bate toh har hissa bada hota hai, aur 4 hisse 5 se kam hain", "en": "when the same line is split into fewer parts each part is longer, and 4 parts are fewer than 5" }
      }
     },
     {
@@ -275,7 +284,8 @@
       "key": "1/10, 1/5, 1/3",
       "accept": ["1/10 1/5 1/3", "1/10 < 1/5 < 1/3", "1/10, 1/5 aur 1/3"],
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
-      "wrongIfMis": "1/3, 1/5, 1/10"
+      "wrongIfMis": "1/3, 1/5, 1/10",
+      "why": { "hi": "zyada barabar hisse matlab chhota hissa, aur 10 sabse zyada hisse hain, 3 sabse kam", "en": "more equal parts means a smaller part, and 10 is the most parts, 3 the fewest" }
      }
     }
    ],
@@ -331,7 +341,8 @@
      "accept": ["4 mein se ek", "4 mein se ek dost", "4 wala dost", "4 doston wala", "1/4", "one of the 4 friends"],
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
      "wrongIfMis": "one of the 7",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Roti 1", "items": ["4 dost"] }, "right": { "title": "Roti 2, utni hi badi", "items": ["7 dost"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Roti 1", "items": ["4 dost"] }, "right": { "title": "Roti 2, utni hi badi", "items": ["7 dost"] } } },
+     "why": { "hi": "ek jaisi roti 4 mein bate toh har hissa 7 mein bate hisse se bada hota hai", "en": "the same roti shared by 4 gives a bigger part than shared by 7" }
     },
     {
      "id": "c2",
@@ -343,7 +354,8 @@
      "accept": ["1/9 1/6 1/3 1/2", "1/9 < 1/6 < 1/3 < 1/2", "1/9, 1/6, 1/3 aur 1/2"],
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
      "wrongIfMis": "1/2, 1/3, 1/6, 1/9",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Lagaya kram", "items": ["1/2, 1/3, 1/6, 1/9"] }, "right": { "title": "Sahi kram", "items": ["sabse chhota pehle"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Lagaya kram", "items": ["1/2, 1/3, 1/6, 1/9"] }, "right": { "title": "Sahi kram", "items": ["sabse chhota pehle"] } } },
+     "why": { "hi": "ek hi poore ke 9 hisse sabse chhote hote hain aur 2 hisse sabse bade", "en": "of one whole, ninths are the smallest parts and halves the biggest" }
     },
     {
      "id": "c3",
@@ -355,7 +367,8 @@
      "accept": ["Rahul ne", "aman", "Rahul ne zyada"],
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
      "wrongIfMis": "Sana",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["route ka 1/7"] }, "right": { "title": "Sana", "items": ["route ka 1/9"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["route ka 1/7"] }, "right": { "title": "Sana", "items": ["route ka 1/9"] } } },
+     "why": { "hi": "ek hi route ke 7 barabar hisse 9 barabar hisson se bade hote hain", "en": "7 equal parts of the same route are bigger than 9 equal parts" }
     }
    ],
    "ladder": [
@@ -383,14 +396,16 @@
       "accept": ["one fifth", "ek bata paanch", "1 by 5", "5 doston wala"],
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
       "wrongIfMis": "1/10",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Ek cake", "items": ["5 doston mein"] }, "right": { "title": "Doosra cake", "items": ["10 doston mein"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Ek cake", "items": ["5 doston mein"] }, "right": { "title": "Doosra cake", "items": ["10 doston mein"] } } },
+      "why": { "hi": "ek jaisa cake 5 mein bate toh har hissa 10 mein bate hisse se bada hota hai", "en": "the same cake shared by 5 gives a bigger part than shared by 10" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak ek cheez ko kuch logon mein baanta. Agle hisse mein ek se zyada cheezein barabar baantenge, jaise kuch roti kuch bachchon mein, aur har ek ka hissa fraction mein likhenge.",
     "en": "So far we shared one thing among some people. Next we will share more than one thing equally, like a few rotis among a few children, and write each share as a fraction."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Kuch roti", "items": ["ek se zyada"] }, "right": { "title": "Kuch bachchon mein", "items": ["har ek ka hissa"] } } }
   },
   {
    "skillId": "c6-maths-ch07-t01-s3",
@@ -432,7 +447,8 @@
       "key": "2/4",
       "accept": ["2/4 roti", "1/2", "aadhi roti", "aadhi", "half", "do bata chaar"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "4/2"
+      "wrongIfMis": "4/2",
+      "why": { "hi": "har roti se har bachche ko 1/4 milta hai, aur 2 roti se 1/4 + 1/4 = 2/4", "en": "each child gets 1/4 from each roti, and from 2 rotis 1/4 + 1/4 = 2/4" }
      }
     },
     {
@@ -453,7 +469,8 @@
       "key": "3/8",
       "accept": ["3/8 roti", "teen bata aath", "3 by 8"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "8/3"
+      "wrongIfMis": "8/3",
+      "why": { "hi": "har roti ke 8 hisse karke har bachche ko har roti se 1/8 milta hai, aur 3 roti se 3/8", "en": "with 8 parts in each roti each child gets 1/8 from each roti, and from 3 rotis 3/8" }
      }
     },
     {
@@ -472,7 +489,8 @@
      "ask": {
       "prompt": { "hi": "Isi 1 metre ki ribbon ko ab 5 barabar hisson mein baanto. Ek hissa kitne cm ka hoga?", "en": "Now share this same 1 metre ribbon into 5 equal parts. How many cm is one part?" },
       "key": "20 cm",
-      "accept": ["20", "20 centimetre", "20 centimetres"]
+      "accept": ["20", "20 centimetre", "20 centimetres"],
+      "why": { "hi": "1 metre = 100 cm, aur 100 ÷ 5 = 20", "en": "1 metre = 100 cm, and 100 ÷ 5 = 20" }
      }
     }
    ],
@@ -528,7 +546,8 @@
      "accept": ["2/3 chikki", "do tihaai", "do bata teen", "2 by 3"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "3/2",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Chikki", "items": ["2 chikki"] }, "right": { "title": "Dost", "items": ["3 dost"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Chikki", "items": ["2 chikki"] }, "right": { "title": "Dost", "items": ["3 dost"] } } },
+     "why": { "hi": "har chikki se har dost ko 1/3 milta hai, aur 2 chikki se 1/3 + 1/3 = 2/3", "en": "each friend gets 1/3 from each chikki, and from 2 chikkis 1/3 + 1/3 = 2/3" }
     },
     {
      "id": "c2",
@@ -540,7 +559,8 @@
      "accept": ["5/4", "5/4 metre", "1 1/4 m", "1 aur 1/4 m", "sava metre", "1.25 m", "125 cm"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "4/5 m",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } },
+     "why": { "hi": "har metre se har banner ko 1/4 m milta hai, aur 5 metre se 5/4 m", "en": "each banner gets 1/4 m from each metre, and from 5 metres 5/4 m" }
     },
     {
      "id": "c3",
@@ -552,7 +572,8 @@
      "accept": ["4/6 roti", "2/3", "2/3 roti", "do tihaai"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "6/4",
-     "board": { "template": "compare@1", "params": { "left": { "title": "4 roti", "items": ["6 bachche"] }, "right": { "title": "Likha", "items": ["6/4 roti"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "4 roti", "items": ["6 bachche"] }, "right": { "title": "Likha", "items": ["6/4 roti"] } } },
+     "why": { "hi": "baanti jaane wali 4 roti upar aati hain aur 6 bachche neeche", "en": "the 4 rotis being shared go on top and the 6 children below" }
     }
    ],
    "ladder": [
@@ -579,7 +600,8 @@
       "accept": ["4/7 roti", "chaar bata saat", "4 by 7"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
       "wrongIfMis": "7/4",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Roti", "items": ["4 roti"] }, "right": { "title": "Bachche", "items": ["7 bachche"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Roti", "items": ["4 roti"] }, "right": { "title": "Bachche", "items": ["7 bachche"] } } },
+      "why": { "hi": "har roti se har bachche ko 1/7 milta hai, aur 4 roti se 4/7", "en": "each child gets 1/7 from each roti, and from 4 rotis 4/7" }
      }
     }
    ],

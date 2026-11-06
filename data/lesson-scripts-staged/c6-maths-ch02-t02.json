@@ -55,6 +55,7 @@
      "ask": {
       "prompt": { "hi": "Upar wali arm par ek point B hai. Us arm ka naam kya hoga: ray OB ya ray BO?", "en": "There is a point B on the upper arm. What is that arm's name: ray OB or ray BO?" },
       "key": "ray OB",
+      "why": { "hi": "yeh arm vertex O se shuru hokar B ki taraf jaati hai, aur ray ke naam mein shuru wala point pehle aata hai", "en": "this arm starts at the vertex O and goes towards B, and a ray's name begins with its starting point" },
       "accept": ["OB", "ray OB", "kiran OB"]
      }
     },
@@ -73,6 +74,7 @@
      "ask": {
       "prompt": { "hi": "Upar wali arm par, A se aage, ek aur point D hai. D aur C lekar is angle ka naam kya hoga?", "en": "On the upper arm, beyond A, there is another point D. Using D and C, what is this angle's name?" },
       "key": "angle DBC",
+      "why": { "hi": "D upar wali arm par hai aur C neeche wali par, aur vertex B beech mein aata hai", "en": "D is on the upper arm and C on the lower one, with the vertex B in the middle" },
       "accept": ["DBC", "CBD", "angle CBD", "∠DBC", "∠CBD"],
       "targets": "c6-maths-ch02-t02-m-vertex-name",
       "wrongIfMis": "angle BDC"
@@ -125,6 +127,7 @@
      "id": "c1",
      "prompt": { "hi": "Angle PQR mein vertex kaunsa point hai?", "en": "In angle PQR, which point is the vertex?" },
      "key": "Q",
+     "why": { "hi": "angle PQR ke naam mein beech wala letter Q hai, aur vertex beech mein hi likha jaata hai", "en": "Q is the middle letter of angle PQR, and the vertex is always written in the middle" },
      "accept": ["point Q", "Q point"],
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "P",
@@ -134,6 +137,7 @@
      "id": "c2",
      "prompt": { "hi": "Is angle ka vertex B hai, aur arms A aur C ki taraf jaati hain. Sahi naam kaunsa hai: angle BAC ya angle ABC?", "en": "This angle's vertex is B, and its arms go towards A and C. Which name is correct: angle BAC or angle ABC?" },
      "key": "angle ABC",
+     "why": { "hi": "vertex B hai, toh B beech mein aata hai, A aur C kinaron par", "en": "the vertex is B, so B goes in the middle, with A and C at the ends" },
      "accept": ["ABC", "∠ABC", "angle CBA", "CBA"],
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "angle BAC",
@@ -143,6 +147,7 @@
      "id": "c3",
      "prompt": { "hi": "Ghadi ki dono suiyan centre O se nikalti hain: ek point H tak, ek point M tak. Suiyon ke beech ke angle ka teen letters wala naam kya hai?", "en": "Both hands of a clock start at the centre O: one goes to point H, one to point M. What is the three-letter name of the angle between the hands?" },
      "key": "angle HOM",
+     "why": { "hi": "dono suiyan O se nikalti hain, toh vertex O beech mein aata hai, H aur M kinaron par", "en": "both hands start at O, so the vertex O goes in the middle, with H and M at the ends" },
      "accept": ["HOM", "MOH", "angle MOH", "∠HOM", "∠MOH"],
      "targets": "c6-maths-ch02-t02-m-vertex-name",
      "wrongIfMis": "angle OHM",
@@ -168,6 +173,7 @@
      "then": {
       "prompt": { "hi": "Vertex N hai, arms M aur P ki taraf hain. Sahi naam kaunsa hai: angle NMP ya angle MNP?", "en": "The vertex is N, and the arms go towards M and P. Which name is correct: angle NMP or angle MNP?" },
       "key": "angle MNP",
+      "why": { "hi": "vertex N hai, toh N beech mein aata hai, M aur P kinaron par", "en": "the vertex is N, so N goes in the middle, with M and P at the ends" },
       "accept": ["MNP", "PNM", "angle PNM", "∠MNP", "∠PNM"],
       "targets": "c6-maths-ch02-t02-m-vertex-name",
       "wrongIfMis": "angle NMP",
@@ -178,7 +184,8 @@
    "bridgeToNext": {
     "hi": "Ab humein angle ke hisse aur uska naam pata hai. Agle hisse mein dekhenge ki angle chhota ya bada kis cheez se hota hai: ghumaav se.",
     "en": "Now we know the parts of an angle and its name. In the next part we will see what makes an angle small or big: the turn."
-   }
+   },
+   "bridgeBoard": { "template": "angle@1", "params": { "angles": [{ "deg": 35, "name": "chhota" }, { "deg": 110, "name": "bada" }] } }
   },
   {
    "skillId": "c6-maths-ch02-t02-s2",
@@ -217,6 +224,7 @@
      "ask": {
       "prompt": { "hi": "Board par kis angle ki doosri arm zyada ghoomi hai, toh kaunsa angle bada hai: A ya B?", "en": "On the board, whose second arm has turned more, so which angle is bigger: A or B?" },
       "key": "angle B",
+      "why": { "hi": "board par angle B ki doosri arm angle A ki doosri arm se kahin zyada ghoomkar khuli hai", "en": "on the board angle B's second arm has turned open much further than angle A's" },
       "accept": ["B", "B bada", "angle B bada hai"]
      }
     },
@@ -236,6 +244,7 @@
      "ask": {
       "prompt": { "hi": "12 se 6 tak ka aadha chakkar kitne quarter turn ke barabar hai?", "en": "The half turn from 12 to 6 equals how many quarter turns?" },
       "key": "2",
+      "why": { "hi": "12 se 3 ek quarter turn hai aur 3 se 6 doosra", "en": "12 to 3 is one quarter turn and 3 to 6 is another" },
       "accept": ["do", "2 quarter turn", "2 quarter turns", "do quarter turn"]
      }
     },
@@ -254,6 +263,7 @@
      "ask": {
       "prompt": { "hi": "Yahi blade khidki se chalkar do poore chakkar ghoome aur phir khidki par ruke, toh woh kitne quarter turn ghooma?", "en": "If this same blade starts at the window, turns two full turns and stops at the window, how many quarter turns did it turn?" },
       "key": "8",
+      "why": { "hi": "har poora chakkar 4 quarter turn hai, aur 2 × 4 = 8", "en": "each full turn is 4 quarter turns, and 2 × 4 = 8" },
       "accept": ["aath", "8 quarter turn", "8 quarter turns"],
       "targets": "c6-maths-ch02-t02-m-full-turn-zero",
       "wrongIfMis": "0"
@@ -304,6 +314,7 @@
      "id": "c1",
      "prompt": { "hi": "Minute wali sui 12 se chalkar ek poora chakkar ghoomti hai aur phir 12 par aa jaati hai. Woh kitne quarter turn ghoomi?", "en": "The minute hand starts at 12, turns one full turn and comes back to 12. How many quarter turns did it turn?" },
      "key": "4",
+     "why": { "hi": "12 se 3, 3 se 6, 6 se 9 aur 9 se 12, chaar quarter turn hain", "en": "12 to 3, 3 to 6, 6 to 9 and 9 to 12 are four quarter turns" },
      "accept": ["chaar", "char", "4 quarter turn", "4 quarter turns"],
      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
      "wrongIfMis": "0",
@@ -313,6 +324,7 @@
      "id": "c2",
      "prompt": { "hi": "Sui X 12 se seedha 3 tak ghoomi. Sui Y 12 se ek poora chakkar lagakar phir 3 tak ghoomi. Kya dono ka ghumaav barabar hai, haan ya nahi?", "en": "Hand X turned straight from 12 to 3. Hand Y went one full turn from 12 and then on to 3. Have both turned the same amount, yes or no?" },
      "key": "nahi",
+     "why": { "hi": "X sirf ek quarter turn ghoomi, par Y ek poora chakkar aur upar se ek quarter turn", "en": "X turned just one quarter turn, but Y turned a full turn and a quarter turn more" },
      "accept": ["no", "nahin", "barabar nahi", "Y zyada ghoomi"],
      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
      "wrongIfMis": "haan",
@@ -336,6 +348,7 @@
      "then": {
       "prompt": { "hi": "Sui 12 se ek poora chakkar lagakar phir 3 tak gayi. Kul kitne quarter turn hue?", "en": "A hand went one full turn from 12 and then on to 3. How many quarter turns is that in all?" },
       "key": "5",
+      "why": { "hi": "poora chakkar 4 quarter turn hai aur 12 se 3 ek aur, 4 + 1 = 5", "en": "a full turn is 4 quarter turns and 12 to 3 is one more, 4 + 1 = 5" },
       "accept": ["paanch", "5 quarter turn", "5 quarter turns"],
       "targets": "c6-maths-ch02-t02-m-full-turn-zero",
       "wrongIfMis": "1",
@@ -344,9 +357,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ghumaav jitna zyada, angle utna bada. Agle hisse mein do angles ko ek doosre par rakhkar milaana seekhenge.",
-    "en": "The more the turn, the bigger the angle. In the next part we will learn to compare two angles by placing one on the other."
-   }
+    "hi": "Ghumaav jitna zyada, angle utna bada. Agle hisse mein do angles, jaise angle P aur angle Q, ko ek doosre par rakhkar milaana seekhenge.",
+    "en": "The more the turn, the bigger the angle. In the next part we will learn to compare two angles, like angle P and angle Q, by placing one on the other."
+   },
+   "bridgeBoard": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle P" }, { "deg": 80, "name": "angle Q" }] } }
   },
   {
    "skillId": "c6-maths-ch02-t02-s3",
@@ -386,6 +400,7 @@
      "ask": {
       "prompt": { "hi": "Angle P ki copy angle Q par aise hi rakho. Kiski doosri arm bahar rahegi, yaani kaunsa angle bada hai: P ya Q?", "en": "Place a copy of angle P on angle Q this way. Whose second arm stays outside, that is, which angle is bigger: P or Q?" },
       "key": "angle Q",
+      "why": { "hi": "angle Q ki doosri arm angle P ki doosri arm se zyada ghoomi hai, toh copy rakhne par Q ki arm bahar rehti hai", "en": "angle Q's second arm has turned further than angle P's, so with the copy laid on, Q's arm stays outside" },
       "accept": ["Q", "Q bada", "angle Q bada hai"]
      }
     },
@@ -404,6 +419,7 @@
      "ask": {
       "prompt": { "hi": "Ab angle B ki dono arms ko pencil se aur aage tak badha do. Ab angle B, angle A se bada hai, chhota hai, ya barabar?", "en": "Now extend both arms of angle B further with a pencil. Is angle B now bigger than angle A, smaller, or equal?" },
       "key": "barabar",
+      "why": { "hi": "arms badhane se sirf lakeerein lambi hui, B ka ghumaav utna hi raha jitna A ka", "en": "extending the arms only made the lines longer; B's turn stayed the same as A's" },
       "accept": ["barabar hai", "dono barabar", "equal", "same"],
       "targets": "c6-maths-ch02-t02-m-longer-arms",
       "wrongIfMis": "bada"
@@ -424,6 +440,7 @@
      "ask": {
       "prompt": { "hi": "Ab angle M par bahut bada arc banao aur angle N par chhota sa. Ab kaunsa angle bada hai: M ya N?", "en": "Now draw a very big arc on angle M and a tiny one on angle N. Which angle is bigger now: M or N?" },
       "key": "angle N",
+      "why": { "hi": "arc ka size arms ko nahi hilata, aur N ki arms M ki arms se zyada khuli hain", "en": "the size of an arc does not move the arms, and N's arms are open wider than M's" },
       "accept": ["N", "N bada", "angle N bada hai"],
       "targets": "c6-maths-ch02-t02-m-arc-size",
       "wrongIfMis": "angle M"
@@ -478,6 +495,7 @@
      "id": "c1",
      "prompt": { "hi": "Board ke angle X aur angle Y ko ek doosre par rakhne par vertex aur dono arms mil jaati hain. Ab Y ki arms 8 cm tak lambi kar do. Kaunsa bada hai: X, Y, ya dono barabar?", "en": "When angle X and angle Y on the board are placed one on the other, the vertex and both arms match. Now make Y's arms 8 cm long. Which is bigger: X, Y, or are they equal?" },
      "key": "barabar",
+     "why": { "hi": "X aur Y ka vertex aur dono arms milte hain, aur arms lambi karne se ghumaav nahi badalta", "en": "X and Y match at the vertex and both arms, and longer arms do not change the turn" },
      "accept": ["dono barabar", "barabar hain", "equal", "same"],
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "wrongIfMis": "angle Y",
@@ -487,6 +505,7 @@
      "id": "c2",
      "prompt": { "hi": "Board ke angle K par bada arc banao aur angle L par chhota arc. Ab kaunsa angle bada hai: K ya L?", "en": "Draw a big arc on angle K on the board and a small arc on angle L. Which angle is bigger now: K or L?" },
      "key": "angle L",
+     "why": { "hi": "L ki arms K ki arms se zyada khuli hain, aur arc ka size kuch nahi badalta", "en": "L's arms are open wider than K's, and the size of an arc changes nothing" },
      "accept": ["L", "L bada", "angle L bada hai"],
      "targets": "c6-maths-ch02-t02-m-arc-size",
      "wrongIfMis": "angle K",
@@ -496,6 +515,7 @@
      "id": "c3",
      "prompt": { "hi": "Angle S ki copy angle T par rakho: vertex par vertex, ek arm par ek arm. Phir S ki arms bahut lambi kar do. Kaunsa angle bada hai: S ya T?", "en": "Place a copy of angle S on angle T: vertex on vertex, one arm on one arm. Then make S's arms very long. Which angle is bigger: S or T?" },
      "key": "angle T",
+     "why": { "hi": "board par T ki doosri arm S ki doosri arm se zyada ghoomi hai, aur S ki lambi arms ghumaav nahi badaltin", "en": "on the board T's second arm has turned further than S's, and S's longer arms do not change its turn" },
      "accept": ["T", "T bada", "angle T bada hai"],
      "targets": "c6-maths-ch02-t02-m-longer-arms",
      "wrongIfMis": "angle S",
@@ -520,6 +540,7 @@
      "then": {
       "prompt": { "hi": "Angle E aur angle F dono quarter turn khule hain. Ab F ki arms 10 cm tak badha do. Kaunsa bada hai: E, F, ya barabar?", "en": "Angles E and F are both a quarter turn. Now F's arms are made 10 cm long. Which is bigger: E, F, or equal?" },
       "key": "barabar",
+      "why": { "hi": "E aur F dono quarter turn khule hain, aur 10 cm ki arms se F ka ghumaav nahi badla", "en": "E and F are both open a quarter turn, and 10 cm arms did not change F's turn" },
       "accept": ["dono barabar", "barabar hain", "equal", "same"],
       "targets": "c6-maths-ch02-t02-m-longer-arms",
       "wrongIfMis": "angle F",
@@ -537,6 +558,7 @@
      "then": {
       "prompt": { "hi": "Angle G aur angle H ek doosre par bilkul milte hain. Ab H par bada arc banao. Kaunsa bada hai: G, H, ya barabar?", "en": "Angles G and H match exactly when laid one on the other. Now H gets a big arc. Which is bigger: G, H, or equal?" },
       "key": "barabar",
+      "why": { "hi": "G aur H bilkul milte hain, aur bada arc arms ko hilata nahi", "en": "G and H match exactly, and a big arc does not move the arms" },
       "accept": ["dono barabar", "barabar hain", "equal", "same"],
       "targets": "c6-maths-ch02-t02-m-arc-size",
       "wrongIfMis": "angle H",

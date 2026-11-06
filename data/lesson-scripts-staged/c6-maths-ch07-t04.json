@@ -112,7 +112,11 @@
       "accept": [
        "8 by 9",
        "eight ninths"
-      ]
+      ],
+      "why": {
+       "hi": "dono mein gap ek hi size ke hain, aur 8 gap 4 gap se aage hain",
+       "en": "the gaps are the same size in both, and 8 gaps reach further than 4 gaps"
+      }
      }
     },
     {
@@ -161,7 +165,11 @@
        "three fifths"
       ],
       "targets": "c6-maths-ch07-t04-m-bigger-den-bigger",
-      "wrongIfMis": "3/10"
+      "wrongIfMis": "3/10",
+      "why": {
+       "hi": "3/5 = 6/10, aur 6 chhote gap 3 chhote gap se aage hain",
+       "en": "3/5 = 6/10, and 6 small gaps reach further than 3 small gaps"
+      }
      }
     }
    ],
@@ -254,7 +262,7 @@
      "id": "c1",
      "prompt": {
       "hi": "Do ek jaisi chocolate hain. Pehli 6 barabar tukdon mein bati hai, doosri 9 mein. Farhan ne 4/6 li, yaani pehli ke 4 tukde, aur Isha ne 4/9, yaani doosri ke 4 tukde. Zyada chocolate kisne li: Farhan ya Isha?",
-      "en": "There are two same-size chocolates. The first is shared into 6 equal pieces, the second into 9. Farhan took 4 pieces of the first, that is 4/6, and Isha took 4 of the second, that is 4/9. Who took more chocolate: Farhan or Isha?"
+      "en": "There are two same-size chocolates. The first is shared into 6 equal pieces, the second into 9. Farhan took 4/6, that is 4 pieces of the first, and Isha took 4/9, that is 4 pieces of the second. Who took more chocolate: Farhan or Isha?"
      },
      "key": "Farhan",
      "accept": [
@@ -278,6 +286,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "dono ne 4 tukde liye, aur 6 mein bati chocolate ka tukda 9 mein bati ke tukde se bada hai",
+      "en": "both took 4 pieces, and a piece of the chocolate in 6 is bigger than a piece of the one in 9"
      }
     },
     {
@@ -310,6 +322,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "teeno mein 5 tukde hain, aur 12 hisson ka tukda sabse chhota hai, 6 hisson ka sabse bada",
+      "en": "all three have 5 pieces, and a twelfth is the smallest piece, a sixth the biggest"
      }
     }
    ],
@@ -340,8 +356,8 @@
      "targets": "c6-maths-ch07-t04-m-bigger-den-bigger",
      "move": "two same-size rotis, one in 3 equal parts, one in 6 → each third = 2 sixths → 2/3 lands on 4/6 → 2/6 stops well before it: same count of pieces, smaller pieces, less roti",
      "say": {
-      "hi": "Do ek jaisi roti lo: ek 3 barabar hisson mein, ek 6 mein. 3 wali roti ka har hissa 6 wali ke 2 hisson ke barabar hai, isliye 2/3 = 4/6. 2/6 toh 4/6 se kaafi kam hai.",
-      "en": "Take two same-size rotis: one in 3 equal parts, one in 6. Each part of the roti in 3 equals 2 parts of the roti in 6, so 2/3 = 4/6. And 2/6 is much less than 4/6."
+      "hi": "Is line par 0 se 1 tak 6 barabar gap hain. Yahi line 3 hisson mein bati hoti toh har hissa 2 gap ke barabar hota, isliye 2/3 = 4/6. 2/6 toh 4/6 se kaafi kam hai.",
+      "en": "This line has 6 equal gaps from 0 to 1. If the same line were split into 3 parts, each part would equal 2 gaps, so 2/3 = 4/6. And 2/6 is much less than 4/6."
      },
      "board": {
       "template": "fraction-line@1",
@@ -388,6 +404,10 @@
          ]
         }
        }
+      },
+      "why": {
+       "hi": "dono ne 3 hisse liye, aur 4 mein bate ribbon ka hissa 7 mein bate hisse se bada hai",
+       "en": "both took 3 parts, and a part of the ribbon in 4 is bigger than a part of the one in 7"
       }
      }
     }
@@ -395,6 +415,23 @@
    "bridgeToNext": {
     "hi": "Agle hisse mein aisi bhinn lenge jinke na numerator same hain na denominator, aur dono ko ek jaise hisson mein badlenge.",
     "en": "In the next part we take fractions whose numerators are not the same and whose denominators are not the same either, and change both into same-size parts."
+   },
+   "bridgeBoard": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Na numerator same",
+      "items": [
+       "na denominator"
+      ]
+     },
+     "right": {
+      "title": "Badlenge",
+      "items": [
+       "ek jaise hisson mein"
+      ]
+     }
+    }
    }
   },
   {
@@ -466,7 +503,11 @@
        "4/6"
       ],
       "targets": "c6-maths-ch07-t04-m-only-num-den",
-      "wrongIfMis": "3/6"
+      "wrongIfMis": "3/6",
+      "why": {
+       "hi": "2/3 = 4/6, aur 4 gap 3 gap se aage hain",
+       "en": "2/3 = 4/6, and 4 gaps reach further than 3 gaps"
+      }
      }
     },
     {
@@ -506,7 +547,7 @@
      "ask": {
       "prompt": {
        "hi": "Rahul ka 3/8 hai 15/40. Sana ka 2/5 bhi 40 hisson mein badlo. Zyada deewar kisne paint ki: Rahul ne ya Sana ne?",
-       "en": "Change Sana's 2/5 into 40 parts too. Who painted more of the wall: Rahul or Sana?"
+       "en": "Rahul's 3/8 is 15/40. Change Sana's 2/5 into 40 parts too. Who painted more of the wall: Rahul or Sana?"
       },
       "key": "Sana",
       "accept": [
@@ -515,7 +556,11 @@
        "16/40"
       ],
       "targets": "c6-maths-ch07-t04-m-only-num-den",
-      "wrongIfMis": "Rahul"
+      "wrongIfMis": "Rahul",
+      "why": {
+       "hi": "2/5 ke upar aur neeche ko 8 se guna karo toh 16/40, jo 15/40 se zyada hai",
+       "en": "multiply the top and bottom of 2/5 by 8 to get 16/40, which is more than 15/40"
+      }
      }
     },
     {
@@ -564,7 +609,11 @@
        "2/3"
       ],
       "targets": "c6-maths-ch07-t04-m-gap",
-      "wrongIfMis": "dono barabar"
+      "wrongIfMis": "dono barabar",
+      "why": {
+       "hi": "2/4 = 6/12 aur 4/6 = 8/12, aur 8 gap 6 gap se aage hain",
+       "en": "2/4 = 6/12 and 4/6 = 8/12, and 8 gaps reach further than 6 gaps"
+      }
      }
     }
    ],
@@ -697,6 +746,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "4/7 = 36/63 aur 5/9 = 35/63, aur 36 hisse 35 se zyada hain",
+      "en": "4/7 = 36/63 and 5/9 = 35/63, and 36 parts are more than 35"
      }
     },
     {
@@ -727,6 +780,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "4/5 = 28/35 aur 6/7 = 30/35, aur 30 hisse 28 se zyada hain",
+      "en": "4/5 = 28/35 and 6/7 = 30/35, and 30 parts are more than 28"
      }
     },
     {
@@ -758,6 +815,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "7/10 = 14/20 aur 3/4 = 15/20, aur 15 hisse 14 se zyada hain",
+      "en": "7/10 = 14/20 and 3/4 = 15/20, and 15 parts are more than 14"
      }
     }
    ],
@@ -832,6 +893,10 @@
          ]
         }
        }
+      },
+      "why": {
+       "hi": "2/3 = 6/9, aur 6/9 5/9 se zyada hai",
+       "en": "2/3 = 6/9, and 6/9 is more than 5/9"
       }
      }
     },
@@ -887,6 +952,10 @@
          ]
         }
        }
+      },
+      "why": {
+       "hi": "3/4 = 6/8, aur 7/8 6/8 se zyada hai",
+       "en": "3/4 = 6/8, and 7/8 is more than 6/8"
       }
      }
     }
@@ -894,6 +963,24 @@
    "bridgeToNext": {
     "hi": "Common denominator hamesha kaam karta hai. Agle hisse mein ek tez raasta dekhenge: bhinn ko 1/2 aur 1 se milana.",
     "en": "A common denominator always works. In the next part we will see a quicker way: comparing fractions with 1/2 and 1."
+   },
+   "bridgeBoard": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      },
+      {
+       "num": 2,
+       "label": "1"
+      }
+     ]
+    }
    }
   },
   {
@@ -967,7 +1054,11 @@
        "less"
       ],
       "targets": "c6-maths-ch07-t04-m-half-by-numerator",
-      "wrongIfMis": "baad"
+      "wrongIfMis": "baad",
+      "why": {
+       "hi": "10 ka aadha 5 hai, aur 4, 5 se kam hai",
+       "en": "half of 10 is 5, and 4 is less than 5"
+      }
      }
     },
     {
@@ -1018,7 +1109,11 @@
        "pehle"
       ],
       "targets": "c6-maths-ch07-t04-m-half-by-numerator",
-      "wrongIfMis": "zyada"
+      "wrongIfMis": "zyada",
+      "why": {
+       "hi": "7 ka aadha 3.5 hai, aur 2, 3.5 se kam hai",
+       "en": "half of 7 is 3.5, and 2 is less than 3.5"
+      }
      }
     },
     {
@@ -1068,7 +1163,11 @@
        "2/3"
       ],
       "targets": "c6-maths-ch07-t04-m-only-num-den",
-      "wrongIfMis": "3/10"
+      "wrongIfMis": "3/10",
+      "why": {
+       "hi": "4/6 mein 4, 6 ke aadhe 3 se zyada hai, par 3/10 mein 3, 10 ke aadhe 5 se kam",
+       "en": "in 4/6, 4 is more than 3, half of 6, but in 3/10, 3 is less than 5, half of 10"
+      }
      }
     },
     {
@@ -1114,7 +1213,11 @@
       "key": "9/8",
       "accept": [
        "9 by 8"
-      ]
+      ],
+      "why": {
+       "hi": "9/8 mein 9, 8 se bada hai toh woh 1 ke baad hai, par 3/4 1 se pehle hai",
+       "en": "in 9/8, 9 is bigger than 8 so it is past 1, but 3/4 is before 1"
+      }
      }
     }
    ],
@@ -1190,7 +1293,7 @@
     "yourStep": {
      "prompt": {
       "hi": "Anil ki 5/12 aadhe se neeche hai aur Bina ki 7/13 aadhe se upar. Toh kiski bottle mein zyada paani hai: Anil ki ya Bina ki?",
-      "en": "5/12 is below half and 7/13 is above half. So whose bottle has more water: Anil's or Bina's?"
+      "en": "Anil's 5/12 is below half and Bina's 7/13 is above half. So whose bottle has more water: Anil's or Bina's?"
      },
      "key": "Bina",
      "accept": [
@@ -1252,13 +1355,17 @@
         9
        ]
       }
+     },
+     "why": {
+      "hi": "9 ka aadha 4.5 hai, aur 4, 4.5 se kam hai",
+      "en": "half of 9 is 4.5, and 4 is less than 4.5"
      }
     },
     {
      "id": "c2",
      "prompt": {
       "hi": "Do ek jaise jug hain. Rahul ka jug 2/3 bhara hai, Sana ka 5/11. 1/2 se milakar batao, kiska jug zyada bhara hai: Rahul ka ya Sana ka?",
-      "en": "There are two same-size jugs. Rahul's jug is 2/3 full, Sana's is 5/11 full. Using 1/2, tell whose jug is fuller: Rahul's or Sana's?"
+      "en": "There are two same-size jugs. Rahul's jug is 2/3 full, Sana's is 5/11 full; using 1/2, tell whose jug is fuller: Rahul's or Sana's?"
      },
      "key": "Rahul",
      "accept": [
@@ -1283,6 +1390,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "2/3 mein 2, 3 ke aadhe 1.5 se zyada hai, par 5/11 mein 5, 11 ke aadhe 5.5 se kam",
+      "en": "in 2/3, 2 is more than 1.5, half of 3, but in 5/11, 5 is less than 5.5, half of 11"
      }
     },
     {
@@ -1313,6 +1424,10 @@
         ]
        }
       }
+     },
+     "why": {
+      "hi": "7/6 mein 7, 6 se bada hai toh woh 1 litre se zyada hai, par 11/12 1 litre se kam hai",
+      "en": "in 7/6, 7 is bigger than 6 so it is more than 1 litre, but 11/12 is less than 1 litre"
      }
     }
    ],
@@ -1382,6 +1497,10 @@
          8
         ]
        }
+      },
+      "why": {
+       "hi": "8 ka aadha 4 hai, aur 3, 4 se kam hai",
+       "en": "half of 8 is 4, and 3 is less than 4"
       }
      }
     },
@@ -1412,7 +1531,7 @@
      "then": {
       "prompt": {
        "hi": "Rahul ne deewar ka 4/10 rang kiya, Isha ne usi deewar ka 3/5. 1/2 se milakar batao: zyada kisne, Rahul ya Isha?",
-       "en": "Rahul painted 4/10 of a wall, Isha painted 3/5 of the same wall. Using 1/2, tell who painted more: Rahul or Isha?"
+       "en": "Rahul painted 4/10 of a wall, Isha painted 3/5 of the same wall; using 1/2, tell who painted more: Rahul or Isha?"
       },
       "key": "Isha",
       "accept": [
@@ -1436,6 +1555,10 @@
          ]
         }
        }
+      },
+      "why": {
+       "hi": "3/5 mein 3, 5 ke aadhe 2.5 se zyada hai, par 4/10 mein 4, 10 ke aadhe 5 se kam",
+       "en": "in 3/5, 3 is more than 2.5, half of 5, but in 4/10, 4 is less than 5, half of 10"
       }
      }
     }

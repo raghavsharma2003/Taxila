@@ -150,7 +150,21 @@ test("director7: events fire only in context: no self-try after a why-probe or o
       if (r.event === "selftry") assert.doesNotMatch(teacher, /kaise|kyun|why|how/i, `${persona}/${seed} T${turn}: self-try after a why-probe`);
       if (r.event === "dontknow") assert.match(teacher, /\?/, `${persona}/${seed} T${turn}: pata nahi without a question`);
       if (r.event === "picture") assert.doesNotMatch(teacher, /kaise socha/i, `${persona}/${seed} T${turn}: picture request as a reason`);
+      // director8: never "samajh nahi aaya" to a greeting or other unkeyed line; never cricket as the reply to a why-probe
+      if (r.event === "dontknow") assert.ok(ask, `${persona}/${seed} T${turn}: pata nahi with no keyed question`);
+      if (r.event === "cricket" || r.event === "hindi") assert.doesNotMatch(teacher, /kaise socha/i, `${persona}/${seed} T${turn}: ${r.event} as the reply to a why-probe`);
     }
     assert.ok(fired >= 3, `${persona}/${seed}: only ${fired} events`);
   }
+});
+
+test("director8: a greeting gets no event-reply; probe reasons name no topic; stuck and offtopic stay past skill 1", () => {
+  for (const persona of PERSONAS) for (let seed = 1; seed <= 10; seed++) {
+    const c = createReactiveChild({ persona, seed, kit });
+    const r = c.reply({ turn: 1, teacher: "Namaste! Kaise ho aaj?" });
+    assert.notEqual(r.event, "dontknow", `${persona}/${seed}: answered the greeting with ${r.text}`);
+    const p = c.reply({ turn: 40, teacher: "28 kaise mila?", probe: true });
+    if (p.kind === "reason") assert.doesNotMatch(p.text, /line|hiss|roti|neeche wala/i, p.text);
+  }
+  for (const persona of ["stuck", "offtopic"]) assert.ok(maxTurnsFor(persona) >= 30, `${persona}: ${maxTurnsFor(persona)} turns`);
 });

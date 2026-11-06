@@ -57,7 +57,8 @@
       "key": "130°",
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-linear-90",
-      "wrongIfMis": "40°"
+      "wrongIfMis": "40°",
+      "why": { "hi": "seedhi line 180° hai, aur 180° − 50° = 130°", "en": "a straight line is 180°, and 180° − 50° = 130°" }
      }
     },
     {
@@ -77,7 +78,8 @@
       "key": "80°",
       "accept": ["80", "80 degree", "80 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
-      "wrongIfMis": "100°"
+      "wrongIfMis": "100°",
+      "why": { "hi": "linear pair ka jod 180° hai, aur 180° − 100° = 80°", "en": "a linear pair adds to 180°, and 180° − 100° = 80°" }
      }
     }
    ],
@@ -126,7 +128,8 @@
      "accept": ["145", "145 degree", "145 degrees"],
      "targets": "c7-maths-ch05-t01-m-linear-90",
      "wrongIfMis": "55°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 35 }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 35 }] } },
+     "why": { "hi": "linear pair milkar 180° hota hai, aur 180° − 35° = 145°", "en": "a linear pair makes 180°, and 180° − 35° = 145°" }
     },
     {
      "id": "c2",
@@ -138,7 +141,8 @@
      "accept": ["110", "110 degree", "110 degrees"],
      "targets": "c7-maths-ch05-t01-m-all-equal",
      "wrongIfMis": "70°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi sadak" }, { "deg": 70 }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi sadak" }, { "deg": 70 }] } },
+     "why": { "hi": "sadak seedhi hai toh dono angle milkar 180°, aur 180° − 70° = 110°", "en": "the road is straight so the two angles make 180°, and 180° − 70° = 110°" }
     },
     {
      "id": "c3",
@@ -150,7 +154,8 @@
      "accept": ["90", "90 degree", "90 degrees"],
      "targets": "c7-maths-ch05-t01-m-linear-90",
      "wrongIfMis": "45°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }] } },
+     "why": { "hi": "180° ko do barabar hisson mein baanto toh 180° ÷ 2 = 90°", "en": "share 180° into two equal parts and 180° ÷ 2 = 90°" }
     }
    ],
    "ladder": [
@@ -177,7 +182,8 @@
       "accept": ["160", "160 degree", "160 degrees"],
       "targets": "c7-maths-ch05-t01-m-linear-90",
       "wrongIfMis": "70°",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 20 }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 20 }] } },
+      "why": { "hi": "linear pair milkar 180° hota hai, aur 180° − 20° = 160°", "en": "a linear pair makes 180°, and 180° − 20° = 160°" }
      }
     },
     {
@@ -197,14 +203,16 @@
       "accept": ["140", "140 degree", "140 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "40°",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 40 }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi line" }, { "deg": 40 }] } },
+      "why": { "hi": "seedhi line par dono angle milkar 180°, aur 180° − 40° = 140°", "en": "on a straight line the two angles make 180°, and 180° − 40° = 140°" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab ek ray ki jagah do poori seedhi lines ek-doosre ko paar karengi. Wahan chaar angle bante hain, aur har bagal wala joda ek linear pair hota hai.",
     "en": "Next, instead of one ray, two whole straight lines will cross each other. Four angles form there, and every neighbouring pair is a linear pair."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Do seedhi lines", "items": ["paar karengi"] }, "right": { "title": "Chaar angle", "items": ["har bagal wala joda", "linear pair"] } } }
   },
   {
    "skillId": "c7-maths-ch05-t01-s2",
@@ -246,7 +254,8 @@
       "key": "daayein wala",
       "accept": ["daayein", "daayaan", "right", "the right one", "right one", "the right angle"],
       "targets": "c7-maths-ch05-t01-m-above-below",
-      "wrongIfMis": "upar wala"
+      "wrongIfMis": "upar wala",
+      "why": { "hi": "baayein wala angle crossing bindu ke aar-paar daayein wale ke theek saamne hai", "en": "the left angle is right across the crossing point from the right angle" }
      }
     },
     {
@@ -267,7 +276,8 @@
       "key": "130°",
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
-      "wrongIfMis": "230°"
+      "wrongIfMis": "230°",
+      "why": { "hi": "upar aur neeche dono 180° − 115° = 65° hain, aur 65° + 65° = 130°", "en": "top and bottom are each 180° − 115° = 65°, and 65° + 65° = 130°" }
      }
     },
     {
@@ -287,7 +297,8 @@
       "key": "angle AOD",
       "accept": ["AOD", "DOA", "angle DOA", "∠AOD", "∠DOA"],
       "targets": "c7-maths-ch05-t01-m-above-below",
-      "wrongIfMis": "angle BOD"
+      "wrongIfMis": "angle BOD",
+      "why": { "hi": "OC ki ulti ray OD hai aur OB ki ulti OA, toh COB ke saamne AOD hai", "en": "the opposite ray of OC is OD and of OB is OA, so AOD is opposite COB" }
      }
     }
    ],
@@ -336,7 +347,8 @@
      "accept": ["daayein", "daayaan", "right", "the right one", "right one", "the right angle"],
      "targets": "c7-maths-ch05-t01-m-above-below",
      "wrongIfMis": "upar wala",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "baayein 50°" }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "baayein 50°" }] } },
+     "why": { "hi": "baayein wala angle crossing bindu ke aar-paar daayein wale ke theek saamne hai", "en": "the left angle is right across the crossing point from the right angle" }
     },
     {
      "id": "c2",
@@ -348,7 +360,8 @@
      "accept": ["110", "110 degree", "110 degrees"],
      "targets": "c7-maths-ch05-t01-m-all-equal",
      "wrongIfMis": "70°",
-     "board": { "template": "compare@1", "params": { "left": { "title": "upar aur neeche", "items": ["jod 140°"] }, "right": { "title": "daayein", "items": ["kitna"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "upar aur neeche", "items": ["jod 140°"] }, "right": { "title": "daayein", "items": ["kitna"] } } },
+     "why": { "hi": "upar aur neeche barabar hain toh har ek 70°, aur 180° − 70° = 110°", "en": "top and bottom are equal so each is 70°, and 180° − 70° = 110°" }
     },
     {
      "id": "c3",
@@ -360,7 +373,8 @@
      "accept": ["QOS", "SOQ", "angle SOQ", "∠QOS", "∠SOQ"],
      "targets": "c7-maths-ch05-t01-m-above-below",
      "wrongIfMis": "angle ROQ",
-     "board": { "template": "compare@1", "params": { "left": { "title": "line PQ", "items": ["bindu O"] }, "right": { "title": "line RS", "items": ["bindu O"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "line PQ", "items": ["bindu O"] }, "right": { "title": "line RS", "items": ["bindu O"] } } },
+     "why": { "hi": "OP ki ulti ray OQ hai aur OR ki ulti OS, toh POR ke saamne QOS hai", "en": "the opposite ray of OP is OQ and of OR is OS, so QOS is opposite POR" }
     }
    ],
    "ladder": [
@@ -388,7 +402,8 @@
       "accept": ["baayein", "baayaan", "left", "the left one", "left one", "the left angle"],
       "targets": "c7-maths-ch05-t01-m-above-below",
       "wrongIfMis": "neeche wala",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "daayein 40°" }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "daayein 40°" }] } },
+      "why": { "hi": "daayein wale ke theek saamne, crossing bindu ke aar-paar, baayein wala hai", "en": "right across the crossing point from the right angle is the left one" }
      }
     },
     {
@@ -408,14 +423,16 @@
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "50°",
-      "board": { "template": "compare@1", "params": { "left": { "title": "upar aur neeche", "items": ["jod 100°"] }, "right": { "title": "baayein", "items": ["kitna"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "upar aur neeche", "items": ["jod 100°"] }, "right": { "title": "baayein", "items": ["kitna"] } } },
+      "why": { "hi": "upar aur neeche barabar hain toh har ek 50°, aur 180° − 50° = 130°", "en": "top and bottom are equal so each is 50°, and 180° − 50° = 130°" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab do niyam tumhare paas hain: bagal wale angle milkar 180°, aur saamne wale angle barabar. Agle hisse mein sirf ek angle se crossing ke chaaron angle nikaalenge.",
     "en": "Now you have two rules: neighbouring angles add to 180°, and opposite angles are equal. In the next part we will find all four angles at a crossing from just one angle."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Bagal wale angle", "items": ["milkar 180°"] }, "right": { "title": "Saamne wale angle", "items": ["barabar"] } } }
   },
   {
    "skillId": "c7-maths-ch05-t01-s3",
@@ -457,7 +474,8 @@
       "key": "130°",
       "accept": ["130", "130 degree", "130 degrees"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
-      "wrongIfMis": "50°"
+      "wrongIfMis": "50°",
+      "why": { "hi": "daayein wala upar ke 50° ke saath linear pair hai, aur 180° − 50° = 130°", "en": "the right angle makes a linear pair with the top 50°, and 180° − 50° = 130°" }
      }
     },
     {
@@ -476,7 +494,8 @@
      "ask": {
       "prompt": { "hi": "Toh is crossing ke chaaron angle ka jod kitna hai?", "en": "So what is the sum of all four angles at this crossing?" },
       "key": "360°",
-      "accept": ["360", "360 degree", "360 degrees"]
+      "accept": ["360", "360 degree", "360 degrees"],
+      "why": { "hi": "neeche 40° aur baayein 140° hain, aur 40° + 140° + 40° + 140° = 360°", "en": "the bottom is 40° and the left 140°, and 40° + 140° + 40° + 140° = 360°" }
      }
     }
    ],
@@ -527,7 +546,8 @@
      "accept": ["145, 35, 145", "145 35 145", "145°, 35° aur 145°", "145, 35 and 145"],
      "targets": "c7-maths-ch05-t01-m-all-equal",
      "wrongIfMis": "35°, 35°, 35°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 35 }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 35 }] } },
+     "why": { "hi": "bagal wale 180° − 35° = 145° hain, aur saamne wala bhi 35° hai", "en": "the neighbours are 180° − 35° = 145°, and the opposite one is 35° too" }
     },
     {
      "id": "c2",
@@ -539,7 +559,8 @@
      "accept": ["116", "116 degree", "116 degrees"],
      "targets": "c7-maths-ch05-t01-m-linear-90",
      "wrongIfMis": "26°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 64, "name": "upar 64°" }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 64, "name": "upar 64°" }] } },
+     "why": { "hi": "baayein wala upar ke saath linear pair hai, aur 180° − 64° = 116°", "en": "the left angle makes a linear pair with the top, and 180° − 64° = 116°" }
     },
     {
      "id": "c3",
@@ -551,7 +572,8 @@
      "accept": ["80", "80 degree", "80 degrees"],
      "targets": "c7-maths-ch05-t01-m-above-below",
      "wrongIfMis": "100°",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 100, "name": "baayein 100°" }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 100, "name": "baayein 100°" }] } },
+     "why": { "hi": "upar wala baayein ke saath linear pair hai, aur 180° − 100° = 80°", "en": "the top angle makes a linear pair with the left, and 180° − 100° = 80°" }
     }
    ],
    "ladder": [
@@ -579,7 +601,8 @@
       "accept": ["155, 25, 155", "155 25 155", "155°, 25° aur 155°", "155, 25 and 155"],
       "targets": "c7-maths-ch05-t01-m-all-equal",
       "wrongIfMis": "25°, 25°, 25°",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 25 }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 25 }] } },
+      "why": { "hi": "bagal wale 180° − 25° = 155° hain, aur saamne wala bhi 25° hai", "en": "the neighbours are 180° − 25° = 155°, and the opposite one is 25° too" }
      }
     },
     {
@@ -599,7 +622,8 @@
       "accept": ["150", "150 degree", "150 degrees"],
       "targets": "c7-maths-ch05-t01-m-linear-90",
       "wrongIfMis": "60°",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "upar 30°" }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "upar 30°" }] } },
+      "why": { "hi": "daayein wala upar ke saath linear pair hai, aur 180° − 30° = 150°", "en": "the right angle makes a linear pair with the top, and 180° − 30° = 150°" }
      }
     },
     {
@@ -619,7 +643,8 @@
       "accept": ["105", "105 degree", "105 degrees"],
       "targets": "c7-maths-ch05-t01-m-above-below",
       "wrongIfMis": "75°",
-      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 75, "name": "daayein 75°" }] } }
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 75, "name": "daayein 75°" }] } },
+      "why": { "hi": "neeche wala daayein ke saath linear pair hai, aur 180° − 75° = 105°", "en": "the bottom angle makes a linear pair with the right, and 180° − 75° = 105°" }
      }
     }
    ],

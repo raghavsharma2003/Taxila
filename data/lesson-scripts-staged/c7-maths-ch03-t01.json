@@ -57,7 +57,8 @@
       "key": "7/10 m",
       "accept": ["7/10", "7/10 metre", "seven tenths", "saat bata das"],
       "targets": "c7-maths-ch03-t01-m-no-fraction-link",
-      "wrongIfMis": "1/7 m"
+      "wrongIfMis": "1/7 m",
+      "why": { "hi": "0.7 mein point ke baad pehla ank 7 hai, yaani 10 barabar hisson mein se 7", "en": "in 0.7 the first digit after the point is 7, that is 7 of 10 equal parts" }
      }
     },
     {
@@ -75,7 +76,8 @@
      "ask": {
       "prompt": { "hi": "Is zoom wali line par 2 ke baad teesra chhota nishaan kitne cm par hai?", "en": "On this zoomed line, at how many cm is the 3rd small mark after 2?" },
       "key": "2.3 cm",
-      "accept": ["2.3", "2 3/10 cm", "23/10 cm"]
+      "accept": ["2.3", "2 3/10 cm", "23/10 cm"],
+      "why": { "hi": "har chhota hissa 0.1 cm hai, toh 2 ke baad 3 hisse matlab 2 + 0.3 = 2.3", "en": "each small part is 0.1 cm, so 3 parts after 2 means 2 + 0.3 = 2.3" }
      }
     }
    ],
@@ -129,7 +131,8 @@
      "accept": ["9/10", "9/10 metre", "nine tenths"],
      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
      "wrongIfMis": "1/9 m",
-     "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } }
+     "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } },
+     "why": { "hi": "0.9 mein tenths ki jagah 9 hai, yaani 10 barabar hisson mein se 9", "en": "0.9 has 9 in the tenths place, that is 9 of 10 equal parts" }
     },
     {
      "id": "c2",
@@ -141,7 +144,8 @@
      "accept": ["18", "18/10", "18/10 m", "eighteen tenths"],
      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
      "wrongIfMis": "8 tenths",
-     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["10 tenths"] }, "right": { "title": "nishaan", "items": ["kitne tenths"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["10 tenths"] }, "right": { "title": "nishaan", "items": ["kitne tenths"] } } },
+     "why": { "hi": "1 m = 10 tenths, toh 1.8 m = 10 + 8 = 18 tenths", "en": "1 m = 10 tenths, so 1.8 m = 10 + 8 = 18 tenths" }
     }
    ],
    "ladder": [
@@ -169,14 +173,16 @@
       "accept": ["3/10", "3/10 metre", "three tenths"],
       "targets": "c7-maths-ch03-t01-m-no-fraction-link",
       "wrongIfMis": "1/3 m",
-      "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } }
+      "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } },
+      "why": { "hi": "0.3 mein tenths ki jagah 3 hai, yaani 10 barabar hisson mein se 3", "en": "0.3 has 3 in the tenths place, that is 3 of 10 equal parts" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab har tenth ko bhi 10 barabar hisson mein baantenge. Tab jo aur chhote hisse milenge, woh hundredths kehlaate hain, jaise 1 cm metre ka ek hundredth hai.",
     "en": "Next we will share each tenth into 10 equal parts as well. The even smaller parts we get are called hundredths, just as 1 cm is one hundredth of a metre."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Har tenth", "items": ["10 barabar hisson mein"] }, "right": { "title": "1 cm", "items": ["metre ka ek hundredth"] } } }
   },
   {
    "skillId": "c7-maths-ch03-t01-s2",
@@ -217,7 +223,8 @@
       "key": "23/100 m",
       "accept": ["23/100", "23/100 metre", "twenty-three hundredths"],
       "targets": "c7-maths-ch03-t01-m-no-fraction-link",
-      "wrongIfMis": "1/23 m"
+      "wrongIfMis": "1/23 m",
+      "why": { "hi": "0.23 mein point ke baad do ank hain, yaani 100 barabar hisson mein se 23", "en": "0.23 has two digits after the point, that is 23 of 100 equal parts" }
      }
     },
     {
@@ -235,7 +242,8 @@
      "ask": {
       "prompt": { "hi": "Is line par 0.62 se 0.7 tak pahunchne ke liye kitne hundredths aur chahiye?", "en": "On this line, how many more hundredths are needed to get from 0.62 to 0.7?" },
       "key": "8 hundredths",
-      "accept": ["8", "0.08", "8/100"]
+      "accept": ["8", "0.08", "8/100"],
+      "why": { "hi": "0.7 = 70 hundredths aur 0.62 = 62 hundredths, aur 70 − 62 = 8", "en": "0.7 = 70 hundredths and 0.62 = 62 hundredths, and 70 − 62 = 8" }
      }
     },
     {
@@ -255,7 +263,8 @@
       "key": "10",
       "accept": ["10 baar", "ten", "das"],
       "targets": "c7-maths-ch03-t01-m-same-digit",
-      "wrongIfMis": "1"
+      "wrongIfMis": "1",
+      "why": { "hi": "₹0.5 = 50 paise aur ₹0.05 = 5 paise, aur 50 ÷ 5 = 10", "en": "₹0.5 = 50 paise and ₹0.05 = 5 paise, and 50 ÷ 5 = 10" }
      }
     }
    ],
@@ -309,7 +318,8 @@
      "accept": ["63", "₹0.63", "0.63"],
      "targets": "c7-maths-ch03-t01-m-same-digit",
      "wrongIfMis": "0 paise",
-     "board": { "template": "compare@1", "params": { "left": { "title": "₹0.7", "items": ["7 tenths"] }, "right": { "title": "₹0.07", "items": ["7 hundredths"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "₹0.7", "items": ["7 tenths"] }, "right": { "title": "₹0.07", "items": ["7 hundredths"] } } },
+     "why": { "hi": "₹0.7 = 70 paise aur ₹0.07 = 7 paise, aur 70 − 7 = 63", "en": "₹0.7 = 70 paise and ₹0.07 = 7 paise, and 70 − 7 = 63" }
     },
     {
      "id": "c2",
@@ -321,7 +331,8 @@
      "accept": ["36/100", "36/100 metre", "9/25", "9/25 m"],
      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
      "wrongIfMis": "1/36 m",
-     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "dor ka tukda", "items": ["kaunsa fraction"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "dor ka tukda", "items": ["kaunsa fraction"] } } },
+     "why": { "hi": "0.36 m = 36 cm, aur 1 m mein 100 cm hote hain", "en": "0.36 m = 36 cm, and 1 m has 100 cm" }
     },
     {
      "id": "c3",
@@ -333,7 +344,8 @@
      "accept": ["30", "30/100", "0.30", "thirty hundredths"],
      "targets": "c7-maths-ch03-t01-m-same-digit",
      "wrongIfMis": "3 hundredths",
-     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 hundredths"] }, "right": { "title": "ribbon", "items": ["kitne hundredths"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 hundredths"] }, "right": { "title": "ribbon", "items": ["kitne hundredths"] } } },
+     "why": { "hi": "0.3 = 3 tenths, aur har tenth mein 10 hundredths, toh 3 × 10 = 30", "en": "0.3 = 3 tenths, and each tenth has 10 hundredths, so 3 × 10 = 30" }
     }
    ],
    "ladder": [
@@ -361,7 +373,8 @@
       "accept": ["58/100", "58/100 metre", "29/50", "29/50 m"],
       "targets": "c7-maths-ch03-t01-m-no-fraction-link",
       "wrongIfMis": "1/58 m",
-      "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "pencil", "items": ["kaunsa fraction"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "pencil", "items": ["kaunsa fraction"] } } },
+      "why": { "hi": "0.58 m = 58 cm, aur 1 m mein 100 cm hote hain", "en": "0.58 m = 58 cm, and 1 m has 100 cm" }
      }
     },
     {
@@ -381,14 +394,16 @@
       "accept": ["10 baar", "ten", "das"],
       "targets": "c7-maths-ch03-t01-m-same-digit",
       "wrongIfMis": "1",
-      "board": { "template": "compare@1", "params": { "left": { "title": "₹0.2", "items": ["2 tenths"] }, "right": { "title": "₹0.02", "items": ["2 hundredths"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "₹0.2", "items": ["2 tenths"] }, "right": { "title": "₹0.02", "items": ["2 hundredths"] } } },
+      "why": { "hi": "₹0.2 = 20 paise aur ₹0.02 = 2 paise, aur 20 ÷ 2 = 10", "en": "₹0.2 = 20 paise and ₹0.02 = 2 paise, and 20 ÷ 2 = 10" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab yahi tenths aur hundredths units badalne mein kaam aayenge: cm se metre, mm se cm, aur paise se rupaye.",
     "en": "Next, these same tenths and hundredths help us change units: cm to metres, mm to cm, and paise to rupees."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Units badalne", "items": ["cm se metre", "mm se cm", "paise se rupaye"] }, "right": { "title": "Kaam aayenge", "items": ["tenths aur hundredths"] } } }
   },
   {
    "skillId": "c7-maths-ch03-t01-s3",
@@ -429,7 +444,8 @@
       "key": "1.3 m",
       "accept": ["1.30 m", "1.3", "1.30", "130 cm"],
       "targets": "c7-maths-ch03-t01-m-cm-decimal",
-      "wrongIfMis": "1.75 m"
+      "wrongIfMis": "1.75 m",
+      "why": { "hi": "1.25 m = 125 cm, aur 125 + 5 = 130 cm = 1.30 m", "en": "1.25 m = 125 cm, and 125 + 5 = 130 cm = 1.30 m" }
      }
     },
     {
@@ -449,7 +465,8 @@
       "key": "0.09 m",
       "accept": ["0.09", "9/100 m", "9/100"],
       "targets": "c7-maths-ch03-t01-m-cm-decimal",
-      "wrongIfMis": "0.9 m"
+      "wrongIfMis": "0.9 m",
+      "why": { "hi": "8 + 1 = 9 cm, aur 9 cm metre ke 9 hundredths hain", "en": "8 + 1 = 9 cm, and 9 cm is 9 hundredths of a metre" }
      }
     },
     {
@@ -467,7 +484,8 @@
      "ask": {
       "prompt": { "hi": "Ek keeda 23 mm lamba hai. Woh kitne cm ka hai?", "en": "An insect is 23 mm long. How many cm is it?" },
       "key": "2.3 cm",
-      "accept": ["2.3", "23/10 cm", "2 3/10 cm"]
+      "accept": ["2.3", "23/10 cm", "2 3/10 cm"],
+      "why": { "hi": "10 mm = 1 cm, toh 23 mm = 2 cm aur 3 mm = 2.3 cm", "en": "10 mm = 1 cm, so 23 mm = 2 cm and 3 mm = 2.3 cm" }
      }
     },
     {
@@ -487,7 +505,8 @@
       "key": "₹6.04",
       "accept": ["6.04", "Rs 6.04", "6.04 rupaye", "6.04 rupees"],
       "targets": "c7-maths-ch03-t01-m-same-digit",
-      "wrongIfMis": "₹6.4"
+      "wrongIfMis": "₹6.4",
+      "why": { "hi": "4 paise = ₹0.04, aur paise point ke baad do jagah lete hain", "en": "4 paise = ₹0.04, and paise take two places after the point" }
      }
     }
    ],
@@ -543,7 +562,8 @@
      "accept": ["0.09", "9/100 m", "9/100"],
      "targets": "c7-maths-ch03-t01-m-cm-decimal",
      "wrongIfMis": "0.9 m",
-     "board": { "template": "compare@1", "params": { "left": { "title": "pauda", "items": ["9 cm"] }, "right": { "title": "badhat", "items": ["kitne metre"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "pauda", "items": ["9 cm"] }, "right": { "title": "badhat", "items": ["kitne metre"] } } },
+     "why": { "hi": "9 cm metre ke sirf 9 hundredths hain, toh tenths ki jagah 0 aata hai", "en": "9 cm is only 9 hundredths of a metre, so the tenths place is 0" }
     },
     {
      "id": "c2",
@@ -555,7 +575,8 @@
      "accept": ["8.03", "Rs 8.03", "8.03 rupaye", "8.03 rupees"],
      "targets": "c7-maths-ch03-t01-m-same-digit",
      "wrongIfMis": "₹8.3",
-     "board": { "template": "compare@1", "params": { "left": { "title": "pen", "items": ["₹8", "3 paise"] }, "right": { "title": "daam", "items": ["rupaye mein"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "pen", "items": ["₹8", "3 paise"] }, "right": { "title": "daam", "items": ["rupaye mein"] } } },
+     "why": { "hi": "3 paise = ₹0.03, aur ₹8 + ₹0.03 = ₹8.03", "en": "3 paise = ₹0.03, and ₹8 + ₹0.03 = ₹8.03" }
     },
     {
      "id": "c3",
@@ -567,7 +588,8 @@
      "accept": ["54", "0.54 m"],
      "targets": "c7-maths-ch03-t01-m-cm-decimal",
      "wrongIfMis": "0 cm",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Neha", "items": ["2 m 6 cm"] }, "right": { "title": "Kiran", "items": ["2.6 m"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Neha", "items": ["2 m 6 cm"] }, "right": { "title": "Kiran", "items": ["2.6 m"] } } },
+     "why": { "hi": "2.6 m = 2 m 60 cm, aur 60 − 6 = 54", "en": "2.6 m = 2 m 60 cm, and 60 − 6 = 54" }
     }
    ],
    "ladder": [
@@ -594,7 +616,8 @@
       "accept": ["0.04", "4/100 m", "4/100"],
       "targets": "c7-maths-ch03-t01-m-cm-decimal",
       "wrongIfMis": "0.4 m",
-      "board": { "template": "compare@1", "params": { "left": { "title": "rubber", "items": ["4 cm"] }, "right": { "title": "metre mein", "items": ["kitne metre"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "rubber", "items": ["4 cm"] }, "right": { "title": "metre mein", "items": ["kitne metre"] } } },
+      "why": { "hi": "4 cm metre ke 4 hundredths hain, toh tenths ki jagah 0 aata hai", "en": "4 cm is 4 hundredths of a metre, so the tenths place is 0" }
      }
     },
     {
@@ -614,7 +637,8 @@
       "accept": ["5.09", "Rs 5.09", "5.09 rupaye", "5.09 rupees"],
       "targets": "c7-maths-ch03-t01-m-same-digit",
       "wrongIfMis": "₹5.9",
-      "board": { "template": "compare@1", "params": { "left": { "title": "₹5 aur 9 paise", "items": ["rupaye mein"] }, "right": { "title": "decimal", "items": ["likho"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "₹5 aur 9 paise", "items": ["rupaye mein"] }, "right": { "title": "decimal", "items": ["likho"] } } },
+      "why": { "hi": "9 paise = ₹0.09, aur ₹5 + ₹0.09 = ₹5.09", "en": "9 paise = ₹0.09, and ₹5 + ₹0.09 = ₹5.09" }
      }
     }
    ],

@@ -63,6 +63,7 @@
      "ask": {
       "prompt": { "hi": "Isi gol mein aadha chakkar dikhana ho, toh kitne hisse bharne padenge?", "en": "To show a half turn on this same circle, how many parts must be filled?" },
       "key": "2",
+      "why": { "hi": "aadha chakkar poore chakkar ka 2/4 hai, yaani 4 mein se 2 hisse", "en": "a half turn is 2/4 of a full turn, 2 of the 4 parts" },
       "accept": ["2 hisse", "2 parts", "do", "do hisse", "two"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "1"
@@ -84,6 +85,7 @@
      "ask": {
       "prompt": { "hi": "Tum darwaze ki taraf dekh rahe ho aur aadha chakkar ghoomte ho. Ab darwaza tumhare peeche hoga ya side mein?", "en": "You are facing the door and make a half turn. Will the door now be behind you or at your side?" },
       "key": "behind",
+      "why": { "hi": "aadha chakkar tumhe ulti taraf ghuma deta hai, toh saamne wala darwaza peeche aa jaata hai", "en": "a half turn makes you face the opposite way, so the door in front ends up behind you" },
       "accept": ["peeche", "peeche hoga", "behind me", "mere peeche", "darwaza peeche"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "at the side"
@@ -105,6 +107,7 @@
      "ask": {
       "prompt": { "hi": "Ab chhoti bhujayon wala angle aadha chakkar khula hai, aur lambi bhujayon wala sirf quarter turn. Kaunsa angle bada hai: chhoti bhujayon wala ya lambi bhujayon wala?", "en": "Now the angle with short arms is open a half turn, and the one with long arms only a quarter turn. Which angle is bigger: the short-armed one or the long-armed one?" },
       "key": "the short-armed one",
+      "why": { "hi": "chhoti bhujayon wala angle aadha chakkar khula hai, jo quarter turn ka dugna hai", "en": "the short-armed angle is open a half turn, twice a quarter turn" },
       "accept": ["chhoti bhujayon wala", "chhoti bhujayein", "chhoti wala", "short arms", "the one with short arms", "short one"],
       "targets": "c5-maths-ch03-t01-m-angle-is-length",
       "wrongIfMis": "the long-armed one"
@@ -153,6 +156,7 @@
       "en": "A red mark on a bicycle wheel is at the very top. The wheel makes a half turn. Where is the mark now: at the very bottom or at one side?"
      },
      "key": "at the bottom",
+     "why": { "hi": "aadha chakkar nishaan ko ulti taraf le jaata hai, sabse upar se sabse neeche", "en": "a half turn takes the mark to the opposite side, from the very top to the very bottom" },
      "accept": ["sabse neeche", "neeche", "bottom", "at the very bottom"],
      "targets": "c5-maths-ch03-t01-m-half-is-quarter",
      "wrongIfMis": "at the side",
@@ -165,6 +169,7 @@
       "en": "There are two hand fans, a small one and a big one. Both are open exactly a quarter turn. Whose angle is bigger: the small one's, the big one's, or are both equal?"
      },
      "key": "both are equal",
+     "why": { "hi": "dono pankhe theek quarter turn khule hain, aur pankhe ka size angle nahi badalta", "en": "both fans are open exactly a quarter turn, and a fan's size does not change its angle" },
      "accept": ["dono barabar", "barabar", "both equal", "equal", "same", "both the same"],
      "targets": "c5-maths-ch03-t01-m-angle-is-length",
      "wrongIfMis": "the big one",
@@ -190,6 +195,7 @@
      "then": {
       "prompt": { "hi": "Pehle tum TV ki taraf dekh rahe ho, phir aadha chakkar ghoomte ho. Ab TV kahaan hai: peeche ya side mein?", "en": "You are facing the TV and make a half turn. Where is the TV now: behind you or at your side?" },
       "key": "behind",
+      "why": { "hi": "aadha chakkar ghoomkar tum ulti taraf dekhte ho, toh TV peeche ho jaata hai", "en": "after a half turn you face the opposite way, so the TV is behind you" },
       "accept": ["peeche", "behind me", "mere peeche", "TV peeche"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "at the side",
@@ -207,6 +213,7 @@
      "then": {
       "prompt": { "hi": "Badi ghadi aur chhoti ghadi, dono ki minute ki sui 12 se 3 tak gayi. Kiski sui zyada ghoomi: badi, chhoti, ya barabar?", "en": "On a big clock and a small clock the minute hand went from 12 to 3. Whose turned more: big, small, or the same?" },
       "key": "the same",
+      "why": { "hi": "dono suiyan 12 se 3 tak gayin, yaani dono ne ek hi quarter turn liya", "en": "both hands went from 12 to 3, so both made the same quarter turn" },
       "accept": ["barabar", "dono barabar", "same", "equal", "both the same", "both equal"],
       "targets": "c5-maths-ch03-t01-m-angle-is-length",
       "wrongIfMis": "the big clock",
@@ -215,9 +222,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab tak humne dekha ki kitna ghoome. Agle hisse mein dekhenge ki kis taraf ghoome: ghadi ki suiyon wali taraf, ya ulti taraf.",
-    "en": "So far we saw how much we turn. Next we will see which way we turn: the way the clock hands go, or the other way."
-   }
+    "hi": "Ab tak humne dekha ki kitna ghoome: quarter turn ya aadha chakkar. Agle hisse mein dekhenge ki kis taraf ghoome: ghadi ki suiyon wali taraf, ya ulti taraf.",
+    "en": "So far we saw how much we turn: a quarter turn or a half turn. Next we will see which way we turn: the way the clock hands go, or the other way."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "kitna ghoome", "items": ["quarter turn", "aadha chakkar"] }, "right": { "title": "kis taraf ghoome", "items": ["ghadi ki suiyon wali taraf", "ulti taraf"] } } }
   },
   {
    "skillId": "c5-maths-ch03-t01-s2",
@@ -257,6 +265,7 @@
      "ask": {
       "prompt": { "hi": "Sui 6 se 7, 8 hote hue 9 tak jaati hai. Yeh clockwise hai ya anticlockwise?", "en": "A hand goes from 6 through 7 and 8 to 9. Is that clockwise or anticlockwise?" },
       "key": "clockwise",
+      "why": { "hi": "sui 6 se badhte numberon 7, 8 hote hue 9 tak gayi, jaise ghadi ki suiyan chalti hain", "en": "the hand went from 6 up through 7 and 8 to 9, the way clock hands move" },
       "accept": ["ghadi ki disha", "clockwise hai"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "anticlockwise"
@@ -278,6 +287,7 @@
      "ask": {
       "prompt": { "hi": "Sui 2 par hai aur quarter turn clockwise ghoomti hai. Sui kis number par rukegi?", "en": "The hand is at 2 and makes a quarter turn clockwise. At which number does it stop?" },
       "key": "5",
+      "why": { "hi": "2 se clockwise 3, 4, 5 teen number aage hain, ek quarter turn", "en": "clockwise from 2, the numbers 3, 4, 5 are three numbers on, one quarter turn" },
       "accept": ["5 par", "at 5", "paanch", "five"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "11"
@@ -299,6 +309,7 @@
      "ask": {
       "prompt": { "hi": "Ek robot teen-chauthai chakkar anticlockwise ghoomta hai. Clockwise kitne quarter turn lekar woh usi taraf muh kar lega?", "en": "A robot makes a three-quarter turn anticlockwise. How many quarter turns clockwise would make it face the same way?" },
       "key": "1 quarter turn",
+      "why": { "hi": "teen-chauthai chakkar anticlockwise ke baad poore chakkar ka sirf 1/4 bachta hai, jo clockwise ek quarter turn hai", "en": "three quarters anticlockwise leaves just 1/4 of the full turn, which is one quarter turn clockwise" },
       "accept": ["1", "ek", "ek quarter turn", "one quarter turn", "one", "quarter turn"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "3 quarter turns"
@@ -347,6 +358,7 @@
       "en": "At the start the hand is at 4. It makes a quarter turn anticlockwise. At which number does it stop?"
      },
      "key": "1",
+     "why": { "hi": "4 se anticlockwise 3, 2, 1 teen number peeche hain, ek quarter turn", "en": "anticlockwise from 4, the numbers 3, 2, 1 are three numbers back, one quarter turn" },
      "accept": ["1 par", "at 1", "ek", "one"],
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "wrongIfMis": "7",
@@ -359,6 +371,7 @@
       "en": "A clock hand goes from 9 through 10 and 11 to 12. Is that clockwise or anticlockwise?"
      },
      "key": "clockwise",
+     "why": { "hi": "sui 9 se badhte numberon 10, 11 hote hue 12 tak gayi, ghadi ki suiyon wali taraf", "en": "the hand went from 9 up through 10 and 11 to 12, the way clock hands go" },
      "accept": ["ghadi ki disha", "clockwise hai"],
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "wrongIfMis": "anticlockwise",
@@ -384,6 +397,7 @@
      "then": {
       "prompt": { "hi": "Shuru mein sui 5 par hai. Woh quarter turn clockwise ghoomti hai. Sui kis number par rukegi?", "en": "At the start the hand is at 5. It makes a quarter turn clockwise. At which number does it stop?" },
       "key": "8",
+      "why": { "hi": "5 se clockwise 6, 7, 8 teen number aage hain, ek quarter turn", "en": "clockwise from 5, the numbers 6, 7, 8 are three numbers on, one quarter turn" },
       "accept": ["8 par", "at 8", "aath", "eight"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "2",
@@ -394,7 +408,8 @@
    "bridgeToNext": {
     "hi": "Har quarter turn mein ghadi ki sui 3 number aage jaati hai. Agle hisse mein dekhenge ki ek quarter turn ek right angle hota hai.",
     "en": "In every quarter turn the clock hand moves 3 numbers on. Next we will see that one quarter turn is one right angle."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "quarter turn", "items": ["3 number aage"] }, "right": { "title": "ek quarter turn", "items": ["ek right angle"] } } }
   },
   {
    "skillId": "c5-maths-ch03-t01-s3",
@@ -434,6 +449,7 @@
      "ask": {
       "prompt": { "hi": "Minute ki sui 6 se 12 tak clockwise jaati hai. Yeh kaunsa turn hai: quarter turn ya aadha chakkar?", "en": "The minute hand goes clockwise from 6 to 12. Which turn is that: a quarter turn or a half turn?" },
       "key": "half turn",
+      "why": { "hi": "6 se 12 tak clockwise do quarter hain, 6 se 9 aur 9 se 12, yaani aadha chakkar", "en": "6 to 12 clockwise is two quarters, 6 to 9 and 9 to 12, a half turn" },
       "accept": ["aadha chakkar", "aadha", "half", "a half turn", "2 quarter turn"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "quarter turn"
@@ -455,6 +471,7 @@
      "ask": {
       "prompt": { "hi": "Sui 12 se 6 tak clockwise ghoomti hai. Woh kitne right angle ghoomi?", "en": "The hand turns clockwise from 12 to 6. How many right angles has it turned?" },
       "key": "2",
+      "why": { "hi": "12 se 3 ek right angle hai aur 3 se 6 doosra", "en": "12 to 3 is one right angle and 3 to 6 is another" },
       "accept": ["2 right angle", "2 right angles", "do", "two"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "1"
@@ -502,6 +519,7 @@
       "en": "The minute hand goes clockwise from 3 to 9. How many right angles has it turned?"
      },
      "key": "2",
+     "why": { "hi": "3 se 6 ek right angle hai aur 6 se 9 doosra", "en": "3 to 6 is one right angle and 6 to 9 is another" },
      "accept": ["2 right angle", "2 right angles", "do", "two"],
      "targets": "c5-maths-ch03-t01-m-half-is-quarter",
      "wrongIfMis": "1",
@@ -514,6 +532,7 @@
       "en": "At the start the hand is at 12. It turns one right angle anticlockwise. At which number does it stop?"
      },
      "key": "9",
+     "why": { "hi": "ek right angle ek quarter turn hai, aur 12 se anticlockwise 11, 10, 9 teen number peeche hain", "en": "one right angle is one quarter turn, and anticlockwise from 12 the numbers 11, 10, 9 are three back" },
      "accept": ["9 par", "at 9", "nau", "nine"],
      "targets": "c5-maths-ch03-t01-m-cw-confuse",
      "wrongIfMis": "3",
@@ -538,6 +557,7 @@
      "then": {
       "prompt": { "hi": "Sui 1 se 7 tak clockwise jaati hai. Yeh kaunsa turn hai: quarter turn ya aadha chakkar?", "en": "The hand goes clockwise from 1 to 7. Which turn is that: a quarter turn or a half turn?" },
       "key": "half turn",
+      "why": { "hi": "1 se 7 tak 6 number hain, yaani 3-3 number ke do quarter, aadha chakkar", "en": "1 to 7 is 6 numbers, two quarters of 3 numbers each, a half turn" },
       "accept": ["aadha chakkar", "aadha", "half", "a half turn"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "quarter turn",
@@ -555,6 +575,7 @@
      "then": {
       "prompt": { "hi": "Shuru mein sui 4 par hai. Woh ek right angle clockwise ghoomti hai. Sui kis number par rukegi?", "en": "At the start the hand is at 4. It turns one right angle clockwise. At which number does it stop?" },
       "key": "7",
+      "why": { "hi": "ek right angle ek quarter turn hai, aur 4 se clockwise 5, 6, 7 teen number aage hain", "en": "one right angle is one quarter turn, and clockwise from 4 the numbers 5, 6, 7 are three on" },
       "accept": ["7 par", "at 7", "saat", "seven"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "1",
