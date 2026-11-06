@@ -82,6 +82,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
         <nav className="sv-nav" aria-label="Site">
           {home ? <a href="#lesson">How a lesson works</a> : <NavLink to="/#lesson">How a lesson works</NavLink>}
           <NavLink to="/promises">Our promises</NavLink>
+          <NavLink to="/pricing">Pricing</NavLink>
           <NavLink to="/help">Help and safety</NavLink>
         </nav>
         <span className="sv-spacer" />
@@ -118,6 +119,7 @@ export function SiteFooter() {
           <Link to="/help">Help and safety</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/promises">Our promises</Link>
+          <Link to="/pricing">Pricing</Link>
         </nav>
         <div className="sv-stack">
           <p className="kx-label">If a child needs help now</p>
