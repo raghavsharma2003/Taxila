@@ -44,7 +44,7 @@ export const MODES = {
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
-  kon: ["turn", "set", "zone", "pair", "close"],
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
   arena: ["pick"],
   stambh: ["bars", "picto"],
@@ -201,6 +201,7 @@ export type LabAct =
 // Kon (round 4 G1, angles)
 export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+  | { kind: "stop"; side: "lo" | "hi"; at: number }      // r7 kon2 ends: a stop on point `at`, −1 off the track's end (open), −2 parked
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
