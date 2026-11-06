@@ -59,6 +59,7 @@
        "en": "The paper corner on the board is a quarter turn. How many such corners placed one after another make a full turn?"
       },
       "key": "4",
+      "why": { "hi": "ek quarter turn poore chakkar ka 1/4 hai, toh 4 quarter milkar poora chakkar banate hain", "en": "a quarter turn is 1/4 of a full turn, so 4 quarters together make the full turn" },
       "accept": ["chaar", "four", "4 kone", "4 corners"]
      }
     },
@@ -80,6 +81,7 @@
        "en": "The paper corner is put on the samosa tip. One arm matches an edge; the other stays inside the paper with a gap. Is this tip a right angle, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "doosri bhuja doosre kinaare par nahi mili, paper ke andar gap reh gaya", "en": "the other arm did not match the second edge; a gap stayed inside the paper" },
       "accept": ["nahi", "nahin", "nahi, chhota hai", "no, it is smaller"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "yes"
@@ -103,6 +105,7 @@
        "en": "Now turn this tilted tile a little more, so that no edge stands upright or lies flat. Are its corners still right angles, yes or no?"
       },
       "key": "yes",
+      "why": { "hi": "tile wahi hai, sirf uski disha badli, uske kone utne hi khule hain", "en": "it is the same tile with only its direction changed, so its corners are open just as much" },
       "accept": ["haan", "haan, ab bhi right angle", "yes, still right angles"],
       "targets": "c5-maths-ch03-t02-m-prototype-right",
       "wrongIfMis": "no"
@@ -158,6 +161,7 @@
       "en": "A paper corner is put on a corner. The first arm matches an edge, but the second arm is inside the paper with a gap. Is this corner smaller than, equal to or bigger than a right angle?"
      },
      "key": "chhota",
+     "why": { "hi": "doosri bhuja paper ke andar ruk gayi, yaani kona paper corner jitna nahi khula", "en": "the second arm stopped inside the paper, so the corner opens less than the paper corner" },
      "accept": ["smaller", "right angle se chhota", "chhota hai", "acute"],
      "targets": "c5-maths-ch03-t02-m-fits-means-right",
      "wrongIfMis": "barabar",
@@ -170,6 +174,7 @@
       "en": "A square tile is lying tilted on the floor. Are its corners still right angles, yes or no?"
      },
      "key": "yes",
+     "why": { "hi": "square tile ke kone right angle hain, aur tirchha rakhne se kone ka khulaav nahi badalta", "en": "a square tile's corners are right angles, and lying tilted does not change how wide a corner opens" },
      "accept": ["haan", "haan, right angle hain", "yes, still right angles"],
      "targets": "c5-maths-ch03-t02-m-prototype-right",
      "wrongIfMis": "no",
@@ -196,6 +201,7 @@
        "en": "A paper corner on an angle: one arm on an edge, the other goes outside the paper. Is it a right angle, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "doosri bhuja paper ke bahar nikli, yaani angle paper corner se zyada khula hai", "en": "the other arm went outside the paper, so the angle opens wider than the paper corner" },
       "accept": ["nahi", "nahin", "nahi, bada hai", "no, it is bigger"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "yes",
@@ -216,6 +222,7 @@
        "en": "A book is lying tilted on a table. Are its corners right angles, yes or no?"
       },
       "key": "yes",
+      "why": { "hi": "kitaab ke kone right angle hain, aur tirchhi rakhne se sirf disha badalti hai, khulaav nahi", "en": "a book's corners are right angles, and lying tilted changes only the direction, not the opening" },
       "accept": ["haan", "haan, right angle hain", "yes, they are right angles"],
       "targets": "c5-maths-ch03-t02-m-prototype-right",
       "wrongIfMis": "no",
@@ -224,9 +231,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab paper corner se right angle pehchaanna aa gaya. Agle hisse mein dekhenge ki jo angle us par fit nahi hote, unke naam kya hain.",
-    "en": "Now you can spot a right angle with a paper corner. Next we see what the angles that do not fit it are called."
-   }
+    "hi": "Ab paper corner se right angle pehchaanna aa gaya. Agle hisse mein dekhenge ki jo angle us par fit nahi hote, jo chhote hain ya bade, unke naam kya hain.",
+    "en": "Now you can spot a right angle with a paper corner. Next we see what the angles that do not fit it, the smaller and the bigger ones, are called."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "right angle", "items": ["paper corner fit"] }, "right": { "title": "fit nahi hote", "items": ["chhote", "bade"] } } }
   },
   {
    "skillId": "c5-maths-ch03-t02-s2",
@@ -268,6 +276,7 @@
        "en": "Now put the paper corner on angle B. One arm matches an edge; the other stays inside the paper. Is B acute or a right angle?"
       },
       "key": "acute",
+      "why": { "hi": "B ki doosri bhuja paper ke andar reh gayi, yaani B right angle se chhota hai", "en": "B's other arm stays inside the paper, so B is smaller than a right angle" },
       "accept": ["acute angle", "B acute hai", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "right angle"
@@ -291,6 +300,7 @@
        "en": "The other arm of angle B also goes outside the paper corner, and the two arms do not make a straight line. Is B acute or obtuse?"
       },
       "key": "obtuse",
+      "why": { "hi": "B ki doosri bhuja paper corner ke bahar gayi, par bhujayein seedhi line tak nahi khulin", "en": "B's other arm goes outside the paper corner, but the arms have not opened to a straight line" },
       "accept": ["obtuse angle", "B obtuse hai", "adhik kon"]
      }
     },
@@ -312,6 +322,7 @@
        "en": "At 6 o'clock the clock hands make a straight line, like the one on the board. Is this an obtuse angle, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "6 baje suiyan seedhi line mein hain, yaani aadha chakkar, jo obtuse se bada hai", "en": "at 6 o'clock the hands lie in a straight line, a half turn, which is more than obtuse" },
       "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
       "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
       "wrongIfMis": "yes"
@@ -363,6 +374,7 @@
       "en": "An open book lies fully flat on a table; both pages are in one straight line. Is the angle between the pages obtuse, yes or no?"
      },
      "key": "no",
+     "why": { "hi": "dono panne ek seedhi line mein hain, yaani aadha chakkar, obtuse nahi", "en": "both pages lie in one straight line, a half turn, not obtuse" },
      "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
      "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
      "wrongIfMis": "yes",
@@ -375,6 +387,7 @@
       "en": "Angle A is bigger than a right angle but smaller than a straight line. Both arms of angle B lie in one straight line. Which of these is obtuse, A or B?"
      },
      "key": "A",
+     "why": { "hi": "A right angle se bada aur seedhi line se chhota hai, jabki B ki bhujayein seedhi line mein hain, yaani aadha chakkar", "en": "A is bigger than a right angle and smaller than a straight line, while B's arms lie in a straight line, a half turn" },
      "accept": ["angle A", "sirf A", "A obtuse hai", "only A"],
      "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
      "wrongIfMis": "both",
@@ -387,6 +400,7 @@
       "en": "A paper corner is put on the tip of a pizza slice. One edge matches; the other stays inside with a gap. Is the tip acute, a right angle or obtuse?"
      },
      "key": "acute",
+     "why": { "hi": "doosra kinaara paper ke andar raha aur gap bacha, yaani nok right angle se chhoti hai", "en": "the other edge stayed inside with a gap, so the tip is smaller than a right angle" },
      "accept": ["acute angle", "nyoon kon", "acute hai"],
      "targets": "c5-maths-ch03-t02-m-fits-means-right",
      "wrongIfMis": "right angle",
@@ -415,6 +429,7 @@
        "en": "A folding ruler is opened all the way; both parts are in one straight line. Is this an obtuse angle, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "scale ke dono hisse ek seedhi line mein hain, yaani aadha chakkar", "en": "both parts of the ruler lie in one straight line, a half turn" },
       "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
       "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
       "wrongIfMis": "yes",
@@ -435,6 +450,7 @@
        "en": "A paper corner on an angle: one arm on an edge, the other inside with a gap. Is it acute, right or obtuse?"
       },
       "key": "acute",
+      "why": { "hi": "doosri bhuja paper ke andar gap ke saath ruki, yaani angle right angle se chhota hai", "en": "the other arm stopped inside with a gap, so the angle is smaller than a right angle" },
       "accept": ["acute angle", "nyoon kon", "acute hai"],
       "targets": "c5-maths-ch03-t02-m-fits-means-right",
       "wrongIfMis": "right angle",
@@ -445,7 +461,8 @@
    "bridgeToNext": {
     "hi": "Ab teeno naam aa gaye: acute, right aur obtuse. Agle hisse mein dekhenge ki angle ko palatne ya uski bhujayein lambi karne se uska type badalta hai ya nahi.",
     "en": "Now you know all three names: acute, right and obtuse. Next we see whether flipping an angle or making its arms longer changes its type."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "teeno naam", "items": ["acute", "right", "obtuse"] }, "right": { "title": "type badalta hai ya nahi", "items": ["palatne se", "bhujayein lambi karne se"] } } }
   },
   {
    "skillId": "c5-maths-ch03-t02-s3",
@@ -488,6 +505,7 @@
        "en": "In the same way, an acute angle opens to the right. Flip the paper and it opens to the left. Is it acute or obtuse now?"
       },
       "key": "acute",
+      "why": { "hi": "palatne se sirf disha badli, angle utna hi khula hai jitna pehle tha", "en": "flipping changed only the direction; the angle is open just as much as before" },
       "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-orientation",
       "wrongIfMis": "obtuse"
@@ -512,6 +530,7 @@
        "en": "An acute angle has arms of 2 cm. Keeping the same opening, the arms are made 9 cm. Is it acute or obtuse now?"
       },
       "key": "acute",
+      "why": { "hi": "khulaav wahi raha, sirf lakeerein 2 cm se 9 cm lambi hui", "en": "the opening stayed the same; only the lines grew from 2 cm to 9 cm" },
       "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
       "targets": "c5-maths-ch03-t02-m-arm-length",
       "wrongIfMis": "obtuse"
@@ -535,6 +554,7 @@
        "en": "An obtuse angle is flipped and its arms are made shorter; the opening stays the same. Is it acute or obtuse now?"
       },
       "key": "obtuse",
+      "why": { "hi": "na palatne se, na chhoti bhujaon se ghumaav badla, khulaav wahi raha", "en": "neither the flip nor the shorter arms changed the turn; the opening stayed the same" },
       "accept": ["obtuse angle", "ab bhi obtuse", "still obtuse", "adhik kon"],
       "targets": "c5-maths-ch03-t02-m-arm-length",
       "wrongIfMis": "acute"
@@ -588,6 +608,7 @@
       "en": "Two angles are the same size. One opens to the left and one to the right. Are they the same type, yes or no?"
      },
      "key": "yes",
+     "why": { "hi": "dono ka size ek hi hai, sirf khulne ki disha alag hai", "en": "both are the same size; only the direction they open in differs" },
      "accept": ["haan", "haan, ek hi type", "yes, the same type"],
      "targets": "c5-maths-ch03-t02-m-orientation",
      "wrongIfMis": "no",
@@ -600,6 +621,7 @@
       "en": "An acute angle has arms of 1 cm. Keeping the same opening, the arms are made 15 cm. Is it acute or obtuse now?"
      },
      "key": "acute",
+     "why": { "hi": "khulaav wahi rakha, toh 15 cm ki bhujaon se angle bada nahi hua", "en": "the opening was kept the same, so the 15 cm arms did not make the angle bigger" },
      "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
      "targets": "c5-maths-ch03-t02-m-arm-length",
      "wrongIfMis": "obtuse",
@@ -612,6 +634,7 @@
       "en": "A square photo frame hangs tilted on a wall. Are its corners acute, right angles or obtuse?"
      },
      "key": "right angle",
+     "why": { "hi": "square frame ke kone right angle hain, aur tirchha latkane se khulaav nahi badalta", "en": "a square frame's corners are right angles, and hanging tilted does not change the opening" },
      "accept": ["right", "right angles", "right angle hain", "samkon"],
      "targets": "c5-maths-ch03-t02-m-prototype-right",
      "wrongIfMis": "acute",
@@ -639,6 +662,7 @@
        "en": "An obtuse angle opens to the right. Flipped, it opens to the left. Is it acute or obtuse now?"
       },
       "key": "obtuse",
+      "why": { "hi": "palatne par sirf disha daayein se baayein hui, khulaav wahi raha", "en": "flipping only moved the direction from right to left; the opening stayed the same" },
       "accept": ["obtuse angle", "ab bhi obtuse", "still obtuse", "adhik kon"],
       "targets": "c5-maths-ch03-t02-m-orientation",
       "wrongIfMis": "acute",
@@ -659,6 +683,7 @@
        "en": "The arms of a right angle are made longer, from 2 cm to 20 cm. Is it acute, a right angle or obtuse now?"
       },
       "key": "right angle",
+      "why": { "hi": "bhujayein 20 cm tak lambi hui par khulaav wahi raha", "en": "the arms grew to 20 cm but the opening stayed the same" },
       "accept": ["right", "ab bhi right angle", "still a right angle", "samkon"],
       "targets": "c5-maths-ch03-t02-m-arm-length",
       "wrongIfMis": "obtuse",
@@ -679,6 +704,7 @@
        "en": "A square handkerchief lies tilted on a table. Are its corners acute or right angles?"
       },
       "key": "right angle",
+      "why": { "hi": "square rumaal ke kone right angle hain, aur tirchha rakhne se khulaav nahi badalta", "en": "a square handkerchief's corners are right angles, and lying tilted does not change the opening" },
       "accept": ["right", "right angles", "right angle hain", "samkon"],
       "targets": "c5-maths-ch03-t02-m-prototype-right",
       "wrongIfMis": "acute",

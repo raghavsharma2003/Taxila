@@ -85,6 +85,8 @@ export function beatsOf(skill, version = 1) {
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
       // v2.1 (director5, dc-r7-script-walk-v3): the follow-up card after a remediation carries its own board, gated as a check
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}.then`, board: r.then?.board, line: said(r.then?.prompt), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: true })),
+      // director8 (dc-r7-script-walk-v6, R1): the bridge is its own segment on its own authored board
+      ...(skill.bridgeToNext && skill.bridgeBoard ? [{ id: "bridge", board: skill.bridgeBoard, line: said(skill.bridgeToNext), withhold: null, check: false }] : []),
     ].filter((b) => b.board);
   }
   return [
@@ -244,6 +246,16 @@ export function v22Errors(s) {
       if (/^\s*kyunki\b/i.test(st.why?.hi ?? "")) e.push(at(`workedExample.steps[${i}].why: starts with "kyunki" (the runtime adds it)`));
     }
     if (/^\s*kyunki\b/i.test(we.why?.hi ?? "")) e.push(at(`workedExample.why: starts with "kyunki" (the runtime adds it)`));
+    // director8 (dc-r7-script-walk-v6, R2): a close's "why" comes only from the closed card's own authored why, so every
+    // keyed card carries one; and a bridge points at its own board (bridgeBoard), never at a board that was not drawn
+    const cards = [...k.explain.filter((b) => b.ask).map((b) => [`${b.id}.ask`, b.ask]), ...k.checks.map((c, i) => [`checks[${i}]`, c]),
+      ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then ?? {}])];
+    for (const [where, c] of cards) {
+      if (!String(c.why?.hi ?? "").trim() || !String(c.why?.en ?? "").trim()) { e.push(at(`${where}: an authored why { hi, en } for its key`)); continue; }
+      if (/^\s*kyunki\b/i.test(c.why.hi)) e.push(at(`${where}.why: starts with "kyunki" (the runtime adds it)`));
+      if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
+    }
+    if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
     if (/\bkyunki\b/i.test(we.answer?.hi ?? "") || /^\s*toh\b/i.test(we.answer?.hi ?? "")) e.push(at(`workedExample.answer: a clause with no "kyunki" and no leading "Toh" (the why says why)`));
   }
   return e;

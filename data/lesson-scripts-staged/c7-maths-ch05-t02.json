@@ -61,7 +61,8 @@
      "ask": {
       "prompt": { "hi": "AB aur CD ke beech doori 3 cm hai. CD ke neeche ek teesri line EF kheenchi, jo CD ke parallel hai aur CD se 2 cm door hai. AB aur EF ke beech doori kitni hai?", "en": "The gap between AB and CD is 3 cm. Below CD a third line EF is drawn, parallel to CD and 2 cm away from it. What is the gap between AB and EF?" },
       "key": "5 cm",
-      "accept": ["5", "5 centimetre", "5 centimetres"]
+      "accept": ["5", "5 centimetre", "5 centimetres"],
+      "why": { "hi": "AB se CD 3 cm hai aur CD se EF 2 cm, aur 3 + 2 = 5", "en": "AB to CD is 3 cm and CD to EF is 2 cm, and 3 + 2 = 5" }
      }
     },
     {
@@ -82,7 +83,8 @@
       "key": "haan",
       "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
       "targets": "c7-maths-ch05-t02-m-same-length",
-      "wrongIfMis": "nahi"
+      "wrongIfMis": "nahi",
+      "why": { "hi": "disha ek hai aur doori dono jagah 4 cm hai, lambai se farak nahi padta", "en": "the direction is the same and the gap is 4 cm at both places; length makes no difference" }
      }
     },
     {
@@ -102,7 +104,8 @@
       "key": "40 cm",
       "accept": ["40", "40 centimetre", "40 centimetres"],
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
-      "wrongIfMis": "kabhi nahi"
+      "wrongIfMis": "kabhi nahi",
+      "why": { "hi": "daayein kinaare par doori 4 cm hai, aur har 1 cm ghatne mein 10 cm lagte hain, 4 × 10 = 40", "en": "the gap at the right edge is 4 cm, and every 1 cm of shrinking takes 10 cm, 4 × 10 = 40" }
      }
     }
    ],
@@ -153,7 +156,8 @@
      "accept": ["yes", "haan, parallel hain", "parallel", "haan parallel"],
      "targets": "c7-maths-ch05-t02-m-same-length",
      "wrongIfMis": "nahi",
-     "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "segment EF", "items": ["5 cm"] }, "right": { "title": "segment GH", "items": ["11 cm"] } } },
+     "why": { "hi": "disha ek hai aur doori dono siron par 3 cm hai, lambai se farak nahi padta", "en": "the direction is the same and the gap is 3 cm at both ends; length makes no difference" }
     },
     {
      "id": "c2",
@@ -165,7 +169,8 @@
      "accept": ["A", "pair A", "joda A", "A wala"],
      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
      "wrongIfMis": "dono",
-     "board": { "template": "compare@1", "params": { "left": { "title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"] }, "right": { "title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "joda A", "items": ["baayein 5 cm", "daayein 5 cm"] }, "right": { "title": "joda B", "items": ["baayein 5 cm", "daayein 4 cm"] } } },
+     "why": { "hi": "joda A ki doori dono taraf 5 cm hai, par joda B ki doori 5 cm se 4 cm ho jaati hai", "en": "pair A's gap is 5 cm on both sides, but pair B's goes from 5 cm to 4 cm" }
     }
    ],
    "ladder": [
@@ -190,7 +195,8 @@
       "accept": ["segment EF", "EF wala"],
       "targets": "c7-maths-ch05-t02-m-same-length",
       "wrongIfMis": "CD",
-      "board": { "template": "compare@1", "params": { "left": { "title": "CD 3 cm", "items": ["2 cm se 1 cm"] }, "right": { "title": "EF 9 cm", "items": ["har jagah 2 cm"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "CD 3 cm", "items": ["2 cm se 1 cm"] }, "right": { "title": "EF 9 cm", "items": ["har jagah 2 cm"] } } },
+      "why": { "hi": "AB se EF tak doori har jagah 2 cm hai, par CD tak 2 cm se 1 cm ho jaati hai", "en": "the gap from AB to EF is 2 cm everywhere, but to CD it goes from 2 cm to 1 cm" }
      }
     },
     {
@@ -207,14 +213,16 @@
       "accept": ["70", "70 centimetre", "70 centimetres"],
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
       "wrongIfMis": "kabhi nahi",
-      "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 8 cm"] }, "right": { "title": "10 cm aage", "items": ["doori 7 cm"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 8 cm"] }, "right": { "title": "10 cm aage", "items": ["doori 7 cm"] } } },
+      "why": { "hi": "7 cm wali jagah par doori 7 cm bachi hai, aur har 1 cm ghatne mein 10 cm lagte hain, 7 × 10 = 70", "en": "at the 7 cm point the gap left is 7 cm, and every 1 cm of shrinking takes 10 cm, 7 × 10 = 70" }
      }
     }
    ],
    "bridgeToNext": {
-    "hi": "Parallel lines kabhi nahi milti. Ab hum woh lines dekhenge jo milti hain, aur ek khaas tarah se milti hain, theek samkon par.",
-    "en": "Parallel lines never meet. Now we will look at lines that do meet, and meet in a special way, exactly at a right angle."
-   }
+    "hi": "Parallel lines kabhi nahi milti. Ab hum woh lines dekhenge jo milti hain, aur ek khaas tarah se milti hain, theek samkon par, 90° par.",
+    "en": "Parallel lines never meet. Now we will look at lines that do meet, and meet in a special way, exactly at a right angle, at 90°."
+   },
+   "bridgeBoard": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "samkon" }] } }
   },
   {
    "skillId": "c7-maths-ch05-t02-s2",
@@ -254,7 +262,8 @@
      "ask": {
       "prompt": { "hi": "In dono lines ko milne wale bindu ke aar-paar aage badhao, toh ek crossing banegi. Crossing par bane angles mein se kitne angle 90° ke honge?", "en": "Extend both lines through the meeting point and a crossing forms. How many of the angles at the crossing will be 90°?" },
       "key": "4",
-      "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"]
+      "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"],
+      "why": { "hi": "aar-paar badhane par chaar angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives four angles, and each is 180° − 90° = 90°" }
      }
     },
     {
@@ -274,7 +283,8 @@
       "key": "2",
       "accept": ["do", "two", "2 bhujayein", "do bhujayein", "two sides"],
       "targets": "c7-maths-ch05-t02-m-perp-upright",
-      "wrongIfMis": "0"
+      "wrongIfMis": "0",
+      "why": { "hi": "square ke har kone par samkon hai, toh chuni bhuja se judi dono bhujayein perpendicular hain", "en": "every corner of a square is a right angle, so both sides joined to the chosen side are perpendicular" }
      }
     },
     {
@@ -292,7 +302,8 @@
      "ask": {
       "prompt": { "hi": "Ek line ko ghuma kar angle thoda aur kholna hai, taaki yeh lines perpendicular ban jaayein. Angle ko kitne degree aur kholna hoga?", "en": "One line is to be turned to open the angle a little more, so that these lines become perpendicular. By how many more degrees must the angle open?" },
       "key": "2°",
-      "accept": ["2", "2 degree", "2 degrees", "do degree"]
+      "accept": ["2", "2 degree", "2 degrees", "do degree"],
+      "why": { "hi": "perpendicular ke liye 90° chahiye, aur 90° − 88° = 2°", "en": "perpendicular needs 90°, and 90° − 88° = 2°" }
      }
     }
    ],
@@ -345,7 +356,8 @@
      "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
      "targets": "c7-maths-ch05-t02-m-same-length",
      "wrongIfMis": "nahi",
-     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } }
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90 }] } },
+     "why": { "hi": "milne ka angle 90° hai, aur segments ki lambai se farak nahi padta", "en": "the meeting angle is 90°, and the segments' lengths make no difference" }
     },
     {
      "id": "c2",
@@ -357,7 +369,8 @@
      "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
      "targets": "c7-maths-ch05-t02-m-perp-upright",
      "wrongIfMis": "nahi",
-     "board": { "template": "compare@1", "params": { "left": { "title": "plus ka nishaan", "items": ["perpendicular lines"] }, "right": { "title": "ghuma kar X", "items": ["X jaisa tircha"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "plus ka nishaan", "items": ["perpendicular lines"] }, "right": { "title": "ghuma kar X", "items": ["X jaisa tircha"] } } },
+     "why": { "hi": "ghumaane se lines ke beech ka angle nahi badalta, woh 90° hi rehta hai", "en": "turning does not change the angle between the lines; it stays 90°" }
     },
     {
      "id": "c3",
@@ -369,7 +382,8 @@
      "accept": ["sab", "all", "all corners", "all four", "chaaron", "chaaron kono par", "sab par"],
      "targets": "c7-maths-ch05-t02-m-perp-upright",
      "wrongIfMis": "kisi par nahi",
-     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["seedha frame", "tircha frame"] } }
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["seedha frame", "tircha frame"] } },
+     "why": { "hi": "rectangle ke har kone par samkon hai, aur tircha latakne se kone ka angle nahi badalta", "en": "every corner of a rectangle is a right angle, and hanging tilted does not change a corner's angle" }
     }
    ],
    "ladder": [
@@ -394,7 +408,8 @@
       "accept": ["B", "B wali", "the B one"],
       "targets": "c7-maths-ch05-t02-m-perp-upright",
       "wrongIfMis": "crossing A",
-      "board": { "template": "compare@1", "params": { "left": { "title": "crossing A", "items": ["khadi aur leti", "angle 85°"] }, "right": { "title": "crossing B", "items": ["dono tirchhi", "angle 90°"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "crossing A", "items": ["khadi aur leti", "angle 85°"] }, "right": { "title": "crossing B", "items": ["dono tirchhi", "angle 90°"] } } },
+      "why": { "hi": "crossing B ka angle theek 90° hai, par crossing A ka 85°", "en": "crossing B's angle is exactly 90°, but crossing A's is 85°" }
      }
     },
     {
@@ -411,14 +426,16 @@
       "accept": ["Q", "pair Q", "Q wala"],
       "targets": "c7-maths-ch05-t02-m-same-length",
       "wrongIfMis": "joda P",
-      "board": { "template": "compare@1", "params": { "left": { "title": "joda P", "items": ["5 cm aur 5 cm", "80°"] }, "right": { "title": "joda Q", "items": ["2 cm aur 9 cm", "90°"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "joda P", "items": ["5 cm aur 5 cm", "80°"] }, "right": { "title": "joda Q", "items": ["2 cm aur 9 cm", "90°"] } } },
+      "why": { "hi": "joda Q 90° par milta hai, par joda P 80° par", "en": "pair Q meets at 90°, but pair P at 80°" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab parallel aur perpendicular lines pehchaan li. Agle hisse mein inhe set-square aur kaagaz ke mod se khud banayenge, aur jaanchenge bhi.",
     "en": "Now we can recognise parallel and perpendicular lines. In the next part we will draw them ourselves with a set-square and paper folds, and check them too."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Set-square", "items": ["khud banayenge"] }, "right": { "title": "Kaagaz ke mod", "items": ["jaanchenge bhi"] } } }
   },
   {
    "skillId": "c7-maths-ch05-t02-s3",
@@ -457,7 +474,8 @@
      "ask": {
       "prompt": { "hi": "Pehli crease ek seedhi line hai, yaani 180°. Doosre mod ne use do barabar hisson mein baant diya. Creases ke milne par har angle kitne degree ka hai?", "en": "The first crease is a straight line, that is 180°. The second fold shared it into two equal halves. How many degrees is each angle where the creases meet?" },
       "key": "90°",
-      "accept": ["90", "90 degree", "90 degrees", "samkon"]
+      "accept": ["90", "90 degree", "90 degrees", "samkon"],
+      "why": { "hi": "180° ke do barabar hisse hue, aur 180° ÷ 2 = 90°", "en": "180° was shared into two equal parts, and 180° ÷ 2 = 90°" }
      }
     },
     {
@@ -475,7 +493,8 @@
      "ask": {
       "prompt": { "hi": "Set-square ka kona ek crossing par rakha. Ek line ek bhuja par theek baithi, par doosri line doosri bhuja se 5° aur bahar khuli hai. Crossing ka angle kitna hai?", "en": "A set-square's corner is put on a crossing. One line sits exactly on one edge, but the other line opens 5° further out than the other edge. What is the angle at the crossing?" },
       "key": "95°",
-      "accept": ["95", "95 degree", "95 degrees"]
+      "accept": ["95", "95 degree", "95 degrees"],
+      "why": { "hi": "set-square ka kona 90° hai aur line 5° aur bahar khuli hai, 90° + 5° = 95°", "en": "the set-square corner is 90° and the line opens 5° further out, 90° + 5° = 95°" }
      }
     },
     {
@@ -493,7 +512,8 @@
      "ask": {
       "prompt": { "hi": "Isi tarah set-square khiska kar teen parallel lines kheenchi, har agli line pichhli se 2 cm neeche. Pehli aur teesri line ke beech doori kitni hai?", "en": "Sliding the set-square this way, three parallel lines are drawn, each one 2 cm below the one before. What is the gap between the first and the third line?" },
       "key": "4 cm",
-      "accept": ["4", "4 centimetre", "4 centimetres"]
+      "accept": ["4", "4 centimetre", "4 centimetres"],
+      "why": { "hi": "pehli se doosri 2 cm aur doosri se teesri 2 cm, aur 2 + 2 = 4", "en": "first to second is 2 cm and second to third is 2 cm, and 2 + 2 = 4" }
      }
     }
    ],
@@ -553,7 +573,8 @@
      "accept": ["yes", "haan, perpendicular hain", "perpendicular", "haan perpendicular"],
      "targets": "c7-maths-ch05-t02-m-perp-upright",
      "wrongIfMis": "nahi",
-     "board": { "template": "compare@1", "params": { "left": { "title": "seedha set-square", "items": ["fit nahi"] }, "right": { "title": "ghumaya set-square", "items": ["theek fit"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "seedha set-square", "items": ["fit nahi"] }, "right": { "title": "ghumaya set-square", "items": ["theek fit"] } } },
+     "why": { "hi": "ghumaye hue set-square ka samkon kona theek fit hua, toh angle 90° hai", "en": "the turned set-square's right-angle corner fitted exactly, so the angle is 90°" }
     },
     {
      "id": "c2",
@@ -565,7 +586,8 @@
      "accept": ["no", "nahi, parallel nahi", "not parallel", "nahin"],
      "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
      "wrongIfMis": "haan",
-     "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 5 cm"] }, "right": { "title": "doosri jagah", "items": ["doori 5.5 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 5 cm"] }, "right": { "title": "doosri jagah", "items": ["doori 5.5 cm"] } } },
+     "why": { "hi": "doori ek jagah 5 cm aur doosri jagah 5.5 cm hai, barabar nahi", "en": "the gap is 5 cm at one place and 5.5 cm at another, not equal" }
     }
    ],
    "ladder": [
@@ -586,7 +608,8 @@
       "prompt": { "hi": "Tirchhi crossing par ghumaya kaagaz ka kona: ek line kinaare par, doosri kinaare se 3° andar. Angle kitna hai?", "en": "A turned paper corner on a tilted crossing: one line on an edge, the other 3° inside the other edge. What is the angle?" },
       "key": "87°",
       "accept": ["87", "87 degree", "87 degrees"],
-      "board": { "template": "compare@1", "params": { "left": { "title": "tirchhi crossing", "items": ["kaagaz ka kona"] }, "right": { "title": "doosri line", "items": ["3° andar"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "tirchhi crossing", "items": ["kaagaz ka kona"] }, "right": { "title": "doosri line", "items": ["3° andar"] } } },
+      "why": { "hi": "kaagaz ka kona 90° hai aur line 3° andar hai, 90° − 3° = 87°", "en": "the paper corner is 90° and the line is 3° inside, 90° − 3° = 87°" }
      }
     },
     {
@@ -603,7 +626,8 @@
       "accept": ["0.2", "0.2 centimetre", "2 mm", "2 millimetre"],
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
       "wrongIfMis": "kuch nahi",
-      "board": { "template": "compare@1", "params": { "left": { "title": "baayein", "items": ["doori 7 cm"] }, "right": { "title": "daayein", "items": ["doori 6.8 cm"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "baayein", "items": ["doori 7 cm"] }, "right": { "title": "daayein", "items": ["doori 6.8 cm"] } } },
+      "why": { "hi": "baayein doori 7 cm hai, aur 7 − 6.8 = 0.2", "en": "the left gap is 7 cm, and 7 − 6.8 = 0.2" }
      }
     }
    ],

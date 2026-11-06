@@ -60,7 +60,8 @@
       "key": "smaller",
       "accept": ["chhota", "chhota hoga", "small", "smaller than before"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-      "wrongIfMis": "bigger"
+      "wrongIfMis": "bigger",
+      "why": { "hi": "wahi patti 8 hisson mein bate toh har hissa 4 hisson wale hisse ka aadha hota hai", "en": "when the same bar is split into 8, each part is half of a part out of 4" }
      }
     },
     {
@@ -83,7 +84,8 @@
       "key": "1/4",
       "accept": ["one quarter", "ek chauthai", "1/4 bada hai", "1/4 is bigger"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-      "wrongIfMis": "1/8"
+      "wrongIfMis": "1/8",
+      "why": { "hi": "ek 1/4 hissa do 1/8 hisson ke barabar hai", "en": "one 1/4 part equals two 1/8 parts" }
      }
     },
     {
@@ -109,7 +111,8 @@
       "key": "1/3",
       "accept": ["one third", "ek tihai", "1/3 wala", "1/3 bada hai"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-      "wrongIfMis": "1/7"
+      "wrongIfMis": "1/7",
+      "why": { "hi": "1/3 wala hissa 1/7 wale hisse se bada hai, toh 1/3 zero se zyada door rukta hai", "en": "a third is bigger than a seventh, so 1/3 stops further from zero" }
      }
     }
    ],
@@ -176,7 +179,8 @@
        "left": { "title": "10 tukdon mein", "items": ["ek jaisi roti"] },
        "right": { "title": "5 tukdon mein", "items": ["ek jaisi roti"] }
       }
-     }
+     },
+     "why": { "hi": "5 tukdon wali roti ka har tukda 10 tukdon wali roti ke tukde se do guna hai", "en": "each piece of the roti cut into 5 is twice a piece of the roti cut into 10" }
     },
     {
      "id": "c2",
@@ -194,7 +198,8 @@
        "left": { "title": "ek hi poore ke", "items": ["1/3", "1/12", "1/6"] },
        "right": { "title": "kram", "items": ["chhote se bade"] }
       }
-     }
+     },
+     "why": { "hi": "ek hi poore ke 12 hisse sabse chhote hote hain, phir 6 hisse, aur 3 hisse sabse bade", "en": "of one whole, twelfths are the smallest parts, then sixths, and thirds the biggest" }
     },
     {
      "id": "c3",
@@ -206,7 +211,8 @@
      "accept": ["bada", "bada hai", "it is bigger", "1/4 is bigger", "1/4 bada hai"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "smaller",
-     "board": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "mark": 1 } }
+     "board": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "mark": 1 } },
+     "why": { "hi": "ringed nishaan 1/4 hai, aur 1/4 do 1/8 ke barabar hai", "en": "the circled mark is 1/4, and 1/4 equals two 1/8s" }
     }
    ],
    "ladder": [
@@ -234,20 +240,13 @@
       "accept": ["Ravi ne", "Ravi, 1/7", "1/7 wali"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "{friend}",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "1/7", "items": ["ek jaisi bottle"] },
-        "right": { "title": "1/9", "items": ["ek jaisi bottle"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1, "marks": [ [1, 7], [1, 9] ] } },
+      "why": { "hi": "ek jaisi bottle ka 1/7 hissa 1/9 hisse se bada hai", "en": "of identical bottles, a seventh is more than a ninth" }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Ab tak har baar ek hi tukda tha, toh tukde ka size faisla karta tha. Ab dekhenge ki neeche ka number same ho, tab kaise tulna karte hain.",
-    "en": "So far it was always one piece, so the piece size decided. Next we see how to compare when the bottom number is the same."
-   }
+   "bridgeToNext": { "hi": "Ab tak har baar ek hi tukda tha, jaise 1/4 aur 1/8, toh tukde ka size faisla karta tha. Ab dekhenge ki neeche ka number same ho, jaise 3/7 aur 5/7, tab kaise tulna karte hain.", "en": "So far it was always one piece, like 1/4 and 1/8, so the piece size decided. Next we see how to compare when the bottom number is the same, like 3/7 and 5/7." },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "ek hi tukda", "items": ["1/4", "1/8"] }, "right": { "title": "neeche ka number same", "items": ["3/7", "5/7"] } } }
   },
   {
    "skillId": "c5-maths-ch02-t02-s2",
@@ -289,7 +288,8 @@
        "en": "If we shade 5 parts of this same bar, which fraction will that be?"
       },
       "key": "5/7",
-      "accept": ["five sevenths", "5 by 7", "paanch bata saat"]
+      "accept": ["five sevenths", "5 by 7", "paanch bata saat"],
+      "why": { "hi": "patti ke 7 barabar hisse hain aur unme se 5 rang wale hain", "en": "the bar has 7 equal parts and 5 of them are shaded" }
      }
     },
     {
@@ -312,7 +312,8 @@
       "key": "no",
       "accept": ["nahi", "nahi, 5/7 zyada hai", "galat", "he is wrong"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
-      "wrongIfMis": "yes"
+      "wrongIfMis": "yes",
+      "why": { "hi": "dono mein hisse 1/7 ke hain, par 5/7 mein 5 hisse hain aur 3/7 mein sirf 3", "en": "both have 1/7 parts, but 5/7 has 5 of them and 3/7 only 3" }
      }
     },
     {
@@ -338,7 +339,8 @@
       "key": "4/5",
       "accept": ["four fifths", "4/5 wala", "4/5 zyada hai"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
-      "wrongIfMis": "they are equal"
+      "wrongIfMis": "they are equal",
+      "why": { "hi": "dono mein hisse 1/5 ke hain, aur 4/5 mein 4 hisse hain, 2 se zyada", "en": "both have 1/5 parts, and 4/5 has 4 of them, more than 2" }
      }
     },
     {
@@ -367,7 +369,8 @@
       "key": "2/3",
       "accept": ["two thirds", "2/3 wala", "2/3 bada hai", "2/3 is bigger"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
-      "wrongIfMis": "3/10"
+      "wrongIfMis": "3/10",
+      "why": { "hi": "2/3 aadhe se zyada hai, par 3/10 aadhe yaani 5/10 se bhi kam hai", "en": "2/3 is more than a half, but 3/10 is less than a half, 5/10" }
      }
     }
    ],
@@ -434,7 +437,8 @@
        "left": { "title": "Meena", "items": ["2/6"] },
        "right": { "title": "uske bhai", "items": ["4/6"] }
       }
-     }
+     },
+     "why": { "hi": "dono ke tukde 1/6 ke hain, aur bhai ke 4 tukde Meena ke 2 se zyada hain", "en": "both have 1/6 pieces, and the brother's 4 pieces are more than Meena's 2" }
     },
     {
      "id": "c1",
@@ -452,7 +456,8 @@
        "left": { "title": "4 barabar tukdon", "items": ["2 tukde liye"] },
        "right": { "title": "12 barabar tukdon", "items": ["3 tukde liye"] }
       }
-     }
+     },
+     "why": { "hi": "Ben ka 2/4 aadha cake hai, par 12 mein se 3 tukde sirf 1/4 cake hai", "en": "Ben's 2/4 is half the cake, but 3 of 12 pieces is only 1/4 of the cake" }
     },
     {
      "id": "c2",
@@ -470,7 +475,8 @@
        "left": { "title": "4 barabar tukdon", "items": ["3 tukdon", "ek tukda kam"] },
        "right": { "title": "6 barabar tukdon", "items": ["5 tukdon", "ek tukda kam"] }
       }
-     }
+     },
+     "why": { "hi": "5/6 mein 1/6 kam hai aur 3/4 mein 1/4 kam, aur 1/6 ka gap 1/4 ke gap se chhota hai", "en": "5/6 is short by 1/6 and 3/4 by 1/4, and a 1/6 gap is smaller than a 1/4 gap" }
     }
    ],
    "ladder": [
@@ -501,7 +507,8 @@
       "accept": ["Gopi ke paas", "Gopi, 7/10", "Gopi ke"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
       "wrongIfMis": "they have the same",
-      "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } }
+      "board": { "template": "shade-grid@1", "params": { "rows": 1, "cols": 10, "shade": 3, "labels": false, "hideResult": true } },
+      "why": { "hi": "saare tukde ribbon ke 1/10 hain, aur Gopi ke 7 tukde 3 tukdon se zyada hain", "en": "all the pieces are tenths of the ribbon, and Gopi's 7 pieces are more than 3" }
      }
     },
     {
@@ -524,13 +531,8 @@
       "accept": ["three fifths", "3/5 wala", "5 wale bar ke 3 tukde", "3 pieces of the bar cut into 5", "6/10"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "4/10",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "5 barabar tukdon", "items": ["3 tukde lo"] },
-        "right": { "title": "10 tukdon", "items": ["4 lo"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1 } },
+      "why": { "hi": "3/5 utna hai jitna 6/10, aur 6/10, 4/10 se zyada hai", "en": "3/5 is as much as 6/10, and 6/10 is more than 4/10" }
      }
     },
     {
@@ -553,20 +555,13 @@
       "accept": ["nine tenths", "9/10 bada hai"],
       "targets": "c5-maths-ch02-t02-m-gap-thinking",
       "wrongIfMis": "they are equal",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "8 barabar tukdon", "items": ["ek tukda kam"] },
-        "right": { "title": "10 tukdon", "items": ["ek tukda kam"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [8, 10], "from": 0, "to": 1 } },
+      "why": { "hi": "9/10 mein 1/10 kam hai aur 7/8 mein 1/8 kam, aur 1/10 ka gap 1/8 ke gap se chhota hai", "en": "9/10 is short by 1/10 and 7/8 by 1/8, and a 1/10 gap is smaller than a 1/8 gap" }
      }
     }
    ],
-   "bridgeToNext": {
-    "hi": "Jab neeche ka number same tha, tab upar wala number dekha. Ab ulta dekhenge, jab upar ka number same ho.",
-    "en": "When the bottom number was the same, we looked at the top number. Next we look at the opposite case, when the top number is the same."
-   }
+   "bridgeToNext": { "hi": "Jab neeche ka number same tha, jaise 3/7 aur 5/7, tab upar wala number dekha. Ab ulta dekhenge, jab upar ka number same ho, jaise 3/5 aur 3/8.", "en": "When the bottom number was the same, like 3/7 and 5/7, we looked at the top number. Next we look at the opposite case, when the top number is the same, like 3/5 and 3/8." },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "neeche ka number same", "items": ["3/7", "5/7"] }, "right": { "title": "upar ka number same", "items": ["3/5", "3/8"] } } }
   },
   {
    "skillId": "c5-maths-ch02-t02-s3",
@@ -608,7 +603,8 @@
        "en": "Now cut a bar of the same size into 8 equal parts and shade 3. Which fraction is that?"
       },
       "key": "3/8",
-      "accept": ["three eighths", "3 by 8", "teen bata aath"]
+      "accept": ["three eighths", "3 by 8", "teen bata aath"],
+      "why": { "hi": "patti ke 8 barabar hisse hain aur unme se 3 rang wale hain", "en": "the bar has 8 equal parts and 3 of them are shaded" }
      }
     },
     {
@@ -631,7 +627,8 @@
       "key": "no",
       "accept": ["nahi", "nahi, 3/5 zyada hai", "galat", "she is wrong"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
-      "wrongIfMis": "yes"
+      "wrongIfMis": "yes",
+      "why": { "hi": "dono mein 3 hisse hain, par 1/5 wale hisse 1/8 wale hisson se bade hain", "en": "both have 3 parts, but fifths are bigger than eighths" }
      }
     },
     {
@@ -660,7 +657,8 @@
       "key": "2/5",
       "accept": ["two fifths", "2/5 wala", "2/5 zyada hai"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
-      "wrongIfMis": "2/9"
+      "wrongIfMis": "2/9",
+      "why": { "hi": "dono mein 2 hisse hain, aur 1/5 wala hissa 1/9 wale hisse se bada hai", "en": "both have 2 parts, and a fifth is bigger than a ninth" }
      }
     },
     {
@@ -684,7 +682,8 @@
        "en": "Think on this same number line. Which is bigger, 2/4 or 5/8?"
       },
       "key": "5/8",
-      "accept": ["five eighths", "5/8 bada hai", "5/8 wala", "5/8 is bigger"]
+      "accept": ["five eighths", "5/8 bada hai", "5/8 wala", "5/8 is bigger"],
+      "why": { "hi": "2/4 utna hai jitna 4/8, aur 5/8 usse ek hissa aage hai", "en": "2/4 is as much as 4/8, and 5/8 is one part beyond it" }
      }
     }
    ],
@@ -729,13 +728,7 @@
      "hi": "dono ke tukde 2-2 hain, aur 1/3 wale tukde 1/5 wale tukdon se bade hain",
      "en": "both have 2 pieces, and the 1/3 pieces are bigger than the 1/5 pieces"
     },
-    "board": {
-     "template": "compare@1",
-     "params": {
-      "left": { "title": "2/5", "items": ["2 tukde", "har tukda 1/5"] },
-      "right": { "title": "2/3", "items": ["2 tukde", "har tukda 1/3"] }
-     }
-    }
+    "board": { "template": "fraction-line@1", "params": { "dens": [5, 3], "from": 0, "to": 1, "marks": [ [2, 5], [2, 3] ] } }
    },
    "checks": [
     {
@@ -754,7 +747,8 @@
        "left": { "title": "7 barabar tukdon", "items": ["4 tukdon"] },
        "right": { "title": "9 barabar tukdon", "items": ["4 tukdon"] }
       }
-     }
+     },
+     "why": { "hi": "dono mein 4 tukde hain, aur 1/7 wala tukda 1/9 wale tukde se bada hai", "en": "both are 4 pieces, and a seventh is bigger than a ninth" }
     },
     {
      "id": "c2",
@@ -772,7 +766,8 @@
        "left": { "title": "Anjali", "items": ["12 barabar tukdon", "5 tukdon"] },
        "right": { "title": "Gopi", "items": ["6 barabar tukdon", "5 tukdon"] }
       }
-     }
+     },
+     "why": { "hi": "dono ne 5 tukde kaate, aur Gopi ka 1/6 wala tukda Anjali ke 1/12 wale tukde se do guna hai", "en": "both cut off 5 pieces, and a sixth of Gopi's ribbon is twice a twelfth of Anjali's" }
     },
     {
      "id": "c3",
@@ -790,7 +785,8 @@
        "left": { "title": "5 barabar slice", "items": ["4 slice", "ek slice kam"] },
        "right": { "title": "6 barabar slice", "items": ["5 slice", "ek slice kam"] }
       }
-     }
+     },
+     "why": { "hi": "5/6 mein 1/6 kam hai aur 4/5 mein 1/5 kam, aur 1/6 ka gap 1/5 ke gap se chhota hai", "en": "5/6 is short by 1/6 and 4/5 by 1/5, and a 1/6 gap is smaller than a 1/5 gap" }
     }
    ],
    "ladder": [
@@ -821,13 +817,8 @@
       "accept": ["three fifths", "3/5 wala", "3/5 wale ka"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "they are equal",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "5 barabar tukdon", "items": ["3 rang wale"] },
-        "right": { "title": "10 tukdon", "items": ["3 rang wale"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1 } },
+      "why": { "hi": "dono mein 3 tukde hain, aur 1/5 wala tukda 1/10 wale tukde se do guna hai", "en": "both have 3 pieces, and a fifth is twice a tenth" }
      }
     },
     {
@@ -850,13 +841,8 @@
       "accept": ["3/4 wala", "the 3/4 piece", "3/4 lamba hai", "three quarters"],
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "3/7",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "4 barabar hisse", "items": ["3 hisse"] },
-        "right": { "title": "7 hisse", "items": ["3 hisse"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [4, 7], "from": 0, "to": 1 } },
+      "why": { "hi": "dono mein 3 hisse hain, aur 1/4 wala hissa 1/7 wale hisse se bada hai", "en": "both have 3 parts, and a quarter is bigger than a seventh" }
      }
     },
     {
@@ -882,13 +868,8 @@
       "accept": ["eight ninths", "8/9 bada hai", "8/9 wala"],
       "targets": "c5-maths-ch02-t02-m-gap-thinking",
       "wrongIfMis": "they are equal",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": { "title": "7 barabar tukdon", "items": ["ek tukda kam"] },
-        "right": { "title": "9 tukdon", "items": ["ek tukda kam"] }
-       }
-      }
+      "board": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1 } },
+      "why": { "hi": "8/9 mein 1/9 kam hai aur 6/7 mein 1/7 kam, aur 1/9 ka gap 1/7 ke gap se chhota hai", "en": "8/9 is short by 1/9 and 6/7 by 1/7, and a 1/9 gap is smaller than a 1/7 gap" }
      }
     }
    ],

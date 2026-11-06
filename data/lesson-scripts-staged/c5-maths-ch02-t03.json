@@ -57,6 +57,7 @@
        "en": "Fold this same roti down the middle once more. How many equal parts will the whole roti have now?"
       },
       "key": "4",
+      "why": { "hi": "beech se modne par 2 hisson mein se har ek 2 mein bant jaata hai, aur 2 × 2 = 4", "en": "folding down the middle splits each of the 2 parts into 2, and 2 × 2 = 4" },
       "accept": ["chaar", "four", "4 hisse", "4 barabar hisse"]
      }
     },
@@ -78,6 +79,7 @@
        "en": "Fold this same roti down the middle two more times, and the whole roti will have 16 equal parts. How many of them will be shaded?"
       },
       "key": "8",
+      "why": { "hi": "do aur mod se rang wale 2 hisse 2 × 2 × 2 = 8 ho jaate hain, jo 16 ka aadha hai", "en": "two more folds turn the 2 shaded parts into 2 × 2 × 2 = 8, which is half of 16" },
       "accept": ["aath", "eight", "8 hisse", "8/16"]
      }
     },
@@ -102,6 +104,7 @@
        "en": "On this same line, you go from 0 to 3/4. How many 1/8 parts does that take?"
       },
       "key": "6",
+      "why": { "hi": "3/4 ke upar aur neeche dono ko 2 se guna karo toh 6/8 banta hai", "en": "multiplying the top and bottom of 3/4 by 2 gives 6/8" },
       "accept": ["6/8", "chhe", "six", "6 hisse"]
      }
     }
@@ -155,6 +158,7 @@
       "en": "Two identical chocolate bars. Mohit ate 1/2 of one bar. Anjali ate 3 of the 6 equal pieces of the other bar. Who ate more: Mohit, Anjali, or did they eat the same?"
      },
      "key": "the same",
+     "why": { "hi": "6 barabar tukdon mein se 3 tukde 3/6 hain, aur 3/6 = 1/2", "en": "3 of 6 equal pieces is 3/6, and 3/6 = 1/2" },
      "accept": ["same", "barabar", "dono ne barabar", "dono ne barabar khaya", "same amount", "both the same"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "Anjali",
@@ -173,6 +177,7 @@
       "en": "This number line from 0 to 1 is split into 8 equal parts. The 4th mark after 0 is circled. Is that mark bigger than 1/2, smaller, or equal?"
      },
      "key": "equal",
+     "why": { "hi": "0 ke baad chautha nishaan 4/8 hai, aur 4/8 = 1/2", "en": "the 4th mark after 0 is 4/8, and 4/8 = 1/2" },
      "accept": ["barabar", "barabar hai", "the same", "same", "equal to 1/2"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "bigger",
@@ -201,6 +206,7 @@
        "en": "Two same pizzas: Farhan ate 1/3 of one, {friend} ate 2 of 6 equal slices of the other. Who ate more, or the same?"
       },
       "key": "the same",
+      "why": { "hi": "6 barabar slice mein se 2 slice 2/6 hain, aur 2/6 = 1/3", "en": "2 of 6 equal slices is 2/6, and 2/6 = 1/3" },
       "accept": ["same", "barabar", "dono ne barabar", "both the same", "same amount"],
       "targets": "c5-maths-ch02-t03-m-more-pieces-more",
       "wrongIfMis": "{friend}",
@@ -215,9 +221,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Modne par kul hisse aur rang wale hisse dono dugne hue, aur maatra wahi rahi. Ab bina mode, sirf guna karke barabar bhinn banayenge.",
-    "en": "Each fold doubled both the total parts and the coloured parts, and the amount stayed the same. Next we make equivalent fractions without folding, just by multiplying."
-   }
+    "hi": "Modne par 1/2 se 2/4 bana: kul hisse 2 se 4, rang wale 1 se 2, dono dugne hue, aur maatra wahi rahi. Ab bina mode, sirf guna karke barabar bhinn banayenge.",
+    "en": "Folding turned 1/2 into 2/4: total parts 2 to 4, coloured parts 1 to 2, both doubled, and the amount stayed the same. Next we make equivalent fractions without folding, just by multiplying."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "1/2", "items": ["kul hisse 2", "rang wale 1"] }, "right": { "title": "2/4", "items": ["kul hisse 4", "rang wale 2"] } } }
   },
   {
    "skillId": "c5-maths-ch02-t03-s2",
@@ -259,6 +266,7 @@
        "en": "Split every part of this bar into 2 smaller equal parts. How many parts will the whole bar have now?"
       },
       "key": "10",
+      "why": { "hi": "5 hisson mein se har ek 2 ban gaya, aur 5 × 2 = 10", "en": "each of the 5 parts became 2, and 5 × 2 = 10" },
       "accept": ["das", "ten", "10 hisse"]
      }
     },
@@ -280,6 +288,7 @@
        "en": "Split every part of this same 2/5 bar into 3 smaller parts instead of 2. How many small shaded parts will there be now?"
       },
       "key": "6",
+      "why": { "hi": "2 rang wale hisson mein se har ek 3 ban gaya, aur 2 × 3 = 6", "en": "each of the 2 shaded parts became 3, and 2 × 3 = 6" },
       "accept": ["chhe", "six", "6 hisse", "6/15"],
       "targets": "c5-maths-ch02-t03-m-one-part-only",
       "wrongIfMis": "2"
@@ -306,6 +315,7 @@
        "en": "On this same line, 1/3 is at the 2nd mark after 0. Add 1 to the top and bottom of 1/3 and you get 2/4, which equals 1/2. Is 2/4 bigger than 1/3, smaller, or equal?"
       },
       "key": "bigger",
+      "why": { "hi": "2/4 = 1/2 hai, aur isi rekha par 1/2 ka nishaan 1/3 se aage hai", "en": "2/4 = 1/2, and on this line the 1/2 mark comes after 1/3" },
       "accept": ["bada", "bada hai", "2/4 bada hai", "zyada", "greater", "more"],
       "targets": "c5-maths-ch02-t03-m-add-same",
       "wrongIfMis": "equal"
@@ -362,6 +372,7 @@
       "en": "Make a new fraction equal to 2/7 with 14 at the bottom. What goes at the top of this new fraction?"
      },
      "key": "4",
+     "why": { "hi": "neeche 7 × 2 = 14 hua, toh upar bhi 2 × 2 = 4", "en": "the bottom went 7 × 2 = 14, so the top is 2 × 2 = 4" },
      "accept": ["chaar", "four", "4 aayega"],
      "targets": "c5-maths-ch02-t03-m-one-part-only",
      "wrongIfMis": "2",
@@ -380,6 +391,7 @@
       "en": "{friend} added 1 to both the top and bottom of 3/4, wrote 4/5, and said they are equal. Is that right, yes or no?"
      },
      "key": "no",
+     "why": { "hi": "1 jodna ek hi number se guna nahi hai, aur 3/4 = 15/20 jabki 4/5 = 16/20", "en": "adding 1 is not multiplying by one number, and 3/4 = 15/20 while 4/5 = 16/20" },
      "accept": ["nahi", "galat", "nahi, barabar nahi", "wrong"],
      "targets": "c5-maths-ch02-t03-m-add-same",
      "wrongIfMis": "yes",
@@ -398,6 +410,7 @@
       "en": "Make a new fraction equal to 4/5 with 12 at the top. What goes at the bottom of this new fraction?"
      },
      "key": "15",
+     "why": { "hi": "upar 4 × 3 = 12 hua, toh neeche bhi 5 × 3 = 15", "en": "the top went 4 × 3 = 12, so the bottom is 5 × 3 = 15" },
      "accept": ["pandrah", "fifteen", "15 aayega"],
      "targets": "c5-maths-ch02-t03-m-add-same",
      "wrongIfMis": "13",
@@ -432,6 +445,7 @@
        "en": "A fraction equal to 2/3 has 9 at the bottom. What goes at its top?"
       },
       "key": "6",
+      "why": { "hi": "neeche 3 × 3 = 9 hua, toh upar bhi 2 × 3 = 6", "en": "the bottom went 3 × 3 = 9, so the top is 2 × 3 = 6" },
       "accept": ["chhe", "six", "6 aayega"],
       "targets": "c5-maths-ch02-t03-m-one-part-only",
       "wrongIfMis": "2",
@@ -461,6 +475,7 @@
        "en": "A fraction equal to 1/4 has 2 at the top. What goes at its bottom?"
       },
       "key": "8",
+      "why": { "hi": "upar 1 × 2 = 2 hua, toh neeche bhi 4 × 2 = 8", "en": "the top went 1 × 2 = 2, so the bottom is 4 × 2 = 8" },
       "accept": ["aath", "eight", "8 aayega"],
       "targets": "c5-maths-ch02-t03-m-add-same",
       "wrongIfMis": "5",
@@ -475,9 +490,10 @@
     }
    ],
    "bridgeToNext": {
-    "hi": "Ab barabar bhinn banana aa gaya. Ab ulta kaam: do bhinn diye hon, toh kaise check karein ki woh barabar hain ya nahi.",
-    "en": "Now we can make equivalent fractions. Next, the reverse: given two fractions, how to check whether they are equal."
-   }
+    "hi": "Ab barabar bhinn banana aa gaya, jaise 2/5 = 4/10. Ab ulta kaam: do bhinn diye hon, jaise 2/3 aur 6/9, toh kaise check karein ki woh barabar hain ya nahi.",
+    "en": "Now we can make equivalent fractions, like 2/5 = 4/10. Next, the reverse: given two fractions, like 2/3 and 6/9, how to check whether they are equal."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "barabar bhinn banana", "items": ["2/5 = 4/10"] }, "right": { "title": "check karein", "items": ["2/3 aur 6/9"] } } }
   },
   {
    "skillId": "c5-maths-ch02-t03-s3",
@@ -522,6 +538,7 @@
        "en": "{friend} says 1/4 and 2/8 cannot be equal because their numbers are different. Looking at this same line, is that right, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "is rekha par 2/8 aur 1/4 ek hi nishaan par hain, 0 ke baad doosra nishaan", "en": "on this line 2/8 and 1/4 sit at the same mark, the 2nd mark after 0" },
       "accept": ["nahi", "galat", "nahi, dono barabar hain", "wrong"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
       "wrongIfMis": "yes"
@@ -551,6 +568,7 @@
        "en": "Now check 5/6 and 20/24 the same way. By which one number were the top and bottom both multiplied?"
       },
       "key": "4",
+      "why": { "hi": "upar 5 × 4 = 20 aur neeche 6 × 4 = 24", "en": "the top is 5 × 4 = 20 and the bottom is 6 × 4 = 24" },
       "accept": ["chaar", "four", "× 4", "4 se"]
      }
     },
@@ -578,6 +596,7 @@
        "en": "Check the same way: are 3/4 and 9/16 equal fractions, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "upar 3 × 3 = 9 hua par neeche 4 × 4 = 16, ek hi number nahi", "en": "the top went 3 × 3 = 9 but the bottom went 4 × 4 = 16, not one number" },
       "accept": ["nahi", "barabar nahi", "not equal"]
      }
     }
@@ -638,6 +657,7 @@
       "en": "The first fraction is 4/10 and the second fraction is 2/5. Are these two equal fractions, yes or no?"
      },
      "key": "yes",
+     "why": { "hi": "2 × 2 = 4 aur 5 × 2 = 10, upar aur neeche dono × 2", "en": "2 × 2 = 4 and 5 × 2 = 10, top and bottom both × 2" },
      "accept": ["haan", "haan, barabar hain", "barabar", "equal"],
      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
      "wrongIfMis": "no",
@@ -656,6 +676,7 @@
       "en": "This number line from 0 to 1 is split into 6 equal parts. The 4th mark after 0 is circled. Is that mark equal to 2/3, yes or no?"
      },
      "key": "yes",
+     "why": { "hi": "0 ke baad chautha nishaan 4/6 hai, aur 2/3 ke upar-neeche × 2 karke 4/6 banta hai", "en": "the 4th mark after 0 is 4/6, and 2/3 with top and bottom × 2 is 4/6" },
      "accept": ["haan", "haan, barabar hai", "barabar"],
      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
      "wrongIfMis": "no",
@@ -668,6 +689,7 @@
       "en": "{friend} says 3/7 and 4/8 are equal because in both the bottom number is 4 more than the top. Is that right, yes or no?"
      },
      "key": "no",
+     "why": { "hi": "4/8 theek aadha hai, par 3/7 aadhe se kam hai, 3 ka dugna 6 hi hai, 7 nahi", "en": "4/8 is exactly half, but 3/7 is less than half: double 3 is only 6, not 7" },
      "accept": ["nahi", "galat", "barabar nahi", "wrong"],
      "targets": "c5-maths-ch02-t03-m-add-same",
      "wrongIfMis": "yes",
@@ -703,6 +725,7 @@
        "en": "Are 5/6 and 10/12 equal fractions, yes or no?"
       },
       "key": "yes",
+      "why": { "hi": "5 × 2 = 10 aur 6 × 2 = 12, upar aur neeche dono × 2", "en": "5 × 2 = 10 and 6 × 2 = 12, top and bottom both × 2" },
       "accept": ["haan", "haan, barabar", "barabar", "equal"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
       "wrongIfMis": "no",
@@ -732,6 +755,7 @@
        "en": "{friend} added 2 to the top and bottom of 1/3 and wrote 3/5. Is 3/5 equal to 1/3, yes or no?"
       },
       "key": "no",
+      "why": { "hi": "upar 1 se 3 hone ke liye × 3 chahiye, par neeche 3 × 3 = 9 hota, 5 nahi", "en": "the top going 1 to 3 needs × 3, but then the bottom would be 3 × 3 = 9, not 5" },
       "accept": ["nahi", "galat", "barabar nahi", "not equal"],
       "targets": "c5-maths-ch02-t03-m-add-same",
       "wrongIfMis": "yes",

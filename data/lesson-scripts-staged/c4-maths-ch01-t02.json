@@ -52,7 +52,8 @@
      "ask": {
       "prompt": { "hi": "Is square ke saare kone ek jaise hain. Is square mein kul kitne right angle hain?", "en": "All the corners of this square are the same. How many right angles does this square have in all?" },
       "key": "4",
-      "accept": ["chaar", "char", "four", "4 right angle", "4 kone"]
+      "accept": ["chaar", "char", "four", "4 right angle", "4 kone"],
+      "why": { "hi": "square ke 4 kone hain aur saare ek jaise square corner hain", "en": "a square has 4 corners and all of them are the same square corners" }
      }
     },
     {
@@ -70,7 +71,8 @@
      "ask": {
       "prompt": { "hi": "Tester ko table ke ek kone par rakha. Kone aur tester ke beech khaali jagah reh gayi. Kya woh kona right angle hai, haan ya nahi?", "en": "The tester is put on a corner of a table. Some empty space is left between the corner and the tester. Is that corner a right angle, yes or no?" },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, fit nahi hua", "no, it does not fit"]
+      "accept": ["nahi", "nahin", "no", "nahi, fit nahi hua", "no, it does not fit"],
+      "why": { "hi": "tester aur kone ke beech khaali jagah bachi, matlab tester bilkul fit nahi hua", "en": "empty space was left between the tester and the corner, so the tester did not fit exactly" }
      }
     },
     {
@@ -90,7 +92,8 @@
       "key": "4",
       "accept": ["chaar", "char", "four", "saare", "all", "all 4", "saare 4"],
       "targets": "c4-maths-ch01-t02-m-tilted-not-right",
-      "wrongIfMis": "0"
+      "wrongIfMis": "0",
+      "why": { "hi": "ghumaane se sirf square ki jagah badli, uske 4 right angle kone nahi badle", "en": "turning changed only where the square sits, not its 4 right-angle corners" }
      }
     }
    ],
@@ -136,7 +139,8 @@
      "accept": ["nahi", "nahin", "no", "nahi, ab bhi right angle hain", "no, they are still right angles"],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "Yes",
-     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["kitaab", "diamond jaisi"] } }
+     "board": { "template": "shape@1", "params": { "shape": "rectangle", "copies": 2, "names": ["kitaab", "diamond jaisi"] } },
+     "why": { "hi": "ghumaakar rakhne se kitaab ke kone nahi badalte, woh ab bhi right angle hain", "en": "laying the book slanting does not change its corners; they are still right angles" }
     },
     {
      "id": "c2",
@@ -148,7 +152,8 @@
      "accept": ["chaar", "char", "four", "saare", "all", "all 4", "saare 4"],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "2",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Noticeboard", "items": ["square"] }, "right": { "title": "Diwar par", "items": ["diamond ki tarah"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Noticeboard", "items": ["square"] }, "right": { "title": "Diwar par", "items": ["diamond ki tarah"] } } },
+     "why": { "hi": "noticeboard square hai, aur latkaane ka tareeka uske 4 right angle kone nahi badalta", "en": "the noticeboard is a square, and the way it hangs does not change its 4 right-angle corners" }
     },
     {
      "id": "c3",
@@ -160,7 +165,8 @@
      "accept": ["haan", "han", "yes", "haan, fit hoga", "yes, it fits"],
      "targets": "c4-maths-ch01-t02-m-tilted-not-right",
      "wrongIfMis": "No",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Patang", "items": ["square"] }, "right": { "title": "Hawa mein", "items": ["diamond jaisi"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Patang", "items": ["square"] }, "right": { "title": "Hawa mein", "items": ["diamond jaisi"] } } },
+     "why": { "hi": "patang square hai, toh diamond jaisi udne par bhi uska har kona right angle hai", "en": "the kite is a square, so even flying like a diamond each of its corners is a right angle" }
     }
    ],
    "ladder": [
@@ -185,14 +191,16 @@
       "accept": ["haan", "han", "yes", "haan, ab bhi right angle hain", "yes, still right angles"],
       "targets": "c4-maths-ch01-t02-m-tilted-not-right",
       "wrongIfMis": "No",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Rumaal", "items": ["square"] }, "right": { "title": "Ghumakar", "items": ["diamond jaisa"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Rumaal", "items": ["square"] }, "right": { "title": "Ghumakar", "items": ["diamond jaisa"] } } },
+      "why": { "hi": "rumaal square hai, aur ghumaane se uske kone nahi badalte", "en": "the handkerchief is a square, and turning it does not change its corners" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak tester se dekha ki kona fit hota hai ya nahi. Ab dekhenge ki jo kona fit nahi hota, woh right angle se kam khula hai ya zyada.",
     "en": "So far we used the tester to see whether a corner fits. Next we see whether a corner that does not fit opens less or more than a right angle."
-   }
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Ab tak", "items": ["kona fit hota hai ya nahi"] }, "right": { "title": "Ab", "items": ["right angle se kam", "ya zyada"] } } }
   },
   {
    "skillId": "c4-maths-ch01-t02-s2",
@@ -231,7 +239,8 @@
      "ask": {
       "prompt": { "hi": "Ek cake slice ki nok tester se tang hai. Nok ka angle right angle se kam hai ya zyada?", "en": "The tip of a cake slice is narrower than the tester. Is the tip's angle less or more than a right angle?" },
       "key": "kam",
-      "accept": ["less", "right angle se kam", "less than a right angle", "kam hai", "chhota"]
+      "accept": ["less", "right angle se kam", "less than a right angle", "kam hai", "chhota"],
+      "why": { "hi": "nok tester se bhi tang khulti hai, aur tester khud ek right angle hai", "en": "the tip opens narrower than the tester, and the tester itself is a right angle" }
      }
     },
     {
@@ -251,7 +260,8 @@
       "key": "dono barabar",
       "accept": ["barabar", "both equal", "both are equal", "equal", "same", "both same", "dono same", "dono right angle"],
       "targets": "c4-maths-ch01-t02-m-arm-length",
-      "wrongIfMis": "12 cm wala"
+      "wrongIfMis": "12 cm wala",
+      "why": { "hi": "tester dono par bilkul fit hota hai, aur 3 cm ya 12 cm ki bhuja khulna nahi badalti", "en": "the tester fits both exactly, and arms of 3 cm or 12 cm do not change the opening" }
      }
     },
     {
@@ -271,7 +281,8 @@
       "key": "diary ka kona",
       "accept": ["diary", "diary ke kone ka", "diary ka", "the diary corner", "the diary's", "square corner"],
       "targets": "c4-maths-ch01-t02-m-arm-length",
-      "wrongIfMis": "kainchi ka"
+      "wrongIfMis": "kainchi ka",
+      "why": { "hi": "kainchi thodi si hi khuli hai, jabki diary ka kona poora square corner khula hai", "en": "the scissors open only slightly, while the diary corner opens a full square corner" }
      }
     }
    ],
@@ -320,7 +331,8 @@
      "accept": ["angle B", "B wala", "B hai"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "A",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Angle A", "items": ["15 cm bhuja", "right angle se kam"] }, "right": { "title": "Angle B", "items": ["3 cm bhuja", "right angle se zyada"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Angle A", "items": ["15 cm bhuja", "right angle se kam"] }, "right": { "title": "Angle B", "items": ["3 cm bhuja", "right angle se zyada"] } } },
+     "why": { "hi": "B right angle se zyada khulta hai aur A kam, bhuja ki lambai se farak nahi padta", "en": "B opens more than a right angle and A less; the arm lengths make no difference" }
     },
     {
      "id": "c2",
@@ -332,7 +344,8 @@
      "accept": ["nahi", "nahin", "no", "nahi, dono barabar hain", "no, both are equal"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "Yes",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Badi kitaab", "items": ["square corner"] }, "right": { "title": "Chhoti diary", "items": ["square corner"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Badi kitaab", "items": ["square corner"] }, "right": { "title": "Chhoti diary", "items": ["square corner"] } } },
+     "why": { "hi": "dono kone square corner hain, toh dono utne hi khule hain, kitaab badi ho ya chhoti", "en": "both corners are square corners, so both open the same, however big the book is" }
     },
     {
      "id": "c3",
@@ -344,7 +357,8 @@
      "accept": ["less", "right angle se kam", "less than a right angle", "kam hai"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "zyada",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Bhuja", "items": ["20 cm lambi"] }, "right": { "title": "Kona", "items": ["tester se tang"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Bhuja", "items": ["20 cm lambi"] }, "right": { "title": "Kona", "items": ["tester se tang"] } } },
+     "why": { "hi": "kona tester se tang hai, aur 20 cm lambi bhuja use zyada nahi kholti", "en": "the corner is narrower than the tester, and 20 cm arms do not open it any wider" }
     }
    ],
    "ladder": [
@@ -369,14 +383,16 @@
       "accept": ["barabar", "both equal", "both are equal", "equal", "same", "both same", "dono same"],
       "targets": "c4-maths-ch01-t02-m-arm-length",
       "wrongIfMis": "15 cm wali",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Ek kainchi", "items": ["5 cm blade"] }, "right": { "title": "Doosri kainchi", "items": ["15 cm blade"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Ek kainchi", "items": ["5 cm blade"] }, "right": { "title": "Doosri kainchi", "items": ["15 cm blade"] } } },
+      "why": { "hi": "dono kainchi ek jitni khuli hain, aur 5 cm ya 15 cm ki blade khulna nahi badalti", "en": "both scissors are opened the same amount, and 5 cm or 15 cm blades do not change the opening" }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab tak hum kone aur angle dekh rahe the. Ab ek aisi shape dekhenge jismein koi kona hi nahi hota: circle.",
     "en": "So far we looked at corners and angles. Next we look at a shape that has no corner at all: the circle."
-   }
+   },
+   "bridgeBoard": { "template": "shape@1", "params": { "shape": "circle", "name": "circle" } }
   },
   {
    "skillId": "c4-maths-ch01-t02-s3",
@@ -415,7 +431,8 @@
      "ask": {
       "prompt": { "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. Kinaare ka koi doosra point centre se 4 cm se kam door hoga, zyada, ya barabar?", "en": "One point on the edge of this circle is 4 cm from the centre. Will another point on the edge be less than, more than, or equal to 4 cm from the centre?" },
       "key": "barabar",
-      "accept": ["4 cm", "utna hi", "equal", "same", "barabar door", "4 cm hi"]
+      "accept": ["4 cm", "utna hi", "equal", "same", "barabar door", "4 cm hi"],
+      "why": { "hi": "circle ke kinaare ka har point centre se ek jitna door hota hai, isliye doosra point bhi 4 cm door hai", "en": "every point on a circle's edge is equally far from the centre, so the other point is also 4 cm away" }
      }
     },
     {
@@ -435,7 +452,8 @@
       "key": "No",
       "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances are not equal"],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
-      "wrongIfMis": "Yes"
+      "wrongIfMis": "Yes",
+      "why": { "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, doori barabar nahi", "en": "the edge is 8 cm from the centre on one side and 10 cm on the other, so the distances are not equal" }
      }
     },
     {
@@ -453,7 +471,8 @@
      "ask": {
       "prompt": { "hi": "Is circle ke paas ek nishaan khoonte se 4 m door hai. Kya woh nishaan is circle par hai, haan ya nahi?", "en": "Near this circle there is a mark 4 m from the peg. Is that mark on this circle, yes or no?" },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, woh 4 m door hai", "no, it is 4 m away"]
+      "accept": ["nahi", "nahin", "no", "nahi, woh 4 m door hai", "no, it is 4 m away"],
+      "why": { "hi": "is circle ka har nishaan khoonte se 3 m door hai, par woh nishaan 4 m door hai", "en": "every mark of this circle is 3 m from the peg, but that mark is 4 m away" }
      }
     }
    ],
@@ -500,7 +519,8 @@
      "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "Yes",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Anda", "items": ["gol dikhta hai"] }, "right": { "title": "Centre se", "items": ["ek taraf 3 cm", "doosri taraf 4 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Anda", "items": ["gol dikhta hai"] }, "right": { "title": "Centre se", "items": ["ek taraf 3 cm", "doosri taraf 4 cm"] } } },
+     "why": { "hi": "ande ka kinaara centre se ek taraf 3 cm aur doosri taraf 4 cm hai, doori barabar nahi", "en": "the egg's edge is 3 cm from the centre one way and 4 cm the other, so the distances are not equal" }
     },
     {
      "id": "c2",
@@ -512,7 +532,8 @@
      "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "Yes",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Gol loop", "items": ["haath se"] }, "right": { "title": "Centre se", "items": ["kahin 5 cm", "kahin 6 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Gol loop", "items": ["haath se"] }, "right": { "title": "Centre se", "items": ["kahin 5 cm", "kahin 6 cm"] } } },
+     "why": { "hi": "loop ka kinaara centre se kahin 5 cm aur kahin 6 cm hai, doori ek jaisi nahi", "en": "the loop's edge is 5 cm from the centre in some places and 6 cm in others, so the distance is not the same" }
     },
     {
      "id": "c3",
@@ -524,7 +545,8 @@
      "accept": ["bangle", "the bangle", "chudi hai", "chudi wala"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "dono",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Chudi", "items": ["gol"] }, "right": { "title": "Anda", "items": ["gol"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "Chudi", "items": ["gol"] }, "right": { "title": "Anda", "items": ["gol"] } } },
+     "why": { "hi": "chudi ka har point centre se barabar door hai, jabki anda ek taraf lamba hai", "en": "every point of the bangle is equally far from its centre, while the egg is longer one way" }
     }
    ],
    "ladder": [
@@ -549,7 +571,8 @@
       "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances differ"],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
-      "board": { "template": "compare@1", "params": { "left": { "title": "Ek taraf", "items": ["9 cm"] }, "right": { "title": "Doosri taraf", "items": ["11 cm"] } } }
+      "board": { "template": "compare@1", "params": { "left": { "title": "Ek taraf", "items": ["9 cm"] }, "right": { "title": "Doosri taraf", "items": ["11 cm"] } } },
+      "why": { "hi": "plate ka kinaara centre se ek taraf 9 cm aur doosri taraf 11 cm hai, doori barabar nahi", "en": "the plate's edge is 9 cm from the centre on one side and 11 cm on the other, so the distances are not equal" }
      }
     }
    ],
