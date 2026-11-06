@@ -12,8 +12,12 @@ import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, 
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { diff, meets, norm, targetOf, type KonParams, type KonState } from "./kon.logic.ts";
+import { isLineGoal } from "./kon.lines.ts";
+import { makeLinesView } from "./kon.lines.view.ts";
 
 export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
+  // r7 kon2: the line goals (lines, cross, ends) have their own boards
+  if (isLineGoal((depsIn.level.params as KonParams | null)?.goal)) return makeLinesView(api, depsIn);
   const deps = depsIn as unknown as ViewDeps<KonParams, KonState, KonAct>;
   const { level, ctl, lang } = deps;
   const p = level.params, setGoal = p.goal === "set";

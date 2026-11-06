@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 126,
-  "entries": 408,
-  "withMisconceptionMap": 128,
-  "mappedMisconceptions": 247,
+  "topicsCovered": 129,
+  "entries": 413,
+  "withMisconceptionMap": 131,
+  "mappedMisconceptions": 254,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 107
+    "covered": 110
    },
    "science": {
     "inScope": 146,
@@ -44,11 +44,11 @@
    },
    "6": {
     "inScope": 69,
-    "covered": 31
+    "covered": 32
    },
    "7": {
     "inScope": 79,
-    "covered": 36
+    "covered": 38
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 140,
+  "topicsCoveredAll": 143,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 107
+    "covered": 110
    },
    "science": {
     "topics": 146,
@@ -87,8 +87,8 @@
     "covered": 7
    }
   },
-  "arenaOnly": 111,
-  "arenaOnlyClass4to7": 24,
+  "arenaOnly": 108,
+  "arenaOnlyClass4to7": 21,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 8,
@@ -101,7 +101,7 @@
    "hissa": 5,
    "kaal": 6,
    "kila": 6,
-   "kon": 9,
+   "kon": 12,
    "koshtak": 2,
    "kram": 7,
    "naksha": 5,
@@ -3531,6 +3531,132 @@
    },
    "contexts": [],
    "why": "RULES c7-maths-ch09-t03 kon/close/iso · ACTS"
+  },
+  "c7-maths-ch05-t02-s1": {
+   "topicId": "c7-maths-ch05-t02",
+   "family": "kon",
+   "mode": "lines",
+   "goal": "parallel",
+   "grammar": {
+    "tol": 2
+   },
+   "misMap": {
+    "not-meet-on-page": "c7-maths-ch05-t02-m-not-meet-on-page"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t02 kon/lines/parallel · ACTS"
+  },
+  "c7-maths-ch05-t02-s3": {
+   "topicId": "c7-maths-ch05-t02",
+   "family": "kon",
+   "mode": "lines",
+   "goal": "parallel",
+   "grammar": {
+    "tol": 2
+   },
+   "misMap": {
+    "not-meet-on-page": "c7-maths-ch05-t02-m-not-meet-on-page"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t02 kon/lines/parallel · ACTS"
+  },
+  "c7-maths-ch05-t02-s2": {
+   "topicId": "c7-maths-ch05-t02",
+   "family": "kon",
+   "mode": "lines",
+   "goal": "perp",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "perp-upright": "c7-maths-ch05-t02-m-perp-upright"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t02 kon/lines/perp · ACTS"
+  },
+  "c7-maths-ch05-t03-s2": {
+   "topicId": "c7-maths-ch05-t03",
+   "family": "kon",
+   "mode": "cross",
+   "goal": "corr",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "corr-position": "c7-maths-ch05-t03-m-alternate-position"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t03 kon/cross/corr · ACTS"
+  },
+  "c7-maths-ch05-t03-s1": {
+   "topicId": "c7-maths-ch05-t03",
+   "family": "kon",
+   "mode": "cross",
+   "goal": "corr",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "corr-position": "c7-maths-ch05-t03-m-alternate-position"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t03 kon/cross/corr · ACTS"
+  },
+  "c7-maths-ch05-t03-s3": {
+   "topicId": "c7-maths-ch05-t03",
+   "family": "kon",
+   "mode": "cross",
+   "goal": "corr",
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "corr-position": "c7-maths-ch05-t03-m-alternate-position"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch05-t03 kon/cross/corr · ACTS"
+  },
+  "c6-maths-ch02-t01-s1": {
+   "topicId": "c6-maths-ch02-t01",
+   "family": "kon",
+   "mode": "ends",
+   "goal": "ends",
+   "grammar": {
+    "figs": [
+     "seg",
+     "ray",
+     "ray",
+     "line"
+    ]
+   },
+   "misMap": {
+    "ray-two-ends": "c6-maths-ch02-t01-m-ray-two-ends",
+    "ray-order": "c6-maths-ch02-t01-m-ray-order",
+    "line-ends": "c6-maths-ch02-t01-m-longer-line"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch02-t01 kon/ends/ends · ACTS"
+  },
+  "c6-maths-ch02-t01-s2": {
+   "topicId": "c6-maths-ch02-t01",
+   "family": "kon",
+   "mode": "ends",
+   "goal": "ends",
+   "grammar": {
+    "figs": [
+     "seg",
+     "ray",
+     "ray",
+     "line"
+    ]
+   },
+   "misMap": {
+    "ray-two-ends": "c6-maths-ch02-t01-m-ray-two-ends",
+    "ray-order": "c6-maths-ch02-t01-m-ray-order",
+    "line-ends": "c6-maths-ch02-t01-m-longer-line"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch02-t01 kon/ends/ends · ACTS"
   },
   "c7-maths-ch02-t02-s1": {
    "topicId": "c7-maths-ch02-t02",
@@ -7538,30 +7664,6 @@
    "contexts": [],
    "why": "RULES c6-maths-ch01-t04 arena/pick/pick · ACTS"
   },
-  "c6-maths-ch02-t01-s1": {
-   "topicId": "c6-maths-ch02-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch02-t01 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch02-t01-s2": {
-   "topicId": "c6-maths-ch02-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch02-t01 arena/pick/pick · ACTS"
-  },
   "c6-maths-ch02-t01-s3": {
    "topicId": "c6-maths-ch02-t01",
    "family": "arena",
@@ -8089,78 +8191,6 @@
    "misMap": {},
    "contexts": [],
    "why": "RULES c7-maths-ch05-t01 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t02-s1": {
-   "topicId": "c7-maths-ch05-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t02-s2": {
-   "topicId": "c7-maths-ch05-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t02-s3": {
-   "topicId": "c7-maths-ch05-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t03-s1": {
-   "topicId": "c7-maths-ch05-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t03-s2": {
-   "topicId": "c7-maths-ch05-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch05-t03-s3": {
-   "topicId": "c7-maths-ch05-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch05-t03 arena/pick/pick · ACTS"
   },
   "c7-maths-ch06-t01-s1": {
    "topicId": "c7-maths-ch06-t01",
@@ -9965,7 +9995,6 @@
   "c4-maths-ch01-t01",
   "c4-maths-ch04-t01",
   "c4-maths-ch05-t02",
-  "c6-maths-ch02-t01",
   "c6-maths-ch03-t02",
   "c6-maths-ch04-t01",
   "c6-maths-ch06-t03",
@@ -9973,8 +10002,6 @@
   "c6-science-ch05-t02",
   "c6-science-ch07-t02",
   "c7-maths-ch01-t01",
-  "c7-maths-ch05-t02",
-  "c7-maths-ch05-t03",
   "c7-maths-ch06-t01",
   "c7-maths-ch06-t02",
   "c7-maths-ch06-t04",
@@ -13282,6 +13309,116 @@
    },
    "misMap": {
     "wrong-pair": "c7-maths-ch09-t03-m-wrong-pair"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch05-t02",
+   "title": "Parallel and perpendicular lines",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "lines",
+   "goal": "parallel",
+   "skillId": "c7-maths-ch05-t02-s1",
+   "skillIds": [
+    "c7-maths-ch05-t02-s1",
+    "c7-maths-ch05-t02-s3"
+   ],
+   "grammar": {
+    "tol": 2
+   },
+   "misMap": {
+    "not-meet-on-page": "c7-maths-ch05-t02-m-not-meet-on-page"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch05-t02",
+   "title": "Parallel and perpendicular lines",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "lines",
+   "goal": "perp",
+   "skillId": "c7-maths-ch05-t02-s2",
+   "skillIds": [
+    "c7-maths-ch05-t02-s2",
+    "c7-maths-ch05-t02-s3"
+   ],
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "perp-upright": "c7-maths-ch05-t02-m-perp-upright"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch05-t03",
+   "title": "Transversals: corresponding and alternate angles",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "cross",
+   "goal": "corr",
+   "skillId": "c7-maths-ch05-t03-s2",
+   "skillIds": [
+    "c7-maths-ch05-t03-s2",
+    "c7-maths-ch05-t03-s1",
+    "c7-maths-ch05-t03-s3"
+   ],
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "corr-position": "c7-maths-ch05-t03-m-alternate-position"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch05-t03",
+   "title": "Transversals: corresponding and alternate angles",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "cross",
+   "goal": "alt",
+   "skillId": "c7-maths-ch05-t03-s2",
+   "skillIds": [
+    "c7-maths-ch05-t03-s2",
+    "c7-maths-ch05-t03-s1",
+    "c7-maths-ch05-t03-s3"
+   ],
+   "grammar": {
+    "tol": 3
+   },
+   "misMap": {
+    "same-side-equal": "c7-maths-ch05-t03-m-interior-equal",
+    "alt-same-side": "c7-maths-ch05-t03-m-alternate-position"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch02-t01",
+   "title": "Point, line segment, line and ray",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kon",
+   "mode": "ends",
+   "goal": "ends",
+   "skillId": "c6-maths-ch02-t01-s1",
+   "skillIds": [
+    "c6-maths-ch02-t01-s1",
+    "c6-maths-ch02-t01-s2"
+   ],
+   "grammar": {
+    "figs": [
+     "seg",
+     "ray",
+     "ray",
+     "line"
+    ]
+   },
+   "misMap": {
+    "ray-two-ends": "c6-maths-ch02-t01-m-ray-two-ends",
+    "ray-order": "c6-maths-ch02-t01-m-ray-order",
+    "line-ends": "c6-maths-ch02-t01-m-longer-line"
    }
   },
   {
