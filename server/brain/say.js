@@ -1829,7 +1829,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const alt = visualAsk ? state.lastMove?.altView ?? null : null;
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"] };
     const asked = !visualAsk ? null
-      : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
+      : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()
       : boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) ?? (lang === "english" ? "Let's see it in a picture." : "Chalo, ise picture mein dekhte hain.");
     if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }

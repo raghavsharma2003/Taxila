@@ -279,3 +279,14 @@ export function segmentsAt(plan, line, card, parts = null) {
   out[0] = { ...out[0], atChar: 0, atClause: 0 };
   return out;
 }
+
+/**
+ * v6 (Studio's S3′ second view; main on integration 11: preselectWhiteboard returns the facts row, a string, so the pick's
+ * altView never reached Brain): the second view of the same numbers, read off the preselected row itself ("bar1 6 equal parts,
+ * 1 shaded = 1/6"). → { view: "parts", labels } (labels: the shaded bars' fractions, never an asked "?"), or null. Pure.
+ */
+export function altViewOfRow(row) {
+  const bars = [...String(row ?? "").matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+)|\?\s*\(asked\))/g)];
+  if (!bars.length) return null;
+  return { view: "parts", labels: bars.map((b) => b[3]).filter(Boolean) };
+}

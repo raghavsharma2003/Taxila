@@ -47,7 +47,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -716,7 +716,13 @@ export async function lessonTurn(req, body, hooks = {}) {
     : null;
   // v6 (Studio's alternate view on a picture ask): the take's flag rides on the move, so her line says it is a new view of the
   // same numbers (brain/say.js)
-  if (r.move?.request === "visual" && wbFirstRow?.altView && next.lastMove) next.lastMove = { ...next.lastMove, altView: wbFirstRow.altView };
+  // (preselectWhiteboard returns the facts row, a string: the pick's altView comes from Studio's sibling seam)
+  if (r.move?.request === "visual" && wbFirstRow && next.lastMove) {
+    // (Studio's sibling seam when it has one; else the row itself, whose bars name the second view)
+    const altView = (typeof studioSeam.preselectedAltView === "function" ? seamSafe("studio.preselectedAltView", () => studioSeam.preselectedAltView(lesson.id), null) : null)
+      ?? altViewOfRow(wbFirstRow);
+    if (altView) next.lastMove = { ...next.lastMove, altView };
+  }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
