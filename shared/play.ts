@@ -35,6 +35,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "guna",       // round 7: multi-digit multiplication and division (a field cut into place-value pieces, a godown shared into trucks, stories with leftovers)
   "kram",       // round 7: growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines, rhythms, L-pieces)
   "hissa",      // round 7: multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths grid, a place-value slide, stories)
+  "koshtak",    // round 7: expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms in bins)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -58,6 +59,7 @@ export const MODES = {
   guna: ["field", "pack", "story"],
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
+  koshtak: ["tray", "bin"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -312,7 +314,7 @@ export type KramAct =
   | { kind: "pick"; i: number }                           // nest: tray piece i picked (again = put back)
   | { kind: "run" }                                       // grow it / run the machine / play the rhythms / nest the pieces: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct;
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
 // cup; a tenths grid shaded both ways and the label's point placed; digits slid on a place-value chart; a bar spent twice
@@ -328,6 +330,16 @@ export type HissaAct =
   | { kind: "zero" }                                     // a zero written at the end of the digits (again = rubbed out)
   | { kind: "point"; at: number }                        // the label's decimal point, `at` digits from the right
   | { kind: "run" }                                      // cut / pour / read the chart / run the story: the law answers
+  | { kind: "undo" };
+// Koshtak (round 7, expressions): tray walls snapped between the numbers of a row (the counter works each tray, then joins
+// them); one lid laid over a run of numbers; an opened bracket's jumps turned forward / back; term cards put into bins
+// (each bin closes into one term); the law answers on "run"
+export type KoshtakAct =
+  | { kind: "wall"; at: number }                         // terms: a tray wall in gap `at` (between number at and at + 1; again = lifted)
+  | { kind: "lid"; from: number; to: number }            // lid: the lid over numbers from..to (the same lid again = lifted)
+  | { kind: "flip"; at: number }                         // open: the jump after gap `at` turned forward / back
+  | { kind: "bin"; card: number; to: number }            // like: card `card` into bin `to` (−1 = back on the belt)
+  | { kind: "run" }                                      // run the counter / walk both / close the bins: the law answers
   | { kind: "undo" };
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
@@ -492,6 +504,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   guna: ["kagaz", "chalk", "blueprint", "raat"],
   kram: ["kagaz", "chalk", "blueprint", "raat"],
   hissa: ["kagaz", "chalk", "blueprint", "raat"],
+  koshtak: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

@@ -22,6 +22,7 @@ import { nakshaLogic } from "./naksha/naksha.logic.ts";
 import { gunaLogic } from "./guna/guna.logic.ts";
 import { kramLogic } from "./kram/kram.logic.ts";
 import { hissaLogic } from "./hissa/hissa.logic.ts";
+import { koshtakLogic } from "./koshtak/koshtak.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -104,5 +105,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "hissa/pour": asAny(hissaLogic),
   "hissa/grid": asAny(hissaLogic),
   "hissa/story": asAny(hissaLogic),
+  // round 7: Koshtak, expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms
+  // in bins); nothing runs on a clock
+  "koshtak/tray": asAny(koshtakLogic),
+  "koshtak/bin": asAny(koshtakLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
