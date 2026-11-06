@@ -5630,3 +5630,102 @@ Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432
 - It now holds User Access Administrator, conditioned so it cannot grant Owner, UAA or RBAC Admin.
 
 **Locks.** CanNotDelete `m3-credit-do-not-delete` on 11 M3-critical resources: the RG taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, both m3 jobs, the action group and both alert rules.
+
+
+<!-- merged from inbox/r7-brain-16.json -->
+## `ms-r7-turn-replay-int10` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs over director8's 16 lessons (4 topics × 4 personas, H1.2 reactive child), on int/r6 7e2d7eea7.
+- POST /api/lesson/start, then /turn on the in-process API: cascade spoken turns on the clause stream, so speculation, the distress read, the note, the guards and the store all run.
+- A throwaway localhost Postgres with every migration applied; Neon never touched.
+- No TTS.
+
+**n:** 432 teacher turns. 2,265 calls, about $1.42, against a cap of 3,200 / $2.00.
+
+**Results:**
+- first-audio-ready (the first guarded clause) p50 1,896 ms, p90 3,055 ms.
+
+| Path | Turns | p50 |
+|---|---|---|
+| Speculation hit | 81 | 1,612 ms |
+| Speculation miss | 76 | 2,491 ms |
+| Code-classified | 275 | 1,779 ms (`@classified` at 799 ms) |
+| Rewritten | 164 | 2,718 ms |
+| Cut 1 skip | 44 | 1,599 ms |
+
+- 3 script cards were skipped on a move-section budget overflow (c4 s1 e3 ×2, e4 ×1); fixed in Brain 9b2c3b4d.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10/README.md.
+
+
+<!-- merged from inbox/r7-brain-17.json -->
+## `ms-r7-code-spec-ab` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs, `--personas steady`.
+- int/r6 7e2d7eea7, plus the harness-only fbaa0f4c, plus Brain 61fb6850 (`TAXILA_CODE_SPEC=on`).
+- Baseline: the steady rows of 2026-11-06-int10, on the same tree without 61fb6850.
+- n = 160 turns each. 939 calls, about $0.62, against a cap of 1,000 / $0.70.
+
+**first-audio-ready p50 / p90:**
+
+| | Baseline | Flag on |
+|---|---|---|
+| All turns | 1,852 / 3,123 ms | 1,954 / 3,498 ms |
+| Code-classified turns | 1,710 ms | 1,747 ms |
+| … speculated reply used (78) | – | 1,490 ms |
+| … missed (18) | – | 2,168 ms |
+| … early clause streamed | 21 turns at 970 ms | 3 turns |
+
+**Conclusion:** as built, the speculated reply loses the streamed early clause. The flag stays off.
+
+**Proposed next step:** stream the speculated reply and hold its first guarded clause until the read returns clean. Fix the 19% misses first: the facts row differs between the speculated and the real plan.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10-codespec/README.md.
+
+
+<!-- merged from inbox/r7-brain-18.json -->
+## `ms-r7-checker-v6-offline` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/hybrid-side-by-side/checks.mjs (the four kinds main named, plus widened false keys).
+- Run over the saved rows of evals/hybrid-side-by-side/results/2026-11-06-director8/ (16 lessons).
+- No model calls.
+- Approximate: a row keeps one screen per turn, not one per segment. The previous turn's board stands in for the answered card's board.
+
+**Results (per topic: c4, c5-t01, c5-t02, c6):**
+
+| Kind | c4 | c5-t01 | c5-t02 | c6 | Judges / old checker |
+|---|---|---|---|---|---|
+| '?' board, value stated (turns) | 0 | 5 | 31 | 0 | judges 40 of c5-t02's 45 |
+| Borrowed why | 9 | 8 | 10 | 9 | |
+| Verdict with content over another board | 8 | 10 | 11 | 2 | |
+| Picture line names an undrawn thing | 2 | 0 | 1 | 2 | |
+| Old per-segment checker | 1 | 1 | 0 | 0 | judges 10 / – / 45 / 4 |
+
+**Source:** tests/r7-brain-v6-checks.test.mjs pins each kind on a director8 row.
+
+
+<!-- merged from inbox/r7-games-hissa.json -->
+## `ms-r7-games-hissa-cert`
+
+hissa play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-hissa.test.mjs, 64 tests. An independent checker uses plain integer arithmetic (numerators and denominators cross-multiplied, the chart in millionths) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.
+
+
+<!-- merged from inbox/r7-games-kram.json -->
+## `ms-r7-games-kram-cert`
+
+kram play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every kram sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-kram.test.mjs, 73 tests. An independent checker agrees with the law over at least 2000 random acts per case. It counts stick houses and rows stick by stick, pairs of points by a double loop, snowflake sides by repeated × 4 and rhythms by brute force over S / L strings, and compares tile figures under its own turns and flips. Generator p95 is under 50 ms (grow/next about 25 ms with cold starts, every other goal under 2 ms).
+
+
+<!-- merged from inbox/r7-studio-25.json -->
+## `ms-r7-director8-card-question-replay-2026-11-06`
+
+director8's card turns re-drawn with the asked-only rule: "?" over a stated, authored number c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 and c6 0 → 0; 42 of 81 "?" turns remain, each an open question. tests/r8-card-stated.test.mjs covers the 4 pilot and 29 staged scripts; 7 staged cards (shape named in the prompt, words-only compare board) fail a picture request on W15 — Learning data.
