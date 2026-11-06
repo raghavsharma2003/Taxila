@@ -59,9 +59,9 @@ const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · ser
 export const prewarmStats = () => ({ ...prewarmed });
 // round 7 (main, director4: Brain's R4 screen contract): what the board shows, for her line to be checked against: the shape
 // kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
-const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
+const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
   "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
-  "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
+  "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "lines@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
 /** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
 export const SCREEN_SHAPES = Object.freeze(["rectangle", "square", "triangle", "quadrilateral", "pentagon", "hexagon", "octagon", "polygon", "circle",
   "number line", "whole in parts", "area model", "groups", "comparison", "flow", "cycle", "bar chart", "table", "timeline", "map", "labelled diagram",
@@ -91,7 +91,8 @@ export function screenOf(c, facts, script = null) {
   const shape = shapeWord(own.shape ?? on.shape, c?.template);
   const split = (v) => String(v ?? "").split(/\s*\|\s*|\s+(?=\d)/).map((x) => x.trim()).filter((x) => x && !/\?/.test(x));
   // (and every number the board itself writes: a template whose facts row names none still shows its numbers)
-  const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [])
+  // (a grouped number, "4,815", is the number 4815 — and its groups, as before)
+  const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : (String(o.text ?? "").match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? []).flatMap((n) => (n.includes(",") ? [n.replace(/,/g, ""), ...n.split(",")] : [n])))
     : o.op === "numwork" ? (o.layout === "fraction" ? [(o.rows ?? []).flat().map(String).join("/")] : (o.rows ?? []).flat().map(String)).filter((x) => /^\d+(?:\.\d+)?(?:\/\d+)?$/.test(x)) : []));
   // round 7 (director5 SC1): what the template drew, counted (gaps, ticks, marks with labels, parts, sides with values)
   const counts0 = c?.facts?.counts ?? script?.facts?.counts ?? facts?.counts ?? null;   // (the template's own first: a re-gate rebuilds the facts row)
@@ -261,11 +262,13 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // the same numbers goes first (her line is written from ITS row); none → the re-show below, as before
     const card0 = request && request.kind !== "example" && avoid ? cands.find((c) => c.by === "script") : null;
     if (card0 && (samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
-      const ac = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
-      const ax = ac ? expand(ac, { band }) : null;
+      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
+      const { view, ...ac } = ac0 ?? {};
+      const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
-      const say = ac ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin (${b.label})` : ""}`).join("; ")}` : "";
-      if (ax?.ok) cands.unshift({ by: "script", template: "fraction-bars@1", script: ax.script, facts: ax.script.facts, altView: "parts", say });
+      const say = !ac0 ? "" : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
+        : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
+      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: view === "line" ? "line" : "parts", say });
     }
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
       const A2 = c.say ? { ...ask, line: { ...(ask.line ?? {}), text: c.say } } : a2, CTX = c.say ? { ...gateCtxFor(A2, { kit, redact }), withhold: ctx.withhold } : ctx;
@@ -342,13 +345,32 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
     // (director8 c5-t02 c3: "pehla nishaan 1/4 hai" over the asked mark's "?": a mark whose value her line states is labelled)
+    const before = r.script;
     const shown = statedMark(r.script, ask?.intent?.boardRef, ctx.reply);
     if (shown) r = { ...r, script: shown };
+    // (director9: the "?" a stated mark became is that value in the SCREEN too — counts.marks and labels — not only in the
+    // ops: Brain's per-segment check read counts.marks "?" under "Bilkul, Riya — pehla gap 1/8 km" on the drawn 1/8)
+    const revealed = shown ? revealsOf(before, shown) : [];
     // round 7 (director6 #1): the screen is what is DRAWN now: re-gated on her real line, a value she states is no longer "?"
     // (the pick's screen was computed before her line existed, masked: R4 read "40 m lamba" against a screen with no 40)
     return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, ...(p.altView ? { altView: p.altView } : {}), ...(p.sameCard ? { sameCard: true } : {}),
-      screen: screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), syncMs: Date.now() - t0 };
+      screen: withReveals(screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), revealed), syncMs: Date.now() - t0 };
   } catch { return null; }
+}
+
+/** The values a stated-mark rewrite wrote over "?", in board order: the "?" text ops of `before` that `after` writes. */
+function revealsOf(before, after) {
+  const was = new Map((before?.ops ?? []).filter((o) => o.op === "text" && String(o.text).trim() === "?").map((o) => [o.id, true]));
+  return (after?.ops ?? []).filter((o) => was.has(o.id) && String(o.text).trim() !== "?").map((o) => String(o.text));
+}
+/** A screen whose "?" marks (counts.marks, in order) are now the revealed values: they are drawn, so they are shown. */
+function withReveals(screen, revealed) {
+  if (!revealed?.length || !screen) return screen;
+  const q = [...revealed];
+  const marks = screen.counts?.marks?.map((m) => (m.label === "?" && q.length ? { ...m, label: q.shift() } : m));
+  const nums = revealed.flatMap((t) => String(t).match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
+  return { ...screen, labels: [...new Set([...(screen.labels ?? []), ...revealed])], numbers: [...new Set([...(screen.numbers ?? []), ...nums])],
+    ...(marks ? { counts: { ...screen.counts, marks } } : {}) };
 }
 
 /**
@@ -358,6 +380,27 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
 export function statedMark(script, ref, line) {
   try {
     const r = resolveBoardRef(ref, {});
+    // (c7 lines@1: an asked angle "?" whose value her line states — "70°", "70 degree" — is written as that angle)
+    if (r.ok && r.call.template === "lines@1" && Array.isArray(script?.ops)) {
+      const deg = r.call.kind === "cross" ? r.call.deg : r.call.transversal?.deg;
+      const asked = (r.call.angles ?? []).filter((a) => a?.value === "?").map((a) => ((a.at - 1) % 2 === 0 ? deg : 180 - deg));
+      // (opposite angles are equal: "ek kon 70° hai" states the GIVEN 70°, and is no answer to the asked one. The asked angle
+      // is written only when her line says its value more times than the board already writes it)
+      const saidN = new Map();
+      for (const m of String(line ?? "").matchAll(/(\d+)\s*(?:°|degree|digree|ansh)/gi)) saidN.set(Number(m[1]), (saidN.get(Number(m[1])) ?? 0) + 1);
+      const writtenN = new Map();
+      for (const a of r.call.angles ?? []) if (typeof a?.value === "number") writtenN.set(a.value, (writtenN.get(a.value) ?? 0) + 1);
+      let k = 0, hit = false;
+      const ops = script.ops.map((o) => {
+        if (o.op !== "text" || String(o.text).trim() !== "?") return o;
+        const v = asked[k++];
+        if (!Number.isFinite(v) || (saidN.get(v) ?? 0) <= (writtenN.get(v) ?? 0)) return o;
+        writtenN.set(v, (writtenN.get(v) ?? 0) + 1);
+        hit = true;
+        return { ...o, text: `${v}°`, ink: "accent" };
+      });
+      return hit ? { ...script, ops } : null;
+    }
     if (!r.ok || r.call.template !== "fraction-line@1" || !Number.isInteger(r.call.mark) || !Number.isInteger(r.call.den)) return null;
     const v = r.call.mark / r.call.den;
     const said = (String(line ?? "").match(/(?<![\d/])\d+\s*\/\s*\d+(?![\d/])/g) ?? []).map((m) => m.replace(/\s+/g, ""))
@@ -378,14 +421,15 @@ export function statedMark(script, ref, line) {
  */
 export function altView(ask, ctx) {
   try {
-    const call = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
-    const x = call ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
+    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
+    const { view, ...call } = call0 ?? {};
+    const x = call0 ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
     if (!x?.ok) return null;
     const s = retime(x.script, Math.max(800, Number(x.script.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH);
     const g = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     if (!g.ok) return null;
-    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: "fraction-bars@1", altView: "parts", syncMs: 0,
-      screen: screenOf({ template: "fraction-bars@1", facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
+    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: view === "line" ? "line" : "parts", syncMs: 0,
+      screen: screenOf({ template: call.template, facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
   } catch { return null; }
 }
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
@@ -394,12 +438,28 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
     const r = resolveBoardRef(ref, {});
     if (!r.ok) return null;
     const c = r.call;
+    // (director9: a whole already in parts has its own second view — a circle or a grid becomes a bar; a bar becomes the
+    // number line of the same fraction. The judges counted picture requests over these boards that drew nothing new)
+    const withheldOf = (a, b) => withheld.map(String).some((w) => { const m = /^(\d+)\/(\d+)$/.exec(w); return !!m && Math.abs(Number(m[1]) / Number(m[2]) - a / b) < 1e-9; });
+    if (c.template === "fraction-parts@1" && isFinite(c.parts) && c.parts >= 2 && c.parts <= 12 && c.shade >= 1 && c.shade <= c.parts) {
+      if (c.whole === "bar") return withheldOf(c.shade, c.parts) ? null : { template: "fraction-line@1", den: c.parts, from: 0, to: 1, marks: [{ num: c.shade, label: `${c.shade}/${c.parts}` }], view: "line" };
+      return { template: "fraction-bars@1", bars: [withheldOf(c.shade, c.parts) ? { parts: c.parts, shade: c.shade, label: "?" } : { parts: c.parts, shade: c.shade, label: `${c.shade}/${c.parts}` }] };
+    }
+    if (c.template === "shade-grid@1" && !Array.isArray(c.block)) {
+      const n = (c.rows ?? 0) * (c.cols ?? 0), sh = c.shade ?? 0;
+      if (n < 2 || n > 12 || sh < 1 || sh > n) return null;
+      return { template: "fraction-bars@1", bars: [c.hideResult || withheldOf(sh, n) ? { parts: n, shade: sh, label: "?" } : { parts: n, shade: sh, label: `${sh}/${n}` }] };
+    }
     if (!["fraction-line@1", "compare@1"].includes(c.template)) return null;
     const frac = (t) => { const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t ?? "")); return m && Number(m[2]) >= 1 && Number(m[2]) <= 12 && Number(m[1]) <= Number(m[2]) ? [Number(m[1]), Number(m[2])] : null; };
     const fs = [];   // [a, b], or { at: [a, b] } for the asked mark
     if (c.template === "fraction-line@1") {
       if (c.target != null || Number(c.to ?? 1) > 1) return null;   // (beyond one whole, or a target to place: no bar view)
-      for (const m of Array.isArray(c.marks) ? c.marks : []) { const f = frac(m?.label ?? `${m?.num}/${c.den}`) ?? (Number.isInteger(m?.num) && m.num <= c.den ? [m.num, c.den] : null); if (f) fs.push(f); }
+      // (a two-scale line names its marks as [a, b] pairs: [[1, 7], [1, 9]])
+      for (const m of Array.isArray(c.marks) ? c.marks : []) {
+        const f = Array.isArray(m) ? frac(`${m[0]}/${m[1]}`) : frac(m?.label ?? `${m?.num}/${c.den}`) ?? (Number.isInteger(m?.num) && m.num <= c.den ? [m.num, c.den] : null);
+        if (f) fs.push(f);
+      }
       if (Number.isInteger(c.mark) && Number.isInteger(c.den) && c.den <= 12) fs.push({ at: [c.mark, c.den] });
       if (!fs.length && Number.isInteger(c.hop?.num) && c.hop.num <= c.den) fs.push([c.hop.num, c.den]);
     } else {
@@ -407,7 +467,8 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       // a count of pieces or a share of a set: as bars they would show something else)
       for (const w of [c.left?.title, ...(c.left?.items ?? []), c.right?.title, ...(c.right?.items ?? [])].map((v) => String(v ?? ""))) {
         const ns = w.match(/\d+(?:\s*\/\s*\d+)?/g) ?? [];
-        if (ns.length === 1) { const f = frac(ns[0]); if (f) fs.push(f); }
+        // (never a fraction the item denies: "1/3 nahi" is Cake A's point — its pieces are NOT thirds)
+        if (ns.length === 1 && !/\b(?:nahi|nahin|not|na)\b/i.test(w)) { const f = frac(ns[0]); if (f) fs.push(f); }
       }
     }
     // (a two-scale line — no fraction of its own — takes the fractions her line states on its scales; nothing else does)
@@ -467,6 +528,15 @@ export function segmentsOf(ask) {
   }
   return out.length >= 2 ? out : null;
 }
+/** #44: the first spoken word of her line from character `from` (normalised as lineClock.normWord) and how many words
+ *  come before it — the page lands on that word's onset when the voice sends word timings. */
+export function firstWordOf(text, from) {
+  const t = String(text ?? ""), i = Math.max(0, Math.min(t.length, Number(from) || 0));
+  const norm = (w) => String(w).toLowerCase().normalize("NFKC").replace(/[^\p{L}\p{N}/]+/gu, "");
+  const before = t.slice(0, i).split(/\s+/).map(norm).filter(Boolean).length;
+  const w = t.slice(i).split(/\s+/).map(norm).find(Boolean);
+  return w ? { word: w.slice(0, 24), wordIndex: before } : {};
+}
 /** (director7's first form, kept for its callers) → { say, then, clause, th } or null. */
 export function thenSplit(ask) {
   const sg = ask?.intent?.then ? segmentsOf({ ...ask, intent: { ...ask.intent, segments: [ask.intent.then] } }) : null;
@@ -517,7 +587,7 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
     if (ops.length > WB_LIMITS.maxOps) return null;
     const first = takes[0].script, last = takes.at(-1);
     const raw = { ...first, scriptId: `${first.scriptId ?? id}:pg`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
-      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1] })) };
+      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from) })) };
     delete raw.card;
     const n = normalizeScript(raw, { strict: false });
     if (!n.ok || !n.script?.switches?.length) return null;
