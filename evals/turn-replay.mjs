@@ -189,7 +189,7 @@ const q50 = (v, p) => { const s = v.filter(Number.isFinite).sort((a, b) => a - b
 const flat = all.flatMap((x) => x.rows);
 const cat = (f) => { const r = flat.filter(f); return { turns: r.length, firstAudioReady: { p50: q50(r.map((x) => x.firstAudioReadyMs), 0.5), p90: q50(r.map((x) => x.firstAudioReadyMs), 0.9) }, turn: { p50: q50(r.map((x) => x.turnMs), 0.5), p90: q50(r.map((x) => x.turnMs), 0.9) } }; };
 const summary = { dry: DRY, lessons: all.length, all: cat(() => true), earlyClause: cat((x) => x.earlyClause), noEarlyClause: cat((x) => !x.earlyClause),
-  speculationHit: cat((x) => /hit/.test(JSON.stringify(x.speculation ?? ""))), rewritten: cat((x) => x.rewrite), rewriteSkipped: cat((x) => !!x.rewriteSkipped), meter: meterOut() };
+  speculationHit: cat((x) => x.speculation?.hit === true), speculationMiss: cat((x) => x.speculation?.hit === false), rewritten: cat((x) => x.rewrite), rewriteSkipped: cat((x) => !!x.rewriteSkipped), meter: meterOut() };
 writeFileSync(`${OUT}/summary.json`, JSON.stringify(summary, null, 1) + "\n");
 writeFileSync(`${OUT}/meter.json`, JSON.stringify({ dry: DRY, ...meterOut() }, null, 1) + "\n");
 console.log(`done: ${meter.calls} model calls, ~$${meter.usd.toFixed(3)} estimated`);
