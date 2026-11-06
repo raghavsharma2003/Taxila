@@ -187,3 +187,14 @@ The earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-1
 - Public IPs: 100 per region.
 
 **taxila-cin-pg over 30 days:** ~11 connections, CPU ~8% on average (62% at peak), ~2.4 of 8 GB memory. taxila-sin-staging has a DATABASE_URL.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## open-r7-m4-billing-assumptions (2026-11-06)
+
+What only live billing can settle, on the first closed day after the M4 apply (2026-11-08 or later, visible about 2 days after):
+1. Do the 10 unattached Standard public IPs bill $0.005/h? Expect Virtual Network ≈ $1.56. If it is ≈ $0.36, attach them as secondary ipconfigs on the VM's NIC.
+2. Does taxila-m3-lb bill 24 Included + 72 Overage hours ($1.32), with the VM's NIC in its pool?
+3. Did managed Run Command pass the protectedParameter as an env var? The apply prints M3-RUNNER-OK, or M3-RUNNER-FAIL no env parameter.
+4. Does the ledger show runs by both aca and vm?
+5. Did 2026-11-06 count as day 1 (the report's `day1`; `status` prints the day-1 candidate line)?

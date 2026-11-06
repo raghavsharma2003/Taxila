@@ -1,12 +1,15 @@
 // Round 7, M3 credit unlock: infra/m3/plan.js (pure), the copies inside the two self-contained in-job scripts
 // (infra/m3/keeper-job.mjs, infra/m3/verify-job.mjs) checked against it on fixtures, and both jobs' main() end to end
-// against a fake Azure (blob store with ETags, chat, TTS, Cost Management). No network, no Azure.
+// against a fake Azure (tests/fixtures/m3-fake-azure.mjs: blob store with ETags and leases, chat, TTS, Cost Management).
+// No network, no Azure. The M4 break tests (two runners, leases, the closed loop, the VM's local fallback) are in
+// tests/m4-break.test.mjs.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import * as P from "../infra/m3/plan.js";
 import { CHAT } from "../server/cost/prices.js";
+import { fakeAzure, runKeeper as run } from "./fixtures/m3-fake-azure.mjs";
 
 // the jobs read their env at load AND at run time: set it before importing them (M3_ROLE stays unset, so their main does
 // not run) and keep it for this file's tests. Only M3_* names: no other suite reads them, so sharing npm test's one
@@ -51,16 +54,19 @@ test("pg downsize: B2s is the smallest Burstable that holds $1.25/day with 64 GB
   assert.equal(P.pgDownsizeCheck("Standard_B1ms", 400).ok, true, "storage counts: a big disk lifts B1ms over the bar");
 });
 
-test("portfolio: 7 candidates, 5 required + 2 spare; the classifier maps Cost Management ServiceNames and flags a collapse", () => {
-  assert.equal(P.PORTFOLIO.length, 7);
-  assert.equal(new Set(P.PORTFOLIO.map((p) => p.id)).size, 7);
+test("portfolio: 9 candidates (M4: 7 required + 2 spare); the classifier maps Cost Management ServiceNames and flags a collapse", () => {
+  assert.equal(P.PORTFOLIO.length, 9);
+  assert.equal(new Set(P.PORTFOLIO.map((p) => p.id)).size, 9);
   assert.deepEqual(P.activePortfolio().map((p) => p.id), ["aca", "pg", "acr", "models", "tools", "storage"]);
   assert.equal(P.activePortfolio({ vm: true }).length, 7);
+  assert.deepEqual(P.activePortfolio({ vm: true, lb: true, vnet: true }).map((p) => p.id), ["aca", "pg", "acr", "models", "tools", "storage", "vm", "lb", "vnet"]);
+  assert.deepEqual(P.activePortfolio({ lb: "yes" }).map((p) => p.id).includes("lb"), false, "only a real true switches an optional one on");
   for (const p of P.PORTFOLIO) assert.ok(p.usdPerDay >= 1.25 || p.id === "aca", `${p.id} planned at $${p.usdPerDay}`);
   const c = P.classify({ "Azure Container Apps": 1.6, "Azure Database for PostgreSQL": 6, "Container Registry": 1.67, "Foundry Models": 1.4, "Foundry Tools": 1.4,
     Storage: 1.3, "Virtual Machines": 1.33, "Log Analytics": 0.2, Bandwidth: 0.01 });
   assert.deepEqual(c.byId, { aca: 1.6, pg: 6, acr: 1.67, models: 1.4, tools: 1.4, storage: 1.3, vm: 1.33 });
   assert.deepEqual(Object.keys(c.unmatched).sort(), ["Bandwidth", "Log Analytics"]);
+  assert.deepEqual(P.classify({ "Load Balancer": 1.92, "Virtual Network": 1.56 }).byId, { lb: 1.92, vnet: 1.56 });
   // the legacy name for both AI meters lands on tools only, so models reads $0 and the verifier alerts
   const legacy = P.classify({ "Cognitive Services": 2.8 });
   assert.deepEqual(legacy.byId, { tools: 2.8 });
@@ -139,13 +145,28 @@ test("top-up arithmetic: reaches the target, never passes the cap, counts pendin
   assert.equal(P.unitsToBuy(null, lane, { date: "2027-02-01", until: "2027-01-31" }), 0);
   assert.equal(P.unitsToBuy(null, lane, { date: "2026-11-05", until: "" }), 0);
   assert.equal(P.unitsToBuy({ lanes: { models: { usd: "x", pendingUsd: -4 } } }, lane, when), 270, "garbage counts as 0, never negative");
-  assert.equal(P.slotOf("2026-11-05T03:17:00Z"), "am"); assert.equal(P.slotOf("2026-11-05T15:17:00Z"), "pm");
-  assert.deepEqual(["ok", "absent", "broken"].flatMap((s) => ["am", "pm"].map((t) => P.runMode(s, t))), ["topup", "topup", "topup", "topup", "blind", "skip"]);
+  // M4 run modes: only the VM, only in its last slot, spends without the shared ledger; a corrupt ledger never spends
+  const modes = ["ok", "absent", "held", "corrupt", "unreachable", "auth"];
+  assert.deepEqual(modes.map((s) => P.runMode(s, { runner: "aca", hour: 23 })), ["topup", "topup", "wait", "skip", "skip", "skip"]);
+  assert.deepEqual(modes.map((s) => P.runMode(s, { runner: "vm", hour: 21 })), ["topup", "topup", "wait", "skip", "skip", "skip"]);
+  assert.deepEqual(modes.map((s) => P.runMode(s, { runner: "vm", hour: 22 })), ["topup", "topup", "wait", "skip", "local", "local"]);
+  assert.equal(P.minutesToMidnight("2026-11-05T23:40:00Z"), 20); assert.equal(P.minutesToMidnight("2026-11-05T00:00:00Z"), 1440);
+  // orphans: a dead run's write-ahead stays counted under the next lease holder; offline spend folds in once, by max
+  const o = P.adoptOrphans({ lanes: { models: { usd: 1, pendingUsd: 0.05, orphanUsd: 0.01 } } });
+  assert.deepEqual(o.lanes.models, { usd: 1, pendingUsd: 0, orphanUsd: 0.06 });
+  assert.equal(P.laneSpent(o, "models"), 1.06); assert.equal(P.laneReported(o, "models"), 1, "an orphan is a bound, not a spend");
+  const off = { lanes: { tts: { usd: 1.3, pendingUsd: 0.05, seenUsd: 0.2 } } };
+  assert.equal(P.offlineSpent(off, "tts"), 1.35, "seenUsd is the shared ledger's, never the VM's own");
+  const f1 = P.foldOffline({ lanes: { tts: { usd: 0.1 } } }, off);
+  assert.equal(f1.lanes.tts.offlineUsd, 1.35); assert.equal(P.foldOffline(f1, off).lanes.tts.offlineUsd, 1.35, "idempotent");
+  assert.equal(P.laneReported(f1, "tts"), 1.45); assert.equal(P.laneSpent({ lanes: { x: { seenUsd: 0.5, usd: 0.2 } } }, "x"), 0.7);
   assert.equal(P.chatUsd({ in: 1080, cached: 1000, out: 4000 }, P.MODEL_PRICES["taxila-fast"]), 0.004836);
   assert.equal(P.chatUsd({}, P.MODEL_PRICES["taxila-fast"]), 0);
   const m = P.mergeBlind({ v: 1, lanes: { tts: { usd: 0.2, pendingUsd: 0 } } }, { lanes: { tts: { usd: 1.35 }, models: { usd: 1.0, pendingUsd: 0.01 } } });
   assert.equal(P.laneSpent(m, "tts"), 1.55); assert.equal(P.laneSpent(m, "models"), 1.01);
   assert.deepEqual(P.ledgerShort(null), { missing: true, short: [] });
+  assert.deepEqual(P.ledgerRuns({ runs: [{ slot: "am" }, { runner: "vm", alerts: [{ reason: "auth-failed", lane: "tts", endpoint: "primary" }, { reason: "auth-failed", lane: "tts", endpoint: "primary" }] }] }),
+    { runners: ["aca", "vm"], alerts: [{ runner: "vm", reason: "auth-failed", lane: "tts", endpoint: "primary" }] }, "a v1 run was the ACA job; alerts deduplicated");
   assert.deepEqual(P.ledgerShort({ lanes: { models: { usd: 1.36 }, tts: { usd: 1.0, pendingUsd: 0.5 }, storage: { usd: 1.25 } } }),
     { missing: false, short: [{ lane: "tts", usd: 1, target: 1.35 }] }, "pending is a bound, not a spend");
 });
@@ -182,15 +203,14 @@ test("Shared Key string-to-sign: the documented layout for a List Blobs GET and 
 });
 
 test("the in-job copies agree with plan.js on fixtures (keeper and verifier are self-contained)", () => {
-  const verbatim = ["laneSpent", "mergeBlind", "unitsToBuy", "runMode", "chatUsd", "sharedKeyStringToSign"];
+  const verbatim = ["laneSpent", "mergeBlind", "adoptOrphans", "offlineSpent", "foldOffline", "unitsToBuy", "runMode", "laneTargets", "minutesToMidnight", "chatUsd", "sharedKeyStringToSign"];
   for (const f of verbatim) assert.equal(K[f].toString(), P[f].toString(), `keeper ${f}`);
-  for (const f of ["mergeBlind", "laneReported", "streakReset", "sharedKeyStringToSign", "costQueryBody", "dayList", "parseCostRows"]) assert.equal(V[f].toString(), P[f].toString(), `verifier ${f}`);
+  for (const f of ["mergeBlind", "laneReported", "streakReset", "sharedKeyStringToSign", "costQueryBody", "dayList", "parseCostRows", "ledgerRuns", "projectBalance"]) assert.equal(V[f].toString(), P[f].toString(), `verifier ${f}`);
   // behaviour on fixtures for the copies whose defaults differ
   const ledgers = [null, { lanes: {} }, { lanes: { models: { usd: 1, pendingUsd: 0.2, blindUsd: 0.1 } } }, { lanes: { models: { usd: 1.35 } } }];
   const lanes = [{ id: "models", targetUsd: 1.35, capUsd: 2, unitUsd: 0.005, maxUnitUsd: 0.0073 }, { id: "models", targetUsd: 1.35, capUsd: 1.36, unitUsd: 0.01 }];
   for (const l of ledgers) for (const ln of lanes) for (const when of [{ date: "2026-11-05", until: "2027-01-31" }, { date: "2027-03-01", until: "2027-01-31" }])
     assert.equal(K.unitsToBuy(l, ln, when), P.unitsToBuy(l, ln, when));
-  for (const d of ["2026-11-05T00:00:00Z", "2026-11-05T11:59:59Z", "2026-11-05T12:00:00Z", "2026-11-05T23:59:59Z"]) assert.equal(K.slotOf(d), P.slotOf(d));
   const asOf = "2026-11-20";
   const fixtures = [
     mkDaily("2026-10-01", asOf, healthy),
@@ -208,6 +228,13 @@ test("the in-job copies agree with plan.js on fixtures (keeper and verifier are 
       for (const prev of [null, { streak: { days: 5, start: "2026-11-02" } }])
         for (const since of [null, "2026-11-06"])
           assert.deepEqual(V.verifyAlerts({ result: b, ledger, prev, today: asOf, since, portfolio }), P.verifyAlerts({ result: a, ledger, prev, today: asOf, since, portfolio }));
+    // the M4 options, every one switched on, on the same fixtures
+    const runs = { runners: ["aca"], alerts: [{ runner: "vm", reason: "auth-failed", lane: "tts" }] };
+    for (const m4 of [{ floorAlert: false, minServices: 8, runs, runners: { expected: ["aca", "vm"], since: "2026-11-02" }, burstUsd: 10, runway: { projectedUsd: 100 } },
+      { floorAlert: true, runs: { runners: ["aca", "vm"], alerts: [] }, runners: { expected: ["aca", "vm"] }, burstUsd: 60, burstDays: 5, runway: { projectedUsd: 900 } }]) {
+      const o = { ledger: { missing: false, short: [] }, prev: null, today: asOf, since: "2026-11-06", portfolio, ...m4 };
+      assert.deepEqual(V.verifyAlerts({ result: b, ...o }), P.verifyAlerts({ result: a, ...o }));
+    }
   }
   const lanesT = { models: { targetUsd: 1.35 }, tts: { targetUsd: 1.35 }, storage: { targetUsd: 1.25 } };
   for (const l of [null, ...ledgers.slice(1)]) assert.deepEqual(V.ledgerShort(l, lanesT), P.ledgerShort(l, lanesT));
@@ -216,66 +243,10 @@ test("the in-job copies agree with plan.js on fixtures (keeper and verifier are 
 
 // ───────────────────────────── the jobs end to end, against a fake Azure ─────────────────────────────
 
-/** A fake Azure: a blob store with ETags and conditional writes, chat, TTS and List Blobs, each counted. */
-function fakeAzure({ failGet = () => false, failPut = () => false, chat = () => ({ prompt_tokens: 80, completion_tokens: 4000 }) } = {}) {
-  const blobs = new Map(), calls = { chat: 0, chatOk: 0, tts: 0, list: 0, put: 0 };
-  let etagN = 0, spent = { models: 0, tts: 0, storage: 0 };
-  const fetch = async (url, init = {}) => {
-    const u = new URL(url), method = init.method || "GET";
-    const h = Object.fromEntries(Object.entries(init.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
-    if (u.hostname === "acct.blob.core.windows.net") {
-      assert.match(h.authorization, /^SharedKey acct:[A-Za-z0-9+/]+=*$/);
-      if (u.searchParams.get("comp") === "list") { calls.list++; spent.storage += 0.0001; return new Response("<EnumerationResults/>", { status: 200 }); }
-      const name = decodeURIComponent(u.pathname.replace(/^\/m3-ledger\//, ""));
-      if (method === "GET") {
-        if (failGet(name)) return new Response("", { status: 500 });
-        const b = blobs.get(name);
-        return b ? new Response(b.body, { status: 200, headers: { etag: b.etag } }) : new Response("", { status: 404 });
-      }
-      calls.put++;
-      if (failPut(name, calls.put)) return new Response("", { status: 500 });
-      const cur = blobs.get(name);
-      if (h["if-none-match"] === "*" && cur) return new Response("", { status: 409 });
-      if (h["if-match"] && cur?.etag !== h["if-match"]) return new Response("", { status: 412 });
-      const etag = `"0x${++etagN}"`;
-      blobs.set(name, { body: Buffer.from(init.body).toString(), etag });
-      return new Response("", { status: 201, headers: { etag } });
-    }
-    if (u.pathname.endsWith("/chat/completions")) {
-      calls.chat++;
-      assert.equal(h["api-key"], "aoai-secret");
-      const r = chat(JSON.parse(init.body));
-      if (r.status) return new Response(JSON.stringify({ error: { code: "x" } }), { status: r.status });
-      calls.chatOk++;
-      const p = JSON.parse(init.body).model === "dep-fb" ? { in: 4, cached: 0.4, out: 20 } : { in: 0.2, cached: 0.02, out: 1.2 };
-      spent.models += (r.prompt_tokens * p.in + r.completion_tokens * p.out) / 1e6;
-      return Response.json({ choices: [{ message: { content: "…" } }], usage: { ...r, prompt_tokens_details: { cached_tokens: 0 } } });
-    }
-    if (u.hostname.endsWith(".tts.speech.microsoft.com")) {
-      calls.tts++;
-      const text = String(init.body).replace(/<[^>]+>/g, "");
-      spent.tts += ([...text].length * 15) / 1e6;
-      return new Response(new Uint8Array(64), { status: 200 });
-    }
-    throw new Error(`unexpected fetch ${u.host}${u.pathname}`);
-  };
-  return { fetch, blobs, calls, spent: () => spent, ledger: (d) => JSON.parse(blobs.get(`ledger/${d}.json`)?.body || "null") };
-}
-const KEEPER_ENV = { M3_UNTIL: "2027-01-31", M3_MODELS_TARGET: "1.35", M3_MODELS_CAP: "2", M3_TTS_TARGET: "1.35", M3_TTS_CAP: "2", M3_STORAGE_TARGET: "1.25", M3_STORAGE_CAP: "2",
-  M3_AOAI_ENDPOINT: "https://example.openai.azure.com/openai/v1", M3_AOAI_KEY: "aoai-secret", M3_AOAI_DEPLOYMENT: "dep-fast", M3_AOAI_PRICE_IN: "0.2", M3_AOAI_PRICE_CACHED: "0.02", M3_AOAI_PRICE_OUT: "1.2",
-  M3_AOAI_FALLBACK_DEPLOYMENT: "dep-fb", M3_AOAI_FALLBACK_PRICE_IN: "4", M3_AOAI_FALLBACK_PRICE_CACHED: "0.4", M3_AOAI_FALLBACK_PRICE_OUT: "20",
-  M3_SPEECH_REGION: "centralindia", M3_SPEECH_KEY: "speech-secret", M3_TTS_PRICE_PER_MCHARS: "15", M3_STORAGE_OP_USD: "0.0001", M3_STORAGE_BATCH: "2000" };
-async function runKeeper(az, at) {
-  Object.assign(process.env, KEEPER_ENV);
-  const lines = [], log = console.log, f = globalThis.fetch;
-  console.log = (s) => lines.push(String(s));
-  globalThis.fetch = az.fetch;
-  try { const code = await K.main(new Date(at)); return { code, lines, lane: (id) => lines.filter((l) => l.startsWith("M3 ")).map((l) => JSON.parse(l.slice(3))).find((x) => x.lane === id) }; }
-  finally { console.log = log; globalThis.fetch = f; }
-}
+const runKeeper = (az, at, env) => run(K, az, at, env);
 const D = "2026-11-05", AM = `${D}T03:17:05Z`, PM = `${D}T15:17:05Z`;
 
-test("keeper: the am run spends each lane to its target under its cap; the pm run spends nothing more; after M3_UNTIL nothing", async () => {
+test("keeper: the day's first run spends each lane to its target under its cap; a later run spends nothing more; after M3_UNTIL nothing", async () => {
   const az = fakeAzure();
   const am = await runKeeper(az, AM);
   assert.equal(am.code, 0); assert.equal(am.lines.at(-1), "M3-RUN-OK");
@@ -286,12 +257,14 @@ test("keeper: the am run spends each lane to its target under its cap; the pm ru
     assert.ok(Math.abs(real - l.after) < 1e-3, `${id}: the ledger is what the APIs reported (${real} vs ${l.after})`);
   }
   const led = az.ledger(D);
-  assert.equal(led.date, D); assert.equal(led.runs.length, 1); assert.equal(led.lanes.models.pendingUsd, 0);
+  assert.equal(led.date, D); assert.equal(led.v, 2); assert.equal(led.runs.length, 1); assert.equal(led.runs[0].runner, "aca"); assert.equal(led.lanes.models.pendingUsd, 0);
+  assert.deepEqual(Object.keys(led.targets).sort(), ["models", "storage", "tts"]);
+  assert.equal(az.lease(`ledger/${D}.json`), null, "the lease is released at the end");
   assert.ok(!JSON.stringify(az.blobs.get(`ledger/${D}.json`).body).includes("secret"), "no key in the ledger");
   const before = { ...az.calls };
   const pm = await runKeeper(az, PM);
   assert.equal(pm.code, 0);
-  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [before.chat, before.tts, before.list], "the pm run only tops up what is missing");
+  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [before.chat, before.tts, before.list], "a later run only tops up what is missing");
   assert.equal(pm.lane("models").spent, 0); assert.equal(az.ledger(D).runs.length, 2);
   const late = await runKeeper(az, "2027-02-01T03:17:00Z");
   assert.equal(late.code, 0); assert.match(late.lines[0], /^M3-UNTIL-PASSED /);
@@ -299,24 +272,21 @@ test("keeper: the am run spends each lane to its target under its cap; the pm ru
   for (const l of [...am.lines, ...pm.lines]) assert.ok(!/secret|SharedKey|api-key/i.test(l), `no credential in a log line: ${l.slice(0, 80)}`);
 });
 
-test("keeper: an unreadable ledger → the am run spends each target once (a retry cannot repeat it), the pm run skips", async () => {
+test("keeper: an unreadable ledger → the ACA runner spends nothing (M3-ALERT, exit 1); once it reads, one run spends the day", async () => {
   let broken = true;
   const az = fakeAzure({ failGet: (n) => broken && n === `ledger/${D}.json` });
   const am = await runKeeper(az, AM);
-  assert.equal(am.code, 0, "never retried");
-  assert.match(am.lines[0], /^M3-ALERT .*ledger-unreadable/);
-  const once = { ...az.calls }, s1 = az.spent();
-  assert.ok(s1.models >= 1.35 && s1.models <= 2 && s1.tts >= 1.35 && s1.storage >= 1.25 - 1e-6, JSON.stringify(s1));
-  const again = await runKeeper(az, AM);   // a manual re-run or a retry
-  assert.equal(again.code, 0);
-  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [once.chat, once.tts, once.list], "the blind spend is claimed once per day");
+  assert.equal(am.code, 1, "the job retry may try again");
+  assert.equal(am.alerts[0].reason, "ledger-unreadable"); assert.equal(am.alerts[0].action, "nothing spent without the shared ledger");
+  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [0, 0, 0]);
+  const again = await runKeeper(az, AM);   // a retry or a manual re-run
+  assert.equal(again.code, 1);
+  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [0, 0, 0]);
+  broken = false;
   const pm = await runKeeper(az, PM);
-  assert.equal(pm.code, 1); assert.match(pm.lines[0], /^M3-ALERT .*pm run skipped/);
-  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [once.chat, once.tts, once.list]);
-  broken = false;   // the ledger reads again: the blind blob is folded in, nothing is bought twice
-  const pm2 = await runKeeper(az, PM);
-  assert.equal(pm2.code, 0);
-  assert.deepEqual([az.calls.chat, az.calls.tts, az.calls.list], [once.chat, once.tts, once.list]);
+  assert.equal(pm.code, 0);
+  const s = az.spent();
+  assert.ok(s.models >= 1.35 && s.models <= 2 && s.tts >= 1.35 && s.tts <= 2 && s.storage >= 1.25 - 1e-6 && s.storage <= 2, JSON.stringify(s));
 });
 
 test("keeper: a failing primary deployment falls back; a lost write never lets the next run spend twice", async () => {
@@ -325,9 +295,9 @@ test("keeper: a failing primary deployment falls back; a lost write never lets t
   assert.equal(r.code, 0);
   assert.ok(r.lines.some((l) => l.startsWith("M3-FALLBACK ") && l.includes('"to":"fallback"')));
   assert.ok(r.lane("models").via.fallback >= 1.35 && r.lane("models").after <= 2);
-  // the ledger write after the 3rd models batch fails: that batch's worst case stays counted, the retry tops up the rest
+  // the ledger write after the 3rd models batch fails (content PUTs: create, then before/after each batch → the 7th)
   let n = 0;
-  const az2 = fakeAzure({ failPut: (name) => name === `ledger/${D}.json` && ++n === 6 });
+  const az2 = fakeAzure({ failPut: (name) => name === `ledger/${D}.json` && ++n === 7 });
   const a = await runKeeper(az2, AM);
   assert.equal(a.code, 1, "a short lane exits non-zero so the job retry fires");
   assert.match(a.lane("models").err, /ledger write failed after a batch/);

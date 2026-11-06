@@ -1,6 +1,6 @@
-// Milestone 3 credit unlock: the operator CLI (round 7, M3; owner page docs/design/round7/M3.md; pure half
-// infra/m3/plan.js). DRY RUN BY DEFAULT: `apply` prints exactly what it would create or change; `--apply` does it.
-// Every step GETs first and PUTs/PATCHes only on a diff. Nothing is ever deleted (owner rule).
+// Milestone 3/4 credit unlock: the operator CLI (round 7, M3 + M4 hardening; owner page docs/design/round7/M3.md;
+// pure halves infra/m3/plan.js and infra/m3/vm.js). DRY RUN BY DEFAULT: `apply` prints exactly what it would create or
+// change; `--apply` does it. Every step GETs first and PUTs/PATCHes only on a diff. Nothing is ever deleted (owner rule).
 //
 //   node scripts/m3.mjs plan                     the daily and 60-day cost table, credit runway (pure; no Azure)
 //   node scripts/m3.mjs prices                   re-read every hard-coded price from the Retail Prices API (public, no
@@ -14,32 +14,47 @@
 //   image        ACR importImage docker.io/library/node:22-slim → taxilacr m3/node:22-slim (daily runs never touch Docker
 //                Hub; NoForce, so a present tag is kept; --refresh-image re-imports)
 //   acr          taxilacr SKU → Premium ($1.67/day; Standard is $0.67, too low)
-//   container    a private blob container `m3` in $AZURE_STORAGE_ACCOUNT (the keeper's ledger, the verifier's reports)
-//   jobs         ACA jobs m3-keeper (cron "17 3,15 * * *") and m3-verify ("41 6 * * *") in $AZURE_CONTAINERAPPS_ENV:
-//                image from taxilacr with taxila-web's registry credential, keys in the job's secret store,
-//                replicaRetryLimit 2, 0.5 / 0.25 vCPU
-//   actiongroup  m3-owner, whose receiver is the subscription's Owner role (armRoleReceivers; no email hard-coded)
+//   container    a private blob container `m3-ledger` in $AZURE_STORAGE_ACCOUNT (the keeper's ledger, the verifier's reports)
+//   vm           (only with --vm) taxila-m3-vm, Standard_D2as_v5 Linux in centralindia, resource group taxila-m3-rg, no
+//                inbound rule, no auto-shutdown ($1.33/day + its disk under Storage)
+//   jobs         ACA jobs m3-keeper (cron "17 */3 * * *") and m3-verify ("41 6,18 * * *", --milestone m4 by default:
+//                7 required, alert under 8) in $AZURE_CONTAINERAPPS_ENV: image from taxilacr with taxila-web's registry
+//                credential, keys in the job's secret store, replicaRetryLimit 2, 0.5 / 0.25 vCPU
+//   actiongroup  m3-owner: the subscription's Owner role + one email receiver per M3_ALERT_EMAIL address (comma-separated)
 //   alerts       scheduled query rules on the environment's Log Analytics workspace: any M3-ALERT line; no M3-OK in 26 h
-// Owner-gated, OFF unless passed (they rent or change things the owner must say yes to):
-//   --vm                 taxila-m3-vm, Standard_D2as_v5 Linux in centralindia, NEW resource group taxila-m3-rg, no
-//                        public IP, no inbound rule, no auto-shutdown ($1.33/day + its disk under Storage)
+//   pips         (M4) 11 Standard static IPv4 public IPs in taxila-m3-rg ($1.32/day on Virtual Network); pip-01 on the
+//                VM's NIC gives it outbound; refuses unless taxila-m3-nsg denies internet inbound
+//   lb           (M4) taxila-m3-lb: Standard internal LB on subnet `lb`, 8 TCP rules ($1.32/day on Load Balancer), the
+//                VM's NIC in its pool
+//   runner       (M4) the keeper's second runner on taxila-m3-vm over Run Command (no SSH): Node (sha256-pinned), the
+//                keeper, a systemd timer at :47 past 01, 04, ... UTC, its env in a root-only file
+//   locks        (M4) CanNotDelete locks on taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env and the Speech
+//                account; when the principal may not (Contributor), the exact portal / Cloud Shell steps for the owner
+// Owner-gated, OFF unless passed:
+//   --vm                 create or check taxila-m3-vm (the vm step above)
 //   --pg-downsize SKU    taxila-cin-pg → a Burstable SKU; refuses any SKU whose compute + storage < $1.25/day
 // Other flags: --since D (first day the verifier alerts on; default: the job's current value, else tomorrow UTC),
-//   --until D (default 2027-01-31; the keeper spends nothing after it), --models-deployment NAME (default $DEPLOY_FAST
-//   or taxila-fast), --models-fallback NAME (default $DEPLOY_BRAIN or taxila-brain), --models-price in,cached,out (for a
-//   deployment not in plan.js), --vm-size SIZE, --start-now (with --apply: start one keeper run right after the jobs).
+//   --until D (default 2027-01-31; the keeper spends nothing after it), --milestone m3|m4 (default m4), --models-deployment
+//   NAME (default $DEPLOY_FAST or taxila-fast), --models-fallback NAME (default $DEPLOY_BRAIN or taxila-brain),
+//   --models-fallback2 ACCOUNT/DEPLOYMENT|none (default: discovered on taxila-ai-*), --speech-fallback ACCOUNT|none
+//   (default: a taxila-ai-* account in another priced TTS region), --models-price in,cached,out (for a deployment not in
+//   plan.js), --vm-size SIZE, --start-now (with --apply: start one keeper run right after the jobs).
 //
 // Needs (in .env.local or the environment; never printed): AZURE_SP_CLIENT_ID, AZURE_SP_SECRET, AZURE_TENANT_ID,
 // AZURE_SUBSCRIPTION_ID, AZURE_RESOURCE_GROUP, AZURE_CONTAINERAPPS_ENV, AZURE_OPENAI_ENDPOINT, AZURE_OPENAI_API_KEY,
 // AZURE_SPEECH_REGION_SIN + AZURE_SPEECH_KEY_SIN and/or AZURE_SPEECH_REGION + AZURE_SPEECH_KEY, AZURE_STORAGE_ACCOUNT
-// (+ AZURE_STORAGE_KEY, else read with listKeys). Optional M3_VERIFY_SP_CLIENT_ID / M3_VERIFY_SP_SECRET: a separate
-// read-only principal for the verify job (default: the deploy principal). Run under NODE_USE_ENV_PROXY=1 here.
+// (+ AZURE_STORAGE_KEY, else read with listKeys). Optional: M3_VERIFY_SP_CLIENT_ID / M3_VERIFY_SP_SECRET (a separate
+// read-only principal for the verify job), M3_ALERT_EMAIL (comma-separated), M3_BALANCE_INR + M3_BALANCE_AT (the credit
+// balance in the billing currency and the day it was read, for the verifier's runway alert; default the owner's
+// 2026-11-06 reading, plan.js CREDIT), M3_SP_SECRET_EXPIRES (default 2027-03-30). Run under NODE_USE_ENV_PROXY=1 here.
 import { readFileSync } from "fs";
+import { gzipSync } from "zlib";
 import { createHash, createHmac, generateKeyPairSync } from "crypto";
-import { SUB_PATH, arm, loadEnv, sleep, until } from "../infra/azure.mjs";
+import { RG_PATH, SUB_PATH, arm, loadEnv, sleep, until } from "../infra/azure.mjs";
 import * as P from "../infra/m3/plan.js";
+import * as V from "../infra/m3/vm.js";
 
-loadEnv();
+if (!process.env.M3_NO_DOTENV) loadEnv();   // tests run the CLI hermetically (M3_NO_DOTENV=1)
 const argv = process.argv.slice(2);
 const CMD = argv[0];
 const flag = (f) => argv.includes(f);
@@ -56,9 +71,11 @@ const N = {
   pg: E.M3_PG_NAME || P.PG_NOW.name, pgRg: E.M3_PG_RG || P.PG_NOW.rg,
 };
 const API = { aca: "2024-03-01", acr: "2023-07-01", st: "2023-01-01", insights: "2023-01-01", sqr: "2023-03-15-preview", ws: "2022-10-01",
-  pg: "2024-08-01", net: "2023-11-01", vm: "2024-07-01", rg: "2021-04-01" };
+  pg: "2024-08-01", net: "2023-11-01", vm: "2024-07-01", rg: "2021-04-01", cog: "2024-10-01", locks: "2020-05-01", perms: "2022-04-01" };
 const OWNER_ROLE = "8e3af657-a8ff-443c-a75c-2fe8c4bcb635";   // built-in "Owner"
-const CRON = { keeper: "17 3,15 * * *", verify: "41 6 * * *" };
+const CRON = { keeper: P.KEEPER.acaCron, verify: P.KEEPER.verifyCron };
+const MILESTONE = P.MILESTONES[opt("--milestone", "m4")];
+if (!MILESTONE) { console.error("--milestone: m3 or m4"); process.exit(2); }
 const DEFAULT_UNTIL = "2027-01-31";
 const TAGS = { project: "taxila", purpose: "m3-credit-unlock" };
 const sha = (s) => createHash("sha256").update(s).digest("hex");
@@ -80,7 +97,8 @@ async function retail(filter) {
     let j = null;
     for (let k = 0; k < 4 && !j?.Items; k++) {   // the public API throttles bursts (429) and drops the odd connection
       if (k) await sleep(3000 * k);
-      j = await fetch(url, { signal: AbortSignal.timeout(30_000) }).then((r) => r.json(), (e) => ({ error: e.message }));
+      // a throttled reply (429) is plain text: its parse error must reach the retry, not escape it (2026-11-06)
+      j = await fetch(url, { signal: AbortSignal.timeout(30_000) }).then((r) => r.json().catch(() => ({ error: `http ${r.status}` })), (e) => ({ error: e.message }));
     }
     if (!j.Items) throw new Error(`retail prices: ${JSON.stringify(j).slice(0, 200)}`);
     items.push(...j.Items);
@@ -114,7 +132,8 @@ async function prices() {
 function plan() {
   const label = Object.fromEntries(P.PORTFOLIO.map((p) => [p.id, p.serviceName]));
   const combos = [["6 services", { vm: false }], ["6 services + PG on B2s", { vm: false, pgSku: "Standard_B2s" }], ["7 services (--vm)", { vm: true }],
-    ["7 services (--vm) + PG on B2s", { vm: true, pgSku: "Standard_B2s" }]];
+    ["7 services (--vm) + PG on B2s", { vm: true, pgSku: "Standard_B2s" }],
+    ["9 services (M4: --vm, lb, pips) + PG on B2s", { vm: true, lb: true, vnet: true, pgSku: "Standard_B2s" }]];
   for (const [name, o] of combos) {
     const d = P.dailyPlan(o);
     console.log(`\n${name}: ${usd(d.total)}/day, ${usd(d.total60)} over 60 days; M3 adds ${usd(d.added)}/day (${usd(d.added60)} over 60 days)`);
@@ -175,9 +194,11 @@ async function status() {
   if (!CREDS) { console.error("status needs AZURE_SP_CLIENT_ID, AZURE_SP_SECRET, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID"); return 2; }
   const days = Number(opt("--days", P.ALERT.queryDays)), t = today(), from = P.addDays(t, -(days - 1));
   const { daily, currency, source } = await costDaily(from, t);
-  const vmExists = !!(await arm("GET", `${SUB_PATH()}/resourceGroups/${P.VM.rg}/providers/Microsoft.Compute/virtualMachines/${P.VM.name}?api-version=${API.vm}`, undefined, { allow404: true }).catch(() => null));
-  const portfolio = P.activePortfolio({ vm: vmExists });
-  const res = P.computeStreak(daily, { asOf: t, from, portfolio });
+  const ids = V.m4Ids(SUB_PATH());
+  const exists = async (id, v) => !!(await arm("GET", `${id}?api-version=${v}`, undefined, { allow404: true }).catch(() => null));
+  const portfolio = P.activePortfolio({ vm: await exists(ids.vm, API.vm), lb: await exists(ids.lb, API.net), vnet: await exists(ids.pip(1), API.net) });
+  const res = P.computeStreak(daily, { asOf: t, from, portfolio, required: MILESTONE.required });
+  const m3 = MILESTONE.required > 5 ? P.computeStreak(daily, { asOf: t, from, portfolio, required: 5 }).streak : null;
   const show = P.dayList(P.addDays(t, -15), t);
   console.log(`Cost Management, ActualCost by ServiceName, USD (${source}; billed in ${currency}); last ${show.length} days, * = not closed yet:`);
   console.log(`  ${"service".padEnd(34)}${show.map((d) => (d.slice(8) + (d > res.lastClosed ? "*" : " ")).padStart(7)).join("")}`);
@@ -187,11 +208,16 @@ async function status() {
     console.log(`  ${s.slice(0, 33).padEnd(34)}${cells.join("")}`);
   }
   console.log(`  ${"services >= $1".padEnd(34)}${show.map((d) => String(Object.values(daily[d] || {}).filter((v) => v >= 1).length).padStart(7)).join("")}`);
+  console.log(`  ${"whole subscription".padEnd(34)}${show.map((d) => Object.values(daily[d] || {}).reduce((a, v) => a + v, 0).toFixed(1).padStart(7)).join("")}`);
   const s = res.streak;
-  console.log(`\n60-day clock (strict: one set of >= ${P.RULE.workloads} services each >= $1 every closed day; last closed ${res.lastClosed}):`);
-  console.log(s.days ? `  day ${s.days} of ${P.RULE.days}, started ${s.start}, ${s.remaining} to go, completes ${s.completes}; held: ${s.set.join(", ")}`
-    : "  not running: no closed day has 5 services each >= $1");
-  console.log(`  loose reading (>= 5 services each day, any): ${res.loose.days} day(s)${res.loose.start ? ` since ${res.loose.start}` : ""}`);
+  console.log(`\n60-day clock, ${MILESTONE.id.toUpperCase()} (strict: one set of >= ${MILESTONE.required} services each >= $1 every closed day; last closed ${res.lastClosed}):`);
+  console.log(s.days ? `  day ${s.days} of ${P.RULE.days}, started ${s.start} (the earliest qualifying day of the current run; M3_SINCE only gates alerts), ${s.remaining} to go, completes ${s.completes}; held: ${s.set.join(", ")}`
+    : `  not running: no closed day has ${MILESTONE.required} services each >= $1`);
+  const d1 = opt("--day1", P.DAY1_CANDIDATE), d1Row = res.days.find((d) => d.date === d1);
+  console.log(`  day-1 candidate ${d1}: ${!d1Row ? (d1 > res.lastClosed ? "not closed yet" : "outside the window") : `${d1Row.n} services >= $1 (${d1Row.qualifying.join(", ")}); ` +
+    `${s.start && s.start <= d1 ? "IN the current run" : "not in the current run"}${m3 ? `; M3 reading ${m3.start && m3.start <= d1 ? "includes it" : "does not include it"}` : ""}`}`);
+  if (m3) console.log(`  M3 reading (>= 5): ${m3.days ? `day ${m3.days}, started ${m3.start}, completes ${m3.completes}` : "not running"}`);
+  console.log(`  loose reading (>= ${MILESTONE.required} services each day, any): ${res.loose.days} day(s)${res.loose.start ? ` since ${res.loose.start}` : ""}`);
   const under = res.under.filter((u) => u.date > P.addDays(res.lastClosed, -7));
   if (under.length) console.log(`  portfolio under $1 in the last 7 closed days: ${under.map((u) => `${u.date} ${u.id} ${usd(u.usd)}`).join("; ")}`);
   try {
@@ -201,8 +227,12 @@ async function status() {
       const txt = await r.text();
       if (r.status === 404) { console.log(`  ${N.container}/${name}: none`); continue; }
       const j = JSON.parse(txt);
-      if (name.startsWith("ledger")) console.log(`  ${N.container}/${name}: ${Object.entries(j.lanes || {}).map(([k, l]) => `${k} ${usd(P.laneReported(j, k))}`).join(", ")} (${(j.runs || []).length} run(s))`);
-      else console.log(`  ${N.container}/${name}: ${j.ok ? "OK" : `ALERT ${j.reasons.map((x) => x.reason).join(", ")}`}; credit ${j.credits?.supported ? j.credits.balance : "unsupported"}`);
+      if (name.startsWith("ledger")) {
+        const r = P.ledgerRuns(j);
+        console.log(`  ${N.container}/${name}: ${Object.entries(j.lanes || {}).map(([k, l]) => `${k} ${usd(P.laneReported(j, k))}${j.targets?.[k]?.raise ? ` (raised to ${usd(j.targets[k].target)})` : ""}`).join(", ")} ` +
+          `(${(j.runs || []).length} run(s) by ${r.runners.join("+") || "-"}${r.alerts.length ? `; alerts ${r.alerts.map((a) => `${a.runner}:${a.reason}:${a.lane || ""}`).join(", ")}` : ""})`);
+      } else console.log(`  ${N.container}/${name}: ${j.ok ? "OK" : `ALERT ${j.reasons.map((x) => x.reason).join(", ")}`}${j.warnings?.length ? `; WARN ${j.warnings.map((x) => x.reason).join(", ")}` : ""}; ` +
+        `credit ${j.credits?.supported ? j.credits.balance : "unsupported"}${j.runway ? `; runway ${j.runway.currency || ""} ${j.runway.projected ?? j.runway.projectedUsd} at ${j.runway.endDate}` : ""}`);
     }
   } catch (e) { console.log(`  ledger/report: not readable (${e.message.slice(0, 120)})`); }
   for (const [what, path] of [["Consumption balances", `${SUB_PATH()}/providers/Microsoft.Consumption/balances?api-version=2024-08-01`],
@@ -233,7 +263,10 @@ async function image() {
     const op = r.headers.get("azure-asyncoperation") || r.headers.get("location");
     if (!op) return say("image", "import accepted");
     const st = await until(async () => {
-      const s = await arm("GET", op.replace("https://management.azure.com", ""), undefined, { raw: true });
+      // 2026-11-06 live: with the tag present, ACR's async-operation poll itself answers 409 "Tag … already exists" (a
+      // NoForce import that has nothing to do), which arm() throws; read it as the Failed+exists outcome it is
+      const s = await arm("GET", op.replace("https://management.azure.com", ""), undefined, { raw: true })
+        .catch((e) => (/already exists/i.test(e.message) ? { status: 409, body: { status: "Failed", error: { message: String(e.message) } } } : Promise.reject(e)));
       const v = s.body?.status || (s.status === 200 || s.status === 204 ? "Succeeded" : "");
       return /^(Succeeded|Failed|Canceled)$/.test(v) && { status: v, error: s.body?.error };
     }, { everyMs: 5000, maxMs: 600_000, what: "image import" });
@@ -270,7 +303,32 @@ async function container() {
   await act("container", `create private container ${N.sa}/${N.container}`, () => arm("PUT", `${sa}/blobServices/default/containers/${N.container}?api-version=${API.st}`, { properties: { publicAccess: "None" } }));
 }
 
-/** Everything the two jobs need, resolved from the environment (+ ARM when credentials exist). */
+/** taxila-ai-* accounts in this subscription and their deployments (read-only GETs). */
+async function aiAccounts() {
+  const all = [];
+  let path = `${SUB_PATH()}/providers/Microsoft.CognitiveServices/accounts?api-version=${API.cog}`;
+  for (let i = 0; path && i < 10; i++) { const r = await arm("GET", path); all.push(...(r.value || [])); path = r.nextLink ? r.nextLink.replace("https://management.azure.com", "") : null; }
+  const out = [];
+  for (const a of all.filter((x) => /^taxila-ai-/.test(x.name))) {
+    const d = (await arm("GET", `${a.id}/deployments?api-version=${API.cog}`).catch(() => ({ value: [] }))).value || [];
+    out.push({ name: a.name, id: a.id, location: a.location, kind: a.kind, deployments: d.map((x) => ({ name: x.name, format: x.properties?.model?.format,
+      model: x.properties?.model?.name, state: x.properties?.provisioningState, chat: x.properties?.capabilities?.chatCompletion === "true" })) });
+  }
+  return out;
+}
+const accountKey = async (a) => (await arm("POST", `${a.id}/listKeys?api-version=${API.cog}`)).key1;
+/** TTS regions with a verified S1 neural price row in plan.js. */
+const TTS_PRICED = Object.fromEntries(Object.entries(P.PRICES).filter(([k]) => k.startsWith("tts:neural")).map(([k, p]) => [p.region, k]));
+
+/** The credit balance and the principal's secret expiry the verifier checks: the environment's, else the owner's 2026-11-06 reading. */
+function credit() {
+  const inr = E.M3_BALANCE_INR !== undefined && E.M3_BALANCE_INR !== "" ? Number(E.M3_BALANCE_INR) : P.CREDIT.balanceInr;
+  const at = E.M3_BALANCE_AT || P.CREDIT.at, secretExpires = E.M3_SP_SECRET_EXPIRES || P.CREDIT.spSecretExpires;
+  if (!Number.isFinite(inr) || !/^\d{4}-\d{2}-\d{2}$/.test(at) || !/^\d{4}-\d{2}-\d{2}$/.test(secretExpires)) throw new Error("M3_BALANCE_INR / M3_BALANCE_AT / M3_SP_SECRET_EXPIRES: a number and YYYY-MM-DD dates");
+  return { inr, at, secretExpires, from: E.M3_BALANCE_INR ? "M3_BALANCE_INR" : P.CREDIT.source };
+}
+
+/** Everything the two jobs (and the VM runner) need, resolved from the environment (+ ARM when credentials exist). */
 async function jobInputs() {
   const fast = opt("--models-deployment", E.DEPLOY_FAST || "taxila-fast"), slow = opt("--models-fallback", E.DEPLOY_BRAIN || "taxila-brain");
   const priceArg = opt("--models-price", null);
@@ -282,7 +340,7 @@ async function jobInputs() {
   };
   const speech = [[E.AZURE_SPEECH_REGION_SIN, E.AZURE_SPEECH_KEY_SIN], [E.AZURE_SPEECH_REGION, E.AZURE_SPEECH_KEY]].filter(([r, k]) => r && k);
   const uniq = speech.filter(([r], i) => speech.findIndex(([x]) => x === r) === i);
-  let envRes = null, web = null, registries = null, regSecrets = [], current = {};
+  let envRes = null, web = null, registries = null, regSecrets = [], current = {}, fb2 = null, fb2Note = "not looked up (no credentials)", spNote = null, ai = [];
   if (CREDS) {
     envRes = await arm("GET", `/providers/Microsoft.App/managedEnvironments/${N.env}?api-version=${API.aca}`);
     web = await arm("GET", `/providers/Microsoft.App/containerApps/${N.web}?api-version=${API.aca}`);
@@ -302,40 +360,94 @@ async function jobInputs() {
       const x = await arm("GET", `/providers/Microsoft.App/jobs/${j}?api-version=${API.aca}`, undefined, { allow404: true });
       if (x) current[j] = x;
     }
+    // (e) the third models fallback: a chat deployment on a Taxila-owned account (taxila-ai-*) with a verified price
+    ai = await aiAccounts();
+    const want2 = opt("--models-fallback2", E.M3_MODELS_FALLBACK2 || "auto");
+    if (want2 === "none") fb2Note = "off (--models-fallback2 none)";
+    else {
+      const pick = want2 === "auto" ? P.pickModelsFallback2(ai)
+        : P.pickModelsFallback2(ai.filter((a) => a.name === want2.split("/")[0]).map((a) => ({ ...a, deployments: a.deployments.filter((d) => d.name === want2.split("/")[1]) })));
+      if (!pick) fb2Note = `none: no chat deployment with a verified price on ${ai.map((a) => a.name).join(", ") || "any taxila-ai-* account"}`;
+      else {
+        const acct = ai.find((a) => a.name === pick.account);
+        fb2 = { ...pick, key: await accountKey(acct) };
+        fb2Note = `${pick.account}/${pick.deployment} (${pick.model}, ${pick.region}, $${pick.price.in}/$${pick.price.out} per 1M in/out)`;
+      }
+    }
+    // a TTS fallback in another priced region on a taxila-ai-* account, when .env.local names only one Speech region
+    const wantSp = opt("--speech-fallback", E.M3_SPEECH_FALLBACK || "auto");
+    if (uniq.length === 1 && wantSp !== "none") {
+      const cand = ai.filter((a) => (wantSp === "auto" || a.name === wantSp) && a.location !== uniq[0][0] && TTS_PRICED[a.location] && /^(AIServices|SpeechServices|CognitiveServices)$/.test(a.kind));
+      if (cand[0]) { uniq.push([cand[0].location, await accountKey(cand[0])]); spNote = `${cand[0].name} (${cand[0].location}, ${TTS_PRICED[cand[0].location]})`; }
+      else spNote = "none: no taxila-ai-* account in another region with a verified TTS price";
+    }
   }
   const curEnv = (j, k) => current[j]?.properties?.template?.containers?.[0]?.env?.find((e) => e.name === k)?.value;
   const since = opt("--since", curEnv(N.verify, "M3_SINCE") || P.addDays(today(), 1));
   const untilD = opt("--until", curEnv(N.keeper, "M3_UNTIL") || DEFAULT_UNTIL);
-  const vmOn = flag("--vm") || (CREDS && !!(await arm("GET", `${SUB_PATH()}/resourceGroups/${P.VM.rg}/providers/Microsoft.Compute/virtualMachines/${P.VM.name}?api-version=${API.vm}`, undefined, { allow404: true }).catch(() => null)));
+  const exists = async (id, v) => (CREDS ? !!(await arm("GET", `${id}?api-version=${v}`, undefined, { allow404: true }).catch(() => null)) : false);
+  const ids = V.m4Ids(SUB_PATH());
+  const vmOn = flag("--vm") || await exists(ids.vm, API.vm);
+  // lb / vnet join the verifier's portfolio once they exist, or when this apply creates them
+  const lbOn = STEPS.includes("lb") || await exists(ids.lb, API.net);
+  const vnetOn = STEPS.includes("pips") || await exists(ids.pip(1), API.net);
+  const runCmd = CREDS ? await arm("GET", `${ids.runCmd}?api-version=${API.vm}&$expand=instanceView`, undefined, { allow404: true }).catch(() => null) : null;
+  const runnerOn = STEPS.includes("runner") || runCmd?.properties?.instanceView?.executionState === "Succeeded";
+  const runnersSince = curEnv(N.verify, "M3_RUNNERS_SINCE") || P.addDays(today(), 1);
   const storageKeyV = CREDS ? await storageKey() : E.AZURE_STORAGE_KEY;
-  return { fast, slow, fastPrice: priceOf(fast, priceArg), slowPrice: P.MODEL_PRICES[slow] || null, speech: uniq, envRes, web, registries, regSecrets, current, since, until: untilD, vmOn, storageKey: storageKeyV };
+  return { fast, slow, fastPrice: priceOf(fast, priceArg), slowPrice: P.MODEL_PRICES[slow] || null, fb2, fb2Note, spNote, speech: uniq, envRes, web, registries, regSecrets, current,
+    since, until: untilD, vmOn, lbOn, vnetOn, runnerOn, runnersSince, storageKey: storageKeyV };
+}
+
+/**
+ * The keeper's env as {name, value, secret?} (secret = the ACA secret-store name; the VM gets the value in its root-only
+ * env file instead). One list, so the two runners can never drift apart.
+ */
+function keeperEnvSpec(x, runner) {
+  const L = P.LANES, K = P.KEEPER, [sp1, sp2] = x.speech, e = [];
+  const add = (name, value, secret = null) => e.push({ name, value: value == null ? "" : String(value), secret });
+  add("M3_ROLE", "keeper"); add("M3_RUNNER", runner); add("M3_SINCE", x.since); add("M3_UNTIL", x.until);
+  add("M3_STORAGE_ACCOUNT", N.sa); add("M3_STORAGE_KEY", x.storageKey, "storage-key"); add("M3_CONTAINER", N.container);
+  for (const l of ["models", "tts", "storage"]) { add(`M3_${l.toUpperCase()}_TARGET`, L[l].targetUsd); add(`M3_${l.toUpperCase()}_CAP`, L[l].capUsd); }
+  add("M3_RAISE_FLOOR", K.raiseFloorUsd); add("M3_RAISE_MAX", K.raiseMaxUsd); add("M3_RAISE_HEADROOM", K.raiseHeadroomUsd); add("M3_LEASE_SEC", K.leaseSec); add("M3_LEASE_RENEW_MS", K.leaseRenewMs);
+  add("M3_DAY_GUARD_MIN", K.dayGuardMin);
+  add("M3_AOAI_ENDPOINT", E.AZURE_OPENAI_ENDPOINT || ""); add("M3_AOAI_KEY", E.AZURE_OPENAI_API_KEY, "aoai-key"); add("M3_AOAI_DEPLOYMENT", x.fast);
+  add("M3_AOAI_PRICE_IN", x.fastPrice.in); add("M3_AOAI_PRICE_CACHED", x.fastPrice.cached); add("M3_AOAI_PRICE_OUT", x.fastPrice.out);
+  if (x.slowPrice && x.slow !== x.fast) {
+    add("M3_AOAI_FALLBACK_DEPLOYMENT", x.slow); add("M3_AOAI_FALLBACK_PRICE_IN", x.slowPrice.in); add("M3_AOAI_FALLBACK_PRICE_CACHED", x.slowPrice.cached); add("M3_AOAI_FALLBACK_PRICE_OUT", x.slowPrice.out);
+  }
+  if (x.fb2) {
+    add("M3_AOAI_FALLBACK2_ENDPOINT", x.fb2.endpoint); add("M3_AOAI_FALLBACK2_KEY", x.fb2.key, "aoai-fb2-key"); add("M3_AOAI_FALLBACK2_DEPLOYMENT", x.fb2.deployment);
+    add("M3_AOAI_FALLBACK2_PRICE_IN", x.fb2.price.in); add("M3_AOAI_FALLBACK2_PRICE_CACHED", x.fb2.price.cached); add("M3_AOAI_FALLBACK2_PRICE_OUT", x.fb2.price.out);
+  }
+  if (sp1) { add("M3_SPEECH_REGION", sp1[0]); add("M3_SPEECH_KEY", sp1[1], "speech-key"); }
+  if (sp2) { add("M3_SPEECH_FALLBACK_REGION", sp2[0]); add("M3_SPEECH_FALLBACK_KEY", sp2[1], "speech-fb-key"); }
+  add("M3_TTS_PRICE_PER_MCHARS", P.PRICES["tts:neural"].usd); add("M3_STORAGE_OP_USD", P.PRICES["storage:listOp"].usd / 10_000);
+  if (runner === "vm") { add("M3_LOCAL_DIR", "/var/lib/m3"); add("M3_LOCAL_FALLBACK_HOUR", K.localFallbackHour); }
+  return e;
 }
 
 /** The two job bodies. Secret values sit in configuration.secrets; env only references them. */
 function jobBodies(x) {
   const plain = (name, value) => ({ name, value: String(value) });
   const ref = (name, secretRef) => ({ name, secretRef });
-  const L = P.LANES;
-  const [sp1, sp2] = x.speech;
-  const keeperSecrets = [{ name: "aoai-key", value: E.AZURE_OPENAI_API_KEY }, { name: "storage-key", value: x.storageKey },
-    ...(sp1 ? [{ name: "speech-key", value: sp1[1] }] : []), ...(sp2 ? [{ name: "speech-fb-key", value: sp2[1] }] : []), ...x.regSecrets];
-  const keeperEnv = [plain("M3_ROLE", "keeper"), plain("M3_UNTIL", x.until), plain("M3_STORAGE_ACCOUNT", N.sa), ref("M3_STORAGE_KEY", "storage-key"), plain("M3_CONTAINER", N.container),
-    ...["models", "tts", "storage"].flatMap((l) => [plain(`M3_${l.toUpperCase()}_TARGET`, L[l].targetUsd), plain(`M3_${l.toUpperCase()}_CAP`, L[l].capUsd)]),
-    plain("M3_AOAI_ENDPOINT", E.AZURE_OPENAI_ENDPOINT || ""), ref("M3_AOAI_KEY", "aoai-key"), plain("M3_AOAI_DEPLOYMENT", x.fast),
-    plain("M3_AOAI_PRICE_IN", x.fastPrice.in), plain("M3_AOAI_PRICE_CACHED", x.fastPrice.cached), plain("M3_AOAI_PRICE_OUT", x.fastPrice.out),
-    ...(x.slowPrice && x.slow !== x.fast ? [plain("M3_AOAI_FALLBACK_DEPLOYMENT", x.slow), plain("M3_AOAI_FALLBACK_PRICE_IN", x.slowPrice.in),
-      plain("M3_AOAI_FALLBACK_PRICE_CACHED", x.slowPrice.cached), plain("M3_AOAI_FALLBACK_PRICE_OUT", x.slowPrice.out)] : []),
-    ...(sp1 ? [plain("M3_SPEECH_REGION", sp1[0]), ref("M3_SPEECH_KEY", "speech-key")] : []),
-    ...(sp2 ? [plain("M3_SPEECH_FALLBACK_REGION", sp2[0]), ref("M3_SPEECH_FALLBACK_KEY", "speech-fb-key")] : []),
-    plain("M3_TTS_PRICE_PER_MCHARS", P.PRICES["tts:neural"].usd), plain("M3_STORAGE_OP_USD", P.PRICES["storage:listOp"].usd / 10_000)];
-  const portfolio = P.activePortfolio({ vm: x.vmOn }).map((p) => ({ id: p.id, match: p.match }));
+  const L = P.LANES, A = P.ALERT, M = MILESTONE;
+  const spec = keeperEnvSpec(x, "aca");
+  const keeperSecrets = [...spec.filter((v) => v.secret).map((v) => ({ name: v.secret, value: v.value })), ...x.regSecrets];
+  const keeperEnv = spec.map((v) => (v.secret ? ref(v.name, v.secret) : plain(v.name, v.value)));
+  const portfolio = P.activePortfolio({ vm: x.vmOn, lb: x.lbOn, vnet: x.vnetOn }).map((p) => ({ id: p.id, match: p.match }));
   const verifySecrets = [{ name: "sp-secret", value: E.M3_VERIFY_SP_SECRET || E.AZURE_SP_SECRET }, { name: "storage-key", value: x.storageKey }, ...x.regSecrets];
+  const C = credit();
   const verifyEnv = [plain("M3_ROLE", "verify"), plain("AZURE_TENANT_ID", E.AZURE_TENANT_ID || ""), plain("AZURE_SUBSCRIPTION_ID", E.AZURE_SUBSCRIPTION_ID || ""),
     plain("M3_SP_CLIENT_ID", E.M3_VERIFY_SP_CLIENT_ID || E.AZURE_SP_CLIENT_ID || ""), ref("M3_SP_SECRET", "sp-secret"),
     plain("M3_STORAGE_ACCOUNT", N.sa), ref("M3_STORAGE_KEY", "storage-key"), plain("M3_CONTAINER", N.container), plain("M3_SINCE", x.since), plain("M3_UNTIL", x.until),
     plain("M3_PORTFOLIO_JSON", JSON.stringify(portfolio)), plain("M3_LANES_JSON", JSON.stringify(Object.fromEntries(Object.entries(L).map(([k, v]) => [k, { targetUsd: v.targetUsd }])))),
-    plain("M3_FX_INR", E.M3_FX_INR || 96), plain("M3_DAYS", P.ALERT.queryDays), plain("M3_ALERT_DAYS", P.ALERT.alertWindowDays), plain("M3_REQUIRED", P.RULE.workloads),
-    plain("M3_MIN_SERVICES", P.ALERT.minServices), plain("M3_FLOOR", P.ALERT.portfolioFloorUsd), plain("M3_OPEN_DAYS", P.ALERT.openDays)];
+    plain("M3_FX_INR", E.M3_FX_INR || 96), plain("M3_DAYS", A.queryDays), plain("M3_ALERT_DAYS", A.alertWindowDays), plain("M3_REQUIRED", M.required),
+    plain("M3_MIN_SERVICES", M.minServices), plain("M3_FLOOR", A.portfolioFloorUsd), plain("M3_FLOOR_ALERT", M.floorAlert ? 1 : 0), plain("M3_OPEN_DAYS", A.openDays),
+    plain("M3_RUNNERS", x.runnerOn ? "aca,vm" : "aca"), plain("M3_RUNNERS_SINCE", x.runnersSince),
+    plain("M3_BURST_USD", A.burstUsd), plain("M3_BURST_DAYS", A.burstDays), plain("M3_RUNWAY_DAYS", A.runwayDays), plain("M3_RUNWAY_AVG_DAYS", A.runwayAvgDays),
+    plain("M3_RUNWAY_MIN_INR", A.runwayMinInr), plain("M3_BALANCE_INR", C.inr), plain("M3_BALANCE_AT", C.at),
+    plain("M3_SP_SECRET_EXPIRES", C.secretExpires), plain("M3_SECRET_WARN_DAYS", A.secretWarnDays), plain("M3_DAY1", P.DAY1_CANDIDATE)];
   const wp = (x.envRes?.properties?.workloadProfiles || []).length ? { workloadProfileName: "Consumption" } : {};
   const body = (job, cron, timeout, cpu, memory, secrets, env, file) => {
     const script = readFileSync(new URL(`../infra/m3/${file}`, import.meta.url), "utf8");
@@ -367,14 +479,22 @@ function jobView(j) {
     secrets: (cfg.secrets || []).map((s) => s.name).sort().join(","), registries: (cfg.registries || []).map((r) => r.server).join(","), spec: j?.tags?.["m3-spec"] || null };
 }
 
+let INPUTS = null;
+/** jobInputs once per run (jobs and runner share it: one keeper env for both runners). */
+const inputs = async () => (INPUTS ||= await jobInputs());
+
 async function jobs() {
-  const x = await jobInputs();
+  const x = await inputs();
   const bodies = jobBodies(x);
   const missing = Object.entries(bodies).flatMap(([j, b]) => b.properties.configuration.secrets.filter((s) => !s.value).map((s) => `${j}:${s.name}`));
   if (!x.speech.length) missing.push("speech region/key (AZURE_SPEECH_REGION_SIN + AZURE_SPEECH_KEY_SIN, or AZURE_SPEECH_REGION + AZURE_SPEECH_KEY)");
   if (!E.AZURE_OPENAI_ENDPOINT) missing.push("AZURE_OPENAI_ENDPOINT");
-  say("jobs", `models lane: ${x.fast} ($${x.fastPrice.in}/$${x.fastPrice.out} per 1M in/out)${x.slowPrice && x.slow !== x.fast ? `, fallback ${x.slow}` : ""}; ` +
-    `speech: ${x.speech.map(([r]) => r).join(" → ") || "NONE"}; storage: ${N.sa}/${N.container}; since ${x.since}, until ${x.until}; portfolio ${P.activePortfolio({ vm: x.vmOn }).map((p) => p.id).join(",")}`);
+  say("jobs", `models lane: ${x.fast} ($${x.fastPrice.in}/$${x.fastPrice.out} per 1M in/out)${x.slowPrice && x.slow !== x.fast ? ` → fallback ${x.slow}` : ""} → fallback2 ${x.fb2Note}; ` +
+    `speech: ${x.speech.map(([r]) => r).join(" → ") || "NONE"}${x.spNote ? ` (fallback: ${x.spNote})` : ""}; storage: ${N.sa}/${N.container}; since ${x.since}, until ${x.until}`);
+  say("jobs", `milestone ${MILESTONE.id}: ${MILESTONE.required} required, alert under ${MILESTONE.minServices}, a single service under the floor ${MILESTONE.floorAlert ? "alerts" : "warns"}; ` +
+    `portfolio ${P.activePortfolio({ vm: x.vmOn, lb: x.lbOn, vnet: x.vnetOn }).map((p) => p.id).join(",")}; runners ${x.runnerOn ? `aca,vm (both expected from ${x.runnersSince})` : "aca"}; ` +
+    `keeper "${CRON.keeper}", verify "${CRON.verify}"; runway from ₹${credit().inr} on ${credit().at} (${credit().from}), alert under ₹${P.ALERT.runwayMinInr} at M3_SINCE + ${P.ALERT.runwayDays} days; ` +
+    `principal secret expires ${credit().secretExpires} (alert ${P.ALERT.secretWarnDays} days before)`);
   if (missing.length) {
     say("jobs", `${DRY ? "WOULD STOP" : "STOP"}: missing ${missing.join(", ")}`);
     if (!DRY) throw new Error(`missing inputs: ${missing.join(", ")}`);
@@ -413,7 +533,8 @@ async function actiongroup() {
   const path = `/providers/Microsoft.Insights/actionGroups/${N.ag}?api-version=${API.insights}`;
   const email = String(E.M3_ALERT_EMAIL || "").trim();
   const body = P.actionGroupBody({ ownerRole: OWNER_ROLE, email, tags: TAGS });
-  const who = `armRoleReceivers Owner (${OWNER_ROLE}; direct assignments only)${email ? " + emailReceiver (M3_ALERT_EMAIL)" : " (set M3_ALERT_EMAIL to also reach an Owner held through a group)"}`;
+  const k = body.properties.emailReceivers.length;
+  const who = `armRoleReceivers Owner (${OWNER_ROLE}; direct assignments only)${k ? ` + ${k} emailReceiver(s) from M3_ALERT_EMAIL` : " (set M3_ALERT_EMAIL, comma-separated, to also reach an Owner held through a group)"}`;
   if (CREDS) {
     const g = await arm("GET", path, undefined, { allow404: true });
     if (P.actionGroupMatches(g, body)) { say("actiongroup", `ok: ${N.ag} → ${who}`); return g; }
@@ -487,7 +608,7 @@ async function vm() {
       "VNet taxila-m3-vnet 10.73.0.0/24 (private subnet: no default outbound access)"],
     [ids.nic, API.net, { location: loc, tags: TAGS, properties: { networkSecurityGroup: { id: ids.nsg },
       ipConfigurations: [{ name: "ipconfig1", properties: { subnet: { id: `${ids.vnet}/subnets/default` }, privateIPAllocationMethod: "Dynamic" } }] } },
-      "NIC taxila-m3-nic, private IP only (no public IP)"],
+      "NIC taxila-m3-nic (created private; the pips step adds its one public IP, the lb step its pool)"],
   ];
   for (const [path, v, body, what] of steps) {
     if (await get(path, v)) { say("vm", `ok: ${what.split(" (")[0]} exists`); continue; }
@@ -517,6 +638,196 @@ async function vm() {
   });
 }
 
+// ── M4: two spare services and the keeper's second runner, all in taxila-m3-rg (owner-approved 2026-11-06) ──
+
+const short = (id) => String(id).split("/").slice(-2).join("/");
+const getRes = (id, v) => (CREDS ? arm("GET", `${id}?api-version=${v}`, undefined, { allow404: true }) : Promise.resolve(null));
+async function putAndWait(id, v, body, what) {
+  await arm("PUT", `${id}?api-version=${v}`, body);
+  await until(async () => {
+    const r = await arm("GET", `${id}?api-version=${v}`);
+    if (r.properties?.provisioningState === "Failed") throw new Error(`${what} provisioning failed`);
+    return !r.properties?.provisioningState || r.properties.provisioningState === "Succeeded";
+  }, { everyMs: 4000, maxMs: 600_000, what });
+}
+/** pips / lb / runner sit on taxila-m3-vm: → the VM, or null in a plan without it (apply refuses). */
+async function needVm(step) {
+  const v = await getRes(V.m4Ids(SUB_PATH()).vm, API.vm);
+  if (v) return v;
+  if (DRY || !CREDS) { say(step, `NOTE: ${P.VM.name} ${CREDS ? "does not exist" : "not read (no credentials)"}; the plan assumes it (apply --vm creates it first)`); return null; }
+  throw new Error(`${step}: ${P.VM.name} does not exist; run apply --vm first`);
+}
+/** Re-read the live retail price before renting anything; refuse below $1.25/day (as the vm step does). */
+async function livePerDay(step, keys, perDay, label, planned) {
+  const live = {};
+  for (const k of keys) live[k] = await livePrice(k).catch(() => null);
+  if (keys.some((k) => live[k] == null)) throw new Error(`${step}: live retail price of ${keys.join(", ")} not readable; refusing`);
+  const day = perDay(live);
+  if (day < P.MIN_FIXED_USD_PER_DAY) throw new Error(`${step}: ${label} is $${day.toFixed(3)}/day at live prices, below $${P.MIN_FIXED_USD_PER_DAY}; refusing`);
+  say(step, `${label}: ${keys.map((k) => `${k} $${live[k]}/${P.PRICES[k].unit.replace(/^1 ?\/?/, "")} (${P.PRICES[k].region})`).join(" + ")} → $${day.toFixed(3)}/day live (plan.js $${planned})`);
+}
+
+async function pips() {
+  const ids = V.m4Ids(SUB_PATH());
+  await livePerDay("pips", ["pip:standard"], (l) => l["pip:standard"] * 24 * P.PIPS.count, `${P.PIPS.count} Standard static IPv4 public IPs`, P.pipsDailyUsd());
+  await needVm("pips");
+  // the NSG must keep the internet out BEFORE a public IP goes on the NIC
+  const nsg = await getRes(ids.nsg, API.net);
+  if (nsg) {
+    const c = V.nsgDeniesInternetInbound(nsg);
+    if (!c.ok) throw new Error(`pips: taxila-m3-nsg does not deny internet inbound (${c.why}); refusing to attach a public IP`);
+    say("pips", `ok: taxila-m3-nsg denies internet inbound (${c.why}); it guards both the NIC and the subnet`);
+  } else say("pips", `NOTE: taxila-m3-nsg ${CREDS ? "missing" : "not read"}; apply --vm creates it with no custom rules, and this step re-checks it`);
+  for (let i = 1; i <= P.PIPS.count; i++) {
+    const id = ids.pip(i), name = V.pipName(i), cur = await getRes(id, API.net);
+    if (cur) {
+      if (!V.pipOk(cur)) throw new Error(`pips: ${name} exists but is not Standard / static / IPv4 (${cur.sku?.name} ${cur.properties?.publicIPAllocationMethod})`);
+      say("pips", `ok: ${name} ${cur.properties.ipAddress || ""} ${cur.properties.ipConfiguration ? `on ${short(cur.properties.ipConfiguration.id.split("/ipConfigurations/")[0])}` : "(unattached)"}`);
+      continue;
+    }
+    await act("pips", `create ${name}: Standard static IPv4, ${P.PIPS.region}, $${(P.PRICES["pip:standard"].usd * 24).toFixed(2)}/day${i === P.PIPS.onNic ? " (goes on taxila-m3-nic)" : " (unattached)"}`,
+      () => putAndWait(id, API.net, V.pipBody({ tags: TAGS }), name));
+  }
+  const nic = await getRes(ids.nic, API.net);
+  if (!nic) return say("pips", `WOULD attach ${V.pipName(P.PIPS.onNic)} to taxila-m3-nic once it exists`);
+  const { changed, body } = V.nicWith(nic, { publicIpId: ids.pip(P.PIPS.onNic) });
+  if (!changed.length) return say("pips", `ok: taxila-m3-nic holds ${V.pipName(P.PIPS.onNic)} (the VM's outbound)`);
+  await act("pips", `update taxila-m3-nic: ${changed.join("; ")}: the VM's outbound (its subnet has no default outbound); inbound from the internet stays denied`,
+    () => putAndWait(ids.nic, API.net, body, "taxila-m3-nic"));
+}
+
+async function lb() {
+  const ids = V.m4Ids(SUB_PATH());
+  await livePerDay("lb", ["lb:included", "lb:overage"], (l) => (l["lb:included"] + Math.max(0, P.LB.rules - 5) * l["lb:overage"]) * 24,
+    `taxila-m3-lb with ${P.LB.rules} rules (5 included + ${P.LB.rules - 5} overage)`, P.lbDailyUsd());
+  await needVm("lb");
+  const sn = await getRes(ids.subnetLb, API.net);
+  if (sn) say("lb", `ok: subnet taxila-m3-vnet/${P.LB.subnet} ${sn.properties?.addressPrefix}`);
+  else await act("lb", `create subnet taxila-m3-vnet/${P.LB.subnet} ${P.LB.subnetPrefix} (no default outbound, taxila-m3-nsg; the default subnet is untouched)`,
+    () => putAndWait(ids.subnetLb, API.net, V.lbSubnetBody(ids), `subnet ${P.LB.subnet}`));
+  const want = V.lbBody(ids, { tags: TAGS }), cur = await getRes(ids.lb, API.net);
+  const wv = V.lbView(want), hv = cur ? V.lbView(cur) : null;
+  const diff = hv ? Object.keys(wv).filter((k) => wv[k] !== hv[k]) : null;
+  if (hv && !diff.length) say("lb", `ok: ${P.LB.name} ${hv.sku}, ${V.lbRuleCount(cur)} billed rules, frontend ${hv.frontends}, pool ${hv.pools}, probe ${hv.probes}`);
+  else {
+    if (DRY) console.log(`  ${P.LB.name}: ${want.sku.name} internal, ${P.LB.region}; frontend ${wv.frontends} (private, dynamic); pool ${wv.pools}; probe ${wv.probes} every 15 s; rules ${wv.rules}`);
+    await act("lb", `${cur ? `update ${P.LB.name} (changed: ${diff.join(", ")})` : `create ${P.LB.name}`}: Standard internal, ${P.LB.rules} TCP rules, $${P.lbDailyUsd()}/day`,
+      () => putAndWait(ids.lb, API.net, want, P.LB.name));
+  }
+  const nic = await getRes(ids.nic, API.net);
+  if (!nic) return say("lb", `WOULD put taxila-m3-nic in ${P.LB.name}/be once it exists`);
+  const { changed, body } = V.nicWith(nic, { poolId: ids.lbPool });
+  if (!changed.length) return say("lb", `ok: taxila-m3-nic is in ${P.LB.name}/be (the rules have a real backend)`);
+  await act("lb", `update taxila-m3-nic: ${changed.join("; ")}: the rules get a real backend, so an empty-pool billing rule cannot matter`,
+    () => putAndWait(ids.nic, API.net, body, "taxila-m3-nic"));
+}
+
+/** The hosts the VM runner calls, for its install-time reachability check (no credentials sent). */
+function runnerHosts(x) {
+  const h = new Set([`https://${N.sa}.blob.core.windows.net/`, "https://nodejs.org/"]);
+  for (const u of [E.AZURE_OPENAI_ENDPOINT, x.fb2?.endpoint]) if (u) h.add(`https://${new URL(u).host}/`);
+  for (const [r] of x.speech) h.add(`https://${r}.tts.speech.microsoft.com/`);
+  return [...h];
+}
+async function runner() {
+  const ids = V.m4Ids(SUB_PATH());
+  const vmr = await needVm("runner");
+  if (vmr) {
+    const iv = await arm("GET", `${ids.vm}/instanceView?api-version=${API.vm}`);
+    const power = (iv.statuses || []).find((s) => s.code?.startsWith("PowerState/"))?.code || "unknown", agent = iv.vmAgent?.statuses?.[0]?.displayStatus || "unknown";
+    say("runner", `${P.VM.name}: ${power}, VM agent ${agent} ${iv.vmAgent?.vmAgentVersion || ""}`.trim());
+    if (!/running/.test(power) || agent !== "Ready") { if (DRY) say("runner", "NOTE: Run Command needs the VM running with a Ready agent"); else throw new Error("runner: the VM is not running with a Ready agent"); }
+    const nic = await getRes(ids.nic, API.net);
+    const pip = (nic?.properties?.ipConfigurations || []).find((c) => c.properties?.publicIPAddress)?.properties.publicIPAddress.id;
+    if (!pip) { if (DRY) say("runner", `NOTE: taxila-m3-nic has no public IP yet: the pips step (run before this one) gives the VM the outbound the install needs`); else throw new Error("runner: taxila-m3-nic has no public IP (no outbound): run the pips step first"); }
+  }
+  const x = await inputs();
+  const pairs = keeperEnvSpec(x, "vm").map((v) => [v.name, v.value]);
+  const unset = pairs.filter(([k, v]) => !v && /KEY$|ENDPOINT$|ACCOUNT$/.test(k)).map(([k]) => k);
+  const envText = V.envFileText(pairs);
+  const src = readFileSync(new URL("../infra/m3/keeper-job.mjs", import.meta.url));
+  const keeperSha = createHash("sha256").update(src).digest("hex");
+  const script = V.runnerScript({ keeperGzB64: gzipSync(src, { level: 9 }).toString("base64"), keeperSha, hosts: runnerHosts(x) });
+  const spec = sha(`${script}\n${envText}`).slice(0, 16);   // covers the secret values too (a rotated key re-runs), never shows them
+  const cur = await getRes(ids.runCmd, `${API.vm}&$expand=instanceView`);
+  const iv = cur?.properties?.instanceView;
+  const tail = (s) => String(s || "").split("\n").filter((l) => /^M3-RUNNER/.test(l)).map((l) => V.scrubLine(l));
+  if (cur && cur.tags?.["m3-spec"] === spec && iv?.executionState === "Succeeded" && iv.exitCode === 0) {
+    say("runner", `ok: ${V.RUNCMD} on ${P.VM.name} unchanged (spec ${spec}), last run ${iv.endTime || "?"}`);
+    for (const l of tail(iv.output)) console.log(`  ${l}`);
+    return;
+  }
+  const { service, timer } = V.runnerUnits();
+  console.log(`  ${V.RUNCMD}: managed Run Command on ${P.VM.name} (${P.VM.region}), script ${Buffer.byteLength(script)} bytes sha256 ${sha(script).slice(0, 12)}, timeout 1500 s; ` +
+    `${cur ? `replaces the last one (${iv?.executionState || "?"}, exit ${iv?.exitCode ?? "?"}, spec ${cur.tags?.["m3-spec"] || "-"} → ${spec})` : "first install"}`);
+  console.log(`    node ${P.NODE.version} from nodejs.org/dist (${P.NODE.file}, sha256 ${P.NODE.sha256.slice(0, 16)}…, checked before unpacking) → /opt/m3/node`);
+  console.log(`    keeper infra/m3/keeper-job.mjs (${src.length} bytes, sha256 ${keeperSha.slice(0, 12)}, gzip+base64 inline) → /opt/m3/keeper-job.mjs`);
+  console.log(`    /etc/m3/keeper.env (root 0600, via the protectedParameter M3_ENV_B64; a GET never returns it): ` +
+    pairs.map(([k, v]) => `${k}=${/KEY$/.test(k) ? (v ? "<set>" : "<MISSING>") : v}`).join(" "));
+  console.log(`    m3-keeper.service: ${service.split("\n").filter((l) => /^(ExecStart|EnvironmentFile|DynamicUser|StateDirectory|TimeoutStartSec)=/.test(l)).join(", ")}`);
+  console.log(`    m3-keeper.timer: ${timer.split("\n").filter((l) => /^(OnCalendar|Persistent)=/.test(l)).join(", ")} (the ACA job runs "${CRON.keeper}")`);
+  console.log(`    reachability check after install (no credentials sent): ${runnerHosts(x).join(" ")}`);
+  if (unset.length) { say("runner", `${DRY ? "WOULD STOP" : "STOP"}: unset ${unset.join(", ")}`); if (!DRY) throw new Error(`runner: unset ${unset.join(", ")}`); return; }
+  const body = { location: P.VM.region, tags: { ...TAGS, "m3-spec": spec }, properties: { source: { script }, asyncExecution: false, timeoutInSeconds: 1500,
+    treatFailureAsDeploymentFailure: false, protectedParameters: [{ name: "M3_ENV_B64", value: Buffer.from(envText).toString("base64") }] } };
+  await act("runner", `${cur ? "re-run" : "create"} Run Command ${V.RUNCMD} on ${P.VM.name}: install Node ${P.NODE.version}, the keeper and its timer (every 3 h at :47 past 01, 04, ... UTC)`, async () => {
+    await arm("PUT", `${ids.runCmd}?api-version=${API.vm}`, body);
+    const done = await until(async () => {
+      const r = await arm("GET", `${ids.runCmd}?api-version=${API.vm}&$expand=instanceView`);
+      const s = r.properties?.instanceView?.executionState;
+      return /^(Succeeded|Failed|TimedOut|Canceled)$/.test(s || "") && r.properties.instanceView;
+    }, { everyMs: 10_000, maxMs: 1_800_000, what: `${V.RUNCMD} finished` });
+    for (const l of tail(done.output)) console.log(`  ${l}`);
+    if (done.executionState !== "Succeeded" || done.exitCode !== 0) throw new Error(`runner: ${done.executionState}, exit ${done.exitCode}: ${V.scrubLine(String(done.error || "").split("\n").slice(-6).join(" | "))}`);
+    say("runner", `${P.VM.name} runs the keeper every 3 hours; it shares the ledger lease with ${N.keeper}`);
+  });
+}
+
+/** The lock targets: what the 60 days stand on. NOT raghavsharma1729-compan-resource (another project's deployments). */
+async function lockTargets() {
+  const rgId = (rg) => `${SUB_PATH()}/resourceGroups/${rg}`, rg = process.env.AZURE_RESOURCE_GROUP || "rg-raghavsharma1729-7190";
+  const res = (name, resRg, type, why) => ({ kind: "res", name, rg: resRg, type, id: `${rgId(resRg)}/providers/${type}/${name}`, why });
+  const t = [{ kind: "rg", name: P.VM.rg, rg: P.VM.rg, id: rgId(P.VM.rg), why: "the VM, its disk, NIC, VNet, NSG, the LB and the 11 public IPs" },
+    res(N.registry, rg, "Microsoft.ContainerRegistry/registries", "Container Registry and the jobs' image"),
+    res(N.sa, rg, "Microsoft.Storage/storageAccounts", "the ledger, the reports, the storage lane"),
+    res(N.pg, N.pgRg, "Microsoft.DBforPostgreSQL/flexibleServers", "PostgreSQL"),
+    res(N.env, rg, "Microsoft.App/managedEnvironments", "the environment the jobs and taxila-web run in"),
+    res(N.keeper, rg, "Microsoft.App/jobs", "the keeper's ACA runner"), res(N.verify, rg, "Microsoft.App/jobs", "the verifier"),
+    res(N.ag, rg, "microsoft.insights/actionGroups", "who gets the alerts"),
+    ...Object.keys(RULES).map((r) => res(r, rg, "microsoft.insights/scheduledQueryRules", "an alert rule"))];
+  // the Speech account: the one whose key is the keeper's primary speech key (compared in memory, never printed)
+  let speech = null;
+  const key = E.AZURE_SPEECH_KEY_SIN || E.AZURE_SPEECH_KEY, region = E.AZURE_SPEECH_KEY_SIN ? E.AZURE_SPEECH_REGION_SIN : E.AZURE_SPEECH_REGION;
+  if (CREDS && key) {
+    for (const a of (await aiAccounts()).filter((a) => a.location === region)) {
+      const k = await arm("POST", `${a.id}/listKeys?api-version=${API.cog}`).catch(() => ({}));
+      if ([k.key1, k.key2].includes(key)) { speech = res(a.name, a.id.split("/")[4], "Microsoft.CognitiveServices/accounts", `the Speech key's account (${a.location}; ${a.deployments.length} model deployments)`); break; }
+    }
+  }
+  t.push(speech || { kind: "res", name: "<the Speech account behind AZURE_SPEECH_KEY_SIN>", rg, type: "Microsoft.CognitiveServices/accounts", id: null, why: "not identified" });
+  return t;
+}
+async function locks() {
+  const ACTION = "Microsoft.Authorization/locks/write";
+  for (const t of await lockTargets()) {
+    const label = t.kind === "rg" ? `resource group ${t.name}` : `${t.name} (${t.type.split("/").pop()})`;
+    if (!t.id || !CREDS) { say("locks", `${label}: not read (${t.id ? "no credentials" : t.why}); owner step:`); for (const l of V.lockSteps(t)) console.log(`    ${l}`); continue; }
+    const have = (await arm("GET", `${t.id}/providers/Microsoft.Authorization/locks?api-version=${API.locks}`, undefined, { allow404: true }).catch((e) => ({ err: e.status })));
+    if (have?.err || have === null) { say("locks", `${label}: locks not readable (${have?.err || 404})`); continue; }
+    if (V.lockCovered(have.value, t.id)) { say("locks", `ok: ${label} has a delete lock`); continue; }
+    const perms = (await arm("GET", `${t.id}/providers/Microsoft.Authorization/permissions?api-version=${API.perms}`).catch(() => ({ value: [] }))).value || [];
+    if (V.canDo(perms, ACTION)) {
+      await act("locks", `create CanNotDelete lock ${V.LOCK_NAME} on ${label} (${t.why})`,
+        () => arm("PUT", `${t.id}/providers/Microsoft.Authorization/locks/${V.LOCK_NAME}?api-version=${API.locks}`, { properties: { level: "CanNotDelete", notes: "M3/M4 credit unlock: do not delete (docs/design/round7/M3.md)" } }));
+      continue;
+    }
+    say("locks", `OWNER STEP: ${label} has no delete lock, and this principal may not create one (${ACTION} is not allowed: Contributor excludes Microsoft.Authorization/*/Write). Protects ${t.why}:`);
+    for (const l of V.lockSteps(t)) console.log(`    ${l}`);
+  }
+  say("locks", `everything inside ${P.VM.rg} (VM, disk, NIC, VNet, subnets, NSG, ${P.LB.name}, the ${P.PIPS.count} public IPs, the Run Command) is covered by the resource group's lock`);
+  say("locks", "NOT locked, on purpose: raghavsharma1729-compan-resource (a delete lock there would block another project's model-deployment deletes)");
+}
+
 async function pgDownsize(sku) {
   const path = `${SUB_PATH()}/resourceGroups/${N.pgRg}/providers/Microsoft.DBforPostgreSQL/flexibleServers/${N.pg}?api-version=${API.pg}`;
   let gb = P.PG_NOW.storageGb, cur = null;
@@ -540,24 +851,31 @@ async function pgDownsize(sku) {
   });
 }
 
+let STEPS = [];
 async function apply() {
-  const ALL = ["guard", "image", "acr", "container", "jobs", "actiongroup", "alerts"];
+  const ALL = ["guard", "image", "acr", "container", "vm", "jobs", "actiongroup", "alerts", "pips", "lb", "runner", "locks"];
   const only = opt("--only", null)?.split(",") || ALL;
+  if (flag("--vm") && !only.includes("vm")) only.push("vm");   // --vm always runs (or re-checks) the VM, before the steps that sit on it
   const bad = only.filter((s) => !ALL.includes(s));
   if (bad.length) { console.error(`unknown step(s) ${bad.join(", ")}; steps: ${ALL.join(", ")}`); return 2; }
-  console.log(`m3 apply: ${DRY ? "DRY RUN (nothing changes; pass --apply)" : "APPLYING"}${CREDS ? "" : " — no Azure credentials: the plan is printed without reading what exists"}`);
+  STEPS = ALL.filter((s) => only.includes(s));   // always in ALL's order: the NIC gets its public IP before the runner needs outbound
+  console.log(`m3 apply: ${DRY ? "DRY RUN (nothing changes; pass --apply)" : "APPLYING"} [${STEPS.join(", ")}]${CREDS ? "" : " — no Azure credentials: the plan is printed without reading what exists"}`);
   if (!DRY && !CREDS) { console.error("--apply needs AZURE_SP_CLIENT_ID, AZURE_SP_SECRET, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID"); return 2; }
   let ag = null;
-  for (const s of only) {
+  for (const s of STEPS) {
     if (s === "guard") await guard();
     if (s === "image") await image();
     if (s === "acr") await acr();
     if (s === "container") await container();
+    if (s === "vm") { if (flag("--vm")) await vm(); else say("vm", "skipped (owner-gated: pass --vm)"); }
     if (s === "jobs") await jobs();
     if (s === "actiongroup") ag = await actiongroup();
     if (s === "alerts") { if (!ag && CREDS) ag = await arm("GET", `/providers/Microsoft.Insights/actionGroups/${N.ag}?api-version=${API.insights}`, undefined, { allow404: true }); await alerts(ag); }
+    if (s === "pips") await pips();
+    if (s === "lb") await lb();
+    if (s === "runner") await runner();
+    if (s === "locks") await locks();
   }
-  if (flag("--vm")) await vm(); else say("vm", "skipped (owner-gated: pass --vm)");
   const pgSku = opt("--pg-downsize", null);
   if (pgSku) await pgDownsize(pgSku); else say("pg", "skipped (owner-gated: pass --pg-downsize Standard_B2s)");
   console.log(DRY ? "dry run done: nothing changed" : "done. Read back: node scripts/m3.mjs status");
