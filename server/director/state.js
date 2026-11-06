@@ -2613,7 +2613,12 @@ const isScriptCard = scriptCardOf;
  * @returns the step; `hold: true` when a module-only turn changed nothing (the last move and UI stand).
  */
 export function step(prev, input) {
+  // v6 R5: the second half of a split turn (splitLong) comes first
+  const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
+  if (heldOut) return heldOut;
   const s = structuredClone(prev);
+  // (a safety read or a stop over a split turn: the held half is let go; the card comes back through the walk)
+  if (s.splitHold) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
   // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
   // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
   if (input.event === "turn") s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
@@ -2910,7 +2915,54 @@ export function step(prev, input) {
   }
   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
   const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
-  return { state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) };
+  return splitLong({ state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) }, input);
+}
+
+/**
+ * v6 R5 (main, director8: 22 c6 turns over 60 words, up to 112; "the cap is enforced by splitting into turns, not by
+ * truncation"): a scripted move that closes the last card (a verdict's give-up, a missed card's close, the worked answer, a
+ * bridge, a return) AND opens new teaching, too long for one turn by its authored words, is said as two turns: the closures
+ * now, ending on a short "shall we go on?", with no card live (nothing they say to it is graded); the new beat and its card,
+ * whole and unchanged, on the next turn (step: s.splitHold). TAXILA_R7_SPLIT=off: one turn, as before.
+ */
+export const splitOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SPLIT ?? ""));
+const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split(/\s+/).filter(Boolean).length;
+export function splitLong(out, input) {
+  const { state: s, move, ui } = out;
+  if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
+  if (["safeguard", "wrap", "break", "repair"].includes(move.kind) || move.request || move.checkin) return out;
+  const closing = [move.gave?.answer, move.gave?.why, move.closed?.answer, move.closed?.why, move.workedDone?.answer, move.workedDone?.why, move.bridgeSaid, move.returned?.line];
+  if (!closing.some(Boolean)) return out;
+  const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
+  if (!teaching.some(Boolean)) return out;
+  const cap = s.ctx?.plainWords ? 45 : 60;
+  // (her verdict and the joins are about a dozen words beside the authored ones)
+  if (wordsIn(closing, teaching) + 12 <= cap) return out;
+  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
+    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
+    ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
+  const held = { ...move };
+  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "probeAck"]) delete held[k];
+  s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
+  s.activeItemId = undefined;
+  s.lastMove = close;
+  const closeUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
+  s.lastUi = closeUi;
+  return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
+}
+/** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
+function heldTurn(prev, input) {
+  const h = prev.splitHold;
+  if (!h || input.event !== "turn" || input.branch) return null;
+  const c = input.cls;
+  if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
+  const s = structuredClone(prev);
+  s.turn += 1;
+  s.splitHold = undefined;
+  s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
+  if (h.activeItemId) s.activeItemId = h.activeItemId;
+  return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
+    proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
 }
 
 /** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5

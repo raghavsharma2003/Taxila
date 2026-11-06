@@ -5,7 +5,7 @@
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { initLessonState, step, scriptWhyOf } from "../server/director/state.js";
+import { initLessonState, step, scriptWhyOf, splitLong } from "../server/director/state.js";
 import { setScriptForTest, scriptCheckItem } from "../server/director/script.js";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
@@ -275,5 +275,93 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     const out = await say(L, `Har side ko jodo, total perimeter milega. ${L.r.ui.ask.text}`, { state: { ctx: { ...L.r.state.ctx, lang: "hindi", langPinned: true } } });
     assert.match(out.reply, /bhuja|parimap|kul/i, out.reply);
     assert.doesNotMatch(out.reply.replace(L.r.ui.ask.text, ""), /\bside\b|\btotal\b|\bperimeter\b/i, out.reply);
+  });
+});
+
+describe("R5: a turn too long for one is split, never cut", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+
+  test("closures now (no card live, ending on 'shall we go on?'); the beat and its card whole on the next turn", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    // the e1 card's turn with a long close of an earlier card on it: over the cap together
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    const out0 = { ...L.r, state: structuredClone(L.r.state), move: { ...L.r.move, closed: { answer: "12 cm", why: long }, closeBeat: { scriptId: "x", beatId: "c0", kind: "check", board: { template: "measured@1", params: { shape: "rect", unit: "cm", w: 4, h: 2 } } } } };
+    const split = splitLong(out0, { event: "turn", kit: K });
+    assert.equal(split.move.splitClose, true, "a close + new teaching over the cap is split");
+    assert.equal(split.ui.ask, undefined, "no card is live on the closing half");
+    assert.equal(split.state.activeItemId, undefined);
+    assert.equal(split.move.closed?.answer, "12 cm", "the closures ride on it");
+    replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
+    const out = await textReply({ instructions: "x", state: { ...split.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: split.ui, module: null });
+    assert.match(out.reply, /pehle wale sawaal ka jawab 12 cm tha/, out.reply);
+    assert.match(out.reply, /(?:aage badhein|aage chalein|aage ke liye)\?$/, out.reply);
+    const held = split.state.splitHold;
+    const r2 = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: 9e6 });
+    assert.equal(r2.move.kind, held.move.kind, "the held beat comes next, unchanged");
+    assert.deepEqual(r2.ui, held.ui);
+    assert.equal(r2.state.activeItemId, held.activeItemId);
+    assert.equal(r2.move.closed, undefined, "the closures are not said twice");
+    assert.equal(r2.state.splitHold, undefined);
+    // (a short close beside the same teaching is one turn)
+    const short = splitLong({ ...L.r, state: structuredClone(L.r.state), move: { ...L.r.move, closed: { answer: "12 cm" } } }, { event: "turn", kit: K });
+    assert.notEqual(short.move.splitClose, true);
+  });
+
+  test("a stop said over the closing half lets the held half go", () => {
+    const s0 = { splitHold: { move: { kind: "explain" }, ui: { ask: { itemId: "x" } }, activeItemId: "x" } };
+    const L = run();
+    const st = { ...L.r.state, ...s0 };
+    const r = step(st, { event: "turn", kit: K, cls: { ...cls("no_evidence"), flags: { distress: true } }, text: "x", now: 1e6 });
+    assert.equal(r.state.splitHold, undefined);
+    assert.notEqual(r.move, s0.splitHold.move);
+  });
+});
+
+import { notRightLead } from "../server/brain/say.js";
+
+describe("R5: render hygiene", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+  const toCard = () => { const L = run(); for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan"); return L; };
+  const say = (L, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: L.r.ui, module: null }); };
+
+  test("their English phrase is never echoed in the not-right line; a number or one word is", () => {
+    assert.equal(notRightLead("they are equal"), "Nahi, yeh jawab nahi hai.");
+    assert.equal(notRightLead("23 m"), "23 m sahi nahi hai.");
+    assert.equal(notRightLead("Yes"), "Yes sahi nahi hai.");
+  });
+
+  test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes, a reason stays", async () => {
+    const L = toCard();
+    const card = L.r.ui.ask.text;
+    const out = await say(L, `Haan, sahi hai. Haan, 15 cm. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
+    assert.equal(out.reply.match(/\bHaan\b/g)?.length, 1, out.reply);
+    // (on a practice card her own lines are the body; an explain beat says its authored point instead)
+    const practice = { ...L.r.state.lastMove, kind: "practice", point: undefined, mustSay: [] };
+    const out2 = await say(L, `Haan, sahi hai. Haan, 15 cm sahi hai—har bhuja ek hi baar gini gayi. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastMove: practice, lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
+    assert.equal(out2.reply.match(/\bHaan\b/g)?.length, 1, out2.reply);
+    assert.match(out2.reply, /Har bhuja ek hi baar gini gayi\./, out2.reply);
+  });
+
+  test("a sentence is said once, and the card is the one question", async () => {
+    const L = toCard();
+    const card = L.r.ui.ask.text;
+    const out = await say(L, `Yeh triangle hai. Yeh triangle hai. Tumhari pehli choice kya hai? ${card}`);
+    assert.equal(out.reply.match(/Yeh triangle hai/g)?.length ?? 0, out.reply.includes("Yeh triangle hai") ? 1 : 0, out.reply);
+    assert.equal(out.reply.match(/[?？]/g)?.length, (card.match(/[?？]/g) ?? []).length, out.reply);
   });
 });
