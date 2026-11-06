@@ -3,6 +3,7 @@
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
 import { boardWords } from "./board-words.js";
+import { inHindiWords } from "./register.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -1750,7 +1751,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8): a return is one line of REAL content: her own sentence about it,
       // else the script's authored interest line (state.js returnLineOf); never the "I remember" stub
       const authoredReturn = kind === "return" && ret?.line ? (lang === "english" ? `And about ${topic}: ${dot(ret.line)}` : `Aur ${topic} ki baat: ${dot(ret.line)}`) : null;
-      const real = mine.filter((x) => words(x) >= 6 && !/(?:yaad hai|i remember)/i.test(x));
+      // v6 R4 (director8: "Virat ka cover drive boundary ke poore round jaisa", "tumne kaha tha ki tumhe woh pasand hain"): a
+      // return of hers is content about the thing itself: never an analogy to the lesson, never words put in their mouth
+      const real = mine.filter((x) => words(x) >= 6 && !/(?:yaad hai|i remember)/i.test(x) && !/\d/.test(x)
+        && !/(?<![\p{L}])(?:jaisa|jaise|jaisi|ki\s+tarah|socho|like\s+(?:a|the)|just\s+like)(?![\p{L}])/iu.test(x)
+        && !/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)|tumhe\s+\S+(?:\s+\S+)?\s+pasand|you\s+like/iu.test(x));
+      if (kind === "return" && mine.length > real.length) guard.returnFiltered = mine.length - real.length;
       aside.push(...(kind === "park" ? (mine.length ? mine : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
         : real.length ? real : authoredReturn ? [authoredReturn] : []));
       if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
@@ -1841,9 +1847,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (asked) body = [asked, ...body.filter((x) => !/(?:screen|board)\s+(?:par|pe)|on the screen/i.test(x))];
     const assembled = [...prevPart, closedS, ...first, ...aside, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
+    // v6 R4: Hindi asked for: her spoken words in Hindi from here on (the card and the beat's must-say words stay)
+    const hindiOn = state.ctx?.lang === "hindi" && !!state.ctx?.langPinned;
+    const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
+    const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
+    if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
-    guard.parts = { ...(prevPart.length ? { prev: prevPart.join(" ") } : {}), ...(closedS ? { closed: norm(closedS) } : {}), ...(bridgeS ? { bridge: norm(bridgeS) } : {}),
-      ...(lead ? { verdict: norm(lead) } : {}) };
+    guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedS ? { closed: hw(norm(closedS)) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
+      ...(lead ? { verdict: hw(norm(lead)) } : {}) };
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }

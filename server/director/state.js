@@ -750,6 +750,25 @@ function asideTopic(text, interests = []) {
   const m = ASIDE_WORDS.exec(t);
   return m ? m[1].charAt(0).toUpperCase() + m[1].slice(1).toLowerCase() : null;
 }
+/**
+ * v6 R4 (main, director8: 0 real returns in three topics; the hook's interest line said as the return was a maths analogy, not
+ * content about what they raised): one plain, true line about a common aside, said when it is returned to. No digits (it is said
+ * over whatever board is up). null for a topic not listed (her own sentence, held to the return rules in brain/say.js).
+ */
+const ASIDE_FACTS = [
+  [/\b(?:virat|kohli)\b/i, { hinglish: "Virat Kohli India ke liye batting karte hain, aur unka cover drive bahut mashhoor hai.", english: "Virat Kohli bats for India, and his cover drive is famous." }],
+  [/\bdhoni\b/i, { hinglish: "MS Dhoni India ke captain rahe hain, aur wicket ke peechhe bahut tez the.", english: "MS Dhoni was India's captain, and very quick behind the stumps." }],
+  [/\brohit\b/i, { hinglish: "Rohit Sharma India ke liye opening karte hain, aur lambe chhakke maarte hain.", english: "Rohit Sharma opens for India and hits long sixes." }],
+  [/\b(?:sixer|six)\b/i, { hinglish: "Sixer tab hota hai jab ball zameen chhuye bina boundary ke bahar jaati hai.", english: "A six is when the ball goes over the boundary without touching the ground." }],
+  [/\b(?:cricket|ipl|match)\b/i, { hinglish: "Cricket mein ek over mein chhe ball hoti hain, aur ek team mein gyarah khiladi.", english: "In cricket an over has six balls, and a team has eleven players." }],
+  [/\b(?:messi|ronaldo|football)\b/i, { hinglish: "Football mein ek team mein gyarah khiladi hote hain, aur sirf goalkeeper haath laga sakta hai.", english: "In football a team has eleven players, and only the goalkeeper may use their hands." }],
+  [/\bchess\b/i, { hinglish: "Chess mein har khiladi ke paas solah mohre hote hain.", english: "In chess each player has sixteen pieces." }],
+  [/\bkabaddi\b/i, { hinglish: "Kabaddi mein raider ek saans mein doosri taraf jaakar wapas aata hai.", english: "In kabaddi the raider goes to the other side and back in one breath." }],
+];
+export function asideFactOf(topic, lang = "hinglish") {
+  const f = ASIDE_FACTS.find(([re]) => re.test(String(topic ?? "")));
+  return f ? f[1][lang === "english" ? "english" : "hinglish"] : null;
+}
 function parkAside(s, kit, input, item) {
   if (!scriptOn() || !scriptIdOf(kit)) return;
   const topic = input.cls?.request?.topic ?? asideTopic(input.text, s.ctx.interests);
@@ -2804,8 +2823,14 @@ export function step(prev, input) {
     }
   }
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
+  // v6 R4 (main: "'turant baad' means the next turn"): in a scripted lesson an aside parked on the last turn is returned to on
+  // this one, whatever the move (never on a safeguard, a wrap or a break)
+  if (scriptOn() && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
+    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1);
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share }; }
+  }
   if (s.servedNow?.topic) {
-    const line = returnLineOf(input.kit, s.servedNow.topic, s.ctx.lang ?? "hinglish");
+    const line = asideFactOf(s.servedNow.topic, s.ctx.lang ?? "hinglish");
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
   if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard") {

@@ -218,3 +218,62 @@ describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
   });
 });
 function findKey(L) { const id = L.r.state.activeItemId; if (!id) return null; const it = L.r.state.scriptCard; return it?.id === id ? it.answer : null; }
+
+import { asideFactOf } from "../server/director/state.js";
+import { inHindiWords } from "../server/brain/register.js";
+
+describe("R4: real returns and a register that changes", () => {
+  test("a known aside has one plain, true line about it (no digits); an unknown one has none", () => {
+    assert.match(asideFactOf("Virat", "hinglish"), /^Virat Kohli India ke liye batting/);
+    assert.match(asideFactOf("Sixer"), /boundary/);
+    assert.equal(asideFactOf("Dinosaur"), null);
+    for (const t of ["Virat", "Dhoni", "Cricket", "Football", "Chess"]) assert.doesNotMatch(asideFactOf(t), /\d/);
+  });
+
+  test("Hindi asked for: her English words become Hindi; the card and the must-say words stay", () => {
+    const card = "Cake ka kitna hissa khaya, fraction mein batao.";
+    const out = inHindiWords(`Pizza ke 4 equal parts hain, total 4 pieces. ${card}`, { card });
+    assert.equal(out, `Pizza ke 4 barabar hisse hain, kul 4 tukde. ${card}`);
+    assert.equal(inHindiWords("Yeh fraction hai.", { keep: ["fraction"] }), "Yeh fraction hai.");
+    assert.equal(inHindiWords("Perimeter nikalo."), "Parimap nikalo.");
+  });
+});
+
+describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: [r.move.point, ...(r.move.mustSay ?? [])].filter(Boolean).join(" ") }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+  const say = (L, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: L.r.ui, module: null }); };
+
+  test("an aside parked on one turn is returned to on the very next, with a real line", () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("aapko virat pasand hai?", { ...cls("no_evidence"), request: { type: "answer_q" } });
+    assert.ok((L.r.state.later ?? []).some((e) => /virat/i.test(e.topic) && !e.servedAt), JSON.stringify(L.r.state.later));
+    L.t("haan");
+    assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
+    assert.match(L.r.move.returned?.line ?? "", /Virat Kohli/);
+  });
+
+  test("a return of hers that is an analogy or puts words in their mouth goes; the real line is said", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, line: asideFactOf("Virat") } };
+    const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
+    assert.doesNotMatch(out.reply, /tumne kaha|jaisa hai/, out.reply);
+    assert.match(out.reply, /Virat Kohli India ke liye batting karte hain/, out.reply);
+  });
+
+  test("after 'hindi mein batao' her later turns are visibly in Hindi words", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const out = await say(L, `Har side ko jodo, total perimeter milega. ${L.r.ui.ask.text}`, { state: { ctx: { ...L.r.state.ctx, lang: "hindi", langPinned: true } } });
+    assert.match(out.reply, /bhuja|parimap|kul/i, out.reply);
+    assert.doesNotMatch(out.reply.replace(L.r.ui.ask.text, ""), /\bside\b|\btotal\b|\bperimeter\b/i, out.reply);
+  });
+});
