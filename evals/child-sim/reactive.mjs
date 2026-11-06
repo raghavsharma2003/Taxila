@@ -29,6 +29,12 @@
 // she has not asked (no "?" in her line): it asks for the question instead.
 
 export const MIN_TURNS = 20;
+/** director9: the most "which question?" replies one card gets in a row before the child answers it anyway. */
+export const WHICH_MAX = 2;
+/** Her line poses a question: a "?" or an imperative ask ("batao", "bolo", "likho", "kitna", "kaunsa", "kya hoga"; English
+ *  "tell", "what", "how many", "which", "find", "write"). director9: "…fraction mein batao." was never answered. */
+export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|nikalo|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write)\b/i;
+const posed = (teacher) => ASK_RE.test(String(teacher ?? ""));
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
 export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", "selftry"]);
 
@@ -156,6 +162,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     return true;
   };
   const misses = new Map();
+  const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   const log = [];
   const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
@@ -168,7 +175,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (pending.length) {
         const c0 = input.card ?? input.ask ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
-        const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: /\?/.test(String(input.teacher ?? "")),
+        const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: posed(input.teacher),
           howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid),
           greeting: turn === 0 || (!input.beat && !c0 && /\b(?:namaste|hi|hello)\b/i.test(String(input.teacher ?? ""))) };
         const i = pending.findIndex((e) => fits(e, ctx));
@@ -193,8 +200,14 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (q && q.key != null && String(q.key).trim()) {
         const id = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
         if (answered.has(id)) return say({ text: pick(rng, LINES.done), kind: "ack" });
-        // she has not asked it yet (no question in her line): the child cannot know its givens, so it asks
-        if (!/\?/.test(String(input.teacher ?? ""))) return say({ text: pick(rng, LINES.which), kind: "ack" });
+        // she has not asked it yet (no question in her line): the child cannot know its givens, so it asks. director9: an
+        // imperative ask ("…fraction mein batao.") IS a question, and after WHICH_MAX "which question?" on one card the child
+        // answers anyway, so a persona never loops (steady c4 sent 11 in a row and never left skill 1).
+        if (!posed(input.teacher) && (whichAsked.get(id) ?? 0) < WHICH_MAX) {
+          whichAsked.set(id, (whichAsked.get(id) ?? 0) + 1);
+          return say({ text: pick(rng, LINES.which), kind: "ack" });
+        }
+        whichAsked.delete(id);
         const tries = Number(input.card?.misses ?? misses.get(id) ?? 0);
         const p = Math.min(0.95, P.right[input.card ? "card" : "ask"] + P.learn * tries);
         if (rng() < p) { misses.delete(id); answered.add(id); return say({ text: pick(rng, rightForms(q.key, q.accept)), kind: "right" }); }
