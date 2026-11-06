@@ -343,13 +343,32 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
     }
     if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
     // (director8 c5-t02 c3: "pehla nishaan 1/4 hai" over the asked mark's "?": a mark whose value her line states is labelled)
+    const before = r.script;
     const shown = statedMark(r.script, ask?.intent?.boardRef, ctx.reply);
     if (shown) r = { ...r, script: shown };
+    // (director9: the "?" a stated mark became is that value in the SCREEN too — counts.marks and labels — not only in the
+    // ops: Brain's per-segment check read counts.marks "?" under "Bilkul, Riya — pehla gap 1/8 km" on the drawn 1/8)
+    const revealed = shown ? revealsOf(before, shown) : [];
     // round 7 (director6 #1): the screen is what is DRAWN now: re-gated on her real line, a value she states is no longer "?"
     // (the pick's screen was computed before her line existed, masked: R4 read "40 m lamba" against a screen with no 40)
     return { ok: true, script: r.script, gate: r.gate, usd: 0, ms: Date.now() - t0, source: "first", by: p.by, template: p.template, ...(p.altView ? { altView: p.altView } : {}), ...(p.sameCard ? { sameCard: true } : {}),
-      screen: screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), syncMs: Date.now() - t0 };
+      screen: withReveals(screenOf({ template: p.template, facts: { ...(p.raw?.facts ?? p.facts ?? {}), ...(p.counts ? { counts: p.counts } : {}) } }, r.script?.facts ?? p.facts, r.script), revealed), syncMs: Date.now() - t0 };
   } catch { return null; }
+}
+
+/** The values a stated-mark rewrite wrote over "?", in board order: the "?" text ops of `before` that `after` writes. */
+function revealsOf(before, after) {
+  const was = new Map((before?.ops ?? []).filter((o) => o.op === "text" && String(o.text).trim() === "?").map((o) => [o.id, true]));
+  return (after?.ops ?? []).filter((o) => was.has(o.id) && String(o.text).trim() !== "?").map((o) => String(o.text));
+}
+/** A screen whose "?" marks (counts.marks, in order) are now the revealed values: they are drawn, so they are shown. */
+function withReveals(screen, revealed) {
+  if (!revealed?.length || !screen) return screen;
+  const q = [...revealed];
+  const marks = screen.counts?.marks?.map((m) => (m.label === "?" && q.length ? { ...m, label: q.shift() } : m));
+  const nums = revealed.flatMap((t) => String(t).match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
+  return { ...screen, labels: [...new Set([...(screen.labels ?? []), ...revealed])], numbers: [...new Set([...(screen.numbers ?? []), ...nums])],
+    ...(marks ? { counts: { ...screen.counts, marks } } : {}) };
 }
 
 /**

@@ -216,3 +216,30 @@ test("c7 lines@1 under the S1 rule: the asked angle is '?' until her line states
   assert.ok(said?.script, "drawn");
   assert.deepEqual(texts(said.script).filter((t) => /°|\?/.test(t)), ["70°", "70°"], "confirmed: the asked angle is written");
 });
+
+test("director9: the confirming VERDICT segment on the answered card's own board reveals the mark — ops, counts.marks and labels (offtopic-c5-ch02-t01 turn 13)", () => {
+  const T = "c5-maths-ch02-t01", kit = kitOf(T);
+  const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${T}.json`, "utf8"));
+  const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+  const answers = [rem.then.key, ...(rem.then.accept ?? [])].map(String);
+  const card = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
+  const cb = { scriptId: "s", beatId: "then:c5-maths-ch02-t01-m-not-numbers", kind: "check", ownBoard: true, answers };
+  // the harness's per-segment take (evals/hybrid-side-by-side.mjs: each part preselected, then taken on its own words)
+  const a = { intent: { intentId: "d9row:s0", lessonId: "d9row", kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: card, scriptBeat: cb }, line: { lessonId: "d9row", text: "" }, mode: "fresh", kit: { topicId: T, content: [] } };
+  BF.preselect(a, { kit });
+  const aR = { ...a, line: { ...a.line, text: "Bilkul, Riya—pehla gap 1/8 km hota hai. " } };
+  const tk = BF.takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] }));
+  assert.ok(tk?.script, "taken");
+  assert.deepEqual(texts(tk.script), ["1/8"]);
+  assert.deepEqual(tk.screen.counts.marks, [{ at: "mark 1", label: "1/8" }], "the screen says what is drawn");
+  assert.ok(tk.screen.labels.includes("1/8") && tk.screen.numbers.includes("1/8"));
+  // and through the seam, the whole turn paged: verdict on the card's board, the closed card's board, the card again
+  const text = "Bilkul, Riya—pehla gap 1/8 km hota hai. Aur pehle wale sawaal ka jawab isi line par tha, kyunki 1/3 ka matlab 0 se 1 ke 3 barabar gaps mein se pehla gap, toh woh isi line par hai. Ab aage chalein?";
+  const e1 = { template: "fraction-line@1", params: { den: 2, from: 0, to: 1, marks: [{ num: 1, label: "1/2" }] } };
+  const s = showCard(T, kit, card, "check", answers, rem.then.prompt.hi);
+  assert.ok(texts(s.first.artifact.script).includes("?"), "the card's question: '?'");
+  const v = s.turn(text, { scriptBeat: cb, segments: [{ atChar: 40, atClause: 1, boardRef: e1, scriptBeat: { scriptId: "s", beatId: "e1", kind: "explain" } }, { atChar: 180, atClause: 1, boardRef: card, scriptBeat: cb }] });
+  assert.equal(v.state, "revealed");
+  assert.deepEqual(v.artifact.screens[0].counts.marks, [{ at: "mark 1", label: "1/8" }], JSON.stringify(v.artifact.screens[0]));
+  assert.ok(v.artifact.script.ops.some((o) => o.id.startsWith("a.") && o.text === "1/8"));
+});
