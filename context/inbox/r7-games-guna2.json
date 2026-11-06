@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-guna2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "guna extended to c7-maths-ch01-t03 (round × round to 7 racks, big estimates), c5-maths-ch04-t02 (field/check: the estimate built, then dockets marked) and c4-maths-ch09-t02 (pack/each sharing; story full / all at small numbers); rack limit 7, existing levels unchanged. Reverse: dockets marked without the estimate, or the column truck read as labels."
+  },
+  {
+   "id": "ms-r7-games-guna2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "guna play-cert after guna2: 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px); 97 guna law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-guna2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-guna2-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-guna2`\n\n**guna** (multi-digit multiplication and division) is extended to three more arena-only topics, with no new mode and every earlier guna level unchanged. Before the change, the generator's output for every existing grammar was hashed over seeds 1..60 × fades 1..3 (73,440 candidates: params, solver, every mal set-up). After the change the hash is identical, and a test pins a levelId per existing entry. Nothing in it is timed.\n\n- **c7-maths-ch01-t03 (patterns in products).** field/area with both sides round and a truck of 6 or 7 racks, e.g. 3000 × 400. The field fills with 3 × 4 tiles of 1000 × 100 each, and the truck must weigh exactly 12,00,000. The zeros of both sides set the tile's size, so the rack the child picks is the zero count (s1), and the racks used are the product's digits (s3). field/round with 4-digit × 2- or 3-digit sides (4872 × 312 → 5000 × 300) is a large estimate (s2). Mal-rules: zero-count → hidden-zero (the basic fact's own zero lost). The new zero-less (one attached zero too few, only where the fact does not end in 0) and zero-more (one too many, where it fits) → zero-miscount.\n- **Rack limit.** RACKS = 7 (crates up to 10^6), only as far as c7-ch01-t03 needs. A test pins it: every c7 product fits, some need all 7, and every earlier entry still uses at most 5. A truck of more than 5 racks is drawn as columns (+ above, nine crates, − below, 44 px wide) so seven fit a 324 px phone tray. Places from 10^4 up are labelled as powers (10⁴, 10⁵, 10⁶).\n- **c5-maths-ch04-t02 (checking reasonableness).** New goal field/check. The child pulls the sides to round lengths and loads the estimate, then marks three dockets someone wrote for a × b: the true product, ten times it, and a tenth of it. Each docket is marked could-be-right or send-back. The law checks the estimate and every mark. Every docket kept → steps-mean-right; every docket sent back (none equals the estimate) → estimate-must-equal. Admits s1 only. s2 (inverse operations for + and −) and s3 (sense in a story) stay with the arena; inverse-wrong has no set-up.\n- **c4-maths-ch09-t02 (grouping and sharing).** Small numbers. New goal pack/each is equal SHARING: loose things, and one deal gives one to every friend until a round cannot go (s1, s3). story/full is equal GROUPING: packets of b, how many b's in a (s2, s3). story/all covers a leftover that still needs a vehicle (s3). Mal-rules: short → remainder-too-big; drop → no-remainder. order-doesnt-matter has no honest set-up here.\n\n**Reverse if** children solve check levels by marking dockets without loading the estimate first (watch mark changes between runs), or the 7-column truck reads as a quiz of labels rather than a load (watch rack corrections on c7 levels).\n",
+  "measurements": "## `ms-r7-games-guna2-cert`\n\nguna play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px) (counts in server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-guna.test.mjs has 97 tests, including the new cases: BIG area, big round, check, each, and small full / all. The independent plain-arithmetic checker judges check by the band the rounded sides allow (both down … both up). Each new mal-rule lands on its own misconception. Generator p95 is under 50 ms. Every new coverage entry serves through currentLevel at every fade. 43 gate files: 828 tests pass. lint-ui is 354 before and after.\n"
+ }
+}
