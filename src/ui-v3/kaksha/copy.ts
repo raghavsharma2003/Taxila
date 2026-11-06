@@ -66,6 +66,7 @@ export const KX = {
   madeForYou: K("Made for you", "Tumhare liye bana", "तुम्हारे लिए बना"),
   playAgain: K("Play again", "Phir se khelo", "फिर से खेलो"),
   practiseThis: K("Practise this", "Isko practise karo", "इसका अभ्यास करो"),
+  revisit: K("Revisit", "Phir se dekho", "फिर से देखो"),
   // r7 app-world-hangar-depth: chapter seals (the ledger's: every skill Got it or Secure)
   chapterSealed: K("Chapter sealed", "Chapter pakka", "अध्याय पक्का"),
   sealNote: K("Every idea in this chapter is yours now.", "Is chapter ka har idea ab tumhara hai.", "इस अध्याय का हर विचार अब तुम्हारा है।"),

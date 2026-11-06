@@ -43,7 +43,8 @@ export function KakshaWorld() {
       <WorldView childName={child.first_name} world={w.today} yesterday={w.yesterday} hidden={w.hidden} reducedMotion={reducedMotion}
         backTo={`/c/${cid}`} hangarTo={`/c/${cid}/hangar`} go={go} dock={kn.dock} meTo={kn.meTo} school={w.school} seals={w.seals}
         // r7 app-practice-entry: a station's topic (its skill id without the -sN suffix) as a practice set; none on a hold
-        practiceTo={cachedHold(cid) ? null : (skillId) => { const t = topicOfSkill(skillId); return t ? `/c/${cid}/practice/${encodeURIComponent(t)}` : null; }} />
+        practiceTo={cachedHold(cid) ? null : (skillId) => { const t = topicOfSkill(skillId); return t ? `/c/${cid}/practice/${encodeURIComponent(t)}` : null; }}
+        revisitTo={cachedHold(cid) ? null : (skillId) => { const t = topicOfSkill(skillId); return t ? `/c/${cid}/lesson/new?topic=${encodeURIComponent(t)}` : null; }} />
     </KakshaRoot>
   );
 }
