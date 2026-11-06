@@ -2833,7 +2833,7 @@ export function step(prev, input) {
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
   // v6 R4 (main: "'turant baad' means the next turn"): in a scripted lesson an aside parked on the last turn is returned to on
   // this one, whatever the move (never on a safeguard, a wrap or a break)
-  if (scriptOn() && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
+  if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
     const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1);
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share }; }
   }
