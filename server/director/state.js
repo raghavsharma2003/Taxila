@@ -76,6 +76,22 @@ function whyOf(kit, item, lang = "hinglish") {
   return null;
 }
 /**
+ * v5 B5 ("a close says the answer and its why"): a scripted card's why, from its authored lines. A check or follow-up card:
+ * the rule its misconception's remediation ends on; an explain beat's question: the beat's point; the worked example's own
+ * step: the worked example's why. Its last sentence, when short enough to ride after "kyunki"; else null.
+ */
+function scriptWhyOf(kit, item, lang = "hinglish") {
+  const sk = item?.skillId ? skillScriptOf(kit, item.skillId) : null;
+  if (!sk) return null;
+  const targets = item.scriptCheck?.targets ?? item.scriptThen?.targets ?? item.scriptAsk?.targets ?? null;
+  const src = item.scriptAsk?.beatId === "worked" ? sk.workedExample?.why
+    : targets && (item.scriptCheck || item.scriptThen) ? sk.remediation?.find((r) => r.targets === targets)?.say
+    : item.scriptAsk ? sk.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point : null;
+  const t = src ? saidIn(src, lang) : null;
+  const last = t ? (String(t).match(/[^.!?\u0964]+[.!?\u0964]*/g) ?? []).map((x) => x.trim()).filter(Boolean).at(-1) : null;
+  return last && last.split(/\s+/).length <= 22 ? last.replace(/[.!?\u0964]+$/, "") : null;
+}
+/**
  * A card's key in the lesson language, from its AUTHORED forms only (director7: "jawab 0 tha" for the key "between 0 and 1"
  * took the first number out of a range key). A key that IS a number or fraction (with a unit) is said as it is; any other key
  * (a range, a place, a phrase) is said in its authored Hindi accept form, preferring one that carries every number of the key
@@ -814,7 +830,7 @@ function walkRemedy(s, input, item) {
     activate(s, then);
     // v4 W4 (director6 c6: 8 missed cards never answered): the card they missed is closed with its answer once the follow-up
     // is done (brain/say.js says it after the verdict)
-    s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang) };
+    s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "" };
     const mis0 = kit.misconceptions.find((m) => m.id === targets);
     logReteach(s, "kit", item.skillId, mis0 ?? null);
     return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
@@ -2492,9 +2508,9 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) } } : {}),
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? scriptWhyOf(kit, item, s.ctx.lang) } } : {}),
     // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
-    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? scriptWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
 }
 const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 const isScriptCard = scriptCardOf;
@@ -2709,13 +2725,13 @@ export function step(prev, input) {
     const was = prev.activeItemId && String(prev.activeItemId).startsWith("script:") ? prev.activeItemId : null;
     if (was && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
       const left = findItem(prev, input.kit, was);
-      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: "" };
+      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: scriptWhyOf(input.kit, left, s.ctx.lang) ?? "" };
     }
   }
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
   if (s.servedNow?.topic) move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share };
   if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard") {
-    move.closed = { answer: s.pendingClose.answer };
+    move.closed = { answer: s.pendingClose.answer, ...(s.pendingClose.why ? { why: s.pendingClose.why } : {}) };
     s.pendingClose = undefined;
   }
   // v5 B1: a closure (a give-up reveal, "Toh poora jawab", a missed card's close) is spoken over the board it closes: the board

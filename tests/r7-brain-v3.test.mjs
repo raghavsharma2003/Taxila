@@ -236,7 +236,27 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
-    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, out.reply);
+    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha, kyunki \S/, "v5 B5: the close says its why: " + out.reply);
+  });
+
+  test("v5 B5: one verdict sentence; a sentence putting a method in the child's mouth goes; a long turn keeps its authored parts", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    for (let i = 0; i < 4 && !L.r.state.activeItemId; i++) L.t("haan");
+    const card = L.r.ui.ask.text;
+    const st = { ...L.r.state, mode: "text", lastMove: { ...L.r.state.lastMove, scriptBeat: { ...(L.r.state.lastMove.scriptBeat ?? {}), kind: "check" } } };
+    replyDeps.chat = async () => ({ text: `Haan, sahi hai. Haan, tumne bilkul sahi socha. Tumne pehle sab ko jodkar phir guna kiya. ${card}` });
+    const out = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.equal((out.reply.match(/\bsahi\b/g) ?? []).length, 1, out.reply);
+    assert.match(out.reply, /tumne bilkul sahi socha/, "the richer verdict stays: " + out.reply);
+    assert.doesNotMatch(out.reply, /Haan, sahi hai\./, out.reply);
+    assert.doesNotMatch(out.reply, /Tumne pehle sab ko jodkar/, out.reply);
+    assert.ok(out.reply.trim().endsWith(card), out.reply);
+    const long = Array.from({ length: 8 }, (_, i) => `Yeh ek lambi baat hai jo number ${i} ke baare mein hai.`).join(" ");
+    replyDeps.chat = async () => ({ text: `Haan, sahi hai. ${long} ${card}` });
+    const out2 = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.ok(out2.reply.split(/\s+/).length <= 60 || out2.reply.replace(card, "").split(/\s+/).length <= 20, out2.reply);
+    assert.ok(out2.reply.trim().endsWith(card), out2.reply);
   });
 
   test("v4 W6: an aside is parked with a promise in her line (topic found in code), and kept until it is served", async () => {

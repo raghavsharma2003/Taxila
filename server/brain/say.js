@@ -1654,12 +1654,22 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const card = ui?.ask?.text ? norm(ui.ask.text) : null;
     const cardSs = card ? sentences(card).map(norm) : [];
     const gaveA = state.lastMove?.gave?.answer ? norm(state.lastMove.gave.answer) : null;
-    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}.` : `Pichhle sawaal ka jawab ${gaveA} tha.`) : null;
+    // v5 B5: a give-up or a close says the answer AND its why (state.js scriptWhyOf: the authored rule)
+    const whyS = (w) => (w && String(w).trim() ? (lang === "english" ? `, because ${joinable(w, { lower: true })}` : `, kyunki ${joinable(w, { lower: true })}`) : "");
+    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}${whyS(state.lastMove?.gave?.why)}.` : `Pichhle sawaal ka jawab ${gaveA} tha${whyS(state.lastMove?.gave?.why)}.`) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|woh wala|the last|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
     const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
-    const lead = graded && ss.length ? ss.shift() : null;
+    let lead = graded && ss.length ? ss.shift() : null;
+    // v5 B5: one verdict sentence per turn ("Haan, sahi hai. Haan, 4/6 sahi hai."): a second verdict of the same sign right after
+    // the lead is one too many; the richer of the two stays (a bare code verdict gives way to hers)
+    const polarity = (x) => (NOT_RIGHT.test(String(x).split(/[,—–-]/)[0]) && !affirmsAnswer(x) ? "no" : affirmsAnswer(x) ? "yes" : null);
+    const verdictLike = (x) => polarity(x) && words(x) <= 12 && !/[?？]/.test(x);
+    while (lead && ss.length && verdictLike(ss[0]) && polarity(ss[0]) === polarity(lead)) {
+      const nxt = ss.shift();
+      if (words(lead) <= 4 && words(nxt) > words(lead)) lead = nxt;
+    }
     // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
     // short one when her words left it out); they come after the verdict, before the teaching
     const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
@@ -1675,6 +1685,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         ? pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)
         : (lang === "english" ? `And ${topic}: I remember what you told me.` : `Aur haan, ${topic} wali baat mujhe yaad hai.`)]));
     }
+    // v5 B5 (director7 c5-t01 T61): her lines never put a method in the child's mouth ("Tumne upar ke 2 ko neeche ke 5 se
+    // jodkar …") that the authored text does not use: a sentence about what THEY did with an operation word goes
+    const OPS = /(?<![\p{L}])(?:jod\w*|ghata\w*|guna\w*|bhaag\w*|add\w*|subtract\w*|multipl\w*|divid\w*|mila\w*)/iu;
+    const authoredText = [point, ...(workedLines ?? []), card, state.lastMove?.cardPoint].filter(Boolean).join(" ");
+    ss = ss.filter((x) => !(/^(?:tumne|aapne|you)\b/i.test(x) && OPS.test(x) && !OPS.test(authoredText)));
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
     let body;
@@ -1690,13 +1705,24 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
     }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
-    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha.`) : null;
+    const closedW = whyS(state.lastMove?.closed?.why);
+    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
     if (closedS) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
     const wd = state.lastMove?.workedDone;
     const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(wd.why, { lower: true }) : null;
     const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
     // (a worked step with no card ends on a short check-in, never mid-air)
     const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
+    // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
+    // verdict, a closure, authored text or the card
+    const MAX_WORDS = 60;
+    const total = () => words([lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).join(" "));
+    const own = body === ss && !(point && kindNow === "explain") ? body : null;
+    if (!workedLines?.length && total() > MAX_WORDS) {
+      if (own) { while (own.length && total() > MAX_WORDS) own.pop(); guard.trimmed = true; }
+      else if (point && kindNow === "explain" && !(body.length === 1 && body[0] === dot(point))) { body = [dot(point)]; guard.trimmed = true; }
+      if (total() > MAX_WORDS && aside.length > 1) { aside.splice(1); guard.trimmed = true; }
+    }
     const assembled = [lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
