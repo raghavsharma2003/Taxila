@@ -70,9 +70,11 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       rackY = wide ? Math.max(fy, (h - truckH0) / 2) : h - truckH0 - 8;
       const aw = fw - 56, ah = fh - 52;
       sx = aw / drawA; sy = ah / drawB;
-      // never stretched more than 6 to 1 (a 3-digit × 1-digit field stays a field, not a line)
-      if (sy > 6 * sx) sy = 6 * sx;
-      if (sx > 6 * sy) sx = 6 * sy;
+      // each axis has its own scale (every piece keeps its share of the field), but never stretched more than 10 to 1, so
+      // a 3-digit × 1-digit field stays a field, not a line, while a long thin 12 × 90 still fills a phone's width
+      const STRETCH = 10;
+      if (sy > STRETCH * sx) sy = STRETCH * sx;
+      if (sx > STRETCH * sy) sx = STRETCH * sy;
       ox = fx + 52 + Math.max(0, (aw - drawA * sx) / 2);
       oy = fy + 48 + Math.max(0, (ah - drawB * sy) / 2);
     } else if (p.goal === "share") {
@@ -348,6 +350,33 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (end && s.done) P.tick(c, w / 2, truckY - 14, 24, 1);
   }
 
+  /** the things on the dock in the family's place-value shapes: a hundred as a flat, a ten as a stick, a one as a dot
+   *  (the count is never capped: every thing waiting is drawn, scaled down together when the dock is short) */
+  function dockThings(c: CanvasRenderingContext2D, n: number, x: number, y: number, bw: number, bh: number): void {
+    const P = api.P, H = Math.floor(n / 100), T = Math.floor((n % 100) / 10), O = n % 10;
+    const FL = 36, ST = 7, GAP = 4, DOT = 9, oneCols = Math.ceil(O / 2);
+    const natW = H * (FL + GAP) + (H && (T || O) ? GAP : 0) + T * (ST + GAP) + (T && O ? GAP : 0) + oneCols * DOT;
+    const k = Math.min(1, bw / Math.max(1, natW), bh / FL);
+    let cx = x;
+    for (let i = 0; i < H; i++) {
+      P.body(c, cx, y, FL * k, FL * k, { role: "q1", r: 2, seed: 300 + i });
+      for (let g = 1; g < 10; g++) {
+        const at = (FL * k * g) / 10;
+        P.stroke(c, [[cx + at, y], [cx + at, y + FL * k]], { role: "ink3", width: 0.6 });
+        P.stroke(c, [[cx, y + at], [cx + FL * k, y + at]], { role: "ink3", width: 0.6 });
+      }
+      cx += (FL + GAP) * k;
+    }
+    if (H && (T || O)) cx += GAP * k;
+    for (let i = 0; i < T; i++) {
+      P.body(c, cx, y, ST * k, FL * k, { role: "q1", r: 2, seed: 200 + i });
+      for (let g = 1; g < 10; g++) P.stroke(c, [[cx, y + (FL * k * g) / 10], [cx + ST * k, y + (FL * k * g) / 10]], { role: "ink3", width: 0.6 });
+      cx += (ST + GAP) * k;
+    }
+    if (T && O) cx += GAP * k;
+    for (let i = 0; i < O; i++) P.circle(c, cx + (Math.floor(i / 2) + 0.5) * DOT * k, y + FL * k * (i % 2 ? 0.72 : 0.28), DOT * k * 0.38, { role: "q1", fill: true });
+  }
+
   function drawStory(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), end = shownEnd(), k = runK();
     const [item, holder] = STORY[p.goal][p.ctx] ?? STORY[p.goal][0];
@@ -358,8 +387,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const dockBad = end && !s.done && waiting > 0;
     const dw = Math.min(w - 16, 300), dx = (w - dw) / 2;
     P.body(c, dx, dockY, dw, DOCK_H, { role: "panel", r: 10, state: dockBad ? "look" : "idle" });
-    const dots = Math.min(waiting, 100), per = 25, ds = Math.min(10, (dw - 20) / per);
-    for (let i = 0; i < dots; i++) P.circle(c, dx + 10 + ds / 2 + (i % per) * ds, dockY + 10 + ds / 2 + Math.floor(i / per) * ds, ds * 0.36, { role: "q1", fill: true });
+    dockThings(c, waiting, dx + 10, dockY + 6, dw - 20 - (dockBad ? 30 : 0), DOCK_H - 12);
     if (dockBad) P.magnifier(c, dx + dw - 16, dockY + DOCK_H - 16, 14);
     // left: the jar (what the machine must not pack)
     if (p.goal === "left") {
