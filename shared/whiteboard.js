@@ -338,6 +338,12 @@ function cleanCounts(c) {
     if (cs.length) out.columns = cs;
   }
   if (Array.isArray(c.values)) { const vs = c.values.slice(0, 8).filter(smallStr); if (vs.length) out.values = vs; }
+  // (director8 S3′: fraction-bars@1, a picture's second view — each equal whole: its parts, the parts shaded, its label)
+  if (Array.isArray(c.wholes)) {
+    const ws = c.wholes.slice(0, 3).filter((x) => Number.isInteger(x?.parts) && x.parts >= 1 && x.parts <= 24 && Number.isInteger(x?.shaded) && x.shaded >= 0 && x.shaded <= x.parts)
+      .map((x) => ({ parts: x.parts, shaded: x.shaded, label: smallStr(x.label) ? x.label : "" }));
+    if (ws.length) out.wholes = ws;
+  }
   for (const k of ["angles", "amounts"]) if (Array.isArray(c[k])) { const ns = c[k].slice(0, 6).filter((n) => Number.isFinite(n) && n >= 0 && n <= 100000); if (ns.length) out[k] = ns; }
   return Object.keys(out).length ? out : null;
 }

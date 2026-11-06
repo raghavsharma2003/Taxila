@@ -65,6 +65,9 @@ export interface ScreenCounts {
   /** director6 #2: word and other boards — compare columns (title, item count, quantities their items state), steps, events,
    *  bars with values, labels, places, hops, digits, halves, angles, amounts */
   columns?: { title: string; items: number; quantities: { n: number; what: string }[] }[];
+  /** director8 S3′ (fraction-bars@1, a picture's second view): each equal whole drawn, its parts, parts shaded and label
+   *  ("?" = the asked value, never shaded) */
+  wholes?: { parts: number; shaded: number; label: string }[];
   steps?: number; events?: number; bars?: number; values?: string[]; labels?: number; places?: number; hops?: number;
   digits?: number; halves?: number; angles?: number[]; amounts?: number[];
 }

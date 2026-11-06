@@ -128,6 +128,35 @@ function fractionParts(c, tl) {
  *   mark k  (the item names a mark and asks its fraction) that mark is ringed and marked "?": its fraction is never written
  *   target  (the item names a/den and asks where it goes) a/den is written above the line, no point is drawn
  */
+/**
+ * director8 S3′ (a picture asked for while the card's own board is up): the SAME fractions as equal wholes, one bar each,
+ * stacked so their pieces compare by eye. `bars` [{ parts 1-12, shade 0-parts, label? }] (1-3): the label is the bar's
+ * fraction ("1/3"), or "?" for the value the card asks (drawn unshaded: the view never answers). → counts.wholes.
+ */
+function fractionBars(c, tl) {
+  const bars = Array.isArray(c.bars) ? c.bars : [];
+  if (bars.length < 1 || bars.length > 3) return { error: "fraction_bars_count" };
+  for (const b of bars) {
+    if (!isInt(b?.parts, 1, 12) || !isInt(b?.shade, 0, b.parts)) return { error: "fraction_bars_range" };
+    const label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
+    if (label !== "?" && (!fitsLabel(label) || textProblem(label))) return { error: "fraction_bars_label" };
+    if (label === "?" && b.shade > 0) return { error: "fraction_bars_asked_shaded" };
+    if (label !== "?") { const m = /^(\d+)\s*\/\s*(\d+)$/.exec(label); if (!m || Number(m[1]) * b.parts !== b.shade * Number(m[2])) return { error: `fraction_bars_label_value:${label}` }; }
+  }
+  const x0 = 30, W = 270, H = 46, gapY = 30, top = Math.round((BOARD.h - (bars.length * H + (bars.length - 1) * gapY)) / 2);
+  const wholes = [];
+  bars.forEach((b, k) => {
+    const y0 = top + k * (H + gapY), pw = W / b.parts, label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
+    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 700, { gap: k ? 300 : 0 });
+    for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, 160, { gap: 40 });
+    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 260, { gap: 80 });
+    tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 400, { gap: 120 });
+    wholes.push({ parts: b.parts, shaded: b.shade, label });
+  });
+  // (one short fact per bar: the facts row keeps values of up to 40 characters)
+  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, w.label === "?" ? `${w.parts} equal parts, ? (asked)` : `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+}
+
 function fractionLine(c, tl) {
   if (Array.isArray(c.dens)) return fractionLine2(c, tl);
   const den = c.den, w = c.wholes ?? c.to ?? 1;
@@ -1372,7 +1401,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
@@ -1407,7 +1436,14 @@ function claimsBroken(script, claims) {
  * table's rows and columns, a chart's bars and values, labels, places, hops, digits. → counts, or null.
  */
 function derivedCounts(call, facts = {}) {
-  const qty = (t) => { const m = String(t ?? "").trim().match(/^(\d+)\s+(\p{L}[\p{L} ]{0,20}?)(?=\s*(?:[=,(]|$))/u); return m ? { n: Number(m[1]), what: m[2].trim() } : null; };
+  // (director8 bridge rows: "8 ka 1/2 = 4" → { n: 4, what: "8 ka 1/2" }; "= 4 laddoo" → { n: 4, what: "laddoo" })
+  const qty = (t) => {
+    const x = String(t ?? "").trim();
+    const m = x.match(/^(\d+)\s+(\p{L}[\p{L} ]{0,20}?)(?=\s*(?:[=,(]|$))/u);
+    if (m) return { n: Number(m[1]), what: m[2].trim() };
+    const e = x.match(/^(.{0,20}?)\s*=\s*(\d+)\s*(\p{L}[\p{L} ]{0,20})?$/u);
+    return e && (e[3] || e[1]) ? { n: Number(e[2]), what: (e[3] || e[1]).trim().slice(0, 24) } : null;
+  };
   const col = (side) => side && typeof side === "object" ? { title: String(side.title ?? "").slice(0, 24), items: (side.items ?? []).length,
     quantities: (side.items ?? []).map(qty).filter(Boolean) } : null;
   switch (call.template) {
