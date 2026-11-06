@@ -1,0 +1,589 @@
+{
+ "topicId": "c6-maths-ch07-t01",
+ "classLevel": 6,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "bhinn / fraction", "en": "fraction" },
+  { "hi": "fractional unit / ikai bhinn", "en": "fractional unit (1/n)" },
+  { "hi": "barabar hisse", "en": "equal parts" },
+  { "hi": "barabar baantna", "en": "to share equally" },
+  { "hi": "poora", "en": "the whole" },
+  { "hi": "aadha", "en": "one half" },
+  { "hi": "ek-tihaai", "en": "one third" },
+  { "hi": "ek-chauthaai / pav", "en": "one quarter" },
+  { "hi": "teen-chauthaai / pauna", "en": "three quarters" },
+  { "hi": "ansh", "en": "numerator (top number)" },
+  { "hi": "har", "en": "denominator (bottom number)" },
+  { "hi": "kram", "en": "order" },
+  { "hi": "patti", "en": "strip" }
+ ],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch07-t01-s1",
+   "hook": {
+    "convey": "one whole shared into EQUAL parts → each part gets a name from how many equal parts the whole has: 4 equal parts → 1/4; a roti shared at home, a paper strip folded for a drawing",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Kitchen mein ek garam roti 4 bachchon mein barabar baantni hai. Har bachche ko jo tukda milta hai, uska ek pakka naam hota hai, aur woh naam roti ke barabar hisson se banta hai.",
+       "en": "A hot roti in the kitchen is to be shared equally among 4 children. The piece each child gets has a proper name, and that name comes from the roti's equal parts."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing ke liye kaagaz ki ek lambi patti ko 3 barabar hisson mein mod do aur ek hissa colour karo. Woh rangin hissa patti ka ek fractional unit hai.",
+       "en": "For a drawing, fold a long paper strip into 3 equal parts and colour one part. That coloured part is one fractional unit of the strip."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "roti in 4 equal parts, 1 shaded → 1/4 = one of 4 equal parts = a fractional unit; the bottom number = how many equal parts the whole has",
+     "mustSay": [
+      { "hi": "4 barabar hisse", "en": "4 equal parts" },
+      { "hi": "1/4", "en": "1/4" },
+      { "hi": "fractional unit", "en": "fractional unit" }
+     ],
+     "board": { "template": "fraction-parts@1", "params": { "parts": 4, "shade": 1, "whole": "roti" } },
+     "point": {
+      "hi": "Yeh roti 4 barabar hisson mein bati hai, aur 1 hissa rangin hai. Rangin hissa poori roti ka 1/4 hai, ek-chauthaai. 1/4 ek fractional unit hai: poore ke 4 barabar hisson mein se ek.",
+      "en": "This roti is in 4 equal parts, and 1 part is shaded. The shaded part is 1/4 of the whole roti, one quarter. 1/4 is a fractional unit: one of the 4 equal parts of the whole."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi roti ko 4 ki jagah 8 barabar hisson mein baanto. Tab ek hissa poori roti ka kaunsa fractional unit hoga?", "en": "Share this same roti into 8 equal parts instead of 4. Then which fractional unit of the whole roti is one part?" },
+      "key": "1/8",
+      "accept": ["one eighth", "ek bata aath", "1 by 8", "ek-aathvaan"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "two 12 cm strips, both in 3 pieces: A = 4, 4, 4 cm → each piece is 1/3; B = 6, 3, 3 cm → not equal → three pieces alone do not make thirds; 1/3 of 12 cm = 4 cm and no B piece is 4 cm → a piece is 1/3 only if its length is exactly 1/3 of the whole",
+     "mustSay": [
+      { "hi": "barabar", "en": "equal" },
+      { "hi": "1/3", "en": "1/3" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Patti A, 12 cm", "items": ["4 cm, 4 cm, 4 cm"] }, "right": { "title": "Patti B, 12 cm", "items": ["6 cm, 3 cm, 3 cm"] } } },
+     "point": {
+      "hi": "Dono pattiyan 12 cm ki hain, aur dono ke 3 hisse hain. Patti A ke hisse 4 cm, 4 cm, 4 cm hain, sab barabar, toh wahan har hissa 1/3 hai. Patti B ke hisse 6 cm, 3 cm, 3 cm hain, barabar nahi, toh sirf 3 hisse hone se har hissa 1/3 nahi ban jaata. 12 cm ka 1/3 toh 4 cm hai, aur B ka koi hissa 4 cm ka nahi.",
+      "en": "Both strips are 12 cm, and both have 3 pieces. Strip A's pieces are 4 cm, 4 cm, 4 cm, all equal, so there each piece is 1/3. Strip B's pieces are 6 cm, 3 cm, 3 cm, not equal, so having 3 pieces does not make each piece 1/3. 1/3 of 12 cm is 4 cm, and no piece of B is 4 cm."
+     },
+     "ask": {
+      "prompt": { "hi": "Ek aur patti 15 cm ki hai, uske 3 hisse 6 cm, 5 cm aur 4 cm ke hain. Kis hisse ki lambai poori patti ki lambai ka theek 1/3 hai: 6 cm, 5 cm ya 4 cm wale ki?", "en": "Another strip is 15 cm, and its 3 pieces are 6 cm, 5 cm and 4 cm. Which piece's length is exactly 1/3 of the whole strip's length: the 6 cm, 5 cm or 4 cm one?" },
+      "key": "5 cm",
+      "accept": ["5", "5 cm wala", "5 cm wala hissa", "the 5 cm piece", "5 centimetre"],
+      "targets": "c6-maths-ch07-t01-m-unequal-parts",
+      "wrongIfMis": "every piece"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "a fraction is always of some whole: strip P 20 cm → 1/2 = 10 cm; strip Q 12 cm → 1/2 = 6 cm; same name, different amount, because the wholes differ",
+     "mustSay": [
+      { "hi": "poora", "en": "the whole" },
+      { "hi": "naam ek, lambai alag", "en": "same name, different length" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Patti P, 20 cm", "items": ["1/2 = 10 cm"] }, "right": { "title": "Patti Q, 12 cm", "items": ["1/2 = 6 cm"] } } },
+     "point": {
+      "hi": "Patti P 20 cm ki hai, uska 1/2 hai 10 cm. Patti Q 12 cm ki hai, uska 1/2 hai 6 cm. Dono hisson ka naam 1/2 hai, par poora alag hai, isliye naam ek, lambai alag.",
+      "en": "Strip P is 20 cm, and its 1/2 is 10 cm. Strip Q is 12 cm, and its 1/2 is 6 cm. Both pieces are called 1/2, but the wholes are different, so same name, different length."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab dono pattiyon ka 1/4 lo. Patti P ka 1/4, patti Q ke 1/4 se kitne cm lamba hai?", "en": "Now take 1/4 of both strips. How many cm longer is 1/4 of strip P than 1/4 of strip Q?" },
+      "key": "2 cm",
+      "accept": ["2", "2 centimetre", "2 cm zyada", "2 cm lamba"],
+      "targets": "c6-maths-ch07-t01-m-whole-dependence",
+      "wrongIfMis": "0 cm"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "30 cm lamba ek ganna 5 barabar tukdon mein toda gaya. Ek tukda poore ganne ka kaunsa fraction hai, aur woh kitna lamba hai?",
+     "en": "A sugarcane 30 cm long is broken into 5 equal pieces. What fraction of the whole sugarcane is one piece, and how long is it?"
+    },
+    "givens": [
+     { "hi": "poora ganna 30 cm ka hai", "en": "the whole sugarcane is 30 cm" },
+     { "hi": "ganne ke 5 barabar tukde hain", "en": "the sugarcane is in 5 equal pieces" }
+    ],
+    "find": { "hi": "ek tukde ka fractional unit aur uski lambai", "en": "the fractional unit for one piece and its length" },
+    "steps": [
+     {
+      "do": { "hi": "Dekho poora ganna kitne barabar tukdon mein bata hai", "en": "See how many equal pieces the whole sugarcane is in" },
+      "result": "ek tukda = ganne ka 1/5",
+      "why": { "hi": "ganna 5 barabar tukdon mein bata hai aur yeh unmein se ek hai", "en": "the sugarcane is in 5 equal pieces and this is one of them" }
+     },
+     {
+      "do": { "hi": "Ek tukde ki lambai ke liye poori lambai ko 5 se bhaag do", "en": "For one piece's length, divide the whole length by 5" },
+      "result": "ek tukda = 30 ÷ 5 cm",
+      "why": { "hi": "saare tukde barabar hain, toh 30 cm sab mein barabar batta hai", "en": "all the pieces are equal, so the 30 cm is shared equally among them" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 30 ÷ 5 nikalo. Ek tukda kitne cm lamba hai?", "en": "Now work out 30 ÷ 5. How many cm long is one piece?" },
+     "key": "6 cm",
+     "accept": ["6", "6 centimetre", "6 centimetres"]
+    },
+    "answer": { "hi": "ek tukda poore ganne ka 1/5 hai aur 6 cm lamba hai", "en": "one piece is 1/5 of the whole sugarcane and is 6 cm long" },
+    "why": {
+     "hi": "1/5 ka matlab hai 5 barabar hisson mein se ek, aur 5 tukde × 6 cm = 30 cm, yaani poora ganna",
+     "en": "1/5 means one of 5 equal parts, and 5 pieces × 6 cm = 30 cm, the whole sugarcane"
+    },
+    "board": { "template": "fraction-parts@1", "params": { "parts": 5, "shade": 1, "whole": "bar" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "16 cm ki ek chocolate bar 4 tukdon mein tooti: 6 cm, 6 cm, 2 cm aur 2 cm. Inmein se kitne tukde bar ka 1/4 hain?",
+      "en": "A 16 cm chocolate bar breaks into 4 pieces: 6 cm, 6 cm, 2 cm and 2 cm. How many of these pieces are 1/4 of the bar?"
+     },
+     "key": "0",
+     "accept": ["none", "koi nahi", "koi bhi nahi", "ek bhi nahi", "zero", "0 tukde"],
+     "targets": "c6-maths-ch07-t01-m-unequal-parts",
+     "wrongIfMis": "4",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Chocolate bar", "items": ["16 cm", "4 tukde"] }, "right": { "title": "Tukde", "items": ["6 cm, 6 cm", "2 cm, 2 cm"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek ribbon 60 cm ki hai aur doosri 30 cm ki. Rahul ne pehli ribbon ka 1/3 liya, Sana ne doosri ka 1/3. Rahul ka tukda Sana ke tukde se kitne cm lamba hai?",
+      "en": "One ribbon is 60 cm and another is 30 cm. Rahul took 1/3 of the first ribbon, Sana took 1/3 of the second. How many cm longer is Rahul's piece than Sana's?"
+     },
+     "key": "10 cm",
+     "accept": ["10", "10 centimetre", "10 cm zyada", "10 cm lamba"],
+     "targets": "c6-maths-ch07-t01-m-whole-dependence",
+     "wrongIfMis": "0 cm",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["60 cm ribbon", "1/3"] }, "right": { "title": "Sana", "items": ["30 cm ribbon", "1/3"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t01-i01", "why": "first naming: a roti in 4 equal pieces → one piece = 1/4, as on the e1 board" },
+    { "itemId": "c6-maths-ch07-t01-i12", "why": "quick retrieval with a new count: 6 equal parts → unit 1/6" },
+    { "itemId": "c6-maths-ch07-t01-i10", "why": "make 1/3 on a paper strip → the parts must be EQUAL before one is shaded" },
+    { "itemId": "c6-maths-ch07-t01-i09", "why": "half of a big vs half of a small pizza → same fraction, different whole, different amount" },
+    { "itemId": "c6-maths-ch07-t01-rl-h1", "why": "harder: 1 litre in 125 mL pots → find how many equal parts first, then the unit 1/8" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t01-m-unequal-parts",
+     "move": "equal-thirds strip beside the broken bar: lay each piece against one third of the strip → only pieces that match one third exactly carry the name 1/3; 1 big + 2 small never match",
+     "say": {
+      "hi": "Barabar patti ke 3 hisse sab ek hi lambai ke hain, toh har hissa 1/3 hai. Koi tukda tabhi 1/3 hai jab woh is hisse se theek match kare, aur toote bar ke 1 bade aur 2 chhote tukde match nahi karte.",
+      "en": "The equal strip's 3 parts are all the same length, so each part is 1/3. A piece is 1/3 only if it matches that part exactly, and the broken bar's 1 big and 2 small pieces do not."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "Barabar patti", "items": ["3 barabar hisse", "har hissa 1/3"] }, "right": { "title": "Toote bar ke tukde", "items": ["1 bade, 2 chhote"] } } },
+     "then": {
+      "prompt": {
+       "hi": "18 cm ki patti ke 3 hisse 8 cm, 6 cm aur 4 cm ke hain. Kis hisse ki lambai poori patti ka theek 1/3 hai: 8, 6 ya 4 cm?",
+       "en": "An 18 cm strip has pieces of 8 cm, 6 cm and 4 cm. Which piece's length is exactly 1/3 of the whole strip: 8, 6 or 4 cm?"
+      },
+      "key": "6 cm",
+      "accept": ["6", "6 cm wala", "6 cm wala hissa", "the 6 cm piece", "6 centimetre"],
+      "targets": "c6-maths-ch07-t01-m-unequal-parts",
+      "wrongIfMis": "every piece",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Patti", "items": ["18 cm"] }, "right": { "title": "Hisse", "items": ["3 hisse"] } } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch07-t01-m-whole-dependence",
+     "move": "two strips of different lengths, each folded in half, the small half laid on the big half → 'half' depends on the whole it is half of; same name, different length",
+     "say": {
+      "hi": "1/2 ka matlab hai apne poore ka aadha. 40 cm ki patti ka 1/2 hai 20 cm, aur 10 cm ki patti ka 1/2 sirf 5 cm. Naam ek hi hai, par poora alag, toh lambai bhi alag.",
+      "en": "1/2 means half of its own whole. 1/2 of a 40 cm strip is 20 cm, and 1/2 of a 10 cm strip is only 5 cm. The name is the same, but the whole is different, so the length is different too."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "Patti, 40 cm", "items": ["1/2 = 20 cm"] }, "right": { "title": "Patti, 10 cm", "items": ["1/2 = 5 cm"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Patti A 36 cm ki hai, patti B 18 cm ki. A ka 1/3, B ke 1/3 se kitne cm lamba hai?",
+       "en": "Strip A is 36 cm, strip B is 18 cm. How many cm longer is 1/3 of A than 1/3 of B?"
+      },
+      "key": "6 cm",
+      "accept": ["6", "6 centimetre", "6 cm zyada", "6 cm lamba"],
+      "targets": "c6-maths-ch07-t01-m-whole-dependence",
+      "wrongIfMis": "0 cm",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Patti A", "items": ["36 cm", "1/3"] }, "right": { "title": "Patti B", "items": ["18 cm", "1/3"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab tak humne ek poore ko barabar hisson mein baanta aur har hisse ko naam diya. Agle hisse mein ek hi roti ko kam ya zyada hisson mein baant kar unke tukdon ki tulna karenge.",
+    "en": "So far we shared one whole into equal parts and named each part. Next we will share the same roti into fewer or more parts and compare the pieces."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch07-t01-s2",
+   "hook": {
+    "convey": "the same cake shared by 3 friends or by 6 friends; the same train route split into parts → compare one share from each; same whole, more equal parts → each part smaller",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Ek birthday cake 3 dost barabar baant rahe hain, aur bilkul waisa hi doosra cake 6 dost. Aaj dekhenge ki kis cake mein ek dost ka tukda bada hai.",
+       "en": "Three friends are sharing a birthday cake equally, and six friends are sharing another cake exactly like it. Today we see in which cake one friend's piece is bigger."
+      }
+     },
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Ek hi train route par Rahul route ka ek hissa safar karta hai aur Sana ek doosra hissa. Route ek hi hai, isliye dono hisson ki tulna ho sakti hai.",
+       "en": "On the same train route, Rahul travels one part of the route and Sana another part. The route is the same, so the two parts can be compared."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "one 0-to-1 line in 6 equal parts: first mark = 1/6; the same line in 3 equal parts would end its first part at the second mark, 2/6 = 1/3 → 6 is the bigger number but 1/6 is the smaller part",
+     "mustSay": [
+      { "hi": "1/3", "en": "1/3" },
+      { "hi": "1/6", "en": "1/6" },
+      { "hi": "chhota hissa", "en": "smaller part" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "den": 6, "from": 0, "to": 1, "marks": [{ "num": 1, "label": "1/6" }, { "num": 2, "label": "2/6 = 1/3" }] } },
+     "point": {
+      "hi": "Yeh 0 se 1 ki line 6 barabar hisson mein bati hai, toh 0 ke baad pehla nishaan 1/6 hai. Agar wahi line sirf 3 barabar hisson mein bati hoti, toh pehla hissa doosre nishaan tak jaata, jahan likha hai 2/6 = 1/3. 6 bada number hai, par 1/6 chhota hissa hai.",
+      "en": "This 0-to-1 line has 6 equal parts, so the first mark after 0 is 1/6. If the same line were in only 3 equal parts, the first part would reach the second mark, where it says 2/6 = 1/3. 6 is the bigger number, but 1/6 is the smaller part."
+     },
+     "ask": {
+      "prompt": { "hi": "Agar wahi 0 se 1 ek baar 4 barabar hisson mein aur ek baar 5 mein bate, toh kaunsa hissa lamba hoga: 1/4 ya 1/5?", "en": "If the same 0 to 1 is split once into 4 equal parts and once into 5, which part is longer: 1/4 or 1/5?" },
+      "key": "1/4",
+      "accept": ["one quarter", "ek-chauthaai", "ek chauthaai", "1 by 4"],
+      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+      "wrongIfMis": "1/5"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "one same-size pizza shared by 2, 4, 8 friends → each gets 1/2, 1/4, 1/8 → more friends, smaller share → order unit fractions by their bottom numbers, the bigger bottom first when smallest first",
+     "mustSay": [
+      { "hi": "ek hi size", "en": "the same size" },
+      { "hi": "zyada dost, chhota hissa", "en": "more friends, smaller share" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "Ek hi size ka pizza", "items": ["2 dost: 1/2", "4 dost: 1/4", "8 dost: 1/8"] }, "right": { "title": "Har dost ka hissa", "items": ["bada", "chhota", "aur chhota"] } } },
+     "point": {
+      "hi": "Ek hi size ka pizza 2 dost baantein toh har ek ko 1/2 milta hai, 4 dost baantein toh 1/4, aur 8 dost baantein toh 1/8. Zyada dost, chhota hissa: 1/2 bada hai, 1/4 chhota, aur 1/8 aur bhi chhota.",
+      "en": "If 2 friends share a pizza of the same size, each gets 1/2; if 4 friends share it, 1/4; and if 8 friends share it, 1/8. More friends, smaller share: 1/2 is big, 1/4 is smaller, and 1/8 smaller still."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi size ke pizza ke 1/3, 1/10 aur 1/5 hisse ko sabse chhote se sabse bade ke kram mein lagao.", "en": "Put 1/3, 1/10 and 1/5 of a pizza this size in order, from smallest to biggest." },
+      "key": "1/10, 1/5, 1/3",
+      "accept": ["1/10 1/5 1/3", "1/10 < 1/5 < 1/3", "1/10, 1/5 aur 1/3"],
+      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+      "wrongIfMis": "1/3, 1/5, 1/10"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Teen ek jaise size ke pizza baante gaye: pehla 6 doston mein barabar, doosra 3 doston mein, aur teesra 8 doston mein. Kis group mein har dost ko sabse bada hissa mila, aur 1/6, 1/3, 1/8 ka sabse bade se sabse chhote tak kram kya hai?",
+     "en": "Three pizzas of the same size are shared: the first equally by 6 friends, the second by 3 friends, and the third by 8 friends. In which group does each friend get the biggest share, and what is the order of 1/6, 1/3, 1/8 from biggest to smallest?"
+    },
+    "givens": [
+     { "hi": "teeno pizza ek hi size ke hain", "en": "all three pizzas are the same size" },
+     { "hi": "pehla pizza 6 doston mein, doosra 3 doston mein, teesra 8 doston mein", "en": "the first pizza is shared by 6 friends, the second by 3, the third by 8" }
+    ],
+    "find": { "hi": "sabse bade hisse wala group, aur 1/6, 1/3, 1/8 ka kram, sabse bada pehle", "en": "the group with the biggest share, and 1/6, 1/3, 1/8 in order, biggest first" },
+    "steps": [
+     {
+      "do": { "hi": "Har group mein ek dost ka hissa likho", "en": "Write one friend's share in each group" },
+      "result": "1/6, 1/3 aur 1/8 pizza",
+      "why": { "hi": "har pizza apne group ke doston mein barabar bata hai", "en": "each pizza is shared equally among its own group" }
+     },
+     {
+      "do": { "hi": "Pizza ek hi size ke hain, toh har pizza ke barabar hisson ki ginti dekho", "en": "The pizzas are the same size, so look at the number of equal parts in each" },
+      "result": "3 doston wala pizza sabse kam tukdon mein, 8 doston wala sabse zyada tukdon mein",
+      "why": { "hi": "ek hi poore ke jitne kam barabar hisse hon, har hissa utna bada hota hai", "en": "the fewer equal parts the same whole has, the bigger each part is" }
+     },
+     {
+      "do": { "hi": "Sabse bada hissa chuno", "en": "Pick the biggest share" },
+      "result": "1/3, yaani 3 doston wala group",
+      "why": { "hi": "wahan pizza sabse kam hisson mein bata hai", "en": "there the pizza is in the fewest parts" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 1/6, 1/3 aur 1/8 ko sabse bade se sabse chhote ke kram mein lagao.", "en": "Now put 1/6, 1/3 and 1/8 in order from biggest to smallest." },
+     "key": "1/3, 1/6, 1/8",
+     "accept": ["1/3 1/6 1/8", "1/3 > 1/6 > 1/8", "1/3, 1/6 aur 1/8"],
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+     "wrongIfMis": "1/8, 1/6, 1/3"
+    },
+    "answer": { "hi": "3 doston wale group mein har dost ko sabse bada hissa milta hai, aur kram 1/3, 1/6, 1/8 hai", "en": "each friend in the group of 3 gets the biggest share, and the order is 1/3, 1/6, 1/8" },
+    "why": {
+     "hi": "teeno pizza barabar size ke hain, aur ek hi poore ke jitne zyada barabar hisse, har hissa utna chhota",
+     "en": "the three pizzas are the same size, and the more equal parts the same whole has, the smaller each part"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Teen ek jaise pizza", "items": ["6 dost", "3 dost", "8 dost"] }, "right": { "title": "Har dost ka hissa", "items": ["1/6", "1/3", "1/8"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek roti 4 doston mein barabar baanti gayi, aur utni hi badi doosri roti 7 doston mein. Kisko zyada roti mili: 4 mein se ek dost ko ya 7 mein se ek dost ko?",
+      "en": "One roti is shared equally by 4 friends, and another roti of the same size by 7 friends. Who gets more roti: one of the 4 friends or one of the 7 friends?"
+     },
+     "key": "one of the 4",
+     "accept": ["4 mein se ek", "4 mein se ek dost", "4 wala dost", "4 doston wala", "1/4", "one of the 4 friends"],
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+     "wrongIfMis": "one of the 7",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Roti 1", "items": ["4 dost"] }, "right": { "title": "Roti 2, utni hi badi", "items": ["7 dost"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "{friend} ne inhe chhote se bade ke kram mein lagaya: 1/2, 1/3, 1/6, 1/9. Sahi kram kya hai, sabse chhota pehle?",
+      "en": "{friend} put these in order from smallest to biggest: 1/2, 1/3, 1/6, 1/9. What is the correct order, smallest first?"
+     },
+     "key": "1/9, 1/6, 1/3, 1/2",
+     "accept": ["1/9 1/6 1/3 1/2", "1/9 < 1/6 < 1/3 < 1/2", "1/9, 1/6, 1/3 aur 1/2"],
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+     "wrongIfMis": "1/2, 1/3, 1/6, 1/9",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Lagaya kram", "items": ["1/2, 1/3, 1/6, 1/9"] }, "right": { "title": "Sahi kram", "items": ["sabse chhota pehle"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek hi train route par Rahul ne route ka 1/7 safar kiya aur Sana ne 1/9. Kisne zyada doori tay ki: Rahul ne ya Sana ne?",
+      "en": "On the same train route, Rahul travelled 1/7 of the route and Sana 1/9. Who covered more distance: Rahul or Sana?"
+     },
+     "key": "Rahul",
+     "accept": ["Rahul ne", "aman", "Rahul ne zyada"],
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+     "wrongIfMis": "Sana",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Rahul", "items": ["route ka 1/7"] }, "right": { "title": "Sana", "items": ["route ka 1/9"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t01-i03", "why": "predict from a sharing story: same roti by 3 vs by 5 → one of the 3 gets more" },
+    { "itemId": "c6-maths-ch07-t01-i13", "why": "how many 1/4 pieces fill one whole → the bottom number counts the equal pieces of the whole" },
+    { "itemId": "c6-maths-ch07-t01-i06", "why": "error-spot: 1/2, 1/3, 1/4, 1/5 called smallest-first → it is reversed" },
+    { "itemId": "c6-maths-ch07-t01-i04", "why": "explain in words why 1/8 < 1/6 though 8 > 6: more equal parts, smaller each" },
+    { "itemId": "c6-maths-ch07-t01-rl-o2", "why": "same route, 1/7 vs 1/9 → apply the rule to distance, not food" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+     "move": "one 0-to-1 line in 8 equal parts: 1/8 is the first mark, 1/4 = 2/8 the second, so 1/8 sits halfway between 0 and 1/4 → twice the parts, each part half as long → the bigger bottom number gives the shorter piece",
+     "say": {
+      "hi": "Yeh 0 se 1 ki line 8 barabar hisson mein hai, aur pehla nishaan 1/8 hai. Wahi line 4 hisson mein hoti toh pehla hissa doosre nishaan tak jaata, 2/8 = 1/4. Hisse do guna hue, toh har hissa aadha reh gaya.",
+      "en": "This 0-to-1 line has 8 equal parts, and the first mark is 1/8. If the same line were in 4 parts, the first part would reach the second mark, 2/8 = 1/4. Twice as many parts, so each part is half as long."
+     },
+     "board": { "template": "fraction-line@1", "params": { "den": 8, "from": 0, "to": 1, "marks": [{ "num": 1, "label": "1/8" }, { "num": 2, "label": "2/8 = 1/4" }] } },
+     "then": {
+      "prompt": {
+       "hi": "Do ek jaise cake: ek 5 doston mein barabar bata, doosra 10 doston mein. Kiska ek hissa bada hai: 1/5 ya 1/10?",
+       "en": "Two identical cakes: one shared equally by 5 friends, the other by 10. Whose one share is bigger: 1/5 or 1/10?"
+      },
+      "key": "1/5",
+      "accept": ["one fifth", "ek bata paanch", "1 by 5", "5 doston wala"],
+      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
+      "wrongIfMis": "1/10",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Ek cake", "items": ["5 doston mein"] }, "right": { "title": "Doosra cake", "items": ["10 doston mein"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab tak ek cheez ko kuch logon mein baanta. Agle hisse mein ek se zyada cheezein barabar baantenge, jaise kuch roti kuch bachchon mein, aur har ek ka hissa fraction mein likhenge.",
+    "en": "So far we shared one thing among some people. Next we will share more than one thing equally, like a few rotis among a few children, and write each share as a fraction."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch07-t01-s3",
+   "hook": {
+    "convey": "more than one thing shared equally → each share is a fraction: things on top, sharers below; fewer things than sharers → less than one whole each; a metre of ribbon shared → a fraction of a metre, also in cm",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Kitchen mein 3 roti bachi hain aur 4 bachche khaane baithe hain. Sabko barabar milna hai, par roti bachchon se kam hain, toh har bachche ko poori roti nahi, roti ka ek fraction milega.",
+       "en": "There are 3 rotis left in the kitchen and 4 children sit down to eat. Everyone must get the same, but there are fewer rotis than children, so each child gets not a whole roti but a fraction of one."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing class mein colour paper ki 2 lambi pattiyan 3 doston mein barabar baantni hain. Har dost ka hissa ek patti se kam hoga, aur use fraction mein naapenge.",
+       "en": "In drawing class, 2 long strips of colour paper are to be shared equally among 3 friends. Each friend's share will be less than one strip, and we will measure it as a fraction."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "3 rotis among 4 children: every roti into 4 equal parts → each child gets 1/4 from each roti → 3 rotis give 1/4 + 1/4 + 1/4 = 3/4 roti each",
+     "mustSay": [
+      { "hi": "4 barabar hisse", "en": "4 equal parts" },
+      { "hi": "1/4", "en": "1/4" },
+      { "hi": "3/4 roti", "en": "3/4 of a roti" }
+     ],
+     "board": { "template": "fraction-parts@1", "params": { "parts": 4, "shade": 1, "whole": "roti" } },
+     "point": {
+      "hi": "3 roti 4 bachchon mein barabar baantni hain. Har roti ke 4 barabar hisse karo, jaise is roti mein. Har roti se har bachche ko ek hissa, yaani 1/4 milta hai. Teen roti se teen hisse: 1/4 + 1/4 + 1/4 = 3/4 roti.",
+      "en": "3 rotis are to be shared equally among 4 children. Make 4 equal parts of each roti, like this roti. From each roti every child gets one part, that is 1/4. Three rotis give three parts: 1/4 + 1/4 + 1/4 = 3/4 of a roti."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab bachche wahi 4 hain, par roti sirf 2. Har roti ke aise hi 4 barabar hisse karo. Har bachche ko kitni roti milegi?", "en": "Now there are the same 4 children, but only 2 rotis. Make 4 equal parts of each roti in the same way. How much roti does each child get?" },
+      "key": "2/4",
+      "accept": ["2/4 roti", "1/2", "aadhi roti", "aadhi", "half", "do bata chaar"],
+      "targets": "c6-maths-ch07-t01-m-share-flipped",
+      "wrongIfMis": "4/2"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "reasonableness: fewer things than sharers → each share less than 1 whole (3 rotis, 4 children → 3/4); more things than sharers → more than 1 (5 laddoos, 2 children → 5/2); things on top, sharers below",
+     "mustSay": [
+      { "hi": "1 se kam", "en": "less than 1" },
+      { "hi": "1 se zyada", "en": "more than 1" },
+      { "hi": "upar cheezein, neeche baantne wale", "en": "things on top, sharers below" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "3 roti, 4 bachche", "items": ["har ek: 3/4", "1 se kam"] }, "right": { "title": "5 laddoo, 2 bachche", "items": ["har ek: 5/2", "1 se zyada"] } } },
+     "point": {
+      "hi": "Baayein taraf 3 roti aur 4 bachche hain: roti kam, bachche zyada, toh har ek ko 3/4, 1 se kam. Daayein taraf 5 laddoo aur 2 bachche hain: laddoo zyada, toh har ek ko 5/2, 1 se zyada. Dono mein upar cheezein, neeche baantne wale.",
+      "en": "On the left are 3 rotis and 4 children: fewer rotis, more children, so each gets 3/4, less than 1. On the right are 5 laddoos and 2 children: more laddoos, so each gets 5/2, more than 1. In both, things on top, sharers below."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab 3 roti 8 bachchon mein barabar baanto. Har bachche ko kitni roti milegi?", "en": "Now share 3 rotis equally among 8 children. How much roti does each child get?" },
+      "key": "3/8",
+      "accept": ["3/8 roti", "teen bata aath", "3 by 8"],
+      "targets": "c6-maths-ch07-t01-m-share-flipped",
+      "wrongIfMis": "8/3"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "fractions measure lengths: 1 m ribbon in 4 equal parts → one part = 1/4 m; 1 m = 100 cm → 100 ÷ 4 = 25 cm",
+     "mustSay": [
+      { "hi": "1 metre", "en": "1 metre" },
+      { "hi": "1/4 metre", "en": "1/4 metre" },
+      { "hi": "100 cm", "en": "100 cm" }
+     ],
+     "board": { "template": "fraction-line@1", "params": { "den": 4, "from": 0, "to": 1, "marks": [{ "num": 1, "label": "1/4" }] } },
+     "point": {
+      "hi": "Yeh 1 metre ki ribbon hai, 0 se 1 tak, 4 barabar hisson mein bati. Ek hissa 1/4 metre hai. 1 metre = 100 cm, toh 1/4 metre = 100 ÷ 4 = 25 cm.",
+      "en": "This is a 1 metre ribbon, from 0 to 1, in 4 equal parts. One part is 1/4 metre. 1 metre has 100 cm, so 1/4 metre = 100 ÷ 4 = 25 cm."
+     },
+     "ask": {
+      "prompt": { "hi": "Isi 1 metre ki ribbon ko ab 5 barabar hisson mein baanto. Ek hissa kitne cm ka hoga?", "en": "Now share this same 1 metre ribbon into 5 equal parts. How many cm is one part?" },
+      "key": "20 cm",
+      "accept": ["20", "20 centimetre", "20 centimetres"]
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "5 laddoo 3 bachchon mein barabar baante gaye. Har bachche ko kitna laddoo mila?",
+     "en": "5 laddoos are shared equally among 3 children. How much does each child get?"
+    },
+    "givens": [
+     { "hi": "kul 5 laddoo hain", "en": "there are 5 laddoos in all" },
+     { "hi": "3 bachche barabar baant rahe hain", "en": "3 children share them equally" }
+    ],
+    "find": { "hi": "har bachche ka hissa, laddoo ke fraction mein", "en": "each child's share, as a fraction of a laddoo" },
+    "steps": [
+     {
+      "do": { "hi": "Har laddoo ke 3 barabar hisse karo", "en": "Make 3 equal parts of every laddoo" },
+      "result": "har hissa 1/3 laddoo",
+      "why": { "hi": "3 bachche hain, toh har laddoo se har bachche ko ek hissa mile", "en": "there are 3 children, so every child gets one part from every laddoo" }
+     },
+     {
+      "do": { "hi": "Saare hisse jodo: 5 laddoo, har laddoo mein 3 hisse", "en": "Total the parts: 5 laddoos, 3 parts in each" },
+      "result": "5 × 3 = 15 hisse, har hissa 1/3",
+      "why": { "hi": "har laddoo se 3 hisse bane", "en": "each laddoo gave 3 parts" }
+     },
+     {
+      "do": { "hi": "15 hisse 3 bachchon mein barabar baanto", "en": "Share the 15 parts equally among 3 children" },
+      "result": "15 ÷ 3 = 5 hisse har bachche ko",
+      "why": { "hi": "baantna barabar hai, toh sabko utne hi hisse milte hain", "en": "the sharing is equal, so everyone gets the same number of parts" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Har bachche ko 1/3 laddoo wale 5 hisse mile. Yeh kul kitna laddoo hai, fraction mein?", "en": "Each child got 5 parts of 1/3 laddoo each. How much laddoo is that in all, as a fraction?" },
+     "key": "5/3",
+     "accept": ["5/3 laddoo", "1 2/3", "1 aur 2/3", "ek poora aur 2/3", "paanch bata teen"],
+     "targets": "c6-maths-ch07-t01-m-share-flipped",
+     "wrongIfMis": "3/5"
+    },
+    "answer": { "hi": "har bachche ko 5/3 laddoo milta hai, yaani 1 poora laddoo aur 2/3", "en": "each child gets 5/3 of a laddoo, that is 1 whole laddoo and 2/3 more" },
+    "why": {
+     "hi": "har bachche ko har laddoo se 1/3 mila aur laddoo 5 the, aur laddoo bachchon se zyada hain, isliye hissa 1 se zyada hai",
+     "en": "each child got 1/3 from each of the 5 laddoos, and there are more laddoos than children, so the share is more than 1"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "5 laddoo", "items": ["har laddoo: 3 hisse"] }, "right": { "title": "3 bachche", "items": ["15 hisse baante"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "2 chikki 3 doston mein barabar baanti gayi. Har dost ko kitni chikki mili?",
+      "en": "2 chikkis are shared equally among 3 friends. How much chikki does each friend get?"
+     },
+     "key": "2/3",
+     "accept": ["2/3 chikki", "do tihaai", "do bata teen", "2 by 3"],
+     "targets": "c6-maths-ch07-t01-m-share-flipped",
+     "wrongIfMis": "3/2",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Chikki", "items": ["2 chikki"] }, "right": { "title": "Dost", "items": ["3 dost"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "5 metre ribbon 4 banners mein barabar baanti gayi. Har banner ko kitne metre ribbon mili?",
+      "en": "5 metres of ribbon are shared equally among 4 banners. How many metres of ribbon does each banner get?"
+     },
+     "key": "5/4 m",
+     "accept": ["5/4", "5/4 metre", "1 1/4 m", "1 aur 1/4 m", "sava metre", "1.25 m", "125 cm"],
+     "targets": "c6-maths-ch07-t01-m-share-flipped",
+     "wrongIfMis": "4/5 m",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "4 roti 6 bachchon mein barabar baanti gayi. {friend} ne likha ki har bachche ko 6/4 roti mili. Sahi hissa kya hai?",
+      "en": "4 rotis are shared equally among 6 children. {friend} wrote that each child got 6/4 of a roti. What is the correct share?"
+     },
+     "key": "4/6",
+     "accept": ["4/6 roti", "2/3", "2/3 roti", "do tihaai"],
+     "targets": "c6-maths-ch07-t01-m-share-flipped",
+     "wrongIfMis": "6/4",
+     "board": { "template": "compare@1", "params": { "left": { "title": "4 roti", "items": ["6 bachche"] }, "right": { "title": "Likha", "items": ["6/4 roti"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch07-t01-i05", "why": "the core case: 3 rotis among 4 children → 3/4 each, as in e1" },
+    { "itemId": "c6-maths-ch07-t01-i07", "why": "2 chikkis among 3 → 2/3, then judge it against half: is the share sensible" },
+    { "itemId": "c6-maths-ch07-t01-i08", "why": "a 1 m ribbon in 4 equal pieces → 1/4 m and 25 cm: fractions as lengths" },
+    { "itemId": "c6-maths-ch07-t01-rl-h3", "why": "harder: 7 m among 4 banners → more things than sharers → 7/4 m, more than 1" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch07-t01-m-share-flipped",
+     "move": "bar model: each roti drawn as a bar in 5 equal parts, one part per child in every bar → each child 1/5 from each roti → 1/5 + 1/5 = 2/5; fewer rotis than children → share below 1 whole → 5/2 is impossible",
+     "say": {
+      "hi": "2 roti 5 bachchon mein baanto: har roti ke 5 barabar hisse, aur har bachche ko har roti se 1/5. Do roti se 1/5 + 1/5 = 2/5. Roti bachchon se kam hain, toh hissa 1 se kam hi hoga, 5/2 nahi.",
+      "en": "Share 2 rotis among 5 children: 5 equal parts of each roti, and every child gets 1/5 from each roti. Two rotis give 1/5 + 1/5 = 2/5. There are fewer rotis than children, so the share must be less than 1, not 5/2."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "Roti 1", "items": ["5 barabar hisse", "har bachche ko 1/5"] }, "right": { "title": "Roti 2", "items": ["5 barabar hisse", "har bachche ko 1/5"] } } },
+     "then": {
+      "prompt": {
+       "hi": "4 roti 7 bachchon mein barabar baanti gayi. Har bachche ko kitni roti mili?",
+       "en": "4 rotis are shared equally among 7 children. How much roti does each child get?"
+      },
+      "key": "4/7",
+      "accept": ["4/7 roti", "chaar bata saat", "4 by 7"],
+      "targets": "c6-maths-ch07-t01-m-share-flipped",
+      "wrongIfMis": "7/4",
+      "board": { "template": "compare@1", "params": { "left": { "title": "Roti", "items": ["4 roti"] }, "right": { "title": "Bachche", "items": ["7 bachche"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

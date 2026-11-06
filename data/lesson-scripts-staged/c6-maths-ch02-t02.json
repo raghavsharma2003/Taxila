@@ -1,0 +1,550 @@
+{
+ "topicId": "c6-maths-ch02-t02",
+ "classLevel": 6,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "kon / angle", "en": "angle" },
+  { "hi": "shirsh / vertex", "en": "vertex" },
+  { "hi": "bhuja / arm", "en": "arm (of an angle)" },
+  { "hi": "kiran / ray", "en": "ray" },
+  { "hi": "ghumaav", "en": "turn (amount of turning)" },
+  { "hi": "chauthai chakkar / quarter turn", "en": "quarter turn" },
+  { "hi": "aadha chakkar / half turn", "en": "half turn" },
+  { "hi": "poora chakkar", "en": "full turn" },
+  { "hi": "chhota arc / nishaan", "en": "arc mark" },
+  { "hi": "ek ke upar ek rakhna", "en": "placing one on the other (superposing)" },
+  { "hi": "khulapan", "en": "opening (of an angle)" }
+ ],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch02-t02-s1",
+   "hook": {
+    "convey": "two straight lines leaving one point make an angle → the shared point = vertex, the two lines = arms; a drawing of two lines from one dot, a wicket-keeper with lines to the bowler and to slip",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet par ek point lagao aur usi point se do seedhi lines alag-alag disha mein kheencho. Yeh ek angle hai: point uska vertex hai aur dono lines uski arms.",
+       "en": "Put a dot on a drawing sheet and draw two straight lines from that same dot in different directions. That is an angle: the dot is its vertex and the two lines are its arms."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket ground par wicket-keeper point W par khada hai. W se ek seedhi line bowler tak aur ek slip fielder tak kheencho, toh W par ek angle banta hai, aur W uska vertex hai.",
+       "en": "On a cricket ground the wicket-keeper stands at point W. Draw one straight line from W to the bowler and one to the slip fielder, and an angle forms at W, with W as its vertex."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "angle = two rays starting from the same point; that point = vertex; each ray = an arm, named from the vertex outwards (ray OA); the second arm gets its own point and its name starts at O too",
+     "mustSay": [
+      { "hi": "vertex", "en": "vertex" },
+      { "hi": "arm", "en": "arm" },
+      { "hi": "ek hi point se", "en": "from the same point" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 55, "name": "angle" }], "vertex": "O", "arm": "OA" } },
+     "point": {
+      "hi": "Yeh ek angle hai. Isme do rays ek hi point se shuru hoti hain, yahan point O se. O is angle ka vertex hai. Neeche wali ray O se A ki taraf jaati hai, yeh ray OA hai, angle ki ek arm. Upar wali ray angle ki doosri arm hai.",
+      "en": "This is an angle. In it two rays start from the same point, here point O. O is the vertex of this angle. The lower ray goes from O towards A; it is ray OA, one arm of the angle. The upper ray is the other arm."
+     },
+     "ask": {
+      "prompt": { "hi": "Upar wali arm par ek point B hai. Us arm ka naam kya hoga: ray OB ya ray BO?", "en": "There is a point B on the upper arm. What is that arm's name: ray OB or ray BO?" },
+      "key": "ray OB",
+      "accept": ["OB", "ray OB", "kiran OB"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "three-letter name: a point on one arm, the VERTEX IN THE MIDDLE, a point on the other arm → angle ABC = angle CBA; any point on an arm can stand for it, the vertex letter never moves",
+     "mustSay": [
+      { "hi": "vertex beech mein", "en": "vertex in the middle" },
+      { "hi": "angle ABC", "en": "angle ABC" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 65, "name": "angle ABC" }], "vertex": "B", "arm": "BC" } },
+     "point": {
+      "hi": "Is angle ka vertex B hai. Neeche wali arm par point C hai aur upar wali arm par point A. Teen letters ke naam mein vertex hamesha beech mein aata hai: angle ABC, ya ulta padho toh angle CBA. Dono naam isi ek angle ke hain.",
+      "en": "The vertex of this angle is B. Point C is on the lower arm and point A is on the upper arm. In a three-letter name the vertex always comes in the middle: angle ABC, or read backwards, angle CBA. Both names belong to this one angle."
+     },
+     "ask": {
+      "prompt": { "hi": "Upar wali arm par, A se aage, ek aur point D hai. D aur C lekar is angle ka naam kya hoga?", "en": "On the upper arm, beyond A, there is another point D. Using D and C, what is this angle's name?" },
+      "key": "angle DBC",
+      "accept": ["DBC", "CBD", "angle CBD", "∠DBC", "∠CBD"],
+      "targets": "c6-maths-ch02-t02-m-vertex-name",
+      "wrongIfMis": "angle BDC"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "School ke playground mein Anjali point T par khadi hai, Ravi point R par aur Sonu point S par. Anjali ke paas se do seedhi rassiyan nikalti hain: ek Ravi tak jaati hai aur ek Sonu tak. Rassiyon se T par jo angle banta hai, uska vertex aur arms batao, aur teen letters mein uske do sahi naam likho.",
+     "en": "In the school playground Anjali stands at point T, Ravi at point R and Sonu at point S. Two straight ropes start from Anjali: one goes to Ravi and one to Sonu. For the angle the ropes make at T, give its vertex and arms, and write two correct three-letter names for it."
+    },
+    "givens": [
+     { "hi": "pehli rassi T se shuru hokar R tak jaati hai", "en": "rope 1 starts at T and goes to R" },
+     { "hi": "doosri rassi T se shuru hokar S tak jaati hai", "en": "rope 2 starts at T and goes to S" }
+    ],
+    "find": { "hi": "angle ka vertex, uski do arms, aur teen letters wale do sahi naam", "en": "the vertex, the two arms, and two correct three-letter names of the angle" },
+    "steps": [
+     {
+      "do": { "hi": "Dekho dono rassiyan kis point se shuru hoti hain", "en": "See which point both ropes start from" },
+      "result": "vertex = T",
+      "why": { "hi": "dono rassiyan Anjali ke paas, point T se nikalti hain", "en": "both ropes leave from Anjali, at point T" }
+     },
+     {
+      "do": { "hi": "Vertex se baaki do points ki taraf jaati rays lo", "en": "Take the rays from the vertex towards the other two points" },
+      "result": "arms = ray TR aur ray TS",
+      "why": { "hi": "har arm vertex se shuru hoti hai", "en": "every arm starts at the vertex" }
+     },
+     {
+      "do": { "hi": "Naam likho: ek arm ka point, beech mein vertex, phir doosri arm ka point", "en": "Write the name: a point on one arm, the vertex in the middle, then a point on the other arm" },
+      "result": "angle RTS",
+      "why": { "hi": "vertex ka letter hamesha beech mein aata hai", "en": "the vertex letter always comes in the middle" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab arms wale do letters ki jagah aapas mein badlo, vertex beech mein hi rakho. Is angle ka doosra sahi naam kya hai?", "en": "Now swap the two arm letters and keep the vertex in the middle. What is the angle's other correct name?" },
+     "key": "angle STR",
+     "accept": ["STR", "∠STR", "angle S T R"],
+     "targets": "c6-maths-ch02-t02-m-vertex-name",
+     "wrongIfMis": "angle TSR"
+    },
+    "answer": { "hi": "vertex T hai, arms ray TR aur ray TS hain, aur angle ke naam angle RTS aur angle STR hain", "en": "the vertex is T, the arms are ray TR and ray TS, and the angle is named angle RTS or angle STR" },
+    "why": {
+     "hi": "angle ek hi point se nikalti do rays se banta hai, aur naam mein vertex ka letter beech mein rehta hai, sirf arms wale letters jagah badal sakte hain",
+     "en": "an angle is made by two rays from one point, and in its name the vertex letter stays in the middle; only the arm letters may swap"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "rassiyan" }], "vertex": "T", "arm": "TR" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Angle PQR mein vertex kaunsa point hai?", "en": "In angle PQR, which point is the vertex?" },
+     "key": "Q",
+     "accept": ["point Q", "Q point"],
+     "targets": "c6-maths-ch02-t02-m-vertex-name",
+     "wrongIfMis": "P",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle PQR" }] } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Is angle ka vertex B hai, aur arms A aur C ki taraf jaati hain. Sahi naam kaunsa hai: angle BAC ya angle ABC?", "en": "This angle's vertex is B, and its arms go towards A and C. Which name is correct: angle BAC or angle ABC?" },
+     "key": "angle ABC",
+     "accept": ["ABC", "∠ABC", "angle CBA", "CBA"],
+     "targets": "c6-maths-ch02-t02-m-vertex-name",
+     "wrongIfMis": "angle BAC",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70, "name": "angle" }], "vertex": "B" } }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Ghadi ki dono suiyan centre O se nikalti hain: ek point H tak, ek point M tak. Suiyon ke beech ke angle ka teen letters wala naam kya hai?", "en": "Both hands of a clock start at the centre O: one goes to point H, one to point M. What is the three-letter name of the angle between the hands?" },
+     "key": "angle HOM",
+     "accept": ["HOM", "MOH", "angle MOH", "∠HOM", "∠MOH"],
+     "targets": "c6-maths-ch02-t02-m-vertex-name",
+     "wrongIfMis": "angle OHM",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "suiyan" }], "vertex": "O" } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t02-i01", "why": "first straight use: read the vertex off a three-letter name (the middle letter)" },
+    { "itemId": "c6-maths-ch02-t02-rl-o2", "why": "choose between two names: the shared starting point of the beams goes in the middle" },
+    { "itemId": "c6-maths-ch02-t02-rl-o1", "why": "build the three-letter name from a map: paths from a gate → gate letter in the middle" },
+    { "itemId": "c6-maths-ch02-t02-i08", "why": "from name to drawing: where the arc goes (the vertex) and which rays are the arms" },
+    { "itemId": "c6-maths-ch02-t02-rl-h1", "why": "three tracks from one junction → spot which names show the same angle (outer letters swapped)" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t02-m-vertex-name",
+     "move": "name card with three slots: the vertex letter goes ONLY in the middle slot, the arm letters in the end slots (either way round); the little arc also sits at the vertex",
+     "say": {
+      "hi": "Is angle ka vertex K hai, aur arms J aur L ki taraf hain. Naam ke teen khaane socho: vertex K sirf beech wale khaane mein jaata hai, J aur L kinaron par. Isliye naam angle JKL hai, ya angle LKJ.",
+      "en": "This angle's vertex is K, and its arms go towards J and L. Think of three slots for the name: the vertex K goes only in the middle slot, J and L at the ends. So the name is angle JKL, or angle LKJ."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70, "name": "angle JKL" }], "vertex": "K" } },
+     "then": {
+      "prompt": { "hi": "Vertex N hai, arms M aur P ki taraf hain. Sahi naam kaunsa hai: angle NMP ya angle MNP?", "en": "The vertex is N, and the arms go towards M and P. Which name is correct: angle NMP or angle MNP?" },
+      "key": "angle MNP",
+      "accept": ["MNP", "PNM", "angle PNM", "∠MNP", "∠PNM"],
+      "targets": "c6-maths-ch02-t02-m-vertex-name",
+      "wrongIfMis": "angle NMP",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle" }], "vertex": "N" } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab humein angle ke hisse aur uska naam pata hai. Agle hisse mein dekhenge ki angle chhota ya bada kis cheez se hota hai: ghumaav se.",
+    "en": "Now we know the parts of an angle and its name. In the next part we will see what makes an angle small or big: the turn."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch02-t02-s2",
+   "hook": {
+    "convey": "an angle is an amount of turn: a bat swinging from the shoulder, a bus turning right (quarter turn) or taking a U-turn (half turn) → more turn = bigger angle",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Batting karte waqt bat kandhe ke paas se ghoomta hai. Bat thoda ghooma toh chhota angle banta hai, zyada ghooma toh bada angle.",
+       "en": "When batting, the bat turns about the shoulder. If the bat turns a little the angle is small; if it turns a lot the angle is big."
+      }
+     },
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Bus chauraahe par right mudti hai toh woh ek quarter turn ghoomti hai. U-turn le toh aadha chakkar ghoomti hai, yaani do quarter turn.",
+       "en": "When a bus turns right at a crossing it turns a quarter turn. If it takes a U-turn it turns half a turn, that is two quarter turns."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "angle = amount of turn: both arms start together, one arm turns about the vertex (like a door on its hinge) → the further it turns, the bigger the angle; the board animates each second arm turning open",
+     "mustSay": [
+      { "hi": "ghumaav", "en": "turn" },
+      { "hi": "zyada ghoomi, bada angle", "en": "more turn, bigger angle" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 35, "name": "angle A" }, { "deg": 110, "name": "angle B" }] } },
+     "point": {
+      "hi": "Angle ek ghumaav hai. Pehle dono arms ek saath hoti hain, phir ek arm vertex par ghoomkar khulti hai, jaise darwaza apne kabze par ghoomta hai. Arm jitni zyada ghoomi, angle utna bada. Board par angle A aur angle B dono aise hi khule hain.",
+      "en": "An angle is a turn. First both arms lie together, then one arm turns open about the vertex, like a door turning on its hinge. The more the arm turns, the bigger the angle. On the board, angle A and angle B have both opened this way."
+     },
+     "ask": {
+      "prompt": { "hi": "Board par kis angle ki doosri arm zyada ghoomi hai, toh kaunsa angle bada hai: A ya B?", "en": "On the board, whose second arm has turned more, so which angle is bigger: A or B?" },
+      "key": "angle B",
+      "accept": ["B", "B bada", "angle B bada hai"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "turns on a clock: one hand on 12, the other turns from 12 → to 3 = quarter turn, to 6 = half turn, back to 12 = full turn; the child turns the half turn into quarter turns",
+     "mustSay": [
+      { "hi": "quarter turn", "en": "quarter turn" },
+      { "hi": "aadha chakkar", "en": "half turn" },
+      { "hi": "poora chakkar", "en": "full turn" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "3 baje" }, { "deg": 180, "name": "6 baje" }] } },
+     "point": {
+      "hi": "Ghadi mein minute wali sui 12 par hai. Ghante wali sui 12 se ghoomkar 3 par pahunche, toh yeh poore chakkar ka chautha hissa hai, quarter turn. 6 par pahunche toh aadha chakkar. Aur ghoomkar wapas 12 par aaye toh poora chakkar.",
+      "en": "On a clock the minute hand is on 12. If the hour hand turns from 12 to 3, that is a quarter of a full turn, a quarter turn. If it reaches 6, that is a half turn. And if it turns all the way back to 12, that is a full turn."
+     },
+     "ask": {
+      "prompt": { "hi": "12 se 6 tak ka aadha chakkar kitne quarter turn ke barabar hai?", "en": "The half turn from 12 to 6 equals how many quarter turns?" },
+      "key": "2",
+      "accept": ["do", "2 quarter turn", "2 quarter turns", "do quarter turn"]
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "a full turn that ends where it began is NOT zero turn: a fan blade from the window, once round, back at the window = four quarter turns; the angle is the turn swept, not the end position",
+     "mustSay": [
+      { "hi": "poora chakkar", "en": "full turn" },
+      { "hi": "chaar quarter turn", "en": "four quarter turns" }
+     ],
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "fan", "name": "poora chakkar" } },
+     "point": {
+      "hi": "Ceiling fan ka blade khidki ki taraf hai. Woh ghoomta hai aur ek poora chakkar lagakar phir khidki ki taraf aakar rukta hai. Blade wahin ruka jahan se chala tha, phir bhi woh chaar quarter turn ghooma. Angle utna hota hai jitna ghoomna hua, sirf aakhri jagah se nahi.",
+      "en": "A ceiling fan blade points at the window. It turns, goes once all the way round and stops pointing at the window again. The blade stopped where it started, yet it turned four quarter turns. The angle is how much turning happened, not just where it ended."
+     },
+     "ask": {
+      "prompt": { "hi": "Yahi blade khidki se chalkar do poore chakkar ghoome aur phir khidki par ruke, toh woh kitne quarter turn ghooma?", "en": "If this same blade starts at the window, turns two full turns and stops at the window, how many quarter turns did it turn?" },
+      "key": "8",
+      "accept": ["aath", "8 quarter turn", "8 quarter turns"],
+      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
+      "wrongIfMis": "0"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ghadi mein 2 baje aur 4 baje: kis samay suiyon ke beech ka angle bada hota hai?",
+     "en": "On a clock at 2 o'clock and at 4 o'clock: at which time is the angle between the hands bigger?"
+    },
+    "givens": [
+     { "hi": "2 baje ghante wali sui 2 par aur minute wali sui 12 par hoti hai", "en": "at 2 o'clock the hour hand is on 2 and the minute hand on 12" },
+     { "hi": "4 baje ghante wali sui 4 par aur minute wali sui 12 par hoti hai", "en": "at 4 o'clock the hour hand is on 4 and the minute hand on 12" }
+    ],
+    "find": { "hi": "kis samay suiyon ke beech ka angle bada hai", "en": "at which time the angle between the hands is bigger" },
+    "steps": [
+     {
+      "do": { "hi": "Dono samay minute wali sui 12 par hai, use dono angles ki pehli arm lo", "en": "At both times the minute hand is on 12; take it as the first arm of both angles" },
+      "result": "pehli arm dono mein 12 ki taraf",
+      "why": { "hi": "dono ghumaav ek hi arm se shuru hon tabhi unki tulna theek hoti hai", "en": "two turns can be compared fairly only when they start from the same arm" }
+     },
+     {
+      "do": { "hi": "2 baje ghante wali sui 12 se kitne ghante ke khaane ghoomi, dekho", "en": "See how many hour-spaces the hour hand has turned from 12 at 2 o'clock" },
+      "result": "2 baje: 2 khaane ka ghumaav",
+      "why": { "hi": "sui 12 se 1 tak, phir 1 se 2 tak ghoomi", "en": "the hand turned from 12 to 1, then from 1 to 2" }
+     },
+     {
+      "do": { "hi": "Ab 4 baje ke liye bhi wahi dekho", "en": "Now see the same for 4 o'clock" },
+      "result": "4 baje: 4 khaane ka ghumaav",
+      "why": { "hi": "sui 12 se 4 tak chaar khaane ghoomi", "en": "the hand turned four spaces from 12 to 4" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab dono ghumaav milao. Kis samay suiyon ke beech ka angle bada hai: 2 baje ya 4 baje?", "en": "Now compare the two turns. At which time is the angle between the hands bigger: 2 o'clock or 4 o'clock?" },
+     "key": "4 baje",
+     "accept": ["4 o'clock", "chaar baje", "char baje", "4 baje wala"]
+    },
+    "answer": { "hi": "4 baje suiyon ke beech ka angle bada hai", "en": "the angle between the hands is bigger at 4 o'clock" },
+    "why": {
+     "hi": "dono angle 12 wali arm se shuru hote hain aur 4 baje sui 4 khaane ghoomi, jabki 2 baje sirf 2 khaane",
+     "en": "both angles start from the arm on 12, and at 4 o'clock the hand turned 4 spaces while at 2 o'clock only 2"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "2 baje" }, { "deg": 120, "name": "4 baje" }] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Minute wali sui 12 se chalkar ek poora chakkar ghoomti hai aur phir 12 par aa jaati hai. Woh kitne quarter turn ghoomi?", "en": "The minute hand starts at 12, turns one full turn and comes back to 12. How many quarter turns did it turn?" },
+     "key": "4",
+     "accept": ["chaar", "char", "4 quarter turn", "4 quarter turns"],
+     "targets": "c6-maths-ch02-t02-m-full-turn-zero",
+     "wrongIfMis": "0",
+     "board": { "template": "shape@1", "params": { "shape": "circle", "name": "poora chakkar" } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Sui X 12 se seedha 3 tak ghoomi. Sui Y 12 se ek poora chakkar lagakar phir 3 tak ghoomi. Kya dono ka ghumaav barabar hai, haan ya nahi?", "en": "Hand X turned straight from 12 to 3. Hand Y went one full turn from 12 and then on to 3. Have both turned the same amount, yes or no?" },
+     "key": "nahi",
+     "accept": ["no", "nahin", "barabar nahi", "Y zyada ghoomi"],
+     "targets": "c6-maths-ch02-t02-m-full-turn-zero",
+     "wrongIfMis": "haan",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "12 se 3" }] } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t02-i07", "why": "clock hands at 3 and at 6: quarter turn vs half turn → the half turn is bigger" },
+    { "itemId": "c6-maths-ch02-t02-rl-h2", "why": "a direction arrow turning from north to east vs to south → compare the turn, not the end direction" },
+    { "itemId": "c6-maths-ch02-t02-i10", "why": "right turn vs U-turn at a crossing → which is bigger and how many times (2)" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t02-m-full-turn-zero",
+     "move": "pointer that drags a ribbon behind it: start at 12, turn past 3, 6, 9 back to 12 → count the quarter turns passed (1, 2, 3, 4) → same end position, but the ribbon shows a whole circle swept → angle = turn swept, not end position",
+     "say": {
+      "hi": "Sui ke peechhe ek ribbon socho jo ghoomte hue jagah ko rang deta hai. Sui 12 se chalkar 3, 6, 9 aur phir 12 tak aaye, toh ribbon poora gola bana deta hai. Sui wahin ruki jahan se chali thi, par woh chaar quarter turn ghoomi.",
+      "en": "Imagine a ribbon behind the hand that colours the space as it turns. If the hand goes from 12 past 3, 6, 9 and back to 12, the ribbon makes a whole circle. The hand stopped where it started, but it turned four quarter turns."
+     },
+     "board": { "template": "shape@1", "params": { "shape": "circle", "name": "ribbon" } },
+     "then": {
+      "prompt": { "hi": "Sui 12 se ek poora chakkar lagakar phir 3 tak gayi. Kul kitne quarter turn hue?", "en": "A hand went one full turn from 12 and then on to 3. How many quarter turns is that in all?" },
+      "key": "5",
+      "accept": ["paanch", "5 quarter turn", "5 quarter turns"],
+      "targets": "c6-maths-ch02-t02-m-full-turn-zero",
+      "wrongIfMis": "1",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "phir 12 se 3" }] } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ghumaav jitna zyada, angle utna bada. Agle hisse mein do angles ko ek doosre par rakhkar milaana seekhenge.",
+    "en": "The more the turn, the bigger the angle. In the next part we will learn to compare two angles by placing one on the other."
+   }
+  },
+  {
+   "skillId": "c6-maths-ch02-t02-s3",
+   "hook": {
+    "convey": "the same opening can have short or long arms: a small and a big roti each shared into 4 equal parts → each corner at the centre is a quarter turn; the same angle drawn small and drawn with long lines → only the turn counts",
+    "interestSlots": [
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Ek chhoti roti aur ek badi roti, dono ke chaar barabar hisse banao. Har hisse ka beech wala kona ek quarter turn hai, roti chhoti ho ya badi.",
+       "en": "Take a small roti and a big roti and make four equal parts of each. The corner of every part at the centre is a quarter turn, whether the roti is small or big."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing mein ek angle chhoti lines se banao aur wahi angle bade kagaz par lambi lines se. Lines lambi ho gayi, par khulapan wahi raha.",
+       "en": "In a drawing, make an angle with short lines and the same angle on a big sheet with long lines. The lines got longer, but the opening stayed the same."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "compare by superposing: copy one angle on tracing paper → vertex on vertex, one arm on one arm → look at the second arms: the one turned further out belongs to the bigger angle",
+     "mustSay": [
+      { "hi": "vertex par vertex", "en": "vertex on vertex" },
+      { "hi": "ek arm ke upar ek arm", "en": "one arm on one arm" },
+      { "hi": "doosri arm", "en": "the second arm" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle P" }, { "deg": 80, "name": "angle Q" }] } },
+     "point": {
+      "hi": "Do angles milaane ke liye ek angle ki copy tracing paper par banao. Phir copy ka vertex doosre angle ke vertex par rakho, yaani vertex par vertex, aur ek arm ke upar ek arm. Ab doosri arm dekho: jiski doosri arm zyada ghoomi hui, bahar ki taraf hai, woh angle bada hai. Board par angle P aur angle Q hain.",
+      "en": "To compare two angles, copy one angle on tracing paper. Then put the copy's vertex on the other angle's vertex, vertex on vertex, and one arm on one arm. Now look at the second arm: the angle whose second arm has turned further, lying outside, is bigger. On the board are angle P and angle Q."
+     },
+     "ask": {
+      "prompt": { "hi": "Angle P ki copy angle Q par aise hi rakho. Kiski doosri arm bahar rahegi, yaani kaunsa angle bada hai: P ya Q?", "en": "Place a copy of angle P on angle Q this way. Whose second arm stays outside, that is, which angle is bigger: P or Q?" },
+      "key": "angle Q",
+      "accept": ["Q", "Q bada", "angle Q bada hai"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "arm length is not the angle: an arm is a ray that goes on forever, the paper shows only a piece of it → drawing the arms longer keeps their directions → the turn, and so the angle, is unchanged",
+     "mustSay": [
+      { "hi": "arms ki lambai", "en": "the length of the arms" },
+      { "hi": "ghumaav", "en": "turn" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "angle A" }, { "deg": 60, "name": "angle B" }] } },
+     "point": {
+      "hi": "Board par angle A aur angle B ek jitne khule hain. Arm ek ray hai jo aage chalti hi jaati hai; kagaz par hum uska sirf ek hissa banaate hain. Isliye arms ki lambai se angle nahi badalta. Angle sirf ghumaav se badalta hai.",
+      "en": "On the board angle A and angle B are opened the same amount. An arm is a ray that goes on and on; on paper we draw only a piece of it. So the length of the arms does not change the angle. Only the turn changes the angle."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab angle B ki dono arms ko pencil se aur aage tak badha do. Ab angle B, angle A se bada hai, chhota hai, ya barabar?", "en": "Now extend both arms of angle B further with a pencil. Is angle B now bigger than angle A, smaller, or equal?" },
+      "key": "barabar",
+      "accept": ["barabar hai", "dono barabar", "equal", "same"],
+      "targets": "c6-maths-ch02-t02-m-longer-arms",
+      "wrongIfMis": "bada"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "the little arc at the vertex is only a mark that says which angle we mean, like a label → a bigger arc does not move the arms → the angle stays the same; the wider-open angle stays bigger whatever arcs are drawn",
+     "mustSay": [
+      { "hi": "arc", "en": "arc" },
+      { "hi": "sirf nishaan", "en": "only a mark" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle M" }, { "deg": 85, "name": "angle N" }] } },
+     "point": {
+      "hi": "Vertex ke paas jo chhota arc lagate hain, woh sirf nishaan hai. Woh batata hai ki hum kaunsa angle dekh rahe hain, jaise naam ka label. Arc chhota ho ya bada, arms wahin rehti hain, toh angle bhi wahi rehta hai. Board par angle M aur angle N hain.",
+      "en": "The little arc we put near the vertex is only a mark. It tells which angle we are looking at, like a name label. Whether the arc is small or big, the arms stay where they are, so the angle stays the same too. On the board are angle M and angle N."
+     },
+     "ask": {
+      "prompt": { "hi": "Ab angle M par bahut bada arc banao aur angle N par chhota sa. Ab kaunsa angle bada hai: M ya N?", "en": "Now draw a very big arc on angle M and a tiny one on angle N. Which angle is bigger now: M or N?" },
+      "key": "angle N",
+      "accept": ["N", "N bada", "angle N bada hai"],
+      "targets": "c6-maths-ch02-t02-m-arc-size",
+      "wrongIfMis": "angle M"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ritu cardboard se do angles banati hai. Angle ABC ki arms 9 cm lambi hain aur angle PQR ki arms 4 cm. Woh angle PQR ko angle ABC par aise rakhti hai ki Q, B par aaye aur arm QP, arm BA ke upar. Tab arm QR, arm BC se bhi aage bahar padti hai. Kaunsa angle bada hai?",
+     "en": "Ritu makes two angles from cardboard. Angle ABC has arms 9 cm long and angle PQR has arms 4 cm long. She places angle PQR on angle ABC so that Q sits on B and arm QP lies along arm BA. Then arm QR lies outside, beyond arm BC. Which angle is bigger?"
+    },
+    "givens": [
+     { "hi": "angle ABC ki arms 9 cm hain", "en": "angle ABC has 9 cm arms" },
+     { "hi": "angle PQR ki arms 4 cm hain", "en": "angle PQR has 4 cm arms" },
+     { "hi": "Q, B par hai aur QP, BA ke upar", "en": "Q is on B and QP lies along BA" },
+     { "hi": "QR, BC se aage bahar padti hai", "en": "QR lies outside, beyond BC" }
+    ],
+    "find": { "hi": "dono mein se bada angle", "en": "the bigger of the two angles" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle vertex milao: Q ko B par rakho", "en": "First match the vertices: put Q on B" },
+      "result": "dono ka vertex ek hi jagah",
+      "why": { "hi": "vertex mile bina do ghumaav ki tulna nahi ho sakti", "en": "two turns cannot be compared until the vertices match" }
+     },
+     {
+      "do": { "hi": "Ab ek arm milao: QP ko BA ke upar rakho", "en": "Now match one arm: lay QP along BA" },
+      "result": "pehli arm dono ki ek hi line par",
+      "why": { "hi": "ab dono ghumaav ek hi arm se shuru hote hain", "en": "now both turns start from the same arm" }
+     },
+     {
+      "do": { "hi": "Doosri arms dekho: QR, BC se bhi aage bahar hai", "en": "Look at the second arms: QR lies outside, beyond BC" },
+      "result": "QR zyada ghoomi hai",
+      "why": { "hi": "QR angle ABC ke khulepan se bahar nikal jaati hai", "en": "QR goes outside the opening of angle ABC" }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Arms ki lambai 4 cm aur 9 cm hai, par woh ghumaav ka hissa nahi hai. Toh kaunsa angle bada hai: angle ABC ya angle PQR?", "en": "The arms are 4 cm and 9 cm long, but that is not part of the turn. So which angle is bigger: angle ABC or angle PQR?" },
+     "key": "angle PQR",
+     "accept": ["PQR", "∠PQR", "angle PQR bada hai", "RQP", "angle RQP"],
+     "targets": "c6-maths-ch02-t02-m-longer-arms",
+     "wrongIfMis": "angle ABC"
+    },
+    "answer": { "hi": "angle PQR bada hai, jabki uski arms chhoti hain", "en": "angle PQR is bigger, even though its arms are shorter" },
+    "why": {
+     "hi": "vertex aur ek arm milaane par jiski doosri arm zyada ghoomi ho woh angle bada hota hai, aur arms ki lambai ghumaav nahi badalti",
+     "en": "with the vertex and one arm matched, the angle whose second arm has turned further is bigger, and the length of the arms does not change the turn"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle ABC" }, { "deg": 75, "name": "angle PQR" }] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": { "hi": "Board ke angle X aur angle Y ko ek doosre par rakhne par vertex aur dono arms mil jaati hain. Ab Y ki arms 8 cm tak lambi kar do. Kaunsa bada hai: X, Y, ya dono barabar?", "en": "When angle X and angle Y on the board are placed one on the other, the vertex and both arms match. Now make Y's arms 8 cm long. Which is bigger: X, Y, or are they equal?" },
+     "key": "barabar",
+     "accept": ["dono barabar", "barabar hain", "equal", "same"],
+     "targets": "c6-maths-ch02-t02-m-longer-arms",
+     "wrongIfMis": "angle Y",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 55, "name": "angle X" }, { "deg": 55, "name": "angle Y" }] } }
+    },
+    {
+     "id": "c2",
+     "prompt": { "hi": "Board ke angle K par bada arc banao aur angle L par chhota arc. Ab kaunsa angle bada hai: K ya L?", "en": "Draw a big arc on angle K on the board and a small arc on angle L. Which angle is bigger now: K or L?" },
+     "key": "angle L",
+     "accept": ["L", "L bada", "angle L bada hai"],
+     "targets": "c6-maths-ch02-t02-m-arc-size",
+     "wrongIfMis": "angle K",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "angle K" }, { "deg": 100, "name": "angle L" }] } }
+    },
+    {
+     "id": "c3",
+     "prompt": { "hi": "Angle S ki copy angle T par rakho: vertex par vertex, ek arm par ek arm. Phir S ki arms bahut lambi kar do. Kaunsa angle bada hai: S ya T?", "en": "Place a copy of angle S on angle T: vertex on vertex, one arm on one arm. Then make S's arms very long. Which angle is bigger: S or T?" },
+     "key": "angle T",
+     "accept": ["T", "T bada", "angle T bada hai"],
+     "targets": "c6-maths-ch02-t02-m-longer-arms",
+     "wrongIfMis": "angle S",
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle S" }, { "deg": 80, "name": "angle T" }] } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch02-t02-i03", "why": "predict: same quarter-turn opening with 2 cm and 10 cm arms → equal" },
+    { "itemId": "c6-maths-ch02-t02-i06", "why": "error-spot: a narrow angle with long arms called bigger → the wide one is bigger, only the turn counts" },
+    { "itemId": "c6-maths-ch02-t02-rl-h3", "why": "superposed angles whose second arms overlap but one drawing has longer arms → equal, and say why" },
+    { "itemId": "c6-maths-ch02-t02-i04", "why": "explain in words why longer arms do not make a bigger angle (same directions, same turn)" }
+   ],
+   "remediation": [
+    {
+     "targets": "c6-maths-ch02-t02-m-longer-arms",
+     "move": "angle-maker with two arms that stretch: pull the arms longer while watching the opening → the opening does not change → the turn is the angle, arm length is not",
+     "say": {
+      "hi": "Ek angle-maker socho jiski do pattiyan kheenchne par lambi ho jaati hain. Pattiyan lambi karo, par unke beech ka khulapan wahi rehta hai. Angle ghumaav se banta hai, arms ki lambai se nahi.",
+      "en": "Imagine an angle-maker whose two strips get longer when you pull them. Make the strips longer, but the opening between them stays the same. An angle comes from the turn, not from the length of the arms."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle-maker" }] } },
+     "then": {
+      "prompt": { "hi": "Angle E aur angle F dono quarter turn khule hain. Ab F ki arms 10 cm tak badha do. Kaunsa bada hai: E, F, ya barabar?", "en": "Angles E and F are both a quarter turn. Now F's arms are made 10 cm long. Which is bigger: E, F, or equal?" },
+      "key": "barabar",
+      "accept": ["dono barabar", "barabar hain", "equal", "same"],
+      "targets": "c6-maths-ch02-t02-m-longer-arms",
+      "wrongIfMis": "angle F",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "angle E" }, { "deg": 90, "name": "angle F" }] } }
+     }
+    },
+    {
+     "targets": "c6-maths-ch02-t02-m-arc-size",
+     "move": "tracing-paper copy laid on the other angle: the arms match exactly → rub out the arc and draw a bigger one → the arms did not move → the angle did not change",
+     "say": {
+      "hi": "Ek angle ki copy tracing paper par banao aur doosre angle par rakho: arms bilkul mil jaati hain. Ab copy ka chhota arc mitaakar bada arc banao. Arms hili hi nahi, isliye angle bhi wahi raha.",
+      "en": "Copy one angle on tracing paper and lay it on the other angle: the arms match exactly. Now rub out the copy's small arc and draw a big one. The arms did not move at all, so the angle stayed the same."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 65, "name": "copy" }, { "deg": 65, "name": "angle" }] } },
+     "then": {
+      "prompt": { "hi": "Angle G aur angle H ek doosre par bilkul milte hain. Ab H par bada arc banao. Kaunsa bada hai: G, H, ya barabar?", "en": "Angles G and H match exactly when laid one on the other. Now H gets a big arc. Which is bigger: G, H, or equal?" },
+      "key": "barabar",
+      "accept": ["dono barabar", "barabar hain", "equal", "same"],
+      "targets": "c6-maths-ch02-t02-m-arc-size",
+      "wrongIfMis": "angle H",
+      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 65, "name": "angle G" }, { "deg": 65, "name": "angle H" }] } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

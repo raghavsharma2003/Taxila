@@ -16,6 +16,7 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -29,6 +30,9 @@ export const scriptOf = (topicId) => JSON.parse(readFileSync(join(SCRIPTS, `${to
 export const allTopics = () => readdirSync(SCRIPTS).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
 /** Board parameter ranges (Studio's templates, server/forge/explainer/templates.js and board-ref.js). */
+/** A board whose template has no range rule here is left to Studio's own resolver and gate (certifyBoardRef), as long as
+ *  Studio lists it as a maths template (BOARD_REFS): never refused only because this file does not know it yet. */
+export const rangeOk = (b) => (RANGE[b.template] ? RANGE[b.template](b.params ?? {}) : BOARD_REFS[b.template]?.subject === "maths");
 export const RANGE = {
   "fraction-parts@1": (p) => p.parts >= 2 && p.parts <= 12 && p.shade >= 0 && p.shade <= p.parts,
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
@@ -43,6 +47,10 @@ export const RANGE = {
   "number-line-hop@1": (p) => Number.isInteger(p.start) && Array.isArray(p.hops),
   // marks label points and hop draws the solved jumps; a CHECK uses mark k or target [a, den], never both
   "fraction-line@1": (p) => {
+    // Studio (director7): dens [d1, d2] draws both scales on one line, d1 above and d2 below; marks are [num, den] pairs
+    if (Array.isArray(p.dens)) return p.den === undefined && p.dens.length === 2 && p.dens.every((d) => Number.isInteger(d) && d >= 2 && d <= 12)
+      && [1, 2, 3].includes(p.to) && p.hop === undefined && p.mark === undefined && p.target === undefined
+      && (p.marks ?? []).every((m) => Array.isArray(m) && p.dens.includes(m[1]) && Number.isInteger(m[0]) && m[0] >= 0 && m[0] <= m[1] * p.to);
     const inLine = (n) => Number.isInteger(n) && n >= 0 && n <= p.den * p.to;
     return p.den >= 2 && p.den <= 12 && [1, 2, 3].includes(p.to) && (p.marks ?? []).every((m) => inLine(m.num))
       && (p.hop === undefined || inLine(p.hop.num)) && (p.mark === undefined || inLine(p.mark)) && !(p.mark !== undefined && p.target !== undefined)
@@ -108,7 +116,7 @@ export function structureErrors(s, kit) {
       if (!c.key || !c.wrongIfMis || c.wrongIfMis === c.key) e.push(at(`${c.id} key and the misconception's answer`));
       if (leaks(c.prompt, c.key)) e.push(at(`${c.id} prompt prints its key`));
       const p = c.board?.params ?? {};
-      if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
+      if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
     }
     if (k.ladder.length < 3) e.push(at("ladder: fewer than 3 rungs"));
     for (const r of k.ladder) if (!items.has(r.itemId)) e.push(at(`ladder ${r.itemId} is not a kit item`));
@@ -117,7 +125,7 @@ export function structureErrors(s, kit) {
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move)) e.push(at("remediation falls back to counting"));
     }
     for (const b of beatsOf(k, s.version ?? 1)) {
-      if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
+      if (!rangeOk(b.board)) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
     }
   }
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
@@ -198,6 +206,23 @@ export function v21Errors(s) {
 export const THEN_MAX = 120;
 const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
 const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
+/**
+ * The {friend} slot's own names (server/director/friend.js FRIENDS, FRIENDS_F, FRIENDS_M) never appear written into a
+ * script, keys and accepts included: the slot may fill with the same name in the same lesson, and then two characters
+ * share it ("Tara painted 3/5 … {friend} painted 2/5 … who painted more? Tara").
+ */
+export const FRIEND_POOL = ["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara", "Diya", "Aman"];
+const POOL_RE = new RegExp(`(?<![\\p{L}])(?:${FRIEND_POOL.join("|")})(?![\\p{L}])`, "u");
+export function poolNameErrors(s) {
+  const e = [];
+  const walk = (x, path) => {
+    if (typeof x === "string") { if (POOL_RE.test(x)) e.push(`${path}: names "${x.match(POOL_RE)[0]}", a {friend}-slot name; use another name`); return; }
+    if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (x && typeof x === "object") for (const [k, v] of Object.entries(x)) walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(s, "");
+  return e;
+}
 export function v22Errors(s) {
   const e = [];
   for (const k of s.skills) {
@@ -207,7 +232,10 @@ export function v22Errors(s) {
     k.checks.forEach((c, i) => { if (!c.board) e.push(at(`checks[${i}]: a check carries its own board`)); });
     k.remediation.forEach((r, i) => {
       const t = r.then ?? {};
-      if ([...String(t.prompt?.hi ?? "")].length > THEN_MAX) e.push(at(`remediation[${i}].then: prompt ${[...String(t.prompt?.hi ?? "")].length} > ${THEN_MAX} characters`));
+      for (const lang of ["hi", "en"]) {
+        const len = [...String(t.prompt?.[lang] ?? "")].length;
+        if (len > THEN_MAX) e.push(at(`remediation[${i}].then: prompt${lang === "en" ? " (en)" : ""} ${len} > ${THEN_MAX} characters`));
+      }
       if (!t.board) e.push(at(`remediation[${i}].then: a then-card carries its own board`));
       if (weNums && numsOf(t.prompt?.hi) === weNums) e.push(at(`remediation[${i}].then: repeats the worked problem's numbers (${weNums})`));
     });
@@ -264,7 +292,7 @@ export function structureErrorsV2(s, kit) {
       if (!c.targets) e.push(at(`${c.id}: targets`));
       if (!c.wrongIfMis) e.push(at(`${c.id}: wrongIfMis`));
       const p = c.board?.params ?? {};
-      if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
+      if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
     }
     if (k.ladder.length < 3) e.push(at("ladder: fewer than 3 rungs"));
     for (const r of k.ladder) if (!items.has(r.itemId)) e.push(at(`ladder ${r.itemId} is not a kit item`));
@@ -277,13 +305,13 @@ export function structureErrorsV2(s, kit) {
       if (/\bcount (them|the (pieces|parts|squares|units))\b/i.test(r.move ?? "")) e.push(at("remediation falls back to counting"));
     }
     if (k.bridgeToNext != null) e.push(...saidErrors(k.bridgeToNext, at("bridgeToNext")));
-    for (const b of beatsOf(k, 2)) if (!RANGE[b.board.template]?.(b.board.params ?? {})) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
+    for (const b of beatsOf(k, 2)) if (!rangeOk(b.board)) e.push(at(`${b.id} ${b.board.template} params out of range ${JSON.stringify(b.board.params)}`));
   }
   if ((s.skills.at(-1)?.bridgeToNext ?? null) !== null) e.push("the last skill has a bridge");
   const checked = new Set(s.skills.flatMap((k) => [...k.checks.map((c) => c.targets), ...k.explain.map((b) => b.ask?.targets)]).filter(Boolean));
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
-  if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s));
+  if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
   return e;
 }
 
