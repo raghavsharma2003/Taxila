@@ -300,6 +300,7 @@ export type GunaAct =
   | { kind: "open"; place: number }                      // pack: one crate of 10^place opened into ten of the next place down
   | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
+  | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
 // Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step

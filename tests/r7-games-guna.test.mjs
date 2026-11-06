@@ -9,7 +9,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { gunaLogic, GUNA_MAL, malSetup } from "../src/play/families/guna/guna.logic.ts";
+import { gunaLogic, GUNA_MAL, malSetup, racksOf, RACKS } from "../src/play/families/guna/guna.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
@@ -35,10 +35,19 @@ const CASES = [
   ["story", "full", { cap: [12, 50], q: [3, 40] }],
   ["story", "full", { cap: [3, 12], q: [2, 20] }],
   ["story", "left", { cap: [3, 12], q: [2, 20] }],
+  // r7 guna2: class 7 big round × round and big estimates; class 5 checking an answer by its estimate; class 4 sharing,
+  // grouping and the leftover at small numbers
+  ["field", "area", { shapes: ["BIG"] }],
+  ["field", "round", { big: true }],
+  ["field", "check", {}],
+  ["pack", "each", { cap: [2, 6], q: [2, 9] }],
+  ["story", "full", { cap: [3, 9], q: [2, 9] }],
+  ["story", "all", { cap: [3, 9], q: [2, 9] }],
 ];
 const EXPECT = { "2x1": ["ones-only", "no-carry", "forget-carry"], "2x10,2xT": ["adds-ten", "no-zero", "forget-carry"], "3x1": [], "2x2,2xT": ["no-zero", "diagonal", "forget-carry"],
-  "RxR,2xH": ["zero-count"], round: ["zero-count"], share: ["digitwise", "short"], all: ["drop"], full: ["up", "short"], left: ["quotient"] };
-const expectOf = (goal, g) => EXPECT[g.shapes ? g.shapes.join(",") : goal];
+  "RxR,2xH": ["zero-count"], round: ["zero-count"], share: ["digitwise", "short"], all: ["drop"], full: ["up", "short"], left: ["quotient"],
+  BIG: ["zero-count", "zero-less", "zero-more"], roundbig: ["zero-count", "zero-less", "zero-more"], check: ["trusts", "must-equal"], each: ["short"] };
+const expectOf = (goal, g) => EXPECT[g.shapes ? g.shapes.join(",") : g.big ? "roundbig" : goal];
 const levelsOf = (mode, goal, grammar, seeds = [1, 7, 42, 99]) => {
   const out = [];
   for (const seed of seeds) for (const fade of [1, 2, 3]) for (const c of gunaLogic.generate(req(mode, goal, seed, { grammar, fade }))) out.push(c);
@@ -49,11 +58,16 @@ const levelsOf = (mode, goal, grammar, seeds = [1, 7, 42, 99]) => {
 /** the nearest round length at a side's leading place, by plain string reading (48 → 50, 348 → 300) */
 const nearestRound = (x) => { const u = 10 ** (String(x).length - 1); return Math.floor(x / u + 0.5) * u; };
 const crateValue = (crates) => crates.reduce((s, c, i) => s + c * 10 ** i, 0);
+/** check: the dockets as the task states them (the product, ten times it, a tenth of it), in the order ctx names */
+const ORDERS = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
+const claimsOf = (p) => ORDERS[p.ctx].map((i) => [p.a * p.b, p.a * p.b * 10, Math.floor((p.a * p.b) / 10)][i]);
+const roundDown = (x) => { const u = 10 ** (String(x).length - 1); return Math.floor(x / u) * u; };
+const roundUp = (x) => { const u = 10 ** (String(x).length - 1); return Math.ceil(x / u) * u; };
 /** the checker's own copy of the set-up, fed every act the law accepted (undo pops its own stack) */
 function checker(p) {
   const places = (x) => String(x).split("").reverse().map(Number);
-  const racks = p.goal === "round" ? String(nearestRound(p.a)).length + String(nearestRound(p.b)).length : String(p.a).length + String(p.b).length;
-  const st = { crates: new Array(racks).fill(0), ra: 0, rb: 0, dock: p.goal === "share" ? places(p.a) : [], given: 0, n: 0 }, stack = [];
+  const racks = p.goal === "round" || p.goal === "check" ? String(nearestRound(p.a)).length + String(nearestRound(p.b)).length : String(p.a).length + String(p.b).length;
+  const st = { crates: new Array(racks).fill(0), ra: 0, rb: 0, dock: p.goal === "share" ? places(p.a) : p.goal === "each" ? [p.a] : [], given: 0, n: 0, marks: [0, 0, 0] }, stack = [];
   return {
     st,
     feed(a) {
@@ -65,6 +79,7 @@ function checker(p) {
       if (a.kind === "open") { st.dock[a.place] -= 1; st.dock[a.place - 1] += 10; }
       if (a.kind === "deal") { st.dock[a.place] -= p.b; st.given += 10 ** a.place; }
       if (a.kind === "count") st.n = a.n;
+      if (a.kind === "stamp") st.marks[a.i] = a.to;
     },
   };
 }
@@ -72,7 +87,12 @@ function checker(p) {
 function verdict(p, st) {
   if (p.goal === "area") return crateValue(st.crates) === p.a * p.b;
   if (p.goal === "round") return st.ra === nearestRound(p.a) && st.rb === nearestRound(p.b) && crateValue(st.crates) === nearestRound(p.a) * nearestRound(p.b);
-  if (p.goal === "share") { const left = crateValue(st.dock); return left === p.a % p.b && st.given === Math.floor(p.a / p.b) && left + st.given * p.b === p.a; }
+  if (p.goal === "check") {
+    // reasonable = inside the band the rounded sides allow (both down … both up); the estimate built first
+    const lo = roundDown(p.a) * roundDown(p.b), hi = roundUp(p.a) * roundUp(p.b), est = nearestRound(p.a) * nearestRound(p.b);
+    return st.ra === nearestRound(p.a) && st.rb === nearestRound(p.b) && crateValue(st.crates) === est && claimsOf(p).every((v, i) => st.marks[i] === (v >= lo && v <= hi ? 1 : 2));
+  }
+  if (p.goal === "share" || p.goal === "each") { const left = crateValue(st.dock); return left === p.a % p.b && st.given === Math.floor(p.a / p.b) && left + st.given * p.b === p.a; }
   if (p.goal === "all") return st.n * p.b >= p.a && (st.n - 1) * p.b < p.a;
   if (p.goal === "full") return st.n * p.b <= p.a && p.a - st.n * p.b < p.b;
   return st.n === p.a % p.b;
@@ -141,6 +161,21 @@ test("guna: mal-rule signatures are the beliefs (+10 for ×10, the tens digit br
     assert.equal(zc.load * 10, x * y);
     assert.equal((Number(String(x)[0]) * Number(String(y)[0])) % 10, 0, "only where the basic fact ends in 0");
   }
+  for (const c of [...levelsOf("field", "area", { shapes: ["BIG"] }), ...levelsOf("field", "round", { big: true })]) {
+    const p = gunaLogic.validate(c.level).params, x = p.goal === "round" ? nearestRound(p.a) : p.a, y = p.goal === "round" ? nearestRound(p.b) : p.b;
+    const fact = Number(String(x)[0]) * Number(String(y)[0]);
+    const zl = malSetup(p, "zero-less"); if (zl) { assert.equal(zl.load * 10, x * y); assert.notEqual(fact % 10, 0, "zero-less only where the fact keeps no zero of its own"); }
+    const zm = malSetup(p, "zero-more"); if (zm) assert.equal(zm.load, x * y * 10);
+  }
+  for (const c of levelsOf("field", "check", {})) {
+    const p = gunaLogic.validate(c.level).params;
+    assert.deepEqual(malSetup(p, "trusts").marks, [1, 1, 1]); assert.deepEqual(malSetup(p, "must-equal").marks, [2, 2, 2]);
+    assert.ok(claimsOf(p).every((v) => v !== nearestRound(p.a) * nearestRound(p.b)), "no docket is the estimate itself");
+  }
+  for (const c of levelsOf("pack", "each", {})) {
+    const p = gunaLogic.validate(c.level).params, sh = malSetup(p, "short");
+    assert.deepEqual(sh.dock, [(p.a % p.b) + p.b], "a round less than can go: the leftover a share or more");
+  }
   for (const c of levelsOf("pack", "share", { sizes: [2, 3] })) {
     const p = gunaLogic.validate(c.level).params;
     const dw = malSetup(p, "digitwise");
@@ -161,7 +196,11 @@ test("guna: no idea-free set-up wins (a + b on the truck, both sides rounded the
       const load = (v) => String(v).split("").reverse().flatMap((d, place) => Array.from({ length: Number(d) }, () => ({ kind: "crate", place, by: 1 })));
       if (String(p.a + p.b).length <= String(p.a).length + String(p.b).length) assert.ok(!replayCheck(level, [...cuts, ...load(p.a + p.b), { kind: "run" }]).ok, `${c.signature}: a + b wins`);
     }
-    if (goal === "share") { assert.ok(!run(level, [{ kind: "run" }]).s.done, `${c.signature}: sent at once`); }
+    if (goal === "share" || goal === "each") { assert.ok(!run(level, [{ kind: "run" }]).s.done, `${c.signature}: sent at once`); }
+    if (goal === "check") for (const m of [1, 2]) {
+      const sol = gunaLogic.solve(level).filter((a) => a.kind !== "stamp" && a.kind !== "run");
+      assert.ok(!replayCheck(level, [...sol, ...[0, 1, 2].map((i) => ({ kind: "stamp", i, to: m })), { kind: "run" }]).ok, `${c.signature}: every docket ${m}`);
+    }
     if (goal === "all" || goal === "full") assert.ok(!run(level, [{ kind: "count", n: 1 }, { kind: "run" }]).s.done || Math.ceil(p.a / p.b) === 1);
     if (goal === "left") assert.ok(!run(level, [{ kind: "run" }]).s.done, `${c.signature}: an empty jar wins`);
   }
@@ -236,8 +275,14 @@ test("guna: tampered params are refused", () => {
     [share, { b: 10 }], [share, { a: 1000 }], [share, { a: 3 * share.params.b }], [share, { a: 84, b: 4 }], [share, { ctx: 1 }],
     [all, { a: all.params.b * 5 }], [all, { b: 60 }], [all, { ctx: 3 }], [all, { a: 1000 }], [all, { a: 1, b: 7 }],
     [left, { a: 7 * 3 + 3, b: 7 }],
+    [area, { a: 30000, b: 4000 }], [area, { a: 3000, b: 4 }], [area, { a: 30000, b: 4000, ctx: 1 }],
+    [round, { a: 48720, b: 312 }],
   ]) assert.equal(gunaLogic.validate(bad(lv, patch)), null, `${lv.params.goal} ${JSON.stringify(patch)}`);
   assert.equal(gunaLogic.validate({ ...area, mode: "pack" }), null, "a goal belongs to its mode");
+  const check = g("field", "check"), each = g("pack", "each"), big = g("field", "area", { shapes: ["BIG"] });
+  for (const lv of [check, each, big]) assert.ok(gunaLogic.validate(lv), lv.levelId);
+  for (const [lv, patch] of [[check, { ctx: 6 }], [check, { ctx: -1 }], [check, { a: 50 }], [check, { a: 4872, b: 312 }], [each, { a: 61 }], [each, { b: 10 }], [each, { a: each.params.b }], [each, { ctx: 3 }],
+    [big, { a: big.params.a * 10, b: big.params.b * 10 }]]) assert.equal(gunaLogic.validate(bad(lv, patch)), null, `${lv.params.goal} ${JSON.stringify(patch)}`);
   assert.equal(gunaLogic.validate({ ...area, params: null }), null);
 });
 
@@ -274,7 +319,7 @@ for (const [mode, goal, grammar] of CASES) {
           const r = rnd(), x = rnd();
           const a = pursue && r < 0.7 && k < sol.length ? sol[k++]
             : r < 0.12 ? { kind: "cut", side: x < 0.6 ? 0 : 1, at: 1 + Math.floor(rnd() * 120), ...(rnd() < 0.2 ? { correct: true } : {}) }
-            : r < 0.32 ? { kind: "crate", place: Math.floor(x * 5), by: rnd() < 0.7 ? 1 : -1 }
+            : r < 0.32 ? (p.goal === "check" && rnd() < 0.3 ? { kind: "stamp", i: Math.floor(x * 3), to: rnd() < 0.5 ? 1 : 2 } : { kind: "crate", place: Math.floor(x * 7), by: rnd() < 0.7 ? 1 : -1 })
             : r < 0.38 ? { kind: "round", side: x < 0.5 ? 0 : 1, to: 10 * Math.floor(rnd() * 60) }
             : r < 0.5 ? { kind: "deal", place: Math.floor(x * 3) } : r < 0.58 ? { kind: "open", place: Math.floor(x * 3) }
             : r < 0.7 ? { kind: "count", n: Math.max(0, w + Math.floor((x - 0.5) * 6)) }
@@ -306,7 +351,8 @@ test("guna: every word the view shows exists in all three languages; vakya's wor
   const view = readFileSync(`${ROOT}src/play/families/guna/guna.view.ts`, "utf8");
   const used = [...view.matchAll(/W\("(guna\.[a-zA-Z0-9.]+)"/g)].map((m) => m[1]);
   const extra = ["area", "round", "share", ...[0, 1, 2].flatMap((i) => [`all${i}`, `full${i}`, `left${i}`])].map((g) => `guna.goal.${g}`)
-    .concat(["child", "book", "sweet", "rice", "marble"].map((x) => `guna.item.${x}`), ["bus", "auto", "box", "packet", "sack", "bag"].map((x) => `guna.per.${x}`));
+    .concat(["child", "book", "sweet", "rice", "marble"].map((x) => `guna.item.${x}`), ["bus", "auto", "box", "packet", "sack", "bag"].map((x) => `guna.per.${x}`),
+      ["big", "check", "each0", "each1", "each2"].map((g) => `guna.goal.${g}`));
   for (const k of [...used, ...extra]) for (const l of ["hinglish", "en", "hi"]) assert.ok(words[k]?.[l], `${k} ${l}`);
   const logic = readFileSync(`${ROOT}src/play/families/guna/guna.logic.ts`, "utf8").replace(/\/\/.*$/gm, "");
   assert.doesNotMatch(logic, /Math\.random|Date\.now|performance\.now|setTimeout|setInterval/);
@@ -319,19 +365,21 @@ const GE = () => coverage().entries.filter((e) => e.family === "guna");
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 
-test("guna coverage: the eleven authored entries, mapped to real kit misconceptions; the six multiply / divide topics are guna's now", () => {
+test("guna coverage: the seventeen authored entries, mapped to real kit misconceptions; the nine multiply / divide topics are guna's now", () => {
   assert.deepEqual(GE().map((e) => `${e.topicId}|${e.mode}|${e.goal}`), [
     "c4-maths-ch13-t01|field|area", "c4-maths-ch13-t02|pack|share", "c4-maths-ch13-t02|story|all", "c5-maths-ch06-t01|field|area", "c5-maths-ch06-t02|field|area",
-    "c5-maths-ch06-t02|field|round", "c5-maths-ch09-t01|pack|share", "c5-maths-ch09-t01|story|full", "c5-maths-ch09-t02|story|all", "c5-maths-ch09-t02|story|full", "c5-maths-ch09-t02|story|left"]);
-  const kits = readFileSync(`${ROOT}data/kits/c4-maths.json`, "utf8") + readFileSync(`${ROOT}data/kits/c5-maths.json`, "utf8");
-  const ids = new Set([...kits.matchAll(/"(c[45]-maths-ch\d+-t\d+-m-[a-z0-9-]+)"/g)].map((m) => m[1]));
+    "c5-maths-ch06-t02|field|round", "c5-maths-ch09-t01|pack|share", "c5-maths-ch09-t01|story|full", "c5-maths-ch09-t02|story|all", "c5-maths-ch09-t02|story|full", "c5-maths-ch09-t02|story|left",
+    "c7-maths-ch01-t03|field|area", "c7-maths-ch01-t03|field|round", "c5-maths-ch04-t02|field|check", "c4-maths-ch09-t02|pack|each", "c4-maths-ch09-t02|story|full", "c4-maths-ch09-t02|story|all"]);
+  const kits = ["c4", "c5", "c7"].map((k) => readFileSync(`${ROOT}data/kits/${k}-maths.json`, "utf8")).join("");
+  const ids = new Set([...kits.matchAll(/"(c[457]-maths-ch\d+-t\d+-m-[a-z0-9-]+)"/g)].map((m) => m[1]));
   for (const e of GE()) { assert.ok(Object.keys(e.misMap).length >= 1, e.topicId); for (const kit of Object.values(e.misMap)) { assert.ok(kit.startsWith(`${e.topicId}-m-`), kit); assert.ok(ids.has(kit), `${kit} is a verified kit id`); } }
   for (const sk of ["c4-maths-ch13-t01-s1", "c4-maths-ch13-t01-s2", "c4-maths-ch13-t01-s3", "c4-maths-ch13-t02-s1", "c4-maths-ch13-t02-s3", "c5-maths-ch06-t01-s1", "c5-maths-ch06-t01-s2",
-    "c5-maths-ch06-t02-s1", "c5-maths-ch06-t02-s3", "c5-maths-ch09-t01-s1", "c5-maths-ch09-t01-s2", "c5-maths-ch09-t01-s3", "c5-maths-ch09-t02-s1", "c5-maths-ch09-t02-s2", "c5-maths-ch09-t02-s3"]) {
+    "c5-maths-ch06-t02-s1", "c5-maths-ch06-t02-s3", "c5-maths-ch09-t01-s1", "c5-maths-ch09-t01-s2", "c5-maths-ch09-t01-s3", "c5-maths-ch09-t02-s1", "c5-maths-ch09-t02-s2", "c5-maths-ch09-t02-s3",
+    "c7-maths-ch01-t03-s1", "c7-maths-ch01-t03-s2", "c7-maths-ch01-t03-s3", "c5-maths-ch04-t02-s1", "c4-maths-ch09-t02-s1", "c4-maths-ch09-t02-s2", "c4-maths-ch09-t02-s3"]) {
     assert.ok(hasPlay(sk), sk); assert.equal(entryFor({ skillId: sk }).family, "guna", sk);
   }
   // no honest mechanic: these stay with the net
-  for (const sk of ["c4-maths-ch13-t02-s2", "c5-maths-ch06-t01-s3", "c5-maths-ch06-t02-s2"]) assert.notEqual(entryFor({ skillId: sk })?.family, "guna", sk);
+  for (const sk of ["c4-maths-ch13-t02-s2", "c5-maths-ch06-t01-s3", "c5-maths-ch06-t02-s2", "c5-maths-ch04-t02-s2", "c5-maths-ch04-t02-s3"]) assert.notEqual(entryFor({ skillId: sk })?.family, "guna", sk);
 });
 
 for (const e of GE()) for (const fade of [1, 2, 3]) {
@@ -359,3 +407,34 @@ for (const e of GE()) for (const fade of [1, 2, 3]) {
     }
   });
 }
+
+// r7 guna2: the existing levels are the very same (levelIds pinned before the change: seed 5, fade 1, first candidate)
+test("guna: existing entries generate the same levels as before r7 guna2 (pinned levelIds)", () => {
+  const PIN = [
+    ["field", "area", { shapes: ["2x1"] }, "guna-area:16:8:0-5"], ["field", "area", { shapes: ["2x10", "2xT"] }, "guna-area:22:80:0-5"],
+    ["field", "area", { shapes: ["3x1"] }, "guna-area:161:8:0-5"], ["field", "area", { shapes: ["RxR", "2xH"] }, "guna-area:72:100:0-5"],
+    ["field", "area", { shapes: ["RxR", "2xH", "2x10"] }, "guna-area:72:10:0-5"], ["field", "round", {}, "guna-round:67:23:0-5"],
+    ["pack", "share", { sizes: [2] }, "guna-share:95:5:0-5"], ["pack", "share", { sizes: [3] }, "guna-share:297:8:0-5"],
+    ["story", "all", { cap: [3, 9], q: [3, 30] }, "guna-all:170:7:1-5"], ["story", "full", { cap: [12, 50], q: [3, 40] }, "guna-full:386:15:1-5"],
+    ["story", "left", { cap: [3, 12], q: [2, 20] }, "guna-left:146:9:1-5"],
+  ];
+  for (const [mode, goal, grammar, id] of PIN) assert.equal(gunaLogic.generate(req(mode, goal, 5, { grammar, fade: 1 }))[0].level.levelId, id, `${mode}/${goal} ${JSON.stringify(grammar)}`);
+});
+
+// r7 guna2 (main loop): the rack limit is raised only as far as c7-maths-ch01-t03 needs: every one of its products fits a
+// truck of RACKS racks and some need all of them; every earlier entry still uses at most the old five
+test("guna: the rack limit is exactly what c7-maths-ch01-t03 needs; earlier entries never use more than five racks", () => {
+  assert.equal(RACKS, 7);
+  let most = 0;
+  for (const e of GE()) for (const seed of [1, 2, 3, 5, 8, 13, 21, 34]) for (const fade of [1, 2, 3]) {
+    for (const c of gunaLogic.generate(req(e.mode, e.goal, seed, { grammar: e.grammar, fade }))) {
+      const p = gunaLogic.validate(c.level).params;
+      if (!["area", "round", "check"].includes(p.goal)) continue;
+      const racks = racksOf(p), product = p.goal === "area" ? p.a * p.b : nearestRound(p.a) * nearestRound(p.b);
+      assert.ok(product < 10 ** racks, `${c.signature}: the truck holds the product`);
+      if (e.topicId === "c7-maths-ch01-t03") { assert.ok(racks <= RACKS && racks >= 6, `${c.signature} ${racks}`); most = Math.max(most, racks); }
+      else assert.ok(racks <= 5, `${e.topicId} ${c.signature}: ${racks} racks`);
+    }
+  }
+  assert.equal(most, RACKS, "c7-maths-ch01-t03 needs every rack the limit allows");
+});
