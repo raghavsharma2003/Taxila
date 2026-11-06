@@ -65,6 +65,12 @@ export const PLAY_ACTS = Object.freeze({
   guna: { field: { act: "load", hi: "khet kaato aur truck bharo", en: "cut the field and load the truck" },
     pack: { act: "load", hi: "godown ka maal trucks mein barabar baanto", en: "share the godown equally into the trucks" },
     story: { act: "set", hi: "gaadiyan ya packet rakho aur kahani chalao", en: "set out the vehicles or packets and run the story" } },
+  // r7 games: Hissa (multiplying and dividing fractions and decimals): fold the sheet and tag the piece; pour the jug into cups;
+  // shade the tenths grid or slide the digits; fold the bar or the recipe in the story
+  hissa: { fold: { act: "fold", hi: "kaagaz modo, rang bharo aur tukda gino", en: "fold the sheet, shade it and count the piece" },
+    pour: { act: "fill", hi: "jug se cup bharo aur bacha hissa naapo", en: "pour the jug into cups and name the part cup" },
+    grid: { act: "set", hi: "grid mein dasvein bharo ya ank khiskao", en: "shade the tenths or slide the digits" },
+    story: { act: "fold", hi: "kahani padho, patti modo aur hissa lo", en: "read the story, fold the bar and take the part" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

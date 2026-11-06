@@ -20,6 +20,7 @@ import { kilaLogic } from "./kila/kila.logic.ts";
 import { ghadiLogic } from "./ghadi/ghadi.logic.ts";
 import { nakshaLogic } from "./naksha/naksha.logic.ts";
 import { gunaLogic } from "./guna/guna.logic.ts";
+import { hissaLogic } from "./hissa/hissa.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -90,5 +91,11 @@ export const LOGIC: Record<string, AnyLogic> = {
   "guna/field": asAny(gunaLogic),
   "guna/pack": asAny(gunaLogic),
   "guna/story": asAny(gunaLogic),
+  // round 7: Hissa, multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths
+  // grid and a place-value slide, stories spent and scaled); nothing runs on a clock
+  "hissa/fold": asAny(hissaLogic),
+  "hissa/pour": asAny(hissaLogic),
+  "hissa/grid": asAny(hissaLogic),
+  "hissa/story": asAny(hissaLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
