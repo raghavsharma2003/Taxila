@@ -81,3 +81,65 @@ test("R7 (format 2.3): a worked step said smaller is its authored simpler when t
   assert.equal(scriptWorkedStepSmaller({ do: { hi: "8 aur 3 jodo", en: "add 8 and 3" }, result: "11", simpler: { hi: "Pehle 8 lo, phir 3 aage gino", en: "Take 8, count 3 on" } }), "Pehle 8 lo, phir 3 aage gino.");
   assert.equal(scriptWorkedStepSmaller({ do: { hi: "8 aur 3 jodo", en: "add 8 and 3" }, result: "11" }), "Bas yeh ek kadam: 8 aur 3 jodo, aur milta hai 11.");
 });
+
+const T6 = "c6-maths-ch06-t01";
+test("R8 replay director9 c6 steering T21: 'pehle main try karun?' never lets the live card go with its answer", async () => {
+  setScriptForTest(T6, runScript(T6));
+  const { last } = await replay(RUN, "steering", T6, 21);
+  assert.equal(last.child, "pehle main try karun?");
+  assert.equal(last.state.lastMove?.gave, undefined, JSON.stringify(last.state.lastMove?.gave));
+  assert.ok(last.state.activeItemId, "a card is live");
+});
+
+test("R8 replay director9 c4 stuck T23: the third 'kis cheez ka jawab dun?' re-poses the card, never its answer", async () => {
+  const T4 = "c4-maths-ch05-t01";
+  setScriptForTest(T4, runScript(T4));
+  const { plans } = await replay(RUN, "stuck", T4, 23);
+  const asks = plans.filter((p) => /kis cheez|sawaal kya hai|phir se bolo/.test(p.child));
+  assert.ok(asks.length >= 3);
+  for (const p of asks) assert.equal(p.state.lastMove?.gave, undefined, `T${p.row}: ${JSON.stringify(p.state.lastMove?.gave)}`);
+});
+
+test("R8 (director9 c6 stuck T23): a probe answered is acknowledged on the old board; the next beat's opening is never the acknowledgement", async () => {
+  setScriptForTest(T6, runScript(T6));
+  const { kit, last } = await replay(RUN, "stuck", T6, 23);
+  const st = { ...last.state, lastMove: { ...last.state.lastMove, probeAck: true } };
+  const card = last.p.r.ui.ask?.text ?? "";
+  const out = await sayAt(kit, { ...last, child: "mujhe laga aisa hi hoga" }, `Is aayat ke kinaare par ek baar dhaaga lagana hai. ${card}`, st);
+  assert.ok(out.guard.probeAck);
+  assert.ok(out.guard.parts?.prev, JSON.stringify(out.guard.parts));
+  assert.doesNotMatch(out.guard.parts.prev, /dhaaga/, "e3's line is not the acknowledgement");
+  assert.doesNotMatch(out.guard.parts.prev, /[?？]/, "no question in the acknowledgement's slot");
+});
+
+import { initLessonState, step, notYes } from "../server/director/state.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+import { CTX, cls } from "./fixtures/kit.mjs";
+const walkOf = (T) => {
+  const K = kitFromFile(getTopic(T));
+  let r = step(initLessonState({ topicId: T, kit: K, ctx: { ...CTX, classLevel: 5, lang: "hinglish" }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+  const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+  return { K, t, get r() { return r; } };
+};
+
+test("R9: a worked example's steps end on at most one check-in; 'nahi' to it is the same step again, smaller", async () => {
+  setScriptForTest(T1, runScript(T1));
+  const L = walkOf(T1);
+  const answer = () => { const id = L.r.state.activeItemId; const it = id && L.r.state.scriptCard?.id === id ? L.r.state.scriptCard : null; return it ? String(it.answer) : "haan"; };
+  for (let i = 0; i < 40 && !/^worked:step/.test(String(L.r.move.scriptBeat?.beatId ?? "")); i++) L.t(answer(), L.r.state.activeItemId ? cls("correct") : cls("no_evidence"));
+  assert.match(String(L.r.move.scriptBeat?.beatId), /^worked:step1$/, "the worked example's first step");
+  assert.equal(L.r.move.checkinOk, true, "the first step of the beat may check in");
+  const step1 = L.r.move.rendered?.[0];
+  L.t("nahi");
+  assert.equal(L.r.move.scriptBeat?.beatId, "worked:step1", "a 'nahi' to the check-in is acted on: the same step");
+  assert.equal(L.r.move.smaller, true);
+  assert.notEqual(L.r.move.rendered?.[0], step1, "said smaller");
+  assert.ok(!L.r.move.checkinOk, "the beat's one check-in is spent");
+  L.t("haan");
+  assert.ok(!L.r.move.checkinOk, "no second check-in in the same worked example");
+  // her tail on a step with no check-in left is a statement
+  const out = await (async () => { replyDeps.chat = async () => ({ text: "Chalo." }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: L.K, childText: "haan", history: [], ui: L.r.ui, module: null }); })();
+  if (!L.r.state.activeItemId) assert.doesNotMatch(out.reply, /[?？]\s*$/, out.reply);
+  assert.ok(notYes("nahi samjha") && notYes("no") && !notYes("haan") && !notYes("haan, samajh aaya"));
+});

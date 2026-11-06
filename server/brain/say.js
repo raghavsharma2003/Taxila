@@ -38,6 +38,8 @@ const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati his
 // v6 R5: the end of the first half of a split turn
 // (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
 const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab agla hissa."], english: ["Now let's go on.", "On to the next bit.", "Now the next part."] };
+// v6.1 R9: a teaching turn past its beat's one check-in ends on a statement
+const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
@@ -1855,7 +1857,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     let ack = null;
     if (state.lastMove?.probeAck && answeredNow) {
       const a0 = ss[0];
-      if (a0 && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0)) { ack = a0; ss = ss.slice(1); }
+      // v6.1 R8 (main, director9 c6 stuck T23: "Is aayat ke kinaare par ek baar dhaaga lagana hai." — e3's opening — was taken
+      // as the acknowledgement and said over e2's board): hers is the acknowledgement only when it takes up what THEY said
+      const takesUp = (x) => /^(?:achha|accha|acha|theek|thik|hmm+|ok(?:ay)?|samajh\s+(?:gayi|gaya)|i\s+see|good|nice)\b|(?<![\p{L}])(?:tumne|tumhara|tumhari|tumhe|you|your)(?![\p{L}])/iu.test(x);
+      if (a0 && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0) && takesUp(a0) && !RULE_SAID.test(a0)) { ack = a0; ss = ss.slice(1); }
       else ack = pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state);
       guard.probeAck = true;
     }
@@ -1925,9 +1930,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (closedS || closedA) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
     const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
     // (a worked step with no card ends on a short check-in, never mid-air)
-    const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state)
+    // v6.1 R9: a check-in only where state.js allowed one (once per beat, on new teaching); else a statement that goes on
+    const goOn = () => pickOf((state.lastMove?.checkinOk ? WORKED_ASK : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
+    const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       : state.lastMove?.splitClose ? pickOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
-      : state.lastMove?.splitTeach ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
+      : state.lastMove?.splitTeach ? goOn() : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
