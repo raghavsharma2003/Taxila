@@ -8,11 +8,12 @@
 // or outcome numbers (none exist yet); no "replaces tutors" claim; every claim maps to something shipped; one lime
 // element per screen state (K's one-volt law): the CTA. The captures are the app's own screens
 // (tests/prod/r11-site-captures.mjs writes public/site/*.webp), never a mock-up or stock art.
+import { PRICES, priceSet, rupees } from "../site.ts";
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { Icon } from "../../ui/index.ts";
 import { useSurface } from "../band.ts";
-import { Helplines, PrimaryCta, PromiseSpot, Rupee, SiteFooter, SiteHeader, VOLT_NIGHT } from "./Site.tsx";
+import { Helplines, PrimaryCta, PromiseSpot, Rupee, SiteFooter, SiteHeader, VOLT_NIGHT, useCanonical } from "./Site.tsx";
 import { SITE_PROMISES } from "../promises.ts";
 
 /** A capture of the real app in a device frame with HUD corner brackets. The hero's first one is eager (LCP). */
@@ -103,6 +104,7 @@ const FAQ: { q: string; a: string }[] = [
 export default function Landing() {
   useSurface({ surface: "parent" });
   useEffect(() => { document.title = "Taxila · a personal AI teacher for classes 1 to 9"; }, []);
+  useCanonical();
   const [open, setOpen] = useState<number | null>(null);
 
   return (
@@ -120,7 +122,7 @@ export default function Landing() {
             </div>
             <div className="sv-hero-stage" aria-label="The Taxila app" role="group">
               <Shot className="sv-shot--side sv-shot--l" src="/site/home.webp" alt="Taxila's home screen: the AI teacher Asha with her AI teacher label, Evening, Riya, and a big Start button" tag="// HOME" />
-              <Shot className="sv-shot--main" src="/site/desk.webp" eager alt="A live lesson: the AI teacher asks how many quarters make one half, and draws one half as two quarters on the board" tag="// LIVE LESSON" />
+              <Shot className="sv-shot--main" src="/site/desk.webp" eager alt="A live lesson: the board fills the screen, drawing one half of one half as a quarter, while the AI teacher watches from the corner and listens" tag="// LIVE LESSON" />
               <Shot className="sv-shot--side sv-shot--r" src="/site/game.webp" alt="Antariksh, a space game: the child flies a ship to one third on a glowing number line" tag="// GAME" />
             </div>
             <div className="sv-hero-body">
@@ -151,7 +153,7 @@ export default function Landing() {
                 <li><span className="sv-n" aria-hidden="true">03</span><div><h3>Something to work with</h3><p>A board the teacher draws on, pictures or an activity on screen, so the idea is seen and moved, not only heard.</p></div></li>
               </ol>
             </div>
-            <div className="sv-split-media"><Shot src="/site/turn.webp" alt="The lesson screen at the child's turn: the AI teacher with her AI label, the question card, the activity, and the answer area lit with the words Your turn" tag="// YOUR TURN" /></div>
+            <div className="sv-split-media"><Shot src="/site/turn.webp" alt="The lesson screen at the child's turn: the AI teacher with her AI label, the question, and the answer area lit with Your turn and Speak any time, no button to hold" tag="// YOUR TURN" /></div>
           </div>
         </section>
 
@@ -211,7 +213,11 @@ export default function Landing() {
             <div className="sv-panel">
               <p className="kx-label">Price</p>
               <h2 id="price-h" className="sv-h3">Set-up is free</h2>
-              <p className="sv-lead">We have not set a price for lessons yet. Before you pay anything, it will be shown here in <Rupee /> per month, with what stays free and how to cancel in two taps.</p>
+              {priceSet(PRICES.monthly) ? (
+                <p className="sv-lead" data-testid="price-set"><b>{rupees(PRICES.monthly)}</b> per month for one child{priceSet(PRICES.sibling) ? `, ${rupees(PRICES.sibling)} for each brother or sister` : ""}. Set-up and the first meeting with her stay free, and you can cancel in two taps.</p>
+              ) : (
+                <p className="sv-lead" data-testid="price-tbd">We have not set a price for lessons yet. Before you pay anything, it will be shown here in <Rupee /> per month, with what stays free and how to cancel in two taps.</p>
+              )}
             </div>
             <div className="sv-panel">
               <p className="kx-label">Where we are</p>
