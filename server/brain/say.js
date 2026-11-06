@@ -1084,7 +1084,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
   // (dc-r7-script-walk-v3 V1: a scripted remediation's authored explanation is spoken by code the same way)
-  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && state.lastMove?.scriptBeat?.kind === "remediation")) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
+  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && ["remediation", "explain"].includes(state.lastMove?.scriptBeat?.kind))) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
   const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
   try {

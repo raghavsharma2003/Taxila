@@ -12,7 +12,7 @@ const BEATS = ["arrive", "warmup", "hook", "explain", "worked_example", "contras
 // here rather than imported so this module stays pure and dependency-free.
 const REQUEST_TYPES = ["another", "example", "story", "slower", "visual", "language", "topic", "change_topic", "break", "stop", "goodbye", "clear_board",
   "continue", "confused", "thinking", "choices", "why", "how", "clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom",
-  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear",
+  "frustration", "identity", "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "hold_checkin", "ask_invite", "unclear", "selftry",
   // round 3 fix: a closed voice-grammar command to the play piece on screen (adversarial B2), and a named subject to study
   // instead (experience B8)
   "play_act", "switch",

@@ -505,6 +505,7 @@ export const clarifyQuestion = () => join(
   "then the same question again",
 );
 export const breakYes = () => "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now";
+export const selfTry = () => "they want to try it themselves: a short go-ahead, then their step as the question; never its answer or its working";
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 // r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
 export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";

@@ -1526,6 +1526,25 @@ function helpMove(s, input, item, help) {
       if (p) return { ...p, request: help };
     }
   }
+  // v5 B2 (director7: "samajh nahi aaya" on a check got a verbatim repeat or the next step): on a scripted check or follow-up
+  // card, the idea again SMALLER and on another view: the authored rule its misconception's remediation teaches (on that
+  // remediation's board), else the last explain point (on its board), said by code; then the SAME card, no verdict, nothing used up
+  if (scriptOn() && item && (item.scriptCheck || item.scriptThen) && ["another", "example", "slower"].includes(help)) {
+    const sk = skillScriptOf(kit, item.skillId);
+    const targets = item.scriptCheck?.targets ?? item.scriptThen?.targets ?? null;
+    // (a follow-up card was just given its remediation's words: the other view is the explain point, never the same words again)
+    const r = targets && item.scriptCheck ? sk?.remediation?.find((x) => x.targets === targets) : null;
+    const b = [...(sk?.explain ?? [])].reverse().find((x) => x.point);
+    const lang = s.ctx.lang ?? "hinglish";
+    friendOf = s.ctx.firstName ?? "";
+    const line = r?.say ? saidIn(r.say, lang) : b?.point ? saidIn(b.point, lang) : null;
+    const board = r?.say ? r.board ?? null : b?.board ?? null;
+    if (line) {
+      return plan("reteach", SH.ANOTHER_ASKED, { item, probe: probeFor(item), skillId: item.skillId, request: help,
+        rendered: [/[.!?।]$/.test(line.trim()) ? line.trim() : `${line.trim()}.`],
+        scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: r?.say ? `rem:${targets}` : `explain:${b.id}`, kind: r?.say ? "remediation" : "explain", ...(board ? { board } : {}) } });
+    }
+  }
   if (!item) {
     if (help === "skip" || help === "know") {
       if (s.phase === "teach") { s.teachIdx = s.teachPlan.length; return teach(s, input, help === "know" ? SH.KNOWS_IT : "move on"); }
@@ -1804,7 +1823,7 @@ function waysCan(s, input) {
 }
 /** The request types p5-interaction adds (conversation/lexicon.js readings and the UNDERSTAND note, via policy.js). */
 export const P5_REQUESTS = new Set(["clarify", "repeat", "back", "skip", "know", "harder", "easier", "boredom", "frustration", "thinking", "identity",
-  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act"]);
+  "uptake", "decline", "answer_q", "adapt", "adopt", "adult", "park", "detour", "stop", "hold_checkin", "ask_invite", "unclear", "play_act", "selftry"]);
 
 /** A teach-phase re-explanation of the idea being taught now (the teach step does not advance). */
 function teachAgainPlan(s, kit, how) {
@@ -1869,6 +1888,19 @@ function p5RequestMove(s, input, item, req, labels) {
     case "clarify":
       if (item) return plan("repair", SH.clarifyQuestion(), { item, chips: optionChips(item), request: "clarify", lead: "they asked what the question means" });
       return teachAgainPlan(s, kit, "another");
+    // v5 B2 (director7: "pehle main try karun" got the answer anyway): they try the step themselves. In the worked example
+    // the shown steps stop and their own step is the card now (the full answer and why come after it, as always); with a card
+    // live it is posed again, no verdict, nothing new said; never the answer this turn
+    case "selftry": {
+      const w = s.walk;
+      if (w && scriptOn() && String(w.beats?.[w.i] ?? "") === "worked" && w.workedPosed && !s.activeItemId) {
+        w.workedStep = Number.MAX_SAFE_INTEGER;
+        const p = walkNext(s, input, SH.selfTry());
+        if (p) return { ...p, request: "selftry" };
+      }
+      if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.selfTry() }), { item, probe: probeFor(item), chips: optionChips(item), request: "selftry" });
+      return withLead(SH.selfTry());
+    }
     case "repeat": {
       if (item) return plan(moveKindFor(item), SH.pose({ item, prefix: SH.repeatShort() }), { item, probe: probeFor(item), chips: optionChips(item), request: "repeat" });
       const kind = ["hook", "explain", "worked_example", "reteach"].includes(s.lastMove?.kind) ? s.lastMove.kind : "reteach";

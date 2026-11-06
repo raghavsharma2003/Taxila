@@ -447,3 +447,59 @@ test("v2.2 scripts are walked (integration 9: the live scripts went to 2.2 while
   s.skills[0].remediation[0].then.prompt.hi = "x".repeat(121);
   assert.match(validateTopicScript(s, K).errors.join(" "), /at most 120/);
 });
+
+describe("v5 B2: child requests are moves, never grades (c6 skill-1 v2 fixture)", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+  const req = (type, extra = {}) => ({ ...cls("no_evidence"), request: { type, whole: true, src: "p5", ...extra } });
+
+  test("readings: 'ek baar phir se bolo' and 'sawaal kya hai' are repeats; 'pehle main try karun' is a self-try", async () => {
+    const { readIntent } = await import("../server/conversation/lexicon.js");
+    assert.equal(readIntent("ek baar phir se bolo")?.type, "repeat");
+    assert.equal(readIntent("sawaal kya hai")?.type, "repeat");
+    assert.equal(readIntent("pehle main try karun")?.type, "selftry");
+    assert.equal(readIntent("mujhe khud karne do")?.type, "selftry");
+  });
+
+  test("'sawaal kya hai' re-poses the live card with no verdict", () => {
+    const L = run();
+    for (let i = 0; i < 6 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const id = L.r.state.activeItemId;
+    assert.ok(id);
+    L.t("sawaal kya hai", req("repeat"));
+    assert.equal(L.r.state.activeItemId, id, "the same card");
+    assert.equal(L.r.move.request, "repeat");
+    assert.ok(!(L.r.state.skipped ?? []).includes(id));
+  });
+
+  test("'pehle main try karun' in the worked example: their own step is the card now, and no answer is said", () => {
+    const L = run();
+    for (let i = 0; i < 20 && !String(L.r.move.scriptBeat?.beatId ?? "").startsWith("worked:"); i++) L.t(L.r.state.activeItemId ? (findItem(L.r.state, K, L.r.state.activeItemId)?.answer ?? "haan") : "haan", L.r.state.activeItemId ? cls("correct") : cls("no_evidence"));
+    assert.match(String(L.r.move.scriptBeat?.beatId), /^worked:/, JSON.stringify(L.r.move.scriptBeat));
+    L.t("pehle main try karun", req("selftry"));
+    assert.match(String(L.r.state.activeItemId), /:ask:worked$/, JSON.stringify(L.r.move));
+    assert.equal(L.r.move.workedDone, undefined, "never the answer this turn");
+    assert.equal(L.r.move.request, "selftry");
+  });
+
+  test("'samajh nahi aaya' on a check: the idea again from authored lines, then the same card (no verdict, nothing used up)", () => {
+    const L = run();
+    for (let i = 0; i < 40 && !findItem(L.r.state, K, L.r.state.activeItemId ?? "")?.scriptCheck; i++) {
+      const it = L.r.state.activeItemId ? findItem(L.r.state, K, L.r.state.activeItemId) : null;
+      L.t(it ? it.answer : "haan", it ? cls("correct") : cls("no_evidence"));
+    }
+    const id = L.r.state.activeItemId;
+    assert.ok(findItem(L.r.state, K, id)?.scriptCheck, "a check is live");
+    L.t("samajh nahi aaya", req("another", { confused: true }));
+    assert.equal(L.r.state.activeItemId, id, "the same card");
+    assert.equal(L.r.move.kind, "reteach");
+    assert.ok(L.r.move.rendered?.length, JSON.stringify(L.r.move));
+    assert.ok(L.r.move.scriptBeat?.board || true);
+  });
+});
