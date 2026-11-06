@@ -5,7 +5,7 @@
 //   - the equipped Hangar items (identity, not reward). v1 is this device; a server pref lands before 100% (K-O answers).
 // Storage failures are silent: the World still draws from the map, with nothing marked new and nothing equipped.
 const snapKey = (cid: string) => `kx.world.${cid}.seen`;
-const equipKey = (cid: string) => `kx.hangar.${cid}.equipped`;
+export const equipKey = (cid: string) => `kx.hangar.${cid}.equipped`;
 
 interface Snap { day: string; ids: string[]; prev: string[] }
 
@@ -56,3 +56,4 @@ export function writeEquipped(cid: string, slot: string, itemId: string): Record
   }
   return next;
 }
+

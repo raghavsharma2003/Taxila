@@ -7806,3 +7806,175 @@ A scripted board hides answers by what its beat is for. Explain and worked beats
 ## `dc-r7-board-ref-certify-numbers`
 
 A board ref that cannot show its own numbers fails certification (numbers_not_shown), and so does a board that draws none of the measures its line states (line_measures_not_on_board). measured@1 now draws labelled polygons (pentagon to octagon, 3-8 sides, corner names) so the c6 pentagon can show 4, 5, 3, 6, 2 m. Reverse if a ref must author a number that is not drawn. (C1 Studio, 2026-11-05)
+
+
+<!-- merged from inbox/r7-main-13.json -->
+## `dc-r7-script-walk-v4`
+
+(close the runtime gaps; authoring may start, staged)
+
+The architecture is confirmed by three runs in a row (director4–6), each of which judged the content correct, and the gate moved from 39% to 79% taught and from 75% to 89% judged. **The reversal is not taken.** The remaining failures are runtime ordering and guard behaviour, plus small data rules.
+
+**Runtime** (Brain):
+- **W1. Authored text is immune to repair.**
+  - In script mode, no guard (long, uncorrected, noconfirm, twoq, leak, screenmismatch) may cut, drop or replace authored text (point, say, steps, then-prompt, key) or a code verdict. Guards act on the model's own clauses only.
+  - The output order is fixed: verdict → authored say or point → the card. The bare card alone is never a turn.
+- **W2. The worked example, one step per turn.**
+  - Each step is spoken as do → result → why, in its own turn.
+  - The child's step is the card.
+  - The answer and the why are spoken after it.
+  - The give-up reveal is one clean sentence with the key, said at once.
+- **W3. When code inserts the point, the model gets only a one-clause lead-in.** The point goes before the ask, and the ask is shown in full.
+- **W4. Grading.**
+  - The listed wrong answers (`wrongIfMis`) are matched before any by-value match.
+  - Anything on `accept` is graded right.
+  - Every graded answer gets the code verdict (e6c864ff).
+  - After remediation, the missed card is closed with its answer before the walk moves on.
+- **W5. Every scripted skill is walked in order,** with its hook or bridge. The kit ladder never runs in script mode while a skill is still unwalked.
+- **W6. Parks.** An aside is parked with a promise ("cricket baad mein, pakka") and returned to before the wrap. A language promise is a mode that holds (R5).
+
+**Data, v2.2** (Learning; Brain's validator):
+- then-card prompts are 120 characters or fewer;
+- every check and then-card carries its own board;
+- an explain beat's ask is self-contained and fits the beat's board;
+- a then-card never repeats the worked problem;
+- c5-t01 s1 e1 says "0 se 1";
+- kit items get the `{friend}` slot and lose masculine first-person lines.
+
+**Studio:**
+- a number the line states is never drawn as "?" (only an asked mark is "?");
+- every template emits `screen.counts`.
+
+**Harness H1.2** (Learning, with Brain's counters):
+- a card labelled "probe" that poses a keyed question is answered as a card;
+- answered cards are not re-answered;
+- the verdict count requires an explicit affirmation;
+- a new count: wrong called right.
+
+**Authoring may start, staged.** Learning may author the 30-topic batch in v2.2 now, in-session by Claude, blind-verified, at no Azure cost, into a staging folder. The batch goes live only when director7 passes. Rationale: the content layer has been judged correct three times, and the format changes left are small rules. **Reverse this if** director7 forces a format change beyond v2.2.
+
+**Next run: director7.** The same 16 lessons, H1.2, and a cap sized from the dry run (about $0.85).
+
+**The gate is unchanged, plus one line:**
+- at least 80% of beats taught;
+- at least 90% of answers given a verdict;
+- 0 contradictions;
+- 0 right answers called wrong;
+- **0 wrong answers called right;**
+- every judge axis at 3.5 or above;
+- judged by hand.
+
+
+<!-- merged from inbox/r7-app-15.json -->
+## `dc-r7-app-motion`
+The screens used to cut from one to the next. Now they settle into each other, and Asha's window travels with the child from Home into the lesson rather than vanishing and reappearing. All of it is off for a child who asked for less motion, and a browser without View Transitions simply navigates as before.
+
+
+<!-- merged from inbox/r7-app-16.json -->
+## `dc-r7-app-chapter-seals`
+Finishing a chapter now has a moment. When the ledger says every idea in a chapter is the child's own, the lesson that got them there ends with 'Chapter sealed', and the World keeps a row of sealed chapters. The app never counts its way to a seal: it only shows the server's own judgement, read before and after the lesson.
+
+
+<!-- merged from inbox/r7-app-17.json -->
+## `dc-r7-app-hangar-applies`
+Before this, a child could equip a board theme or a frame in the Hangar and nothing anywhere would change, which taught them the Hangar was decoration. Now the board they chose tints the stage where she teaches, and the frame they chose rings her window. Both stay colour only, and only for items the ledger has actually opened. The catalog has more to open across science, English and Hindi, so it isn't a maths-only world.
+
+
+<!-- merged from inbox/r7-app-18.json -->
+## `dc-r7-app-equip-sync-seal-once`
+A child who equips a frame on the family tablet finds it on their own phone too. The device copy remains the offline fallback, and nothing about equipping ever touches the world or the lesson's teaching. A seal is a once-in-a-chapter moment: Learning keeps the first time a chapter sealed, so a skill fading and coming back never replays it.
+
+
+<!-- merged from inbox/r7-brain-14.json -->
+## `dc-r7-brain-script-walk-v4` (2026-11-05, stream A Brain)
+
+The Brain half of main's dc-r7-script-walk-v4, from the director6 hand judgement (79% taught, 89% verdicts, 2 right answers called wrong, 2 wrong answers called right, 12 contradictions).
+
+- **W1/W3 (server/brain/say.js, final assembly).** In script mode the turn is assembled after every guard, from parts:
+  1. the verdict (code's, or her short one);
+  2. the park promise or the return of a parked topic;
+  3. one clean give-up sentence;
+  4. "Toh poora jawab";
+  5. the missed-card close;
+  6. the authored text: the remediation say or worked step, verbatim, or on an explain beat her lines when they carry the point, else one clause of hers then the point once;
+  7. the card, whole.
+
+  A turn that would be the bare card says the card's own authored line (`move.cardPoint`) first. The old glued GAVE_LINE and the V2 point insertion are gone in script mode.
+- **Then-cards.** A script card's prompt is never cut by ASK_MAX. A move that re-poses a live script card shows that card's own board (a follow-up's then.board).
+- **W2.** The worked example runs as: the problem turn, then one turn per step ("<do>: <result>, kyunki <why>.", givens not re-read, then a short check-in), then their step as the card, then "Toh poora jawab: <answer>, kyunki <why>" whether they were right or not. Authored end stops and capitals are joined away (`joinable`).
+- **W4.**
+  - K2 grades in this order: exact form, then the listed wrong answer, then the same words (`sameWords`: English and Hinglish direction words unified), then by value. By value applies only to a key that is a number with a unit at most, which fixes "after 1/3".
+  - After a remediation's follow-up, the missed card is closed: "Aur pehle wale sawaal ka jawab X tha."
+  - Any live script card a step leaves (an unclear or don't-know cap, a park) has its key said.
+- **W5.** When a skill's beats are done, the next scripted skill in kit order is walked with its bridge. The kit ladder runs only after every scripted skill. Steady now walks s1 → s2 → s3 in all four topics (dry run).
+- **W6.** In script mode an aside's topic is found in code (an interest word or one of the child's interests) and parked on the uptake, answer-their-question and identity paths. Her line keeps or gains the promise; a served topic's return is kept or said.
+- **Harness H1.2.**
+  - A right answer's verdict needs an explicit affirmation.
+  - New count: `wrongCalledRight`.
+  - Every script board records its `counts`; a counting template with none is flagged. Word boards are exempt, per Studio.
+
+Director7 dry count on the v2.1 scripts: 1,002 calls (853 reply, 149 classify). That is about 1,120 live calls, or about $0.76 at director6's $0.00068 per call.
+
+
+<!-- merged from inbox/r7-face-12.json -->
+## `dc-r7-face-greetings-pipeline` (2026-11-05)
+Main asked for the greeting clip path to be ready for when the keys return, so the owner's "yes" on the spend is a single run.
+- **One command.** `scripts/character/greetings-pipeline.mjs`. Without flags it is a dry run: it lists the 27 lines (1015 characters), says which clips exist, and says whether this machine has the Azure speech key and region, python torch/transformers and ffmpeg. It calls nothing.
+- **What `--run` does,** in order: render the missing clips (`render-greetings.mjs`, now importable; Diya DragonHD; the only paid step); write a viseme sidecar for every clip that lacks one (`clip-visemes.py`, CPU, free); then check every line. A line passes when it has a clip and a sidecar with visemes, and when every b / m / p word in the sidecar has a lip seal (viseme 21) inside it. Finally it checks that `greetingFor` hands a child a clip URL. It exits 1 on any failed check, so a half-made set never looks finished.
+- **Checked today without keys:** the same checks pass on the three existing Hello clips (seals 5/5, 12/12 and 10/10). Tests: `tests/r7-face-greeting-pipeline.test.mjs`.
+- **Reversal condition:** none needed; it is tooling. If the clips are never approved, the home greets with a silent glance, as it does now.
+
+
+<!-- merged from inbox/r7-games-darpan.json -->
+## `dc-r7-games-darpan`
+
+Darpan (symmetry) as one law family, nothing on a clock: mirror/lines (lay mirror lines through the figure centre, each snapping to a corner or side-middle where a fold can run, then fold; the law reflects outline and pattern across each line; solved only when the lines laid are exactly all the lines of symmetry), turn/smallest (turn a pinwheel / tile on a turntable over its own trace to the smallest part turn that lands it on itself; 15 deg steps at class 5 shown as a fraction of a turn, a 1 deg dial at class 6) and turn/order (mark every stop of one full turn where it lands; the start is not a stop). Shortcut-free: the upright line, the level line, both, every fold line; one press, a quarter turn, the full turn; marks at every quarter or the full turn only never win a served level, so plain upright rectangles, full squares and order-4 pinwheels are never served. Mal-rules exactly-one, vertical-only, diagonals, equal-halves, quarter-default, full-turn, mirror-only, angle-order; a level names a belief only when its set-up differs from every other mal-rule the level maps. New law topics c4-maths-ch11-t01, c5-maths-ch10-t01, c6-maths-ch09-t02, plus s1/s2 of c6-maths-ch09-t01 (s3 stays nazariya). Not covered: telling turn from mirror symmetry as its own judgement (c5/c6 s3), tilings (c7). Reverse if a child pilot shows the snapping fold lines turn line-finding into picking from offered lines, or children cannot read the fold / spin answer.
+
+
+<!-- merged from inbox/r7-games-ghadi.json -->
+## `dc-r7-games-ghadi`
+
+**ghadi** (time and clocks, classes 4-5) is a law family. Nothing in it runs on a clock: every hand, ticket, runner and flag moves only on a touch, and the law answers only on run.
+
+- **set/hands** (c4-maths-ch12-t01): set a geared clock to the board's time, then ring the bell. The child winds the minute hand, the hour hand follows, and passing 12 turns a.m. into p.m. The hour hand drops into its hour sector; the day strip sets a.m. or p.m. There is no digital readout of the child's clock.
+- **run** (c4-maths-ch12-t02, c5-maths-ch12-t01):
+  - **arrive**: wind the bus clock on by the trip.
+  - **leave**: wind it back from the arrival.
+  - **trip**: make the ticket (hours and minutes) that runs the departure clock onto the arrival.
+  - Trips are written as h + min, minutes past 60, 1.5 h, or a quarter / three quarters of an hour.
+- **race/podium** (c5-maths-ch12-t02, c5-maths-ch12-t01): put the runners on the podium; the race then runs each runner in exactly their time.
+- **calendar/days** (c4-maths-ch12-t02): plant the flag n days (or w weeks d days) ahead; the hops start from today.
+
+Mal-rules map only to the topic's own kit ids: minute-number, hour-hand-next, noon-12am, minutes-past-60, base-ten-time, include-start-day, decimal-hours, quarter-as-25, base-hundred (also for 1 min 5 s read as 105 s on c5-t01), bigger-time-faster, longer-decimal-bigger, minute-as-hundred.
+
+Not admitted: c5-maths-ch12-t02-s2 (the difference between two timings in parts of a second) has no honest mechanic here.
+
+**Reverse if** a child pilot shows that the geared clock does the carrying for the child, so the elapsed-time belief never shows.
+
+
+<!-- merged from inbox/r7-learning-28.json -->
+## `dc-r7-map-marks-equip` (2026-11-05, F Learning)
+
+App's World and Debrief needed a stable moment for a chapter seal and for a skill becoming secure. Until now they compared two map reads or a device snapshot, so a chapter that dipped and re-sealed showed twice.
+
+**Marks.** The map now records the first time it sees each state (child_map_mark, migration 046), and those rows are never cleared. The time is when the map observed the state, not the evidence row that caused it. In practice App reads the map at lesson open and at lesson end, so a seal earned in a lesson is stamped at that lesson's end-of-lesson read.
+
+**Backfill.** On a child's first read after the migration, marks that are already true carry no time (null). This avoids a false 'sealed this lesson'.
+
+**Equip.** The Hangar's equipped cosmetics are stored per child as jsonb, validated against App's catalog.
+
+
+<!-- merged from inbox/r7-voice-8.json -->
+## `dc-r7-voice-opus-transport` — Opus for her speech on phones, encoded at the frame writer (2026-11-05)
+
+QA D12 measured her audio at 398–497 KB a line as raw PCM, and on Slow 3G 'Asha is talking' ran about 21 s past her last caption. Round 5 added IMA ADPCM (4:1, lossy) on ≤3g only.
+
+Every server stage of her audio is PCM: the asset cache, both engines, viseme and word marks, the turn-audio fold, continuers. Switching each engine to Azure's own Ogg/Opus output would have meant two cache formats and re-timing every mark. So the encoding happens at the frame writer, where ADPCM already is, and the device decodes with WebCodecs, needing no Ogg demuxer because each frame is one raw packet.
+
+The encoder is `opusscript` (MIT, libopus in WASM). Adding it is a dependency patch request to main; until it is installed the server simply never offers Opus. Tests: tests/r7-voice-opus.test.mjs, using an identity encoder and decoder to test framing, order and the sample clock.
+
+
+<!-- merged from inbox/r7-voice-9.json -->
+## `dc-r7-voice-child-text-seam` — the child's words, in-process, for Studio's speculative builds (2026-11-05)
+
+Studio's M4 policy re-ranks and invalidates pre-built pieces from what the child is saying. Its build decisions live server-side, so the seam is a server emitter, not a client event. Finals are the reliable source on every lane. D5's default ear gives one final per turn, so partials are a pure speed-up where the ear provides them (D4, or a delta-streaming D5 ear); they are off by default because each one is a request. Nothing distress-shaped is ever passed on, so nothing is built from a disclosure. Tests: tests/r7-voice-child-text.test.mjs.

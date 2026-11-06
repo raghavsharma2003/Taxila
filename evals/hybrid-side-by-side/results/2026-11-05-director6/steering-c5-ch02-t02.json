@@ -1,0 +1,1248 @@
+{
+ "topicId": "c5-maths-ch02-t02",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya! Main Asha, tumhari AI teacher. Aaj fractions compare karenge—jaise cooking mein kaunsa hissa zyada. Tumhe cooking mein kya banana pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 891
+  },
+  {
+   "who": "teacher",
+   "text": "Do same-size cakes: ek 4 pieces mein, doosra 8 mein. Sirf ek piece logi—4-wala ya 8-wala?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1285,
+   "replyReadyMs": 2176,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 966
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh ek poori patti hai. Iske 4 barabar hisse hain, aur ek hissa 1/4 hai. Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "move": "explain",
+   "card": "Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?",
+   "replyMs": 3037,
+   "replyReadyMs": 4003,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 4,
+     "shade": 1,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "4 equal parts",
+     "numbers": "4 1"
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 4,
+      "shade": 1,
+      "whole": "bar"
+     }
+    }
+   },
+   "guard": [
+    "screen",
+    "ask"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bigger",
+   "read": "misconception",
+   "classifyMs": 895
+  },
+  {
+   "who": "teacher",
+   "text": "bigger sahi nahi hai. Is patti ke 8 barabar hisse hain, aur rang wale 2 hisse milkar theek ek 1/4 jitne lambe hain. Toh 8 bada number hai, par 1/8 chhota hissa hai. Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "move": "reteach",
+   "card": "Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 2939,
+   "replyReadyMs": 3834,
+   "beat": "s1:remediation:rem:c5-maths-ch02-t02-m-bigger-denominator",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 8,
+     "shade": 2,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 1,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "8 equal parts",
+     "numbers": "8 2"
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 8,
+      "shade": 2,
+      "whole": "bar"
+     }
+    }
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "classifyMs": 1116
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Jab poori bottle barabar hisson mein banti hai, 5 hisse karne par har hissa 10 hisson ke hisse se bada hota hai. Ravi aur Zoya ke paas ek jaisi juice ki bottle hai. Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "move": "practice",
+   "card": "Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 1655,
+   "replyReadyMs": 2771,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "Zoya",
+   "read": "misconception",
+   "classifyMs": 1008
+  },
+  {
+   "who": "teacher",
+   "text": "Zoya sahi nahi hai. Riya, 1/5 mein bottle ko 5 bade hisson mein baantte hain, 1/10 mein 10 chhote hisson mein. Kaunsa ek hissa zyada hai?",
+   "move": "hint",
+   "card": "Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 1256,
+   "replyReadyMs": 2264,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Zoya",
+   "read": "misconception",
+   "classifyMs": 915
+  },
+  {
+   "who": "teacher",
+   "text": "Zoya sahi nahi hai. 1/5 mein 5 bade hisse hote hain, 1/10 mein 10 chhote hisse. Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "move": "hint",
+   "card": "Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 3701,
+   "replyReadyMs": 4616,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "screen",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1485
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par ek jaisi do bottles dekho: 1/5 ka tukda 1/10 ke tukde se bada hai. Toh zyada juice kisne nikala—Ravi ya Zoya?",
+   "move": "reteach",
+   "card": "Ravi ne apni bottle ka 1/5 juice nikala, Zoya ne apni bottle ka 1/10. Kisne zyada juice nikala, Ravi ne ya Zoya ne?",
+   "replyMs": 1443,
+   "replyReadyMs": 2928,
+   "beat": "s1:check:then:c5-maths-ch02-t02-m-bigger-denominator",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "1/5",
+      "items": [
+       "ek jaisi bottle"
+      ]
+     },
+     "right": {
+      "title": "1/10",
+      "items": [
+       "ek jaisi bottle"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:then:c5-maths-ch02-t02-m-bigger-denominator",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "? | ? | ek jaisi bottle | ek jaisi bottl"
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "1/5",
+       "items": [
+        "ek jaisi bottle"
+       ]
+      },
+      "right": {
+       "title": "1/10",
+       "items": [
+        "ek jaisi bottle"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "Zoya",
+   "read": "misconception",
+   "classifyMs": 887
+  },
+  {
+   "who": "teacher",
+   "text": "Pichhle sawaal ka jawab Ravi, 1/5 tha. Zoya sahi nahi hai. Riya, tumne Zoya chuna. Ab 1/4 wale hisse se milao. Ab wahi patti dekho. Iske 8 barabar hisse hain, aur ek hissa rang wala hai, woh 1/8 hai. Pehle wala har hissa ab aadha-aadha bant gaya hai. Toh ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "move": "explain",
+   "card": "Toh ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "replyMs": 2768,
+   "replyReadyMs": 3655,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 8,
+     "shade": 1,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": true
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "misconception",
+    "verdictGiven": false,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "labels": "8 equal parts",
+     "numbers": "8 1"
+    },
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 8,
+      "shade": 1,
+      "whole": "bar"
+     }
+    }
+   },
+   "guard": [
+    "leak",
+    "screenmismatch",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/8",
+   "read": "misconception",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "1/8 sahi nahi hai. Ek hi poori patti socho: 1/4 mein do aathve hisse milte hain. Isliye bada tukda kaunsa hai—1/4 ya 1/8?",
+   "move": "hint",
+   "card": "Toh ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "replyMs": 2823,
+   "replyReadyMs": 2824,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "samecard",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle main try karun?",
+   "read": "no_evidence",
+   "classifyMs": 1195
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, pehle tum try karo. 1/4 aur 1/8 mein kaunsa tukda bada hai?",
+   "move": "practice",
+   "card": "Toh ek hissa kaunsa bada hai, 1/4 ya 1/8?",
+   "replyMs": 1398,
+   "replyReadyMs": 2593,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/8",
+   "read": "misconception",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "1/8 sahi nahi hai. 1/8 chhota hai. Yeh sankhya rekha 0 se 1 tak hai: 1/8 < 1/4. Yeh sankhya rekha 0 se 1 tak hai, aur is par 2 nishaan hain. 1/8 zero ke paas hai, aur 1/4 usse aage. Toh 1/8 < 1/4. Ek hi poore ke jitne zyada barabar hisse, har hissa utna chhota. Do ek jaise cake hain. Ek cake ka 1/3 tukda, doosre ka 1/7 tukda. Kaunsa tukda bada hai, 1/3 ya 1/7?",
+   "move": "explain",
+   "card": "Do ek jaise cake hain. Ek cake ka 1/3 tukda, doosre ka 1/7 tukda. Kaunsa tukda bada hai, 1/3 ya 1/7?",
+   "replyMs": 3098,
+   "replyReadyMs": 3098,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": true
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/4",
+     "numbers": "0 1 1/8 1/4"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "mustsay",
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "classifyMs": 2511
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, isko ek baar aur aaram se dekhte hain. Do ek jaise cake hain. Ek cake ka 1/3 tukda, doosre ka 1/7 tukda. Kaunsa tukda bada hai, 1/3 ya 1/7?",
+   "move": "repair",
+   "card": "Do ek jaise cake hain. Ek cake ka 1/3 tukda, doosre ka 1/7 tukda. Kaunsa tukda bada hai, 1/3 ya 1/7?",
+   "replyMs": 2518,
+   "replyReadyMs": 5029,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "praise"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/3 bada hai",
+   "read": "correct",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya. Tumhe kaise pata chala ki 1/3, 1/7 se bada hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 2808,
+   "replyReadyMs": 2808,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "nowhy",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "jodte jodte aaya",
+   "read": "incorrect",
+   "classifyMs": 1964
+  },
+  {
+   "who": "teacher",
+   "text": "Yahan jodna zaroori nahi; neeche ka number chhota ho, toh ek hissa bada hota hai. Do ek jaise chocolate bar hain. Aman ko ek bar ka 1/6 milta hai, Zoya ko doosre bar ka 1/3. Kise bada tukda milta hai? Diya hai: do ek jaise chocolate bar, Aman ka hissa: 1/6, Zoya ka hissa: 1/3. Dhoondhna hai: kise bada tukda milta hai. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3779,
+   "replyReadyMs": 5743,
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1144
+  },
+  {
+   "who": "teacher",
+   "text": "Aman ka tukda 1/6 hai, Zoya ka tukda 1/3. Toh bada tukda kise mila, Aman ko ya Zoya ko?",
+   "move": "worked_example",
+   "card": "Aman ka tukda 1/6 hai, Zoya ka tukda 1/3. Toh bada tukda kise mila, Aman ko ya Zoya ko?",
+   "replyMs": 4163,
+   "replyReadyMs": 5307,
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "leak",
+    "long",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask",
+     "twoq"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Zoya, 1/3",
+   "read": "correct",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—Zoya ka 1/3 bada hai. Tumne kaise jaana ki 1/3, 1/6 se bada hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 3053,
+   "replyReadyMs": 3053,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "nowhy",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "maine screen wala picture dekh ke socha",
+   "read": "no_evidence · visual",
+   "classifyMs": 1044
+  },
+  {
+   "who": "teacher",
+   "text": "Screen ke picture mein tumne kya dekha, jis se 1/3 ko bada samjha?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2597,
+   "replyReadyMs": 3641,
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 6,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/6"
+      },
+      {
+       "num": 2,
+       "label": "1/3"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/6 | 1/3",
+     "numbers": "0 1 1/6 1/3"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 6,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/6"
+       },
+       {
+        "num": 2,
+        "label": "1/3"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "nowhy"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "nowhy"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "Zoya hai na",
+   "read": "incorrect",
+   "classifyMs": 1579
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Zoya ka tukda bada tha—picture mein uska hissa zyada bada dikh raha tha. Do ek jaisi roti hain. Ek 10 barabar tukdon mein kati hai, doosri 5 barabar tukdon mein. Kaunsa ek tukda bada hai, 1/10 ya 1/5?",
+   "move": "practice",
+   "card": "Ek 10 barabar tukdon mein kati hai, doosri 5 barabar tukdon mein. Kaunsa ek tukda bada hai, 1/10 ya 1/5?",
+   "replyMs": 1274,
+   "replyReadyMs": 2853,
+   "beat": "s1:check:c1",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "one fifth",
+   "read": "correct",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—tumne pehchana ki 5 barabar tukdon wala ek tukda, 10 tukdon wale se bada hota hai. Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "move": "practice",
+   "card": "Ek hi poore ke yeh teen bhinn chhote se bade ke kram mein lagao: 1/3, 1/12, 1/6.",
+   "replyMs": 1502,
+   "replyReadyMs": 1502,
+   "beat": "s1:check:c2",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/12 < 1/6 < 1/3",
+   "read": "correct",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, Riya—tumne bhinnon ko chhote se bade kram mein theek rakha. Yeh sankhya rekha 0 se 1 tak 4 barabar hisson mein bati hai. 0 ke baad pehla nishaan ringed hai. Woh nishaan 1/8 se bada hai ya chhota?",
+   "move": "practice",
+   "card": "0 ke baad pehla nishaan ringed hai. Woh nishaan 1/8 se bada hai ya chhota?",
+   "replyMs": 1454,
+   "replyReadyMs": 1454,
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "smaller",
+   "read": "misconception",
+   "classifyMs": 1110
+  },
+  {
+   "who": "teacher",
+   "text": "smaller sahi nahi hai. 0 se 1 tak 4 barabar hisse hain, toh pehla nishaan 1/4 hai. 1/4 aur 1/8 mein kaunsa bada hai?",
+   "move": "hint",
+   "card": "0 ke baad pehla nishaan ringed hai. Woh nishaan 1/8 se bada hai ya chhota?",
+   "replyMs": 2838,
+   "replyReadyMs": 3948,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t02-s1:c3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "samecard",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bigger",
+   "read": "correct",
+   "classifyMs": 2
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne pehchana ki ek pizza ko kam hisson mein baantne par har hissa bada hota hai. Usi pizza ka kaun bada hai: 1/4 ya 1/8?",
+   "move": "practice",
+   "card": "Usi pizza ka kaun bada hai: 1/4 ya 1/8?",
+   "replyMs": 2996,
+   "replyReadyMs": 2998,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t02-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "4/1",
+   "read": "no_evidence",
+   "classifyMs": 1633
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, fraction mein upar 1 aur neeche 4 hota hai. Ab batao, 1/4 aur 1/8 mein kaunsa hissa bada hai?",
+   "move": "repair",
+   "card": "Usi pizza ka kaun bada hai: 1/4 ya 1/8?",
+   "replyMs": 1505,
+   "replyReadyMs": 3138,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t02-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "4/1",
+   "read": "no_evidence",
+   "classifyMs": 1207
+  },
+  {
+   "who": "teacher",
+   "text": "Fraction mein upar ka ank liye gaye hisson ko, aur neeche ka ank kul barabar hisson ko dikhata hai. 4/1 ulta likha gaya hai. Usi pizza ka kaun bada hai: 1/4 ya 1/8?",
+   "move": "repair",
+   "card": "Usi pizza ka kaun bada hai: 1/4 ya 1/8?",
+   "replyMs": 1531,
+   "replyReadyMs": 2738,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t02-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ab main jaati hoon, bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1085
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya—tum rukna chahti ho. Teen vikalp hain: chalte rahen, thoda viraam lein, ya aaj ke liye rok dein. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2828,
+   "replyReadyMs": 3913,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false
+   },
+   "guard": [
+    "wrap",
+    "nostop",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

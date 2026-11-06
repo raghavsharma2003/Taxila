@@ -24,8 +24,9 @@ import { kakshaThemeFor } from "../tokens.ts";
 import catalogJson from "../../../../data/kaksha/catalog.json";
 import { PlayBriefingContext, type PlayBriefing, type PlayCosmetics } from "../../../play/briefing.ts";
 import { Briefing } from "../play/Briefing.tsx";
-import { cosmeticsFor } from "../play/cosmetics.ts";
+import { cosmeticsFor, lessonLook, type LessonLook } from "../play/cosmetics.ts";
 import { readEquipped } from "../memory.ts";
+import { syncEquipped } from "../equipSync.ts";
 import { world, type Catalog } from "../world.ts";
 import "../play/play.kaksha.css";
 import { Debrief } from "./Debrief.tsx";
@@ -69,9 +70,18 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   // r7 app-debrief-made-later: the made-for feed as the lesson opens (the Debrief shows the pieces new since)
   const [madeBefore] = useState(() => readMade(cid));
   const [cosmetics, setCosmetics] = useState<PlayCosmetics | null>(null);
+  // r7 app-world-hangar-depth: an equipped (and open) board theme tints the stage's board; a rim colours her frame
+  const [look, setLook] = useState<LessonLook>({ board: null, rim: null });
   useEffect(() => {
     let live = true;
-    void before.then((m) => { if (live && m && !m.hidden) setCosmetics(cosmeticsFor(readEquipped(cid), world(m.skills, catalogJson as unknown as Catalog).items)); }, () => {});
+    // the server's equip set first (another device's choice), else this device's
+    void Promise.all([before, syncEquipped(cid)]).then(([m, server]) => {
+      if (!live || !m || m.hidden) return;
+      const items = world(m.skills, catalogJson as unknown as Catalog).items;
+      const eq = server ?? readEquipped(cid);
+      setCosmetics(cosmeticsFor(eq, items));
+      setLook(lessonLook(eq, items));
+    }, () => {});
     return () => { live = false; };
   }, [before, cid]);
   const briefing = useMemo<PlayBriefing>(() => ({ render: (p) => <Briefing {...p} />, cosmetics }), [cosmetics]);
@@ -85,7 +95,9 @@ export default function KakshaLesson({ cid, family, reducedMotion, children, loa
   // r7 app-lesson-stage-first (D7): the stage-first body; ?desk=v2 on the URL keeps the V2 Desk grid for comparison
   const renderBody = useMemo(() => (stageFirst() ? (p: DeskBodyParts) => <StageBody {...p} /> : undefined), []);
   return (
-    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson">
+    <div className="v3 kx kx-lesson" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen="lesson"
+      data-kboard={look.board ?? undefined} data-krim={look.rim ?? undefined}
+      style={{ ...(look.board ? { ["--kboard" as string]: `var(--k-hue-${look.board})` } : {}), ...(look.rim ? { ["--krim" as string]: `var(--k-hue-${look.rim})` } : {}) }}>
       <PlayBriefingContext.Provider value={briefing}>{children({ skin: "kaksha", renderSummary, renderIntake, renderBody })}</PlayBriefingContext.Provider>
     </div>
   );

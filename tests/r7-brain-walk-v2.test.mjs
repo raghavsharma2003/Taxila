@@ -99,14 +99,24 @@ describe("script walk v2", () => {
     assert.equal(L.r.move.scriptBeat.beatId, "worked:problem");
     assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && L.r.move.rendered.some((x) => /^Dhoondhna hai/.test(x)), L.r.move.rendered.join(" | "));
     assert.ok(!L.r.ui.ask?.itemId, "no card yet");
+    // v4 W2: then each step on its own turn, do → result → why (the givens are not read again), with no card
+    const steps = S1.workedExample.steps;
+    for (let k = 0; k < steps.length; k++) {
+      L.t("haan");
+      assert.equal(L.r.move.scriptBeat.beatId, `worked:step${k + 1}`);
+      assert.equal(L.r.move.rendered.length, 1);
+      assert.ok(L.r.move.rendered[0].includes(steps[k].result) && /kyunki/.test(L.r.move.rendered[0]), L.r.move.rendered[0]);
+      assert.ok(!/Diya hai/.test(L.r.move.rendered[0]), "the givens are not read again");
+      assert.ok(!L.r.ui.ask?.itemId, "no card on a step");
+    }
     L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "worked");
-    assert.ok(L.r.move.rendered.some((x) => /kyunki/.test(x)), "the why");
-    assert.ok(!L.r.move.rendered.some((x) => /closed five-sided/.test(x)), "no English given");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:worked`);
-    // K2: "gave" fires only after misses: a right step is confirmed, never followed by a replayed answer
+    // after their step (right here) the worked answer and its why are said; never as a give-up reveal
     L.t("20 m", cls("correct"));
-    for (let k = 0; k < 3; k++) { assert.ok(!L.r.move.gave, "no replayed answer after a right step"); L.t("haan"); }
+    let said = null;
+    for (let k = 0; k < 3 && !said; k++) { assert.ok(!L.r.move.gave, "no give-up reveal after a right step"); said = L.r.move.workedDone ?? null; if (!said) L.t("haan"); }
+    assert.ok(said && /20 m/.test(said.answer), "Toh poora jawab");
   });
 
   test("F4: the greet promises the slot's interest, not one the script cannot use", () => {

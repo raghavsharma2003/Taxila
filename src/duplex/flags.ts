@@ -66,6 +66,9 @@ let serverMode: Promise<DuplexMode | null> | null = null;
 /** D5 (2026-10-11): the transcription lane the last definite /api/duplex/config answer named ("d5" only for the cohort). */
 let serverLane: DuplexLane = "d4";
 export type DuplexLane = "d4" | "d5";
+/** Round 7 (Studio M4): the server asked for the child's live partials (POST /api/duplex/partial); default off. */
+let serverPartialPost = false;
+export const partialPostWanted = (): boolean => serverPartialPost;
 /** r12 flight recorder: what each /api/duplex/config ask answered (status, mode, retry, error), newest last. */
 const asks: Record<string, unknown>[] = [];
 /** One ask: a definite mode, null for a definite unknown value, or undefined to try again (error, timeout, "retry"). */
@@ -77,9 +80,9 @@ async function askOnce(fetcher: typeof fetch): Promise<DuplexMode | null | undef
       const t0 = Date.now();
       const res = await fetcher("/api/duplex/config", { signal: ctl?.signal, credentials: "same-origin" });
       if (!res.ok) { noteAsk({ status: res.status, ms: Date.now() - t0 }); return undefined; }
-      const j = (await res.json()) as { duplex?: unknown; retry?: unknown; cohort?: unknown; lane?: unknown };
+      const j = (await res.json()) as { duplex?: unknown; retry?: unknown; cohort?: unknown; lane?: unknown; partialPost?: unknown };
       noteAsk({ status: res.status, ms: Date.now() - t0, duplex: j?.duplex ?? null, retry: j?.retry === true, cohort: j?.cohort ?? null, lane: j?.lane ?? null });
-      if (j?.retry !== true) serverLane = j?.lane === "d5" ? "d5" : "d4";
+      if (j?.retry !== true) { serverLane = j?.lane === "d5" ? "d5" : "d4"; serverPartialPost = j?.partialPost === true; }
       // the server could not finish the cohort lookup in time: it says so instead of a silent "shadow"
       if (j?.retry === true) return undefined;
       return norm(j?.duplex);

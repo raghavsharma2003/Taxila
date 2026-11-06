@@ -31,6 +31,8 @@ import { lessonSummary } from "./lesson.js";
 import { shortTitleOf } from "../director/state.js";
 import { routes as placementRoutes } from "./placement.js";
 import { openJar, jarSummary, jarNotebook } from "../learner/jar.js";
+import { syncMarks } from "../learner/marks.js";
+import { validateEquip } from "../learner/equip.js";
 
 /** An open lesson older than this is an abandoned tab, not "Continue your lesson" (V2 §3.13 "App killed mid-lesson"). */
 export const RESUME_HOURS = 6;
@@ -364,7 +366,8 @@ async function map(req, res) {
     classLevel: child.class_level, rows: truth.projection, delayed: new Map(), rechecks: new Set(weave.map((r) => r.skill_id)),
     hereTopicId: next?.id ?? null, kitOf: kitFromFile, stateOf: (id) => truth.state(id), schoolChapter: child.school_chapter ?? null,
   });
-  send(res, 200, { ...out, hidden: false });
+  // round 7 F (app-world-hangar-depth): sealedAt / secureSince = when the map FIRST saw it (046 child_map_mark; null = not yet or unknown)
+  send(res, 200, { ...(await syncMarks(child.id, out)), hidden: false });
 }
 
 // ───────────────────────────── her line on a plant / star (flows G16) ─────────────────────────────
@@ -550,6 +553,25 @@ async function jar(req, res) {
 }
 
 /**
+ * GET /api/child/equip?childId= → { equipped } · PUT /api/child/equip { childId, equipped: { hull?, trail?, board?, rim?, emote? } }
+ * → { equipped } (round 7 F, App's app-world-hangar-depth). The Hangar's equipped cosmetics, synced across devices; a PUT
+ * replaces the whole set (null or a missing slot = nothing equipped there). Catalog ids are checked (learner/equip.js).
+ */
+async function equipGet(req, res) {
+  const { child } = await requireChild(req, childIdOf(query(req).get("childId")));
+  const row = await one("select equipped from child_equip where child_id = $1", [child.id]).catch(() => null);
+  send(res, 200, { equipped: row?.equipped ?? {} });
+}
+async function equipPut(req, res, body) {
+  const { child } = await requireChild(req, childIdOf(need(body, "childId").childId));
+  const v = validateEquip(body.equipped);
+  if (v.error) throw bad(v.error);
+  await q(`insert into child_equip (child_id, equipped, updated_at) values ($1, $2, now())
+      on conflict (child_id) do update set equipped = excluded.equipped, updated_at = now()`, [child.id, v.equipped]);
+  send(res, 200, { equipped: v.equipped });
+}
+
+/**
  * POST /api/child/reflect { childId, lessonId, choice } → 204 (round 7 F, App's app-debrief-made-later "What helped?").
  * choice: "made:<madeForId>" (a piece revealed in THAT lesson) | board | explain | self | unsure. Emits child.reflect;
  * the first tap per lesson wins (a second is a 204 no-op). A lesson that is not this child's own → 404; an unknown
@@ -586,6 +608,8 @@ export const routes = {
   "POST /api/homework/match": homeworkMatch,
   "POST /api/child/reflect": reflect,
   "GET /api/child/jar": jar,
+  "GET /api/child/equip": equipGet,
+  "PUT /api/child/equip": equipPut,
   // round 7 F item 6: the placement round (server/routes/placement.js), registered here so the route registry is untouched
   ...placementRoutes,
 };

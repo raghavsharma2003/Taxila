@@ -19,7 +19,15 @@ export function installApp(prod: boolean): void {
   window.addEventListener("beforeinstallprompt", (e) => { e.preventDefault(); held = e as InstallPrompt; tell(); });
   window.addEventListener("appinstalled", () => { held = null; tell(); });
   if (!prod || !("serviceWorker" in navigator)) return;
-  window.addEventListener("load", () => { void navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {}); });
+  window.addEventListener("load", () => { void navigator.serviceWorker.register(`/sw.js?v=${encodeURIComponent(buildId())}`, { scope: "/" }).catch(() => {}); });
+}
+
+/** This build's id (the worker's cache name): the deploy's commit when the build carries it, else the content hash in the
+ *  entry bundle's own file name (/assets/index-<hash>.js), which Vite changes whenever the build changes. */
+export function buildId(sha = import.meta.env?.VITE_BUILD_SHA as string | undefined, entryUrl = import.meta.url): string {
+  if (sha) return String(sha).slice(0, 12);
+  const m = /-([A-Za-z0-9_-]{8,})\.js(?:$|\?)/.exec(entryUrl);
+  return m ? m[1] : "dev";
 }
 
 /** The install offer while the browser holds one (null otherwise, and always null in the installed app). */

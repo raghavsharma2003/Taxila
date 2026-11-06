@@ -25323,6 +25323,139 @@
    "at": "2026-11-05",
    "title": "certifyBoardRef fails a ref whose board cannot show what it authors. numbers_not_shown:<v> fires when an authored value (sides, dims, mark labels, list items) is not drawn or is drawn as '?'. line_measures_not_on_board fires when the beat line states two or more measures ('4 m, 5 m') and the board draws none of them. To make the c6 worked pentagon certifiable, measured@1 draws pentagon, hexagon, octagon, quadrilateral and polygon with 3-8 labelled side lengths and corner names, regular and not to scale. Reverse if a legitimate ref authors a number that must not be drawn (then a per-param 'hidden' flag, never a silent pass).",
    "source": "inbox/r7-studio-24.json"
+  },
+  {
+   "id": "jd-r7-director6-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director6 (v3 walk, v2.1 scripts, H1.1 child; 16 lessons, 1,190 calls, ~$0.807) judged by 4 Claude judges by hand: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 (+6 \"?\" boards); up from 39% / 75% / ≥14 / 25 in director5. Gate failed narrowly; reversal not triggered (explain beats taught ~94% outside one beat).",
+   "source": "inbox/r7-main-13.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v4",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Close the runtime gaps: authored text and code verdicts immune to every guard (verdict → authored say/point → card, never the bare card); worked example one step per turn; model gets only a lead-in when the point is inserted; wrongIfMis before by-value, accept graded right, missed card closed after remediation; every scripted skill walked in order; asides parked and returned. Data v2.2 (then-prompt ≤120 chars, boards on every check/then-card, self-contained asks), Studio never draws a stated number as \"?\", H1.2 harness. Authoring of the 30-topic batch may start staged (not live) until director7 passes.",
+   "source": "inbox/r7-main-13.json"
+  },
+  {
+   "id": "dc-r7-app-motion",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Kaksha screens move with one go() (src/ui-v3/kaksha/screens/go.ts): React Router navigate with a View Transition unless motion is reduced (the OS setting or Me → Less motion: no transition at all). The screen fades out in .16 s and the next rises in over .32 s; her window (view-transition-name kx-asha) morphs between Home, Your teacher and the lesson's stage; the dock holds still. Measured: a dock tap makes 1 startViewTransition call with motion on and 0 under reduced motion (Playwright, n=1 each). Reverse: transitions prove janky on the owner's mid-range Android.",
+   "source": "inbox/r7-app-15.json"
+  },
+  {
+   "id": "dc-r7-app-chapter-seals",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Chapter seals on the Kaksha World and in the Debrief come from the ledger's own flag (/api/child/map chapters[].sealed, server/routes/child.js buildMap: every skill Got it or Secure), never from an app count: the World lists sealed chapters; the Debrief shows 'Chapter sealed' for chapters that flip unsealed→sealed between the lesson-open and lesson-end map reads (nowSealed), so a seal shows in the lesson that sealed it. Learning is asked for sealedAt (first-seal time) so a dip-and-reseal never shows twice, secureSince (K-P5), and a server equip route. Reverse: the seal moves to a Conductor milestone event.",
+   "source": "inbox/r7-app-16.json"
+  },
+  {
+   "id": "dc-r7-app-hangar-applies",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Hangar's board themes and Comms rims now change the lesson: an equipped, OPEN board item tints the stage's slot and frame, an open rim colours her frame and PiP (cosmetics.ts lessonLook; the same 'open now' rule as the hull/trail on the engine); colour only, nothing a child can win or lose. The catalog grows from 9 to 21 items across subjects (hulls, trails, boards, rims, emotes), economy lint green. Reverse: the owner wants cosmetics off the lesson surface.",
+   "source": "inbox/r7-app-17.json"
+  },
+  {
+   "id": "dc-r7-app-equip-sync-seal-once",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Hangar's equip set follows the child across devices through Learning's GET/PUT /api/child/equip (src/ui-v3/kaksha/equipSync.ts; memory.ts stays device-local per the economy test): the server's set wins when it has one and is kept on the device; every equip PUTs the whole set; the lesson reads it before tinting the stage. A seal shows 'since {date}' from Learning's sealedAt, and a chapter that dipped and re-sealed (its first sealedAt older than a stamp in the start read) is not shown again. Reverse: Learning moves the equip store.",
+   "source": "inbox/r7-app-18.json"
+  },
+  {
+   "id": "ms-r7-brain-reply-latency-quiet-hour",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Reply latency at a quiet hour vs daytime (taxila-fast, the same replayed reply call, n = 20 each): quiet 20:36 UTC p50 1,424 ms / p90 2,560 ms; daytime 07:43 UTC p50 1,479 ms / p90 2,086 ms. The p50 is the same within noise, so the time of day does not explain the Director's ~3 s reply-ready; that is the pipeline, not Azure load.",
+   "source": "inbox/r7-brain-13.json"
+  },
+  {
+   "id": "dc-r7-brain-script-walk-v4",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 Brain build of dc-r7-script-walk-v4 (main's director6 judgement), in script mode:\n- the reply is assembled last, from parts no guard can cut: verdict → park/return → give-up → worked answer → missed-card close → authored text → card;\n- the point is never doubled;\n- then-cards are whole and show their own board;\n- the worked example is one step per turn;\n- wrongIfMis is matched before by-value;\n- a missed card is closed after its follow-up;\n- a left card always says its key;\n- every scripted skill is walked in order before any ladder;\n- asides are parked and returned;\n- the H1.2 counters are added.",
+   "source": "inbox/r7-brain-14.json"
+  },
+  {
+   "id": "ms-r7-face-stills-sweep-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Stills sweep (15 surfaces, r8, phone viewport): every face shown is her rig or a rig still on all 7 surfaces that show her (hello, home, teacher, lesson desk, summary, help, trouble); 0 stragglers. The landing hero's product screenshots have r8 drawn in (re-capture if the look changes).",
+   "source": "inbox/r7-face-12.json"
+  },
+  {
+   "id": "dc-r7-face-greetings-pipeline",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The daily greeting clips are one command (scripts/character/greetings-pipeline.mjs): dry run by default; --run renders the missing clips (the only paid step), writes the viseme sidecars and checks every clip, its lip seals and that the server serves it; exits 1 on a half-made set.",
+   "source": "inbox/r7-face-12.json"
+  },
+  {
+   "id": "ms-r7-face-timing-i8-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Low-end timing on int/r6 93b0e20c0 (SwiftShader, n=8): the hand-off holds (face live ~0.8-0.9 s, before her first sound in 16/16 runs, adopted 16/16); the face costs +60 ms (CPU x6) / +154 ms (x4) of first sound vs off. A same-machine rerun of integration 3b shows the higher absolute start numbers are mostly this machine, not integrations 5-8.",
+   "source": "inbox/r7-face-12.json"
+  },
+  {
+   "id": "dc-r7-games-darpan",
+   "kind": "decision",
+   "title": "Darpan (symmetry) as one law family, nothing on a clock: mirror/lines (lay mirror lines through the figure centre, each snapping to a corner or side-middle where a fold can run, then fold; the law reflects outline and pattern across each line; solved only when the lines laid are exactly all the lines of symmetry), turn/smallest (turn a pinwheel / tile on a turntable over its own trace to the smallest part turn that lands it on itself; 15 deg steps at class 5 shown as a fraction of a turn, a 1 deg dial at class 6) and turn/order (mark every stop of one full turn where it lands; the start is not a stop). Shortcut-free: the upright line, the level line, both, every fold line; one press, a quarter turn, the full turn; marks at every quarter or the full turn only never win a served level, so plain upright rectangles, full squares and order-4 pinwheels are never served. Mal-rules exactly-one, vertical-only, diagonals, equal-halves, quarter-default, full-turn, mirror-only, angle-order; a level names a belief only when its set-up differs from every other mal-rule the level maps. New law topics c4-maths-ch11-t01, c5-maths-ch10-t01, c6-maths-ch09-t02, plus s1/s2 of c6-maths-ch09-t01 (s3 stays nazariya). Not covered: telling turn from mirror symmetry as its own judgement (c5/c6 s3), tilings (c7). Reverse if a child pilot shows the snapping fold lines turn line-finding into picking from offered lines, or children cannot read the fold / spin answer.",
+   "at": "2026-11-05",
+   "source": "inbox/r7-games-darpan.json"
+  },
+  {
+   "id": "ms-r7-games-darpan-cert",
+   "kind": "measurement",
+   "title": "darpan play-cert (forge3-qa, FORGE3_QA_LOCAL=1, p360/p412/l1366, 4 arts, 2026-11-05): 48/48 darpan samples pass at p360, p412 and l1366 with the game mounted (6 coverage entries x 4 arts x 2 seeds; boxes p360 320x524, p412 372x639, l1366 720x520; whole table 3000/3000); generator p95 under 50 ms per case (tests/r7-games-darpan.test.mjs, 6 cases x 40 seeds); independent point-set oracle agrees with the law on every judged go of >= 2000 random acts per case and on every subset of up to 8 fold lines of every generated figure (seeds 1-3, fades 1-3).",
+   "at": "2026-11-05",
+   "source": "inbox/r7-games-darpan.json"
+  },
+  {
+   "id": "dc-r7-games-ghadi",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "ghadi (time and clocks) as one never-timed law family for classes 4-5: set (a geared clock set to a board's time: minute hand wound, hour hand creeps with it, hour sector, a.m./p.m. day strip), run (arrive: wind the bus clock on by the trip; leave: wind back; trip: make the ticket that runs the departure clock onto the arrival), race (podium checked by the race itself), calendar (flag a date n days / w weeks d days ahead; the hops start the day after today). 4 topics: c4-maths-ch12-t01, c4-maths-ch12-t02, c5-maths-ch12-t01, c5-maths-ch12-t02. Why: the four time topics were served only by ITEM-ARENA. Reverse: a child pilot shows the geared clock does the carrying for the child so the elapsed-time belief never surfaces.",
+   "source": "inbox/r7-games-ghadi.json"
+  },
+  {
+   "id": "ms-r7-games-ghadi-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "ghadi play-cert (forge3-qa, p360/p412/l1366, game mounted): every ghadi sample passes at every size; 48 law and server tests pass.",
+   "source": "inbox/r7-games-ghadi.json"
+  },
+  {
+   "id": "dc-r7-map-marks-equip",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (App's app-world-hangar-depth, PIPELINE §14 B2-4, K-P5): /api/child/map now carries `sealedAt` on chapters and `secureSince` on skills. Each is the FIRST time the map saw that chapter sealed or that skill secure (migration 046 child_map_mark; set once, kept on a dip). A chapter that decays and re-seals is therefore one Debrief moment. Marks already true at the child's first map read after 046 are backfilled, and the map sends null for them instead of a made-up time. GET/PUT /api/child/equip syncs the Hangar's equipped cosmetics across devices (046 child_equip). The values are data/kaksha/catalog.json ids of the slot's kind; a slot with no catalog items yet (emote) takes a short slug. M0 handling: child_map_mark is deleted with the child's learning history, and child_equip is kept as a child-chosen cosmetic. The contracts.ts types go to Brain as patch 005. Reverse if: the first-seen time is too coarse for the Debrief, because a seal the map never read until a later lesson is stamped then; derive it from the ledger's certifying evidence row instead.",
+   "source": "inbox/r7-learning-28.json"
+  },
+  {
+   "id": "dc-r7-voice-opus-transport",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 (voice-tts-transport, QA D12): her speech travels as Opus on every link where the device can decode it. The server encodes at the frame writer (frames.js FRAME.opus = 6, one raw 20 ms packet, 24 kHz mono, ~24 kbps ≈ 3 KB/s against PCM's 48 and ADPCM's 12), so the cache, DragonHD, mini-tts and every mark on the PCM sample clock are unchanged; the last packet is zero-padded before the end frame, so the samples out are never fewer than the samples in. The device asks `codec=opus` first only where WebCodecs AudioDecoder supports 24 kHz mono Opus, with `adpcm` after it on a slow link; the server serves the first codec it can (opus needs the lazily loaded opusscript WASM encoder; until it loads, or with TAXILA_TTS_OPUS=off, the request gets ADPCM or PCM). A decoder error yields 20 ms of silence per packet, never a stall. Not yet measured on phones. Reverse (TAXILA_TTS_OPUS=off, or `?tts=adpcm|pcm` on a device) if live lessons show first-sound later on Opus than on PCM/ADPCM at the same link, or audible artefacts on her voice.",
+   "source": "inbox/r7-voice-8.json"
+  },
+  {
+   "id": "ms-r7-voice-opus-transport",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Opus TTS transport, model-free, 2026-11-05. CPU (evals/tts-transport/cpu.mjs, n = 8,742 20 ms frames of real teacher speech from the bake, one thread, Xeon 2.8 GHz, Node 22): encode 0.41 ms p50 / 0.68 ms p95 / 0.80 ms p99 per 20 ms frame, so ~47 real-time streams per core, ~23 per 0.5 vCPU; 2.9 KB/s on the wire against PCM's 48 KB/s. First audio (evals/tts-transport/first-audio.mjs, real Chromium WebCodecs, CDP throttling, a local server through the shipped frameWriter, no Azure call; time to the first 100 ms of decoded PCM and to the whole line, p50). 12 short lines (75 KB PCM): Slow 3G PCM 494 / ADPCM 437 / Opus 432 ms first, 1,843 / 759 / 522 ms whole; Fast 3G 181 / 168 / 158 first; 4G 68 / 67 / 67 first. 10 QA-D12-sized lines (693 KB PCM): Slow 3G first 496 / 436 / 432 ms, whole 12,770 / 3,513 / 1,228 ms (p90 24,840 / 6,558 / 2,073); Fast 3G whole 3,177 / 919 / 363 ms; 4G first 69 / 67 / 67, whole 609 / 204 / 360 ms (Opus paces its encoding, ~200 ms of audio per slice, so on a fast link a 14 s line finishes later than ADPCM while still arriving far ahead of real time). An earlier cut that encoded each pushed chunk synchronously sent its first byte only after the whole line was encoded (4G first audio 325 ms, and 199 ms of event loop blocked per 14 s line); the shipped writer always yields between slices. Not measured on real phones or live Azure lines.",
+   "source": "inbox/r7-voice-8.json"
+  },
+  {
+   "id": "dc-r7-voice-child-text-seam",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 (Voice → C1 Studio M4): the child's words reach server code in-process through server/duplex/childText.js: onChildText(lessonId, fn) → unsubscribe; events { lessonId, itemId, seq, text (the turn's cumulative, echo-filtered text), final, t, at }. Finals come from every turn route: /api/lesson/turn-audio here, /api/lesson/turn through docs/patches/to-brain/012. Each is emitted before the turn runs, so one source works on every lane, including D5's default ear, which has no partials. Live partials come from the device (cascadeLink, ≤ 1 post / 400 ms, the newest text) to POST /api/duplex/child-text only when /api/duplex/config says partialPost: true, which needs TAXILA_DUPLEX_PARTIAL_POST=on and duplex on. With no listener, that route answers 204 without reading the database; otherwise it allows only the caller's own child's open lesson and ≤ 1 post per 300 ms. Safety by predicate: text scanSafety reads as distress is never handed to a listener. The registered route is new because /api/duplex/partial sits in the unregistered slice table. Reverse (unset TAXILA_DUPLEX_PARTIAL_POST) if the extra posts show up in replica load or D4 first-sound.",
+   "source": "inbox/r7-voice-9.json"
   }
  ],
  "edges": [
@@ -39635,6 +39768,66 @@
    "src": "dc-r7-board-screen-contract",
    "rel": "part_of",
    "dst": "dc-r7-script-walk-v2"
+  },
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "measured_by",
+   "dst": "jd-r7-director6-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v3"
+  },
+  {
+   "src": "dc-r7-app-hangar-applies",
+   "rel": "part_of",
+   "dst": "dc-r7-app-chapter-seals"
+  },
+  {
+   "src": "dc-r7-app-equip-sync-seal-once",
+   "rel": "part_of",
+   "dst": "dc-r7-app-chapter-seals"
+  },
+  {
+   "src": "ms-r7-face-timing-i8-2026-11-05",
+   "rel": "caused_by",
+   "dst": "dc-r7-face-prewarm-handoff"
+  },
+  {
+   "src": "dc-r7-face-greetings-pipeline",
+   "rel": "part_of",
+   "dst": "dc-r7-face-home-daily-greeting"
+  },
+  {
+   "src": "ms-r7-face-stills-sweep-2026-11-05",
+   "rel": "caused_by",
+   "dst": "dc-r7-face-stills-from-rig"
+  },
+  {
+   "src": "dc-r7-games-darpan",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-darpan-cert"
+  },
+  {
+   "src": "dc-r7-games-ghadi",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-ghadi-cert"
+  },
+  {
+   "src": "dc-r7-voice-opus-transport",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-opus-transport",
+   "rel": "measured_by",
+   "dst": "ms-r7-voice-opus-transport"
+  },
+  {
+   "src": "dc-r7-voice-child-text-seam",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
   }
  ]
 }

@@ -12,7 +12,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust } from "../director/script.js";
+import { saidMust, joinable } from "../director/script.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -130,27 +130,47 @@ const HI_COUNT = { ek: 1, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, panch: 5
 const NUM_W = "(\\d+|ek|do|teen|chaa?r|paa?nch|chhe|chhah|saat|aath|nau|das)";
 const countOf = (w) => /^\d+$/.test(w) ? Number(w) : HI_COUNT[w.toLowerCase()] ?? null;
 const COUNTED = [
-  ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:chhote\\s+)?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
-  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups]],
-  ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => (c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps])],
+  // (director6: "beech mein 3 chalk ke nishaan": up to two words between the count and the marks)
+  ["inner", new RegExp(`beech\\s+mein\\s+${NUM_W}\\s+(?:[\\p{L}]+\\s+){0,2}?(?:marks?|nishaan|nishan|ticks?|lakeer\\w*|nishaanon)`, "giu"), (c) => (c.lines ?? []).map((l) => l.innerTicks)],
+  ["gaps", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(barabar\\s+|equal\\s+)?(?:gaps?|hisse|hisson|hissa|tukde|tukdon|parts?|bhaag)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole]), c.parts, c.groups, c.shaded,
+    // (compare@1, Studio 244936c8: each column's stated quantities, "2 tukde")
+    ...(c.columns ?? []).flatMap((col) => (col.quantities ?? []).map((q) => q.n))]],
+  // ("teen mark hain: 1/2, 1/4 aur 1/8": the labelled marks count too)
+  ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps]), ...(Array.isArray(c.marks) && c.marks.length ? [c.marks.length] : [])]],
   ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
   ["shaded", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hisse\\s+|parts?\\s+|tukde\\s+)?(?:shaded|rangi\\w*|rangee\\w*|colou?red)(?![\\p{L}])`, "giu"), (c) => [c.shaded]],
 ];
 const DEICTIC = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye|\b(?:yahan|is|iss|ye|yeh)\s+(?:line|rekha|shape|aakar|chitra?|figure|rectangle|triangle|square|circle|pentagon|hexagon|patti|strip|kyaari)/i;
+/** Every number a board counted (SC1), for the pointed-number check: a count said is never "a number the board lacks". */
+const countNumbers = (c) => !c ? [] : [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole, l.ticks, l.innerTicks]), c.parts, c.shaded, c.rows, c.cols, c.groups, c.each,
+  c.sides, c.corners, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
 /** SC1: does this sentence state a count the board's counted facts contradict? */
 export function countContradicts(x, counts) {
   if (!counts || !DEICTIC.test(x)) return false;
   // "beech mein N" claims are inner marks only; the plain "N marks" rule then skips them
   const t = String(x);
+  const lineMax = Math.max(0, ...(counts.lines ?? []).map((l) => l.gaps ?? 0));
   for (const [kind, re, allowed] of COUNTED) {
     for (const m of t.matchAll(re)) {
       if (kind === "ticks" && /beech\s+mein\s*$/i.test(t.slice(0, m.index))) continue;
       if (kind === "gaps" && /^\s*(?:hisse\s+|parts?\s+|tukde\s+)?(?:shaded|rangi|rangee|colou?red)/i.test(t.slice(m.index + m[0].length))) continue;
+      const n = countOf(m[1]);
+      // ("ek gap ki value", "ek kone se": one of them, never a count of the board)
+      if (n === 1 && /^ek$/i.test(m[1])) continue;
+      // (on a line, "3 tukde … 3/8 tak" is a stretch of it, as Studio's W10 reads it; only "N barabar …" names the division)
+      if (kind === "gaps" && lineMax && !m[2] && n != null && n <= lineMax) continue;
       const ok = allowed(counts).filter((v) => typeof v === "number");
       if (!ok.length) continue;                       // not counted by this board: never flagged
-      const n = countOf(m[1]);
       if (n != null && !ok.includes(n)) return true;
     }
+  }
+  // compare@1: a number said right after a column's title ("Cake A mein 3") is one of THAT column's stated quantities
+  for (const col of counts.columns ?? []) {
+    const title = String(col?.title ?? "").trim();
+    const qs = (col?.quantities ?? []).map((q) => q.n).filter((n) => typeof n === "number");
+    if (title.length < 3 || !qs.length) continue;
+    const m = new RegExp(`${title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:\\s+\\p{L}+){0,3}?\\s+${NUM_W}(?![\\d/])`, "iu").exec(t);
+    if (m) { const n = countOf(m[1]); if (n != null && n !== 1 && !qs.includes(n)) return true; }
   }
   // a side value with a unit, said of a side, must be one the board wrote
   if (Array.isArray(counts.sideValues) && counts.sideValues.length && /\b(?:sides?|bhuja\w*)\b/i.test(t) && !/parimap|perimeter|\bkul\b|total|jod/i.test(t)) {
@@ -173,7 +193,12 @@ export function screenContradictions(text, facts) {
       // (SC1: a number that is a count — "4 hisse", "beech mein 3 nishaan" — is the counts' business, never this check's:
       // director5's false flags were counts the board drew but never wrote)
       const bare = COUNTED.reduce((acc, [, re]) => acc.replace(re, " "), x);
-      const ns = (bare.match(/\d+(?:\/\d+)?/g) ?? []);
+      const counted = countNumbers(facts.counts);
+      // (a fraction that lands on what is drawn, a/b × D whole for the board's parts or gaps D, is the board's own: "1/2" over a
+      // roti in 2, "1/4" over a line in eighths; director6's last 2 false flags)
+      const units = facts.counts ? [facts.counts.parts, ...(facts.counts.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole])].filter((v) => typeof v === "number" && v > 0) : [];
+      const onBoard = (n) => { const m = /^(\d+)\/(\d+)$/.exec(n); return !!m && Number(m[2]) > 0 && units.some((D) => Number.isInteger((Number(m[1]) * D) / Number(m[2]))); };
+      const ns = (bare.match(/\d+(?:\/\d+)?/g) ?? []).filter((n) => !counted.includes(n) && !onBoard(n));
       if (ns.some((n) => !facts.numbers.some((m) => m === n || m.startsWith(`${n} `) || m.split(/[^\d/]+/).includes(n)))) return true;
     }
     return false;
@@ -190,6 +215,8 @@ export function pointSaid(text, point) {
 }
 const REMEDY_FRAME = { hinglish: ["Chalo, ise ek naye tareeke se dekhte hain.", "Ek alag tarah se sochte hain.", "Isse aise samjho."],
   english: ["Let's look at it another way.", "Here is a different way to see it.", "Think of it like this."] };
+export const skipRewriteOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SKIP_REWRITE ?? ""));
+export const longTrimOn = (env = process.env) => /^(on|1|true)$/i.test(String(env.TAXILA_R7_LONG_TRIM ?? ""));
 // round 7 T3 (dc-r7-teaching-scripts, the listening contract; kill switch TAXILA_R7_LISTEN=off)
 export const listenOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_LISTEN ?? ""));
 /** A sentence that tells them their answer is not right (or not yet). */
@@ -1175,6 +1202,26 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const fixed = toAap(reply);
     if (!registerBroken(fixed, address)) { reply = fixed; guard.repaired = true; found = problems(reply); }
   }
+  // round 7 latency cut 1 (main, after director6: 44% of turns paid a second model call): in script mode, a draft whose only
+  // problems are ones the final assembly below fixes in code — the beat's point (mustsay, on an explain beat with a point),
+  // the missing "not right" (uncorrected) or the missing yes (noconfirm) — is not rewritten: the rewrite's words would be
+  // replaced by the assembly anyway. Any other problem keeps today's rewrite. Kill switch TAXILA_R7_SKIP_REWRITE=off.
+  const scriptTurnEarly = scripted || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  const ASSEMBLY_FIXES = (p) => p === "uncorrected" || p === "noconfirm" || (p === "mustsay" && !!point && kindNow === "explain");
+  if (found.length && skipRewriteOn() && scriptTurnEarly && listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin
+    && !forgetSafety && !clause.sent && found.every((p) => ASSEMBLY_FIXES(p) || (p === "long" && longTrimOn()))) {
+    guard.rewriteSkipped = [...found];
+    // cut 2 (TAXILA_R7_LONG_TRIM, default OFF until a judged A/B): "long" is her own words trimmed in code to the turn budget,
+    // the card kept whole; the assembly then puts the authored parts back in their places
+    if (found.includes("long")) {
+      const cardT = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
+      const own0 = cardT && String(reply).includes(cardT) ? String(reply).replace(cardT, " ").replace(/\s+/g, " ").trim() : String(reply).trim();
+      const budget = Math.max(8, (TURN_WORDS[state.ctx.ageBand] ?? 25) - (cardT ? words(cardT) : 0));
+      reply = [trimToWords(own0, budget), cardT].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
+      guard.longTrimmed = true;
+    }
+    found = [];
+  }
   if (found.length) {
     const asked = G && ["example", "story", "another"].includes(state.lastMove?.request);
     const why = [found.includes("leak") && asked && "it gives away the answer to the question — keep what they asked for, but with different numbers and a different case from the question, so its answer is never stated",
@@ -1459,7 +1506,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     // round 7 (director2 c6 steering: "cricket ke baare mein" was parked by the Director, but her line never named it): a topic
     // parked this turn is said with its promise when her words left it out
-    if (state.lastMove?.request === "park" && kindNow !== "safeguard") {
+    // (v4 W6: any topic parked this turn, an aside kept by the Director included, not only an explicit park request)
+    if (kindNow !== "safeguard" && (state.later ?? []).some((p) => p.at === state.turn && p.servedAt == null)) {
       const e = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
       const key = e ? (String(e.topic).toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) : null;
       if (key && !new RegExp(`\\b${key}`, "i").test(reply)) {
@@ -1543,7 +1591,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   }
   // round 7 S3: a card let go after two misses plus help has its answer and why said, in code, when her line left them out
   const gave = state.lastMove?.gave;
-  if (gave?.answer && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
+  // (v4 W2: in script mode the give-up is one clean sentence said by the final assembly below, never glued here)
+  const scriptCardNow = !!state.lastMove?.scriptBeat || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  if (gave?.answer && !scriptCardNow && kindNow !== "safeguard" && !new RegExp(`(?<![\\d.])${gave.answer.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\d])`).test(reply)) {
     reply = `${pickOf(GAVE_LINE[lang === "english" ? "english" : "hinglish"], state)(gave.answer, gave.why)} ${reply}`.trim();
     guard.gaveAnswer = true;
   }
@@ -1568,13 +1618,87 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       else guard.unenforced = bad;
     }
   }
-  // dc-r7-script-walk-v3 V2 / G1: a scripted explain beat's authored point is in what she says. When her line (or what a guard
-  // left of it) lacks it, code says the point verbatim before the card: a guard never leaves the card alone
-  if (point && kindNow === "explain" && !pointSaid(reply, point)) {
-    const card = ui?.ask?.text ?? askEnd ?? null;
-    const body = card && String(reply).includes(card) ? String(reply).replace(card, " ").replace(/\s+/g, " ").trim() : String(reply).trim();
-    reply = [body, /[.!?।]$/.test(point.trim()) ? point.trim() : `${point.trim()}.`, card].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
-    guard.pointSaid = true;
+  // director6 (K1/K2, after every repair above): the verdict on a graded answer is the FIRST thing she says.
+  // - wrong: the not-right sentence leads. A give-up reveal of the previous card ("Pichhle sawaal ka jawab …") or an S1 fixed
+  //   line had pushed it second or dropped it (14 of director6's 16 verdict misses); a later one is moved up, a missing one
+  //   added by code (never the key)
+  // - right: her line never negates their answer ("Riya, 1/8 nahi; …" to a graded-right 1/8, director6's one right answer
+  //   called wrong); the negation goes and the line leads with a plain yes
+  if (listenOn() && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && answeredNow && !clause.sent) {
+    const ss = sentences(reply);
+    const isLead = (x) => NOT_RIGHT.test(String(x).replace(/\bkoi\s+baat\s+nahi?n?\b/gi, "")) && !affirmsAnswer(x);
+    if (verdict === "not_yet" && ss.length && !isLead(ss[0])) {
+      const key = String(item?.answer ?? "").trim();
+      const at = ss.findIndex((x) => isLead(x) && words(x) <= 12 && !(key && x.includes(key)));
+      reply = at > 0 ? [ss[at], ...ss.filter((_, i) => i !== at)].join(" ").replace(/\s+/g, " ").trim()
+        : `${notRightLead(key && saidNow.includes(key) ? "" : saidNow, lang)} ${reply}`.trim();
+      guard.verdictFirst = at > 0 ? "moved" : "added";
+    } else if (verdict === "correct" && (negatesAnswer(reply, saidNow) || !affirmsAnswer(ss[0] ?? ""))) {
+      // (an S1 fixed line or the card alone carries no yes: the graded-right answer is still confirmed first)
+      const yes = lang === "english" ? "Yes, that's right." : "Haan, sahi hai.";
+      const neg = negatesAnswer(reply, saidNow);
+      reply = `${yes} ${neg ? withoutNegation(reply, saidNow) : reply}`.replace(/\s+/g, " ").trim();
+      guard.verdictFirst = neg ? "unnegated" : "confirmed";
+    }
+  }
+  // dc-r7-script-walk-v4 W1/W3 (director6: guards left the bare card 45 times, deleted authored says and steps, doubled the point,
+  // put it mid-ask): in script mode the turn is ASSEMBLED last, from parts no guard can cut. Guards above act on her own clauses;
+  // here the order is fixed: the verdict → one clean give-up sentence → the authored text → the card, whole.
+  // - authored text: the code-rendered remediation say or worked lines; on an explain beat her own lines when they carry the
+  //   point, else ONE short clause of hers then the point verbatim (never both, never mid-ask)
+  // - a turn that would be the bare card says the card's own authored line first ("Yaad karo: …")
+  const scriptTurn = !!state.lastMove?.scriptBeat || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen));
+  if (scriptTurn && kindNow !== "safeguard" && !CLOSING_MOVES.has(kindNow) && !checkin && !clause.sent && !forgetSafety) {
+    const norm = (x) => String(x ?? "").replace(/\s+/g, " ").trim();
+    const dot = (x) => (/[.!?।]$/.test(norm(x)) ? norm(x) : `${norm(x)}.`);
+    const card = ui?.ask?.text ? norm(ui.ask.text) : null;
+    const cardSs = card ? sentences(card).map(norm) : [];
+    const gaveA = state.lastMove?.gave?.answer ? norm(state.lastMove.gave.answer) : null;
+    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}.` : `Pichhle sawaal ka jawab ${gaveA} tha.`) : null;
+    const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|woh wala|the last|that one)/i.test(x);
+    let ss = sentences(reply).map(norm).filter(Boolean)
+      .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
+    const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
+    const lead = graded && ss.length ? ss.shift() : null;
+    // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
+    // short one when her words left it out); they come after the verdict, before the teaching
+    const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
+    const parkedNow = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
+    const ret = state.lastMove?.returned ?? null;
+    const aside = [];
+    for (const [topic, kind] of [[parkedNow?.topic, "park"], [ret?.topic, "return"]]) {
+      const k = keyOf(topic);
+      if (!k) continue;
+      const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, 2);
+      ss = ss.filter((x) => !mine.includes(x));
+      aside.push(...(mine.length ? mine : [kind === "park"
+        ? pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)
+        : (lang === "english" ? `And ${topic}: I remember what you told me.` : `Aur haan, ${topic} wali baat mujhe yaad hai.`)]));
+    }
+    const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
+    const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
+    let body;
+    if (workedLines?.length) {
+      // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
+      const frame = !lead && clean(ss[0]) && !(kindNow === "reteach" && /\d/.test(ss[0])) ? ss[0] : null;
+      body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
+    } else if (point && kindNow === "explain") {
+      if (ss.length && pointSaid(ss.join(" "), point)) body = ss;
+      else { const li = ss.find((x) => clean(x) && !/\d/.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true; }
+    } else {
+      body = ss;
+      if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
+    }
+    const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
+    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha.`) : null;
+    if (closedS) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
+    const wd = state.lastMove?.workedDone;
+    const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(wd.why, { lower: true }) : null;
+    const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
+    // (a worked step with no card ends on a short check-in, never mid-air)
+    const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
+    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }

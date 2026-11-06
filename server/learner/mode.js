@@ -62,6 +62,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "placement",
   // 037_question_jar.sql (round 7 F item 8): the questions she parked and promised to come back to — history, deleted on M0
   "question_jar",
+  // 046_child_map_marks.sql (round 7 F, app-world-hangar-depth): when a chapter first sealed / a skill first became secure
+  "child_map_mark",
 ]);
 
 /**
@@ -76,6 +78,8 @@ export const KEPT_TABLES = Object.freeze({
   child_seq: "event counter only (no content)",
   child_controls: "parent-entered controls",
   child_routine: "parent-entered routine",
+  // 046 (round 7 F): the Hangar cosmetics the child equipped (catalog ids); no learning signal
+  child_equip: "child-chosen cosmetics",
   child_timetable: "the school timetable by weekday (034, round 7): parent-entered, or the intake's plain subject list",
   conductor_usage: "minutes used against the parent cap",
   job: "operational queue (cancel-or-run)",

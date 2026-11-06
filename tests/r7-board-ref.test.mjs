@@ -140,7 +140,7 @@ test("director5 SC2: a scripted remediation board goes up only on the turn its e
   const BF = await import("../server/stagecraft/board-first.js");
   const { kitFromFile } = await import("../server/content/kits.js");
   const { getTopic } = await import("../server/content/curriculum.js");
-  const sc = JSON.parse(fs.readFileSync("data/lesson-scripts-v2/c5-maths-ch02-t01.json", "utf8"));
+  const sc = JSON.parse(fs.readFileSync("data/lesson-scripts/c5-maths-ch02-t01.json", "utf8"));
   const rem = sc.skills[0].remediation[1];
   const T = "c5-maths-ch02-t01", kit = kitFromFile(getTopic(T));
   // every v2 remediation board is "spoken" on its own say; an unrelated line holds it
@@ -149,8 +149,8 @@ test("director5 SC2: a scripted remediation board goes up only on the turn its e
   assert.equal(BF.scriptBoardSpoken(ask("x", rem.say.hi)), true);
   assert.equal(BF.scriptBoardSpoken(ask("x", "Koi baat nahi, ek baar aur sochte hain.")), false);
   assert.equal(BF.scriptBoardSpoken(ask("x", "Koi baat nahi.", { kind: "explain" })), true, "only remediation is held");
-  for (const f of fs.readdirSync("data/lesson-scripts-v2")) {
-    const d = JSON.parse(fs.readFileSync(`data/lesson-scripts-v2/${f}`, "utf8"));
+  for (const f of fs.readdirSync("data/lesson-scripts")) {
+    const d = JSON.parse(fs.readFileSync(`data/lesson-scripts/${f}`, "utf8"));
     for (const sk of d.skills ?? []) for (const b of sk.remediation ?? []) if (b.board && !b.board.auto) assert.ok(BF.scriptBoardSpoken(ask("x", b.say?.hi ?? "", { ref: b.board })), `${f} ${b.targets}`);
   }
   // through the seam: an unspoken remediation never takes the tray
@@ -186,8 +186,8 @@ test("director5: every v2 script board is preselected as the script's and drawn 
   const KNOWN = new Set();
   const misses = [];
   let n = 0;
-  for (const f of fs.readdirSync("data/lesson-scripts-v2")) {
-    const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts-v2/${f}`, "utf8"));
+  for (const f of fs.readdirSync("data/lesson-scripts")) {
+    const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts/${f}`, "utf8"));
     const T = f.replace(".json", ""); const kit = kitFromFile(getTopic(T));
     for (const [si, sk] of (sc.skills ?? []).entries()) for (const kind of ["explain", "remediation"]) for (const [bi, b] of (sk[kind] ?? []).entries()) {
       if (!b.board || b.board.auto) continue;

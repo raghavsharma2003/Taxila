@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-map-marks-equip",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (App's app-world-hangar-depth, PIPELINE §14 B2-4, K-P5): /api/child/map now carries `sealedAt` on chapters and `secureSince` on skills. Each is the FIRST time the map saw that chapter sealed or that skill secure (migration 046 child_map_mark; set once, kept on a dip). A chapter that decays and re-seals is therefore one Debrief moment. Marks already true at the child's first map read after 046 are backfilled, and the map sends null for them instead of a made-up time. GET/PUT /api/child/equip syncs the Hangar's equipped cosmetics across devices (046 child_equip). The values are data/kaksha/catalog.json ids of the slot's kind; a slot with no catalog items yet (emote) takes a short slug. M0 handling: child_map_mark is deleted with the child's learning history, and child_equip is kept as a child-chosen cosmetic. The contracts.ts types go to Brain as patch 005. Reverse if: the first-seen time is too coarse for the Debrief, because a seal the map never read until a later lesson is stamped then; derive it from the ledger's certifying evidence row instead."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-map-marks-equip` (2026-11-05, F Learning)\n\nApp's World and Debrief needed a stable moment for a chapter seal and for a skill becoming secure. Until now they compared two map reads or a device snapshot, so a chapter that dipped and re-sealed showed twice.\n\n**Marks.** The map now records the first time it sees each state (child_map_mark, migration 046), and those rows are never cleared. The time is when the map observed the state, not the evidence row that caused it. In practice App reads the map at lesson open and at lesson end, so a seal earned in a lesson is stamped at that lesson's end-of-lesson read.\n\n**Backfill.** On a child's first read after the migration, marks that are already true carry no time (null). This avoids a false 'sealed this lesson'.\n\n**Equip.** The Hangar's equipped cosmetics are stored per child as jsonb, validated against App's catalog.",
+  "measurements": "",
+  "rejected": ""
+ }
+}
