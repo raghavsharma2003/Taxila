@@ -108,8 +108,8 @@
    ],
    "workedExample": {
     "problem": {
-     "hi": "Zoya ek chaukor rumal ko aadha modti hai aur ek aadhe hisse mein rang bharti hai. Phir rumal ko do baar aur aadha modti hai. Kholne par kitne barabar hisse honge, aur rang wala hissa kaunsa bhinn hai?",
-     "en": "Zoya folds a square hanky in half and colours one half. Then she folds it in half two more times. When it is opened, how many equal parts are there, and what fraction is coloured?"
+     "hi": "Sana ek chaukor rumal ko aadha modti hai aur ek aadhe hisse mein rang bharti hai. Phir rumal ko do baar aur aadha modti hai. Kholne par kitne barabar hisse honge, aur rang wala hissa kaunsa bhinn hai?",
+     "en": "Sana folds a square hanky in half and colours one half. Then she folds it in half two more times. When it is opened, how many equal parts are there, and what fraction is coloured?"
     },
     "givens": [
      { "hi": "ek chaukor rumal", "en": "one square hanky" },
@@ -151,18 +151,18 @@
     {
      "id": "c1",
      "prompt": {
-      "hi": "Do ek jaisi chocolate bar hain. Aman ne ek bar ka 1/2 khaya. Tara ne doosri bar ke 6 barabar tukdon mein se 3 tukde khaaye. Zyada kisne khaya: Aman ne, Tara ne, ya dono ne barabar?",
-      "en": "Two identical chocolate bars. Aman ate 1/2 of one bar. Tara ate 3 of the 6 equal pieces of the other bar. Who ate more: Aman, Tara, or did they eat the same?"
+      "hi": "Do ek jaisi chocolate bar hain. Mohit ne ek bar ka 1/2 khaya. Anjali ne doosri bar ke 6 barabar tukdon mein se 3 tukde khaaye. Zyada kisne khaya: Mohit ne, Anjali ne, ya dono ne barabar?",
+      "en": "Two identical chocolate bars. Mohit ate 1/2 of one bar. Anjali ate 3 of the 6 equal pieces of the other bar. Who ate more: Mohit, Anjali, or did they eat the same?"
      },
      "key": "the same",
      "accept": ["same", "barabar", "dono ne barabar", "dono ne barabar khaya", "same amount", "both the same"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
-     "wrongIfMis": "Tara",
+     "wrongIfMis": "Anjali",
      "board": {
       "template": "compare@1",
       "params": {
-       "left": { "title": "Aman", "items": ["1/2"] },
-       "right": { "title": "Tara", "items": ["6 barabar tukdon", "3 tukde khaaye"] }
+       "left": { "title": "Mohit", "items": ["1/2"] },
+       "right": { "title": "Anjali", "items": ["6 barabar tukdon", "3 tukde khaaye"] }
       }
      }
     },
@@ -197,8 +197,8 @@
      "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 4, "whole": "bar" } },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise pizza: Kabir ne ek ka 1/3 khaya, {friend} ne doosre ke 6 barabar slice mein se 2. Zyada kisne, ya barabar?",
-       "en": "Two same pizzas: Kabir ate 1/3 of one, {friend} ate 2 of 6 equal slices of the other. Who ate more, or the same?"
+       "hi": "Do ek jaise pizza: Farhan ne ek ka 1/3 khaya, {friend} ne doosre ke 6 barabar slice mein se 2. Zyada kisne, ya barabar?",
+       "en": "Two same pizzas: Farhan ate 1/3 of one, {friend} ate 2 of 6 equal slices of the other. Who ate more, or the same?"
       },
       "key": "the same",
       "accept": ["same", "barabar", "dono ne barabar", "both the same", "same amount"],
@@ -207,7 +207,7 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "Kabir", "items": ["1/3"] },
+        "left": { "title": "Farhan", "items": ["1/3"] },
         "right": { "title": "6 barabar slice", "items": ["2 slice"] }
        }
       }
