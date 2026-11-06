@@ -36,7 +36,8 @@ const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.",
   english: ["Let's solve one together.", "Here is one, step by step.", "Let's start this one."] };
 const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati hissa dekhte hain.", "Pehle yeh hissa."], english: ["First, this part.", "Here is the first step.", "Start with this part."] };
 // v6 R5: the end of the first half of a split turn
-const SPLIT_ASK = { hinglish: ["Chalo, aage badhein?", "Ab aage chalein?", "Taiyaar ho aage ke liye?"], english: ["Shall we go on?", "Ready for the next bit?", "Shall we carry on?"] };
+// (director9: "Chalo, aage badhein?" was asked and then ignored, whatever they said: closures end on a statement, never a question)
+const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab agla hissa."], english: ["Now let's go on.", "On to the next bit.", "Now the next part."] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
@@ -267,7 +268,8 @@ export function notRightLead(said, lang = "hinglish") {
   const x = String(said ?? "").replace(/[?？!.]+$/, "").trim();
   // v6 R5 (director8: "they are equal sahi nahi hai"): their words are said back only when they are a short answer with a
   // number, or one word; an English phrase in a Hinglish lesson is never echoed
-  const short = x && x.split(/\s+/).length <= 3 && (/\d/.test(x) || x.split(/\s+/).length === 1 || lang === "english") ? x : "";
+  // (director9 c4 ×8: "Yes sahi nahi hai": a word of theirs is never said back, only a short answer with a number)
+  const short = x && x.split(/\s+/).length <= 3 && (/\d/.test(x) || lang === "english") ? x : "";
   if (lang === "english") return short ? `Not quite, ${short} isn't it.` : "Not quite.";
   return short ? `${short} sahi nahi hai.` : "Nahi, yeh jawab nahi hai.";
 }
@@ -1850,6 +1852,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"] };
     const asked = !visualAsk ? null
       : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
+        // (Studio: a bar card's second view is a number line: "0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par")
+        if ((alt.view ?? alt) === "line") return lang === "english" ? `Look, the same on a number line from 0 to 1${alt.gaps ? `, ${alt.gaps} equal gaps` : ""}${nums.length ? `, marked at ${nums.join(" and ")}` : ""}.`
+          : `Dekho, yahi 0 se 1 ki sankhya rekha par${alt.gaps ? `, ${alt.gaps} barabar gaps` : ""}${nums.length ? `, nishaan ${nums.join(" aur ")} par` : ""}.`;
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()
       : boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) ?? (lang === "english" ? "Let's see it in a picture." : "Chalo, ise picture mein dekhte hain.");
     if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }

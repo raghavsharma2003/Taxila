@@ -303,7 +303,7 @@ describe("R5: a turn too long for one is split, never cut", () => {
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...split.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: split.ui, module: null });
     assert.match(out.reply, /pehle wale sawaal ka jawab 12 cm tha/, out.reply);
-    assert.match(out.reply, /(?:aage badhein|aage chalein|aage ke liye)\?$/, out.reply);
+    assert.match(out.reply, /(?:Ab aage chalte hain|Chalo, ab aage|Ab agla hissa)\.$/, "closures end on a statement, never a question: " + out.reply);
     const held = split.state.splitHold;
     const r2 = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: 9e6 });
     assert.equal(r2.move.kind, held.move.kind, "the held beat comes next, unchanged");
@@ -379,7 +379,7 @@ describe("R5: render hygiene", () => {
   test("their English phrase is never echoed in the not-right line; a number or one word is", () => {
     assert.equal(notRightLead("they are equal"), "Nahi, yeh jawab nahi hai.");
     assert.equal(notRightLead("23 m"), "23 m sahi nahi hai.");
-    assert.equal(notRightLead("Yes"), "Yes sahi nahi hai.");
+    assert.equal(notRightLead("Yes"), "Nahi, yeh jawab nahi hai.", "director9: a word of theirs is never said back");
   });
 
   test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes, a reason stays", async () => {

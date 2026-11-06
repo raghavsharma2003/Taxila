@@ -17,6 +17,9 @@ test("altViewOfRow: a row of bars is the second view, with its shaded fractions;
   assert.deepEqual(altViewOfRow("on screen now: board · bar1 6 equal parts, 1 shaded = 1/6 · bar2 3 equal parts, 1 shaded = 1/3"), { view: "parts", labels: ["1/6", "1/3"] });
   assert.deepEqual(altViewOfRow("bar1 3 equal parts, ? (asked)"), { view: "parts", labels: [] });
   assert.equal(altViewOfRow("on screen now: board · line 0 to 1 in 6 gaps"), null);
+  // (Studio, director9: an asked bar reads "S shaded = ?"; a bar card's second view is a number line, hinted "line")
+  assert.deepEqual(altViewOfRow("bar1 6 equal parts, 1 shaded = 1/6 · bar2 4 equal parts, 3 shaded = ?"), { view: "parts", labels: ["1/6"] });
+  assert.deepEqual(altViewOfRow("line 0 to 1 · gaps 8 equal gaps in each whole · each 1/8 · marks 1/8", "line"), { view: "line", labels: ["1/8"], gaps: 8 });
   assert.equal(altViewOfRow(null), null);
 });
 
@@ -74,5 +77,18 @@ test("replay director9 c5-t02 offtopic T26 ('drawing karke samjhao' with e3's li
     assert.match(out.reply, /^Dekho, yahi 1\/8 aur 1\/4 ab patti par\./, out.reply);
     assert.doesNotMatch(out.reply, /line banao/, "never tells the child to draw it");
     assert.ok(out.reply.endsWith(card));
+  } finally { replyDeps.chat = chat; }
+});
+
+test("a bar card's second view is a number line: her line says it ('0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par')", async () => {
+  const T = "c5-maths-ch02-t02", kit = kitFromFile(getTopic(T));
+  const card = "Isi patti ko 8 barabar hisson mein kaatein, toh ek hissa pehle se bada hoga ya chhota?";
+  const state = { ...initLessonState({ topicId: T, kit, ctx: { ...CTX, classLevel: 5, lang: "hinglish" }, seed: 7, now: 0 }), mode: "text",
+    lastMove: { kind: "reteach", request: "visual", visual: "diagram", altView: altViewOfRow("line 0 to 1 · gaps 8 equal gaps in each whole · each 1/8 · marks 1/8", "line"),
+      scriptBeat: { scriptId: "s", skillId: "x", beatId: "e2", kind: "explain", board: { template: "fraction-parts@1", params: { parts: 8, shade: 1, whole: "bar" } } } } };
+  try {
+    replyDeps.chat = async () => ({ text: `Theek hai. ${card}` });
+    const out = await textReply({ instructions: "x", state, kit, childText: "picture dikhao", history: [], ui: { ask: { itemId: "x", text: card } }, module: null });
+    assert.match(out.reply, /^Dekho, yahi 0 se 1 ki sankhya rekha par, 8 barabar gaps, nishaan 1\/8 par\./, out.reply);
   } finally { replyDeps.chat = chat; }
 });

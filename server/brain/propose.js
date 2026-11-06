@@ -287,11 +287,19 @@ export function segmentsAt(plan, line, card, parts = null) {
 
 /**
  * v6 (Studio's S3′ second view; main on integration 11: preselectWhiteboard returns the facts row, a string, so the pick's
- * altView never reached Brain): the second view of the same numbers, read off the preselected row itself ("bar1 6 equal parts,
- * 1 shaded = 1/6"). → { view: "parts", labels } (labels: the shaded bars' fractions, never an asked "?"), or null. Pure.
+ * altView never reached Brain): the second view of the same numbers, read off the preselected row itself. Bars ("bar1 6 equal
+ * parts, 1 shaded = 1/6"; an asked bar "… 3 shaded = ?") → { view: "parts", labels }; with Studio's hint "line" (a bar card's
+ * second view is a number line: "line 0 to 1 · gaps 8 equal gaps in each whole · each 1/8 · marks 1/8") → { view: "line",
+ * labels, gaps }. Labels never carry an asked "?". null when the row is no second view. Pure.
  */
-export function altViewOfRow(row) {
-  const bars = [...String(row ?? "").matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+)|\?\s*\(asked\))/g)];
+export function altViewOfRow(row, hint = null) {
+  const r = String(row ?? "");
+  if (hint === "line" || (hint && hint.view === "line")) {
+    const marks = (/\bmarks\s+([\d/ ,]+)/.exec(r)?.[1] ?? "").match(/\d+\/\d+/g) ?? [];
+    const gaps = Number(/\bgaps\s+(\d+)\s+equal gaps/.exec(r)?.[1]) || null;
+    return { view: "line", labels: marks, ...(gaps ? { gaps } : {}) };
+  }
+  const bars = [...r.matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+|\?)|\?\s*\(asked\))/g)];
   if (!bars.length) return null;
-  return { view: "parts", labels: bars.map((b) => b[3]).filter(Boolean) };
+  return { view: "parts", labels: bars.map((b) => b[3]).filter((x) => x && x !== "?") };
 }

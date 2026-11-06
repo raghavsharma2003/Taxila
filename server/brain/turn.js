@@ -719,8 +719,9 @@ export async function lessonTurn(req, body, hooks = {}) {
   // (preselectWhiteboard returns the facts row, a string: the pick's altView comes from Studio's sibling seam)
   if (r.move?.request === "visual" && wbFirstRow && next.lastMove) {
     // (Studio's sibling seam when it has one; else the row itself, whose bars name the second view)
-    const altView = (typeof studioSeam.preselectedAltView === "function" ? seamSafe("studio.preselectedAltView", () => studioSeam.preselectedAltView(lesson.id), null) : null)
-      ?? altViewOfRow(wbFirstRow);
+    const hint = typeof studioSeam.preselectedAltView === "function" ? seamSafe("studio.preselectedAltView", () => studioSeam.preselectedAltView(lesson.id), null) : null;
+    // (the row names the view's numbers; the seam's hint says which view: "parts", or "line" for a bar card)
+    const altView = altViewOfRow(wbFirstRow, hint) ?? hint;
     if (altView) next.lastMove = { ...next.lastMove, altView };
   }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first

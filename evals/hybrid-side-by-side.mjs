@@ -243,7 +243,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       } else {
         const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
-        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
         const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}) });
         pickAsk = pick ? ask : null;
         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
@@ -258,7 +259,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
           if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
           if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
           // (as brain/turn.js: a picture asked with the card's board up names Studio's second view in her line)
-          if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row) ?? pick.altView } };
+          if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row, pick.altView) ?? pick.altView } };
         } else screen = { kind: "none", why: "no board for this ask" };
         if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
       }
@@ -289,7 +290,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
       let took = null;
       try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
       if (took?.screen) {
-        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null };
+        // (Studio 608a0e90: a value her line confirms is revealed in the take's counts, labels and numbers: take all three)
+        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null,
+          ...(took.screen.labels != null ? { onScreen: { ...(screen.onScreen ?? {}), labels: Array.isArray(took.screen.labels) ? took.screen.labels.join(" | ") : String(took.screen.labels) } } : {}) };
         shownScript = took.script ?? shownScript;
         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
       } else { screen = { ...screen, drawn: "preselect" }; }
