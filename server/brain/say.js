@@ -1719,7 +1719,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
-    const MAX_WORDS = 60;
+    const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
     const total = () => words([lead, ...aside, gaveS, doneS, closedS, ...(state.lastMove?.sayFirst ?? []), ...body, tail].filter(Boolean).join(" "));
     const own = body === ss && !(point && kindNow === "explain") ? body : null;
     if (!workedLines?.length && total() > MAX_WORDS) {

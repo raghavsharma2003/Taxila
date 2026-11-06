@@ -1717,7 +1717,9 @@ function requestMove(s, input, item, req, labels) {
     }
     case "language": {
       // the lesson's language from now on (compile.js reads ctx.lang every turn; langPinned keeps it when they reply in another)
-      s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
+      // v5 B3 (director7: "Ab se simple Hindi" held for one turn): the language AND "simple/aasan" are a mode for the lesson,
+      // held until they ask otherwise (compile.js languageRule reads both every turn; brain/say.js keeps such turns shorter)
+      s.ctx = { ...s.ctx, lang: req.lang, langPinned: true, plainWords: /\b(?:simple|aasan|asaan|easy|saral|seedhi|sidhi)\b/i.test(String(input.text ?? "")) || (s.ctx.plainWords && req.lang === s.ctx.lang) };
       if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
     }
@@ -2433,7 +2435,7 @@ function decide(s, input, item) {
   }
   if (req && s.phase === "teachback" && req.type !== "break" && !(p5Flag("STEER") && P5_REQUESTS.has(req.type))) {
     // teaching the protégé: a language switch holds from now on; any other request re-asks the teach-back more simply
-    if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true };
+    if (req.type === "language") s.ctx = { ...s.ctx, lang: req.lang, langPinned: true, plainWords: /\b(?:simple|aasan|asaan|easy|saral|seedhi|sidhi)\b/i.test(String(input.text ?? "")) || (s.ctx.plainWords && req.lang === s.ctx.lang) };
     const p = helpMove(s, input, item, req.type === "language" ? "slower" : "another");
     return { ...p, request: req.type };
   }

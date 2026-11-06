@@ -532,3 +532,36 @@ describe("v5 B3/B4 on the live c6 script", () => {
     assert.equal(returnLineOf(K, "mera naya phone", "hinglish"), null);
   });
 });
+
+describe("v5 B3: a language promise is a mode for the lesson", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+
+  test("'ab se hindi mein padhao' is a language ask, not a subject", async () => {
+    const { requestOf } = await import("../server/director/requests.js");
+    assert.equal(requestOf("ab se hindi mein padhao")?.type, "language");
+    assert.equal(requestOf("ab se simple hindi mein bolo")?.lang, "hindi");
+  });
+
+  test("'ab se simple Hindi mein bolo' holds: Hindi and plain words, every later turn, until they ask otherwise", async () => {
+    const { languageRule } = await import("../server/compiler/compile.js");
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: [] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    t("haan");
+    t("ab se simple hindi mein bolo", { ...cls("no_evidence"), request: { type: "language", lang: "hindi", whole: true } });
+    for (let i = 0; i < 6; i++) {
+      const it = r.state.activeItemId ? findItem(r.state, K, r.state.activeItemId) : null;
+      t(it ? String(it.answer) : "ok yes", it ? cls("correct") : cls("no_evidence"));
+      assert.equal(r.state.ctx.lang, "hindi", `turn ${i}`);
+      assert.equal(r.state.ctx.plainWords, true, `turn ${i}`);
+      const rule = languageRule(r.state.ctx.lang, "10-12", !!r.state.ctx.langPinned, "voice", !!r.state.ctx.plainWords);
+      assert.match(rule, /they asked for/i);
+      assert.match(rule, /Short everyday words/);
+      assert.ok(rule.length / 4 < 140, `the language section fits its cap: ${rule.length} chars`);
+    }
+    t("english mein bolo", { ...cls("no_evidence"), request: { type: "language", lang: "english", whole: true } });
+    assert.equal(r.state.ctx.lang, "english");
+    assert.equal(r.state.ctx.plainWords, false);
+  });
+});
