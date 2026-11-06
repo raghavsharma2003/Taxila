@@ -268,3 +268,11 @@ test("Learning c6 circles: a circle shows its radius and diameter (arrows, not c
   // the bare circle without the line's measures still fails (the line states 7 cm and 14 cm)
   assert.ok((await certifyBoardRef({ template: "shape@1", shape: "circle", diameter: "diameter", chord: "chord" }, { line })).failed.some((f) => f.startsWith("line_measures_not_on_board")));
 });
+
+test("director8 prep: a fraction line whose dot hops counts its hops (\"0 se 6 hop\" over 6 drawn hops is the board's own count)", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const c = (params) => expand({ template: "fraction-line@1", ...params })?.script?.facts?.counts;
+  assert.equal(c({ den: 4, from: 0, to: 2, marks: [{ num: 6, label: "6/4" }], hop: { num: 6 } })?.hops, 6);
+  assert.equal(c({ den: 6, from: 0, to: 1, hop: { num: 4 } })?.hops, 4);
+  assert.equal(c({ den: 8, from: 0, to: 1, marks: [{ num: 3, label: "3/8" }, { num: 6, label: "3/4" }] })?.hops, undefined, "no dot, no hops counted");
+});

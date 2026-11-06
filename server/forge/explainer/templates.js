@@ -159,7 +159,8 @@ function fractionLine(c, tl) {
   const facts = { line: `0 to ${w}`, gaps: `${den} equal gaps in each whole`, each: `1/${den}` };
   // round 7 (director5 SC1): what the line DRAWS, counted (Brain's R4 reads these: "beech mein 2 marks" over 2 inner ticks)
   const lineCount = { gaps: N, ...(w > 1 ? { gapsPerWhole: den } : {}), ticks: N + 1, innerTicks: N - 1 };
-  const counts = (pts) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}) });
+  // (director8 prep: the hops the dot DRAWS are counted too — "0 se 6 hop" over a line it hops 6 times, Brain's dry-run flags)
+  const counts = (pts, hops = null) => ({ lines: [lineCount], ...(pts.length ? { marks: pts } : {}), ...(hops != null ? { hops } : {}) });
   const claims = [];
   const hopTo = (n) => {
     const dot = tl.add({ op: "circle", c: [X(0), y], r: 7, fill: "accent", ink: "accent" }, 300, { gap: 200 });
@@ -191,13 +192,13 @@ function fractionLine(c, tl) {
       tl.add({ op: "text", at: [round1(lx), rows[p.r]], text: p.label, size: "s", ink: "mark" }, 400, { gap: 60 });
     }
     const pts = [...placed.map((p) => ({ at: `${p.m.num}/${den}`, label: p.label })), ...(hop != null && !marks.some((m) => m.num === hop) ? [{ at: `${hop}/${den}`, label: "" }] : [])];
-    return { claims, counts: counts(pts), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
+    return { claims, counts: counts(pts, hop), facts: { ...facts, ...(marks.length ? { marks: placed.map((p) => p.label).join(", ") } : {}), ...(hop != null ? { hop: `${hop}/${den}`, counted: `${hop} gaps from 0` } : {}) } };
   }
   if (c.show) {
     // the counting IS the method: one hop per gap from 0, the dot riding along; the last mark is the fraction
     hopTo(tgt);
     tl.add({ op: "text", at: [X(tgt / den), y - 44], text: `${tgt}/${den}`, size: "m", ink: "mark" }, 500, { gap: 300 });
-    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }]), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
+    return { claims, counts: counts([{ at: `${tgt}/${den}`, label: `${tgt}/${den}` }], tgt), facts: { ...facts, point: `${tgt}/${den}`, counted: `${tgt} gaps from 0` } };
   }
   if (mark != null) {
     // (the mark the item NAMES is its given: a tall tick in mark ink and a "?" over it; never a dot on it, which is how a
