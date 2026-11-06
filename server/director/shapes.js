@@ -783,3 +783,5 @@ export const frustrationFirst = () => (p5Flag("R3CONV")
   : "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question");
 /** v6 R5: the first half of a split turn: only the verdict and the closing lines code gives, then a short "shall we go on?". */
 export const splitClose = () => "say only the closing lines given (the verdict, the answer and its reason); nothing new; end by asking in a few words if they are ready to go on";
+/** v6 R5: the card half of a split turn: the question as written, after at most one short lead-in; nothing taught again. */
+export const splitCard = () => "pose the question on the card as written, after at most one short lead-in; do not explain it again";

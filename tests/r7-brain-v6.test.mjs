@@ -315,6 +315,30 @@ describe("R5: a turn too long for one is split, never cut", () => {
     assert.notEqual(short.move.splitClose, true);
   });
 
+  test("a remediation's long say and its card: the say now ending on a check-in, the card on its own board next; 'samajh nahi aaya' keeps the card live", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.equal(L.r.move.kind, "reteach");
+    assert.equal(L.r.move.splitTeach, true, "a long remediation say with its card is split");
+    assert.equal(L.r.ui.ask, undefined);
+    replyDeps.chat = async () => ({ text: "Chalo." });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    assert.match(out.reply, /\?$/, out.reply);
+    const held = L.r.state.splitHold;
+    L.t("haan");
+    assert.equal(L.r.ui.ask?.itemId, held.ui.ask.itemId, "the card next, on its own board");
+    assert.equal(L.r.move.scriptBeat?.beatId, held.move.scriptBeat?.beatId);
+    assert.match(L.r.state.activeItemId ?? "", /:then:/);
+    // (and "samajh nahi aaya" to the check-in: the card stays live and the walk answers it)
+    const L2 = run();
+    for (let i = 0; i < 4 && L2.r.move.scriptBeat?.beatId !== "e1"; i++) L2.t("haan");
+    L2.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    L2.t("samajh nahi aaya");
+    assert.match(L2.r.state.activeItemId ?? "", /:then:/, "the follow-up card is live again");
+    assert.equal(L2.r.state.splitHold, undefined);
+  });
+
   test("a stop said over the closing half lets the held half go", () => {
     const s0 = { splitHold: { move: { kind: "explain" }, ui: { ask: { itemId: "x" } }, activeItemId: "x" } };
     const L = run();
@@ -363,5 +387,55 @@ describe("R5: render hygiene", () => {
     const out = await say(L, `Yeh triangle hai. Yeh triangle hai. Tumhari pehli choice kya hai? ${card}`);
     assert.equal(out.reply.match(/Yeh triangle hai/g)?.length ?? 0, out.reply.includes("Yeh triangle hai") ? 1 : 0, out.reply);
     assert.equal(out.reply.match(/[?？]/g)?.length, (card.match(/[?？]/g) ?? []).length, out.reply);
+  });
+});
+
+describe("R2: an invented draft is replaced, not repaired", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  test("no rewrite call; none of the draft's sentences ship; the verdict is code's", async () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
+    let calls = 0;
+    replyDeps.chat = async () => { calls++; return { text: `Galat, kyunki 4 aur 5 aur 6 aur 913 ka jod. ${r.ui.ask.text}` }; };
+    const out = await textReply({ instructions: "x", state: { ...r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: r.ui, module: null });
+    assert.equal(calls, 1, "the draft only: no rewrite");
+    assert.doesNotMatch(out.reply, /913/, out.reply);
+    assert.match(out.reply, /^7 cm sahi nahi hai\./, out.reply);
+  });
+});
+
+describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const toCard = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
+    return r;
+  };
+  const say = (r, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: r.ui, module: null }); };
+
+  test("no reason sentence contradicts code's verdict (steady T65: 'Haan, sahi hai. 4/6 nahi… mila diya')", async () => {
+    const r = toCard();
+    const practice = { ...r.state.lastMove, kind: "practice", point: undefined, mustSay: [] };
+    const out = await say(r, `Haan, sahi hai. 15 cm nahi—tumne bhujayein aur kone mila diye. ${r.ui.ask.text}`, { childText: "15 cm", verdict: "correct", state: { lastMove: practice, lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
+    assert.doesNotMatch(out.reply, /15 cm nahi|mila diye/, out.reply);
+    assert.match(out.reply, /^Haan, sahi hai\./);
+    const out2 = await say(r, `7 cm sahi nahi hai. Haan, bilkul theek socha. ${r.ui.ask.text}`, { childText: "7 cm", verdict: "not_yet", state: { lastMove: practice } });
+    assert.doesNotMatch(out2.reply, /bilkul theek/, out2.reply);
+  });
+
+  test("a picture ask is always acknowledged and keeps the card; on Studio's alternate view she names the new view of the same numbers", async () => {
+    const r = toCard();
+    const card = r.ui.ask.text;
+    const none = await say(r, `Theek hai, chalo isi sawaal par wapas aate hain. ${card}`, { childText: "drawing karke samjhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", scriptBeat: { ...r.state.lastMove.scriptBeat, board: { auto: true } } } } });
+    assert.match(none.reply, /^Chalo, ise picture mein dekhte hain\./, none.reply);
+    assert.ok(none.reply.endsWith(card), "the card stays");
+    const board = { template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }, { num: 2, label: "1/3" }] } };
+    const alt = await say(r, `Theek hai. ${card}`, { childText: "picture dikhao", state: { lastMove: { ...r.state.lastMove, request: "visual", visual: "diagram", altView: { view: "parts" }, scriptBeat: { ...r.state.lastMove.scriptBeat, board } } } });
+    assert.match(alt.reply, /Dekho, yahi 1\/6 aur 1\/3 ab patti par\./, alt.reply);
+    assert.ok(alt.reply.endsWith(card));
   });
 });

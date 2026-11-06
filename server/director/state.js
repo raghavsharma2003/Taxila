@@ -550,7 +550,7 @@ function walkStart(s, kit, skillId, { hook = false } = {}) {
   if (!sk) return false;
   const prev = s.walked?.length ? skillScriptOf(kit, s.walked.at(-1)) : null;
   s.walked = [...(s.walked ?? []), skillId];
-  s.walk = { skillId, beats: walkBeats(sk, { hook }), i: 0, ladder: (sk.ladder ?? []).map((r) => r.itemId), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext } : {}) };
+  s.walk = { skillId, beats: walkBeats(sk, { hook }), i: 0, ladder: (sk.ladder ?? []).map((r) => r.itemId), ...(prev?.bridgeToNext ? { bridge: prev.bridgeToNext, ...(prev.bridgeBoard ? { bridgeBoard: prev.bridgeBoard } : {}) } : {}) };
   // (the S3 card bridge would say it again on its first check)
   if (oneLiveOn()) s.lastCardSkill = skillId;
   return true;
@@ -656,15 +656,17 @@ function walkNextV2(s, input, prefix, sk) {
     // v5 B4 (director7: 0 bridges spoken): the authored bridge is said by code at the skill change (sayFirst), whatever beat
     // the new skill opens on; the hook's interest line likewise
     const bridge = w.bridge ? saidIn(w.bridge, lang) ?? null : null;
-    if (bridge) delete w.bridge;
+    // v6: a bridge Learning gave its own board (SkillScriptV2.bridgeBoard) is its own segment on that board (brain/propose.js)
+    const bridgeBeat = bridge && w.bridgeBoard ? { bridgeBeat: { scriptId: scriptIdOf(kit), skillId, beatId: "bridge", kind: "bridge", board: w.bridgeBoard } } : {};
+    if (bridge) { delete w.bridge; delete w.bridgeBoard; }
     const bridgeLine = bridge ? [`bridge from what they just did: ${bridge}`] : [];
-    const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge } : {};
+    const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge, ...bridgeBeat } : {};
     if (kind === "hook") {
       w.i += 1;
       const slot = hookSlot(sk, s.ctx.interests);
       const use = saidIn(slot?.use, lang);
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
-        ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge } : {}) });
+        ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
     }
     if (kind === "explain") {
       const b = sk.explain.find((x) => x.id === id);
@@ -2806,6 +2808,7 @@ export function step(prev, input) {
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
   if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);
+  if (p.bridgeBeat?.board) move.bridgeBeat = { ...p.bridgeBeat };
   // v4 W1: the live script card's own authored line (its explain beat's point; a follow-up's remediation say), which code says
   // when a guard would otherwise leave her turn as the bare card
   {
@@ -2845,7 +2848,9 @@ export function step(prev, input) {
   }
   // v5 B1: a closure (a give-up reveal, "Toh poora jawab", a missed card's close) is spoken over the board it closes: the board
   // the last turn ended on (its card's own board, else its beat's), before the switch to this turn's boards
-  if ((move.gave || move.workedDone || move.closed || move.sayFirst?.length) && scriptOn()) {
+  // v6 R1: and a verdict on the answer they just gave (with its reason) is said over the same board, so it rides on every
+  // scripted move (brain/propose.js uses it only for a line that has such a part: brain/say.js guard.parts.prev)
+  if (scriptOn()) {
     const end = prev?.lastMove?.cardBeat ?? prev?.lastMove?.scriptBeat ?? null;
     if (end?.board) move.closeBeat = end;
   }
@@ -2932,17 +2937,17 @@ export function splitLong(out, input) {
   if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
   if (["safeguard", "wrap", "break", "repair"].includes(move.kind) || move.request || move.checkin) return out;
   const closing = [move.gave?.answer, move.gave?.why, move.closed?.answer, move.closed?.why, move.workedDone?.answer, move.workedDone?.why, move.bridgeSaid, move.returned?.line];
-  if (!closing.some(Boolean)) return out;
   const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
   if (!teaching.some(Boolean)) return out;
   const cap = s.ctx?.plainWords ? 45 : 60;
+  if (!closing.some(Boolean)) return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
   if (wordsIn(closing, teaching) + 12 <= cap) return out;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
-    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
+    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
   const held = { ...move };
-  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "probeAck"]) delete held[k];
+  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "probeAck"]) delete held[k];
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
   s.activeItemId = undefined;
   s.lastMove = close;
@@ -2950,19 +2955,46 @@ export function splitLong(out, input) {
   s.lastUi = closeUi;
   return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
 }
+/**
+ * v6 R5, the other split: authored teaching (a remediation's say, a worked part, a beat's point) and the card it ends on, too
+ * long for one turn: the teaching now, ending on "is that clear so far?", no card live; the card alone on the next turn (its
+ * board, no point said again). A "pata nahi" / "samajh nahi aaya" to the check-in lets the card go: the walk then re-teaches
+ * the same beat smaller with the card live, as it would have.
+ */
+function splitTeach(out, input, cap) {
+  const { state: s, move, ui } = out;
+  const card = ui?.ask?.text;
+  const body = [move.point, ...(move.rendered ?? [])];
+  if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 <= cap) return out;
+  const teach = { ...move, splitTeach: true };
+  const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,
+    ...(move.cardBeat ?? move.scriptBeat ? { scriptBeat: move.cardBeat ?? move.scriptBeat } : {}), ...(move.cardBeat ? { cardBeat: move.cardBeat } : {}),
+    ...(move.probe ? { probe: move.probe } : {}), ...(move.format ? { format: move.format } : {}), ...(move.methods ? { methods: move.methods } : {}), ...(move.prefs ? { prefs: move.prefs } : {}) };
+  s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: [], teach: true };
+  s.activeItemId = undefined;
+  s.lastMove = teach;
+  const teachUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
+  s.lastUi = teachUi;
+  return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
+}
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
   const h = prev.splitHold;
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
+  // (the teaching half asked "is that clear?": not following it is answered by the walk, with the card live)
+  if (h.teach && (c?.flags?.dontKnow || c?.help || ["confused", "clarify", "another", "example", "slower", "repeat"].includes(c?.request?.type)
+    || readIntent(String(input.text ?? ""))?.type === "confused")) return null;
   const s = structuredClone(prev);
   s.turn += 1;
   s.splitHold = undefined;
   s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
   if (h.activeItemId) s.activeItemId = h.activeItemId;
-  return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
+  const out = { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
     proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  // (the beat a closing half held may itself be too long: its teaching, then its card)
+  return h.teach ? out : splitTeach(out, input, s.ctx?.plainWords ? 45 : 60);
 }
 
 /** Round 3: the most characters a move shape may grow to by OPTIONAL notes (the MOVE section cap is 260 tokens at 3.5

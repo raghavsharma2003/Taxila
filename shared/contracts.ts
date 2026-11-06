@@ -805,6 +805,8 @@ export interface SkillScriptV2 {
   ladder: Array<{ itemId: string; why: string }>;
   remediation: RemediationV2[];
   bridgeToNext: Said | null;
+  /** v6: the bridge's own board, when it shows something (it is then its own segment; with none the bridge points at nothing) */
+  bridgeBoard?: BoardRef | null;
 }
 export interface ExplainBeatV2 {
   id: string;

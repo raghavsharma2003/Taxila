@@ -714,6 +714,9 @@ export async function lessonTurn(req, body, hooks = {}) {
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
       item: boardItemOf(next, kit, findItem), line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
+  // v6 (Studio's alternate view on a picture ask): the take's flag rides on the move, so her line says it is a new view of the
+  // same numbers (brain/say.js)
+  if (r.move?.request === "visual" && wbFirstRow?.altView && next.lastMove) next.lastMove = { ...next.lastMove, altView: wbFirstRow.altView };
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
