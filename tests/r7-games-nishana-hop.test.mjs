@@ -55,7 +55,8 @@ test("nishana/hop: a level whose value disagrees with its operands is refused", 
 
 test("nishana/hop: every coverage entry serves a level as the play server would", async () => {
   const { currentLevel, entryKey, seedOf } = await import("../server/play/levels.js");
-  const mine = coverage.entries.filter((e) => e.family === "nishana" && e.mode === "hop");
+  // the integer + − × hops (nishana2's ÷ and decimal hops have their own test: tests/r7-games-nishana.test.mjs)
+  const mine = coverage.entries.filter((e) => e.family === "nishana" && e.mode === "hop" && !e.grammar.decimals && !e.grammar.ops.includes("÷"));
   assert.equal(mine.length, 2);
   for (const entry of mine) for (let n = 0; n < 3; n++) {
     const key = entryKey(entry);
