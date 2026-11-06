@@ -12,6 +12,7 @@ import { AUTHORITY, proposal } from "./kernel.js";
 import { relationalProposals } from "./relational-adapter.js";
 import { EXPLAIN_BEATS } from "./beat.js";
 import { BANDS } from "../learner/bands.js";
+import { splitSentences } from "../voice/sentences.js";
 
 /** The Director's proposal with the kernel's turn rules: one move (mandatory in its rank), safety freezes the rest. */
 export function directorProposalOf(r) {
@@ -153,6 +154,9 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       // preselect reads one field and never the Director's state shape (an absent or failing ref: Studio's own pick)
       ...(next?.lastMove?.scriptBeat?.board ? { boardRef: next.lastMove.scriptBeat.board } : {}),
       ...(next?.lastMove?.scriptBeat ? { scriptBeat: { scriptId: next.lastMove.scriptBeat.scriptId, beatId: next.lastMove.scriptBeat.beatId, kind: next.lastMove.scriptBeat.kind } } : {}),
+      // director7 cause 2: the card spoken at the end of this line has its OWN board (a remediation's then-card): the board
+      // switches to it at clause `atClause` (0-based, the reply's sentences as the clause stream numbers them)
+      ...cardBoardOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -163,4 +167,35 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       ...(item ? { item: { id: item.id, prompt_en: item.prompt_en ?? "", prompt_hi: item.prompt_hi ?? "" } } : {}),
       ...(next?.module ? { onScreen: true } : {}) },
   };
+}
+
+/**
+ * director7 cause 2 (main, option a): the clause (0-based, as brain/clauses.js numbers the reply: voice/sentences.js
+ * splitSentences) where the card at the end of her line starts, or null when the card is not found in the line. A card that
+ * starts inside a merged piece switches at that piece's start (a moment early, never late).
+ */
+export function cardClauseOf(reply, card) {
+  const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
+  const r = norm(reply), c = norm(card);
+  if (!r || !c) return null;
+  let at = r.lastIndexOf(c);
+  if (at < 0) { const head = c.slice(0, Math.min(40, c.length)); at = r.lastIndexOf(head); }
+  if (at < 0) return null;
+  let pos = 0;
+  const pieces = splitSentences(r);
+  for (const [i, p] of pieces.entries()) {
+    const start = r.indexOf(p, pos);
+    const end = start + p.length;
+    if (at < end) return i;
+    pos = end;
+  }
+  return null;
+}
+/** The intent's `cardBoard` (spread into StudioIntent): {} unless the move carries the live card's own board (move.cardBeat). */
+export function cardBoardOf(move, line, card) {
+  const cb = move?.cardBeat;
+  if (!cb?.board) return {};
+  const atClause = card ? cardClauseOf(line, card) : null;
+  return { cardBoard: { boardRef: cb.board, scriptBeat: { scriptId: cb.scriptId, beatId: cb.beatId, kind: cb.kind, ...(cb.ownBoard ? { ownBoard: true } : {}) },
+    ...(card ? { cardText: String(card) } : {}), ...(atClause != null ? { atClause } : {}) } };
 }

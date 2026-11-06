@@ -32,6 +32,8 @@ export interface StudioIntent {
   // round 5 (stream 2, RCA-1): what the child asked to SEE this turn (brain/propose.js requestOfSee): how, the thing named
   // (a short noun phrase, code-gated), the numbers named for a number line. The board draws this; never the child's words.
   request?: StudioRequest;
+  /** director7 cause 2: the card at the end of the line has its own board; switch to it at that clause (contracts.ts) */
+  cardBoard?: import("./contracts.ts").CardBoardSwitch;
 }
 export interface StudioRequest { kind: "number_line" | "picture" | "draw" | "show" | "example"; subject?: string; said?: string[]; offKit?: boolean }
 

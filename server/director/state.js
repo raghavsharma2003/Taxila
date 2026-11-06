@@ -725,9 +725,13 @@ function cardPointOf(s, kit, item) {
   if (!sk) return null;
   const lang = s.ctx?.lang ?? "hinglish";
   friendOf = s.ctx?.firstName ?? "";
+  // (director7: a recap is said only over the board it describes; a card that shows its OWN board — a then-card's then.board, a
+  // check's board — gets no recap of another board's line: "Yaad karo: 1/2, 1/4, 1/8" over the 1/3 card was a contradiction)
+  const shown = cardBeatRef(s, kit, item)?.board ?? null;
+  const same = (b) => JSON.stringify(b ?? null) === JSON.stringify(shown);
   if (item.scriptAsk && item.scriptAsk.beatId !== "worked") return saidIn(sk.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point, lang) || null;
-  if (item.scriptThen) return saidIn(sk.remediation?.find((r) => r.targets === item.scriptThen.targets)?.say, lang) || null;
-  if (item.scriptCheck) return saidIn([...(sk.explain ?? [])].reverse().find((b) => b.point)?.point, lang) || null;
+  if (item.scriptThen) { const r = sk.remediation?.find((x) => x.targets === item.scriptThen.targets); return r && same(r.board) ? saidIn(r.say, lang) || null : null; }
+  if (item.scriptCheck) { const b = [...(sk.explain ?? [])].reverse().find((x) => x.point); return b && same(b.board) ? saidIn(b.point, lang) || null : null; }
   return null;
 }
 /** SC2: a live script card's own beat ref, with its board (an ask: its explain beat's; a check: its own, else the last explain
@@ -2678,6 +2682,11 @@ export function step(prev, input) {
     const live = s.activeItemId ? findItem(s, input.kit, s.activeItemId) : null;
     const cp = live ? cardPointOf(s, input.kit, live) : null;
     if (cp) move.cardPoint = cp;
+    // director7 cause 2 (main: option a): a turn whose board is not the live card's own board (a remediation's say on its board,
+    // then its then-card on then.board) switches to the card's board where the card starts (brain/propose.js: intent.cardBoard,
+    // the clause index; Studio stages the change there)
+    const own = live && (live.scriptAsk || live.scriptCheck || live.scriptThen) ? cardBeatRef(s, input.kit, live) : null;
+    if (own?.board && move.scriptBeat?.board && JSON.stringify(own.board) !== JSON.stringify(move.scriptBeat.board)) move.cardBeat = own;
   }
   // v4 / K2 (giving up says the answer): a live script card this step left (skipped: the unclear or don't-know cap, a park)
   // has its key said by code, whichever path left it, unless the move already says one

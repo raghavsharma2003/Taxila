@@ -12,6 +12,9 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { whiteboardIntentOf, cardBoardOf, cardClauseOf } from "../server/brain/propose.js";
+import { findItem } from "../server/director/items.js";
+import { splitSentences } from "../server/voice/sentences.js";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const SC = JSON.parse(readFileSync(new URL("./fixtures/scripts/c6-s1-v2.json", import.meta.url), "utf8"));
@@ -159,6 +162,56 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     L.t("pata nahi", cls("dont_know"));
     assert.equal(L.r.ui.ask?.itemId, L.r.state.activeItemId, "the then-card is still the card");
     assert.deepEqual(L.r.move.scriptBeat?.board, r0.then.board, JSON.stringify(L.r.move));
+  });
+
+  test("director7: a recap is said only over the board it describes; a then-card on its own board gets none", () => {
+    const own = structuredClone(SC);
+    const r0 = own.skills[0].remediation[0];
+    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    assert.notDeepEqual(r0.board ?? null, r0.then.board);
+    setScriptForTest(); setScriptForTest(K.topicId, own);
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    L.t("pata nahi", cls("dont_know"));
+    assert.match(String(L.r.state.activeItemId), /:then:/);
+    assert.equal(L.r.move.cardPoint ?? null, null, "the remediation say describes its own board, not the then-card's");
+    // the same then-card on the say's board keeps its recap
+    const shared = structuredClone(SC);
+    shared.skills[0].remediation[0].then.board = shared.skills[0].remediation[0].board ?? null;
+    setScriptForTest(); setScriptForTest(K.topicId, shared);
+    const M = run();
+    for (let i = 0; i < 4 && M.r.move.scriptBeat?.beatId !== "e1"; i++) M.t("haan");
+    M.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    M.t("pata nahi", cls("dont_know"));
+    assert.ok(M.r.move.cardPoint, JSON.stringify(M.r.move));
+  });
+
+  test("director7 cause 2: a remediation turn whose then-card has its own board switches to it at the card's clause", async () => {
+    const own = structuredClone(SC);
+    const r0 = own.skills[0].remediation[0];
+    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    setScriptForTest(); setScriptForTest(K.topicId, own);
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.equal(L.r.move.scriptBeat?.kind, "remediation");
+    assert.deepEqual(L.r.move.cardBeat?.board, r0.then.board, JSON.stringify(L.r.move));
+    const card = L.r.ui.ask.text;
+    replyDeps.chat = async () => ({ text: "Koi baat nahi, ek alag tarah se dekhte hain." });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
+    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply } });
+    const cb = ask.intent.cardBoard;
+    assert.deepEqual(cb?.boardRef, r0.then.board, JSON.stringify(ask.intent));
+    assert.deepEqual(ask.intent.boardRef, r0.board ?? L.r.move.scriptBeat.board, "the say's board comes first");
+    const pieces = splitSentences(out.reply);
+    assert.ok(Number.isInteger(cb.atClause) && cb.atClause > 0, JSON.stringify(cb));
+    assert.ok(pieces.slice(cb.atClause).join(" ").includes(card.slice(0, 30)), `${cb.atClause}: ${JSON.stringify(pieces)}`);
+    assert.ok(!pieces.slice(0, cb.atClause).join(" ").includes(card.slice(0, 30)), "the switch is not late");
+    // a turn on one board carries no switch
+    assert.deepEqual(cardBoardOf({ scriptBeat: { board: r0.board } }, out.reply, card), {});
+    assert.equal(cardClauseOf("Pehla. Doosra wala vakya. Card ka sawaal kya hai?", "Card ka sawaal kya hai?"), 1);
   });
 
   test("v4 W4: after a remediation's follow-up, the card they missed is closed with its answer", async () => {

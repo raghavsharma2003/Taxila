@@ -856,3 +856,15 @@ export interface ScriptBeatRef {
   kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
   board?: BoardRef | null;
 }
+/**
+ * director7 cause 2 (main, option a): StudioIntent.cardBoard. The line's board (intent.boardRef) is not the board of the card
+ * spoken at its end (a remediation's say on its board, then its then-card on then.board): Studio switches to `boardRef` at
+ * clause `atClause` (0-based, the reply's pieces as brain/clauses.js numbers them; brain/propose.js cardClauseOf recomputes it
+ * for a replaced line from `cardText`). Voice's per-word onsets, when present, can time the switch to the card's first word.
+ */
+export interface CardBoardSwitch {
+  boardRef: BoardRef;
+  scriptBeat: { scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true };
+  cardText?: string;
+  atClause?: number;
+}
