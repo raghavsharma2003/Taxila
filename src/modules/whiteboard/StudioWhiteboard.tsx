@@ -17,6 +17,7 @@ import { WhiteboardPlayer } from "./Player.tsx";
 import { boardSkinFromDocument, watchSkin } from "./palette.ts";
 import { traceBoardDrawn, traceBoardPage } from "../../trace/lesson.ts";
 import { onTtsEvent } from "../../lesson/ttsStream.ts";
+import { switchOnsets, type WordOnset } from "./lineClock.ts";
 
 /**
  * lessonId → the board: `ops` = what is on it after the script `scriptId` (re-scoped ids), `base` = what was on it
@@ -107,6 +108,8 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   // round 7 (director7): a paged script (switches) turns each page on the then-prompt's REAL onset: the reply's clause
   // events, on the player's clock (playAt), relative to this board's anchor
   const [onsets, setOnsets] = useState<number[] | undefined>(undefined);
+  // #44: her words' REAL onsets (Voice's word timings, per part; a re-anchored part replaces its words), on the same clock
+  const [words, setWords] = useState<Record<number, WordOnset[]> | undefined>(undefined);
   const emitted = useRef(false);
   const page = useRef(0);
   const host = useRef<HTMLSpanElement>(null);
@@ -139,14 +142,28 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   useEffect(() => {
     const sw = script?.switches?.length, seq = script?.line?.teacherReplySeq, lid = script?.line?.lessonId;
     setOnsets(undefined);
+    setWords(undefined);
     if (!sw || startAt === null || seq === undefined) return;
     return onTtsEvent((e) => {
-      if (e.kind !== "clause" || e.req.lessonId !== lid || e.req.seq !== seq) return;
+      if (e.req.lessonId !== lid || e.req.seq !== seq) return;
+      if (e.kind === "words") {
+        const part = e.data.part, ws = (e.data.words ?? []).filter((x) => Number.isFinite(x.playAt)).map((x) => ({ w: x.w, at: Math.max(0, Math.round(x.playAt - startAt)) }));
+        setWords((prev) => ({ ...(prev ?? {}), [part]: ws }));
+        return;
+      }
+      if (e.kind !== "clause") return;
       const d = e.data;
       if (typeof d.playAt !== "number" || !Number.isFinite(d.playAt)) return;
       setOnsets((prev) => { const a = [...(prev ?? [])]; a[d.clause] = Math.max(0, Math.round(d.playAt! - startAt)); return a; });
     });
   }, [script, startAt]);
+  // (the words in spoken order, all parts: each switch lands on its first word's onset; none → the clause onset stands)
+  const switchAt = useMemo(() => {
+    if (!script?.switches?.length || !words) return undefined;
+    const all = Object.keys(words).map(Number).sort((a, b) => a - b).flatMap((k) => words[k]);
+    const at = switchOnsets(script, all, onsets);
+    return at.some((x) => x !== undefined) ? at : undefined;
+  }, [script, words, onsets]);
 
   // r4: the Kaksha skin's board when the Desk wears it (palette.ts: Kaksha's own tokens, read where the board mounts)
   const ground = script?.board.ground ?? "chalk";
@@ -158,7 +175,7 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   // display:contents: the recorder's handle on the drawn SVG, with no box of its own (layout and look unchanged)
   return (
     <span ref={host} style={{ display: "contents" }} data-script={script.scriptId} data-same={same ? "1" : undefined}>
-      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin} clauseOnsets={onsets}
+      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin} clauseOnsets={onsets} switchAt={switchAt}
         className="wb-svg" onDone={() => {
           if (emitted.current) return;
           emitted.current = true;

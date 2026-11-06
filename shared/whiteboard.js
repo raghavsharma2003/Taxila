@@ -291,7 +291,10 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   // before); the player moves them onto clause `clause`'s real onset when the voice reports it (lineClock.ts)
   if (Array.isArray(raw.switches)) {
     const sw = raw.switches.slice(0, 8).filter((x) => x && Number.isInteger(x.clause) && x.clause >= 0 && x.clause < 64 && isNum(x.atMs) && x.atMs > 0 && x.atMs < LIMITS.maxDurationMs)
-      .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs) })).sort((a, b) => a.atMs - b.atMs);
+      // (#44: `word` / `wordIndex` — the segment's first spoken word and how many words of her line come before it: the
+      // player lands the page on that word's REAL onset when the voice sends word timings, else on the clause's)
+      .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs), ...(typeof x.word === "string" && x.word.length > 0 && x.word.length <= 24 ? { word: x.word } : {}),
+        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}) })).sort((a, b) => a.atMs - b.atMs);
     if (sw.length) script.switches = sw;
   }
   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };

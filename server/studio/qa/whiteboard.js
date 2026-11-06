@@ -226,7 +226,14 @@ function opNumbers(o, allowed) {
       nums.push(...[a, b].map(String).filter((x) => !["0", "1"].includes(x)));
       // tick labels inside a range she named: k/d for a denominator she said, or whole numbers of a short range
       const dens = [...allowed].filter((x) => /^\d+$/.test(x) && +x >= 2 && +x <= 12).map(Number);
-      for (const c of o.rows[0] ?? []) {
+      // (a big scale — 0, 1000, … 10000: number-line-scale@1 — is an axis, not invented, when its ticks step evenly from end
+      // to end and her line says the step, or two neighbouring ticks)
+      const whole = (o.rows[0] ?? []).map((c) => (/^\d+$/.test(String(c)) ? Number(c) : NaN));
+      const stepAx = whole.length >= 3 && whole.every(Number.isFinite) ? whole[1] - whole[0] : 0;
+      const even = stepAx > 0 && whole[0] === a && whole.at(-1) === b && whole.every((v, i) => !i || v - whole[i - 1] === stepAx);
+      const named = even && (allowed.has(String(stepAx)) || whole.some((v, i) => i && allowed.has(String(v)) && allowed.has(String(whole[i - 1]))));
+      if (named) { derived.push(...whole.map((v) => canon(String(v)))); }
+      else for (const c of o.rows[0] ?? []) {
         const r = rat(c); if (!r) continue;
         const v = r[0] / r[1];
         const inRange = v >= a - 1e-9 && v <= b + 1e-9;
@@ -290,7 +297,9 @@ function circleCutByLines(ops) {
  *  draws some closed shape, never draws. A 4-point polygon counts as a rectangle only when its corners are right angles. PURE. */
 const SHAPE_NAMES = [
   ["rectangle", /\b(?:rectangle|rectangular|aayat|aayatakar)\b|आयत/iu],
-  ["square", /\b(?:square|varg|vargakar)\b|वर्ग/iu],
+  // (not the instrument — "set-square", "set square" — nor a unit: "square cm", "varg metre"; Learning's c7 card on a
+  // set-square tripped W15 on a picture request)
+  ["square", /(?<!set[- ])\b(?:square|varg|vargakar)\b(?!\s*(?:cm|mm|km|m|metre|meter|centimet\w*|unit|ikaai)\b)|वर्ग/iu],
   ["triangle", /\b(?:triangle|tribhuj|trikon)\b|त्रिभुज/iu],
   ["circle", /\b(?:circle|gola|vritt|vrutt)\b|वृत्त/iu],
 ];

@@ -80,7 +80,9 @@ export function whiteboardAskOf({ beat, lane, late, strained, move = null, studi
   // release 13 (A): a picture nothing can make was asked for: no board this turn (the release-13 replay drew the maths table
   // beside "aloo gol, bhura hota hai")
   if (move?.request === "visual_unavailable") return { proposals: [], declined: "studio_rejected.not_explain" };
-  if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
+  // (v6.1, director9 c5-t02 offtopic T26: "drawing karke samjhao" over a live card is a `practice` move, the card re-posed;
+  // the child's own picture ask is honoured on it, as on any beat, never declined as "not an explanation")
+  if (move && !WHITEBOARD_MOVES.has(move.kind) && !(requested && move.request === "visual")) return { proposals: [], declined: "studio_rejected.not_explain" };
   if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
   if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };
   const on = studioView?.onScreen;
@@ -143,7 +145,10 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // named), this turn only. Studio draws THAT; it is never the child's words, only the request's shape and subject.
   // (state.js sets lastMove on every step, so a see from an earlier turn never rides on a later move)
   // an example asked for ("ek example do") is drawn as her worked example, on a new page
-  const request = requestOfSee(next?.lastMove?.request === "visual" ? next.lastMove.see : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
+  // (v6.1, director9 c5-t02: "picture dikhao" with nothing named carries no `see`, so the ask carried no request and Studio's
+  // second view — keyed on a request — never came: a picture ask is always a request, at least "show")
+  const visualNow = next?.lastMove?.request === "visual" || (!!next?.lastMove?.visual && next.lastMove.visual !== "game");
+  const request = (visualNow ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
       intentId: `${lessonId}:wb:${turn}`, lessonId, kind: "whiteboard", skillId, ...(item?.id ? { itemIds: [item.id] } : {}),
@@ -245,6 +250,7 @@ function spanOf(text, part) {
  * drop. With no text (a preselect before her line exists) the parts cannot be placed: the beat's (else the first) alone.
  * v6: with `parts` (say.js guard.parts) the closure, the missed card's close and the bridge are found by their own texts.
  */
+export const PAGE_MIN_WORDS = 5;
 export function segmentsAt(plan, line, card, parts = null) {
   const text = norm1(line);
   const closePart = plan.find((p) => p.part === "close");
@@ -277,5 +283,39 @@ export function segmentsAt(plan, line, card, parts = null) {
   }
   if (!out.length) out.push({ atChar: 0, atClause: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
   out[0] = { ...out[0], atChar: 0, atClause: 0 };
+  // (dc-r7-script-walk-v6-1 P1, replay of director9 c5-t01 steady T21: a page whose own words are a bare transition — "Ab agla
+  // hissa.", 3 words, back on the answered card's board — cannot be drawn in its time (Studio W6.timing), so the whole paged
+  // turn failed and the verdict page's revealed 1/8 never reached the screen. A page switch with fewer than PAGE_MIN_WORDS
+  // words and no card of its own is no page: the board before it stays up while it is said)
+  for (let i = out.length - 1; i > 0; i--) {
+    const seg = text.slice(out[i].atChar, out[i + 1]?.atChar ?? text.length);
+    const hasCard = at.card != null && at.card >= out[i].atChar && at.card < (out[i + 1]?.atChar ?? text.length + 1);
+    if (!hasCard && seg.split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) out.splice(i, 1);
+  }
+  for (let i = out.length - 1; i > 0; i--) if (JSON.stringify(out[i].boardRef) === JSON.stringify(out[i - 1].boardRef)) out.splice(i, 1);
   return out;
+}
+
+/**
+ * v6 (Studio's S3′ second view; main on integration 11: preselectWhiteboard returns the facts row, a string, so the pick's
+ * altView never reached Brain): the second view of the same numbers, read off the preselected row itself. Bars ("bar1 6 equal
+ * parts, 1 shaded = 1/6"; an asked bar "… 3 shaded = ?") → { view: "parts", labels }; with Studio's hint "line" (a bar card's
+ * second view is a number line: "line 0 to 1 · gaps 8 equal gaps in each whole · each 1/8 · marks 1/8") → { view: "line",
+ * labels, gaps }. Labels never carry an asked "?". null when the row is no second view. Pure.
+ */
+export function altViewOfRow(row, hint = null) {
+  const r = String(row ?? "");
+  if (hint === "line" || (hint && hint.view === "line")) {
+    const marks = (/\bmarks\s+([\d/ ,]+)/.exec(r)?.[1] ?? "").match(/\d+\/\d+/g) ?? [];
+    const gaps = Number(/\bgaps\s+(\d+)\s+equal gaps/.exec(r)?.[1]) || null;
+    return { view: "line", labels: marks, ...(gaps ? { gaps } : {}) };
+  }
+  // (Studio wholes@1, a compare card's two wholes: "whole1 3 unequal parts · whole2 3 equal parts, 1 shaded")
+  const wholes = [...r.matchAll(/\bwhole\d+\s+(\d+)\s+(equal|unequal)\s+parts(?:,\s*(\d+)\s+shaded)?/g)];
+  if (wholes.length && (hint === "wholes" || hint?.view === "wholes" || !/\bbar\d+\s/.test(r))) {
+    return { view: "wholes", labels: [], wholes: wholes.map((w) => ({ parts: Number(w[1]), equal: w[2] === "equal", ...(w[3] != null ? { shaded: Number(w[3]) } : {}) })) };
+  }
+  const bars = [...r.matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+|\?)|\?\s*\(asked\))/g)];
+  if (!bars.length) return null;
+  return { view: "parts", labels: bars.map((b) => b[3]).filter((x) => x && x !== "?") };
 }

@@ -224,7 +224,7 @@ export interface WhiteboardScript {
   card?: BeatCard;
   /** round 7 (director7 B1/S2): one board per segment of a turn — at each switch (in order) a new page starts; ops from
    *  `atMs` (the estimate) to the next switch move onto clause `clause`'s real onset when the voice reports it. */
-  switches?: { clause: number; atMs: number }[];
+  switches?: { clause: number; atMs: number; word?: string; wordIndex?: number }[];
 }
 export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */

@@ -23,7 +23,7 @@ import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
-import { step, evidenceFrom, upcomingItem } from "../director/state.js";
+import { step, evidenceFrom, upcomingItem, scriptWhyOf } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
@@ -47,7 +47,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -716,7 +716,14 @@ export async function lessonTurn(req, body, hooks = {}) {
     : null;
   // v6 (Studio's alternate view on a picture ask): the take's flag rides on the move, so her line says it is a new view of the
   // same numbers (brain/say.js)
-  if (r.move?.request === "visual" && wbFirstRow?.altView && next.lastMove) next.lastMove = { ...next.lastMove, altView: wbFirstRow.altView };
+  // (preselectWhiteboard returns the facts row, a string: the pick's altView comes from Studio's sibling seam)
+  if (r.move?.request === "visual" && wbFirstRow && next.lastMove) {
+    // (Studio's sibling seam when it has one; else the row itself, whose bars name the second view)
+    const hint = typeof studioSeam.preselectedAltView === "function" ? seamSafe("studio.preselectedAltView", () => studioSeam.preselectedAltView(lesson.id), null) : null;
+    // (the row names the view's numbers; the seam's hint says which view: "parts", or "line" for a bar card)
+    const altView = altViewOfRow(wbFirstRow, hint) ?? hint;
+    if (altView) next.lastMove = { ...next.lastMove, altView };
+  }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
@@ -1685,7 +1692,11 @@ export async function planTurn(base, cls, c) {
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
   if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
-    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400) };
+    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
+    // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
+    // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception
+    ...((() => { const w = scriptWhyOf(kit, activeItem, next.ctx?.lang ?? "hinglish"); return w ? { why: w } : {}; })()),
+    ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: String((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
   else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
