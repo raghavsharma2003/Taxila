@@ -5,7 +5,7 @@
 // (server/forge3/qa/checks.js; class 4-5 at the 16 px floor). The verdict table is what compose() may offer at a size.
 //
 //   FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --harness <built harness dir> [--out server/forge3/certs/play.json]
-//     [--shots <dir>] [--seeds 2] [--only <family>]
+//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family>]
 // Round 4 G1: a (family, mode) that a real-game engine renders (src/play/engines/registry.ts) is judged on BOTH renderers a
 // child can get: the 2D view (a 2D-tier device, the board twin) in every art direction, cells `<art>@c<band>` as before
 // (what forge3 compose reads), and the 3D engine in every theme of its art pack, cells `3d:<theme>@c<band>` (the harness
@@ -75,6 +75,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const out = arg("out", PLAY_CERT_FILE);
   const only = arg("only", null);
   const shots = arg("shots", null);
+  // a 2D sample is shot every Nth (default 7; 1 shoots them all, e.g. to look at every goal of one family)
+  const shotEvery = Math.max(1, Number(arg("shot-every", 7)) || 7);
   const seeds = Number(arg("seeds", "2")) || 2;
   const { FAMILY_ARTS } = await import("../../shared/play.ts");
   const { coverage } = await import("../play/levels.js");
@@ -149,7 +151,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const artifact = { kind: "play", stage: { w: 360, h: 576 }, play: { sessionId: "qa", family: level.family, mode: level.mode, skillId: level.skillId, topicId: level.topicId, art, levelId: level.levelId }, ...(boardTwin ? { boardTwin } : {}) };
       await force(engineFor(level.family, level.mode, level.goal) ? { render: "2d" } : null);
       const r = await judgePlay(artifact, { young: entry.classLevel <= 5, playLevel: { level, art: { art, reason: "qa" } },
-        shotDir: shots && shot++ % 7 === 0 ? `${shots}/${key.replace("/", "_")}` : undefined, shotTag: `${entry.topicId}-${art}` });
+        shotDir: shots && shot++ % shotEvery === 0 ? `${shots}/${key.replace("/", "_")}` : undefined, shotTag: `${entry.topicId}-${art}` });
       const cell = ((table.pieces[key] ??= {})[`${art}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
       cell.n++;
       for (const v of r.views) if (!v.verdict.pass) { cell.byViewport[v.vp] = false; for (const f of v.verdict.fails) if (cell.fails.length < 12 && !cell.fails.includes(`${v.vp}:${f}`)) cell.fails.push(`${v.vp}:${f}`); }

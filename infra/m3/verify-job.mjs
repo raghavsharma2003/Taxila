@@ -14,7 +14,7 @@
 // it does (main runs only with M3_ROLE=verify). Never prints a key, a token or a URL with credentials.
 //
 // env: M3_ROLE=verify, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID, M3_SP_CLIENT_ID, M3_SP_SECRET, M3_STORAGE_ACCOUNT,
-// M3_STORAGE_KEY, M3_CONTAINER (m3), M3_SINCE (first day the keeper is expected to have run; earlier days never alert),
+// M3_STORAGE_KEY, M3_CONTAINER (m3-ledger), M3_SINCE (first day the keeper is expected to have run; earlier days never alert),
 // M3_UNTIL, M3_PORTFOLIO_JSON ([{id, match: [regex source]}]), M3_LANES_JSON ({lane: {targetUsd}}), M3_FX_INR (96),
 // M3_DAYS (66), M3_ALERT_DAYS (14), M3_REQUIRED (5), M3_MIN_SERVICES (6), M3_FLOOR (1.10), M3_OPEN_DAYS (2).
 import { createHmac } from "node:crypto";
@@ -160,7 +160,7 @@ export const scrub = (s) => String(s ?? "").replace(/\?[^\s"']*/g, "?…").repla
 const E = process.env;
 const n = (k, d) => (E[k] !== undefined && E[k] !== "" && Number.isFinite(Number(E[k])) ? Number(E[k]) : d);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-const SA = E.M3_STORAGE_ACCOUNT, CONTAINER = E.M3_CONTAINER || "m3", XV = "2023-11-03";
+const SA = E.M3_STORAGE_ACCOUNT, CONTAINER = E.M3_CONTAINER || "m3-ledger", XV = "2023-11-03";
 const ARM = "https://management.azure.com";
 
 function blob(method, name, { body = null, headers = {} } = {}) {

@@ -1,0 +1,718 @@
+{
+ "topicId": "c5-maths-ch03-t02",
+ "classLevel": 5,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "kon / angle", "en": "angle" },
+  { "hi": "samkon", "en": "right angle" },
+  { "hi": "nyoon kon", "en": "acute angle" },
+  { "hi": "adhik kon", "en": "obtuse angle" },
+  { "hi": "bhuja", "en": "arm (of an angle)" },
+  { "hi": "kona / sheersh", "en": "corner / vertex" },
+  { "hi": "kaagaz ka kona", "en": "paper corner" },
+  { "hi": "chauthai chakkar", "en": "quarter turn" },
+  { "hi": "aadha chakkar", "en": "half turn" },
+  { "hi": "seedhi line", "en": "straight line" },
+  { "hi": "khulaav", "en": "opening (between the arms)" },
+  { "hi": "tirchha", "en": "tilted" }
+ ],
+ "skills": [
+  {
+   "skillId": "c5-maths-ch03-t02-s1",
+   "hook": {
+    "convey": "fold a sheet twice, first fold lying on itself → a paper corner = a quarter turn = a right angle; it becomes a tester for corners around us: a wicket's stump on the ground, the corner of a drawing sheet",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket mein wicket ke stumps zameen mein seedhe khade hote hain. Stump aur zameen ke beech jo kona banta hai, use aaj hum kaagaz ke ek kone se jaanchenge.",
+       "en": "In cricket, the stumps of a wicket stand straight up in the ground. Today we will test the corner between a stump and the ground with a corner made of paper."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Tumhari drawing sheet ke chaaron kone ek jaise hote hain. Kaagaz ko do baar modkar ek kona banao, aur dekho ki woh sheet ke kone par kaise baithta hai.",
+       "en": "All four corners of your drawing sheet are alike. Fold a paper twice to make a corner, and see how it sits on the corner of the sheet."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "fold a sheet once, then again so the first fold lies on itself → the corner at the folds = paper corner = a quarter turn = right angle (samkon); four such corners fill one full turn",
+     "mustSay": [
+      { "hi": "paper corner", "en": "paper corner" },
+      { "hi": "quarter turn", "en": "quarter turn" },
+      { "hi": "right angle", "en": "right angle" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 90, "name": "paper corner" } ] } },
+     "point": {
+      "hi": "Kaagaz ko ek baar modo, phir dobara aise modo ki pehla mod apne hi upar aa jaaye. Modon par jo kona banta hai, woh paper corner hai. Yeh ek quarter turn hai, aur ise right angle kehte hain.",
+      "en": "Fold a paper once, then fold it again so that the first fold lies on itself. The corner at the folds is a paper corner. It is a quarter turn, and it is called a right angle."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Board ka paper corner ek quarter turn hai. Aise kitne kone ek ke baad ek rakho toh poora chakkar ban jaata hai?",
+       "en": "The paper corner on the board is a quarter turn. How many such corners placed one after another make a full turn?"
+      },
+      "key": "4",
+      "why": { "hi": "ek quarter turn poore chakkar ka 1/4 hai, toh 4 quarter milkar poora chakkar banate hain", "en": "a quarter turn is 1/4 of a full turn, so 4 quarters together make the full turn" },
+      "accept": ["chaar", "four", "4 kone", "4 corners"]
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "the test: paper corner's point on the angle's corner → one arm along one edge → look at the OTHER arm: along the second edge = right angle; inside with a gap = smaller, not a right angle; one matching arm alone proves nothing",
+     "mustSay": [
+      { "hi": "doosri bhuja", "en": "the other arm" },
+      { "hi": "bilkul mile", "en": "matches exactly" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 90, "name": "paper corner" }, { "deg": 50, "name": "samosa ki nok" } ] } },
+     "point": {
+      "hi": "Jaanchne ka tareeka yeh hai. Paper corner ki nok angle ke kone par rakho, aur ek bhuja ko paper ke ek kinaare se milao. Ab doosri bhuja dekho. Woh doosre kinaare par bilkul mile, tabhi right angle hai. Board par paper corner ke saath samosa ki nok bani hai.",
+      "en": "This is how to test. Put the point of the paper corner on the corner of the angle, and line up one arm with one edge of the paper. Now look at the other arm. Only if it matches the second edge exactly is it a right angle. The board shows the paper corner next to the tip of a samosa."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Samosa ki nok par paper corner rakha. Ek bhuja kinaare par milti hai, doosri paper ke andar reh jaati hai aur gap bachta hai. Kya yeh nok right angle hai, haan ya nahi?",
+       "en": "The paper corner is put on the samosa tip. One arm matches an edge; the other stays inside the paper with a gap. Is this tip a right angle, yes or no?"
+      },
+      "key": "no",
+      "why": { "hi": "doosri bhuja doosre kinaare par nahi mili, paper ke andar gap reh gaya", "en": "the other arm did not match the second edge; a gap stayed inside the paper" },
+      "accept": ["nahi", "nahin", "nahi, chhota hai", "no, it is smaller"],
+      "targets": "c5-maths-ch03-t02-m-fits-means-right",
+      "wrongIfMis": "yes"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "a square tile upright → paper corner fits its corner; tile turned to sit tilted → the paper corner still fits the same way → turning moves the corner, never changes its opening; a right angle need not look like an L",
+     "mustSay": [
+      { "hi": "tirchhi tile", "en": "tilted tile" },
+      { "hi": "khulaav", "en": "opening" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "seedhi tile", "items": ["paper corner fit"] }, "right": { "title": "tirchhi tile", "items": ["paper corner fit"] } } },
+     "point": {
+      "hi": "Baayein ek seedhi tile hai, uske kone mein paper corner fit hota hai. Daayein wahi tile ghuma kar rakhi hai, yeh tirchhi tile hai. Paper corner iske kone mein bhi waise hi fit hota hai, kyunki ghumane se kone ka khulaav nahi badalta.",
+      "en": "On the left is an upright tile; the paper corner fits its corner. On the right the same tile is turned; this is the tilted tile. The paper corner fits its corner the same way, because turning does not change the opening of the corner."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ab is tirchhi tile ko thoda aur ghuma do, taaki koi bhi kinaara seedha khada ya leta hua na ho. Kya uske kone ab bhi right angle hain, haan ya nahi?",
+       "en": "Now turn this tilted tile a little more, so that no edge stands upright or lies flat. Are its corners still right angles, yes or no?"
+      },
+      "key": "yes",
+      "why": { "hi": "tile wahi hai, sirf uski disha badli, uske kone utne hi khule hain", "en": "it is the same tile with only its direction changed, so its corners are open just as much" },
+      "accept": ["haan", "haan, ab bhi right angle", "yes, still right angles"],
+      "targets": "c5-maths-ch03-t02-m-prototype-right",
+      "wrongIfMis": "no"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ritu kaagaz ko do baar modkar paper corner banati hai aur teen kone jaanchti hai: ₹10 ke note ka kona, samosa ki nok, aur deewar aur zameen ka kona. Note aur deewar wale kone par paper ke dono kinaare bilkul milte hain. Samosa ki nok paper ke andar reh jaati hai aur gap bachta hai. Inmein se kitne kone right angle hain?",
+     "en": "Ritu folds a paper twice to make a paper corner and tests three corners: the corner of a ₹10 note, the tip of a samosa, and the corner where the wall meets the floor. On the note and the wall corner, both edges of the paper match exactly. The samosa tip stays inside the paper with a gap. How many of these corners are right angles?"
+    },
+    "givens": [
+     { "hi": "paper corner kaagaz ko do baar modkar bana hai", "en": "the paper corner is made by folding a paper twice" },
+     { "hi": "note ke kone par dono kinaare bilkul milte hain", "en": "on the note's corner both edges match exactly" },
+     { "hi": "samosa ki nok andar reh jaati hai, gap ke saath", "en": "the samosa tip stays inside, with a gap" },
+     { "hi": "deewar aur zameen ke kone par dono kinaare bilkul milte hain", "en": "on the wall–floor corner both edges match exactly" }
+    ],
+    "find": { "hi": "kaunse aur kitne kone right angle hain", "en": "which corners are right angles, and how many of them" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle paper corner ko pehchano", "en": "First, know what the paper corner is" },
+      "result": "paper corner khud ek right angle hai",
+      "why": { "hi": "kaagaz do baar modne se quarter turn ka kona banta hai", "en": "folding a paper twice makes a corner of a quarter turn" }
+     },
+     {
+      "do": { "hi": "Samosa ki nok ko jaancho", "en": "Test the samosa tip" },
+      "result": "samosa ki nok right angle se chhoti hai, right angle nahi",
+      "why": { "hi": "doosri bhuja paper ke andar reh jaati hai aur gap bachta hai", "en": "the other arm stays inside the paper and a gap is left" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Note ke kone aur deewar wale kone par dono kinaare bilkul milte hain, samosa ki nok par nahi. Toh teeno mein se kitne kone right angle hain?",
+      "en": "On the note's corner and the wall corner both edges match exactly; on the samosa tip they do not. So how many of the three corners are right angles?"
+     },
+     "key": "2",
+     "accept": ["do", "two", "2 kone", "note aur deewar wale"],
+     "targets": "c5-maths-ch03-t02-m-fits-means-right",
+     "wrongIfMis": "3"
+    },
+    "answer": { "hi": "2 kone right angle hain, ₹10 ke note ka kona aur deewar aur zameen ka kona, samosa ki nok nahi", "en": "2 corners are right angles, the corner of the ₹10 note and the wall–floor corner, not the samosa tip" },
+    "why": {
+     "hi": "right angle tabhi hai jab paper corner ki dono bhujayein bilkul milein, aur samosa ki nok par doosri bhuja andar reh gayi thi",
+     "en": "it is a right angle only when both arms of the paper corner match exactly, and on the samosa tip the other arm stayed inside"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [ { "deg": 90, "name": "note ka kona" }, { "deg": 50, "name": "samosa ki nok" } ] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek kone par paper corner rakha. Pehli bhuja kinaare par milti hai, par doosri bhuja paper ke andar hai aur gap bachta hai. Yeh kona right angle se chhota hai, barabar hai ya bada?",
+      "en": "A paper corner is put on a corner. The first arm matches an edge, but the second arm is inside the paper with a gap. Is this corner smaller than, equal to or bigger than a right angle?"
+     },
+     "key": "chhota",
+     "why": { "hi": "doosri bhuja paper ke andar ruk gayi, yaani kona paper corner jitna nahi khula", "en": "the second arm stopped inside the paper, so the corner opens less than the paper corner" },
+     "accept": ["smaller", "right angle se chhota", "chhota hai", "acute"],
+     "targets": "c5-maths-ch03-t02-m-fits-means-right",
+     "wrongIfMis": "barabar",
+     "board": { "template": "compare@1", "params": { "left": { "title": "pehli bhuja", "items": ["kinaare par"] }, "right": { "title": "doosri bhuja", "items": ["andar, gap"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek square tile zameen par tirchhi rakhi hai. Kya uske kone ab bhi right angle hain, haan ya nahi?",
+      "en": "A square tile is lying tilted on the floor. Are its corners still right angles, yes or no?"
+     },
+     "key": "yes",
+     "why": { "hi": "square tile ke kone right angle hain, aur tirchha rakhne se kone ka khulaav nahi badalta", "en": "a square tile's corners are right angles, and lying tilted does not change how wide a corner opens" },
+     "accept": ["haan", "haan, right angle hain", "yes, still right angles"],
+     "targets": "c5-maths-ch03-t02-m-prototype-right",
+     "wrongIfMis": "no",
+     "board": { "template": "compare@1", "params": { "left": { "title": "square tile", "items": ["4 kone"] }, "right": { "title": "zameen par", "items": ["tirchhi rakhi"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c5-maths-ch03-t02-i01", "why": "first straight use: which everyday corner (notebook, pizza tip, open fan) matches a paper corner" },
+    { "itemId": "c5-maths-ch03-t02-rl-o1", "why": "two metro routes, straight up and straight right → predict the paper corner fits exactly" },
+    { "itemId": "c5-maths-ch03-t02-rl-h1", "why": "tilted display boards that the paper corner still fits → right angle judged by fit, not by an upright L" }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch03-t02-m-fits-means-right",
+     "move": "vertex on point → arm 1 on edge 1 → stop and look only at arm 2 against edge 2: on it = right, gap inside = smaller, poking outside = bigger; one matching arm is only half the test",
+     "say": {
+      "hi": "Ek bhuja milana sirf aadha kaam hai. Doosri bhuja bhi doosre kinaare par bilkul mile, tabhi woh paper corner jaisa right angle hai.",
+      "en": "Matching one arm is only half the job. Only if the other arm also matches the second edge exactly is it a right angle like the paper corner."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 90, "name": "paper corner" }, { "deg": 50, "name": "doosri bhuja" } ] } },
+     "then": {
+      "prompt": {
+       "hi": "Paper corner rakha: ek bhuja kinaare par, doosri paper ke bahar nikli. Kya yeh right angle hai, haan ya nahi?",
+       "en": "A paper corner on an angle: one arm on an edge, the other goes outside the paper. Is it a right angle, yes or no?"
+      },
+      "key": "no",
+      "why": { "hi": "doosri bhuja paper ke bahar nikli, yaani angle paper corner se zyada khula hai", "en": "the other arm went outside the paper, so the angle opens wider than the paper corner" },
+      "accept": ["nahi", "nahin", "nahi, bada hai", "no, it is bigger"],
+      "targets": "c5-maths-ch03-t02-m-fits-means-right",
+      "wrongIfMis": "yes",
+      "board": { "template": "compare@1", "params": { "left": { "title": "ek bhuja", "items": ["kinaare par"] }, "right": { "title": "doosri bhuja", "items": ["paper ke bahar"] } } }
+     }
+    },
+    {
+     "targets": "c5-maths-ch03-t02-m-prototype-right",
+     "move": "paper corner held in one corner of a square tile while the tile is turned slowly → ask when the fit stopped → it never stops → the corner is still a right angle in any position",
+     "say": {
+      "hi": "Tile ke kone mein paper corner rakho aur tile ko dheere-dheere ghumao. Paper corner kone mein fit hi rehta hai, isliye tirchhi tile ka kona bhi right angle hai.",
+      "en": "Keep a paper corner in the tile's corner and turn the tile slowly. The paper corner stays fitted in the corner, so the corner of the tilted tile is a right angle too."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "tile", "items": ["paper corner"] }, "right": { "title": "tirchhi tile", "items": ["paper corner fit"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek kitaab table par tirchhi padi hai. Kya uske kone right angle hain, haan ya nahi?",
+       "en": "A book is lying tilted on a table. Are its corners right angles, yes or no?"
+      },
+      "key": "yes",
+      "why": { "hi": "kitaab ke kone right angle hain, aur tirchhi rakhne se sirf disha badalti hai, khulaav nahi", "en": "a book's corners are right angles, and lying tilted changes only the direction, not the opening" },
+      "accept": ["haan", "haan, right angle hain", "yes, they are right angles"],
+      "targets": "c5-maths-ch03-t02-m-prototype-right",
+      "wrongIfMis": "no",
+      "board": { "template": "compare@1", "params": { "left": { "title": "kitaab", "items": ["kone"] }, "right": { "title": "table par", "items": ["tirchhi padi"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab paper corner se right angle pehchaanna aa gaya. Agle hisse mein dekhenge ki jo angle us par fit nahi hote, jo chhote hain ya bade, unke naam kya hain.",
+    "en": "Now you can spot a right angle with a paper corner. Next we see what the angles that do not fit it, the smaller and the bigger ones, are called."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "right angle", "items": ["paper corner fit"] }, "right": { "title": "fit nahi hote", "items": ["chhote", "bade"] } } }
+  },
+  {
+   "skillId": "c5-maths-ch03-t02-s2",
+   "hook": {
+    "convey": "one opening that keeps widening (a car door) → before the paper corner, at it, past it, up to a straight line → three names by comparing with the right angle",
+    "interestSlots": [
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Car ka darwaza dheere-dheere kholo. Pehle woh thoda sa khulta hai, phir seedha bahar ki taraf, phir aur zyada. Darwaze aur car ke beech ka angle har baar badalta hai.",
+       "en": "Open a car door slowly. First it opens just a little, then straight out, then even more. The angle between the door and the car changes each time."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing mein ek ghar banao. Deewar aur zameen ka kona paper corner jaisa hai, par chhat ki nok usse patli hai. Har kone ko paper corner se mila kar uska naam rakhenge.",
+       "en": "Draw a house. The corner of the wall and the ground is like a paper corner, but the tip of the roof is narrower than it. We will compare each corner with the paper corner and name it."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "paper corner on angle A → the other arm stays inside with a gap → A smaller than a right angle → acute (nyoon kon); B is a second narrow angle for the child to name",
+     "mustSay": [
+      { "hi": "acute", "en": "acute" },
+      { "hi": "right angle se chhota", "en": "smaller than a right angle" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 40, "name": "A" }, { "deg": 70, "name": "B" } ] } },
+     "point": {
+      "hi": "Angle A ke kone par paper corner rakho aur ek bhuja milao. A ki doosri bhuja paper ke andar reh jaati hai, gap bachta hai. Toh A right angle se chhota hai. Right angle se chhote angle ko acute angle kehte hain.",
+      "en": "Put the paper corner on the corner of angle A and match one arm. The other arm of A stays inside the paper, with a gap. So A is smaller than a right angle. An angle smaller than a right angle is called an acute angle."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ab angle B par paper corner rakho. Ek bhuja kinaare par milti hai, doosri paper ke andar rehti hai. B acute hai ya right angle?",
+       "en": "Now put the paper corner on angle B. One arm matches an edge; the other stays inside the paper. Is B acute or a right angle?"
+      },
+      "key": "acute",
+      "why": { "hi": "B ki doosri bhuja paper ke andar reh gayi, yaani B right angle se chhota hai", "en": "B's other arm stays inside the paper, so B is smaller than a right angle" },
+      "accept": ["acute angle", "B acute hai", "nyoon kon"],
+      "targets": "c5-maths-ch03-t02-m-fits-means-right",
+      "wrongIfMis": "right angle"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "paper corner on angle A → the other arm goes outside the paper → A bigger than a right angle, not yet a straight line → obtuse (adhik kon); B is a second wide angle for the child to name",
+     "mustSay": [
+      { "hi": "obtuse", "en": "obtuse" },
+      { "hi": "right angle se bada", "en": "bigger than a right angle" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 120, "name": "A" }, { "deg": 150, "name": "B" } ] } },
+     "point": {
+      "hi": "Ab is angle A par paper corner rakho aur ek bhuja milao. Doosri bhuja paper ke bahar nikal jaati hai. Toh A right angle se bada hai, par bhujayein abhi seedhi line nahi banatin. Aise angle ko obtuse angle kehte hain.",
+      "en": "Now put the paper corner on this angle A and match one arm. The other arm goes outside the paper. So A is bigger than a right angle, but the arms do not yet make a straight line. Such an angle is called an obtuse angle."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Angle B ki doosri bhuja bhi paper corner ke bahar nikalti hai, aur dono bhujayein seedhi line nahi banatin. B acute hai ya obtuse?",
+       "en": "The other arm of angle B also goes outside the paper corner, and the two arms do not make a straight line. Is B acute or obtuse?"
+      },
+      "key": "obtuse",
+      "why": { "hi": "B ki doosri bhuja paper corner ke bahar gayi, par bhujayein seedhi line tak nahi khulin", "en": "B's other arm goes outside the paper corner, but the arms have not opened to a straight line" },
+      "accept": ["obtuse angle", "B obtuse hai", "adhik kon"]
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "obtuse has an upper limit: arms opening wider and wider until they lie in one straight line = a half turn (aadha chakkar) → obtuse = bigger than a right angle AND smaller than a half turn; the straight line itself is outside obtuse",
+     "mustSay": [
+      { "hi": "seedhi line", "en": "straight line" },
+      { "hi": "aadha chakkar", "en": "half turn" }
+     ],
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 150, "name": "obtuse" }, { "deg": 180, "name": "aadha chakkar" } ] } },
+     "point": {
+      "hi": "Baayein ek obtuse angle hai. Daayein bhujayein itni khul gayi ki dono ek seedhi line mein aa gayi, yeh aadha chakkar hai. Obtuse angle right angle se bada hota hai, aur aadhe chakkar se chhota.",
+      "en": "On the left is an obtuse angle. On the right the arms have opened so far that they lie in one straight line; this is a half turn. An obtuse angle is bigger than a right angle, and smaller than a half turn."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "6 baje ghadi ki suiyan board ki tarah ek seedhi line banati hain. Kya yeh obtuse angle hai, haan ya nahi?",
+       "en": "At 6 o'clock the clock hands make a straight line, like the one on the board. Is this an obtuse angle, yes or no?"
+      },
+      "key": "no",
+      "why": { "hi": "6 baje suiyan seedhi line mein hain, yaani aadha chakkar, jo obtuse se bada hai", "en": "at 6 o'clock the hands lie in a straight line, a half turn, which is more than obtuse" },
+      "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
+      "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
+      "wrongIfMis": "yes"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "5 baje ghadi ki dono suiyon ke beech ka angle acute hai, right angle hai ya obtuse?",
+     "en": "At 5 o'clock, is the angle between the two clock hands acute, a right angle or obtuse?"
+    },
+    "givens": [
+     { "hi": "minute ki sui 12 par hai", "en": "the minute hand is on 12" },
+     { "hi": "ghante ki sui 5 par hai", "en": "the hour hand is on 5" }
+    ],
+    "find": { "hi": "suiyon ke beech ke angle ka type", "en": "the type of the angle between the hands" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle 3 baje ki suiyan socho", "en": "First think of the hands at 3 o'clock" },
+      "result": "3 baje suiyan right angle banati hain, yaani quarter turn",
+      "why": { "hi": "12 se 3 tak sui poore chakkar ka chauthai hissa ghoomti hai", "en": "from 12 to 3 a hand turns a quarter of a full turn" }
+     },
+     {
+      "do": { "hi": "Ab 5 baje ki ghante wali sui dekho", "en": "Now look at the hour hand at 5 o'clock" },
+      "result": "5 baje ka angle right angle se bada hai, aur aadhe chakkar se chhota",
+      "why": { "hi": "5 number 3 se 2 aage hai, par 6 tak nahi pahuncha, jahan suiyan seedhi line banati hain", "en": "5 is 2 numbers past 3, but has not reached 6, where the hands make a straight line" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Jo angle right angle se bada aur aadhe chakkar se chhota ho, woh acute hai ya obtuse?",
+      "en": "An angle bigger than a right angle and smaller than a half turn: is it acute or obtuse?"
+     },
+     "key": "obtuse",
+     "accept": ["obtuse angle", "adhik kon", "obtuse hai"]
+    },
+    "answer": { "hi": "5 baje ghadi ki suiyan obtuse angle banati hain", "en": "at 5 o'clock the clock hands make an obtuse angle" },
+    "why": {
+     "hi": "suiyan 3 baje wale right angle se zyada khuli hain, par 6 baje wali seedhi line tak nahi pahunchi",
+     "en": "the hands are open wider than the right angle at 3 o'clock, but have not reached the straight line of 6 o'clock"
+    },
+    "board": { "template": "angle@1", "params": { "angles": [ { "deg": 90, "name": "3 baje" }, { "deg": 150, "name": "5 baje" } ] } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek khuli kitaab table par poori bichhi hai, dono panne ek seedhi line mein hain. Kya panno ke beech obtuse angle hai, haan ya nahi?",
+      "en": "An open book lies fully flat on a table; both pages are in one straight line. Is the angle between the pages obtuse, yes or no?"
+     },
+     "key": "no",
+     "why": { "hi": "dono panne ek seedhi line mein hain, yaani aadha chakkar, obtuse nahi", "en": "both pages lie in one straight line, a half turn, not obtuse" },
+     "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
+     "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
+     "wrongIfMis": "yes",
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 180, "name": "khuli kitaab" } ] } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Angle A right angle se bada hai par seedhi line se chhota. Angle B ki dono bhujayein ek seedhi line mein hain. Inmein obtuse kaunsa hai, A ya B?",
+      "en": "Angle A is bigger than a right angle but smaller than a straight line. Both arms of angle B lie in one straight line. Which of these is obtuse, A or B?"
+     },
+     "key": "A",
+     "why": { "hi": "A right angle se bada aur seedhi line se chhota hai, jabki B ki bhujayein seedhi line mein hain, yaani aadha chakkar", "en": "A is bigger than a right angle and smaller than a straight line, while B's arms lie in a straight line, a half turn" },
+     "accept": ["angle A", "sirf A", "A obtuse hai", "only A"],
+     "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
+     "wrongIfMis": "both",
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 130, "name": "A" }, { "deg": 180, "name": "B" } ] } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Pizza slice ki nok par paper corner rakha. Ek kinaara mila, doosra andar raha aur gap bacha. Nok acute hai, right angle hai ya obtuse?",
+      "en": "A paper corner is put on the tip of a pizza slice. One edge matches; the other stays inside with a gap. Is the tip acute, a right angle or obtuse?"
+     },
+     "key": "acute",
+     "why": { "hi": "doosra kinaara paper ke andar raha aur gap bacha, yaani nok right angle se chhoti hai", "en": "the other edge stayed inside with a gap, so the tip is smaller than a right angle" },
+     "accept": ["acute angle", "nyoon kon", "acute hai"],
+     "targets": "c5-maths-ch03-t02-m-fits-means-right",
+     "wrongIfMis": "right angle",
+     "board": { "template": "compare@1", "params": { "left": { "title": "ek kinaara", "items": ["mila"] }, "right": { "title": "doosra", "items": ["andar, gap"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c5-maths-ch03-t02-i03", "why": "scissors opened a little → fits inside the paper corner → acute" },
+    { "itemId": "c5-maths-ch03-t02-i04", "why": "a door wider than a right angle but not flat → obtuse, with its upper limit named" },
+    { "itemId": "c5-maths-ch03-t02-i05", "why": "predict from 3 o'clock to 4 o'clock → the hour hand moves on, the angle opens past right" },
+    { "itemId": "c5-maths-ch03-t02-rl-o2", "why": "scoreboard supports narrower than a paper corner → acute inside a story" },
+    { "itemId": "c5-maths-ch03-t02-rl-h2", "why": "two kabaddi flags, one narrower and one wider but less than a straight line → pick the obtuse one" }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
+     "move": "two card arms opened step by step: before the paper corner = acute band, past it = obtuse band, the moment they lie in a straight line = a half turn = the end of the obtuse band; obtuse = between a quarter turn and a half turn, the half turn itself outside",
+     "say": {
+      "hi": "Do bhujayein dheere-dheere kholo. Right angle ke baad obtuse shuru hota hai, aur jaise hi bhujayein seedhi line banati hain, woh aadha chakkar hai, obtuse nahi.",
+      "en": "Open two arms slowly. After the right angle, obtuse begins, and as soon as the arms make a straight line it is a half turn, not obtuse."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 120, "name": "obtuse" }, { "deg": 180, "name": "aadha chakkar" } ] } },
+     "then": {
+      "prompt": {
+       "hi": "Ek folding scale poora khol diya, dono hisse ek seedhi line mein hain. Kya yeh obtuse angle hai, haan ya nahi?",
+       "en": "A folding ruler is opened all the way; both parts are in one straight line. Is this an obtuse angle, yes or no?"
+      },
+      "key": "no",
+      "why": { "hi": "scale ke dono hisse ek seedhi line mein hain, yaani aadha chakkar", "en": "both parts of the ruler lie in one straight line, a half turn" },
+      "accept": ["nahi", "nahin", "nahi, aadha chakkar hai", "no, it is a half turn"],
+      "targets": "c5-maths-ch03-t02-m-straight-is-obtuse",
+      "wrongIfMis": "yes",
+      "board": { "template": "angle@1", "params": { "angles": [ { "deg": 180, "name": "folding scale" } ] } }
+     }
+    },
+    {
+     "targets": "c5-maths-ch03-t02-m-fits-means-right",
+     "move": "vertex on point → arm 1 on edge 1 → look at arm 2 only: inside with a gap = acute, on the edge = right, outside = obtuse → the child names which of the three",
+     "say": {
+      "hi": "Ek bhuja milane ke baad doosri bhuja dekho. Andar gap ho toh acute, kinaare par mile toh right angle, aur bahar nikle toh obtuse.",
+      "en": "After matching one arm, look at the other arm. A gap inside means acute, matching the edge means a right angle, and going outside means obtuse."
+     },
+     "board": { "template": "angle@1", "params": { "angles": [ { "deg": 50, "name": "acute" }, { "deg": 90, "name": "right angle" } ] } },
+     "then": {
+      "prompt": {
+       "hi": "Paper corner rakha: ek bhuja kinaare par, doosri andar, gap ke saath. Yeh acute hai, right angle hai ya obtuse?",
+       "en": "A paper corner on an angle: one arm on an edge, the other inside with a gap. Is it acute, right or obtuse?"
+      },
+      "key": "acute",
+      "why": { "hi": "doosri bhuja paper ke andar gap ke saath ruki, yaani angle right angle se chhota hai", "en": "the other arm stopped inside with a gap, so the angle is smaller than a right angle" },
+      "accept": ["acute angle", "nyoon kon", "acute hai"],
+      "targets": "c5-maths-ch03-t02-m-fits-means-right",
+      "wrongIfMis": "right angle",
+      "board": { "template": "compare@1", "params": { "left": { "title": "ek bhuja", "items": ["kinaare par"] }, "right": { "title": "doosri bhuja", "items": ["andar, gap"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab teeno naam aa gaye: acute, right aur obtuse. Agle hisse mein dekhenge ki angle ko palatne ya uski bhujayein lambi karne se uska type badalta hai ya nahi.",
+    "en": "Now you know all three names: acute, right and obtuse. Next we see whether flipping an angle or making its arms longer changes its type."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "teeno naam", "items": ["acute", "right", "obtuse"] }, "right": { "title": "type badalta hai ya nahi", "items": ["palatne se", "bhujayein lambi karne se"] } } }
+  },
+  {
+   "skillId": "c5-maths-ch03-t02-s3",
+   "hook": {
+    "convey": "the same V drawn, then the sheet turned upside down; a short twig and a long branch leaving a trunk at the same opening → the angle is the opening between the arms, not where it points or how long its arms are",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing sheet par ek V draw karo, phir sheet ko ulta ghuma do. Ab V neeche ki taraf hai, par uski dono lakeeron ke beech ka khulaav wahi hai.",
+       "en": "Draw a V on a drawing sheet, then turn the sheet upside down. Now the V points downwards, but the opening between its two lines is the same."
+      }
+     },
+     {
+      "interest": "nature",
+      "use": {
+       "hi": "Ek chhote plant ki tahni aur ek bade tree ki daali tane se ek jaisa kona bana sakti hain. Daali lambi hai, par uska khulaav tahni jitna hi hai.",
+       "en": "A twig on a small plant and a branch on a big tree can leave their trunks at the same corner. The branch is longer, but its opening is the same as the twig's."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "a right angle drawn opening to the right, the paper flipped → it now opens to the left → laid back on the first, it covers it exactly → only the direction changed, the opening and the type stay; the child applies it to a flipped acute angle",
+     "mustSay": [
+      { "hi": "palat do", "en": "flip it" },
+      { "hi": "disha", "en": "direction" },
+      { "hi": "khulaav wahi", "en": "the same opening" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "daayein khulta", "items": ["paper corner fit"] }, "right": { "title": "baayein khulta", "items": ["khulaav wahi"] } } },
+     "point": {
+      "hi": "Kaagaz par ek right angle bana hai jo daayein khulta hai, aur paper corner us par fit hota hai. Ab kaagaz palat do. Angle ab baayein khulta hai. Use pehle wale par rakho toh dono bilkul mil jaate hain, khulaav wahi hai, sirf disha badli.",
+      "en": "A right angle is drawn on paper, opening to the right, and the paper corner fits it. Now flip the paper. The angle now opens to the left. Lay it on the first one and the two match exactly; the opening is the same, only the direction changed."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Isi tarah ek acute angle daayein khulta hai. Kaagaz palat do toh woh baayein khulta hai. Ab woh acute hai ya obtuse?",
+       "en": "In the same way, an acute angle opens to the right. Flip the paper and it opens to the left. Is it acute or obtuse now?"
+      },
+      "key": "acute",
+      "why": { "hi": "palatne se sirf disha badli, angle utna hi khula hai jitna pehle tha", "en": "flipping changed only the direction; the angle is open just as much as before" },
+      "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
+      "targets": "c5-maths-ch03-t02-m-orientation",
+      "wrongIfMis": "obtuse"
+     }
+    },
+    {
+     "id": "e2",
+     "convey": "two angles with the same opening, arms 3 cm and 8 cm → the paper corner sits on both the same way → longer arms are only longer lines; the opening, and so the type, does not change",
+     "mustSay": [
+      { "hi": "bhuja ki lambai", "en": "length of the arms" },
+      { "hi": "3 cm", "en": "3 cm" },
+      { "hi": "8 cm", "en": "8 cm" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "3 cm bhujayein", "items": ["paper corner fit"] }, "right": { "title": "8 cm bhujayein", "items": ["paper corner fit"] } } },
+     "point": {
+      "hi": "Do angle hain. Ek ki bhujayein 3 cm hain, doosre ki 8 cm. Dono par paper corner bilkul fit hota hai. Bhuja ki lambai badhane se lakeer lambi hoti hai, khulaav nahi badalta.",
+      "en": "There are two angles. One has arms of 3 cm, the other 8 cm. The paper corner fits both exactly. Making the arms longer makes the lines longer; it does not change the opening."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek acute angle ki bhujayein 2 cm hain. Khulaav wahi rakhkar bhujayein 9 cm kar di. Ab woh acute hai ya obtuse?",
+       "en": "An acute angle has arms of 2 cm. Keeping the same opening, the arms are made 9 cm. Is it acute or obtuse now?"
+      },
+      "key": "acute",
+      "why": { "hi": "khulaav wahi raha, sirf lakeerein 2 cm se 9 cm lambi hui", "en": "the opening stayed the same; only the lines grew from 2 cm to 9 cm" },
+      "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
+      "targets": "c5-maths-ch03-t02-m-arm-length",
+      "wrongIfMis": "obtuse"
+     }
+    },
+    {
+     "id": "e3",
+     "convey": "what can change vs what decides: direction and arm length can change; the opening between the arms decides the type → both changes at once still leave the type as it was",
+     "mustSay": [
+      { "hi": "khulaav", "en": "opening" },
+      { "hi": "angle ka type", "en": "type of the angle" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "badal sakti hain", "items": ["disha", "bhuja ki lambai"] }, "right": { "title": "type tay karta hai", "items": ["khulaav"] } } },
+     "point": {
+      "hi": "Baayein woh cheezein hain jo badal sakti hain: disha aur bhuja ki lambai. Daayein woh hai jo angle ka type tay karta hai: sirf khulaav, yaani dono bhujaon ke beech kitna ghumaav hai.",
+      "en": "On the left are the things that can change: the direction and the length of the arms. On the right is what decides the type of the angle: only the opening, that is, how much turn there is between the two arms."
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek obtuse angle ko palat diya aur uski bhujayein chhoti kar di, khulaav wahi raha. Ab woh acute hai ya obtuse?",
+       "en": "An obtuse angle is flipped and its arms are made shorter; the opening stays the same. Is it acute or obtuse now?"
+      },
+      "key": "obtuse",
+      "why": { "hi": "na palatne se, na chhoti bhujaon se ghumaav badla, khulaav wahi raha", "en": "neither the flip nor the shorter arms changed the turn; the opening stayed the same" },
+      "accept": ["obtuse angle", "ab bhi obtuse", "still obtuse", "adhik kon"],
+      "targets": "c5-maths-ch03-t02-m-arm-length",
+      "wrongIfMis": "acute"
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Vikram ek angle banata hai jiski bhujayein 3 cm hain aur jo daayein khulta hai. Paper corner us par bilkul fit hota hai. Kavya wahi khulaav trace karti hai, par bhujayein 8 cm ki banati hai aur drawing palat deti hai, toh uska angle baayein khulta hai. Kavya ka angle kaunsa hai?",
+     "en": "Vikram draws an angle with arms 3 cm long that opens to the right. A paper corner fits it exactly. Kavya traces the same opening, but makes the arms 8 cm long and flips the drawing, so her angle opens to the left. What type of angle is Kavya's?"
+    },
+    "givens": [
+     { "hi": "Vikram ka angle: bhujayein 3 cm, daayein khulta, paper corner bilkul fit", "en": "Vikram's angle: arms 3 cm, opens right, the paper corner fits exactly" },
+     { "hi": "Kavya ka angle: wahi khulaav, bhujayein 8 cm, baayein khulta", "en": "Kavya's angle: the same opening, arms 8 cm, opens left" }
+    ],
+    "find": { "hi": "Kavya ke angle ka type", "en": "the type of Kavya's angle" },
+    "steps": [
+     {
+      "do": { "hi": "Pehle Vikram ka angle pehchano", "en": "First identify Vikram's angle" },
+      "result": "Vikram ka angle right angle hai",
+      "why": { "hi": "paper corner us par bilkul fit hota hai", "en": "the paper corner fits it exactly" }
+     },
+     {
+      "do": { "hi": "Ab dekho Kavya ne kya badla", "en": "Now see what Kavya changed" },
+      "result": "disha aur bhuja ki lambai badli, khulaav wahi raha",
+      "why": { "hi": "Kavya ne wahi khulaav trace kiya, sirf drawing palti aur bhujayein lambi ki", "en": "Kavya traced the same opening; she only flipped the drawing and made the arms longer" }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Khulaav wahi hai jo Vikram ke right angle ka tha. Toh Kavya ka angle acute hai, right angle hai ya obtuse?",
+      "en": "The opening is the same as Vikram's right angle. So is Kavya's angle acute, a right angle or obtuse?"
+     },
+     "key": "right angle",
+     "accept": ["right", "samkon", "right angle hai", "a right angle"],
+     "targets": "c5-maths-ch03-t02-m-arm-length",
+     "wrongIfMis": "obtuse"
+    },
+    "answer": { "hi": "Kavya ka angle bhi right angle hai, Vikram ke angle jaisa", "en": "Kavya's angle is also a right angle, the same type as Vikram's" },
+    "why": {
+     "hi": "angle ka type sirf bhujaon ke beech ke khulaav se tay hota hai, disha ya bhuja ki lambai se nahi",
+     "en": "the type of an angle is decided only by the opening between its arms, not by its direction or the length of its arms"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Vikram", "items": ["3 cm bhujayein", "daayein khulta"] }, "right": { "title": "Kavya", "items": ["8 cm bhujayein", "baayein khulta"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Do angle ek hi size ke hain. Ek baayein khulta hai aur ek daayein. Kya dono ek hi type ke hain, haan ya nahi?",
+      "en": "Two angles are the same size. One opens to the left and one to the right. Are they the same type, yes or no?"
+     },
+     "key": "yes",
+     "why": { "hi": "dono ka size ek hi hai, sirf khulne ki disha alag hai", "en": "both are the same size; only the direction they open in differs" },
+     "accept": ["haan", "haan, ek hi type", "yes, the same type"],
+     "targets": "c5-maths-ch03-t02-m-orientation",
+     "wrongIfMis": "no",
+     "board": { "template": "compare@1", "params": { "left": { "title": "baayein khulta", "items": ["ek hi size"] }, "right": { "title": "daayein khulta", "items": ["ek hi size"] } } }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek acute angle ki bhujayein 1 cm hain. Khulaav wahi rakhkar bhujayein 15 cm kar di. Ab woh acute hai ya obtuse?",
+      "en": "An acute angle has arms of 1 cm. Keeping the same opening, the arms are made 15 cm. Is it acute or obtuse now?"
+     },
+     "key": "acute",
+     "why": { "hi": "khulaav wahi rakha, toh 15 cm ki bhujaon se angle bada nahi hua", "en": "the opening was kept the same, so the 15 cm arms did not make the angle bigger" },
+     "accept": ["acute angle", "ab bhi acute", "still acute", "nyoon kon"],
+     "targets": "c5-maths-ch03-t02-m-arm-length",
+     "wrongIfMis": "obtuse",
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 cm bhujayein", "items": ["khulaav wahi"] }, "right": { "title": "15 cm bhujayein", "items": ["khulaav wahi"] } } }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek square photo frame deewar par tirchha latka hai. Uske kone acute hain, right angle hain ya obtuse?",
+      "en": "A square photo frame hangs tilted on a wall. Are its corners acute, right angles or obtuse?"
+     },
+     "key": "right angle",
+     "why": { "hi": "square frame ke kone right angle hain, aur tirchha latkane se khulaav nahi badalta", "en": "a square frame's corners are right angles, and hanging tilted does not change the opening" },
+     "accept": ["right", "right angles", "right angle hain", "samkon"],
+     "targets": "c5-maths-ch03-t02-m-prototype-right",
+     "wrongIfMis": "acute",
+     "board": { "template": "compare@1", "params": { "left": { "title": "square frame", "items": ["4 kone"] }, "right": { "title": "deewar par", "items": ["tirchha latka"] } } }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c5-maths-ch03-t02-i06", "why": "same opening, arms 2 cm and 10 cm, someone calls the long one obtuse → compare and correct" },
+    { "itemId": "c5-maths-ch03-t02-i08", "why": "error-spot: a tilted square tile said to have no right angles → turning keeps the corners right" },
+    { "itemId": "c5-maths-ch03-t02-i14", "why": "explain why a flipped angle is still the same angle → same turn, new direction" },
+    { "itemId": "c5-maths-ch03-t02-rl-h3", "why": "V marks pointing up and down with 1 cm and 3 cm arms → both changes at once, type unchanged" }
+   ],
+   "remediation": [
+    {
+     "targets": "c5-maths-ch03-t02-m-orientation",
+     "move": "a paper angle flipped and laid back on the first one → it covers it exactly → ask whether anything about the opening changed → only the direction did",
+     "say": {
+      "hi": "Kaagaz ka angle palat kar pehle wale angle ke upar rakho. Dono bilkul ek doosre par aa jaate hain, toh khulaav wahi hai, bas disha badli.",
+      "en": "Flip the paper angle and lay it on the first angle. The two cover each other exactly, so the opening is the same; only the direction changed."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "pehle", "items": ["ek disha"] }, "right": { "title": "palat kar", "items": ["disha badli", "khulaav wahi"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek obtuse angle daayein khulta hai. Palatne par woh baayein khulta hai. Ab woh acute hai ya obtuse?",
+       "en": "An obtuse angle opens to the right. Flipped, it opens to the left. Is it acute or obtuse now?"
+      },
+      "key": "obtuse",
+      "why": { "hi": "palatne par sirf disha daayein se baayein hui, khulaav wahi raha", "en": "flipping only moved the direction from right to left; the opening stayed the same" },
+      "accept": ["obtuse angle", "ab bhi obtuse", "still obtuse", "adhik kon"],
+      "targets": "c5-maths-ch03-t02-m-orientation",
+      "wrongIfMis": "acute",
+      "board": { "template": "compare@1", "params": { "left": { "title": "khulta", "items": ["daayein"] }, "right": { "title": "palatne par", "items": ["baayein"] } } }
+     }
+    },
+    {
+     "targets": "c5-maths-ch03-t02-m-arm-length",
+     "move": "paper corner placed at the vertex of a short-armed and a long-armed copy of the same angle → it sits the same way on both → the arms only run on further; the opening is what the paper corner measures",
+     "say": {
+      "hi": "Chhoti bhujaon wale aur lambi bhujaon wale angle, dono ke kone par paper corner rakho. Dono par woh ek jaisa baithta hai, kyunki khulaav same hai.",
+      "en": "Put the paper corner on the corner of the short-armed angle and of the long-armed angle. It sits the same way on both, because the opening is the same."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "chhoti bhujaon", "items": ["paper corner"] }, "right": { "title": "lambi bhujaon", "items": ["paper corner"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek right angle ki bhujayein 2 cm se badhakar 20 cm kar di. Ab woh acute hai, right angle hai ya obtuse?",
+       "en": "The arms of a right angle are made longer, from 2 cm to 20 cm. Is it acute, a right angle or obtuse now?"
+      },
+      "key": "right angle",
+      "why": { "hi": "bhujayein 20 cm tak lambi hui par khulaav wahi raha", "en": "the arms grew to 20 cm but the opening stayed the same" },
+      "accept": ["right", "ab bhi right angle", "still a right angle", "samkon"],
+      "targets": "c5-maths-ch03-t02-m-arm-length",
+      "wrongIfMis": "obtuse",
+      "board": { "template": "compare@1", "params": { "left": { "title": "bhujayein", "items": ["2 cm"] }, "right": { "title": "badhakar", "items": ["20 cm"] } } }
+     }
+    },
+    {
+     "targets": "c5-maths-ch03-t02-m-prototype-right",
+     "move": "a square tile turned slowly while a paper corner stays fitted in one of its corners → ask when the fit stopped → it never stops → the corner stays a right angle, L-shape or not",
+     "say": {
+      "hi": "Tile ke kone mein paper corner rakho aur tile ko dheere-dheere ghumao. Paper corner kone mein fit hi rehta hai, toh tirchha kona bhi right angle hai.",
+      "en": "Keep a paper corner in the tile's corner and turn the tile slowly. The paper corner stays fitted in the corner, so a tilted corner is a right angle too."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "tile", "items": ["paper corner"] }, "right": { "title": "ghumao", "items": ["paper corner fit"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek square rumaal table par tirchha rakha hai. Uske kone acute hain ya right angle?",
+       "en": "A square handkerchief lies tilted on a table. Are its corners acute or right angles?"
+      },
+      "key": "right angle",
+      "why": { "hi": "square rumaal ke kone right angle hain, aur tirchha rakhne se khulaav nahi badalta", "en": "a square handkerchief's corners are right angles, and lying tilted does not change the opening" },
+      "accept": ["right", "right angles", "right angle hain", "samkon"],
+      "targets": "c5-maths-ch03-t02-m-prototype-right",
+      "wrongIfMis": "acute",
+      "board": { "template": "compare@1", "params": { "left": { "title": "square rumaal", "items": ["kone"] }, "right": { "title": "table par", "items": ["tirchha rakha"] } } }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

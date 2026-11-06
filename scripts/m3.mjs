@@ -52,7 +52,7 @@ const usd = (x) => (x == null ? "-" : `${x < 0 ? "-" : ""}$${Math.abs(Number(x))
 
 const N = {
   web: "taxila-web", env: E.AZURE_CONTAINERAPPS_ENV || "taxila-env", registry: "taxilacr", image: "m3/node:22-slim", source: "library/node:22-slim",
-  sa: E.AZURE_STORAGE_ACCOUNT || "taxilaforge", container: "m3", keeper: "m3-keeper", verify: "m3-verify", ag: "m3-owner",
+  sa: E.AZURE_STORAGE_ACCOUNT || "taxilaforge", container: "m3-ledger", keeper: "m3-keeper", verify: "m3-verify", ag: "m3-owner",
   pg: E.M3_PG_NAME || P.PG_NOW.name, pgRg: E.M3_PG_RG || P.PG_NOW.rg,
 };
 const API = { aca: "2024-03-01", acr: "2023-07-01", st: "2023-01-01", insights: "2023-01-01", sqr: "2023-03-15-preview", ws: "2022-10-01",

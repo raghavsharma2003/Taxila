@@ -55,6 +55,28 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Darpan (symmetry): lay the mirror lines and fold; turn the figure on the turntable and spin
   darpan: { mirror: { act: "place", hi: "aaine ki lakeerein rakho aur modo", en: "lay the mirror lines and fold" },
     turn: { act: "set", hi: "ghumao aur chakri chalao", en: "turn it and spin" } },
+  // r7 games: Feeta (length and distance): cut the ribbon / the rope / the fence, set the trip meter, put routes in order; then run
+  feeta: { measure: { act: "set", hi: "ruler se naapo aur feeta kaato", en: "measure with the ruler and cut the ribbon" },
+    fence: { act: "set", hi: "baad kaato aur bagiche ko ghero", en: "cut the fence and go round the garden" },
+    trip: { act: "set", hi: "meter set karo aur cycle chalao", en: "set the meter and ride the trip" },
+    compare: { act: "place", hi: "raaston ko chhote se bade kram mein rakho aur chalao", en: "put the routes from shortest to longest and ride them" } },
+  // r7 games: Guna (multi-digit multiplication and division): cut the field and load the truck; share the godown into trucks;
+  // set out the vehicles / packets / jar and run the story
+  guna: { field: { act: "load", hi: "khet kaato aur truck bharo", en: "cut the field and load the truck" },
+    pack: { act: "load", hi: "godown ka maal trucks mein barabar baanto", en: "share the godown equally into the trucks" },
+    story: { act: "set", hi: "gaadiyan ya packet rakho aur kahani chalao", en: "set out the vehicles or packets and run the story" } },
+  // r7 games: Kram (growing patterns and sequences): grow the figure or fill the bag; set the machine; lay the rhythms; pick
+  // the pieces for the square
+  kram: { grow: { act: "place", hi: "tiles rakh kar agla aakaar banao, ya door ke aakaar ke liye thaila bharo", en: "lay tiles to grow the next stage, or fill the bag for a far stage" },
+    machine: { act: "set", hi: "machine ka niyam set karo aur chalao", en: "set the machine's rule and run it" },
+    beats: { act: "place", hi: "chhote aur lambe beat ki saari laya rakho aur bajao", en: "lay every rhythm of short and long beats and play them" },
+    nest: { act: "place", hi: "tukde varg mein bithao aur bharo", en: "fit the pieces into the square and fill it" } },
+  // r7 games: Hissa (multiplying and dividing fractions and decimals): fold the sheet and tag the piece; pour the jug into cups;
+  // shade the tenths grid or slide the digits; fold the bar or the recipe in the story
+  hissa: { fold: { act: "fold", hi: "kaagaz modo, rang bharo aur tukda gino", en: "fold the sheet, shade it and count the piece" },
+    pour: { act: "fill", hi: "jug se cup bharo aur bacha hissa naapo", en: "pour the jug into cups and name the part cup" },
+    grid: { act: "set", hi: "grid mein dasvein bharo ya ank khiskao", en: "shade the tenths or slide the digits" },
+    story: { act: "fold", hi: "kahani padho, patti modo aur hissa lo", en: "read the story, fold the bar and take the part" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

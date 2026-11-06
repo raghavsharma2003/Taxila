@@ -65,6 +65,9 @@ export interface ScreenCounts {
   /** director6 #2: word and other boards — compare columns (title, item count, quantities their items state), steps, events,
    *  bars with values, labels, places, hops, digits, halves, angles, amounts */
   columns?: { title: string; items: number; quantities: { n: number; what: string }[] }[];
+  /** director8 S3′ (fraction-bars@1, a picture's second view): each equal whole drawn, its parts, parts shaded and label
+   *  ("?" = the asked value, never shaded) */
+  wholes?: { parts: number; shaded: number; label: string }[];
   steps?: number; events?: number; bars?: number; values?: string[]; labels?: number; places?: number; hops?: number;
   digits?: number; halves?: number; angles?: number[]; amounts?: number[];
 }
@@ -219,6 +222,9 @@ export interface WhiteboardScript {
   /** round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD; server/stagecraft/beat-card.js): the card this beat's
    *  board is, its beat number in the lesson, and whether a check follows it. Absent with the flag off. */
   card?: BeatCard;
+  /** round 7 (director7 B1/S2): one board per segment of a turn — at each switch (in order) a new page starts; ops from
+   *  `atMs` (the estimate) to the next switch move onto clause `clause`'s real onset when the voice reports it. */
+  switches?: { clause: number; atMs: number }[];
 }
 export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */

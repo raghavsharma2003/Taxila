@@ -7,6 +7,7 @@
 // English chrome only (§5.3). No teacher name or pronoun is written here (whether the site names her is the owner's
 // open call, BUILD-PLAN §5 decision 4), so the site says "the teacher" and shows her unnamed.
 import { useEffect, useState, type ReactNode } from "react";
+import { SITE } from "../site.ts";
 import { Link, NavLink } from "react-router-dom";
 import { TUTORS, type TutorCharacter } from "../../../shared/tutors.js";
 import { Plate2D } from "../../avatar/Plate2D.tsx";
@@ -128,8 +129,22 @@ export function SiteFooter() {
 }
 
 /** A public page in the site's scope (Volt night): header, the page, footer. */
+/** r7 app-landing-refresh: each public page names itself on the canonical origin (SITE.origin): the canonical link and
+ *  the share card's og:url follow the path, so /promises is never indexed as the landing. */
+export function useCanonical(): void {
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const href = `${SITE.origin}${location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "")}`;
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.appendChild(link); }
+    link.href = href;
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", href);
+  }, []);
+}
+
 export function SitePage({ children, title }: { children: ReactNode; title: string }) {
   useEffect(() => { document.title = `${title} · Taxila`; }, [title]);
+  useCanonical();
   return (
     <div {...VOLT_NIGHT}>
       <a className="sv-skip" href="#main">Skip to content</a>

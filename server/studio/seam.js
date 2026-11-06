@@ -1039,7 +1039,16 @@ export const studioSeam = {
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
       // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
       const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
-      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen };
+      // (director7 S1, the live guard: a "?" drawn over a number her line states is flagged, never silently shown: a trace
+      // row and the artifact's statedAsUnknown, which director runs read beside the screen)
+      const statedUnknown = boardSync.statedAsUnknown(r.script, ask?.line?.text, intentId);
+      if (statedUnknown.length) {
+        traceRecord("studio.board_stated_unknown", { intentId, values: statedUnknown, source: r.source ?? "line", template: r.template ?? null });
+        console.warn(`[studio] board writes "?" over a number her line states: ${statedUnknown.join(",")} (source=${r.source ?? "line"})`);
+      }
+      // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
+      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
+        ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}), ...(r.altView ? { altView: r.altView } : {}) };
       p.facts = r.script.facts ?? null;
       if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
       p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
@@ -1080,8 +1089,20 @@ export const studioSeam = {
       const failing = (given ? [{ id: shownBefore(given.script, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : "tray" }] : boardSync.regate(boardSync.retime(ask.script, Math.max(800, Number(ask.script.durationMs) || 0), ctx0.speechMs), ask, ctx0).gate?.checks ?? []).filter((c) => c.pass !== true).map((c) => c.id);
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
-    const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
+    // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
+    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
+    if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    const ctxFirst = boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] });
+    const first = boardFirst.takePreselected(ask, ctxFirst);
+    // director8 S3′ (main, amends SC2): a picture asked for while the card's OWN board is already the page on screen draws a
+    // second view of the same numbers (artifact.altView, Brain's line describes it); no second view → re-shown as before
+    if (first?.script && onPage && request && request.kind !== "example" && shownBefore(dress(first.script), { avoid: onPage })) {
+      const alt = boardFirst.altView(ask, ctxFirst);
+      if (alt && drawn(alt)) { traceRecord("studio.board_alt_view", { intentId, altView: alt.altView, template: alt.template }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
+    }
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // (director8 S1′: the card's own board, still the page on screen and unchanged on her line, stays up: kept, not replaced)
+    if (first?.sameCard && first.script && drawn({ ...first, source: "kept" })) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // round 5 merge (main; owner-5 battery on 14.1, 2/2 "whiteboard pe bana ke samjhao" after the same page was drawn): the
     // board-first page was refused ONLY because it is the page on screen now. Her line was written from that page, so it is
     // KEPT (no second notebook entry; it redraws beside her line, as a kept continue does) instead of a slow line plan that

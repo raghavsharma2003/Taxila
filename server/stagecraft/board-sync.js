@@ -107,7 +107,17 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // authors; a check that BORROWS its explain beat's board, which may teach the answer — c4 s3 c1, "1 hissa = 1/2" under
   // "the bigger piece's fraction?" — frees only its mark labels)
   const ownCard = String(ask?.intent?.scriptBeat?.beatId ?? "").startsWith("then:") || ask?.intent?.scriptBeat?.ownBoard === true;
-  const withhold = !sk ? withhold1 : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
+  // round 7 (main, director7 S1: "? equal parts", "7 + ? + ? + ?" on 36 check boards): a scripted card whose answers Brain
+  // sends (scriptBeat.answers: its key and accept forms) withholds THOSE only — the asked value is the one "?"; every other
+  // number its board writes is drawn, whatever her line happens to say this turn (the card's numbers are on the card, not
+  // always in line.text)
+  // (director8, c5-t02: ~40 "?" over stated numbers — every number in the ACCEPT forms was withheld: "5 wali roti ka
+  // tukda", "her brother, 4/6" hid the card's own givens. Only the KEY's values are withheld, and never one her line —
+  // which carries the spoken card — states: "1/12, 1/6, 1/3" is an order of numbers the card gives)
+  const cardAnswers = sk === "check" && Array.isArray(ask?.intent?.scriptBeat?.answers) ? answerValues(ask.intent.scriptBeat.answers, text) : null;
+  // (and a card's OWN board writes the labels Learning authored and certified against its answers: "before 2/4" names the
+  // 2/4 its board labels — that label is the card's given, never the "?")
+  const withhold = !sk ? withhold1 : cardAnswers ? withoutLabels({ values: cardAnswers, words: [], phrases: [] }, ask.intent.boardRef, { authored: ownCard }) : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
   const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
@@ -117,6 +127,16 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
+}
+/** A card's answers as withheld values: the numbers in its KEY (answers[0]; "between 0 and 1/3" → "0", "1/3") that her line
+ *  does not state (as itself or an equal fraction: "2/4" states 1/2). Accept forms withhold nothing: they quote the card's
+ *  givens ("5 wali roti ka tukda", "her brother, 4/6"). */
+export function answerValues(answers, line = "") {
+  const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((m) => m.replace(/\s+/g, ""));
+  const val = (n) => { const m = /^(\d+)\/(\d+)$/.exec(n); return m ? (Number(m[2]) ? Number(m[1]) / Number(m[2]) : NaN) : Number(n); };
+  const said = nums(line).map((n) => ({ n, v: val(n) }));
+  const stated = (n) => said.some((s) => s.n === n || (n.includes("/") && s.n.includes("/") && Math.abs(s.v - val(n)) < 1e-9));
+  return [...new Set(nums(answers[0]).filter((n) => !stated(n)))];
 }
 /**
  * A withheld set without the values a board ref AUTHORS to show (rational equality: "2/4" frees "1/2"): mark labels, side
@@ -273,18 +293,43 @@ export function regate(script, ask, ctx) {
     if (!failing.length || !failing.some((c) => MASKABLE(c.id))
       || failing.some((c) => !OTHER_OK(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(OTHER_OK)))) break;
     const reveals = failing.filter((c) => MASKABLE(c.id)).flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
-    const masked = maskReveals(g.script ?? raw, reveals);
+    const hits = [];
+    const masked = maskReveals(g.script ?? raw, reveals, hits);
     if (!masked) break;
+    noteMasked(ask?.intent?.intentId, hits);
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
   }
   return g.pass ? { ok: true, script: { ...g.script, facts: g.facts }, gate: g } : { ok: false, script: null, gate: g };
 }
 
 /**
+ * round 7 (main, director7 S1, the live guard): which value each "?" this lesson's gate wrote stands for, per intent (a
+ * paged board's pages are `${intentId}:p${i}`), keyed by the op's text AS MASKED ("? m", a numwork's rows): the drawn board
+ * is matched by that text, so a candidate board the gate masked but the stage never drew flags nothing. Bounded.
+ */
+const maskLog = new Map();
+function noteMasked(intentId, hits) {
+  if (!hits.length || intentId == null) return;
+  const id = String(intentId);
+  maskLog.set(id, [...(maskLog.get(id) ?? []), ...hits].slice(-40));
+  while (maskLog.size > 300) maskLog.delete(maskLog.keys().next().value);
+}
+/** The numbers her line STATES that the drawn board writes as "?" (a check's own answer she has not said is not one). */
+export function statedAsUnknown(script, lineText, intentId) {
+  const id = String(intentId ?? "");
+  const log = [...maskLog].filter(([k]) => k === id || k.startsWith(`${id}:`)).flatMap(([, v]) => v);
+  if (!log.length || !Array.isArray(script?.ops)) return [];
+  const shown = new Set(script.ops.flatMap((o) => (o.op === "text" || o.op === "label") && /\?/.test(String(o.text ?? "")) ? [String(o.text)]
+    : o.op === "numwork" && Array.isArray(o.rows) && o.rows.flat().some((c) => String(c) === "?") ? [JSON.stringify(o.rows)] : []));
+  const stated = new Set(String(lineText ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
+  return [...new Set(log.filter((h) => shown.has(h.text) && stated.has(String(h.value))).map((h) => String(h.value)))];
+}
+
+/**
  * The script with every W9 reveal written as "?": "o7: 12 = answer 12" → that op's token; "o3: marks 3/4 on o2" → the
  * marker dropped; "word: scale" → the word replaced. null when nothing could be masked.
  */
-export function maskReveals(script, reveals) {
+export function maskReveals(script, reveals, log = null) {
   if (!script?.ops?.length || !Array.isArray(reveals) || !reveals.length) return null;
   const esc = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   let ops = script.ops.map((o) => ({ ...o }));
@@ -303,16 +348,17 @@ export function maskReveals(script, reveals) {
     const o = ops.find((x) => x.id === tok[1]);
     if (!o) continue;
     const src = `(^|[^\\d/.])${esc(tok[2])}($|[^\\d/.])`;
-    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; }
+    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; log?.push({ text: o.text, value: tok[2] }); }
     else if (o.op === "numwork" && o.layout === "fraction" && /^\d+\/\d+$/.test(tok[2]) && Array.isArray(o.rows) && String(o.rows?.[0]?.[0]) === tok[2].split("/")[0] && String(o.rows?.[1]?.[0]) === tok[2].split("/")[1]) {
       // a stacked fraction a over b: its top written "?" (the whole stays, so the question is still what she asked)
       o.rows = [["?"], ...o.rows.slice(1)];
       changed = true;
+      log?.push({ text: JSON.stringify(o.rows), value: tok[2] });
     }
     else if (o.op === "numwork" && Array.isArray(o.rows)) {
       const before = JSON.stringify(o.rows);
       o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
-      changed ||= JSON.stringify(o.rows) !== before;
+      if (JSON.stringify(o.rows) !== before) { changed = true; log?.push({ text: JSON.stringify(o.rows), value: tok[2] }); }
     }
   }
   return changed ? { ...script, ops } : null;

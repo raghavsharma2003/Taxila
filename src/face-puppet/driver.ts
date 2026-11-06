@@ -73,6 +73,11 @@ const lowpass = (cur: number, target: number, dt: number, tau: number) => cur + 
  *  read as a light smile, so 0. Eased in and out over ~150 ms (no corner pop). */
 export const SAFETY_NEUTRAL = { mouthSmile: 0, cheekSquint: 0 } as const;
 
+/** Round 7 face-reacts: the breath she takes as she starts thinking: one raised-sine in-breath on top of the idle 0.25 Hz
+ *  breath, `amp` in the rig's breath units (1 = the idle breath's peak: a 1.4 px head bob plus the shoulder rise), over
+ *  `s` seconds. Cut short at her first audio. */
+export const THINK_INHALE = { amp: 0.9, s: 1.4 } as const;
+
 export class PuppetDriver {
   readonly policy: ActingPolicy;
   readonly visemes = new VisemeScheduler();
@@ -102,6 +107,10 @@ export class PuppetDriver {
   private calmK = 0;
   /** Until when (s) the face needs the full frame rate: speech, a state change, an expression's ramp, a nod, a look. */
   busyUntil = 0;
+  /** Round 7 face-reacts (TAXILA_R7_FACE_REACT): one breath as the face starts THINKING (see THINK_INHALE). */
+  react = false;
+  /** When the thinking inhale began (s), or -1. */
+  private inhaleT0 = -1;
   /** Eval-only: a head offset added after everything (the judge grid's ±20° turn cell). Never set by product code. */
   evalHead: [number, number, number] | null = null;
   /** Eval-only: emote a judged preset directly (the judge grid's surprise / playful cells, which no product affect maps to). */
@@ -112,8 +121,9 @@ export class PuppetDriver {
     this.run([{ op: "release", why: "eval" }], nowMs / 1000);
   }
 
-  constructor(o: { band: BandKey | string; seed?: number; reducedMotion?: boolean; gentle?: boolean; smile?: number }) {
+  constructor(o: { band: BandKey | string; seed?: number; reducedMotion?: boolean; gentle?: boolean; smile?: number; react?: boolean }) {
     applySafetyFloor();
+    this.react = !!o.react;
     const band = (["b1", "b2", "b3", "b4"].includes(String(o.band)) ? o.band : "b2") as BandKey;
     this.reduced = !!o.reducedMotion;
     this.behaviour = new Behaviour({ band, seed: o.seed ?? 7, faceStyle: { smile: o.smile ?? 0.7 }, reducedMotion: this.reduced, gentle: o.gentle });
@@ -208,7 +218,14 @@ export class PuppetDriver {
     if (speakingNow && !echoing) this.spoke = this.spoke || t - this.statusSince > 0.3;
     const st: FaceState = echoing && inp.status !== "listening" ? "thinking"
       : floorState({ status: inp.status, tapSpeaking: speakingNow, silenceMs: visOn ? 0 : lf.silenceMs, spokeSinceStatus: this.spoke });
-    if (st !== this.state) { this.state = st; this.busyUntil = Math.max(this.busyUntil, t + 0.8); this.run(this.policy.floor(st, t), t); }
+    if (st !== this.state) {
+      // round 7 face-reacts: entering THINKING takes one breath (never under reduced motion or in a safety turn); her
+      // first audio ends it at once (speaking is a new state; the inhale only plays while the state is still thinking)
+      if (st === "thinking" && this.react && !this.reduced && !this.calm) { this.inhaleT0 = t; this.busyUntil = Math.max(this.busyUntil, t + THINK_INHALE.s); }
+      this.state = st;
+      this.busyUntil = Math.max(this.busyUntil, t + 0.8);
+      this.run(this.policy.floor(st, t), t);
+    }
     for (const k of this.knowledge.step(st, t, { calm: this.calm, reduced: this.reduced })) {
       if (k.op === "nod") { if (this.nod.kick(k.peakDeg, t)) this.busyUntil = Math.max(this.busyUntil, t + 1); }
       else if (k.op === "look") this.lookAt(k.yaw, k.pitch, k.holdS, k.why);
@@ -260,7 +277,12 @@ export class PuppetDriver {
       lipSource = "visemes";
     }
     if (this.evalHead) for (let i = 0; i < 3; i++) head[i] += this.evalHead[i];
-    const breath = Math.sin(t * 2 * Math.PI * 0.25);
+    let breath = Math.sin(t * 2 * Math.PI * 0.25);
+    if (this.inhaleT0 >= 0) {
+      const u = (t - this.inhaleT0) / THINK_INHALE.s;
+      if (u >= 1 || st !== "thinking") this.inhaleT0 = -1;
+      else breath += THINK_INHALE.amp * Math.sin(Math.PI * u);
+    }
     const workMs = performance.now() - w0;
     if (rig) {
       rig.clock = t;

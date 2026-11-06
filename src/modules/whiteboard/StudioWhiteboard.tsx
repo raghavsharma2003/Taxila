@@ -16,6 +16,7 @@ import { awaitLineAnchor, type AnchorTiming } from "./clock.ts";
 import { WhiteboardPlayer } from "./Player.tsx";
 import { boardSkinFromDocument, watchSkin } from "./palette.ts";
 import { traceBoardDrawn, traceBoardPage } from "../../trace/lesson.ts";
+import { onTtsEvent } from "../../lesson/ttsStream.ts";
 
 /**
  * lessonId → the board: `ops` = what is on it after the script `scriptId` (re-scoped ids), `base` = what was on it
@@ -103,6 +104,9 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   // read before this script is remembered (the effect below): is it the page already on the board?
   const same = useMemo(() => sameAsBoard(script), [script]);
   const [startAt, setStartAt] = useState<number | null>(null);
+  // round 7 (director7): a paged script (switches) turns each page on the then-prompt's REAL onset: the reply's clause
+  // events, on the player's clock (playAt), relative to this board's anchor
+  const [onsets, setOnsets] = useState<number[] | undefined>(undefined);
   const emitted = useRef(false);
   const page = useRef(0);
   const host = useRef<HTMLSpanElement>(null);
@@ -132,6 +136,18 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [script, norm.errors]);
 
+  useEffect(() => {
+    const sw = script?.switches?.length, seq = script?.line?.teacherReplySeq, lid = script?.line?.lessonId;
+    setOnsets(undefined);
+    if (!sw || startAt === null || seq === undefined) return;
+    return onTtsEvent((e) => {
+      if (e.kind !== "clause" || e.req.lessonId !== lid || e.req.seq !== seq) return;
+      const d = e.data;
+      if (typeof d.playAt !== "number" || !Number.isFinite(d.playAt)) return;
+      setOnsets((prev) => { const a = [...(prev ?? [])]; a[d.clause] = Math.max(0, Math.round(d.playAt! - startAt)); return a; });
+    });
+  }, [script, startAt]);
+
   // r4: the Kaksha skin's board when the Desk wears it (palette.ts: Kaksha's own tokens, read where the board mounts)
   const ground = script?.board.ground ?? "chalk";
   // re-read Kaksha's tokens when the theme or look switches under the board (K: data-ktheme / data-klook)
@@ -142,7 +158,7 @@ export function StudioWhiteboard({ artifact, px, reducedMotion, onEvent }: Artif
   // display:contents: the recorder's handle on the drawn SVG, with no box of its own (layout and look unchanged)
   return (
     <span ref={host} style={{ display: "contents" }} data-script={script.scriptId} data-same={same ? "1" : undefined}>
-      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin}
+      <WhiteboardPlayer script={script} prior={prior} startAt={startAt} frozenAt={same ? script.durationMs : undefined} reducedMotion={reducedMotion} width={px.w} height={px.h} skin={skin} clauseOnsets={onsets}
         className="wb-svg" onDone={() => {
           if (emitted.current) return;
           emitted.current = true;

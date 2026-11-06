@@ -154,3 +154,36 @@ The two board-truth fixes rest on QA's three lessons and tests that fail on base
 ## open-r7-m3-verification-deadline (2026-11-05)
 
 The Learn page (2026-11-03) says not qualifying for Milestone 3 within 180 days of business verification cancels the sponsorship. The sponsorship started 2026-07-08. If that was the verification day, the deadline is 2027-01-04, and the 60-day clock must start by 2026-11-06. The keeper cannot make day 1 earlier than the first full day after `apply`. Unknown: the real verification date, and whether the clause applies to sponsorships granted before it was published. The owner reads it in the Founders Hub portal (docs/design/round7/M3.md §1).
+
+
+<!-- merged from inbox/r7-main-15.json -->
+## `fd-r7-m3-verification-date-2026-07-15` (2026-11-06)
+
+Resolves `open-r7-m3-verification-deadline`.
+
+**Business verification completed on 2026-07-15.** Microsoft's Startup and Partner Programs Ops Desk mailed that day (ticket 2607100030006859) that it "has been completed successfully". The ticket was opened 2026-07-10, after the first attempt failed.
+
+| Counting from | Deadline (180 days) | Day 1 of the 60 must fall on or before |
+|---|---|---|
+| 2026-07-15, verification completed | 2027-01-11 | 2026-11-13 |
+| 2026-07-10, ticket opened (worst case) | 2027-01-06 | 2026-11-08 |
+
+The earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-11-05 and was a week too early. The portal's own recorded date has not been read.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `fd-r7-m3-subscription-inventory-2026-11-06` (2026-11-06)
+
+**Projects in the subscription:** Taxila, Vyakti, and the companion and sales-enabler projects. The milestones count services across all of them.
+
+**Cost Management, closed days 10-22 to 11-04:**
+- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's), Virtual Machines 1.33 (Vyakti's vl-vm-cin only).
+- Fluctuating: Foundry Models and Foundry Tools.
+- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage 0.15, Azure Monitor 0.15.
+
+**Limits:**
+- The service principal is Contributor only: no role assignments, no locks.
+- Container Instances has 0 core quota.
+- Public IPs: 100 per region.
+
+**taxila-cin-pg over 30 days:** ~11 connections, CPU ~8% on average (62% at peak), ~2.4 of 8 GB memory. taxila-sin-staging has a DATABASE_URL.

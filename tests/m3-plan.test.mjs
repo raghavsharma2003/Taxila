@@ -4,13 +4,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
+import { readFileSync } from "node:fs";
 import * as P from "../infra/m3/plan.js";
 import { CHAT } from "../server/cost/prices.js";
 
 // the jobs read their env at load AND at run time: set it before importing them (M3_ROLE stays unset, so their main does
 // not run) and keep it for this file's tests. Only M3_* names: no other suite reads them, so sharing npm test's one
 // process with them is safe (tests/test-isolation.test.mjs requires the marker below for a module-level env write).
-Object.assign(process.env, { M3_STORAGE_ACCOUNT: "acct", M3_STORAGE_KEY: Buffer.from("k".repeat(32)).toString("base64"), M3_CONTAINER: "m3", M3_BACKOFF_MS: "1" });   // one-process-safe: M3_* names only, read by no other suite
+Object.assign(process.env, { M3_STORAGE_ACCOUNT: "acct", M3_STORAGE_KEY: Buffer.from("k".repeat(32)).toString("base64"), M3_CONTAINER: "m3-ledger", M3_BACKOFF_MS: "1" });   // one-process-safe: M3_* names only, read by no other suite
 delete process.env.M3_ROLE;   // one-process-safe: M3_* names only, read by no other suite
 const K = await import("../infra/m3/keeper-job.mjs");
 const V = await import("../infra/m3/verify-job.mjs");
@@ -225,7 +226,7 @@ function fakeAzure({ failGet = () => false, failPut = () => false, chat = () => 
     if (u.hostname === "acct.blob.core.windows.net") {
       assert.match(h.authorization, /^SharedKey acct:[A-Za-z0-9+/]+=*$/);
       if (u.searchParams.get("comp") === "list") { calls.list++; spent.storage += 0.0001; return new Response("<EnumerationResults/>", { status: 200 }); }
-      const name = decodeURIComponent(u.pathname.replace(/^\/m3\//, ""));
+      const name = decodeURIComponent(u.pathname.replace(/^\/m3-ledger\//, ""));
       if (method === "GET") {
         if (failGet(name)) return new Response("", { status: 500 });
         const b = blobs.get(name);
@@ -356,7 +357,7 @@ function fakeArm(daily, { blobs = new Map(), cm = 200 } = {}) {
       return Response.json({ error: { code: "NotSupported" } }, { status: 400 });   // balances / credits / billing accounts
     }
     if (u.hostname === "acct.blob.core.windows.net") {
-      const name = u.pathname.replace(/^\/m3\//, "");
+      const name = u.pathname.replace(/^\/m3-ledger\//, "");
       if (method === "PUT") { puts.push(name); blobs.set(name, { body: Buffer.from(init.body).toString() }); return new Response("", { status: 201 }); }
       const b = blobs.get(name);
       return b ? new Response(b.body, { status: 200 }) : new Response("", { status: 404 });
@@ -435,4 +436,17 @@ test("actionGroupBody: the Owner role always; an email receiver only from M3_ALE
   assert.equal(P.actionGroupMatches(live(["owner@example.test"]), plain), false, "removing it re-PUTs too");
   assert.equal(P.actionGroupMatches(live([], false), plain), false);
   assert.equal(P.actionGroupMatches(null, plain), false);
+});
+
+test("the ledger container's name is a legal blob container name (3-63 chars: lowercase, digits, single hyphens)", () => {
+  // 2026-11-06: the first live dry run failed with OutOfRangeInput because the container was "m3" (2 chars); the fake
+  // Azure above never checked the name. Both job scripts and scripts/m3.mjs must agree on the default.
+  const legal = /^(?=.{3,63}$)[a-z0-9]+(-[a-z0-9]+)*$/;
+  for (const f of ["../infra/m3/keeper-job.mjs", "../infra/m3/verify-job.mjs", "../scripts/m3.mjs"]) {
+    const src = readFileSync(new URL(f, import.meta.url), "utf8");
+    const m = src.match(/M3_CONTAINER \|\| "([^"]+)"/) || src.match(/container: "([^"]+)"/);
+    assert.ok(m, `${f}: default container name found`);
+    assert.match(m[1], legal, `${f}: ${m[1]}`);
+    assert.equal(m[1], "m3-ledger", `${f}: all three agree`);
+  }
 });

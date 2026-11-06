@@ -7,7 +7,11 @@
 //   in  { t: "init", canvas, kind: "mesh"|"keys", base, opts, css: [w, h] }   → out { t: "ready", warmFrameMs, path } | { t: "error", message }
 //   in  { t: "frame", clock, bs, head, gaze, lean, breath, dpr, calm, reduced }  → out { t: "drawn", rigMs, gap, name }
 //   in  { t: "size", css: [w, h] } · { t: "view", view } · { t: "dispose" }
-//   out { t: "lost" } when the GL context is lost (the stage then holds her still)
+//   out { t: "lost" } when the GL context is lost; { t: "restored", warmFrameMs } once the rig is rebuilt on the restored
+//   context (round 7: the main-thread path's one rebuild, stage.ts onRestored; the stage falls back on a second loss)
+//   in  { t: "lose", restoreAfterMs } (evals only: WEBGL_lose_context, then restoreContext after the delay)
+// Every frame is answered (a frame that arrives with no rig, e.g. during a loss, is answered as skipped), so the
+// main side's one-in-flight queue (remoteRig.ts) never waits on a frame that will not be drawn.
 
 // The runtimes read the canvas's CSS box (clientWidth / clientHeight) and make one small 2D canvas with
 // document.createElement; an OffscreenCanvas has neither, so the worker supplies both (the box comes from the stage).
@@ -30,6 +34,9 @@ type Rig = {
 
 let rig: Rig | null = null;
 let canvas: OffscreenCanvas | null = null;
+/** What init was given, for the rebuild after a context loss. */
+let made: { kind: "mesh" | "keys"; base: string; opts: Record<string, unknown> } | null = null;
+let gl: WebGL2RenderingContext | null = null;
 let css: [number, number] = [1, 1];
 
 const post = (m: unknown) => (self as unknown as { postMessage(m: unknown): void }).postMessage(m);
@@ -43,7 +50,16 @@ async function init(m: { canvas: OffscreenCanvas; kind: "mesh" | "keys"; base: s
   canvas = m.canvas;
   css = m.css;
   boxed(canvas);
-  canvas.addEventListener("webglcontextlost", (e) => { e.preventDefault(); post({ t: "lost" }); });
+  made = { kind: m.kind, base: m.base, opts: m.opts };
+  canvas.addEventListener("webglcontextlost", (e) => {
+    e.preventDefault();
+    rig = null; // every GL object died with the context
+    post({ t: "lost" });
+  });
+  canvas.addEventListener("webglcontextrestored", () => {
+    if (!made || made.kind !== "mesh" || !canvas) return; // a 2D key rig has no GL context to lose
+    rebuild().catch((e: unknown) => post({ t: "error", message: `rebuild after context loss failed: ${String((e as Error)?.message ?? e).slice(0, 160)}` }));
+  });
   if (m.kind === "keys") {
     const { KeyRig } = await import("../rig-keys/keyrig.ts");
     const r = await KeyRig.load(canvas as unknown as HTMLCanvasElement, m.base, m.opts);
@@ -55,7 +71,17 @@ async function init(m: { canvas: OffscreenCanvas; kind: "mesh" | "keys"; base: s
   const { loadRigChunked } = await import("../loader.ts");
   const res = await loadRigChunked(canvas as unknown as HTMLCanvasElement, m.base, m.opts as never);
   rig = res.rig as unknown as Rig;
+  gl = (canvas.getContext("webgl2") as WebGL2RenderingContext | null) ?? null;
   post({ t: "ready", warmFrameMs: res.warmFrameMs, path: `worker-${res.path}` });
+}
+
+/** The restored context: build the rig again on the same canvas (the pack is in the HTTP cache). */
+async function rebuild() {
+  if (!made || !canvas) return;
+  const { loadRigChunked } = await import("../loader.ts");
+  const res = await loadRigChunked(canvas as unknown as HTMLCanvasElement, made.base, made.opts as never);
+  rig = res.rig as unknown as Rig;
+  post({ t: "restored", warmFrameMs: res.warmFrameMs });
 }
 
 self.onmessage = (ev: MessageEvent) => {
@@ -63,6 +89,12 @@ self.onmessage = (ev: MessageEvent) => {
   try {
     if (m.t === "init") {
       init(m as never).catch((e: unknown) => post({ t: "error", message: String((e as Error)?.message ?? e).slice(0, 200) }));
+    } else if (m.t === "frame" && !rig) {
+      post({ t: "drawn", rigMs: 0, gap: 0, name: "", skipped: true });
+    } else if (m.t === "lose" && gl) {
+      const ext = gl.getExtension("WEBGL_lose_context");
+      ext?.loseContext();
+      setTimeout(() => ext?.restoreContext(), Math.max(0, Number(m.restoreAfterMs) || 0));
     } else if (m.t === "frame" && rig) {
       const t0 = performance.now();
       rig.R.dpr = m.dpr as number;

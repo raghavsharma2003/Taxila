@@ -36,8 +36,9 @@ export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", 
  *  the last one is scheduled by turn 17 so every event lands inside MIN_TURNS). */
 const PROFILE = {
   steady:   { right: { card: 0.7, ask: 0.75, open: 0.8 }, learn: 0.15, events: { dontknow: [3], picture: [8], selftry: [12], cricket: [14], hindi: [16] }, leaveAfter: 40 },
-  stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, leaveAfter: 22 },
-  offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 22 },
+  // director8: stuck and offtopic stay long enough to reach skill 2 (they never left skill 1 in 23-25 turns)
+  stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, leaveAfter: 32 },
+  offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 32 },
   steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, leaveAfter: 24 },
 };
 
@@ -54,13 +55,18 @@ const gendered = (line, girl) => line.replace(/\{([^|{}]*)\|([^|{}]*)\}/g, (_, m
 
 /** An unkeyed probe in her line: how did you know, why, explain it in your words (Hinglish and English). */
 export const PROBE_RE = /\bkaise\s+(jaana|jana|pata|socha|kiya|nikala|samjha)|\bkyun\b|\bkyon\b|\bkyu\b|apne shabdon|samjha(o|na|aogi|aoge)\s*(mujhe|na)?|mujhe\s+samjhao|explain|\bwhy\b|how did you|in your (own )?words|teach (me|golu)|golu ko (samjhao|batao|sikhao)/i;
-/** A probe answer: a short reason in a child's words, with no number (never the card answer repeated). */
+/** A probe answer: a short reason in a child's words, with no number (never the card answer repeated), and no topic of
+ *  its own (director8: number-line reasoning turned up in a roti lesson): it fits any maths lesson. */
 const REASONS = {
-  right: ["kyunki hisse barabar the, maine wahi dekha", "maine line par aage-peeche dekh ke socha", "pehle wale step se pata chala", "neeche wala number dekha, phir socha",
-    "maine dono ko mila ke dekha", "kyunki pura ek hi hai, uske hisse hain", "jo aapne dikhaya tha, usse socha", "jodte jodte aaya"],
-  unsure: ["pata nahi kaise, bas laga", "thoda guess kiya, pakka nahi", "mujhe laga aisa hi hoga", "shayad hisse gin ke"],
+  right: ["pehle wale step se pata chala", "maine dono ko mila ke dekha", "jo aapne dikhaya tha, usse socha", "maine dhyan se dekh ke socha",
+    "maine ek ek karke gina", "jaise aapne samjhaya tha, waise hi kiya", "maine pehle chhota wala socha, phir bada", "maine dobara check kiya"],
+  unsure: ["pata nahi kaise, bas laga", "thoda guess kiya, pakka nahi", "mujhe laga aisa hi hoga", "shayad gin ke"],
 };
-
+// (v6 harness, main on director8: "number-line reasoning in a roti lesson"): a reason that names a thing is said only where that
+// thing is in her line or the topic; the rest fit anywhere
+const REASON_NEEDS = [[/\bline\b/, /\b(?:line|rekha|number line)\b/i], [/\bhisse\b/, /\b(?:hiss[ae]|tukd[ae]|parts?|fraction|bhinn)\b/i],
+  [/neeche wala number/, /\b(?:neeche|upar|fraction|bhinn|\d+\/\d+)\b/i], [/\bjodte\b/, /\b(?:jod|plus|\+|parimap|perimeter|kul)\w*/i]];
+const fitsReason = (r, context) => REASON_NEEDS.every(([said, need]) => !said.test(r) || need.test(context));
 const LINES = {
   dontknow: ["pata nahi", "mujhe nahi pata", "samajh nahi aaya", "pata nahi, aap batao"],
   picture: ["picture dikhao", "screen par dikhao na", "drawing karke samjhao"],
@@ -137,17 +143,38 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     while (at.has(u)) u++;
     at.set(u, ev);
   }
+  // director7 (dc-r7-script-walk-v5): an event fires only where it makes sense. A scheduled event that does not fit its
+  // turn waits (in schedule order) for the first turn that fits; one event per turn.
+  const pending = [];
+  const fits = (ev, c) => {
+    if (ev === "selftry") return c.keyed && c.asks && !c.howWhy && !c.done;  // "pehle main try karun?": a question she just asked
+    if (ev === "dontknow") return c.keyed && c.asks && !c.done && !c.howWhy; // "pata nahi": to a keyed question still open, never a greeting
+    if (ev === "cricket") return !c.howWhy && !(c.keyed && c.asks && !c.done); // an aside on a telling turn, never as the reply to "kaise mila?"
+    if (ev === "hindi") return !c.howWhy;                                    // a language request, not as a reason
+    if (ev === "picture") return !c.howWhy;                                  // a picture request, not as a reason
+    return true;
+  };
   const misses = new Map();
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   const log = [];
   const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
   return {
-    persona, seed, name, girl, schedule: at, log,
+    persona, seed, name, girl, schedule: new Map(at), pending, log,
     reply(input = {}) {
       const turn = Number(input.turn ?? log.length);
       if (turn >= P.leaveAfter && turn >= MIN_TURNS) return say({ text: pick(rng, LINES.leave), kind: "leave" });
-      const ev = at.get(turn);
-      if (ev) return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
+      if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
+      if (pending.length) {
+        const c0 = input.card ?? input.ask ?? null;
+        const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
+        const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: /\?/.test(String(input.teacher ?? "")),
+          howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid) };
+        const i = pending.findIndex((e) => fits(e, ctx));
+        if (i >= 0) {
+          const [ev] = pending.splice(i, 1);
+          return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
+        }
+      }
       // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again).
       // H1.2: a card merely LABELLED probe that poses a keyed question is a card: a reason only when her line asks how/why,
       // or when the harness says probe and no keyed question is on the table.
@@ -156,7 +183,9 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       const howWhy = PROBE_RE.test(String(input.teacher ?? ""));
       if (input.probe !== false && (howWhy || (input.probe === true && !keyed))) {
         const sure = rng() < P.right.open;
-        return say({ text: pick(rng, REASONS[sure ? "right" : "unsure"]), kind: "reason" });
+        const context = `${input.teacher ?? ""} ${kit?.title ?? ""} ${kit?.topicId ?? ""} ${(kit?.skills ?? []).map((k) => k.title ?? "").join(" ")}`;
+        const pool = REASONS[sure ? "right" : "unsure"].filter((r) => fitsReason(r, context));
+        return say({ text: pick(rng, pool.length ? pool : ["jo aapne dikhaya tha, usse socha"]), kind: "reason" });
       }
       const q = input.card ?? input.ask ?? null;
       if (q && q.key != null && String(q.key).trim()) {

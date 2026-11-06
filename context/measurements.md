@@ -5494,3 +5494,238 @@ ghadi play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366
 ## `ms-r7-voice-opus-transport` — Opus transport: CPU and first audio (2026-11-05)
 
 Main's condition 2, measured before shipping. CPU: 0.41 ms p50, 0.68 ms p95 per 20 ms frame (n = 8,742 frames of real speech), ~23 real-time streams per 0.5 vCPU. First audio, throttled real Chromium: Opus matches or beats ADPCM on every profile (Slow 3G 432 vs 436 ms), and delivers a QA-D12-sized line 3× faster than ADPCM and 10× faster than PCM on Slow 3G (1.2 s vs 3.5 s vs 12.8 s). Found and fixed during the run: the first cut encoded synchronously, which held the first byte ~300 ms and blocked the event loop. Files: evals/tts-transport/results/{cpu,first-audio,first-audio-long}-2026-11-05.json.
+
+
+<!-- merged from inbox/r7-main-14.json -->
+## `jd-r7-director7-2026-11-06`
+
+n = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering), 1,161 calls on taxila-fast (~$0.794), median lesson reply-ready p50 2.65 s (director6 3.00 s). Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on int/r6 8f461ae0b + Brain 32492218 (live v2.2 scripts, H1.2 child). Four Claude judges (one per topic, not blind) counted by hand. Totals: taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, contradictions 51 (code proxy 13), stated-number "?" board turns ≥38, false keys spoken 2. Date 2026-11-06. Write-up: docs/design/round7/judgements/director7-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-brain-15.json -->
+## `ms-r7-director7` (2026-11-05, stream A Brain)
+
+What was run:
+- **Method:** evals/hybrid-side-by-side.mjs `--matrix --director-only --reactive`. The lessons were 4 topics (c4 ch05-t01, c5 ch02-t01, c5 ch02-t02, c6 ch06-t01) × 4 personas.
+- **Run tree:** int/r6 8f461ae0b plus Brain 32492218, using the live v2.2 scripts.
+- **n:** 16 lessons, 448 teacher turns, 230 keyed answers.
+- **Cost:** 1,161 calls, about $0.794, against a cap of 1,300 / $0.85. The dry count was 968, so live was 1.20 × dry.
+- **Source:** evals/hybrid-side-by-side/results/2026-11-05-director7/README.md.
+
+Code counts (the hand judgement is main's):
+- Delivered: 82/82.
+- Verdicts: 229/230. The one miss had two earlier cards' give-up reveals spoken before the verdict.
+- Right called wrong: 0. Wrong called right: 0.
+- Contradictions against the drawn board: 13 flags in 11 turns. Read by hand against each board, they are real and come from two causes:
+  1. A "Yaad karo" recap (the card's W1 `cardPoint`) describing a different board than the card's own: 5 turns.
+  2. The remediation say and its then-card in one turn, with only the say's board drawn: 5 turns.
+  - One more turn is borderline: an ask about an imagined line.
+
+Latency, sequential classify + reply:
+- p50 2,990 → 2,681 ms; p90 4,763 → 4,392 ms.
+- Cut 1 skipped the rewrite on 40 turns, with a p50 of 1,770 ms; rewritten turns had a p50 of 3,816 ms.
+- The fast path took 289 turns, against 124 in director6.
+- The harness parallel bound is not the production figure. A turn.js replay is next.
+
+
+<!-- merged from inbox/r7-face-13.json -->
+## `ms-r7-face-react-2026-11-05` (2026-11-05)
+`evals/face-puppet/react-turns.mjs` → `docs/design/round7/face/react/`: `summary.json`, the per-run JSON with the per-frame face log, and recordings at 412 px (`react-on-412.webm`, `react-off-412.webm`). The page is the real lesson runtime on /dev/desk?live=1, with the scripted Director thinking 1.5 s (`?slow=1500`) and the live puppet. The harness uses SwiftShader and a 412×915 viewport. Each run has two child turns: the child talks for 1.6 s through the link's own talkStart / talkEnd, and the script's replies are "correct" then "not yet". Times are measured from the floor's own changes, not the harness's polling. There is 1 run per arm at ×1 and 3 runs per arm at CPU ×4 and ×6 (2 turns each).
+
+| | ×1 off / on | ×4 off / on | ×6 off / on |
+|---|---|---|---|
+| face thinking after the child stops (p50) | 429 / **14** ms | 514 / **93** ms | 594 / **132** ms |
+| share of the wait spent thinking | 0.80 / **1.00** | 0.82 / **1.00** | 0.82 / **1.00** |
+| her first sound after the child stops (p50) | 2222 / 2234 ms | 2485 / 2431 ms | 2596 / 2537 ms |
+| face speaking after her first audio (p50) | 71 / 77 ms | 67 / 66 ms | 96 / 75 ms |
+| driver work p95 while thinking | 0.9 / 0.7 ms | 8.4 / 7.6 ms | 8.6 / 10.7 ms |
+| jaw while thinking (max) | 0.13 / 0 | 0.13 / 0 | 0.13 / 0 |
+
+Her first sound does not move: the differences are +12 / −54 / −59 ms, which is noise. Driver work is the whole frame's JS. It is inflated by the CPU throttle, and the on and off arms are within each other's noise. The 66-96 ms to the speaking face is the page's own main-thread work when the reply arrives: the face changes on its first drawn frame after her audio starts, so thinking never runs into her speech.
+
+
+<!-- merged from inbox/r7-face-14.json -->
+## `ms-r7-face-context-loss-2026-11-06` (2026-11-06)
+`evals/face-puppet/context-loss.mjs` → `docs/design/round7/face/context-loss.json`. It runs /dev/desk?live=1 with the live puppet forced on, SwiftShader and 412×915, with 3 runs per arm (worker, `?rigworker=1`, path `worker-bitmap`; main thread, `?rigworker=0`, path `bitmap`). Each run forces a context loss with `WEBGL_lose_context` and restores it after 400 ms, then forces a second loss.
+- **After the first loss she is back live** in 3/3 runs on both paths. Loss → re-reveal p50 is 1655 ms on the worker and 1658 ms on the main thread (max 1709 / 1744), including the 400 ms before the restore.
+- **After the second loss she is on her still** in 3/3 runs on both paths, with the poster painted.
+- **0 page errors.**
+- **Before the change** the worker path fell back on the first loss. That is from the code: the old build has no hook to force a loss, so there is no "before" run.
+- **Limits.** This is a desktop browser with SwiftShader. A real Android context loss, and how long its restore takes, is row 8 of `needs-live-low-end-phone.md`.
+
+
+<!-- merged from inbox/r7-games-feeta.json -->
+## `ms-r7-games-feeta-cert`
+
+feeta play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every feeta sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-feeta.test.mjs, 38 tests. An independent checker in millimetres agrees with the law over at least 2000 random acts per case. It walks the ruler's spaces, counts the garden's unit edges square by square, and turns every written length into mm with its own table. Generator p95 is under 5 ms.
+
+
+<!-- merged from inbox/r7-games-guna.json -->
+## `ms-r7-games-guna-cert`
+
+guna play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every guna sample passes at every size (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-guna.test.mjs, 65 tests. An independent checker uses plain arithmetic (a * b, Math.floor(a / b), a % b, Math.ceil, its own nearest-round reading) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms (measured runs are a few ms).
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `ms-r7-m3-applied-2026-11-06` (2026-11-06)
+
+M3 went live on 2026-11-06 at 08:24 UTC with the owner's keys, from int/r6 plus the m3-ledger fix (49e45cb44). Command: `apply --apply --start-now --vm`.
+
+**Created or changed:**
+- taxilacr: Basic → Premium.
+- taxilaforge/m3-ledger: new container.
+- In taxila-env, the ACA jobs m3-keeper (`17 3,15 * * *`) and m3-verify (`41 6 * * *`).
+- Action group m3-owner, and the alert rules m3-alert-lines and m3-verify-silent.
+- taxila-m3-rg, containing taxila-m3-vm.
+
+**Dates:** M3_SINCE is 2026-11-07, so day 60 is 2027-01-05.
+
+**Database:** at 09:10 UTC, taxila-cin-pg was moved to B2s ($6.30 → $2.63/day).
+
+**Probes before applying:** taxila-fast, taxila-brain and the speech token each returned 200.
+
+**First keeper run:** at 08:51, its ledger showed $1.25 on the models lane.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `ms-r7-director8-hand-2026-11-06` (2026-11-06)
+
+director8: script walk v5, v2.2 scripts, H1.2 child, int/r6 7e2d7eea7. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 174/182 (96%) |
+| Verdicts | 200/202 (99%) |
+| Right called wrong | 1 |
+| Wrong called right | 0 |
+| False keys | 1 |
+| Contradictions, by hand | 73 (code checker: 2) |
+
+Where the contradictions come from: about 45 Studio "?", 6 empty picture requests, about 22 runtime segment placement (director7: 51).
+
+Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register 2.5-3; promises 2.5-3.
+
+Cost and speed: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.
+
+Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns. Full write-up: docs/design/round7/judgements/director8-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-main-18.json -->
+## `ms-r7-m3-owner-facts-2026-11-06` (2026-11-06)
+
+**Credit and sponsorship**
+- Credit: ₹230,490.71 remaining, from the MCA billing profile. The Startups dashboard shows $4,770 of $5,000, expiring 2027-04-04.
+- The billing record shows a StartupSponsorship of $5,000 from 2026-07-08 to 2027-04-04, with status LimitRemoved.
+- If Microsoft counts the 180 days from 2026-07-08, day 60 must fall on or before 2027-01-04, so day 1 must be 2026-11-06. All lanes and the registry and VM were already above $1 for 11-06 by 08:58 UTC; to be confirmed once Cost Management closes the day.
+- microsoftazuresponsorships.com does not show this sponsorship, because it sits on an MCA billing profile.
+
+**Deploy SP (sales-enabler-deployer)**
+- Its secret expires 2027-03-30.
+- It now holds User Access Administrator, conditioned so it cannot grant Owner, UAA or RBAC Admin.
+
+**Locks.** CanNotDelete `m3-credit-do-not-delete` on 11 M3-critical resources: the RG taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, both m3 jobs, the action group and both alert rules.
+
+
+<!-- merged from inbox/r7-brain-16.json -->
+## `ms-r7-turn-replay-int10` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs over director8's 16 lessons (4 topics × 4 personas, H1.2 reactive child), on int/r6 7e2d7eea7.
+- POST /api/lesson/start, then /turn on the in-process API: cascade spoken turns on the clause stream, so speculation, the distress read, the note, the guards and the store all run.
+- A throwaway localhost Postgres with every migration applied; Neon never touched.
+- No TTS.
+
+**n:** 432 teacher turns. 2,265 calls, about $1.42, against a cap of 3,200 / $2.00.
+
+**Results:**
+- first-audio-ready (the first guarded clause) p50 1,896 ms, p90 3,055 ms.
+
+| Path | Turns | p50 |
+|---|---|---|
+| Speculation hit | 81 | 1,612 ms |
+| Speculation miss | 76 | 2,491 ms |
+| Code-classified | 275 | 1,779 ms (`@classified` at 799 ms) |
+| Rewritten | 164 | 2,718 ms |
+| Cut 1 skip | 44 | 1,599 ms |
+
+- 3 script cards were skipped on a move-section budget overflow (c4 s1 e3 ×2, e4 ×1); fixed in Brain 9b2c3b4d.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10/README.md.
+
+
+<!-- merged from inbox/r7-brain-17.json -->
+## `ms-r7-code-spec-ab` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs, `--personas steady`.
+- int/r6 7e2d7eea7, plus the harness-only fbaa0f4c, plus Brain 61fb6850 (`TAXILA_CODE_SPEC=on`).
+- Baseline: the steady rows of 2026-11-06-int10, on the same tree without 61fb6850.
+- n = 160 turns each. 939 calls, about $0.62, against a cap of 1,000 / $0.70.
+
+**first-audio-ready p50 / p90:**
+
+| | Baseline | Flag on |
+|---|---|---|
+| All turns | 1,852 / 3,123 ms | 1,954 / 3,498 ms |
+| Code-classified turns | 1,710 ms | 1,747 ms |
+| … speculated reply used (78) | – | 1,490 ms |
+| … missed (18) | – | 2,168 ms |
+| … early clause streamed | 21 turns at 970 ms | 3 turns |
+
+**Conclusion:** as built, the speculated reply loses the streamed early clause. The flag stays off.
+
+**Proposed next step:** stream the speculated reply and hold its first guarded clause until the read returns clean. Fix the 19% misses first: the facts row differs between the speculated and the real plan.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10-codespec/README.md.
+
+
+<!-- merged from inbox/r7-brain-18.json -->
+## `ms-r7-checker-v6-offline` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/hybrid-side-by-side/checks.mjs (the four kinds main named, plus widened false keys).
+- Run over the saved rows of evals/hybrid-side-by-side/results/2026-11-06-director8/ (16 lessons).
+- No model calls.
+- Approximate: a row keeps one screen per turn, not one per segment. The previous turn's board stands in for the answered card's board.
+
+**Results (per topic: c4, c5-t01, c5-t02, c6):**
+
+| Kind | c4 | c5-t01 | c5-t02 | c6 | Judges / old checker |
+|---|---|---|---|---|---|
+| '?' board, value stated (turns) | 0 | 5 | 31 | 0 | judges 40 of c5-t02's 45 |
+| Borrowed why | 9 | 8 | 10 | 9 | |
+| Verdict with content over another board | 8 | 10 | 11 | 2 | |
+| Picture line names an undrawn thing | 2 | 0 | 1 | 2 | |
+| Old per-segment checker | 1 | 1 | 0 | 0 | judges 10 / – / 45 / 4 |
+
+**Source:** tests/r7-brain-v6-checks.test.mjs pins each kind on a director8 row.
+
+
+<!-- merged from inbox/r7-games-hissa.json -->
+## `ms-r7-games-hissa-cert`
+
+hissa play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-hissa.test.mjs, 64 tests. An independent checker uses plain integer arithmetic (numerators and denominators cross-multiplied, the chart in millionths) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.
+
+
+<!-- merged from inbox/r7-games-kram.json -->
+## `ms-r7-games-kram-cert`
+
+kram play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every kram sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-kram.test.mjs, 73 tests. An independent checker agrees with the law over at least 2000 random acts per case. It counts stick houses and rows stick by stick, pairs of points by a double loop, snowflake sides by repeated × 4 and rhythms by brute force over S / L strings, and compares tile figures under its own turns and flips. Generator p95 is under 50 ms (grow/next about 25 ms with cold starts, every other goal under 2 ms).
+
+
+<!-- merged from inbox/r7-studio-25.json -->
+## `ms-r7-director8-card-question-replay-2026-11-06`
+
+director8's card turns re-drawn with the asked-only rule: "?" over a stated, authored number c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 and c6 0 → 0; 42 of 81 "?" turns remain, each an open question. tests/r8-card-stated.test.mjs covers the 4 pilot and 29 staged scripts; 7 staged cards (shape named in the prompt, words-only compare board) fail a picture request on W15 — Learning data.

@@ -2854,8 +2854,8 @@
      "skillId": "c5-maths-ch02-t02-s2",
      "kind": "near_transfer",
      "difficulty": 3,
-     "prompt_en": "Riya read 4/9 of a storybook and Sohan read 7/9 of the same book. Who read more?",
-     "prompt_hi": "Riya ne kahani ki kitaab ka 4/9 padha aur Sohan ne usi kitaab ka 7/9. Kisne zyada padha?",
+     "prompt_en": "{friendF} read 4/9 of a storybook and Sohan read 7/9 of the same book. Who read more?",
+     "prompt_hi": "{friendF} ne kahani ki kitaab ka 4/9 padha aur Sohan ne usi kitaab ka 7/9. Kisne zyada padha?",
      "answer": "Sohan",
      "acceptable": [
       "Sohan, 7/9"
@@ -4057,7 +4057,7 @@
    "skillExamples": [
     {
      "skillId": "c5-maths-ch02-t03-s1",
-     "problem": "Riya folds a square rumal in half and colours one half. Then she folds it in half again, and in half once more (3 folds in all). When she opens it, how many equal parts are there and how many are coloured? Write the fraction coloured after each fold.",
+     "problem": "Nisha folds a square rumal in half and colours one half. Then she folds it in half again, and in half once more (3 folds in all). When she opens it, how many equal parts are there and how many are coloured? Write the fraction coloured after each fold.",
      "givens": [
       "one square rumal",
       "fold 1: in half, one half coloured",
@@ -6641,8 +6641,8 @@
       "Accepts answers that are far from any estimate"
      ],
      "diagnostic": {
-      "prompt_en": "Asha followed every step and got 3,456 + 2,789 = 5,145. Should she trust it?",
-      "prompt_hi": "Asha ne har step kiya aur 3,456 + 2,789 = 5,145 paaya. Kya use is par bharosa karna chahiye?",
+      "prompt_en": "{friendF} followed every step and got 3,456 + 2,789 = 5,145. Should she trust it?",
+      "prompt_hi": "{friendF} ne har step kiya aur 3,456 + 2,789 = 5,145 paaya. Kya use is par bharosa karna chahiye?",
       "options": [
        {
         "text": "No: about 3,500 + 2,800 = 6,300, so 5,145 is too small",
@@ -6953,8 +6953,8 @@
      "skillId": "c5-maths-ch04-t02-s1",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Asha added 3,456 + 2,789 and got 5,145. She says, 'I followed all the steps, so it's right.' Is she right?",
-     "prompt_hi": "Asha ne 3,456 + 2,789 joda aur 5,145 paaya. Woh kehti hai, 'Maine saare steps kiye, isliye sahi hai.' Kya woh sahi hai?",
+     "prompt_en": "{friendF} added 3,456 + 2,789 and got 5,145. She says, 'I followed all the steps, so it's right.' Is she right?",
+     "prompt_hi": "{friendF} ne 3,456 + 2,789 joda aur 5,145 paaya. Woh kehti hai, 'Maine saare steps kiye, isliye sahi hai.' Kya woh sahi hai?",
      "answer": "No. The estimate is about 3,500 + 2,800 = 6,300, so 5,145 is too small; the sum is 6,245",
      "acceptable": [
       "no",
@@ -7994,6 +7994,36 @@
      },
      "demand": "recall",
      "tooEasy": true
+    },
+    {
+     "id": "c5-maths-ch05-t01-i19",
+     "skillId": "c5-maths-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A 10-storey building is about 30 ___ tall. Which unit fills the blank: cm, m or km?",
+     "prompt_hi": "Ek 10 manzil ki building lagbhag 30 ___ oonchi hoti hai. Khaali jagah mein kaunsa unit aayega: cm, m ya km?",
+     "answer": "m",
+     "acceptable": [
+      "metre",
+      "metres",
+      "meter",
+      "meters",
+      "30 m"
+     ],
+     "targetsMisconception": "c5-maths-ch05-t01-m-km-for-big",
+     "hints": [
+      "A building is big, but is it as long as a road between two towns?",
+      "One storey is about 3 metres tall.",
+      "10 storeys of about 3 m each make about 30 ___.",
+      "m: the building is about 30 m tall."
+     ],
+     "verified": {
+      "solverAnswer": "m",
+      "agrees": true,
+      "note": "Learning in-session 2026-11-05 (staged script ladder needs a third s3 rung): a tall building is measured in m, not km (30 km would be far taller than any mountain); 10 storeys x about 3 m = about 30 m."
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c5-maths-ch05-t01-rl-o2",
@@ -17693,8 +17723,8 @@
      "skillId": "c5-maths-ch11-t02-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "For a school game, Riya runs three complete laps around a rectangular court, 35 m long and 20 m wide. What distance does she run?",
-     "prompt_hi": "School game mein Riya 35 m lambe aur 20 m chaude rectangular court ke 3 poore chakkar lagati hai. Woh kitni door daudti hai?",
+     "prompt_en": "For a school game, {friendF} runs three complete laps around a rectangular court, 35 m long and 20 m wide. What distance does she run?",
+     "prompt_hi": "School game mein {friendF} 35 m lambe aur 20 m chaude rectangular court ke 3 poore chakkar lagati hai. Woh kitni door daudti hai?",
      "answer": "330 m",
      "acceptable": [
       "330",
@@ -19148,26 +19178,26 @@
      "skillId": "c5-maths-ch12-t01-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "At a school race, Riya finishes in 119 seconds and Mehak in 2 minutes. Who finishes first, and by how many seconds?",
-     "prompt_hi": "School race mein Riya 119 second mein aur Mehak 2 minute mein finish karti hai. Kaun pehle finish karti hai, aur kitne second se?",
-     "answer": "Riya, by 1 second",
+     "prompt_en": "At a school race, {friendF} finishes in 119 seconds and Mehak in 2 minutes. Who finishes first, and by how many seconds?",
+     "prompt_hi": "School race mein {friendF} 119 second mein aur Mehak 2 minute mein finish karti hai. Kaun pehle finish karti hai, aur kitne second se?",
+     "answer": "{friendF}, by 1 second",
      "acceptable": [
-      "Riya by one second",
-      "Riya, 1 second",
-      "Riya ek second se"
+      "{friendF} by one second",
+      "{friendF}, 1 second",
+      "{friendF} ek second se"
      ],
      "hints": [
       "Can you compare the times in the same unit?",
       "Turn Mehak’s time into seconds, then compare.",
       "Difference = Mehak’s seconds − ___ seconds.",
-      "Riya, by 1 second: Mehak takes 120 seconds."
+      "{friendF}, by 1 second: Mehak takes 120 seconds."
      ],
      "ge": 4.5,
      "geSource": "raters-v2",
      "demand": "reason",
      "relevel": "harder",
      "verified": {
-      "solverAnswer": "Riya finishes first by 1 second",
+      "solverAnswer": "{friendF} finishes first by 1 second",
       "agrees": true,
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
@@ -19320,8 +19350,8 @@
       "Orders runners from biggest time as first"
      ],
      "diagnostic": {
-      "prompt_en": "Who won the race: Asha with 15.2 s or Bina with 14.8 s?",
-      "prompt_hi": "Race kisne jeeti: Asha 15.2 s mein ya Bina 14.8 s mein?",
+      "prompt_en": "Who won the race: {friendF} with 15.2 s or Bina with 14.8 s?",
+      "prompt_hi": "Race kisne jeeti: {friendF} 15.2 s mein ya Bina 14.8 s mein?",
       "options": [
        {
         "text": "Bina, because she took less time",
@@ -19329,7 +19359,7 @@
         "correct": true
        },
        {
-        "text": "Asha, because 15.2 is bigger",
+        "text": "{friendF}, because 15.2 is bigger",
         "misconceptionId": "c5-maths-ch12-t02-m-bigger-time-faster",
         "correct": false
        }
@@ -19405,21 +19435,21 @@
      "skillId": "c5-maths-ch12-t02-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "In a 100 m race, Asha took 15 seconds and Bina took 17 seconds. Who was faster?",
-     "prompt_hi": "100 m race mein Asha ko 15 second aur Bina ko 17 second lage. Kaun tez thi?",
-     "answer": "Asha",
+     "prompt_en": "In a 100 m race, {friendF} took 15 seconds and Bina took 17 seconds. Who was faster?",
+     "prompt_hi": "100 m race mein {friendF} ko 15 second aur Bina ko 17 second lage. Kaun tez thi?",
+     "answer": "{friendF}",
      "acceptable": [
-      "Asha, 15 seconds"
+      "{friendF}, 15 seconds"
      ],
      "hints": [
       "Did they run the same distance?",
       "Yes, so compare the times.",
       "Less time means ___.",
-      "Asha was faster."
+      "{friendF} was faster."
      ],
      "targetsMisconception": "c5-maths-ch12-t02-m-bigger-time-faster",
      "verified": {
-      "solverAnswer": "Asha",
+      "solverAnswer": "{friendF}",
       "agrees": true,
       "note": "Blind-solved before reading key; matches. prompt_hi matches prompt_en. Class-5 appropriate."
      },
@@ -19463,8 +19493,8 @@
      "skillId": "c5-maths-ch12-t02-s2",
      "kind": "practice",
      "difficulty": 2,
-     "prompt_en": "Asha ran in 15.2 s and Bina in 14.8 s. Who won, and by how much?",
-     "prompt_hi": "Asha ne 15.2 s mein aur Bina ne 14.8 s mein daud poori ki. Kaun jeeti, aur kitne se?",
+     "prompt_en": "{friendF} ran in 15.2 s and Bina in 14.8 s. Who won, and by how much?",
+     "prompt_hi": "{friendF} ne 15.2 s mein aur Bina ne 14.8 s mein daud poori ki. Kaun jeeti, aur kitne se?",
      "answer": "Bina, by 0.4 s",
      "acceptable": [
       "Bina",
@@ -19940,24 +19970,24 @@
      "skillId": "c5-maths-ch12-t02-s1",
      "kind": "contrast",
      "difficulty": 4,
-     "prompt_en": "For a 50 m swim, Riya took 32.09 s, Aman 32.9 s, and Tara 32.19 s. Give their names in order from fastest to slowest.",
-     "prompt_hi": "50 m swimming mein Riya ne 32.09 s, Aman ne 32.9 s, aur Tara ne 32.19 s liye. Sabse tez se sabse dheere tak naam batao.",
-     "answer": "Riya, Tara, Aman",
+     "prompt_en": "For a 50 m swim, {friendF} took 32.09 s, Aman 32.9 s, and Sana 32.19 s. Give their names in order from fastest to slowest.",
+     "prompt_hi": "50 m swimming mein {friendF} ne 32.09 s, Aman ne 32.9 s, aur Sana ne 32.19 s liye. Sabse tez se sabse dheere tak naam batao.",
+     "answer": "{friendF}, Sana, Aman",
      "acceptable": [
-      "Riya then Tara then Aman"
+      "{friendF} then Sana then Aman"
      ],
      "hints": [
       "Can you write every timing to two decimal places?",
       "Compare hundredths after lining up the decimal points.",
       "From least time to greatest: ___, ___, ___.",
-      "Riya, Tara, Aman: their times increase in that order."
+      "{friendF}, Sana, Aman: their times increase in that order."
      ],
      "ge": 5.75,
      "geSource": "raters-v2",
      "demand": "reason",
      "relevel": "harder",
      "verified": {
-      "solverAnswer": "Riya, Tara, Aman",
+      "solverAnswer": "{friendF}, Sana, Aman",
       "agrees": true,
       "how": "code",
       "solver": "DeepSeek-V4-Pro",
@@ -22025,8 +22055,8 @@
      "skillId": "c5-maths-ch14-t01-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya guides her friend: 'From the bus stand go north 2 blocks, then turn right and go west.' Check her directions.",
-     "prompt_hi": "Riya dost ko raasta batati hai: 'Bus stand se 2 block north jao, phir daayein mudkar west jao.' Check karo.",
+     "prompt_en": "{friendF} guides her friend: 'From the bus stand go north 2 blocks, then turn right and go west.' Check her directions.",
+     "prompt_hi": "{friendF} dost ko raasta batati hai: 'Bus stand se 2 block north jao, phir daayein mudkar west jao.' Check karo.",
      "answer": "Wrong: turning right from north faces east, not west",
      "acceptable": [
       "wrong",
@@ -23291,8 +23321,8 @@
      "skillId": "c5-maths-ch15-t01-s1",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Each TV picture stands for 2 hours of screen time. Riya's row has 3 TV pictures. How many hours is that?",
-     "prompt_hi": "Har TV tasveer 2 ghante screen time ke barabar hai. Riya ki row mein 3 TV tasveerein hain. Kitne ghante hue?",
+     "prompt_en": "Each TV picture stands for 2 hours of screen time. {friendF}'s row has 3 TV pictures. How many hours is that?",
+     "prompt_hi": "Har TV tasveer 2 ghante screen time ke barabar hai. {friendF} ki row mein 3 TV tasveerein hain. Kitne ghante hue?",
      "answer": "6 hours",
      "acceptable": [
       "6"
@@ -24498,8 +24528,8 @@
      "skillId": "c5-maths-ch15-t02-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "A bar graph of phone data used has scale marks at 0, 150, 300 and 450 MB. Riya’s bar ends one-third of the way from 300 to 450 MB. How much data did she use?",
-     "prompt_hi": "Phone data ke bar graph mein scale marks 0, 150, 300 aur 450 MB par hain. Riya ka bar 300 se 450 MB ke beech ka ek-tihai raasta tay karta hai. Usne kitna data use kiya?",
+     "prompt_en": "A bar graph of phone data used has scale marks at 0, 150, 300 and 450 MB. {friendF}’s bar ends one-third of the way from 300 to 450 MB. How much data did she use?",
+     "prompt_hi": "Phone data ke bar graph mein scale marks 0, 150, 300 aur 450 MB par hain. {friendF} ka bar 300 se 450 MB ke beech ka ek-tihai raasta tay karta hai. Usne kitna data use kiya?",
      "answer": "350 MB",
      "acceptable": [
       "350",

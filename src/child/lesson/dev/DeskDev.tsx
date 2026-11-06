@@ -63,7 +63,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const young = family === "young";
   const rec = teacherRecord(null, band);
   const play = name === "work-play";
-  const work = name.startsWith("work-") || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
+  // r7 (landing captures): hf-beat = the work-beat board with the hands-free dock (names starting "hf" get it below)
+  const work = name.startsWith("work-") || name === "hf-beat" || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
   const floorOf = (n: string): Floor => {
     if (n === "work-beat") return "speaking"; // a board beat draws while she speaks
     if (n === "hf-speaking") return "speaking";
@@ -95,7 +96,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "stop-checkin") tray = { kind: "tiles", tiles: [{ id: "stop:continue", label: "Chalo, aage" }, { id: "break:rest", label: "Chhota break" }, { id: "stop:end", label: "Aaj ke liye bas" }], overlay: null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
-  else if (name === "work-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
+  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
   // r4: a skeleton activity in the tray (the shade-fraction skeleton), for the Kaksha skin shots
   else if (name === "work-skeleton") tray = { kind: "studio", studio: { slotId: "dev:sk:slot", intentId: "dev:sk", state: "revealed", artifact: { kind: "skeleton", stage: { w: 360, h: 320 }, skeleton: "fraction-parts", archetype: "shade_fraction", intentId: "dev:sk", params: { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" }, strings: {} } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };

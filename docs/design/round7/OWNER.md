@@ -1,12 +1,11 @@
 # Round 7: for the owner
 
-Updated by the main loop at each integration. Last update: 2026-11-05 evening UTC, at integration 7 (`int/r6`).
+Updated by the main loop at each integration. Last update: 2026-11-06 morning UTC, at integration 9 (`int/r6` 8f461ae0b).
 - **Build checks:** tsc and the build are green.
-- **Unit tests:** 4598 of 4611 pass, both in the new 9-minute per-file gate and single-process.
-  - 1 failure: a test that wrongly walked a new lesson script. Fixed in tests only, and re-proved.
-  - 11 skipped; 1 is a known todo.
-- **Live model calls so far:** only the lesson-brain runs, about $3.5 plus director5 (capped at $0.70), on the stream's 2026-10-10 AI keys.
+- **Unit tests:** 4771 of 4783 pass, both in the per-file gate and single-process; 0 failures, 11 skipped, 1 known todo.
+- **Live model calls so far:** only the lesson-brain runs (director1–7), about $6 in total, on the stream's 2026-10-10 AI keys.
 - **Nothing is released:** deploying needs the full key set.
+- **Founders Hub (row 7): apply by 2026-11-07.** Corrected 2026-11-06 from your mail: business verification completed on 2026-07-15. The 180 days end on 2027-01-11, so day 1 of the 60 must fall on or before 2026-11-13; on or before 2026-11-08 if Microsoft counts from the 2026-07-10 ticket. The automation is built and merged (`scripts/m3.mjs`). It is **not running**: this environment has no Azure keys. The VM is taken as yes (your 2026-11-06 message: "rent or whatever we need"). Still needed from you: the keys, and yes/no on the PostgreSQL downsize.
 
 ## 1. Decisions only you can make
 
@@ -20,7 +19,7 @@ Updated by the main loop at each integration. Last update: 2026-11-05 evening UT
 | 6 | Volt-emblem avatars; on-device speaker matching | **Avatars, built and reversible:** App's onboarding sweep (2026-11-05) found the first pick a 13-year-old makes is a painted cartoon animal. Classes 4-9 now pick from 12 line emblems instead (orbit, comet, bolt, …); classes 1-3 keep the animals, and existing picks still render. One switch reverts it (`OLDER_AVATAR_SET`); say if you want the animals back. Speaker matching: still parked. |
 | 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
 | 6c | Parent term report, section S18 (the term report itself is built) | S18 would show the child's own words ("what I liked this term") and let the parent write back. The child's quote needs a show-consent step from the child; a parent free-text reply breaks the rule that every parent-facing line is structured and checked. Recommendation: leave S18 out until the test phase. |
-| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." If verification was 2026-07-08, the 60 days must start by **2026-11-06**. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Alerts go to identities assigned Owner directly on the subscription; if you hold Owner through a group, also add the env var `M3_ALERT_EMAIL`. Also: is the spending limit back on? |
+| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." Business verification completed on **2026-07-15** (per the support desk's mail), so the 180 days end on 2027-01-11 and day 1 of the 60 must fall on or before **2026-11-13**; on or before 2026-11-08 if counted from the 2026-07-10 ticket. **Apply by 2026-11-07.** The VM counts as a yes. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Alerts go to identities assigned Owner directly on the subscription; if you hold Owner through a group, also add the env var `M3_ALERT_EMAIL`. Also: is the spending limit back on? |
 
 ## 2. Spend batch (Azure Foundry, Direct): Azure only authors
 
@@ -127,6 +126,32 @@ in parts, start with tiers 1 and 2 (~$21).
   - Decision (`dc-r7-script-walk-v4`): fix those. Learning may now start writing the next 30 topics in the final format, held back from children until director7 passes.
   - Write-up: `judgements/director6-2026-11-05.md`.
   - Separately, a quiet-hour re-test showed Azure's model answers in about 1.4 s at any hour. Her ~3 s reply time is our own pipeline, so it's ours to cut.
+- 2026-11-06: director7 (16 lessons, $0.79). **The teaching itself now works.**
+
+  | Measure | director7 | Bar |
+  |---|---|---|
+  | Beats really taught | 97% | ≥ 80% |
+  | Answers judged | 99% | ≥ 90% |
+  | Answers marked wrongly, either way | 0 | 0 |
+
+  - The worked example is real.
+  - She walks all three skills in order.
+  - Reply time is down to 2.65 s.
+  - What still fails is what's on screen while she speaks: 51 places, because one board shows while she describes the next. Plus a "?" over numbers she says, and not acting on "samajh nahi aaya", "phir se bolo", "pehle main try karun" or a promised return to cricket.
+  - Decision (`dc-r7-script-walk-v5`): switch the board mid-turn at the exact words, and treat those child requests as moves.
+  - Write-up: `judgements/director7-2026-11-06.md`.
+- 2026-11-06: director8 (16 lessons, $0.80). The teaching still works: 96% of beats taught, 99% of answers judged, 0 false "wrong"s. Bridges between skills are now spoken every time.
+  - Screen/speech fails worse overall: 73 mismatches.
+    - About 45 are a new Studio bug: its "?" rule now hides numbers she says.
+    - About 22 are sentences shown on the wrong board (director7 had 51 of this kind).
+  - One wrong answer key was spoken, and one right answer was called wrong.
+  - She still doesn't act on "samajh nahi aaya", and never really comes back to cricket.
+  - Faster:
+    - Reply-ready time: 2.29 s.
+    - In the real app path, the first spoken words are ready in 1.90 s (p50).
+  - Decision (`dc-r7-script-walk-v6`): fix Studio's "?" rule; put every sentence on its own board; make requests and promised returns real.
+  - The 30 new topics stay held.
+  - Write-up: `judgements/director8-2026-11-06.md`.
 
 ## 4. Calls the main loop took that you may want to reverse
 

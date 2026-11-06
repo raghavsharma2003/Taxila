@@ -28,3 +28,8 @@ test("the World/Hangar sheet is really fixed (it opened below the page end on ph
   assert.match(css, /\.kx-screen > \.kx-sheet\.kx-sheet \{ position: fixed; \}/);
   assert.match(css, /\.kx-hasdock > \.kx-sheet\.kx-sheet \{ bottom: calc\(64px/);
 });
+
+test("Revisit on a station starts a lesson on its topic through the plan's own route, never on a hold", () => {
+  assert.match(read("src/ui-v3/kaksha/views.tsx"), /testid="station-revisit"/);
+  assert.match(read("src/ui-v3/kaksha/screens/KakshaWorld.tsx"), /revisitTo=\{cachedHold\(cid\) \? null : \(skillId\) => \{ const t = topicOfSkill\(skillId\); return t \? `\/c\/\$\{cid\}\/lesson\/new\?topic=\$\{encodeURIComponent\(t\)\}`/);
+});

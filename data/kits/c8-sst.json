@@ -2164,22 +2164,22 @@
           "skillId": "c8-sst-ch05-t01-s4",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Votes in a constituency: Asha 41,200; Bilal 38,900; Charan 22,400; NOTA 1,500. Who wins?",
-          "prompt_hi": "Ek constituency ke vote: Asha 41,200; Bilal 38,900; Charan 22,400; NOTA 1,500. Kaun jeeta?",
-          "answer": "Asha wins with the most votes (41,200), even though that is less than half of all votes.",
+          "prompt_en": "Votes in a constituency: {friendF} 41,200; Bilal 38,900; Charan 22,400; NOTA 1,500. Who wins?",
+          "prompt_hi": "Ek constituency ke vote: {friendF} 41,200; Bilal 38,900; Charan 22,400; NOTA 1,500. Kaun jeeta?",
+          "answer": "{friendF} wins with the most votes (41,200), even though that is less than half of all votes.",
           "acceptable": [
-            "Asha",
-            "Asha jeeti"
+            "{friendF}",
+            "{friendF} jeeti"
           ],
           "hints": [
             "Ask who has the biggest number",
             "Point: the rule is 'most votes', not 'more than half'",
             "Prompt: highest = ___",
-            "Assert: Asha wins under first-past-the-post"
+            "Assert: {friendF} wins under first-past-the-post"
           ],
           "targetsMisconception": "c8-sst-ch05-t01-m2",
           "verified": {
-            "solverAnswer": "Asha (most votes, first-past-the-post).",
+            "solverAnswer": "{friendF} (most votes, first-past-the-post).",
             "agrees": true,
             "note": "Matches key; facts checked."
           }
@@ -5337,8 +5337,8 @@
             "Cannot name a single Fundamental Duty"
           ],
           "diagnostic": {
-            "prompt_en": "Riya says: 'I have a right to clean surroundings, but I can throw my wrappers on the road.' What is wrong?",
-            "prompt_hi": "Riya kehti hai: 'Mujhe saaf mahaul ka haq hai, lekin main apne wrapper sadak par phenk sakti hoon.' Kya galat hai?",
+            "prompt_en": "{friendF} says: 'I have a right to clean surroundings, but I can throw my wrappers on the road.' What is wrong?",
+            "prompt_hi": "{friendF} kehti hai: 'Mujhe saaf mahaul ka haq hai, lekin main apne wrapper sadak par phenk sakti hoon.' Kya galat hai?",
             "options": [
               {
                 "text": "Nothing; rights do not come with duties",
