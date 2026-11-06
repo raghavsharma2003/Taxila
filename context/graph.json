@@ -25456,6 +25456,20 @@
    "at": "2026-11-05",
    "title": "Round 7 (Voice → C1 Studio M4): the child's words reach server code in-process through server/duplex/childText.js: onChildText(lessonId, fn) → unsubscribe; events { lessonId, itemId, seq, text (the turn's cumulative, echo-filtered text), final, t, at }. Finals come from every turn route: /api/lesson/turn-audio here, /api/lesson/turn through docs/patches/to-brain/012. Each is emitted before the turn runs, so one source works on every lane, including D5's default ear, which has no partials. Live partials come from the device (cascadeLink, ≤ 1 post / 400 ms, the newest text) to POST /api/duplex/child-text only when /api/duplex/config says partialPost: true, which needs TAXILA_DUPLEX_PARTIAL_POST=on and duplex on. With no listener, that route answers 204 without reading the database; otherwise it allows only the caller's own child's open lesson and ≤ 1 post per 300 ms. Safety by predicate: text scanSafety reads as distress is never handed to a listener. The registered route is new because /api/duplex/partial sits in the unregistered slice table. Reverse (unset TAXILA_DUPLEX_PARTIAL_POST) if the extra posts show up in replica load or D4 first-sound.",
    "source": "inbox/r7-voice-9.json"
+  },
+  {
+   "id": "jd-r7-director7-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director7 (v4 walk, v2.2 scripts, H1.2; 16 lessons, 1,161 calls, ~$0.794) judged by 4 Claude judges by hand: beats taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, but contradictions 51 (code proxy 13) and ≥38 stated-number \"?\" board turns; screen axis 2, promises 2–2.5; 2 false keys spoken on closing a missed card.",
+   "source": "inbox/r7-main-14.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v5",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Board/speech sync and child requests as moves: segment-tagged turns with board switches at segment boundaries (closure before switch, recap only over its own board); samajh nahi aaya / phir se bolo / try-first / picture as moves never grades; parks answered with real content before the wrap and language promise held; bridges spoken; one verdict sentence, keys from authored forms (keyInLang fix), close with why, ≤60-word turns; Studio never draws a stated number as \"?\", picture request always draws; v2.2 data fixes; per-segment contradiction checker; gate adds 0 false keys.",
+   "source": "inbox/r7-main-14.json"
   }
  ],
  "edges": [
@@ -39828,6 +39842,16 @@
    "src": "dc-r7-voice-child-text-seam",
    "rel": "part_of",
    "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "measured_by",
+   "dst": "jd-r7-director7-2026-11-06"
+  },
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v4"
   }
  ]
 }

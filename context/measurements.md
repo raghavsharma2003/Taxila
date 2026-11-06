@@ -5494,3 +5494,9 @@ ghadi play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366
 ## `ms-r7-voice-opus-transport` — Opus transport: CPU and first audio (2026-11-05)
 
 Main's condition 2, measured before shipping. CPU: 0.41 ms p50, 0.68 ms p95 per 20 ms frame (n = 8,742 frames of real speech), ~23 real-time streams per 0.5 vCPU. First audio, throttled real Chromium: Opus matches or beats ADPCM on every profile (Slow 3G 432 vs 436 ms), and delivers a QA-D12-sized line 3× faster than ADPCM and 10× faster than PCM on Slow 3G (1.2 s vs 3.5 s vs 12.8 s). Found and fixed during the run: the first cut encoded synchronously, which held the first byte ~300 ms and blocked the event loop. Files: evals/tts-transport/results/{cpu,first-audio,first-audio-long}-2026-11-05.json.
+
+
+<!-- merged from inbox/r7-main-14.json -->
+## `jd-r7-director7-2026-11-06`
+
+n = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering), 1,161 calls on taxila-fast (~$0.794), median lesson reply-ready p50 2.65 s (director6 3.00 s). Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on int/r6 8f461ae0b + Brain 32492218 (live v2.2 scripts, H1.2 child). Four Claude judges (one per topic, not blind) counted by hand. Totals: taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, contradictions 51 (code proxy 13), stated-number "?" board turns ≥38, false keys spoken 2. Date 2026-11-06. Write-up: docs/design/round7/judgements/director7-2026-11-06.md.

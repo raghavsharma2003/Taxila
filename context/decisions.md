@@ -7978,3 +7978,63 @@ The encoder is `opusscript` (MIT, libopus in WASM). Adding it is a dependency pa
 ## `dc-r7-voice-child-text-seam` — the child's words, in-process, for Studio's speculative builds (2026-11-05)
 
 Studio's M4 policy re-ranks and invalidates pre-built pieces from what the child is saying. Its build decisions live server-side, so the seam is a server emitter, not a client event. Finals are the reliable source on every lane. D5's default ear gives one final per turn, so partials are a pure speed-up where the ear provides them (D4, or a delta-streaming D5 ear); they are off by default because each one is a request. Nothing distress-shaped is ever passed on, so nothing is built from a disclosure. Tests: tests/r7-voice-child-text.test.mjs.
+
+
+<!-- merged from inbox/r7-main-14.json -->
+## `dc-r7-script-walk-v5`
+
+(board/speech sync, and child requests as moves)
+
+Nothing here needs a format change beyond v2.2 (all four judges agree). **The reversal is not relevant**: the teaching layer passes.
+
+**Runtime** (Brain, with Studio):
+- **B1. One board per description.**
+  - A turn's speech is split into segments, each tagged with the board it describes: remediation say, then-card, closure, recap.
+  - Brain sends segment boundaries (clause index + board ref); Studio switches the board at each boundary, timed by Voice's word onsets (PR #62) or the clause boundary.
+  - The "Toh poora jawab" closure is spoken before the switch to the next card's board.
+  - A recap is spoken only when its board is the one on screen; otherwise it is dropped.
+- **B2. Child requests are moves, never grades.**
+  - "samajh nahi aaya" → a smaller re-explanation, in other words or on another board, not a repeat.
+  - "phir se bolo" or "sawaal kya hai" → re-pose the card, with no verdict.
+  - "pehle main try karun" → the next step is handed over as a card.
+  - A picture request → the live card's board is redrawn (never nothing).
+- **B3. Real returns.**
+  - A parked aside is answered with one line of real content before the wrap, tied back to the lesson when it fits. No stub.
+  - A language promise is a mode that holds for the lesson.
+- **B4. The authored bridge or hook is spoken** at every change of skill.
+- **B5. Render hygiene.**
+  - One verdict sentence per turn.
+  - Keys are spoken from the authored key or accept forms (the `keyInLang` fix, with a test over every key).
+  - A close says the answer and its why.
+  - A turn is at most about 60 words, except a worked step.
+  - Her lead-in never restates a wrong method as her own.
+
+**Studio:**
+- **S1.** Check and compare boards never draw a stated number as "?". Only the asked value is "?".
+- **S2.** Segment-timed board switching, as in B1.
+- **S3.** A picture request always draws the live card's board.
+
+**Data, v2.2 fixes** (Learning; no format change):
+- c4 s1-e3's ask fits its board.
+- c5-t02's remediation pairs differ from its check pairs.
+- c5-t01 s2 e2's point carries its must-say, and s3's then-card is written as speech.
+- c6 skill-1 then-cards use a fresh figure.
+
+**Harness** (Brain, with Learning):
+- the contradiction checker is per segment, against the board shown during that segment;
+- "sawaal kya hai" and "phir se bolo" are never counted as keyed answers;
+- the child's events fire only in context.
+
+**Next run: director8.** The same 16 lessons, and a cap sized from the dry run (about $0.85).
+
+**The gate:**
+- unchanged:
+  - ≥ 80% taught;
+  - ≥ 90% verdicts;
+  - 0 contradictions;
+  - 0 right called wrong;
+  - 0 wrong called right;
+  - every judge axis ≥ 3.5;
+- **plus: 0 false keys spoken.**
+
+Learning's staged batch and Studio's 011 stay held until director8 passes.
