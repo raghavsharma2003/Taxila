@@ -22,6 +22,7 @@ import { makeGhadiView } from "./ghadi/ghadi.view.ts";
 import { makeNakshaView } from "./naksha/naksha.view.ts";
 import { makeGunaView } from "./guna/guna.view.ts";
 import { makeKramView } from "./kram/kram.view.ts";
+import { makeHissaView } from "./hissa/hissa.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeFeetaView } from "./feeta/feeta.view.ts";
 
@@ -81,5 +82,9 @@ export const VIEWS: Record<string, MakeView> = {
   "kram/machine": makeKramView,
   "kram/beats": makeKramView,
   "kram/nest": makeKramView,
+  "hissa/fold": makeHissaView,
+  "hissa/pour": makeHissaView,
+  "hissa/grid": makeHissaView,
+  "hissa/story": makeHissaView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
