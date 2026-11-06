@@ -18,7 +18,7 @@
 // Never prints a key, a SAS or a URL with credentials: logs carry lane, host, status codes and numbers.
 //
 // env: M3_ROLE=keeper, M3_UNTIL (YYYY-MM-DD; after it the job does nothing), M3_STORAGE_ACCOUNT, M3_STORAGE_KEY,
-// M3_CONTAINER (m3), M3_{MODELS,TTS,STORAGE}_{TARGET,CAP} (USD), M3_AOAI_{ENDPOINT,KEY,DEPLOYMENT,PRICE_IN,PRICE_CACHED,
+// M3_CONTAINER (m3-ledger), M3_{MODELS,TTS,STORAGE}_{TARGET,CAP} (USD), M3_AOAI_{ENDPOINT,KEY,DEPLOYMENT,PRICE_IN,PRICE_CACHED,
 // PRICE_OUT}, M3_AOAI_FALLBACK_{ENDPOINT,KEY,DEPLOYMENT,PRICE_IN,PRICE_CACHED,PRICE_OUT} (optional; endpoint and key
 // default to the primary's), M3_AOAI_MAX_TOKENS (6000), M3_AOAI_CONCURRENCY (6), M3_SPEECH_{REGION,KEY},
 // M3_SPEECH_FALLBACK_{REGION,KEY}, M3_TTS_PRICE_PER_MCHARS (15), M3_TTS_VOICE_HI, M3_TTS_VOICE_EN, M3_TTS_CONCURRENCY (4),
@@ -97,7 +97,7 @@ const E = process.env;
 const n = (k, d) => (E[k] !== undefined && E[k] !== "" && Number.isFinite(Number(E[k])) ? Number(E[k]) : d);
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const BACKOFF = n("M3_BACKOFF_MS", 5000);
-const SA = E.M3_STORAGE_ACCOUNT, CONTAINER = E.M3_CONTAINER || "m3", XV = "2023-11-03";
+const SA = E.M3_STORAGE_ACCOUNT, CONTAINER = E.M3_CONTAINER || "m3-ledger", XV = "2023-11-03";
 
 function blob(method, name, { body = null, headers = {}, query = {} } = {}) {
   const path = `/${CONTAINER}${name ? "/" + name : ""}`;
