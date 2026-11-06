@@ -35,7 +35,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
-import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, saidIn as saidIn0, saidMust, fillFriend } from "./script.js";
+import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -126,7 +126,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { alsoReading, alsoQuestion, questionShaped, bareAck } from "../conversation/lexicon.js";
+import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
 import { priorNotes } from "./session/prior.js";
@@ -677,7 +677,7 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...(point ? { point } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
+        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
@@ -694,14 +694,20 @@ function walkNextV2(s, input, prefix, sk) {
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
           rendered: problem, ...ref("worked", "worked:problem", we.board), ...sayFirst });
       }
+      // v6 R3: "pata nahi" / "samajh nahi aaya" to a step just shown is that step again, smaller, once (never the next one)
+      const ws = w.workedStep ?? 0;
+      if (ws > 0 && ws !== Number.MAX_SAFE_INTEGER && s.lastMove?.scriptBeat?.beatId === `worked:step${ws}` && w.smallerStep !== ws - 1
+        && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) { w.workedStep = ws - 1; w.smallerStep = ws - 1; }
       // v4 W2 (director6: steps glued into one block, the givens re-read): each step is its own turn, do → result → why
       const steps = (we.steps ?? []).map((st) => scriptWorkedStepLine(st, lang)).filter(Boolean);
       if ((w.workedStep ?? 0) < steps.length) {
         const k = w.workedStep ?? 0;
         w.workedStep = k + 1;
+        // v6 R3: a step they did not follow is said again smaller (its reason first, then the step), once
+        const small = w.smallerStep === k ? scriptWorkedStepSmaller(we.steps[k], lang) : null;
         return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { skillId, format: "F2", stuck: true,
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, `step ${k + 1} of ${steps.length}`],
-          whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, rendered: [steps[k]], ...ref("worked", `worked:step${k + 1}`, we.board) });
+          whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, rendered: [small ?? steps[k]], ...(small ? { smaller: true } : {}), ...ref("worked", `worked:step${k + 1}`, we.board) });
       }
       s.scriptCard = item; s.phase = "practice";
       activate(s, item);
@@ -1302,7 +1308,9 @@ function afterWhy(s, input, item) {
     const p = trap(s, kit, item, cls.misconceptionId);
     if (p) return p;
   }
-  return poseNext(s, input, verdict(cls) === "right" ? SH.CONFIRM.whyGood : SH.CONFIRM.whyMissed);
+  // v6 R3 (director8 c4: 5 of 7 probe answers ignored): the next beat opens with one line that takes up what they said
+  const next = poseNext(s, input, verdict(cls) === "right" ? SH.CONFIRM.whyGood : SH.CONFIRM.whyMissed);
+  return next ? { ...next, probeAck: true } : next;
 }
 
 function afterMiss(s, input, item) {
@@ -1543,6 +1551,10 @@ function helpMove(s, input, item, help) {
     const [kind, id] = String(s.walk.beats[s.walk.i] ?? "").split(":");
     if (kind === "explain" || kind === "worked") {
       if (kind === "explain") s.walk.smaller = id;
+      // v6 R3 (director8 offtopic c4 T45: "samajh nahi aaya" on a worked step got the NEXT step): the step just shown is said
+      // again, smaller, once; never the next one
+      if (kind === "worked" && s.walk.workedPosed && (s.walk.workedStep ?? 0) > 0 && !s.activeItemId && s.walk.workedStep !== Number.MAX_SAFE_INTEGER
+        && s.walk.smallerStep !== s.walk.workedStep - 1) { s.walk.workedStep -= 1; s.walk.smallerStep = s.walk.workedStep; }
       s.activeItemId = undefined;
       const note = help === "slower" ? SH.SLOWER : help === "story" ? SH.STORY_ASKED : help === "example" ? SH.EXAMPLE_ON_BEAT : SH.ANOTHER_ASKED;
       const p = walkNext(s, input, note);
@@ -2764,6 +2776,9 @@ export function step(prev, input) {
   // dc-r7-script-walk-v2 R1: the words this beat must say (brain/say.js holds her line to them; the next turn checks them)
   if (p.mustSay?.length) move.mustSay = [...p.mustSay];
   if (p.point) move.point = String(p.point);
+  // v6 R3: the same beat or step again, smaller (brain/say.js never says it in the same words)
+  if (p.smaller) move.smaller = true;
+  if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
   if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);

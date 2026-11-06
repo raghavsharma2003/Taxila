@@ -123,3 +123,98 @@ describe("R1/R2/R5 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.deepEqual(out.guard.falseNumbers, ["77"], "the shown working is not a stray number");
   });
 });
+
+import { readIntent } from "../server/conversation/lexicon.js";
+import { missingPieces } from "../server/brain/say.js";
+import { scriptWorkedStepSmaller, scriptWorkedStepLine } from "../server/director/script.js";
+import { boardWords } from "../server/brain/board-words.js";
+
+describe("R3: requests as moves", () => {
+  test("'kya poochha, phir se bolo na' is a repeat (never a miss, never a give-up)", () => {
+    for (const t of ["kya poochha, phir se bolo na", "phir se bolo na didi", "sawaal kya tha?", "ek baar phir se bolo"]) assert.equal(readIntent(t)?.type, "repeat", t);
+    assert.equal(readIntent("3/4 hai, phir se bolo"), null, "an answer with it is still an answer");
+  });
+
+  test("a repeated miss on an adding card names exactly what the total left out", () => {
+    const card = "Ek L-shape kamre ki 6 bhujayein hain: 8 m, 3 m, 5 m, 4 m, 3 m aur 7 m. Kamre ka parimap kitna hai?";
+    assert.deepEqual(missingPieces(card, "23 m", "30 m"), [7]);
+    assert.equal(missingPieces(card, "19 m", "30 m"), null, "8 + 3 or 4 + 7: not known which, so nothing is named");
+    assert.deepEqual(missingPieces(card, "22 m", "30 m"), [8], "a unique piece is named");
+    assert.equal(missingPieces(card, "35 m", "30 m"), null, "more than the key: not a left-out piece");
+    assert.equal(missingPieces("Ek cake ke 4 tukde, 3 khaye.", "1/4", "3/4"), null, "not an adding card");
+  });
+
+  test("a worked step said smaller: its reason first, then the step and result; never the same words", () => {
+    const st = S1.workedExample.steps[0];
+    const small = scriptWorkedStepSmaller(st, "hinglish"), same = scriptWorkedStepLine(st, "hinglish");
+    assert.notEqual(small, same);
+    assert.ok(small.includes(String(st.result)), small);
+    assert.match(small, /^Dekho, /);
+  });
+
+  test("the board's own words: what the params draw, never the card's key", () => {
+    assert.equal(boardWords({ template: "fraction-parts@1", params: { parts: 4, shade: 1, whole: "circle" } }), "Screen par ek circle hai, 4 barabar hisson mein bata hua, 1 hissa rangin.");
+    assert.equal(boardWords({ template: "compare@1", params: { left: { title: "Cake A" }, right: { title: "Cake B" } } }), "Screen par do khaane hain: Cake A aur Cake B.");
+    assert.match(boardWords({ template: "fraction-line@1", params: { den: 6, from: 0, to: 1, marks: [{ num: 1, label: "1/6" }] } }, "english"), /from 0 to 1, cut into 6 equal gaps, with 1\/6 marked/);
+    assert.equal(boardWords({ template: "measured@1", params: { shape: "rect", unit: "cm", w: 9, h: 2 } }, "hinglish", "22 cm"), "Screen par ek rectangle hai, 9 cm lamba aur 2 cm chauda.");
+    assert.equal(boardWords({ template: "equal-groups@1", params: { groups: 3, each: 5 } }, "hinglish", "5"), "Screen par barabar group hain.", "the key is never said");
+    assert.equal(boardWords({ auto: true }), null);
+  });
+});
+
+describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence"), said = null) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: said ?? [r.move.point, ...(r.move.mustSay ?? [])].filter(Boolean).join(" ") }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+  const say = (L, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: L.r.ui, module: null }); };
+
+  test("'pata nahi' on an explain beat: the same beat, smaller, and never her last turn's words again", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const prevLine = `Dekho, parimap boundary ki poori lambai hai. ${S1.explain[0].point.hi} ${L.r.ui.ask.text}`;
+    L.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } }, prevLine);
+    assert.equal(L.r.move.scriptBeat?.beatId, "e1", "the same beat");
+    assert.equal(L.r.move.smaller, true);
+    const out = await say(L, `Dekho, parimap boundary ki poori lambai hai. Ek ek bhuja ko gino. ${L.r.ui.ask.text}`, { childText: "pata nahi" });
+    assert.doesNotMatch(out.reply, /parimap boundary ki poori lambai hai/, "her last turn's sentence is not said again: " + out.reply);
+    assert.ok(!out.reply.includes(S1.explain[0].point.hi) || S1.explain[0].point.hi.split(/[.!?]/).filter(Boolean).length === 1, "not the whole point again");
+  });
+
+  test("'samajh nahi aaya' on a worked step: that step again smaller, never the next step", () => {
+    const L = run();
+    for (let i = 0; i < 30 && !/^worked:step1$/.test(L.r.move.scriptBeat?.beatId ?? ""); i++) {
+      const c = L.r.state.activeItemId ? { ...cls("correct") } : cls("no_evidence");
+      L.t(L.r.state.activeItemId ? (findKey(L) ?? "haan") : "haan", c);
+    }
+    assert.equal(L.r.move.scriptBeat?.beatId, "worked:step1", JSON.stringify(L.r.move.scriptBeat));
+    L.t("samajh nahi aaya");
+    assert.equal(L.r.move.scriptBeat?.beatId, "worked:step1", "the same step, not step 2");
+    assert.equal(L.r.move.smaller, true);
+    L.t("haan");
+    assert.notEqual(L.r.move.scriptBeat?.beatId, "worked:step1", "then it goes on");
+  });
+
+  test("a probe answered gets one line that takes it up before the next beat", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const out = await say(L, `${L.r.ui.ask.text}`, { childText: "maine jod ke dekha", state: { lastMove: { ...L.r.state.lastMove, probeAck: true } } });
+    assert.ok(out.guard.probeAck, JSON.stringify(out.guard));
+    assert.match(out.reply, /^(?:Achha|Theek)/, out.reply);
+  });
+
+  test("a picture they asked for is described from the board sent; her words about another drawing go", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const board = { template: "measured@1", params: { shape: "triangle", unit: "cm", sides: [4, 5, 6] } };
+    const lm = { ...L.r.state.lastMove, request: "visual", scriptBeat: { ...L.r.state.lastMove.scriptBeat, board } };
+    const out = await say(L, `Screen par pizza dekho, 8 slice hain. Kitne slice bache? ${L.r.ui.ask.text}`, { childText: "picture dikhao", state: { lastMove: lm } });
+    assert.doesNotMatch(out.reply, /pizza|slice/, out.reply);
+    assert.ok(out.reply.includes("Screen par ek triangle hai, bhujayein 4 cm, 5 cm aur 6 cm."), out.reply);
+  });
+});
+function findKey(L) { const id = L.r.state.activeItemId; if (!id) return null; const it = L.r.state.scriptCard; return it?.id === id ? it.answer : null; }

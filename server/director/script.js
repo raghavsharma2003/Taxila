@@ -397,6 +397,16 @@ export function scriptWorkedStepLine(st, lang = "hinglish") {
   if (!d || !String(st?.result ?? "").trim()) return null;
   return dot(`${d.charAt(0).toUpperCase()}${d.slice(1)}: ${String(st.result).trim()}${y ? `, ${BECAUSE[lang] ?? BECAUSE.hinglish} ${y}` : ""}`);
 }
+/**
+ * v6 R3 (main, director8: "samajh nahi aaya" on a worked step got the next step, or the same words again): the SAME step
+ * said smaller and in another order: its reason first, on its own, then the step and its result. Authored words only.
+ */
+export function scriptWorkedStepSmaller(st, lang = "hinglish") {
+  const d = joinable(saidIn(st?.do, lang), { lower: true }), y = joinable(saidIn(st?.why, lang));
+  if (!d || !String(st?.result ?? "").trim()) return null;
+  if (!y) return dot(`${lang === "english" ? "Just this one step" : "Bas yeh ek kadam"}: ${d}, ${lang === "english" ? "and that gives" : "aur milta hai"} ${String(st.result).trim()}`);
+  return `${dot(`${lang === "english" ? "Look" : "Dekho"}, ${y.charAt(0).toLowerCase()}${y.slice(1)}`)} ${dot(`${lang === "english" ? "So" : "Isliye"} ${d}: ${String(st.result).trim()}`)}`;
+}
 /** An authored clause made ready to join into a sentence: its end stop gone, its first letter lowered when asked (never "I"). */
 export function joinable(x, { lower = false } = {}) {
   let t = String(x ?? "").replace(/\s+/g, " ").trim().replace(/[.!।;,]+$/, "");

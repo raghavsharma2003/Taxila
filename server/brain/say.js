@@ -2,6 +2,7 @@
 // instructions string (one compile() for every lane) and guarded on the bytes by code: answer leaks, drift, floor
 // breaks, praise/verdict agreement, the screen, register, script, length and the turn's shape. Moved out of
 // server/routes/lesson.js unchanged by W2-E BR1 (BUILD-PLAN W2-E #2); the lesson start and the turn both call it.
+import { boardWords } from "./board-words.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -34,6 +35,38 @@ const WORKED_FRAME = { hinglish: ["Chalo, ek sawaal saath mein hal karte hain.",
   english: ["Let's solve one together.", "Here is one, step by step.", "Let's start this one."] };
 const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati hissa dekhte hain.", "Pehle yeh hissa."], english: ["First, this part.", "Here is the first step.", "Start with this part."] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
+// v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
+// grades their reason (a probe is never right or wrong)
+const PROBE_ACK = {
+  hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi.", "Achha, ab samajh aaya tumne kaise socha."],
+  english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking.", "Okay, now I see how you thought about it."],
+};
+/**
+ * v6 R3 (director8 c6 stuck T39–T43: "23 m" three times, the same generic hint each time): on an adding card (its key is the
+ * sum of every number the card gives) a total that leaves numbers out names exactly the ones left out. null otherwise.
+ * Exported for tests.
+ */
+export function missingPieces(card, said, key) {
+  let nums = (String(card ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number);
+  // (a number that counts the pieces, "6 bhujayein", is not one of them)
+  const total = nums.reduce((a, x) => a + x, 0);
+  const counter = nums.findIndex((n) => n === nums.length - 1 && Math.abs(total - n - Number(String(key ?? "").match(/\d+(?:\.\d+)?/)?.[0])) < 1e-9);
+  if (counter >= 0) nums = nums.filter((_, i) => i !== counter);
+  const k = Number(String(key ?? "").match(/\d+(?:\.\d+)?/)?.[0]);
+  const got = Number(String(said ?? "").match(/\d+(?:\.\d+)?/)?.[0]);
+  if (nums.length < 3 || nums.length > 12 || !Number.isFinite(k) || !Number.isFinite(got) || got >= k) return null;
+  if (Math.abs(nums.reduce((a, x) => a + x, 0) - k) > 1e-9) return null;
+  // the fewest numbers left out; two different ways to leave them out is not known, so nothing is named
+  let best = null, other = false;
+  for (let m = 1; m < 1 << nums.length; m++) {
+    let sum = 0; const out = [];
+    for (let i = 0; i < nums.length; i++) if (m & (1 << i)) sum += nums[i]; else out.push(nums[i]);
+    if (!out.length || Math.abs(sum - got) > 1e-9) continue;
+    if (!best || out.length < best.length) { best = out; other = false; }
+    else if (out.length === best.length && [...out].sort().join() !== [...best].sort().join()) other = true;
+  }
+  return best && !other ? best : null;
+}
 const GAVE_LINE = {
   hinglish: [(a, w) => `Pichhle sawaal ka jawab ${a} tha${w ? `, kyunki ${w}` : ""}.`, (a, w) => `Woh wala: jawab ${a}${w ? `; ${w}` : ""}.`, (a, w) => `Pichhla sawaal: ${w ? `${w}, ` : ""}yaani jawab ${a}.`],
   english: [(a, w) => `The last one's answer was ${a}${w ? `, because ${w}` : ""}.`, (a, w) => `That one: the answer is ${a}${w ? `; ${w}` : ""}.`, (a, w) => `The last question: ${w ? `${w}, ` : ""}so the answer is ${a}.`],
@@ -1727,6 +1760,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const OPS = /(?<![\p{L}])(?:jod\w*|ghata\w*|guna\w*|bhaag\w*|add\w*|subtract\w*|multipl\w*|divid\w*|mila\w*)/iu;
     const authoredText = [point, ...(workedLines ?? []), card, state.lastMove?.cardPoint].filter(Boolean).join(" ");
     ss = ss.filter((x) => !(/^(?:tumne|aapne|you)\b/i.test(x) && OPS.test(x) && !OPS.test(authoredText)));
+    // v6 R3/R5 (director8: verbatim repeats of 63–67-word turns): no sentence of her previous turn is said again in her own words
+    // (the authored parts and the card are code's, and stay)
+    const herPrev = norm([...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
+    const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
+    { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
+    // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
+    let ack = null;
+    if (state.lastMove?.probeAck && answeredNow) {
+      const a0 = ss[0];
+      if (a0 && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0)) { ack = a0; ss = ss.slice(1); }
+      else ack = pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state);
+      guard.probeAck = true;
+    }
+    // v6 R3: a repeated miss on an adding card names exactly what their total left out
+    const miss = kindNow === "hint" && verdict === "not_yet" && card ? missingPieces(card, saidNow, item?.answer) : null;
+    const unit = String(item?.answer ?? "").match(/\d\s*([a-zA-Z]+)\s*$/)?.[1] ?? "";
+    const missS = miss ? (() => { const xs = miss.map((n) => `${n}${unit ? ` ${unit}` : ""}`); const list = xs.length > 1 ? `${xs.slice(0, -1).join(", ")} ${lang === "english" ? "and" : "aur"} ${xs.at(-1)}` : xs[0];
+      return lang === "english" ? `Your total leaves out ${list}.` : `Tumhare jod mein ${list} nahi juda.`; })() : null;
+    if (missS) { ss = ss.filter((x) => !/chhoot|left out|miss|bhool/i.test(x)); guard.missingNamed = miss; }
+    // v6 R3: a picture they asked for is described by code from the board it sends; her own lines that point at the screen,
+    // ask a question of their own, or carry a number go (the card is the one question)
+    const asked = state.lastMove?.request === "visual" && state.lastMove?.visual !== "game" ? boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) : null;
+    if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
     let body;
@@ -1734,6 +1790,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
       const frame = !lead && clean(ss[0]) && !(kindNow === "reteach" && /\d/.test(ss[0])) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
+    } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
+      // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
+      // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
+      const mine = ss.filter((x) => !/[?？]/.test(x) && words(x) <= 22).slice(0, 2);
+      const ps = sentences(point).map(norm).filter(Boolean);
+      const p1 = ps.find((x) => !saidBefore(x)) ?? ps[0] ?? point;
+      body = mine.length ? mine : [dot(p1)];
+      guard.smaller = mine.length ? "hers" : "point";
     } else if (point && kindNow === "explain") {
       if (ss.length && pointSaid(ss.join(" "), point)) body = ss;
       else { const li = ss.find((x) => clean(x) && !/\d/.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true; }
@@ -1773,7 +1837,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // they just answered is said FIRST and together (the verdict with its reason, a give-up, the worked answer), so it is one
     // segment on THAT card's board; then a missed card's close (its own board); then the bridge (its own segment); then a parked
     // aside, the teaching and the card. The parts' texts ride on guard.parts (brain/propose.js places the segments from them).
-    const prevPart = [lead, gaveS, doneS].filter(Boolean).map(norm);
+    const prevPart = [lead, ack, missS, gaveS, doneS].filter(Boolean).map(norm);
+    if (asked) body = [asked, ...body.filter((x) => !/(?:screen|board)\s+(?:par|pe)|on the screen/i.test(x))];
     const assembled = [...prevPart, closedS, ...first, ...aside, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
