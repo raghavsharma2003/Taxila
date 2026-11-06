@@ -1681,9 +1681,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (!k) continue;
       const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, 2);
       ss = ss.filter((x) => !mine.includes(x));
-      aside.push(...(mine.length ? mine : [kind === "park"
-        ? pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)
-        : (lang === "english" ? `And ${topic}: I remember what you told me.` : `Aur haan, ${topic} wali baat mujhe yaad hai.`)]));
+      // v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8): a return is one line of REAL content: her own sentence about it,
+      // else the script's authored interest line (state.js returnLineOf); never the "I remember" stub
+      const authoredReturn = kind === "return" && ret?.line ? (lang === "english" ? `And about ${topic}: ${dot(ret.line)}` : `Aur ${topic} ki baat: ${dot(ret.line)}`) : null;
+      const real = mine.filter((x) => words(x) >= 6 && !/(?:yaad hai|i remember)/i.test(x));
+      aside.push(...(kind === "park" ? (mine.length ? mine : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
+        : real.length ? real : authoredReturn ? [authoredReturn] : []));
+      if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
     }
     // v5 B5 (director7 c5-t01 T61): her lines never put a method in the child's mouth ("Tumne upar ke 2 ko neeche ke 5 se
     // jodkar …") that the authored text does not use: a sentence about what THEY did with an operation word goes
@@ -1716,14 +1720,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = 60;
-    const total = () => words([lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).join(" "));
+    const total = () => words([lead, ...aside, gaveS, doneS, closedS, ...(state.lastMove?.sayFirst ?? []), ...body, tail].filter(Boolean).join(" "));
     const own = body === ss && !(point && kindNow === "explain") ? body : null;
     if (!workedLines?.length && total() > MAX_WORDS) {
       if (own) { while (own.length && total() > MAX_WORDS) own.pop(); guard.trimmed = true; }
       else if (point && kindNow === "explain" && !(body.length === 1 && body[0] === dot(point))) { body = [dot(point)]; guard.trimmed = true; }
       if (total() > MAX_WORDS && aside.length > 1) { aside.splice(1); guard.trimmed = true; }
     }
-    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    // v5 B4: the authored bridge (and the hook's interest line) at a skill change, said by code unless her lines carry it
+    const first = (state.lastMove?.sayFirst ?? []).map(dot).filter((x) => !pointSaid([...ss, ...body].join(" "), x));
+    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...first, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard

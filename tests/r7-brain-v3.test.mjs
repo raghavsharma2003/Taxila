@@ -4,7 +4,7 @@
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, returnLineOf } from "../server/director/state.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { verdictFor, joinAsk } from "../server/director/say.js";
 import { textReply, replyDeps, pointSaid } from "../server/brain/say.js";
@@ -501,5 +501,34 @@ describe("v5 B2: child requests are moves, never grades (c6 skill-1 v2 fixture)"
     assert.equal(L.r.move.kind, "reteach");
     assert.ok(L.r.move.rendered?.length, JSON.stringify(L.r.move));
     assert.ok(L.r.move.scriptBeat?.board || true);
+  });
+});
+
+describe("v5 B3/B4 on the live c6 script", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; KEEP.d = process.env.TAXILA_R7_SCRIPT_DIR; delete process.env.TAXILA_R7_SCRIPT_DIR; setScriptForTest(); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); for (const [k, e] of [["s", "TAXILA_R7_SCRIPT"], ["d", "TAXILA_R7_SCRIPT_DIR"]]) { if (KEEP[k] === undefined) delete process.env[e]; else process.env[e] = KEEP[k]; } });
+
+  test("B4: the authored bridge is said by code at the change to skill 2", async () => {
+    const live = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c6-maths-ch06-t01.json", import.meta.url), "utf8"));
+    const bridge = live.skills[0].bridgeToNext?.hi;
+    assert.ok(bridge, "the live script has a bridge");
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    let found = null;
+    for (let i = 0; i < 60 && !found; i++) {
+      const it = r.state.activeItemId ? findItem(r.state, K, r.state.activeItemId) : null;
+      r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: it ? cls("correct") : cls("no_evidence"), text: it ? String(it.answer) : "haan", now: (r.state.turn + 1) * 20_000 });
+      if ((r.move.sayFirst ?? []).some((x) => x.includes(bridge.slice(0, 20)))) found = r;
+    }
+    assert.ok(found, "a move carries the bridge");
+    replyDeps.chat = async () => ({ text: `Chalo aage badhte hain. ${found.ui?.ask?.text ?? ""}` });
+    const out = await textReply({ instructions: "x", state: { ...found.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: found.ui, module: null });
+    assert.ok(out.reply.includes(bridge.slice(0, 30)), out.reply);
+  });
+
+  test("B3: a parked cricket aside returns with the script's own cricket line, never a stub", () => {
+    const line = returnLineOf(K, "Virat ke sixer", "hinglish");
+    assert.ok(line && /cricket|pitch/i.test(line), String(line));
+    assert.equal(returnLineOf(K, "mera naya phone", "hinglish"), null);
   });
 });
