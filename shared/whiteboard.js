@@ -286,6 +286,12 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const script = { v: 1, scriptId: typeof raw.scriptId === "string" ? raw.scriptId.slice(0, 64) : "wb", line, anchor: "line_audio_start", board,
     mode: raw.mode === "continue" ? "continue" : "fresh", durationMs: Math.round(durationMs), ops: sorted };
   if (raw.facts && typeof raw.facts === "object" && raw.facts.onScreen && typeof raw.facts.onScreen === "object") script.facts = cleanFacts(raw.facts);
+  // round 7 (director7: a remediation say and its then-card in one turn): the page turns at the then-prompt. Every op that
+  // starts at or after `atMs` (the estimate) belongs to the second page; the player moves them onto clause `clause`'s real
+  // onset when the voice reports it (src/modules/whiteboard/Player.tsx onLineClock)
+  const sw = raw.switchAt;
+  if (sw && typeof sw === "object" && Number.isInteger(sw.clause) && sw.clause >= 0 && sw.clause < 64 && isNum(sw.atMs) && sw.atMs > 0 && sw.atMs < LIMITS.maxDurationMs)
+    script.switchAt = { clause: sw.clause, atMs: Math.round(sw.atMs) };
   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };
 }
 

@@ -29,6 +29,9 @@ import { scriptFacts, isMotionOp } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 import { resolveBoardRef } from "../forge/explainer/board-ref.js";
 import { expand } from "../forge/explainer/templates.js";
+import { splitSentences } from "../voice/sentences.js";
+import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
+import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -338,3 +341,63 @@ export function pickState(ask) {
   return p.used ? "used" : "pending";
 }
 export const _picks = picks;
+
+// ───────────────────────────── director7: the page turns at the then-prompt ─────────────────────────────
+/**
+ * round 7 (main, director7: "1/3 ka mark hai" asked over the 1/8 | 1/4 | 1/2 board, 5 turns): a remediation `say` and its
+ * then-card in ONE turn draw two pages: the say's board under the say, the then-card's own board from the then-prompt on.
+ * Brain marks the turn (intent.then { boardRef, scriptBeat, atChar, atClause? }). → { say, then, clause, th } or null.
+ */
+export function thenSplit(ask) {
+  const th = ask?.intent?.then, text = String(ask?.line?.text ?? "");
+  if (!th?.boardRef || !Number.isInteger(th.atChar) || th.atChar <= 0 || th.atChar >= text.length) return null;
+  const say = text.slice(0, th.atChar).trim(), then = text.slice(th.atChar).trim();
+  if (!say || !then) return null;
+  // the voice's own clause numbering (server/voice/expressive/align.js: sentences, then clauses): the then-prompt's first
+  // clause is the number of clauses before it; Brain's atClause, when sent, wins
+  const clause = Number.isInteger(th.atClause) && th.atClause >= 0 ? th.atClause : splitSentences(say).reduce((n, part) => n + voiceClausesOf(part).length, 0);
+  return { say, then, clause, th };
+}
+const TARGETED = new Set(["highlight", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
+const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork"]);
+/**
+ * The two-page board for such a turn: page A (the say's board) gated on the say, page B (the then-card's board, a card's
+ * own board) gated on the then-prompt; composed as page A, A erased at the estimated turn, then page B from it. The
+ * script's `switchAt` lets the player move page B onto the then-prompt clause's real onset. → a board-first result
+ * ({ ok, script, screen, screenBefore, switchChar, by, template, source }) or null (the turn draws one page, as before).
+ */
+export function twoPageBoard(ask, { kit, redact = [] } = {}) {
+  try {
+    const sp = thenSplit(ask);
+    if (!sp || !kit) return null;
+    const id = String(ask?.intent?.intentId ?? "");
+    const askA = { ...ask, line: { ...(ask.line ?? {}), text: sp.say } };
+    const beatB = { ...(ask.intent.scriptBeat ?? {}), ...(sp.th.scriptBeat ?? {}), kind: "check", ownBoard: sp.th.scriptBeat?.ownBoard ?? true };
+    const intentB = { ...ask.intent, intentId: `${id}:then`, boardRef: sp.th.boardRef, scriptBeat: beatB };
+    delete intentB.then; delete intentB.request;
+    const askB = { ...ask, intent: intentB, mode: "fresh", line: { ...(ask.line ?? {}), text: sp.then } };
+    const page = (a) => { if (!picks.has(String(a.intent.intentId))) preselect(a, { kit, redact }); return takePreselected(a, gateCtxFor(a, { kit, redact, prior: [] })); };
+    const A = page(askA), B = page(askB);
+    if (!A?.script || !B?.script) return null;
+    const ba = A.script.board ?? WB_BOARD, bb = B.script.board ?? WB_BOARD;
+    if (ba.w !== bb.w || ba.h !== bb.h) return null;
+    const atMs = Math.max(800, speechMsOf(sp.say));
+    const rename = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
+      return ops.map((o) => ({ ...o, id: m.get(o.id), ...(TARGETED.has(o.op) && m.has(o.target) ? { target: m.get(o.target) } : {}) })); };
+    const opsA = rename(A.script.ops, "a.");
+    const erase = opsA.filter((o) => DRAWN.has(o.op)).map((o, i) => ({ id: `ax.${i}`, op: "erase", target: o.id, startMs: atMs, endMs: atMs + 200 }));
+    const opsB = rename(B.script.ops, "b.").map((o) => ({ ...o, startMs: o.startMs + atMs, endMs: o.endMs + atMs }));
+    const ops = [...opsA.map((o) => ({ ...o, endMs: Math.min(o.endMs, atMs), startMs: Math.min(o.startMs, Math.max(0, atMs - 120)) })), ...erase, ...opsB];
+    if (ops.length > WB_LIMITS.maxOps) return null;
+    const raw = { ...A.script, scriptId: `${A.script.scriptId ?? id}:2p`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
+      facts: B.script.facts ?? A.script.facts, switchAt: { clause: sp.clause, atMs } };
+    delete raw.card;
+    const n = normalizeScript(raw, { strict: false });
+    if (!n.ok || !n.script?.switchAt) return null;
+    twoPages.drawn++;
+    return { ok: true, script: n.script, gate: B.gate, usd: 0, ms: 0, source: "first", by: "script", template: B.template, syncMs: 0,
+      screen: B.screen, screenBefore: A.screen, switchChar: sp.th.atChar };
+  } catch { return null; }
+}
+const twoPages = { drawn: 0 };
+export const twoPageStats = () => ({ ...twoPages });

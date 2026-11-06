@@ -216,6 +216,9 @@ export interface WhiteboardScript {
   /** round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD; server/stagecraft/beat-card.js): the card this beat's
    *  board is, its beat number in the lesson, and whether a check follows it. Absent with the flag off. */
   card?: BeatCard;
+  /** round 7 (director7): the page turns at the then-prompt — ops starting at or after `atMs` (the estimate) are the second
+   *  page, moved onto clause `clause`'s real onset when the voice reports it. */
+  switchAt?: { clause: number; atMs: number };
 }
 export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */
