@@ -175,3 +175,40 @@ test("director8 bridge boards: compare@1 draws and counts '8 ka 1/2 = 4 | 8 ka 1
   assert.deepEqual(texts(x.script).filter((t) => /=/.test(t)), ["8 ka 1/2 = 4", "8 ka 1/4 = 2"]);
   assert.deepEqual(x.script.facts.counts.columns.map((col) => col.quantities), [[{ n: 4, what: "8 ka 1/2" }], [{ n: 2, what: "8 ka 1/4" }]]);
 });
+
+test("c7 lines@1: two crossing lines and parallel lines with a transversal — angle labels (value, '?', name) drawn and counted; a value must BE the angle drawn", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const cross = { template: "lines@1", kind: "cross", deg: 60, ends: ["A", "B", "C", "D"], point: "O", angles: [{ at: 1, value: 60 }, { at: 3, value: "?" }, { at: 2, name: "b" }] };
+  const x = expand(cross);
+  assert.ok(x.ok, String(x.errors));
+  assert.deepEqual(x.script.facts.counts, { angles: [60], marks: [{ at: "angle 1", label: "60°" }, { at: "angle 3", label: "?" }, { at: "angle 2", label: "b" }], labels: 3 });
+  for (const t of ["A", "B", "C", "D", "O", "60°", "?", "b"]) assert.ok(texts(x.script).includes(t), t);
+  assert.deepEqual(expand({ ...cross, angles: [{ at: 2, value: 60 }] }).errors, ["lines_angle_value:2"], "angle 2 is 120°, never 60°");
+  const par = { template: "lines@1", kind: "parallel", names: ["AB", "CD"], transversal: { deg: 60, name: "PQ" }, angles: [{ at: 1, value: 60 }, { at: 5, value: "?" }] };
+  const y = expand(par);
+  assert.ok(y.ok, String(y.errors));
+  assert.deepEqual(y.script.facts.counts.marks, [{ at: "angle 1", label: "60°" }, { at: "angle 5", label: "?" }]);
+  assert.equal(y.script.facts.onScreen.lines, "two parallel lines");
+  // the full gate, with c7-style lines
+  for (const [ref, line] of [[cross, "Screen par do rekhayein AB aur CD, O par kat rahi hain. Ek kon 60° hai. Uske saamne wala kon kitne degree ka hoga?"],
+    [{ template: "lines@1", kind: "parallel", names: ["AB", "CD"], gap: "3 cm" }, "AB aur CD do parallel rekhayein hain. Unke beech ki doori har jagah 3 cm hai."],
+    [par, "AB aur CD parallel hain, aur PQ dono ko kaat rahi hai. Upar wala kon 60° hai. Neeche usi jagah wala kon kitna hoga?"]]) {
+    const r = await certifyBoardRef(ref, { line });
+    assert.equal(r.ok, true, `${ref.kind}: ${JSON.stringify(r.failed)}`);
+  }
+});
+
+test("c7 lines@1 under the S1 rule: the asked angle is '?' until her line states it; the given angle is drawn", () => {
+  const T = "c5-maths-ch02-t01", kit = kitOf(T);
+  const ref = { template: "lines@1", kind: "cross", deg: 70, ends: ["A", "B", "C", "D"], point: "O", angles: [{ at: 1, value: 70 }, { at: 3, value: "?" }] };
+  const ask = (id, text) => ({ intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { scriptId: "s", beatId: "c", kind: "check", ownBoard: true, answers: ["70"] } }, line: { lessonId: id, text }, mode: "fresh", kit: { topicId: T, content: [] } });
+  const take = (id, text) => { const a = ask(id, text); BF.preselect({ ...a, line: { ...a.line, text: "" } }, { kit }); return BF.takePreselected(a, gateCtxFor(a, { kit, redact: [], prior: [] })); };
+  const open = take("l7a", "Do rekhayein AB aur CD, O par kat rahi hain. Ek kon 70° hai. Uske saamne wala kon kitne degree ka hai?");
+  assert.ok(open?.script, "drawn");
+  assert.deepEqual(texts(open.script).filter((t) => /°|\?/.test(t)), ["70°", "?"], "the given 70° drawn, the asked angle '?'");
+  const said = take("l7b", "Haan, AB aur CD O par kat rahi hain; ek kon 70° hai, toh saamne wala kon bhi 70° hai.");
+  assert.ok(said?.script, "drawn");
+  assert.deepEqual(texts(said.script).filter((t) => /°|\?/.test(t)), ["70°", "70°"], "confirmed: the asked angle is written");
+});

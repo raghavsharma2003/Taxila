@@ -61,7 +61,7 @@ export const prewarmStats = () => ({ ...prewarmed });
 // kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
 const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
   "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
-  "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
+  "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "lines@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
 /** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
 export const SCREEN_SHAPES = Object.freeze(["rectangle", "square", "triangle", "quadrilateral", "pentagon", "hexagon", "octagon", "polygon", "circle",
   "number line", "whole in parts", "area model", "groups", "comparison", "flow", "cycle", "bar chart", "table", "timeline", "map", "labelled diagram",
@@ -358,6 +358,27 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
 export function statedMark(script, ref, line) {
   try {
     const r = resolveBoardRef(ref, {});
+    // (c7 lines@1: an asked angle "?" whose value her line states — "70°", "70 degree" — is written as that angle)
+    if (r.ok && r.call.template === "lines@1" && Array.isArray(script?.ops)) {
+      const deg = r.call.kind === "cross" ? r.call.deg : r.call.transversal?.deg;
+      const asked = (r.call.angles ?? []).filter((a) => a?.value === "?").map((a) => ((a.at - 1) % 2 === 0 ? deg : 180 - deg));
+      // (opposite angles are equal: "ek kon 70° hai" states the GIVEN 70°, and is no answer to the asked one. The asked angle
+      // is written only when her line says its value more times than the board already writes it)
+      const saidN = new Map();
+      for (const m of String(line ?? "").matchAll(/(\d+)\s*(?:°|degree|digree|ansh)/gi)) saidN.set(Number(m[1]), (saidN.get(Number(m[1])) ?? 0) + 1);
+      const writtenN = new Map();
+      for (const a of r.call.angles ?? []) if (typeof a?.value === "number") writtenN.set(a.value, (writtenN.get(a.value) ?? 0) + 1);
+      let k = 0, hit = false;
+      const ops = script.ops.map((o) => {
+        if (o.op !== "text" || String(o.text).trim() !== "?") return o;
+        const v = asked[k++];
+        if (!Number.isFinite(v) || (saidN.get(v) ?? 0) <= (writtenN.get(v) ?? 0)) return o;
+        writtenN.set(v, (writtenN.get(v) ?? 0) + 1);
+        hit = true;
+        return { ...o, text: `${v}°`, ink: "accent" };
+      });
+      return hit ? { ...script, ops } : null;
+    }
     if (!r.ok || r.call.template !== "fraction-line@1" || !Number.isInteger(r.call.mark) || !Number.isInteger(r.call.den)) return null;
     const v = r.call.mark / r.call.den;
     const said = (String(line ?? "").match(/(?<![\d/])\d+\s*\/\s*\d+(?![\d/])/g) ?? []).map((m) => m.replace(/\s+/g, ""))

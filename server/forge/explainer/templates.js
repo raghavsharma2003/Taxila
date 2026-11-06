@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "fraction-line@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -857,6 +857,99 @@ function angle(c, tl) {
   return { facts, claims };
 }
 
+/**
+ * round 7 (main + Learning, c7 staged: vertically opposite angles, parallel lines): LINES, not one angle.
+ *   kind "cross"    two lines crossing at a point: `deg` (20-160) between them, `ends` up to 4 letters [A, B, C, D] (line 1's
+ *                   left / right ends, line 2's lower / upper ends), `point` (the crossing, "O"), `angles` [{ at 1-4, value?,
+ *                   name? }]: at 1 = between B and D (deg), 2 = D-A (180-deg), 3 = A-C (deg), 4 = C-B (180-deg).
+ *   kind "parallel" two parallel lines (`names` ["AB", "CD"]: two letters each, at the ends; or one name each), parallel
+ *                   marks on both; `transversal` { deg 30-150, name? } crossing both, `angles` [{ at 1-8 }] (1-4 round the
+ *                   upper crossing, 5-8 the lower, numbered as for a cross); `gap` (a label, "3 cm") marks the gap between
+ *                   the lines at two places — the same gap.
+ * A labelled angle writes its `value` in degrees (which must BE the angle drawn there), or "?" (the asked angle), or its
+ * `name` ("a", "∠1"). counts.angles: the degrees written; counts.marks: every angle label [{ at: "angle 1", label }].
+ */
+function lines(c, tl) {
+  const okLetter = (t) => typeof t === "string" && /^[A-Z][A-Z]?$/.test(t);
+  const list = Array.isArray(c.angles) ? c.angles : [];
+  const kind = c.kind === "parallel" ? "parallel" : c.kind === "cross" ? "cross" : null;
+  if (!kind) return { error: "lines_kind" };
+  const deg = kind === "cross" ? c.deg : c.transversal?.deg;
+  if (kind === "cross" && !isInt(deg, 20, 160)) return { error: "lines_deg" };
+  if (kind === "parallel" && c.transversal != null && !isInt(deg, 30, 150)) return { error: "lines_transversal" };
+  const maxAt = kind === "cross" ? 4 : c.transversal ? 8 : 0;
+  if (list.length > maxAt || list.some((a) => !a || !isInt(a.at, 1, maxAt) || (a.value !== undefined && a.value !== "?" && !isInt(a.value, 1, 179)) || (a.name !== undefined && !fitsLabel(a.name)))) return { error: "lines_angles" };
+  if (new Set(list.map((a) => a.at)).size !== list.length) return { error: "lines_angles_repeat" };
+  // (a written value must be the angle drawn there: 1 and 3 are `deg`, 2 and 4 its supplement)
+  const trueAt = (at) => ((at - 1) % 2 === 0 ? deg : 180 - deg);
+  for (const a of list) if (typeof a.value === "number" && a.value !== trueAt(a.at)) return { error: `lines_angle_value:${a.at}` };
+  const facts = {}, marks = [], written = [];
+  // the four rays from a crossing at (x, y): 0 right, deg up-right, 180 left, 180+deg down-left (screen y grows down)
+  const ray = (x, y, a, L) => [round1(x + L * Math.cos(rad(a))), round1(y - L * Math.sin(rad(a)))];
+  const arcBetween = (x, y, r, a0, a1) => { const n = Math.max(4, Math.round((a1 - a0) / 10) + 1); return Array.from({ length: n }, (_, k) => ray(x, y, a0 + ((a1 - a0) * k) / (n - 1), r)); };
+  const labelAngles = (x, y, base) => {
+    for (const a of list.filter((q) => q.at > base && q.at <= base + 4)) {
+      const i = a.at - base, from = [0, deg, 180, 180 + deg][i - 1], to = [deg, 180, 180 + deg, 360][i - 1];
+      const r = 28 + (i % 2 ? 0 : 4);
+      if (Math.round(to - from) === 90) {
+        const p1 = ray(x, y, from, 16), p2 = ray(x, y, to, 16), p3 = [round1(p1[0] + p2[0] - x), round1(p1[1] + p2[1] - y)];
+        tl.add({ op: "stroke", points: [p1, p3, p2], ink: "mark", weight: 2 }, 360, { gap: 120 });
+      } else tl.add({ op: "stroke", points: arcBetween(x, y, r, from, to), ink: "mark", weight: 2 }, 420, { gap: 140 });
+      const text = a.value === "?" ? "?" : typeof a.value === "number" ? `${a.value}°` : a.name ?? "?";
+      const [lx, ly] = ray(x, y, (from + to) / 2, r + 22);
+      tl.add({ op: "text", at: [lx, ly + 5], text, size: "s", ink: text === "?" ? "mark" : "accent" }, 360, { gap: 80 });
+      marks.push({ at: `angle ${a.at}`, label: text });
+      if (typeof a.value === "number") written.push(a.value);
+    }
+  };
+  if (kind === "cross") {
+    const ends = Array.isArray(c.ends) ? c.ends : [];
+    if (ends.length > 4 || ends.some((e) => !okLetter(e)) || (c.point !== undefined && !okLetter(c.point))) return { error: "lines_names" };
+    const x = 200, y = 150, L = 125;
+    const [A, B] = [ray(x, y, 180, L), ray(x, y, 0, L)], [C, D] = [ray(x, y, 180 + deg, L), ray(x, y, deg, L)];
+    tl.add({ id: "l1", op: "line", from: A, to: B, weight: 2 }, 600);
+    tl.add({ id: "l2", op: "line", from: C, to: D, weight: 2, ink: "accent" }, 600, { gap: 160 });
+    tl.add({ op: "circle", c: [x, y], r: 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 60 });
+    [[A, 180], [B, 0], [C, 180 + deg], [D, deg]].forEach(([p, a], k) => { if (ends[k]) tl.add({ op: "text", at: [round1(p[0] + 14 * Math.cos(rad(a))), round1(p[1] - 14 * Math.sin(rad(a)) + 5)], text: ends[k], size: "s" }, 220, { gap: 40 }); });
+    // (the point's name inside the arcs, in the lower right angle, clear of both lines)
+    if (c.point) { const [px, py] = ray(x, y, (180 + deg + 360) / 2, 16); tl.add({ op: "text", at: [px, py + 5], text: c.point, size: "s" }, 220, { gap: 40 }); }
+    labelAngles(x, y, 0);
+    // (no stray digits in the row her line is written from: "two lines", "first line AB" — a "2" or "line1" is a number W17
+    // holds her to)
+    Object.assign(facts, { lines: `two lines crossing${c.point ? ` at ${c.point}` : ""}`, ...(ends.length === 4 ? { first: `line ${ends[0]}${ends[1]}`, second: `line ${ends[2]}${ends[3]}` } : {}) });
+  } else {
+    const names = Array.isArray(c.names) ? c.names.slice(0, 2) : [];
+    if (names.some((n) => typeof n !== "string" || !(/^[A-Z]{2}$/.test(n) || fitsLabel(n)))) return { error: "lines_names" };
+    if (c.gap !== undefined && !fitsLabel(c.gap)) return { error: "lines_gap" };
+    if (c.transversal?.name !== undefined && !/^[A-Z]{2}$/.test(c.transversal.name)) return { error: "lines_transversal_name" };
+    const ys = [105, 205], x0 = 40, x1 = 360;
+    ys.forEach((y, k) => {
+      tl.add({ id: `p${k}`, op: "line", from: [x0, y], to: [x1, y], weight: 2 }, 600, { gap: k ? 160 : 0 });
+      // (parallel marks: one chevron on each line, the same way)
+      tl.add({ op: "stroke", points: [[292, y - 6], [300, y], [292, y + 6]], ink: "soft", weight: 2 }, 200, { gap: 40 });
+      const n = names[k];
+      if (n && /^[A-Z]{2}$/.test(n)) { tl.add({ op: "text", at: [x0 - 14, y + 5], text: n[0], size: "s" }, 200, { gap: 40 }); tl.add({ op: "text", at: [x1 + 14, y + 5], text: n[1], size: "s" }, 200, { gap: 40 }); }
+      else if (n) tl.add({ op: "text", at: [x1 - 28, y - 12], text: n, size: "s" }, 200, { gap: 40 });
+    });
+    if (c.gap !== undefined) for (const gx of [80, 240]) {
+      tl.add({ op: "line", from: [gx, ys[0] + 4], to: [gx, ys[1] - 4], weight: 1, ink: "soft" }, 260, { gap: 80 });
+      tl.add({ op: "text", at: [gx + 30, (ys[0] + ys[1]) / 2 + 5], text: c.gap, size: "s", ink: "soft" }, 260, { gap: 40 });
+    }
+    if (c.transversal) {
+      const dx = 50 / Math.tan(rad(deg)), I1 = [round1(200 + dx), ys[0]], I2 = [round1(200 - dx), ys[1]];
+      const P = ray(I1[0], I1[1], deg, 45), Q = ray(I2[0], I2[1], 180 + deg, 45);
+      tl.add({ id: "t", op: "line", from: Q, to: P, weight: 2, ink: "accent" }, 600, { gap: 160 });
+      if (c.transversal.name) { tl.add({ op: "text", at: [P[0] + 10, P[1] - 4], text: c.transversal.name[0], size: "s" }, 200, { gap: 40 }); tl.add({ op: "text", at: [Q[0] - 10, Q[1] + 12], text: c.transversal.name[1], size: "s" }, 200, { gap: 40 }); }
+      labelAngles(I1[0], I1[1], 0);
+      labelAngles(I2[0], I2[1], 4);
+    }
+    Object.assign(facts, { lines: "two parallel lines", ...(names.length ? { names: names.join(", ") } : {}), ...(c.transversal ? { transversal: c.transversal.name ?? "1 line crossing both" } : {}), ...(c.gap ? { gap: `${c.gap} at two places` } : {}) });
+  }
+  // (the angles it WRITES: the asked "?" is no fact)
+  if (written.length) facts.angles = marks.filter((m) => m.label !== "?").map((m) => m.label).join(" | ").slice(0, 40);
+  return { facts, counts: { ...(written.length ? { angles: written } : {}), ...(marks.length ? { marks, labels: marks.length } : {}) } };
+}
+
 const SIDES = { triangle: 3, square: 4, rectangle: 4, quadrilateral: 4, pentagon: 5, hexagon: 6, octagon: 8, circle: 0 };
 /** A shape's corners round (cx, cy), radius R, turned by `turn` degrees. */
 function corners(shape, cx, cy, R, turn = 0) {
@@ -1401,7 +1494,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES

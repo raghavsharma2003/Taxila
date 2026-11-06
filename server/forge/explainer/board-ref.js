@@ -25,6 +25,9 @@ export const BOARD_REFS = Object.freeze({
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
   "angle@1": { subject: "maths", params: "angles [{ deg 1-359 }] (1-2)", example: { angles: [{ deg: 60 }] } },
+  // round 7 (c7 staged: vertically opposite angles, parallel lines)
+  "lines@1": { subject: "maths", params: "kind cross { deg 20-160, ends [A,B,C,D], point O, angles [{ at 1-4, value deg | \"?\" | name }] } | kind parallel { names [\"AB\",\"CD\"], gap label, transversal { deg 30-150, name \"PQ\" }, angles [{ at 1-8 }] }; at 1/3 = deg, 2/4 = 180-deg (5-8 the lower crossing)",
+    example: { kind: "cross", deg: 60, ends: ["A", "B", "C", "D"], point: "O", angles: [{ at: 1, value: 60 }, { at: 3, value: "?" }] } },
   "shape@1": { subject: "maths", params: "shape (circle | polygon names); optional short labels: name, side, corner, centre, names []; a circle also radius, diameter (drawn as arrows from / through the centre), chord (a line clear of the centre), arc (along the rim), each a short label (e.g. 'diameter 14 cm'); copies 1|2", example: { shape: "circle", radius: "radius" } },
   "symmetry@1": { subject: "maths", params: "line? (label), dot? (squares from the line)", example: { dot: 3 } },
   "bar-chart@1": { subject: "maths|science|evs", params: "bars [{ label, value }] 2-6", example: { bars: [{ label: "Mon", value: 4 }, { label: "Tue", value: 6 }] } },
@@ -67,6 +70,7 @@ export function refNumbersOf(call) {
   const add = (v) => { if (typeof v === "number" && Number.isFinite(v)) out.add(String(v)); else if (typeof v === "string") for (const m of v.match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []) out.add(m); };
   for (const k of ["sides", "w", "h", "r", "value"]) { const v = call[k]; (Array.isArray(v) ? v : [v]).forEach(add); }
   for (const m of call.marks ?? []) if (m && typeof m === "object" && !Array.isArray(m)) add(m.label ?? `${m.num}/${call.den}`);
+  if (call.template === "lines@1") for (const a of call.angles ?? []) if (typeof a?.value === "number") add(a.value);
   for (const k of ["items", "steps", "stages", "parts"]) for (const v of [call[k], call.left?.[k], call.right?.[k]].flat()) if (typeof v === "string") add(v);
   return [...out];
 }
