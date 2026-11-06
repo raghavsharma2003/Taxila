@@ -218,6 +218,7 @@ export default function Landing() {
               ) : (
                 <p className="sv-lead" data-testid="price-tbd">We have not set a price for lessons yet. Before you pay anything, it will be shown here in <Rupee /> per month, with what stays free and how to cancel in two taps.</p>
               )}
+              <Link className="sv-more" to="/pricing" data-testid="see-plans">See the plans <Icon name="chevron" /></Link>
             </div>
             <div className="sv-panel">
               <p className="kx-label">Where we are</p>
