@@ -262,11 +262,13 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // the same numbers goes first (her line is written from ITS row); none → the re-show below, as before
     const card0 = request && request.kind !== "example" && avoid ? cands.find((c) => c.by === "script") : null;
     if (card0 && (samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
-      const ac = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
-      const ax = ac ? expand(ac, { band }) : null;
+      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
+      const { view, ...ac } = ac0 ?? {};
+      const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
-      const say = ac ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin (${b.label})` : ""}`).join("; ")}` : "";
-      if (ax?.ok) cands.unshift({ by: "script", template: "fraction-bars@1", script: ax.script, facts: ax.script.facts, altView: "parts", say });
+      const say = !ac0 ? "" : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
+        : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
+      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: view === "line" ? "line" : "parts", say });
     }
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
       const A2 = c.say ? { ...ask, line: { ...(ask.line ?? {}), text: c.say } } : a2, CTX = c.say ? { ...gateCtxFor(A2, { kit, redact }), withhold: ctx.withhold } : ctx;
@@ -419,14 +421,15 @@ export function statedMark(script, ref, line) {
  */
 export function altView(ask, ctx) {
   try {
-    const call = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
-    const x = call ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
+    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
+    const { view, ...call } = call0 ?? {};
+    const x = call0 ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
     if (!x?.ok) return null;
     const s = retime(x.script, Math.max(800, Number(x.script.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH);
     const g = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     if (!g.ok) return null;
-    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: "fraction-bars@1", altView: "parts", syncMs: 0,
-      screen: screenOf({ template: "fraction-bars@1", facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
+    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: view === "line" ? "line" : "parts", syncMs: 0,
+      screen: screenOf({ template: call.template, facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
   } catch { return null; }
 }
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
@@ -435,12 +438,28 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
     const r = resolveBoardRef(ref, {});
     if (!r.ok) return null;
     const c = r.call;
+    // (director9: a whole already in parts has its own second view — a circle or a grid becomes a bar; a bar becomes the
+    // number line of the same fraction. The judges counted picture requests over these boards that drew nothing new)
+    const withheldOf = (a, b) => withheld.map(String).some((w) => { const m = /^(\d+)\/(\d+)$/.exec(w); return !!m && Math.abs(Number(m[1]) / Number(m[2]) - a / b) < 1e-9; });
+    if (c.template === "fraction-parts@1" && isFinite(c.parts) && c.parts >= 2 && c.parts <= 12 && c.shade >= 1 && c.shade <= c.parts) {
+      if (c.whole === "bar") return withheldOf(c.shade, c.parts) ? null : { template: "fraction-line@1", den: c.parts, from: 0, to: 1, marks: [{ num: c.shade, label: `${c.shade}/${c.parts}` }], view: "line" };
+      return { template: "fraction-bars@1", bars: [withheldOf(c.shade, c.parts) ? { parts: c.parts, shade: c.shade, label: "?" } : { parts: c.parts, shade: c.shade, label: `${c.shade}/${c.parts}` }] };
+    }
+    if (c.template === "shade-grid@1" && !Array.isArray(c.block)) {
+      const n = (c.rows ?? 0) * (c.cols ?? 0), sh = c.shade ?? 0;
+      if (n < 2 || n > 12 || sh < 1 || sh > n) return null;
+      return { template: "fraction-bars@1", bars: [c.hideResult || withheldOf(sh, n) ? { parts: n, shade: sh, label: "?" } : { parts: n, shade: sh, label: `${sh}/${n}` }] };
+    }
     if (!["fraction-line@1", "compare@1"].includes(c.template)) return null;
     const frac = (t) => { const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t ?? "")); return m && Number(m[2]) >= 1 && Number(m[2]) <= 12 && Number(m[1]) <= Number(m[2]) ? [Number(m[1]), Number(m[2])] : null; };
     const fs = [];   // [a, b], or { at: [a, b] } for the asked mark
     if (c.template === "fraction-line@1") {
       if (c.target != null || Number(c.to ?? 1) > 1) return null;   // (beyond one whole, or a target to place: no bar view)
-      for (const m of Array.isArray(c.marks) ? c.marks : []) { const f = frac(m?.label ?? `${m?.num}/${c.den}`) ?? (Number.isInteger(m?.num) && m.num <= c.den ? [m.num, c.den] : null); if (f) fs.push(f); }
+      // (a two-scale line names its marks as [a, b] pairs: [[1, 7], [1, 9]])
+      for (const m of Array.isArray(c.marks) ? c.marks : []) {
+        const f = Array.isArray(m) ? frac(`${m[0]}/${m[1]}`) : frac(m?.label ?? `${m?.num}/${c.den}`) ?? (Number.isInteger(m?.num) && m.num <= c.den ? [m.num, c.den] : null);
+        if (f) fs.push(f);
+      }
       if (Number.isInteger(c.mark) && Number.isInteger(c.den) && c.den <= 12) fs.push({ at: [c.mark, c.den] });
       if (!fs.length && Number.isInteger(c.hop?.num) && c.hop.num <= c.den) fs.push([c.hop.num, c.den]);
     } else {
@@ -448,7 +467,8 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       // a count of pieces or a share of a set: as bars they would show something else)
       for (const w of [c.left?.title, ...(c.left?.items ?? []), c.right?.title, ...(c.right?.items ?? [])].map((v) => String(v ?? ""))) {
         const ns = w.match(/\d+(?:\s*\/\s*\d+)?/g) ?? [];
-        if (ns.length === 1) { const f = frac(ns[0]); if (f) fs.push(f); }
+        // (never a fraction the item denies: "1/3 nahi" is Cake A's point — its pieces are NOT thirds)
+        if (ns.length === 1 && !/\b(?:nahi|nahin|not|na)\b/i.test(w)) { const f = frac(ns[0]); if (f) fs.push(f); }
       }
     }
     // (a two-scale line — no fraction of its own — takes the fractions her line states on its scales; nothing else does)

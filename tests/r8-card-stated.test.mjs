@@ -243,3 +243,39 @@ test("director9: the confirming VERDICT segment on the answered card's own board
   assert.deepEqual(v.artifact.screens[0].counts.marks, [{ at: "mark 1", label: "1/8" }], JSON.stringify(v.artifact.screens[0]));
   assert.ok(v.artifact.script.ops.some((o) => o.id.startsWith("a.") && o.text === "1/8"));
 });
+
+test("director9 S3′ on the run path: every picture request of the run, with the card's board already up, draws a second view through the seam (preselectWhiteboard → requestIntent)", () => {
+  // (the 11 director9 rows, r4-conversation f4cf2561: the board up the turn before, then the child's picture ask)
+  const ROWS = [
+    ["c5-maths-ch02-t02", "stuck T18", { template: "fraction-parts@1", params: { parts: 8, shade: 1, whole: "bar" } }, "line", "fraction-line@1"],
+    ["c5-maths-ch02-t02", "offtopic T26", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 2, label: "1/4" }] } }, "parts", "fraction-bars@1"],
+    ["c5-maths-ch02-t02", "steering T14", { template: "fraction-line@1", params: { dens: [7, 9], from: 0, to: 1, marks: [[1, 7], [1, 9]] } }, "parts", "fraction-bars@1"],
+    ["c5-maths-ch02-t01", "steady T34 / offtopic T28", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 4, label: "1/2" }] } }, "parts", "fraction-bars@1"],
+    ["c5-maths-ch02-t01", "stuck T18 / steering T14", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "parts", "fraction-bars@1"],
+    ["c4-maths-ch05-t01", "stuck T18 / steering T14", { template: "shade-grid@1", params: { rows: 1, cols: 4, shade: 3, labels: false, hideResult: true } }, "parts", "fraction-bars@1"],
+  ];
+  const lineFor = (row) => {
+    const bars = [...String(row ?? "").matchAll(/bar\d (\d+) equal parts, (\d+) shaded = (\d+\/\d+|\?)/g)];
+    if (bars.length) return `Yeh dekho: ${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] !== "0" ? `, ${b[2]} rangin${b[3] === "?" ? "" : ` (${b[3]})`}` : ""}`).join("; ")}.`;
+    const m = /gaps (\d+) equal gaps.*marks ([\d/ ,]+)/.exec(String(row ?? ""));
+    return m ? `Yeh dekho: 0 se 1 ki sankhya rekha, ${m[1]} barabar gaps, aur nishaan ${m[2].trim()} par.` : "Yeh dekho.";
+  };
+  for (const [T, where, ref, view, template] of ROWS) {
+    const kit = kitOf(T);
+    const L = `d9pic-${lessonN++}`;
+    seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: T, child: { id: `c-${L}`, class_level: 5, language_pref: "hinglish" } });
+    const mk = (n, t, more = {}) => ({ intent: { intentId: `${L}:wb:${n}`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "b", kind: "explain" }, ...more },
+      line: { lessonId: L, teacherReplySeq: n, text: t }, mode: "fresh", kit: { topicId: T, content: [] } });
+    const up = mk(1, "");
+    up.line.text = `Screen par dekho. ${String(seam.studioSeam.preselectWhiteboard({ ...up }) ?? "").replace(/^.*?board · /, "").replace(/ · /g, ". ")}`;
+    assert.equal(seam.studioSeam.requestIntent(up)?.state, "revealed", `${T} ${where}: the card's board is up`);
+    const ask = mk(2, "", { request: { kind: "picture" } });
+    const row = seam.studioSeam.preselectWhiteboard({ ...ask });
+    assert.equal(seam.studioSeam.preselectedAltView(L), view, `${T} ${where}: ${row}`);
+    ask.line.text = lineFor(row);
+    const k = seam.studioSeam.requestIntent(ask);
+    assert.equal(k?.state, "revealed", `${T} ${where}: ${ask.line.text}`);
+    assert.equal(k.artifact.altView, view);
+    assert.equal(k.artifact.screen.template, template, `${T} ${where}`);
+  }
+});

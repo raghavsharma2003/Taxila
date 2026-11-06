@@ -140,7 +140,7 @@ function fractionBars(c, tl) {
     if (!isInt(b?.parts, 1, 12) || !isInt(b?.shade, 0, b.parts)) return { error: "fraction_bars_range" };
     const label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
     if (label !== "?" && (!fitsLabel(label) || textProblem(label))) return { error: "fraction_bars_label" };
-    if (label === "?" && b.shade > 0) return { error: "fraction_bars_asked_shaded" };
+    // (a "?" bar may be shaded: the shading is the given and its NAME the question — a shade-grid card's second view)
     if (label !== "?") { const m = /^(\d+)\s*\/\s*(\d+)$/.exec(label); if (!m || Number(m[1]) * b.parts !== b.shade * Number(m[2])) return { error: `fraction_bars_label_value:${label}` }; }
   }
   const x0 = 30, W = 270, H = 46, gapY = 30, top = Math.round((BOARD.h - (bars.length * H + (bars.length - 1) * gapY)) / 2);
@@ -154,7 +154,7 @@ function fractionBars(c, tl) {
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
-  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, w.label === "?" ? `${w.parts} equal parts, ? (asked)` : `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
 }
 
 function fractionLine(c, tl) {
