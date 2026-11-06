@@ -231,3 +231,16 @@ test("safeguard and wrap turns get their own last rules; the floor still precede
   assert.match(text.split("\n").at(-1), /at most 35 words/);
   assert.ok(text.indexOf(FLOOR_HEADING) < text.indexOf("ONE MORE CHECK"));
 });
+
+test("a script card whose move note overflows is never skipped: the note is shortened and the card stays", () => {
+  let s = lessonAfter(toFirstItem(), "text");
+  for (let i = 0; i < 10 && (!s.lastMove.itemId || String(s.lastMove.itemId).startsWith("fade:")); i++) s = lessonAfter([...toFirstItem(), ...Array(i + 1).fill(cls("no_evidence"))], "text");
+  const long = Array.from({ length: 40 }, (_, i) => `note ${i}: keep the child with the idea on the board and the card`).join(". ") + ". Say the point. Then the card.";
+  const st = { ...s, lastMove: { ...s.lastMove, itemId: "script:x:ask:e4", shape: long } };
+  assert.throws(() => instructionsFor(st, K), /move/);
+  const out = instructionsAfter({ state: st, move: st.lastMove }, K, 300_000);
+  assert.equal(out.skipped, undefined, "never skipped");
+  assert.equal(out.r.state.lastMove.itemId, "script:x:ask:e4");
+  assert.ok(out.r.state.lastMove.shape.length < long.length);
+  assert.match(out.instructions, /Then the card/);
+});
