@@ -310,6 +310,11 @@ export function altViewOfRow(row, hint = null) {
     const gaps = Number(/\bgaps\s+(\d+)\s+equal gaps/.exec(r)?.[1]) || null;
     return { view: "line", labels: marks, ...(gaps ? { gaps } : {}) };
   }
+  // (Studio wholes@1, a compare card's two wholes: "whole1 3 unequal parts · whole2 3 equal parts, 1 shaded")
+  const wholes = [...r.matchAll(/\bwhole\d+\s+(\d+)\s+(equal|unequal)\s+parts(?:,\s*(\d+)\s+shaded)?/g)];
+  if (wholes.length && (hint === "wholes" || hint?.view === "wholes" || !/\bbar\d+\s/.test(r))) {
+    return { view: "wholes", labels: [], wholes: wholes.map((w) => ({ parts: Number(w[1]), equal: w[2] === "equal", ...(w[3] != null ? { shaded: Number(w[3]) } : {}) })) };
+  }
   const bars = [...r.matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+|\?)|\?\s*\(asked\))/g)];
   if (!bars.length) return null;
   return { view: "parts", labels: bars.map((b) => b[3]).filter((x) => x && x !== "?") };

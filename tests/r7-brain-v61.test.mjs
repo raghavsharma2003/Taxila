@@ -191,3 +191,27 @@ test("R11: a worked step is labelled as its own step; a card let go with no new 
   assert.match(g.reply, /Is sawaal ka jawab 30 cm hai/, g.reply);
   assert.doesNotMatch(g.reply, /Pichhle sawaal/);
 });
+
+import { altViewOfRow } from "../server/brain/propose.js";
+test("Studio wholes@1: a compare card's two wholes, read off the row and named by code from the card's columns", async () => {
+  const alt = altViewOfRow("on screen now: board · whole1 3 unequal parts · whole2 3 equal parts", "wholes");
+  assert.deepEqual(alt, { view: "wholes", labels: [], wholes: [{ parts: 3, equal: false }, { parts: 3, equal: true }] });
+  const T4 = "c4-maths-ch05-t01";
+  setScriptForTest(T4, runScript(T4));
+  const L = walkOf(T4);
+  const board = { template: "compare@1", params: { left: { title: "Cake A", items: ["3 tukde"] }, right: { title: "Cake B", items: ["3 tukde"] } } };
+  const card = "Kis cake ka har tukda 1/3 hai?";
+  const st = { ...L.r.state, mode: "text", lastMove: { kind: "reteach", request: "visual", visual: "diagram", altView: alt, scriptBeat: { scriptId: "s", skillId: "x", beatId: "c1", kind: "check", board } } };
+  replyDeps.chat = async () => ({ text: `Theek hai. ${card}` });
+  const out = await textReply({ instructions: "x", state: st, kit: L.K, childText: "picture dikhao", history: [], ui: { ask: { itemId: "x", text: card } }, module: null });
+  assert.match(out.reply, /^Dekho: Cake A ke 3 alag-alag tukde; Cake B ke 3 barabar tukde\./, out.reply);
+});
+
+test("split policy B (main): closures never split a turn on their own; only authored teaching plus its card over the cap is split", async () => {
+  const { splitLong } = await import("../server/director/state.js");
+  const s = { ctx: {}, lastMove: null };
+  const out = { state: s, move: { kind: "explain", itemId: "x", point: "Ek chhota point.", closed: { answer: "30 m", why: "bahut lamba kaaran ".repeat(12) }, gave: { answer: "5", why: "aur ek lamba kaaran ".repeat(10) } }, ui: { ask: { text: "Kitna?" } } };
+  const r = splitLong(out, { event: "turn" });
+  assert.equal(r.move.splitClose, undefined, "no closing split");
+  assert.equal(r.move.kind, "explain");
+});

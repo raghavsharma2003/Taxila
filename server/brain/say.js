@@ -1904,6 +1904,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const asked = !visualAsk ? null
       : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
         // (Studio: a bar card's second view is a number line: "0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par")
+        // (Studio wholes@1: a compare card's two wholes drawn, "whole1 3 unequal parts · whole2 3 equal parts", named by code)
+        if ((alt.view ?? alt) === "wholes" && Array.isArray(alt.wholes) && alt.wholes.length) {
+          const bp = state.lastMove?.scriptBeat?.board?.params ?? {};
+          const names = alt.names ?? [bp.left?.title, bp.right?.title].filter((x) => typeof x === "string" && x.trim());
+          const one = (w, i) => { const n = names[i] ?? (lang === "english" ? `whole ${i + 1}` : `${i + 1} wala`); const sh = w.shaded != null ? (lang === "english" ? `, ${w.shaded} shaded` : `, ${w.shaded} rangin`) : "";
+            return lang === "english" ? `${n} in ${w.parts} ${w.equal ? "equal" : "unequal"} pieces${sh}` : `${n} ke ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${sh}`; };
+          return lang === "english" ? `Look: ${alt.wholes.map(one).join("; ")}.` : `Dekho: ${alt.wholes.map(one).join("; ")}.`;
+        }
         if ((alt.view ?? alt) === "line") return lang === "english" ? `Look, the same on a number line from 0 to 1${alt.gaps ? `, ${alt.gaps} equal gaps` : ""}${nums.length ? `, marked at ${nums.join(" and ")}` : ""}.`
           : `Dekho, yahi 0 se 1 ki sankhya rekha par${alt.gaps ? `, ${alt.gaps} barabar gaps` : ""}${nums.length ? `, nishaan ${nums.join(" aur ")} par` : ""}.`;
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()
@@ -1985,6 +1993,19 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const seenS = new Set((tail ? sentences(tail) : []).map(keyS));
     const once = (xs) => xs.filter(Boolean).map(norm).filter((x) => { const kk = keyS(x); if (!kk || seenS.has(kk)) { if (kk) guard.dupDropped = (guard.dupDropped ?? 0) + 1; return false; } seenS.add(kk); return true; });
     const noQ = (xs) => (tail ? xs.filter((x) => { const q = /[?？]/.test(x); if (q) guard.secondQuestion = (guard.secondQuestion ?? 0) + 1; return !q; }) : xs);
+    // v6.1 (main's split policy B: "first trim HER own words"): a scripted turn over the word cap loses her own sentences in the
+    // body (lead-ins, framings, her lines) before anything authored or code's is touched
+    {
+      const capW = state.ctx?.plainWords ? 45 : 60;
+      const authoredS = new Set([...(point ? sentences(point) : []), ...(workedLines ?? []), ...(state.lastMove?.simpler ? sentences(state.lastMove.simpler) : []),
+        ...(state.lastMove?.cardPoint ? [state.lastMove.cardPoint] : [])].map((x) => norm(x).toLowerCase().replace(/[.!?\u0964]+$/, "")));
+      const total = [lead, ack, missS, gaveS, doneS, closedS, ...first, ...aside, ...body, tail].filter(Boolean).join(" ").split(/\s+/).filter(Boolean).length;
+      if (total > capW) {
+        const mineOnly = (x) => !authoredS.has(norm(x).toLowerCase().replace(/[.!?\u0964]+$/, "")) && ![...authoredS].some((a) => a && norm(x).toLowerCase().includes(a));
+        const kept = body.filter((x) => !mineOnly(x));
+        if (kept.length && kept.length < body.length) { guard.trimmedHers = body.length - kept.length; body = kept; }
+      }
+    }
     const prevPart = once([lead, ...noQ([ack, missS, gaveS, doneS].filter(Boolean))]);
     const closedP = once([closedS]);
     first.splice(0, first.length, ...once(first));

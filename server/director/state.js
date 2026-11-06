@@ -2984,7 +2984,10 @@ export function splitLong(out, input) {
   const teaching = [move.point, ...(move.rendered ?? []), ui?.ask?.text];
   if (!teaching.some(Boolean)) return out;
   const cap = s.ctx?.plainWords ? 45 : 60;
-  if (!closing.some(Boolean)) return splitTeach(out, input, cap);
+  // v6.1 (main's split policy B, on director9: 45 split turns slowed skill 1 to 66 turns): closures never cause a split on
+  // their own; they stay in the beat's turn (brain/say.js trims her own words first). Only authored teaching plus its card
+  // that still do not fit is split. TAXILA_R7_SPLIT_CLOSE=on brings back the closing split.
+  if (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on") return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
   if (wordsIn(closing, teaching) + 12 <= cap) return out;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
