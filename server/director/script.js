@@ -362,16 +362,19 @@ const keyed = (id, skillId, prompt, key, accept, extra) => ({ id, skillId, kind:
 // own authored why (KeyedAsk.why / CheckQuestionV2.why, a Said), carried on the card for the close; absent → no why is said
 // v2.3 (dc-r7-script-walk-v6-1 R8): a card's authored one-step hint, said on "pata nahi" / "samajh nahi aaya" instead of a model hint
 const simplerField = (a) => (a?.simpler && typeof a.simpler === "object" && (a.simpler.hi || a.simpler.en) ? { simpler: { hi: String(a.simpler.hi ?? ""), en: String(a.simpler.en ?? "") } } : {});
+// v2.3 (director9 item 4, Learning: c4 e3's "what if" ask): a card's answer-state board, drawn over its close (verdict + why,
+// give-up, or the missed card's close), never while the card is live; it may show the key
+const answerBoardField = (a) => (a?.answerBoard && typeof a.answerBoard === "object" && a.answerBoard.template ? { answerBoard: { template: String(a.answerBoard.template), params: a.answerBoard.params ?? {} } } : {});
 const whyField = (a) => (a?.why && typeof a.why === "object" && (a.why.hi || a.why.en) ? { why: { hi: String(a.why.hi ?? ""), en: String(a.why.en ?? "") } } : {});
 /** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
 export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
-  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a), ...simplerField(a) } });
+  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a), ...simplerField(a), ...answerBoardField(a) } });
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
-  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c), ...simplerField(c) } });
+  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c), ...simplerField(c), ...answerBoardField(c) } });
 /** A remediation's follow-up question as a keyed card. */
 export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
-  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then), ...simplerField(r.then) } })
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then), ...simplerField(r.then), ...answerBoardField(r.then) } })
   : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
 /** The script version of a skill (1 or 2). */
 export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;

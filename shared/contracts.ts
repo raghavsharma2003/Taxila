@@ -775,6 +775,9 @@ export interface KeyedAsk {
   /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
    *  Absent: the close says the answer alone (never a sentence borrowed from a point or a remediation) */
   why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
   /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
    *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
   simpler?: Said;
@@ -850,6 +853,9 @@ export interface CheckQuestionV2 {
   board?: BoardRef | null;
   /** v6: why the key is right (see KeyedAsk.why) */
   why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
   /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
    *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
   simpler?: Said;
