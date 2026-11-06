@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-signin-code",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Guardians can sign in with a 6-digit code sent by email, at /signin. The server is server/signin/code.js: POST /api/auth/code and /api/auth/code/verify, with the same createSession as password login. One provider interface: email goes through ACS Email (the existing sendAcsEmail, Azure-managed domain); phone has the same shape and refuses with 501 phone.unavailable, because ACS SMS does not reach Indian numbers. There is no migration: codes are password_reset rows keyed code:+sha256(guardian, code), so reset links and codes share the 5-an-hour mail limit and a password reset spends open codes. A code lives 10 minutes, and 5 wrong tries spend it. An unknown email gets the same answers as a known one. Platform registers the routes (to-platform/002); Learning adds the links (to-learning/004). Reverse: an Indian SMS or WhatsApp route on Azure fills PROVIDERS.phone, or Learning wants a dedicated table (then a migration number from Platform).",
+   "source": "inbox/r7-app-21.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-signin-code`\nA parent who forgot the password, or never wants one, types their email, gets a code, and is in. The sent line reads the same whether or not the email has an account. Phone codes keep their place in the interface and say plainly that they are not ready, so the day an Azure route reaches Indian numbers only `PROVIDERS.phone.send` changes.\n"
+ }
+}

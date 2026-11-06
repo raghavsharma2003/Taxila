@@ -11,6 +11,8 @@ import Who from "./Who.tsx";
 
 const Landing = lazy(() => import("./landing/Landing.tsx"));
 const Onboarding = lazy(() => import("../onboarding/index.tsx"));
+// r7 app-auth-email-otp: sign in with a code by email (its own small chunk; the first run's chunk is not loaded for it)
+const CodeSignIn = lazy(() => import("./signin/CodeSignIn.tsx"));
 const ParentCorner = lazy(() => import("../parent/index.tsx"));
 // The public pages share the marketing site's chrome (B4, PRODUCT-DESIGN-V2 §6.1.2): one lazy chunk, off the child path.
 const pub = (k: "Promises" | "Privacy" | "Help" | "Leaving" | "NotFound") => lazy(() => import("./Public.tsx").then((m) => ({ default: m[k] })));
@@ -56,6 +58,7 @@ export const routes: RouteObject[] = [
       { path: "/privacy", element: s(<Privacy />) },
       { path: "/leaving", element: s(<Leaving />) },
       { path: "/help", element: s(<PublicHelp />) },
+      { path: "/signin", element: s(<CodeSignIn />) },
       { path: "/start/*", element: s(<Onboarding />) },
       { path: "/who", element: <Who /> },
       { element: <ChildMode />, children: childRouteTree() },
