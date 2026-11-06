@@ -138,12 +138,14 @@ const COUNTED = [
   // ("teen mark hain: 1/2, 1/4 aur 1/8": the labelled marks count too)
   ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps]), ...(Array.isArray(c.marks) && c.marks.length ? [c.marks.length] : [])]],
   ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
+  // (Studio 013: the dot's drawn hops, fraction-line@1 counts.hops; "pehle 4 hop" over 5 drawn is a stretch, as gaps)
+  ["hops", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hops?|chhalang\\w*|jumps?)(?![\\p{L}])`, "giu"), (c) => [c.hops]],
   ["shaded", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hisse\\s+|parts?\\s+|tukde\\s+)?(?:shaded|rangi\\w*|rangee\\w*|colou?red)(?![\\p{L}])`, "giu"), (c) => [c.shaded]],
 ];
 const DEICTIC = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye|\b(?:yahan|is|iss|ye|yeh)\s+(?:line|rekha|shape|aakar|chitra?|figure|rectangle|triangle|square|circle|pentagon|hexagon|patti|strip|kyaari)/i;
 /** Every number a board counted (SC1), for the pointed-number check: a count said is never "a number the board lacks". */
 const countNumbers = (c) => !c ? [] : [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole, l.ticks, l.innerTicks]), c.parts, c.shaded, c.rows, c.cols, c.groups, c.each,
-  c.sides, c.corners, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
+  c.sides, c.corners, c.hops, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
 /** SC1: does this sentence state a count the board's counted facts contradict? */
 export function countContradicts(x, counts) {
   if (!counts || !DEICTIC.test(x)) return false;
@@ -159,6 +161,7 @@ export function countContradicts(x, counts) {
       if (n === 1 && /^ek$/i.test(m[1])) continue;
       // (on a line, "3 tukde … 3/8 tak" is a stretch of it, as Studio's W10 reads it; only "N barabar …" names the division)
       if (kind === "gaps" && lineMax && !m[2] && n != null && n <= lineMax) continue;
+      if (kind === "hops" && typeof counts.hops === "number" && n != null && n <= counts.hops) continue;
       const ok = allowed(counts).filter((v) => typeof v === "number");
       if (!ok.length) continue;                       // not counted by this board: never flagged
       if (n != null && !ok.includes(n)) return true;
@@ -186,7 +189,9 @@ export function screenContradictions(text, facts) {
   return (String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => {
     if (facts.counts && countContradicts(x, facts.counts)) return true;
     if (facts.shape) {
-      const named = SHAPES.filter(([, re]) => re.test(x)).map(([n]) => n);
+      // ("woh area hai, square cm mein": a square unit is not the shape square)
+      const xs = x.replace(/(?<![\p{L}])(?:square|varg)\s+(?:cm|m|km|mm|centimet\w*|met(?:re|er)\w*|unit\w*|ikaai\w*)(?![\p{L}])/giu, " ");
+      const named = SHAPES.filter(([, re]) => re.test(xs)).map(([n]) => n);
       if (named.length && !named.includes(facts.shape) && !(facts.shape === "square" && named.includes("rectangle"))) return true;
     }
     if (facts.numbers?.length && POINT.test(x)) {

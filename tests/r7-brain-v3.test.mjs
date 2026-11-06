@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { initLessonState, step, returnLineOf } from "../server/director/state.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { verdictFor, joinAsk } from "../server/director/say.js";
-import { textReply, replyDeps, pointSaid } from "../server/brain/say.js";
+import { textReply, replyDeps, pointSaid, countContradicts, screenContradictions } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
@@ -564,4 +564,12 @@ describe("v5 B3: a language promise is a mode for the lesson", () => {
     assert.equal(r.state.ctx.lang, "english");
     assert.equal(r.state.ctx.plainWords, false);
   });
+});
+
+test("Studio 013: drawn hops are counted (a stretch of them is fine, more than drawn is not); a square unit is not the shape", () => {
+  assert.equal(countContradicts("Screen par 1/4 ke 5 hop hain: pehle 4 hop 0 se 1 ko bhar dete hain.", { hops: 5, lines: [{ gaps: 8 }] }), false);
+  assert.equal(countContradicts("Screen par dono 3 hop chale.", { lines: [{ gaps: 4 }] }), false, "a board that counted no hops is never checked");
+  assert.equal(countContradicts("Screen par 7 hop hain.", { hops: 5 }), true);
+  assert.equal(screenContradictions("Yeh rectangle hai. Andar tiles bichhao toh woh area hai, square cm mein.", { shape: "rectangle", numbers: null, counts: null }).length, 0);
+  assert.equal(screenContradictions("Screen par yeh square hai.", { shape: "rectangle", numbers: null, counts: null }).length, 1, "the shape square over a rectangle is still a contradiction");
 });
