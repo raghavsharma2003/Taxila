@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 107,
-  "entries": 374,
-  "withMisconceptionMap": 109,
-  "mappedMisconceptions": 205,
+  "topicsCovered": 114,
+  "entries": 386,
+  "withMisconceptionMap": 116,
+  "mappedMisconceptions": 220,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 88
+    "covered": 95
    },
    "science": {
     "inScope": 146,
@@ -36,19 +36,19 @@
    },
    "4": {
     "inScope": 50,
-    "covered": 25
+    "covered": 26
    },
    "5": {
     "inScope": 52,
-    "covered": 30
+    "covered": 31
    },
    "6": {
     "inScope": 69,
-    "covered": 28
+    "covered": 31
    },
    "7": {
     "inScope": 79,
-    "covered": 24
+    "covered": 26
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 121,
+  "topicsCoveredAll": 128,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 88
+    "covered": 95
    },
    "science": {
     "topics": 146,
@@ -87,8 +87,8 @@
     "covered": 7
    }
   },
-  "arenaOnly": 130,
-  "arenaOnlyClass4to7": 43,
+  "arenaOnly": 123,
+  "arenaOnlyClass4to7": 36,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 8,
@@ -101,6 +101,7 @@
    "kaal": 6,
    "kila": 6,
    "kon": 9,
+   "kram": 7,
    "naksha": 5,
    "nazariya": 11,
    "stambh": 6,
@@ -118,7 +119,7 @@
     "covered": 0
    }
   },
-  "skillsAdmitted": 674,
+  "skillsAdmitted": 675,
   "rulesNotAdmitted": 2
  },
  "skills": {
@@ -3158,6 +3159,348 @@
    },
    "contexts": [],
    "why": "RULES c7-maths-ch09-t03 kon/close/iso · ACTS"
+  },
+  "c4-maths-ch03-t02-s1": {
+   "topicId": "c4-maths-ch03-t02",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "grammar": {
+    "kinds": [
+     "add",
+     "sub",
+     "mul",
+     "div",
+     "cal"
+    ]
+   },
+   "misMap": {
+    "only-increase": "c4-maths-ch03-t02-m-only-increase",
+    "first-step": "c4-maths-ch03-t02-m-first-step-only",
+    "plus-one": "c4-maths-ch03-t02-m-calendar-plus-one"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch03-t02 kram/machine/step · ACTS"
+  },
+  "c4-maths-ch03-t02-s2": {
+   "topicId": "c4-maths-ch03-t02",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "grammar": {
+    "kinds": [
+     "add",
+     "sub",
+     "mul",
+     "div",
+     "cal"
+    ]
+   },
+   "misMap": {
+    "only-increase": "c4-maths-ch03-t02-m-only-increase",
+    "first-step": "c4-maths-ch03-t02-m-first-step-only",
+    "plus-one": "c4-maths-ch03-t02-m-calendar-plus-one"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch03-t02 kram/machine/step · ACTS"
+  },
+  "c4-maths-ch03-t02-s3": {
+   "topicId": "c4-maths-ch03-t02",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "grammar": {
+    "kinds": [
+     "add",
+     "sub",
+     "mul",
+     "div",
+     "cal"
+    ]
+   },
+   "misMap": {
+    "only-increase": "c4-maths-ch03-t02-m-only-increase",
+    "first-step": "c4-maths-ch03-t02-m-first-step-only",
+    "plus-one": "c4-maths-ch03-t02-m-calendar-plus-one"
+   },
+   "contexts": [],
+   "why": "RULES c4-maths-ch03-t02 kram/machine/step · ACTS"
+  },
+  "c5-maths-ch07-t02-s1": {
+   "topicId": "c5-maths-ch07-t02",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "next",
+   "grammar": {
+    "seqs": [
+     "ell",
+     "plus",
+     "stair",
+     "oblong"
+    ],
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "copy": "c5-maths-ch07-t02-m-guess-next"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch07-t02 kram/grow/next · ACTS"
+  },
+  "c5-maths-ch07-t02-s3": {
+   "topicId": "c5-maths-ch07-t02",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "grammar": {
+    "seqs": [
+     "houses",
+     "sqrow",
+     "trirow"
+    ],
+    "far": [
+     6,
+     12
+    ]
+   },
+   "misMap": {
+    "times-first": "c5-maths-ch07-t02-m-whole-object",
+    "step-only": "c5-maths-ch07-t02-m-forget-start"
+   },
+   "contexts": [],
+   "why": "RULES c5-maths-ch07-t02 kram/grow/far · ACTS"
+  },
+  "c5-maths-ch07-t02-s2": {
+   "topicId": "c5-maths-ch07-t02",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "grammar": {
+    "kinds": [
+     "fig"
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c5-maths-ch07-t02 kram/machine/step · ACTS"
+  },
+  "c6-maths-ch01-t02-s1": {
+   "topicId": "c6-maths-ch01-t02",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "next",
+   "grammar": {
+    "seqs": [
+     "square",
+     "square",
+     "stair"
+    ],
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "corner": "c6-maths-ch01-t02-m-corner",
+    "rows-only": "c6-maths-ch01-t02-m-any-arrangement"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t02 kram/grow/next · ACTS"
+  },
+  "c6-maths-ch01-t02-s2": {
+   "topicId": "c6-maths-ch01-t02",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "next",
+   "grammar": {
+    "seqs": [
+     "square",
+     "square",
+     "stair"
+    ],
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "corner": "c6-maths-ch01-t02-m-corner",
+    "rows-only": "c6-maths-ch01-t02-m-any-arrangement"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t02 kram/grow/next · ACTS"
+  },
+  "c6-maths-ch01-t03-s1": {
+   "topicId": "c6-maths-ch01-t03",
+   "family": "kram",
+   "mode": "nest",
+   "goal": "odd",
+   "grammar": {
+    "n": [
+     3,
+     6
+    ]
+   },
+   "misMap": {
+    "skip-start": "c6-maths-ch01-t03-m-skip-start"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t03 kram/nest/odd · ACTS"
+  },
+  "c6-maths-ch01-t03-s2": {
+   "topicId": "c6-maths-ch01-t03",
+   "family": "kram",
+   "mode": "nest",
+   "goal": "pair",
+   "grammar": {
+    "n": [
+     3,
+     7
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t03 kram/nest/pair · ACTS"
+  },
+  "c6-maths-ch01-t04-s2": {
+   "topicId": "c6-maths-ch01-t04",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "grammar": {
+    "seqs": [
+     "lines",
+     "koch"
+    ],
+    "far": [
+     7,
+     12
+    ]
+   },
+   "misMap": {
+    "double": "c6-maths-ch01-t04-m-line-jump",
+    "same-step": "c6-maths-ch01-t04-m-line-jump",
+    "sides-plus": "c6-maths-ch01-t04-m-sides-plus"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t04 kram/grow/far · ACTS"
+  },
+  "c6-maths-ch01-t04-s3": {
+   "topicId": "c6-maths-ch01-t04",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "grammar": {
+    "seqs": [
+     "lines",
+     "koch"
+    ],
+    "far": [
+     7,
+     12
+    ]
+   },
+   "misMap": {
+    "double": "c6-maths-ch01-t04-m-line-jump",
+    "same-step": "c6-maths-ch01-t04-m-line-jump",
+    "sides-plus": "c6-maths-ch01-t04-m-sides-plus"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch01-t04 kram/grow/far · ACTS"
+  },
+  "c7-maths-ch04-t03-s1": {
+   "topicId": "c7-maths-ch04-t03",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "rule",
+   "grammar": {
+    "far": [
+     10,
+     100
+    ]
+   },
+   "misMap": {
+    "recursive": "c7-maths-ch04-t03-m-recursive-only",
+    "proportional": "c7-maths-ch04-t03-m-proportional"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch04-t03 kram/machine/rule · ACTS"
+  },
+  "c7-maths-ch04-t03-s2": {
+   "topicId": "c7-maths-ch04-t03",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "grammar": {
+    "seqs": [
+     "houses",
+     "sqrow",
+     "trirow"
+    ],
+    "far": [
+     20,
+     50
+    ]
+   },
+   "misMap": {
+    "times-first": "c7-maths-ch04-t03-m-proportional"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch04-t03 kram/grow/far · ACTS"
+  },
+  "c7-maths-ch06-t03-s1": {
+   "topicId": "c7-maths-ch06-t03",
+   "family": "kram",
+   "mode": "beats",
+   "goal": "lay",
+   "grammar": {
+    "n": [
+     4,
+     5
+    ]
+   },
+   "misMap": {
+    "order-ignored": "c7-maths-ch06-t03-m-order-ignored"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch06-t03 kram/beats/lay · ACTS"
+  },
+  "c7-maths-ch06-t03-s3": {
+   "topicId": "c7-maths-ch06-t03",
+   "family": "kram",
+   "mode": "beats",
+   "goal": "lay",
+   "grammar": {
+    "n": [
+     4,
+     5
+    ]
+   },
+   "misMap": {
+    "order-ignored": "c7-maths-ch06-t03-m-order-ignored"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch06-t03 kram/beats/lay · ACTS"
+  },
+  "c7-maths-ch06-t03-s2": {
+   "topicId": "c7-maths-ch06-t03",
+   "family": "kram",
+   "mode": "beats",
+   "goal": "count",
+   "grammar": {
+    "far": [
+     6,
+     10
+    ]
+   },
+   "misMap": {
+    "add-one": "c7-maths-ch06-t03-m-add-one",
+    "doubling": "c7-maths-ch06-t03-m-add-one"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch06-t03 kram/beats/count · ACTS"
   },
   "c4-maths-ch01-t03-s1": {
    "topicId": "c4-maths-ch01-t03",
@@ -6234,42 +6577,6 @@
    "contexts": [],
    "why": "RULES c4-maths-ch03-t01 arena/pick/pick · ACTS"
   },
-  "c4-maths-ch03-t02-s1": {
-   "topicId": "c4-maths-ch03-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch03-t02 arena/pick/pick · ACTS"
-  },
-  "c4-maths-ch03-t02-s2": {
-   "topicId": "c4-maths-ch03-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch03-t02 arena/pick/pick · ACTS"
-  },
-  "c4-maths-ch03-t02-s3": {
-   "topicId": "c4-maths-ch03-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c4-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c4-maths-ch03-t02 arena/pick/pick · ACTS"
-  },
   "c4-maths-ch04-t01-s1": {
    "topicId": "c4-maths-ch04-t01",
    "family": "arena",
@@ -6690,42 +6997,6 @@
    "contexts": [],
    "why": "RULES c5-maths-ch06-t02 arena/pick/pick · ACTS"
   },
-  "c5-maths-ch07-t02-s1": {
-   "topicId": "c5-maths-ch07-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch07-t02 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch07-t02-s2": {
-   "topicId": "c5-maths-ch07-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch07-t02 arena/pick/pick · ACTS"
-  },
-  "c5-maths-ch07-t02-s3": {
-   "topicId": "c5-maths-ch07-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c5-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c5-maths-ch07-t02 arena/pick/pick · ACTS"
-  },
   "c5-maths-ch08-t01-s1": {
    "topicId": "c5-maths-ch08-t01",
    "family": "arena",
@@ -6834,30 +7105,6 @@
    "contexts": [],
    "why": "RULES c6-maths-ch01-t01 arena/pick/pick · ACTS"
   },
-  "c6-maths-ch01-t02-s1": {
-   "topicId": "c6-maths-ch01-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t02 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch01-t02-s2": {
-   "topicId": "c6-maths-ch01-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t02 arena/pick/pick · ACTS"
-  },
   "c6-maths-ch01-t02-s3": {
    "topicId": "c6-maths-ch01-t02",
    "family": "arena",
@@ -6870,55 +7117,7 @@
    "contexts": [],
    "why": "RULES c6-maths-ch01-t02 arena/pick/pick · ACTS"
   },
-  "c6-maths-ch01-t03-s1": {
-   "topicId": "c6-maths-ch01-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t03 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch01-t03-s2": {
-   "topicId": "c6-maths-ch01-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t03 arena/pick/pick · ACTS"
-  },
   "c6-maths-ch01-t04-s1": {
-   "topicId": "c6-maths-ch01-t04",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t04 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch01-t04-s2": {
-   "topicId": "c6-maths-ch01-t04",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch01-t04 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch01-t04-s3": {
    "topicId": "c6-maths-ch01-t04",
    "family": "arena",
    "mode": "pick",
@@ -7554,30 +7753,6 @@
    "contexts": [],
    "why": "RULES c7-maths-ch04-t02 arena/pick/pick · ACTS"
   },
-  "c7-maths-ch04-t03-s1": {
-   "topicId": "c7-maths-ch04-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch04-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch04-t03-s2": {
-   "topicId": "c7-maths-ch04-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch04-t03 arena/pick/pick · ACTS"
-  },
   "c7-maths-ch04-t03-s3": {
    "topicId": "c7-maths-ch04-t03",
    "family": "arena",
@@ -7745,30 +7920,6 @@
    "misMap": {},
    "contexts": [],
    "why": "RULES c7-maths-ch06-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch06-t03-s1": {
-   "topicId": "c7-maths-ch06-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch06-t03 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch06-t03-s2": {
-   "topicId": "c7-maths-ch06-t03",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch06-t03 arena/pick/pick · ACTS"
   },
   "c7-maths-ch06-t04-s1": {
    "topicId": "c7-maths-ch06-t04",
@@ -9655,15 +9806,10 @@
   "c3-maths-ch14-t01",
   "c3-maths-ch14-t02",
   "c4-maths-ch01-t01",
-  "c4-maths-ch03-t02",
   "c4-maths-ch04-t01",
   "c4-maths-ch05-t02",
   "c4-maths-ch09-t02",
   "c5-maths-ch04-t02",
-  "c5-maths-ch07-t02",
-  "c6-maths-ch01-t02",
-  "c6-maths-ch01-t03",
-  "c6-maths-ch01-t04",
   "c6-maths-ch02-t01",
   "c6-maths-ch03-t02",
   "c6-maths-ch04-t01",
@@ -9676,12 +9822,10 @@
   "c7-maths-ch02-t02",
   "c7-maths-ch03-t04",
   "c7-maths-ch04-t02",
-  "c7-maths-ch04-t03",
   "c7-maths-ch05-t02",
   "c7-maths-ch05-t03",
   "c7-maths-ch06-t01",
   "c7-maths-ch06-t02",
-  "c7-maths-ch06-t03",
   "c7-maths-ch06-t04",
   "c7-maths-ch07-t01",
   "c7-maths-ch07-t02",
@@ -12596,6 +12740,306 @@
    },
    "misMap": {
     "wrong-pair": "c7-maths-ch09-t03-m-wrong-pair"
+   }
+  },
+  {
+   "topicId": "c4-maths-ch03-t02",
+   "title": "Number patterns",
+   "classLevel": 4,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "skillId": "c4-maths-ch03-t02-s1",
+   "skillIds": [
+    "c4-maths-ch03-t02-s1",
+    "c4-maths-ch03-t02-s2",
+    "c4-maths-ch03-t02-s3"
+   ],
+   "grammar": {
+    "kinds": [
+     "add",
+     "sub",
+     "mul",
+     "div",
+     "cal"
+    ]
+   },
+   "misMap": {
+    "only-increase": "c4-maths-ch03-t02-m-only-increase",
+    "first-step": "c4-maths-ch03-t02-m-first-step-only",
+    "plus-one": "c4-maths-ch03-t02-m-calendar-plus-one"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch07-t02",
+   "title": "Growing shape patterns",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "next",
+   "skillId": "c5-maths-ch07-t02-s1",
+   "skillIds": [
+    "c5-maths-ch07-t02-s1"
+   ],
+   "grammar": {
+    "seqs": [
+     "ell",
+     "plus",
+     "stair",
+     "oblong"
+    ],
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "copy": "c5-maths-ch07-t02-m-guess-next"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch07-t02",
+   "title": "Growing shape patterns",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "skillId": "c5-maths-ch07-t02-s3",
+   "skillIds": [
+    "c5-maths-ch07-t02-s3"
+   ],
+   "grammar": {
+    "seqs": [
+     "houses",
+     "sqrow",
+     "trirow"
+    ],
+    "far": [
+     6,
+     12
+    ]
+   },
+   "misMap": {
+    "times-first": "c5-maths-ch07-t02-m-whole-object",
+    "step-only": "c5-maths-ch07-t02-m-forget-start"
+   }
+  },
+  {
+   "topicId": "c5-maths-ch07-t02",
+   "title": "Growing shape patterns",
+   "classLevel": 5,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "step",
+   "skillId": "c5-maths-ch07-t02-s2",
+   "skillIds": [
+    "c5-maths-ch07-t02-s2"
+   ],
+   "grammar": {
+    "kinds": [
+     "fig"
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c6-maths-ch01-t02",
+   "title": "Visualising sequences with pictures",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "next",
+   "skillId": "c6-maths-ch01-t02-s1",
+   "skillIds": [
+    "c6-maths-ch01-t02-s1",
+    "c6-maths-ch01-t02-s2"
+   ],
+   "grammar": {
+    "seqs": [
+     "square",
+     "square",
+     "stair"
+    ],
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "corner": "c6-maths-ch01-t02-m-corner",
+    "rows-only": "c6-maths-ch01-t02-m-any-arrangement"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch01-t03",
+   "title": "Relations among sequences",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "nest",
+   "goal": "odd",
+   "skillId": "c6-maths-ch01-t03-s1",
+   "skillIds": [
+    "c6-maths-ch01-t03-s1"
+   ],
+   "grammar": {
+    "n": [
+     3,
+     6
+    ]
+   },
+   "misMap": {
+    "skip-start": "c6-maths-ch01-t03-m-skip-start"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch01-t03",
+   "title": "Relations among sequences",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "nest",
+   "goal": "pair",
+   "skillId": "c6-maths-ch01-t03-s2",
+   "skillIds": [
+    "c6-maths-ch01-t03-s2"
+   ],
+   "grammar": {
+    "n": [
+     3,
+     7
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c6-maths-ch01-t04",
+   "title": "Patterns in shapes",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "skillId": "c6-maths-ch01-t04-s2",
+   "skillIds": [
+    "c6-maths-ch01-t04-s2",
+    "c6-maths-ch01-t04-s3"
+   ],
+   "grammar": {
+    "seqs": [
+     "lines",
+     "koch"
+    ],
+    "far": [
+     7,
+     12
+    ]
+   },
+   "misMap": {
+    "double": "c6-maths-ch01-t04-m-line-jump",
+    "same-step": "c6-maths-ch01-t04-m-line-jump",
+    "sides-plus": "c6-maths-ch01-t04-m-sides-plus"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch04-t03",
+   "title": "Patterns and relationships with algebra",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "machine",
+   "goal": "rule",
+   "skillId": "c7-maths-ch04-t03-s1",
+   "skillIds": [
+    "c7-maths-ch04-t03-s1"
+   ],
+   "grammar": {
+    "far": [
+     10,
+     100
+    ]
+   },
+   "misMap": {
+    "recursive": "c7-maths-ch04-t03-m-recursive-only",
+    "proportional": "c7-maths-ch04-t03-m-proportional"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch04-t03",
+   "title": "Patterns and relationships with algebra",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "grow",
+   "goal": "far",
+   "skillId": "c7-maths-ch04-t03-s2",
+   "skillIds": [
+    "c7-maths-ch04-t03-s2"
+   ],
+   "grammar": {
+    "seqs": [
+     "houses",
+     "sqrow",
+     "trirow"
+    ],
+    "far": [
+     20,
+     50
+    ]
+   },
+   "misMap": {
+    "times-first": "c7-maths-ch04-t03-m-proportional"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch06-t03",
+   "title": "Virahanka–Fibonacci numbers",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "beats",
+   "goal": "lay",
+   "skillId": "c7-maths-ch06-t03-s1",
+   "skillIds": [
+    "c7-maths-ch06-t03-s1",
+    "c7-maths-ch06-t03-s3"
+   ],
+   "grammar": {
+    "n": [
+     4,
+     5
+    ]
+   },
+   "misMap": {
+    "order-ignored": "c7-maths-ch06-t03-m-order-ignored"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch06-t03",
+   "title": "Virahanka–Fibonacci numbers",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "kram",
+   "mode": "beats",
+   "goal": "count",
+   "skillId": "c7-maths-ch06-t03-s2",
+   "skillIds": [
+    "c7-maths-ch06-t03-s2"
+   ],
+   "grammar": {
+    "far": [
+     6,
+     10
+    ]
+   },
+   "misMap": {
+    "add-one": "c7-maths-ch06-t03-m-add-one",
+    "doubling": "c7-maths-ch06-t03-m-add-one"
    }
   },
   {
