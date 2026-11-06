@@ -117,6 +117,8 @@ test("director8 S3′: a picture asked while the card's board is up draws a SECO
   const pic = s.turn("Yeh dekho: 2 barabar bar, ek 6 barabar hisson mein, 1 rangin, 1/6; ek 3 barabar hisson mein, 1 rangin, 1/3.", { request: { kind: "picture" } });
   assert.equal(pic.state, "revealed");
   assert.equal(pic.artifact.altView, "parts");
+  // (Brain reads the pick's view right after the preselect: preselectWhiteboard's row is unchanged)
+  assert.equal(seam.studioSeam.preselectedAltView(pic.slotId.split(":")[0]), "parts");
   assert.equal(pic.artifact.screen.template, "fraction-bars@1");
   assert.deepEqual(pic.artifact.screen.counts.wholes, [{ parts: 6, shaded: 1, label: "1/6" }, { parts: 3, shaded: 1, label: "1/3" }]);
   assert.deepEqual([...new Set(pic.artifact.screen.numbers)].sort(), ["1/3", "1/6"]);
@@ -164,10 +166,9 @@ test(`director8 S3′: on every check and then-card (${DIRS.join(" + ")}), a pic
   // only shrinks: a new failure, or any pilot card, fails this test.
   const KNOWN = new Set(["lesson-scripts-staged c4-maths-ch01-t02 s3 c1", "lesson-scripts-staged c4-maths-ch01-t02 s3 c2", "lesson-scripts-staged c4-maths-ch01-t02 s3 c3",
     "lesson-scripts-staged c4-maths-ch01-t02 s3 then:m-round-is-circle", "lesson-scripts-staged c5-maths-ch13-t02 s1 then:m-miss-pairs",
-    "lesson-scripts-staged c6-maths-ch08-t01 s1 c2", "lesson-scripts-staged c6-maths-ch08-t01 s1 then:m-chord-diameter",
-    // integration 11 (main): Learning's 30th staged topic (c7 parallel/perpendicular lines) asks to see two lines; no template
-    // draws crossing or parallel lines yet (queued at Studio). Leaves this list when that template lands.
-    "lesson-scripts-staged c7-maths-ch05-t02 s3 c2"]);
+    "lesson-scripts-staged c6-maths-ch08-t01 s1 c2", "lesson-scripts-staged c6-maths-ch08-t01 s1 then:m-chord-diameter"]);
+  // (c7-maths-ch05-t02 s3 c2 left this list: its "Set-square se do lines kheenchi" read as a named square — W15 no longer
+  // counts the instrument, or "square cm" — and lines@1 now draws crossing and parallel lines)
   assert.deepEqual(none.filter((x) => !KNOWN.has(x.replace(/: [a-z]+$/, ""))), []);
 });
 

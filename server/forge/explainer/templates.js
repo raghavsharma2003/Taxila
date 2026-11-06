@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "fraction-line@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -827,13 +827,14 @@ const arcPts = (cx, cy, r, deg) => Array.from({ length: Math.max(3, Math.round(d
 
 function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
-  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)))) return { error: "angles" };
+  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)) && (a.len === undefined || a.len === "short" || a.len === "long"))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
   const facts = { angles: n }, claims = [];
   list.forEach((a, i) => {
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
-    const L = Math.min(Lbase, (colW - 14) / (Math.max(1, Math.cos(th)) - Math.min(0, Math.cos(th))));
+    // (Learning: "short arms, long arms, the same angle": `len` "short" draws the arms at half length; the opening is the same)
+    const L = Math.min(Lbase, (colW - 14) / (Math.max(1, Math.cos(th)) - Math.min(0, Math.cos(th)))) * (a.len === "short" ? 0.5 : 1);
     const xs = [0, L, L * Math.cos(th)], minX = Math.min(...xs), maxX = Math.max(...xs);
     const vx = i * colW + colW / 2 - (minX + maxX) / 2, vy = n === 1 ? 215 : 205;
     tl.add({ id: `h${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2 }, 520, { gap: i ? 260 : 120 });
@@ -1329,6 +1330,42 @@ function placesBoard(c, tl) {
  * lines; the stretched unit gets its ten tenths, and the value is marked on it. Every label is a normal size: the zoom is
  * in the drawing, never in the text. The stretched unit ends exactly on the lower line (a claim expand() checks).
  */
+/**
+ * round 7 (Learning, staged c4-c5 large numbers: "4815 lies between 4000 and 5000", rounding): a number line on a big
+ * scale. `from` 0-99999 to `to` (≤ 100000), ticks every `step` (2-10 intervals; fewer when the labels are long, so they
+ * never touch), `marks` [{ value, label? }] (1-3): a tall tick at the value with its label — the value itself by default,
+ * "?" for the asked one, or a short word ("Ram ka ghar"). counts: lines [{ gaps, ticks, innerTicks }], marks [{ at, label }].
+ */
+function numberLineScale(c, tl) {
+  const { from, to, step } = c;
+  if (!isInt(from, 0, 99999) || !isInt(to, 1, 100000) || to <= from || !isInt(step, 1, 100000) || (to - from) % step) return { error: "scale_range" };
+  const N = (to - from) / step, digits = String(to).length;
+  // (2-10 intervals; a 6-digit end allows 5 — "100000" labels touch beyond that)
+  if (N < 2 || N > (digits >= 6 ? 5 : 10)) return { error: "scale_ticks" };
+  const marks = Array.isArray(c.marks) ? c.marks : [];
+  if (marks.length > 3 || marks.some((m) => !isInt(m?.value, from, to) || (m.label !== undefined && m.label !== "?" && (!fitsLabel(String(m.label)) || textProblem(String(m.label)))))) return { error: "scale_marks" };
+  const x0 = 30, W = 340, y = 180;
+  const X = (u) => round1(x0 + 12 + ((u - from) / (to - from)) * (W - 24));
+  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: N + 1 }, (_, i) => String(from + i * step))], range: [from, to], w: W, weight: 2 }, 1200);
+  // (paced for her explanation, as the fraction line: each step of the scale marked in turn, then the values — W6)
+  for (let i = 1; i < N; i++) tl.add({ op: "line", from: [X(from + i * step), y - 7], to: [X(from + i * step), y + 7], weight: 1 }, 320, { gap: 160 });
+  // (labels above in up to two rows: a label moves up when it would touch its left neighbour)
+  const rows = [y - 46, y - 74], right = [-Infinity, -Infinity], pts = [];
+  for (const m of [...marks].sort((a, b) => a.value - b.value)) {
+    const label = m.label === undefined ? String(m.value) : String(m.label), x = X(m.value), half = textBox(label, "s").w / 2;
+    const r = right.findIndex((e) => x - half >= e + 6);
+    if (r < 0) return { error: "scale_marks_crowded" };
+    right[r] = x + half;
+    const lx = Math.min(BOARD.w - 4 - half, Math.max(4 + half, x));
+    tl.add({ op: "line", from: [x, y - 14], to: [x, y + 14], weight: 3, ink: "mark" }, 500, { gap: 700 });
+    tl.add({ op: "line", from: [x, y - 12], to: [x, rows[r] + 6], weight: 1, ink: "soft" }, 300, { gap: 120 });
+    tl.add({ op: "text", at: [round1(lx), rows[r]], text: label, size: "s", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 120 });
+    pts.push({ at: String(m.value), label });
+  }
+  return { counts: { lines: [{ gaps: N, ticks: N + 1, innerTicks: N - 1 }], ...(pts.length ? { marks: pts } : {}) },
+    facts: { line: `${from} to ${to}`, step: `every ${step}`, ...(pts.length ? { marks: pts.map((q) => (q.label === "?" ? "?" : q.label)).join(", ").slice(0, 40) } : {}) } };
+}
+
 function numberLineZoom(c, tl) {
   const v = Number(c.value);
   if (!(v > 0 && v < 10) || Math.abs(Math.round(v * 100) - v * 100) > 1e-6 || Number.isInteger(v)) return { error: "zoom_value" };
@@ -1494,7 +1531,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES

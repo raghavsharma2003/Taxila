@@ -59,7 +59,7 @@ const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · ser
 export const prewarmStats = () => ({ ...prewarmed });
 // round 7 (main, director4: Brain's R4 screen contract): what the board shows, for her line to be checked against: the shape
 // kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
-const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
+const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts",
   "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
   "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "lines@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
 /** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
@@ -91,7 +91,8 @@ export function screenOf(c, facts, script = null) {
   const shape = shapeWord(own.shape ?? on.shape, c?.template);
   const split = (v) => String(v ?? "").split(/\s*\|\s*|\s+(?=\d)/).map((x) => x.trim()).filter((x) => x && !/\?/.test(x));
   // (and every number the board itself writes: a template whose facts row names none still shows its numbers)
-  const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [])
+  // (a grouped number, "4,815", is the number 4815 — and its groups, as before)
+  const drawn = (script?.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? (/\?/.test(String(o.text ?? "")) ? [] : (String(o.text ?? "").match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? []).flatMap((n) => (n.includes(",") ? [n.replace(/,/g, ""), ...n.split(",")] : [n])))
     : o.op === "numwork" ? (o.layout === "fraction" ? [(o.rows ?? []).flat().map(String).join("/")] : (o.rows ?? []).flat().map(String)).filter((x) => /^\d+(?:\.\d+)?(?:\/\d+)?$/.test(x)) : []));
   // round 7 (director5 SC1): what the template drew, counted (gaps, ticks, marks with labels, parts, sides with values)
   const counts0 = c?.facts?.counts ?? script?.facts?.counts ?? facts?.counts ?? null;   // (the template's own first: a re-gate rebuilds the facts row)

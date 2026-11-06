@@ -17,6 +17,7 @@ export const BOARD_REFS = Object.freeze({
   "fraction-of@1": { subject: "maths", params: "a/b of c/d: a 1-b, b 2-6, c 1-d, d 2-6, hideResult?", example: { a: 2, b: 3, c: 3, d: 5 } },
   "combine-count@1": { subject: "maths", params: "a 0-10, b 0-10, op add|take_away, hideResult?", example: { a: 4, b: 3, op: "add" } },
   "number-line-hop@1": { subject: "maths", params: "start -20..100, hops [1-4 non-zero ints -20..20], hideResult?", example: { start: -2, hops: [5] } },
+  "number-line-scale@1": { subject: "maths", params: "from 0-99999, to ≤ 100000, step (2-10 intervals; ≤ 5 for 5-digit labels), marks [{ value, label? (\"?\" = asked) }] (≤ 3)", example: { from: 0, to: 10000, step: 1000, marks: [{ value: 4815 }] } },
   "number-line-zoom@1": { subject: "maths", params: "value: a decimal with 1-2 places, 0-10", example: { value: 2.45 } },
   "column-op@1": { subject: "maths", params: "a, b 0-99999, op add|sub (b ≤ a), hideResult?", example: { a: 478, b: 356, op: "add" } },
   "place-value@1": { subject: "maths", params: "value 1-9999999", example: { value: 3456 } },
@@ -24,7 +25,7 @@ export const BOARD_REFS = Object.freeze({
   "shade-grid@1": { subject: "maths", params: "rows 1-6, cols 1-10, shade 0-rows*cols | block [r, c], labels?, hideResult?", example: { rows: 3, cols: 5, shade: 6, labels: true, hideResult: true } },
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
-  "angle@1": { subject: "maths", params: "angles [{ deg 1-359 }] (1-2)", example: { angles: [{ deg: 60 }] } },
+  "angle@1": { subject: "maths", params: "angles [{ deg 10-180, name?, len? \"short\"|\"long\" (arm length; the same angle either way) }] (1-3)", example: { angles: [{ deg: 60 }] } },
   // round 7 (c7 staged: vertically opposite angles, parallel lines)
   "lines@1": { subject: "maths", params: "kind cross { deg 20-160, ends [A,B,C,D], point O, angles [{ at 1-4, value deg | \"?\" | name }] } | kind parallel { names [\"AB\",\"CD\"], gap label, transversal { deg 30-150, name \"PQ\" }, angles [{ at 1-8 }] }; at 1/3 = deg, 2/4 = 180-deg (5-8 the lower crossing)",
     example: { kind: "cross", deg: 60, ends: ["A", "B", "C", "D"], point: "O", angles: [{ at: 1, value: 60 }, { at: 3, value: "?" }] } },
@@ -89,7 +90,9 @@ export async function certifyBoardRef(ref, { kit = null, item = null, line, with
   const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w });
   // round 7 (main, director4 S2): the board must SHOW the numbers the ref authors (a template that cannot draw them, or
   // draws one as "?", fails the ref, never the child's screen)
-  const drawn = new Set((x.script.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? String(o.text ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? [] : o.op === "numwork" ? (o.rows ?? []).flat().map(String) : [])));
+  // (a grouped number — "4,815", "1,00,000" — is one number: place-value@1's Indian grouping failed numbers_not_shown)
+  const grouped = (t) => (String(t ?? "").match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? []).flatMap((n) => (n.includes(",") ? [n.replace(/,/g, ""), ...n.split(",")] : [n]));
+  const drawn = new Set((x.script.ops ?? []).flatMap((o) => (o.op === "text" || o.op === "label" ? grouped(o.text) : o.op === "numwork" ? (o.rows ?? []).flat().map(String) : [])));
   const authored = refNumbersOf(r.call).filter((v) => !drawn.has(v));
   // (and a beat whose line gives measures — "4 m, 5 m, 3 m" — with a board that draws none of them shows the wrong thing:
   // c6's worked pentagon was a bare shape@1)

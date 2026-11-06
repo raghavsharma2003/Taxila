@@ -1176,6 +1176,14 @@ export const studioSeam = {
   },
 
   /**
+   * director8 S3′ (Brain): the second view the last preselectWhiteboard picked for this lesson ("parts": fraction-bars@1,
+   * her line describes the bars), or null. preselectWhiteboard's row is unchanged; read this right after it. Never throws.
+   */
+  preselectedAltView(lessonId) {
+    try { return lessons.get(lessonId)?.preAltView ?? null; } catch { return null; }
+  },
+
+  /**
    * Round 2 content, board-first: pick the board for an accepted whiteboard ask BEFORE her line is written (turn.js, right
    * after the kernel), so her line is written from it. Same guards as requestIntent (safety, the parent's Studio switch,
    * the router's whiteboard rule, an interactive piece mid-use). Synchronous, pure, ~16 ms; never throws.
@@ -1184,6 +1192,9 @@ export const studioSeam = {
   preselectWhiteboard(ask) {
     try {
       const lessonId = ask?.line?.lessonId || ask?.intent?.lessonId;
+      // (director8 S3′: the pick's second view, for preselectedAltView; cleared on every ask, whatever it picks)
+      const L0 = lessonId ? lessons.get(lessonId) : null;
+      if (L0) L0.preAltView = null;
       if (!lessonId || ask?.intent?.kind !== "whiteboard") return null;
       const L = lessonState(lessonId, {});
       // a continued board draws on the one on screen: her line is told what that board shows (values only), so it points
@@ -1198,7 +1209,9 @@ export const studioSeam = {
       const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
-      return boardFirst.preselect(ask, boardFirstOpts(L, ask))?.row ?? null;
+      const pk = boardFirst.preselect(ask, boardFirstOpts(L, ask));
+      L.preAltView = pk?.altView ?? null;
+      return pk?.row ?? null;
     } catch { return null; }
   },
 

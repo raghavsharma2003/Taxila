@@ -276,3 +276,31 @@ test("director8 prep: a fraction line whose dot hops counts its hops (\"0 se 6 h
   assert.equal(c({ den: 6, from: 0, to: 1, hop: { num: 4 } })?.hops, 4);
   assert.equal(c({ den: 8, from: 0, to: 1, marks: [{ num: 3, label: "3/8" }, { num: 6, label: "3/4" }] })?.hops, undefined, "no dot, no hops counted");
 });
+
+test("Learning's template asks: 4-digit place value, a 0-10000 scale, short/long angle arms, and 'set-square' is no square", async () => {
+  const { expand } = await import("../server/forge/explainer/templates.js");
+  // 4815 is written "4,815" (Indian grouping): one number, shown
+  const pv = await certifyBoardRef({ template: "place-value@1", value: 4815 }, { line: "Screen par sankhya 4815 hai. Har ank apne khane mein jaata hai: 4 hazaar ke khane mein, 8 sau ke khane mein, 1 dahai ke khane mein, aur 5 ikaai ke khane mein. Toh 4815 mein 4 hazaar, 8 sau, 1 dahai aur 5 ikaai hain." });
+  assert.equal(pv.ok, true, JSON.stringify(pv.failed));
+  // a big scale: its ticks are an axis once her line says the step
+  const ref = { template: "number-line-scale@1", from: 0, to: 10000, step: 1000, marks: [{ value: 4815 }] };
+  const x = expand(ref);
+  assert.ok(x.ok, String(x.errors));
+  assert.deepEqual(x.script.facts.counts, { lines: [{ gaps: 10, ticks: 11, innerTicks: 9 }], marks: [{ at: "4815", label: "4815" }] });
+  const nl = await certifyBoardRef(ref, { line: "Screen par 0 se 10000 tak ki sankhya rekha hai, har 1000 par ek nishaan. 4815 yahan hai: 4000 aur 5000 ke beech, 5000 ke zyada paas. Isliye 4815 ko nikatatam hazaar tak 5000 likhte hain." });
+  assert.equal(nl.ok, true, JSON.stringify(nl.failed));
+  assert.equal(expand({ template: "number-line-scale@1", from: 4000, to: 5000, step: 100, marks: [{ value: 4815, label: "?" }] }).script.facts.counts.marks[0].label, "?");
+  assert.deepEqual(expand({ template: "number-line-scale@1", from: 0, to: 10000, step: 300 }).errors, ["scale_range"], "a step that does not divide the range");
+  // the same angle, short arms and long arms
+  const ang = expand({ template: "angle@1", angles: [{ deg: 50, len: "short" }, { deg: 50, len: "long" }] });
+  assert.ok(ang.ok, String(ang.errors));
+  const arm = (i) => { const o = ang.script.ops.find((q) => q.id === `h${i}`); return Math.hypot(o.to[0] - o.from[0], o.to[1] - o.from[1]); };
+  assert.ok(Math.abs(arm(0) * 2 - arm(1)) < 1, `short ${arm(0)} vs long ${arm(1)}`);
+  // W15: "set-square" (the instrument) and "square cm" (a unit) name no square
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const lines = expand({ template: "lines@1", kind: "parallel", names: ["AB", "CD"], gap: "5 cm" });
+  for (const line of ["Set-square se do lines AB aur CD kheenchi; beech ki doori 5 cm hai.", "AB aur CD ke beech 5 cm; area 12 square cm nahi, yeh doori hai."]) {
+    const g = gateWhiteboard(lines.script, { reply: line, speechMs: 9000, withhold: { values: [] }, asked: true });
+    assert.ok(g.checks.find((c) => c.id === "W15.named_shape_drawn")?.pass !== false, line);
+  }
+});
