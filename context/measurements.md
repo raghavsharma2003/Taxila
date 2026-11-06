@@ -5614,3 +5614,19 @@ Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register
 Cost and speed: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.
 
 Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns. Full write-up: docs/design/round7/judgements/director8-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-main-18.json -->
+## `ms-r7-m3-owner-facts-2026-11-06` (2026-11-06)
+
+**Credit and sponsorship**
+- Credit: ₹230,490.71 remaining, from the MCA billing profile. The Startups dashboard shows $4,770 of $5,000, expiring 2027-04-04.
+- The billing record shows a StartupSponsorship of $5,000 from 2026-07-08 to 2027-04-04, with status LimitRemoved.
+- If Microsoft counts the 180 days from 2026-07-08, day 60 must fall on or before 2027-01-04, so day 1 must be 2026-11-06. All lanes and the registry and VM were already above $1 for 11-06 by 08:58 UTC; to be confirmed once Cost Management closes the day.
+- microsoftazuresponsorships.com does not show this sponsorship, because it sits on an MCA billing profile.
+
+**Deploy SP (sales-enabler-deployer)**
+- Its secret expires 2027-03-30.
+- It now holds User Access Administrator, conditioned so it cannot grant Owner, UAA or RBAC Admin.
+
+**Locks.** CanNotDelete `m3-credit-do-not-delete` on 11 M3-critical resources: the RG taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, both m3 jobs, the action group and both alert rules.
