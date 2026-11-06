@@ -77,6 +77,9 @@ export const PLAY_ACTS = Object.freeze({
     pour: { act: "fill", hi: "jug se cup bharo aur bacha hissa naapo", en: "pour the jug into cups and name the part cup" },
     grid: { act: "set", hi: "grid mein dasvein bharo ya ank khiskao", en: "shade the tenths or slide the digits" },
     story: { act: "fold", hi: "kahani padho, patti modo aur hissa lo", en: "read the story, fold the bar and take the part" } },
+  // r7 games: Koshtak (expressions): put the tray walls / the lid / turn the jumps and run the counter; put like terms in bins
+  koshtak: { tray: { act: "place", hi: "tray ki deewar ya dhakkan lagao aur counter chalao", en: "set the tray walls or the lid and run the counter" },
+    bin: { act: "place", hi: "ek jaise term ek dibbe mein daalo aur dibbe band karo", en: "put like terms in one bin and close the bins" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
