@@ -85,6 +85,12 @@ export function beatsOf(skill, version = 1) {
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}`, board: r.board, line: said(r.say), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: false })),
       // v2.1 (director5, dc-r7-script-walk-v3): the follow-up card after a remediation carries its own board, gated as a check
       ...skill.remediation.map((r, i) => ({ id: `rem${i + 1}.then`, board: r.then?.board, line: said(r.then?.prompt), withhold: { values: [r.then?.key, ...(r.then?.accept ?? [])].filter(Boolean) }, check: true })),
+      // director9 (dc-r7-script-walk-v6-1): a card's answerBoard is drawn only in its close, under her verdict and the card's
+      // own why, so it is certified against that line and may show the key
+      ...[...skill.explain.filter((e) => e.ask?.answerBoard).map((e) => [`${e.id}.answer`, e.ask]), ...skill.checks.filter((c) => c.answerBoard).map((c) => [`${c.id}.answer`, c]),
+        ...skill.remediation.map((r, i) => [`rem${i + 1}.then.answer`, r.then]).filter(([, t]) => t?.answerBoard),
+        ...(we.yourStep?.answerBoard ? [["we.answer", we.yourStep]] : [])]
+        .map(([id, c]) => ({ id, board: c.answerBoard, line: `${c.key ?? ""} ${said(c.why)}`, withhold: null, check: false })),
       // director8 (dc-r7-script-walk-v6, R1): the bridge is its own segment on its own authored board
       ...(skill.bridgeToNext && skill.bridgeBoard ? [{ id: "bridge", board: skill.bridgeBoard, line: said(skill.bridgeToNext), withhold: null, check: false }] : []),
     ].filter((b) => b.board);
@@ -207,6 +213,7 @@ export function v21Errors(s) {
  */
 export const THEN_MAX = 120;
 export const SAY_MAX_WORDS = 45;
+export const SIMPLER_MAX_WORDS = 35;
 const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
 const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
 /**
@@ -262,6 +269,28 @@ export function v22Errors(s) {
       if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
     }
     if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
+    // director9 (dc-r7-script-walk-v6-1, format v2.3, additive): an authored smaller re-explanation on every beat, worked
+    // step and card. Brain says it on "samajh nahi aaya" / "pata nahi"; the model no longer writes one (it stated wrong maths).
+    const said2 = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
+    const items = [...k.explain.map((b) => [b.id, b.simpler, said2(b.point) + " " + said2(b.ask?.prompt) + " " + (b.ask?.key ?? ""), b.ask?.key]),
+      ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.simpler, said2(we.problem) + " " + said2(st.do) + " " + (st.result ?? "") + " " + (we.givens ?? []).map(said2).join(" "), null]),
+      ...(we.yourStep ? [["workedExample.yourStep", we.yourStep.simpler, said2(we.problem) + " " + said2(we.yourStep.prompt) + " " + (we.givens ?? []).map(said2).join(" ") + " " + (we.steps ?? []).map((x) => x.result).join(" "), we.yourStep.key]] : []),
+      ...k.checks.map((c, i) => [`checks[${i}]`, c.simpler, said2(c.prompt), c.key]),
+      ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then?.simpler, said2(r.then?.prompt), r.then?.key])];
+    const nums = (t) => new Set((String(t ?? "").replace(/,(?=\d{2,3}\b)/g, "").match(/\d+(?:[./]\d+)?/g) ?? []));
+    for (const [where, sm, givens, key] of items) {
+      if (!String(sm?.hi ?? "").trim() || !String(sm?.en ?? "").trim()) { e.push(at(`${where}: a simpler { hi, en } (≤ ${SIMPLER_MAX_WORDS} words, no "?", never the key)`)); continue; }
+      for (const lang of ["hi", "en"]) {
+        const t = String(sm[lang]);
+        const w = t.split(/\s+/).filter(Boolean).length;
+        if (w > SIMPLER_MAX_WORDS) e.push(at(`${where}.simpler${lang === "en" ? " (en)" : ""}: ${w} words > ${SIMPLER_MAX_WORDS}`));
+        if (/\?/.test(t)) e.push(at(`${where}.simpler${lang === "en" ? " (en)" : ""}: no "?" (it is said, not asked)`));
+        const have = nums(givens + " " + (key ?? ""));
+        const extra = [...nums(t)].filter((n) => !have.has(n));
+        if (extra.length) e.push(at(`${where}.simpler${lang === "en" ? " (en)" : ""}: numbers ${extra.join(", ")} are not in its givens or key`));
+      }
+      if (key != null && where !== "workedExample.steps" && !/^\s*(yes|no|haan|nahi)\s*$/i.test(String(key)) && leaks(sm.hi, key)) e.push(at(`${where}.simpler: states its key ${key}`));
+    }
     if (/\bkyunki\b/i.test(we.answer?.hi ?? "") || /^\s*toh\b/i.test(we.answer?.hi ?? "")) e.push(at(`workedExample.answer: a clause with no "kyunki" and no leading "Toh" (the why says why)`));
   }
   return e;
@@ -343,7 +372,7 @@ export async function boardErrors(s, kit) {
     const r = resolveBoardRef(b.board, { kit });
     if (!r.ok) { errors.push(`${k.skillId}/${b.id}: ${r.why}`); continue; }
     const text = String(b.line ?? "");
-    const g = gateWhiteboard(retimeToLine(expand(r.call).script, text), { reply: text, speechMs: Math.max(1500, text.split(/\s+/).length * 400), withhold: b.withhold ?? { values: [] }, kit });
+    const g = gateWhiteboard(retimeToLine(expand(r.call).script, text), { reply: text, speechMs: Math.max(1500, text.split(/\s+/).length * 400), withhold: b.withhold ?? { values: [] }, kit, asked: true });
     const failed = g.checks.filter((c) => !c.pass);
     const timingOnly = (c) => c.id === "W6.timing" || (c.id === "W19.settled" && Array.isArray(c.detail) && c.detail.every((d) => d === "W6.timing"));
     const bad = failed.filter((c) => !timingOnly(c));
