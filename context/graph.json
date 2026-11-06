@@ -25736,6 +25736,90 @@
    "at": "2026-11-06",
    "title": "director8's own card turns (results on claude/r4-conversation 9dbf3101a: per-turn boardRef, card, screen) re-drawn with dc-r7-card-board-asked-only: turns whose board wrote \"?\" over a number the card states and its board authors, before → after: c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 0/30 → 0, c6 0/28 → 0. Of all 81 director8 turns that drew a \"?\", 42 still do: each an open question whose value her line has not stated. tests/r8-card-stated.test.mjs: every check and then-card of the 4 pilot scripts and Learning's 29 staged scripts draws no stated number as \"?\"; a picture request returns a figure on every pilot card and on all staged cards but 7, each a card whose prompt names a shape (circle, chord) over a words-only compare board (W15.named_shape_drawn; Learning data).",
    "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "dc-r7-m4-no-spend-without-ledger",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "With two runners, nothing spends without the shared ledger, with one exception: the VM in its last slot (22:47 UTC) spends each lane to target against its local mirror of the last shared ledger it saw, records it offline, and folds it into the shared ledger (offlineUsd) once it can reach it. This replaces M3's rule (the 03:17 run spent each target once blind; the 15:17 run skipped): with two runners and 16 runs a day, a blind spend can double-spend, and the retry density makes it unnecessary for transient faults. A corrupt ledger never spends. Safe because the ACA runner never spends without a write-ahead to the shared ledger: if the ledger is really down, nobody else spent since the VM last saw it. Reverse if a one-sided partition (the VM cannot reach the ledger while ACA can) is ever observed: offlineUsd and ACA spend on the same lane and day in a ledger; or if a full-day eastus2 storage outage costs a day that a blind ACA spend would have saved.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-price-lb-pip-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Load Balancer and public IP prices, read 2026-11-06. Retail Prices API: Standard LB meters are Global rows ('Standard Included LB Rules and Outbound Rules' $0.025/h, 27827eb0; 'Standard Overage LB Rules and Outbound Rules' $0.01/rule-h, c36503b7). armRegionName eq 'centralindia' finds none. Standard IPv4 Static Public IP centralindia: $0.005/h (9c150bf9); there is no separate idle meter for Standard. Cost Management agrees for 7/7 closed days (2026-10-30 to 11-05): capp-svc-lb (2 rules) billed 24 Included hours = $0.60/day, and Vyakti's 2 attached IPs billed 48 IP-hours = $0.24/day. So 8 rules = $1.32/day and 11 IPs = $1.32/day. n = 1 retail read per meter + 7 days of actuals (Cost Management query grouped by ServiceName and Meter).",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-price-fallbacks-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Fallback prices, read 2026-11-06 from the Retail Prices API. gpt-5.6-luna GlobalStandard in southindia: $0.20 input / $0.02 cached / $1.20 output per 1M tokens (a05ffb45 / 5489ae4f / d01c83fd), the same as eastus2. S1 Neural TTS is $15 per 1M characters in 34 regions including swedencentral (meter 0f98e708), but there are 0 rows in southindia. Then `m3.mjs prices` re-read all 26 hard-coded rows by meter id: 26/26 unchanged. The first run hit a 429, which exposed retail()'s missing retry on a non-JSON reply; that is fixed. n = 1 read per row.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "fd-r7-m4-live-inventory-2026-11-06",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "Live, read-only, 2026-11-06. The deploy SP was Contributor only (notActions Microsoft.Authorization/*/Write), so it could not create locks. The owner then gave it User Access Administrator (conditioned: it cannot assign Owner, UAA or RBAC Admin) and hand-made CanNotDelete locks 'm3-credit-do-not-delete' on 11 targets. The dry run reads all 11 as present. AZURE_SPEECH_KEY_SIN belongs to taxila-ai-centralindia (matched by hash in memory, never printed). Chat deployments on Taxila-owned accounts exist only on taxila-ai-southindia: taxila-fast, taxila-brain, taxila-fast-bg (luna) and others. taxila-m3-nsg has 0 custom rules; its defaults deny internet inbound. taxila-m3-vm is running; its VM agent is Ready (2.16.0.2) with no outbound. taxilaforge and the AOAI account are public-network (no ACL).",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "fd-r7-m4-lb-empty-pool-unknown",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "Microsoft's Load Balancer pricing page bills 'configured load-balancing and outbound rules'. It states that a Standard LB with no rules has no hourly charge, and says nothing about rules whose backend pool is empty (read 2026-11-06). Not measured here. Design consequence: taxila-m3-lb's pool holds taxila-m3-vm's NIC, so the answer does not matter.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-break-tests-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Fake-Azure break tests, 2026-11-06. tests/m4-break.test.mjs: 22/22. tests/m3-plan.test.mjs: 18/18 (updated to the v2 keeper). The fake (tests/fixtures/m3-fake-azure.mjs) has blob leases on a settable clock, per-endpoint faults and a network-down switch. Results: a run killed after a paid batch leaves its lease held (a retry 30 s later waits, spends $0), and the next slot adopts its write-ahead as orphanUsd and finishes under every cap. Two runners at once: the VM run started mid ACA batch saw the lease and spent nothing. When every ACA run fails, the VM alone reaches all three targets. With eastus2 down all day, the VM's 22:47 local fallback spends models via fallback2 and TTS once, a re-run spends $0, and the next day folds it into the old ledger (only storage short). Primary 404 → after 1 batch (6 calls, $0 billed), primary 429 → fallback after 3 batches, both to target under the cap. A TTS 401 alerts before the lane ends. A corrupt ledger and a seen-then-unreachable ledger spend $0. Closed loop: 1.0 → 1.82, 0 → 2.50 (cap 2.65), and a raise never drops. Boundary: no batch at 23:40+, a run crossing 23:40 stops before its first batch, 00:01 starts the next ledger. After M3_UNTIL: 0 requests. Verifier M4: 9 → OK; 8 → OK + WARN; 7 → ALERT, with the clock still running; reset alerts, and an M3-era report is not a reset; runway INR; burst > $60 only for recent days; cost-query failure; runner-missing; keeper-auth-failed; secret expiry at 20 days but not 22, after M3_UNTIL. The CLI dry run against a fake ARM, in 4 scenarios, made no write and printed no secret. NOT measured: anything live.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-live-dry-run-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "`node scripts/m3.mjs apply --vm --only pips,lb,runner,locks` dry run against live Azure, 2026-11-06 (read-only GETs and list* POSTs, no writes, no secret in the output by an in-memory scan of 14 secret values). VM ok and running. pips: live $0.005/h → $1.320/day; NSG denies internet inbound; WOULD create 11 IPs and attach pip-01 to the NIC. lb: live $0.025 + 3 x $0.01 per hour → $1.320/day; WOULD create subnet lb 10.73.0.64/27, taxila-m3-lb, and put the NIC in its pool. runner: WOULD create Run Command m3-runner (script ~22 KB, Node v22.23.4 sha256-pinned, the keeper as a file, a timer at 01/3:47 UTC), with fallback2 = taxila-ai-southindia/taxila-fast-bg and the TTS fallback = taxila-ai-swc. locks: 11/11 present. A jobs/actiongroup/alerts dry run would update m3-keeper (cron, script, env, secrets) and m3-verify (cron, script, env); actiongroup and alerts are unchanged. n = 1 run each.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "open-r7-m4-billing-assumptions",
+   "kind": "open",
+   "at": "2026-11-06",
+   "title": "To verify on the first closed day after the M4 apply (2026-11-08 or later, visible about 2 days later), with `m3.mjs status` or Cost Management by Meter. (1) Do the 10 unattached Standard public IPs bill $0.005/h each? Expect Virtual Network ≈ $1.56. If it is ≈ $0.36, attach them as secondary ipconfigs. (2) Does taxila-m3-lb bill 24 Included + 72 Overage hours = $1.32? (3) Did the Run Command pass the protectedParameter (look for M3-RUNNER-OK in the apply output)? (4) Does the ledger show runs by both aca and vm, and does the day-1 report count 2026-11-06?",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-applied-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "M4 hardening applied live on 2026-11-06 at ~10:55 UTC from int/r6 725ead5e9, via `apply --vm --apply`. Image skipped; see rj-r7-m3-image-409.\n- Created 11 Standard public IPs and taxila-m3-lb (internal, 8 rules, VM NIC in its pool). pip-01 gives the VM outbound.\n- Installed m3-runner on taxila-m3-vm: M3-RUNNER-OK, node v22.23.4, a systemd timer at 01/3:47 UTC.\n- Updated m3-keeper (17 */3) and m3-verify (41 6,18; M4 mode).\n- The action group mails 2 addresses plus the Owner role.\n- Locks verified on all 11 critical resources.\n\nLive break test at 11:02 UTC: two ACA keeper executions and the VM runner fired at once. The ledger recorded runs vm@11:02:10 and aca@11:02:27; the third found the lease held and did nothing. Lane totals stayed $1.35 / $1.35 / $1.25: no double spend, and both runners reached the ledger. A test notification was sent through m3-owner (createNotifications returned accepted). Not yet live-tested: a whole day with ACA down. That is covered only by tests/m4-break.test.mjs (22/22).",
+   "source": "inbox/r7-main-19.json"
+  },
+  {
+   "id": "rj-r7-m3-image-409",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "M3 image step: with the tag present, a NoForce ACR import's async-operation poll answers 409 \"Tag … already exists\". arm() threw it, so the whole apply aborted at step 2 on the first M4 apply. Fixed: the poll reads that 409 as the 'already present' outcome. Verified live: `apply --only image` prints 'already present'. A fake that never models a provider's async-poll error codes misses this class.",
+   "source": "inbox/r7-main-19.json"
+  },
+  {
+   "id": "ms-r7-director9-hand-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director9: script walk v6, int/r6 4ebc45fe2 + Brain 3d6f7e7c, 16 lessons, counted by hand by 4 Claude judges.\n- Beats taught 173.5/181 (96%); verdicts 154/156 (99%).\n- Right/wrong called the other way 0/0. False keys: 1, a stated wrong rule.\n- Contradictions per segment by hand: 41 (code: 10). Of these, 14 are confirm-reveal not firing on the run path, 13 are picture requests that draw nothing new, 8 are the c6 L-shape over a regular polygon (data + Studio), and 6 are runtime placement.\n- \"samajh nahi aaya\" / \"pata nahi\" got a real smaller re-explanation 16 of 58 times.\n- 52-53 of 136 turns end in a check-in.\n- Axes: listening 2.5-3; worked example 3-4; class-level 3-3.5; screen 2.5-3; register 2.5-3; promises 2-3.\n- 1,424 calls, ~$0.937. Reply-ready p50 2.33 s / p90 3.58 s.",
+   "source": "inbox/r7-main-20.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-1",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6.1.\n- P1: replay director9's rows through the real turn path to find why confirm-reveal and S3' are dead there; fix and pin them with run-path tests.\n- P2: every picture request draws something new, with a second view for compare and shade-grid too.\n- R7: no model-written teaching in script mode (authored `simpler` and whys; model sentences stating rules or numbers are checked against the key and the misconception).\n- R8: requests as moves; never give away the live answer.\n- R9: one check-in per beat, after new teaching, and a non-yes is acted on.\n- R10: parks, and the language mode extends to cards.\n- R11: rendering.\n- Data v2.3 (additive): `simpler` on every explain beat, worked step and card; prompt shape words checked against the board.\n- Harness: the child treats an imperative as a question; the checker models confirm-reveal and picture draws.\n- Next: director10 on integration 12. The gate is unchanged, plus a stated wrong rule counts as a false key.\n- Reverse if: director10 has P1-P2 in place and still more than 10 runtime-class contradictions; then board-describing sentences go to a code-rendered voice. The 30-topic batch stays held.",
+   "source": "inbox/r7-main-20.json"
   }
  ],
  "edges": [
@@ -40268,6 +40352,86 @@
    "src": "dc-r7-picture-second-view",
    "rel": "measured_by",
    "dst": "ms-r7-director8-card-question-replay-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-rule-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m4-lb-empty-pool-unknown"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-price-lb-pip-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-price-fallbacks-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-break-tests-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-live-dry-run-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-azure-spend-2026-10-24"
+  },
+  {
+   "src": "dc-r7-m4-no-spend-without-ledger",
+   "rel": "part_of",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-m4-no-spend-without-ledger",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-break-tests-2026-11-06"
+  },
+  {
+   "src": "fd-r7-m4-live-inventory-2026-11-06",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-owner-2026-10-27-azure-soft",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "open-r7-m4-billing-assumptions",
+   "rel": "blocks",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-applied-2026-11-06"
+  },
+  {
+   "src": "rj-r7-m3-image-409",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1",
+   "rel": "measured_by",
+   "dst": "ms-r7-director9-hand-2026-11-06"
   }
  ]
 }
