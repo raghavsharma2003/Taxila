@@ -137,17 +137,36 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     while (at.has(u)) u++;
     at.set(u, ev);
   }
+  // director7 (dc-r7-script-walk-v5): an event fires only where it makes sense. A scheduled event that does not fit its
+  // turn waits (in schedule order) for the first turn that fits; one event per turn.
+  const pending = [];
+  const fits = (ev, c) => {
+    if (ev === "selftry") return c.keyed && c.asks && !c.howWhy && !c.done;  // "pehle main try karun?": a question she just asked
+    if (ev === "dontknow") return c.asks && !c.done;                         // "pata nahi": to a question still open
+    if (ev === "picture") return !c.howWhy;                                  // a picture request, not as a reason
+    return true;                                                             // cricket, hindi: any turn
+  };
   const misses = new Map();
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   const log = [];
   const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
   return {
-    persona, seed, name, girl, schedule: at, log,
+    persona, seed, name, girl, schedule: new Map(at), pending, log,
     reply(input = {}) {
       const turn = Number(input.turn ?? log.length);
       if (turn >= P.leaveAfter && turn >= MIN_TURNS) return say({ text: pick(rng, LINES.leave), kind: "leave" });
-      const ev = at.get(turn);
-      if (ev) return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
+      if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
+      if (pending.length) {
+        const c0 = input.card ?? input.ask ?? null;
+        const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
+        const ctx = { keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: /\?/.test(String(input.teacher ?? "")),
+          howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid) };
+        const i = pending.findIndex((e) => fits(e, ctx));
+        if (i >= 0) {
+          const [ev] = pending.splice(i, 1);
+          return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
+        }
+      }
       // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again).
       // H1.2: a card merely LABELLED probe that poses a keyed question is a card: a reason only when her line asks how/why,
       // or when the harness says probe and no keyed question is on the table.
