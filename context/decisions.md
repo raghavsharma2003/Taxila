@@ -8150,3 +8150,15 @@ Mal-rules map only to the topic's own kit ids: ones-only, no-carry, times-ten-ad
 Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c4-maths-ch13-t02-s2 (repeated subtraction of big chunks), c5-maths-ch06-t01-s3 (the written column method), c5-maths-ch06-t02-s2 (doubling and halving). Kit beliefs with no honest set-up: drop-zero-quotient / zero-in-quotient (the trucks hold the crates, so a place cannot be dropped), remainder-as-decimal, ignore-remainder, mult-makes-bigger, double-both.
 
 **Reverse if** a child pilot shows that the field's tiles do the multiplying for the child, so the partial-product beliefs never show.
+
+
+<!-- merged from inbox/r7-main-15.json -->
+## `dc-r7-m3-apply-by-2026-11-07` (2026-11-06)
+
+Apply `node scripts/m3.mjs apply --apply --start-now --vm` by 2026-11-07, so that day 1 is 2026-11-08 at the latest.
+- **Why that date:** it meets even the worst-case deadline (`fd-r7-m3-verification-date-2026-07-15`).
+- **The VM:** taken as a yes from the owner's 2026-11-06 message ("rent or whatever we need"). That makes 7 services, with 2 spare. The spare also covers the risk that Foundry Models and Foundry Tools are counted as one service.
+- **The PostgreSQL downsize:** stays off until the owner says yes. It touches a database and is not needed to qualify.
+- **Blocked on:** the Azure keys. This environment has no environment variables and no network secrets.
+
+**Reverse if** the Founders Hub portal shows a different verification date, or the owner declines the VM.
