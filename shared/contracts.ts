@@ -867,4 +867,4 @@ export interface ScriptBeatOnAsk {
  * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
  */
 export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
-export interface BoardSegmentPart { part: "close" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
+export interface BoardSegmentPart { part: "close" | "closed" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

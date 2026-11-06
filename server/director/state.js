@@ -763,7 +763,11 @@ export function returnLineOf(kit, topic, lang) {
   const t = String(topic).toLowerCase();
   for (const sk of f.script.skills ?? []) for (const sl of sk.hook?.interestSlots ?? []) {
     const words = [sl.interest, ...(INTEREST_WORDS[sl.interest] ?? []), ...(PERSONA_INTERESTS[sl.interest] ?? [])];
-    if (words.some((w) => new RegExp(`(?<![\\p{L}])${String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "iu").test(t))) return saidIn(sl.use, lang) || null;
+    if (!words.some((w) => new RegExp(`(?<![\\p{L}])${String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "iu").test(t))) continue;
+    // (it is said over whatever board is up: a sentence with no number of its own, so it never reads as the board's)
+    const ss = (String(saidIn(sl.use, lang) ?? "").match(/[^.!?\u0964]+[.!?\u0964]*/g) ?? []).map((x) => x.trim()).filter((x) => x && !/\d/.test(x));
+    const best = ss.sort((a, b) => b.length - a.length)[0];
+    if (best) return best;
   }
   return null;
 }
@@ -850,7 +854,7 @@ function walkRemedy(s, input, item) {
     activate(s, then);
     // v4 W4 (director6 c6: 8 missed cards never answered): the card they missed is closed with its answer once the follow-up
     // is done (brain/say.js says it after the verdict)
-    s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "" };
+    s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "", beat: cardBeatRef(s, kit, item) ?? null };
     const mis0 = kit.misconceptions.find((m) => m.id === targets);
     logReteach(s, "kit", item.skillId, mis0 ?? null);
     return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
@@ -2788,11 +2792,12 @@ export function step(prev, input) {
   }
   if (s.pendingClose && s.activeItemId !== s.pendingClose.thenId && move.kind !== "safeguard") {
     move.closed = { answer: s.pendingClose.answer, ...(s.pendingClose.why ? { why: s.pendingClose.why } : {}) };
+    if (s.pendingClose.beat?.board) move.closedBeat = s.pendingClose.beat;
     s.pendingClose = undefined;
   }
   // v5 B1: a closure (a give-up reveal, "Toh poora jawab", a missed card's close) is spoken over the board it closes: the board
   // the last turn ended on (its card's own board, else its beat's), before the switch to this turn's boards
-  if ((move.gave || move.workedDone || move.closed) && scriptOn()) {
+  if ((move.gave || move.workedDone || move.closed || move.sayFirst?.length) && scriptOn()) {
     const end = prev?.lastMove?.cardBeat ?? prev?.lastMove?.scriptBeat ?? null;
     if (end?.board) move.closeBeat = end;
   }

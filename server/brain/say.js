@@ -1729,7 +1729,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     }
     // v5 B4: the authored bridge (and the hook's interest line) at a skill change, said by code unless her lines carry it
     const first = (state.lastMove?.sayFirst ?? []).map(dot).filter((x) => !pointSaid([...ss, ...body].join(" "), x));
-    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...first, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    // (the bridge is about what they just did: it rides with the closures on the last board, before a missed card's close)
+    const assembled = [lead, ...aside, gaveS, doneS, ...first, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard

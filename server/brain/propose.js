@@ -194,25 +194,30 @@ export function cardAt(reply, card) {
 /** The clause where the card starts (cardAt → clauseAt). */
 export const cardClauseOf = (reply, card) => { const at = cardAt(reply, card); return at == null ? null : clauseAt(reply, at); };
 // the closure sentences say.js assembles (the give-up reveal, "Toh poora jawab", the missed card's close), in either language
-const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|And the earlier question's answer was)[^.!?।]*(?:[.!?।]+|$)/g;
+const CLOSURE = /(?:Pichhle sawaal ka jawab|Toh poora jawab|Aur pehle wale sawaal ka jawab|The last question's answer was|So the full answer|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/g;
+const CLOSED = /(?:Aur pehle wale sawaal ka jawab|And the earlier question's answer was)[^.!?\u0964]*(?:[.!?\u0964]+|$)/;
+const norm1 = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
+const skipSpace = (r, i) => { while (i < r.length && r[i] === " ") i++; return i; };
 /** The end of the last closure sentence in the reply (0 when there is none). */
 export function closureEnd(reply) {
-  const r = String(reply ?? "").replace(/\s+/g, " ").trim();
+  const r = norm1(reply);
   let end = 0;
   for (const m of r.matchAll(CLOSURE)) end = m.index + m[0].length;
-  while (end < r.length && r[end] === " ") end++;
-  return end;
+  return end ? skipSpace(r, end) : 0;
 }
 const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ...(b.ownBoard ? { ownBoard: true } : {}), ...(b.answers?.length ? { answers: [...b.answers] } : {}) });
 /**
- * v5 B1: the parts of a scripted line and their boards, from the move (state.js closeBeat / scriptBeat / cardBeat):
- * `segmentPlan` [{ part: "close"|"body"|"card", boardRef, scriptBeat }] always (Studio places it on a line it replaces with
- * segmentsAt), and on a line with text: boardRef/scriptBeat = the first part's, `segments` [{ atChar, atClause, boardRef,
- * scriptBeat }] = each later part whose board differs, in order. {} when the move draws no scripted board.
+ * v5 B1: the parts of a scripted line and their boards, from the move (state.js closeBeat / closedBeat / scriptBeat / cardBeat):
+ * a closure, a give-up and the skill's bridge on the board the last turn ended on; a missed card's close on that card's own
+ * board; the beat; the card. `segmentPlan` [{ part, boardRef, scriptBeat, said? }] always when there is more than one part
+ * (Studio places it on a line it replaces with segmentsAt); on a line with text: boardRef/scriptBeat = the first part's,
+ * `segments` [{ atChar, atClause, boardRef, scriptBeat }] = each later part whose board differs. {} with no scripted board.
  */
 export function boardPartsOf(move, line, card) {
+  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length;
   const plan = [
-    ...((move?.gave || move?.workedDone || move?.closed) && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat) }] : []),
+    ...(closing && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat), ...(move?.sayFirst?.length ? { said: [...move.sayFirst] } : {}) }] : []),
+    ...(move?.closed && (move?.closedBeat ?? move?.closeBeat)?.board ? [{ part: "closed", boardRef: (move.closedBeat ?? move.closeBeat).board, scriptBeat: refOf(move.closedBeat ?? move.closeBeat) }] : []),
     ...(move?.scriptBeat?.board ? [{ part: "body", boardRef: move.scriptBeat.board, scriptBeat: refOf(move.scriptBeat) }] : []),
     ...(move?.cardBeat?.board ? [{ part: "card", boardRef: move.cardBeat.board, scriptBeat: refOf(move.cardBeat) }] : []),
   ];
@@ -222,25 +227,32 @@ export function boardPartsOf(move, line, card) {
   return { boardRef: first.boardRef, scriptBeat: first.scriptBeat, ...(placed.length > 1 ? { segments: placed.slice(1) } : {}), ...(plan.length > 1 ? { segmentPlan: plan } : {}) };
 }
 /**
- * A segment plan placed on a line: each part from its start (a closure from 0, the body after the last closure sentence, the
- * card where its text starts), consecutive parts on the same board merged, empty parts dropped. With no text (a preselect
- * before her line exists) the parts cannot be placed: the first one alone, from 0.
+ * A segment plan placed on a line: the closure part from 0; a missed card's close from its sentence; the beat after the last
+ * closure sentence and any bridge line; the card where its text starts. Consecutive parts on the same board merge, empty parts
+ * drop. With no text (a preselect before her line exists) the parts cannot be placed: the beat's (else the first) alone.
  */
 export function segmentsAt(plan, line, card) {
-  const text = String(line ?? "").replace(/\s+/g, " ").trim();
-  const ce = closureEnd(text), ca = cardAt(text, card);
-  const at = (p) => (p.part === "close" ? 0 : p.part === "body" ? ce : ca);
+  const text = norm1(line);
+  const closePart = plan.find((p) => p.part === "close");
+  let bodyAt = closureEnd(text);
+  for (const said of closePart?.said ?? []) { const t = norm1(said).replace(/[.!?\u0964]+$/, ""); const i = t ? text.indexOf(t) : -1; if (i >= 0) bodyAt = Math.max(bodyAt, skipSpace(text, text.indexOf(" ", i + t.length) < 0 ? text.length : i + t.length + 1)); }
+  const cm = CLOSED.exec(text);
+  const at = { close: 0, closed: cm ? cm.index : null, body: bodyAt, card: cardAt(text, card) };
+  if (!text) {
+    const one = plan.find((p) => p.part === "body") ?? plan.find((p) => p.part === "card") ?? plan[0];
+    return [{ atChar: 0, boardRef: one.boardRef, scriptBeat: one.scriptBeat }];
+  }
   const out = [];
   for (const p of plan) {
-    const a = text ? at(p) : out.length ? null : 0;
-    if (a == null) continue;
-    if (p.part === "close" && !ce) continue;
+    const a = at[p.part];
+    if (a == null || (p.part === "close" && !bodyAt && !cm)) continue;
     const prev = out.at(-1);
-    if (prev && JSON.stringify(prev.boardRef) === JSON.stringify(p.boardRef)) continue;
-    if (prev && a <= prev.atChar) { out.pop(); }
-    out.push({ atChar: out.length ? a : 0, ...(text ? { atClause: clauseAt(text, out.length ? a : 0) } : {}), boardRef: p.boardRef, scriptBeat: p.scriptBeat });
+    if (prev && a <= prev.atChar) out.pop();
+    const keep = out.at(-1);
+    if (keep && JSON.stringify(keep.boardRef) === JSON.stringify(p.boardRef)) continue;
+    out.push({ atChar: out.length ? a : 0, atClause: clauseAt(text, out.length ? a : 0), boardRef: p.boardRef, scriptBeat: p.scriptBeat });
   }
-  if (!out.length && plan.length) out.push({ atChar: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
-  out[0] = { ...out[0], atChar: 0, ...(text ? { atClause: 0 } : {}) };
+  if (!out.length) out.push({ atChar: 0, atClause: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
+  out[0] = { ...out[0], atChar: 0, atClause: 0 };
   return out;
 }

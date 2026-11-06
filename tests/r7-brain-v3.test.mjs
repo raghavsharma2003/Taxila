@@ -218,7 +218,7 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     // a closure is spoken over the board it closes, before the switch
     const closeB = { template: "shape@1", params: { shape: "square" } };
     const line = `Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo. ${card}`;
-    const parts = boardPartsOf({ closed: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
+    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
     assert.deepEqual(parts.boardRef, closeB);
     assert.equal(parts.segments?.[0]?.atChar, closureEnd(line));
     assert.equal(line.slice(parts.segments[0].atChar), card);
