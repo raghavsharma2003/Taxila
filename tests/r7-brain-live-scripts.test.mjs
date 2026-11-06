@@ -6,6 +6,7 @@ import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { SCRIPT_VERSIONS, WALK_VERSIONS, scriptFor, scriptWhyNot, setScriptForTest, validateTopicScript } from "../server/director/script.js";
 import { kitFromFile } from "../server/content/kits.js";
+import { keyInLang } from "../server/director/state.js";
 import { getTopic } from "../server/content/curriculum.js";
 
 const DIR = new URL("../data/lesson-scripts/", import.meta.url);
@@ -32,6 +33,30 @@ describe("live lesson scripts are walkable", () => {
       assert.equal(scriptWhyNot(kit), null);
     });
   }
+
+  test("director7: every key is said in an authored form (the key or an accept form) and never with a number the key lacks", () => {
+    const numsOf = (t) => String(t).match(/\d+(?:\/\d+)?/g) ?? [];
+    let n = 0;
+    for (const f of FILES) {
+      const sc = JSON.parse(readFileSync(new URL(f, DIR), "utf8"));
+      for (const sk of sc.skills ?? []) {
+        const asks = [...(sk.explain ?? []).map((b) => b.ask), sk.workedExample?.yourStep, ...(sk.checks ?? []), ...(sk.remediation ?? []).map((r) => r.then)];
+        for (const a of asks.filter((x) => x && typeof x === "object")) {
+          for (const lang of ["hinglish", "english"]) {
+            const said = keyInLang({ answer: a.key, acceptable: a.accept ?? [] }, lang);
+            const key = String(a.key).trim();
+            assert.ok(said === key || said === key.replace(/\s*\/\s*/, "/") || (a.accept ?? []).map(String).includes(said), `${f} ${key} (${lang}) → ${said}: not an authored form`);
+            for (const x of numsOf(said)) assert.ok(numsOf(key).includes(x), `${f} ${key} → ${said}: says ${x}, which the key does not`);
+            n++;
+          }
+        }
+      }
+    }
+    assert.ok(n > 50, `${n} keys checked`);
+    // the two director7 false keys
+    assert.equal(keyInLang({ answer: "between 0 and 1", acceptable: ["0 and 1", "0 aur 1 ke beech", "0 aur 1"] }, "hinglish"), "0 aur 1 ke beech");
+    assert.equal(keyInLang({ answer: "between 2 and 3", acceptable: ["2 and 3", "2 aur 3 ke beech", "2 aur 3", "after 2, before 3", "2 2/3"] }, "hinglish"), "2 aur 3 ke beech");
+  });
 
   test("a script at an unknown version validates nothing", () => {
     const f = FILES[0];

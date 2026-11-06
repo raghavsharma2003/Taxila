@@ -12,7 +12,7 @@ import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
-import { whiteboardIntentOf, cardBoardOf, cardClauseOf } from "../server/brain/propose.js";
+import { whiteboardIntentOf, boardPartsOf, cardClauseOf, closureEnd } from "../server/brain/propose.js";
 import { findItem } from "../server/director/items.js";
 import { splitSentences } from "../server/voice/sentences.js";
 
@@ -202,15 +202,26 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
     const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
     const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply } });
-    const cb = ask.intent.cardBoard;
-    assert.deepEqual(cb?.boardRef, r0.then.board, JSON.stringify(ask.intent));
-    assert.deepEqual(ask.intent.boardRef, r0.board ?? L.r.move.scriptBeat.board, "the say's board comes first");
+    // v5 B1: the say on the remediation board from 0, then the card on its own board from where the card starts
+    assert.deepEqual(ask.intent.boardRef, L.r.move.scriptBeat.board, "the say's board comes first");
+    const seg = ask.intent.segments ?? [];
+    assert.equal(seg.length, 1, JSON.stringify(ask.intent));
+    assert.deepEqual(seg[0].boardRef, r0.then.board);
+    assert.equal(seg[0].scriptBeat.ownBoard, true);
+    assert.ok(seg[0].scriptBeat.answers?.includes(r0.then.key), JSON.stringify(seg[0].scriptBeat));
+    const text = out.reply.replace(/\s+/g, " ").trim();
+    assert.equal(text.slice(seg[0].atChar), card.replace(/\s+/g, " ").trim(), "the switch is exactly where the card starts");
     const pieces = splitSentences(out.reply);
-    assert.ok(Number.isInteger(cb.atClause) && cb.atClause > 0, JSON.stringify(cb));
-    assert.ok(pieces.slice(cb.atClause).join(" ").includes(card.slice(0, 30)), `${cb.atClause}: ${JSON.stringify(pieces)}`);
-    assert.ok(!pieces.slice(0, cb.atClause).join(" ").includes(card.slice(0, 30)), "the switch is not late");
-    // a turn on one board carries no switch
-    assert.deepEqual(cardBoardOf({ scriptBeat: { board: r0.board } }, out.reply, card), {});
+    assert.ok(pieces.slice(seg[0].atClause).join(" ").includes(card.slice(0, 30)), `${seg[0].atClause}: ${JSON.stringify(pieces)}`);
+    // a turn on one board carries no segments
+    assert.equal(boardPartsOf({ scriptBeat: { board: r0.board }, cardBeat: { board: r0.board } }, out.reply, card).segments, undefined);
+    // a closure is spoken over the board it closes, before the switch
+    const closeB = { template: "shape@1", params: { shape: "square" } };
+    const line = `Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo. ${card}`;
+    const parts = boardPartsOf({ closed: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
+    assert.deepEqual(parts.boardRef, closeB);
+    assert.equal(parts.segments?.[0]?.atChar, closureEnd(line));
+    assert.equal(line.slice(parts.segments[0].atChar), card);
     assert.equal(cardClauseOf("Pehla. Doosra wala vakya. Card ka sawaal kya hai?", "Card ka sawaal kya hai?"), 1);
   });
 

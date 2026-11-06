@@ -856,15 +856,15 @@ export interface ScriptBeatRef {
   kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
   board?: BoardRef | null;
 }
-/**
- * director7 cause 2 (main, option a): StudioIntent.cardBoard. The line's board (intent.boardRef) is not the board of the card
- * spoken at its end (a remediation's say on its board, then its then-card on then.board): Studio switches to `boardRef` at
- * clause `atClause` (0-based, the reply's pieces as brain/clauses.js numbers them; brain/propose.js cardClauseOf recomputes it
- * for a replaced line from `cardText`). Voice's per-word onsets, when present, can time the switch to the card's first word.
- */
-export interface CardBoardSwitch {
-  boardRef: BoardRef;
-  scriptBeat: { scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true };
-  cardText?: string;
-  atClause?: number;
+/** A scripted beat as the board ask names it (v5: a card's own board says so; its answers are all the board withholds). */
+export interface ScriptBeatOnAsk {
+  scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true; answers?: string[];
 }
+/**
+ * v5 B1 (dc-r7-script-walk-v5; Studio's segments): a part of her line spoken over its own board. intent.boardRef /
+ * intent.scriptBeat are the first part's (from character 0); each `segments` entry starts at `atChar` in the FINAL line.text
+ * (`atClause`: the same point as brain/clauses.js numbers the reply). `segmentPlan` names the parts in order (a closure, the
+ * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
+ */
+export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
+export interface BoardSegmentPart { part: "close" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
