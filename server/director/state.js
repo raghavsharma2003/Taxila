@@ -77,20 +77,19 @@ function whyOf(kit, item, lang = "hinglish") {
   return null;
 }
 /**
- * v5 B5 ("a close says the answer and its why"): a scripted card's why, from its authored lines. A check or follow-up card:
- * the rule its misconception's remediation ends on; an explain beat's question: the beat's point; the worked example's own
- * step: the worked example's why. Its last sentence, when short enough to ride after "kyunki"; else null.
+ * v5 B5 ("a close says the answer and its why"); v6 (main, director8 hand judges: "kyunki toh 8 bada…", "wapas A par": the
+ * last sentence of a point or a remediation said as a card's why contradicted the card): a scripted card's why is ONLY its own
+ * authored why: the worked example's `why` for its own step, else the card's authored `why` (KeyedAsk.why /
+ * CheckQuestionV2.why). No authored why → null, and the close says the answer alone. Short enough to ride after "kyunki".
  */
-function scriptWhyOf(kit, item, lang = "hinglish") {
+export function scriptWhyOf(kit, item, lang = "hinglish") {
   const sk = item?.skillId ? skillScriptOf(kit, item.skillId) : null;
   if (!sk) return null;
-  const targets = item.scriptCheck?.targets ?? item.scriptThen?.targets ?? item.scriptAsk?.targets ?? null;
   const src = item.scriptAsk?.beatId === "worked" ? sk.workedExample?.why
-    : targets && (item.scriptCheck || item.scriptThen) ? sk.remediation?.find((r) => r.targets === targets)?.say
-    : item.scriptAsk ? sk.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point : null;
+    : (item.scriptAsk ?? item.scriptCheck ?? item.scriptThen)?.why ?? null;
   const t = src ? saidIn(src, lang) : null;
-  const last = t ? (String(t).match(/[^.!?\u0964]+[.!?\u0964]*/g) ?? []).map((x) => x.trim()).filter(Boolean).at(-1) : null;
-  return last && last.split(/\s+/).length <= 22 ? last.replace(/[.!?\u0964]+$/, "") : null;
+  const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
+  return one && one.split(/\s+/).length <= 22 ? one : null;
 }
 /**
  * A card's key in the lesson language, from its AUTHORED forms only (director7: "jawab 0 tha" for the key "between 0 and 1"
@@ -659,13 +658,13 @@ function walkNextV2(s, input, prefix, sk) {
     const bridge = w.bridge ? saidIn(w.bridge, lang) ?? null : null;
     if (bridge) delete w.bridge;
     const bridgeLine = bridge ? [`bridge from what they just did: ${bridge}`] : [];
-    const sayFirst = bridge ? { sayFirst: [bridge] } : {};
+    const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge } : {};
     if (kind === "hook") {
       w.i += 1;
       const slot = hookSlot(sk, s.ctx.interests);
       const use = saidIn(slot?.use, lang);
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
-        ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}) });
+        ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge } : {}) });
     }
     if (kind === "explain") {
       const b = sk.explain.find((x) => x.id === id);
@@ -2566,9 +2565,9 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? scriptWhyOf(kit, item, s.ctx.lang) } } : {}),
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? scriptWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "" } } : {}),
     // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
-    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: whyOf(kit, item, s.ctx.lang) ?? scriptWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
 }
 const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 const isScriptCard = scriptCardOf;
@@ -2766,6 +2765,8 @@ export function step(prev, input) {
   if (p.mustSay?.length) move.mustSay = [...p.mustSay];
   if (p.point) move.point = String(p.point);
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
+  // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
+  if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);
   // v4 W1: the live script card's own authored line (its explain beat's point; a follow-up's remediation say), which code says
   // when a guard would otherwise leave her turn as the bare card
   {

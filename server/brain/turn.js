@@ -1053,7 +1053,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       // line, is a picture OF a thing ("Aloo ka picture: brown skin, gol shape") asks the board for THAT thing (code-gated:
       // drawableSubject), so the page and her words meet; owner replay of a95d2ff1 turn 22 drew the rules table under it
       const wbAsk = whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } });
+        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq, ...(guard?.parts ? { parts: guard.parts } : {}) } });
       const lineThing = r.move?.request === "visual" && !wbAsk.intent.request?.subject && r.move?.visual !== "game" ? pictureSubjectOf(teacherReply) : null;
       if (lineThing && drawableSubject(lineThing)) { wbAsk.intent = { ...wbAsk.intent, request: { kind: "picture", subject: lineThing } }; wbAsk.mode = "fresh"; }
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
@@ -1680,6 +1680,10 @@ export async function planTurn(base, cls, c) {
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
   if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid) next.lastVerdict = "ungraded";
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
+  // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
+  if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
+    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400) };
+  else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
   if (wrongShown.length) next.lastRight = { key: String(gradedTarget.key), wrong: wrongShown };

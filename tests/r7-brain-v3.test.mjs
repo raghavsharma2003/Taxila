@@ -236,7 +236,9 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
-    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha, kyunki \S/, "v5 B5: the close says its why: " + out.reply);
+    // (v6, director8 judges: a why is only the card's own authored why; this fixture's card has none, so none is borrowed from
+    // the remediation's last sentence)
+    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, "v6: the close says its answer, with no borrowed why: " + out.reply);
   });
 
   test("v5 B5: one verdict sentence; a sentence putting a method in the child's mouth goes; a long turn keeps its authored parts", async () => {
