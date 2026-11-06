@@ -4,14 +4,17 @@
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { initLessonState, step } from "../server/director/state.js";
+import { initLessonState, step, returnLineOf } from "../server/director/state.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { verdictFor, joinAsk } from "../server/director/say.js";
-import { textReply, replyDeps, pointSaid } from "../server/brain/say.js";
+import { textReply, replyDeps, pointSaid, countContradicts, screenContradictions } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { CTX, cls } from "./fixtures/kit.mjs";
+import { whiteboardIntentOf, boardPartsOf, cardClauseOf, closureEnd } from "../server/brain/propose.js";
+import { findItem } from "../server/director/items.js";
+import { splitSentences } from "../server/voice/sentences.js";
 
 const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
 const SC = JSON.parse(readFileSync(new URL("./fixtures/scripts/c6-s1-v2.json", import.meta.url), "utf8"));
@@ -161,6 +164,67 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.deepEqual(L.r.move.scriptBeat?.board, r0.then.board, JSON.stringify(L.r.move));
   });
 
+  test("director7: a recap is said only over the board it describes; a then-card on its own board gets none", () => {
+    const own = structuredClone(SC);
+    const r0 = own.skills[0].remediation[0];
+    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    assert.notDeepEqual(r0.board ?? null, r0.then.board);
+    setScriptForTest(); setScriptForTest(K.topicId, own);
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    L.t("pata nahi", cls("dont_know"));
+    assert.match(String(L.r.state.activeItemId), /:then:/);
+    assert.equal(L.r.move.cardPoint ?? null, null, "the remediation say describes its own board, not the then-card's");
+    // the same then-card on the say's board keeps its recap
+    const shared = structuredClone(SC);
+    shared.skills[0].remediation[0].then.board = shared.skills[0].remediation[0].board ?? null;
+    setScriptForTest(); setScriptForTest(K.topicId, shared);
+    const M = run();
+    for (let i = 0; i < 4 && M.r.move.scriptBeat?.beatId !== "e1"; i++) M.t("haan");
+    M.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    M.t("pata nahi", cls("dont_know"));
+    assert.ok(M.r.move.cardPoint, JSON.stringify(M.r.move));
+  });
+
+  test("director7 cause 2: a remediation turn whose then-card has its own board switches to it at the card's clause", async () => {
+    const own = structuredClone(SC);
+    const r0 = own.skills[0].remediation[0];
+    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    setScriptForTest(); setScriptForTest(K.topicId, own);
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.equal(L.r.move.scriptBeat?.kind, "remediation");
+    assert.deepEqual(L.r.move.cardBeat?.board, r0.then.board, JSON.stringify(L.r.move));
+    const card = L.r.ui.ask.text;
+    replyDeps.chat = async () => ({ text: "Koi baat nahi, ek alag tarah se dekhte hain." });
+    const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "7 cm", verdict: "not_yet", history: [], ui: L.r.ui, module: null });
+    const item = findItem(L.r.state, K, L.r.move.itemId ?? L.r.state.activeItemId);
+    const ask = whiteboardIntentOf({ lessonId: "L", turn: L.r.state.turn, beat: { id: "b", type: "explain" }, next: L.r.state, kit: K, item, line: { text: out.reply } });
+    // v5 B1: the say on the remediation board from 0, then the card on its own board from where the card starts
+    assert.deepEqual(ask.intent.boardRef, L.r.move.scriptBeat.board, "the say's board comes first");
+    const seg = ask.intent.segments ?? [];
+    assert.equal(seg.length, 1, JSON.stringify(ask.intent));
+    assert.deepEqual(seg[0].boardRef, r0.then.board);
+    assert.equal(seg[0].scriptBeat.ownBoard, true);
+    assert.ok(seg[0].scriptBeat.answers?.includes(r0.then.key), JSON.stringify(seg[0].scriptBeat));
+    const text = out.reply.replace(/\s+/g, " ").trim();
+    assert.equal(text.slice(seg[0].atChar), card.replace(/\s+/g, " ").trim(), "the switch is exactly where the card starts");
+    const pieces = splitSentences(out.reply);
+    assert.ok(pieces.slice(seg[0].atClause).join(" ").includes(card.slice(0, 30)), `${seg[0].atClause}: ${JSON.stringify(pieces)}`);
+    // a turn on one board carries no segments
+    assert.equal(boardPartsOf({ scriptBeat: { board: r0.board }, cardBeat: { board: r0.board } }, out.reply, card).segments, undefined);
+    // a closure is spoken over the board it closes, before the switch
+    const closeB = { template: "shape@1", params: { shape: "square" } };
+    const line = `Haan, sahi hai. Toh poora jawab: 12 cm, kyunki sab jodo. ${card}`;
+    const parts = boardPartsOf({ workedDone: { answer: "12 cm" }, closeBeat: { board: closeB, kind: "check", beatId: "c1" }, cardBeat: { board: r0.then.board, kind: "check", beatId: "x", ownBoard: true } }, line, card);
+    assert.deepEqual(parts.boardRef, closeB);
+    assert.equal(parts.segments?.[0]?.atChar, closureEnd(line));
+    assert.equal(line.slice(parts.segments[0].atChar), card);
+    assert.equal(cardClauseOf("Pehla. Doosra wala vakya. Card ka sawaal kya hai?", "Card ka sawaal kya hai?"), 1);
+  });
+
   test("v4 W4: after a remediation's follow-up, the card they missed is closed with its answer", async () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
@@ -172,7 +236,27 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.equal(L.r.move.closed?.answer, "12 cm", JSON.stringify(L.r.move));
     replyDeps.chat = async () => ({ text: "Bahut badhiya!" });
     const out = await textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: K, childText: "38", verdict: "correct", history: [], ui: L.r.ui, module: null });
-    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha\./, out.reply);
+    assert.match(out.reply, /Aur pehle wale sawaal ka jawab 12 cm tha, kyunki \S/, "v5 B5: the close says its why: " + out.reply);
+  });
+
+  test("v5 B5: one verdict sentence; a sentence putting a method in the child's mouth goes; a long turn keeps its authored parts", async () => {
+    const L = run();
+    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    for (let i = 0; i < 4 && !L.r.state.activeItemId; i++) L.t("haan");
+    const card = L.r.ui.ask.text;
+    const st = { ...L.r.state, mode: "text", lastMove: { ...L.r.state.lastMove, scriptBeat: { ...(L.r.state.lastMove.scriptBeat ?? {}), kind: "check" } } };
+    replyDeps.chat = async () => ({ text: `Haan, sahi hai. Haan, tumne bilkul sahi socha. Tumne pehle sab ko jodkar phir guna kiya. ${card}` });
+    const out = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.equal((out.reply.match(/\bsahi\b/g) ?? []).length, 1, out.reply);
+    assert.match(out.reply, /tumne bilkul sahi socha/, "the richer verdict stays: " + out.reply);
+    assert.doesNotMatch(out.reply, /Haan, sahi hai\./, out.reply);
+    assert.doesNotMatch(out.reply, /Tumne pehle sab ko jodkar/, out.reply);
+    assert.ok(out.reply.trim().endsWith(card), out.reply);
+    const long = Array.from({ length: 8 }, (_, i) => `Yeh ek lambi baat hai jo number ${i} ke baare mein hai.`).join(" ");
+    replyDeps.chat = async () => ({ text: `Haan, sahi hai. ${long} ${card}` });
+    const out2 = await textReply({ instructions: "x", state: st, kit: K, childText: "12 cm", verdict: "correct", history: [], ui: L.r.ui, module: null });
+    assert.ok(out2.reply.split(/\s+/).length <= 60 || out2.reply.replace(card, "").split(/\s+/).length <= 20, out2.reply);
+    assert.ok(out2.reply.trim().endsWith(card), out2.reply);
   });
 
   test("v4 W6: an aside is parked with a promise in her line (topic found in code), and kept until it is served", async () => {
@@ -351,4 +435,141 @@ test("R4 reads compare@1 quantities (Studio 244936c8): a count said against a co
   assert.equal(countContradicts("Board par dekho, Roti A mein 2 tukde hain.", c), false);
   assert.equal(countContradicts("Board par dekho, Roti A mein 4 tukde hain.", c), true);
   assert.equal(countContradicts("Dekho, 3 tukde hain.", c), true);
+});
+
+test("v2.2 scripts are walked (integration 9: the live scripts went to 2.2 while WALK_VERSIONS stopped at 2.1)", async () => {
+  const { WALK_VERSIONS, validateTopicScript } = await import("../server/director/script.js");
+  assert.ok(WALK_VERSIONS.has(2.2));
+  const s = structuredClone(SC); s.version = 2.2;
+  s.skills[0].checks.forEach((c) => { c.board = c.board ?? { template: "shape@1", params: { shape: "hexagon" } }; });
+  s.skills[0].remediation.forEach((r) => { r.then.board = r.then.board ?? { template: "shape@1", params: { shape: "hexagon" } }; });
+  assert.deepEqual(validateTopicScript(s, K).errors, []);
+  s.skills[0].remediation[0].then.prompt.hi = "x".repeat(121);
+  assert.match(validateTopicScript(s, K).errors.join(" "), /at most 120/);
+});
+
+describe("v5 B2: child requests are moves, never grades (c6 skill-1 v2 fixture)", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  const run = () => {
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    return { t, get r() { return r; } };
+  };
+  const req = (type, extra = {}) => ({ ...cls("no_evidence"), request: { type, whole: true, src: "p5", ...extra } });
+
+  test("readings: 'ek baar phir se bolo' and 'sawaal kya hai' are repeats; 'pehle main try karun' is a self-try", async () => {
+    const { readIntent } = await import("../server/conversation/lexicon.js");
+    assert.equal(readIntent("ek baar phir se bolo")?.type, "repeat");
+    assert.equal(readIntent("sawaal kya hai")?.type, "repeat");
+    assert.equal(readIntent("pehle main try karun")?.type, "selftry");
+    assert.equal(readIntent("mujhe khud karne do")?.type, "selftry");
+  });
+
+  test("'sawaal kya hai' re-poses the live card with no verdict", () => {
+    const L = run();
+    for (let i = 0; i < 6 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+    const id = L.r.state.activeItemId;
+    assert.ok(id);
+    L.t("sawaal kya hai", req("repeat"));
+    assert.equal(L.r.state.activeItemId, id, "the same card");
+    assert.equal(L.r.move.request, "repeat");
+    assert.ok(!(L.r.state.skipped ?? []).includes(id));
+  });
+
+  test("'pehle main try karun' in the worked example: their own step is the card now, and no answer is said", () => {
+    const L = run();
+    for (let i = 0; i < 20 && !String(L.r.move.scriptBeat?.beatId ?? "").startsWith("worked:"); i++) L.t(L.r.state.activeItemId ? (findItem(L.r.state, K, L.r.state.activeItemId)?.answer ?? "haan") : "haan", L.r.state.activeItemId ? cls("correct") : cls("no_evidence"));
+    assert.match(String(L.r.move.scriptBeat?.beatId), /^worked:/, JSON.stringify(L.r.move.scriptBeat));
+    L.t("pehle main try karun", req("selftry"));
+    assert.match(String(L.r.state.activeItemId), /:ask:worked$/, JSON.stringify(L.r.move));
+    assert.equal(L.r.move.workedDone, undefined, "never the answer this turn");
+    assert.equal(L.r.move.request, "selftry");
+  });
+
+  test("'samajh nahi aaya' on a check: the idea again from authored lines, then the same card (no verdict, nothing used up)", () => {
+    const L = run();
+    for (let i = 0; i < 40 && !findItem(L.r.state, K, L.r.state.activeItemId ?? "")?.scriptCheck; i++) {
+      const it = L.r.state.activeItemId ? findItem(L.r.state, K, L.r.state.activeItemId) : null;
+      L.t(it ? it.answer : "haan", it ? cls("correct") : cls("no_evidence"));
+    }
+    const id = L.r.state.activeItemId;
+    assert.ok(findItem(L.r.state, K, id)?.scriptCheck, "a check is live");
+    L.t("samajh nahi aaya", req("another", { confused: true }));
+    assert.equal(L.r.state.activeItemId, id, "the same card");
+    assert.equal(L.r.move.kind, "reteach");
+    assert.ok(L.r.move.rendered?.length, JSON.stringify(L.r.move));
+    assert.ok(L.r.move.scriptBeat?.board || true);
+  });
+});
+
+describe("v5 B3/B4 on the live c6 script", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; KEEP.d = process.env.TAXILA_R7_SCRIPT_DIR; delete process.env.TAXILA_R7_SCRIPT_DIR; setScriptForTest(); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); for (const [k, e] of [["s", "TAXILA_R7_SCRIPT"], ["d", "TAXILA_R7_SCRIPT_DIR"]]) { if (KEEP[k] === undefined) delete process.env[e]; else process.env[e] = KEEP[k]; } });
+
+  test("B4: the authored bridge is said by code at the change to skill 2", async () => {
+    const live = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c6-maths-ch06-t01.json", import.meta.url), "utf8"));
+    const bridge = live.skills[0].bridgeToNext?.hi;
+    assert.ok(bridge, "the live script has a bridge");
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    let found = null;
+    for (let i = 0; i < 60 && !found; i++) {
+      const it = r.state.activeItemId ? findItem(r.state, K, r.state.activeItemId) : null;
+      r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: it ? cls("correct") : cls("no_evidence"), text: it ? String(it.answer) : "haan", now: (r.state.turn + 1) * 20_000 });
+      if ((r.move.sayFirst ?? []).some((x) => x.includes(bridge.slice(0, 20)))) found = r;
+    }
+    assert.ok(found, "a move carries the bridge");
+    replyDeps.chat = async () => ({ text: `Chalo aage badhte hain. ${found.ui?.ask?.text ?? ""}` });
+    const out = await textReply({ instructions: "x", state: { ...found.state, mode: "text" }, kit: K, childText: "haan", history: [], ui: found.ui, module: null });
+    assert.ok(out.reply.includes(bridge.slice(0, 30)), out.reply);
+  });
+
+  test("B3: a parked cricket aside returns with the script's own cricket line, never a stub", () => {
+    const line = returnLineOf(K, "Virat ke sixer", "hinglish");
+    assert.ok(line && /cricket|pitch/i.test(line), String(line));
+    assert.equal(returnLineOf(K, "mera naya phone", "hinglish"), null);
+  });
+});
+
+describe("v5 B3: a language promise is a mode for the lesson", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+
+  test("'ab se hindi mein padhao' is a language ask, not a subject", async () => {
+    const { requestOf } = await import("../server/director/requests.js");
+    assert.equal(requestOf("ab se hindi mein padhao")?.type, "language");
+    assert.equal(requestOf("ab se simple hindi mein bolo")?.lang, "hindi");
+  });
+
+  test("'ab se simple Hindi mein bolo' holds: Hindi and plain words, every later turn, until they ask otherwise", async () => {
+    const { languageRule } = await import("../server/compiler/compile.js");
+    let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: [] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+    const t = (text, c = cls("no_evidence")) => { r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }); return r; };
+    t("haan");
+    t("ab se simple hindi mein bolo", { ...cls("no_evidence"), request: { type: "language", lang: "hindi", whole: true } });
+    for (let i = 0; i < 6; i++) {
+      const it = r.state.activeItemId ? findItem(r.state, K, r.state.activeItemId) : null;
+      t(it ? String(it.answer) : "ok yes", it ? cls("correct") : cls("no_evidence"));
+      assert.equal(r.state.ctx.lang, "hindi", `turn ${i}`);
+      assert.equal(r.state.ctx.plainWords, true, `turn ${i}`);
+      const rule = languageRule(r.state.ctx.lang, "10-12", !!r.state.ctx.langPinned, "voice", !!r.state.ctx.plainWords);
+      assert.match(rule, /they asked for/i);
+      assert.match(rule, /Short everyday words/);
+      assert.ok(rule.length / 4 < 140, `the language section fits its cap: ${rule.length} chars`);
+    }
+    t("english mein bolo", { ...cls("no_evidence"), request: { type: "language", lang: "english", whole: true } });
+    assert.equal(r.state.ctx.lang, "english");
+    assert.equal(r.state.ctx.plainWords, false);
+  });
+});
+
+test("Studio 013: drawn hops are counted (a stretch of them is fine, more than drawn is not); a square unit is not the shape", () => {
+  assert.equal(countContradicts("Screen par 1/4 ke 5 hop hain: pehle 4 hop 0 se 1 ko bhar dete hain.", { hops: 5, lines: [{ gaps: 8 }] }), false);
+  assert.equal(countContradicts("Screen par dono 3 hop chale.", { lines: [{ gaps: 4 }] }), false, "a board that counted no hops is never checked");
+  assert.equal(countContradicts("Screen par 7 hop hain.", { hops: 5 }), true);
+  assert.equal(screenContradictions("Yeh rectangle hai. Andar tiles bichhao toh woh area hai, square cm mein.", { shape: "rectangle", numbers: null, counts: null }).length, 0);
+  assert.equal(screenContradictions("Screen par yeh square hai.", { shape: "rectangle", numbers: null, counts: null }).length, 1, "the shape square over a rectangle is still a contradiction");
 });

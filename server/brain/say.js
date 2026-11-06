@@ -138,12 +138,14 @@ const COUNTED = [
   // ("teen mark hain: 1/2, 1/4 aur 1/8": the labelled marks count too)
   ["ticks", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:marks?|nishaan|nishan|ticks?)(?![\\p{L}])`, "giu"), (c) => [...(c.lines ?? []).flatMap((l) => [l.innerTicks, l.ticks, l.gaps]), ...(Array.isArray(c.marks) && c.marks.length ? [c.marks.length] : [])]],
   ["sides", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:sides?|bhuja\\w*|kon[ea]|corners?)(?![\\p{L}])`, "giu"), (c) => [c.sides, c.corners]],
+  // (Studio 013: the dot's drawn hops, fraction-line@1 counts.hops; "pehle 4 hop" over 5 drawn is a stretch, as gaps)
+  ["hops", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hops?|chhalang\\w*|jumps?)(?![\\p{L}])`, "giu"), (c) => [c.hops]],
   ["shaded", new RegExp(`(?<![\\p{L}\\d/])${NUM_W}\\s+(?:hisse\\s+|parts?\\s+|tukde\\s+)?(?:shaded|rangi\\w*|rangee\\w*|colou?red)(?![\\p{L}])`, "giu"), (c) => [c.shaded]],
 ];
 const DEICTIC = /\b(?:screen|board|whiteboard)\b|dekho|dekhiye|\b(?:yahan|is|iss|ye|yeh)\s+(?:line|rekha|shape|aakar|chitra?|figure|rectangle|triangle|square|circle|pentagon|hexagon|patti|strip|kyaari)/i;
 /** Every number a board counted (SC1), for the pointed-number check: a count said is never "a number the board lacks". */
 const countNumbers = (c) => !c ? [] : [...(c.lines ?? []).flatMap((l) => [l.gaps, l.gapsPerWhole, l.ticks, l.innerTicks]), c.parts, c.shaded, c.rows, c.cols, c.groups, c.each,
-  c.sides, c.corners, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
+  c.sides, c.corners, c.hops, Array.isArray(c.marks) ? c.marks.length : null].filter((v) => typeof v === "number").map(String);
 /** SC1: does this sentence state a count the board's counted facts contradict? */
 export function countContradicts(x, counts) {
   if (!counts || !DEICTIC.test(x)) return false;
@@ -159,6 +161,7 @@ export function countContradicts(x, counts) {
       if (n === 1 && /^ek$/i.test(m[1])) continue;
       // (on a line, "3 tukde … 3/8 tak" is a stretch of it, as Studio's W10 reads it; only "N barabar …" names the division)
       if (kind === "gaps" && lineMax && !m[2] && n != null && n <= lineMax) continue;
+      if (kind === "hops" && typeof counts.hops === "number" && n != null && n <= counts.hops) continue;
       const ok = allowed(counts).filter((v) => typeof v === "number");
       if (!ok.length) continue;                       // not counted by this board: never flagged
       if (n != null && !ok.includes(n)) return true;
@@ -186,7 +189,9 @@ export function screenContradictions(text, facts) {
   return (String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).filter((x) => {
     if (facts.counts && countContradicts(x, facts.counts)) return true;
     if (facts.shape) {
-      const named = SHAPES.filter(([, re]) => re.test(x)).map(([n]) => n);
+      // ("woh area hai, square cm mein": a square unit is not the shape square)
+      const xs = x.replace(/(?<![\p{L}])(?:square|varg)\s+(?:cm|m|km|mm|centimet\w*|met(?:re|er)\w*|unit\w*|ikaai\w*)(?![\p{L}])/giu, " ");
+      const named = SHAPES.filter(([, re]) => re.test(xs)).map(([n]) => n);
       if (named.length && !named.includes(facts.shape) && !(facts.shape === "square" && named.includes("rectangle"))) return true;
     }
     if (facts.numbers?.length && POINT.test(x)) {
@@ -1084,7 +1089,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
   // (dc-r7-script-walk-v3 V1: a scripted remediation's authored explanation is spoken by code the same way)
-  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && state.lastMove?.scriptBeat?.kind === "remediation")) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
+  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && ["remediation", "explain"].includes(state.lastMove?.scriptBeat?.kind))) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
   const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
   try {
@@ -1654,12 +1659,22 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const card = ui?.ask?.text ? norm(ui.ask.text) : null;
     const cardSs = card ? sentences(card).map(norm) : [];
     const gaveA = state.lastMove?.gave?.answer ? norm(state.lastMove.gave.answer) : null;
-    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}.` : `Pichhle sawaal ka jawab ${gaveA} tha.`) : null;
+    // v5 B5: a give-up or a close says the answer AND its why (state.js scriptWhyOf: the authored rule)
+    const whyS = (w) => (w && String(w).trim() ? (lang === "english" ? `, because ${joinable(w, { lower: true })}` : `, kyunki ${joinable(w, { lower: true })}`) : "");
+    const gaveS = gaveA ? (lang === "english" ? `The last question's answer was ${gaveA}${whyS(state.lastMove?.gave?.why)}.` : `Pichhle sawaal ka jawab ${gaveA} tha${whyS(state.lastMove?.gave?.why)}.`) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|woh wala|the last|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
     const graded = listenOn() && answeredNow && (verdict === "not_yet" || verdict === "correct");
-    const lead = graded && ss.length ? ss.shift() : null;
+    let lead = graded && ss.length ? ss.shift() : null;
+    // v5 B5: one verdict sentence per turn ("Haan, sahi hai. Haan, 4/6 sahi hai."): a second verdict of the same sign right after
+    // the lead is one too many; the richer of the two stays (a bare code verdict gives way to hers)
+    const polarity = (x) => (NOT_RIGHT.test(String(x).split(/[,—–-]/)[0]) && !affirmsAnswer(x) ? "no" : affirmsAnswer(x) ? "yes" : null);
+    const verdictLike = (x) => polarity(x) && words(x) <= 12 && !/[?？]/.test(x);
+    while (lead && ss.length && verdictLike(ss[0]) && polarity(ss[0]) === polarity(lead)) {
+      const nxt = ss.shift();
+      if (words(lead) <= 4 && words(nxt) > words(lead)) lead = nxt;
+    }
     // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
     // short one when her words left it out); they come after the verdict, before the teaching
     const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
@@ -1671,10 +1686,19 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (!k) continue;
       const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, 2);
       ss = ss.filter((x) => !mine.includes(x));
-      aside.push(...(mine.length ? mine : [kind === "park"
-        ? pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)
-        : (lang === "english" ? `And ${topic}: I remember what you told me.` : `Aur haan, ${topic} wali baat mujhe yaad hai.`)]));
+      // v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8): a return is one line of REAL content: her own sentence about it,
+      // else the script's authored interest line (state.js returnLineOf); never the "I remember" stub
+      const authoredReturn = kind === "return" && ret?.line ? (lang === "english" ? `And about ${topic}: ${dot(ret.line)}` : `Aur ${topic} ki baat: ${dot(ret.line)}`) : null;
+      const real = mine.filter((x) => words(x) >= 6 && !/(?:yaad hai|i remember)/i.test(x));
+      aside.push(...(kind === "park" ? (mine.length ? mine : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
+        : real.length ? real : authoredReturn ? [authoredReturn] : []));
+      if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
     }
+    // v5 B5 (director7 c5-t01 T61): her lines never put a method in the child's mouth ("Tumne upar ke 2 ko neeche ke 5 se
+    // jodkar …") that the authored text does not use: a sentence about what THEY did with an operation word goes
+    const OPS = /(?<![\p{L}])(?:jod\w*|ghata\w*|guna\w*|bhaag\w*|add\w*|subtract\w*|multipl\w*|divid\w*|mila\w*)/iu;
+    const authoredText = [point, ...(workedLines ?? []), card, state.lastMove?.cardPoint].filter(Boolean).join(" ");
+    ss = ss.filter((x) => !(/^(?:tumne|aapne|you)\b/i.test(x) && OPS.test(x) && !OPS.test(authoredText)));
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
     let body;
@@ -1690,14 +1714,28 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
     }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
-    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha.`) : null;
+    const closedW = whyS(state.lastMove?.closed?.why);
+    const closedS = closedA && !(gaveA && gaveA === closedA) ? (lang === "english" ? `And the earlier question's answer was ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
     if (closedS) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
     const wd = state.lastMove?.workedDone;
     const wdA = wd?.answer ? joinable(String(wd.answer).replace(/^\s*(?:toh|so)\s+/i, "")) : null, wdW = wd?.why ? joinable(wd.why, { lower: true }) : null;
     const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
     // (a worked step with no card ends on a short check-in, never mid-air)
     const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? pickOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state) : null);
-    const assembled = [lead, ...aside, gaveS, doneS, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
+    // verdict, a closure, authored text or the card
+    const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
+    const total = () => words([lead, ...aside, gaveS, doneS, closedS, ...(state.lastMove?.sayFirst ?? []), ...body, tail].filter(Boolean).join(" "));
+    const own = body === ss && !(point && kindNow === "explain") ? body : null;
+    if (!workedLines?.length && total() > MAX_WORDS) {
+      if (own) { while (own.length && total() > MAX_WORDS) own.pop(); guard.trimmed = true; }
+      else if (point && kindNow === "explain" && !(body.length === 1 && body[0] === dot(point))) { body = [dot(point)]; guard.trimmed = true; }
+      if (total() > MAX_WORDS && aside.length > 1) { aside.splice(1); guard.trimmed = true; }
+    }
+    // v5 B4: the authored bridge (and the hook's interest line) at a skill change, said by code unless her lines carry it
+    const first = (state.lastMove?.sayFirst ?? []).map(dot).filter((x) => !pointSaid([...ss, ...body].join(" "), x));
+    // (the bridge is about what they just did: it rides with the closures on the last board, before a missed card's close)
+    const assembled = [lead, ...aside, gaveS, doneS, ...first, closedS, ...body, tail].filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard

@@ -780,7 +780,7 @@ export interface TopicScriptV2 {
   classLevel: number;
   /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
    *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
-  version: 2 | 2.1;
+  version: 2 | 2.1 | 2.2;
   status: "draft" | "reviewed" | "live";
   terms: Array<{ hi: string; en: string }>;
   skills: SkillScriptV2[];
@@ -856,3 +856,15 @@ export interface ScriptBeatRef {
   kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
   board?: BoardRef | null;
 }
+/** A scripted beat as the board ask names it (v5: a card's own board says so; its answers are all the board withholds). */
+export interface ScriptBeatOnAsk {
+  scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true; answers?: string[];
+}
+/**
+ * v5 B1 (dc-r7-script-walk-v5; Studio's segments): a part of her line spoken over its own board. intent.boardRef /
+ * intent.scriptBeat are the first part's (from character 0); each `segments` entry starts at `atChar` in the FINAL line.text
+ * (`atClause`: the same point as brain/clauses.js numbers the reply). `segmentPlan` names the parts in order (a closure, the
+ * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
+ */
+export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
+export interface BoardSegmentPart { part: "close" | "closed" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

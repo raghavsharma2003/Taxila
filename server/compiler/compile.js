@@ -224,8 +224,8 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
 const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
 /** Voice lane only (TALKING-RULES §1, docs/research/voice/v4): her words are heard. A shape, never a line; sized to the cap. */
 export const SPOKEN_NOTE = " Said aloud: short chunks, key word last, feeling held to the end.";
-export function languageRule(language, ageBand, pinned = false, lane = "text") {
-  const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+export function languageRule(language, ageBand, pinned = false, lane = "text", plain = false) {
+  const words = ageBand === "6-9" || plain ? " Short everyday words a 7-year-old knows." : "";
   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
   return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.${lane === "voice" ? SPOKEN_NOTE : ""}`;
 }
@@ -365,7 +365,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
     { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
-    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned, lane), drop: null }] },
+    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned, lane, !!input.lessonState?.ctx?.plainWords), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is

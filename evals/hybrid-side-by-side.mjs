@@ -18,7 +18,8 @@ import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
-import { saidMust, scriptOn, scriptWhyNot } from "../server/director/script.js";
+import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
+const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
@@ -76,6 +77,20 @@ const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOStri
 const CAP = Number(arg("cap", "150"));
 const USD_CAP = Number(arg("usd", "2"));
 export const meter = { calls: 0, usd: 0, byDeployment: {} };
+/** Every authored key and accept form of the topic's script (lower case), for the false-key count. */
+const _keys = new Map();
+function AUTHORED_KEYS(kit) {
+  if (_keys.has(kit.topicId)) return _keys.get(kit.topicId);
+  const set = new Set();
+  const sc = scriptOn() ? (scriptWhyNot(kit) == null ? scriptForKit(kit) : null) : null;
+  for (const sk of sc?.skills ?? []) {
+    const asks = [...(sk.explain ?? []).map((b) => b.ask), sk.workedExample?.yourStep, ...(sk.checks ?? []), ...(sk.remediation ?? []).map((r) => r.then)];
+    for (const a of asks.filter(Boolean)) for (const k of [a.key, ...(a.accept ?? [])]) set.add(String(fillFriend(String(k), "Riya")).trim().toLowerCase());
+  }
+  for (const it of kit.items ?? []) for (const k of [it.answer, ...(it.acceptable ?? [])]) if (k != null) set.add(String(k).trim().toLowerCase());
+  _keys.set(kit.topicId, set);
+  return set;
+}
 function dryCall(kind) { meter.calls++; meter.byDeployment[kind] = (meter.byDeployment[kind] ?? 0) + 1; }
 if (!DRY) {
   const { usdOf } = await import("../server/azure.js");
@@ -200,7 +215,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     // T4 (screen contract): a scripted beat's board is drawn too (turn.js asks Studio on explain beats; intent.boardRef), and
     // what is on the screen reaches her line as production's does (ui.studioSlot: the screen guard and the facts row)
     let slot = null;
-    const scriptedBoard = !!next.lastMove?.scriptBeat?.board;
+    const scriptedBoard = !!(next.lastMove?.scriptBeat?.board || next.lastMove?.cardBeat?.board);
     if (lane === "director" && (p.r.move?.request === "visual" || scriptedBoard)) {
       const visual = p.r.move?.request === "visual" ? String(p.r.move.visual ?? "diagram") : "diagram";
       let shape = String(next.lastMove?.shape ?? "");
@@ -282,13 +297,38 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
     const wim = meta?.wrongIfMis ? String(meta.wrongIfMis).toLowerCase().replace(/\s+/g, " ").trim() : null;
     const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
       || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
-    const contradictions = next.lastMove?.scriptBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
+    // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
+    // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's
+    // board preselected and taken on that part's own words, as Studio pages it)
+    let segs = null;
+    if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
+      const item = boardItemOf(next, kit, findItem);
+      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${rows.length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply } });
+      const parts = [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+      if (parts.length > 1) {
+        const text = String(reply).replace(/\s+/g, " ").trim();
+        segs = parts.map((pt, i) => {
+          const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
+          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined }, line: { ...askF.line, text: "" } };
+          const pk = preselect(a, { kit });
+          let scr = pk?.screen ?? null;
+          try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
+          const n = scr ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
+          return { from: pt.atChar, beat: pt.scriptBeat?.beatId ?? null, template: pk?.template ?? null, contradictions: n };
+        });
+      }
+    }
+    const contradictions = segs ? segs.reduce((a, x) => a + x.contradictions, 0)
+      : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length : 0;
+    // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
+    const saidKeys = [...String(reply).matchAll(/jawab\s+(.+?)\s+tha\b|answer was\s+(.+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase());
+    const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length;
     // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
     // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
     const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
-      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight },
+      gate: { delivered, answered, verdictGiven, contradictions, rightCalledWrong, wrongCalledRight, falseKeys }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}) });
     s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
     lastBoardUp = boardUp;
