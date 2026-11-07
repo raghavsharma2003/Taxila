@@ -8590,3 +8590,117 @@ The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 sh
 Next: director11. The gate is unchanged, and the batch stays held.
 
 **Reverse if:** G1-G4 are in place and drawing contradictions are still above 10. Then close and picture boards are code-composed from card params only.
+
+
+<!-- merged from inbox/r7-games-parkar.json -->
+## `dc-r7-games-parkar`
+
+**parkar** (ruler-and-compass constructions, classes 6-7) is a law family. Nothing in it runs on a clock and nothing is dragged into place by eye: the child opens the compass on its ruler, swings arcs from spots, lays the protractor at a vertex or the set-square along a line, joins two spots with the ruler, and pins a spot only where two marks cross. On go the law checks the construction by plain coordinate geometry (cm).
+
+- **build** (c7-ch07-t01, c7-ch09-t02): sss (arcs of CA from A and BC from B), sas (the protractor's ray at A, an arc of CA along it), asa (two rays), rhs (the set-square's right angle at B, the hypotenuse as an arc from A); the run lays a tracing of the card's triangle over the child's (the mirror image across AB fits too). long / short: AB is laid and CA's arc swung; open the compass for the longest / shortest whole-cm third stick that still closes the frame; the run hinges the sticks (close, lie flat, gap). ssa: an arc from B cuts the ray at A twice; every triangle must be pinned.
+- **bisect** (c7-ch14-t01, c6-ch08-t03): perp (equal arcs from A and B, join the crossings; the run walks a spot along the line with a string to each end), equi (the water tank on a road, as far from one house as from the other), angle (arc from O, equal arcs from the cut-spots, join), sixty (the opening stepped once round its own arc).
+- **drop** (c7-ch07-t02): the set-square along the opposite side (extended when the foot is outside), its edge through A.
+
+Mal-rules map only to the topic's own kit beliefs: equal-sum and any-three (c7-ch07-t01), ssa (the SAS angle built at B, and only one SSA triangle pinned), compass-change / unequal-arcs (the opening changed between arcs that must be equal), median-confusion, vertical-height and inside-only (c7-ch07-t02). Not admitted: c7-ch07-t02-s3 (height in a real object / area) and c6-ch08-t03-s1 (a rectangle's diagonals): no honest construction mechanic yet. Kit beliefs with no honest set-up here: check-one-pair, aaa, order-mismatch, protractor, short-radius, midpoint-only, diag-right-angle.
+
+Reverse if a child pilot shows the crossings are tapped by trial rather than built, or the compass opening is guessed rather than read off the given lengths.
+
+
+<!-- merged from inbox/r7-games-runshots.json -->
+## `dc-r7-games-run-redraw-window`
+
+The 2D stage redraws only while a view reports `busy()`. In kon's lines view, `busy()` closed at 1.6 s after the commit, while the cross run's "off by" chip draws only after 1.6 s and its miss ring fades in until 1.7 s. On a real phone the child's missed transversal run therefore showed no "off by" at all and a faint ring. The fix keeps the stage drawing until `RUN_END` (2.0 s), and a test in tests/r7-games-kon.test.mjs reads the view's own timed beats (`api.t - truthAt > x` and `(api.t - truthAt - a) / b`) and asserts each lands before `RUN_END`. Rule for every view: a run's busy window must outlast its last timed beat. Reverse if the stage ever redraws continuously instead of on demand.
+
+
+<!-- merged from inbox/r7-learning-31.json -->
+## `dc-r7-coldstart-placement` (2026-11-07, F Learning)
+A new child's starting point per subject comes from onboarding answers, never from a quiz (main 2026-11-07 item (c); comprehension-engine-program: no quiz-style checking as the main signal).
+
+**The answers.** The parent's view is `hard | fine | easy | unsure` (parent corner FeelPicker, and App's set-up step via docs/patches/to-app/007). The child's own pick at Hello is `tricky | okay | easy`.
+
+**How they become a start** (server/placement/coldstart.js, pure):
+- Each answer is a Gaussian site on GE, relative to the class's expected level today:
+  - parent: hard −1.2 (sd 1.3), fine 0 (1.5), easy +0.5 (1.5);
+  - child: tricky −0.8 (1.8), okay 0 (2.0), easy +0.4 (2.0), with sd ×1.5 for classes 1-2.
+- The product of the sites, floored at sd 1.0 like every placement site, is combined with the class MIXTURE prior (ability.js classPriorComponents, new export; the Normal fit dragged a "fine" answer a class low).
+- The start is the posterior mean − 0.25 sd, never above the class's expected level and never below GE 0.
+
+**Where it goes.** It is written as a placement row (`result.source = 'onboarding'`). Existing readers take it unchanged:
+- next-topic.js startGE (a school chapter still wins);
+- placementGapOf → R9 foundation share;
+- kt/placement.js → the θ prior site (written once per subject, so changing an answer never stacks a second site).
+
+A subject with its own placement round keeps the round. The answers are stored in `child.onboarding_answers` (migration 047). Routes: POST /api/placement/onboarding and GET /api/placement/note.
+
+**Reverse if:** real first-week data shows answer-started children settling no faster than calendar-started ones.
+
+## `dc-r7-coldstart-refine-theta` (2026-11-07, F Learning)
+Refinement is covert. `refinedStart` reads the subject's live θ from kt_ability; once its sd ≤ 0.7 (SETTLE_SD), the start is θ.mu − 0.25 sd, and it may then sit above the class level. `store.js liveResultsOf` applies this for topic choice (reports/truth.js nextTopicForPlan) and for the conductor's placementGap (view.js).
+
+The rule is by sd, not by an observation count: kt_ability.n_obs is the current epoch's count (openEpoch folds earlier sessions into the base), while the sd carries every session. The prior alone never reaches 0.7 (the class prior combined with a site floored at 1.0 has sd > 0.8).
+
+SETTLE_SD 0.7 and Z_START 0.25 were picked by sweeping z ∈ {0, .25, .5} × settle ∈ {.5, .6, .7}. z = 0 settles one lesson sooner but starts 43% of model-population children too hard, against 36% at z = .25.
+
+**Reverse if:** θ-driven starts swing between lessons enough to repeat or skip chapters.
+
+## `dc-r7-r15-first-week` (2026-11-07, F Learning)
+Conductor rule R15 reads the view key `learner.firstWeek` (a late key). It holds `{ [subject]: { lessons, settled } }` for onboarding-started subjects, counted from live lesson topic ids and kt_ability.
+
+- For a lesson in such a subject, the first two lessons (WARM_LESSONS) are success-first with newSkillBudget 0.
+- After that, the lesson stays success-first until θ settles.
+- A subject that is settled and past FIRST_WEEK_LESSONS (5) drops out of the view.
+- A child without such subjects plans and hashes exactly as before.
+
+**Reverse if:** children in the warm lessons close "bored" more than others.
+
+## `dc-r7-placement-note` (2026-11-07, F Learning)
+The note is "what we think and what we used" (server/placement/note.js). Per subject it gives:
+- `place.start`: the topic it begins with, computed by topic choice's own rule;
+- `place.easier`: when the gap is ≥ 0.5;
+- the parent's answer (`place.parent_<v>`) and the child's pick (`place.child_<v>`);
+
+then one `place.firstweek` line at the end. These are registered SHAPES with HOW copy, so they get lineViolations (banned and locked words, digits, the exact template) and the reports-gate tests.
+
+checkPlacementNote re-derives every claim from `child.onboarding_answers` and the round's date: the start, the topic, the answer lines and the name. A failing claim is dropped, along with its subject's other lines, and never shown. It never shows a level word (lexicon: behind, on track) or a class number (rejected grade-equivalent-parent-band).
+
+**Reverse if:** parents read "starts a little before the class's chapter" as a verdict on the child.
+
+
+<!-- merged from inbox/r7-learning-32.json -->
+## `dc-r7-report-s15-rest` (2026-11-07, F Learning)
+S15 "A note about routine and rest" (PARENT-REPORT §5; RESEARCH-PROGRAM MH-M12). The pure rule lives in server/reports/rest.js; claims.js reads it from the facts and check.js re-derives it from its own lesson query.
+
+**When a line appears.** Weekly and monthly reports only (CAPS.rest 1; daily and term 0). Each line has an absolute floor and a minimum count, never an own-percentile rule (MH R9: ~46% false alarms a year).
+- `rest.afterbed`: k ≥ 3 counted lessons in the last 14 days started after the bedtime set in Parent corner (child_routine.bedtime), or after midnight and before 04:00.
+- `rest.longer`: each 14-day half has ≥ 4 closed lessons, and the recent median length is ≥ 10 min AND ≥ 1.5× the earlier one.
+
+**What a line says.** The fact plus one Parent-corner suggestion (change the bedtime; set a lesson length). The spec's "Taxila has gone back to a shorter plan" is NOT said, because no conductor rule does it yet. There are no alarm words (the lexicon bans sleep*, neend, late night*, addict*, screen time), and distress never appears here (that is the safeguarding route).
+
+**Reverse if:** replay on real families shows either rule firing for more than ~5% of children a month.
+
+## `o-r7-report-s8-s10-need-signals` (2026-11-07, F Learning)
+PARENT-REPORT S8 (How sure, B2+) and S10 (How learning with Taxila goes best lately) stay unbuilt. Their data does not exist yet:
+- **S8** needs the child's per-item "how sure" bet (pakka / shayad / andaaza), which no lesson asks or stores, and a calibration gate.
+- **S10** needs gated ISP dimensions (warm-up turns before free answers, pace, words) with consistent/changing status, and its section kill-switch studies (R-VIBE, R-VIGNETTE).
+
+S18 is deferred by the owner. All other sections (S1-S7, S9, S11-S17) exist.
+
+**Reverse if:** a lesson starts capturing how-sure bets (then build S8 on them), or ISP dimensions with their TV gates exist (then build S10).
+
+
+<!-- merged from inbox/r7-studio-26.json -->
+## `dc-r7-card-board-authored-gate`
+
+A card's own board is authored content. Its words pass W5, its separate wholes are not a count she must say (W8), its authored radii are not a circle cut by lines (W8), and its authored numbers need none of hers (W17). W9 and her counts against the board's parts still apply. Reverse if judges count a close over its own card's board that contradicts it.
+
+## `dc-r7-first-page-keep-by-ref`
+
+The seam remembers which card's ref drew the page on screen. A failing first page keeps that page when it is the same card, matched by ref, not by comparing pages (the card was drawn masked on its own line). Picture requests use the same identity. Reverse if one ref ever names two drawings in a lesson.
+
+## `dc-r7-verdict-reveal`
+
+A correct verdict reveals the card's key on its board even when her page says no digits. Brain's verdict beat carries `reveal: true` or `reveal: [values]`; Studio frees them and writes the asked mark. Reverse if a reveal reaches an unanswered card.
+
+## `dc-r7-second-view-every-template`
+
+Extends the picture second view to every card template, built from the card on screen. Wholes become strips; measured and regular shapes are unrolled onto a ruler; bars become their line; a two-scale line becomes a bar per scale. Brain's `show` request draws them too. Reverse if a view confuses more than the card's own board.
