@@ -8,7 +8,9 @@ import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
-import { revealOnVerdict } from "../server/brain/propose.js";
+import { revealOnVerdict, whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
+import { findItem } from "../server/director/items.js";
+import * as seam from "../server/studio/seam.js";
 import { requestOf } from "../server/director/requests.js";
 
 // Scoped to this file's describe, as tests/fixtures/kit-path.mjs asks.
@@ -116,5 +118,32 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.equal(plans.at(-2).state.lastMove?.scriptBeat?.beatId, "rem:c5-maths-ch02-t01-m-not-numbers", "T11 was the remediation");
     assert.equal(last.child, "samajh nahi aaya");
     assert.equal(last.state.lastMove?.simpler, rem.simpler.hi, JSON.stringify({ kind: last.p.r.move.kind, beat: last.state.lastMove?.scriptBeat?.beatId }));
+  });
+
+  test("T7 replay director10 c4 offtopic (main: 'a practice turn that parks the Virat aside drew nothing'): Studio's W8 rejects the card's line, not the park or the page plan", async () => {
+    const T = "c4-maths-ch05-t01";
+    setScriptForTest(T, runScript(T));
+    const { kit, rows, last } = await replay(RUN, "offtopic", T, 7);
+    assert.equal(last.child, "aapko virat pasand hai?");
+    assert.equal(last.p.r.move.kind, "practice");
+    assert.equal(last.state.activeItemId, "script:c4-maths-ch05-t01-s1:ask:e1");
+    const take = (text) => {
+      const L = `d10t7-${Math.random()}`;
+      seam.studioSeam.prefetch({ lessonId: L, purpose: "practice", kit, topicId: kit.topicId, child: { id: `c-${L}`, class_level: 4, language_pref: "hinglish" } });
+      const a = whiteboardIntentOf({ lessonId: L, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item: boardItemOf(last.state, kit, findItem), line: { text } });
+      seam.studioSeam.preselectWhiteboard({ ...a, line: { ...a.line, text: "" } });
+      return { a, ack: seam.studioSeam.requestIntent(a) };
+    };
+    const run = take(rows[6].text);
+    // Brain's side is whole: one unpaged intent on the live card's own board (2 parts, 1 shaded)
+    assert.deepEqual(run.a.intent.boardRef, { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } });
+    assert.equal(run.a.intent.segments, undefined, "one page: nothing for a page plan to drop");
+    assert.equal(run.ack?.state, "planning", "the run's line: no board (W8.counts_match_line)");
+    // the park lines are not the cause: the card's line alone is rejected the same way
+    const card = "Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?";
+    assert.equal(take(card).ack?.state, "planning");
+    // the cause is W8 reading the line's counts: the same card naming the board's parts pages
+    assert.equal(take("Is roti mein 2 barabar tukde hain, 1 rangin hai. Rangin hissa kitna hai?").ack?.state, "revealed");
+    // (held with main's other W8 cases for the judges: when W8 accepts a card that never says the whole's parts, flip the two above)
   });
 });
