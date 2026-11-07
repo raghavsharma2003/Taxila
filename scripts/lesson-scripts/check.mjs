@@ -214,6 +214,8 @@ export function v21Errors(s) {
 export const THEN_MAX = 120;
 export const SAY_MAX_WORDS = 45;
 export const SIMPLER_MAX_WORDS = 35;
+/** state.js scriptWhyOf drops a why longer than this. */
+export const WHY_MAX_WORDS = 22;
 const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
 const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
 /**
@@ -267,6 +269,14 @@ export function v22Errors(s) {
       if (!String(c.why?.hi ?? "").trim() || !String(c.why?.en ?? "").trim()) { e.push(at(`${where}: an authored why { hi, en } for its key`)); continue; }
       if (/^\s*kyunki\b/i.test(c.why.hi)) e.push(at(`${where}.why: starts with "kyunki" (the runtime adds it)`));
       if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
+    }
+    // integration 13 (Brain, state.js scriptWhyOf): the runtime silently drops a why over WHY_MAX_WORDS, so the checker
+    // refuses one: every authored why (cards, worked example, its steps and yourStep) in hi and en
+    const whys = [...cards.map(([where, c]) => [where, c.why]), ["workedExample", we.why], ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.why]),
+      ...(we.yourStep?.why ? [["workedExample.yourStep", we.yourStep.why]] : [])];
+    for (const [where, w] of whys) for (const lang of ["hi", "en"]) {
+      const n = String(w?.[lang] ?? "").split(/\s+/).filter(Boolean).length;
+      if (n > WHY_MAX_WORDS) e.push(at(`${where}.why${lang === "en" ? " (en)" : ""}: ${n} words > ${WHY_MAX_WORDS} (the runtime drops it)`));
     }
     if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
     // director9 (dc-r7-script-walk-v6-1, format v2.3, additive): an authored smaller re-explanation on every beat, worked
