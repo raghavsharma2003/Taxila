@@ -55,7 +55,8 @@
       "key": "6",
       "why": { "hi": "12 kursiyan 2 barabar rows mein lagao toh har row mein 6 aati hain, 2 × 6 = 12", "en": "putting 12 chairs in 2 equal rows gives 6 in each, 2 × 6 = 12" },
       "accept": ["6 kursiyan", "six", "chhe", "6 chairs"]
-     }
+     },
+     "simpler": { "hi": "12 kursiyan 3 rows mein lagi hain, har row mein 4, aur koi nahi bachi. Isliye 3 aur 4 dono 12 ke factors hain.", "en": "12 chairs sit in 3 rows with 4 in each, and none is left over. So 3 and 4 are both factors of 12." }
     },
     {
      "id": "e2",
@@ -79,7 +80,8 @@
       "accept": ["1 2 3 6", "1, 2, 3 aur 6", "1, 2, 3 and 6"],
       "targets": "c5-maths-ch13-t02-m-one-and-self",
       "wrongIfMis": "2, 3"
-     }
+     },
+     "simpler": { "hi": "6 kursiyan ek lambi row mein bhi barabar rows hain, koi kursi nahi bachi. Toh ek row wala tareeka bhi poora sahi hai.", "en": "6 chairs in one long row are also equal rows, with no chair left over. So the one-row way is fully correct too." }
     },
     {
      "id": "e3",
@@ -88,13 +90,7 @@
       { "hi": "rectangle", "en": "rectangle" },
       { "hi": "13 ke factors kam", "en": "13 has fewer factors" }
      ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "12 kursiyan", "items": ["1 × 12", "2 × 6", "3 × 4"] },
-       "right": { "title": "13 kursiyan", "items": ["1 × 13"] }
-      }
-     },
+     "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0, "labels": false } },
      "point": {
       "hi": "12 kursiyan teen rectangle banati hain: 1 × 12, 2 × 6 aur 3 × 4. 13 kursiyan sirf ek: 1 × 13, ek lambi row. 13 bada number hai, phir bhi 13 ke factors kam hain.",
       "en": "12 chairs make three rectangles: 1 × 12, 2 × 6 and 3 × 4. 13 chairs make only one: 1 × 13, one long row. 13 is the bigger number, yet 13 has fewer factors."
@@ -109,7 +105,8 @@
       "accept": ["14 ke", "14 ke zyada", "14 has more"],
       "targets": "c5-maths-ch13-t02-m-bigger-more-factors",
       "wrongIfMis": "19"
-     }
+     },
+     "simpler": { "hi": "12 kursiyan teen rectangle banati hain, par 13 kursiyan sirf ek lambi row. Bada number hone se factors zyada nahi ho jaate.", "en": "12 chairs make three rectangles, but 13 chairs make only one long row. Being a bigger number does not give more factors." }
     }
    ],
    "workedExample": {
@@ -126,12 +123,14 @@
      {
       "do": { "hi": "1, 2 aur 4 rows aazmao", "en": "Try 1, 2 and 4 rows" },
       "result": "1 × 16, 2 × 8 aur 4 × 4, teeno mein koi paudha nahi bachta",
-      "why": { "hi": "16 ko 1, 2 aur 4 se poora baanta ja sakta hai", "en": "16 can be shared exactly by 1, 2 and 4" }
+      "why": { "hi": "16 ko 1, 2 aur 4 se poora baanta ja sakta hai", "en": "16 can be shared exactly by 1, 2 and 4" },
+      "simpler": { "hi": "16 paudhe 1, 2 ya 4 rows mein lagao, toh koi nahi bachta. Isliye 1 × 16, 2 × 8 aur 4 × 4 rectangle bante hain.", "en": "Plant 16 saplings in 1, 2 or 4 rows and none is left over. So 1 × 16, 2 × 8 and 4 × 4 rectangles are made." }
      },
      {
       "do": { "hi": "Ab 3, 5, 6 aur 7 rows aazmao", "en": "Now try 3, 5, 6 and 7 rows" },
       "result": "har baar kuch paudhe bach jaate hain, aur 8 rows wala 2 × 8 ulta hai",
-      "why": { "hi": "16 in mein se kisi se poora nahi bantta, aur 8 rows mein 2-2 wala rectangle pehle mil chuka hai", "en": "16 is not shared exactly by any of these, and the 8 rows of 2 rectangle was already found" }
+      "why": { "hi": "16 in mein se kisi se poora nahi bantta, aur 8 rows mein 2-2 wala rectangle pehle mil chuka hai", "en": "16 is not shared exactly by any of these, and the 8 rows of 2 rectangle was already found" },
+      "simpler": { "hi": "3, 5, 6 ya 7 rows mein kuch paudhe bach jaate hain. 8 rows wala rectangle 2 × 8 ka hi ulta hai, woh pehle mil chuka.", "en": "With 3, 5, 6 or 7 rows some saplings are left over. The 8-row rectangle is just 2 × 8 turned round, found already." }
      }
     ],
     "yourStep": {
@@ -142,7 +141,8 @@
      "key": "1, 2, 4, 8, 16",
      "accept": ["1 2 4 8 16", "1, 2, 4, 8 aur 16", "1, 2, 4, 8 and 16"],
      "targets": "c5-maths-ch13-t02-m-one-and-self",
-     "wrongIfMis": "2, 4, 8"
+     "wrongIfMis": "2, 4, 8",
+     "simpler": { "hi": "Har rectangle ke dono number likho, jaise 1 × 16 se 1 aur 16. 4 × 4 mein 4 sirf ek baar likho.", "en": "Write both numbers of each rectangle, like 1 and 16 from 1 × 16. From 4 × 4, write 4 only once." }
     },
     "answer": { "hi": "16 ke factors 1, 2, 4, 8 aur 16 hain", "en": "the factors of 16 are 1, 2, 4, 8 and 16" },
     "why": {
@@ -169,13 +169,14 @@
        "left": { "title": "11 kursiyon", "items": ["barabar rows"] },
        "right": { "title": "koi tareeka nahi", "items": ["haan ya nahi"] }
       }
-     }
+     },
+     "simpler": { "hi": "Ek lambi row bhi barabar rows mein ginti hai. Socho 11 kursiyan ek hi lambi row mein lag sakti hain ya nahi.", "en": "One long row also counts as equal rows. Think whether 11 chairs can go in one long row." }
     },
     {
      "id": "c2",
      "prompt": {
-      "hi": "Ek hall mein 20 kursiyan hain, doosre mein 23. Kis hall ki kursiyan zyada tarah ke rectangle mein lag sakti hain, 20 wali ya 23 wali?",
-      "en": "One hall has 20 chairs, another has 23. Which hall's chairs can be set out as more kinds of rectangle, the 20 or the 23?"
+      "hi": "Ek hall mein 20 kursiyan hain, doosre mein 23. Kis hall ki kursiyan zyada tarah ki barabar rows mein lag sakti hain, 20 wali ya 23 wali?",
+      "en": "One hall has 20 chairs, another has 23. Which hall's chairs can be set out in equal rows in more ways, the 20 or the 23?"
      },
      "key": "20",
      "why": { "hi": "20 se 1 × 20, 2 × 10 aur 4 × 5 bante hain, par 23 se sirf 1 × 23", "en": "20 makes 1 × 20, 2 × 10 and 4 × 5, but 23 makes only 1 × 23" },
@@ -185,10 +186,11 @@
      "board": {
       "template": "compare@1",
       "params": {
-       "left": { "title": "ek hall", "items": ["rectangle"] },
-       "right": { "title": "doosre hall", "items": ["rectangle"] }
+       "left": { "title": "ek hall", "items": ["barabar rows"] },
+       "right": { "title": "doosre hall", "items": ["barabar rows"] }
       }
-     }
+     },
+     "simpler": { "hi": "Dono hall ki kursiyon ko barabar rows mein lagakar dekho. Jis number ke zyada factors honge, uski kursiyan zyada tarah se lagengi.", "en": "Set out each hall's chairs in equal rows. The number with more factors can be set out in more ways." }
     },
     {
      "id": "c3",
@@ -207,7 +209,8 @@
        "left": { "title": "27 kursiyan", "items": ["barabar rows"] },
        "right": { "title": "rows", "items": ["saare tareeke"] }
       }
-     }
+     },
+     "simpler": { "hi": "27 ko ek-ek number se baantkar dekho ki kab koi kursi nahi bachti. Ek lambi row bhi ek tareeka hai.", "en": "Try sharing 27 by each number and see when no chair is left over. One long row is also a way." }
     }
    ],
    "ladder": [
@@ -242,7 +245,8 @@
         "left": { "title": "35 kursiyan", "items": ["barabar rows"] },
         "right": { "title": "35 ke factors", "items": ["saare"] }
        }
-      }
+      },
+      "simpler": { "hi": "35 ko 1 se shuru karke har number se baantkar dekho. Jahan koi kursi na bache, uske rectangle ke dono number factor hain.", "en": "Share 35 by each number, starting from 1. Where no chair is left over, both numbers of that rectangle are factors." }
      }
     },
     {
@@ -252,17 +256,11 @@
       "hi": "12 kursiyan 1 × 12, 2 × 6 aur 3 × 4 teen rectangle banati hain, par 13 kursiyan sirf 1 × 13. Number bada hone se factors zyada nahi ho jaate.",
       "en": "12 chairs made three rectangles, 1 × 12, 2 × 6 and 3 × 4, but 13 chairs only 1 × 13. A bigger number does not mean more factors."
      },
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "12 kursiyan", "items": ["1 × 12", "2 × 6", "3 × 4"] },
-       "right": { "title": "13 kursiyan", "items": ["1 × 13"] }
-      }
-     },
+     "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0, "labels": false } },
      "then": {
       "prompt": {
-       "hi": "Kursiyan lekar rectangle banakar socho. Kiske factors zyada hain, 9 ya 11?",
-       "en": "Think by making rectangles of chairs. Which has more factors, 9 or 11?"
+       "hi": "Kursiyan lekar barabar rows banakar socho. Kiske factors zyada hain, 9 ya 11?",
+       "en": "Think by setting chairs out in equal rows. Which has more factors, 9 or 11?"
       },
       "key": "9",
       "why": { "hi": "9 se 1 × 9 aur 3 × 3 bante hain, par 11 se sirf 1 × 11", "en": "9 makes 1 × 9 and 3 × 3, but 11 makes only 1 × 11" },
@@ -272,10 +270,11 @@
       "board": {
        "template": "compare@1",
        "params": {
-        "left": { "title": "kursiyan", "items": ["rectangle"] },
+        "left": { "title": "kursiyan", "items": ["barabar rows"] },
         "right": { "title": "factors", "items": ["kiske zyada"] }
        }
-      }
+      },
+      "simpler": { "hi": "Dono number ki kursiyon ko barabar rows mein lagakar dekho. 11 kursiyan sirf ek lambi row mein lagti hain, ab doosre number ko aazmao.", "en": "Set out chairs in equal rows for both numbers. 11 chairs fit only in one long row; now try the other number." }
      }
     },
     {
@@ -296,7 +295,8 @@
       "accept": ["8 kursiyan", "eight", "aath"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
       "wrongIfMis": "none, only 4",
-      "board": { "template": "shade-grid@1", "params": { "rows": 4, "cols": 8, "shade": 0, "labels": false } }
+      "board": { "template": "shade-grid@1", "params": { "rows": 4, "cols": 8, "shade": 0, "labels": false } },
+      "simpler": { "hi": "32 kursiyan 4 barabar rows mein hain. Ek row mein jitni kursiyan hain, woh number bhi 32 ka factor hai.", "en": "32 chairs are in 4 equal rows. The number of chairs in one row is also a factor of 32." }
      }
     }
    ],
@@ -304,7 +304,7 @@
     "hi": "Rectangle banakar factors mile, jaise 12 ke liye 3 × 4. Ab ek tez tareeka dekhenge: factors ko jodiyon mein dhoondhna, jaise 1 × 12, 2 × 6, 3 × 4, taaki koi factor chhoote nahi.",
     "en": "We found factors by making rectangles, like 3 × 4 for 12. Next we see a quicker way: finding factors in pairs, like 1 × 12, 2 × 6, 3 × 4, so that no factor is missed."
    },
-   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "rectangle", "items": ["3 × 4"] }, "right": { "title": "jodiyon mein", "items": ["1 × 12", "2 × 6", "3 × 4"] } } }
+   "bridgeBoard": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0, "labels": false } }
   },
   {
    "skillId": "c5-maths-ch13-t02-s2",
@@ -356,7 +356,8 @@
       "accept": ["6 factors", "chhe", "six"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
       "wrongIfMis": "3"
-     }
+     },
+     "simpler": { "hi": "20 ki jodiyan 1 × 20, 2 × 10 aur 4 × 5 hain, har jodi ka guna 20. Har jodi ke dono number 20 ke factors hain.", "en": "The pairs of 20 are 1 × 20, 2 × 10 and 4 × 5, each multiplying to 20. Both numbers of every pair are factors of 20." }
     },
     {
      "id": "e2",
@@ -386,7 +387,8 @@
       "accept": ["8 factors", "aath", "eight"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
       "wrongIfMis": "6"
-     }
+     },
+     "simpler": { "hi": "30 ki jodiyan 1 se kram se banao: 1 × 30, 2 × 15, 3 × 10, 5 × 6. Jab jodi ulti hokar dobara aaye, tab ruk jao.", "en": "Make the pairs of 30 in order from 1: 1 × 30, 2 × 15, 3 × 10, 5 × 6. When a pair comes again turned round, stop." }
     }
    ],
    "workedExample": {
@@ -403,12 +405,14 @@
      {
       "do": { "hi": "1 se shuru karke kram se jodiyan banao", "en": "Start at 1 and make pairs in order" },
       "result": "1 × 28, 2 × 14, aur 3 nahi chalta, phir 4 × 7",
-      "why": { "hi": "har jodi ka guna 28 hona chahiye, aur 28 ko 3 se baanto toh 1 bachta hai", "en": "each pair must multiply to 28, and sharing 28 by 3 leaves 1 over" }
+      "why": { "hi": "har jodi ka guna 28 hona chahiye, aur 28 ko 3 se baanto toh 1 bachta hai", "en": "each pair must multiply to 28, and sharing 28 by 3 leaves 1 over" },
+      "simpler": { "hi": "28 ki jodi 1 × 28 aur 2 × 14 hai. 3 se 28 poora nahi bantta, phir 4 × 7 milta hai.", "en": "28 has the pairs 1 × 28 and 2 × 14. 3 does not divide 28 exactly, then 4 × 7 is found." }
      },
      {
       "do": { "hi": "Ab 5, 6 aur 7 aazmao", "en": "Now try 5, 6 and 7" },
       "result": "5 aur 6 nahi chalte, aur 7 × 4 pehle mil chuka, toh ruk jao",
-      "why": { "hi": "ab jodiyan ulti hokar dobara aa rahi hain", "en": "the pairs are now coming again, turned round" }
+      "why": { "hi": "ab jodiyan ulti hokar dobara aa rahi hain", "en": "the pairs are now coming again, turned round" },
+      "simpler": { "hi": "5 aur 6 se 28 poora nahi bantta. 7 × 4 toh 4 × 7 ka hi ulta hai, isliye yahin ruk jao.", "en": "5 and 6 do not divide 28 exactly. 7 × 4 is just 4 × 7 turned round, so stop here." }
      }
     ],
     "yourStep": {
@@ -419,7 +423,8 @@
      "key": "1, 2, 4, 7, 14, 28",
      "accept": ["1 2 4 7 14 28", "1, 2, 4, 7, 14 aur 28", "1, 2, 4, 7, 14 and 28"],
      "targets": "c5-maths-ch13-t02-m-miss-pairs",
-     "wrongIfMis": "1, 2, 4, 28"
+     "wrongIfMis": "1, 2, 4, 28",
+     "simpler": { "hi": "Har jodi ke dono number likho. Phir unhe chhote se bade kram mein lagao.", "en": "Write both numbers of every pair. Then put them in order from smallest to biggest." }
     },
     "answer": { "hi": "28 ke factors 1, 2, 4, 7, 14 aur 28 hain", "en": "the factors of 28 are 1, 2, 4, 7, 14 and 28" },
     "why": {
@@ -452,7 +457,8 @@
        "left": { "title": "45 ke factors", "items": ["1, 3, 9, 15, 45"] },
        "right": { "title": "chhoot gaya", "items": ["kaunsa"] }
       }
-     }
+     },
+     "simpler": { "hi": "45 ki jodiyan banao: 1 × 45 aur 3 × 15. Ab 9 ka saathi dhoondho jo guna karke 45 banaye, woh list mein nahi hai.", "en": "Make the pairs of 45: 1 × 45 and 3 × 15. Now find 9's partner that multiplies to 45; it is not in the list." }
     },
     {
      "id": "c2",
@@ -471,7 +477,8 @@
        "left": { "title": "14 ke factors", "items": ["2, 7"] },
        "right": { "title": "chhoot gaye", "items": ["kaunse do"] }
       }
-     }
+     },
+     "simpler": { "hi": "2 × 7 ek jodi hai. Har number ki ek jodi aur hoti hai, jo sabse chhote factor se shuru hoti hai.", "en": "2 × 7 is one pair. Every number has one more pair, which starts with the smallest factor." }
     },
     {
      "id": "c3",
@@ -490,7 +497,8 @@
        "left": { "title": "50 ki jodiyan", "items": ["kram se"] },
        "right": { "title": "50 ke factors", "items": ["saare"] }
       }
-     }
+     },
+     "simpler": { "hi": "50 ko 1 se kram se har number se baantkar dekho. Jo poora baante, uski jodi ke dono number likho.", "en": "Try sharing 50 by each number in order from 1. For each that divides exactly, write both numbers of its pair." }
     }
    ],
    "ladder": [
@@ -531,7 +539,8 @@
         "left": { "title": "36 ke factors", "items": ["1, 2, 3, 4, 6", "12, 18, 36"] },
         "right": { "title": "chhoot gaya", "items": ["kaunsa"] }
        }
-      }
+      },
+      "simpler": { "hi": "36 ki jodiyan banao: 1 × 36, 2 × 18, 3 × 12. Ab 4 ka saathi dhoondho jo guna karke 36 banaye.", "en": "Make the pairs of 36: 1 × 36, 2 × 18, 3 × 12. Now find 4's partner that multiplies to 36." }
      }
     },
     {
@@ -564,7 +573,8 @@
         "left": { "title": "22 ke factors", "items": ["2, 11"] },
         "right": { "title": "aur do", "items": ["kaunse"] }
        }
-      }
+      },
+      "simpler": { "hi": "2 × 11 ek jodi hai. Har number ki ek jodi aur hoti hai, jo sabse chhote factor se shuru hoti hai.", "en": "2 × 11 is one pair. Every number has one more pair, which starts with the smallest factor." }
      }
     }
    ],
@@ -616,7 +626,8 @@
       "key": "no",
       "why": { "hi": "7 ki chhalaang 28 ke baad seedha 35 par girti hai, 30 beech mein chhoot jaata hai", "en": "jumps of 7 go from 28 straight to 35, so 30 is skipped" },
       "accept": ["nahi", "nahi, 28 ke baad 35 aata hai", "no, it lands on 28 then 35"]
-     }
+     },
+     "simpler": { "hi": "7-7 ki do chhalaang theek 14 par girti hain, kuch nahi bachta. Isliye 7, 14 ka factor hai, aur 14, 7 ka multiple.", "en": "Two jumps of 7 land exactly on 14, with nothing left. So 7 is a factor of 14, and 14 is a multiple of 7." }
     },
     {
      "id": "e2",
@@ -646,7 +657,8 @@
       "accept": ["3, 5", "3 aur 5", "5 and 3", "5 aur 3", "5, 3"],
       "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
       "wrongIfMis": "30 and 45"
-     }
+     },
+     "simpler": { "hi": "12 ke factors 12 ko poora baantte hain, isliye woh 12 se bade nahi hote. 12 ke multiples 12 ki table mein aate hain: 12, 24, 36, 48.", "en": "The factors of 12 divide 12 exactly, so they are never bigger than 12. The multiples of 12 are in its table: 12, 24, 36, 48." }
     },
     {
      "id": "e3",
@@ -670,7 +682,8 @@
       "accept": ["48 hai", "forty-eight", "8 × 6 = 48"],
       "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
       "wrongIfMis": "8"
-     }
+     },
+     "simpler": { "hi": "8 ki table mein 24 ke baad seedha 32 aata hai. 28 beech mein chhoot jaata hai, isliye 8, 28 ka factor nahi.", "en": "In the table of 8, 32 comes straight after 24. 28 is skipped in between, so 8 is not a factor of 28." }
     }
    ],
    "workedExample": {
@@ -687,12 +700,14 @@
      {
       "do": { "hi": "6 ki table mein 45 ke paas dekho", "en": "Look near 45 in the table of 6" },
       "result": "6 × 7 = 42 aur 6 × 8 = 48, toh 45 beech mein hai aur 3 bachte hain",
-      "why": { "hi": "6 se 45 poora nahi bantta, isliye 6, 45 ka factor nahi hai", "en": "45 is not shared exactly by 6, so 6 is not a factor of 45" }
+      "why": { "hi": "6 se 45 poora nahi bantta, isliye 6, 45 ka factor nahi hai", "en": "45 is not shared exactly by 6, so 6 is not a factor of 45" },
+      "simpler": { "hi": "6 × 7 = 42 aur 6 × 8 = 48 hai, aur 45 inke beech mein hai. Isliye 6 se 45 poora nahi bantta.", "en": "6 × 7 = 42 and 6 × 8 = 48, and 45 is in between. So 6 does not divide 45 exactly." }
      },
      {
       "do": { "hi": "Ab 9 ki table ko 45 ki taraf badhao", "en": "Now take the table of 9 up towards 45" },
       "result": "9 × 4 = 36, abhi 45 tak nahi pahunche",
-      "why": { "hi": "45 tabhi 9 ka multiple hai jab 9 ki chhalaangein theek 45 par giren", "en": "45 is a multiple of 9 only if jumps of 9 land exactly on 45" }
+      "why": { "hi": "45 tabhi 9 ka multiple hai jab 9 ki chhalaangein theek 45 par giren", "en": "45 is a multiple of 9 only if jumps of 9 land exactly on 45" },
+      "simpler": { "hi": "9 ki table mein 9 × 4 = 36 tak aaye hain. Abhi 45 tak nahi pahunche, toh table aage badhani hogi.", "en": "In the table of 9 we have reached 9 × 4 = 36. We are not at 45 yet, so carry the table on." }
      }
     ],
     "yourStep": {
@@ -701,7 +716,8 @@
       "en": "We have reached 9 × 4 = 36. How many jumps of 9 from 0 does it take to reach exactly 45?"
      },
      "key": "5",
-     "accept": ["paanch", "five", "5 chhalaang", "9 × 5 = 45"]
+     "accept": ["paanch", "five", "5 chhalaang", "9 × 5 = 45"],
+     "simpler": { "hi": "4 chhalaang mein 36 tak aaye. Ab 36 mein ek aur 9 jodkar dekho ki 45 aata hai ya nahi, phir chhalaang gino.", "en": "4 jumps reached 36. Now add one more 9 to 36 and see whether you get 45, then count the jumps." }
     },
     "answer": { "hi": "6, 45 ka factor nahi hai, aur 9 × 5 = 45, isliye 45, 9 ka multiple hai", "en": "6 is not a factor of 45, and 9 × 5 = 45, so 45 is a multiple of 9" },
     "why": {
@@ -734,7 +750,8 @@
        "left": { "title": "18", "items": ["factor"] },
        "right": { "title": "inmein se", "items": ["kaunsa"] }
       }
-     }
+     },
+     "simpler": { "hi": "Factor 18 ko poora baantta hai, isliye woh 18 se bada nahi ho sakta. 36 aur 54 ko dekho, woh 18 se bade hain.", "en": "A factor divides 18 exactly, so it cannot be bigger than 18. Look at 36 and 54: they are bigger than 18." }
     },
     {
      "id": "c2",
@@ -753,7 +770,8 @@
        "left": { "title": "8 × 5 = 40", "items": ["40, 8 ka factor"] },
        "right": { "title": "sahi kya", "items": ["40 aur 8"] }
       }
-     }
+     },
+     "simpler": { "hi": "8 × 5 = 40, toh 40, 8 ki table mein aata hai. Factor kabhi apne number se bada nahi hota, aur 40, 8 se bada hai.", "en": "8 × 5 = 40, so 40 is in the table of 8. A factor is never bigger than its number, and 40 is bigger than 8." }
     },
     {
      "id": "c3",
@@ -772,7 +790,8 @@
        "left": { "title": "6 aur 3", "items": ["6, 3 ka multiple"] },
        "right": { "title": "3 aur 6", "items": ["3, 6 ka factor"] }
       }
-     }
+     },
+     "simpler": { "hi": "3 ki table mein 6 aata hai ya nahi, yeh dekho. Table mein aaye, toh 3 se 6 poora bantta hai.", "en": "See whether 6 is in the table of 3. If it is, then 3 divides 6 exactly." }
     }
    ],
    "ladder": [
@@ -806,7 +825,8 @@
         "left": { "title": "20", "items": ["factor"] },
         "right": { "title": "inmein se", "items": ["kaunsa"] }
        }
-      }
+      },
+      "simpler": { "hi": "Factor 20 ko poora baantta hai, isliye woh 20 se bada nahi ho sakta. 40 aur 60 dono 20 se bade hain.", "en": "A factor divides 20 exactly, so it cannot be bigger than 20. 40 and 60 are both bigger than 20." }
      }
     }
    ],
