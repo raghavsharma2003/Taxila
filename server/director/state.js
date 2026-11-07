@@ -2846,12 +2846,17 @@ export function step(prev, input) {
     && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused"
       // v6.2 H1 (main, director10: 12 model-written hints in c4, 4 of them giving the live answer): a wrong answer's hint is the
       // card's authored simpler too
-      || ["incorrect", "misconception", "partial"].includes(input?.cls?.outcome))) {
+      || (["incorrect", "misconception", "partial"].includes(input?.cls?.outcome) && move.kind !== "reteach"))) {
     const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
+    // (Learning, director10 item 1: still lost straight after a remediation's say — its follow-up card up — the remediation's own
+    // simpler, a plainer restatement of that say, comes first)
+    const remBeat = String(prev?.lastMove?.scriptBeat?.beatId ?? "");
+    const remSimpler = remBeat.startsWith("rem:") && item.scriptThen && !["incorrect", "misconception", "partial"].includes(input?.cls?.outcome)
+      ? skillScriptOf(input.kit, item.skillId)?.remediation?.find((r) => `rem:${r.targets}` === remBeat)?.simpler ?? null : null;
     // (an explain beat's card with no simpler of its own: its beat's simpler — Learning's v2.3 pilots put it on the beat)
     const beatSimpler = !meta?.simpler && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
       ? skillScriptOf(input.kit, item.skillId)?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.simpler ?? null : null;
-    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : beatSimpler ? saidIn(beatSimpler, s.ctx?.lang ?? "hinglish") : null;
+    const sm = remSimpler ? saidIn(remSimpler, s.ctx?.lang ?? "hinglish") : meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : beatSimpler ? saidIn(beatSimpler, s.ctx?.lang ?? "hinglish") : null;
     if (sm && String(sm).trim()) move.simpler = String(sm).trim();
   }
   if (p.probeAck) move.probeAck = true;
@@ -3071,6 +3076,24 @@ function heldTurn(prev, input) {
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
   // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
   // following it is such a request too)
+  // (Learning, director10 item 1; steering c5-t01 T13: "samajh nahi aaya" after a remediation's say, split from its card, let the
+  // card go and the walk moved on to the next beat): still lost after a remediation's say, the held follow-up card comes now,
+  // with the remediation's own simpler (else the card's) said first
+  const lost = c?.flags?.dontKnow || ["confused", "another", "clarify"].includes(c?.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused";
+  const remId = String(prev.lastMove?.scriptBeat?.beatId ?? "");
+  if (h.teach && lost && remId.startsWith("rem:") && h.activeItemId) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    s.splitHold = undefined;
+    const item = findItem(s, input.kit, h.activeItemId);
+    const rem = item ? skillScriptOf(input.kit, item.skillId)?.remediation?.find((r) => `rem:${r.targets}` === remId) : null;
+    const lang = s.ctx?.lang ?? "hinglish";
+    const meta = item?.scriptThen ?? item?.scriptCheck ?? item?.scriptAsk;
+    const sm = rem?.simpler ? saidIn(rem.simpler, lang) : meta?.simpler ? saidIn(meta.simpler, lang) : null;
+    const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true } : {}) };
+    s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
+    return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   if (c?.help || c?.request || (h.teach && (c?.flags?.dontKnow || readIntent(String(input.text ?? ""))?.type === "confused"))) return null;
   // v6.1 R9: "nahi" to the teaching half's check-in is acted on: the same teaching again, smaller (the beat's authored simpler,
   // else one sentence of its point), the card still held for the next turn; asked once, so no second check-in follows

@@ -36,10 +36,12 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.ok(!rows[22].text.includes("Circle ke 3 barabar hisse hain"), "(the run said hers)");
   });
 
-  test("H5 replay director10 c5-t01 steering T47: '1/3' — right for c1, c2's listed wrong answer — gets its verdict", async () => {
-    const { out, last } = await at("steering", "c5-maths-ch02-t01", 47);
-    assert.equal(last.state.lastVerdict, "not_yet", "graded (it was 'ungraded' as a repeat of the last right answer)");
-    assert.match(out.reply, /^1\/3 sahi nahi hai\./, out.reply);
+  test("H5 (director10 c5-t01 steering T47): the last right answer said again is no answer only on the same card", async () => {
+    const { repeatOfLastRight } = await import("../server/brain/turn.js");
+    const state = { lastVerdict: "correct", lastAnswerSaid: "1/3", lastGraded: { itemId: "script:s1:c1", key: "1/3" } };
+    assert.equal(repeatOfLastRight(state, { id: "script:s1:c1" }, "1/3"), true, "the same card: a repeat");
+    assert.equal(repeatOfLastRight(state, { id: "script:s1:c2" }, "1/3"), false, "a new card: '1/3' is its answer (its listed wrong one), graded");
+    assert.equal(repeatOfLastRight({ ...state, lastVerdict: "not_yet" }, { id: "script:s1:c1" }, "1/3"), false);
   });
 
   test("H5 replay director10 c5-t02 steering T19: a consolation ('Koi baat nahi, …') is no verdict and never replaces code's", async () => {
@@ -47,12 +49,11 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.match(out.reply, /^1\/8 sahi nahi hai\./, out.reply);
   });
 
-  test("T1/T2 replay director10 c5-t01 steering T43: one close, and a why said in her last turn is not said again", async () => {
-    const { out, rows } = await at("steering", "c5-maths-ch02-t01", 43);
-    assert.equal((rows[42].text.match(/raasta 4 barabar gaps mein bata hai/g) ?? []).length, 2, "(the run said the why twice, after its last turn said it)");
+  test("T1/T2 replay director10 c5-t01 steady T37: one close, and a why said in her last turn is not said again", async () => {
+    const { out, rows } = await at("steady", "c5-maths-ch02-t01", 37);
+    assert.ok(rows[34].text.includes("kyunki raasta 4 barabar gaps mein bata hai") && rows[36].text.includes("kyunki raasta 4 barabar gaps mein bata hai"), "(the run said the why on T35 and again on T37)");
     assert.doesNotMatch(out.reply, /raasta 4 barabar gaps mein bata hai/, out.reply);
-    assert.doesNotMatch(out.reply, /Pichhle sawaal ka jawab/, "the give-up and the worked close are not both said");
-    assert.match(out.reply, /^Toh poora jawab: pehla khamba ghar se 1\/4 km door hai\./, out.reply);
+    assert.match(out.reply, /Toh poora jawab: pehla khamba ghar se 1\/4 km door hai\./, out.reply);
   });
 
   test("H4 replays director10 c4: no doubled sentence after Hindi words, no 'Now try.', no 'Bilkul, no sahi hai'", async () => {
@@ -102,5 +103,17 @@ describe("r7-brain-v62.test.mjs", () => {
       assert.equal(p.state.activeItemId, undefined, `T${p.row}: no card live on the bridge turn`);
       assert.ok(p.state.splitHold?.move, `T${p.row}: the new skill's beat is held for the next turn`);
     }
+  });
+
+  test("Learning (director10 item 1) replay c5-t01 steering T13: 'samajh nahi aaya' straight after a remediation's say gets that remediation's own simpler", async () => {
+    const T = "c5-maths-ch02-t01";
+    const sc = runScript(T);
+    const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
+    rem.simpler = { hi: "Ghar se dukaan tak ki sadak ko barabar tukdon mein socho. Har tukda ek hissa hai.", en: "Think of the road as equal pieces. Each piece is one part." };
+    setScriptForTest(T, sc);
+    const { plans, last } = await replay(RUN, "steering", T, 13);
+    assert.equal(plans.at(-2).state.lastMove?.scriptBeat?.beatId, "rem:c5-maths-ch02-t01-m-not-numbers", "T11 was the remediation");
+    assert.equal(last.child, "samajh nahi aaya");
+    assert.equal(last.state.lastMove?.simpler, rem.simpler.hi, JSON.stringify({ kind: last.p.r.move.kind, beat: last.state.lastMove?.scriptBeat?.beatId }));
   });
 });

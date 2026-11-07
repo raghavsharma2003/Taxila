@@ -869,6 +869,8 @@ export interface RemediationV2 {
   board?: BoardRef | null;
   /** the follow-up card, keyed */
   then: KeyedAsk;
+  /** v2.3 (Learning, director10): a smaller, plainer restatement of `say`, said when the child is still lost after it */
+  simpler?: Said;
 }
 /** On a move the Director took from a script (T2): which beat it is (Studio reads intent.boardRef / intent.scriptBeat). */
 export interface ScriptBeatRef {

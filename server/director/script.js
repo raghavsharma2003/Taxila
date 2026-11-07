@@ -241,7 +241,7 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
   for (const [i, b] of (sk?.explain ?? []).entries()) simplerOk(`explain[${i}].simpler`, b?.simpler);
   for (const [i, st] of (sk?.workedExample?.steps ?? []).entries()) simplerOk(`workedExample.steps[${i}].simpler`, st?.simpler);
   for (const [i, c] of (sk?.checks ?? []).entries()) simplerOk(`checks[${i}].simpler`, c?.simpler, c?.key);
-  for (const [i, r] of (sk?.remediation ?? []).entries()) simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key);
+  for (const [i, r] of (sk?.remediation ?? []).entries()) { simplerOk(`remediation[${i}].simpler`, r?.simpler); simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key); }
   // ── v2.1 (dc-r7-script-walk-v3, director5's data findings), for scripts marked version 2.1 ──
   if (Number(v21) >= 2.1) {
     const spoken = [];

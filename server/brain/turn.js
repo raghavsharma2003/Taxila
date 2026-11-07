@@ -1618,6 +1618,11 @@ export function noteDid(next, { cls, target, activeItem, kit, childText, tapped,
  * fold, the facets and the 001 projection (skill_state; the legacy evidence rows as the verdict log) are staged for
  * the turn's ONE transaction under the child's advisory lock and legal-mode guard.
  */
+/** K1 / v6.2 H5: is this "wrong" answer only the last right answer said again on the SAME card (not a new card's answer)? Pure. */
+export function repeatOfLastRight(state, activeItem, said) {
+  return state?.lastVerdict === "correct" && !!said && said === state.lastAnswerSaid
+    && (!state.lastGraded?.itemId || state.lastGraded.itemId === activeItem?.id);
+}
 export async function planTurn(base, cls, c) {
   const state = structuredClone(base);
   const { kit, child, lesson, activeItem, moduleOnly } = c;
@@ -1690,8 +1695,7 @@ export async function planTurn(base, cls, c) {
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
   // (v6.2 H5, director10 c5-t01 steering T47: "1/3", right for c1, was the new card c2's listed wrong answer and got no verdict:
   // a repeat of the last right answer is no answer only on the SAME card)
-  if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid
-    && (!state.lastGraded?.itemId || state.lastGraded.itemId === activeItem?.id)) next.lastVerdict = "ungraded";
+  if (k1On() && next.lastVerdict === "not_yet" && repeatOfLastRight(state, activeItem, said)) next.lastVerdict = "ungraded";
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
   if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { itemId: activeItem.id, key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
