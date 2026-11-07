@@ -59,7 +59,7 @@ const prewarmed = { made: 0, hit: 0, used: 0, stale: 0 };   // made ahead · ser
 export const prewarmStats = () => ({ ...prewarmed });
 // round 7 (main, director4: Brain's R4 screen contract): what the board shows, for her line to be checked against: the shape
 // kind, and the numbers and labels actually drawn (masked "?" values are not shown, so not listed)
-const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts", "wholes@1": "whole in parts",
+const SHAPE_OF = { "fraction-line@1": "number line", "number-line-hop@1": "number line", "number-line-zoom@1": "number line", "number-line-scale@1": "number line", "fraction-parts@1": "whole in parts", "fraction-bars@1": "whole in parts", "wholes@1": "whole in parts", "unrolled@1": "drawing",
   "fraction-of@1": "area model", "equal-groups@1": "groups", "compare@1": "comparison", "flow@1": "flow", "cycle@1": "cycle", "bar-chart@1": "bar chart", "table@1": "table",
   "timeline@1": "timeline", "places@1": "map", "label@1": "labelled diagram", "column-op@1": "column sum", "place-value@1": "place value", "area-grid@1": "grid", "shade-grid@1": "grid", "angle@1": "angle", "lines@1": "angle", "symmetry@1": "symmetry", "parts@1": "labelled diagram", "combine-count@1": "groups" };
 /** round 7 (Brain R4): the CLOSED set of shape words a screen may name (R4 matches them against her Hinglish/English). */
@@ -224,7 +224,7 @@ function candidates(ask, kit, lessonId, band, predicted) {
  * @param {any} ask whiteboardIntentOf(...) with an empty line
  * @param {{ kit?: any, redact?: string[], now?: number }} o
  */
-export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false, avoid = null, seen = null } = {}) {
+export function preselect(ask, { kit, redact = [], now = Date.now(), certify = null, pictureFirst = false, avoid = null, seen = null, avoidRef = null } = {}) {
   try {
     if (!boardFirstOn() || !kit) return null;
     const id = String(ask?.intent?.intentId ?? "");
@@ -261,14 +261,18 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // director8 S3′ (amends SC2): a picture asked for while the card's own board is the page on screen: the second view of
     // the same numbers goes first (her line is written from ITS row); none → the re-show below, as before
     const card0 = request && request.kind !== "example" && avoid ? cands.find((c) => c.by === "script") : null;
-    if (card0 && (samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
+    // (director10 G4: the card on screen by its ref — the page up was drawn, masked and labelled, on its own line)
+    const cardUp = !!avoidRef && refKey(ask?.intent?.boardRef) === avoidRef;
+    if (card0 && (cardUp || samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
       const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
       const { view, ...ac } = ac0 ?? {};
       const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
       const say = !ac0 ? "" : ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ") : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
+        : ac.sides ? `${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v) => `${v} ${ac.unit}`).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
+        : Array.isArray(ac.dens) ? `0 se 1 ki do sankhya rekhayein, ${ac.dens.join(" aur ")} barabar gaps, nishaan ${ac.marks.map((m) => `${m[0]}/${m[1]}`).join(", ")} par`
         : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
-      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: view === "line" || view === "wholes" ? view : "parts", say });
+      if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: ALT_VIEWS.has(view) ? view : "parts", say });
     }
     for (const c of pictureFirst ? preferPicture(cands) : cands) {
       const A2 = c.say ? { ...ask, line: { ...(ask.line ?? {}), text: c.say } } : a2, CTX = c.say ? { ...gateCtxFor(A2, { kit, redact }), withhold: ctx.withhold } : ctx;
@@ -285,7 +289,7 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
       // (director8 S1′: the scripted board of the beat still on screen — the same card, her confirming turn — stays this
       // beat's board: re-taken on her line, a value she now states is drawn (statedMark / the answers rule), else it is
       // kept; before, the never-repeat rule skipped it and the code's bare line replaced the card's board)
-      const sameCard = c.by === "script" && !c.altView && !!avoid && (samePage(c.script, avoid) || shownBefore(c.script, { avoid }));
+      const sameCard = c.by === "script" && !c.altView && !!avoid && (cardUp || samePage(c.script, avoid) || shownBefore(c.script, { avoid }));
       if (!onScreenAnswer && !reShow && !sameCard && shownBefore(c.script, { avoid, seen })) continue;
       const s0 = withSectors(retime(c.script, Math.max(800, Number(c.script.durationMs) || 0), CTX.speechMs), CTX.reply);
       // round 7 (motion ops): a whole cut into equal parts splits when the split passes the same gate (else the still board)
@@ -343,10 +347,16 @@ export function takePreselected(ask, ctx, t0 = Date.now()) {
       // (refused still too: the still board's reasons are recorded, W19.settled only repeats them)
       r = regate({ ...still, board: { ...WB_BOARD, ...(still.board ?? {}) } }, ask, ctx);
     }
-    if (!r.ok) { p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id); return null; }
+    if (!r.ok) {
+      p.rejected = (r.gate?.checks ?? []).filter((x) => !x.pass).map((x) => x.id);
+      // (director10 G4: a second view her real line does not describe — "Ek rectangle card …" under the unrolled sides,
+      // W15 — gives way to the card's OWN board, re-shown as before the second views: never nothing)
+      return p.altView ? cardBoardOn(ask, ctx, t0) : null;
+    }
     // (director8 c5-t02 c3: "pehla nishaan 1/4 hai" over the asked mark's "?": a mark whose value her line states is labelled)
     const before = r.script;
-    const shown = statedMark(r.script, ask?.intent?.boardRef, ctx.reply);
+    // (director10 G3: a correct verdict's reveal — Brain's scriptBeat.reveal — is said for the mark, digits on her page or not)
+    const shown = statedMark(r.script, ask?.intent?.boardRef, ctx.revealText ? `${ctx.reply} ${ctx.revealText}` : ctx.reply);
     if (shown) r = { ...r, script: shown };
     // (director9: the "?" a stated mark became is that value in the SCREEN too — counts.marks and labels — not only in the
     // ops: Brain's per-segment check read counts.marks "?" under "Bilkul, Riya — pehla gap 1/8 km" on the drawn 1/8)
@@ -371,6 +381,22 @@ function withReveals(screen, revealed) {
   const nums = revealed.flatMap((t) => String(t).match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
   return { ...screen, labels: [...new Set([...(screen.labels ?? []), ...revealed])], numbers: [...new Set([...(screen.numbers ?? []), ...nums])],
     ...(marks ? { counts: { ...screen.counts, marks } } : {}) };
+}
+
+/** The card's own board (intent.boardRef), drawn and gated on her real line — the re-show a failed second view falls back to. */
+function cardBoardOn(ask, ctx, t0) {
+  try {
+    const rr = resolveBoardRef(ask?.intent?.boardRef, {});
+    const x = rr.ok ? expand(rr.call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
+    if (!x?.ok) return null;
+    const s = retime(x.script, Math.max(800, Number(x.script.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH);
+    let g = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+    if (!g.ok) return null;
+    const shown = statedMark(g.script, ask?.intent?.boardRef, ctx.revealText ? `${ctx.reply} ${ctx.revealText}` : ctx.reply);
+    if (shown) g = { ...g, script: shown };
+    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: Date.now() - t0, source: "first", by: "script", template: rr.call.template, sameCard: true,
+      screen: screenOf({ template: rr.call.template, facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script), syncMs: Date.now() - t0 };
+  } catch { return null; }
 }
 
 /**
@@ -428,7 +454,7 @@ export function altView(ask, ctx) {
     const s = retime(x.script, Math.max(800, Number(x.script.durationMs) || 0), ctx.speechMs, SCRIPT_STRETCH);
     const g = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
     if (!g.ok) return null;
-    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: view === "line" || view === "wholes" ? view : "parts", syncMs: 0,
+    return { ok: true, script: g.script, gate: g.gate, usd: 0, ms: 0, source: "first", by: "script", template: call.template, altView: ALT_VIEWS.has(view) ? view : "parts", syncMs: 0,
       screen: screenOf({ template: call.template, facts: x.script.facts }, g.script?.facts ?? x.script.facts, g.script) };
   } catch { return null; }
 }
@@ -450,12 +476,48 @@ function wholesOfCompare(c) {
   return a && b && (a.parts >= 3 || a.equal) && (b.parts >= 3 || b.equal) ? { template: "wholes@1", wholes: [a, b], view: "wholes" } : null;
 }
 
+/** The second views a pick names (artifact.altView): parts (bars), line, wholes, strips (wholes as bars), unrolled (a ruler). */
+const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled"]);
+/** director10 G4: a polygon card's sides, in order, and its unit — measured@1 (rect, square, triangle, polygon) or shape@1
+ *  (a regular polygon whose `side` label gives one length: "5 cm") — or null (a circle, no lengths). */
+function sidesOf(c) {
+  const unit = c.unit === "m" || c.unit === "cm" ? c.unit : null;
+  if (c.template === "measured@1" && unit) {
+    if (c.shape === "rect" || c.shape === "square") { const w = Number(c.w), h = Number(c.h ?? c.w); return w > 0 && h > 0 ? { sides: [w, h, w, h], unit } : null; }
+    if (c.shape !== "circle" && Array.isArray(c.sides) && c.sides.length >= 3 && c.sides.every((v) => Number(v) > 0)) return { sides: c.sides.map(Number), unit };
+    return null;
+  }
+  if (c.template === "shape@1") {
+    const n = { triangle: 3, square: 4, pentagon: 5, hexagon: 6, heptagon: 7, octagon: 8 }[String(c.shape ?? "").toLowerCase()];
+    const m = /(\d+(?:\.\d+)?)\s*(cm|m)\b/.exec(String(c.side ?? ""));
+    return n && m && Number(m[1]) > 0 ? { sides: Array.from({ length: n }, () => Number(m[1])), unit: m[2] } : null;
+  }
+  return null;
+}
+
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
 export function altCall(ref, { line = "", withheld = [] } = {}) {
   try {
     const r = resolveBoardRef(ref, {});
     if (!r.ok) return null;
     const c = r.call;
+    // (director10 G4, from the LIVE card's figure) two wholes in pieces → the same wholes as strips; a polygon's sides → its
+    // boundary laid straight on a ruler, the total its card asks a "?" unless her line says it; equal bars → their line
+    if (c.template === "wholes@1" && c.as !== "bar" && Array.isArray(c.wholes) && c.wholes.length) return { template: "wholes@1", as: "bar", wholes: c.wholes, view: "strips" };
+    const ps = sidesOf(c);
+    if (ps) {
+      const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;
+      const said = (String(line).match(/\d+(?:\.\d+)?/g) ?? []).map(Number).includes(sum);
+      const held = withheld.map(String).some((w) => Number(w) === sum);
+      return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", view: "unrolled" };
+    }
+    if (c.template === "fraction-bars@1" && Array.isArray(c.bars)) {
+      const named = c.bars.filter((b) => b && b.label !== "?" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
+      const dens = [...new Set(named.map((b) => b.parts))];
+      if (!named.length || dens.length > 2) return null;
+      if (dens.length === 1) return { template: "fraction-line@1", den: dens[0], from: 0, to: 1, marks: [...new Map(named.map((b) => [b.shade, { num: b.shade, label: `${b.shade}/${b.parts}` }])).values()], view: "line" };
+      return { template: "fraction-line@1", dens, from: 0, to: 1, marks: named.map((b) => [b.shade, b.parts]), view: "line" };
+    }
     // (director9: a whole already in parts has its own second view — a circle or a grid becomes a bar; a bar becomes the
     // number line of the same fraction. The judges counted picture requests over these boards that drew nothing new)
     const withheldOf = (a, b) => withheld.map(String).some((w) => { const m = /^(\d+)\/(\d+)$/.exec(w); return !!m && Math.abs(Number(m[1]) / Number(m[2]) - a / b) < 1e-9; });
@@ -483,6 +545,9 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       }
       if (Number.isInteger(c.mark) && Number.isInteger(c.den) && c.den <= 12) fs.push({ at: [c.mark, c.den] });
       if (!fs.length && Number.isInteger(c.hop?.num) && c.hop.num <= c.den) fs.push([c.hop.num, c.den]);
+      // (director10 G4, c5-t01: a two-scale line is BOTH its scales — "1/4" above and the 8-gap line below that the card asks
+      // about; the bars drew only the marked 1/4. A scale with no mark of its own is its bar, unnamed: "?")
+      if (Array.isArray(c.dens)) for (const d of c.dens) if (Number.isInteger(d) && d >= 2 && d <= 12 && !fs.some((f) => (Array.isArray(f) ? f : f.at)[1] === d)) fs.push({ at: [0, d] });
     } else {
       // (only a title or item that IS a fraction — its one number: "1/6 roti". "1/4 ke 3 hop" and "8 ka 1/2 = 4" are
       // a count of pieces or a share of a set: as bars they would show something else)
@@ -576,7 +641,12 @@ let pagesDropped = 0, firstKept = 0;
 /** How many paged turns kept the card's board on screen for a first page whose own take failed. */
 export const firstPageKeptCount = () => firstKept;
 export const pagesDroppedCount = () => pagesDropped;
-export function pagesBoard(ask, { kit, redact = [], keep = null } = {}) {
+/** A board ref's identity (template + params, keys in order): two refs that name the same figure compare equal. */
+export function refKey(ref) {
+  const canon = (v) => (Array.isArray(v) ? v.map(canon) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon(v[k])])) : v);
+  return ref?.template ? JSON.stringify({ t: ref.template, p: canon(ref.params ?? {}) }) : null;
+}
+export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null } = {}) {
   try {
     let sg = segmentsOf(ask);
     if (!sg || !kit) return null;
@@ -599,7 +669,10 @@ export function pagesBoard(ask, { kit, redact = [], keep = null } = {}) {
     // page's board); only with no card board to keep does the turn fail)
     if (!takes0[0]?.script) {
       const p0 = picks.get(id), base = p0?.raw ?? p0?.script ?? null;
-      if (!keep?.ops?.length || !base || !(samePage(base, keep) || shownBefore(base, { avoid: keep }))) return null;
+      // (director10 G1, replayed: the card's board on screen was drawn on ITS line, masked and labelled for that line, so it
+      // is rarely the same page as this pick; it is the same card when the page on screen was drawn from this ref)
+      const sameRef = !!keepRef && refKey(sg[0].boardRef) === keepRef;
+      if (!keep?.ops?.length || !base || !(sameRef || samePage(base, keep) || shownBefore(base, { avoid: keep }))) return null;
       const still = { ...keep, ops: keep.ops.map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 };
       takes0[0] = { ok: true, script: still, template: p0.template, source: "kept", by: "script", kept: true,
         screen: screenOf({ template: p0.template, facts: { ...(base.facts ?? p0.facts ?? {}), ...(p0.counts ? { counts: p0.counts } : {}) } }, keep.facts ?? p0.facts, keep) };
@@ -609,7 +682,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null } = {}) {
     if (kept.length < takes0.length) pagesDropped += takes0.length - kept.length;
     const takes = kept.map((i) => takes0[i]);
     sg = kept.map((i) => sg[i]);
-    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }] };
+    const lastRef = refKey(sg.at(-1).boardRef);
+    if (takes.length === 1) return { ...takes[0], screens: [{ from: 0, ...(takes[0].screen ?? {}) }], lastRef };
     const b0 = takes[0].script.board ?? WB_BOARD;
     if (takes.some((t) => (t.script.board ?? WB_BOARD).w !== b0.w || (t.script.board ?? WB_BOARD).h !== b0.h)) return null;
     const rename = (ops, pre) => { const m = new Map(ops.map((o) => [o.id, `${pre}${o.id}`.slice(0, 32)]));
@@ -637,7 +711,7 @@ export function pagesBoard(ask, { kit, redact = [], keep = null } = {}) {
     if (!n.ok || !n.script?.switches?.length) return null;
     pageStats.drawn++;
     return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0,
-      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })) };
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef };
   } catch { return null; }
 }
 /** (director7's first form) */

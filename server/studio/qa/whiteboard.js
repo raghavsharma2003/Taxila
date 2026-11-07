@@ -611,9 +611,13 @@ export function gateWhiteboard(raw, ctx) {
   // round2 content: "3 equal groups, each with 5 dots" is 15 dots: a count she partitions by (said) times a number she says
   // (owner-5 on prod 2026-10-06: the kit's own equal-groups board of 15 dots was refused against exactly that line)
   const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
-  const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
+  // (director10 G2: a card's authored board of two or three separate wholes — fraction-bars, wholes — is that many wholes
+  // side by side: the bars' outlines are wholes, never a partition she must say; each bar's own parts are still counted)
+  const badCount = said.size ? fams.filter((f) => !okCount(f.n) && !(ctx.wholes && f.n === ctx.wholes)).map((f) => `${f.kind} x${f.n}`) : [];
   // (a clock's hands run from its centre: ctx.face, the asked thing is a face of numbers, studio/request.js faceDrawing)
-  const cut = ctx.face ? [] : circleCutByLines(ops);
+  // (director10 G2: a card's OWN authored board cuts its wholes the way Learning authored them — wholes@1's radii, "1 bada,
+  // 2 chhote" — certified with the card: the rule is for boards that draw a round whole of their own)
+  const cut = ctx.face || ctx.authoredRef ? [] : circleCutByLines(ops);
   add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
   // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
   const crossed = textsCrossed(ops, byId);
@@ -651,7 +655,10 @@ export function gateWhiteboard(raw, ctx) {
   const boardNums = [...new Set(numbersIn(per.flatMap((p) => p.nums).join(" ")))];
   // ... and a board whose every number her line says, in digits or in words ("five equal gaps" over a 5), is hers too
   const saidAll = new Set(numbersIn(ctx.reply));
-  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
+  // (director10 G2: a card's OWN board writes the numbers Learning authored on it — c6's 12 m, 9 m, 7 m under "Pichhle sawaal
+  // ka jawab 28 m tha": the board is the card, not other maths. W17 is for boards that write numbers of their own)
+  const authoredAll = Array.isArray(ctx.authoredNumbers) && ctx.authoredNumbers.length > 0 && boardNums.every((n) => ctx.authoredNumbers.map(String).includes(n));
+  const notHers = !ctx.face && !authoredAll && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
   // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
   // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.

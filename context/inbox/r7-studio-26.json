@@ -1,0 +1,49 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-card-board-authored-gate",
+      "kind": "decision",
+      "at": "2026-11-07",
+      "title": "director10 G2: a scripted card's OWN board (an explain/worked beat's board, a then-card, a check's ownBoard) is gated as authored content. Its params' words count as kit words (W5: \"bada\", \"chhota\", \"jaisi\", \"kram\" on compare@1 cards). Two or three separate wholes side by side (fraction-bars bars, wholes) are a count of wholes, not a partition she must say (W8). A round whole the card authors cut by radii is not a model's circle cut by lines (W8 cutByLines). A board that writes only the card's authored numbers needs none of hers (W17: c6's 12/9/7 m under \"jawab 28 m tha\"). W9 (nothing withheld drawn) and her counts against a board's parts still bind: steady-c4 T62's \"12 laddoo, 6 a group\" over e1's 2 groups of 4 is still refused. Reverse if judges count a close drawn over its card's board that contradicts it (then W5/W8 apply to card boards as before and the card needs an answerBoard)."
+    },
+    {
+      "id": "dc-r7-first-page-keep-by-ref",
+      "kind": "decision",
+      "at": "2026-11-07",
+      "title": "director10 G1: the seam records the ref of the card whose board is the page on screen (L.wbPrevRef, the last page's ref for a paged board; none for a second view or a model board). A paged turn whose first page fails keeps the page on screen when it was drawn from that page's ref: the card's board was drawn masked and labelled on its own line, so comparing pages missed 16 of 17 keeps. The same identity says which card's board is up for a picture request (G4). Reverse if a ref ever names two different drawings in one lesson (then compare pages again)."
+    },
+    {
+      "id": "dc-r7-verdict-reveal",
+      "kind": "decision",
+      "at": "2026-11-07",
+      "title": "director10 G3: a correct verdict reveals the answered card's key on its board whatever her page says: Brain's verdict beat (the first page's scriptBeat, or the segment's) carries `reveal: true` (the key, answers[0]) or `reveal: [values]`. Studio frees those values from the withheld set and writes an asked fraction-line mark or lines@1 angle with them (statedMark); screen.counts follow. Without the hint the old rule stands (a value her line states). Reverse if a reveal ever reaches a card the child has not answered (then Studio checks the verdict itself)."
+    },
+    {
+      "id": "dc-r7-second-view-every-template",
+      "kind": "decision",
+      "at": "2026-11-07",
+      "title": "director10 G4, extends dc-r7-picture-second-view: every board template a card can use has a second view, built from the card whose board is up (by ref). wholes@1 → the same wholes as strips (wholes@1 as \"bar\", altView \"strips\"). measured@1 (rect, square, triangle, polygon) and shape@1 (a regular polygon with a side length) → unrolled@1, the boundary laid straight on a ruler, each side labelled and the total \"?\" unless her line states it (altView \"unrolled\"). fraction-bars@1 → its fraction line (one denominator: marks; two: a two-scale line). A two-scale fraction line → a bar per scale, the unmarked scale an unnamed \"?\" bar (c5-t01 drew only the marked 1/4). Brain's {kind: \"show\"} request draws them too. Reverse if judges find a view confuses more than the card's own board."
+    },
+    {
+      "id": "ms-r7-director10-drawing-replay-2026-11-07",
+      "kind": "measurement",
+      "at": "2026-11-07",
+      "title": "director10's rows (claude/r4-conversation 14883b7f) replayed through Studio's seam on the director10 tree + int/r6 5534e97a, with Brain's bare-first-page join (1f2c46de) applied to the recorded segments. The 31 unpaged turns now draw 29/31. The 2 still failing are a close over a board that contradicts it: steady-c4 T62 (\"12 laddoo, 6 a group\" over e1's 8 dots) and c5-t02 steady T50 (\"5 rang wale\" over the 3/7 patti). Both are Learning data (no answerBoard). The 16 picture-request rows draw a second view 16/16: c4 wholes 0/2 → 2/2 strips; c6 measured and hexagon 0/4 → 4/4 unrolled (offtopic was already 1/1); fraction-bars → line 1/1; c5-t01's 3 two-scale rows now draw both scales. A first page refused on its own close went 30/31 → 4/31. The 26 freed were W5 on compare@1 words 13, W8 on two wholes 4, W8 on authored radii 8, and W17 1. The 4 left are each a close spoken over ANOTHER item's board: steady-c4 T46 (barfi 2/3 over the 3/4 grid), T62 and T72 (the 12- and 32-laddoo checks over e1's and e3's groups), and c5-t02 T50 (5/7 over 3/7). Two of these, T46 and T72, are kept as the card's board on screen (G1) and still contradict the close: that needs Brain's segment labels or Learning's answerBoard. Method: the card's board up on its run line (or the row Brain's line is written from), then the turn's segments; DATABASE_URL unset, no model calls. tests/r8-director10.test.mjs pins one row per item."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-card-board-authored-gate", "rel": "part_of", "dst": "dc-r7-script-walk-v6-2" },
+    { "src": "dc-r7-first-page-keep-by-ref", "rel": "part_of", "dst": "dc-r7-script-walk-v6-2" },
+    { "src": "dc-r7-verdict-reveal", "rel": "part_of", "dst": "dc-r7-script-walk-v6-2" },
+    { "src": "dc-r7-second-view-every-template", "rel": "part_of", "dst": "dc-r7-script-walk-v6-2" },
+    { "src": "dc-r7-second-view-every-template", "rel": "supersedes", "dst": "dc-r7-picture-second-view" },
+    { "src": "dc-r7-verdict-reveal", "rel": "constrains", "dst": "dc-r7-card-board-asked-only" },
+    { "src": "dc-r7-card-board-authored-gate", "rel": "measured_by", "dst": "ms-r7-director10-drawing-replay-2026-11-07" },
+    { "src": "dc-r7-first-page-keep-by-ref", "rel": "measured_by", "dst": "ms-r7-director10-drawing-replay-2026-11-07" },
+    { "src": "dc-r7-second-view-every-template", "rel": "measured_by", "dst": "ms-r7-director10-drawing-replay-2026-11-07" }
+  ],
+  "md": {
+    "decisions": "## `dc-r7-card-board-authored-gate`\n\nA card's own board is authored content. Its words pass W5, its separate wholes are not a count she must say (W8), its authored radii are not a circle cut by lines (W8), and its authored numbers need none of hers (W17). W9 and her counts against the board's parts still apply. Reverse if judges count a close over its own card's board that contradicts it.\n\n## `dc-r7-first-page-keep-by-ref`\n\nThe seam remembers which card's ref drew the page on screen. A failing first page keeps that page when it is the same card, matched by ref, not by comparing pages (the card was drawn masked on its own line). Picture requests use the same identity. Reverse if one ref ever names two drawings in a lesson.\n\n## `dc-r7-verdict-reveal`\n\nA correct verdict reveals the card's key on its board even when her page says no digits. Brain's verdict beat carries `reveal: true` or `reveal: [values]`; Studio frees them and writes the asked mark. Reverse if a reveal reaches an unanswered card.\n\n## `dc-r7-second-view-every-template`\n\nExtends the picture second view to every card template, built from the card on screen. Wholes become strips; measured and regular shapes are unrolled onto a ruler; bars become their line; a two-scale line becomes a bar per scale. Brain's `show` request draws them too. Reverse if a view confuses more than the card's own board.\n",
+    "measurements": "## `ms-r7-director10-drawing-replay-2026-11-07`\n\nReplaying director10's rows through the seam, with Brain's bare-first-page join applied, gives these results:\n- **Unpaged turns:** 29/31 now draw. The 2 left are closes over a contradicting board, both Learning data with no answerBoard.\n- **Picture requests:** 16/16 draw a second view built from the card on screen.\n- **First pages refused on their own close:** 30 → 4. Each of the 4 is a close over another item's board. Two of them are kept as the card's board and still contradict the close (Brain or Learning to fix).\n\nThe replay made no model calls and used no database. tests/r8-director10.test.mjs pins one row per item.\n"
+  }
+}
