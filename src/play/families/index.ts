@@ -23,6 +23,7 @@ import { gunaLogic } from "./guna/guna.logic.ts";
 import { kramLogic } from "./kram/kram.logic.ts";
 import { hissaLogic } from "./hissa/hissa.logic.ts";
 import { koshtakLogic } from "./koshtak/koshtak.logic.ts";
+import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -112,5 +113,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   // in bins); nothing runs on a clock
   "koshtak/tray": asAny(koshtakLogic),
   "koshtak/bin": asAny(koshtakLogic),
+  // round 7: Parkar, ruler-and-compass constructions (triangles from arcs and rays, bisectors, 60°, altitudes); never timed
+  "parkar/build": asAny(parkarLogic),
+  "parkar/bisect": asAny(parkarLogic),
+  "parkar/drop": asAny(parkarLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

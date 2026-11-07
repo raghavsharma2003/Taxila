@@ -132,7 +132,10 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     api.invalidate(); if (kind !== "move") deps.changed();
   }
   const update = () => { /* the arm follows the finger; the run reads api.t */ };
-  const busy = () => drag || !!held || (truthAt >= 0 && api.t - truthAt < 1.6);
+  // the run keeps the stage drawing until its last beat has landed: the miss ring fades in to 1.7 s and the "off by" chip
+  // appears after 1.6 s, so a window that closed at 1.6 s froze the frame before either was whole
+  const RUN_END = 2.0;
+  const busy = () => drag || !!held || (truthAt >= 0 && api.t - truthAt < RUN_END);
 
   // ── draw
   function drawLines(c: CanvasRenderingContext2D): void {

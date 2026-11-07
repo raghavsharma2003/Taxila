@@ -234,3 +234,20 @@ test("kon: every earlier coverage entry still serves the same levelId", async ()
     assert.equal(currentLevel(s, entry).levelId, levelId);
   }
 });
+
+// Seen in a real browser (r7, 360 px): the cross run's "off by" chip never appeared, because busy() stopped redrawing at
+// 1.6 s and the chip only drew after 1.6 s. Every timed beat of the lines / cross / ends run must land inside the window
+// that keeps the stage drawing.
+test("kon lines view: the run keeps drawing until its last timed beat has landed", async () => {
+  const { readFileSync } = await import("node:fs");
+  const src = readFileSync(new URL("../src/play/families/kon/kon.lines.view.ts", import.meta.url), "utf8");
+  const end = Number(src.match(/const RUN_END = ([0-9.]+)/)?.[1]);
+  assert.ok(end > 0, "RUN_END is declared");
+  assert.match(src, /api\.t - truthAt < RUN_END/, "busy() uses RUN_END");
+  const beats = [
+    ...[...src.matchAll(/api\.t - truthAt > ([0-9.]+)/g)].map((m) => Number(m[1])),
+    ...[...src.matchAll(/\(api\.t - truthAt - ([0-9.]+)\) \/ ([0-9.]+)/g)].map((m) => Number(m[1]) + Number(m[2])),
+  ];
+  assert.ok(beats.length >= 3, `found the run's timed beats (${beats.length})`);
+  for (const b of beats) assert.ok(b < end, `a beat at ${b} s lands after the stage stops drawing at ${end} s`);
+});
