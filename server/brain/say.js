@@ -2050,8 +2050,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       };
       lead = once1(lead); g2 = once1(g2); d2 = once1(d2); c2 = once1(c2);
     }
-    const prevPart = once([lead, ...noQ([ack, missS, g2, d2].filter(Boolean))]);
-    const closedP = once([c2]);
+    // (director10 steady c4 T46, Studio: "Toh poora jawab: barfi ka 2/3 …" rode on the then-card's 3/4 grid) a worked answer that
+    // closes another card than the one just answered (its close is the worked beat's, state.js closedBeat) is said with that close,
+    // on the worked board, never on the answered card's
+    const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
+    const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
+    const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     const asideP = once(noQ(aside));
     body = once(noQ(body));
@@ -2079,7 +2083,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (r2 && r2 !== reply) reply = r2;
     }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
-    guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(c2 ? { closed: hw(norm(c2)) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
+    guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedP.length ? { closed: hw(closedP.join(" ")) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
       ...(lead ? { verdict: hw(norm(lead)) } : {}) };
   }
   // v6.2 H4 (director10 c4 offtopic T23, a break move: "Bilkul, no sahi hai: …"): on any move, a right answer is never confirmed by

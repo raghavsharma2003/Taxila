@@ -227,13 +227,13 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
   said("bridgeToNext", sk?.bridgeToNext, { optional: true });
   // v2.3 (dc-r7-script-walk-v6-1): an optional authored `simpler` on explain beats, worked steps, checks and follow-up cards:
   // spoken in place of anything model-written, so it is a statement (no "?"), at most 2 sentences, and on a card never its key
-  const simplerOk = (where, x, key = null) => {
+  const simplerOk = (where, x, key = null, maxS = 2) => {
     if (x == null) return;
     said(where, x);
     for (const f of ["hi", "en"]) {
       const t = String(x?.[f] ?? "");
       if (/[?？]/.test(t)) err(`${where}.${f}: a statement, never a question`);
-      if ((t.match(/[.!।]+(?:\s|$)/g) ?? []).length > 2) err(`${where}.${f}: at most 2 sentences`);
+      if ((t.match(/[.!।]+(?:\s|$)/g) ?? []).length > maxS) err(`${where}.${f}: at most ${maxS} sentences`);
       const k = key != null ? keyLeaks(key, t) : null;
       if (k && new RegExp(`(?<![\\d./])${k.replace(/[./]/g, "\\$&")}(?![\\d/])`).test(t)) err(`${where}.${f}: states its card's key ${k}`);
     }
@@ -241,7 +241,7 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
   for (const [i, b] of (sk?.explain ?? []).entries()) simplerOk(`explain[${i}].simpler`, b?.simpler);
   for (const [i, st] of (sk?.workedExample?.steps ?? []).entries()) simplerOk(`workedExample.steps[${i}].simpler`, st?.simpler);
   for (const [i, c] of (sk?.checks ?? []).entries()) simplerOk(`checks[${i}].simpler`, c?.simpler, c?.key);
-  for (const [i, r] of (sk?.remediation ?? []).entries()) { simplerOk(`remediation[${i}].simpler`, r?.simpler); simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key); }
+  for (const [i, r] of (sk?.remediation ?? []).entries()) { simplerOk(`remediation[${i}].simpler`, r?.simpler, null, 3); simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key); }
   // ── v2.1 (dc-r7-script-walk-v3, director5's data findings), for scripts marked version 2.1 ──
   if (Number(v21) >= 2.1) {
     const spoken = [];

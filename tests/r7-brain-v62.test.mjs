@@ -120,7 +120,9 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.equal(last.state.lastMove?.simpler, rem.simpler.hi, JSON.stringify({ kind: last.p.r.move.kind, beat: last.state.lastMove?.scriptBeat?.beatId }));
   });
 
-  test("T7 replay director10 c4 offtopic (main: 'a practice turn that parks the Virat aside drew nothing'): Studio's W8 rejects the card's line, not the park or the page plan", async () => {
+  test("T7 replay director10 c4 offtopic (main: 'a practice turn that parks the Virat aside drew nothing'): the card's line on its own board pages", async () => {
+    // (in the director10 tree Studio's W8 rejected the line — it never said the whole's parts — and the run fell back to the
+    // preselect; Studio's G2 (integration 13) counts a card's own board params as authored, so the take now draws)
     const T = "c4-maths-ch05-t01";
     setScriptForTest(T, runScript(T));
     const { kit, rows, last } = await replay(RUN, "offtopic", T, 7);
@@ -135,15 +137,28 @@ describe("r7-brain-v62.test.mjs", () => {
       return { a, ack: seam.studioSeam.requestIntent(a) };
     };
     const run = take(rows[6].text);
-    // Brain's side is whole: one unpaged intent on the live card's own board (2 parts, 1 shaded)
+    // Brain's side: one unpaged intent on the live card's own board (2 parts, 1 shaded)
     assert.deepEqual(run.a.intent.boardRef, { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } });
     assert.equal(run.a.intent.segments, undefined, "one page: nothing for a page plan to drop");
-    assert.equal(run.ack?.state, "planning", "the run's line: no board (W8.counts_match_line)");
-    // the park lines are not the cause: the card's line alone is rejected the same way
-    const card = "Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?";
-    assert.equal(take(card).ack?.state, "planning");
-    // the cause is W8 reading the line's counts: the same card naming the board's parts pages
-    assert.equal(take("Is roti mein 2 barabar tukde hain, 1 rangin hai. Rangin hissa kitna hai?").ack?.state, "revealed");
-    // (held with main's other W8 cases for the judges: when W8 accepts a card that never says the whole's parts, flip the two above)
+    assert.equal(run.ack?.state, "revealed", "the run's line (park + card) draws the card's board");
+    assert.equal(take("Is roti mein 1 tukda rangin hai aur 1 bina rang ka. Kya isliye rangin hissa 1/1 hai, haan ya nahi?").ack?.state, "revealed");
+  });
+
+  test("T46 replay director10 steady c4 (Studio): a worked answer that closes another card than the one just answered pages onto the worked board", async () => {
+    const T = "c4-maths-ch05-t01";
+    setScriptForTest(T, runScript(T));
+    const { kit, rows, last } = await replay(RUN, "steady", T, 47);
+    assert.equal(last.state.lastMove?.closeBeat?.beatId, "then:c4-maths-ch05-t01-m-part-part", "the card answered last turn: the 3/4 chocolate bar");
+    assert.equal(last.state.lastMove?.closedBeat?.beatId, "worked", "the close said now: the worked barfi 2/3");
+    replyDeps.chat = async () => ({ text: rows[46].text });
+    const out = await textReply({ instructions: "x", state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    assert.match(out.guard.parts.closed ?? "", /^Toh poora jawab: barfi ka 2\/3/, JSON.stringify(out.guard.parts));
+    assert.doesNotMatch(out.guard.parts.prev ?? "", /barfi/);
+    const a = whiteboardIntentOf({ lessonId: "d10t46", turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item: boardItemOf(last.state, kit, findItem), line: { text: out.reply, parts: out.guard.parts } });
+    const at = out.reply.indexOf("Toh poora jawab");
+    const pages = [{ atChar: 0, boardRef: a.intent.boardRef, scriptBeat: a.intent.scriptBeat }, ...(a.intent.segments ?? [])];
+    const onBarfi = pages.filter((p) => p.atChar <= at).at(-1);
+    assert.equal(onBarfi.scriptBeat?.beatId, "worked", JSON.stringify(pages.map((p) => [p.atChar, p.scriptBeat?.beatId])));
+    assert.deepEqual(onBarfi.boardRef.params, { rows: 1, cols: 3, shade: 2, labels: false, hideResult: true }, "the barfi's 3 parts, 2 eaten — never the 3/4 grid");
   });
 });
