@@ -78,13 +78,14 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.match(reason.reply, /tumhari soch|tareeka bataya|kaise socha/, reason.reply);
   });
 
-  test("G3: a right answer's verdict segment on the answered card's board carries the key (revealKey, answers)", () => {
+  test("G3: a right answer's verdict segment on the answered card's board carries the key (reveal: true, answers[0] the key)", () => {
     const board = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
     const next = { lastVerdict: "correct", lastGraded: { key: "1/8 km", accept: ["1/8"] }, lastMove: { closeBeat: { beatId: "then:x", board } } };
     const bp = { boardRef: board, scriptBeat: { scriptId: "s", beatId: "then:x", kind: "check" } };
-    assert.deepEqual(revealOnVerdict(bp, next).scriptBeat, { scriptId: "s", beatId: "then:x", kind: "check", revealKey: "1/8 km", answers: ["1/8 km", "1/8"] });
+    assert.deepEqual(revealOnVerdict(bp, next).scriptBeat, { scriptId: "s", beatId: "then:x", kind: "check", reveal: true, answers: ["1/8 km", "1/8"] });
+    assert.deepEqual(revealOnVerdict({ ...bp, scriptBeat: { ...bp.scriptBeat, answers: ["1/8", "1/8 km"] } }, next).scriptBeat.answers, ["1/8 km", "1/8"], "the key first");
     assert.equal(revealOnVerdict(bp, { ...next, lastVerdict: "not_yet" }), bp, "never on a wrong answer");
-    assert.equal(revealOnVerdict({ ...bp, boardRef: { template: "fraction-line@1", params: { den: 2 } } }, next).scriptBeat.revealKey, undefined, "only on the answered card's board");
+    assert.equal(revealOnVerdict({ ...bp, boardRef: { template: "fraction-line@1", params: { den: 2 } } }, next).scriptBeat.reveal, undefined, "only on the answered card's board");
   });
 
   test("G5: 'screen par dikhao (na)' is a picture request", () => {

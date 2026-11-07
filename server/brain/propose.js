@@ -225,15 +225,17 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  */
 /**
  * v6.2 G3 (main, director10, with Studio): a right answer's verdict segment carries the key, so Studio's confirm-reveal fires on the
- * answered card's board whether or not her page says the digits: { revealKey, answers } on the first segment's scriptBeat, when that
+ * answered card's board whether or not her page says the digits: { reveal: true, answers } (Studio's shape: true reveals answers[0], so
+ * the key is put first) on the first segment's scriptBeat, when that
  * segment is on the answered card's board (move.closeBeat) and this turn graded the card right (turn.js lastVerdict / lastGraded).
  */
 export function revealOnVerdict(bp, next) {
   const g = next?.lastGraded, cb = next?.lastMove?.closeBeat;
   if (!bp?.scriptBeat || !bp.boardRef || next?.lastVerdict !== "correct" || !g?.key || !cb?.board) return bp;
   if (JSON.stringify(bp.boardRef) !== JSON.stringify(cb.board)) return bp;
-  const answers = bp.scriptBeat.answers?.length ? bp.scriptBeat.answers : [g.key, ...(g.accept ?? [])].map(String);
-  return { ...bp, scriptBeat: { ...bp.scriptBeat, revealKey: String(g.key), answers } };
+  const key = String(g.key);
+  const answers = [key, ...(bp.scriptBeat.answers?.length ? bp.scriptBeat.answers : (g.accept ?? [])).map(String).filter((a) => a !== key)];
+  return { ...bp, scriptBeat: { ...bp.scriptBeat, reveal: true, answers } };
 }
 export function boardPartsOf(move, line, card, parts = null) {
   const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;

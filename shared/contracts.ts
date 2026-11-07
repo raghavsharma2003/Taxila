@@ -883,8 +883,9 @@ export interface ScriptBeatRef {
 /** A scripted beat as the board ask names it (v5: a card's own board says so; its answers are all the board withholds). */
 export interface ScriptBeatOnAsk {
   scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true; answers?: string[];
-  /** v6.2 G3: on a right answer's verdict segment, the answered card's key: Studio's confirm-reveal draws it on this board */
-  revealKey?: string;
+  /** v6.2 G3 (Studio's shape): on a right answer's verdict segment, reveal the withheld value on this board. `true` reveals
+   *  answers[0] (the key); a list gives the values. Never sent on a wrong or missed verdict. */
+  reveal?: true | string[];
 }
 /**
  * v5 B1 (dc-r7-script-walk-v5; Studio's segments): a part of her line spoken over its own board. intent.boardRef /
