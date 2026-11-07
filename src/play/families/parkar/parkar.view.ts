@@ -188,7 +188,8 @@ export const makeParkarView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!parts.length) return;
     const bw = Math.min(w - 16, 460), x = (w - bw) / 2;
     P.body(c, x, cardY, bw, cardH, { role: "panel", r: 8 });
-    P.textFit(c, parts.join("   "), w / 2, cardY + cardH / 2, bw - 16, cardH, { size: 17, role: "ink", weight: 700, font: "mono" });
+    // the ui face (narrower than mono) keeps a three-part card at 16 px on a 360 px phone
+    P.textFit(c, parts.join("  ·  "), w / 2, cardY + cardH / 2, bw - 12, cardH, { size: 17, role: "ink", weight: 700, font: "ui" });
   }
 
   function drawRuler(c: CanvasRenderingContext2D): void {
