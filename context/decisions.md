@@ -8534,3 +8534,31 @@ Learning's check.mjs runs Studio's W15 (named_shape_drawn) in asked mode on ever
 **Reverse if** Studio's exemption list grows past a handful of phrases. Then key W15 to the board's intent instead of to words.
 
 (Written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the node without an md entry.)
+
+## `dc-r7-script-v23-simpler` (2026-11-06)
+
+Script format v2.3 (part of dc-r7-script-walk-v6-1, after director9): every explain beat, worked step, yourStep, check and then-card carries an authored `simpler` {hi, en}. Each `simpler`:
+- is at most 35 words;
+- has no "?";
+- uses only numbers from that item's givens or key;
+- never states the key (a yes/no key is exempt from the leak test).
+
+check.mjs enforces this (SIMPLER_MAX_WORDS), and Brain's validator checks the shape, so a stuck child hears an authored easier line, not a generated one.
+
+- The 4 live pilots moved to 2.3 in integration 12b (db128cebb).
+- The 30 staged scripts have `simpler` but stay at 2.2, held.
+
+**Reverse if** a director run shows `simpler` lines recited where a re-ask would serve better, or the 35-word cap cuts a needed step.
+
+## `dc-r7-answer-board` (2026-11-06)
+
+`answerBoard` {template, params} on a KeyedAsk or check:
+- is drawn only in that card's close;
+- is the one board allowed to show the key;
+- is certified by check.mjs against the key plus the why.
+
+The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 shaded), for director9's "what if" ask whose confirmed answer had no board. Brain draws it over the close (c3c63dc91).
+
+**Reverse if** a run shows an answerBoard drawn before the child answers.
+
+(Both written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the nodes without md entries.)
