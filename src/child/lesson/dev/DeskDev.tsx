@@ -37,6 +37,8 @@ export const FIXTURES = [
 export type FixtureName = (typeof FIXTURES)[number];
 
 const noop = () => {};
+/** A board a render check injects (window.__deskScript, set by Playwright's addInitScript); else the half ka half board. */
+const devScript = () => (typeof window !== "undefined" && (window as unknown as { __deskScript?: unknown }).__deskScript) || BEAT_SCRIPT;
 /** The "half ka half" board (server fraction-of@1, a/b = c/d = 1/2) with its beat card, as the server sends it (dev only). */
 const BEAT_SCRIPT = {
   v: 1, scriptId: "dev-beat", line: { lessonId: "dev" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1200,
@@ -96,7 +98,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
   else if (name === "stop-checkin") tray = { kind: "tiles", tiles: [{ id: "stop:continue", label: "Chalo, aage" }, { id: "break:rest", label: "Chhota break" }, { id: "stop:end", label: "Aaj ke liye bas" }], overlay: null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
-  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
+  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: devScript() } } as unknown as TrayModel["studio"], overlay: null };
   // r4: a skeleton activity in the tray (the shade-fraction skeleton), for the Kaksha skin shots
   else if (name === "work-skeleton") tray = { kind: "studio", studio: { slotId: "dev:sk:slot", intentId: "dev:sk", state: "revealed", artifact: { kind: "skeleton", stage: { w: 360, h: 320 }, skeleton: "fraction-parts", archetype: "shade_fraction", intentId: "dev:sk", params: { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" }, strings: {} } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
