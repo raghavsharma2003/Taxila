@@ -8562,3 +8562,31 @@ The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 sh
 **Reverse if** a run shows an answerBoard drawn before the child answers.
 
 (Both written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the nodes without md entries.)
+
+
+<!-- merged from inbox/r7-main-21.json -->
+## `dc-r7-script-walk-v6-2` (2026-11-07)
+
+**Studio, with Brain (G1-G5):**
+- G1: a failing first page keeps the card's board, and never fails the turn.
+- G2: W5/W8 accept the card's authored why.
+- G3: confirm-reveal fires on a correct verdict.
+- G4: a second view for every card template, built from the live card's figure.
+- G5: 'screen par dikhao' is a picture request.
+
+**Brain:**
+- Policy B is kept, with limits:
+  - T1: one close per turn; stale closes dropped.
+  - T2: each why said once.
+  - T3: the turn ends after a bridge.
+- H1: hints are authored and never leak the answer.
+- H2: asides are returned on time, about the child's words.
+- H3: code acknowledgements.
+- H4: Hindi without doubling.
+- H5: every keyed answer gets a verdict.
+
+**Learning:** the data fixes.
+
+Next: director11. The gate is unchanged, and the batch stays held.
+
+**Reverse if:** G1-G4 are in place and drawing contradictions are still above 10. Then close and picture boards are code-composed from card params only.
