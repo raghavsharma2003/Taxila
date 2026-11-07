@@ -36,6 +36,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "kram",       // round 7: growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines, rhythms, L-pieces)
   "hissa",      // round 7: multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths grid, a place-value slide, stories)
   "koshtak",    // round 7: expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms in bins)
+  "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -60,6 +61,7 @@ export const MODES = {
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
   koshtak: ["tray", "bin"],
+  parkar: ["build", "bisect", "drop"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -316,7 +318,19 @@ export type KramAct =
   | { kind: "pick"; i: number }                           // nest: tray piece i picked (again = put back)
   | { kind: "run" }                                       // grow it / run the machine / play the rhythms / nest the pieces: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct;
+// Parkar (round 7, ruler-and-compass constructions): open the compass on its ruler, swing arcs from spots, lay the
+// protractor or the set-square, join two spots with the ruler, pin where two marks cross; the law (plain coordinate geometry)
+// answers on "run", never on a clock. A spot exists only where tool marks put it: nothing is dragged into place
+export type ParkarAct =
+  | { kind: "open"; r: number }                          // the compass opened to r cm on its ruler
+  | { kind: "arc"; at: string }                          // an arc swung round spot `at` at the present opening
+  | { kind: "ray"; at: string; deg: number }             // the protractor at vertex `at`, zero on its arm: a ray at `deg`
+  | { kind: "square"; at: string; on: number }           // the set-square along mark `on` (−1: the page's edge), its edge through `at`
+  | { kind: "join"; p: string; q: string }               // the ruler through two spots
+  | { kind: "pin"; a: number; b: number; k: number }     // a spot pinned at crossing k of marks a and b
+  | { kind: "run" }                                      // lay the tracing / walk the line / measure: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct;
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
 // cup; a tenths grid shaded both ways and the label's point placed; digits slid on a place-value chart; a bar spent twice
@@ -507,6 +521,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   kram: ["kagaz", "chalk", "blueprint", "raat"],
   hissa: ["kagaz", "chalk", "blueprint", "raat"],
   koshtak: ["kagaz", "chalk", "blueprint", "raat"],
+  parkar: ["kagaz", "blueprint", "chalk", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

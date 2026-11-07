@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "fraction-bars@1": "diagram", "wholes@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "fraction-bars@1": "diagram", "wholes@1": "diagram", "unrolled@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -171,6 +171,7 @@ function wholes(c, tl) {
     if (!isInt(w?.parts, 2, 12) || !isInt(w.shade ?? 0, 0, w.parts) || (w.title !== undefined && (!fitsLabel(String(w.title)) || textProblem(String(w.title))))) return { error: "wholes_range" };
     if (w.equal === false && w.parts < 3) return { error: "wholes_unequal_parts" };
   }
+  if (c.as === "bar") return wholesAsBars(list, tl);
   const n = list.length, colW = 400 / n, r = n === 1 ? 95 : 72, cy = 128, counts = [], facts = {};
   list.forEach((w, k) => {
     const cx = round1(colW * k + colW / 2), shade = w.shade ?? 0;
@@ -186,6 +187,65 @@ function wholes(c, tl) {
     facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
   });
   return { counts: { wholes: counts }, facts };
+}
+
+/**
+ * director10 G4 (a second view of wholes@1): the same wholes as STRIPS, one under the other — equal pieces, or one half and
+ * the rest of the pieces in the other half — `shade` pieces coloured, the title beside each. Counts as wholes@1.
+ */
+function wholesAsBars(list, tl) {
+  const x0 = 30, W = 250, H = 46, gapY = 40, top = Math.round((BOARD.h - (list.length * H + (list.length - 1) * gapY)) / 2);
+  const counts = [], facts = {};
+  list.forEach((w, k) => {
+    const y0 = top + k * (H + gapY), shade = w.shade ?? 0;
+    // the cuts, as fractions of the strip: equal pieces, or one half and the other half shared by the rest
+    const cuts = w.equal === false ? [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
+    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
+    for (const f of cuts) tl.add({ op: "line", from: [round1(x0 + f * W), y0], to: [round1(x0 + f * W), y0 + H], weight: 1 }, 260, { gap: 140 });
+    const edges = [0, ...cuts, 1];
+    for (let i = 0; i < shade; i++) tl.add({ op: "rect", at: [round1(x0 + edges[i] * W + 3), y0 + 3], w: round1((edges[i + 1] - edges[i]) * W - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 420, { gap: 260 });
+    const title = w.title !== undefined ? String(w.title) : "";
+    if (title) writeFit(tl, title, x0 + W + 60, y0 + H / 2 + 6, 110, {}, { id: `t${k}`, ink: "accent", gap: 300, size: "s" });
+    counts.push({ parts: w.parts, shaded: shade, label: title });
+    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+  });
+  return { counts: { wholes: counts }, facts: { ...facts, view: "strips" } };
+}
+
+/**
+ * director10 G4 (main: measured@1's second view, "seedha karke scale par napo"): a shape's boundary UNROLLED onto a ruler —
+ * its sides laid end to end on one straight line, to scale, each labelled with its length; under them a measuring line from
+ * the start to the end, labelled with the total (a number, or "?" — the card's asked perimeter). unit cm | m; sides 2-8.
+ * counts { sides, sideValues }.
+ */
+function unrolled(c, tl) {
+  const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
+  if (!unit) return { error: "unit" };
+  const sides = Array.isArray(c.sides) ? c.sides.map(Number) : [];
+  if (sides.length < 2 || sides.length > 8 || sides.some((v) => !(v > 0 && v <= 10000))) return { error: "unrolled_sides" };
+  const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
+  const total = c.total === "?" || c.total == null ? "?" : Number(c.total);
+  if (total !== "?" && !(Number.isFinite(total) && Math.abs(total - sides.reduce((a, b) => a + b, 0)) < 1e-6)) return { error: "unrolled_total" };
+  const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
+  let x = x0;
+  const xs = [x0];
+  sides.forEach((v, i) => {
+    const x1 = round1(x + (v / sum) * W);
+    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
+    tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
+    // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
+    const lab = `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "s").w + 6 <= x1 - x;
+    tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s" }, 400, { gap: 120 });
+    x = x1; xs.push(x1);
+  });
+  tl.add({ op: "line", from: [x0, y - 9], to: [x0, y + 9], weight: 1 }, 160, { gap: 0 });
+  // the ruler: a measuring line under the pieces, start to end, and the total
+  const yr = y + 62;
+  tl.add({ id: "ruler", op: "arrow", from: [x0, yr], to: [round1(x), yr], weight: 1 }, 700, { gap: 300 });
+  tl.add({ op: "line", from: [x0, yr - 7], to: [x0, yr + 7], weight: 1 }, 160, { gap: 0 });
+  tl.add({ id: "total", op: "text", at: [round1((x0 + x) / 2), yr + 30], text: total === "?" ? "?" : `${num(total)} ${unit}`, size: "m", ink: total === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+  const sideValues = sides.map((v) => `${num(v)} ${unit}`);
+  return { counts: { sides: sides.length, sideValues }, facts: { sides: `${sides.length} sides laid in a straight line`, lengths: sideValues.join(", ").slice(0, 40), total: total === "?" ? "?" : `${num(total)} ${unit}` } };
 }
 
 function fractionLine(c, tl) {
@@ -1609,7 +1669,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "wholes@1": wholes, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "wholes@1": wholes, "unrolled@1": unrolled, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES

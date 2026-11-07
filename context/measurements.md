@@ -5907,3 +5907,77 @@ The drawing contradictions break down as: first-page failures about 29, second v
 `simpler` now answers most requests. 13 of 16 lessons leave skill 1. Turns over 60 words: 21-30 per topic. Cost ~$0.95; reply-ready p50 2.56 s.
 
 Full write-up: docs/design/round7/judgements/director10-2026-11-07.md.
+
+
+<!-- merged from inbox/r7-app-23.json -->
+## `m-r7-app-studio-templates-render-2026-11-07`
+Method: Studio's own expand() boards injected into the dev Desk's work tray (window.__deskScript), shot after the full board duration, with drawn SVG text boxes tested pairwise and against the board. Details and the suggested rule are in docs/design/round7/app/BOARDS-RENDER.md.
+
+
+<!-- merged from inbox/r7-games-parkar.json -->
+## `ms-r7-games-parkar-cert`
+
+parkar play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every parkar sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-parkar.test.mjs, 68 tests. An independent checker (its own circle–circle and circle–line crossings, distances and angles; a built triangle compared with the card's by its six parts; the longest / shortest stick found by trying every whole cm) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.
+- **Browser runs:** a solved run and a misconception run per goal driven at 360 px in the dev harness (and sss, sas, alt solved by real taps only); the end states were looked at.
+- **lint-ui:** 354 findings before and after (no new finding).
+
+
+<!-- merged from inbox/r7-games-runshots.json -->
+## `ms-r7-games-runshots-nishana-kon`
+
+Method: the play dev harness (src/play/dev) built with the server's generator; for each new nishana goal (c7-ch10-t02 ÷, c7-ch03-t04 decimals ±, fades 1 and 3) and each new kon goal (parallel, perp, corr, alt, ends), the opening board, the law's solve() acts and one malActs() rule were applied through window.__play.dispatch, the run played in real time (4.5 s), and Chromium took a 360 x 740 screenshot at 2x (stored at 1x). n = 35 shots, 0 page errors. Every solved run reads correctly (the hop chain lands on the flag; the set-square fits the corner; the light runs past the open end). Every misconception run misses visibly with its own consequence (the hop chain runs the wrong way; the lines meet off the sheet; off by N°). One bug: the cross run's "off by" chip was never drawn (see dc-r7-games-run-redraw-window), fixed and re-shot. 14 of the shots are in docs/design/round7/games/runshots-r7/ with a README.
+
+
+<!-- merged from inbox/r7-learning-31.json -->
+## `m-r7-coldstart-sim` (2026-11-07, F Learning)
+Script: evals/placement-coldstart/sim.mjs (seed 7). Children with known true θ (maths, GE scale), n=300 per class for classes 3-8, 3 first-try answers per lesson, 20 lessons, all through the real θ engine (initialBase, openEpoch, addObs, currentTheta).
+
+**Answers.** The parent sees the child's level through noise sd 0.8 (15% unsure). The child sees it through noise sd 1.2.
+
+**Populations.**
+- `model`: the classPrior mixture itself.
+- `ontrack`: 80% within ±0.6 of expected, 20% at −1.5.
+
+**Answer models.**
+- The engine's own 4PL.
+- `missp`: a = 1.0, guess .1, slip .15.
+
+**Conditions.**
+- class: today's calendar start with the class prior.
+- onboarding: the answers' site and start.
+
+**Columns.**
+- settle: lessons until the start reads θ and |θ̂ − θ| ≤ 0.5 holds to the end (never = lessons + 1).
+- by5 / by10: share settled by lesson 5 / 10.
+- err1 / err5: mean |start − θ| at lesson 1 / 5.
+- high1: share starting more than 0.5 GE above θ.
+
+| pop | answers | cond | settle median | p75 | by5 | by10 | err1 | high1 | err5 |
+|---|---|---|---|---|---|---|---|---|---|
+| model | model | class | 9 | 16 | 0.29 | 0.57 | 1.51 | 0.68 | 1.16 |
+| model | model | onboarding | 6 | 12 | 0.47 | 0.72 | 0.97 | 0.39 | 0.46 |
+| model | missp | class | 14 | 21 | 0.19 | 0.39 | 1.5 | 0.68 | 1.1 |
+| model | missp | onboarding | 13 | 21 | 0.24 | 0.42 | 1.02 | 0.39 | 0.64 |
+| ontrack | model | class | 8 | 13 | 0.33 | 0.66 | 0.68 | 0.28 | 0.6 |
+| ontrack | model | onboarding | 6 | 12 | 0.46 | 0.7 | 0.79 | 0.08 | 0.46 |
+| ontrack | missp | class | 16 | 21 | 0.19 | 0.37 | 0.68 | 0.29 | 0.66 |
+| ontrack | missp | onboarding | 17 | 21 | 0.23 | 0.37 | 0.77 | 0.08 | 0.67 |
+
+**Read-out.**
+- With 5 answers per lesson (out-obs5.json), the model population settles at a median of 4 lessons with answers, against 6 without.
+- Under the misspecified answer model, both conditions settle slowly (12-17 lessons). That is the θ engine's fit, not placement.
+- In the on-track population the answers cost 0.1 GE of day-one error (starts sit a little low) and cut too-hard starts from 28% to 8%.
+
+
+<!-- merged from inbox/r7-studio-26.json -->
+## `ms-r7-director10-drawing-replay-2026-11-07`
+
+Replaying director10's rows through the seam, with Brain's bare-first-page join applied, gives these results:
+- **Unpaged turns:** 29/31 now draw. The 2 left are closes over a contradicting board, both Learning data with no answerBoard.
+- **Picture requests:** 16/16 draw a second view built from the card on screen.
+- **First pages refused on their own close:** 30 → 4. Each of the 4 is a close over another item's board. Two of them are kept as the card's board and still contradict the close (Brain or Learning to fix).
+
+The replay made no model calls and used no database. tests/r8-director10.test.mjs pins one row per item.
