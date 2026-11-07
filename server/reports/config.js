@@ -25,13 +25,14 @@ export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish",
  * Daily is pull-only in v1 (X11) and carries no home activity (PL6: at most one per week).
  */
 export const CAPS = Object.freeze({
-  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, body: 5 },
-  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, body: 5 },
+  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, rest: 0, body: 5 },
+  // S15 (round 7 F): the routine-and-rest card, conditional, weekly and monthly only
+  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, rest: 1, body: 5 },
   // round 7 F (PARENT-REPORT §2, §9.2: one card per section): the monthly report in the app
-  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 0, still: 0, body: 20 },
+  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 0, still: 0, rest: 1, body: 20 },
   // round 7 F batch R2 (PARENT-REPORT §2, §5 S14): the term learning story: the monthly sections over the term, plus
   // Then → now (≤ 4 rows that passed RP-D6) and the still-learning line
-  term: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 4, still: 1, body: 26 },
+  term: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 4, still: 1, rest: 0, body: 26 },
 });
 
 /** Spoken-script budgets (PARENT-REPORT §9.1 weekly 60-90 s) at ~2.3 spoken words/s [U]. Over budget → throw. */

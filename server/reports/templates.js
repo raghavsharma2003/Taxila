@@ -227,6 +227,17 @@ export const SHAPES = {
     hinglish: (s) => `Ghar par: ${s.name} ${q(s.skill)} par kaam kar rahe hain. ${s.object} ke saath ${s.name} se kahiye ki aapko karke dikhayein, phir ${s.name} ke kiye ek step ka naam lekar taareef kijiye. Galat ho jaaye to poochhiye: kya try kiya, aage kya try karenge?`,
     hi: (s) => `घर पर: ${s.name} ${q(s.skill)} पर काम कर रहे हैं। ${s.object} के साथ ${s.name} से कहिए कि आपको करके दिखाएँ, फिर ${s.name} के किए एक कदम का नाम लेकर तारीफ़ कीजिए। ग़लत हो जाए तो पूछिए: क्या आज़माया, आगे क्या आज़माएँगे?` },
 
+  // S15 routine and rest (round 7 F, reports/rest.js; MH-M12): a fact and one suggestion, no judgement, no alarm words
+  // (lexicon: sleep*, neend, late night*, addict*, screen time are banned)
+  "rest.afterbed": { slots: { k: "number", d: "number" },
+    en: (s) => `${s.k} lessons started after the bedtime you set, in the last ${s.d} days. You can change the bedtime in Parent corner.`,
+    hinglish: (s) => `Pichhle ${s.d} din mein ${s.k} lessons aapke rakhe sone ke samay ke baad shuru hue. Parent corner mein yeh samay badal sakte hain.`,
+    hi: (s) => `पिछले ${s.d} दिनों में ${s.k} पाठ आपके तय किए सोने के समय के बाद शुरू हुए। Parent corner में यह समय बदला जा सकता है।` },
+  "rest.longer": { slots: { n1: "number", n2: "number" },
+    en: (s) => `Lessons have been getting longer: the middle lesson length went from ${s.n1} to ${s.n2} min. You can set a lesson length in Parent corner.`,
+    hinglish: (s) => `Lessons lambe hote ja rahe hain: beech wali lesson ki lambai ${s.n1} se ${s.n2} min ho gayi. Parent corner mein lesson ki lambai tay kar sakte hain.`,
+    hi: (s) => `पाठ लंबे होते जा रहे हैं: बीच वाले पाठ की लंबाई ${s.n1} से ${s.n2} मिनट हो गई। Parent corner में पाठ की लंबाई तय की जा सकती है।` },
+
   // Cold-start placement note (round 7 F, server/placement/note.js; not a report line): where a new child begins in a
   // subject and what that was made from. One shape per answer value, so no free word rides in a slot; never a level word
   // (lexicon "prediction": behind / on track) and never a class number (rejected grade-equivalent-parent-band).
@@ -335,6 +346,12 @@ const PLACE_HOW = { en: "Made from the answers you and your child gave when you 
   hinglish: "Judte samay aapke aur bachche ke diye jawaab, aur class se bana. Bachche se alag se kuch nahi poochha gaya. Kuch lessons ke baad yeh apne aap badal jaata hai.",
   hi: "जुड़ते समय आपके और बच्चे के दिए जवाब, और कक्षा से बना। बच्चे से अलग से कुछ नहीं पूछा गया। कुछ पाठों के बाद यह अपने आप बदल जाता है।" };
 export const HOW = {
+  "rest.afterbed": { en: "Lessons of the last 14 days that started after the bedtime set in Parent corner, or after midnight. Shown only when there are at least 3.",
+    hinglish: "Pichhle 14 din ke woh lessons jo Parent corner mein rakhe sone ke samay ke baad, ya aadhi raat ke baad, shuru hue. Kam se kam 3 hon tabhi dikhta hai.",
+    hi: "पिछले 14 दिनों के वे पाठ जो Parent corner में तय सोने के समय के बाद, या आधी रात के बाद, शुरू हुए। कम से कम 3 हों तभी दिखता है।" },
+  "rest.longer": { en: "The middle length of finished lessons in the last 14 days and in the 14 days before. Shown only when each has at least 4 lessons and the length rose by at least 10 minutes and by half.",
+    hinglish: "Pichhle 14 din aur usse pehle ke 14 din ke poore hue lessons ki beech wali lambai. Tabhi dikhta hai jab dono mein kam se kam 4 lessons hon aur lambai kam se kam 10 minute aur aadhi badhi ho.",
+    hi: "पिछले 14 दिनों और उससे पहले के 14 दिनों के पूरे हुए पाठों की बीच वाली लंबाई। तभी दिखता है जब दोनों में कम से कम 4 पाठ हों और लंबाई कम से कम 10 मिनट और आधी बढ़ी हो।" },
   "place.start": PLACE_HOW, "place.easier": PLACE_HOW, "place.parent_hard": PLACE_HOW, "place.parent_fine": PLACE_HOW, "place.parent_easy": PLACE_HOW,
   "place.child_tricky": PLACE_HOW, "place.child_okay": PLACE_HOW, "place.child_easy": PLACE_HOW,
   "place.firstweek": { en: "The plan for a new child's first lessons in a subject: two lessons with no new topic, then one new idea per lesson.",
