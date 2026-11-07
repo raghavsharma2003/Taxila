@@ -48,7 +48,9 @@ describe("R1: segments from the assembled parts", () => {
     const none = boardPartsOf(move, line, null, { prev: v, bridge: br });
     assert.deepEqual(none.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
     const own = boardPartsOf({ ...move, bridgeBeat: { ...ref("bridge", 3), kind: "bridge" } }, line, null, { prev: v, bridge: br });
-    assert.deepEqual(own.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Ab tak"), 3], [line.indexOf("Rectangle"), 4]]);
+    // (director10: a bare 3-word verdict is no first page of its own; it is said over the bridge's board)
+    assert.deepEqual(own.boardRef, B(3));
+    assert.deepEqual(own.segments.map((x) => [x.atChar, x.boardRef.params.w]), [[line.indexOf("Rectangle"), 4]]);
   });
 
   test("without parts (Studio re-placing a line it replaced) the closure sentences place it as before", () => {

@@ -251,6 +251,8 @@ function spanOf(text, part) {
  * v6: with `parts` (say.js guard.parts) the closure, the missed card's close and the bridge are found by their own texts.
  */
 export const PAGE_MIN_WORDS = 5;
+// (a code verdict is 3-5 words: "Haan, sahi hai.", "Nahi, yeh jawab nahi hai.")
+export const FIRST_PAGE_MIN_WORDS = 6;
 export function segmentsAt(plan, line, card, parts = null) {
   const text = norm1(line);
   const closePart = plan.find((p) => p.part === "close");
@@ -291,6 +293,14 @@ export function segmentsAt(plan, line, card, parts = null) {
     const seg = text.slice(out[i].atChar, out[i + 1]?.atChar ?? text.length);
     const hasCard = at.card != null && at.card >= out[i].atChar && at.card < (out[i + 1]?.atChar ?? text.length + 1);
     if (!hasCard && seg.split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) out.splice(i, 1);
+  }
+  // (director10, main: 9 of 31 unpaged turns opened on a code not-right verdict, "Nahi, yeh jawab nahi hai.", as a first page of
+  // its own; Studio cannot draw a page that short and a failing FIRST page fails the turn. A bare first page under PAGE_MIN_WORDS
+  // (FIRST_PAGE_MIN_WORDS) with no card and no number (a bare verdict) joins the next page: its words are said over that page's board — a bare verdict says nothing a board contradicts)
+  if (out.length > 1) {
+    const seg0 = text.slice(0, out[1].atChar);
+    const hasCard0 = at.card != null && at.card < out[1].atChar;
+    if (!hasCard0 && !/\d/.test(seg0) && seg0.split(/\s+/).filter(Boolean).length < FIRST_PAGE_MIN_WORDS) { out.shift(); out[0] = { ...out[0], atChar: 0, atClause: 0 }; }
   }
   for (let i = out.length - 1; i > 0; i--) if (JSON.stringify(out[i].boardRef) === JSON.stringify(out[i - 1].boardRef)) out.splice(i, 1);
   return out;
