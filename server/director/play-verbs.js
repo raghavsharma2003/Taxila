@@ -84,6 +84,10 @@ export const PLAY_ACTS = Object.freeze({
   parkar: { build: { act: "set", hi: "parkar kholo, nishaan lagao aur tribhuj banao", en: "open the compass, swing the arcs and build the triangle" },
     bisect: { act: "set", hi: "barabar parkar se nishaan lagao aur rekha milao", en: "swing equal arcs and join the crossings" },
     drop: { act: "place", hi: "set-square ko saamne ki bhuja par rakho aur lamb kheencho", en: "lay the set-square along the opposite side and draw the altitude" } },
+  // r7 games: Aankde (data): stroke slips into tally rows and count; level the towers / set the level line; order the cards, peg the middle
+  aankde: { tally: { act: "place", hi: "har parchi ko uski line mein tally ki tarah lagao aur gino", en: "stroke each slip into its row as a tally and count" },
+    stack: { act: "set", hi: "blocks ko barabar karo ya level ki line lagao", en: "level the towers or set the level line" },
+    line: { act: "place", hi: "cards ko kram mein lagao aur beech mein khoonti rakho", en: "put the cards in order and set the peg in the middle" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape
