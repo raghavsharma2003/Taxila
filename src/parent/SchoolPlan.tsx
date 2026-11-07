@@ -8,7 +8,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "../ui/index.ts";
 import "../ui-v3/scheduler.css";
-import { isRelock, parentApi, type ChapterRef, type PlacementSummary, type SchoolOut } from "./api.ts";
+import { isRelock, parentApi, type ChapterRef, type ParentView, type PlacementNote, type PlacementSummary, type SchoolOut } from "./api.ts";
 import { parentError, SUBJECT_NAME } from "./copy.ts";
 
 const WEEK = [1, 2, 3, 4, 5, 6, 0];
@@ -56,6 +56,31 @@ export function TimetableEditor({ subjects, value, onChange }: { subjects: strin
   );
 }
 
+const FEEL: { v: ParentView; label: string }[] = [{ v: "hard", label: "Hard" }, { v: "fine", label: "About right" }, { v: "easy", label: "Easy" }];
+
+/**
+ * Round 7 F cold start: "How does {subject} feel for {name}?" per subject (the parent's view; server/placement/coldstart.js).
+ * Chips, not a test: the answer only sets where lessons begin, and lessons move it on their own. "Not sure" clears it.
+ */
+export function FeelPicker({ subject, name, value, onChange }: { subject: string; name: string; value: ParentView | null; onChange: (v: ParentView) => void }) {
+  const label = SUBJECT_NAME[subject] ?? subject;
+  return (
+    <div className="sch pa-school-subj" data-testid={`feel-picker-${subject}`}>
+      <div className="sch-label-row"><span className="sch-label">{`${label} for ${name}`}</span>
+        <button type="button" className="sch-textbtn" aria-pressed={value == null} onClick={() => onChange("unsure")}>Not sure</button></div>
+      <div className="sch-choices" role="radiogroup" aria-label={`How ${label} feels for ${name}`}>
+        {FEEL.map((f) => (
+          <button key={f.v} type="button" role="radio" aria-checked={value === f.v} className="sch-chip" onClick={() => onChange(f.v)}>{f.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** The parent's current view per subject, read back from the checked note's lines (place.parent_<view>). */
+const viewsOf = (note: PlacementNote | null): Record<string, ParentView> => Object.fromEntries((note?.lines.en ?? [])
+  .filter((l) => l.subject && l.shapeId.startsWith("place.parent_")).map((l) => [l.subject as string, l.shapeId.slice("place.parent_".length) as ParentView]));
+
 /** The Progress card: where school is per subject, and the week's timetable. */
 export function SchoolCard({ childId, name, onRelock }: { childId: string; name: string; onRelock: () => void }) {
   const [d, setD] = useState<SchoolOut | null>(null);
@@ -66,6 +91,17 @@ export function SchoolCard({ childId, name, onRelock }: { childId: string; name:
   const [err, setErr] = useState<string | null>(null);
   const [placed, setPlaced] = useState<Record<string, PlacementSummary>>({});
   useEffect(() => { parentApi.placement(childId).then((r) => setPlaced(r.results), () => setPlaced({})); }, [childId]);
+  const [note, setNote] = useState<PlacementNote | null>(null);
+  useEffect(() => { parentApi.placementNote(childId).then((r) => setNote(r.note), () => setNote(null)); }, [childId]);
+  const setFeel = async (subject: string, v: ParentView) => {
+    setErr(null);
+    try { const r = await parentApi.setParentView(childId, { [subject]: v }); setNote(r.note); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setErr(parentError(e));
+    }
+  };
+  const rounds = Object.values(placed).filter((p) => p.chapter && p.source !== "onboarding");
+  const feel = viewsOf(note);
   useEffect(() => {
     setD(null);
     parentApi.school(childId).then((r) => { setD(r); setTt(r.timetable); setDirty(false); }, (e) => { if (isRelock(e)) onRelock(); else setErr(parentError(e)); });
@@ -99,15 +135,24 @@ export function SchoolCard({ childId, name, onRelock }: { childId: string; name:
     <section className="pa-card pa-school" aria-labelledby="pa-school-h" data-testid="school-card">
       <h2 id="pa-school-h" className="pa-h2">School</h2>
       <p className="pa-effect">{`Where ${name}'s class is now. The next lesson in that subject starts there.`}</p>
-      {Object.values(placed).some((p) => p.chapter) && (
+      {note && note.lines.en.length > 0 && (
+        <div className="pa-note" data-testid="placement-note">
+          <p><strong>Where {name} begins</strong></p>
+          {note.lines.en.map((l) => <p key={l.id}>{l.text}</p>)}
+        </div>
+      )}
+      {rounds.length > 0 && (
         <div className="pa-note" data-testid="placement-start">
           <p><strong>Where {name} is starting</strong></p>
-          {Object.values(placed).filter((p) => p.chapter).map((p) => (
+          {rounds.map((p) => (
             <p key={p.subject}>{`${SUBJECT_NAME[p.subject] ?? p.subject}: chapter ${p.chapter!.number} · ${p.chapter!.title}, from ${name}'s warm-up round.`}{p.subject in (d.pointer ?? {}) ? " The school's chapter you set below comes first." : ""}</p>
           ))}
         </div>
       )}
       {subjects.map((s) => <ChapterPicker key={s} subject={s} chapters={d.chapters[s]} value={d.pointer[s] ?? null} onChange={(n) => void setChapter(s, n)} />)}
+      <h3 className="pa-h3">How each subject feels</h3>
+      <p className="pa-effect">{`Your sense of each subject sets where ${name}'s lessons begin. Lessons then move it on their own.`}</p>
+      {subjects.map((s) => <FeelPicker key={`feel-${s}`} subject={s} name={name} value={feel[s] ?? null} onChange={(v) => void setFeel(s, v)} />)}
       <h3 className="pa-h3">Timetable</h3>
       <p className="pa-effect">{`What school teaches each day. Each lesson follows the day's subjects; with none set, ${name}'s subjects take turns.`}</p>
       <TimetableEditor subjects={subjects} value={tt} onChange={(v) => { setTt(v); setDirty(true); setSaved(false); }} />

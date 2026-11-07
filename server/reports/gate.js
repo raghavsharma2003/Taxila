@@ -77,7 +77,7 @@ export function lineViolations(text, { shapeId, fixedId, slots = {}, lang, k7 = 
 /** Growth-edge shapes: each carries the task feature, [hedged reasoning past the gate], and Taxila's action (S11). */
 const TRICKY = new Set(["tricky.work", "tricky.mixup", "tricky.work_next", "tricky.mixup_next"]);
 /** Sections whose lines count against the body cap (the header is the S1 line, not body). */
-const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next", "ways", "change", "still"]);
+const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next", "ways", "change", "still", "rest"]);
 
 /**
  * Gate an assembled report in every language. Throws ReportGateError; returns true when clean.

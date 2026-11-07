@@ -11,6 +11,7 @@ import { dateParts } from "./facts.js";
 import { lineViolations } from "./gate.js";
 import { monthsApart, pRose } from "./stats.js";
 import { HOME_OBJECT, WAY_LABEL, renderShape } from "./templates.js";
+import { restSignals } from "./rest.js";
 
 export const F = { ev: (id) => `kt_evidence:${id}`, lesson: (id) => `lesson:${id}`, skill: (id) => `kt_skill_state:${id}`,
   jar: (id) => `question_jar:${id}`, test: (t) => `test_window:${t.subject}:${t.from}:${t.to}`, way: (id) => `decision_record:${id}` };
@@ -222,6 +223,15 @@ export function buildClaims(facts, { k7 = CALIBRATION.k7Passed, now, preview = f
         : admit(claim("curious", "curious.asked_open", { name, q: asked.length }, asked.map((j) => F.jar(j.id)), "q = learning questions kept in the window; none answered yet"));
       if (c) claims.push(c);
     }
+  }
+  if (caps.rest && facts.rest?.length) {
+    // S15 (MH-M12): after-bedtime starts and longer lessons, each behind an absolute floor (reports/rest.js); facts + one suggestion
+    const sig = restSignals(facts.rest, { bedtime: facts.child.bedtime, tz, to: w.to });
+    const c = sig.afterBed
+      ? admit(claim("rest", "rest.afterbed", { k: sig.afterBed.k, d: sig.afterBed.d }, sig.afterBed.ids.map(F.lesson), "k = counted lessons of the last 14 days started after the bedtime set (or before 04:00); shown when k ≥ 3"))
+      : sig.longer ? admit(claim("rest", "rest.longer", { n1: sig.longer.n1, n2: sig.longer.n2 }, sig.longer.ids.map(F.lesson),
+        "n1, n2 = median closed-lesson minutes of the 14 days before and the last 14 days; shown when each has ≥ 4 lessons and n2 ≥ n1 + 10 and ≥ 1.5 × n1")) : null;
+    if (c) claims.push(c);
   }
   if (caps.routine && facts.lessons.length >= ROUTINE_MIN_LESSONS) {
     // S9: lesson days of the month and the median lesson length (counts only)

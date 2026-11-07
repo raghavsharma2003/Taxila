@@ -4,6 +4,7 @@
 // the outcome names it needs are written out here from LEARNER-MODEL §6.1, so a generator bug cannot be "confirmed"
 // by the same bug. It also checks COMPLETENESS (a count claim must cite every row that counts, not a convenient
 // subset) and that every rendered line maps to an admitted claim or registered fixed copy.
+import { restSignals } from "./rest.js";
 import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 import { CHANGE_MIN_DELTA, CHANGE_MIN_MONTHS, CHANGE_MIN_N, CHANGE_P, CHANGE_P_MANY, WAYS_MIN_N } from "./config.js";
 import { pRose } from "./stats.js";
@@ -39,7 +40,7 @@ const solvedR = (r) => scored(r) && ((r.cls === "item.open" && ["C1", "C2"].incl
  * @returns {Promise<{ claims: { id: string, shapeId: string, ok: boolean, why: string[] }[], lines: { total: number, mapped: number }, supported: number, total: number }>}
  */
 export async function checkReport(db, report, lookup) {
-  const child = (await db.q(`select c.id, c.first_name, coalesce(cr.tz, 'Asia/Kolkata') as tz from child c left join child_routine cr on cr.child_id = c.id where c.id = $1`, [report.child_id]))[0];
+  const child = (await db.q(`select c.id, c.first_name, coalesce(cr.tz, 'Asia/Kolkata') as tz, cr.bedtime from child c left join child_routine cr on cr.child_id = c.id where c.id = $1`, [report.child_id]))[0];
   const from = ms(report.window_from), to = ms(report.window_to);
   const inWin = (at) => ms(at) >= from && ms(at) < to;
   const out = [];
@@ -255,6 +256,24 @@ export async function checkReport(db, report, lookup) {
         const mins = win.map((l) => { const e = l.ended_at ? ms(l.ended_at) : Math.max(ms(l.started_at), ...winEv.filter((r) => r.session_id === String(l.id)).map((r) => ms(r.occurred_at))); return Math.round((e - ms(l.started_at)) / 60_000); }).sort((a, b) => a - b);
         const med = mins.length % 2 ? mins[(mins.length - 1) / 2] : Math.round((mins[mins.length / 2 - 1] + mins[mins.length / 2]) / 2);
         if (s.m !== med) why.push(`m slot ${s.m} ≠ median ${med}`);
+        break;
+      }
+      case "rest.afterbed": case "rest.longer": {
+        // S15, re-derived from the database: the 28 days of counted lessons before the window's end (the routine rule)
+        if (report.cadence !== "weekly" && report.cadence !== "monthly") why.push("a routine-and-rest line outside a weekly or monthly report");
+        const rows = await db.q("select id, started_at, ended_at, state from lesson where child_id = $1 and started_at >= $2 and started_at < $3",
+          [report.child_id, new Date(to - 28 * 86_400_000).toISOString(), report.window_to]);
+        const counted = rows.filter((l) => { const st = l.state ?? {}; if (String(st.abandoned) === "true") return false; if (Array.isArray(st.did) && st.did.length) return true; return !!l.ended_at && ms(l.ended_at) - ms(l.started_at) >= 300_000; })
+          .map((l) => ({ id: String(l.id), startedAt: new Date(l.started_at).toISOString(), endedAt: l.ended_at ? new Date(l.ended_at).toISOString() : null }));
+        const sig = restSignals(counted, { bedtime: child.bedtime, tz: child.tz, to: report.window_to });
+        const got = c.shapeId === "rest.afterbed" ? sig.afterBed : sig.longer;
+        const cited = c.factIds.filter((f) => f.startsWith("lesson:")).map((f) => f.slice(7)).sort().join(",");
+        if (!got) why.push(`${c.shapeId}: its threshold does not fire on the lesson rows`);
+        else {
+          if (got.ids.join(",") !== cited) why.push("does not cite exactly the lessons the rule counts");
+          if (c.shapeId === "rest.afterbed" && (s.k !== got.k || s.d !== got.d)) why.push(`k/d slots ${s.k}/${s.d} ≠ ${got.k}/${got.d}`);
+          if (c.shapeId === "rest.longer" && (s.n1 !== got.n1 || s.n2 !== got.n2)) why.push(`n1/n2 slots ${s.n1}/${s.n2} ≠ ${got.n1}/${got.n2}`);
+        }
         break;
       }
       case "next.recheck": {

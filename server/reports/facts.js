@@ -76,7 +76,7 @@ const LATEST_CONSENT = `select distinct on (purpose) purpose, granted from conse
  * @param {{ skillTitle?: (id: string) => Promise<string|null>, belief?: (id: string) => Promise<string|null> }} [lookup]
  */
 export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
-  const c = (await db.q(`select c.id, c.first_name, c.class_level, c.language_pref, c.guardian_id, coalesce(cr.tz, 'Asia/Kolkata') as tz
+  const c = (await db.q(`select c.id, c.first_name, c.class_level, c.language_pref, c.guardian_id, coalesce(cr.tz, 'Asia/Kolkata') as tz, cr.bedtime
       from child c left join child_routine cr on cr.child_id = c.id where c.id = $1`, [childId]))[0];
   if (!c) return null;
   const w = windowOf(cadence, period, c.tz);
@@ -96,17 +96,21 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
   // entered (Conductor state). Both tolerate a missing table: the sections are simply left out.
   const monthlyOrWeekly = cadence === "monthly" || cadence === "weekly";
   const long = cadence === "monthly" || cadence === "term";             // R2: the term report carries the monthly sections
-  const [jar, cstate, ways] = await Promise.all([
+  // round 7 F (S15): the 28 days of counted lessons before the window's end, for the routine-and-rest card (weekly, monthly)
+  const restLessons = monthlyOrWeekly ? db.q(`select l.id, l.started_at, l.ended_at from lesson l where l.child_id = $1 and l.started_at >= $2 and l.started_at < $3
+      and ${COUNTED_LESSON_SQL("l")} order by l.started_at, l.id`, [childId, new Date(Date.parse(w.to) - 28 * 86_400_000).toISOString(), w.to]).catch(() => []) : Promise.resolve([]);
+  const [jar, cstate, ways, restRows] = await Promise.all([
     long ? db.q(`select id, learning, created_at, answered_at from question_jar where child_id = $1 and created_at >= $2 and created_at < $3 order by created_at, id`,
       [childId, w.from, w.to]).catch(() => []) : [],
     monthlyOrWeekly ? db.q("select state->'school'->'testWindows' as tw from conductor_state where child_id = $1", [childId]).catch(() => []) : [],
     // S5: the explain format Taxila chose per skill (decision_record point explain_format; Learning patch 008)
     long ? db.q(`select d.id, d.lesson_id, d.chosen, d.options->>'skillId' as skill_id from decision_record d join lesson l on l.id = d.lesson_id
         where l.child_id = $1 and d.point_id = 'explain_format' and d.at >= $2 and d.at < $3 order by d.id`, [childId, w.from, w.to]).catch(() => []) : [],
+    restLessons,
   ]);
   const consent = Object.fromEntries(consentRows.map((r) => [r.purpose, !!r.granted]));
   const facts = {
-    child: { id: c.id, firstName: c.first_name, classLevel: c.class_level, languagePref: c.language_pref, tz: c.tz },
+    child: { id: c.id, firstName: c.first_name, classLevel: c.class_level, languagePref: c.language_pref, tz: c.tz, ...(c.bedtime ? { bedtime: c.bedtime } : {}) },
     window: w,
     consent,
     lessons: lessons.map((l) => ({ id: String(l.id), topicId: l.topic_id, startedAt: iso(l.started_at), endedAt: iso(l.ended_at) })),
@@ -119,6 +123,7 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     titles: {}, beliefs: {},
     jar: jar.map((r) => ({ id: String(r.id), learning: !!r.learning, createdAt: iso(r.created_at), answeredAt: iso(r.answered_at) })),
     ways: ways.map((r) => ({ id: String(r.id), lessonId: String(r.lesson_id), format: r.chosen, skillId: r.skill_id ?? null })),
+    ...(monthlyOrWeekly ? { rest: restRows.map((l) => ({ id: String(l.id), startedAt: iso(l.started_at), endedAt: iso(l.ended_at) })) } : {}),
     testWindows: (Array.isArray(cstate[0]?.tw) ? cstate[0].tw : [])
       .filter((t) => t && typeof t.subject === "string" && t.from <= w.lastDay && t.to >= w.firstDay)
       .map((t) => ({ subject: t.subject, from: t.from, to: t.to })).sort((a, b) => (a.from + a.subject < b.from + b.subject ? -1 : 1)),
@@ -135,4 +140,5 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
 
 /** Digest of the snapshot (audit and replay: the same facts render the same Lane A text, E-R9). */
 export const factsDigest = (f) => createHash("sha256").update(JSON.stringify({ c: f.child, w: f.window, l: f.lessons, e: f.events.map((e) => [e.id, e.seq]),
-  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs, ...(f.jar?.length ? { j: f.jar } : {}), ...(f.testWindows?.length ? { tw: f.testWindows } : {}) })).digest("hex").slice(0, 32);
+  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs, ...(f.jar?.length ? { j: f.jar } : {}), ...(f.testWindows?.length ? { tw: f.testWindows } : {}),
+  ...(f.rest?.length ? { r: f.rest } : {}) })).digest("hex").slice(0, 32);

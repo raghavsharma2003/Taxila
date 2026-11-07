@@ -276,8 +276,17 @@ export function v22Errors(s) {
       ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.simpler, said2(we.problem) + " " + said2(st.do) + " " + (st.result ?? "") + " " + (we.givens ?? []).map(said2).join(" "), null]),
       ...(we.yourStep ? [["workedExample.yourStep", we.yourStep.simpler, said2(we.problem) + " " + said2(we.yourStep.prompt) + " " + (we.givens ?? []).map(said2).join(" ") + " " + (we.steps ?? []).map((x) => x.result).join(" "), we.yourStep.key]] : []),
       ...k.checks.map((c, i) => [`checks[${i}]`, c.simpler, said2(c.prompt), c.key]),
-      ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then?.simpler, said2(r.then?.prompt), r.then?.key])];
+      ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then?.simpler, said2(r.then?.prompt), r.then?.key]),
+      // director10 (dc-r7-script-walk-v6-2, item 1): the remediation's own check-in ("samjhe?") had no smaller line
+      ...k.remediation.map((r, i) => [`remediation[${i}]`, r.simpler, said2(r.say), null])];
     const nums = (t) => new Set((String(t ?? "").replace(/,(?=\d{2,3}\b)/g, "").match(/\d+(?:[./]\d+)?/g) ?? []));
+    // director10 (item 3): a keyed card's why names its value, so the close and the board say the same thing. Enforced
+    // for numeric and fraction keys, in hi and en (a word or name key is the author's call).
+    for (const [where, c] of cards) {
+      const kn = [...nums(c.key)];
+      if (c.key == null || !kn.length || /^\s*(yes|no|haan|nahi)\s*$/i.test(String(c.key))) continue;
+      for (const lang of ["hi", "en"]) if (!kn.every((n) => nums(c.why?.[lang]).has(n))) e.push(at(`${where}.why${lang === "en" ? " (en)" : ""}: names its value ${kn.join(", ")}`));
+    }
     for (const [where, sm, givens, key] of items) {
       if (!String(sm?.hi ?? "").trim() || !String(sm?.en ?? "").trim()) { e.push(at(`${where}: a simpler { hi, en } (≤ ${SIMPLER_MAX_WORDS} words, no "?", never the key)`)); continue; }
       for (const lang of ["hi", "en"]) {
