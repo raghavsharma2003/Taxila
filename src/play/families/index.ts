@@ -24,6 +24,7 @@ import { kramLogic } from "./kram/kram.logic.ts";
 import { hissaLogic } from "./hissa/hissa.logic.ts";
 import { koshtakLogic } from "./koshtak/koshtak.logic.ts";
 import { parkarLogic } from "./parkar/parkar.logic.ts";
+import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -117,5 +118,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   "parkar/build": asAny(parkarLogic),
   "parkar/bisect": asAny(parkarLogic),
   "parkar/drop": asAny(parkarLogic),
+  // round 7: Paheli, number puzzles (parity by pairing, magic squares, letter sums, reverse-and-add); never timed
+  "paheli/pairs": asAny(paheliLogic),
+  "paheli/magic": asAny(paheliLogic),
+  "paheli/cipher": asAny(paheliLogic),
+  "paheli/mirror": asAny(paheliLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
