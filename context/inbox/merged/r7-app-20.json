@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-site-config",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "The public site reads one config, src/app/site.ts. SITE.origin is https://taxila.dev, confirmed from the trace default and the Front Door plan. PRICES holds every price and is \"TBD\" until the owner sets it. With TBD the landing says no price is set yet; with a number it shows ₹ per month. No literal amount is allowed in the landing source. The canonical link and og:url are set per public path from SITE.origin. Reverse: the owner picks another domain, or pricing moves to a server-served plan table.",
+   "source": "inbox/r7-app-20.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-site-config`\nThe owner's price goes into one value, `PRICES.monthly` in src/app/site.ts, and the landing picks it up with no other code change. Until then the page says plainly that no price is set. The canonical origin is taxila.dev for every public page, so the eastus2 container FQDN is never indexed. The landing captures were re-shot from the r7 lesson shell: a stage-first board, the teacher in a corner, and the hands-free dock.\n"
+ }
+}

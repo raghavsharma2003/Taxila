@@ -28,7 +28,7 @@ import { speakable } from "../voice/spoken.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { learningDay, isoWeek, addDays, zonedToUtc } from "../conductor/clock.js";
 import { madeForOf } from "../reports/madeFor.js";
-import { listReports, previewReport, reportById, windowOf } from "../reports/index.js";
+import { listReports, previewReport, reportById, termOf, windowOf } from "../reports/index.js";
 import { HOW, renderFixed } from "../reports/templates.js";
 import { outcomeName } from "../learner/kt/outcomes.js";
 import { shortTitleOf } from "../director/state.js";
@@ -483,12 +483,20 @@ export async function parentLabelOf(id) {
 export function defaultControls(classLevel) {
   const cl = Number(classLevel);
   return { dailyMinutes: cl <= 2 ? 20 : cl <= 5 ? 30 : 45, hoursStart: "06:30", hoursEnd: "21:30", captionsAlways: false, comfortMode: false,
-    address: cl >= 5 ? "aap" : null, reportChannel: "whatsapp" };
+    address: cl >= 5 ? "aap" : null, reportChannel: reportChannels().includes("whatsapp") ? "whatsapp" : "app",
+    limitsOn: false, extraTime: "normal", dataSaver: false };
 }
+/**
+ * The report channels that deliver today (dc-r7 D5: a control that does nothing is hidden). WhatsApp only once the
+ * Notifier sends it (Platform sets TAXILA_REPORT_WHATSAPP=on); until then the corner shows no channel choice.
+ */
+export const reportChannels = () => (process.env.TAXILA_REPORT_WHATSAPP === "on" ? ["whatsapp", "app"] : ["app"]);
+const EXTRA_TIME = ["normal", "more", "most"];
 const controlsOut = (row, child) => row ? {
   dailyMinutes: row.daily_minutes, hoursStart: row.hours_start, hoursEnd: row.hours_end, captionsAlways: row.captions_always,
   comfortMode: row.comfort_mode, address: row.address, reportChannel: row.report_channel, saved: true,
   textOnly: !!row.text_only, homeworkToday: !!row.homework_until && new Date(row.homework_until) > new Date(),
+  limitsOn: !!row.limits_on, extraTime: EXTRA_TIME.includes(row.extra_time) ? row.extra_time : "normal", dataSaver: !!row.data_saver,
 } : { ...defaultControls(child.class_level), saved: false, textOnly: false, homeworkToday: false };
 
 const HHMM = /^([01]\d|2[0-3]):[0-5]\d$/;
@@ -507,7 +515,11 @@ export function mergeControls(current, body) {
     }
   }
   if (out.hoursStart >= out.hoursEnd) throw bad("allowed hours must end after they start");
-  for (const k of ["captionsAlways", "comfortMode", "textOnly", "homeworkToday"]) if (body[k] !== undefined) out[k] = !!body[k];
+  for (const k of ["captionsAlways", "comfortMode", "textOnly", "homeworkToday", "limitsOn", "dataSaver"]) if (body[k] !== undefined) out[k] = !!body[k];
+  if (body.extraTime !== undefined) {
+    if (!EXTRA_TIME.includes(body.extraTime)) throw bad("extra time must be normal, more or most");
+    out.extraTime = body.extraTime;
+  }
   if (body.address !== undefined) {
     if (body.address !== null && !["tum", "aap"].includes(body.address)) throw bad("address must be tum or aap");
     out.address = body.address;
@@ -524,8 +536,10 @@ async function getControls(req, res) {
   const row = await one("select * from child_controls where child_id = $1", [child.id]);
   // dayLimits: whether the hours and the daily limit gate anything (round 5: off unless TAXILA_DAY_LIMITS=on), so the
   // corner never promises a window that does not exist (imported late: child.js imports this file)
-  const { dayLimitsOn } = await import("./child.js");
-  send(res, 200, { controls: controlsOut(row, child), dayLimits: dayLimitsOn() });
+  // round 7 (dc-r7 D5): per family — the parent's own "Use a daily limit" (limitsOn), unless TAXILA_DAY_LIMITS forces it
+  const { limitsOnFor, dayLimitsMode } = await import("./child.js");
+  const controls = controlsOut(row, child);
+  send(res, 200, { controls, dayLimits: limitsOnFor(controls), dayLimitsMode: dayLimitsMode(), reportChannels: reportChannels() });
 }
 
 /**
@@ -560,6 +574,14 @@ async function setControls(req, res, body) {
       throw e;
     }) ?? saved;
   }
+  // 035 columns (round 7): the limits opt-in, Extra time to answer, Data saver
+  if (body.limitsOn !== undefined || body.extraTime !== undefined || body.dataSaver !== undefined) {
+    saved2 = await one("update child_controls set limits_on = $2, extra_time = $3, data_saver = $4 where child_id = $1 returning *",
+      [child.id, !!c.limitsOn, c.extraTime ?? "normal", !!c.dataSaver]).catch((e) => {
+      if (e?.code === "42703") throw new HttpError(503, "this setting is not available yet");
+      throw e;
+    }) ?? saved2;
+  }
   await q("insert into audit(guardian_id, action, detail) values ($1, 'controls', $2)", [g.id, { childId: child.id }]);
   send(res, 200, { controls: controlsOut(saved2, child) });
 }
@@ -584,26 +606,200 @@ async function setTestWindow(req, res, body) {
   if (!DAY.test(String(body.from ?? "")) || !DAY.test(String(body.to ?? ""))) throw bad("from and to must be dates (YYYY-MM-DD)");
   if (body.to < body.from) throw bad("the test window must end after it starts");
   if ((Date.parse(body.to) - Date.parse(body.from)) / 86_400_000 > 21) throw bad("a test window is at most 3 weeks");
-  const w = { subject, from: body.from, to: body.to };
+  // round 7 F (learning-test-window-revision): the test's chapters, optional; lessons revise only those (content/next-topic.js)
+  const book = new Set((chaptersOf(child.class_level)[subject] ?? []).map((c) => c.number));
+  const chapters = body.chapters == null ? [] : Array.isArray(body.chapters) ? [...new Set(body.chapters.map(Number))].sort((a, b) => a - b) : null;
+  if (!chapters || chapters.length > 12 || chapters.some((c) => !book.has(c))) throw bad("chapters must be up to 12 chapter numbers of the class book");
+  const w = { subject, from: body.from, to: body.to, ...(chapters.length ? { chapters } : {}) };
   await one(`insert into child_controls(child_id, daily_minutes, test_window) values ($1, $2, $3)
       on conflict (child_id) do update set test_window = excluded.test_window, updated_at = now() returning child_id`,
   [child.id, defaultControls(child.class_level).dailyMinutes, w]);
   await q("insert into audit(guardian_id, action, detail) values ($1, 'test_window', $2)", [guardian.id, { childId: child.id, subject }]);
+  // the Conductor's copy (planner test mode, newSkillBudget 0 in the last 2 days; the weekly report's S17 line)
+  await emitSchool(child.id, { type: "school.test_announced", subject, on: w.to, from: w.from, chapters: chapters.map(String), via: "parent" });
   send(res, 200, { window: w });
 }
 /** DELETE /api/parent/test-window { childId } */
 async function deleteTestWindow(req, res, body) {
   const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const prev = await one("select test_window from child_controls where child_id = $1", [child.id]).catch(() => null);
   await q("update child_controls set test_window = null where child_id = $1", [child.id]);
+  if (prev?.test_window?.subject) await emitSchool(child.id, { type: "school.test_cleared", subject: prev.test_window.subject, via: "parent" });
   send(res, 200, { window: null });
+}
+
+// ───────────────────── school position and timetable (round 7 F items 1-2; dc-r7 D6) ─────────────────────
+// Open during first-run setup (no PIN yet) and inside an unlocked corner (requireParentIfPinSet): onboarding asks
+// "which chapter is school on?" and the corner's Progress changes it later. Each write also tells the Conductor
+// (school.pointer_set / school.timetable_set) so today's plan re-ranks its subject.
+
+/** PURE. A class's chapters per subject, for the "school is here" picker: { subject: [{ number, title }] }. */
+export function chaptersOf(classLevel) {
+  const out = {};
+  for (const subject of SUBJECT_ORDER) {
+    const seen = new Map();
+    for (const id of topicSequence(classLevel, subject)) {
+      const t = getTopic(id);
+      if (t && !seen.has(t.chapter.number)) seen.set(t.chapter.number, { number: t.chapter.number, title: t.chapter.title });
+    }
+    if (seen.size) out[subject] = [...seen.values()];
+  }
+  return out;
+}
+
+async function requireSetupChild(req, childId) {
+  if (!childId || !/^[0-9a-f-]{36}$/i.test(String(childId))) throw bad("invalid childId");
+  await requireParentIfPinSet(req);
+  return requireChild(req, String(childId));
+}
+
+async function emitSchool(childId, event) {
+  try { const { emit } = await import("../conductor/index.js"); await emit(childId, event); }
+  catch (e) { console.error("[parent] school event", event.type, e?.message?.slice(0, 160)); }
+}
+
+// ───────────────────────────── the lesson schedule (round 7 F, app-parent-schedule) ─────────────────────────────
+// Days (JS weekdays, 0 = Sunday), a start time and a length. Stored on child_routine (045: lesson_days, lesson_min; anchor
+// is 004's) and sent to the Conductor as parent.setting_changed { restDays, anchor, lessonMin }: the planner starts the
+// sitting at that time on those days and never plans it longer. It plans; it never locks the child out (the daily limit
+// and lesson hours do that, and only when the family turned them on).
+const HHMM_P = /^([01]\d|2[0-3]):[0-5]\d$/;
+export const SCHEDULE_MINUTES = Object.freeze([15, 20, 25, 30, 35, 45]);
+
+/** GET /api/parent/schedule?childId= → { schedule: { days, time, minutes } | null, minutes: number[] } */
+async function getSchedule(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const r = await one("select * from child_routine where child_id = $1", [child.id]).catch(() => null);
+  const schedule = r?.anchor ? { days: Array.isArray(r.lesson_days) ? r.lesson_days.map(Number) : [0, 1, 2, 3, 4, 5, 6], time: r.anchor, minutes: r.lesson_min ?? null } : null;
+  send(res, 200, { schedule, minutes: SCHEDULE_MINUTES });
+}
+
+/** POST /api/parent/schedule { childId, days, time, minutes } → { schedule }. Inside an unlocked Parent corner. */
+async function setSchedule(req, res, body) {
+  const { child } = await requireParentChild(req, need(body, "childId").childId);
+  const days = Array.isArray(body.days) ? [...new Set(body.days.map(Number))].sort((a, b) => a - b) : null;
+  if (!days || !days.length || days.some((d) => !Number.isInteger(d) || d < 0 || d > 6)) throw bad("days must be one or more weekdays (0 = Sunday)");
+  if (!HHMM_P.test(String(body.time ?? ""))) throw bad("time must be HH:MM");
+  const minutes = Number(body.minutes);
+  if (!SCHEDULE_MINUTES.includes(minutes)) throw bad(`minutes must be one of ${SCHEDULE_MINUTES.join(", ")}`);
+  await one(`insert into child_routine (child_id, anchor, lesson_days, lesson_min) values ($1, $2, $3::smallint[], $4)
+      on conflict (child_id) do update set anchor = excluded.anchor, lesson_days = excluded.lesson_days, lesson_min = excluded.lesson_min, updated_at = now()
+      returning child_id`, [child.id, body.time, days, minutes]);
+  const settingsVersion = Date.now();
+  const restDays = [0, 1, 2, 3, 4, 5, 6].filter((d) => !days.includes(d));
+  for (const [key, value] of [["restDays", restDays], ["anchor", body.time], ["lessonMin", minutes]]) {
+    await emitSchool(child.id, { type: "parent.setting_changed", key, value, by: "owner", settingsVersion });
+  }
+  send(res, 200, { schedule: { days, time: body.time, minutes } });
+}
+
+// ───────────────────────────── how the teacher teaches (round 7 F, learning-parent-teaching-page) ─────────────────────────────
+/** GET /api/parent/teaching?childId= → { teacher, approach, lessons: [{ id, topic, startedAt, why: [{ code, n, text }] }], madeFor } */
+async function teaching(req, res) {
+  const { child } = await requireParentChild(req, query(req).get("childId"));
+  const [{ teachingOf }, { teacherFor }] = await Promise.all([import("../reports/teaching.js"), import("../compiler/characters/index.js")]);
+  const T = teacherFor(child).name;
+  send(res, 200, { teacher: T, ...(await teachingOf(child, { T, q })) });
+}
+
+// ───────────────────────────── household (round 7 F, household v1) ─────────────────────────────
+// "The children share one phone for lessons": each child's Conductor gets parent.setting_changed{sharedPhone}, and the
+// planner then gives each her own window on that phone, younger first (conductor/household.js). Offered only to a
+// guardian with two or more children (D5: wired or hidden). Inside an unlocked Parent corner.
+
+/** GET /api/parent/household → { eligible, shared } (shared: every child of the guardian is marked as sharing). */
+async function getHousehold(req, res) {
+  const g = await requireParent(req);
+  const rows = await q(`select c.id, coalesce((s.state->'household'->>'shared')::boolean, false) as shared
+      from child c left join conductor_state s on s.child_id = c.id where c.guardian_id = $1`, [g.id]).catch(() => []);
+  send(res, 200, { eligible: rows.length >= 2, shared: rows.length >= 2 && rows.every((r) => r.shared) });
+}
+
+/** POST /api/parent/household { shared } → { eligible, shared }. Emits the setting to each child's Conductor. */
+async function setHousehold(req, res, body) {
+  const g = await requireParent(req);
+  if (typeof body?.shared !== "boolean") throw bad("shared must be true or false");
+  const kids = await q("select id from child where guardian_id = $1", [g.id]);
+  if (kids.length < 2) throw bad("a shared phone needs two or more children");
+  const settingsVersion = Date.now();
+  for (const k of kids) await emitSchool(k.id, { type: "parent.setting_changed", key: "sharedPhone", value: body.shared, by: "owner", settingsVersion });
+  send(res, 200, { eligible: true, shared: body.shared });
+}
+
+/** GET /api/parent/chapters?classLevel= → { chapters } (set-up: before the child exists; signed-in guardian only). */
+async function getChapters(req, res) {
+  await requireGuardian(req);
+  const cl = Number(query(req).get("classLevel"));
+  if (!Number.isInteger(cl) || cl < 1 || cl > 9) throw bad("classLevel must be 1-9");
+  res.setHeader("cache-control", "private, max-age=3600");
+  send(res, 200, { chapters: chaptersOf(cl) });
+}
+
+/** GET /api/parent/school?childId= → { chapters, pointer, timetable: { [weekday]: string[] } } (the parent's rows). */
+async function getSchool(req, res) {
+  const { child } = await requireSetupChild(req, query(req).get("childId"));
+  const [row, tt] = await Promise.all([
+    one("select school_chapter from child where id = $1", [child.id]).catch(() => null),
+    q("select weekday, subjects from child_timetable where child_id = $1 and source = 'parent' order by weekday", [child.id]).catch(() => []),
+  ]);
+  send(res, 200, { chapters: chaptersOf(child.class_level), pointer: row?.school_chapter ?? {},
+    timetable: Object.fromEntries(tt.map((r) => [r.weekday, r.subjects])) });
+}
+
+/** POST /api/parent/school-chapter { childId, subject, chapter } (chapter null clears it: back to the calendar estimate). */
+async function setSchoolChapter(req, res, body) {
+  const { guardian, child } = await requireSetupChild(req, need(body, "childId").childId);
+  const subject = String(body.subject ?? "");
+  const chapters = chaptersOf(child.class_level)[subject];
+  if (!chapters) throw bad("subject must be one of the class's subjects");
+  const chapter = body.chapter == null ? null : Number(body.chapter);
+  if (chapter !== null && !chapters.some((c) => c.number === chapter)) throw bad("chapter must be one of the subject's chapters");
+  const r = chapter === null
+    ? await one("update child set school_chapter = coalesce(school_chapter, '{}'::jsonb) - $2::text where id = $1 returning school_chapter", [child.id, subject])
+    : await one("update child set school_chapter = coalesce(school_chapter, '{}'::jsonb) || jsonb_build_object($2::text, $3::int) where id = $1 returning school_chapter", [child.id, subject, chapter]);
+  await q("insert into audit(guardian_id, action, detail) values ($1, 'school_chapter', $2)", [guardian.id, { childId: child.id, subject, chapter }]);
+  if (chapter !== null) await emitSchool(child.id, { type: "school.pointer_set", subject, chapter, on: learningDay(new Date(), await tzOf(child.id)), via: "parent" });
+  send(res, 200, { pointer: r?.school_chapter ?? {} });
+}
+
+/** POST /api/parent/timetable { childId, days: { [weekday 0-6]: string[] } } → { timetable }. Replaces the parent's week. */
+async function setTimetable(req, res, body) {
+  const { guardian, child } = await requireSetupChild(req, need(body, "childId").childId);
+  const days = body.days && typeof body.days === "object" ? body.days : null;
+  if (!days) throw bad("days must be an object of weekday → subjects");
+  const { normaliseSubject } = await import("../conductor/rotation.js");
+  const classSubjects = SUBJECT_ORDER.filter((s) => topicSequence(child.class_level, s).length);
+  const clean = {};
+  for (const [k, v] of Object.entries(days)) {
+    const wd = Number(k);
+    if (!Number.isInteger(wd) || wd < 0 || wd > 6) throw bad("weekday must be 0 (Sunday) to 6 (Saturday)");
+    if (!Array.isArray(v) || v.length > 8) throw bad("each day is a list of at most 8 subjects");
+    clean[wd] = [...new Set(v.map((x) => normaliseSubject(x, classSubjects)).filter(Boolean))];
+  }
+  const rev = Date.now();
+  for (const [wd, subjects] of Object.entries(clean)) {
+    if (subjects.length) {
+      await q(`insert into child_timetable(child_id, weekday, source, subjects) values ($1, $2, 'parent', $3)
+          on conflict (child_id, weekday, source) do update set subjects = excluded.subjects, updated_at = now()`, [child.id, Number(wd), subjects]);
+    } else {
+      await q("delete from child_timetable where child_id = $1 and weekday = $2 and source = 'parent'", [child.id, Number(wd)]);
+    }
+    await emitSchool(child.id, { type: "school.timetable_set", weekday: Number(wd), subjects, rev, via: "parent" });
+  }
+  await q("insert into audit(guardian_id, action, detail) values ($1, 'timetable', $2)", [guardian.id, { childId: child.id, days: Object.keys(clean).length }]);
+  const tt = await q("select weekday, subjects from child_timetable where child_id = $1 and source = 'parent' order by weekday", [child.id]);
+  send(res, 200, { timetable: Object.fromEntries(tt.map((r) => [r.weekday, r.subjects])) });
 }
 
 // ───────────────────────────── reads ─────────────────────────────
 
 /** GET /api/parent/overview?childId= → Home's three things (§6.3) + the skill list one level down. */
 async function overview(req, res) {
+  const t0 = Date.now();
   const { guardian, child } = await requireParentChild(req, query(req).get("childId"));
-  send(res, 200, await homeData(child, guardian));
+  const out = await homeData(child, guardian);
+  res.setHeader("server-timing", `app;dur=${Date.now() - t0}`);   // QA D22: read latency, visible in the browser's network panel
+  send(res, 200, out);
 }
 
 /**
@@ -707,6 +903,11 @@ export async function weekTally(child, now = new Date()) {
 /** Everything Parent Home shows for one child (overview, and the "Listen to this page" read-aloud). */
 async function homeData(child, guardian) {
   const now = new Date();
+  // QA D22 (overview 2.4 s for 975 B): the second stage (the weekly letter's home line, the alert, the next lesson) needs
+  // nothing from the first, so it starts with it; only the hold decides whether the home line is read at all
+  const holdP = reportHold(child.id);
+  const stage2 = Promise.all([holdP.then((h) => tryAtHomeOf(child, h)), alertOf(child), guardian ? nextOf(child, guardian) : null]);
+  stage2.catch(() => {});
   const [skills, mis, counts, week, recent, controls, firstLesson, hold, profile, truth] = await Promise.all([
     q("select * from skill_state where child_id = $1 order by last_seen desc nulls last limit 60", [child.id]),
     q(`select misconception_id, evidence_count, last_seen from misconception_state
@@ -716,7 +917,7 @@ async function homeData(child, guardian) {
     q(`select l.id, l.topic_id, l.started_at, l.ended_at from lesson l where l.child_id = $1 and ${COUNTED_SQL} order by l.started_at desc limit 3`, [child.id]),
     one("select * from child_controls where child_id = $1", [child.id]),
     one(`select l.topic_id from lesson l where l.child_id = $1 and ${COUNTED_SQL} order by l.started_at limit 1`, [child.id]),
-    reportHold(child.id),
+    holdP,
     guardian ? hasConsent(guardian.id, child.id, "learning_profile") : Promise.resolve(true),
     loadTruth(child),
   ]);
@@ -743,7 +944,7 @@ async function homeData(child, guardian) {
   };
   const canNow = head.canNow ? claimOut(head.canNow, "can_now") : null;
   const practising = head.practising ? claimOut(head.practising, "practising") : null;
-  const [tryAtHome0, alert, next] = await Promise.all([tryAtHomeOf(child, hold), alertOf(child), guardian ? nextOf(child, guardian) : null]);
+  const [tryAtHome0, alert, next] = await stage2;
   const tryAtHome = reconcileTryAtHome(tryAtHome0, { canNow, practising }, child.first_name);
   const topicOut = (tid) => { const t = getTopic(tid); return t ? { id: t.id, title: t.title, chapter: t.chapter.title, subject: t.subject } : { id: tid, title: tid }; };
   const minutesById = new Map(week.all.map((l) => [l.id, l.minutes]));
@@ -969,17 +1170,19 @@ export function engineTick(here, turnSeq) {
  * foundation bridge when the next lesson comes from an earlier class.
  */
 async function syllabus(req, res) {
+  const t0 = Date.now();
   const { guardian, child } = await requireParentChild(req, query(req).get("childId"));
   const [truth, next, profile] = await Promise.all([loadTruth(child), nextTopicOf(child), hasConsent(guardian.id, child.id, "learning_profile")]);
   // ONE state per skill (truth.state) and the topic's state derived from its skills (topicTruth): Progress, the map,
   // the lesson card and the evidence sheet read the same words (G-PARENT-1 across surfaces).
   const skillsOf = new Map();
-  for (const id of truth.triedSkills()) {
+  const tried = truth.triedSkills().filter((id) => topicOf(id));
+  const labels = await Promise.all(tried.map((id) => parentLabelOf(id)));   // in parallel (QA D22)
+  tried.forEach((id, i) => {
     const tid = topicOf(id);
-    if (!tid) continue;
     if (!skillsOf.has(tid)) skillsOf.set(tid, []);
-    skillsOf.get(tid).push({ skillId: id, label: (await parentLabelOf(id)) ?? id, ...stateOut(truth.state(id)) });
-  }
+    skillsOf.get(tid).push({ skillId: id, label: labels[i] ?? id, ...stateOut(truth.state(id)) });
+  });
   const subjects = [];
   for (const subject of SUBJECT_ORDER) {
     const ids = topicSequence(child.class_level, subject);
@@ -1005,6 +1208,7 @@ async function syllabus(req, res) {
     ? { steps: [nextTopic.title, getTopic(firstOfClass)?.chapter.title].filter(Boolean) } : null;
   const chaptersStarted = subjects.reduce((n, s) => n + s.chapters.filter((c) => c.topics.some((t) => t.level > 0)).length, 0);
   const secure = all.filter((t) => t.level === 3).length;
+  res.setHeader("server-timing", `app;dur=${Date.now() - t0}`);
   send(res, 200, {
     classLevel: child.class_level, board: child.board, subjects, profileKept: !!profile,
     here: here ? { chapterId: here.id, topicId: nextTopic.id } : null, bridge, next: nextTopic ? { id: nextTopic.id, title: nextTopic.title } : null,
@@ -1171,13 +1375,15 @@ async function report(req, res) {
     return send(res, 200, { report: { ...reportOut(r), ...(hold ? { held: true, renders: noVoice(reportOut(r).renders) } : {}) } });
   }
   const cadence = sp.get("cadence");
-  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+  if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly, monthly or term");
   if (hold) return send(res, 200, { report: null, skipped: "held", held: true });
   const tz = await tzOf(child.id);
   const today = learningDay(new Date(), tz);
-  let period = sp.get("period") || (cadence === "daily" ? "today" : "thisweek");
+  let period = sp.get("period") || (cadence === "daily" ? "today" : cadence === "monthly" ? "thismonth" : cadence === "term" ? "thisterm" : "thisweek");
   if (period === "today") period = today;
   if (period === "thisweek") period = isoWeek(today);
+  if (period === "thismonth") period = today.slice(0, 7);
+  if (period === "thisterm") period = termOf(today);
   try { windowOf(cadence, period, tz); } catch { throw bad("invalid period"); }
   const out = await previewReport(child.id, { cadence, period }, { db: { q } });
   if (out.skipped) return send(res, 200, { report: null, skipped: out.skipped, period });
@@ -1211,7 +1417,7 @@ async function reportEvidence(req, res) {
     throw new HttpError(404, "line not found");
   } else {
     const cadence = sp.get("cadence"), period = sp.get("period");
-    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily or weekly");
+    if (!CADENCES.includes(cadence)) throw bad("cadence must be daily, weekly, monthly or term");
     try { windowOf(cadence, String(period), await tzOf(child.id)); } catch { throw bad("invalid period"); }
     r = (await previewReport(child.id, { cadence, period }, { db: { q } })).report;
   }
@@ -1376,6 +1582,15 @@ export const routes = {
   "GET /api/parent/test-window": getTestWindows,
   "POST /api/parent/test-window": setTestWindow,
   "DELETE /api/parent/test-window": deleteTestWindow,
+  "GET /api/parent/school": getSchool,
+  "GET /api/parent/chapters": getChapters,
+  "POST /api/parent/school-chapter": setSchoolChapter,
+  "POST /api/parent/timetable": setTimetable,
+  "GET /api/parent/teaching": teaching,
+  "GET /api/parent/schedule": getSchedule,
+  "POST /api/parent/schedule": setSchedule,
+  "GET /api/parent/household": getHousehold,
+  "POST /api/parent/household": setHousehold,
   "GET /api/parent/made-for": madeForList,
   "POST /api/auth/forgot": async (req, res, body) => (await import("./account.js")).forgotPassword(req, res, body),
   "POST /api/auth/reset": async (req, res, body) => (await import("./account.js")).resetPassword(req, res, body),

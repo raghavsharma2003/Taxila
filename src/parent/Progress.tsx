@@ -9,6 +9,8 @@ import { parentApi, type SyllabusOut } from "./api.ts";
 import { HOME, labelTitle, SUBJECT_ART, SUBJECT_NAME } from "./copy.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { PageState, ParentShell, useChildren, useParentData } from "./Shell.tsx";
+import { SchoolCard } from "./SchoolPlan.tsx";
+import { useGate } from "./Gate.tsx";
 
 const LEGEND: LedgerState[] = [{ level: 0, key: "unseen" }, { level: 1, key: "practising" }, { level: 2, key: "learned_today" }, { level: 3, key: "mastered" }];
 
@@ -17,6 +19,7 @@ export default function Progress() {
   const cid = current?.id ?? "";
   const syl = useParentData<SyllabusOut>(current ? () => parentApi.syllabus(current.id) : null, [current?.id], `syllabus:${cid}`);
   const [skill, setSkill] = useState<string | null>(null);
+  const { relock } = useGate();
   const d = syl.data;
   return (
     <ParentShell title="Progress" child={current} kids={kids}>
@@ -37,6 +40,7 @@ export default function Progress() {
           {d.bridge && (
             <p className="pa-note">Building the foundation: {d.bridge.steps.join(" → ")}</p>
           )}
+          {current && <SchoolCard childId={cid} name={current.first_name} onRelock={relock} />}
           {d.subjects.length === 0 && <p className="pa-note">The chapter list for this class is still being prepared.</p>}
           {d.subjects.map((s) => (
             <section key={s.subject} className="pa-subject" aria-labelledby={`pa-subj-${s.subject}`}>

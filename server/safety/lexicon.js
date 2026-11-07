@@ -38,6 +38,20 @@ const words = (list) => new RegExp(`(?<![a-z])(?:${[...new Set(list.split(/\s+/)
 /** Words that make a turn about a soldier, a story, a game or a sum: the shapes that read "gives a life" / "jump" / "die" stay off. */
 const LESSON = words(`desh sainik sipahi shahid soldier soldiers freedom bhagat azadi kahani story movie film cartoon game games level pubg minecraft fortnite
   roblox ludo chess carrom match race kabaddi cricket ball goal joke haha lol machhar makkhi cockroach insect plant plants paudha paudhe swimming pool`);
+// 14.4 (main safety review; sim lab decided gate p13 #8, NCERT EVS: "Amrita Devi ne 363 pedon ke liye apni jaan de di thi"
+// read as self-harm, the full script): the sacrifice idiom in the PAST, for someone or something ("… ke liye apni jaan de
+// di / de diya"), is history or a story, never the child's wish. Only that: the future ("main … ke liye apni jaan de
+// dungi"), "jaan LE li" (took their own life: a family member's suicide is a disclosure) and every other form still fire.
+const SACRIFICE_PAST = /(?<![a-z])(?:ke|ki) (?:liye|lie|khatir)(?: [a-z0-9]+){0,2} apni jan de (?:di|diya|dia|de di)(?![a-z])/;
+// 14.4.2 (sim lab be9b766a p13 #6, the same NCERT EVS chapter: "wo ped ke liye apni jaan de dete hain na?" got the full
+// script): the same idiom as a habit or a fact about others, "… ke liye apni jaan de dete hain / the / hai" (they give,
+// they gave). Never the first person: "de deti hun / deta hun" is not this shape and still fires, as does every future.
+const SACRIFICE_HABIT = /(?<![a-z])(?:ke|ki) (?:liye|lie|khatir)(?: [a-z0-9]+){0,2} apni jan de (?:dete|deti|deta) (?:hain|hai|the|thi|tha)(?![a-z])/;
+// 14.4.2 sim lab 6da8f599 p13 r3 #5 ("…toh unhone apni jaan de di ped bachane ke liye…": the full script): the same idiom
+// with the purpose AFTER the verb. Only with no first person and no family in the turn: a family member who "gave their
+// life" can be a death at home, and that is a disclosure ("main", "mere", "papa", "mummy", … keep it firing).
+const SACRIFICE_FOR = /(?<![a-z])apni jan de (?:di|diya|dia|de di|dete|deti|deta)(?: [a-z0-9]+){0,5} (?:ke|ki) (?:liye|lie|khatir)(?![a-z])/;
+const SELF_OR_FAMILY = /(?<![a-z])(?:main|mai|mujhe|maine|mene|mera|meri|mere|hum|humne|hamne|hamara|hamari|papa|mumi|mummy|mama|maa|ma|bhai|bhaiya|didi|behen|nana|nani|dada|dadi|chacha|chachi|mausi|uncle|aunty)(?![a-z])/;
 const SURPRISE = words("surprise birthday janamdin gift gifts tohfa party present");
 /** Words that make a turn a story or a show (patch request 12): a slap or a gaali in a retold story is the story's. */
 // ("kahani" is read "khani" by the garble rule when the turn has no other story word: "kahani mein ... thappad padte the")
@@ -72,7 +86,7 @@ const SHAPES = [
   ["self_harm", "mann_karta_mar_jaun", `(?:man|dil) (?:karta|karti|karte|hota|hoti) (?:hai |he |h )?(?:ki )?(?:main |mai )?(?:mar|marne) (?:jaun|jau|jaon|jan|ka)`],
   ["self_harm", "kaash_mar_jaun", `(?:kash|kas)(?: main| mai)? mar (?:jaun|jau|jaon|jata|jati|gaya hota|gayi hoti)`],
   ["self_harm", "khud_ko_khatam", `(?:khud|khudko|apne ap|apneap|apne apko|apneapko|apni jindagi|apni jindgi|apna jivan|jindagi|jindgi)(?: ko)? (?:khatam|khatm|khtm|mar|kat|jala|nuksan)`, (m, full) => /(?<![a-z])(?:jindagi|jindgi) (?:khatam|khatm)/.test(m) && LESSON.test(full)],
-  ["self_harm", "apni_jaan_de", `apni jan (?:de|le|dena|lena|dene|lene|de dun|de dunga|de dungi|le lun|le lunga|le lungi)|jan dene ka (?:man|khayal|soch)|${I_S} (?:apni )?jan de (?:dun|dunga|dungi|dena)`, (m, full) => LESSON.test(full)],
+  ["self_harm", "apni_jaan_de", `apni jan (?:de|le|dena|lena|dene|lene|de dun|de dunga|de dungi|le lun|le lunga|le lungi)|jan dene ka (?:man|khayal|soch)|${I_S} (?:apni )?jan de (?:dun|dunga|dungi|dena)`, (m, full) => LESSON.test(full) || SACRIFICE_PAST.test(full) || SACRIFICE_HABIT.test(full) || (SACRIFICE_FOR.test(full) && !SELF_OR_FAMILY.test(full))],
   ["self_harm", "suicide_spellings", `${SUICIDE}`],
   ["self_harm", "kms_unalive", `(?:vant to|vana|gona|gonna|going to|il|vil|ima|imma|should|shud|just) (?:just )?kms|unalive ${SELFX}`],
   ["self_harm", "paida_na_hota", `(?:main|mai|kash|kas)${g(1)} paida (?:hi )?(?:na|nahi|nahin|nai) (?:hota|hoti|hua|hui|hue|hote)`],
@@ -192,6 +206,14 @@ const SHAPES = [
   ["fear", "ghar_se_dar", `ghar (?:vapas |vapis )?(?:jane )?(?:se|men|mein|me|par|pe|[a-z]{2,3}) (?:bahut |bohot |bht )?(?:dar|dr) (?:lagta|lagti|lag)|sab ${I_O} (?:chidhate|chidate|chedte|marte|pitte)|(?:nobodi|nobody|no one|noone) loves me`],
   // round 2
   ["fear", "mera_intezaar_karta", `(?:admi|unkle|ankal|ladka|koi|stranger|bhaiya|man|someone|somebody)${g(4)} (?:mera|meri) (?:intejar|intjar|intajar|vait) (?:karta|karte|karti|kar raha|kar rahi)`],
+  // 14.4 (main safety review): someone comes to the child at night ("raat ko akele bahut dar lagta hai, koi aata hai", "raat
+  // ko mere kamre mein koi aata hai", "someone comes into my room at night"): the words-only read named it a plain fright
+  // 4/4 (a check-in that waits a turn), and this is the shape that must never wait. Only with fear or a room / bed / being
+  // alone in the line: "raat ko kaun aata hai? ullu" (a lesson on night animals) and "koi doodh dene aata hai" stay quiet.
+  // (the shape is read per clause, so "…dar lagta hai, koi aata hai" is the night in the line and someone coming in its last clause)
+  ["fear", "raat_koi_aata", `rat (?:ko|men|mein|me)${g(5)} koi (?:ata|ati|ate|aa jata|aa jati|andar ata|pas ata)|koi (?:ata|ati|ate|aa jata|aa jati|andar ata|pas ata) (?:hai|he|h)|(?:someone|somebodi|somebody|a man|unkle) (?:komes|cums|comes|enters|kums) (?:in |into |to )?(?:mi )?(?:rum|bed)|(?:someone|somebodi|somebody) (?:komes|comes|cums) at night`,
+    (m, full) => !/(?<![a-z])(?:rat (?:ko|men|mein|me)|at night|rum|bed|kamre|kamra|bistar)(?![a-z])/.test(full)
+      || !/(?<![a-z])(?:dar|dr|dara|dari|darr|darta|darti|skared|skary|afraid|kamre|kamra|rum|bed|bistar|akele|akeli|alone|chupke)(?![a-z])/.test(full) || LESSON.test(full)],
   ["fear", "kill_my_family_if_tell", `(?:vil|vould|gonna|gona|going to|il) (?:hurt|kil|beat|hit|harm) (?:me|mi family|mi mom|mi parents|mi brother|mi sister|mi dad)${g(1)} if (?:i|ai) (?:tel|told|say|speak)`],
   ["fear", "jaan_se_maar_dunga", `jan se mar (?:dunga|dungi|dega|degi|denge|dalunga|dalega|dalenge|dalungi|dene)`, (m, full) => LESSON.test(full)],
   ["fear", "scared_to_tell", `(?:skared|afraid|terified) to tel (?:anyone|anybody|someone|mi mom|mi parents|mi dad|mi teacher)`],

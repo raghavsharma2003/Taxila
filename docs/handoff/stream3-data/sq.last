@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop
+ok 1 - player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop
+  ---
+  duration_ms: 1009.777745
+  type: 'test'
+  ...
+# Subtest: player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock
+ok 2 - player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock
+  ---
+  duration_ms: 89.805947
+  type: 'test'
+  ...
+# Subtest: gate (browser): goldens pass at their params and at held-out params; seeded mutants are caught
+ok 3 - gate (browser): goldens pass at their params and at held-out params; seeded mutants are caught
+  ---
+  duration_ms: 46477.444483
+  type: 'test'
+  ...
+# Subtest: player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun
+ok 4 - player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun
+  ---
+  duration_ms: 5.352268
+  type: 'test'
+  ...
+# Subtest: player clock: no req → anchor still marked (any line), clause events not emitted by the player
+ok 5 - player clock: no req → anchor still marked (any line), clause events not emitted by the player
+  ---
+  duration_ms: 6.813016
+  type: 'test'
+  ...
+# Subtest: probe: performance.now is the real clock after the files above ran
+ok 6 - probe: performance.now is the real clock after the files above ran
+  ---
+  duration_ms: 31.219115
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 48079.12455

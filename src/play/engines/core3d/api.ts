@@ -24,7 +24,7 @@ export const CORE3D_VERSION = "core3d@1" as const;
 // ───────────────────────────── engines and tiers ─────────────────────────────
 
 /** The real-game engines (FEASIBILITY.md §4.3). Each renders one or more family laws. */
-export const ENGINES = ["antariksh", "khand"] as const;
+export const ENGINES = ["antariksh", "khand", "yantra"] as const;
 export type EngineId = (typeof ENGINES)[number];
 
 /**
@@ -75,6 +75,7 @@ export const DRESS_ENUMS = Object.freeze({
 export const ENGINE_THEMES: Record<EngineId, readonly string[]> = {
   antariksh: ["neela-nebula", "laal-grah", "hara-toofan"],
   khand: ["mitti", "barf", "jungle"],
+  yantra: ["lab", "rooftop", "bench"],
 };
 export interface Dress {
   theme: string;

@@ -3,7 +3,7 @@
 import { compile, BudgetError } from "./compile.js";
 import { characterForState } from "./characters/index.js";
 import { getTopic } from "../content/curriculum.js";
-import { describe, branchesFor, skipItem } from "../director/state.js";
+import { describe, branchesFor, skipItem, fitShape } from "../director/state.js";
 import { briefViewFor } from "../learner/briefView.js";
 import { kitFromFile } from "../content/kits.js";
 
@@ -50,6 +50,22 @@ export function instructionsAfter(r, kit, now) {
     return { r, instructions: instructionsFor(r.state, kit) };
   } catch (e) {
     const itemId = r.move?.itemId;
+    // (turn-replay on integration 10: c4 s1 e4's explain card was skipped — "move" 270 tokens, cap 260 — so the beat was never
+    // taught. A script card is the walk itself: before it is skipped, its move's shape note is shortened (optional clauses,
+    // then its last two sentences); the authored text it carries is spoken by code, so only her note gets shorter)
+    if (e instanceof BudgetError && String(itemId ?? "").startsWith("script:") && r.state?.lastMove?.shape) {
+      const shape = String(r.state.lastMove.shape);
+      const tails = shape.split(/(?<=[.;])\s+/);
+      for (const s of [fitShape(shape, 560), fitShape(shape, 420), tails.slice(-2).join(" ")]) {
+        if (!s || s === shape) continue;
+        try {
+          const state = { ...r.state, lastMove: { ...r.state.lastMove, shape: s } };
+          const instructions = instructionsFor(state, kit);
+          console.warn(`[lesson] script card ${itemId}: its move note was shortened to fit the prompt budget (${shape.length} → ${s.length} chars)`);
+          return { r: { ...r, state }, instructions };
+        } catch (e2) { if (!(e2 instanceof BudgetError)) throw e2; }
+      }
+    }
     const next = e instanceof BudgetError && itemId ? skipItem(r.state, kit, itemId, now) : null;
     if (!next) throw e;
     console.warn(`[lesson] item ${itemId} does not fit the prompt budget; skipped (${e.message})`);

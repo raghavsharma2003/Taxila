@@ -6,9 +6,13 @@ import { createHash } from "crypto";
 import { addDays, isoWeek, localParts, zonedToUtc } from "../conductor/clock.js";
 import { HISTORY_DAYS } from "./config.js";
 import { COUNTED_LESSON_SQL, supersede } from "./truth.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 export const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 export const WEEK_RE = /^(\d{4})-W(\d{2})$/;
+export const MONTH_RE = /^(\d{4})-(0[1-9]|1[0-2])$/;
+/** A school term (CBSE academic year from April): "2026-T1" = 1 Apr → 30 Sep 2026, "2026-T2" = 1 Oct 2026 → 31 Mar 2027. */
+export const TERM_RE = /^(\d{4})-T([12])$/;
 const iso = (x) => (x == null ? null : new Date(x).toISOString());
 
 /** Monday ('YYYY-MM-DD') of an ISO week id 'YYYY-Www'. */
@@ -36,8 +40,28 @@ export function windowOf(cadence, period, tz) {
     const mon = mondayOf(period);
     return { cadence, period, firstDay: mon, lastDay: addDays(mon, 6), from: zonedToUtc(mon, "04:00", tz).toISOString(), to: zonedToUtc(addDays(mon, 7), "04:00", tz).toISOString() };
   }
+  if (cadence === "monthly") {
+    if (!MONTH_RE.test(period)) throw new Error(`reports: bad month ${period}`);
+    const first = `${period}-01`;
+    const next = addDays(addDays(first, 27), 4).slice(0, 7) + "-01";            // the 1st of the following month
+    return { cadence, period, firstDay: first, lastDay: addDays(next, -1), from: zonedToUtc(first, "04:00", tz).toISOString(), to: zonedToUtc(next, "04:00", tz).toISOString() };
+  }
+  if (cadence === "term") {
+    const m = TERM_RE.exec(period);
+    if (!m) throw new Error(`reports: bad term ${period}`);
+    const y = Number(m[1]);
+    const first = m[2] === "1" ? `${y}-04-01` : `${y}-10-01`, next = m[2] === "1" ? `${y}-10-01` : `${y + 1}-04-01`;
+    return { cadence, period, firstDay: first, lastDay: addDays(next, -1), from: zonedToUtc(first, "04:00", tz).toISOString(), to: zonedToUtc(next, "04:00", tz).toISOString() };
+  }
   throw new Error(`reports: unknown cadence ${cadence}`);
 }
+
+/** The term a learning day belongs to ("2026-T2"), and whether it is that term's last day. */
+export function termOf(day) {
+  const [y, mo] = day.split("-").map(Number);
+  return mo >= 4 && mo <= 9 ? `${y}-T1` : mo >= 10 ? `${y}-T2` : `${y - 1}-T2`;
+}
+export const isTermEnd = (day) => day.endsWith("-09-30") || day.endsWith("-03-31");
 
 /** Local calendar parts of an instant, for date slots. */
 export const dateParts = (at, tz) => { const p = localParts(new Date(at), tz); return { y: p.y, m: p.m, d: p.d }; };
@@ -48,7 +72,7 @@ const LATEST_CONSENT = `select distinct on (purpose) purpose, granted from conse
 /**
  * @param {{ q: (text: string, params?: any[]) => Promise<any[]> }} db
  * @param {string} childId
- * @param {{ cadence: 'daily'|'weekly', period: string }} p
+ * @param {{ cadence: 'daily'|'weekly'|'monthly'|'term', period: string }} p
  * @param {{ skillTitle?: (id: string) => Promise<string|null>, belief?: (id: string) => Promise<string|null> }} [lookup]
  */
 export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
@@ -64,9 +88,21 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
         and ${COUNTED_LESSON_SQL("l")} order by l.started_at, l.id`, [childId, w.from, w.to]),
     db.q(`select id, seq, session_id, occurred_at, skill_ids, cls, outcome, grader, item_key, teach, pre_attempt_help, entry_rung, misconception_id,
         discriminates, via, contaminated, assisted
-      from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 order by seq`, [childId, histFrom, w.to]),
+      from kt_evidence where child_id = $1 and occurred_at >= $2 and occurred_at < $3 and ${NOT_PLACEMENT} order by seq`, [childId, histFrom, w.to]),
     db.q(`select skill_id, display, next_review_at, refresh from kt_skill_state where child_id = $1`, [childId]),
     db.q(`select misconception_id, hits, resolved_at from kt_misconception where child_id = $1`, [childId]),
+  ]);
+  // round 7 F (S7, S17): the child's own questions in the window (question_jar, 037) and the school test windows the parent
+  // entered (Conductor state). Both tolerate a missing table: the sections are simply left out.
+  const monthlyOrWeekly = cadence === "monthly" || cadence === "weekly";
+  const long = cadence === "monthly" || cadence === "term";             // R2: the term report carries the monthly sections
+  const [jar, cstate, ways] = await Promise.all([
+    long ? db.q(`select id, learning, created_at, answered_at from question_jar where child_id = $1 and created_at >= $2 and created_at < $3 order by created_at, id`,
+      [childId, w.from, w.to]).catch(() => []) : [],
+    monthlyOrWeekly ? db.q("select state->'school'->'testWindows' as tw from conductor_state where child_id = $1", [childId]).catch(() => []) : [],
+    // S5: the explain format Taxila chose per skill (decision_record point explain_format; Learning patch 008)
+    long ? db.q(`select d.id, d.lesson_id, d.chosen, d.options->>'skillId' as skill_id from decision_record d join lesson l on l.id = d.lesson_id
+        where l.child_id = $1 and d.point_id = 'explain_format' and d.at >= $2 and d.at < $3 order by d.id`, [childId, w.from, w.to]).catch(() => []) : [],
   ]);
   const consent = Object.fromEntries(consentRows.map((r) => [r.purpose, !!r.granted]));
   const facts = {
@@ -81,8 +117,16 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
     skills: Object.fromEntries(skills.map((s) => [s.skill_id, { display: s.display, nextReviewAt: iso(s.next_review_at), refresh: !!s.refresh }])),
     misconceptions: Object.fromEntries(mis.map((m) => [m.misconception_id, { hits: Number(m.hits), resolvedAt: iso(m.resolved_at) }])),
     titles: {}, beliefs: {},
+    jar: jar.map((r) => ({ id: String(r.id), learning: !!r.learning, createdAt: iso(r.created_at), answeredAt: iso(r.answered_at) })),
+    ways: ways.map((r) => ({ id: String(r.id), lessonId: String(r.lesson_id), format: r.chosen, skillId: r.skill_id ?? null })),
+    testWindows: (Array.isArray(cstate[0]?.tw) ? cstate[0].tw : [])
+      .filter((t) => t && typeof t.subject === "string" && t.from <= w.lastDay && t.to >= w.firstDay)
+      .map((t) => ({ subject: t.subject, from: t.from, to: t.to })).sort((a, b) => (a.from + a.subject < b.from + b.subject ? -1 : 1)),
   };
   const skillIds = new Set(facts.events.flatMap((e) => e.skillIds));
+  // S13 (monthly, term): the next few scheduled re-checks after the window, whether or not the skill came up in it
+  if (long) for (const [sid] of Object.entries(facts.skills).filter(([, x]) => x.nextReviewAt && x.nextReviewAt >= w.to)
+    .sort((a, b) => (a[1].nextReviewAt < b[1].nextReviewAt ? -1 : a[1].nextReviewAt > b[1].nextReviewAt ? 1 : a[0] < b[0] ? -1 : 1)).slice(0, 3)) skillIds.add(sid);
   const misIds = new Set(facts.events.flatMap((e) => [e.misconceptionId, e.discriminates]).filter(Boolean));
   for (const s of skillIds) facts.titles[s] = (await lookup.skillTitle?.(s).catch(() => null)) ?? null;
   for (const m of misIds) facts.beliefs[m] = (await lookup.belief?.(m).catch(() => null)) ?? null;
@@ -91,4 +135,4 @@ export async function loadFacts(db, childId, { cadence, period }, lookup = {}) {
 
 /** Digest of the snapshot (audit and replay: the same facts render the same Lane A text, E-R9). */
 export const factsDigest = (f) => createHash("sha256").update(JSON.stringify({ c: f.child, w: f.window, l: f.lessons, e: f.events.map((e) => [e.id, e.seq]),
-  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs })).digest("hex").slice(0, 32);
+  s: f.skills, m: f.misconceptions, t: f.titles, b: f.beliefs, ...(f.jar?.length ? { j: f.jar } : {}), ...(f.testWindows?.length ? { tw: f.testWindows } : {}) })).digest("hex").slice(0, 32);

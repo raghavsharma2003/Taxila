@@ -11,6 +11,7 @@ import { routes as voice } from "./routes/voice.js";
 import { routes as tutor } from "./routes/tutor.js";
 import { routes as forge } from "./routes/forge.js";
 import { routes as child } from "./routes/child.js";
+import { routes as placement } from "./routes/placement.js";
 // W1-C: the test clock (GET/POST /api/test/clock; @taxila.test accounts only). Seam applied by W1-D, owner of this file.
 import { routes as testClock } from "./comprehension/testclock.js";
 // W2-D: the mid-sitting realtime → cascade lane switch (POST /api/lesson/lane). One-line seam; the route lives in W2-D's module.
@@ -35,6 +36,10 @@ import { routes as relational } from "./relational/routes.js";
 import { routes as play } from "./play/routes.js";
 // release 12 flight recorder: POST /api/trace/batch and /api/trace/blob (T-server, server/trace). One line.
 import { routes as trace } from "./trace/routes.js";
+// round 7, stream G: the owner ops page (TAXILA_OPS_FOR)
+import { routes as ops } from "./ops/routes.js";
+// r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
+import { routes as signin } from "./signin/code.js";
 
-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });
+register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
 export { handle, register };

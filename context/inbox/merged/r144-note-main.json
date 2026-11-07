@@ -1,0 +1,35 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r144-note-disagrees",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "A distress read by the understanding note ALONE (kind model_note) is a check-in tier, never the full script (state.js checkTier): the note sets distress only when classify's own reads, the labels and the words-only read, said none (conversation/policy.js applyNote), so a note-only read is reads that disagree, which the tier already makes a check-in. On the turn after a check-in it never escalates by itself, and a lesson answer read as distress by any model alone is never sure either (the predicate, a sure layer, a bare 'nahi' and a low mood said again still are). QA TEST on 7d8fcea4: 8a4ce363 X2c (a right answer after a check-in: the full script on the note) and 9e0d6167 XS1 ('Nahi, bleeding nahi hai ab… Ab theek hai… accha ho gaya': the full script on the note). Supersedes the 14.4 tier's 'model_note is sure'. Reverse if a sim-lab or QA disclosure is caught by the note alone (sim-lab rule (1) counts sure disclosures missing the numbers)."
+  },
+  {
+   "id": "fd-r144-setaside-not-cleared",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "state.js check-in release: the answer / request path handed the turn back to decide() through quiet(cls), which clears only a check-kind read, so a sure-kind MODEL read the check-in had just set aside re-entered decide() still flagged and opened the full script. Found by the 14.4.1 unit test (a right answer with a hurt_by_person words read). The set-aside read is now cleared whatever its kind."
+  },
+  {
+   "id": "ms-r144-qa-7d8fcea4",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 14,
+   "method": "QA session TEST re-test of int @ 7d8fcea4 (local server on Neon TEST, typed; the W2 family ×2, S1, S2)",
+   "title": "On 7d8fcea4: 'pata nahi' waits 4/4 (the second escalates), 'nahi' and 'theek nahi hoon' the full script 3/3, 'haan' and 'haan theek hoon' release, the science answer 'बिना ऑक्सीजन के जी नहीं सकते' no helpline, 0 of 17 check-in and wait lines say safe. Fails: a right answer after a check-in (X2c 8a4ce363) and 'Nahi, bleeding nahi hai ab… accha ho gaya' (XS1 9e0d6167) got the full script on the understanding note alone (dc-r144-note-disagrees); 2 of 4 wait lines carried 1098 / 14416 and 3 of 4 asked 'khud ko nuksan…?' (closed by dc-r144-reply-no-safeguarding-call)."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r144-note-disagrees", "rel": "caused_by", "dst": "ms-r144-qa-7d8fcea4" },
+  { "src": "dc-r144-note-disagrees", "rel": "part_of", "dst": "dc-r144-safeguard-tiers" },
+  { "src": "fd-r144-setaside-not-cleared", "rel": "part_of", "dst": "dc-r144-checkin-notok" },
+  { "src": "dc-r144-reply-no-safeguarding-call", "rel": "measured_by", "dst": "ms-r144-qa-7d8fcea4" }
+ ],
+ "md": {
+  "decisions": "## dc-r144-note-disagrees — the understanding note alone is a check-in (2026-10-21)\n\nQA's re-test of 7d8fcea4 found the last path around the tier: the understanding note, which reads the whole lesson, kept re-reading a check-in's low-mood context into the child's next turn, so a right answer and an \"it's fine now\" got the full script. The note only ever adds distress where the classifier's own two reads said none: by the tier's rule, reads that disagree are a check-in. A lesson answer read as distress by a model alone is likewise never sure. The predicate, the sure layers, a bare \"nahi\" and a low mood said again still escalate at once.",
+  "measurements": "## ms-r144-qa-7d8fcea4 (2026-10-21, n = 14 runs)\n\nThe check-in answers hold on 7d8fcea4 (pata nahi waits, nahi escalates, haan releases, the science answer is quiet, 0 of 17 check-ins say safe); the two misses were the understanding note escalating a released turn (now a check-in tier) and the reply model's own numbers in the wait line (now harm talk).",
+  "rejected": ""
+ }
+}

@@ -12,38 +12,19 @@
 import type { CSSProperties } from "react";
 // V4 (face.puppet2d, default on): the style-C 2D puppet where the puppet is the tutor; TutorFace otherwise.
 import { LessonFace as TutorFace } from "../../face-puppet/LessonFace.tsx";
-import type { Emotion, FloorStatus } from "../../avatar/behaviour.ts";
+import type { Emotion } from "../../avatar/behaviour.ts";
 import type { FaceTier } from "../../avatar/tier.ts";
 import type { TapSource } from "../../avatar/tap.ts";
 import { Art } from "../Art.tsx";
 import { t } from "../copy.ts";
 import { useTeacher } from "./useTeacher.ts";
-import "./teacher.css";
+import "./teacher.css";import { Protege, type ProtegeKind, type ProtegeMood } from "./Protege.tsx";
+
 
 /** The eight floor states of PRODUCT-DESIGN-V2 §4.1. */
-export type TeacherFloor = "idle" | "speaking" | "showing" | "yielding" | "your_turn" | "listening" | "heard" | "thinking";
-
-/**
- * Floor → the face's status input. yielding leans in on her offset frame like your_turn (TV §7.1); heard holds the
- * listening face (the one 2° nod is identical for every answer); showing talks with her gaze on the tray.
- */
-export function faceStatusOf(floor: TeacherFloor | null | undefined): FloorStatus | null {
-  switch (floor) {
-    case "speaking":
-    case "showing":
-      return "speaking";
-    case "yielding":
-    case "your_turn":
-      return "your_turn";
-    case "listening":
-    case "heard":
-      return "listening";
-    case "thinking":
-      return "thinking";
-    default:
-      return null;
-  }
-}
+// the floor → face mapping lives in ./floor.ts (plain TS, so the tests can import it); re-exported for the callers
+export { faceStatusOf, type TeacherFloor } from "./floor.ts";
+import { faceStatusOf, type TeacherFloor } from "./floor.ts";
 
 export interface TeacherProps {
   teacherId: string | null | undefined;
@@ -68,6 +49,8 @@ export interface TeacherProps {
   className?: string;
   style?: CSSProperties;
   noProbe?: boolean;
+  /** The young band's teach-back protégé beside her (./Protege.tsx), or null. */
+  protege?: { kind: ProtegeKind; mood: ProtegeMood } | null;
 }
 
 export function Teacher(p: TeacherProps) {
@@ -102,6 +85,10 @@ export function Teacher(p: TeacherProps) {
           lang="english"
           className="teacher-face-host"
         />
+        {p.protege && (
+          <Protege kind={p.protege.kind} mood={p.protege.mood} reducedMotion={p.reducedMotion}
+            glance={p.floor === "listening" || p.floor === "speaking" || p.floor === "your_turn"} />
+        )}
         {p.aiPicto && (
           <span className="teacher-aipicto" aria-hidden="true">
             <Art id="picto/ai-teacher" fallback={<AiPicto />} />

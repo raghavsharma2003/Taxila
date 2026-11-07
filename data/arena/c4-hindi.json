@@ -1,0 +1,332 @@
+{
+ "v": 1,
+ "tier": "A",
+ "source": "data/kits/c4-hindi.json",
+ "challenges": [
+  {
+   "id": "c4-hindi-ch01-t01-rl-h3",
+   "topicId": "c4-hindi-ch01-t01",
+   "skillId": "c4-hindi-ch01-t01-s5",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "Change ‘चिड़िया पंख फैलाकर उड़ रही है’ to past tense for yesterday. Choose the correct sentence: ‘चिड़िया पंख फैलाकर उड़ी’ or ‘चिड़िया पंख फैलाकर उड़ेंगे’?",
+    "hi": "‘चिड़िया पंख फैलाकर उड़ रही है’ को बीते कल की बात बनाओ। सही वाक्य चुनो: ‘चिड़िया पंख फैलाकर उड़ी’ या ‘चिड़िया पंख फैलाकर उड़ेंगे’?"
+   },
+   "hint": "क्रिया को बीते समय और चिड़िया के अनुसार बदलो।",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "चिड़िया पंख फैलाकर उड़ी"
+    },
+    {
+     "id": "o2",
+     "text": "चिड़िया पंख फैलाकर उड़ेंगे"
+    }
+   ],
+   "keyText": "चिड़िया पंख फैलाकर उड़ी"
+  },
+  {
+   "id": "c4-hindi-ch02-t01-rl-h6",
+   "topicId": "c4-hindi-ch02-t01",
+   "skillId": "c4-hindi-ch02-t01-s4",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "{friendF} searched every corner of the garden for her lost badge. Which expression fits better: ‘कोना-कोना छान मारा’ or ‘फुदक-फुदककर चली’?",
+    "hi": "रिया ने खोया हुआ बैज ढूँढ़ने के लिए बगीचे का हर कोना देखा। कौन-सा प्रयोग ठीक है: ‘कोना-कोना छान मारा’ या ‘फुदक-फुदककर चली’?"
+   },
+   "hint": "Choose the expression that describes checking a place completely.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "कोना-कोना छान मारा"
+    },
+    {
+     "id": "o2",
+     "text": "फुदक-फुदककर चली"
+    }
+   ],
+   "keyText": "कोना-कोना छान मारा"
+  },
+  {
+   "id": "c4-hindi-ch03-t01-i10",
+   "topicId": "c4-hindi-ch03-t01",
+   "skillId": "c4-hindi-ch03-t01-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Karela and neem are bitter, a laddoo is sweet. Are only sweet things useful? Answer using the neem.",
+    "hi": "करेला और नीम कड़वे हैं, लड्डू मीठा है। क्या सिर्फ़ मीठी चीज़ें ही काम की होती हैं? नीम से समझाओ।"
+   },
+   "hint": "Think of illness and the air.",
+   "mis": "c4-hindi-ch03-t01-mc-bitter-useless",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c4-hindi-ch04-t01-i11",
+   "topicId": "c4-hindi-ch04-t01",
+   "skillId": "c4-hindi-ch04-t01-s4",
+   "difficulty": 3,
+   "itemKind": "error_spot",
+   "prompt": {
+    "en": "Raju says: ‘In दूध पियो, दूध is not a naming word because it is not a person.’ Is Raju right?",
+    "hi": "राजू कहता है — ‘दूध पियो’ में ‘दूध’ संज्ञा नहीं है, क्योंकि वह कोई इंसान नहीं है। क्या राजू सही है?"
+   },
+   "hint": "Think of names of places and things too.",
+   "mis": "c4-hindi-ch04-t01-mc-sangya-people",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c4-hindi-ch04-t01-i12",
+   "topicId": "c4-hindi-ch04-t01",
+   "skillId": "c4-hindi-ch04-t01-s4",
+   "difficulty": 2,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Listen: ‘कमरा सजा हुआ है’ and ‘उसे सज़ा मिली’. Do सजा and सज़ा mean the same thing?",
+    "hi": "सुनो — ‘कमरा सजा हुआ है’ और ‘उसे सज़ा मिली’। क्या ‘सजा’ और ‘सज़ा’ एक ही बात है?"
+   },
+   "hint": "Look at the dot under ज़.",
+   "mis": "c4-hindi-ch04-t01-mc-nukta-meaning",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c4-hindi-ch04-t01-rl-h2",
+   "topicId": "c4-hindi-ch04-t01",
+   "skillId": "c4-hindi-ch04-t01-s4",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "In the school notice, ‘मंच सजा है’ and ‘नियम तोड़ने पर सज़ा मिलेगी’ are written. Which word means punishment: सजा or सज़ा?",
+    "hi": "स्कूल की सूचना में लिखा है, ‘मंच सजा है’ और ‘नियम तोड़ने पर सज़ा मिलेगी।’ ‘दंड’ का अर्थ देने वाला शब्द कौन-सा है—सजा या सज़ा?"
+   },
+   "hint": "दोनों शब्दों में बिंदु का अंतर देखो।",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "सजा"
+    },
+    {
+     "id": "o2",
+     "text": "सज़ा"
+    }
+   ],
+   "keyText": "सज़ा"
+  },
+  {
+   "id": "c4-hindi-ch07-t01-rl-o2",
+   "topicId": "c4-hindi-ch07-t01",
+   "skillId": "c4-hindi-ch07-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Three comic panels show: A—Rohan thanks Sana; B—Sana returns Rohan’s library book; C—Rohan searches his bag for the book. Which order tells the story—C-B-A or B-C-A?",
+    "hi": "तीन चित्र हैं: A—रोहन सना को धन्यवाद देता है; B—सना रोहन की पुस्तकालय वाली किताब लौटाती है; C—रोहन अपने बैग में किताब ढूँढ़ता है। सही क्रम कौन-सा है—C-B-A या B-C-A?"
+   },
+   "hint": "घटना, उसका समाधान और फिर प्रतिक्रिया देखो।",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "C-B-A"
+    },
+    {
+     "id": "o2",
+     "text": "B-C-A"
+    }
+   ],
+   "keyText": "C-B-A"
+  },
+  {
+   "id": "c4-hindi-ch09-t01-i07",
+   "topicId": "c4-hindi-ch09-t01",
+   "skillId": "c4-hindi-ch09-t01-s3",
+   "difficulty": 3,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Did the meeting say sweets should never be eaten? What did Peda remind everyone of?",
+    "hi": "क्या सम्मेलन ने कहा कि मिठाई कभी नहीं खानी चाहिए? पेड़ा ने सबको क्या याद दिलाया?"
+   },
+   "hint": "Think of weddings and festivals.",
+   "mis": "c4-hindi-ch09-t01-mc-never-eat",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c4-hindi-ch10-t01-i05",
+   "topicId": "c4-hindi-ch10-t01",
+   "skillId": "c4-hindi-ch10-t01-s1",
+   "difficulty": 2,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "To rhyme with चित्र at the end of the poem, which word will come — मित्र or तस्वीर?",
+    "hi": "कविता के आख़िर में ‘चित्र’ से तुक मिलाने के लिए कौन-सा शब्द आएगा — ‘मित्र’ या ‘तस्वीर’?"
+   },
+   "hint": "Which choice also ends in -त्र?",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "मित्र"
+    },
+    {
+     "id": "o2",
+     "text": "तस्वीर"
+    }
+   ],
+   "keyText": "मित्र"
+  },
+  {
+   "id": "c4-hindi-ch11-t01-rl-h2",
+   "topicId": "c4-hindi-ch11-t01",
+   "skillId": "c4-hindi-ch11-t01-s4",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Meera opened her result and learned she had won a scholarship. Which expression fits her feeling: ‘मन में लड्डू फूटना’ or ‘काटो तो ख़ून नहीं’?",
+    "hi": "मीरा ने परिणाम खोला और जाना कि उसे छात्रवृत्ति मिली है। उसकी भावना के लिए कौन-सा मुहावरा ठीक है—‘मन में लड्डू फूटना’ या ‘काटो तो ख़ून नहीं’?"
+   },
+   "hint": "दोनों मुहावरे अलग-अलग भाव बताते हैं।",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "मन में लड्डू फूटना"
+    },
+    {
+     "id": "o2",
+     "text": "काटो तो ख़ून नहीं"
+    }
+   ],
+   "keyText": "मन में लड्डू फूटना"
+  },
+  {
+   "id": "c4-hindi-ch13-t01-i10",
+   "topicId": "c4-hindi-ch13-t01",
+   "skillId": "c4-hindi-ch13-t01-s5",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "The answer is ‘2 सितंबर 2023’. Which question word does this answer — कब, कहाँ or किसने?",
+    "hi": "जवाब है — ‘2 सितंबर 2023’। यह किस सवाल वाले शब्द का जवाब है — ‘कब’, ‘कहाँ’ या ‘किसने’?"
+   },
+   "hint": "Which word brings a date as its answer?",
+   "mis": "c4-hindi-ch13-t01-mc-question-word",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "कब"
+    },
+    {
+     "id": "o2",
+     "text": "कहाँ"
+    },
+    {
+     "id": "o3",
+     "text": "किसने"
+    }
+   ],
+   "keyText": "कब"
+  }
+ ]
+}

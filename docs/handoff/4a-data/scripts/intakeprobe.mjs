@@ -1,0 +1,2 @@
+const {intakeParse}=await import("/home/user/Taxila/server/director/session/intake.js");const {intakeCandidates}=await import("/home/user/Taxila/server/director/session/candidates.js");
+for (const [t,cl] of [["आज स्कूल में डिवीजन पढ़ाया",4],["आज स्कूल में भिन्न पढ़ाया",5],["मुझे पौधों के बारे में पढ़ना है",5]]) { const f=intakeParse(t); const c=intakeCandidates(f,t,{classLevel:cl}); console.log(cl,t,"→",f.kind,"| top:",c?.top?.topicId??null,c?.p?.toFixed?.(2)??"");}

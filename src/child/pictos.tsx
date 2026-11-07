@@ -3,6 +3,8 @@
 //    colours, never text). <Picto id="picto/garden" size={64} /> renders the painted art when it exists.
 //  - Older icons: the tab bar / rail and row icons are SVG (Material Symbols Rounded shapes, §7.3: never raster).
 // Colour comes from currentColor and the art tint tokens only (PD-G13: no raw hex outside tokens.css).
+import { AVATARS, EMBLEMS } from "./avatars.ts";
+export { AVATARS, EMBLEMS, OLDER_AVATAR_SET, avatarsFor, type OlderAvatarSet } from "./avatars.ts";
 import type { ReactNode } from "react";
 import { Spot } from "./art.tsx";
 
@@ -92,14 +94,43 @@ export function Picto({ id, size = 48 }: { id: string; size?: number }) {
 }
 
 /** The 24 avatar discs (§7.5): animals and objects, never human faces; tints rotate teal, rose, leaf, sky, terracotta, stone. */
-export const AVATARS = [
-  "red-panda", "tiger-cub", "elephant-calf", "river-dolphin", "hornbill", "peacock", "turtle", "butterfly", "squirrel",
-  "camel", "rhino", "snow-leopard", "kite", "rocket", "football", "cricket-bat", "mango", "sunflower", "mountain",
-  "sailboat", "auto-rickshaw", "bicycle", "telescope", "paintbrush",
-] as const;
 const TINTS = ["var(--art-teal)", "var(--art-rose)", "var(--art-leaf)", "var(--art-sky)", "var(--art-terracotta)", "var(--art-stone)"];
+/** r7 (9-15 onboarding sweep; gap app-identity-avatars): the older family's identity set. Line emblems on a chamfered
+ *  dark tile in the look's own hues, drawn here (no raster), in place of the painted animals that read "for a 5-year-old".
+ *  Ids are plain strings (the child row's avatar column takes any id); a child who picked an animal keeps it. */
+const EMBLEM_PATH: Record<string, string> = {
+  "em-orbit": "M12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6M3 14.5c-.8-2.5 3-5.6 8.4-6.9s10.2-.6 11 1.9-3 5.6-8.4 6.9S3.8 17 3 14.5",
+  "em-comet": "M17 7a3 3 0 1 0 0 .01M14.8 9.2L4 20M12.5 6.5L5 14M17.5 11.5L10 19",
+  "em-bolt": "M13 2.5L5 13.5h6l-1 8 8-11h-6z",
+  "em-prism": "M12 3l8 15H4zM12 3v15M4 18l8-6 8 6",
+  "em-wave": "M2.5 9c3-3 6.5 3 9.5 0s6.5 3 9.5 0M2.5 15c3-3 6.5 3 9.5 0s6.5 3 9.5 0",
+  "em-peak": "M2.5 19l6-10 4 6 3-4 6 8zM8.5 9l1.5-2.5L11.5 9",
+  "em-atom": "M12 10.5a1.5 1.5 0 1 0 0 3a1.5 1.5 0 1 0 0-3M12 3c2 0 3.5 4 3.5 9S14 21 12 21s-3.5-4-3.5-9S10 3 12 3M4.2 7.5c1-1.7 5.3-1 9.6 1.5s7 6 6 7.6-5.3 1-9.6-1.5-7-6-6-7.6",
+  "em-delta": "M12 3.5l9 16H3zM12 9.5l4 7H8z",
+  "em-nova": "M12 2.5v5M12 16.5v5M2.5 12h5M16.5 12h5M5.3 5.3l3.5 3.5M15.2 15.2l3.5 3.5M5.3 18.7l3.5-3.5M15.2 8.8l3.5-3.5",
+  "em-helix": "M7 3c0 4.5 10 4.5 10 9s-10 4.5-10 9M17 3c0 4.5-10 4.5-10 9s10 4.5 10 9M8.5 7.5h7M8.5 16.5h7",
+  "em-grid": "M4 4h16v16H4zM4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16",
+  "em-flare": "M12 3c3 4 5 6.5 5 10a5 5 0 0 1-10 0c0-2 1-3.5 2.5-5 .3 2 1.2 3 2.5 3.5C11.5 8.5 11.3 6 12 3",
+};
+/** Each emblem's hue: the look's tokens, with the classic art tints as the fallback outside the Volt root. */
+const EMBLEM_HUE = ["var(--k-ion, var(--art-sky))", "var(--k-her, var(--art-rose))", "var(--k-move, var(--art-leaf))", "var(--k-secure, var(--art-teal))",
+  "var(--k-look, var(--art-terracotta))", "var(--k-rose, var(--art-rose))"];
+
+export function Emblem({ id, size = 56 }: { id: string; size?: number }) {
+  const i = Math.max(0, EMBLEMS.indexOf(id as (typeof EMBLEMS)[number]));
+  const hue = EMBLEM_HUE[i % EMBLEM_HUE.length];
+  return (
+    <span className="avatar-em" style={{ width: size, height: size, color: hue }} aria-hidden="true">
+      <svg viewBox="0 0 24 24" width={Math.round(size * 0.62)} height={Math.round(size * 0.62)} focusable="false">
+        <path d={EMBLEM_PATH[id] ?? EMBLEM_PATH["em-orbit"]} fill="none" stroke="currentColor" strokeWidth={1.6} strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    </span>
+  );
+}
+
 /** Human names for the avatar pictures (accessible names; the art itself carries no text). */
-export const avatarName = (id: string) => id.replace(/-/g, " ");
+export const avatarName = (id: string) => (id.startsWith("em-") ? `${id.slice(3)} emblem` : id.replace(/-/g, " "));
+
 
 /** The disc's fallback: its tint and a simple drawn mark (a different shape per avatar, so a child can tell them apart). */
 function AvatarMark({ i }: { i: number }) {
@@ -111,6 +142,7 @@ function AvatarMark({ i }: { i: number }) {
 }
 
 export function Avatar({ id, size = 56, alt }: { id: string | null | undefined; size?: number; alt?: string }) {
+  if (id && id.startsWith("em-")) return <Emblem id={id} size={size} />;
   const i = Math.max(0, AVATARS.indexOf((id ?? "") as (typeof AVATARS)[number]));
   const fallback = (
     <span className="avatar-fb" style={{ width: size, height: size, background: TINTS[i % TINTS.length] }}>

@@ -7,6 +7,7 @@
 // English chrome only (§5.3). No teacher name or pronoun is written here (whether the site names her is the owner's
 // open call, BUILD-PLAN §5 decision 4), so the site says "the teacher" and shows her unnamed.
 import { useEffect, useState, type ReactNode } from "react";
+import { SITE } from "../site.ts";
 import { Link, NavLink } from "react-router-dom";
 import { TUTORS, type TutorCharacter } from "../../../shared/tutors.js";
 import { Plate2D } from "../../avatar/Plate2D.tsx";
@@ -81,6 +82,7 @@ export function SiteHeader({ home }: { home?: boolean }) {
         <nav className="sv-nav" aria-label="Site">
           {home ? <a href="#lesson">How a lesson works</a> : <NavLink to="/#lesson">How a lesson works</NavLink>}
           <NavLink to="/promises">Our promises</NavLink>
+          <NavLink to="/pricing">Pricing</NavLink>
           <NavLink to="/help">Help and safety</NavLink>
         </nav>
         <span className="sv-spacer" />
@@ -117,6 +119,7 @@ export function SiteFooter() {
           <Link to="/help">Help and safety</Link>
           <Link to="/privacy">Privacy</Link>
           <Link to="/promises">Our promises</Link>
+          <Link to="/pricing">Pricing</Link>
         </nav>
         <div className="sv-stack">
           <p className="kx-label">If a child needs help now</p>
@@ -128,8 +131,22 @@ export function SiteFooter() {
 }
 
 /** A public page in the site's scope (Volt night): header, the page, footer. */
+/** r7 app-landing-refresh: each public page names itself on the canonical origin (SITE.origin): the canonical link and
+ *  the share card's og:url follow the path, so /promises is never indexed as the landing. */
+export function useCanonical(): void {
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const href = `${SITE.origin}${location.pathname === "/" ? "/" : location.pathname.replace(/\/$/, "")}`;
+    let link = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    if (!link) { link = document.createElement("link"); link.rel = "canonical"; document.head.appendChild(link); }
+    link.href = href;
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", href);
+  }, []);
+}
+
 export function SitePage({ children, title }: { children: ReactNode; title: string }) {
   useEffect(() => { document.title = `${title} · Taxila`; }, [title]);
+  useCanonical();
   return (
     <div {...VOLT_NIGHT}>
       <a className="sv-skip" href="#main">Skip to content</a>
@@ -145,14 +162,14 @@ export function SitePage({ children, title }: { children: ReactNode; title: stri
  *  stable teacher). */
 export const SITE_TUTORS: TutorCharacter[] = TUTORS.filter((t) => t.status === "live");
 
-/** A teacher's face as the lesson draws it at rest: under the r8 look the code-drawn plate (Plate2D `still`, the same
- *  person as the lesson's tier D face, no bytes to fetch); under lamp1 or lamp2, the grown-up Asha, her rest still from the
- *  pack, never the vector (BUILD-PLAN §3.5 Part B: no fallback changes the face). Nothing paints until the page's look is
+/** A teacher's face as the lesson draws it at rest: Asha's rest still from her look's pack under EVERY look (r8, lamp1,
+ *  lamp2; round 7 Face: the lesson never shows the Plate2D vector for her, so the site does not either); the code-drawn
+ *  plate only for a tutor the puppet is not. Nothing paints until the page's look is
  *  known (./face-puppet/look.ts), so the site never shows one face and then another. Hidden from assistive tech: the
  *  caller labels the group. */
 export function TeacherPortrait({ tutor, size }: { tutor: TutorCharacter; size: number }) {
   const look = usePuppetLook();
-  const grown = look === "lamp1" || look === "lamp2" ? look : null;
+  const grown = look;
   const still = grown !== null && tutor.id === "asha";
   return (
     <span className="rig-portrait" style={{ width: size, height: size }} data-tutor={tutor.id} data-look={look ?? "pending"} aria-hidden="true">

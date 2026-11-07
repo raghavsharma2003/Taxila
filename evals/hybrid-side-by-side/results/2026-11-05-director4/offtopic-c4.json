@@ -1,0 +1,303 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko cricket ke equal shares se samjhenge. Tumhara favourite cricket player kaun hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 890
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai—badhiya! Socho, ek roti do siblings ko deni hai: fair share ke liye dono pieces kaise hone chahiye?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1234,
+   "replyReadyMs": 2124,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1199
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai—games, stories, ya kuch aur? Phir fractions par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1406,
+   "replyReadyMs": 2605,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 950
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, roti ko do barabar pieces mein socho; board par ek piece shaded hai—tum ise apne words mein kya kahogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1453,
+   "replyReadyMs": 2403,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-parts@1",
+    "onScreen": {},
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 833
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi—ek shaded piece, do barabar pieces mein se ek hota hai: one-half. Board par Cake B ke pieces dekho: kya sab same size hain?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1798,
+   "replyReadyMs": 2631,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Cake A",
+      "items": [
+       "3 pieces",
+       "1 big, 2 small",
+       "not thirds"
+      ]
+     },
+     "right": {
+      "title": "Cake B",
+      "items": [
+       "3 pieces",
+       "all the same size",
+       "each piece = 1/3"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "compare@1",
+    "onScreen": {
+     "labels": "Cake A | Cake B | ? pieces | ? pieces | "
+    },
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Cake A",
+       "items": [
+        "3 pieces",
+        "1 big, 2 small",
+        "not thirds"
+       ]
+      },
+      "right": {
+       "title": "Cake B",
+       "items": [
+        "3 pieces",
+        "all the same size",
+        "each piece = 1/3"
+       ]
+      }
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 778
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par fractions activity khelo: Cake B ke barabar pieces gino, phir shaded piece dekho—kitna hissa dikh raha hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1401,
+   "replyReadyMs": 2179,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "game",
+    "game": "todo-jodo/strips",
+    "goal": "make"
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1039
+  },
+  {
+   "who": "teacher",
+   "text": "Theek, tumne 3 pieces gina. Ab dekho: kya teeno pieces barabar size ke hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1353,
+   "replyReadyMs": 2392,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 848
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, yeh boring lag raha hai—ab tareeka badalte hain: picture, story, ya quick game?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1370,
+   "replyReadyMs": 2218,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 888
+  },
+  {
+   "who": "teacher",
+   "text": "Kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1097,
+   "replyReadyMs": 1985,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 881
+  },
+  {
+   "who": "teacher",
+   "text": "Ek din Riya ne cake ko teen barabar pieces mein baanta; ek piece kisi ko mila. Us hissa ko one-third kehte hain. Kitne equal pieces the?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1421,
+   "replyReadyMs": 2302,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1196
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum rukna chahti ho—choose karo: aage badhein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3166,
+   "replyReadyMs": 4362,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

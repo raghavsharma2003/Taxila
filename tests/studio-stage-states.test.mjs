@@ -1,5 +1,5 @@
 // W2-H, the Studio piece inside the lesson (owner priority 4; LIVE-STUDIO §4, §5.1, AT-11; STUDENT-FLOW §5.3 journey 2):
-// drives the REAL child lesson route (Vite dev server: ChildShell, LessonScreen, useDesk, Desk, WorkTray, StudioStage,
+// drives the REAL child lesson route (the built app from dist/, or the Vite dev server when dist/ is stale: ChildShell, LessonScreen, useDesk, Desk, WorkTray, StudioStage,
 // the skeleton renderers, StudioFrame) with the API mocked by page.route, and checks:
 //   1. every archetype's skeleton-as-activity sits INSIDE the stage box, which sits inside the tray, at 360 x 800,
 //      768 x 1024 and 1366 x 768: nothing overflows, the page never scrolls sideways, every target is ≥ 44 CSS px;
@@ -33,20 +33,37 @@ const GOLD = JSON.parse(readFileSync(new URL("../evals/live-studio/goldens/golde
 const FIXTURE = readFileSync(new URL("./fixtures/studio-shade-fraction.html", import.meta.url), "utf8");
 const SHA = createHash("sha256").update(FIXTURE, "utf8").digest("hex");
 
-let vite, browser, base;
+let app, browser, base;
+// gate speed (main, 2026-11-05): the prebuilt dist/ from a static server (tests/support/app-server.mjs; the dev server
+// when dist/ is stale) and ONE browser context per viewport, its pages opened and closed per case
+const contexts = new Map();
 before(async () => {
   if (SKIP) return;
-  const { createServer } = await import("vite");
-  vite = await createServer({ root: ROOT, configFile: ROOT + "vite.config.ts", logLevel: "error", server: { port: 0, strictPort: false, host: "127.0.0.1", hmr: false } });
-  await vite.listen();
-  base = vite.resolvedUrls.local[0].replace(/\/$/, "");
+  const { appServer } = await import("./support/app-server.mjs");
+  app = await appServer();
+  base = app.url;
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
 });
 after(async () => {
+  for (const c of contexts.values()) await c.close().catch(() => {});
   await browser?.close();
-  await vite?.close();
+  await app?.close();
 });
+/** Runs fn over items, `n` at a time (each case is its own page: independent loads, in parallel); results in order. */
+async function pool(items, fn, n = 4) {
+  const out = new Array(items.length); let next = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (next < items.length) { const i = next++; out[i] = await fn(items[i], i); } }));
+  return out;
+}
+async function contextFor(viewport) {
+  const key = `${viewport.width}x${viewport.height}`;
+  if (!contexts.has(key)) {
+    const mobile = viewport.width < 600;
+    contexts.set(key, await browser.newContext({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile }));
+  }
+  return contexts.get(key);
+}
 
 const skeletonOf = (id) => {
   const a = ARCHETYPES.get(id);
@@ -64,9 +81,8 @@ function hostGrader() {
     return { correct, complete: i >= items.length, wrongTries: correct ? 0 : wrong }; };
 }
 
-async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, fragment: FIXTURE } } = {}) {
-  const mobile = viewport.width < 600;
-  const page = await browser.newPage({ viewport, deviceScaleFactor: 1, hasTouch: mobile, isMobile: mobile });
+async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, fragment: FIXTURE }, turnSlot = null } = {}) {
+  const page = await (await contextFor(viewport)).newPage();
   const ui = { status: "speaking", phase: "teach", handover: "answer", answerForm: "words", tray: "studio", studioSlot: slot, ask: { text: "Try it", itemId: "i1" } };
   const grade = hostGrader();
   await page.route("**/api/**", async (route) => {
@@ -76,7 +92,7 @@ async function lessonWith(viewport, slot, { calls = [], build = { sha256: SHA, f
     if (p === "/api/me") return json(200, { guardian: { id: "g1", email: "g@test.invalid", name: "Grown-up" }, children: [KID] });
     if (p === "/api/lesson/start") return json(200, { lessonId: LESSON, topic: { id: "c5-maths-ch02-t01", title: "Fractions", chapter: "Fractions" },
       teacher: { id: "arjun", name: "Arjun", voice: "v", addressedAs: "", role: "AI teacher" }, moduleCommands: [], ui, teacherOpening: "Dekho.", teacherOpeningSeq: 1 });
-    if (p === "/api/lesson/turn") { calls.push({ p, b: JSON.parse(route.request().postData() || "{}") }); return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui, teacherReply: "Hmm.", teacherReplySeq: 2 }); }
+    if (p === "/api/lesson/turn") { calls.push({ p, b: JSON.parse(route.request().postData() || "{}") }); return json(200, { move: { kind: "explain", shape: "x" }, moduleCommands: [], ui: turnSlot ? { ...ui, studioSlot: turnSlot } : ui, teacherReply: "Hmm.", teacherReplySeq: 2 }); }
     if (p === "/api/lesson/end") return json(200, { summary: null, parentNote: null });
     if (p === "/api/studio/stream") return route.fulfill({ status: 204, body: "" });
     if (p === "/api/studio/slot") return json(200, { slot: null });
@@ -113,7 +129,8 @@ const SKELETON_IDS = [...ARCHETYPES.values()].filter((a) => a.build !== "script"
 
 test("every skeleton activity sits inside its stage box, nothing overflows, targets ≥ 44 px (360 x 800, 768 x 1024, 1366 x 768)", { skip: SKIP, timeout: 600_000 }, async () => {
   const fails = [];
-  for (const vp of VIEWPORTS) for (const id of (vp.width === 360 ? SKELETON_IDS : ["shade_fraction", "bar_chart_read", "sort_bins", "hub_flows"])) {
+  const cases = VIEWPORTS.flatMap((vp) => (vp.width === 360 ? SKELETON_IDS : ["shade_fraction", "bar_chart_read", "sort_bins", "hub_flows"]).map((id) => ({ vp, id })));
+  await pool(cases, async ({ vp, id }) => {
     const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf(id) });
     try {
       await page.waitForSelector('[data-testid="studio-skeleton"]', { timeout: 10_000 });
@@ -131,32 +148,41 @@ test("every skeleton activity sits inside its stage box, nothing overflows, targ
       if (m.page.sw > m.page.iw + 1) fails.push(`${tag}: horizontal page scroll`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-${id}-${vp.width}x${vp.height}.png` });
     } finally { await page.close(); }
-  }
+  });
   assert.deepEqual(fails, []);
 });
 
 test("the tray states keep the tray the same size and never show a spinner, a percentage, code or error text", { skip: SKIP, timeout: 300_000 }, async () => {
   const states = ["skeleton_shown", "building", "ready", "revealed", "in_use", "fallback_shown"];
-  const sizes = [], fails = [];
-  for (const state of states) {
+  const fails = [];
+  const sizes = await pool(states, async (state) => {
     const page = await lessonWith({ width: 360, height: 800 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state, artifact: skeletonOf("shade_fraction") });
     try {
       await page.waitForSelector(`[data-testid="studio-stage"][data-state="${state}"]`, { timeout: 10_000 });
       await page.waitForTimeout(700);   // the pencil draw / reveal choreography settles
       const m = await measure(page);
-      sizes.push({ state, tray: m.tray, box: m.box });
+      const size = { state, tray: m.tray, box: m.box };
       if (/\d\s*%|loading|error|generat|spinner|function\s*\(|<\w+/i.test(m.trayText)) fails.push(`${state}: forbidden text "${m.trayText.slice(0, 80)}"`);
       const spin = await page.evaluate(() => [...document.querySelectorAll('[data-testid="tray"] *')].some((e) => /spin|progress/i.test(e.className?.baseVal ?? e.className ?? "") || e.getAttribute("role") === "progressbar"));
       if (spin) fails.push(`${state}: a spinner or progress element`);
-      const chip = await page.$('[data-testid="studio-chip"]');
-      if ((state === "skeleton_shown" || state === "building") !== !!chip) fails.push(`${state}: caption chip ${chip ? "shown" : "missing"}`);
+      // round 7 (C1 app-studio-no-build-state): the child never sees a piece being made: no "{T} is making this" chip, no
+      // pencil sketch, no veil, no sparkle; with no earlier piece the box stays the calm ground
+      const chip = await page.$('[data-testid="studio-chip"], .st-wash, .st-veil, .st-sparkle');
+      if (chip) fails.push(`${state}: build state on screen`);
+      const drawn = await page.evaluate(() => document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0);
+      if (["skeleton_shown", "building", "ready"].includes(state) && drawn) fails.push(`${state}: an unfinished piece is drawn`);
+      if (!["skeleton_shown", "building", "ready"].includes(state) && !drawn) fails.push(`${state}: the finished piece is not drawn`);
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-state-${state}.png` });
+      return size;
     } finally { await page.close(); }
-  }
+  });
+  // the tray never moves; the box is compared among the states that draw the piece (round 7: an unfinished piece draws
+  // nothing, so its box is the calm ground's, not the piece's)
+  const drawnSizes = sizes.filter((x) => !["skeleton_shown", "building", "ready"].includes(x.state));
   for (const s of sizes) for (const k of ["x", "y", "w", "h"]) {
     if (Math.abs(s.tray[k] - sizes[0].tray[k]) > 4) fails.push(`${s.state}: tray ${k} moved ${s.tray[k]} vs ${sizes[0].tray[k]}`);
-    if (Math.abs(s.box[k] - sizes[0].box[k]) > 4) fails.push(`${s.state}: box ${k} moved`);
   }
+  for (const s of drawnSizes) for (const k of ["x", "y", "w", "h"]) if (Math.abs(s.box[k] - drawnSizes[0].box[k]) > 4) fails.push(`${s.state}: box ${k} moved`);
   assert.deepEqual(fails, []);
 });
 
@@ -269,7 +295,7 @@ test("the params production serves (class 7 tenths, d = 12) keep every target �
   const fails = [];
   const cases = realCases();
   assert.ok(cases.some((c) => c.params.items?.some?.((i) => i.d === 10)), "a 10-part bar is among the real cases");
-  for (const vp of VIEWPORTS) for (const c of cases) {
+  await pool(VIEWPORTS.flatMap((vp) => cases.map((c) => ({ vp, c }))), async ({ vp, c }) => {
     const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: realArt(c.id, c.params) });
     try {
       await page.waitForSelector('[data-testid="studio-skeleton"]', { timeout: 10_000 });
@@ -286,13 +312,13 @@ test("the params production serves (class 7 tenths, d = 12) keep every target �
       for (let i = 1; i < row.length; i++) if (row[i].x < row[i - 1].x + row[i - 1].w - 0.5) { fails.push(`${tag}: labels overlap`); break; }
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-real-${c.tag.replace(/\W+/g, "-")}-${vp.width}x${vp.height}.png` });
     } finally { await page.close(); }
-  }
+  });
   assert.deepEqual(fails, []);
 });
 
 test("the open corner menu stays inside the clipping stage at all three viewports", { skip: SKIP, timeout: 300_000 }, async () => {
   const fails = [];
-  for (const vp of VIEWPORTS) {
+  await pool(VIEWPORTS, async (vp) => {
     const page = await lessonWith(vp, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") });
     try {
       await page.click('[data-testid="studio-more"]');
@@ -307,7 +333,7 @@ test("the open corner menu stays inside the clipping stage at all three viewport
       await page.click('[data-testid="studio-again"]');
       if (SHOTS) await page.screenshot({ path: `${SHOTS}/w2h-menu-${vp.width}x${vp.height}.png` });
     } finally { await page.close(); }
-  }
+  });
   assert.deepEqual(fails, []);
 });
 
@@ -332,5 +358,28 @@ test("an answer names its item and the mount key; a second wrong try reaches the
     assert.equal(ev.type, "stuck");
     assert.equal(ev.moduleId, `${LESSON}:st:1`);
     assert.equal(ev.data?.correct, undefined, "the lesson reads the host's grade, never a client claim");
+  } finally { await page.close(); }
+});
+
+// round 7 (C1 app-studio-no-build-state): while the next piece is still being made, the stage keeps the piece the child had
+// (inert: no corner control, no answers), never the new piece's sketch and never a caption about making it
+test("a piece still being made never replaces the finished piece on screen: the earlier piece stays, inert", { skip: SKIP, timeout: 120_000 }, async () => {
+  const page = await lessonWith({ width: 412, height: 860 }, { slotId: "s1", intentId: `${LESSON}:st:1`, state: "fallback_shown", artifact: skeletonOf("shade_fraction") },
+    { turnSlot: { slotId: "s2", intentId: `${LESSON}:st:2`, state: "building", artifact: skeletonOf("shade_fraction") } });
+  try {
+    await page.waitForSelector('[data-testid="studio-stage"][data-state="fallback_shown"]', { timeout: 10_000 });
+    const before = await page.evaluate(() => document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0);
+    assert.ok(before > 0, "the finished piece is drawn");
+    const input = await page.waitForSelector("input.dk-input, textarea.dk-input", { timeout: 8000 }).catch(() => null);
+    if (!input) { const type = await page.$('[data-testid="type"]'); if (type) await type.click(); }
+    await page.fill("input.dk-input, textarea.dk-input", "aur dikhao");
+    await page.keyboard.press("Enter");
+    await page.waitForSelector('[data-testid="studio-stage"][data-state="building"]', { timeout: 10_000 });
+    await page.waitForTimeout(400);
+    const m = await page.evaluate(() => ({ phase: document.querySelector('[data-testid="studio-stage"]')?.getAttribute("data-phase"),
+      drawn: document.querySelector('[data-testid="studio-box"] .st-art')?.childElementCount ?? 0,
+      chip: !!document.querySelector('[data-testid="studio-chip"], .st-wash, .st-veil, .st-sparkle'),
+      ctrl: !!document.querySelector('[data-testid="studio-more"]') }));
+    assert.deepEqual(m, { phase: "held", drawn: before, chip: false, ctrl: false });
   } finally { await page.close(); }
 });

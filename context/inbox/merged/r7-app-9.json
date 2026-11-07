@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-notebook-made",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Notebook has two pages under Kaksha: Lessons (the board pages, unchanged) and Made for you (GET /api/studio/made-for, newest first, no counts or completion), where a tap plays the piece again in the real Studio stage with no lesson in its intent (posts nothing). ?made=<id> from Home and the Debrief opens that piece. The Question jar page waits for Learning's child-facing jar route. Reverse: Studio moves replays to their own route.",
+   "source": "inbox/r7-app-9.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-notebook-made",
+   "rel": "part_of",
+   "dst": "dc-r7-app-debrief-made"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-app-notebook-made\nWhat she builds for a child should not disappear when the lesson ends. Made for you is the child's shelf of those pieces: the games, animations and simulations she made for them, ready to play again. Plain boards stay on the Lessons page. The Home's and the Debrief's links now land on the piece itself. A replay is play, not a lesson: it opens no stream and records nothing.\n"
+ }
+}

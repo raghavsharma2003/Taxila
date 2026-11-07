@@ -1,0 +1,205 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ground ki boundary se perimeter, yaani charon taraf ki lambai, dekhenge. Tum cricket dekhti ho?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1376
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, cricket se shuru karte hain, Riya. Ground ke charon taraf rope lagani ho, toh rope ki lambai jaanne ke liye kya naapogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1580,
+   "replyReadyMs": 2956
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1278
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ground ke chaaron taraf rope lagegi, toh har side ki lambai jodni hogi. Isi total ko perimeter, yaani parimap, kehte hain. Kya-kya jodogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 3024,
+   "replyReadyMs": 4302,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1033
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 4 kaha—rectangle ki chaar sides hoti hain. Rani ke park ki length 50 m, breadth 30 m hai; ek round kaise nikalogi?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 5476,
+   "replyReadyMs": 6509,
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1279
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek round park ka perimeter hai: 50 aur 30 ko jodkar double karo, toh 160 m. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 3357,
+   "replyReadyMs": 4636,
+   "guard": [
+    "underived"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1352
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumhara jawab saaf nahi pakad paayi. Ek baar phir bolo: 160 m ke teen rounds ki kul lambai kitni m hogi?",
+   "move": "repair",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1572,
+   "replyReadyMs": 2924
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1297
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 6 likha, par teen rounds ki lambai nikalni hai. Ek round ki 160 m lambai ko teen baar jodne se shuru karo. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1104,
+   "replyReadyMs": 2401
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 1130
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle dekho: 2 × (50 + 30) = 2 × 80 = 160.",
+   "move": "reteach",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2973,
+   "replyReadyMs": 4103,
+   "guard": [
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "underived",
+     "samecard"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1367
+  },
+  {
+   "who": "teacher",
+   "text": "Pichhle sawaal ka jawab 480 m hai, kyunki 160 m ke teen rounds utne hote hain. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1441,
+   "replyReadyMs": 2808
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1071
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 8 likha. Perimeter ke liye teeno sides jodte hain. 5 cm, 6 cm aur 9 cm wali sides ka total kya hoga?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2452,
+   "replyReadyMs": 3523,
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1457
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum abhi rukna chahti ho, theek hai. Aage chalna hai, chhota break lena hai, ya aaj ke liye band karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1344,
+   "replyReadyMs": 2801
+  }
+ ],
+ "agent": []
+}

@@ -1,0 +1,24 @@
+{
+  "nodes": [
+    {
+      "id": "fx-r7-picture-request-perimeter",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "Brain's S4 harness (via main): a c6 perimeter child asking for a picture got no board. Fixed in four places. (1) measured@1 names its shape ('rectangle', kit word) and, in a perimeter context, writes 'perimeter' and walks the boundary with a marker (one follow per side, claim: back at its start); geometry.js reads '12 m by 7 m' / '50 m long and 30 m wide' and tags its source (line/item, lesson = worked example + expectations, kit = another item); explainerFor lets a line or lesson shape outrank a perimeter-mode or triangle area-grid, never a shape from another item. (2) regate masks W9/W18 reveals beside a W6 miss (W6 is judged against her real line later); preselect treats a W19 that only repeats W6 as line-bound and keeps the masked board. (3) withheldValues: while the item IS the worked example (fade:N), the numbers its problem states are givens, never withheld. (4) pick.js: an operation inside brackets after another ('2 × (50 + 30)') and a hyphen range ('1-9') are not two-group sums.",
+      "reversal": "a measured run shows the boundary marker distracts from the perimeter step her line names"
+    },
+    {
+      "id": "ms-r7-picture-request-perimeter",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 7,
+      "method": "every class 4-7 maths kit titled perimeter/area/rectangle, driven to its first item, a picture request (plain, 'picture', subject 'perimeter') through whiteboardIntentOf → preselect certified at p412; before/after on the same kits; plus the first-explain coverage over 250 kits",
+      "title": "Picture requests answered: c5-ch11-t02 0/3 → 3/3, c6-ch06-t01 2/3 (catalogue, no shape) → 3/3 measured@1, c6-ch06-t02 0/3 → 2/3; others unchanged (c6-ch06-t03 still none). First explain: boards 245 → 247, moving 122 → 125."
+    }
+  ],
+  "edges": [ { "src": "fx-r7-picture-request-perimeter", "rel": "measured_by", "dst": "ms-r7-picture-request-perimeter" } ],
+  "md": {
+    "decisions": "## fx-r7-picture-request-perimeter: a perimeter picture when the child asks (2026-11-04)\n\nWhen a child in a perimeter lesson asks to see it, the board now draws the lesson's rectangle to scale with its sides, names it, and walks a marker once round its boundary. Before, no board came up.\n",
+    "measurements": "## ms-r7-picture-request-perimeter (2026-11-04)\n\nIn the perimeter and area lessons, picture requests that got a fitting board rose from 2 of 9 to 8 of 9 asks across the three lessons that lacked one.\n"
+  }
+}

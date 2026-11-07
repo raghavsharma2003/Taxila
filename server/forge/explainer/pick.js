@@ -20,17 +20,33 @@ export function codePick({ kit, item = null, text, representation, interest }) {
   if (!src) return null;
   const v = extractValues(src);
   const lower = src.toLowerCase();
+  const flat0 = lower.replace(/(\d),(?=\d{3}\b)/g, "$1");
   const n = ints(v);
   const rep = String(representation ?? "").toLowerCase();
   // round 4 content: a fraction OF a fraction ("3/5 of 2/3", "1/2 × 1/4", "half of a half", "aadhe ka aadha"): the area model
   const of = fractionOfIn(src);
   if (of) return { template: "fraction-of@1", ...of };
+  // round 7 (main, director3 judgement): a fraction ON A NUMBER LINE ("Mark 2/5 on a number line", "the middle mark", "4
+  // equal gaps") is drawn on the line it is about, never as a shaded circle (fraction-line@1)
+  const fl = fractionLineIn(src, { kit, item: !!item || text != null });
+  if (fl) return fl;
   // a fraction of a whole: the first proper fraction with a small denominator
   const fr = v.fractions.find(([a, d]) => d >= 2 && d <= 12 && a >= 0 && a <= d);
   if (fr) {
     const food = /roti|chapati|pizza|cake|pie/.test(lower) || (/roti|chapati|pizza|pie/.test(rep)) || (!rep && /^(cooking|food)$/.test(String(interest ?? "")));
     const bar = /\b(bar|strip|line|ribbon|rope)\b/.test(rep);
     return { template: "fraction-parts@1", whole: food && fr[1] <= 8 ? "roti" : bar || fr[1] > 8 ? "bar" : "circle", parts: fr[1], shade: fr[0] };
+  }
+  // round 7 (M3): a decimal to LOCATE or compare ("0.45 on the number line", "tenths and hundredths"): the unit it lies in
+  // is lifted off the number line and zoomed into its tenths (number-line-zoom@1)
+  if ((/decimal|tenths?|hundredths?/.test(lower) || kitSays(kit, /decimal|tenths?|hundredths?/)) && /locat|compar|order|smallest|largest|number line|tenths?|hundredths?|between|greater|smaller|bigger/.test(lower)) {
+    // (the first such decimal that is no item's answer: a board that must write its value "?" says nothing — W9/W17)
+    const keys = new Set((kit?.items ?? []).flatMap((i) => [i?.answer, ...(i?.acceptable ?? [])]).flatMap((x) => String(x ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map((t) => String(Number(t))));
+    // (never in a line that is doing arithmetic: adding decimals is lined-up places, not a location)
+    for (const d of /\d\s*[+×÷*]\s*\d|\d\s[−-]\s\d|\b(?:add|adding|subtract|sum|difference|multiply|divide)\b/.test(flat0) ? [] : flat0.matchAll(/(?<![\d.])(\d)\.(\d{1,2})(?![\d.])/g)) {
+      if (keys.has(String(Number(d[0]))) || /[+×÷*]|\s[−-]\s/.test(lower.slice(Math.max(0, d.index - 3), d.index + d[0].length + 3))) continue;
+      return { template: "number-line-zoom@1", value: Number(d[0]) };
+    }
   }
   // integers with a sign (−2 − 3, −63 ÷ 7): a hop on the number line when it fits
   // a sign is NEGATIVE only where no operand precedes it ("(−2)", "−6 is colder"), never the minus of "8 − 3"
@@ -46,22 +62,52 @@ export function codePick({ kit, item = null, text, representation, interest }) {
     const hop = minus ? -Math.abs(b) : b;
     if (Math.abs(a) <= 20 && Math.abs(hop) <= 20 && hop !== 0) return { template: "number-line-hop@1", start: a, hops: [hop] };
   }
-  const two = n.length >= 2 ? [n[0], n[1]] : null;
-  if (two && /\b(add|sum|total|plus|altogether|in all)\b|\d\s*\+\s*\d|\+/.test(lower)) {
-    const [a, b] = two;
+  // round 7 (M2): the two numbers of an operation are its OPERANDS, read where the operation is written ("4 + 3", "add 4
+  // and 3", "3 groups of 4"), not the line's first two numbers. One sign between two numbers is an operation only when no
+  // other operation joins them ("3 + 4 × 2" is order of operations, "9 + 9 + 1" a longer sum, "3n + 2" a rule: none is two
+  // groups put together). A word problem with exactly two numbers keeps the word cue ("4 apples, 3 more: how many in
+  // all?"). Measured: once motion made such boards pass W6, the old first-two-numbers rule drew "2 + 2" dots for a
+  // perimeter lesson, 2 + 3 for the Collatz rule and 3 + 4 for "3 + 4 × 2 = 11".
+  const flat = lower.replace(/(\d),(?=\d{3}\b)/g, "$1");   // "2,000 + 50" is 2000 + 50
+  const lone = (re) => {
+    const m = re.exec(flat);
+    if (!m) return null;
+    const before = flat.slice(0, m.index), after = flat.slice(m.index + m[0].length);
+    // (inside brackets an operation joins: "2 × (50 + 30)" is a rule's step, not two groups)
+    // (nor inside a decimal: "2.85 + 2.50" is no 85 + 2)
+    if (/[×x*÷/+−-]\s*\(?\s*$|[a-z]$|\d\.$/.test(before) || /^\s*\)?\s*(?:[×*÷/+−-]|x\s*\d)|^[a-z]|^\.\d/.test(after)) return null;
+    return [Number(m[1]), Number(m[2])];
+  };
+  const onlyTwo = n.length === 2 && !/[×÷*/=]|\d[a-z]\b/.test(lower) ? [n[0], n[1]] : null;
+  const addOps = lone(/(\d+)\s*\+\s*(\d+)/) ?? lone(/\b(?:add|adding|sum of|total of|plus)\s+(\d+)\s+(?:and|to|with)\s+(\d+)/)
+    ?? (onlyTwo && /\b(add|sum|total|plus|altogether|in all)\b|\d\s+more\b/.test(lower) ? onlyTwo : null);
+  if (addOps) {
+    const [a, b] = addOps;
     if (a <= 10 && b <= 10) return { template: "combine-count@1", a, b, op: "add" };
     if (a <= 99999 && b <= 99999) return { template: "column-op@1", a, b, op: "add" };
   }
-  if (two && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?|how many more|how much more|fewer)\b|\d\s*[−-]\s*\d/.test(lower)) {
-    const a = Math.max(...two), b = Math.min(...two);
+  // ("1-9" or "2-3 days" is a range: a minus is "−" or a spaced hyphen)
+  const subOps = lone(/(\d+)\s*(?:−|\s-\s)\s*(\d+)/) ?? lone(/\b(?:subtract|take away)\s+(\d+)\s+from\s+(\d+)/)?.reverse()
+    ?? (onlyTwo && /\b(subtract|minus|difference|take away|left over|are left|is left|remain(?:s|ing)?|how many more|how much more|fewer)\b/.test(lower) ? onlyTwo : null);
+  if (subOps) {
+    const a = Math.max(...subOps), b = Math.min(...subOps);
     if (a <= 10) return { template: "combine-count@1", a, b, op: "take_away" };
     if (a <= 99999) return { template: "column-op@1", a, b, op: "sub" };
   }
-  if (two && /\b(times|multiply|multiplied|groups? of|each|rows? of|product)\b|×/.test(lower)) {
-    const g = Math.min(...two), e = Math.max(...two);
+  const mulOps = lone(/(\d+)\s*[×x*]\s*(\d+)/) ?? lone(/(\d+)\s+(?:groups?|rows?|bags?|boxes?|packets?)\s+of\s+(\d+)/) ?? lone(/(\d+)\s+times\s+(\d+)/)
+    ?? (n.length === 2 && !/[+−÷/=]|\d[a-z]\b/.test(lower) && /\b(times|multiply|multiplied|groups? of|each|rows? of|product)\b/.test(lower) ? [n[0], n[1]] : null);
+  if (mulOps) {
+    const g = Math.min(...mulOps), e = Math.max(...mulOps);
     if (g >= 2 && g <= 6 && e >= 1 && e <= 8) return { template: "equal-groups@1", groups: g, each: e };
   }
-  if (/number line|jump|hop|skip/.test(lower) && n.length >= 2 && n[0] <= 100 && n[1] >= 1 && n[1] <= 20) {
+  // "3 × (−2) means three jumps of 2 to the left": a product on the number line is that many equal jumps from 0 (round 7
+  // M2: read as "start 3, hop −2" it drew 3 → 1)
+  const times = /number line|jump|hop|skip/.test(lower) ? flat.match(/(\d+)\s*[×x*]\s*\(?\s*([−-])?\s*(\d+)\s*\)?/) : null;
+  if (times) {
+    const k = Number(times[1]), step = (times[2] ? -1 : 1) * Number(times[3]);
+    if (k >= 1 && k <= 4 && step && Math.abs(step) <= 20 && Math.abs(k * step) <= 40) return { template: "number-line-hop@1", start: 0, hops: Array(k).fill(step) };
+  }
+  if (!times && /number line|jump|hop|skip/.test(lower) && n.length >= 2 && n[0] <= 100 && n[1] >= 1 && n[1] <= 20) {
     return { template: "number-line-hop@1", start: n[0], hops: [/back|left|minus|subtract/.test(lower) ? -n[1] : n[1]] };
   }
   const big = n.find((x) => x >= 1000 && x <= 9_999_999);
@@ -85,6 +131,49 @@ export function fractionOfIn(text) {
 
 /** Does the kit itself say this word (so a part label is the book's own word)? */
 const kitSays = (kit, re) => re.test(kitText(kit));
+
+const ORD = { first: 1, second: 2, third: 3, fourth: 4, fifth: 5, sixth: 6, seventh: 7, eighth: 8, ninth: 9, tenth: 10, pehla: 1, pehle: 1, pahla: 1, doosra: 2, dusra: 2, teesra: 3, tisra: 3 };
+/** A whole object to shade ("roti", "pizza", "circle", "bar"): the fraction is OF it, not on a line. */
+const WHOLE_OBJECT = /\b(roti|chapati|pizza|cake|pie|circle|bar|strip|rectangle|shape|shaded?)\b/;
+/** The number line a fraction lies on, in words ("number line", "mark", "gap", "nishaan", "0 to 1", "0 se 1"). */
+export const ON_A_LINE = /number\s*line|\bmarks?\b|\bgaps?\b|nishaan|nishan|\b0\s*(?:to|se|-to-)\s*[1-3]\b|\bfrom\s+0\b|\bon\s+a\s+line\b|\bstones?\b/;
+/**
+ * round 7 (main, director3 judgement 2026-11-05): the fraction-line@1 call for a text about a fraction on the number line,
+ * or null. The line's split: "N equal parts / gaps", "K marks in between" (K+1 gaps), else the fraction's denominator; its
+ * length: "0 to 2" (else what the fraction needs, ≤ 3). What it highlights follows the ask: a NAMED mark ("the middle
+ * mark", "the first mark", "the 7th stone") asked for its fraction is ringed with "?"; a fraction asked for its place is
+ * written above the line with no point; only the kit's own solved example (`item` false) hops to the point and names it.
+ * Inside a fractions lesson about the line (its worked example), a plain "N equal parts" text is on the line too.
+ */
+export function fractionLineIn(src, { kit = null, item = false } = {}) {
+  const lower = String(src ?? "").toLowerCase();
+  const kitLine = /number\s*line|\bon a line\b/.test(String(kit?.workedExample?.problem ?? "").toLowerCase());
+  // (a lesson whose example is on the line: a text that asks WHERE a fraction is, never "write 7/4 as a mixed fraction")
+  const where = /\b(where|locate|place|point|left|right|between|closer|nearer|jumps?|kahan|kahaan)\b/.test(lower);
+  if (!(ON_A_LINE.test(lower) || (kitLine && where && !WHOLE_OBJECT.test(lower)))) return null;
+  // (a decimal line, "4.30 km to 4.40 km", is the decimal zoom's; a mixed number "2 1/3" is not a/b on 0..1)
+  if (/\d\.\d/.test(lower) || /\b\d\s+\d\s*\/\s*\d/.test(lower)) return null;
+  if (WHOLE_OBJECT.test(lower) && !/number\s*line|nishaan|nishan|\b0\s*(?:to|se|-to-)\s*[1-3]\b/.test(lower)) return null;
+  const fr = [...lower.matchAll(/(?<![\d.])(\d{1,2})\s*\/\s*(\d{1,2})(?![\d.])/g)].map((m) => [Number(m[1]), Number(m[2])]).filter(([, d]) => d >= 2 && d <= 12);
+  const split = lower.match(/\b(\d{1,2})\s+equal\s+(?:parts?|gaps?|pieces?|hisse|hisson)\b/)?.[1];
+  const between = lower.match(/\b(\d{1,2})\s+(?:equally\s+spaced\s+|small\s+)?marks?\s+(?:in\s+between|between|inside)\b/)?.[1];
+  const den = split ? Number(split) : between ? Number(between) + 1 : fr.find(([a, d]) => /every|each|har/.test(lower) && a === 1)?.[1] ?? fr[0]?.[1];
+  if (!(den >= 2 && den <= 12)) return null;
+  const tgt = fr.find(([, d]) => d === den) ?? null;
+  const span = Number(lower.match(/\b0\s*(?:to|se|-to-)\s*([1-3])\b/)?.[1] ?? 0);
+  const wholes = Math.min(3, Math.max(1, span, tgt ? Math.ceil(tgt[0] / den) : 1));
+  if (den * wholes > 24 || (tgt && tgt[0] > den * wholes)) return null;
+  const base = { template: "fraction-line@1", den, ...(wholes > 1 ? { wholes } : {}) };
+  // a named mark, asked for its fraction
+  const ordM = lower.match(/\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|pehla|pehle|pahla|doosra|dusra|teesra|tisra)\s+(?:mark|stone|nishaan|nishan)\b/)
+    ?? lower.match(/\b(\d{1,2})(?:st|nd|rd|th)\s+(?:mark|stone|nishaan|nishan)\b/);
+  const k = /\bmiddle\s+(?:mark|point|nishaan)|\bbeech\s+(?:ka|wala)\s+(?:mark|nishaan)/.test(lower) ? (den * wholes) % 2 ? null : (den * wholes) / 2
+    : ordM ? ORD[ordM[1]] ?? Number(ordM[1]) : null;
+  if (k != null && k >= 1 && k <= den * wholes && /\b(what|which|how far|kya|kaunsa|kitna|name|naam)\b/.test(lower)) return { ...base, mark: k };
+  if (tgt && !item) return { ...base, target: tgt, show: true };
+  if (tgt && tgt[0] >= 1) return { ...base, target: tgt };
+  return base;
+}
 const kitTextMemo = new WeakMap();
 function kitText(kit) {
   if (!kit || typeof kit !== "object") return "";
@@ -108,7 +197,9 @@ function geometryPick({ kit, src, lower, n }) {
     }
     // two pairs in a graph / table problem, or three or more anywhere ("June 140, July 250, August 230")
     const keyword = /bar graph|graph|chart|pictograph|table|data|tally/.test(lower);
-    if ((pairs.length >= 3 || (keyword && pairs.length >= 2)) && pairs.length <= 6 && pairs.every((p) => Number.isInteger(p.value) && p.value <= 100000)) {
+    // (three without a graph word only when every label is a name, "June", "Monday", "Ravi": "easier 38, add 9, away 1" in
+    // a mental-adding line is no data — round 7 M2)
+    if (((pairs.length >= 3 && pairs.every((p) => /^[A-Z]/.test(p.label))) || (keyword && pairs.length >= 2)) && pairs.length <= 6 && pairs.every((p) => Number.isInteger(p.value) && p.value <= 100000)) {
       // a label longer than its column holds at the small size is written as its first three letters (Sep, Sat)
       const maxChars = Math.floor((312 / pairs.length - 4) / 10.5);
       return { template: "bar-chart@1", bars: pairs.map((p) => ({ label: p.label.length > maxChars ? p.label.slice(0, 3) : p.label, value: p.value })) };
@@ -121,7 +212,10 @@ function geometryPick({ kit, src, lower, n }) {
     return { template: "symmetry@1", ...(line ? { line } : {}), ...(d && +d >= 1 && +d <= 6 ? { dot: +d } : {}) };
   }
   // area / perimeter of a rectangle or square with its sides in the text
-  if (/\b(area|perimeter|boundary|fence|border)\b|rectangular (?:park|field|garden|room|plot)|\brounds? of\b/.test(lower) && n.length >= 1) {
+  // (its sides MEASURED: a unit, "5 by 3", or rows and columns — "2 lengths and 2 breadths" in a formula, or "the L-shaped
+  // border around the square" of n × n, gives no sides; round 7 M2)
+  const measured = /\b\d+\s*(?:cm|mm|km|m|units?)\b|\b\d+\s*(?:by|×|x)\s*\d+\b|\b\d+\s+(?:rows?|columns?)\b/.test(lower);
+  if (measured && /\b(area|perimeter|boundary|fence|border)\b|rectangular (?:park|field|garden|room|plot)|\brounds? of\b/.test(lower) && n.length >= 1) {
     const unit = (lower.match(/\b\d+\s*(cm|mm|km|m)\b/) ?? [])[1];
     const sq = /\bsquare\b/.test(lower) && !/rectang/.test(lower);
     const dims = n.filter((x) => x >= 1 && x <= 1000);
@@ -142,7 +236,7 @@ function geometryPick({ kit, src, lower, n }) {
   }
   // a named shape (two of it for congruent figures), its parts in the kit's own words
   // a shape word that names a shape (not "square number", "squares of 12", "circle the answer", "sq cm")
-  const shapeText = lower.replace(/\bsquare\s+(?:numbers?|roots?|units?|cm|mm|m|km|metres?|meters?|centimetres?|kilometres?)\b|\bsquares?\s+of\b|\bperfect\s+squares?\b|\bsquared\b|\bcircle\s+(?:the|your|it|one|each|all)\b|\bsquares?\s+(?:paper|grid)\b|\bsquared\s+paper\b/g, " ");
+  const shapeText = lower.replace(/\bsquare\s+(?:numbers?|roots?|units?|cm|mm|m|km|metres?|meters?|centimetres?|kilometres?)\b|\bsquares?\s+of\b|\bperfect\s+squares?\b|\bsquared\b|\bcircle\s+(?:the|your|it|one|each|all)\b|\bsquares?\s+(?:paper|grid)\b|\bsquared\s+paper\b|\beach\s+square\b/g, " ");
   const sw = SHAPE_WORDS.find((w) => new RegExp(`\\b${w}s?\\b`).test(shapeText));
   if (sw || /congruent/.test(lower)) {
     const shape = sw ?? "quadrilateral";

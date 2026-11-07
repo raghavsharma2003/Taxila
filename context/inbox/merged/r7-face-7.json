@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-rig-glbs-out-of-dist",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Build plugin rigGlbs() (vite.config.ts) drops the owner-rejected generated rig GLBs from dist unless VITE_FACE_RIG=1; plates, runtime.json, the look index, publish-look.mjs and rig tests unchanged; dist 35 \u2192 28 MB."
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-face-rig-glbs-out-of-dist (2026-11-04)\nThe 3D rig looks' GLBs under public/assets/teacher/{teal,slate,plum}/1/ are the generated heads the owner rejected (owner-rejects-generated-faces). They shipped in every dist and were publicly reachable, though only the face.rig path (src/avatar/flags.ts, default off) ever fetches them. The main loop gave Face vite.config.ts for this one change (it has no owner in OWNERSHIP.md).\n- **What changed:** a new build plugin, rigGlbs() (modelled on artMasters), deletes dist/assets/teacher/<look>/<rev>/*.glb after the bundle unless VITE_FACE_RIG=1.\n- **What stays:** the plates, runtime.json, the look index (src/avatar/looks.gen.json), publish-look.mjs and the avatar-rig tests are untouched, and the files stay in public/ for dev (/dev/avatar ?facerig=1) and for a VITE_FACE_RIG=1 build. With the flag off a stray rig request 404s, and TutorFace falls back to the same look's plate.\n- **Measured:** a default build has 0 GLBs (dist 35 MB \u2192 28 MB); a VITE_FACE_RIG=1 build keeps all 6.\n- **Tests:** tests/r7-face-rig-glbs.test.mjs. Platform is told, since build size is theirs to watch.\n\n**Reverse if** the owner picks a 3D rig look (face-3d-selectable-tutor). Then that look ships with VITE_FACE_RIG=1, or its GLBs move out of this rule.\n"
+ }
+}

@@ -11,6 +11,11 @@
 //
 // Like lesson-fills.js: imports nothing heavy at load (the model call is a registered warmer), so Director tests stay pure;
 // process memory only.
+import { timelineCall } from "./timeline.js";
+import { tableCall } from "./table.js";
+import { labelCall } from "./label-pick.js";
+import { measuredCall } from "./geometry.js";
+import { placesCall } from "./places.js";
 import { readFileSync, existsSync } from "node:fs";
 import { expand } from "./templates.js";
 import { codePick } from "./pick.js";
@@ -81,9 +86,31 @@ export function explainerFor({ lessonId, kit, item = null, openItem = null, text
   const tries = [];
   const open = openItem && item && openItem.id === item.id;
   const code = codePick({ kit, item, text, representation, interest });
+  // round 7: a shape the kit states with its measures, drawn to scale (geometry.js); it outranks the generic shape@1
+  const mc = measuredCall(kit, { text, item: openItem ?? item });
+  // (also ahead of a perimeter area-grid, which draws no shape name and no walk round it, and of any area-grid when the
+  // stated shape is a triangle: round 7 M2, a c6 perimeter picture request got no board)
+  const mcFirst = mc && (code?.template === "shape@1" || (mc.from !== "kit" && code?.template === "area-grid@1" && (code.mode === "perimeter" || mc.shape === "triangle")));
+  if (mc) delete mc.from;
+  if (mcFirst) tries.push([mc, "code"]);
   if (code) tries.push([open ? { ...code, hideResult: true } : code, "code"]);
+  if (mc && !mcFirst) tries.push([mc, "code"]);
   // the open item's parallel: the worked example (a different problem, the same method)
   if (open) { const we = codePick({ kit, item: null, representation, interest }); if (we) tries.push([we, "code"]); }
+  // round 7 (C1 studio-board-richness): the kit's own dated chain as a true-scale timeline (timeline.js), before the
+  // library's model-written flow for the same topic
+  const tlc = timelineCall(kit, { text });
+  if (tlc) tries.push([tlc, "code"]);
+  // round 7: a computed table (the kit's "table of N" or its linear rule's values)
+  const tbc = tableCall(kit, { text });
+  if (tbc) tries.push([tbc, "code"]);
+  // round 7: a labelled diagram of the thing the kit is about (label-pick.js: a plant, flower, leaf or insect it names ≥ 3
+  // parts of), before the library's flow and the key-terms board
+  const lbc = labelCall(kit, { text });
+  if (lbc) tries.push([lbc, "code"]);
+  // round 7: the places a kit names, pinned at their true latitude/longitude on a degree grid (places.js; no outline)
+  const plc = placesCall(kit, { text });
+  if (plc) tries.push([plc, "code"]);
   const lib = libraryCall(kit, band);
   if (lib) tries.push([lib, "library"]);
   const live = entry(lessonId, false)?.call;

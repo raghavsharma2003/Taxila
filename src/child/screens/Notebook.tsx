@@ -18,11 +18,15 @@
 // immutable once a lesson ended, so each is fetched once and kept on the device (no N+1 on every open), at most
 // SUMMARY_CONCURRENCY at a time. Replace the source with a server list (GET /api/child/notebook) when it exists.
 import { useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
+import { MadeShelf } from "./NotebookMade.tsx";
+import { JarPage, readJar, type JarItem } from "./NotebookJar.tsx";
+import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import type { LessonSummary } from "../../../shared/contracts.ts";
 import { bestCard, getLessonSummary } from "../api.ts";
 import { Spot } from "../art.tsx";
-import { ChildScreen } from "../chrome.tsx";
+import { ChildScreen, useKx } from "../chrome.tsx";
+import { Glyph, Panel, StatePanel } from "../../ui-v3/kaksha/kit.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
 import { Icon } from "../pictos.tsx";
@@ -31,7 +35,7 @@ import { readArtefacts } from "../prefs.ts";
 import { Link } from "react-router-dom";
 import { StudioStage } from "../../studio/StudioStage.tsx";
 import type { StudioSlot, WhiteboardScript } from "../../../shared/studio.ts";
-import { tnb } from "../../copy/en.ts";
+import { tnb, tr7 } from "../../copy/en.ts";
 import "./notebook.css";
 
 interface Page { lessonId: string; topic: string; at: number; summary: LessonSummary | null; chips: string[]; topicId?: string | null; boards?: number; first?: WhiteboardScript | null }
@@ -86,10 +90,24 @@ async function pooled<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Pr
 }
 
 export function Notebook() {
-  const { cid, family } = useChild();
+  const { cid, family, child, band } = useChild();
   const { plan } = usePlan(cid);
   const young = family === "young";
+  const kx = useKx();
+  const rec = useTeacher(child.teacher_id, band);
   const [pages, setPages] = useState<Page[] | null>(null);
+  // r7 app-notebook-log: Lessons | Made for you; ?made=<id> (Home, Debrief) opens that piece on the Made page
+  const [search] = useSearchParams();
+  const madeId = search.get("made");
+  const [page, setPage] = useState<"lessons" | "made" | "jar">(madeId ? "made" : "lessons");
+  // the Question jar (Learning's GET /api/child/jar): its page shows only when the route answers
+  const [jar, setJar] = useState<JarItem[] | null>(null);
+  useEffect(() => {
+    if (!kx) return;
+    const ac = new AbortController();
+    void readJar(cid, ac.signal).then((j) => { if (!ac.signal.aborted) setJar(j); });
+    return () => ac.abort();
+  }, [cid, kx]);
   useEffect(() => {
     const ac = new AbortController();
     const list = readArtefacts(cid).slice().reverse().slice(0, 12);
@@ -125,6 +143,53 @@ export function Notebook() {
   // "after your first lesson" only when the server says there has been none; otherwise a line true on any device
   const emptyLine = plan.serverState === "first" ? t("emptyNotebook") : t("emptyNotebookLater");
 
+  if (kx) {
+    // Kaksha: each lesson a log entry (a HUD panel: date eyebrow, topic, her best question and the child's answer with the
+    // verified tick, the boards to replay); the empty state a calm panel, never a picture
+    return (
+      <ChildScreen testid="notebook" ground="shelf" title={t("notebook")} surfaces={plan.surfaces} className="kx-notebook">
+        <div className="kx-seg kx-nb-tabs" role="tablist" aria-label={t("notebook")}>
+          {(jar ? (["lessons", "made", "jar"] as const) : (["lessons", "made"] as const)).map((k) => (
+            <button key={k} type="button" role="tab" aria-selected={page === k} onClick={() => setPage(k)} data-testid={`nb-tab-${k}`}>
+              {tr7(k === "lessons" ? "nb.lessons" : k === "made" ? "nb.made" : "nb.jar")}
+            </button>
+          ))}
+        </div>
+        {page === "jar" && jar ? <JarPage items={jar} name={rec.name} /> : page === "made" ? <MadeShelf cid={cid} young={young} openId={madeId} name={rec.name} /> : pages && !shown.length ? (
+          plan.source === "loading" ? <div className="kx-wait" aria-busy="true" /> :
+          <StatePanel glyph="notebook" line={emptyLine} testid="notebook-empty" />
+        ) : (
+          <ol className="kx-log" aria-label={t("notebook")}>
+            {shown.map((p) => {
+              const card = p.summary ? bestCard(p.summary.cards) : null;
+              return (
+                <Panel as="li" key={p.lessonId} className="kx-log-page" testid="notebook-page"
+                  eyebrow={young ? undefined : new Date(p.at).toLocaleDateString(undefined, { day: "numeric", month: "short" })}>
+                  <h2 className="kx-panel-title">{p.topic}</h2>
+                  {card ? (
+                    <div className="kx-log-card">
+                      {card.ask && <p className="kx-log-ask" data-speech="">{card.ask}</p>}
+                      <p className="kx-log-ans">
+                        <span className="kx-tagline">{t("yourAnswer")}</span> <strong data-speech="">{card.answer}</strong>
+                        {card.tick && (
+                          <span className="kx-log-tick" data-help={card.withHelp ? "" : undefined} role="img" aria-label={card.withHelp ? t("withAHint") : t("onYourOwn")}>
+                            <Glyph name="tick" size={20} /><span aria-hidden="true">{card.withHelp ? t("withAHint") : t("onYourOwn")}</span>
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  ) : (
+                    p.chips.length > 0 && <p className="kx-log-ask" data-speech="">{p.chips.slice(-3).join(" · ")}</p>
+                  )}
+                  {(p.boards ?? 0) > 0 && <BoardPage cid={cid} page={p} young={young} kx />}
+                </Panel>
+              );
+            })}
+          </ol>
+        )}
+      </ChildScreen>
+    );
+  }
   return (
     <ChildScreen testid="notebook" ground="shelf" title={t("notebook")} surfaces={plan.surfaces} className="notebook">
       {pages && !shown.length ? (
@@ -167,7 +232,7 @@ export function Notebook() {
 }
 
 /** A lesson's boards: the first as a still, "Replay" redraws them all in order, "Continue this lesson" starts its topic. */
-function BoardPage({ cid, page, young }: { cid: string; page: Page; young: boolean }) {
+function BoardPage({ cid, page, young, kx }: { cid: string; page: Page; young: boolean; kx?: boolean }) {
   const [replay, setReplay] = useState<Replay | null>(null);
   const [i, setI] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -186,28 +251,32 @@ function BoardPage({ cid, page, young }: { cid: string; page: Page; young: boole
   }, [replay, i]);
   const n = page.boards ?? 0;
   const shown = replay ? replay.boards[i]?.script : page.first;
+  // Kaksha: the same controls as kit chips (one class map, so both looks keep one behaviour)
+  const c = kx
+    ? { btn: "kx-chip kx-cut", text: "kx-chip kx-cut", go: "kx-chip kx-cut kx-chip--go", count: "kx-tagline", wrap: "kx-log-boards", board: "kx-log-board", actions: "kx-log-actions" }
+    : { btn: "nb-btn", text: "nb-btn nb-btn--text", go: "nb-btn nb-btn--go", count: "nb-count", wrap: "nb-boards", board: "nb-board", actions: "nb-actions" };
   return (
-    <div className="nb-boards" data-testid="notebook-boards">
+    <div className={c.wrap} data-testid="notebook-boards">
       {shown && (
-        <div className="nb-board" data-testid="notebook-board">
+        <div className={c.board} data-testid="notebook-board">
           <StudioStage key={replay ? `r${i}` : "first"} slot={boardSlot(`${page.lessonId}:${replay ? i : "first"}`, shown)} young={young} lang="en" />
         </div>
       )}
-      <div className="nb-actions">
+      <div className={c.actions}>
         {replay ? (
           <>
-            <button type="button" className="nb-btn" onClick={() => setI((x) => Math.max(0, x - 1))} disabled={i === 0} aria-label={tnb("prev")}>‹</button>
-            <span className="nb-count" data-testid="notebook-count">{tnb("of", { i: i + 1, n: replay.boards.length })}</span>
-            <button type="button" className="nb-btn" onClick={() => setI((x) => Math.min(replay.boards.length - 1, x + 1))} disabled={i >= replay.boards.length - 1} aria-label={tnb("next")}>›</button>
-            <button type="button" className="nb-btn nb-btn--text" onClick={() => setReplay(null)}>{tnb("close")}</button>
+            <button type="button" className={c.btn} onClick={() => setI((x) => Math.max(0, x - 1))} disabled={i === 0} aria-label={tnb("prev")}>‹</button>
+            <span className={c.count} data-testid="notebook-count">{tnb("of", { i: i + 1, n: replay.boards.length })}</span>
+            <button type="button" className={c.btn} onClick={() => setI((x) => Math.min(replay.boards.length - 1, x + 1))} disabled={i >= replay.boards.length - 1} aria-label={tnb("next")}>›</button>
+            <button type="button" className={c.text} onClick={() => setReplay(null)}>{tnb("close")}</button>
           </>
         ) : (
           <>
-            <span className="nb-count">{n === 1 ? tnb("board1") : tnb("boards", { n })}</span>
-            <button type="button" className="nb-btn nb-btn--text" onClick={open} disabled={loading} data-testid="notebook-replay">{tnb("replay")}</button>
+            <span className={c.count}>{n === 1 ? tnb("board1") : tnb("boards", { n })}</span>
+            <button type="button" className={c.text} onClick={open} disabled={loading} data-testid="notebook-replay">{tnb("replay")}</button>
           </>
         )}
-        {page.topicId && <Link className="nb-btn nb-btn--go" to={`/c/${cid}/lesson/new?topic=${encodeURIComponent(page.topicId)}`} data-testid="notebook-continue">{tnb("continue")}</Link>}
+        {page.topicId && <Link className={c.go} to={`/c/${cid}/lesson/new?topic=${encodeURIComponent(page.topicId)}`} data-testid="notebook-continue">{tnb("continue")}</Link>}
       </div>
     </div>
   );

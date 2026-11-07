@@ -1,0 +1,55 @@
+diff --git a/src/lesson/ttsStream.ts b/src/lesson/ttsStream.ts
+index 6323727e..2c754d90 100644
+--- a/src/lesson/ttsStream.ts
++++ b/src/lesson/ttsStream.ts
+@@ -9,6 +9,7 @@ import type { LessonStartRequest, LessonStartResponse, TtsRequest, TurnRequest,
+ import { anchorPerfTime, isVisemeFrame, partPlayAt, puppetCut, puppetVisemes, type TtsVisemeFrame } from "../face-puppet/ttsBridge.ts";
+ import { ApiError } from "./api.ts";
+ import { markLineAudioStart } from "../modules/whiteboard/clock.ts";
++import { boardHoldMs } from "../studio/boardHold.ts";
+ import { adpcmWanted, decodeAdpcm } from "./adpcm.ts";
+ 
+ export const PCM_RATE = 24_000;
+@@ -271,7 +272,24 @@ export function takeFoldedAudio(lessonId: string, seq: number, sink?: ClauseSink
+ 
+ /** POST /api/lesson/turn-audio → the TurnResponse; the reply's audio is parked for the link's speech fetch. */
+ export function postTurnAudio(req: TurnRequest, signal?: AbortSignal): Promise<TurnResponse> {
+-  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => (Number.isInteger(t.teacherReplySeq) ? { lessonId: req.lessonId, seq: t.teacherReplySeq as number } : null), signal, req.lessonId);
++  return postFolded<TurnResponse>("/api/lesson/turn-audio", req, (t) => {
++    if (!Number.isInteger(t.teacherReplySeq)) return null;
++    // round 7 (Studio's patch to Voice): a board milliseconds away holds her first clause for it (src/studio/boardHold.ts)
++    const hold = boardHoldMs(t.ui?.studioSlot);
++    if (hold > 0) boardHolds.set(foldKey(req.lessonId, t.teacherReplySeq as number), hold); else boardHolds.delete(foldKey(req.lessonId, t.teacherReplySeq as number));
++    return { lessonId: req.lessonId, seq: t.teacherReplySeq as number };
++  }, signal, req.lessonId);
++}
++
++/** round 7: lessonId:seq → how long her first sample waits for this reply's board (ms); taken once by play(). */
++const boardHolds = new Map<string, number>();
++/** The hold for this reply, once (a replay or a resume never waits again). */
++function takeBoardHold(req: TtsRequest | undefined): number {
++  if (!req) return 0;
++  const k = foldKey(req.lessonId, req.seq);
++  const ms = boardHolds.get(k) ?? 0;
++  boardHolds.delete(k);
++  return ms;
+ }
+ 
+ /**
+@@ -500,6 +518,7 @@ export class PcmStreamPlayer {
+     const clauses: TtsClauseEvent[] = [];
+     const emitted = new Set<TtsClauseEvent>();
+     const req = opts.req;
++    const holdS = takeBoardHold(req) / 1000;   // round 7: her first sample waits for a board milliseconds away
+     const perfNow = () => (typeof performance !== "undefined" ? performance.now() : Date.now());
+     /** Emit every not-yet-emitted onset inside [from, to), which starts sounding at ctx time `startAt`. */
+     const emitClauses = (from: number, to: number, startAt: number) => {
+@@ -613,7 +632,7 @@ export class PcmStreamPlayer {
+           this.underruns++;
+           this.lead = Math.min(MAX_LEAD_S, this.lead + LEAD_STEP_S);
+         }
+-        nextAt = now + (didStart ? RESUME_LEAD_S : this.lead);
++        nextAt = now + (didStart ? RESUME_LEAD_S : this.lead + holdS);
+         anchor = { at: nextAt, pos: schedPos };
+         reanchorVisemes();
+       }

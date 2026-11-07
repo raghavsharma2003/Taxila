@@ -1,0 +1,30 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-zoom-in-drawing",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "C1 item 6, M3a: the 'zoom' is drawn, not a camera. A camera op (animating the board's viewBox) was planned and rejected before building: an SVG zoom scales text with the drawing, so labels that overlap at full size still overlap zoomed (overlap is scale-invariant) and only legibility changes. number-line-zoom@1 instead draws the textbook magnified segment: the line a..a+3 (4 labels: an axis to W9), the unit [a, a+1] lit, its copy lifts off, stretches (scale about its left end) and lands as the full-width lower line (claim), guide lines below the labels, the lower line labelled in fifths (an axis) with ten tenth ticks and the value marked. pick.js: a decimal to locate/compare/order in a decimal-context kit, never an item's answer (it would be written '?'), never in a line doing arithmetic.",
+      "reversal": "a lesson needs to zoom something with no magnified-segment form (a map region, a microscope view): then a camera op judged in its own view"
+    },
+    {
+      "id": "fx-r7-w9-zero-one-in-box",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "W9 (main): a bare '0' or '1' was skipped as a number-line origin or column label, so a place-value board could show a hidden 0 or 1. A 0/1 that ENDS inside a rect (its settled position: place-value digits rise into their boxes) is now judged like any digit, and the number containing it is masked too. Tested in r7-motion-templates."
+    },
+    {
+      "id": "ms-r7-zoom-reach",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "n": 250,
+      "method": "codePick over every class 4-7 maths kit and item; board-motion-coverage.mjs first-explain over 250 kits before/after; code only",
+      "title": "number-line-zoom@1 is the pick for 11 item boards across c7 ch03 t01-t03 (0 first-explain boards: every worked-example decimal there is also an item's answer). First explain: boards 247 → 247, moving 125 → 125 or 126 (c7-maths-ch06-t02 magic square: a combine-count junk pick from '1-9'-style text → shape@1)."
+    }
+  ],
+  "edges": [ { "src": "dc-r7-zoom-in-drawing", "rel": "measured_by", "dst": "ms-r7-zoom-reach" } ],
+  "md": {
+    "decisions": "## dc-r7-zoom-in-drawing: zooming into a number line (2026-11-05)\n\nTo show where a decimal lies, the board lifts the unit it lies in off the number line and stretches it into a big line split into tenths, as a textbook draws it. Labels stay readable because the drawing is enlarged, not the view.\n",
+    "measurements": "## ms-r7-zoom-reach (2026-11-05)\n\nThe decimal zoom is drawn for 11 practice items across three class 7 decimal lessons.\n"
+  }
+}

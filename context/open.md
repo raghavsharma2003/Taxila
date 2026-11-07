@@ -126,3 +126,75 @@ RESET-PLAN §9 needs these owner decisions:
 | O-R6 | Approve a consented child panel (n ≥ 24) for X1, X4, X6 and the Fun Toolkit. |
 | O-R7 | A human reviews the synthetic safeguarding incidents that block deletion of 3 leftover production test accounts. |
 | O-R9 | Approve the Wave 2.5 Azure envelope, about USD 60-90 [E]. |
+
+
+<!-- merged from inbox/r143-kit-deep-kinds.json -->
+## open-r143-kit-kind-pose-mismatch (2026-10-15)
+
+`deep: false` fixes the evidence weight only.
+
+- **Pose:** shallow error_spot items keep the planted-mistake pose. Predict items keep the predict engine mode. Why-kind items skip the follow-up why. A re-tag needs blind-solver re-verification.
+- **Split items:** 2608 (33.9%) stay deep unread.
+- **Error_spot boundary:** whether refuting a stated false claim from a fact counts as error_spot (12 of 25) needs an owner call.
+
+
+<!-- merged from inbox/r5-38aad918-s2.json -->
+## open-r5-ask-subject-first — the ask's own subject before a guessed one (parked, 2026-10-21)
+
+The idea is to keep the subject visualAskOf reads before freeSubjectOf's guess (on 38aad918 t6 that is 'triangle', not nothing). Main parked it until three things exist: how many readings flip offTopic or visualUnavailable (code replay: 5 offTopic, 0 moves; the real effect is on model-read requests), the odd readings fixed or explained (cake: past-clause photo mention; दी: stop word; laddoo: fair), and a sim-lab A/B on the affected cards.
+
+
+<!-- merged from inbox/r1442-s2.json -->
+## open-r1442-board-truth-unmeasured — not measured on sim-lab (2026-10-22)
+
+The two board-truth fixes rest on QA's three lessons and tests that fail on base. Sim-lab cannot measure them as it stands. The shape fix needs a re-run to count 'picture nahi hai' under a board, and the sim-lab records do not carry the board-to-board sequences at slot level. A QA re-run of 7545d1fd, 13ec94a7 and 897a7453's shapes is the measurement.
+
+
+<!-- merged from inbox/r7-m3-1.json -->
+## open-r7-m3-verification-deadline (2026-11-05)
+
+The Learn page (2026-11-03) says not qualifying for Milestone 3 within 180 days of business verification cancels the sponsorship. The sponsorship started 2026-07-08. If that was the verification day, the deadline is 2027-01-04, and the 60-day clock must start by 2026-11-06. The keeper cannot make day 1 earlier than the first full day after `apply`. Unknown: the real verification date, and whether the clause applies to sponsorships granted before it was published. The owner reads it in the Founders Hub portal (docs/design/round7/M3.md §1).
+
+
+<!-- merged from inbox/r7-main-15.json -->
+## `fd-r7-m3-verification-date-2026-07-15` (2026-11-06)
+
+Resolves `open-r7-m3-verification-deadline`.
+
+**Business verification completed on 2026-07-15.** Microsoft's Startup and Partner Programs Ops Desk mailed that day (ticket 2607100030006859) that it "has been completed successfully". The ticket was opened 2026-07-10, after the first attempt failed.
+
+| Counting from | Deadline (180 days) | Day 1 of the 60 must fall on or before |
+|---|---|---|
+| 2026-07-15, verification completed | 2027-01-11 | 2026-11-13 |
+| 2026-07-10, ticket opened (worst case) | 2027-01-06 | 2026-11-08 |
+
+The earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-11-05 and was a week too early. The portal's own recorded date has not been read.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `fd-r7-m3-subscription-inventory-2026-11-06` (2026-11-06)
+
+**Projects in the subscription:** Taxila, Vyakti, and the companion and sales-enabler projects. The milestones count services across all of them.
+
+**Cost Management, closed days 10-22 to 11-04:**
+- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's), Virtual Machines 1.33 (Vyakti's vl-vm-cin only).
+- Fluctuating: Foundry Models and Foundry Tools.
+- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage 0.15, Azure Monitor 0.15.
+
+**Limits:**
+- The service principal is Contributor only: no role assignments, no locks.
+- Container Instances has 0 core quota.
+- Public IPs: 100 per region.
+
+**taxila-cin-pg over 30 days:** ~11 connections, CPU ~8% on average (62% at peak), ~2.4 of 8 GB memory. taxila-sin-staging has a DATABASE_URL.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## open-r7-m4-billing-assumptions (2026-11-06)
+
+What only live billing can settle, on the first closed day after the M4 apply (2026-11-08 or later, visible about 2 days after):
+1. Do the 10 unattached Standard public IPs bill $0.005/h? Expect Virtual Network ≈ $1.56. If it is ≈ $0.36, attach them as secondary ipconfigs on the VM's NIC.
+2. Does taxila-m3-lb bill 24 Included + 72 Overage hours ($1.32), with the VM's NIC in its pool?
+3. Did managed Run Command pass the protectedParameter as an env var? The apply prints M3-RUNNER-OK, or M3-RUNNER-FAIL no env parameter.
+4. Does the ledger show runs by both aca and vm?
+5. Did 2026-11-06 count as day 1 (the report's `day1`; `status` prints the day-1 candidate line)?

@@ -20,3 +20,14 @@ export function cosmeticsFor(equipped: Readonly<Record<string, string>>, items: 
   const hull = pick("hull"), trail = pick("trail");
   return hull === null && trail === null ? null : { hull, trail };
 }
+
+/** r7 app-world-hangar-depth: the lesson's own look from the equipped board theme and Comms rim (hue names, which the
+ *  lesson frame turns into --k-hue-* vars). Same rule as the engine: an item counts only if it is open now. Colour only. */
+export interface LessonLook { board: string | null; rim: string | null }
+export function lessonLook(equipped: Readonly<Record<string, string>>, items: ReadonlyArray<Pick<HangarItem, "id" | "kind" | "hue" | "open">>): LessonLook {
+  const pick = (slot: "board" | "rim"): string | null => {
+    const it = items.find((i) => i.id === equipped[slot] && i.kind === slot && i.open);
+    return it && /^[a-z]+$/.test(it.hue) ? it.hue : null;
+  };
+  return { board: pick("board"), rim: pick("rim") };
+}

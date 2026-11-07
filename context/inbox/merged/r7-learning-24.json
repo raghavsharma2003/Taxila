@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-reactive-child",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (H1 of the director4 judgement; main 2026-11-05): the hybrid side-by-side runs get a REACTIVE scripted child, evals/child-sim/reactive.mjs. It is rule-based with no model calls and is deterministic per seed. Each turn it reads what Brain's harness already records: the teacher's line, the script beat, the live keyed card, the v2 beat ask, boardUp and lang. It answers the question on the table right or wrong by its persona's odds per question kind, with a learning bump per miss. A wrong answer is the misconception the item targets: the v2 ask's wrongIfMis, or the kit misconception's diagnostic option when the item is that diagnostic, else a near miss attributed to it. So the authored remediation can fire. Right answers come in Hinglish forms ('teen', '1/4 hai na', 'ek bata chaar'). Every persona (steady, stuck, offtopic, steering) plays all five events within 20 turns: pata nahi, a picture request, a cricket aside, Hindi mein bolo, and mujhe khud try karne do. It never leaves before 20 turns. Brain wires it into evals/hybrid-side-by-side.mjs. Reverse if: the judges find its answers unlike a real class 4-6 child (then fit the odds and forms to real transcripts once they exist)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-reactive-child (2026-11-05, F Learning)\n\nDirector4's scripted child had 10 fixed replies, was never right in c4, and could not reach the later beats. Most of the 'answers ungraded' and 'remediation skipped' findings could not be judged with it.\n\nevals/child-sim/reactive.mjs replaces it for director5. Over 20 seeds the test shows each persona answers right, answers wrong from a kit misconception, and plays every event within 20 turns. The stuck child is right markedly less often than the steady one. The input shape is the one Brain offered from its harness, so wiring it is a one-call change per turn.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

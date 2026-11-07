@@ -1,0 +1,184 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko cricket pitch ki number line par dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1076
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ko 0 se 1 tak ki road samjho. Agar ball pitch ka ek chauthai raasta chale, number line par us jagah ko kaise dhoondogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2855,
+   "replyReadyMs": 3931,
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1258
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. 0 se 1 ko chaar equal gaps mein baanto; pehla nishaan one-fourth hoga. 2/5 ke liye kitne equal gaps chahiye?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1340,
+   "replyReadyMs": 2598
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1014
+  },
+  {
+   "who": "teacher",
+   "text": "4? Achha, dekhte hain yeh baithta hai ya nahi. Ek udaharan dekho, kadam se kadam. Diya hai: 2/5, 0 aur 1. Pehle: 5 barabar hisse. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2722,
+   "replyReadyMs": 3736,
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1510
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, denominator 5 batata hai ki 0 se 1 ke beech 5 equal gaps honge. Ab 2/5 middle se pehle hai ya baad?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1266,
+   "replyReadyMs": 2776
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1140
+  },
+  {
+   "who": "teacher",
+   "text": "Ab khaali jagah bharo: 2/5 middle ke ___ hai, kyunki 2/5, 1/2 se chhota hai. Riya, tum kya likhogi?",
+   "move": "repair",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1178,
+   "replyReadyMs": 2318
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1028
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, khaali jagah mein jagah ka word chahiye, number nahi. 2/5 middle ke kis taraf hai—pehle ya baad?",
+   "move": "hint",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1730,
+   "replyReadyMs": 2758
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 952
+  },
+  {
+   "who": "teacher",
+   "text": "Example: 3/8 ko 1/2 se compare karo; 3/8 chhota hai, isliye middle se kis taraf hoga? Ab 2/5 ke liye likho: ___ the middle.",
+   "move": "reteach",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1311,
+   "replyReadyMs": 2263
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1299
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ab wahi question: 2/5, 1/2 se chhota hai, toh number line par middle ke pehle hoga ya baad? Tum likho.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1339,
+   "replyReadyMs": 2638
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1103
+  },
+  {
+   "who": "teacher",
+   "text": "Woh wala: jawab before. 2/5 ke liye “pehle” ya “baad” likhna tha, 8 nahi. Ab nayi practice par chalte hain. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "practice",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1109,
+   "replyReadyMs": 2212
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1222
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum keh rahi ho bas ho gaya—maine suna. Chuno: aage badhein, thoda pause lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2586,
+   "replyReadyMs": 3808,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

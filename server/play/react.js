@@ -9,6 +9,23 @@ import { pickReaction, newHistory } from "../../src/play/core/react.ts";
 import { floorViolations, scanSafety } from "../director/safety.js";
 import { gcd, lcm } from "../../src/play/core/rat.ts";
 import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
+import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
+import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts";
+import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
+import { angle2 } from "../../src/play/families/kon/kon.lines.ts";
+import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
+import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
+import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
+import { vakyaHidden } from "../../src/play/families/vakya/vakya.logic.ts";
+import { kilaHidden } from "../../src/play/families/kila/kila.logic.ts";
+import { ghadiHidden } from "../../src/play/families/ghadi/ghadi.logic.ts";
+import { nakshaHidden } from "../../src/play/families/naksha/naksha.logic.ts";
+import { darpanHidden } from "../../src/play/families/darpan/darpan.logic.ts";
+import { feetaHidden } from "../../src/play/families/feeta/feeta.logic.ts";
+import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
+import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
+import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
+import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -36,6 +53,33 @@ export function bank() {
 /** Values a line must not say aloud before the child produces them (per family; the server knows the key). */
 export function hiddenOf(level) {
   const p = level.params ?? {};
+  // r7 kaal: the event's year (and, in a century goal, its century) is never said before the child places it. Checked by
+  // family first: kaal's modes ("place", "order") share names with nishana's
+  if (level.family === "kaal") return kaalHidden(level);
+  // r7 kila: the squares to net, the trap square (the LCM) and the towers to build (the factors) before the child sets them
+  if (level.family === "kila") return kilaHidden(level);
+  // r7 naksha: the route's run lengths, the fuel, the pump's cm and the plan's side lengths before the child produces them
+  if (level.family === "naksha") return nakshaHidden(level);
+  // r7 ghadi: the time / trip length / date the child must produce (the minute hand's number, the arrival, the ticket, the
+  // flag's date, the winner's bib) is never said first. Checked by family first: ghadi's "set" and "run" are shared names
+  if (level.family === "ghadi") return ghadiHidden(level);
+  // r7 darpan: the count of mirror lines, the smallest turn (degrees and the fraction) and the order before the child finds them
+  if (level.family === "darpan") return darpanHidden(level);
+  // r7 feeta: the length / perimeter / metres the child must produce and the nearest route are never said first. Checked by
+  // family first: feeta's "compare" is also nishana's mode name
+  if (level.family === "feeta") return feetaHidden(level);
+  // r7 guna: the product (or the estimate), the quotient and its leftover, a story's answer are never said first. Checked by
+  // family first: modes may share names with other families
+  if (level.family === "guna") return gunaHidden(level);
+  // r7 kram: the next / far count, the list's next numbers and its step, the rule (and its far output), the rhythm count and
+  // the square the pieces fill are never said first. Checked by family first: kram's goal names are its own, its modes too
+  if (level.family === "kram") return kramHidden(level);
+  // r7 hissa: the product, the quotient (and its part-cup), the slid number, the second spend and the scaled amount are never
+  // said first. Checked by family first: "story" is also guna's mode name
+  if (level.family === "hissa") return hissaHidden(level);
+  // r7 koshtak: the row's worth, the lid's run of numbers, the bracket's worth and its opened row, the simplest form are
+  // never said first. Checked by family first: modes may share names with other families
+  if (level.family === "koshtak") return koshtakHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
@@ -43,6 +87,14 @@ export function hiddenOf(level) {
     case "bundles": return [p.a - p.b];
     case "place": case "compare": return [];
     case "views": case "array": case "floor": case "powers": case "mirror": return nazariyaHidden(level);   // r4-khand
+    case "bars": case "picto": return stambhHidden(level);   // round 7: the diff bar's value
+    // r7: answers the law computes from what the child is told (never what is on screen as given)
+    case "pair": case "close": return [openingOf(p)];        // ∠COB = 180 − ∠AOC; ∠B from the angle sum / isosceles
+    case "cross": return [Math.round(angle2(p))];             // r7 kon2: the reading ∠2 must show (equal to ∠1, or 180° − ∠1)
+    case "hop": return p.hop ? [hopValue(p.hop)] : [];        // where the hop lands
+    case "pendulum": return pendulumHidden(level);           // the thread lengths that keep the beat
+    case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
+    case "rail": return vakyaHidden(level);                  // r7 vakya: the key sentence and its words, before the child builds them
     default: return [];
   }
 }

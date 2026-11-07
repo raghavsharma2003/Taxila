@@ -39,12 +39,20 @@ export const evictLive = (childId, cache = CACHE) => cache.delete(String(childId
  */
 export async function loadLive(child, { q = dbq, cache = CACHE } = {}) {
   const id = String(child.id);
-  const hit = cache.get(id);
+  let hit = cache.get(id);
+  // round 5 (server/brain/supersede.js): a supersede MOVES a turn's rows out of kt_evidence, possibly on another replica,
+  // and a fold that only reads rows after its seq would never notice: the cached fold is kept only while the rows up to
+  // its seq are still all there (one index-only count)
+  if (hit && hit.n !== undefined) {
+    const c = await q("select count(*)::int as n from kt_evidence where child_id = $1 and seq <= $2", [id, hit.maxSeq]);
+    const n = c[0]?.n;
+    if (n !== undefined && n !== null && Number(n) !== hit.n) { cache.delete(id); hit = undefined; }
+  }
   const after = hit?.maxSeq ?? 0;
   const rows = await q("select * from kt_evidence where child_id = $1 and seq > $2 order by seq", [id, after]);
   let state = hit?.state ?? newLearnerState({ childId: id, classLevel: child.class_level });
   if (rows.length) state = fuseEvidence(state, rows.map(eventFromRow), LIVE_FOLD_CTX);
-  const out = { state, maxSeq: rows.length ? Number(rows.at(-1).seq) : after };
+  const out = { state, maxSeq: rows.length ? Number(rows.at(-1).seq) : after, n: (hit?.n ?? 0) + rows.length };
   remember(cache, id, out);
   return out;
 }
@@ -59,7 +67,8 @@ export function commitLive(child, prevMaxSeq, state, seqs, { cache = CACHE } = {
   const got = seqs.filter((x) => x != null).map(Number);
   const contiguous = got.every((x, i) => x === prevMaxSeq + i + 1) && got.length === seqs.length;
   if (!contiguous) { cache.delete(id); return false; }
-  remember(cache, id, { state, maxSeq: prevMaxSeq + got.length });
+  const hit = cache.get(id);
+  remember(cache, id, { state, maxSeq: prevMaxSeq + got.length, ...(hit?.n !== undefined && hit.maxSeq === prevMaxSeq ? { n: hit.n + got.length } : {}) });
   return true;
 }
 

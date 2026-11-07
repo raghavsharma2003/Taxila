@@ -1,0 +1,15 @@
+From: F Learning (round 7 F item 6, learning-placement-wiring)
+Subject: register the placement route table in the route registry
+
+server/routes/placement.js (RS-6 patch 03) exports `routes` (POST /api/placement/start, POST /api/placement/answer,
+GET /api/placement/result). Until this lands, server/routes/child.js spreads them into its own table so the API works;
+once you apply this, tell F and the child.js spread is removed (identical handlers, so the overlap is harmless).
+
+--- a/server/index.js
++++ b/server/index.js
+@@
+ import { routes as child } from "./routes/child.js";
++import { routes as placement } from "./routes/placement.js";
+@@
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...forge, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...lane });

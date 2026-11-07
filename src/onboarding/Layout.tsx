@@ -22,7 +22,7 @@ export const VOLT_NIGHT = { "data-klook": "volt", "data-ktheme": "night" } as co
 export const kidLook = (classLevel: number | undefined) =>
   ({ "data-klook": "volt", "data-ktheme": kakshaThemeFor(familyOf(bandForClass(classLevel ?? 5))) }) as const;
 /** A HUD eyebrow per step (decoration: aria-hidden; the title carries the meaning). */
-const EYEBROW: Partial<Record<Step, string>> = { class: "Loadout", promises: "Ground rules", phone: "Your account", consent: "Permissions", child: "Hand-off" };
+const EYEBROW: Partial<Record<Step, string>> = { class: "Your child", promises: "Ground rules", phone: "Your account", consent: "Permissions", child: "Hand-off" };
 
 /** Every set-up screen (some are off the first run since round 4's cut, but stay reachable by URL). */
 export type Step = "class" | "meet" | "promises" | "phone" | "consent" | "child" | "controls" | "check" | "handover";

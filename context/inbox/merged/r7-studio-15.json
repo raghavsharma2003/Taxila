@@ -1,0 +1,33 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-motion-templates",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "C1 item 6, M2: the code templates animate their idea. angle@1 arm turns open; symmetry@1 half folds (scale -1) and the dot's image jumps; column-op@1 add: the carried 1 rises from the column that made ten; equal-groups@1 a heap shared out group by group; place-value@1 digits rise into their place boxes; combine-count@1 add: the second group slides over to join; area-grid / fraction-of / bar-chart fills sweep in; flow@1 / cycle@1 a token tours the arrows. Explained-end-state check (main's ask): each template returns claims = where each moved op ends (the still board's position); expand() refuses the template (motion_claim:<id>) when the settled board breaks one. Gate: W8/W10/W13/W15 judge a moving board where it ENDS (END_JUDGED); layout checks judge its start; W19 the whole end board.",
+      "reversal": "a measured child run shows a motion distracts (slower or worse answers after a moving board than after the same still board): turn that template's motion off"
+    },
+    {
+      "id": "fx-r7-pick-operands",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "pick.js text pick reads an operation's OWN operands ('4 + 3', 'add 4 and 3', '3 groups of 4', '6 × 8'), refusing a sign another operation joins ('3 + 4 × 2', '9 + 9 + 1', '3n + 2'); a word problem keeps its word cue only when it has exactly two numbers. Products on a number line are k equal jumps from 0. Bar charts from text need a graph word or capitalised name labels; an area/perimeter pick needs measured sides (a unit, 'N by M', rows/columns). Found because motion made old wrong picks ('2 + 2' dots for a perimeter formula, '3 + 4' for '3 + 4 × 2 = 11', Collatz '2 + 3') long enough to pass W6. 11 kits changed board, each from a wrong pick to the library or a better template; none lost a board."
+    },
+    {
+      "id": "ms-r7-motion-reach-m2",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 250,
+      "method": "evals/studio-timing/board-motion-coverage.mjs: class 4-7 maths/science/EVS kits driven to their first explain move, board-first preselect certified at p412; a board MOVES when it has any motion op; same kits before (2017b56c) and after; code only",
+      "title": "Moving first-explain boards 4 → 122 of 245 (maths 4 → 61 of 138, science 0 → 35 of 67, EVS 0 → 26 of 40; class 4 0 → 28, class 5 1 → 28, class 6 2 → 33, class 7 1 → 33). Boards 245 → 245. Still: compare@1 32, catalogue ≈54, label@1 12, shape@1 10."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-motion-templates", "rel": "measured_by", "dst": "ms-r7-motion-reach-m2" },
+    { "src": "fx-r7-pick-operands", "rel": "found_by", "dst": "ms-r7-motion-reach-m2" }
+  ],
+  "md": {
+    "decisions": "## dc-r7-motion-templates: explanations that move (2026-11-04)\n\nThe boards children see now show the idea happening: an angle opening, a shape folding onto its mirror, a carried 1 rising to the next column, dots being shared into equal groups, digits dropping into their places, a process running step by step. Every motion is checked to end exactly on the picture it explains.\n",
+    "measurements": "## ms-r7-motion-reach-m2 (2026-11-04, n = 250 kits)\n\nBoards that move went from 4 to 122 of 245 (maths 61, science 35, EVS 26; every class 4-7 gains 28 to 33).\n"
+  }
+}

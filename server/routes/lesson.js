@@ -2,10 +2,13 @@
 // Every route acts for an authenticated guardian's child (requireChild). One compile() feeds both lanes:
 // the voice client applies `instructions` verbatim via session.update, and text mode generates its reply
 // from the SAME string (inherited rejection: two prompts for two lanes).
+import { emitChildText } from "../duplex/childText.js";
 import { warmupItemsFor } from "../learner/checks.js";
 import { randomUUID } from "crypto";
 import { q, one, tx } from "../db.js";
 import { need, bad, forbidden, notFound, send, HttpError } from "../http.js";
+import { runTurn } from "../brain/clauses.js";
+import { rollupLesson } from "../cost/rollup.js";
 import { requireChild, hasConsent, sessionTokenHash } from "../auth.js";
 import { chat, mintRealtimeSecret, endpoint, realtimeLane, DEPLOY } from "../azure.js";
 import { getTopic, getKit, pinKit, pinnedKit, topicOf, topicSequence } from "../content/index.js";
@@ -39,9 +42,13 @@ import { studioSeam } from "../studio/seam.js";
 import { relationalSeam } from "../relational/seam.js";
 import { purposeSeam } from "../lesson/purpose.js";
 import { sessionStartCtx, schoolPointerStmts } from "../director/session/start.js";
+import { lessonBriefFor } from "../conductor/slot.js"; // Learning patch 006 (see the lesson start)
+import { eligibleFormats, posteriorsFor } from "../learner/formats.js"; // Learning patch 008 (the explain format allocator)
 import { voicesigSeam } from "../voicesig/lesson.js";
 import { realtimeSeam } from "../voice/realtimeSession.js";
 import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
+import { learnerViewOf } from "../learner/view.js";
+import { emitJarEvents, jarLaterEntries, jarServed, jarWriteStmts } from "../learner/jar.js";
 import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
 import { nextBeat, uiBeatOf } from "../brain/beat.js";
 import { momentOf } from "../brain/moment.js";
@@ -90,7 +97,10 @@ export { forgeSeam };
 
 // round 4 (stream 4A): "session" is the session-first start (no topic chosen by the child; the intake decides). It is
 // served only when TAXILA_SESSION_FIRST=on (director/session/start.js); otherwise it starts exactly like "lesson".
-const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session"]);
+// round 7 (Learning patch 007): "homework" is an Ask start for the child's homework (App's HOMEWORK HELP): routed and screened
+// exactly like a doubt; the Director teaches the method on a kit-verified look-alike and never gives their answer
+const START_PURPOSES = new Set(["lesson", "practice", "doubt", "session", "homework"]);
+const ASK_PURPOSES = new Set(["doubt", "homework"]);
 /**
  * PURE. Why a lesson cannot start in this plan state (null: it can). safety_hold, capped and resting refuse everything; done
  * refuses a lesson ("never one more") but lets Practice and Ask through (§6.3.3 done row: "Practise something").
@@ -215,6 +225,9 @@ export async function lessonStart(req, body) {
   const weaveP = early(q("select * from weave_queue where child_id = $1 and status in ('queued','hosted')", [child.id]).catch(() => []));
   // Seam (W2-I, server/relational/seam.js): the bond snapshot, read once per lesson; null until W2-I fills it.
   const bondP = early(Promise.resolve(seamSafe("relational.snapshot", () => relationalSeam.snapshot(child.id, { classLevel: child.class_level, lang: child.language_pref }), null)));
+  // round 7 (Learning patch 006): today's Conductor plan and its LessonBrief (server/conductor/slot.js). null when there is no
+  // plan or on any read error (then the start runs exactly as before)
+  const lessonBriefP = early(lessonBriefFor(child.id, { now: new Date() }).catch(() => null));
   const brief0P = early(memoryP.then((memory) => buildChildBrief(child, { memory })));
   // round 5 (14.2): a safeguarding incident within the last hours: this lesson opens on a calm check-in (state.js, `carried`)
   // once per incident: a lesson that already opened on the check-in for it (ctx.checkedInFor) is enough
@@ -241,8 +254,8 @@ export async function lessonStart(req, body) {
   const purpose = START_PURPOSES.has(body.purpose) ? body.purpose : "lesson";
   // Seam (W2-A, server/lesson/purpose.js): an Ask start with no topic is routed by the child's first words; null (and any
   // unknown topic id) leaves the topic resolved exactly as before.
-  const asked = purpose === "doubt" && !body.topicId
-    ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose, firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
+  const asked = ASK_PURPOSES.has(purpose) && !body.topicId
+    ? await seamSafe("purpose.routeAsk", () => purposeSeam.routeAsk({ child, purpose: "doubt", firstText: typeof body.firstText === "string" ? body.firstText.slice(0, 500) : undefined }), null)
     : null;
   const routed = asked?.topicId ? getTopic(asked.topicId) : null;
   // no topic: the ONE next-topic answer (reports/truth.js), so a start inside a school test window revises its subject
@@ -252,7 +265,8 @@ export async function lessonStart(req, body) {
   // before getKit: a topic with no kit would otherwise be generated (a model call) for a refused start
   const dayPlan = await planP;
   mark("plan");
-  const refusal = startRefusal(dayPlan.state, body.purpose);
+  // round 7 (F Learning patch to-brain/002, dc-r7 D5): the family's own daily-limit opt-in (child_controls.limits_on)
+  const refusal = startRefusal(dayPlan.state, body.purpose, { limits: dayPlan.plan?.limits === true });
   // The refusal names the control that refused (the parent's lesson hours or daily limit, or today's lesson done) and the
   // hours window, so the child's screen can say which and when (BUILD-PLAN W1-A item 2; smooth G8).
   if (refusal) throw new HttpError(409, refusal, { state: dayPlan.state, opensAt: dayPlan.opensAt, capRemaining: dayPlan.capRemaining,
@@ -272,9 +286,13 @@ export async function lessonStart(req, body) {
     bondP]);
   mark("reads2");
   const ledger = live.state.ledger;
+  // round 7 (F Learning patch to-brain/001): θ, the weak flag and minutes left for this child and topic; null on any failure
+  const viewP = early(learnerViewOf(child, { topicId: topic.id, ledger: live.state, kit }).catch(() => null));
   // Session openers (INTEGRATION.md §4): the ledger's due skills AND every learned skill ≥ 20 h past its anchor with
   // no delayed pass, plus weave entries that expired unhosted; then this topic is planned against the weave queue.
   const band = bandOf(child.class_level);
+  // round 7 (Learning patch 008): the population posteriors of the explain formats for this topic type and band ({} on any error)
+  const formatPostP = early(posteriorsFor(kit.topicType, band).catch(() => ({})));
   const weaveQ = weaveExpire(weaveRows.map(weaveEntryOf), new Date(now).toISOString());
   const beliefs = {};
   for (const id of Object.keys(ledger.skills)) beliefs[id] = beliefFor(id, { ...live.state, now });
@@ -285,7 +303,7 @@ export async function lessonStart(req, body) {
   const warmupItems = await warmupItemsFor(checks.openers, { ledger });
   mark("warmup");
   const skillIds = [...new Set([...kit.skills.map((s) => s.id), ...warmupItems.map((w) => w.skillId)])];
-  const [history, brief0, stuck] = await Promise.all([historyP, brief0P, stuckP]);
+  const [history, brief0, stuck, view] = await Promise.all([historyP, brief0P, stuckP, viewP]);
   // The interests the parent picked reach the teacher only under "Remember what {child} likes" (the memory consent;
   // V2 §3.2 step 5: "No" → no interests in examples), and only as short plain labels (they are interpolated).
   mark("reads3");
@@ -305,19 +323,22 @@ export async function lessonStart(req, body) {
   // An Ask's first words are the child's own (W2-C review: safety by predicate, not instruction). The same predicate
   // every child turn passes (director/safety.js scanSafety, passive ideation included) runs BEFORE they become the
   // question her opening answers: a disclosure opens on the safeguard move with the helplines, never on an explain.
-  const askRaw = purpose === "doubt" && typeof body.firstText === "string" ? body.firstText.trim() : "";
+  const askRaw = ASK_PURPOSES.has(purpose) && typeof body.firstText === "string" ? body.firstText.trim() : "";
   const askSafety = askRaw ? scanSafety(askRaw.slice(0, 500)) : { distress: false, kind: null };
   const askText = askRaw && !askSafety.distress ? askRaw.slice(0, 200) : "";
   // round 4 (stream 4A, session-first): the intake's inputs (the day plan as her private prior, due reviews, the school
   // pointer); null unless TAXILA_SESSION_FIRST=on and purpose "session" (then today's start, unchanged). The guardian in
   // TAXILA_SESSION_FIRST_FOR (the owner first) gets it on the plain Start too (purpose "lesson", no topic the child chose).
-  const sessionFirst = sessionStartCtx({ purpose, child, plan: dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
+  // Learning patch 006: dayPlan.plan is the home's summary (no slots); the Conductor plan is what planPrior reads
+  const today = await lessonBriefP;
+  const sessionFirst = sessionStartCtx({ purpose, child, plan: today?.plan ?? dayPlan.plan ?? null, levelPathTopic: topic.id, ledger, now,
     guardian, topicChosen: !!body.topicId || !!routed,
   });
   const state0 = initLessonState({
     topicId: topic.id, kit, skills, history, stuck, warmupItems, activeMisconceptionIds, now,
     seed: Math.floor(Math.random() * 2 ** 32),
     openers: warmupItems.map((w) => w.skillId), comp: skillsMapFor(live.state, kit, skillIds, now),
+    level: view ? { theta: view.theta?.value ?? null, weak: !!view.weak?.weak, minutesLeft: view.minutesLeft ?? null } : null,
     ctx: {
       sessionId: lessonId, classLevel: child.class_level, schoolMedium: child.school_medium ?? undefined,
       // the teacher's id AND name are pinned here for the life of the lesson (a rename lands on the next one)
@@ -333,13 +354,22 @@ export async function lessonStart(req, body) {
       // the practice set from the purpose seam (W2-A); absent until it is filled
       ...(practice ? { practice } : {}),
       // the purpose and, for an Ask, the child's own question (W2-C #7: the Director answers it first, no greeting)
-      purpose,
+      // (a homework start is an Ask to the Director, marked: the method on a look-alike, never their answer; the matched kit
+      // question itself is never posed)
+      purpose: purpose === "homework" ? "doubt" : purpose,
+      ...(purpose === "homework" ? { homework: true, ...(typeof body.matchItemId === "string" ? { avoidItemId: body.matchItemId.slice(0, 80) } : {}) } : {}),
       ...(askText ? { askText } : {}),
       ...(sessionFirst ? { session: sessionFirst } : {}),
+      // Learning patch 008: the formats the kit allows and their population posteriors (the explain format is allocated per skill)
+      formatsEligible: eligibleFormats(kit), formatPosteriors: await formatPostP, formatBand: band,
+      // Learning patch 006: only the clock of the slot (wrap at the next natural stop after wrapAt, never past hardStopAt)
+      ...(today?.brief?.wrapAt || today?.brief?.hardStopAt ? { lessonBrief: { wrapAt: today.brief.wrapAt ?? null, hardStopAt: today.brief.hardStopAt ?? null } } : {}),
       // the bond stage RELATIONAL-OS pinned for this lesson (W2-I snapshot), for the turn's Moment (W2-E TB6)
       ...(bond?.stage ? { bondStage: bond.stage } : {}),
     },
   });
+  // Learning patch 004b: what she promised last time (the Question jar hook) rides in as Later entries; the opening serves one
+  if (view?.jar?.length) state0.later = jarLaterEntries(view.jar);
   const recent = askSafety.distress ? null : await carriedP;
   const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
   const first = askSafety.distress
@@ -347,6 +377,7 @@ export async function lessonStart(req, body) {
       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
     : step(state0, { event: "start", kit, now, ...(carried ? { carried } : {}) });
   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
+  const jarKept = jarServed(state0.later, first.state.later, child.id, lessonId);
   const state = r.state;
   if (vsb0) state.vsb = vsb0;
   if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
@@ -408,6 +439,8 @@ export async function lessonStart(req, body) {
     { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
     ...(openingIncident ? [openingIncident] : []),
+    // Learning patch 004b: the jar items the opening came back to are kept (answered by this lesson)
+    ...jarKept.stmts,
     // a disclosure in an Ask's first words leaves the same incident row a turn's predicate hit does (no transcript)
     ...(askSafety.distress ? [{ text: "insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
       params: [child.id, lessonId, { source: "predicate", family: askSafety.kind, at: "ask_start" }] }] : []),
@@ -417,6 +450,7 @@ export async function lessonStart(req, body) {
     ...onLessonStart({ child, lessonId, topicId: topic.id, purpose, mode, now }),
   ]);
   if (created.length !== 1) throw new Error("lesson insert did not land");
+  emitJarEvents(child.id, jarKept.events);
   mark("tx");
   // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
   try {
@@ -561,8 +595,14 @@ function lessonFacts(state, evidence, kit) {
   }
   const misIds = [...new Set(evidence.map((e) => e.misconception_id).filter(Boolean))];
   const read = state.agent?.learner ?? {};
+  // 14.4.3 (QA TEST on ac4e8e88: 765d3c47, 54569fb1, 4aa87fed): a teach-back never asked is no fact at all ("teachbackPassed:
+  // false" was written as "Teach-back was not passed", a failure to a parent); a lesson with nothing graded says so, so its topic
+  // is what it was about, never what was practised (54569fb1, all safeguarding: "Kabir practised perimeter")
+  const graded = Object.keys(bySkill).length > 0;
   return {
-    topic: getTopic(state.topicId)?.title, minutes: state.minutes, teachbackPassed: state.teachbackPassed,
+    topic: getTopic(state.topicId)?.title, minutes: state.minutes,
+    ...(state.teachbackAsked ? { teachback: state.teachbackPassed ? "asked and passed" : "asked, not passed yet" } : {}),
+    ...(graded ? {} : { practised: "nothing graded this lesson: the topic is only what it was about" }),
     skills: Object.entries(bySkill).map(([id, s]) => ({ skill: kit.skills.find((k) => k.id === id)?.title ?? "an earlier skill", attempts: s.attempts, unaidedCorrect: s.unaided,
       ...(checkOf(read[id]) ? { check: checkOf(read[id]) } : {}) })),
     misconceptions: misIds.map((m) => {
@@ -622,19 +662,50 @@ async function withPlanNext(did, child) {
   return { ...did, nextTitle: next?.title ?? did.nextTitle ?? null };
 }
 
+/**
+ * Did this lesson have a safeguarding turn: an incident row, a safeguard move (state.safeguardedAt), a check-in still
+ * open (state.safeguard) or released (state.checkReleased)? Its end record is then written from the FACTS alone. The
+ * parent note, the summary and the account export all reach the guardian, and a disclosure goes to the parent only
+ * through the safeguarding protocol (decision safety-parent-notice-settle). The guardian can be the very adult the
+ * child named. r1441: 93 of 741 TEST records quoted the disclosure ("… said that her father hits her …"), all from
+ * lessons with an incident. PURE.
+ */
+export const safeguardedRecord = (state, incidents = 0) =>
+  Number(incidents) > 0 || state?.safeguardedAt != null || !!state?.safeguard || state?.checkReleased != null;
+
+const REFERRAL = /\b(safeguard\w*|unsafe|childline|tele-?manas|1098|14416|counsell?or|trusted (adult|grown-?up)|(seek|get|arrange|find) (some |immediate |urgent |professional )*(support|help)|immediate (support|help|safety)|(their|his|her|\p{Lu}\p{L}+['’]s) (immediate |personal )?(safety|well-?being)(?![\s-]+(rules?|gear|tips?|steps?|measures?|precautions?|signs?|first)\b))\b/iu;
+// the writer reports in the third person ("Riya said she wants to die"), which the child-speech predicate does not read
+const REPORTED = /\b((wants?|wanted|wanting|wish(es|ed)?) to die|(kill|hurt|harm|cut)(s|ing)? (her|him|them)sel(f|ves)|suicid\w*|self-?harm\w*|(hits?|hitting|beats?|beating|beaten|slaps?|slapping|touch(es|ed|ing)?) (her|him|them)\b|abus\w*|(afraid|scared|frightened) (to go|of going) home|unsafe at home|better if (she|he|they) (was|were)(n['’]t| not) here|(not|no longer) (want|wants|wanted|wish|wishes) to (live|be alive|be here)|run(ning)? away from home)/i;
+/**
+ * The end record's last fence: a sentence (or, with `lines`, a summary line) that carries distress words (the one
+ * safety predicate, or the writer's third-person report of them) or a safeguarding referral is dropped, never rewritten.
+ * Backstop for any lesson that wrote no incident. PURE. → the kept text ("" when nothing is left).
+ */
+export function recordFence(text, { lines = false } = {}) {
+  const unsafe = (s) => scanSafety(s).distress || REPORTED.test(s) || REFERRAL.test(s);
+  const parts = String(text ?? "").split(lines ? /\n+/ : /(?<=[.!?।])\s+/);
+  return parts.filter((p) => !(lines ? p.split(/(?<=[.!?।])\s+/).some(unsafe) : unsafe(p))).join(lines ? "\n" : " ").trim();
+}
+
 /** The end-of-lesson record's messages (the writer words the FACTS; it does not decide them). PURE. */
-export function endMessages({ child, teacher, facts, childTurns }) {
+export function endMessages({ child, teacher, facts, childTurns, held = false }) {
   return [
     { role: "system", content: [
-      `You write the record of one tutoring lesson with ${child.first_name} (class ${child.class_level}).`,
-      `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only. Refer to the child by first name or "they".`,
-      "Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines. parentNote: plain, warm, specific — what was practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.",
+      // r1441 (38aad918): "with <child>" then "The teacher is <name> … name her by name" made the teacher the actor of
+      // 379 of ~750 TEST notes ("Asha practised …") and lent her pronouns to the child; the learner is named as the
+      // subject of every practised/tried/said, the teacher only as the one who taught
+      `You write the record of one tutoring lesson. The learner is ${child.first_name} (class ${child.class_level}): everything practised, tried, said or mixed up in the FACTS and the child turns is ${child.first_name}'s. Name the learner by first name or "they" only, never he/she.`,
+      `The teacher is ${teacher.name}, an AI teacher (${teacher.pronouns?.subject ?? "they"}/${teacher.pronouns?.object ?? "them"}): the one who taught, never the learner. Name ${teacher.pronouns?.object ?? "them"} by name or with these pronouns only; they are never the learner's.`,
+      `Write ONLY from the FACTS and the child's numbered turns. summary: short factual lines on what ${child.first_name} did (the parent reads it too). parentNote: to ${child.first_name}'s parent, with ${child.first_name} as its subject — plain, warm, specific: what ${child.first_name} practised, what went well (the method, not ability), any mix-up and whether it was corrected later in the lesson (correctAfterLastSeen), one way to help at home. Never use ability words (smart, weak, slow, intelligent, topper…), never compare with other children, never predict marks.`,
       "memories: at most 3 harmless things the child SAID about themself (interests, preferences, a win, a joke, a happy event). Cite the number of the child turn it came from. Never anything about religion, caste, health, family problems, money, location, school name or other people's names. Empty if nothing fits.",
+      // a safeguarded lesson's record is written without the child's turns (safeguardedRecord): their absence is not
+      // silence (r1441 TEST: "No spoken or written response was recorded" for a child who had talked all lesson)
+      ...(held ? [`The child turns are left out of this record, not missing: say nothing about whether or what ${child.first_name} said, replied or answered beyond the FACTS' own counts, and nothing about why.`] : []),
       // last: the rule that must fire (a skill's `check`, the agent lane's earned read, decides how far its words go)
       ...(facts.skills?.some((s) => s.check) ? ["A skill with a check is worded only as far as its check: a \"shown\" skill may read as understood; every other skill reads as practised, with what is still to check next time, in summary and parentNote alike, never as understood, mastered, secure, done well or explained correctly."] : []),
     ].join("\n") },
     // the child's words reach the model with direct identifiers masked (scrubPii), like every other model call
-    { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
+    { role: "user", content: `FACTS: ${JSON.stringify(facts)}\nCHILD TURNS:\n${held ? "(left out)" : childTurns.map((t, i) => `${i}. ${scrubbed(t.text)}`).join("\n") || "(none)"}` },
   ];
 }
 
@@ -676,17 +747,19 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   // The last why / teach-back of the lesson is still held (its verdict lands "on the next turn", and there is none):
   // wait for the blind grader while the summary is written, then fold and store it like a turn would.
   const heldP = flushHeld(child, lesson, state).catch((e) => console.warn("[lesson] end: held evidence not stored:", e.message));
-  const [turns, evidence, memoryOk, profileOk, kit] = await Promise.all([
+  const [turns, evidence, memoryOk, profileOk, kit, incidents] = await Promise.all([
     q("select id, seq, speaker, text from turn where lesson_id = $1 order by seq", [lesson.id]),
     q("select skill_id, item_id, probe, outcome, misconception_id, hints_used from evidence where lesson_id = $1 order by at", [lesson.id]),
     hasConsent(guardian.id, child.id, "memory"), hasConsent(guardian.id, child.id, "learning_profile"),
     state.kitHash ? pinnedKit(topicId, state.kitHash) : getKit(topicId, { generate: false }),
+    // fails closed: an unread count is a safeguarded lesson (safeguardedRecord)
+    one("select count(*)::int as n from incident where lesson_id = $1", [lesson.id]).then((r) => r?.n ?? 0, () => 1),
     ...(topicId !== lesson.topic_id ? [q("update lesson set topic_id = $2 where id = $1", [lesson.id, topicId]).catch(() => null)] : []),
     // the school position the intake confirmed (a school_continue / school_reteach segment): child.school_chapter, which
     // content/next-topic.js schoolStartIndex already reads (migration patch 01 adds the column; never the start's error)
     ...schoolPointerStmts(child, state).map((st) => q(st.text, st.params).catch(() => null)),
   ]);
-  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(topicId)?.title, skills: [] };
+  const facts = kit ? lessonFacts(state, evidence, kit) : { topic: getTopic(topicId)?.title, practised: "nothing graded this lesson: the topic is only what it was about", skills: [] };
   const childTurns = turns.filter((t) => t.speaker === "child" && !t.text.startsWith("["));
   // W2-C #5: child talk share and the conversation mix (a monitor; never evidence, never shown to anyone as a score)
   try {
@@ -694,19 +767,22 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
     console.info(`[talk] lesson=${lesson.id} childTalkShare=${talk.childTalkShare} child=${talk.childWords}w/${talk.childTurns}t teacher=${talk.teacherWords}w/${talk.teacherTurns}t mix=${JSON.stringify(state.talk?.mix ?? {})}`);
   } catch { /* telemetry never fails an end */ }
 
+  const held = safeguardedRecord(state, incidents);
   let summary, parentNote, memories = [];
   try {
-    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
-    summary = json.summary;
+    // a safeguarded lesson's record is written from the FACTS alone: the child's words never reach the writer
+    const { json } = await chat(DEPLOY.fast, endMessages({ child, teacher, facts, childTurns: held ? [] : childTurns, held }), { schema: END_SCHEMA, schemaName: "lesson_end", effort: "low", maxTokens: 2000, timeoutMs: 25_000, trace });
+    summary = recordFence(json.summary, { lines: true }) || null;
     // Ability-label fence on what a parent reads: a sentence with a label is dropped, never rewritten.
-    parentNote = json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" ");
+    parentNote = recordFence(json.parentNote.split(/(?<=[.!?।])\s+/).filter((s) => !hasAbilityLabel(s)).join(" "));
     // round 3 fix (adversarial N2): no memory is kept from a lesson that had a safeguarding turn (state.safeguardedAt)
-    memories = memoryOk && state.safeguardedAt == null && !state.safeguard ? json.memories : [];
+    memories = memoryOk && !held ? json.memories : [];
   } catch (e) {
     console.warn("[lesson] end summary unavailable:", e.message);
-    summary = `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
-    parentNote = `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
   }
+  // (nothing graded: the lesson was ABOUT the topic, never "practised" it)
+  summary ||= facts.practised ? `A lesson on ${facts.topic}.` : `Practised ${facts.topic}. ${(facts.skills || []).map((s) => `${s.skill}: ${s.unaidedCorrect}/${s.attempts} on their own`).join("; ")}`;
+  parentNote ||= facts.practised ? `Today ${child.first_name} had a lesson on ${facts.topic} with ${teacher.name}.` : `Today ${child.first_name} practised ${facts.topic} with ${teacher.name}.`;
 
   // The writer's view of this child: its mode plus the memory consent (P3, personal details).
   const writerChild = { ...child, consent: { ...(child.consent ?? {}), P3: !!memoryOk } };
@@ -743,7 +819,13 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
   const relEnd = seamSafe("relational.onLessonEnd", () => relationalSeam.onLessonEnd(child, { lessonId: lesson.id, childId: child.id,
     endedBy, turns: state.turn ?? 0 }), []);
   const relStmts = Array.isArray(relEnd) ? relEnd : [];
-  const results = await tx([...writes, ...relStmts, ...hookStmts]);
+  // Learning patch 004b: the questions she parked and did not get back to go into the Question jar (a promise for next time);
+  // never from a safeguarded lesson (the same rule as memories)
+  const jar = held ? { stmts: [], events: [] } : jarWriteStmts(child, lesson.id, state, { teacherId: state.ctx?.teacherId ?? teacher.id });
+  const results = await tx([...writes, ...relStmts, ...jar.stmts, ...hookStmts]);
+  emitJarEvents(child.id, jar.events);
+  // round 7 (Platform patch from-platform/001): the lesson's spend rollup into lesson.cost, fire-and-forget (never throws)
+  rollupLesson(q, lesson.id).catch(() => {});
   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
   await heldP;
   const relAt = canWrite(child, "kt") ? 1 : -1;
@@ -815,9 +897,13 @@ async function turn(req, res, body) {
   // the take may wait for the same classify the turn adopts, so the turn never waits on it: the spec lands on `hooks` when
   // handed over (turn.js reads it only after its own classify); whatever happens it is settled (logged, aborted) at the end
   const hooks = {};
+  // r7 Voice → Studio M4 (server/duplex/childText.js): the turn's words as sent, for in-process listeners, before the turn runs
+  // (Brain: synchronous and never awaited, so it adds no serial latency; a throw in it never reaches the turn)
+  if (body?.lessonId && typeof body?.childText === "string") { try { emitChildText({ lessonId: body.lessonId, itemId: `turn:${body.turnSeq ?? ""}`, text: body.childText, final: true }); } catch { /* the turn goes on */ } }
   const specP = !body?.typed && !body?.chipId ? takeAgentSpec(body?.lessonId, body?.childText).catch(() => null) : null;
   specP?.then((s) => { if (s) hooks.agentSpec = s; });
-  try { send(res, 200, await lessonTurn(req, body, hooks)); }
+  // round 7 A5: `Accept: text/event-stream` streams her guarded clauses, then the turn (brain/clauses.js); otherwise plain JSON
+  try { await runTurn(req, res, (h) => lessonTurn(req, body, h), hooks); }
   finally { if (specP) settleAgentSpec(body?.lessonId, await specP); }
 }
 
@@ -831,7 +917,7 @@ export const routes = {
 };
 
 /** Internals for tests (the turn's planning and speculation, which need no database or model). */
-export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed };
+export const __test = { safeguardLine, planTurn, replyKey, speculate, specFanout, textReply, noteDid, withAsk, uiVerdictOf, fallbackReply, scrubbed, lessonFacts };
 
 /** Round 4 (4A patch request 10b): the lane a start runs on. Only an explicit "text" or "voice" is honoured; no mode, or an
  *  unknown one, is the cascade lane (the strongest floor: the server writes every reply). PURE; exported for tests. */

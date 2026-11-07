@@ -5,6 +5,8 @@
 // board-first pick, a speculative board, the kit's code board, the template rung) must pass them before it is drawn for a
 // request; the line planner is told the request and draws it. PURE: no model, no I/O.
 
+import { canonKey } from "../safety/normalize.js";
+
 /** Words that are never the subject itself ("plant ki life cycle" → plant, life, cycle). */
 const GLUE = new Set(["ka", "ki", "ke", "ko", "aur", "and", "of", "the", "a", "an", "se", "me", "mein", "par", "pe", "wala", "wali", "wale",
   "का", "की", "के", "को", "और", "से", "में", "पर"]);
@@ -118,7 +120,10 @@ export function answersRequest(script, request, { drawnFor = false } = {}) {
  * counts with (evals/simlab/boardfacts.mjs). A page that writes nothing (shapes only), or a turn whose line is not known,
  * is not judged. PURE.
  */
-const SYNC_STOP = new Set("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen".split(" "));
+// (main 14.4, QA D43: a unit or a filler word is no shared idea: "metre" kept the rectangle board under the square's problem)
+const SYNC_STOP = new Set(("this that with from have what your kya hai hain aur yeh woh isko usko mein par kaise kitne kitna abhi phir karo dekho dekhiye board screen "
+  + "metre metres meter meters centimetre centimetres centimeter kilometre kilometres gram grams kilogram kilograms litre litres liter millilitre "
+  + "minute minutes second seconds hour hours rupee rupees unit units bataiye batayiye batao shabaash bilkul achha accha").split(" "));
 // a number said in words is its digits ("teen chauthai" is the board's 3/4)
 const NUM_WORDS = { ek: ["1"], one: ["1"], do: ["2"], two: ["2"], teen: ["3"], three: ["3"], chaar: ["4"], char: ["4"], four: ["4"],
   paanch: ["5"], panch: ["5"], five: ["5"], chhe: ["6"], che: ["6"], six: ["6"], saat: ["7"], seven: ["7"], aath: ["8"], eight: ["8"],
@@ -128,7 +133,14 @@ const syncWords = (s) => new Set(String(s ?? "").toLowerCase().normalize("NFKC")
   .flatMap((w) => NUM_WORDS[w] ?? [w])
   // a word and its other-language name are one word ("भिन्न" in her line, "fraction" on the board): the SAME table above
   .flatMap((w) => (SAME_OF.has(w) ? [w, SAME_OF.get(w)[0]] : [w]))
-  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w)).map((w) => (/^\p{N}+$/u.test(w) ? w : w.slice(0, 5))));
+  .filter((w) => (w.length >= 4 || /^\p{N}+$/u.test(w)) && !SYNC_STOP.has(w))
+  // census 2026-10-21 (main: the overlap measure's cross-script false misses, "पत्ता" on the board, "patta" in her line):
+  // a word is also its canonical reading in either script (safety/normalize.js canonKey: पत्ता / patta → "pata")
+  // (the whole reading, never a prefix: "kahaniyan" is not "कहाँ"; never for a token with digits: "30th" is not "100th")
+  // (QA on D42 run 3: the board's "side" and her "sides" are one word: a Roman plural is also its singular)
+  .flatMap((w) => (/^\p{N}+$/u.test(w) ? [w] : [w.slice(0, 5), ...singularOf(w), ...canonOf(w)])));
+const singularOf = (w) => (/^[a-z]{4,}(?:es|s)$/.test(w) && !/(?:ss|us|is)$/.test(w) ? [w.replace(/(?:es|s)$/, "").slice(0, 5), w.slice(0, -1).slice(0, 5)] : []);
+const canonOf = (w) => { if (/\p{N}/u.test(w)) return []; const k = canonKey(w); return k && k.length >= 4 ? [`~${k}`] : []; };
 export function syncedWithLine(script, line) {
   const text = String(line ?? "").trim();
   const page = textsOf(script).join(" ");
@@ -141,7 +153,13 @@ export function syncedWithLine(script, line) {
 
 /** A board that draws something (a figure or a number line), not only text boxes. PURE. */
 export function isDrawing(script) {
-  return (script?.ops ?? []).some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line"));
+  const ops = script?.ops ?? [];
+  // QA on 14.4.1 (aadae80b t1: a picture ask; the rung's rectangle with "50 m" / "30 m" on its sides was refused as "a page
+  // of text boxes", the live board failed, and the child saw nothing): a rectangle no text sits inside is a drawn shape; a
+  // rectangle around its text is a box (flow@1), as before
+  const texts = ops.filter((o) => (o?.op === "text" || o?.op === "label") && Array.isArray(o.at));
+  const shapeRect = (o) => o?.op === "rect" && Array.isArray(o.at) && !texts.some((t) => t.at[0] > o.at[0] + 2 && t.at[0] < o.at[0] + o.w - 2 && t.at[1] > o.at[1] + 2 && t.at[1] < o.at[1] + o.h - 2);
+  return ops.some((o) => ["circle", "ellipse", "sector", "stroke", "line", "x", "polygon", "path"].includes(o?.op) || (o?.op === "numwork" && o?.layout === "number_line") || shapeRect(o));
 }
 
 /** A worked page: three things written or more, two of them carrying numbers (the steps of an example). PURE. */
@@ -342,7 +360,102 @@ export const stayOnScreen = (text) => String(text ?? "")
   .replace(/\s+ko\s+(?:words|shabdon)\s+(?:mein|me|se)\s+(?:dekho|dekhiye|samjho|samjhiye|suno|sochiye|socho)\b/giu, "")
   .replace(/\s+(?:words|shabdon)\s+(?:mein|me)\s+(?:dekho|dekhiye|samjho|samjhiye|suno)\b/giu, "")
   .replace(/\s+imagine\s+(?:karo|kijiye|kariye|karein|karen)\b/giu, "")
+  .replace(/\bimagine\s+(?=(?:a|an|the|this|ek)\b)/giu, "")
   .replace(/\s+([,:;.!?])/g, "$1").replace(/\s{2,}/g, " ").trim();
+/**
+ * main 14.4 (QA pass 15, TEST 1695e941: "number line par perimeter ko walking distance samjho: 0 se 160 metres tak.
+ * Rectangle ka boundary distance kitna hai?", no item open, 160 the worked example's 2 × (50 + 30)): her line states the
+ * answer of its own numeric question before asking it. The question is her last "?" sentence and its operation is read from
+ * its words (W18's reading); the operands are the question's own numbers when it has two, else (each on its own) her line
+ * before it, her last two lines and the worked example's givens. It fires only when that result stands in her line AS a
+ * result (next to a result word, or a range's end "0 se 160"), never a number the child said, never a why / how question,
+ * never an earlier sum restated with its operands. Measured over 4384 sim-lab teacher lines (14.2 / 14.3 runs): 2 fire,
+ * both real ("result 17 aata hai … 2 plus 15 kitna?", "5 andar bachte … 9 mein se 4 ghatao—kitne?"). PURE.
+ */
+const SA_OPS = {
+  sums: /\b(?:jod\w*|total|sum|plus|add\w*|kul|milakar|altogether|in all)\b|\+/u,
+  perim: /\b(?:perimeter|boundary|parimap|around|chaaron\s+taraf)\b|परिमाप/u,
+  prod: /\b(?:guna|times|multiply|multiplied|product|area|kshetrafal)\b|[×*]|क्षेत्रफल/u,
+  diff: /\b(?:minus|ghata\w*|difference|kam|bach\w*|left|subtract\w*|antar)\b|−/u,
+};
+const saNums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number).filter(Number.isFinite);
+const saFmt = (x) => String(Math.round(x * 1000) / 1000);
+function saResults(all, ops, pairs = false) {
+  const uniq = [...new Set(all)].slice(0, 6), out = new Set();
+  if (uniq.length < 2) return out;
+  const add = (x) => { if (Number.isFinite(x) && x > 0) out.add(saFmt(x)); };
+  if (ops.sums || ops.perim) { add(all.reduce((a, b) => a + b, 0)); add(uniq.reduce((a, b) => a + b, 0)); }
+  // two numbers, or (a worked example's / an earlier line's givens: "3 rounds of a park 50 m by 30 m") every pair
+  for (let i = 0; i < uniq.length; i++) for (let j = i + 1; j < uniq.length; j++) {
+    if (uniq.length > 2 && !pairs) break;
+    const [a, b] = [uniq[i], uniq[j]];
+    if (ops.perim) add(2 * (a + b)); if (ops.prod) add(a * b); if (ops.diff) add(Math.abs(a - b));
+  }
+  return out;
+}
+/** A number stated AS a result: next to a result word, or the end of a range ("0 se 160"). */
+const saAsResult = (r) => { const esc = String(r).replace(".", "\\."); return new RegExp(`(?:=|equals|result|total|kul|answer|jawab)\\W{0,4}${esc}(?![\\d.])|(?<![\\d.])${esc}\\s*(?:[^\\s\\d]+\\s+){0,2}(?:aata|aati|milta|milti|hota|hoti|bach\\w*|banta|bante)\\b|\\d+\\s+se\\s+${esc}(?![\\d.])`, "iu"); };
+/** → { answer, question, source } when her line states, before its numeric question, what that question asks; else null */
+export function selfAnswer(line, { recent = [], worked = "", child = [] } = {}) {
+  const s = String(line ?? "");
+  const qEnd = s.lastIndexOf("?");
+  if (qEnd < 0) return null;
+  const qStart = Math.max(s.lastIndexOf(".", qEnd - 1), s.lastIndexOf("!", qEnd - 1), s.lastIndexOf("।", qEnd - 1), s.lastIndexOf(":", qEnd - 1)) + 1;
+  const question = s.slice(qStart, qEnd + 1), before = s.slice(0, qStart);
+  const t = question.toLowerCase();
+  // a why / how question asks for a reason, not the number ("3 − 5 kyun nahi?")
+  if (/\b(?:kyun|kyon|kaise|why|how)\b/u.test(t)) return null;
+  // QA pass 16 (TEST fa2f04e7): the question NAMES the answer of her line's own sum ("0 se 160 tak … 50 aur 30 sides ke steps
+  // milkar perimeter banta hai. Aap 160 par ungli rakhenge?"): the operation from the whole line, the operands her line's
+  // other numbers, the result one the question itself carries
+  const lineOps = Object.fromEntries(Object.entries(SA_OPS).map(([k, re]) => [k, re.test(s.toLowerCase())]));
+  const childNums = new Set(child.slice(-2).flatMap((c) => saNums(c)).map(saFmt));
+  const qOps = Object.values(SA_OPS).some((re) => re.test(t)) || /\b(?:hatao|hataiye|jodo|jodiye|jodenge|jodoge|ghatao|guna)\b/u.test(t);
+  const qNums = [...new Set(saNums(question).map(saFmt))];
+  for (const q of qNums.length === 1 && !qOps ? qNums : []) {
+    if (childNums.has(q) || !Object.values(lineOps).some(Boolean)) continue;
+    const others = saNums(before).filter((x) => saFmt(x) !== q);
+    if (others.length >= 2 && saResults(others, lineOps, true).has(q) && saAsResult(q).test(before)) return { answer: q, question, source: "named" };
+  }
+  const ops = Object.fromEntries(Object.entries(SA_OPS).map(([k, re]) => [k, re.test(t)]));
+  if (!Object.values(ops).some(Boolean)) return null;
+  const said = new Set(saNums(before).map(saFmt));
+  if (!said.size) return null;
+  const qn = saNums(question);
+  const sources = qn.length >= 2 ? [["question", qn]] : [["line", saNums(before)], ...recent.slice(-2).map((r, i) => [`recent${i}`, saNums(r)]), ["worked", saNums(worked)]];
+  // a number the child said is theirs: she confirms it ("Haan, tumne 5 likha"), she does not give it away
+  const childSaid = new Set(child.slice(-2).flatMap((c) => saNums(c)).map(saFmt));
+  const beforeNums = new Set(saNums(before).map(saFmt));
+  for (const [src, all] of sources) for (const r of saResults(all, ops, src === "worked" || src.startsWith("recent"))) {
+    if (!said.has(r) || childSaid.has(r)) continue;
+    // the question's own operands: her line before it states them AND their result (not a coincidence from another sum)
+    if (src === "question" && !all.every((x) => beforeNums.has(saFmt(x)))) continue;
+    // her line's own numbers: the result must not be one of the operands it was made from
+    if (src === "line" && all.map(saFmt).filter((x) => x === r).length) continue;
+    // an earlier sum restated ("7 mein se 2 ghatakar tumne 5 likha") is a recap, not a give-away: from her recent lines or
+    // the worked example, the answer counts only when her line states it bare, without that source's operands
+    if ((src.startsWith("recent") || src === "worked") && [...new Set(all.map(saFmt))].filter((x) => beforeNums.has(x) && x !== r).length >= 1) continue;
+    // stated AS a result, never as an operand of another sum: next to a result word, or the end of a range ("0 se 160")
+    if (!saAsResult(r).test(before)) continue;
+    return { answer: r, question, source: src };
+  }
+  return null;
+}
+/** Her line without the clause that states the answer (the smallest , : ; — or sentence span before the question). PURE. */
+export function unanswer(line, hit) {
+  const s = String(line ?? ""), q = s.lastIndexOf(hit.question.trim());
+  if (q < 0) return s;
+  const before = s.slice(0, q);
+  let rest = s.slice(q);
+  const parts = before.split(/(?<=[.,:;—!।])/u);
+  const re = new RegExp(`(?<![\\d.])${hit.answer.replace(".", "\\.")}(?![\\d.])`);
+  const i = parts.findIndex((p) => re.test(p));
+  if (i < 0) return s;
+  const kept = parts.filter((_, j) => j !== i).join("");
+  // the question that names it asks for it instead ("Aap 160 par ungli rakhenge?" → "Aap kis number par ungli rakhenge?")
+  if (hit.source === "named") rest = rest.replace(new RegExp(`(?<![\\d.])${hit.answer.replace(".", "\\.")}(?![\\d.])`), "kis number");
+  return (kept.replace(/[,:;—]\s*$/u, ".").replace(/\s+([.,:;!?])/g, "$1").replace(/([.:;,])\s*\./g, ".").replace(/\s{2,}/g, " ").trim() + " " + rest.trim()).replace(/\s{2,}/g, " ").trim();
+}
 /** Does her line say there is no game (honest), or announce one ("Chalo mirror line game")? PURE. */
 const GAME_WORD = /\b(?:game|games)\b|गेम/iu;
 const NO_GAME = /\b(?:game|games)\b.{0,40}?\b(?:nahi|nahin|not|isn't|no)\b|\b(?:no|koi|abhi)\b.{0,20}?\bgame\b.{0,20}?\b(?:nahi|nahin|ready nahi)\b|गेम.{0,30}?नहीं|\bno\s+game\b/iu;

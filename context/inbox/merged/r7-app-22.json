@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-pricing-page",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "/pricing shows three plan cards, Set-up (free), One child (PRICES.monthly) and Brother or sister (PRICES.sibling), all built from src/app/site.ts PLANS. There is no payment step: every action is the free set-up, a TBD price reads 'Not set yet' on its card, and a callout says paying is not open and no card is asked for. The cards list only what the product does today; cancellation is described as future, never as a feature. Linked from the site header, the footer and the landing's price section. Reverse: the owner chooses a payment provider (then a checkout seam from Platform), or renames or drops a plan in PLANS.",
+   "source": "inbox/r7-app-22.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-pricing-page",
+   "rel": "part_of",
+   "dst": "dc-r7-app-site-config"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-pricing-page`\nThe owner's prices drop into one file, and the plan cards, the landing line and the header link all follow. Until then the page is honest: set-up is free, lesson prices are not set, and nothing can be paid.\n"
+ }
+}

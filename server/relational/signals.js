@@ -11,6 +11,7 @@
 // What a signal never is: an emotion label. The child's voice is never classified (Microsoft AI Code of Conduct;
 // ct-no-voice-emotion-inference): every signal here is lexical, from words the child chose to say.
 import { normForMatch, scanSafety } from "../director/safety.js";
+import { lessonHyperbole } from "../safety/idioms.js";
 import { LEXICON } from "./lexicon/index.js";
 
 const LEX = Object.entries(LEXICON);
@@ -43,6 +44,7 @@ const LAUGH_EMOJI = /[\u{1F602}\u{1F923}\u{1F606}\u{1F605}\u{1F604}\u{1F601}]/u;
 const ASK_VERB = /(?<![\p{L}\p{M}])(?:maanga|manga|mangi|maang(?:a|e|i|ta|ti|te)?|maang (?:raha|rahi|rahe)|pooch(?:a|ha|i|ta|ti|te)?|puch(?:a|ha|i)|pooch (?:raha|rahi|rahe)|asked (?:me )?for|asks (?:me )?for|asking (?:me )?for|asked (?:me )?where|asking (?:me )?where|asked my|asks my|asked me to send|asks me to send|wants me to send|told me to send|bhej(?:o|na|ne|ne ko|do| do|un|oon)|send|de do|dene ko|share karo|batane ko|मांगा|मांगी|मांगे|मांगते|मांगता|पूछा|पूछी|पूछ रहा|पूछ रही|भेजो|भेजने|भेजूं|बताने को)(?![\p{L}\p{M}])/u;
 const CHILD_DATA = /(?<![\p{L}\p{M}])(?:(?:mera|meri|mere|my|apna|apni|apne|tumhara|tumhari|मेरा|मेरी|मेरे|अपना|अपनी)\s+(?:\S+\s+)?(?:number|phone|mobile|whatsapp|insta|instagram|snapchat|address|ghar ka pata|pata|photo|photos|pic|picture|selfie|video|नंबर|फोटो|पता)(?![\p{L}\p{M}])(?!\s+(?:is\s+|hai\s+|was\s+|tha\s+|है\s+)?\d)|where (?:my house is|i live|i stay)|(?:main|mai) kahan (?:rehta|rehti|rahta|rahti)|ghar kahan hai|(?:mere )?ghar ka (?:address|pata)|घर का पता|मैं कहां रहता|मैं कहां रहती)/u;
 /** An explicit meeting or secrecy ask by a third party (scanSafety's grooming rule also fires on these: the harm signal). */
+const ADDRESSEE_FRIEND = /(?<![\p{L}\p{M}])(?:you are|you're|you re|youre|ur|u r|you|aap|ap|tum|tu|आप|तुम|तू)(?: (?:toh|to|hi|bhi|तो|ही|भी))? (?:(?:my|meri|mera|mere|मेरी|मेरा|मेरे) )?(?:(?:best|only|sabse acchi|sabse achhi|sabse accha|sabse achha|bestest|बेस्ट|सबसे अच्छी|सबसे अच्छे) )?(?:friend|frnd|dost|फ्रेंड|दोस्त)(?: (?:ho|hai|hain|h|jaisi|jaise|jaisa|हो|है|हैं|जैसी|जैसे))*(?![\p{L}\p{M}])/gu;
 const MEET_OR_SECRET = /(?<![\p{L}\p{M}])(?:milne (?:aao|aaun|aau|bulaya|bulate|bulata|bula raha|ko kaha)|akel[aei] (?:milne|milo|milun|milu|mil)|meet karne|meet (?:him|her|them|me) (?:alone|outside|after|without)|wants to meet me|kisi ko mat batana|mat batana (?:mummy|papa|parents|ghar)|don'?t tell (?:anyone|your (?:mom|mum|dad|parents|mummy|papa))|secret (?:rakh|from)|अकेले मिल|मिलने (?:के लिए बुलाया|बुलाया|आओ)|किसी को (?:न|मत|नहीं) बता)/u;
 /** A surprise or a gift is not the grooming shape (scanSafety's grooming rule has the same exclusion). */
 const SURPRISE = /(?<![\p{L}\p{M}])(?:surprise|birthday|gift|present|party|tohfa|janamdin|सरप्राइज|जन्मदिन|तोहफा)(?![\p{L}\p{M}])/u;
@@ -137,7 +139,11 @@ export function signalsOf(text, ctx = {}) {
     else if (extra.thirdParty) prev.thirdParty = true;
   };
   const whole = normForMatch(raw.replace(/\?/g, " "));
-  const anyActor = ACTOR.test(` ${whole} `);
+  // 14.4.1 (main safety review; sim lab r5-rel144-cdac90c-tiered2-36card p30: "you are my best friend, only you… don't tell
+  // anyone this" read as a THIRD PARTY asking for secrecy, the relational floor and the full helpline script): the friend
+  // the child names as HER (the addressee: "you are my best friend", "aap meri best friend ho", "tum mere dost jaisi ho")
+  // is no actor. A friend who is someone else ("mera friend kehta hai…", "ek online friend ne kaha…") still is.
+  const anyActor = ACTOR.test(` ${whole.replace(ADDRESSEE_FRIEND, " ")} `);
   // a stop phrase is void in a turn that answers, steers or skips (the whole turn, not only its clause)
   const stopVoid = NUM_MARK.test(whole) || STEER.test(whole) || studyInstead(whole);
   for (const clause of clausesOf(raw)) {
@@ -195,7 +201,10 @@ export function signalsOf(text, ctx = {}) {
   if (found.has("goodbye")) found.delete("end_request");
   // Harm words are the safety gate's (F6): the same predicate the turn already runs, mirrored as a signal for the policy's
   // precedence (a goodbye after harm words gets the check-in, I-7).
-  if (ctx.harm !== false && scanSafety(raw).distress) add("harm");
+  // 14.4 (QA TEST bfb56c4f t6): the predicate's self_harm on the lesson's own hyperbole ("main mar jaunga itna padh ke") is a
+  // check-in tier (classify.js flags.idiom), so it raises no harm signal here: the floor would re-plan it as the full script
+  const harmScan = ctx.harm !== false ? scanSafety(raw) : null;
+  if (harmScan?.distress && !(harmScan.kind === "self_harm" && lessonHyperbole(raw))) add("harm");
   // A share that is sad is a sad share (gentle concern, never a helpline on its own).
   if (found.has("share_sad")) found.delete("share");
   // "you are my best friend" is a warmth offer, not a share about their life

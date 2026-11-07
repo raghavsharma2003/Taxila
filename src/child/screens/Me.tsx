@@ -10,12 +10,15 @@ import { Link } from "react-router-dom";
 import { Sheet } from "../../ui/Sheet.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import { updateChild } from "../api.ts";
-import { ChildScreen } from "../chrome.tsx";
+import { ChildScreen, useKx } from "../chrome.tsx";
+import { ChoiceRow, LinkRow, Panel, Rows, Sheet as KxSheet, SwitchRow } from "../../ui-v3/kaksha/kit.tsx";
+import { kt } from "../../ui-v3/kaksha/copy.ts";
 import { useChild } from "../ChildShell.tsx";
 import { t } from "../copy.ts";
-import { tw } from "../../copy/en.ts";
+import { tr7, tw } from "../../copy/en.ts";
+import { useInstallOffer } from "../../app/install.ts";
 import { useHeadset } from "../lesson/headset.ts";
-import { AVATARS, Avatar, avatarName, Icon, Picto, type IconName } from "../pictos.tsx";
+import { AVATARS, Avatar, avatarName, avatarsFor, Icon, Picto, type IconName } from "../pictos.tsx";
 import { usePlan } from "../plan.ts";
 import type { ChildPrefs } from "../prefs.ts";
 
@@ -59,6 +62,8 @@ export function Me() {
   const older = family === "older";
   const headset = useHeadset();
   const [picking, setPicking] = useState(false);
+  const kx = useKx();
+  const installOffer = useInstallOffer();
   const ic = (name: IconName, picto: string) => (older ? <Icon name={name} size={24} /> : <Picto id={picto} size={40} />);
   const sounds = prefs.sounds ?? !older;
   const pick = async (a: string) => {
@@ -71,6 +76,76 @@ export function Me() {
     }
   };
 
+  if (kx) {
+    // Kaksha (r7 app-secondary-screens-kaksha): the same settings as HUD panels. Theme is not offered: Kaksha's look
+    // follows the child's family (kakshaThemeFor), so a Light/Dark row would change nothing (app-me-settings).
+    const sw = { onWord: t("on"), offWord: t("off") };
+    return (
+      <ChildScreen testid="me" ground="plain" title={t("me")} surfaces={plan.surfaces} className="kx-me">
+        <Panel eyebrow={t("yourTeacher")}>
+          <Rows>
+            <LinkRow to={`/c/${cid}/teacher`} label={rec.name} note={t("aiTeacher")} glyph="teacher" testid="me-teacher" />
+          </Rows>
+        </Panel>
+        <Panel eyebrow={kt("meLessons")}>
+          <Rows>
+            {older ? (
+              <ChoiceRow id="captions" label={t("captions")} glyph="captions" value={prefs.captionsAlways ? "always" : "needed"}
+                options={[{ v: "always", label: t("captionsAlways") }, { v: "needed", label: t("captionsNeeded") }]} onChange={(v) => setPrefs({ captionsAlways: v === "always" })} />
+            ) : (
+              <SwitchRow id="words" label={t("wordsYoung")} glyph="captions" on={prefs.captionsAlways} onChange={(v) => setPrefs({ captionsAlways: v })} {...sw} />
+            )}
+            <SwitchRow id="type" label={tw(older ? "me.type.title" : "me.tap.title")} glyph="type"
+              note={prefs.quiet ? tw(older ? "me.type.on" : "me.tap.on", { T: rec.name }) : tw(older ? "me.type.off" : "me.tap.off")}
+              on={prefs.quiet} onChange={(v) => setPrefs({ quiet: v })} {...sw} />
+            <ChoiceRow id="talk" label={t("talkMode")} glyph="mic" value={prefs.handsFree === false ? "tap" : "hands"}
+              options={[{ v: "hands", label: t("handsFree") }, { v: "tap", label: t("tapToTalk") }]}
+              onChange={(v) => setPrefs({ handsFree: v === "hands" ? null : false, talk: v === "hands" && headset ? "open" : "tap" })} />
+            {older && (
+              <ChoiceRow id="face" label={t("teacherFace")} glyph="face" value={prefs.face}
+                options={[{ v: "face", label: t("faceMoving") }, { v: "small", label: t("faceStill") }, { v: "voice", label: t("faceVoice") }]}
+                onChange={(v) => setPrefs({ face: v as ChildPrefs["face"] })} />
+            )}
+          </Rows>
+        </Panel>
+        <Panel eyebrow={kt("meScreen")}>
+          <Rows>
+            <SwitchRow id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} glyph="sound" on={sounds} onChange={(v) => setPrefs({ sounds: v })} {...sw} />
+            <SwitchRow id="calm" label={older ? t("lessMotion") : t("calmer")} glyph="motion" on={prefs.calm} onChange={(v) => setPrefs({ calm: v })} {...sw} />
+            {older && <SwitchRow id="bigtext" label={t("biggerText")} glyph="text" on={prefs.largeText} onChange={(v) => setPrefs({ largeText: v })} {...sw} />}
+          </Rows>
+        </Panel>
+        <Panel eyebrow={kt("meYou")}>
+          <Rows>
+            <LinkRow onClick={() => setPicking(true)} label={t("myPicture")} lead={<Avatar id={child.avatar} size={36} />} testid="change-picture"
+              tail={<span className="kx-tagline">{kt("change")}</span>} />
+            <LinkRow to={`/c/${cid}/teacher`} label={tr7("mem.row", { T: rec.name })} glyph="memory" testid="me-remembers" />
+            <LinkRow to="/who" label={t("switchLearner")} glyph="switch" testid="switch-learner" />
+            {installOffer && <LinkRow onClick={() => void installOffer()} label={tr7("app.install")} note={tr7("app.installNote")} glyph="play" testid="install-app" />}
+          </Rows>
+        </Panel>
+        <Panel eyebrow={kt("meSees")}>
+          {older ? (
+            <ul className="kx-bullets">
+              <li>{t("whoSeesList1")}</li><li>{t("whoSeesList2")}</li><li>{t("whoSeesList3")}</li><li>{t("whoSeesList4")}</li>
+            </ul>
+          ) : (
+            <p className="kx-sub">{t("whoSeesYoung", { T: rec.name })}</p>
+          )}
+          {!plan.surfaces.map && <p className="kx-sub">{t("hiddenMap")}</p>}
+        </Panel>
+        <KxSheet open={picking} onClose={() => setPicking(false)} title={t("pickPicture")} closeLabel={t("close")} testid="picture-sheet">
+          <div className="kx-pics" role="radiogroup" aria-label={t("pickPicture")}>
+            {avatarsFor(family).map((a) => (
+              <button key={a} type="button" role="radio" aria-checked={child.avatar === a} className="kx-pic kx-cut" aria-label={avatarName(a)} onClick={() => void pick(a)}>
+                <Avatar id={a} size={64} />
+              </button>
+            ))}
+          </div>
+        </KxSheet>
+      </ChildScreen>
+    );
+  }
   return (
     <ChildScreen testid="me" ground={older ? "plain" : "courtyard"} title={t("me")} surfaces={plan.surfaces} className="me">
       <ul className="cs-card me-list">
@@ -93,12 +168,13 @@ export function Me() {
           on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />
-        {older && (
-          <Choice id="talk" label={t("talkMode")} value={headset && prefs.talk === "open" ? "open" : "tap"} icon={ic("mic", "picto/mic")}
-            options={[{ v: "tap", label: t("tapToTalk") }, ...(headset ? [{ v: "open" as const, label: t("openMic") }] : [])]}
-            set={(v) => setPrefs({ talk: v as ChildPrefs["talk"] })} />
+        {/* Voice to-app/001 (D2): the talk choice is for every child, no headset rule */}
+        {(
+          // r7 (D2): hands-free is the default; Tap to talk starts every lesson with the mic off and the Talk button showing
+          <Choice id="talk" label={t("talkMode")} value={prefs.handsFree === false ? "tap" : "hands"} icon={ic("mic", "picto/mic")}
+            options={[{ v: "hands", label: t("handsFree") }, { v: "tap", label: t("tapToTalk") }]}
+            set={(v) => setPrefs({ handsFree: v === "hands" ? null : false, talk: v === "hands" && headset ? "open" : "tap" })} />
         )}
-        {older && !headset && <li className="me-hint">{t("openMicNeeds")}</li>}
         {older && (
           <Choice id="face" label={t("teacherFace")} value={prefs.face} icon={ic("face", "picto/ai-teacher")}
             options={[{ v: "face", label: t("faceMoving") }, { v: "small", label: t("faceStill") }, { v: "voice", label: t("faceVoice") }]}

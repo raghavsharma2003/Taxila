@@ -35,6 +35,8 @@ export const SOURCE_LAG = {
   other: { p50: 900, p90: 1600 },
 };
 
+/** Census F5: how far before a carried onset the ear's item for that same burst may open (device onset late over her echo). */
+export const CARRY_PRE_MS = 1200;
 const toks = (t) => { const n = normText(t); return n ? n.split(" ") : []; };
 const commonPrefix = (a, b) => { let i = 0; while (i < a.length && i < b.length && a[i] === b[i]) i++; return i; };
 
@@ -60,6 +62,7 @@ export class TurnTranscript {
 
   /** A new turn (epoch). `carryFrom`: keep items whose audio started at or after this time (overlap words, fold-in). */
   begin(t, { carryFrom = null } = {}) {
+    this.prevStart = this.turnStart;
     this.turnStart = t;
     this.carryFrom = carryFrom;
     this.updatedAt = null;
@@ -70,6 +73,17 @@ export class TurnTranscript {
   belongs(it) {
     const start = it.audioStartMs ?? it.firstAt;
     if (this.carryFrom !== null && start >= this.carryFrom - 40) return true;
+    // census F5 (main 2026-10-21): the carried burst ITSELF. Over her playback the device sees the child's onset late (her
+    // echo masks it) while the ear's own VAD opens the item at the true start, so the item that IS the burst began before
+    // `carryFrom` and was dropped with its words (D5 fold-in: "Cube के कितने corners होते हैं? गिनो…" — "8 corners" never a
+    // turn, 0/5 on every D5 arm). An item still open at the carried onset, opened at most CARRY_PRE_MS before it, belongs.
+    // (its audio end must be KNOWN to reach past the onset: an item of the last turn whose end is unknown never joins)
+    if (this.carryFrom !== null && it.audioEndMs != null && start >= this.carryFrom - CARRY_PRE_MS && it.audioEndMs >= this.carryFrom - 40) return true;
+    // R7 voice-echo-filter-residuals (4b open item 4, phone f7-stop-0386): a short burst can END before the device sees it
+    // at all ("एक मिनट दीदी" 2.8-3.8 s, the device's onset 4.1 s under her echo). An item of the epoch being closed (her
+    // line) that ENDED inside the CARRY_PRE_MS before the onset is that burst too (one still open at it: the rule above).
+    // Bake replay, 132 runs: 2 phone barge / fold-in turns gain their words, 0 other commits change.
+    if (this.carryFrom !== null && it.audioEndMs != null && this.prevStart != null && start >= this.prevStart - 40 && it.audioEndMs < this.carryFrom - 40 && it.audioEndMs >= this.carryFrom - CARRY_PRE_MS) return true;
     return start >= this.turnStart - 40;
   }
 
@@ -116,7 +130,7 @@ export class TurnTranscript {
     let it = this.items.get(ev.itemId);
     if (!it) {
       it = { id: ev.itemId, raw: "", text: "", final: false, versions: [], firstAt: ev.t, updatedAt: ev.t, audioStartMs: ev.audioStartMs ?? null,
-        coverEndMs: null, words: null, inTurn: false };
+        audioEndMs: ev.audioEndMs ?? null, coverEndMs: null, words: null, inTurn: false };
       it.inTurn = this.belongs(it);
       this.items.set(ev.itemId, it);
       this.order.push(ev.itemId);
@@ -124,6 +138,7 @@ export class TurnTranscript {
     }
     if (it.final && ev.type === "partial") return false;
     if (ev.audioStartMs !== undefined && it.audioStartMs === null) { it.audioStartMs = ev.audioStartMs; it.inTurn = this.belongs(it); }
+    if (ev.audioEndMs !== undefined && it.audioEndMs === null) { it.audioEndMs = ev.audioEndMs; if (!it.inTurn) it.inTurn = this.belongs(it); }
     const raw = ev.delta ? it.raw + String(ev.text ?? "") : String(ev.text ?? "");
     it.raw = raw;
     let text = raw.trim();

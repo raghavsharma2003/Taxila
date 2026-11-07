@@ -6,6 +6,8 @@ import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
 import { pickArt } from "../../shared/play.ts";
+import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
+import { fillFriendDeep } from "../director/friend.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let COVERAGE = null;
@@ -43,11 +45,41 @@ export function entryByKey(key, cov = coverage()) { return cov.entries.find((e) 
 /** Is there a play game for this skill? (the Director's admission check, patched in by docs/design/round3/play/patches) */
 export const hasPlay = (skillId, cov = coverage()) => !playOff() && cov.entries.some((e) => e.skillIds.includes(skillId));
 
+/** ITEM-ARENA (r7 revival): data/arena/<bank>.json, built from verified kit items by tools/build-arena.mjs, loaded once per file. */
+const BANKS = new Map();
+export function arenaItems(bank, topicId) {
+  if (!/^c\d-[a-z]+$/.test(String(bank))) return [];
+  if (!BANKS.has(bank)) { try { BANKS.set(bank, JSON.parse(readFileSync(join(ROOT, "data/arena", `${bank}.json`), "utf8")).challenges ?? []); } catch { BANKS.set(bank, []); } }
+  return BANKS.get(bank).filter((c) => c.topicId === topicId);
+}
+/** Kaal (r7): data/play/kaal/events.json (the kits' dated events, built and checked by tools/build-kaal.mjs), loaded once.
+ *  The file is registered with the kaal law so validate refuses a stone whose year differs from it. */
+let KAAL = null;
+export function kaalEvents(topicId) {
+  if (!KAAL) {
+    try { KAAL = JSON.parse(readFileSync(join(ROOT, "data/play/kaal/events.json"), "utf8")).events ?? []; } catch { KAAL = []; }
+    registerKaalEvents(KAAL);
+  }
+  return KAAL.filter((e) => e.topicId === topicId).map(({ id, year, circa, decade, label }) => ({ id, year, circa, ...(decade ? { decade } : {}), label }));
+}
+kaalEvents("");
+/** VAKYA (r7, English / Hindi grammar): data/play/vakya/<bank>.json, built from verified kit items by tools/build-vakya.mjs. */
+const VAKYA = new Map();
+export function vakyaItems(bank, topicId) {
+  if (!/^c\d-(english|hindi)$/.test(String(bank))) return [];
+  if (!VAKYA.has(bank)) { try { VAKYA.set(bank, JSON.parse(readFileSync(join(ROOT, "data/play/vakya", `${bank}.json`), "utf8")).items ?? []); } catch { VAKYA.set(bank, []); } }
+  return VAKYA.get(bank).filter((c) => c.topicId === topicId);
+}
+/** The arena's challenges, kaal's events and vakya's sentence trains ride the request (grammar.items / grammar.events); the
+ *  client never loads a bank or the events file. */
+const grammarOf = (entry) => (entry.family === "arena" && entry.grammar?.bank ? { ...entry.grammar, items: arenaItems(entry.grammar.bank, entry.topicId) }
+  : entry.family === "vakya" && entry.grammar?.bank ? { ...entry.grammar, items: vakyaItems(entry.grammar.bank, entry.topicId) }
+  : entry.family === "kaal" ? { ...entry.grammar, events: kaalEvents(entry.topicId) } : entry.grammar);
 /** The picker's request from a session body (the same body always yields the same levels: the picker is pure). */
 export function genRequest(s, entry) {
   return {
     family: entry.family, mode: entry.mode, topicId: entry.topicId, skillId: s.skillId ?? entry.skillId, classLevel: s.classLevel, fade: s.fade,
-    goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: entry.grammar, recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
+    goal: entry.goal, mis: s.mis ?? {}, misMap: entry.misMap, grammar: grammarOf(entry), recent: s.recent ?? [], seed: s.seed, harder: !!s.harder,
     ...(typeof s.pL === "number" ? { pL: s.pL } : {}),
     ...(s.focus ? { focus: s.focus } : {}),
   };
@@ -60,10 +92,16 @@ export function levelsFor(s, entry) {
 }
 /** The level a session body points at (its door decides garam / teekha; a teekha body with no harder candidate at its
  *  fade was already moved one fade up by nextBody, so this never silently serves an easier level behind a "harder" door). */
-export function currentLevel(s, entry) {
+/**
+ * The level the child is served (and graded against: every route regenerates it). Kit-derived text (arena challenges,
+ * vakya trains) keeps its {friendF}/{friendM}/{friend} slots in the banks; they are filled HERE, at serve time, with a
+ * name that is never the child's own (server/director/friend.js) — the builders never fill. The fill touches strings only,
+ * so the levelId is the unfilled one and the same for every child.
+ */
+export function currentLevel(s, entry, childName = "") {
   const r = levelsFor(s, entry);
   if (!r) return null;
-  return s.door === "teekha" && r.teekha ? r.teekha : r.garam;
+  return fillFriendDeep(s.door === "teekha" && r.teekha ? r.teekha : r.garam, childName);
 }
 /**
  * The session body of the level behind a door (round 4 G1). ONE rule for the door preview (doorsFor) and /api/play/next,

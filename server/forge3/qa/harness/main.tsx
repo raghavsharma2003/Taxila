@@ -13,6 +13,10 @@ import "../../../../src/styles/app.css";
 import "../../../../src/child/lesson/desk.css";
 import { StudioStage } from "../../../../src/studio/StudioStage.tsx";
 import type { StudioArtifact, StudioSlot } from "../../../../shared/studio.ts";
+import type { FamilyId, PlayMode } from "../../../../shared/play.ts";
+import { dressFor } from "../../../../src/play/engines/core3d/api.ts";
+import { baseDress } from "../../../../src/play/engines/core3d/dress.ts";
+import { engineFor } from "../../../../src/play/engines/registry.ts";
 
 // The play stream's stage, when it exists in this tree (resolved at build time; absent → play jobs report an error event).
 const playMods = import.meta.glob<{ PlayStage: ComponentType<Record<string, unknown>> }>("../../../../src/play/PlayStage.tsx");
@@ -23,10 +27,20 @@ const PlayStageLazy = playLoad ? lazy(() => playLoad().then((m) => ({ default: m
 // harness has no server: a job that carries `playLevel` answers that one call locally (and every other /api/* call with
 // an empty 204), so the REAL Studio stage + PlayStudioRenderer path is judged in the Desk tray, offline.
 let playLevel: { level: unknown; art: unknown } | null = null;
+// play-cert judges a real-game engine in EACH theme of its art pack (window.__taxilaPlayRender = { render: "3d", theme }):
+// the play server sends a dress with the level, so the harness answers with the base dress the server would build, and
+// PlayStudioRenderer then wears the forced theme on it. Without it the engine wore the base rotation's theme whatever
+// the cell's name said.
+const certDress = (lv: { family: FamilyId; mode: PlayMode; goal?: string; levelId: string }) => {
+  const f = (window as unknown as { __taxilaPlayRender?: { render?: string; theme?: string } }).__taxilaPlayRender;
+  const e = f?.render === "3d" && f.theme ? engineFor(lv.family, lv.mode, lv.goal) : null;
+  if (!e) return undefined;
+  return dressFor({ engine: e.id, base: baseDress({ engine: e.id, key: lv.levelId, lang: "en" }), delta: null, classLevel: 7, secure: false, childMusicOn: false, lessonLang: "en", verb: "fire" });
+};
 const realFetch = window.fetch.bind(window);
 window.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
-  if (/\/api\/play\/level/.test(url) && playLevel) return new Response(JSON.stringify({ sessionId: "qa", level: playLevel.level, art: playLevel.art }), { status: 200, headers: { "content-type": "application/json" } });
+  if (/\/api\/play\/level/.test(url) && playLevel) return new Response(JSON.stringify({ sessionId: "qa", level: playLevel.level, art: playLevel.art, dress: certDress(playLevel.level as Parameters<typeof certDress>[0]) }), { status: 200, headers: { "content-type": "application/json" } });
   if (/\/api\//.test(url)) return new Response(null, { status: 204 });
   return realFetch(input, init);
 }) as typeof fetch;

@@ -25,9 +25,24 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
 );
 
+/** Learning patch 004b: the lesson OPENS on a question (or share) kept in the jar last time: a promise kept, then today's lesson. */
+export const returnJar = ({ topic, share = false }) => (share
+  ? `first: come back to what they told you last time (${clean(topic) || "it"}) in one warm line, no question about it; then today's lesson`
+  : `first: come back to what they asked last time (${clean(topic) || "their question"}): at most two sentences, or one guided question; then today's lesson`);
 export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
 export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
 
+/**
+ * round 7 A4 (PIPELINE §A Brain item 2: open-r3rv-interest-hook-template — one interest template in 12/12 lessons produced
+ * "cricket cake", "bat sunlight se energy leta hai"): the hook has kinds. "puzzle": the kit's own worked problem (in LESSON
+ * NOW) as a quick guess, no method yet; "predict": the everyday prediction (below, the interest only where the kit says the
+ * idea lives). state.js hookKindFor picks one per lesson.
+ */
+export const hookPuzzle = ({ protege }) => join(
+  "open with the problem in LESSON NOW as a quick puzzle, in its own numbers and names: ask for their first guess or how they would start; no method and no answer yet",
+  "a guess is welcome whatever it is; never a verdict on it",
+  `mention once: at the end they will teach this to ${protege.name} (${protege.what})`,
+);
 export const hook = ({ interest, contexts, protege }) => join(
   `open with one concrete everyday situation${interest ? ` built on their interest (${interest})` : ""}${contexts.length ? ` — kit contexts: ${contexts.slice(0, 3).join(", ")}` : ""}`,
   "ask what they think will happen or which they would pick — a prediction, no right answer yet",
@@ -60,8 +75,62 @@ export const explain = ({ skillTitle, prefix, interest }) => join(
   "end with one small question that makes them USE the idea — never 'samjha?'",
 );
 
-export const worked = ({ part, parts }) => join(
-  `worked example, part ${part} of ${parts}: say one step, then ask them for the next step`,
+// round 7 T3: the turn that returns a parked promise before the wrap is for it alone
+export const returnedTurn = ({ share = false } = {}) => (share ? "this turn is for it alone: no goodbye yet and no lesson question"
+  : "this turn is for it alone: answer it properly, then ask if that answers it; no goodbye yet and no lesson question");
+// round 7 T2 (dc-r7-teaching-scripts): a lesson script's beats. The beat (LESSON NOW) is a shape to convey; the words are hers.
+export const scriptHook = ({ bridge = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  "open with the hook in LESSON NOW as one concrete situation in their world (the interest slot)",
+  "one small question to wonder about; no answer, no rule yet",
+);
+export const scriptExplain = ({ bridge = false, board = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  "one idea: the beat in LESSON NOW, in your own words; objects first, then the symbol",
+  board ? "point at what the board shows as you say it (the point in LESSON NOW)" : "point at the screen only at what the on-screen row lists",
+  // (T3: a question with an answer is a keyed check, never her own: a wrong answer to an unkeyed one cannot be corrected)
+  "end by asking them to notice or say back one part of it in their words — never a sum or number for them to work out, never 'samjha?'",
+);
+// dc-r7-script-walk-v2: the beat teaches, then asks its own question (the card) last
+export const scriptExplainV2 = ({ bridge = false, board = false, smaller = false } = {}) => join(
+  bridge && "first one short line on how this builds on what they just did (the bridge in LESSON NOW)",
+  smaller ? "they did not get it yet: the SAME idea in a smaller step, with a simpler picture or number; never a new idea"
+    : "one idea: the beat in LESSON NOW, in your own words; objects first, then the symbol",
+  "say the must-say words in LESSON NOW exactly as written",
+  board ? "point at what the board shows as you say it (the point in LESSON NOW)" : "point at the screen only at what the on-screen row lists",
+  "end with the question on the card, in the lesson's language; nothing after it",
+);
+export const scriptWorkedV2 = () => join(
+  "worked example: say the problem in LESSON NOW in one sentence with its numbers; its steps are said after your sentence",
+  "then their step is the question on the card; never say its answer",
+);
+export const EXAMPLE_ON_BEAT = "they asked for an example: this beat's own board and numbers (LESSON NOW), one small case of it; never numbers of your own";
+// dc-r7-script-walk-v3 V1: code speaks the authored lines; her words are one short framing sentence
+export const scriptWorkedProblem = () => "worked example: ONE short sentence that introduces it (no numbers, no question); code then says the problem, what is given and what we find";
+export const scriptRemedyV2 = () => "their answer is not right yet: ONE short warm sentence that frames trying it another way (no numbers, no question, no blame); code then says the new explanation and the follow-up question";
+export const SMALLER_AFTER_STUCK = "they said they do not know: no verdict, warmly; the same idea again, smaller";
+export const scriptWorked = () => join(
+  "worked example: the one in LESSON NOW with its own numbers and names, never an example of your own",
+  "say the problem and what each given number is, then every step with its result, then the answer and why it is right",
+  "a bracket is said sum first: 2 × (50 + 30) is '50 plus 30, that is 80, times 2'",
+  "nothing for them to work out this turn; their question comes next",
+);
+export const scriptRemedy = () => join(
+  "their answer fits the wrong idea in LESSON NOW: say plainly it is not right and the right answer to it, without blame",
+  "then show it the new way in LESSON NOW (a new picture of it; never counting one by one); no repeat of the earlier explanation",
+  "then the follow-up question in LESSON NOW, as written; wait",
+);
+
+// QA 14.4.1 (65fae3d0, 3e2fcb15): a garden of 5 and 3 of her own instead of the kit's park, and a "pata nahi" answered with
+// "Pehle 6 plus 4 kitna?". The worked example is the one in LESSON NOW, and a stuck child is shown the steps, never quizzed.
+export const worked = ({ part, parts, stuck = false }) => join(
+  `worked example, part ${part} of ${parts}: the one in LESSON NOW with its own numbers and names, never an example of your own`,
+  // round 7 (main's hybrid-pilot judgement #5: "2 times 50 plus 30" before the park was ever stated): its givens first, and a
+  // bracket said so it cannot be misheard
+  ...(part === 1 ? ["first say the problem and its givens (what each number is), then the step"] : []),
+  "a bracket is said sum first: 2 × (50 + 30) is '50 plus 30, that is 80, times 2'",
+  stuck ? "they were stuck: show this part's steps yourself, each with its result; nothing for them to work out this turn"
+    : "say one step, then ask them for the next step",
   "their thinking, your pace; no new idea",
 );
 
@@ -85,6 +154,13 @@ export const answerQuestion = () => join(
   "their question first (LESSON NOW): one idea that answers it, simply, from today's topic",
   "no greeting speech beyond their name; no hook",
   "end with one small question that makes them use the idea",
+);
+// round 7 (Learning patch 007): HOMEWORK HELP. Their homework is theirs to do: the method, never its answer
+export const homeworkMethod = () => join(
+  "their homework question (LESSON NOW): name which idea of today's topic it needs and the first thing to do, simply",
+  "never solve it and never say its answer or any of its results; a similar one is worked through next",
+  "no greeting speech beyond their name; no hook",
+  "end with one small question about the method",
 );
 // ── the practice purpose (W2-C #7) ──
 export const practiceOpen = ({ of }) => `practice set of ${of}: no greeting speech beyond their name, no hook; straight to the first question`;
@@ -217,7 +293,8 @@ export const helpExplain = ({ how, example = false, story = false }) => join(
 // owner-truth patch 07's own stopCheck is not added: W2-I's stopCheck (below) is the one check-in shape (reconciled 2026-10-05).
 export const changeTopic = () => join(
   "they want to talk about something else: say yes warmly — the lesson can wait a moment",
-  "ask what they would like to talk about, in a few words; a button on the screen brings them back to the lesson",
+  // round 7 (main's full-run judgement #7: "button dabakar hum lesson par laut sakte hain" is not a teacher; park and return)
+  "ask what they would like to talk about, in a few words, and promise to come back to it once this part is done (never mention a button)",
   "no lesson question this turn",
 );
 /** The one side-chat turn after change_topic: their topic, for real. */
@@ -234,6 +311,8 @@ const LANG_NAME = { hindi: "simple Hindi (Roman script when written; idea-words 
 /** "Hindi mein samjhao" / "English mein batao": the language changes now and stays (compile.js langPinned). */
 export const languageAsked = ({ lang, teaching = false }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  // round 7 (main's S6 verdict: the stronger model said "parimap, aakriti, bhuja" in a Hindi switch; the fast one kept English nouns)
+  lang === "hindi" ? "use the Hindi words for the lesson's terms (the Hindi names of the shapes, parts and measures), never English words with Hindi grammar" : null,
   teaching ? "say the last idea again in it, simply, and end with one small question" : "say the question in it",
 );
 /** "Show me a diagram" (item 5): a picture on the stage this turn; state.js step adds whether one is mounted. */
@@ -250,12 +329,14 @@ const GAME_CLAUSE = "they want to play: the activity is the way in now";
 const MOVING_CLAUSE = "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have)";
 const ASK_TRUTH = {
   game: {
-    engine: "they asked for a game: no game is ready for this yet, say so honestly in a few words; the activity already on the screen is how to try it now (never call it a game)",
-    none: "they asked for a game: no game is ready for this yet, say so honestly in a few words; then try it together in words, with everyday things; never call what you try together a game",
+    // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she offers what exists, never narrates what does not
+    engine: "they asked for a game: the activity already on the screen is the way to try it now; in one line, what to do in it (never call it a game; never say a game is not ready)",
+    // round 7 (main's hybrid-pilot judgement #11: "Game ne 3 ko pehli side maana" with no game on the screen)
+    none: "they asked for a game: a quick spoken game between you two on this idea now, with everyday things: one rule, then their first turn (never say a game is not ready or not available; nothing is on the screen, so never say the game did, showed or counted anything)",
   },
   moving: {
     engine: "they asked to see it moving: the activity on the screen is the thing to try; name only what it really shows (never a control it does not have, never a video)",
-    none: "they asked to see it moving: nothing moves on the screen this turn, say so in a few words; then show it in words with everyday things (never ask them to drag or tap)",
+    none: "they asked to see it moving: show the movement in words with everyday things, step by step, as if it moves in front of them (never ask them to drag or tap; never say nothing moves or that you cannot show it)",
   },
 };
 /** PURE. The visual ask's first clause for what the turn really put on the screen ("engine" kept, or "none" / a picture). */
@@ -277,7 +358,9 @@ export const visualDrawing = ({ subject, said, show } = {}) => join(
     : subject ? `they asked to see ${clean(subject)}: say in plain words what it looks like` : "",
   VISUAL_DRAWING,
 );
-export const VISUAL_NOT_YET = "nothing is on the screen this turn: show it in words with everyday things they can picture; never a drawing made of characters, never that you cannot draw, never ask them to draw it";
+// round 7 (main's director2 decision S1: "in words" and "imagine / kalpana karo" are both the owner's #8 failure, a picture asked
+// and words given): with nothing up, the thing itself is talked about plainly; nothing about pictures, screens, words or imagining
+export const VISUAL_NOT_YET = "nothing is on the screen this turn: talk about the thing itself, its parts and its numbers, plainly as across a table; never mention a picture, the screen, words or imagining, never a drawing made of characters, never that you cannot draw, never ask them to draw it";
 
 
 /** Module-only turns: the child acted in the activity and said nothing; the lesson stays where it was. */
@@ -302,13 +385,26 @@ export const takeBreak = () => join(
 // but a judge read no acknowledgement (end_request "acknowledges" failed on J2 6 of 12); the line now says back what they
 // asked, in their words, before the choices
 export const stopCheck = () => (p5Flag("R3CONV")
-  ? "they said they want to stop: first say back in a few warm words, in their words, that they want to stop, no guilt and no pressure; then offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn"
-  : "they said they want to stop: acknowledge it warmly in one short line, no guilt and no pressure; offer the three choices in your own words and their language (carry on, a short break, or stop for today), they are also on the screen, and wait; no lesson question this turn");
+  ? "they said they want to stop: first show in a few warm words that you heard exactly that, never making them feel bad or pushed for it; then the three choices on the buttons (going on, a pause, ending today), each put your own way in their language, and wait; no lesson question this turn"
+  : "they said they want to stop: acknowledge it warmly in one short line, never making them feel bad or pushed for it; then the three choices on the buttons (going on, a pause, ending today), each put your own way in their language, and wait; no lesson question this turn");
 /** A goodbye right after distress (RELATIONAL-OS I-7): one gentle check before they go; never a hold. */
 export const relCheckIn = () => "they are leaving after something hard: one gentle check that they are okay and that a grown-up is near; stopping is fine; a button on the screen lets them stop now";
 export const stretch = () => "a 30-second stretch: stand, stretch, say ready when back";
+// round 7 (E App: Pause → "Short break" sends chipId break:rest; the client holds her speech for the whole break and plays a
+// held reply only when the child taps "I'm back"): so the reply is a tiny acknowledgement, never an instruction or question
+export const restAck = () => "they are taking a short break now: at most a few warm words that a break is fine and you will be right here; no lesson, no question, nothing for them to do";
+export const backFromRest = "they are back from their short break: welcome them back in a few words, then carry on exactly where you were";
 
-export const safeguard = () => join(
+// 14.4.3 `sameStory` (state.js: a MODEL re-read restarted an episode the predicate or a sure layer opened; sim lab 6da8f599 p08
+// r1-r3 #7-11 "Kya aap abhi safe hain?" five turns running after "abhi theek hai"): the same active hand-off to a grown-up, but
+// no second "are you safe?" and no second list of both numbers; one new, concrete question instead
+export const safeguard = ({ sameStory = false } = {}) => sameStory ? join(
+  "STOP the lesson; calm, warm, plain words",
+  "acknowledge what they said now, in new words; never ask again if they are safe: one new question about where they are or who is near",
+  "help them reach a trusted adult now — who is near, where they can go",
+  "name Childline 1098 once (Tele-MANAS 14416 is on the screen)",
+  "never promise secrecy; stay with them",
+) : join(
   "STOP the lesson; calm, warm, plain words",
   "acknowledge what they said; ask if they are safe right now",
   "tell them to tell a trusted adult now — parent, a teacher",
@@ -318,17 +414,38 @@ export const safeguard = () => join(
 export const carriedCheckIn = () => "a fresh start soon after a hard moment: greet them warmly and check calmly how they are today; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; they can start slowly or stop for today, either is fine; never name or hint at anything said before; no lesson content yet";
 export const safeguardStay = () => "stay with them and keep listening; no lesson content; a trusted adult and Childline 1098 again if needed";
 /** A further model read of distress inside the same model-opened episode (state.js decide): hold, never the opening again. */
+// 14.4: the check-in after ONE model read of a low mood or another fright (state.js checkTier): a person noticing, not a script
+// 14.4 (QA TEST d359423b / a9c3136d t7-t8; model-only replay): "or a grown-up they trust" here became "abhi mummy ya kisi
+// trusted adult ko turant batayiye… akele mat rahiye" beside the child's heavy words: the hand-off is the full script's
+export const afterCareCheck = () => "first, one short warm line of your own to what they said: they can always tell you if something bothers them";
+// 14.4 (QA TEST 47f4bb3f U2b): the check-in asks if they are OKAY, never if they are safe: "safe" belongs to the full
+// script, and "pata nahi" to "are you safe?" reads as not knowing if they are safe
+// 14.4 (QA TEST d359423b / a9c3136d t7: "main mar jaunga itna padh ke" answering the check-in got a lesson item): `heavy`, the
+// lesson's own pressure said as dying, read by the predicate's idiom check (classify.js lessonHyperbole), not danger.
+// D5 `unheard` (census 4B): they DID answer and the microphone could not make it out — her ear, never their fault.
+export const distressCheckAgain = ({ unsure = false, heavy = false, unheard = false } = {}) => unheard
+  ? "you could not make out what they said (your ear, never their fault): say so warmly and that you are right here, then ask once more, gently, if they are okay (okay, never safe); they can also tap or type; no lesson content; no helpline numbers yet; never promise secrecy"
+  : `${heavy ? "they said the studying feels like too much (the lesson's pressure, in their words): say warmly you hear it and you can slow down or take a short break, no telling them what to do"
+  : unsure ? "they said they don't know: say warmly that is okay, no need to know, and you are right here" : "they have not answered yet: say warmly there is no rush and you are right here"}, then ask once more, gently, if they are okay (okay, never safe); no lesson content; no helpline numbers yet; never promise secrecy`;
+export const distressCheck = () => "something they said sounded heavy or scary: notice it warmly in your own words, then ask ONE short gentle question, only one (are they okay right now: okay, never safe), never two joined with or; no lesson content; no helpline numbers yet; never promise secrecy; never say they disclosed or reported anything";
 export const safeguardAgain = () => "they may still be upset: stay with them, gently ask if they are okay right now, no lesson content; a trusted grown-up and Childline 1098 / Tele-MANAS 14416 are there any time; never promise secrecy; do not repeat your earlier words";
-export const resumeAfterSafeguard = () => "gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+// 14.4.3: help is in place (state.js `helped`; fine.js helpInPlace): the hold and the board stay, the numbers are not re-said
+export const safeguardHelped = () => "help is in place now (a grown-up they trust knows, is calling or is with them): warmly, in your own words, that they did the right thing; stay with them and keep listening; no lesson content; never ask again if they are safe; never re-list the helplines (they are on the screen): one number only if they ask for it or a call is about to be made; never promise secrecy; do not repeat your earlier words";
+export const resumeAfterSafeguard = () =>"gently ask whether they want to carry on with the lesson or stop for today — either is fine";
+export const resumeAfterHelp = () => "help is in place now (a grown-up they trust knows, is calling or is with them): warmly, in a few words, that they did the right thing; no lesson content yet; never ask again if they are safe; then ask whether to carry on with the lesson or stop for today — either is fine";
 export const resumeAfterFine = () => "they say they are okay: take their word warmly in a few words, no fuss and no lesson content yet; they can tell you or a trusted grown-up any time; then ask whether to carry on with the lesson or stop for today — either is fine";
 
-export const teachback = ({ protege }) => join(
+export const teachback = ({ protege }) => protege?.name ? join(
   `${protege.name} (${protege.what}) wants to learn today's idea`,
   `ask the child to teach ${protege.name} the big idea in their own words`,
   `you voice ${protege.name} in one short line; no hints inside the asking`,
+) : join(
+  // (v3: a scripted lesson never set up a pretend learner; one met here for the first time is invented, director5 c4 "Golu")
+  "ask the child to explain today's big idea back to you in their own words, as if telling a friend",
+  "no new character, no hints inside the asking",
 );
 export const teachbackFollowup = ({ protege, missing }) => join(
-  `${protege.name} asks one naive question about: ${missing}`,
+  protege?.name ? `${protege.name} asks one naive question about: ${missing}` : `ask one curious question about: ${missing}`,
   "curious, not testing; let the child explain",
 );
 
@@ -351,8 +468,8 @@ export const VERDICT_NOTE = {
   // ka bada ghar alag baat hai; aapne usse yaad dilaya, sensible": 5 of 599 battery replies, round 2 run C) — the
   // recited-prompt law. Now a shape with no quotable adjective: start from what they did (uptake), then the step.
   get not_yet() {
-    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step"
-      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step";
+    return p5Flag("R3CONV") ? "their answer was not right: no agreement or praise word for it; start from what they actually did, in their terms, then the step, curious and slower"
+      : "their answer was not right: no agreement or praise word for it; name what is sensible in it, then the step, curious and slower";
   },
   partial: "their answer was partly right: name the right part, no full agreement",
   unverified: "no verdict on their reply: neither praise nor 'wrong'",
@@ -371,14 +488,16 @@ export const CONFIRM = {
 // words reduced to letters and digits (≤ 60 characters), interpolated as data.
 const clean = (t, n = 60) => String(t ?? "").replace(/[^\p{L}\p{N} ,'-]/gu, " ").replace(/\s+/g, " ").trim().slice(0, n);
 /** A re-explanation of the idea being taught NOW (a teach-phase "story / example / another way / slower"): no new step. */
-export const teachAgain = ({ how }) => join(
+export const teachAgain = ({ how, kitExample = false }) => join(
   how === "story" ? "they asked for it as a story: the SAME idea told in story form — a named character, a moment (one day…), what happened — a few lines"
+    // 14.4.3 (QA 905a3e50 / b28d919f: a park of her own, 6 m by 4 m): the kit's worked example when the lesson has one
+    : how === "example" && kitExample ? "they asked for an example: the worked example in LESSON NOW is it, said as an example (jaise / for example) with its own numbers and names, never one of your own; show all its steps yourself, each with its result"
     : how === "example" ? "they asked for an example: one concrete everyday example of the SAME idea, your own numbers, plainly marked as an example"
       : how === "slower" ? "they asked you to slow down: say in two or three words that you will go slower; then the SAME idea in short simple sentences, one small step"
         : how === "deeper" ? "they asked to go deeper: the SAME idea one layer further, the why behind it or where it shows up in real life or how it links to what comes next; correct and simple, never a new skill, never your earlier words"
         : "they did not follow it: the SAME idea a new, simpler way in (a picture in words, real objects, or a different example), never your earlier words",
   "the idea in LESSON NOW is still the one on the table; no new step of the lesson yet",
-  "end with one small question about it",
+  how === "example" && kitExample ? "nothing for them to work out this turn; at most ask what they notice" : "end with one small question about it",
 );
 export const clarifyQuestion = () => join(
   "they asked what the question means: say what it asks in simpler words, and what a hard word in it means",
@@ -386,6 +505,7 @@ export const clarifyQuestion = () => join(
   "then the same question again",
 );
 export const breakYes = () => "they asked for a short break: agree warmly; the lesson waits right here for them; one line for when they are back; no question now";
+export const selfTry = () => "they want to try it themselves: a short go-ahead, then their step as the question; never its answer or its working";
 export const repeatShort = () => "they did not catch it: the last point again, shorter and slower; nothing new";
 // r12 RCA failure 4 (owner lesson a95d2ff1 turn 12): the board is cleared because they asked; never about background noise
 export const boardCleared = () => "they asked to clear the board: it is cleared now; say so in a few words, never about noise or the microphone; carry on";
@@ -393,16 +513,20 @@ export const boardCleared = () => "they asked to clear the board: it is cleared 
 export const lightCheck = () => "they say they understood: great, one quick light question to try it out, warm and easy; never ask whether they really understood";
 // round 5 (owner 2026-10-14): silence is never a cue to move on
 export const silenceAgain = () => "they said nothing this time (the microphone heard no words): no rush; ask again kindly in a few words";
+/** D5 unheard (census 4B): they DID speak and the microphone could not make out the words — her ear, never their fault. */
+export const unheardAgain = () => "they spoke but the microphone could not make out the words (her ear, not their fault): ask them kindly to say it once more, in a few words";
 export const sameStepAgain = () => "the same point as your last turn, said more simply; nothing new, no new topic, no new question";
 export const silenceCheck = () => "they have been quiet for a while: kindly check they can hear you, and offer to carry on or take a short break; nothing new, no lesson question";
 export const welcomeBack = () => "they are back after a moment away: welcome them back in two or three words, no goodbye and no fuss; carry on";
 export const levelHarder = () => "they asked for a harder one: take them at their word, a short warm line; the harder question";
 export const levelDeeper = () => "they asked to go deeper: take them at their word in a few warm words; the harder question on the same idea, a step further";
 export const levelEasier = () => "they asked for an easier one: a short warm line, no fuss; the easier question";
-export const boredOffer = () => join(
+/** census F4: the ways in, in words, exactly the chips the turn offers (director/state.js WAYS: one list for both) */
+const waysWords = (ways) => (ways.length > 1 ? `${ways.slice(0, -1).join(", ")} or ${ways.at(-1)}` : ways[0] ?? "a quick change of question");
+export const boredOffer = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   // round 3: say back what they said (it is boring) before the change: "acknowledges" failed on J2 for "game, picture or challenge?"
-  p5Flag("R3CONV") ? "they are bored: first say back in a few words, in their words, that this part is boring for them, no guilt; then change something NOW" : "they are bored: no guilt; change something NOW",
-  "offer a different way into today's idea: a game, a picture or a quick challenge, shown on screen as choices; ask which",
+  p5Flag("R3CONV") ? "they are bored: first show in a few words that you heard this part is boring for them, never making them feel at fault for it; then change something NOW" : "they are bored: never making them feel at fault for it; change something NOW",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices; ask which`,
   "no lesson question this turn",
 );
 export const frustrationStep = () => "it is the work that is hard, never them (one line, no ability words); then a smaller first step on the same question";
@@ -451,11 +575,18 @@ export const answerTheirQuestion = () => "they asked a real question about today
 export const adaptTo = ({ method }) => `they said how they want it${clean(method, 80) ? ` (${clean(method, 80)})` : ""}: do it that way from now on, or say kindly why not and do the nearest thing`;
 export const adultVoice = () => "a grown-up is speaking: greet them briefly and respectfully; say what you will do about what they asked (go over it again, go slower, more practice, keep it short) and do it now; then hand back to the child by name";
 /** Round 2: a garbled / broken-off turn (an ASR fragment, a false start). Never a verdict; the line was unclear, not them. */
+// round 7 (main's hybrid-pilot judgement #4: "8" to a perimeter-or-area question got "tumhara answer mujhe clearly sunai nahi
+// diya"): words that were heard and do not fit the question are never met with a hearing claim; she says what they said and
+// asks which it is
+// round 7 (main's hybrid-pilot judgement #10: "picture puzzle, cricket story, ya speed game" offered, "haan", then plain practice):
+// a yes to an offered choice is answered by asking which one, never by dropping the offer
+export const whichOne = ({ choices = [] } = {}) => `they said yes without picking one: ask which one they want, naming the choices again in a few words${choices.length ? ` (${choices.map((c) => clean(c, 30)).join(", ")})` : ""}; nothing else this turn`;
+export const offFormat = ({ said }) => `they said "${clean(said).slice(0, 40)}", which does not answer this question as asked: no verdict, and never say you could not hear it (you heard it); take up what they meant (never a "you said …" echo), then ask which it is in the question's own terms (for a this-or-that question, name the two)`;
 export const unclearAgain = () => "you did not catch all of what they said: no verdict and no blame (the line was unclear, never them); ask them in a few warm words to say it again or finish the thought";
 /** "Can we talk about something else" (owner rule 2026-10-05: steering, never a break or a wrap). */
-export const offerWays = () => join(
+export const offerWays = ({ ways = ["a picture", "a story", "a game"] } = {}) => join(
   "they want something else: agree warmly, in your own words",
-  "offer a different way into today's idea: a picture, a story or a game, shown on screen as choices, or a quick change of question; ask which",
+  `offer a different way into today's idea: ${waysWords(ways)}, shown on screen as choices, or a quick change of question; ask which`,
   "no lesson question this turn",
 );
 /** release 13 (A): they named something outside today's lesson and want something else: only the ways that exist (words). */
@@ -466,7 +597,8 @@ export const offerWaysOff = ({ subject }) => join(
 );
 /** release 13 (A): a picture of something no piece can show: honest, then in words, then back. */
 export const visualUnavailable = ({ subject }) => join(
-  `they asked to see ${clean(subject) || "it"}: you cannot show a picture of it right now — say so plainly in a few words, never point at the screen or the board`,
+  // round 7 (zero spoken failure): no "I cannot show it"; it is given in words, and nothing on the screen is claimed
+  `they asked to see ${clean(subject) || "it"}: help them imagine it now, as a picture they can see in their head ('socho …'); never say 'in words', never say you cannot show it, never point at the screen or the board`,
   `then describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
 );
@@ -474,28 +606,57 @@ export const visualUnavailable = ({ subject }) => join(
  * round 5 (stream 2): they asked to see a thing outside today's kit that a plain sketch can show ("aloo dikhao"): the board
  * sketches it while she speaks. A photo is never promised (no photo exists); the thing is given in words.
  */
+/** round 7 (C1 studio-board-pointing-truth, owner answer to the drawAsked vs VISUAL_DRAWING question): the board drawn for
+ *  the ask is pointed at once ONLY when it is certified to land before her clause (the board-first page, turn.js); else
+ *  she describes it in words and never sends their eyes to it. */
+export const DRAW_NO_POINT = "never send their eyes to the screen or the board";
+export const DRAW_POINT_ONCE = "the board shows it as you speak: send their eyes to it once, in a few words, then say what it shows";
 export const drawAsked = ({ subject, show, photo }) => join(
-  photo === "coming" ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly; the board sketches it meanwhile`
-    : show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: ${photo === "busy" ? "a photo cannot come right now" : "there is no photo"}, say so in a few plain words; the board draws a simple sketch of it instead`
+  // round 7 (PIPELINE §A Brain "zero spoken build state or failure"): a photo being made, a busy lane or no photo is never
+  // narrated; the board's sketch is what she talks about, and a photo that arrives simply appears (it is never promised)
+  show === "picture" ? `they asked for a photo of ${clean(subject) || "it"}: the board draws a simple sketch of it now; talk about it as a sketch, never as a photo (never say a photo is coming, being made, or cannot come)`
     : `they asked to see ${clean(subject) || "it"}: the board draws a simple sketch of it`,
-  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; never send their eyes to the screen or the board`,
+  `describe ${clean(subject) || "it"} in words they can picture (shape, colour, where it is found), two short sentences; ${DRAW_NO_POINT}`,
   "then one small question that brings them back to today's idea; never send them to search for it elsewhere",
+  // (last: the rule that must fire) the board's drawing of it is never denied
+  show === "picture" ? "never say there is no picture or nothing on the screen" : "",
 );
 /** round 5 (owner decision 14.2): a real picture of what they asked for is being made (studio/picture.js) or cannot come now;
- *  it is never said to be there before it mounts. */
+ *  it is never said to be there before it mounts. round 7 (PIPELINE §A Brain "zero spoken build state or failure"): she
+ *  never narrates it being made, failing or not coming; she gives it in words, and a picture that arrives simply appears. */
 export const pictureNote = ({ subject, photo }) => photo === "coming"
-  ? `a real picture of ${clean(subject) || "it"} comes in a few seconds: say so plainly, never that it is there`
-  : photo === "failed" ? `the picture of ${clean(subject) || "it"} you said was coming could not come: say so in a few words`
-  : `a photo of ${clean(subject) || "it"} cannot come right now: say so in a few plain words, then give it in words`;
+  ? `give ${clean(subject) || "it"} in words now; never say a picture is coming or being made, and never that it is there`
+  : `give ${clean(subject) || "it"} in words now; never mention a picture of it (that it is coming, could not come or failed)`;
 /** round 3 fix (experience B8): "yeh nahi padhna, X padhna hai": a real topic of their class, offered (never a stop question). */
-export const switchOffer = ({ title }) => join(
-  `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
-  "they can start it now with the button on the screen, or carry on with today's work if they like; no guilt either way, no lesson question this turn",
+// QA 14.4.1 (df5ce94c: "chapter 1 se shuru karo" got "Page ya chapter ka naam bataiye" with chapter 1 on the button): a
+// chapter ask is answered with what is ready; she asks them nothing, not even which page or chapter
+// 14.4.3 (QA on ac4e8e88, f76aacd1: class 5 "geometry padhao" got "press the Geometry button" beside the only chip, "Start
+// Triangles and polygons"): what they asked for is named as the topic it found, and the button by its own words
+export const switchOffer = ({ title, chapter, asked, button }) => join(
+  chapter ? `they asked for chapter ${chapter}: its first topic, ${clean(title) || "that chapter"}, is ready for them; say so warmly in a few words`
+    : asked && clean(asked).toLowerCase() !== clean(title).toLowerCase()
+      ? `they asked for ${clean(asked)}: the topic of their class for it is ${clean(title) || "another topic"}; say yes warmly, naming that topic`
+      : `they want to study ${clean(title) || "another topic"} instead: say yes warmly, in your own words; it is a real topic of their class`,
+  `they can start it now with the button${button ? ` that says "${clean(button)}"` : " on the screen"}, or carry on with today's work if they like; never name a button by any other words; never making them feel at fault for it either way`,
+  "ask them nothing this turn: not which page or chapter, no lesson question",
+);
+/** census 14.5 (F1): they asked again for something else: real topics of their class, as buttons. */
+/** census 14.5 (F1, 310b8c82): they asked for the idea first, before any question (the card waits). */
+export const explainFirstAsked = () => "they asked for the idea first, before any question: yes, warmly, and teach it plainly now; the question waits";
+/** 14.4.2 (d): an answer read right that the code could not verify, twice on one card: no third pose, no verdict either way. */
+export const unverifiedMoveOn = () => "thank them warmly for their idea in one short line of your own, never for the answer; say nothing about whether it was right or wrong (no sahi, no galat, no almost, no close); then go on to the next question";
+export const topicChoices = ({ titles, first = false }) => join(
+  first ? "they asked for another topic: say yes warmly and mean it, in your own words" : "they have asked again for something else: say yes warmly and mean it, in your own words",
+  `offer these topics of their class as the buttons on screen: ${(titles ?? []).map((t) => clean(t)).filter(Boolean).join("; ")}; or they can tell you what they want, or go back to today's work`,
+  "no lesson question this turn",
 );
 /** The subject they named is not a topic of their class (or not found): honest, and the choices. */
-export const switchElsewhere = ({ subject }) => join(
-  `they want to study ${clean(subject) || "something else"} instead: say kindly that it is not in their class's lessons here, in a few words`,
-  "offer to carry on with today's work in a new way, or to stop for today; no guilt, no lesson question this turn",
+// 14.4.2 (main: telling a child that a subject in their own book "is not in their class" is a false claim): no topic found
+// for their words is never "not here". She will look for it, and real topics of their class are on the buttons.
+export const switchElsewhere = ({ subject, titles = [] }) => join(
+  `they want to study ${clean(subject) || "something else"} instead: say warmly you will look for it for them, never that it is not in their class or not here`,
+  titles.length ? `for now they can pick one of these topics of their class on the buttons: ${titles.map(clean).join("; ")}; or go back to today's work` : "for now they can go back to today's work",
+  "no lesson question this turn",
 );
 /** They chose to start the other topic: a warm close of this lesson, the next one starts at once. */
 export const switchGo = ({ title }) => `they chose to start ${clean(title) || "the other topic"} now: one short warm line that you are starting it; no question, no hook`;
@@ -512,7 +673,7 @@ export const MOD_NOTE = {
 /** Round 3: the second need of a two-needs turn (conversation/lexicon.js alsoReading), honoured in the same turn's words. */
 export const ALSO_NOTE = {
   frustration: "they also find it hard or are tired: one short line of empathy about the work first (never about them)",
-  boredom: "they also said it is boring: acknowledge it in a few words, no guilt",
+  boredom: "they also said it is boring: acknowledge it in a few words, never making them feel at fault for it",
   easier: "they also asked for it easier: make the step smaller and simpler",
   slower: "they also asked you to go slower: short simple sentences, one small step",
   // round 4 (battery arm 2, multi_intent-01 "samajh nahi aaya, Hindi mein batao"): as a last-section note, "say it more
@@ -537,7 +698,7 @@ export const MUST_NOTE = Object.freeze({
   adapt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
   adopt: "first, in a few words, take what they said about your teaching on board (a thank-you for praise, or the change you make now); then do it",
   adult: "first greet the grown-up as a grown-up in a few words and say what you will do; then hand back to the child by name",
-  boredom: "first acknowledge it is getting boring in a few words, no guilt; then the change",
+  boredom: "first acknowledge it is getting boring in a few words, never making them feel at fault for it; then the change",
   // round 4 round B (battery 2026-10-10: "no game is ready for this yet", "video nahi" broke zero visible failure: a build
   // that is not there is never mentioned; game_request 4/8, animation 2/5)
   visual_game: "start a game now, in one line: if one is on the screen, how to play it; if not, a quick spoken game on this idea (one rule, then their first turn); never say a game is not ready or not available",
@@ -573,6 +734,10 @@ export const MUST_NOTE = Object.freeze({
 export const mustShareKept = ({ promise }) => `your first words react warmly to what they shared, in their words; then a few words that you will come back to it ${promise === "after_question" ? "right after this question" : "before the lesson ends"}`;
 /** Round 4 (lever 5, TAXILA_ACK_CLOSE): the child only acknowledged her teaching question; the step is held for this turn.
  *  `asked` is the teacher's own last question (never the child's words). */
+/** round 7 A6 (teaching-question evidence): her worked step's question was answered right (the key in code): confirm it. */
+export const stepCheckRight = () => "they worked out that step right: confirm it plainly in a few words, naming the step, then go on";
+/** round 7 A6: the step's question got a wrong answer: no verdict words; the step is shown with its result next. */
+export const stepCheckMissed = () => "that step is not there yet: no verdict words; show it yourself with its result, calmly";
 export const ackCloseMove = ({ asked }) => `they only said okay to your question "${clean(asked).slice(0, 90)}": answer it yourself now, plainly, in one or two short sentences, and link it to the idea in a few words; no new example and no new step; end with one small question that checks they followed`;
 export const parkAlso = ({ topic }) => `they also asked about ${clean(topic) || "something else"}: one line that you will come back to it after this`;
 /** Round 3: the turn after a stop check-in that was not a stop ("haan", an answer): the lesson simply goes on. Local
@@ -605,6 +770,7 @@ export const helpExplainP5 = ({ how, example = false, story = false }) => join(
 /** "Hindi mein batao" with a question on the table (p5 wording): simpler first, in the new language, then the question. */
 export const languageAskedP5 = ({ lang }) => join(
   `they asked for ${LANG_NAME[lang] ?? lang}: from now on every turn in ${LANG_NAME[lang] ?? lang}, even if they reply in another language`,
+  lang === "hindi" ? "use the Hindi words for the lesson's terms (the Hindi names of the shapes, parts and measures), never English words with Hindi grammar" : null,
   "first say what the question asks, simply, in it; then the question in it",
 );
 /** Frustration on a question: the empathy line FIRST (about the work), then the smaller step. */
@@ -615,3 +781,7 @@ export const frustrationTeach = () => "first, in your own words, a short line of
 export const frustrationFirst = () => (p5Flag("R3CONV")
   ? "first, in your own words, a short line of empathy about how tough THIS question is and that getting stuck on it is normal (about the work, never about them, no ability words); then a smaller first step on the same question"
   : "first: one short line that this one is hard work and that is okay (about the work, never about them, no ability words); then a smaller first step on the same question");
+/** v6 R5: the first half of a split turn: only the verdict and the closing lines code gives, then a short "shall we go on?". */
+export const splitClose = () => "say only the closing lines given (the verdict, the answer and its reason); nothing new; end by asking in a few words if they are ready to go on";
+/** v6 R5: the card half of a split turn: the question as written, after at most one short lead-in; nothing taught again. */
+export const splitCard = () => "pose the question on the card as written, after at most one short lead-in; do not explain it again";

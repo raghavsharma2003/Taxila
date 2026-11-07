@@ -1,0 +1,310 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket jaise equal shares mein fractions dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 818
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maan lo team ke 4 players ek watermelon equally baantte hain. Har player ko kitna hissa milega? Golu ko bhi tum sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1169,
+   "replyReadyMs": 1987
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 865
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 4 equal parts mein har hissa one-fourth hota hai, likhte hain 1/4. Agar 3 equal parts hon, fraction kya hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 919,
+   "replyReadyMs": 1784
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 749
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, fraction 1/3 mein 3 equal groups bante hain; 15 pencils total hain. Ab batao, problem humse kya pooch rahi hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2113,
+   "replyReadyMs": 2862,
+   "guard": [
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 811
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kyunki 1/3 ka matlab 3 equal groups mein se 1 group. 15 pencils ko 3 groups mein baantkar, ek group ka number chahiye.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1113,
+   "replyReadyMs": 1924
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 869
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, ab ek chhota sa practice try karte hain. Bas roti ko 4 barabar hisson mein sochna. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1151,
+   "replyReadyMs": 2020
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 937
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 6 kaha, par roti ko 4 barabar tukdon mein kaata gaya hai. Pehle total barabar tukdon ki sankhya dekho. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3124,
+   "replyReadyMs": 4061
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 471
+  },
+  {
+   "who": "teacher",
+   "text": "Example ke liye, 3 barabar apple slices mein se 1 slice ko one-third kehte hain. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1052,
+   "replyReadyMs": 1523
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 963
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, “barabar” ka matlab hai sabhi tukde same size ke. Roti mein 4 same-size tukde hain. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1393,
+   "replyReadyMs": 2356
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 987
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 8 kaha; yahan total tukde 4 hain, isliye ek tukda one-fourth kehlata hai. School display ke liye ek square poster ko 4 barabar squares mein baanta gaya. Do squares blue paint kiye. Poster ka kitna hissa blue hai?",
+   "move": "practice",
+   "card": "Do squares blue paint kiye. Poster ka kitna hissa blue hai?",
+   "replyMs": 1142,
+   "replyReadyMs": 2129
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 804
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum stop karna chahti ho. Hum continue kar sakte hain, chhota break le sakti ho, ya aaj ke liye stop kar sakti ho. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1015,
+   "replyReadyMs": 1819
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket wali team ke snacks se aadha aur chautha hissa samjhenge. Ek roti ke chaar barabar tukde hon, toh ek tukde ko kya kehte hain?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 847
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo roti ke tukdon se shuru karte hain. Roti ke chaar barabar tukde hain; ek tukde ko kya kehte hain?",
+   "move": "probe",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2297,
+   "replyReadyMs": 3144
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Roti ke chaar barabar tukde hain, aur tum ek tukda lete ho. Isse ek chautha hissa kehte hain; tum ise apne shabdon mein kya kahoge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2840,
+   "replyReadyMs": 2841
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1318
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, poori roti ke 4 barabar tukde hain. Ek tukda un chaar mein se ek hai; use ek chautha hissa kehte hain. Tum ek tukde ko kya kahoge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2568,
+   "replyReadyMs": 3886
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 796
+  },
+  {
+   "who": "teacher",
+   "text": "Achha sawaal: kyun? Kyunki poori roti chaar barabar hisson mein banti hai, aur hum unmein se ek hissa lete hain. Isliye naam hai ek chautha hissa. Agar chaar tukde barabar na hon, toh kya har tukda ek chautha hissa hoga?",
+   "move": "explain",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2450,
+   "replyReadyMs": 3246
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1197
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahe ho samajh gaya. Ek chhota sa check: tarbooz ke tukdon mein A aur B mein se kiske har tukde ko ek tihaai kahenge?",
+   "move": "probe",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2986,
+   "replyReadyMs": 4183
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "no_evidence",
+   "classifyMs": 994
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 6 kaha; yahan 6 tukde poochhe nahi hain. Tarbooz A ke tukde alag size ke hain, B ke teeno barabar hain. Kis tarbooz ka har tukda ek tihaai hai, A ya B?",
+   "move": "repair",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 5442,
+   "replyReadyMs": 6436
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 1274
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example. Ek sandwich ke do tukde socho: pehle mein dono barabar, doosre mein ek bada aur ek chhota. Pehle sandwich ka har tukda aadha keh sakte hain; doosre ka nahi. Ab tarbooz A ya B mein har tukda ek tihaai hai?",
+   "move": "explain",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 3603,
+   "replyReadyMs": 4877
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1325
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai. Tarbooz A mein ek tukda bada hai, par B ke teeno tukde barabar hain. Ek tihaai ke liye teeno tukde kaise hone chahiye?",
+   "move": "hint",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 4597,
+   "replyReadyMs": 5922
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1246
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 kaha. Tarbooz B mein teen tukde ek jaise size ke hain; A mein ek bada aur do chhote. Ek-tihaai ke liye tukde barabar hone chahiye. A ya B?",
+   "move": "reteach",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2933,
+   "replyReadyMs": 4179
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 851
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, aaj yahin rukte hain. Tumne aadhe aur ek tihaai ke barabar tukdon par practice ki; barabar tukde pehchanna abhi aur pakka karna hai. Bye!",
+   "move": "wrap",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2354,
+   "replyReadyMs": 3205
+  }
+ ]
+}

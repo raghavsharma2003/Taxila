@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-darpan",
+   "kind": "decision",
+   "title": "Darpan (symmetry) as one law family, nothing on a clock: mirror/lines (lay mirror lines through the figure centre, each snapping to a corner or side-middle where a fold can run, then fold; the law reflects outline and pattern across each line; solved only when the lines laid are exactly all the lines of symmetry), turn/smallest (turn a pinwheel / tile on a turntable over its own trace to the smallest part turn that lands it on itself; 15 deg steps at class 5 shown as a fraction of a turn, a 1 deg dial at class 6) and turn/order (mark every stop of one full turn where it lands; the start is not a stop). Shortcut-free: the upright line, the level line, both, every fold line; one press, a quarter turn, the full turn; marks at every quarter or the full turn only never win a served level, so plain upright rectangles, full squares and order-4 pinwheels are never served. Mal-rules exactly-one, vertical-only, diagonals, equal-halves, quarter-default, full-turn, mirror-only, angle-order; a level names a belief only when its set-up differs from every other mal-rule the level maps. New law topics c4-maths-ch11-t01, c5-maths-ch10-t01, c6-maths-ch09-t02, plus s1/s2 of c6-maths-ch09-t01 (s3 stays nazariya). Not covered: telling turn from mirror symmetry as its own judgement (c5/c6 s3), tilings (c7). Reverse if a child pilot shows the snapping fold lines turn line-finding into picking from offered lines, or children cannot read the fold / spin answer.",
+   "at": "2026-11-05"
+  },
+  {
+   "id": "ms-r7-games-darpan-cert",
+   "kind": "measurement",
+   "title": "darpan play-cert (forge3-qa, FORGE3_QA_LOCAL=1, p360/p412/l1366, 4 arts, 2026-11-05): 48/48 darpan samples pass at p360, p412 and l1366 with the game mounted (6 coverage entries x 4 arts x 2 seeds; boxes p360 320x524, p412 372x639, l1366 720x520; whole table 3000/3000); generator p95 under 50 ms per case (tests/r7-games-darpan.test.mjs, 6 cases x 40 seeds); independent point-set oracle agrees with the law on every judged go of >= 2000 random acts per case and on every subset of up to 8 fold lines of every generated figure (seeds 1-3, fades 1-3).",
+   "at": "2026-11-05"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-darpan",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-darpan-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-darpan`\n\nDarpan (symmetry) as one law family, nothing on a clock: mirror/lines (lay mirror lines through the figure centre, each snapping to a corner or side-middle where a fold can run, then fold; the law reflects outline and pattern across each line; solved only when the lines laid are exactly all the lines of symmetry), turn/smallest (turn a pinwheel / tile on a turntable over its own trace to the smallest part turn that lands it on itself; 15 deg steps at class 5 shown as a fraction of a turn, a 1 deg dial at class 6) and turn/order (mark every stop of one full turn where it lands; the start is not a stop). Shortcut-free: the upright line, the level line, both, every fold line; one press, a quarter turn, the full turn; marks at every quarter or the full turn only never win a served level, so plain upright rectangles, full squares and order-4 pinwheels are never served. Mal-rules exactly-one, vertical-only, diagonals, equal-halves, quarter-default, full-turn, mirror-only, angle-order; a level names a belief only when its set-up differs from every other mal-rule the level maps. New law topics c4-maths-ch11-t01, c5-maths-ch10-t01, c6-maths-ch09-t02, plus s1/s2 of c6-maths-ch09-t01 (s3 stays nazariya). Not covered: telling turn from mirror symmetry as its own judgement (c5/c6 s3), tilings (c7). Reverse if a child pilot shows the snapping fold lines turn line-finding into picking from offered lines, or children cannot read the fold / spin answer.\n",
+  "measurements": "## `ms-r7-games-darpan-cert`\n\ndarpan play-cert (forge3-qa, FORGE3_QA_LOCAL=1, p360/p412/l1366, 4 arts, 2026-11-05): 48/48 darpan samples pass at p360, p412 and l1366 with the game mounted (6 coverage entries x 4 arts x 2 seeds; boxes p360 320x524, p412 372x639, l1366 720x520; whole table 3000/3000); generator p95 under 50 ms per case (tests/r7-games-darpan.test.mjs, 6 cases x 40 seeds); independent point-set oracle agrees with the law on every judged go of >= 2000 random acts per case and on every subset of up to 8 fold lines of every generated figure (seeds 1-3, fades 1-3).\n"
+ }
+}

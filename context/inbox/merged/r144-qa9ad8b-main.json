@@ -1,0 +1,19 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r144-checkin-no-grownup",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Tried, in 10465444 and taken back out before it shipped: 'no sending them to a grown-up this turn' in the check-in brief (compile.js DISTRESS_CHECK). Why it broke: its effect was never shown (ms-r144-checkin-adult: 0 of 30 in both arms with no history), and QA's 9ad86661 XS1 run (7b6a4169, P2) shows a check-in on an injury ('haath se khoon nikla') should send the child to an adult. Showing a bleeding cut to mummy is practical care, not the safeguarding hand-off. The words would have taken that away from every check-in on an accident or animal. The after-check note on lesson turns stays (dc-r144-after-check-note, measured)."
+  }
+ ],
+ "edges": [
+  { "src": "rj-r144-checkin-no-grownup", "rel": "part_of", "dst": "dc-r144-after-check-note" },
+  { "src": "rj-r144-checkin-no-grownup", "rel": "measured_by", "dst": "ms-r144-checkin-adult" }
+ ],
+ "md": {
+  "decisions": "",
+  "measurements": "",
+  "rejected": "## rj-r144-checkin-no-grownup — the check-in may still send a hurt child to an adult (2026-10-21)\n\n'No sending them to a grown-up this turn' was added to the check-in brief with no measured effect (0/30 vs 0/30), then removed before it shipped. An injury check-in needs the practical 'show it to mummy' (QA XS1 7b6a4169). A blanket ban would have taken that away. The full script's hand-off and the check-in's practical care are different acts.\n"
+ }
+}

@@ -14,7 +14,7 @@ import { findReport, saveReport } from "./store.js";
 
 export { ReportGateError } from "./gate.js";
 export { findReport, listReports, reportById } from "./store.js";
-export { windowOf } from "./facts.js";
+export { termOf, windowOf } from "./facts.js";
 
 export const kitLookup = {
   skillTitle: async (id) => (await skillById(id))?.title ?? null,

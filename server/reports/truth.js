@@ -19,7 +19,11 @@ import { q as dbq } from "../db.js";
 import { ITEM_CLASSES, isDelayedSuccess, outcomeName } from "../learner/kt/outcomes.js";
 import { nextTopicFor } from "../content/next-topic.js";
 import { DELAY_MS } from "./config.js";
-import { learningDay } from "../conductor/clock.js";
+import { learningDay, weekday as weekdayOf } from "../conductor/clock.js";
+import { rankSubjects, rotationOn, rotationSubjects, timetableToday } from "../conductor/rotation.js";
+import { SUBJECT_ORDER, topicSequence } from "../content/curriculum.js";
+import { placementResultsOf, startGEOf } from "../placement/store.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 /** A lesson that ran this long (start → end) counts even with nothing graded (V2 §3.13: shorter is an accidental start). */
 export const COUNTED_MIN_MS = 5 * 60_000;
@@ -219,7 +223,7 @@ const KT_COLS = "id, seq, session_id, occurred_at, skill_ids, cls, outcome, grad
  */
 export async function loadTruth(child, { skillIds = null, q = dbq } = {}) {
   const [kt, proj] = await Promise.all([
-    q(`select ${KT_COLS} from kt_evidence where child_id = $1 and ($2::text[] is null or skill_ids && $2::text[]) order by seq`, [child.id, skillIds]).catch((e) => {
+    q(`select ${KT_COLS} from kt_evidence where child_id = $1 and ($2::text[] is null or skill_ids && $2::text[]) and ${NOT_PLACEMENT} order by seq`, [child.id, skillIds]).catch((e) => {
       if (e?.code === "42P01") return [];
       throw e;
     }),
@@ -246,29 +250,89 @@ export const claimRows = (rows) => rows.filter((r) => r.scored).sort((a, b) => D
  * PURE. A parent-entered school test window (019 child_controls.test_window) that covers the learning `day`, or null.
  * @param {any} w  the stored {subject, from, to}  @param {string} day  YYYY-MM-DD (learningDay)
  */
-export const activeWindow = (w, day) => (w && w.subject && w.from <= day && w.to >= day ? { subject: w.subject, from: w.from, to: w.to } : null);
+export const activeWindow = (w, day) => (w && w.subject && w.from <= day && w.to >= day
+  ? { subject: w.subject, from: w.from, to: w.to, ...(Array.isArray(w.chapters) && w.chapters.length ? { chapters: w.chapters.map(Number) } : {}) } : null);
 
 /** The child's school test window covering today (its own tz's learning day), or null. Read-only and defensive. */
 export async function testWindowOf(child, { now = new Date(), q = dbq } = {}) {
   try {
     const [r] = await q(`select c.test_window, r.tz from child_controls c left join child_routine r on r.child_id = c.child_id where c.child_id = $1`, [child.id]);
-    return activeWindow(r?.test_window, learningDay(now, r?.tz || "Asia/Kolkata"));
+    const today = learningDay(now, r?.tz || "Asia/Kolkata");
+    const w = activeWindow(r?.test_window, today);
+    return w ? { ...w, today } : null;
   } catch { return null; }
 }
 
 /**
  * The ONE next-topic function (child home, parent "Next lesson", Progress "next"/"here", the child's and the parent's
- * "Next time", the lesson-end summary and a lesson start with no topic): inside an active school test window it is
- * scoped to the test's subject (the lesson revises it), otherwise the plain sequence. `testWindow` may be passed when
- * the caller already read it (undefined: read here; null: no window).
+ * "Next time", the lesson-end summary and a lesson start with no topic). The subject is today's rotation pick
+ * (conductor/rotation.js: the school timetable, then a test window, then due reviews, then the least-recently-taught
+ * subject); inside an active school test window with no timetable the lesson revises the test's subject. Each ranked
+ * subject is tried in turn until one has a next topic. `testWindow` may be passed when the caller already read it
+ * (undefined: read here; null: no window). TAXILA_ROTATION=off: the old fixed subject order.
  */
-export async function nextTopicForPlan(child, { testWindow } = {}) {
-  const w = testWindow === undefined ? await testWindowOf(child) : testWindow;
-  if (w) {
-    const t = await nextTopicFor(child, { subject: w.subject }).catch(() => null);
+export async function nextTopicForPlan(child, { testWindow, now = new Date(), q = dbq } = {}) {
+  const w = testWindow === undefined ? await testWindowOf(child, { now, q }) : testWindow;
+  if (!rotationOn()) {
+    if (w) {
+      const review = !!w.today && (Date.parse(w.to) - Date.parse(w.today)) / 86_400_000 < 2;
+      const t = await nextTopicFor(child, { subject: w.subject, ...(w.chapters?.length ? { revise: { chapters: w.chapters, review } } : {}) }).catch(() => null);
+      if (t) return t;
+    }
+    return nextTopicFor(child).catch(() => null);
+  }
+  const [pick, placed] = await Promise.all([subjectsToday(child, { testWindow: w, now, q }), placementResultsOf(child.id, { q_: q })]);
+  // round 7 F item 6: a finished placement round sets where a subject starts when the school's chapter is not known
+  const startGE = startGEOf(placed);
+  // round 7 F: a test window with chapters revises only those; retrieval-only (a topic already met) in its last 2 days
+  if (w?.chapters?.length) {
+    const review = !!w.today && (Date.parse(w.to) - Date.parse(w.today)) / 86_400_000 < 2;
+    const t = await nextTopicFor(child, { subject: w.subject, revise: { chapters: w.chapters, review } }).catch(() => null);
     if (t) return t;
   }
-  return nextTopicFor(child).catch(() => null);
+  for (const subject of pick.subjects) {
+    const t = await nextTopicFor(child, { subject, startGE }).catch(() => null);
+    if (t) return t;
+  }
+  return nextTopicFor(child, { startGE }).catch(() => null);
+}
+
+/** The class's subjects that have a teaching sequence, in SUBJECT_ORDER, narrowed by TAXILA_ROTATION_SUBJECTS. */
+export const classSubjectsOf = (classLevel) => rotationSubjects(SUBJECT_ORDER.filter((s) => topicSequence(classLevel, s).length > 0));
+
+const SUBJ_OF_TOPIC = /^c\d-([a-z]+)-/;
+
+/**
+ * Today's ranked subjects for a child (rotation.js rankSubjects over the DB reads): the timetable rows for today's
+ * weekday, the lessons started before today (last day per subject) and today, and the skills due for review.
+ * Defensive: a failed read is an empty input (a missing 034 table means no timetable), never an error.
+ * @returns {Promise<ReturnType<typeof rankSubjects> & { timetable: string[], day: string, weekday: number }>}
+ */
+export async function subjectsToday(child, { testWindow = null, now = new Date(), q = dbq } = {}) {
+  const [routine] = await q("select tz from child_routine where child_id = $1", [child.id]).catch(() => []);
+  const tz = routine?.tz || "Asia/Kolkata";
+  const day = learningDay(now, tz);
+  const wd = weekdayOf(day);
+  const classSubjects = classSubjectsOf(child.class_level);
+  const [tt, lessons, due] = await Promise.all([
+    q("select weekday, source, subjects from child_timetable where child_id = $1 and weekday = $2", [child.id, wd]).catch(() => []),
+    q(`select split_part(topic_id, '-', 2) as subject, max(started_at) as last_at from lesson
+        where child_id = $1 and coalesce(state->'ctx'->>'purpose', 'lesson') = 'lesson' group by 1`, [child.id]).catch(() => []),
+    q(`select skill_id from skill_state where child_id = $1 and next_review is not null and next_review <= $2
+        and status in ('learned_today', 'mastered', 'due') order by next_review limit 20`, [child.id, now.toISOString()]).catch(() => []),
+  ]);
+  const lastTaught = {}, taughtToday = [];
+  for (const r of lessons) {
+    if (!r.subject || !r.last_at) continue;
+    const d = learningDay(new Date(r.last_at), tz);
+    if (d === day) taughtToday.push(r.subject);
+    // the last day BEFORE today is what rotation reads; a subject taught only today counts as taught today
+    lastTaught[r.subject] = d < day ? d : lastTaught[r.subject] ?? d;
+  }
+  const dueSubjects = [...new Set(due.map((r) => SUBJ_OF_TOPIC.exec(r.skill_id)?.[1]).filter((s) => s && classSubjects.includes(s)))];
+  const t = timetableToday(tt, wd, classSubjects);
+  const ranked = rankSubjects({ classSubjects, timetable: t.subjects, timetableSource: t.source, testWindow, dueSubjects, lastTaught, taughtToday });
+  return { ...ranked, timetable: t.subjects, day, weekday: wd };
 }
 
 /** The ONE next-topic function, never throwing (see nextTopicForPlan). */
