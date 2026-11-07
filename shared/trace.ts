@@ -94,6 +94,7 @@ export const TRACE_KINDS = {
     "tts.first", "tts.end", "tts.failed",
     "safety.scan", "safety.hold", "classify.verdict",
     "ack.decision",
+    "reply.twin",
     "db.write", "trace.dropped",
   ],
 } as const;

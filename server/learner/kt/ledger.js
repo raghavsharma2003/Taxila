@@ -19,8 +19,9 @@
 import { formOf, fsrsGrade, isDelayedMiss, isDelayedSuccess, isGenerativePass, isUnaidedCorrect, ITEM_CLASSES, outcomeName, recentValue, EMISSIONS } from "./outcomes.js";
 import { dropReason, logEvidence, logit, sigmoid, sourceOf, spend, teachStep, temper, tEff, transition } from "./bktr.js";
 import { nextReviewAt, retrievability, review } from "./fsrs.js";
-import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
+import { addObs, currentTheta, defaultItemMeta, initialBase, newEpoch, openEpoch, withPlacement, strandOfSkill, subjectOfSkill, subjectOfStrand, thetaObs } from "./ability.js";
 import { priorFromTheta } from "./priors.js";
+import { isPlacementRow, siteOf } from "./placement.js";
 import { misconceptionEffects, misLogLR, newMisconception, spendMis, updateMisconception } from "./misconception.js";
 
 // round 2 (2026-10-07): reteach ladder + fresh re-check items and corroborate rules change how evidence folds.
@@ -102,7 +103,8 @@ export const foldOrder = (events) => [...events].sort((a, b) => (a.seq ?? Infini
  */
 export function fold(ledger, events, ctx = {}) {
   const L = { ...ledger, skills: { ...ledger.skills }, mis: { ...ledger.mis }, ability: { ...ledger.ability }, seen: { ...ledger.seen },
-    session: ledger.session ? structuredClone(ledger.session) : null };
+    session: ledger.session ? structuredClone(ledger.session) : null,
+    ...(ledger.placementPending ? { placementPending: structuredClone(ledger.placementPending) } : {}) };
   const owned = new Set();
   const own = (bag, k) => { const x = bag[k]; if (x && !owned.has(x)) { bag[k] = structuredClone(x); owned.add(bag[k]); } return bag[k]; };
   for (const ev of foldOrder(events)) applyOne(L, ev, ctx, own);
@@ -114,21 +116,40 @@ export const foldEvidence = (ledger, ev, ctx) => fold(ledger, [ev], ctx);
 function ensureEpoch(L, subject, sess, ctx, own) {
   const cur = own(L.ability, subject);
   const epochId = `${sess.sessionId}:${subject}`;
+  // round 7 F: a placement site waiting for this subject (kt/placement.js) seeds the epoch's base once, then is consumed
+  const placement = L.placementPending?.[subject];
   if (!cur) {
     const strands = (ctx.strandsFor?.(subject) ?? [`${subject}:core`]).slice().sort();
-    L.ability[subject] = { ...newEpoch(initialBase({ strands, classLevel: L.classLevel, openedAt: sess.startAt, epochId })), sessionId: sess.sessionId };
+    L.ability[subject] = { ...newEpoch(initialBase({ strands, classLevel: L.classLevel, openedAt: sess.startAt, epochId, placement })), sessionId: sess.sessionId };
   } else if (cur.sessionId !== sess.sessionId) {
-    L.ability[subject] = { ...openEpoch(cur, sess.startAt, epochId), sessionId: sess.sessionId };
+    const e = openEpoch(cur, sess.startAt, epochId);
+    L.ability[subject] = { ...(placement ? newEpoch(withPlacement(e.base, placement)) : e), sessionId: sess.sessionId };
+  } else return L.ability[subject];
+  if (placement) {
+    delete L.placementPending[subject];
+    if (!Object.keys(L.placementPending).length) delete L.placementPending;
   }
   return L.ability[subject];
 }
 
+/**
+ * A placement row (round 7 F; kt/placement.js): records its site for the subject's NEXT epoch base (initialBase or the
+ * next opened epoch). It is not evidence: no session, no skill state, no K step, no θ observation, no facet.
+ */
+function applyPlacement(L, ev) {
+  const site = siteOf(ev);
+  if (site) L.placementPending = { ...(L.placementPending ?? {}), [site.subject]: { ...(L.placementPending?.[site.subject] ?? {}), [site.strand]: { mu: site.mu, sd: site.sd } } };
+  L.seen[ev.id] = ev.seq ?? null;
+  if (ev.seq != null) L.lastSeq = ev.seq;
+}
+
 function applyOne(L, ev, ctx, own) {
   if (L.seen[ev.id] !== undefined) return;
-  checkEvent(ev);
+  if (!isPlacementRow(ev)) checkEvent(ev);
   if (ev.seq != null && ev.seq <= L.lastSeq) throw new Error(`evidence ${ev.id}: seq ${ev.seq} ≤ ledger seq ${L.lastSeq} (re-fold from the log)`);
   // A late verdict's correction (comprehension/later.js, via 'late'): the K step already ran on the fallback event it
   // corrects, so the ledger only records it as seen (no K, θ, session or budget change); the facets apply it (fuse.js).
+  if (isPlacementRow(ev)) return applyPlacement(L, ev);
   if (ev.via === "late") { L.seen[ev.id] = ev.seq ?? null; if (ev.seq != null) L.lastSeq = ev.seq; return; }
   if (!L.session || L.session.sessionId !== ev.sessionId) L.session = newSession(ev);
   const sess = L.session;

@@ -1,0 +1,17 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r144-live",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 1,
+   "method": "scripts/deploy-azure.mjs --image-tag 5c127d1 (gate stamp 2026-10-21T20:00:41Z: tsc, vite build, 3,541 of 3,541 tests that ran pass, prompt budget PASS, migrations applied), canary smoke tests/prod/w0-smoke.mjs, then /api/health on the live FQDN; production read scratchpad post144.mjs (real lessons only, codes only).",
+   "title": "Release 14.4 went live at about 20:07 UTC: taxila-web--s5c127d1-l2of (image 5c127d1, int/r5-rel144) at 100%. taxila-web--s7c86981-rx7j (14.3.2) is kept as previous; rollback is node scripts/deploy-azure.mjs --rollback. The first attempt died on a transient 'fetch failed' while polling the new revision (f6kd). Traffic had been pinned to rx7j, so live never moved. The re-run reused the built image and deactivated f6kd and 3a18c0e-xvg1. Canary smoke passed 4 of 4 checks. Before the deploy: QA TEST on 5c127d1a passed with nothing blocking. The sim lab's 1b3bb12c run (36 cards, p66 ×2, p68p ×2, p16s ×2) had rule (1) at 0 missing, 0 of 680 off-script turns, 0 empty replies and 0 real afterRelease (4 on 9ad86661); safety_floor 4.78 / 4.94 against 4.69 / 4.86. On 5c127d1a the hate cards ok03 / p26h had 0 safeguards in 4 of 4 lessons. Production baseline since 10-15 on 14.3.x: 6 real lessons, 77 director turns, 4 safeguard moves, 3 helpline renders, 2 incidents; 0 real lessons since the deploy at the time of the read. Shipped in 14.4: the tiered safeguard (check-in before helplines unless sure), the idioms, the push fixes, the after-check note and history meaning, the never-empty reply, the hate-filter rules, the words-read wait, the harm-talk guard family, and every 14.4 stream head already on int."
+  }
+ ],
+ "edges": [
+  { "src": "ms-r144-live", "rel": "measured_by", "dst": "ms-r144-push-replay" },
+  { "src": "ms-r144-live", "rel": "part_of", "dst": "dc-r144-safeguard-tiers" }
+ ],
+ "md": { "decisions": "", "rejected": "", "measurements": "## ms-r144-live (2026-10-21)\n\nRelease 14.4 (5c127d1) has been live since about 20:07 UTC, and the canary smoke passed 4 of 4. The first deploy attempt hit a transient fetch failure before any traffic moved; the re-run reused the built image. Production holds no real lessons since the deploy yet. The baseline to compare against is 6 lessons, 4 safeguard moves and 3 helpline renders since 10-15.\n" }
+}

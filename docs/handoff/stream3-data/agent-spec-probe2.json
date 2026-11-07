@@ -1,0 +1,692 @@
+{
+ "method": {
+  "date": "2026-10-15T09:20:44.307Z",
+  "label": "agent-spec-probe2",
+  "turns": 8,
+  "classLevel": 4,
+  "base": "in-process",
+  "host": "vm",
+  "prefetch": true,
+  "turnAudio": true,
+  "classify": "grok-4-1-fast-non-reasoning",
+  "stt": "taxila-live-transcribe",
+  "note": "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this host to eastus2; sound = first byte + 60 ms lead + 50 ms NOMINAL output latency"
+ },
+ "summary": {
+  "endpoint": {
+   "n": 8,
+   "p50": 1115,
+   "p90": 1139,
+   "min": 1057,
+   "max": 3016
+  },
+  "stt": {
+   "n": 8,
+   "p50": 538,
+   "p90": 800,
+   "min": 501,
+   "max": 921
+  },
+  "lastDeltaAfterEnd": {
+   "n": 8,
+   "p50": 872,
+   "p90": 963,
+   "min": 714,
+   "max": 2732
+  },
+  "prefetchAfterEnd": {
+   "n": 8,
+   "p50": 1122,
+   "p90": 1212,
+   "min": 963,
+   "max": 2981
+  },
+  "ackReadyAfterEnd": {
+   "n": 1,
+   "p50": 1977,
+   "p90": 1977,
+   "min": 1977,
+   "max": 1977
+  },
+  "turnAfterEnd": {
+   "n": 8,
+   "p50": 1677,
+   "p90": 1915,
+   "min": 1561,
+   "max": 3937
+  },
+  "director": {
+   "n": 8,
+   "p50": 3925,
+   "p90": 5329,
+   "min": 3223,
+   "max": 7322
+  },
+  "tts": {
+   "n": 8,
+   "p50": -1413,
+   "p90": -1013,
+   "min": -2070,
+   "max": -652
+  },
+  "total": {
+   "n": 8,
+   "p50": 4249,
+   "p90": 6137,
+   "min": 3787,
+   "max": 7235
+  },
+  "sound": {
+   "n": 8,
+   "p50": 4359,
+   "p90": 6247,
+   "min": 3897,
+   "max": 7345
+  },
+  "serverMs": {
+   "n": 8,
+   "p50": 3169,
+   "p90": 4318,
+   "min": 2511,
+   "max": 6323
+  },
+  "directorNonAnswer": {
+   "n": 4,
+   "p50": 3756,
+   "p90": 5329,
+   "min": 3223,
+   "max": 5329
+  },
+  "directorAnswer": {
+   "n": 4,
+   "p50": 4016,
+   "p90": 7322,
+   "min": 3334,
+   "max": 7322
+  },
+  "speculation": {
+   "hit": 0,
+   "of": 0
+  },
+  "deltaEqualsFinal": {
+   "yes": 8,
+   "of": 8
+  },
+  "prefetchAdopted": {
+   "yes": 8,
+   "of": 8,
+   "sent": 17,
+   "accepted": 17,
+   "missingRoute": 0,
+   "failed": 0
+  },
+  "nonAnswerTurns": 4,
+  "ack": {
+   "echo": 1,
+   "of": 8,
+   "reasons": {
+    "not_an_answer": 4,
+    "echo": 1,
+    "consecutive": 2,
+    "unclassified": 1
+   }
+  },
+  "firstSoundWithAck": {
+   "n": 8,
+   "p50": 4249,
+   "p90": 6137,
+   "min": 1977,
+   "max": 7235
+  }
+ },
+ "rows": [
+  {
+   "said": "Woh line edge hai, kinara.",
+   "asked": "c4-maths-ch01-t01-i02",
+   "heard": "Well, लाइन एज है किनारा।",
+   "deltaText": "Well, लाइन एज है किनारा।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "practice",
+   "reply": "Haan, tumne line ko kinara, ya edge kaha. Dabbe ki do sapaat satahein jahan milti hain, us line ko edge kehte hain. Ab sticks se cube ka dhaancha socho: kitni sticks aur kitni clay ki goliyan chahiye?",
+   "endpoint": 3016,
+   "stt": 921,
+   "lastDeltaAfterEnd": 2732,
+   "prefetchAfterEnd": 2981,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 923,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 3,
+   "deltaTimesAfterEnd": [
+    1221,
+    1232,
+    1917,
+    1923,
+    2062,
+    2650,
+    2686,
+    2732
+   ],
+   "prefetchTimes": [
+    1482,
+    2311,
+    2981
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 3937,
+   "director": 3756,
+   "tts": -1557,
+   "total": 6137,
+   "sound": 6247,
+   "cls": "no_evidence/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 962,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 3169,
+   "marks": {
+    "ctx": 38,
+    "kit": 39,
+    "prefetch_adopted": 46,
+    "classified": 46,
+    "noted": 47,
+    "planned": 155,
+    "agent": 3064,
+    "kernel": 3079,
+    "replied": 3113,
+    "stored": 3168
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Aath sticks chahiye.",
+   "asked": "c4-maths-ch01-t01-i09",
+   "heard": "आठ स्टिक्स शाही है",
+   "deltaText": "आठ स्टिक्स शाही है",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "reteach",
+   "reply": "Tumne aath sticks kaha. Cube mein aath jagah sticks milti hain, isliye aath goliyan chahiye. Sticks ginne ke liye upar chaar, neeche chaar aur dono ko jodne wali chaar socho. Ek cube ke kitne corners hote hain?",
+   "endpoint": 1115,
+   "stt": 800,
+   "lastDeltaAfterEnd": 809,
+   "prefetchAfterEnd": 1058,
+   "ack": {
+    "kind": "echo",
+    "token": "आठ",
+    "waitedMs": 846,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": 1977,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1392,
+    -443,
+    -394,
+    580,
+    583,
+    809
+   ],
+   "prefetchTimes": [
+    401,
+    1058
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1915,
+   "director": 3334,
+   "tts": -1413,
+   "total": 3836,
+   "sound": 3946,
+   "cls": "incorrect/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 864,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 4,
+    "parallel": null
+   },
+   "serverMs": 2574,
+   "marks": {
+    "ctx": 48,
+    "kit": 49,
+    "prefetch_adopted": 56,
+    "classified": 57,
+    "noted": 60,
+    "planned": 112,
+    "agent": 2517,
+    "kernel": 2520,
+    "replied": 2523,
+    "stored": 2574
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Cube ke aath corners hote hain.",
+   "asked": "c4-maths-ch01-t01-i03",
+   "heard": "युद्ध के आठ कॉर्नर्स होते हैं।",
+   "deltaText": "युद्ध के आठ कॉर्नर्स होते हैं।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "probe",
+   "reply": "Haan, cube ke aath corners hote hain, jahan sticks milti hain. Ab ek farq socho: dice cube hai aur maachis ki dibbi cuboid. Dono mein kiske zyada edges hain?",
+   "endpoint": 1067,
+   "stt": 522,
+   "lastDeltaAfterEnd": 866,
+   "prefetchAfterEnd": 1115,
+   "ack": {
+    "none": "consecutive",
+    "waitedMs": 667,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -328,
+    -97,
+    448,
+    458,
+    508,
+    691,
+    857,
+    866
+   ],
+   "prefetchTimes": [
+    401,
+    1115
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1590,
+   "director": 4016,
+   "tts": -1818,
+   "total": 3787,
+   "sound": 3897,
+   "cls": "correct/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 472,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 2653,
+   "marks": {
+    "ctx": 67,
+    "kit": 67,
+    "prefetch_adopted": 81,
+    "classified": 277,
+    "noted": 278,
+    "planned": 291,
+    "agent": 2585,
+    "kernel": 2587,
+    "replied": 2589,
+    "stored": 2652
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Bas aise hi pata tha.",
+   "asked": "c4-maths-ch01-t01-i06",
+   "heard": "बस ऐसे ही बता था।",
+   "deltaText": "बस ऐसे ही बता था।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Theek hai, tum bas bata rahe the. Dice aur maachis ki dibbi ko sticks ka dhaancha socho: upar chaar sticks, neeche chaar, aur beech mein chaar. Dono mein kiske zyada edges hain?",
+   "endpoint": 1099,
+   "stt": 501,
+   "lastDeltaAfterEnd": 941,
+   "prefetchAfterEnd": 1190,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 657,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -123,
+    137,
+    348,
+    733,
+    930,
+    941
+   ],
+   "prefetchTimes": [
+    598,
+    1190
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1600,
+   "director": 3459,
+   "tts": -1013,
+   "total": 4046,
+   "sound": 4156,
+   "cls": "no_evidence/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 406,
+   "note": {
+    "nonAnswer": true,
+    "intent": "dont_know",
+    "waitedMs": 14,
+    "parallel": null
+   },
+   "serverMs": 2511,
+   "marks": {
+    "ctx": 68,
+    "kit": 69,
+    "prefetch_adopted": 89,
+    "classified": 340,
+    "noted": 354,
+    "planned": 361,
+    "agent": 2433,
+    "kernel": 2434,
+    "replied": 2436,
+    "stored": 2511
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Dono mein barabar, baarah baarah edges hain.",
+   "asked": "c4-maths-ch01-t01-i06",
+   "heard": "दोनों में बराबर बारह बारह एजेस हैं।",
+   "deltaText": "दोनों में बराबर बारह बारह एजेस हैं।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "practice",
+   "reply": "Tumne kaha dono mein barah barah edges hain. Dice aur maachis ki dibbi mein kisi ke zyada edges nahi hain. Ab tiffin box ke edges aur corners batao?",
+   "endpoint": 1139,
+   "stt": 538,
+   "lastDeltaAfterEnd": 963,
+   "prefetchAfterEnd": 1212,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 1270,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -30,
+    -14,
+    237,
+    245,
+    819,
+    844,
+    954,
+    963
+   ],
+   "prefetchTimes": [
+    495,
+    1212
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1677,
+   "director": 3223,
+   "tts": -652,
+   "total": 4249,
+   "sound": 4359,
+   "cls": "no_evidence/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 464,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 2972,
+   "marks": {
+    "ctx": 72,
+    "kit": 73,
+    "prefetch_adopted": 80,
+    "classified": 887,
+    "noted": 888,
+    "planned": 932,
+    "agent": 2871,
+    "kernel": 2878,
+    "replied": 2886,
+    "stored": 2972
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Aath edges aur chhe corners.",
+   "asked": "c4-maths-ch01-t01-i07",
+   "heard": "Edges, or छह corners.",
+   "deltaText": "Edges, or छह corners.",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "reteach",
+   "reply": "Tumne corners chhe kahe; tiffin ke corners chhe nahi hote. Socho har corner ek bindu hai: upar chaar aur neeche chaar. Dono ko mila kar kitne corners hue?",
+   "endpoint": 1085,
+   "stt": 784,
+   "lastDeltaAfterEnd": 714,
+   "prefetchAfterEnd": 963,
+   "ack": {
+    "none": "unclassified",
+    "waitedMs": 3001,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1722,
+    -1700,
+    -1693,
+    -915,
+    -88,
+    705,
+    714
+   ],
+   "prefetchTimes": [
+    401,
+    963
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1869,
+   "director": 7322,
+   "tts": -1956,
+   "total": 7235,
+   "sound": 7345,
+   "cls": "incorrect/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 914,
+   "note": {
+    "nonAnswer": false,
+    "intent": "answer_wrong",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 6323,
+   "marks": {
+    "ctx": 68,
+    "kit": 69,
+    "prefetch_adopted": 81,
+    "classified": 2841,
+    "noted": 2842,
+    "planned": 2869,
+    "agent": 6235,
+    "kernel": 6242,
+    "replied": 6247,
+    "stored": 6323
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Aath edges aur chhe corners.",
+   "asked": "c4-maths-ch01-t01-i07",
+   "heard": "आठ एजेस और छह कॉर्नर्स।",
+   "deltaText": "आठ एजेस और छह कॉर्नर्स।",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "hint",
+   "reply": "Tumne edges aur corners ko ulta gin liya lagta hai. Board par upar chaar aur neeche chaar corners hain; edges ke liye upar chaar, neeche chaar, aur beech ki chaar sticks gino. Sirf edges kitni hui?",
+   "endpoint": 1057,
+   "stt": 504,
+   "lastDeltaAfterEnd": 872,
+   "prefetchAfterEnd": 1122,
+   "ack": {
+    "none": "consecutive",
+    "waitedMs": 843,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -1341,
+    -1311,
+    -549,
+    72,
+    841,
+    847,
+    859,
+    872
+   ],
+   "prefetchTimes": [
+    404,
+    1122
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1561,
+   "director": 3925,
+   "tts": -1314,
+   "total": 4172,
+   "sound": 4282,
+   "cls": "partial/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 434,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 3487,
+   "marks": {
+    "ctx": 70,
+    "kit": 70,
+    "prefetch_adopted": 77,
+    "classified": 486,
+    "noted": 487,
+    "planned": 526,
+    "agent": 3437,
+    "kernel": 3439,
+    "replied": 3441,
+    "stored": 3487
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  },
+  {
+   "said": "Baarah edges aur aath corners.",
+   "asked": "c4-maths-ch01-t01-i07",
+   "heard": "Edges are odd corners.",
+   "deltaText": "Edges are odd corners.",
+   "deltaEqualsFinal": true,
+   "conf": null,
+   "move": "repair",
+   "reply": "Tumne kaha edges aur corners; shayad dono mix ho rahe hain. Tiffin ka kona ek point hai, aur do konon ke beech ka seedha kinara edge hai. Board par edges ke teen group hain: chaar upar, chaar neeche, chaar beech mein. Sirf edges kitni hui?",
+   "endpoint": 1122,
+   "stt": 503,
+   "lastDeltaAfterEnd": 714,
+   "prefetchAfterEnd": 964,
+   "ack": {
+    "none": "not_an_answer",
+    "waitedMs": 1205,
+    "shadow": true
+   },
+   "ackReadyAfterEnd": null,
+   "prefetchCount": 2,
+   "deltaTimesAfterEnd": [
+    -698,
+    -490,
+    -485,
+    -279,
+    116,
+    697,
+    714
+   ],
+   "prefetchTimes": [
+    402,
+    964
+   ],
+   "prefetchTextEqualsFinal": true,
+   "turnAfterEnd": 1626,
+   "director": 5329,
+   "tts": -2070,
+   "total": 4885,
+   "sound": 4995,
+   "cls": "no_evidence/model",
+   "speculation": "none",
+   "specTried": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 671,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_wrong",
+    "waitedMs": 295,
+    "parallel": null
+   },
+   "serverMs": 4318,
+   "marks": {
+    "ctx": 78,
+    "kit": 78,
+    "prefetch_adopted": 83,
+    "classified": 618,
+    "noted": 913,
+    "planned": 944,
+    "agent": 4265,
+    "kernel": 4268,
+    "replied": 4272,
+    "stored": 4318
+   },
+   "ttsPrewarmedMs": null,
+   "engine": null,
+   "guard": ""
+  }
+ ]
+}

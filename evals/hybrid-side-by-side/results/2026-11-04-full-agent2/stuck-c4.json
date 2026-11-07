@@ -1,0 +1,160 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket teams se aadha aur chautha hissa samjhenge. Ek roti ke chaar barabar tukde karo, toh ek tukde ko kya kahoge?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Roti ke chaar barabar tukde hain, toh har tukda ek chautha hissa hota hai. Ek tukde ko kya kahoge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2619,
+   "replyReadyMs": 2619
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 692
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, meri baat clear nahi hui. Socho ek chocolate ko chaar barabar tukdon mein toda. Ek tukde ka naam ek-chautha hai. Agar chaar barabar tukdon mein se ek lo, use kya kahoge?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2729,
+   "replyReadyMs": 3421
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 774
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere dheere batati hoon. Pehle sirf ek baat: chocolate ke saare tukde barabar hone chahiye. Agar ek tukda bada ho aur baaki chhote, kya unhein barabar tukde kahoge?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3221,
+   "replyReadyMs": 3995
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 705
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein dheere-dheere batati hoon. Barabar ka matlab hai, har tukda ek jitna bada. Agar ek tukda bada ho aur baaki chhote, kya tukde barabar hain?",
+   "move": "repair",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2524,
+   "replyReadyMs": 3229
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "incorrect",
+   "classifyMs": 1585
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne paanch kaha. Roti ke chaar barabar tukde socho: ek tukda liya, baaki teen rakhe. Is ek tukde ko ek chautha kehte hain. Agar tukde ek bada aur teen chhote hon, kya har tukda ek chautha hoga?",
+   "move": "reteach",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2770,
+   "replyReadyMs": 4355
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, dheere chalte hain. Ek bada tukda aur ek chhota tukda socho. Kya dono ek jitne bade hain?",
+   "move": "hint",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2680,
+   "replyReadyMs": 2681
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 839
+  },
+  {
+   "who": "teacher",
+   "text": "Do tarbooz socho: ek ke tukde bade-chhote hain, doosre ke teeno ek jitne. Kis tarbooz ke tukde barabar hain?",
+   "move": "repair",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2621,
+   "replyReadyMs": 3460
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1406
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tumne haan kaha. Ab bas dono tarbooz mein se chuno: A ke tukde bade-chhote hain, B ke teeno ek jitne hain. Kis tarbooz ka har tukda ek tihaai hoga?",
+   "move": "probe",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2559,
+   "replyReadyMs": 3965
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1171
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne saat kaha. Yahan ginti nahi, tarbooz A ya B mein se chunna hai. A ke tukde bade-chhote hain; B ke teeno barabar hain. Kis tarbooz ka har tukda ek tihaai hoga?",
+   "move": "repair",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2324,
+   "replyReadyMs": 3495
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1001
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rokna chahti ho. Hum jaari rakhein, chhota break lein, ya aaj yahin ruk jaayein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1316,
+   "replyReadyMs": 2317
+  }
+ ]
+}

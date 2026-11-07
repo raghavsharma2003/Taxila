@@ -1,0 +1,182 @@
+# Round 7: for the owner
+
+Updated by the main loop at each integration. Last update: 2026-11-06 morning UTC, at integration 9 (`int/r6` 8f461ae0b).
+- **Build checks:** tsc and the build are green.
+- **Unit tests:** 4771 of 4783 pass, both in the per-file gate and single-process; 0 failures, 11 skipped, 1 known todo.
+- **Live model calls so far:** only the lesson-brain runs (director1–7), about $6 in total, on the stream's 2026-10-10 AI keys.
+- **Nothing is released:** deploying needs the full key set.
+- **Founders Hub (row 7): apply by 2026-11-07.** Corrected 2026-11-06 from your mail: business verification completed on 2026-07-15. The 180 days end on 2027-01-11, so day 1 of the 60 must fall on or before 2026-11-13; on or before 2026-11-08 if Microsoft counts from the 2026-07-10 ticket. The automation is built and merged (`scripts/m3.mjs`). It is **not running**: this environment has no Azure keys. The VM is taken as yes (your 2026-11-06 message: "rent or whatever we need"). Still needed from you: the keys, and yes/no on the PostgreSQL downsize.
+
+## 1. Decisions only you can make
+
+| # | What | Options / note |
+|---|---|---|
+| 1 | **Azure keys (the blocker).** Nothing has been tried live and nothing can be released without them. | Re-add the keys as environment variables, then the main loop runs `node scripts/handoff/write-env-local.mjs`. |
+| 2 | **Spend batch** (section 2) | Approve all, some tiers, or none. Nothing runs until you say yes. |
+| 3 | **Teacher face**: r8 / lamp2 / lamp2 + new jaw | Everything you need is on one page: `face/OWNER-FACE-REVIEW.md` (on claude/r7-face, PR #49). It covers the look, the greeting clips, the pose stills and the low-end-phone pass, with evidence for each. Lip timing within ±50 ms: r8 89%, lamp2 67% (its mouth barely moves), lamp2 + jaw 100%. |
+| 4 | Account for the owner test cohorts | They are keyed to an email that matches no guardian, e.g. the guardian of the test child "Kiko". |
+| 5 | Staging app (~$40/mo, scripted: `scripts/staging.mjs`, on the TEST DB by construction); India D5 relay (one 0.5-vCPU replica always on in South India: `scripts/region/d5-relay.mjs`); Front Door (~$35/mo); India cutover vs stopping taxila-cin-pg | All scripted and dry-run by default; each waits for your yes and the keys. |
+| 6 | Volt-emblem avatars; on-device speaker matching | **Avatars, built and reversible:** App's onboarding sweep (2026-11-05) found the first pick a 13-year-old makes is a painted cartoon animal. Classes 4-9 now pick from 12 line emblems instead (orbit, comet, bolt, …); classes 1-3 keep the animals, and existing picks still render. One switch reverts it (`OLDER_AVATAR_SET`); say if you want the animals back. Speaker matching: still parked. |
+| 6b | **India map outline** | Any map that draws India's outline must show the official Survey of India boundary. Code can't draw a correct one from memory, so maps today are places pinned at true lat/long on a grid with a compass, and no outline. Provide or approve an official SoI source to enable outlines (`dc-r7-maps-no-outline`). |
+| 6c | Parent term report, section S18 (the term report itself is built) | S18 would show the child's own words ("what I liked this term") and let the parent write back. The child's quote needs a show-consent step from the child; a parent free-text reply breaks the rule that every parent-facing line is structured and checked. Recommendation: leave S18 out until the test phase. |
+| 7 | **URGENT, Founders Hub $25k (Milestone 3).** Microsoft: "If you don't qualify for Milestone 3 (5+ Azure workloads over a sustained period of 60 days) within 180 days of Business Verification, the sponsorship is cancelled and the subscription is converted to pay-as-you-go." Business verification completed on **2026-07-15** (per the support desk's mail), so the 180 days end on 2027-01-11 and day 1 of the 60 must fall on or before **2026-11-13**; on or before 2026-11-08 if counted from the 2026-07-10 ticket. **Apply by 2026-11-07.** The VM counts as a yes. | Built and ready, not applied: `claude/r7-m3`, page `docs/design/round7/M3.md`. Two daily Azure jobs keep 6-7 services above $1/day, plus a daily cost check that emails the subscription Owner. ~$11-15/day including what already runs. You need to: (1) re-add the keys today; (2) send the business-verification date from the Founders Hub portal and the balance from microsoftazuresponsorships.com; (3) say yes/no to the extra VM (~$1.40/day) and to downsizing the unused `taxila-cin-pg` (saves ~$3.70/day). If you can't add the keys today, in the portal: `taxilacr` → Premium, plus one small Linux VM (D2as_v5, Central India, no public IP) in a new group `taxila-m3-rg`. Alerts go to identities assigned Owner directly on the subscription; if you hold Owner through a group, also add the env var `M3_ALERT_EMAIL`. Also: is the spending limit back on? |
+
+## 2. Spend batch (Azure Foundry, Direct): Azure only authors
+
+Claude does all checking in-session, so the checks cost nothing on Azure: the blind-solve of every key, the form
+equivalence check, adjudication and level rating. Figures come from the scripts' own dry runs
+(`node scripts/kits/run.mjs all`). Dry run is the default. Spending needs `--run --cap N`, and runs are resumable.
+(Corrected 2026-11-04: the first estimate of ~$127 had counted Azure checkers.)
+
+| Tier | Work | Azure calls | ~Cost | Unblocks |
+|---|---|---|---|---|
+| 1 | G1 sentence-train grammar items (85 tagged skills, 444 items short) | 128 | $4.10 | English and Hindi grammar games (Games) |
+| 1 | W1a Hinglish/Devanagari answer forms | 30 | $0.60 | Hinglish answers graded correctly |
+| 2 | W1b Hindi worked-example steps, class 4-7 maths | 141 | $2.62 | Worked examples in Hindi |
+| 2 | W1c explain plans per skill, class 4-7 maths (424 skills) | 424 | $15.26 | Richer explanations (Brain) |
+| 3 | W3 language kits on real texts, class 4-7 English/Hindi (101 topics) | 101 | $4.85 | English/Hindi lessons on real passages |
+| 3 | W4 placement banks, class 9 maths/science | 8 | $0.36 | Placement for class 9 |
+| — | W2 relevel, all classes | 0 | $0 | Level match (OWNER-RESET #2): rated by Claude in-session, no approval needed |
+| — | Face: the 27 daily-greeting clips (DragonHD) | 27 | cents | Her spoken home greeting |
+| — | Face: painted pose stills (wave, reading, …) via Azure images | tbd | small | Replaces stand-in stills |
+| — | Studio gate services: Azure AI Vision OCR + Content Safety (image moderation) | recurring | ~₹4,500/month at cap | Lets generated pictures be checked, so they can ever be shown |
+| — | Studio image rung (needs the gate services) | per picture | $0.0066; ~$2.6 for a 200-lesson test; ~$13/day at 1,000 lessons/day | Pictures as lesson pieces |
+| — | Studio dedicated spec deployment (owner action: create `taxila-stagecraft`) | 0 extra tokens | — | Spec builds stop sharing quota with the reply model |
+| later | Studio Sora clips, a priced 5-clip test first | tbd | tbd | Only if code-built animation can't do it |
+| **All** | | **~815** | **~$26 (≈ ₹2,200)** | |
+
+Recommendation: approve it all. At ~$26 it is less than one test-battery day was in October. If you'd rather approve
+in parts, start with tiers 1 and 2 (~$21).
+
+## 3. What you can look at now (all in `docs/design/round7/`)
+
+- **App** (stage-first lesson, one nav, steer chips, the stop check-in, hands-free dock, class 4 in the older look): `app/shots-m1/*.png`.
+  Made from fixture pages and a mocked API, not a live lesson.
+- **Games**
+  - Week 1 maths (angles, integer hops, bar graphs and pictographs): `games/w1/*.mp4` and `*-strip.png`.
+  - Week 2 science (mirror beam, periscope, circuit, pendulum): `games/w2/`.
+- **Studio**:
+  - motion boards: `studio/split-*.mp4`, `jump-*.mp4`;
+  - history timelines: `timeline-*`;
+  - tables: `table-*`;
+  - labelled plant and circuit diagrams: `label-plant-*`, `label-circuit-*`;
+  - beat cards: `beat-card-*`.
+- **Games, more**:
+  - 3D mirror, circuit and pendulum: `games/w2/yantra3d-*.png`;
+  - the history river timeline (kaal), the sentence train (vakya), the kirana balance (taraazu) and the factor/multiple tower defence (kila).
+- **Parent corner** (Learning): `learning/shots/parent-notes-monthly.png`, `parent-controls-household.png`, `parent-teaching.png`.
+- **Face**
+  - `face/r7-face-fallback-sheet.png`: the same Asha on every fallback path.
+  - `face/stills-sheet.png`.
+  - `face/lite-mouth-strip.png`: weak phones.
+  - `face/route-b-vs-r8-sheet.png`.
+
+## 3b. Lesson brain: which engine (decided 2026-11-04)
+
+- The Director lane is the default. The freer agent lane is frozen; its strengths are being ported into the Director.
+  Full run: 23 lessons.
+  - Reply ready p50: 2.2 s for the Director vs 3.9 s for the agent.
+  - The agent dropped class-6 children to counting drills.
+  - Neither met the bar, and the worst defect was praising a wrong answer.
+  - Write-up: `judgements/hybrid-full-2026-11-04.md`.
+- Brain then fixed the 11 defects. The re-run showed the fixes were shallow, because the guards detected bad lines but didn't stop them. The next block is structural:
+  - guards enforce;
+  - worked examples are rendered from the kit;
+  - one question is live at a time;
+  - picture and game requests are real.
+  
+  Write-up: `judgements/director2-2026-11-04.md`.
+- A stronger reply model (taxila-gpt6) was tried: no teaching gain, +0.7 s, about 6× the cost. Kept the fast model (`dc-r7-reply-model-fast`).
+- 2026-11-05: **authored lesson scripts** (`dc-r7-teaching-scripts`). Claude writes the teaching per skill, a second
+  Claude checks every answer blind, and the Director walks the script.
+  - Pilot run (director4, 12 lessons, $0.20):
+    - The maths is right now, and the lesson has a spine.
+    - But she still walks the beats like a clock: a beat counts whether or not she taught it, the explanation beats ask no keyed question, and English script text is read aloud.
+  - Next: format v2 plus beat-completion rules (`dc-r7-script-walk-v2`). No scale-out to 30 topics until director5 passes a measured gate. Write-up: `judgements/director4-2026-11-05.md`.
+- 2026-11-05 evening: director5 (v2 scripts, a simulated child that answers right and wrong, 16 lessons, $0.65).
+  - Clearly better than before:
+    - Hinglish holds;
+    - she comes back to the lesson after the child's detours;
+    - every board shows;
+    - she gives most answers a verdict.
+  - Still failed the bar on every line, by hand count:
+    - 39% of beats really taught;
+    - 75% of answers judged;
+    - at least 14 right answers called wrong, because she graded the reply to her "kaise jaana?" against the next question;
+    - 25 places where her words don't match the screen.
+  - Two code checks were also deleting correct teaching, and the written corrections were never spoken.
+  - Decision (`dc-r7-script-walk-v3`): code now speaks the written corrections and worked examples nearly word for word. Explanations stay in her own words but fall back to the written line. Checks may never delete teaching. She grades only the question she just asked. Then director6. Write-up: `judgements/director5-2026-11-05.md`.
+- 2026-11-05 night: director6 (16 lessons, $0.81). A big step, and just short of the bar.
+
+  | Measure | director5 | director6 |
+  |---|---|---|
+  | Beats really taught | 39% | 79% |
+  | Answers judged | 75% | 89% |
+  | Right answers called wrong | ≥ 14 | 2 |
+  | Places her words don't match the screen | 25 | 12 |
+
+  - Her explanations now land almost every time.
+  - What's left is mechanical:
+    - checks still cut a correction down to the bare question;
+    - a follow-up question longer than the card limit is cut;
+    - the worked example comes out as one block;
+    - she says her point twice;
+    - one skill is skipped;
+    - side-topics are never returned to.
+  - Decision (`dc-r7-script-walk-v4`): fix those. Learning may now start writing the next 30 topics in the final format, held back from children until director7 passes.
+  - Write-up: `judgements/director6-2026-11-05.md`.
+  - Separately, a quiet-hour re-test showed Azure's model answers in about 1.4 s at any hour. Her ~3 s reply time is our own pipeline, so it's ours to cut.
+- 2026-11-06: director7 (16 lessons, $0.79). **The teaching itself now works.**
+
+  | Measure | director7 | Bar |
+  |---|---|---|
+  | Beats really taught | 97% | ≥ 80% |
+  | Answers judged | 99% | ≥ 90% |
+  | Answers marked wrongly, either way | 0 | 0 |
+
+  - The worked example is real.
+  - She walks all three skills in order.
+  - Reply time is down to 2.65 s.
+  - What still fails is what's on screen while she speaks: 51 places, because one board shows while she describes the next. Plus a "?" over numbers she says, and not acting on "samajh nahi aaya", "phir se bolo", "pehle main try karun" or a promised return to cricket.
+  - Decision (`dc-r7-script-walk-v5`): switch the board mid-turn at the exact words, and treat those child requests as moves.
+  - Write-up: `judgements/director7-2026-11-06.md`.
+- 2026-11-06: director8 (16 lessons, $0.80). The teaching still works: 96% of beats taught, 99% of answers judged, 0 false "wrong"s. Bridges between skills are now spoken every time.
+  - Screen/speech fails worse overall: 73 mismatches.
+    - About 45 are a new Studio bug: its "?" rule now hides numbers she says.
+    - About 22 are sentences shown on the wrong board (director7 had 51 of this kind).
+  - One wrong answer key was spoken, and one right answer was called wrong.
+  - She still doesn't act on "samajh nahi aaya", and never really comes back to cricket.
+  - Faster:
+    - Reply-ready time: 2.29 s.
+    - In the real app path, the first spoken words are ready in 1.90 s (p50).
+  - Decision (`dc-r7-script-walk-v6`): fix Studio's "?" rule; put every sentence on its own board; make requests and promised returns real.
+  - The 30 new topics stay held.
+  - Write-up: `judgements/director8-2026-11-06.md`.
+
+## 4. Calls the main loop took that you may want to reverse
+
+- **Khand MEASURE is not shipped.** Its 2D form was a number pad plus left/right buttons, exactly what OWNER-RESET #3 rejects.
+  It is replaced by *taraazu* (a kirana pan balance with real weights, and pouring jugs) on the same four topics.
+  The original is still on its branch. (`dc-r7-games-measure-to-taraazu`)
+- **ITEM-ARENA** ("aim at one of 4 answers and fire") is back only as a last-resort net when no real game exists for a skill.
+  It never counts as game coverage. The topics where it is the only game form the games backlog.
+- **54 sentence items are not served.** They were a swap of two words in a sentence already printed in order, which is a quiz in costume.
+- **Hands-free is the default for every child** (`dc-r7-handsfree-default`). In production it switches on at the next release.
+
+## 5. Phone checks for you after the release (mid-range Android)
+
+- Hands-free from her first line; mute.
+- The Khand 3D games and the new maths and science levels, opened by saying "game khelna hai" in a lesson.
+- The fraction split and the number-line jump: your taste on speed and height.
+- Face fallbacks and the light mouth on a weak phone.
+- The class 4 lesson register.
+
+## 6. Coverage today (classes 4-7, real games where the skill is the mechanic)
+
+| Subject | Topics |
+|---|---|
+| Maths | 63 of 141, plus kila (factors and multiples) and naksha (grids) |
+| Science | 17 |
+| SST | 6 (kaal), plus naksha (latitude and longitude) |
+| English | 6 |
+| Hindi | 0 (waits for G1) |

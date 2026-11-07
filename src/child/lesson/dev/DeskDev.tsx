@@ -37,6 +37,8 @@ export const FIXTURES = [
 export type FixtureName = (typeof FIXTURES)[number];
 
 const noop = () => {};
+/** A board a render check injects (window.__deskScript, set by Playwright's addInitScript); else the half ka half board. */
+const devScript = () => (typeof window !== "undefined" && (window as unknown as { __deskScript?: unknown }).__deskScript) || BEAT_SCRIPT;
 /** The "half ka half" board (server fraction-of@1, a/b = c/d = 1/2) with its beat card, as the server sends it (dev only). */
 const BEAT_SCRIPT = {
   v: 1, scriptId: "dev-beat", line: { lessonId: "dev" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1200,
@@ -63,9 +65,11 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const young = family === "young";
   const rec = teacherRecord(null, band);
   const play = name === "work-play";
-  const work = name.startsWith("work-") || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
+  // r7 (landing captures): hf-beat = the work-beat board with the hands-free dock (names starting "hf" get it below)
+  const work = name.startsWith("work-") || name === "hf-beat" || ["work-tiles", "board-correct", "board-not_yet", "help-menu", "no-mic", "T7"].includes(name);
   const floorOf = (n: string): Floor => {
     if (n === "work-beat") return "speaking"; // a board beat draws while she speaks
+    if (n === "hf-speaking") return "speaking";
     const f = n.replace(/^work-/, "");
     if (["idle", "speaking", "showing", "yielding", "your_turn", "listening", "heard", "thinking"].includes(f)) return f as Floor;
     if (f === "tiles" || f === "help-menu" || f === "no-mic" || f === "pad" || f === "pad-help") return "your_turn";
@@ -83,8 +87,8 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     : { text: young ? "Which one is half?" : "How many quarters make one half?", source: "server", lines: [] };
   if (askModel && (name === "hint-line" || name === "not_yet")) askModel.lines = [{ kind: "hint", level: 1, text: young ? "Count the two equal parts." : "Count the shaded quarters on the board." }];
   if (askModel && name === "with-help") askModel.lines = [{ kind: "hint", level: 2, text: "Two quarters fill one half." }];
-  const answered = ["heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
-  const verdict = name === "correct" || name === "board-correct" || name === "with-help" ? "correct" : name === "not_yet" || name === "board-not_yet" ? "not_yet" : name === "partial" ? "partial" : undefined;
+  const answered = ["teachback-correct", "teachback-not_yet", "heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
+  const verdict = name === "correct" || name === "board-correct" || name === "with-help" || name === "teachback-correct" ? "correct" : name === "not_yet" || name === "board-not_yet" || name === "teachback-not_yet" ? "not_yet" : name === "partial" ? "partial" : undefined;
   const answer: DeskModel["answer"] = answered
     ? { text: young && (name === "heard" || name === "thinking") ? null : young ? "1/2" : "two", form: young && (name === "heard" || name === "thinking") ? "spoken" : "spoken",
         delivery: name === "T2" || name === "T4" ? "not_sent" : name === "RC" ? "sent" : "done", verdict, withHelp: name === "with-help" }
@@ -92,12 +96,13 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const tiles = young ? [{ id: "a", label: "1/2" }, { id: "b", label: "1/3" }] : [{ id: "a", label: "1/3" }, { id: "b", label: "2/3" }, { id: "c", label: "3/3" }];
   let tray: TrayModel | null = null;
   if (name === "work-pad" || name === "work-pad-help") tray = { kind: "pad", overlay: name === "work-pad-help" ? "help_menu" : null };
+  else if (name === "stop-checkin") tray = { kind: "tiles", tiles: [{ id: "stop:continue", label: "Chalo, aage" }, { id: "break:rest", label: "Chhota break" }, { id: "stop:end", label: "Aaj ke liye bas" }], overlay: null };
   else if (name === "work-tiles" || name === "help-menu" || name === "no-mic") tray = { kind: "tiles", tiles, overlay: name === "help-menu" ? "help_menu" : name === "no-mic" ? "no_mic" : null };
-  else if (name === "work-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: BEAT_SCRIPT } } as unknown as TrayModel["studio"], overlay: null };
+  else if (name === "work-beat" || name === "hf-beat") tray = { kind: "studio", studio: { slotId: "dev:beat:slot", intentId: "dev:beat", state: "revealed", artifact: { kind: "whiteboard", stage: { w: 400, h: 300 }, script: devScript() } } as unknown as TrayModel["studio"], overlay: null };
   // r4: a skeleton activity in the tray (the shade-fraction skeleton), for the Kaksha skin shots
   else if (name === "work-skeleton") tray = { kind: "studio", studio: { slotId: "dev:sk:slot", intentId: "dev:sk", state: "revealed", artifact: { kind: "skeleton", stage: { w: 360, h: 320 }, skeleton: "fraction-parts", archetype: "shade_fraction", intentId: "dev:sk", params: { items: [{ id: "i1", n: 3, d: 4 }], picture: "pizza" }, strings: {} } } as unknown as TrayModel["studio"], overlay: null };
   else if (name === "work-studio" || play) tray = { kind: "studio", studio: { slotId: `dev:${name}:slot`, intentId: `dev:${name}`, state: "revealed" } as TrayModel["studio"], overlay: null };
-  else if (work || name.startsWith("board-")) tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
+  else if (work || name.startsWith("board-") || name === "voice-board") tray = { kind: "board", board: { lines: [{ text: "1/2 = 2/4", kind: "math" }], chalked: answered ? (young ? "1/2" : "two") : null, mark: verdict === "correct" ? "tick" : verdict === "not_yet" ? "underline" : null } };
   const geometry = tray ? "work" : "face";
   const keyboard = name === "keyboard";
   const strip = (["T1", "T2", "T3", "T4", "T5", "T6", "T8", "T9", "RC", "PTT"] as const).includes(name as StripId & string) ? (name as StripId) : null;
@@ -109,10 +114,24 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
     floor, sheet, strip, noPack: true, ask: askModel, answer,
     caption: { text: caption, speaking: floor === "speaking" || floor === "showing", mode: "phrase", lang: "hi-Latn" },
-    tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : work ? "teach" : "warmup",
+    // r7: Me → "Voice only" (fixtures voice / voice-board)
+    faceHidden: name === "voice" || name === "voice-board",
+    // r7: the Later list and the moment cards (Brain's ui.later / ui.moment)
+    later: name === "park" || name === "later" || name === "stop-checkin" || name === "returned" ? [{ id: "l1", text: "Black hole mein kya hota hai?", status: name === "returned" ? "returned" : "open" }, { id: "l2", text: "Why is the sky blue?", status: "open" }] : undefined,
+    moment: name === "park" ? { kind: "park", quote: "Black hole mein kya hota hai?", note: "Great question. Let's finish halves, then I'll come back to it.", key: "p1" }
+      : name === "decline" ? { kind: "decline", quote: "Tell me a scary story", note: "Not one for lessons. Here's something just as wild about halves...", key: "d1" }
+      : name === "detour" ? { kind: "detour", quote: "Is a pizza cut in 8 also halves?", note: "Quick one, then back to our question.", key: "t1" }
+      : name === "returned" ? { kind: "returned", quote: "Black hole mein kya hota hai?", laterId: "l1", key: "r1" } : null,
+    // r7: the steer chips as useDesk offers them (Older, a talking floor, no sheet)
+    steer: !young && !sheet && ["speaking", "showing", "your_turn", "yielding"].includes(floor) && !name.startsWith("summary")
+      ? [{ id: "steer:picture", key: "diagram", label: "Diagram" }, { id: "steer:game", key: "game", label: "Game" }, { id: "steer:another", key: "another", label: "Alag tarah se" }, { id: null, key: "else", label: "Kuch aur" }] : null,
+    tray, padSlash: !young && name.startsWith("work-pad"), answerForm: name === "work-tiles" ? "choice" : young && !name.startsWith("work-pad") ? "words" : "number", phase: name === "summary" ? "wrap" : name.startsWith("teachback") ? "teachback" : work ? "teach" : "warmup",
     shortTitle: young ? "Halves" : "Fractions: halves", lastOne: false,
     thinkingSeconds: name === "thinking-4s" && !young ? 4 : null, thinkingLabel: floor === "thinking",
-    mic: { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },
+    // r7: hands-free fixtures (hf / hf-speaking / hf-muted): the duplex engine holds the floor
+    mic: name.startsWith("hf") ? { available: true, talking: false, drain: 0, tapToTalk: name === "hf-muted", handsFree: name !== "hf-muted", muted: name === "hf-muted",
+        dock: name === "hf-muted" ? "muted" : name === "hf-speaking" ? "speaking" : "listening" }
+      : { available: true, talking: floor === "listening", drain: floor === "listening" ? 0.3 : 0, tapToTalk: true },
     showHelp: young && name === "help-menu", typing: !young && (keyboard || name === "T3"), captionsOn: band !== "b1",
     offlineBadge: false, gate: name === "locked" ? "locked" : null,
     summary: name === "summary" ? { cards: [

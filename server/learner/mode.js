@@ -22,7 +22,8 @@ export const WRITES = Object.freeze({
  * the academic record.
  */
 export const LAYER_TABLES = Object.freeze({
-  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state", "rel_state"],
+  // *_superseded (030_lesson_undo.sql): a superseded turn's rows, moved out of the live tables by the child's own edit
+  kt: ["kt_evidence", "kt_skill_state", "evidence", "skill_state", "rel_state", "kt_evidence_superseded", "evidence_superseded"],
   mis: ["kt_misconception", "misconception_state"],
   ability: ["kt_ability", "kt_ability_epoch"],
   eta: ["kt_child"],
@@ -45,6 +46,8 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "student_event", "conductor_state", "decision_log", "brief_snapshot", "day_plan",
   // comprehension engine (007_comprehension.sql): academic record derived from answers
   "comp_facet_state", "reteach_attempts", "rep_fluency", "weave_queue", "probe_log", "grade_audit",
+  // 030_lesson_undo.sql: the same rows of a turn the child's own edit superseded
+  "weave_queue_superseded", "probe_log_superseded", "grade_audit_superseded",
   // 008_tutor_choice.sql: the child's tutor-switch analytics (choice history + time to choose) — history, not a layer
   "tutor_switch",
   // 010_parent_report.sql: rendered parent reports, derived from the academic evidence (claims cite ledger rows)
@@ -55,6 +58,12 @@ export const M0_HISTORY_TABLES = Object.freeze([
   "relational_note",
   // r4-khand (play_build migration): the child's saved Khand builds, a gallery derived from solved levels — history, deleted on M0
   "play_build",
+  // 036_placement.sql (round 7 F item 6): placement rounds (items asked, graded answers, the result) — academic record, deleted on M0
+  "placement",
+  // 037_question_jar.sql (round 7 F item 8): the questions she parked and promised to come back to — history, deleted on M0
+  "question_jar",
+  // 046_child_map_marks.sql (round 7 F, app-world-hangar-depth): when a chapter first sealed / a skill first became secure
+  "child_map_mark",
 ]);
 
 /**
@@ -69,6 +78,9 @@ export const KEPT_TABLES = Object.freeze({
   child_seq: "event counter only (no content)",
   child_controls: "parent-entered controls",
   child_routine: "parent-entered routine",
+  // 046 (round 7 F): the Hangar cosmetics the child equipped (catalog ids); no learning signal
+  child_equip: "child-chosen cosmetics",
+  child_timetable: "the school timetable by weekday (034, round 7): parent-entered, or the intake's plain subject list",
   conductor_usage: "minutes used against the parent cap",
   job: "operational queue (cancel-or-run)",
   wakeup: "scheduler rows",

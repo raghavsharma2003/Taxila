@@ -68,6 +68,15 @@ export interface Move {
   shape: string;
   itemId?: string; skillId?: string; probe?: ProbeId; hintLevel?: 0 | 1 | 2 | 3 | 4;
   format?: FormatFamily;
+  /** 14.4: "check" = a warm check-in after one model read of a low mood or a fright (no helpline, no Help sheet yet).
+   *  14.4.3: "helped" = a held safeguard once help is in place (the Help sheet and the board keep the helplines; not re-said). */
+  tier?: "check" | "helped";
+  /** 14.4: this safeguard escalated from a check-in. */
+  escalated?: boolean;
+  /** 14.4.3: a model re-read restarted a predicate / sure episode: the same hand-off, never "are you safe?" again. */
+  sameStory?: boolean;
+  /** 14.4: a check-kind distress read on this turn was set aside (the check-in released, or its cooldown): no incident. */
+  setAside?: boolean;
 }
 
 export type LessonPhase = "warmup" | "teach" | "practice" | "teachback" | "wrap" | "done";
@@ -150,6 +159,75 @@ export interface UiDirectives {
     /** the session's opened segments, purpose only (no titles on the agenda strip) */
     plan?: { segments: Array<{ purpose: string }> };
   };
+  // ── round 7 contracts (PIPELINE.md §O; Brain owns, App renders, Voice/Games/Studio read) ──
+  /**
+   * The steer row: the ways in this child can ask for right now (PIPELINE A7 brain-steering-persistence; App's stage
+   * shell renders them). A tap sends `TurnRequest.chipId = id`; the server reads it as the same request the words would
+   * make (server/director/steer.js steerRequest). Absent = the client keeps its default row; [] = no steer row this turn
+   * (a safeguard, a check-in, the wrap).
+   */
+  steer?: SteerChip[];
+  /**
+   * The Later list as the child's screen shows it (PIPELINE A6 brain-later-list-visible): every parked question or share
+   * of THIS lesson, open ones first. A tap on an open entry sends `chipId = "later:<id>"` (the child asks for it now).
+   * `text` is the parked topic (≤ 60 characters, server-written; never the child's off-task words beyond the topic).
+   * Sent on every turn that has entries to show: open and due ones, and a returned one for 2 turns after it came back.
+   * Absent = nothing to show (clear the list). It is never "unchanged since the last turn" (round 7, E App 2026-11-04).
+   */
+  later?: LaterEntryUi[];
+  /**
+   * The conversational moment this turn's move made (PIPELINE A6): the App shows its card (a parked chip flying to the
+   * Later tray, a declined ask, the stop check-in, a parked item coming back). One per turn at most; never set on a
+   * safeguard turn. Distinct from `TurnResponse.moment` (the voice layer's delivery Moment).
+   */
+  moment?: UiMoment;
+}
+
+// ── round 7 contracts (PIPELINE.md §O "contracts first"): the steer row, the Later list and the conversational moment ──
+/** A steer intent the child can tap. Each maps to the request its words would make (server/director/steer.js). */
+export type SteerId =
+  | "steer:replay"      // say / show it again
+  | "steer:slower"      // slower, smaller steps
+  | "steer:another"     // explain it another way
+  | "steer:example"     // an example (the kit's worked example when the lesson has one)
+  | "steer:story"       // as a story
+  | "steer:picture"     // show me a diagram / picture
+  | "steer:animation"   // show it moving
+  | "steer:game"        // a game on this idea
+  | "steer:hindi"       // Hindi mein
+  | "steer:english"     // in English
+  | "steer:harder"      // a harder one
+  | "steer:easier"      // an easier one
+  | "steer:skip"        // skip this question
+  | "steer:else"        // talk about something else ("Kuch aur"): the change-topic request
+  | "steer:wrap2"       // wrap up in 2 minutes (decision D5)
+  | "steer:break"       // a short break (mic paused, resume where we were; D5)
+  | "steer:stop";       // stop for today (ends the lesson, not the day; D5)
+export const STEER_IDS: readonly SteerId[] = ["steer:replay", "steer:slower", "steer:another", "steer:example", "steer:story",
+  "steer:picture", "steer:animation", "steer:game", "steer:hindi", "steer:english", "steer:harder", "steer:easier", "steer:skip",
+  "steer:else", "steer:wrap2", "steer:break", "steer:stop"];
+/** One steer chip. `label` is server-written in the lesson language (≤ 24 chars); `icon` is a hint the App may map. */
+export interface SteerChip { id: SteerId; label: string; icon?: string }
+/** One Later entry on screen (the server's s.later, conversation/policy.js parkEntry). */
+export interface LaterEntryUi {
+  id: string;
+  /** the parked topic, ≤ 60 characters */
+  text: string;
+  /** a learning question (curiosity) vs a share from their life */
+  learning: boolean;
+  /** open: waiting; due: she brings it back this turn or next; returned: served (kept on screen, struck) */
+  status: "open" | "due" | "returned";
+  /** her promise: right after the current question, or before the wrap */
+  when: "after_question" | "at_end";
+}
+/** The conversational moment a move made (App's MomentCard). Words are the server's, never the model's. */
+export interface UiMoment {
+  kind: "park" | "detour" | "decline" | "stop_check" | "returned";
+  /** the Later entry it concerns (park / returned) */
+  laterId?: string;
+  /** the topic in a few words (≤ 60 characters): what was parked, declined or brought back */
+  topic?: string;
+  /** stop_check: the choices on the chips (carry on / short break / stop for today) are the chips themselves */
 }
 
 /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
@@ -208,6 +286,18 @@ export interface TurnRequest {
    */
   replyFiltered?: number;
   /**
+   * round 7 (PIPELINE C2-1 studio-game-utterance-double-turn): the child's words were a game command the playing
+   * activity's grammar consumed (PlayStudioRenderer's synchronous ack). The server never grades the card on them and
+   * answers game-aware. `consumed: false` (or absent) = an ordinary turn.
+   */
+  gameAct?: { consumed: boolean; game?: string; act?: string };
+  /**
+   * round 7 (PIPELINE A11 voice-interrupt-awareness): how much of her LAST line the child heard before cutting in, on ANY
+   * lane (the cascade player's position; the duplex engine's own copy stays in `duplex.heardUpTo`, read second). The
+   * server marks the unsaid tail and gives the move an "interrupted after X" fact. null / absent = heard it all.
+   */
+  heardUpTo?: { chars: number; words: number; ms: number } | null;
+  /**
    * The duplex engine's turn summary (docs/research/duplex/INTEGRATION.md §2; server/duplex/slice.js turnSummary). Hashes
    * and flags only, never words. `safetyPending`: the predicate tripped on a PARTIAL of this turn (sticky): the server
    * safeguards even if `childText` now reads clean (OR semantics; safety-robust 2026-10-05).
@@ -219,6 +309,11 @@ export interface TurnRequest {
     superseded?: string[];
     heardUpTo?: { chars: number; words: number; ms: number } | null;
     cutInReason?: "safety" | "word_search_cue" | "off_task_drift" | "question_to_her" | "hold_offer" | null;
+    /**
+     * D5 (round 5, census F5): the text is empty because the ear's item covered the child's speech and returned no words. The
+     * server reads the turn as an unreadable transcript (a re-ask, cls source "asr"), never as silence.
+     */
+    unheard?: boolean;
     engineSummary?: { engine: string; reasons: string[]; pComplete: number[]; decidedAfterEndMs: number | null } | null;
   };
 }
@@ -240,6 +335,21 @@ export interface VoiceUtterance {
    * The server reads it in server/voicesig/lesson.js and does not store it.
    */
   kv?: import("../src/voicesig/types.ts").KnowledgeVoice;
+}
+/**
+ * round 7 (PIPELINE A10, joint with Voice): one clause of a STREAMED Director reply. The server guards each clause before it
+ * is sent (the first guarded clause goes to TTS while the rest is written); `final` closes the reply, and the full
+ * TurnResponse follows as the last event. A clause is never withdrawn once sent: a later guard failure rewrites only what
+ * has not been sent yet.
+ */
+export interface ReplyClauseEvent {
+  lessonId: string;
+  /** the seq the full teacher turn will be stored under (TurnResponse.teacherReplySeq) */
+  seq: number;
+  /** 0-based clause index within the reply */
+  i: number;
+  text: string;
+  final: boolean;
 }
 export interface TurnResponse {
   /**
@@ -324,7 +434,7 @@ export interface LessonStartRequest {
    * (V2 §6.3.3: "Practise something"). capped and resting refuse every purpose: 409 LessonStartRefused.
    * The aap/tum register is never a request field: the parent's controls decide it (V2 §3.3 step 4).
    */
-  purpose?: "lesson" | "practice" | "doubt";
+  purpose?: LessonPurpose;
   /**
    * Ask ("doubt") only: the child's question, sent WITH the start (flows G11), so the server routes the lesson to the
    * matching topic (server/lesson/purpose.js routeAsk) and titles it by the question. ≤ 500 characters are read.
@@ -335,7 +445,39 @@ export interface LessonStartRequest {
    * open lesson on the same server-written lane (cascade / text); otherwise the start opens a new lesson as before.
    */
   resumeLessonId?: string;
+  /**
+   * round 7 (Learning patch 007) homework only: the topic Learning's match ladder proposed (POST /api/homework/match). The
+   * start's topicId is sent only when the child tapped Yes on "Is this from <chapter>?"; null here: they said "Not this".
+   */
+  matchTopicId?: string | null;
+  /** homework only: the kit question the match found (rung kit_item); the lesson teaches on a look-alike and never poses it. */
+  matchItemId?: string;
 }
+/** What a start is for: a lesson, Practice, Ask ("doubt"), the session-first start, or HOMEWORK HELP (an Ask on their homework). */
+export type LessonPurpose = "lesson" | "practice" | "doubt" | "session" | "homework";
+/** round 7 (Learning patch 007): the homework match ladder (server/homework/match.js), POST /api/homework/match. */
+export type HomeworkRung = "kit_item" | "topic" | "subject";
+export interface HomeworkMatchRequest { childId: string; /** ≤ 500 characters */ text: string }
+export interface HomeworkMatch {
+  rung: HomeworkRung; topicId: string | null; subject: string; chapter: number | null; topicTitle: string | null;
+  /** rung kit_item: the kit question it matched (the lesson's look-alike comes from the same topic) */
+  itemId?: string;
+  /** rung kit_item: the word overlap, 0.6-1 */
+  score?: number;
+}
+export interface HomeworkMatchResponse { match: HomeworkMatch | null }
+/**
+ * round 7 (App patch 008, STUDENT-FLOW §11.4 "What {T} remembers"): the child's own memory rows (server/relational/routes.js).
+ * GET /api/child/memory?childId= → ChildMemoryResponse (keeps false: the memory consent is off, items empty);
+ * DELETE /api/child/memory ChildMemoryDeleteRequest → { deleted } (one item; never "all" from the child).
+ */
+export interface ChildMemoryItem { id: string; text: string; at: string }
+export interface ChildMemoryResponse { keeps: boolean; items: ChildMemoryItem[] }
+export interface ChildMemoryDeleteRequest { childId: string; id: string }
+export interface ChildMemoryDeleteResponse { deleted: number }
+/** round 7 (App, the Debrief): the child's closed end-of-lesson emote. POST /api/child/emote ChildEmoteRequest → 204 (one per lesson). */
+export type ChildEmote = "wave" | "thanks" | "fun";
+export interface ChildEmoteRequest { childId: string; lessonId: string; emote: ChildEmote }
 /** 409 from POST /api/lesson/start when the plan does not allow a lesson now (daily cap, lesson hours, done). */
 export interface LessonStartRefused { error: string; state: ChildHomeState; opensAt: string | null; capRemaining: number }
 export interface LessonStartResponse {
@@ -434,15 +576,23 @@ export interface ChildMapSkill {
   state: MapState;
   /** A re-check the server scheduled (weave queue / a missed delayed check): the sunbird / return arrow. Never from time alone. */
   recheckScheduled: boolean;
+  /** Round 7 F (K-P5): when the map first saw this skill secure (ISO); null = not secure, or secure before 046 (time unknown). */
+  secureSince?: string | null;
 }
 export interface ChildMapResponse {
   mode: "garden" | "sky"; hidden: boolean;
-  subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean;
+  subjects: { subject: string; book: string; chapters: { id: string; number: number; title: string; sealed: boolean; here: boolean; school?: boolean;
+    /** Round 7 F (B2-4): when the map FIRST saw this chapter sealed (ISO), kept on a dip; null = not sealed now, or unknown. */
+    sealedAt?: string | null;
     secure: number; total: number; topics: { id: string; title: string; skills: ChildMapSkill[] }[] }[] }[];
   /** Flat list (src/child/api.ts reads `skills`). */
   skills: ChildMapSkill[];
   empty: boolean;
 }
+
+/** GET/PUT /api/child/equip (round 7 F, app-world-hangar-depth): the Hangar cosmetics, catalog item ids per slot. */
+export type EquipSlot = "hull" | "trail" | "board" | "rim" | "emote";
+export interface ChildEquip { equipped: Partial<Record<EquipSlot, string>> }
 
 /** POST /api/tts: speak a stored teacher turn of the caller's lesson (never free text). */
 export interface TtsRequest { lessonId: string; seq: number }
@@ -505,3 +655,243 @@ export type HostToModule =
   | { type: "reset" };
 
 export interface ModuleEvent { moduleId: string; engine: string; type: ModuleToHost["type"]; name?: string; data?: unknown; at: number }
+
+// ───────────────────────────── learner view (round 7 F item 4; server/learner/view.js; F Learning patch to-brain/003) ─────────────────────────────
+/** The child's ability on a subject's core strand, GE scale (class C runs GE C-1 .. C). */
+export interface StrandTheta {
+  strand: string; mu: number; sd: number; nObs: number;
+  /** what item selection uses: mu once nObs >= 2, else null (keep the class default C - 0.5) */
+  value: number | null;
+}
+export interface WeakFlag { weak: boolean; skills: string[]; reasons: ("topic" | "prereq" | "theta")[] }
+export interface MinutesLeft {
+  /** the family's daily limit / lesson hours apply (child_controls.limits_on, or TAXILA_DAY_LIMITS=on) */
+  limitsOn: boolean;
+  /** minutes left today under the limits; null when limits are off */
+  today: number | null;
+  /** today's planned live-lesson slot length (Conductor), or null */
+  slot: number | null;
+  by: "cap" | "hours" | null;
+  /** when `today` runs out (ISO); the mid-lesson wrap (D5) finishes the question after this, then wraps */
+  deadlineAt: string | null;
+}
+export interface LearnerView {
+  topicId: string; subject: string;
+  theta: StrandTheta | null;
+  thetas: Record<string, StrandTheta>;
+  weak: WeakFlag;
+  minutesLeft: MinutesLeft;
+}
+/** GET /api/child/map chapters also carry `school?: boolean`: the chapter the parent said school is on (round 7 F item 2). */
+
+// ───────────────────────────── round 7: lesson scripts (dc-r7-teaching-scripts) ─────────────────────────────
+/**
+ * A teaching script for one kit topic (data/lesson-scripts/<topicId>.json; Learning authors them to
+ * docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md, the shape this type follows). The Director WALKS a skill's script beat by
+ * beat (T2): the move is the next beat, the reply model renders it after first answering what the child said. Every
+ * convey / slotUse / why / do / move / then-shape is a SHAPE (note form, never a quotable line: the inherited law, sentence-shaped
+ * prompt text gets recited); problems, givens, results, prompts and keys are exact data. Checked in code before it is walked
+ * (server/director/script.js validateTopicScript); a script that fails is never walked.
+ */
+export interface TopicScript {
+  topicId: string;
+  classLevel: number;
+  version: number;
+  status: "draft" | "reviewed" | "live";
+  /** the lesson's Hindi terms (the Hindi switch uses them: parimap, bhuja, bhinn …) */
+  terms: Array<{ hi: string; en: string }>;
+  skills: SkillScript[];
+  /** the blind check of every key (Learning's solver), if run */
+  verified?: unknown;
+}
+export interface SkillScript {
+  /** the kit's skill id */
+  skillId: string;
+  hook: { convey: string; interestSlots: string[]; slotUse: string };
+  /** 2-4 beats, in order; each names the board it speaks over and what on it to point at */
+  explain: ExplainBeat[];
+  /** the FULL worked example: stated, givens, every step, the answer and why (no faded blanks) */
+  workedExample: WorkedExampleScript;
+  /** 2-3 keyed checks, each built to catch one kit misconception */
+  checks: CheckQuestion[];
+  /** 3-5 class-level practice rungs, easy → hard, the kit's real items */
+  ladder: Array<{ itemId: string; why: string }>;
+  /** one per misconception the skill touches: a different representation, never counting, then a keyed follow-up */
+  remediation: Remediation[];
+  bridgeToNext: string | null;
+}
+export interface ExplainBeat { id: string; convey: string; board?: BoardRef | null; point?: string; terms?: string[] }
+export interface WorkedExampleScript {
+  problem: string;
+  givens: string[];
+  find: string;
+  steps: Array<{ do: string; result: string }>;
+  answer: string;
+  why: string;
+  board?: BoardRef | null;
+}
+export interface CheckQuestion {
+  id: string;
+  /** the question as data, complete and solvable on its own; never containing its key */
+  prompt: string;
+  key: string;
+  accept?: string[];
+  /** the kit misconception id it is built to catch */
+  targets: string;
+  /** the answer a child holding that misconception gives */
+  wrongIfMis: string;
+  board?: BoardRef | null;
+}
+export interface Remediation { targets: string; move: string; board?: BoardRef | null; then: string; thenKey: string }
+/**
+ * A board for a beat (Studio's BOARD-REFS, server/forge/explainer/board-ref.js): a code template with its params as SHAPES only
+ * (numbers, closed ids, short labels), written nested ({ template, params }, Learning's scripts) or flat ({ template, ...params }),
+ * withhold "item" showing the asked value as "?"; or { auto: true }, Studio's own pick on the beat. Checked by Studio's
+ * resolveBoardRef / certifyBoardRef; an absent or failing ref falls back to Studio's pick. On a turn the beat's board rides on
+ * the board ask as intent.boardRef (brain/propose.js whiteboardIntentOf, from lastMove.scriptBeat).
+ */
+export type BoardRef =
+  | { template: string; params?: Record<string, unknown>; withhold?: "item" }
+  | ({ template: string; withhold?: "item" } & Record<string, unknown>)
+  | { auto: true };
+// ── script v2 (dc-r7-script-walk-v2, main's director4 judgement: "the walk is a clock, not a teacher") ──
+// version: 2. Every field the child HEARS or SEES is a Said (F1): code speaks the lesson language's form and never an
+// English-only field in a Hinglish lesson. Every explain beat ends in a keyed micro-question (F2): a beat is done only when
+// its must-say terms were spoken AND its question was answered and judged against its key (R1). The worked example's last
+// step is the child's, keyed (F3). Interest slots name a closed interest and its spoken situation (F4); the greet promises
+// only an interest a slot uses. Shapes (convey, move) stay note-form strings for the reply model; they are never spoken.
+/** A spoken or shown field in both lesson languages: hi is Roman Hinglish (the Hinglish and Hindi lanes), en English. */
+export interface Said { hi: string; en: string }
+/** A keyed question the child answers (graded by the classifier against `key` / `accept`, never by a model). */
+export interface KeyedAsk {
+  prompt: Said;
+  key: string;
+  accept?: string[];
+  /** the kit misconception a wrong answer most likely shows (its remediation runs), if any */
+  targets?: string | null;
+  wrongIfMis?: string | null;
+  /** v2.1: a follow-up card's board */
+  board?: BoardRef | null;
+  /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
+   *  Absent: the close says the answer alone (never a sentence borrowed from a point or a remediation) */
+  why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
+}
+/** The closed interest list (server/persona/signals.js INTERESTS). */
+export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
+export interface TopicScriptV2 {
+  topicId: string;
+  classLevel: number;
+  /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
+   *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
+  version: 2 | 2.1 | 2.2 | 2.3;
+  status: "draft" | "reviewed" | "live";
+  terms: Array<{ hi: string; en: string }>;
+  skills: SkillScriptV2[];
+  verified?: unknown;
+}
+export interface SkillScriptV2 {
+  skillId: string;
+  hook: {
+    /** the shape of the hook (note form, not spoken) */
+    convey: string;
+    /** 1+ worlds the hook can be set in; the child's interest picks one (else the first) */
+    interestSlots: Array<{ interest: InterestKey; use: Said }>;
+  };
+  /** 1-4 beats; each ENDS in its keyed micro-question, so at most one beat of telling comes before a question */
+  explain: ExplainBeatV2[];
+  workedExample: WorkedExampleV2;
+  /** 2-3 keyed checks, each built to catch one kit misconception */
+  checks: CheckQuestionV2[];
+  ladder: Array<{ itemId: string; why: string }>;
+  remediation: RemediationV2[];
+  bridgeToNext: Said | null;
+  /** v6: the bridge's own board, when it shows something (it is then its own segment; with none the bridge points at nothing) */
+  bridgeBoard?: BoardRef | null;
+}
+export interface ExplainBeatV2 {
+  id: string;
+  /** the idea, as a shape for the reply model (never spoken as written) */
+  convey: string;
+  /** 1-3 short terms or numbers her line MUST contain for the beat to count as delivered (checked in code) */
+  mustSay: Said[];
+  board?: BoardRef | null;
+  /** what on the board to point at */
+  point?: Said;
+  /** the beat's keyed micro-question: the beat is done only when it is answered and judged */
+  ask: KeyedAsk;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
+}
+export interface WorkedExampleV2 {
+  problem: Said;
+  givens: Said[];
+  find: Said;
+  /** every step but the last, each said with its result and why */
+  steps: Array<{ do: Said; result: string; why: Said; /** v2.3: the step said smaller */ simpler?: Said }>;
+  /** the last step, asked of the child (its key is that step's result) */
+  yourStep: KeyedAsk;
+  /** said after their step: the answer and why it is right */
+  answer: Said;
+  why: Said;
+  board?: BoardRef | null;
+}
+export interface CheckQuestionV2 {
+  id: string;
+  /** complete and solvable on its own; never containing its key; shown on the card and asked in the lesson language */
+  prompt: Said;
+  key: string;
+  accept?: string[];
+  targets: string;
+  wrongIfMis: string;
+  board?: BoardRef | null;
+  /** v6: why the key is right (see KeyedAsk.why) */
+  why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
+}
+export interface RemediationV2 {
+  targets: string;
+  /** the new representation, as a shape (never counting) */
+  move: string;
+  /** the explanation she says (spoken, in the lesson language) */
+  say: Said;
+  board?: BoardRef | null;
+  /** the follow-up card, keyed */
+  then: KeyedAsk;
+  /** v2.3 (Learning, director10): a smaller, plainer restatement of `say`, said when the child is still lost after it */
+  simpler?: Said;
+}
+/** On a move the Director took from a script (T2): which beat it is (Studio reads intent.boardRef / intent.scriptBeat). */
+export interface ScriptBeatRef {
+  scriptId: string;
+  skillId: string;
+  beatId: string;
+  kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
+  board?: BoardRef | null;
+}
+/** A scripted beat as the board ask names it (v5: a card's own board says so; its answers are all the board withholds). */
+export interface ScriptBeatOnAsk {
+  scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true; answers?: string[];
+  /** v6.2 G3 (Studio's shape): on a right answer's verdict segment, reveal the withheld value on this board. `true` reveals
+   *  answers[0] (the key); a list gives the values. Never sent on a wrong or missed verdict. */
+  reveal?: true | string[];
+}
+/**
+ * v5 B1 (dc-r7-script-walk-v5; Studio's segments): a part of her line spoken over its own board. intent.boardRef /
+ * intent.scriptBeat are the first part's (from character 0); each `segments` entry starts at `atChar` in the FINAL line.text
+ * (`atClause`: the same point as brain/clauses.js numbers the reply). `segmentPlan` names the parts in order (a closure, the
+ * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
+ */
+export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
+export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

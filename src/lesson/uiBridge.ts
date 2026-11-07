@@ -23,7 +23,8 @@ import { TextLink } from "./textLink.ts";
 import { fetchSpeechStream, PCM_RATE } from "./ttsStream.ts";
 // ship5 p1-duplex: the hands-free duplex mode (ON by default; kill switch: ?duplex=0, TAXILA_DUPLEX=0, VITE_DUPLEX=0) and
 // the face seam it drives (FACE-BRIDGE.md).
-import { resolveDuplexMode, resolveDuplexLane } from "../duplex/flags.ts";
+import { resolveDuplexMode, resolveDuplexLane, duplexExpected } from "../duplex/flags.ts";
+import type { FloorPhase } from "../duplex/engine.ts";
 import { puppetDuplexDetach, withPuppet } from "../face-puppet/duplexBridge.ts";
 
 /** §2.5.1 home state; the client never computes it, it only carries what the server answered. */
@@ -63,6 +64,13 @@ export interface UiBridgeState {
   duplexLive: boolean;
   /** ship5 p1-duplex: why the engine stepped aside for today's path (null while live or never started). */
   duplexFallback: string | null;
+  /**
+   * Round 7 (B2 ↔ App, src/lesson/handsFree.ts): this lesson is expected to run hands-free (flags.duplexExpected at link
+   * creation): the dock renders hands-free from the first frame, before the engine is live, never a tap-then-flip.
+   */
+  duplexExpected: boolean;
+  /** Round 7 (B2 ↔ App): the engine's floor phase while it runs (null otherwise); handsFreeDock() maps it for the dock. */
+  duplexPhase: FloorPhase | null;
 }
 
 /** Two EchoGuard flags drop open mic back to tap-to-talk for the rest of the lesson (§3.9). */
@@ -82,7 +90,7 @@ const MAX_BYTES = 2 * 1024 * 1024;
 export class UiBridge {
   readonly store = new Store<UiBridgeState>({
     ended: null, replaying: false, buffered: 0, replays: 0, cascade: false, pushToTalk: true, transport: null, echoFlags: 0,
-    duplexLive: false, duplexFallback: null,
+    duplexLive: false, duplexFallback: null, duplexExpected: false, duplexPhase: null,
   });
   /** Level of a replay, for lip-sync while one plays (the link's teacher meter is silent then). */
   readonly replayLevel = new LevelMeter();
@@ -130,21 +138,27 @@ export class UiBridge {
       this.detachLink();
       this.clips = [];
       this.resumedEcho = 0;
-      this.store.set({ buffered: 0, ended: null, cascade: !!ctx.cascade, transport: null, echoFlags: 0, pushToTalk: true, duplexLive: false, duplexFallback: null });
+      this.store.set({ buffered: 0, ended: null, cascade: !!ctx.cascade, transport: null, echoFlags: 0, pushToTalk: true, duplexLive: false, duplexFallback: null,
+        duplexExpected: !!ctx.cascade && duplexExpected(), duplexPhase: null });
       let link: TeacherLink;
       if (ctx.cascade) {
         // The cascade lane, with its speech copied into the phir-se buffer (never swapped for a TextLink).
         const cascade = new CascadeLink({
           lessonId: ctx.lessonId,
           levels: ctx.levels,
+          ...(ctx.mic ? { micStream: ctx.mic } : {}),
           speech: this.cachingStream,
-          onTransport: (transport) => this.store.set({ transport }),
+          // round 7 (B2): no transcription call (push-to-talk upload or typed) → no hands-free: the dock is today's
+          onTransport: (transport) => this.store.set(transport === "webrtc" ? { transport } : { transport, duplexExpected: false }),
           duplex: () => resolveDuplexMode(),
           duplexLane: () => resolveDuplexLane(),
           duplexFace: { wrapEmit: withPuppet, detach: puppetDuplexDetach },
           onDuplex: (d) => {
             if (this.link !== cascade) return;
-            if (d.live !== this.state.duplexLive || d.fallback !== this.state.duplexFallback) this.store.set({ duplexLive: d.live, duplexFallback: d.fallback });
+            const phase = d.live ? d.phase : null;
+            if (d.live !== this.state.duplexLive || d.fallback !== this.state.duplexFallback || phase !== this.state.duplexPhase) {
+              this.store.set({ duplexLive: d.live, duplexFallback: d.fallback, duplexPhase: phase });
+            }
           },
         });
         const set = cascade.setPushToTalk.bind(cascade);
@@ -155,6 +169,8 @@ export class UiBridge {
           if (now !== this.state.pushToTalk) this.store.set({ pushToTalk: now });
         };
         cascade.setPushToTalk(this.pttWanted);
+        // round 7 (B2): a definite answer that is not "on" (shadow, off) ends the hands-free expectation
+        void resolveDuplexMode().then((m) => { if (m !== "on" && this.link === cascade) this.store.set({ duplexExpected: false }); }, () => {});
         link = cascade;
       } else if (mode === "text") {
         link = new TextLink({ lessonId: ctx.lessonId, levels: ctx.levels, speech: this.cachingSpeech });

@@ -58,6 +58,31 @@ export function pickTopic(order, statusOf, prereqsOf, { start = 0 } = {}) {
   return chain(first, 0);
 }
 
+/**
+ * PURE. Test-window revision (round 7 F, learning-test-window-revision; CONDUCTOR §4.4 item 3, DC11): the topic for a
+ * lesson inside a school test window whose chapters the parent entered. Only topics of those chapters are candidates.
+ * Before the last two days: the first one not done yet (pickTopic, back-chaining inside the chapters), else a review.
+ * In the last two days (`review`): never a new topic: a topic already met, weak first, then in progress, then learned
+ * (book order inside each); a test chapter the child never met is taught only when nothing in the chapters was met.
+ * @returns {{ id: string, mode: "teach" | "review" } | null}
+ */
+export function revisionPick(order, statusOf, prereqsOf, { chapterOf, chapters, review = false }) {
+  const want = new Set(chapters.map(Number));
+  const inCh = order.filter((id) => want.has(Number(chapterOf(id))));
+  if (!inCh.length) return null;
+  const reviewPick = () => {
+    for (const st of ["weak", "in_progress", "learned", "mastered"]) {
+      const id = inCh.find((t) => statusOf(t) === st);
+      if (id) return { id, mode: "review" };
+    }
+    return null;
+  };
+  if (review) return reviewPick() ?? { id: inCh[0], mode: "teach" };
+  const inSet = new Set(inCh);
+  const id = pickTopic(inCh, statusOf, (t) => prereqsOf(t).filter((p) => inSet.has(p)));
+  return id ? { id, mode: "teach" } : reviewPick();
+}
+
 /** Flag `content.f0` (shared with director/items.js): on unless TAXILA_CONTENT_F0=off. */
 const contentF0 = () => process.env.TAXILA_CONTENT_F0 !== "off";
 /** CBSE year: April start, about ten teaching months. 0 = start of the year, 1 = end. */
@@ -95,7 +120,7 @@ export function schoolStartIndex(order, topicOf, { classLevel, chapter, startGE,
  * @param {{ subject?: string, chapter?: Record<string, number>, startGE?: Record<string, number>, date?: Date|string }} [opts]
  * @returns {Promise<import("./curriculum.js").Topic | null>}
  */
-export async function nextTopicFor(child, { subject, chapter, startGE, date } = {}) {
+export async function nextTopicFor(child, { subject, chapter, startGE, date, revise } = {}) {
   const rows = await q("select skill_id, p_known, status, attempts from skill_state where child_id = $1", [child.id]);
   const byTopic = new Map();
   for (const r of rows) {
@@ -104,11 +129,19 @@ export async function nextTopicFor(child, { subject, chapter, startGE, date } = 
     if (!byTopic.has(tid)) byTopic.set(tid, []);
     byTopic.get(tid).push({ status: r.status, pKnown: r.p_known, attempts: r.attempts });
   }
-  const skillCounts = new Map();
-  for (const tid of byTopic.keys()) skillCounts.set(tid, (await getKit(tid, { generate: false }))?.skills.length ?? 0);
+  // in parallel (QA D22: one awaited kit read per topic made the parent's reads slow)
+  const tids = [...byTopic.keys()];
+  const counts = await Promise.all(tids.map((tid) => getKit(tid, { generate: false }).then((k) => k?.skills.length ?? 0, () => 0)));
+  const skillCounts = new Map(tids.map((tid, i) => [tid, counts[i]]));
   const statusOf = (tid) => topicStatus(byTopic.get(tid) ?? [], skillCounts.get(tid));
   // Prerequisite ids can point outside the seed; only known topics are candidates.
   const prereqsOf = (tid) => (getTopic(tid)?.prerequisites ?? []).filter((p) => getTopic(p));
+  // round 7 F: inside a test window with chapters, revise only those (revisionPick); null → the usual choice below
+  if (revise?.chapters?.length && subject) {
+    const r = revisionPick(topicSequence(child.class_level, subject), statusOf, prereqsOf,
+      { chapterOf: (id) => getTopic(id)?.chapter?.number, chapters: revise.chapters, review: !!revise.review });
+    if (r) return { ...getTopic(r.id), revision: r.mode };
+  }
   for (const subj of subject ? [subject] : SUBJECT_ORDER) {
     const order = topicSequence(child.class_level, subj);
     const start = contentF0() && order.length

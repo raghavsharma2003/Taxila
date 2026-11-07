@@ -1,0 +1,115 @@
+diff --git a/src/app/childStubs.tsx b/src/app/childStubs.tsx
+index 81b2f34b..de0bb0d1 100644
+--- a/src/app/childStubs.tsx
++++ b/src/app/childStubs.tsx
+@@ -3,7 +3,8 @@
+ // of §1.2 is complete and navigable end to end.
+ import type { RouteObject } from "react-router-dom";
+ import { Link, useParams } from "react-router-dom";
+-import { Icon, TeacherFace } from "../ui/index.ts";
++import { Icon } from "../ui/index.ts";
++import { Teacher } from "../ui/teacher/Teacher.tsx";
+ 
+ function Stub({ name }: { name: string }) {
+   const { cid } = useParams();
+@@ -15,7 +16,7 @@ function Stub({ name }: { name: string }) {
+         <Link to="/parent" className="iconbtn parent-door" aria-label="Parent corner"><Icon name="door" /></Link>
+       </header>
+       <div className="col stack center-fill" style={{ textAlign: "center" }}>
+-        <TeacherFace size={160} />
++        <Teacher teacherId={null} band="b3" form="plate" floor="idle" label="below" lights="down" style={{ width: 160, height: 188 }} />
+         <h1 className="t-title">{name}</h1>
+         <p className="muted">This screen is still being built.</p>
+         <Link to="/who">Back to the picker</Link>
+diff --git a/src/stage/TeacherStage.tsx b/src/stage/TeacherStage.tsx
+deleted file mode 100644
+index 7c3b9bd5..00000000
+--- a/src/stage/TeacherStage.tsx
++++ /dev/null
+@@ -1,46 +0,0 @@
+-// Compatibility shim (PRODUCT-DESIGN-V2 §8, §13.1). The 2D illustrated teacher and its room are retired: every
+-// caller of <TeacherStage> now gets the ONE teacher, the M0 rig via src/ui/teacher/Teacher.tsx, staged on the
+-// lesson ground with the "{T} · AI teacher" label. The props are kept so screens owned by other workstreams
+-// (child home, Hello, the avatar dev page) keep compiling; new code imports Teacher directly.
+-import type { CSSProperties, ReactNode } from "react";
+-import type { TapSource } from "../avatar/tap.ts";
+-import { Teacher, type TeacherFloor } from "../ui/teacher/Teacher.tsx";
+-import "./stage.css";
+-
+-export type FloorState = "your_turn" | "listening" | "thinking" | "speaking";
+-
+-export interface TeacherStageProps {
+-  floor: FloorState | TeacherFloor | null;
+-  delighting?: boolean;
+-  teacherId?: string | null;
+-  teacherName?: string;
+-  band: string;
+-  mouth: TapSource[];
+-  mic?: { readonly value: number };
+-  gaze?: string;
+-  orientation?: string;
+-  framing?: "medium" | "close";
+-  reducedMotion?: boolean;
+-  /** Young: the computer-teacher picto in the window corner. */
+-  badge?: boolean;
+-  plainRoom?: boolean;
+-  face?: ReactNode;
+-  onTap?: () => void;
+-  tapLabel?: string;
+-  className?: string;
+-  style?: CSSProperties;
+-}
+-
+-export function TeacherStage(p: TeacherStageProps) {
+-  const body = (
+-    <Teacher teacherId={p.teacherId} band={p.band} floor={p.floor ?? "idle"} meters={p.mouth} mic={p.mic}
+-      reducedMotion={p.reducedMotion} framing={p.framing} aiPicto={p.badge} affect={p.delighting ? "excited" : null} />
+-  );
+-  if (!p.onTap) return <div className={`tx-stage ${p.className ?? ""}`} style={p.style}>{body}</div>;
+-  return (
+-    <button type="button" className={`tx-stage tx-stage--tap ${p.className ?? ""}`} style={p.style} onClick={p.onTap}
+-      aria-label={p.tapLabel ?? p.teacherName ?? "Teacher"}>
+-      {body}
+-    </button>
+-  );
+-}
+diff --git a/src/stage/stage.css b/src/stage/stage.css
+deleted file mode 100644
+index b632fb16..00000000
+--- a/src/stage/stage.css
++++ /dev/null
+@@ -1,3 +0,0 @@
+-/* The TeacherStage shim's frame: the face and its ground come from src/ui/teacher/teacher.css. */
+-.tx-stage { position: relative; display: block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background: none; font: inherit; color: inherit; }
+-.tx-stage--tap { cursor: pointer; }
+diff --git a/src/ui/TeacherFace.tsx b/src/ui/TeacherFace.tsx
+deleted file mode 100644
+index aa9882dc..00000000
+--- a/src/ui/TeacherFace.tsx
++++ /dev/null
+@@ -1,14 +0,0 @@
+-// Compatibility shim (PRODUCT-DESIGN-V2 §8). The flat clip-art face that lived here (audit #4, #15: a third,
+-// female teacher on landing and onboarding) is retired: this now renders the ONE teacher from the character
+-// record, as the D plate of the M0 rig (no WebGL on adult surfaces, deterministic and cheap), with the
+-// "{T} · AI teacher" label. Pass `teacherId` (and the child's `band`) so the parent meets the actual teacher.
+-import { Teacher } from "./teacher/Teacher.tsx";
+-
+-export function TeacherFace({ size = 200, teacherId, band = "b3", label = true }:
+-  { size?: number; speaking?: boolean; title?: string; teacherId?: string | null; band?: string; label?: boolean }) {
+-  return (
+-    <div className="teacher-face-compat" style={{ width: size, height: size + (label ? 28 : 0) }}>
+-      <Teacher teacherId={teacherId} band={band} form="plate" floor="idle" label={label ? "below" : "none"} lights="down" />
+-    </div>
+-  );
+-}
+diff --git a/src/ui/index.ts b/src/ui/index.ts
+index b8b8e8eb..41b08e8e 100644
+--- a/src/ui/index.ts
++++ b/src/ui/index.ts
+@@ -16,6 +16,5 @@ export { Sheet } from "./Sheet.tsx";
+ export { Speaker, useClip } from "./Speaker.tsx";
+ export { StatusGlyph, STATUS_NAME, type FloorState } from "./StatusGlyph.tsx";
+ export { Teacher, type TeacherFloor } from "./teacher/Teacher.tsx";
+-export { TeacherFace } from "./TeacherFace.tsx";
+ export { TileGroup, type TileOption } from "./Tile.tsx";
+ export { STATE_WORDS, STATE_MEANING, RECHECK_TAG, readLang, type Lang, type LedgerState, type StateKey } from "./stateWords.ts";

@@ -28,7 +28,7 @@
 //   (W10-W13: server/studio/qa/semantics.js, round 3 forge, from the taxila.dev audit of 2026-10-09)
 //
 // gateWhiteboard(raw, ctx) → { pass, checks, script, facts }.  The script returned is the normalised one (draw this).
-import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, opGeometry, textBox, TEXT_SIZE, scriptFacts, settledScript, isMotionOp, finalOp } from "../../../shared/whiteboard.js";
 import { kitVocabulary, unknownWords, stem } from "../../forge/explainer/truth.js";
 import { SEVERE, MILD, PII } from "../../forge/g2/safety.js";
 import { PHONE_TRAY } from "../archetypes/index.js";
@@ -56,7 +56,8 @@ const canon = (t) => String(t).replace(/^0+(?=\d)/, "");
 export function numbersIn(text) {
   const out = new Set();
   const s = String(text ?? "").toLowerCase();
-  for (const m of s.matchAll(/\d[\d,]*(?:\.\d+)?(?:\s*\/\s*\d+)?/g)) {
+  // (a comma is a thousands group only before 2-3 digits: "45,000" / "1,00,000"; in "7, 3, 3, 3" it separates a list)
+  for (const m of s.matchAll(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\s*\/\s*\d+)?/g)) {
     const t = m[0].replace(/\s+/g, "");
     if (t.includes("/")) { out.add(canon(t)); const [n, d] = t.split("/"); out.add(canon(n.replace(/,/g, ""))); out.add(canon(d)); }
     else { const plain = t.replace(/,(?=\d{2,3}\b)/g, ""); out.add(canon(plain.replace(/,$/, ""))); }
@@ -131,6 +132,10 @@ function valueTokens(text) {
  */
 export function withheldValues(kit, { itemId, line = "" } = {}) {
   const said = [...numbersIn(line)].map(rat).filter(Boolean);
+  // round 7 (M2, Brain's S4 c6 perimeter picture request): while the item IS the worked example (a faded step, "fade:N"),
+  // the numbers its problem STATES are its givens, taught openly ("a park 50 m long and 30 m wide"): never written "?" on
+  // its own picture because a later item's answer happens to be 50
+  if (/^fade:/.test(String(itemId ?? ""))) said.push(...[...numbersIn(String(kit?.workedExample?.problem ?? ""))].map(rat).filter(Boolean));
   const items = [...(kit?.items ?? [])].sort((a, b) => (b?.id === itemId) - (a?.id === itemId));
   const values = [], words = [], phrases = [];
   const lineWords = new Set(String(line).toLowerCase().match(/[\p{L}\p{M}]+/gu) ?? []);
@@ -176,7 +181,8 @@ const eqTokens = (s) => String(s).replace(/([+\-−×*÷=])/g, " $1 ").trim().sp
  */
 function opNumbers(o, allowed) {
   const nums = [], derived = [], wrong = [];
-  const tokensOf = (t) => String(t).match(/\d[\d,]*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
+  // round 7 (Learning: "7, 3, 3, 3" read as invented "7,"): a comma groups thousands only before 2-3 digits
+  const tokensOf = (t) => String(t).match(/\d+(?:,\d{2,3}(?!\d))*(?:\.\d+)?(?:\/\d+)?/g) ?? [];
   if (o.op === "text" || o.op === "label") {
     const t = String(o.text);
     for (const tok of tokensOf(t)) nums.push(canon(tok.replace(/,(?=\d{3}\b)/g, "")));
@@ -220,7 +226,14 @@ function opNumbers(o, allowed) {
       nums.push(...[a, b].map(String).filter((x) => !["0", "1"].includes(x)));
       // tick labels inside a range she named: k/d for a denominator she said, or whole numbers of a short range
       const dens = [...allowed].filter((x) => /^\d+$/.test(x) && +x >= 2 && +x <= 12).map(Number);
-      for (const c of o.rows[0] ?? []) {
+      // (a big scale — 0, 1000, … 10000: number-line-scale@1 — is an axis, not invented, when its ticks step evenly from end
+      // to end and her line says the step, or two neighbouring ticks)
+      const whole = (o.rows[0] ?? []).map((c) => (/^\d+$/.test(String(c)) ? Number(c) : NaN));
+      const stepAx = whole.length >= 3 && whole.every(Number.isFinite) ? whole[1] - whole[0] : 0;
+      const even = stepAx > 0 && whole[0] === a && whole.at(-1) === b && whole.every((v, i) => !i || v - whole[i - 1] === stepAx);
+      const named = even && (allowed.has(String(stepAx)) || whole.some((v, i) => i && allowed.has(String(v)) && allowed.has(String(whole[i - 1]))));
+      if (named) { derived.push(...whole.map((v) => canon(String(v)))); }
+      else for (const c of o.rows[0] ?? []) {
         const r = rat(c); if (!r) continue;
         const v = r[0] / r[1];
         const inRange = v >= a - 1e-9 && v <= b + 1e-9;
@@ -284,7 +297,10 @@ function circleCutByLines(ops) {
  *  draws some closed shape, never draws. A 4-point polygon counts as a rectangle only when its corners are right angles. PURE. */
 const SHAPE_NAMES = [
   ["rectangle", /\b(?:rectangle|rectangular|aayat|aayatakar)\b|आयत/iu],
-  ["square", /\b(?:square|varg|vargakar)\b|वर्ग/iu],
+  // (not the instrument — "set-square", "set square" — nor a unit: "square cm", "varg metre"; Learning's c7 card on a
+  // set-square tripped W15 on a picture request)
+  // (nor "square corner" / "square kona": NCERT c4's name for a right angle, Learning's staged angles topic)
+  ["square", /(?<!set[- ])\b(?:square|varg|vargakar)\b(?!\s*(?:cm|mm|km|m|metre|meter|centimet\w*|unit|ikaai|corners?|kona|kone|cornered)\b)|वर्ग/iu],
   ["triangle", /\b(?:triangle|tribhuj|trikon)\b|त्रिभुज/iu],
   ["circle", /\b(?:circle|gola|vritt|vrutt)\b|वृत्त/iu],
 ];
@@ -378,6 +394,31 @@ export function segHitsBox(p, q, b) {
 /** A word box shrunk 2 units on each side (touching a line is fine, crossing it is not). */
 export const innerBox = (g) => ({ x: g.x + 2, y: g.y + 2, w: Math.max(0, g.w - 4), h: Math.max(0, g.h - 4) });
 /** Text / label boxes crossed by a line, an arrow shaft or a box edge. */
+/**
+ * round 7 (C1 maps, dc-r7-maps-no-outline): the degree labels of a latitude/longitude grid ("15°N", "20°N", "25°N") are the
+ * grid's AXIS, not claims: like a number line's evenly spaced ticks, ≥ 3 labels of one direction letter, each the whole
+ * text, every step equal. Their numbers are allowed (W4); a single "23.5°N" or an uneven set is still checked against
+ * her line and the kit. → canon number strings.
+ */
+function degreeAxes(ops) {
+  const by = { NS: [], EW: [] };
+  for (const o of ops) {
+    if (o.op !== "text") continue;
+    const m = String(o.text).trim().match(/^(\d{1,3})°([NSEW])$/);
+    if (m) by[/[NS]/.test(m[2]) ? "NS" : "EW"].push(Number(m[1]));
+  }
+  const out = [];
+  for (const vs of Object.values(by)) {
+    const u = [...new Set(vs)].sort((a, b) => a - b);
+    if (u.length < 3) continue;
+    const d = u[1] - u[0];
+    if (d > 0 && u.every((v, i) => !i || v - u[i - 1] === d)) out.push(...u.map((v) => canon(String(v))));
+  }
+  return out;
+}
+
+const END_JUDGED = new Set(["W8.counts_match_line", "W10.screen_claims_drawn", "W13.fractions_agree", "W15.named_shape_drawn"]);
+
 function textsCrossed(ops, byId) {
   const segs = segmentsOf(ops);
   const out = [];
@@ -392,8 +433,11 @@ function textsCrossed(ops, byId) {
 // ───────────────────────────── W9: no reveal ─────────────────────────────
 
 /** Labels of a number line that are its axis (≥ 4 evenly spaced values), not a marked target. */
-function axisLabels(cells) {
+function axisLabels(cells, range = null) {
   const vs = cells.map(rat).filter(Boolean).map((r) => r[0] / r[1]);
+  // round 7 (main, director3: fractions on a line): a line labelled with EVERY whole number of its range and nothing
+  // else ("0 1" for 0 to 1, "0 1 2" for 0 to 2) is its frame: the fractions between are what the child finds
+  if (Array.isArray(range) && vs.length >= 2 && vs.length === cells.length && vs[0] === range[0] && vs.at(-1) === range[1] && vs.every((v, i) => Number.isInteger(v) && (!i || v - vs[i - 1] === 1))) return true;
   if (vs.length < 4) return false;
   const d = vs[1] - vs[0];
   return d > 0 && vs.every((v, i) => !i || Math.abs(v - vs[i - 1] - d) < 1e-9);
@@ -411,17 +455,38 @@ export function revealsOf(ops, per, byId, texts, withhold) {
   if (!values.length && !words.length) return [];
   const out = [];
   const hit = (tok) => { const r = rat(tok); return r ? values.find((x) => rEq(x.r, r)) : null; };
+  // round 7 (main, M3): a digit written INSIDE a box (a place-value box, a grid cell) is that box's digit, never an origin
+  // or a column's label: a hidden 0 or 1 in a place-value box is judged like any other digit
+  const boxes = ops.filter((o) => o.op === "rect").map((o) => opGeometry(o, byId).box);
+  // (where the digit ENDS: place-value digits rise into their boxes)
+  const inBox = (o) => { const at = ops.some((m) => isMotionOp(m) && m.target === o.id) ? finalOp(o, ops).at : o.at; if (!Array.isArray(at)) return false; const [x, y] = at; return boxes.some((b) => x > b.x && x < b.x + b.w && y > b.y && y < b.y + b.h); };
   ops.forEach((o, k) => {
-    const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? []);
+    const axis = o.op === "numwork" && o.layout === "number_line" && axisLabels(o.rows?.[0] ?? [], o.range);
     // a bare "0" or "1" (the origin or the whole of a number line, a place-value column) marks the board, it is not a
     // result; "5 − 5 = 0" or "3/4 + 1/4 = 1" still is (bench 2026-10-05: an origin labelled 0 was refused)
-    const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text));
+    const bare = (o.op === "text" || o.op === "label") && /^\s*[01]\s*$/.test(String(o.text)) && !inBox(o);
     for (const tok of [...per[k].nums, ...per[k].derived]) {
       if (bare) continue;
       if (axis && (o.rows?.[0] ?? []).some((c) => canon(c) === tok)) continue;
       const h = hit(tok); if (h) out.push(`${o.id}: ${tok} = answer ${h.t}`);
     }
   });
+  // round 7 (main: the c5 place-value board masked its hundreds digit "?" but wrote "10,500" under the boxes): when the
+  // board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on the board that
+  // CONTAINS that digit gives it away too and is a reveal (the whole number is masked "?"); a board that never splits a
+  // number into digits is unchanged ("15 cm" beside an answer of 5 is no reveal)
+  const digitHits = new Set(ops.filter((o) => (o.op === "text" || o.op === "label") && /^\s*\d\s*$/.test(String(o.text)) && hit(String(o.text).trim())
+    && (!/^\s*[01]\s*$/.test(String(o.text)) || inBox(o)))
+    .map((o) => String(o.text).trim()));
+  if (digitHits.size) {
+    for (const o of ops) {
+      const cells = o.op === "text" || o.op === "label" ? [String(o.text)] : o.op === "numwork" && Array.isArray(o.rows) ? o.rows.flat().map(String) : [];
+      for (const c of cells) for (const m of c.matchAll(/\d[\d,]*\d/g)) {
+        const d = [...digitHits].find((x) => m[0].replace(/,/g, "").includes(x));
+        if (d) out.push(`${o.id}: ${m[0]} = answer ${d}`);
+      }
+    }
+  }
   // a number line with its answer marked by position: a dot (small circle) or an arrow head at the answer's tick
   for (const nl of ops.filter((o) => o.op === "numwork" && o.layout === "number_line" && Array.isArray(o.range))) {
     let box; try { box = opGeometry(nl, byId).box; } catch { continue; }
@@ -507,6 +572,7 @@ export function gateWhiteboard(raw, ctx) {
   const derived = new Set();
   const per = ops.map((o) => opNumbers(o, allowed));
   for (const p of per) for (const d of p.derived) derived.add(d);
+  for (const d of degreeAxes(ops)) derived.add(d);
   const invented = [...new Set(per.flatMap((p) => p.nums).filter((t) => !numberAllowed(t, allowed, derived)))];
   const wrong = per.flatMap((p) => p.wrong);
   add("W4.numbers_from_truth", invented.length === 0 && wrong.length === 0, { invented: invented.slice(0, 5), wrong: wrong.slice(0, 3) });
@@ -545,9 +611,13 @@ export function gateWhiteboard(raw, ctx) {
   // round2 content: "3 equal groups, each with 5 dots" is 15 dots: a count she partitions by (said) times a number she says
   // (owner-5 on prod 2026-10-06: the kit's own equal-groups board of 15 dots was refused against exactly that line)
   const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
-  const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
+  // (director10 G2: a card's authored board of two or three separate wholes — fraction-bars, wholes — is that many wholes
+  // side by side: the bars' outlines are wholes, never a partition she must say; each bar's own parts are still counted)
+  const badCount = said.size ? fams.filter((f) => !okCount(f.n) && !(ctx.wholes && f.n === ctx.wholes)).map((f) => `${f.kind} x${f.n}`) : [];
   // (a clock's hands run from its centre: ctx.face, the asked thing is a face of numbers, studio/request.js faceDrawing)
-  const cut = ctx.face ? [] : circleCutByLines(ops);
+  // (director10 G2: a card's OWN authored board cuts its wholes the way Learning authored them — wholes@1's radii, "1 bada,
+  // 2 chhote" — certified with the card: the rule is for boards that draw a round whole of their own)
+  const cut = ctx.face || ctx.authoredRef ? [] : circleCutByLines(ops);
   add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
   // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
   const crossed = textsCrossed(ops, byId);
@@ -585,20 +655,33 @@ export function gateWhiteboard(raw, ctx) {
   const boardNums = [...new Set(numbersIn(per.flatMap((p) => p.nums).join(" ")))];
   // ... and a board whose every number her line says, in digits or in words ("five equal gaps" over a 5), is hers too
   const saidAll = new Set(numbersIn(ctx.reply));
-  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
+  // (director10 G2: a card's OWN board writes the numbers Learning authored on it — c6's 12 m, 9 m, 7 m under "Pichhle sawaal
+  // ka jawab 28 m tha": the board is the card, not other maths. W17 is for boards that write numbers of their own)
+  const authoredAll = Array.isArray(ctx.authoredNumbers) && ctx.authoredNumbers.length > 0 && boardNums.every((n) => ctx.authoredNumbers.map(String).includes(n));
+  const notHers = !ctx.face && !authoredAll && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
   // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
   // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.
   // the result of plain arithmetic on her own numbers (their total, 2 × (a + b), a product, a difference) that her line
   // does not already say. The open kit item's key stays W9's.
   const asks = !ctx.face && /\?/.test(String(ctx.reply ?? ""));
-  const herAnswers = asks ? answersOf(String(ctx.reply ?? "")) : new Set();
+  const herAnswers = asks ? new Set([...answersOf(String(ctx.reply ?? "")), ...(ctx.answers ?? []).map(String)]) : new Set();
   const told = [...herAnswers].filter((n) => boardNums.includes(n));
   add("W18.her_answer_unsaid", told.length === 0, told.slice(0, 3));
   // W14 is ADVISORY (logged, never blocks): over 234 real boards it flagged 69, with false refusals across languages (a
   // Hinglish line "paani garam hokar upar jaata hai" under an English "evaporates" board shares no word but is on topic)
   const off = boardOffLine(ctx.reply, ops, ctx.itemText ?? "");
   const advisories = off.length ? [{ id: "W14.about_her_line", detail: off[0] }] : [];
+  // W19 (round 7, motion ops): a board that MOVES is also judged as it ends (every moved op at its final place): a part
+  // that slides onto a word, a label left behind by its part, a jump that lands off the line is refused where it lands
+  if (ops.some(isMotionOp)) {
+    const end = gateWhiteboard(settledScript(script), ctx);
+    add("W19.settled", end.pass, end.checks.filter((c) => !c.pass).map((c) => c.id).slice(0, 6));
+    // M2: what the board SHOWS (her counts, her claims, her fractions, the shape she names) is judged where the motion
+    // leaves it: dots heaped then shared into 3 groups show "3 groups of 4" once shared, not while heaped. Layout checks
+    // (fit, overlap, words clear of lines) still judge the board as it starts, and W19 the end board in full.
+    for (const c of checks) if (END_JUDGED.has(c.id)) { const e = end.checks.find((x) => x.id === c.id); if (e) { c.pass = e.pass; c.detail = e.detail; } }
+  }
   const pass = checks.every((c) => c.pass);
   return { pass, checks, advisories, script, facts: pass ? scriptFacts(script, { kind: "diagram", archetype: "whiteboard" }) : null };
 }

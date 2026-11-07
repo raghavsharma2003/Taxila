@@ -19,8 +19,8 @@ import { PURPOSES } from "./events.js";
  *   pending: { replanAfter?: string, replanCause?: string, jobs: Record<string, { kind: string, idem: string }> },
  *   consent: Record<string, boolean>, budget: { low: boolean, since?: string },
  *   counters: { lastActiveDay?: string, activeDays: string[], lastOpenDay?: string },
- *   adapt: { foldedDay?: string, closes: CloseLite[], successFirstNext: boolean },
- *   household?: null,
+ *   adapt: { foldedDay?: string, closes: CloseLite[], successFirstNext: boolean, lateMinSet?: true, prereqChecked?: Record<string, string> },
+ *   household?: { shared: true },   // round 7 F household v1: the parent says she shares one phone with siblings
  *   failSafe?: { type: string, error: string },   // sticky (§3.6): set by decideOrFailSafe, cleared only by ops.fail_safe_cleared
  * }} ConductorState
  */

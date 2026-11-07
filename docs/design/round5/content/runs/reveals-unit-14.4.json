@@ -1,0 +1,42 @@
+{
+ "at": "2026-10-15T15:25:09.462Z",
+ "method": "items.js revealsAnswer over sim-lab 14.2/14.3 records, each teacher line against the kit item open on that turn (ui.ask.itemId); old = 86570734, new = unit forms + thousands join",
+ "lines": 4384,
+ "withItem": 1638,
+ "leaksOld": 136,
+ "leaksNew": 140,
+ "moved": [
+  {
+   "lesson": "p05-c5-maths-anxious--base142--text.json",
+   "turn": 13,
+   "key": "8,000",
+   "leak": true,
+   "line": "Number line par 8,000 ke thoda left aayega, kyunki asli yog 8,000 se thoda kam hai. Bina poora jode, 4,982 + 3,015 kiske zyada paas hai: 7,000, 8,000 ya 9,000?",
+   "judged": "real leak: she states the estimate 8,000 is what it is close to, then asks which it is close to"
+  },
+  {
+   "lesson": "p59-c5-maths-anxious--oos143v--voice.json",
+   "turn": 10,
+   "key": "2 km",
+   "leak": true,
+   "line": "Haan Arjun, 2 kilometre lamba hai. Aapne kaise jaana ki 2,000 metre, 500 metre se bada hai?",
+   "judged": "key stated as the confirmation of the child's answer (not a give-away of an unanswered item)"
+  },
+  {
+   "lesson": "p59-c5-maths-anxious--oos143v--voice.json",
+   "turn": 11,
+   "key": "2 km",
+   "leak": true,
+   "line": "2000 बड़ा है, पर zero गिनना हमेशा सही तरीका नहीं। 2000 में 500 के चार समूह हैं। 500 के दो समूह कितने होंगे?",
+   "judged": "false: a number word read as 2 beside a verdict word (the existing bare-key-2 behaviour)"
+  },
+  {
+   "lesson": "p59-c5-maths-anxious--oos143v--voice.json",
+   "turn": 12,
+   "key": "2 km",
+   "leak": true,
+   "line": "Bilkul, 500 ka do samooh 1,000 hota hai. 2,000 mein 500 ke kitne samooh honge?",
+   "judged": "false: \"do samooh\" (two groups) read as 2 beside \"hota\" (the existing bare-key-2 behaviour)"
+  }
+ ]
+}

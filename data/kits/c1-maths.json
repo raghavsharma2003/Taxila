@@ -46,8 +46,8 @@
             "Says a friend facing them raises the right hand on the same side as their own right hand"
           ],
           "diagnostic": {
-            "prompt_en": "Riya stands facing you and raises her right hand. Is her hand on your right side or your left side?",
-            "prompt_hi": "Riya tumhare saamne khadi hai, tumhari taraf mooh karke. Woh apna right haath uthati hai. Woh tumhari right side pe hai ya left side pe?",
+            "prompt_en": "{friendF} stands facing you and raises her right hand. Is her hand on your right side or your left side?",
+            "prompt_hi": "{friendF} tumhare saamne khadi hai, tumhari taraf mooh karke. Woh apna right haath uthati hai. Woh tumhari right side pe hai ya left side pe?",
             "options": [
               {
                 "text": "On my left side",
@@ -366,8 +366,8 @@
           "skillId": "c1-maths-ch01-t01-s4",
           "kind": "contrast",
           "difficulty": 4,
-          "prompt_en": "First Riya stands beside you, facing the same way. Then she turns to face you. Both times she raises her right hand. When is her right hand on the same side as your right hand?",
-          "prompt_hi": "Pehle Riya tumhare bagal mein khadi hai, same taraf dekhte hue. Phir woh ghoom kar tumhari taraf mooh karti hai. Dono baar woh right haath uthati hai. Kab uska right haath tumhare right haath ki side pe hota hai?",
+          "prompt_en": "First {friendF} stands beside you, facing the same way. Then she turns to face you. Both times she raises her right hand. When is her right hand on the same side as your right hand?",
+          "prompt_hi": "Pehle {friendF} tumhare bagal mein khadi hai, same taraf dekhte hue. Phir woh ghoom kar tumhari taraf mooh karti hai. Dono baar woh right haath uthati hai. Kab uska right haath tumhare right haath ki side pe hota hai?",
           "answer": "When she stands beside me facing the same way",
           "acceptable": [
             "beside me",
@@ -705,20 +705,20 @@
           "skillId": "c1-maths-ch01-t02-s2",
           "kind": "practice",
           "difficulty": 1,
-          "prompt_en": "Riya has 3 mangoes. Sonu has 1 mango. Who has more?",
-          "prompt_hi": "Riya ke paas 3 aam hain. Sonu ke paas 1 aam. Zyada kiske paas hain?",
-          "answer": "Riya",
+          "prompt_en": "{friendF} has 3 mangoes. Sonu has 1 mango. Who has more?",
+          "prompt_hi": "{friendF} ke paas 3 aam hain. Sonu ke paas 1 aam. Zyada kiske paas hain?",
+          "answer": "{friendF}",
           "acceptable": [
             "riya"
           ],
           "hints": [
             "Count each person's mangoes.",
-            "Match one of Riya's mangoes with Sonu's one mango. Who has some left?",
+            "Match one of {friendF}'s mangoes with Sonu's one mango. Who has some left?",
             "After matching, whose mangoes are left over? Point to that person.",
-            "Riya has more — 3 is more than 1."
+            "{friendF} has more — 3 is more than 1."
           ],
           "verified": {
-            "solverAnswer": "Riya",
+            "solverAnswer": "{friendF}",
             "agrees": true,
             "note": "Solved blind; matches key. Hint leak fixed: hints 1-3 no longer state the answer; only hint 4 (assertion) does."
           }
@@ -1128,8 +1128,8 @@
             "Refuses to re-sort the same things"
           ],
           "diagnostic": {
-            "prompt_en": "Riya sorted buttons by colour. Sonu sorted the same buttons by size. Who is right?",
-            "prompt_hi": "Riya ne buttons rang se alag kiye. Sonu ne wahi buttons size se alag kiye. Kaun sahi hai?",
+            "prompt_en": "{friendF} sorted buttons by colour. Sonu sorted the same buttons by size. Who is right?",
+            "prompt_hi": "{friendF} ne buttons rang se alag kiye. Sonu ne wahi buttons size se alag kiye. Kaun sahi hai?",
             "options": [
               {
                 "text": "Both are right",
@@ -1137,7 +1137,7 @@
                 "correct": true
               },
               {
-                "text": "Only Riya",
+                "text": "Only {friendF}",
                 "misconceptionId": "c1-maths-ch01-t03-mc-one-right-way",
                 "correct": false
               },
@@ -1505,8 +1505,8 @@
           "skillId": "c1-maths-ch01-t03-s3",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Riya sorted the buttons by colour. Sonu sorted the same buttons by size. Who is right?",
-          "prompt_hi": "Riya ne buttons rang se alag kiye. Sonu ne wahi buttons size se. Kaun sahi hai?",
+          "prompt_en": "{friendF} sorted the buttons by colour. Sonu sorted the same buttons by size. Who is right?",
+          "prompt_hi": "{friendF} ne buttons rang se alag kiye. Sonu ne wahi buttons size se. Kaun sahi hai?",
           "answer": "Both are right",
           "acceptable": [
             "both",
@@ -1514,7 +1514,7 @@
             "dono sahi"
           ],
           "hints": [
-            "Did Riya keep one rule?",
+            "Did {friendF} keep one rule?",
             "Did Sonu keep one rule?",
             "If each kept one rule, then ___ are right.",
             "Both are right — the same things can be sorted in more than one way."
@@ -2872,9 +2872,9 @@
           "skillId": "c1-maths-ch03-t01-s2",
           "kind": "contrast",
           "difficulty": 2,
-          "prompt_en": "Riya touched each of 3 balls once and said 3. Sonu skipped one ball and said 2. Who counted right?",
-          "prompt_hi": "Riya ne 3 balls mein se har ek ko ek baar chhua aur kaha 3. Sonu ne ek ball chhod di aur kaha 2. Kisne sahi gina?",
-          "answer": "Riya",
+          "prompt_en": "{friendF} touched each of 3 balls once and said 3. Sonu skipped one ball and said 2. Who counted right?",
+          "prompt_hi": "{friendF} ne 3 balls mein se har ek ko ek baar chhua aur kaha 3. Sonu ne ek ball chhod di aur kaha 2. Kisne sahi gina?",
+          "answer": "{friendF}",
           "acceptable": [
             "riya"
           ],
@@ -2882,11 +2882,11 @@
             "What is the rule for touching when we count?",
             "Who touched every ball?",
             "The one who touched each ball ___ is right.",
-            "Riya — she touched each ball once and got 3."
+            "{friendF} — she touched each ball once and got 3."
           ],
           "targetsMisconception": "c1-maths-ch03-t01-mc-one-to-one",
           "verified": {
-            "solverAnswer": "Riya",
+            "solverAnswer": "{friendF}",
             "agrees": true,
             "note": "Solved blind; matches key."
           }
@@ -3113,8 +3113,8 @@
             "Reads a 9 as 6 on a bus or house number"
           ],
           "diagnostic": {
-            "prompt_en": "Riya says if you turn a 6 upside down, it is still six. Is she right?",
-            "prompt_hi": "Riya kehti hai 6 ko ulta kar do to bhi woh chhah hi rahega. Kya woh sahi hai?",
+            "prompt_en": "{friendF} says if you turn a 6 upside down, it is still six. Is she right?",
+            "prompt_hi": "{friendF} kehti hai 6 ko ulta kar do to bhi woh chhah hi rahega. Kya woh sahi hai?",
             "options": [
               {
                 "text": "No, it becomes 9",
@@ -3636,11 +3636,11 @@
             "Picks the pile that looks bigger"
           ],
           "diagnostic": {
-            "prompt_en": "Riya has 7 small mangoes. Sonu has 4 big mangoes. Who has more mangoes?",
-            "prompt_hi": "Riya ke paas 7 chhote aam hain. Sonu ke paas 4 bade aam. Zyada aam kiske paas hain?",
+            "prompt_en": "{friendF} has 7 small mangoes. Sonu has 4 big mangoes. Who has more mangoes?",
+            "prompt_hi": "{friendF} ke paas 7 chhote aam hain. Sonu ke paas 4 bade aam. Zyada aam kiske paas hain?",
             "options": [
               {
-                "text": "Riya — 7 is more than 4",
+                "text": "{friendF} — 7 is more than 4",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -4085,16 +4085,16 @@
         }
       ],
       "workedExample": {
-        "problem": "Who has more: Riya with 7 small mangoes or Sonu with 4 big mangoes?",
+        "problem": "Who has more: Nisha with 7 small mangoes or Sonu with 4 big mangoes?",
         "steps": [
           "The question is \"how many\", so ignore how big the mangoes are.",
-          "Count Riya's mangoes: 7.",
+          "Count Nisha's mangoes: 7.",
           "Count Sonu's mangoes: 4.",
-          "When counting, 7 comes after 4, so 7 is more. Riya has more."
+          "When counting, 7 comes after 4, so 7 is more. Nisha has more."
         ],
         "fadedVersion": [
           "The question is \"how ___\", so ignore size.",
-          "Riya has ___ mangoes.",
+          "Nisha has ___ mangoes.",
           "Sonu has ___ mangoes.",
           "___ comes after 4, so ___ has more."
         ]
@@ -4410,8 +4410,8 @@
           "skillId": "c1-maths-ch04-t01-s2",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Riya made 10 with 5 and 5. Sonu made 10 with 9 and 1. Who is right?",
-          "prompt_hi": "Riya ne 5 aur 5 se 10 banaya. Sonu ne 9 aur 1 se. Kaun sahi hai?",
+          "prompt_en": "{friendF} made 10 with 5 and 5. Sonu made 10 with 9 and 1. Who is right?",
+          "prompt_hi": "{friendF} ne 5 aur 5 se 10 banaya. Sonu ne 9 aur 1 se. Kaun sahi hai?",
           "answer": "Both are right",
           "acceptable": [
             "both",
@@ -4419,9 +4419,9 @@
             "dono sahi"
           ],
           "hints": [
-            "Check Riya: 5 and 5 is...?",
+            "Check {friendF}: 5 and 5 is...?",
             "Check Sonu: 9 and 1 is...?",
-            "Riya got ___ and Sonu got ___. Is each one 10?",
+            "{friendF} got ___ and Sonu got ___. Is each one 10?",
             "Both are right — 10 can be made in many ways."
           ],
           "targetsMisconception": "c1-maths-ch04-t01-mc-only-one-way",
@@ -4862,9 +4862,9 @@
           "skillId": "c1-maths-ch04-t02-s2",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "For fourteen, Riya writes 14 and Sonu writes 41. Who is right?",
-          "prompt_hi": "Fourteen ke liye Riya likhti hai 14 aur Sonu likhta hai 41. Kaun sahi hai?",
-          "answer": "Riya — 14",
+          "prompt_en": "For fourteen, {friendF} writes 14 and Sonu writes 41. Who is right?",
+          "prompt_hi": "Fourteen ke liye {friendF} likhti hai 14 aur Sonu likhta hai 41. Kaun sahi hai?",
+          "answer": "{friendF} — 14",
           "acceptable": [
             "riya",
             "14",
@@ -4876,11 +4876,11 @@
             "Fourteen is one ten and four ones.",
             "Which digit shows the ten, and where does it go?",
             "The ten goes first, so it is ___.",
-            "Riya — 14. 41 would be forty-one, a much bigger number."
+            "{friendF} — 14. 41 would be forty-one, a much bigger number."
           ],
           "targetsMisconception": "c1-maths-ch04-t02-mc-teen-reversal",
           "verified": {
-            "solverAnswer": "Riya (14)",
+            "solverAnswer": "{friendF} (14)",
             "agrees": true,
             "note": "Solved blind; matches key."
           }
@@ -5791,12 +5791,12 @@
           "id": "c1-maths-ch05-t02-mc-compare-adds",
           "belief": "Thinks a \"how many more\" question means adding the two numbers",
           "signs": [
-            "Says 8 for \"Riya has 5, Zoya has 3, how many more does Riya have?\"",
+            "Says 8 for \"{friendF} has 5, Pooja has 3, how many more does {friendF} have?\"",
             "Hears \"more\" and adds"
           ],
           "diagnostic": {
-            "prompt_en": "Riya has 5 bangles. Zoya has 3. How many more does Riya have?",
-            "prompt_hi": "Riya ke paas 5 choodiyaan hain. Zoya ke paas 3. Riya ke paas kitni zyada hain?",
+            "prompt_en": "{friendF} has 5 bangles. Pooja has 3. How many more does {friendF} have?",
+            "prompt_hi": "{friendF} ke paas 5 choodiyaan hain. Pooja ke paas 3. {friendF} ke paas kitni zyada hain?",
             "options": [
               {
                 "text": "2",
@@ -5929,8 +5929,8 @@
           "skillId": "c1-maths-ch05-t02-s2",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Riya has 5 bangles. Zoya has 3 bangles. How many more does Riya have?",
-          "prompt_hi": "Riya ke paas 5 choodiyaan hain. Zoya ke paas 3. Riya ke paas kitni zyada hain?",
+          "prompt_en": "{friendF} has 5 bangles. Pooja has 3 bangles. How many more does {friendF} have?",
+          "prompt_hi": "{friendF} ke paas 5 choodiyaan hain. Pooja ke paas 3. {friendF} ke paas kitni zyada hain?",
           "answer": "2",
           "acceptable": [
             "2",
@@ -5939,10 +5939,10 @@
             "दो"
           ],
           "hints": [
-            "Match each of Zoya's bangles with one of Riya's.",
-            "How many of Riya's have no partner?",
-            "5 and 3: Riya has ___ extra.",
-            "2 more — after matching 3 pairs, Riya has 2 left over."
+            "Match each of Pooja's bangles with one of {friendF}'s.",
+            "How many of {friendF}'s have no partner?",
+            "5 and 3: {friendF} has ___ extra.",
+            "2 more — after matching 3 pairs, {friendF} has 2 left over."
           ],
           "targetsMisconception": "c1-maths-ch05-t02-mc-compare-adds",
           "verified": {
@@ -6781,11 +6781,11 @@
             "Answer is bigger than 10 when it should be less"
           ],
           "diagnostic": {
-            "prompt_en": "For 13 − 5, Riya says 8 and Sonu says 12. Who is right?",
-            "prompt_hi": "13 − 5 ke liye Riya kehti hai 8 aur Sonu kehta hai 12. Kaun sahi hai?",
+            "prompt_en": "For 13 − 5, {friendF} says 8 and Sonu says 12. Who is right?",
+            "prompt_hi": "13 − 5 ke liye {friendF} kehti hai 8 aur Sonu kehta hai 12. Kaun sahi hai?",
             "options": [
               {
-                "text": "Riya, 8",
+                "text": "{friendF}, 8",
                 "misconceptionId": null,
                 "correct": true
               },
@@ -7602,8 +7602,8 @@
           "skillId": "c1-maths-ch07-t01-s1",
           "kind": "near_transfer",
           "difficulty": 2,
-          "prompt_en": "Meenu and Riya are the same height. Meenu's plait reaches her waist. Riya's plait reaches her shoulder. Whose plait is longer?",
-          "prompt_hi": "Meenu aur Riya ek jitni lambi hain. Meenu ki choti kamar tak aati hai. Riya ki choti kandhe tak. Kiski choti lambi hai?",
+          "prompt_en": "Meenu and {friendF} are the same height. Meenu's plait reaches her waist. {friendF}'s plait reaches her shoulder. Whose plait is longer?",
+          "prompt_hi": "Meenu aur {friendF} ek jitni lambi hain. Meenu ki choti kamar tak aati hai. {friendF} ki choti kandhe tak. Kiski choti lambi hai?",
           "answer": "Meenu's",
           "acceptable": [
             "meenu",
@@ -8145,8 +8145,8 @@
           "skillId": "c1-maths-ch07-t02-s3",
           "kind": "far_transfer",
           "difficulty": 4,
-          "prompt_en": "Riya says her room is 10 footsteps. Arjun says his room is 8 footsteps. Can we be sure Riya's room is longer?",
-          "prompt_hi": "Riya kehti hai uska kamra 10 kadam ka hai. Arjun kehta hai uska 8 kadam ka. Kya pakka hai ki Riya ka kamra lamba hai?",
+          "prompt_en": "{friendF} says her room is 10 footsteps. Arjun says his room is 8 footsteps. Can we be sure {friendF}'s room is longer?",
+          "prompt_hi": "{friendF} kehti hai uska kamra 10 kadam ka hai. Arjun kehta hai uska 8 kadam ka. Kya pakka hai ki {friendF} ka kamra lamba hai?",
           "answer": "No — their feet may be different sizes; we need the same unit to compare",
           "acceptable": [
             "no",
@@ -10391,8 +10391,8 @@
             "Says the row is still a pattern \"because it has red and blue\""
           ],
           "diagnostic": {
-            "prompt_en": "Riya's mala: red, blue, red, blue, red, blue, blue, blue. Is it still the same pattern all the way?",
-            "prompt_hi": "Riya ki maala: laal, neela, laal, neela, laal, neela, neela, neela. Kya poori maala mein ek hi pattern hai?",
+            "prompt_en": "{friendF}'s mala: red, blue, red, blue, red, blue, blue, blue. Is it still the same pattern all the way?",
+            "prompt_hi": "{friendF} ki maala: laal, neela, laal, neela, laal, neela, neela, neela. Kya poori maala mein ek hi pattern hai?",
             "options": [
               {
                 "text": "No — the end breaks the pattern",
@@ -10595,8 +10595,8 @@
           "skillId": "c1-maths-ch09-t02-s1",
           "kind": "error_spot",
           "difficulty": 3,
-          "prompt_en": "Riya's mala: red, blue, red, blue, red, blue, blue, blue. She says it is a pattern all the way. Is it?",
-          "prompt_hi": "Riya ki maala: laal, neela, laal, neela, laal, neela, neela, neela. Woh kehti hai poori maala pattern hai. Kya sahi hai?",
+          "prompt_en": "{friendF}'s mala: red, blue, red, blue, red, blue, blue, blue. She says it is a pattern all the way. Is it?",
+          "prompt_hi": "{friendF} ki maala: laal, neela, laal, neela, laal, neela, neela, neela. Woh kehti hai poori maala pattern hai. Kya sahi hai?",
           "answer": "No — the end breaks the pattern; after blue should come red",
           "acceptable": [
             "no",
@@ -10647,7 +10647,7 @@
           "kind": "near_transfer",
           "difficulty": 3,
           "prompt_en": "Make a pattern with three things: roti, dal, chawal. Say six items.",
-          "prompt_hi": "Teen cheezon se pattern banao: roti, dal, chawal. Chhah cheezein bolo.",
+          "prompt_hi": "3 cheezon se pattern banao: roti, dal, chawal. Chhah cheezein bolo.",
           "answer": "Any repeating pattern, e.g. roti, dal, chawal, roti, dal, chawal",
           "acceptable": [
             "roti dal chawal roti dal chawal"
@@ -11349,8 +11349,8 @@
             "Mixes up \"far\" and \"long time\""
           ],
           "diagnostic": {
-            "prompt_en": "Riya and Sonu start running together and stop together. Riya went further. Who ran for a longer time?",
-            "prompt_hi": "Riya aur Sonu ek saath daudna shuru karte hain aur ek saath rukte hain. Riya zyada door gayi. Kisne zyada der tak daud lagaayi?",
+            "prompt_en": "{friendF} and Sonu start running together and stop together. {friendF} went further. Who ran for a longer time?",
+            "prompt_hi": "{friendF} aur Sonu ek saath daudna shuru karte hain aur ek saath rukte hain. {friendF} zyada door gayi. Kisne zyada der tak daud lagaayi?",
             "options": [
               {
                 "text": "The same time",
@@ -11358,7 +11358,7 @@
                 "correct": true
               },
               {
-                "text": "Riya, because she went further",
+                "text": "{friendF}, because she went further",
                 "misconceptionId": "c1-maths-ch10-t02-mc-time-distance",
                 "correct": false
               }
@@ -11578,8 +11578,8 @@
           "skillId": "c1-maths-ch10-t02-s1",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Riya and Sonu start running together and stop together. Riya went further. Who ran for a longer time?",
-          "prompt_hi": "Riya aur Sonu ek saath daudna shuru karte hain aur ek saath rukte hain. Riya zyada door gayi. Kisne zyada der daud lagaayi?",
+          "prompt_en": "{friendF} and Sonu start running together and stop together. {friendF} went further. Who ran for a longer time?",
+          "prompt_hi": "{friendF} aur Sonu ek saath daudna shuru karte hain aur ek saath rukte hain. {friendF} zyada door gayi. Kisne zyada der daud lagaayi?",
           "answer": "The same time",
           "acceptable": [
             "same",
@@ -11589,8 +11589,8 @@
           "hints": [
             "Did they start at the same moment?",
             "Did they stop at the same moment?",
-            "Running time is from start to stop. Compare Riya's start-to-stop with Sonu's.",
-            "The same time — Riya was faster, so she went further in the same time."
+            "Running time is from start to stop. Compare {friendF}'s start-to-stop with Sonu's.",
+            "The same time — {friendF} was faster, so she went further in the same time."
           ],
           "targetsMisconception": "c1-maths-ch10-t02-mc-time-distance",
           "verified": {
@@ -11844,7 +11844,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Three plates have 2, 3 and 2 rotis. Are these equal groups?",
-            "prompt_hi": "Teen plates mein 2, 3 aur 2 rotiyaan hain. Kya yeh barabar group hain?",
+            "prompt_hi": "3 plates mein 2, 3 aur 2 rotiyaan hain. Kya yeh barabar group hain?",
             "options": [
               {
                 "text": "No — one plate has a different number",
@@ -11871,7 +11871,7 @@
           "kind": "practice",
           "difficulty": 1,
           "prompt_en": "Three plates have 2, 2 and 2 laddoos. Is there the same number on each plate?",
-          "prompt_hi": "Teen plates pe 2, 2 aur 2 laddoo hain. Kya har plate pe barabar hain?",
+          "prompt_hi": "3 plates pe 2, 2 aur 2 laddoo hain. Kya har plate pe barabar hain?",
           "answer": "Yes, 2 on each",
           "acceptable": [
             "yes",
@@ -12004,7 +12004,7 @@
           "kind": "why",
           "difficulty": 3,
           "prompt_en": "For 3 bags with 5 apples in each, why do we add 5 three times?",
-          "prompt_hi": "3 thaile, har ek mein 5 seb. Hum 5 ko teen baar kyun jodte hain?",
+          "prompt_hi": "3 thaile, har ek mein 5 seb. Hum 5 ko 3 baar kyun jodte hain?",
           "answer": "One 5 for each bag, and there are 3 bags",
           "acceptable": [
             "one for each bag",
@@ -12282,7 +12282,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Is \"three twos\" the same as 2 + 2 + 2?",
-            "prompt_hi": "Kya \"teen do\" (2 ke teen group) aur 2 + 2 + 2 ek hi baat hai?",
+            "prompt_hi": "Kya \"teen do\" (2 ke 3 group) aur 2 + 2 + 2 ek hi baat hai?",
             "options": [
               {
                 "text": "Yes — both are 6",
@@ -12415,8 +12415,8 @@
           "skillId": "c1-maths-ch11-t02-s2",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Riya and Sonu hold up both hands — that is 4 hands. Count in fives. How many fingers?",
-          "prompt_hi": "Riya aur Sonu dono haath upar karte hain — 4 haath. Paanch-paanch karke gino. Kitni ungliyaan?",
+          "prompt_en": "{friendF} and Sonu hold up both hands — that is 4 hands. Count in fives. How many fingers?",
+          "prompt_hi": "{friendF} aur Sonu dono haath upar karte hain — 4 haath. Paanch-paanch karke gino. Kitni ungliyaan?",
           "answer": "20",
           "acceptable": [
             "20",
@@ -12779,7 +12779,7 @@
           ],
           "diagnostic": {
             "prompt_en": "Three ₹1 coins or one ₹5 coin — which is more money?",
-            "prompt_hi": "₹1 ke teen sikke ya ₹5 ka ek sikka — zyada paise kaun se hain?",
+            "prompt_hi": "₹1 ke 3 sikke ya ₹5 ka ek sikka — zyada paise kaun se hain?",
             "options": [
               {
                 "text": "One ₹5 coin",
@@ -12946,7 +12946,7 @@
           "kind": "contrast",
           "difficulty": 2,
           "prompt_en": "Three ₹1 coins or one ₹5 coin — which is more money?",
-          "prompt_hi": "₹1 ke teen sikke ya ₹5 ka ek sikka — zyada paise kaun se hain?",
+          "prompt_hi": "₹1 ke 3 sikke ya ₹5 ka ek sikka — zyada paise kaun se hain?",
           "answer": "one ₹5 coin",
           "acceptable": [
             "₹5",
@@ -12971,17 +12971,17 @@
           "skillId": "c1-maths-ch12-t01-s3",
           "kind": "predict",
           "difficulty": 3,
-          "prompt_en": "Riya has four ₹2 coins. Sonu has one ₹10 coin. Guess who has more money, then let us add to check.",
-          "prompt_hi": "Riya ke paas ₹2 ke chaar sikke hain. Sonu ke paas ₹10 ka ek sikka. Guess karo kiske paas zyada paise hain, phir jod ke check karenge.",
-          "answer": "Sonu — Riya has ₹8, Sonu has ₹10",
+          "prompt_en": "{friendF} has four ₹2 coins. Sonu has one ₹10 coin. Guess who has more money, then let us add to check.",
+          "prompt_hi": "{friendF} ke paas ₹2 ke chaar sikke hain. Sonu ke paas ₹10 ka ek sikka. Guess karo kiske paas zyada paise hain, phir jod ke check karenge.",
+          "answer": "Sonu — {friendF} has ₹8, Sonu has ₹10",
           "acceptable": [
             "sonu"
           ],
           "hints": [
-            "Count Riya's money in twos: 2, 4...",
-            "What does Riya have in all?",
-            "Riya has ₹___, Sonu has ₹10.",
-            "Sonu — Riya's four coins make ₹8, less than ₹10."
+            "Count {friendF}'s money in twos: 2, 4...",
+            "What does {friendF} have in all?",
+            "{friendF} has ₹___, Sonu has ₹10.",
+            "Sonu — {friendF}'s four coins make ₹8, less than ₹10."
           ],
           "targetsMisconception": "c1-maths-ch12-t01-mc-more-coins",
           "verified": {
@@ -13203,16 +13203,16 @@
         }
       ],
       "workedExample": {
-        "problem": "Riya has three ₹1 coins. Sonu has one ₹5 coin. Who has more money?",
+        "problem": "Nisha has three ₹1 coins. Sonu has one ₹5 coin. Who has more money?",
         "steps": [
           "Read the value on each coin.",
-          "Add Riya's coins: ₹1 + ₹1 + ₹1 = ₹3.",
+          "Add Nisha's coins: ₹1 + ₹1 + ₹1 = ₹3.",
           "Sonu has ₹5.",
           "₹5 is more than ₹3, so Sonu has more — even with fewer coins."
         ],
         "fadedVersion": [
           "Read the ___ on each coin.",
-          "Riya: ₹1 + ₹1 + ₹1 = ₹___.",
+          "Nisha: ₹1 + ₹1 + ₹1 = ₹___.",
           "Sonu has ₹___.",
           "₹5 is more than ₹3, so ___ has more."
         ]
@@ -13549,9 +13549,9 @@
           "skillId": "c1-maths-ch12-t02-s1",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Riya has ₹8. Sonu has ₹6. A bat costs ₹7. Who can buy it?",
-          "prompt_hi": "Riya ke paas ₹8 hain. Sonu ke paas ₹6. Bat ₹7 ka hai. Kaun khareed sakta hai?",
-          "answer": "Riya",
+          "prompt_en": "{friendF} has ₹8. Sonu has ₹6. A bat costs ₹7. Who can buy it?",
+          "prompt_hi": "{friendF} ke paas ₹8 hain. Sonu ke paas ₹6. Bat ₹7 ka hai. Kaun khareed sakta hai?",
+          "answer": "{friendF}",
           "acceptable": [
             "riya"
           ],
@@ -13559,10 +13559,10 @@
             "Compare each person's money with ₹7.",
             "Is ₹8 enough? Is ₹6 enough?",
             "₹8 is more than ₹7, ₹6 is ___.",
-            "Riya — ₹8 covers ₹7; Sonu's ₹6 is ₹1 short."
+            "{friendF} — ₹8 covers ₹7; Sonu's ₹6 is ₹1 short."
           ],
           "verified": {
-            "solverAnswer": "Riya",
+            "solverAnswer": "{friendF}",
             "agrees": true,
             "note": "Solved blind; matches key."
           }

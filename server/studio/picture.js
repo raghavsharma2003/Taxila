@@ -15,6 +15,7 @@ import { resolveLane } from "../endpoints.js";
 import { DEPLOY } from "../azure.js";
 import { createHash } from "node:crypto";
 import { drawableSubject } from "../director/state.js";
+import { imageCall } from "../cost/meter.js";
 
 /**
  * Who gets real pictures on the Director lane (owner decision 14.2, the cohort pattern of server/duplex/config.js):
@@ -72,6 +73,7 @@ async function generate(subject, { timeoutMs = 30_000 } = {}) {
       const r = await fetch(`${base}/openai/deployments/${dep}/images/generations?api-version=2025-04-01-preview`, { method: "POST", signal: ctl.signal,
         headers: { "api-key": key, "content-type": "application/json" },
         body: JSON.stringify({ prompt: promptFor(subject), n: 1, size: "1024x1024", quality: "low", output_format: "jpeg", output_compression: 60 }) });
+      imageCall({ deployment: dep, n: 1, status: r.status });   // round 7 cost ledger (Platform 001)
       const j = await r.json().catch(() => ({}));
       const b64 = j?.data?.[0]?.b64_json;
       if (r.ok && b64) return { b64, deployment: dep, ms: Date.now() - t0 };

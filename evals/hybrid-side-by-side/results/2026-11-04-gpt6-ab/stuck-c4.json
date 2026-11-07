@@ -1,0 +1,199 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ke through fractions, yaani barabar hisse, dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1644
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, cricket pasand hona zaroori nahi. Riya, do bachchon mein ek roti baantni hai. Tum kaise baantogi? Aakhir mein Golu ko samjhayenge.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1226,
+   "replyReadyMs": 2870
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1235
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek roti ko beech se kaato: do barabar tukde bante hain. Har tukda aadha hai. Dono tukde barabar dikhte hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1561,
+   "replyReadyMs": 2796
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1235
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, dheere chalte hain. Roti ke do barabar tukde hain. Har tukda aadha hai. Dono tukde kaise hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 986,
+   "replyReadyMs": 2221
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1085
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, roti ke do tukde ek jaise bade hon, to har tukda aadha hai. Dono tukdon ka aakar kaisa hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1262,
+   "replyReadyMs": 2347
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1244
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 5 sahi nahi; roti ke do barabar tukde hain. Ek tukde ko kya kahenge: aadha ya poora?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2178,
+   "replyReadyMs": 3422,
+   "guard": [
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1325
+  },
+  {
+   "who": "teacher",
+   "text": "15 kul pencils hain; ek-tihai matlab teen barabar hisson mein se ek. Agla kadam dekhein?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3187,
+   "replyReadyMs": 4512,
+   "guard": [
+    "answerinq",
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1318
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, socho 15 pencils ko teen barabar jhundon mein rakha hai.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2296,
+   "replyReadyMs": 3614,
+   "guard": [
+    "screen",
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1157
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 15 pencils ko barabar jhundon mein rakhna socha. Ek-tihai mein ek jhund lenge. Kul kitne barabar jhund honge?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1154,
+   "replyReadyMs": 2311
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "incorrect",
+   "classifyMs": 1162
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha; pichhli tasveer ke jhund gino. Ek-tihai mein ek jhund lete hain; kul kitne barabar jhund hain?",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1424,
+   "replyReadyMs": 2586
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1213
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum keh rahi ho aaj ke liye bas. Aage badhein, thoda aaram karein, ya aaj yahin rokein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2576,
+   "replyReadyMs": 3789,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

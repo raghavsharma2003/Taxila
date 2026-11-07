@@ -7,10 +7,9 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { createHmac } from "node:crypto";
 
-process.env.FORGE_DB_CACHE = "off";
-process.env.FORGE_BLOB = "off";
-process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1";
-process.env.AZURE_OPENAI_API_KEY ||= "x";
+// npm test runs every file in one process: the env this file needs is set for its tests only, and put back after
+const ENV0 = Object.fromEntries(["FORGE_DB_CACHE", "FORGE_BLOB", "AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY"].map((k) => [k, process.env[k]]));
+const restoreEnv = (saved) => { for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; } };
 
 const { requestFill, prefetchLessonFills, primeLearner, practiceOrder, flushUpgrades, fillKey, TURN_NEED_BY_MS, _learnerMemoClear, learnerFor } = await import("../server/forge/index.js");
 const { _memClear, getFill, upgrades } = await import("../server/forge/cache.js");
@@ -33,13 +32,17 @@ const { _setChat } = await import("../server/forge/generator.js");
 let modelCalls = 0;
 let modelReply = null;      // null → the model is unreachable; else the JSON the stubbed model returns
 before(() => {
+  process.env.FORGE_DB_CACHE = "off";
+  process.env.FORGE_BLOB = "off";
+  process.env.AZURE_OPENAI_ENDPOINT ||= "https://example.invalid/openai/v1";
+  process.env.AZURE_OPENAI_API_KEY ||= "x";
   _setChat(async () => {
     modelCalls++;
     if (!modelReply) throw Object.assign(new Error("offline"), { code: "network" });
     return { text: JSON.stringify(modelReply), json: modelReply, finishReason: "stop" };
   });
 });
-after(() => _setChat(null));
+after(() => { _setChat(null); restoreEnv(ENV0); });
 beforeEach(async () => { await flushUpgrades(); _memClear(); _learnerMemoClear(); modelCalls = 0; modelReply = null; });
 
 describe("child-name check: serve-time, kit-exempt, never child-free state", () => {

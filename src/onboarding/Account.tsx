@@ -8,7 +8,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field, Icon } from "../ui/index.ts";
 import { loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
 import { authErrorOf, checkAuthFields, PasswordField, type FieldErrors } from "./fields.tsx";
-import { tw2 } from "../copy/en.ts";
+import { tr7, tw2 } from "../copy/en.ts";
 import { StepFrame } from "./Layout.tsx";
 import { clearDraftContact, useDraft } from "./draft.ts";
 import { safeNext } from "./next.ts";
@@ -99,7 +99,7 @@ export function AccountStep() {
               onChange={(e) => { set({ name: e.target.value }); setFieldErr((f) => ({ ...f, name: undefined })); }} required />
             <div className="field">
               <label htmlFor="ph">Mobile number <span className="muted">(optional for now)</span></label>
-              <span className="hint" id="ph-hint">Weekly reports will come here on WhatsApp.</span>
+              <span className="hint" id="ph-hint">For your account only.</span>
               <div className="phone-row">
                 <span className="phone-cc" aria-hidden="true">+91</span>
                 <input id="ph" className="input" inputMode="numeric" autoComplete="tel-national" maxLength={10} aria-describedby="ph-hint"
@@ -115,6 +115,11 @@ export function AccountStep() {
         <PasswordField label="Password" autoComplete={signup ? "new-password" : "current-password"} value={password} error={fieldErr.password}
           hint={signup ? "At least 8 characters." : undefined} onChange={(e) => { setPassword(e.target.value); setFieldErr((f) => ({ ...f, password: undefined })); }} required />
         {!signup && <Link to={`/start/forgot${d.email ? `?email=${encodeURIComponent(d.email)}` : ""}`} className="link-quiet" data-testid="forgot">{tw2("auth.forgot")}</Link>}
+        {!signup && (
+          <Link to={`/signin?${new URLSearchParams({ ...(d.email ? { email: d.email } : {}), ...(next ? { next } : {}) })}`} className="link-quiet" data-testid="signin-code">
+            {tr7("code.instead")}
+          </Link>
+        )}
         {signup && <p className="t-note">By continuing you confirm you are 18 or older and this child's parent or guardian.</p>}
         <ErrorNote>{err}</ErrorNote>
         <Button type="submit" block disabled={busy}>{busy ? "Please wait" : signup ? "Create account" : "Sign in"}</Button>

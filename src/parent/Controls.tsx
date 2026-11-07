@@ -5,6 +5,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { Button, Icon, TileGroup } from "../ui/index.ts";
 import { getJson, postJson, refreshMe, request, type ChildRow } from "../app/api.ts";
 import { HoursFields } from "../onboarding/Setup.tsx";
+import { ChoiceChips, DateRange, DayToggles, ManyChips, TimeRail } from "../ui-v3/Scheduler.tsx";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
 import { isRelock, parentApi, type ControlsT } from "./api.ts";
@@ -75,6 +76,99 @@ function TapAndType({ childId, name, T, on0, onRelock }: { childId: string; name
   );
 }
 
+/**
+ * The lesson schedule (round 7 F, app-parent-schedule; DESIGN-V3 §8, §11): days, a start time and a length on the Scheduler
+ * controls. The Conductor plans the day's lesson at that time on those days; it never locks the child out.
+ * Days are Monday-first in DayToggles and JS weekdays (0 = Sunday) on the server.
+ */
+function Schedule({ childId, name, onRelock }: { childId: string; name: string; onRelock: () => void }) {
+  type S = { days: number[]; time: string; minutes: number | null };
+  const [cur, setCur] = useState<S | null>(null);
+  const [draft, setDraft] = useState<S>({ days: [1, 2, 3, 4, 5], time: "17:00", minutes: 25 });
+  const [opts, setOpts] = useState<number[]>([15, 20, 25, 30]);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  useEffect(() => {
+    getJson<{ schedule: S | null; minutes: number[] }>(`/api/parent/schedule?childId=${encodeURIComponent(childId)}`).then((r) => {
+      setOpts(r.minutes); setCur(r.schedule); if (r.schedule) setDraft({ ...r.schedule, minutes: r.schedule.minutes ?? 25 });
+    }, (e) => { if (isRelock(e)) onRelock(); });
+  }, [childId, onRelock]);
+  const monFirst = draft.days.map((d) => (d + 6) % 7);                       // JS weekday → Monday-first index
+  const toMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5));
+  const fromMin = (m: number) => `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+  const save = async () => {
+    setBusy(true); setErr(null); setSaved(false);
+    try { setCur((await postJson<{ schedule: S }>("/api/parent/schedule", { childId, ...draft })).schedule); setSaved(true); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setErr(parentError(e));
+    } finally { setBusy(false); }
+  };
+  const dirty = !cur || cur.time !== draft.time || cur.minutes !== draft.minutes || cur.days.join() !== draft.days.join();
+  return (
+    <section className="pa-card pa-group" aria-labelledby="pa-g-sched" data-group="schedule" data-testid="schedule">
+      <h2 id="pa-g-sched" className="pa-h2">Lesson schedule</h2>
+      <div className="pa-control">
+        <DayToggles days={monFirst} onChange={(d) => setDraft({ ...draft, days: d.map((i) => (i + 1) % 7).sort((a, b) => a - b) })} />
+      </div>
+      <div className="pa-control">
+        <TimeRail value={toMin(draft.time)} length={draft.minutes ?? 0} onChange={(m) => setDraft({ ...draft, time: fromMin(m) })} label="Start time" />
+      </div>
+      <div className="pa-control">
+        <h3 className="pa-h3">Lesson length</h3>
+        <ChoiceChips label="Lesson length" value={String(draft.minutes ?? "")} onChange={(v) => setDraft({ ...draft, minutes: Number(v) })}
+          options={opts.map((m) => ({ value: String(m), label: `${m} min` }))} />
+        <p className="pa-effect">{name}'s lesson is planned for {fmtClock(draft.time)} on the days you chose, about {draft.minutes ?? 25} minutes. It is a plan, not a lock: {name} can still start at another time.</p>
+      </div>
+      {(dirty || saved || err) && (
+        <div className="pa-group-save">
+          {dirty && <Button onClick={() => void save()} disabled={busy || draft.days.length === 0}>{busy ? "Saving" : "Save"}</Button>}
+          {saved && !dirty && <p className="pa-row" role="status"><Icon name="tick" size={20} /> Saved</p>}
+          {err && <p className="pa-form-err" role="alert">{err}</p>}
+        </div>
+      )}
+    </section>
+  );
+}
+
+/**
+ * "The children share one phone" (round 7 F, household v1; CONDUCTOR §4.4): shown only to a family with two or more
+ * children (D5: wired or hidden). On: each child's lesson gets its own time on the phone, younger first, with a few
+ * minutes to hand over. The children never see each other's times.
+ */
+function SharedPhone({ onRelock }: { onRelock: () => void }) {
+  const [state, setState] = useState<{ eligible: boolean; shared: boolean } | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  useEffect(() => {
+    let live = true;
+    getJson<{ eligible: boolean; shared: boolean }>("/api/parent/household").then((r) => { if (live) setState(r); }).catch((e) => { if (isRelock(e)) onRelock(); });
+    return () => { live = false; };
+  }, [onRelock]);
+  if (!state?.eligible) return null;
+  const set = async (next: boolean) => {
+    setErr(null);
+    const was = state.shared;
+    setState({ ...state, shared: next });
+    try { setState(await postJson<{ eligible: boolean; shared: boolean }>("/api/parent/household", { shared: next })); } catch (e) {
+      if (isRelock(e)) { onRelock(); return; }
+      setState({ ...state, shared: was }); setErr(parentError(e));
+    }
+  };
+  return (
+    <section className="pa-card pa-group" aria-labelledby="pa-g-household" data-group="household" data-testid="shared-phone">
+      <h2 id="pa-g-household" className="pa-h2">One phone for the children</h2>
+      <div className="pa-control">
+        <TileGroup label="The children share one phone for lessons" columns={2} value={state.shared ? "on" : "off"} onChange={(v) => void set(v === "on")}
+          options={[{ value: "off", label: "Each has a phone" }, { value: "on", label: "They share one" }]} />
+        <p className="pa-effect">{state.shared
+          ? "Each child gets a lesson time of their own on the phone, younger child first, with a few minutes to hand over. They never see each other's times."
+          : "Each child's lesson time is planned on its own."} This applies to all your children.</p>
+        {err && <p className="pa-form-err" role="alert">{err}</p>}
+      </div>
+    </section>
+  );
+}
+
 /** "Homework help today" (STUDENT-FLOW §4.2 `homework`): the child's home leads with Homework help until the day ends. */
 function HomeworkToday({ childId, name, on0, onRelock }: { childId: string; name: string; on0: boolean; onRelock: () => void }) {
   const [on, setOn] = useState(on0);
@@ -106,8 +200,11 @@ const fmtDayShort = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(
 
 /** "School test coming up" (STUDENT-FLOW §4.2 `test_window`): one window per child; the home shows calm revision. */
 function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; name: string; classLevel: number; onRelock: () => void }) {
-  const [w, setW] = useState<{ subject: string; from: string; to: string } | null>(null);
-  const [draft, setDraft] = useState({ subject: "maths", from: today(), to: today() });
+  const [w, setW] = useState<{ subject: string; from: string; to: string; chapters?: number[] } | null>(null);
+  const [draft, setDraft] = useState<{ subject: string; from: string; to: string; chapters: number[] }>({ subject: "maths", from: today(), to: today(), chapters: [] });
+  // round 7 F (test-window revision): the class book's chapters, so lessons revise only the test's chapters
+  const [book, setBook] = useState<Record<string, { number: number; title: string }[]>>({});
+  useEffect(() => { parentApi.chapters(classLevel).then((r) => setBook(r.chapters), () => setBook({})); }, [classLevel]);
   const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   useEffect(() => {
@@ -117,7 +214,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
   const subjects = TEST_SUBJECTS.filter((x) => (classLevel <= 5 ? x !== "science" && x !== "sst" : x !== "evs"));
   const save = async () => {
     setBusy(true); setErr(null);
-    try { setW((await postJson<{ window: typeof w }>("/api/parent/test-window", { childId, ...draft })).window); } catch (e) {
+    try { setW((await postJson<{ window: typeof w }>("/api/parent/test-window", { childId, ...draft, chapters: [...draft.chapters].sort((a, b) => a - b) })).window); } catch (e) {
       if (isRelock(e)) { onRelock(); return; }
       setErr(parentError(e));
     } finally { setBusy(false); }
@@ -135,23 +232,25 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
       {w ? (
         <>
           <p className="pa-effect" role="status">{tw2("controls.test.set", { subject: subjectWords(w.subject), from: fmtDayShort(w.from), to: fmtDayShort(w.to) })}</p>
+          {w.chapters?.length ? <p className="pa-meta" data-testid="test-chapters">Chapters {w.chapters.join(", ")}. In the last two days, only revision of what was already taught.</p> : null}
           <Button variant="secondary" onClick={() => void clear()} disabled={busy}>{tw2("controls.test.clear")}</Button>
         </>
       ) : (
         <>
           <p className="pa-effect">{tw2("controls.test.none")}</p>
           <div className="pa-test-row">
-            <label className="pa-field"><span>{tw2("controls.test.subject")}</span>
-              <select className="input" value={draft.subject} onChange={(e) => setDraft({ ...draft, subject: e.target.value })}>
-                {subjects.map((x) => <option key={x} value={x}>{subjectWords(x).replace(/^./, (c) => c.toUpperCase())}</option>)}
-              </select>
-            </label>
-            <label className="pa-field"><span>{tw2("controls.test.from")}</span>
-              <input className="input" type="date" value={draft.from} min={today()} onChange={(e) => setDraft({ ...draft, from: e.target.value, to: e.target.value > draft.to ? e.target.value : draft.to })} />
-            </label>
-            <label className="pa-field"><span>{tw2("controls.test.to")}</span>
-              <input className="input" type="date" value={draft.to} min={draft.from} onChange={(e) => setDraft({ ...draft, to: e.target.value })} />
-            </label>
+            <span className="pa-h3" id="pa-test-subj">{tw2("controls.test.subject")}</span>
+            <ChoiceChips label={tw2("controls.test.subject")} value={draft.subject} onChange={(subject) => setDraft({ ...draft, subject, chapters: [] })}
+              options={subjects.map((x) => ({ value: x, label: subjectWords(x).replace(/^./, (c) => c.toUpperCase()) }))} />
+            <DateRange today={today()} from={draft.from} to={draft.to} maxSpanDays={21}
+              fromLabel={tw2("controls.test.from")} toLabel={tw2("controls.test.to")} onChange={(from, to) => setDraft({ ...draft, from, to })} />
+            {(book[draft.subject]?.length ?? 0) > 0 && (
+              <>
+                <span className="pa-h3" id="pa-test-ch">Which chapters (optional)</span>
+                <ManyChips label="Which chapters" max={12} value={draft.chapters} onChange={(chapters) => setDraft({ ...draft, chapters })}
+                  options={(book[draft.subject] ?? []).map((c) => ({ value: c.number, label: String(c.number) }))} />
+              </>
+            )}
           </div>
           <Button onClick={() => void save()} disabled={busy} aria-label={`${tw2("controls.test.save")} for ${name}`}>{tw2("controls.test.save")}</Button>
         </>
@@ -161,7 +260,7 @@ function TestWindow({ childId, name, classLevel, onRelock }: { childId: string; 
   );
 }
 
-type Group = "time" | "voice" | "screen" | "reports";
+type Group = "time" | "voice" | "screen" | "reports" | "pace";
 
 function GroupCard({ id, title, children, dirty, busy, saved, err, onSave }:
   { id: Group; title: string; children: ReactNode; dirty: boolean; busy: boolean; saved: boolean; err: string | null; onSave: () => void }) {
@@ -200,7 +299,8 @@ export default function Controls() {
   const name = current.first_name;
   const dirtyOf = (g: Group) => {
     if (!c || !base) return false;
-    if (g === "time") return c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
+    if (g === "time") return !!c.limitsOn !== !!base.limitsOn || c.dailyMinutes !== base.dailyMinutes || c.hoursStart !== base.hoursStart || c.hoursEnd !== base.hoursEnd;
+    if (g === "pace") return (c.extraTime ?? "normal") !== (base.extraTime ?? "normal") || !!c.dataSaver !== !!base.dataSaver;
     if (g === "voice") return c.address !== base.address || (lang ?? current.language_pref) !== current.language_pref;
     if (g === "screen") return c.captionsAlways !== base.captionsAlways || c.comfortMode !== base.comfortMode;
     return c.reportChannel !== base.reportChannel;
@@ -210,7 +310,8 @@ export default function Controls() {
     if (g === "time" && c.hoursStart >= c.hoursEnd) { setGErr({ g, msg: "Lesson hours must end after they start." }); return; }
     setBusy(g); setGErr(null);
     try {
-      const fields: Partial<ControlsT> = g === "time" ? { dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
+      const fields: Partial<ControlsT> = g === "time" ? { limitsOn: !!c.limitsOn, dailyMinutes: c.dailyMinutes, hoursStart: c.hoursStart, hoursEnd: c.hoursEnd }
+        : g === "pace" ? { extraTime: c.extraTime ?? "normal", dataSaver: !!c.dataSaver }
         : g === "voice" ? { address: c.address } : g === "screen" ? { captionsAlways: c.captionsAlways, comfortMode: c.comfortMode } : { reportChannel: c.reportChannel };
       const out = await parentApi.setControls(current.id, fields);
       if (g === "voice" && lang && lang !== current.language_pref) {
@@ -235,21 +336,48 @@ export default function Controls() {
       {c && (
         <div className="pa-stack">
           <GroupCard id="time" title="Time" {...props("time")}>
-            <div className="pa-control">
-              <h3 className="pa-h3">Daily limit</h3>
-              <TileGroup label="Daily limit" columns={3} value={c.dailyMinutes} onChange={(v) => patch({ dailyMinutes: Number(v) })}
-                options={limitOpts.sort((a, b) => a - b).map((m) => ({ value: m, label: `${m} min` }))} />
-              <p className="pa-effect">At the limit {T} finishes at the next natural stop. {T} never shows {name} a countdown.</p>
-            </div>
-            {data?.dayLimits === false && (
-              <p className="pa-effect" data-testid="limits-off">{`The daily limit and lesson hours are off for now: ${name} can start a lesson at any time. What you choose here is kept for when they come back.`}</p>
+            {/* round 7 (dc-r7 D5): the limits are the family's own choice, off until the parent turns them on; nothing here is inert */}
+            {data?.dayLimitsMode !== "on" && data?.dayLimitsMode !== "off" && (
+              <div className="pa-control">
+                <h3 className="pa-h3">Daily limit and lesson hours</h3>
+                <TileGroup label="Daily limit and lesson hours" columns={2} value={c.limitsOn ? "on" : "off"} onChange={(v) => patch({ limitsOn: v === "on" })}
+                  options={[{ value: "off", label: "Off" }, { value: "on", label: "On" }]} />
+                <p className="pa-effect" data-testid={c.limitsOn ? "limits-on" : "limits-off"}>{c.limitsOn
+                  ? `${name}'s lessons follow the limit and hours below. At the limit ${T} finishes the question, then wraps up.`
+                  : `${name} can start a lesson at any time. Turn this on to set a daily limit and lesson hours.`}</p>
+              </div>
             )}
+            {(c.limitsOn || data?.dayLimitsMode === "on") && data?.dayLimitsMode !== "off" && (
+              <>
+                <div className="pa-control">
+                  <h3 className="pa-h3">Daily limit</h3>
+                  <TileGroup label="Daily limit" columns={3} value={c.dailyMinutes} onChange={(v) => patch({ dailyMinutes: Number(v) })}
+                    options={limitOpts.sort((a, b) => a - b).map((m) => ({ value: m, label: `${m} min` }))} />
+                  <p className="pa-effect">At the limit {T} finishes the question {name} is on, then wraps up. {T} never shows {name} a countdown.</p>
+                </div>
+                <div className="pa-control">
+                  <h3 className="pa-h3">Lesson hours</h3>
+                  <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
+                  <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>
+                </div>
+                {base?.limitsOn && <OpenNow childId={current.id} name={name} onRelock={relock} />}
+              </>
+            )}
+            {data?.dayLimitsMode === "off" && <p className="pa-effect" data-testid="limits-off">{`${name} can start a lesson at any time.`}</p>}
+          </GroupCard>
+          <GroupCard id="pace" title="Pace" {...props("pace")}>
             <div className="pa-control">
-              <h3 className="pa-h3">Lesson hours</h3>
-              <HoursFields start={c.hoursStart} end={c.hoursEnd} onChange={(s, e) => patch({ hoursStart: s, hoursEnd: e })} />
-              {data?.dayLimits !== false && <p className="pa-effect">Lessons open from {fmtClock(c.hoursStart)} to {fmtClock(c.hoursEnd)}. Outside these hours the home says when they open.</p>}
+              <h3 className="pa-h3">Extra time to answer</h3>
+              <TileGroup label="Extra time to answer" columns={3} value={c.extraTime ?? "normal"} onChange={(v) => patch({ extraTime: v as "normal" | "more" | "most" })}
+                options={[{ value: "normal", label: "Normal" }, { value: "more", label: "More" }, { value: "most", label: "Most" }]} />
+              <p className="pa-effect">{c.extraTime === "most" ? `${T} waits longest before speaking again, for a child who thinks aloud slowly.` : c.extraTime === "more" ? `${T} waits a little longer for ${name} to answer.` : `${T} waits the usual time for an answer.`}</p>
             </div>
-            {data?.dayLimits !== false && <OpenNow childId={current.id} name={name} onRelock={relock} />}
+            <div className="pa-control">
+              <h3 className="pa-h3">Data saver</h3>
+              <TileGroup label="Data saver" columns={2} value={c.dataSaver ? "on" : "off"} onChange={(v) => patch({ dataSaver: v === "on" })}
+                options={[{ value: "off", label: "Off" }, { value: "on", label: "On" }]} />
+              <p className="pa-effect">{c.dataSaver ? "Lighter sound and pictures, for slow or costly mobile data." : "Full sound and pictures."}</p>
+            </div>
           </GroupCard>
           <GroupCard id="voice" title={`How ${T} speaks`} {...props("voice")}>
             <div className="pa-control">
@@ -268,6 +396,8 @@ export default function Controls() {
           {/* the name the child gave the teacher: view and reset (child-names-teacher; lesson-safety-naming workstream) */}
           <ParentTeacherName childId={current.id} childName={name} className="pa-card" onGateError={relock} />
           <TapAndType childId={current.id} name={name} T={T} on0={!!c.textOnly} onRelock={relock} />
+          <Schedule childId={current.id} name={name} onRelock={relock} />
+          <SharedPhone onRelock={relock} />
           <section className="pa-card pa-group" aria-labelledby="pa-g-school" data-group="school">
             <h2 id="pa-g-school" className="pa-h2">School</h2>
             <HomeworkToday childId={current.id} name={name} on0={!!c.homeworkToday} onRelock={relock} />
@@ -287,14 +417,17 @@ export default function Controls() {
               <p className="pa-effect">Bigger words and less movement on {name}'s screens.</p>
             </div>
           </GroupCard>
+          {/* dc-r7 D5: the channel choice shows only once a second channel really sends (Platform's Notifier) */}
+          {(data?.reportChannels?.length ?? 1) > 1 && (
           <GroupCard id="reports" title="Weekly letter" {...props("reports")}>
             <div className="pa-control">
               <h3 className="pa-h3">Where the weekly letter goes</h3>
               <TileGroup label="Where the weekly letter goes" columns={2} value={c.reportChannel} onChange={(v) => patch({ reportChannel: v as "whatsapp" | "app" })}
                 options={[{ value: "whatsapp", label: "WhatsApp" }, { value: "app", label: "Only in the app" }]} />
-              <p className="pa-effect">It is always in Notes here. WhatsApp sending starts once Taxila's WhatsApp number is connected.</p>
+              <p className="pa-effect">It is always in Notes here too.</p>
             </div>
           </GroupCard>
+          )}
         </div>
       )}
     </ParentShell>

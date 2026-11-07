@@ -1,0 +1,682 @@
+{
+ "topicId": "c7-maths-ch03-t01",
+ "classLevel": 7,
+ "version": 2.2,
+ "status": "draft",
+ "terms": [
+  { "hi": "dashamlav / decimal", "en": "decimal" },
+  { "hi": "dashamlav bindu / point", "en": "decimal point" },
+  { "hi": "dasvaan hissa / tenth", "en": "tenth" },
+  { "hi": "sauvaan hissa / hundredth", "en": "hundredth" },
+  { "hi": "bhinn / fraction", "en": "fraction" },
+  { "hi": "sthaan / jagah", "en": "place" },
+  { "hi": "barabar hisse", "en": "equal parts" },
+  { "hi": "metre, centimetre, millimetre", "en": "metre, centimetre, millimetre" },
+  { "hi": "rupaya aur paisa", "en": "rupee and paisa" },
+  { "hi": "lambai", "en": "length" },
+  { "hi": "oonchai", "en": "height" }
+ ],
+ "skills": [
+  {
+   "skillId": "c7-maths-ch03-t01-s1",
+   "hook": {
+    "convey": "one whole length (1 m, 1 cm) shared into 10 equal parts → each part is one tenth, written 1/10 or 0.1; the digit just after the point counts tenths; a ruler's small marks, marks every 10 cm on a cricket stump",
+    "interestSlots": [
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Drawing ke liye scale se line kheencho toh dekho: har cm ke beech 10 chhote barabar hisse hote hain, aur har chhota hissa ek cm ka 1/10 hai.",
+       "en": "When you draw a line with your ruler, look closely: each cm has 10 small equal parts, and each small part is 1/10 of a cm."
+      }
+     },
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket stump par har 10 cm par nishaan lagao, toh 1 m ke 10 barabar hisse ban jaate hain, aur har hissa metre ka ek tenth hai.",
+       "en": "Put a mark every 10 cm on a cricket stump, and 1 m becomes 10 equal parts, each one a tenth of a metre."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "a 1 m strip in 10 equal parts, one part shaded → 1/10 m = 0.1 m; the first place after the point is tenths → the child names 0.7 m as a fraction (7/10, not 1/7)",
+     "mustSay": [
+      { "hi": "1/10 = 0.1", "en": "1/10 = 0.1" },
+      { "hi": "10 barabar hisse", "en": "10 equal parts" },
+      { "hi": "tenths ki jagah", "en": "the tenths place" }
+     ],
+     "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 1, "whole": "bar" } },
+     "point": {
+      "hi": "Yeh 1 metre ki patti hai, 10 barabar hisson mein bati hui. Ek hissa rangin hai: woh metre ka 1/10 hai, aur decimal mein 1/10 ko 0.1 likhte hain, yaani 0.1 m. Point ke baad pehli jagah tenths ki jagah hoti hai.",
+      "en": "This is a 1 metre strip, divided into 10 equal parts. One part is coloured: it is 1/10 of the metre, and as a decimal 1/10 is written 0.1, so 0.1 m. The first place after the point is the tenths place."
+     },
+     "ask": {
+      "prompt": { "hi": "Is patti par 0.7 m lambai metre ka kaunsa fraction hai?", "en": "On this strip, what fraction of the metre is a length of 0.7 m?" },
+      "key": "7/10 m",
+      "accept": ["7/10", "7/10 metre", "seven tenths", "saat bata das"],
+      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+      "wrongIfMis": "1/7 m",
+      "why": { "hi": "0.7 mein point ke baad pehla ank 7 hai, yaani 10 barabar hisson mein se 7", "en": "in 0.7 the first digit after the point is 7, that is 7 of 10 equal parts" }
+     },
+     "simpler": { "hi": "1 metre ki patti 10 barabar hisson mein hai, ek hissa 1/10 m, yaani 0.1 m. Point ke baad pehli jagah batati hai kitne dasve hisse hain.", "en": "The 1 metre strip is in 10 equal parts; one part is 1/10 m, that is 0.1 m. The first place after the point tells how many tenths." }
+    },
+    {
+     "id": "e2",
+     "convey": "zoom into the ruler between 2 cm and 3 cm: 10 equal small gaps, each 0.1 cm; the 6th mark after 2 is 2.6 cm (2 whole cm and 6 tenths); one whole cm holds 10 tenths → the child reads another mark, the 3rd after 2",
+     "mustSay": [
+      { "hi": "2.6 cm", "en": "2.6 cm" },
+      { "hi": "2 poore cm aur 6 tenths", "en": "2 whole cm and 6 tenths" }
+     ],
+     "board": { "template": "number-line-zoom@1", "params": { "value": 2.6 } },
+     "point": {
+      "hi": "Yeh scale ka 2 cm se 3 cm wala hissa bada karke dikhaya hai. 2 aur 3 ke beech 10 barabar chhote hisse hain, har hissa 0.1 cm, kyunki ek poore cm mein 10 tenths hote hain. 2 ke baad chhatha nishaan 2.6 cm hai: 2 poore cm aur 6 tenths.",
+      "en": "This shows the part of the ruler from 2 cm to 3 cm, made bigger. Between 2 and 3 there are 10 equal small parts, each 0.1 cm, because one whole cm holds 10 tenths. The 6th mark after 2 is 2.6 cm: 2 whole cm and 6 tenths."
+     },
+     "ask": {
+      "prompt": { "hi": "Is zoom wali line par 2 ke baad teesra chhota nishaan kitne cm par hai?", "en": "On this zoomed line, at how many cm is the 3rd small mark after 2?" },
+      "key": "2.3 cm",
+      "accept": ["2.3", "2 3/10 cm", "23/10 cm"],
+      "why": { "hi": "har chhota hissa 0.1 cm hai, toh 2 ke baad 3 hisse matlab 2 + 0.3 = 2.3", "en": "each small part is 0.1 cm, so 3 parts after 2 means 2 + 0.3 = 2.3" }
+     },
+     "simpler": { "hi": "2 aur 3 cm ke beech 10 chhote hisse hain, har ek 0.1 cm. 2 ke baad chhatha nishaan 2.6 cm hai: 2 poore aur 6 dasve.", "en": "Between 2 and 3 cm there are 10 small parts, each 0.1 cm. The 6th mark after 2 is 2.6 cm: 2 whole and 6 tenths." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Rahul ne scale se apna rubber naapa. Scale par har cm 10 barabar chhote hisson mein bata hai. Rubber ka ek sira 0 par hai aur doosra sira 3 cm ke nishaan ke baad 4 chhote hisse aage hai. Rubber ki lambai cm mein fraction aur decimal dono mein likho.",
+     "en": "Rahul measured his eraser with a ruler. On the ruler each cm is divided into 10 equal small parts. One end of the eraser is at 0 and the other end is 4 small parts after the 3 cm mark. Write the eraser's length in cm both as a fraction and as a decimal."
+    },
+    "givens": [
+     { "hi": "har cm 10 barabar chhote hisson mein bata hai", "en": "each cm is divided into 10 equal small parts" },
+     { "hi": "rubber 3 cm ke nishaan ke baad 4 chhote hisse aage khatam hota hai", "en": "the eraser ends 4 small parts after the 3 cm mark" }
+    ],
+    "find": { "hi": "rubber ki lambai, fraction aur decimal mein", "en": "the eraser's length, as a fraction and as a decimal" },
+    "steps": [
+     {
+      "do": { "hi": "1 cm ke 10 barabar chhote hisse dekho", "en": "Look at the 10 equal small parts of 1 cm" },
+      "result": "ek chhota hissa 1/10 cm = 0.1 cm",
+      "why": { "hi": "1 cm ke 10 barabar hisse hain", "en": "1 cm has 10 equal parts" },
+      "simpler": { "hi": "1 cm ke 10 barabar chhote hisse hain. Ek hissa 1/10 cm hai, yaani 0.1 cm.", "en": "1 cm has 10 equal small parts. One part is 1/10 cm, that is 0.1 cm." }
+     },
+     {
+      "do": { "hi": "3 cm ke baad ke 4 chhote hisse lo", "en": "Take the 4 small parts after 3 cm" },
+      "result": "4/10 cm = 0.4 cm",
+      "why": { "hi": "har chhota hissa 1/10 cm hai", "en": "each small part is 1/10 cm" },
+      "simpler": { "hi": "3 cm ke baad 4 chhote hisse hain, aur har hissa cm ka dasva hissa hai. Toh 4/10 cm, yaani 0.4 cm.", "en": "There are 4 small parts after 3 cm, and each part is a tenth of a cm. So 4/10 cm, that is 0.4 cm." }
+     },
+     {
+      "do": { "hi": "poore cm aur tenths ko jodo", "en": "Put the whole cm and the tenths together" },
+      "result": "3 + 4/10 = 3 4/10 cm",
+      "why": { "hi": "rubber 3 poore cm aur 4 tenths lamba hai", "en": "the eraser is 3 whole cm and 4 tenths long" },
+      "simpler": { "hi": "Rubber 3 poore cm hai, aur upar se 4 dasve. Dono milakar 3 4/10 cm.", "en": "The eraser is 3 whole cm and 4 tenths more. Together that is 3 4/10 cm." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 3 4/10 cm ko decimal mein likho. Rubber kitne cm lamba hai?", "en": "Now write 3 4/10 cm as a decimal. How many cm long is the eraser?" },
+     "key": "3.4 cm",
+     "accept": ["3.4"],
+     "simpler": { "hi": "Poore 3 cm point se pehle aate hain. Dasve hisse point ke theek baad likho.", "en": "The 3 whole cm go before the point. Write the tenths right after the point." }
+    },
+    "answer": { "hi": "rubber 3 4/10 cm yaani 3.4 cm lamba hai", "en": "the eraser is 3 4/10 cm, that is 3.4 cm, long" },
+    "why": {
+     "hi": "point se pehle poore cm aate hain, aur point ke baad wala ank tenths ginta hai, jo yahan 4 hain",
+     "en": "the whole cm come before the point, and the digit after the point counts tenths, which are 4 here"
+    },
+    "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 4, "whole": "bar" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek bel 0.9 m lambi hai. 1 m ko 10 barabar hisson mein baanto, toh yeh lambai metre ka kaunsa fraction hai?",
+      "en": "A creeper is 0.9 m long. Share 1 m into 10 equal parts: what fraction of a metre is this length?"
+     },
+     "key": "9/10 m",
+     "accept": ["9/10", "9/10 metre", "nine tenths"],
+     "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+     "wrongIfMis": "1/9 m",
+     "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } },
+     "why": { "hi": "0.9 mein tenths ki jagah 9 hai, yaani 10 barabar hisson mein se 9", "en": "0.9 has 9 in the tenths place, that is 9 of 10 equal parts" },
+     "simpler": { "hi": "0.9 mein point ke baad wala digit dekho. Woh batata hai 10 mein se kitne hisse hain.", "en": "Look at the digit after the point in 0.9. It tells how many of the 10 parts there are." }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Long jump ka ek nishaan 1.8 m door hai. 1 m mein 10 tenths hote hain. Yeh doori kul kitne tenths hai?",
+      "en": "A long-jump mark is 1.8 m away. 1 m has 10 tenths. How many tenths is this distance in all?"
+     },
+     "key": "18 tenths",
+     "accept": ["18", "18/10", "18/10 m", "eighteen tenths"],
+     "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+     "wrongIfMis": "8 tenths",
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["10 tenths"] }, "right": { "title": "nishaan", "items": ["kitne tenths"] } } },
+     "why": { "hi": "1 m = 10 tenths, toh 1.8 m = 10 + 8 = 18 tenths", "en": "1 m = 10 tenths, so 1.8 m = 10 + 8 = 18 tenths" },
+     "simpler": { "hi": "1 m mein 10 tenths hain. 1.8 m mein ek poora metre aur point ke baad wale tenths, dono jodo.", "en": "1 m has 10 tenths. In 1.8 m, add the tenths of one whole metre and the tenths after the point." }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch03-t01-i01", "why": "first straight use: 1 m ribbon in 10 equal pieces → one piece is 0.1 m" },
+    { "itemId": "c7-maths-ch03-t01-i02", "why": "7 tenths written both ways: 7/10 and 0.7" },
+    { "itemId": "c7-maths-ch03-t01-i13", "why": "retrieval: how many hundredths make one tenth, ready for the next skill" },
+    { "itemId": "c7-maths-ch03-t01-rl-o1", "why": "a cricket-stump mark 30 cm up → 3/10 m = 0.3 m" },
+    { "itemId": "c7-maths-ch03-t01-rl-h1", "why": "past one whole: 1.6 m is 16 tenths (ten tenths in the whole metre plus six)" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+     "move": "metre strip of 10 tenths, each tenth named both 0.1 and 1/10; walk along 7 tenths and name the length both ways: 0.7 = 7/10, never 1/7",
+     "say": {
+      "hi": "0.7 ka matlab 1/7 nahi hai. Point ke baad pehla ank batata hai ki 10 barabar hisson mein se kitne hisse hain, toh 0.7 = 7/10.",
+      "en": "0.7 does not mean 1/7. The first digit after the point tells how many of 10 equal parts there are, so 0.7 = 7/10."
+     },
+     "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 7, "whole": "bar" } },
+     "then": {
+      "prompt": {
+       "hi": "Ek rassi 0.3 m lambi hai. 1 m ke 10 barabar hisse socho. Rassi metre ka kaunsa fraction hai?",
+       "en": "A rope is 0.3 m long. Think of 1 m in 10 equal parts. What fraction of a metre is the rope?"
+      },
+      "key": "3/10 m",
+      "accept": ["3/10", "3/10 metre", "three tenths"],
+      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+      "wrongIfMis": "1/3 m",
+      "board": { "template": "fraction-parts@1", "params": { "parts": 10, "shade": 0, "whole": "bar" } },
+      "why": { "hi": "0.3 mein tenths ki jagah 3 hai, yaani 10 barabar hisson mein se 3", "en": "0.3 has 3 in the tenths place, that is 3 of 10 equal parts" },
+      "simpler": { "hi": "0.3 mein point ke baad wala digit dekho. Woh batata hai 10 mein se kitne hisse hain.", "en": "Look at the digit after the point in 0.3. It tells how many of the 10 parts there are." }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab har tenth ko bhi 10 barabar hisson mein baantenge. Tab jo aur chhote hisse milenge, woh hundredths kehlaate hain, jaise 1 cm metre ka ek hundredth hai.",
+    "en": "Next we will share each tenth into 10 equal parts as well. The even smaller parts we get are called hundredths, just as 1 cm is one hundredth of a metre."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Har tenth", "items": ["10 barabar hisson mein"] }, "right": { "title": "1 cm", "items": ["metre ka ek hundredth"] } } }
+  },
+  {
+   "skillId": "c7-maths-ch03-t01-s2",
+   "hook": {
+    "convey": "one whole in 100 equal parts → each is one hundredth, 1/100 = 0.01; ten hundredths make one tenth, so a row of 10 squares is 0.1; a video-game loading bar of 100 boxes, a 10 by 10 rangoli grid",
+    "interestSlots": [
+     {
+      "interest": "games",
+      "use": {
+       "hi": "Video game ka loading bar 100 chhote barabar khaanon ka hai. Har khaana poore bar ka 1/100 hai, toh 35 khaane bharne par bar ka 35/100 bhar jaata hai.",
+       "en": "A video game's loading bar has 100 small equal boxes. Each box is 1/100 of the whole bar, so when 35 boxes fill up, 35/100 of the bar is full."
+      }
+     },
+     {
+      "interest": "drawing",
+      "use": {
+       "hi": "Rangoli ke liye 10 × 10 ka grid banao, yaani 100 barabar khaane. Ek khaane mein colour bharo toh woh poori rangoli ka 1/100 hai, aur ek poori row 10 khaanon ki hai.",
+       "en": "For a rangoli, draw a 10 × 10 grid, that is 100 equal squares. Colour one square and it is 1/100 of the whole rangoli, and one full row has 10 squares."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "1 m = 100 equal cm → 1 cm = 1/100 m = 0.01 m; the second place after the point is hundredths → the child names 0.23 m as 23/100 m (not 1/23)",
+     "mustSay": [
+      { "hi": "1/100 = 0.01", "en": "1/100 = 0.01" },
+      { "hi": "hundredths ki jagah", "en": "the hundredths place" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "1 cm", "items": ["1/100 m", "0.01 m"] } } },
+     "point": {
+      "hi": "1 metre mein 100 barabar cm hote hain. Toh 1 cm metre ka 1/100 hai, aur decimal mein 0.01 m. Point ke baad doosri jagah hundredths ki jagah hoti hai.",
+      "en": "There are 100 equal cm in 1 metre. So 1 cm is 1/100 of a metre, and as a decimal 0.01 m. The second place after the point is the hundredths place."
+     },
+     "ask": {
+      "prompt": { "hi": "Ek pencil 0.23 m lambi hai. Yeh lambai metre ka kaunsa fraction hai?", "en": "A pencil is 0.23 m long. What fraction of a metre is this length?" },
+      "key": "23/100 m",
+      "accept": ["23/100", "23/100 metre", "twenty-three hundredths"],
+      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+      "wrongIfMis": "1/23 m",
+      "why": { "hi": "0.23 mein point ke baad do ank hain, yaani 100 barabar hisson mein se 23", "en": "0.23 has two digits after the point, that is 23 of 100 equal parts" }
+     },
+     "simpler": { "hi": "1 metre mein 100 barabar cm hain. Isliye 1 cm = 1/100 m = 0.01 m, aur point ke baad doosri jagah hundredths ki hai.", "en": "1 metre has 100 equal cm. So 1 cm = 1/100 m = 0.01 m, and the second place after the point is hundredths." }
+    },
+    {
+     "id": "e2",
+     "convey": "zoom into 0 to 1: 10 tenths, and inside each tenth 10 hundredths (1 tenth = 10 hundredths); 0.62 = 6 tenths and 2 hundredths, just after 0.6 → the child counts the hundredths from 0.62 up to 0.7",
+     "mustSay": [
+      { "hi": "1 tenth = 10 hundredths", "en": "1 tenth = 10 hundredths" },
+      { "hi": "6 tenths aur 2 hundredths", "en": "6 tenths and 2 hundredths" }
+     ],
+     "board": { "template": "number-line-zoom@1", "params": { "value": 0.62 } },
+     "point": {
+      "hi": "Yeh 0 se 1 tak ka hissa bada karke dikhaya hai, 10 tenths mein. Har tenth ke andar 10 hundredths hote hain. 0.62 matlab 6 tenths aur 2 hundredths, isliye woh 0.6 ke theek baad hai.",
+      "en": "This shows the part from 0 to 1 made bigger, in 10 tenths. Inside each tenth there are 10 hundredths. 0.62 means 6 tenths and 2 hundredths, so it sits just after 0.6."
+     },
+     "ask": {
+      "prompt": { "hi": "Is line par 0.62 se 0.7 tak pahunchne ke liye kitne hundredths aur chahiye?", "en": "On this line, how many more hundredths are needed to get from 0.62 to 0.7?" },
+      "key": "8 hundredths",
+      "accept": ["8", "0.08", "8/100"],
+      "why": { "hi": "0.7 = 70 hundredths aur 0.62 = 62 hundredths, aur 70 − 62 = 8", "en": "0.7 = 70 hundredths and 0.62 = 62 hundredths, and 70 − 62 = 8" }
+     },
+     "simpler": { "hi": "Har tenth ke andar 10 hundredths hain. 0.62 matlab 6 tenths aur 2 hundredths, isliye woh 0.6 ke theek baad hai.", "en": "Each tenth holds 10 hundredths. 0.62 is 6 tenths and 2 hundredths, so it sits just after 0.6." }
+    },
+    {
+     "id": "e3",
+     "convey": "₹0.5 vs ₹0.05: both have a 5 but in different places → 5 tenths = 50 paise, 5 hundredths = 5 paise; the 0 after the point holds the empty tenths place → the child finds how many ₹0.05 make ₹0.5",
+     "mustSay": [
+      { "hi": "₹0.5 = 50 paise", "en": "₹0.5 = 50 paise" },
+      { "hi": "₹0.05 = 5 paise", "en": "₹0.05 = 5 paise" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "₹0.5", "items": ["5 tenths", "50 paise"] }, "right": { "title": "₹0.05", "items": ["5 hundredths", "5 paise"] } } },
+     "point": {
+      "hi": "₹0.5 mein 5 tenths ki jagah par hai, yaani 50 paise. ₹0.05 mein tenths ki jagah 0 hai aur 5 hundredths ki jagah par hai, yaani sirf 5 paise. Dono mein 5 hai, par jagah alag hai.",
+      "en": "In ₹0.5 the 5 is in the tenths place, so it is 50 paise. In ₹0.05 the tenths place holds 0 and the 5 is in the hundredths place, so it is only 5 paise. Both have a 5, but in different places."
+     },
+     "ask": {
+      "prompt": { "hi": "Kitne ₹0.05 milkar ₹0.5 banenge?", "en": "How many ₹0.05 together make ₹0.5?" },
+      "key": "10",
+      "accept": ["10 baar", "ten", "das"],
+      "targets": "c7-maths-ch03-t01-m-same-digit",
+      "wrongIfMis": "1",
+      "why": { "hi": "₹0.5 = 50 paise aur ₹0.05 = 5 paise, aur 50 ÷ 5 = 10", "en": "₹0.5 = 50 paise and ₹0.05 = 5 paise, and 50 ÷ 5 = 10" }
+     },
+     "simpler": { "hi": "₹0.5 mein 5 tenths ki jagah par hai, yaani 50 paise. ₹0.05 mein 5 hundredths ki jagah par hai, yaani sirf 5 paise.", "en": "In ₹0.5 the 5 is in the tenths place, so it is 50 paise. In ₹0.05 the 5 is in the hundredths place, only 5 paise." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek varg rangoli 10 × 10 ke grid mein bani hai, yaani 100 barabar chhote khaane. Usme 47 khaanon mein colour bhara hai. Rangin hissa poori rangoli ka fraction aur decimal mein likho, aur batao woh kitne tenths aur hundredths hai.",
+     "en": "A square rangoli is drawn on a 10 × 10 grid, that is 100 equal small squares. 47 squares are coloured. Write the coloured part as a fraction and as a decimal of the whole rangoli, and say how many tenths and hundredths it is."
+    },
+    "givens": [
+     { "hi": "10 × 10 grid mein 100 barabar khaane hain", "en": "the 10 × 10 grid has 100 equal squares" },
+     { "hi": "47 khaane rangin hain", "en": "47 squares are coloured" }
+    ],
+    "find": { "hi": "rangin hissa fraction aur decimal mein, tenths aur hundredths ke saath", "en": "the coloured part as a fraction and a decimal, with its tenths and hundredths" },
+    "steps": [
+     {
+      "do": { "hi": "ek chhota khaana lo", "en": "Take one small square" },
+      "result": "ek khaana = 1/100 = 0.01 rangoli",
+      "why": { "hi": "poori rangoli 100 barabar khaanon mein bati hai", "en": "the whole rangoli is divided into 100 equal squares" },
+      "simpler": { "hi": "Poori rangoli 100 barabar khaanon mein hai. Ek khaana 1/100 hai, yaani 0.01.", "en": "The whole rangoli is in 100 equal squares. One square is 1/100, that is 0.01." }
+     },
+     {
+      "do": { "hi": "47 rangin khaanon ko fraction mein likho", "en": "Write the 47 coloured squares as a fraction" },
+      "result": "47/100 rangoli",
+      "why": { "hi": "har khaana rangoli ka 1/100 hai", "en": "each square is 1/100 of the rangoli" },
+      "simpler": { "hi": "Har khaana rangoli ka sauvaan hissa hai, aur 47 khaane rangeen hain. Toh rangeen hissa 47/100 rangoli hai.", "en": "Each square is a hundredth of the rangoli, and 47 squares are coloured. So the coloured part is 47/100 of the rangoli." }
+     },
+     {
+      "do": { "hi": "47 khaanon ko poori rows aur bache khaanon mein baanto", "en": "Split the 47 squares into full rows and extra squares" },
+      "result": "4 poori rows aur 7 khaane, yaani 4 tenths aur 7 hundredths",
+      "why": { "hi": "ek row ke 10 khaane milkar rangoli ka ek tenth banate hain", "en": "the 10 squares of one row make one tenth of the rangoli" },
+      "simpler": { "hi": "Ek row mein 10 khaane hain, jo ek tenth hai. 47 khaane matlab 4 poori rows aur 7 khaane.", "en": "One row has 10 squares, which is one tenth. 47 squares are 4 full rows and 7 squares." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 4 tenths aur 7 hundredths ko decimal mein likho.", "en": "Now write 4 tenths and 7 hundredths as a decimal." },
+     "key": "0.47",
+     "accept": [".47", "0.47 rangoli"],
+     "simpler": { "hi": "Tenths point ke theek baad aate hain. Hundredths uske baad, doosri jagah par.", "en": "Tenths go right after the point. Hundredths go next, in the second place." }
+    },
+    "answer": { "hi": "rangin hissa 47/100 = 0.47 hai, yaani 4 tenths aur 7 hundredths", "en": "the coloured part is 47/100 = 0.47, that is 4 tenths and 7 hundredths" },
+    "why": {
+     "hi": "point ke baad pehla ank poori rows yaani tenths ginta hai, aur doosra ank bache khaane yaani hundredths",
+     "en": "the first digit after the point counts the full rows, the tenths, and the second counts the extra squares, the hundredths"
+    },
+    "board": { "template": "area-grid@1", "params": { "w": 10, "h": 10, "mode": "area" } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "₹0.7 aur ₹0.07 mein kitne paise ka farak hai?",
+      "en": "What is the difference between ₹0.7 and ₹0.07, in paise?"
+     },
+     "key": "63 paise",
+     "accept": ["63", "₹0.63", "0.63"],
+     "targets": "c7-maths-ch03-t01-m-same-digit",
+     "wrongIfMis": "0 paise",
+     "board": { "template": "compare@1", "params": { "left": { "title": "₹0.7", "items": ["7 tenths"] }, "right": { "title": "₹0.07", "items": ["7 hundredths"] } } },
+     "why": { "hi": "₹0.7 = 70 paise aur ₹0.07 = 7 paise, aur 70 − 7 = 63", "en": "₹0.7 = 70 paise and ₹0.07 = 7 paise, and 70 − 7 = 63" },
+     "simpler": { "hi": "₹0.7 aur ₹0.07 dono ko paise mein badlo. Phir bade mein se chhota ghatao.", "en": "Change both ₹0.7 and ₹0.07 into paise. Then take the smaller from the bigger." }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Patang ki dor ka ek tukda 0.36 m lamba hai. 1 m = 100 cm. Yeh tukda metre ka kaunsa fraction hai, denominator 100 ke saath?",
+      "en": "A piece of kite string is 0.36 m long. 1 m = 100 cm. What fraction of a metre is the piece, with denominator 100?"
+     },
+     "key": "36/100 m",
+     "accept": ["36/100", "36/100 metre", "9/25", "9/25 m"],
+     "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+     "wrongIfMis": "1/36 m",
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "dor ka tukda", "items": ["kaunsa fraction"] } } },
+     "why": { "hi": "0.36 m = 36 cm, aur 1 m mein 100 cm hote hain", "en": "0.36 m = 36 cm, and 1 m has 100 cm" },
+     "simpler": { "hi": "0.36 m ko cm mein socho, kyunki 1 m = 100 cm. Jitne cm, utne hisse 100 mein se.", "en": "Think of 0.36 m in cm, since 1 m = 100 cm. As many cm, that many parts out of 100." }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Ek ribbon 0.3 m lamba hai. 1 m mein 100 hundredths hote hain. Ribbon ki lambai kitne hundredths hai?",
+      "en": "A ribbon is 0.3 m long. 1 m has 100 hundredths. How many hundredths is the ribbon's length?"
+     },
+     "key": "30 hundredths",
+     "accept": ["30", "30/100", "0.30", "thirty hundredths"],
+     "targets": "c7-maths-ch03-t01-m-same-digit",
+     "wrongIfMis": "3 hundredths",
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 hundredths"] }, "right": { "title": "ribbon", "items": ["kitne hundredths"] } } },
+     "why": { "hi": "0.3 = 3 tenths, aur har tenth mein 10 hundredths, toh 3 × 10 = 30", "en": "0.3 = 3 tenths, and each tenth has 10 hundredths, so 3 × 10 = 30" },
+     "simpler": { "hi": "0.3 matlab teen tenths hai. Har tenth mein kitne hundredths hote hain, socho aur guna karo.", "en": "0.3 is three tenths. Think how many hundredths are in each tenth, and multiply." }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch03-t01-i03", "why": "first straight use: 0.36 → 36/100, read as thirty-six hundredths" },
+    { "itemId": "c7-maths-ch03-t01-rl-o2", "why": "7 cm on a 1 m poster → 7/100 m = 0.07 m, the empty tenths place" },
+    { "itemId": "c7-maths-ch03-t01-i11", "why": "0.25 on a 10 × 10 grid: 2 full rows and 5 extra squares = 25/100" },
+    { "itemId": "c7-maths-ch03-t01-i04", "why": "predict then shade: 0.4 (40 squares) covers more than 0.04 (4 squares)" },
+    { "itemId": "c7-maths-ch03-t01-i05", "why": "contrast ₹0.50 and ₹0.05: 50 paise against 5 paise, ten times more" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+     "move": "two digits after the point count parts of 100 equal parts: 0.41 = 41/100, read forty-one hundredths, never 1/41; locate it on the zoomed line between 0.4 and 0.5",
+     "say": {
+      "hi": "0.41 ko 1/41 mat samjho. Point ke baad do ank hon toh woh 100 barabar hisson mein se hisse ginte hain, toh 0.41 = 41/100.",
+      "en": "Do not read 0.41 as 1/41. When there are two digits after the point, they count parts out of 100 equal parts, so 0.41 = 41/100."
+     },
+     "board": { "template": "number-line-zoom@1", "params": { "value": 0.41 } },
+     "then": {
+      "prompt": {
+       "hi": "Ek pencil 0.58 m lambi hai. 1 m = 100 cm. Pencil metre ka kaunsa fraction hai?",
+       "en": "A pencil is 0.58 m long. 1 m = 100 cm. What fraction of a metre is the pencil?"
+      },
+      "key": "58/100 m",
+      "accept": ["58/100", "58/100 metre", "29/50", "29/50 m"],
+      "targets": "c7-maths-ch03-t01-m-no-fraction-link",
+      "wrongIfMis": "1/58 m",
+      "board": { "template": "compare@1", "params": { "left": { "title": "1 m", "items": ["100 cm"] }, "right": { "title": "pencil", "items": ["kaunsa fraction"] } } },
+      "why": { "hi": "0.58 m = 58 cm, aur 1 m mein 100 cm hote hain", "en": "0.58 m = 58 cm, and 1 m has 100 cm" },
+      "simpler": { "hi": "0.58 m ko cm mein socho, kyunki 1 m = 100 cm. Jitne cm, utne hisse 100 mein se.", "en": "Think of 0.58 m in cm, since 1 m = 100 cm. As many cm, that many parts out of 100." }
+     }
+    },
+    {
+     "targets": "c7-maths-ch03-t01-m-same-digit",
+     "move": "hundred grid picture in words: 0.5 is 5 full rows = 50 small squares, 0.05 is 5 small squares; the 0 after the point says no full tenth → shade both and compare the squares",
+     "say": {
+      "hi": "0.5 mein 5 tenths ki jagah par hai, yaani 50 hundredths. 0.05 mein tenths ki jagah 0 hai, toh woh sirf 5 hundredths hai.",
+      "en": "In 0.5 the 5 is in the tenths place, so it is 50 hundredths. In 0.05 the tenths place holds 0, so it is only 5 hundredths."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "0.5", "items": ["50 hundredths"] }, "right": { "title": "0.05", "items": ["5 hundredths"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Kitne ₹0.02 milkar ₹0.2 banenge?",
+       "en": "How many ₹0.02 together make ₹0.2?"
+      },
+      "key": "10",
+      "accept": ["10 baar", "ten", "das"],
+      "targets": "c7-maths-ch03-t01-m-same-digit",
+      "wrongIfMis": "1",
+      "board": { "template": "compare@1", "params": { "left": { "title": "₹0.2", "items": ["2 tenths"] }, "right": { "title": "₹0.02", "items": ["2 hundredths"] } } },
+      "why": { "hi": "₹0.2 = 20 paise aur ₹0.02 = 2 paise, aur 20 ÷ 2 = 10", "en": "₹0.2 = 20 paise and ₹0.02 = 2 paise, and 20 ÷ 2 = 10" },
+      "simpler": { "hi": "₹0.2 aur ₹0.02 dono ko paise mein badlo. Phir dekho chhota wala bade mein kitni baar aata hai.", "en": "Change both ₹0.2 and ₹0.02 into paise. Then see how many times the small one fits into the big one." }
+     }
+    }
+   ],
+   "bridgeToNext": {
+    "hi": "Ab yahi tenths aur hundredths units badalne mein kaam aayenge: cm se metre, mm se cm, aur paise se rupaye.",
+    "en": "Next, these same tenths and hundredths help us change units: cm to metres, mm to cm, and paise to rupees."
+   },
+   "bridgeBoard": { "template": "compare@1", "params": { "left": { "title": "Units badalne", "items": ["cm se metre", "mm se cm", "paise se rupaye"] }, "right": { "title": "Kaam aayenge", "items": ["tenths aur hundredths"] } } }
+  },
+  {
+   "skillId": "c7-maths-ch03-t01-s3",
+   "hook": {
+    "convey": "100 cm = 1 m and 100 paise = ₹1 → cm and paise sit in the hundredths place; 10 mm = 1 cm → mm sit in the tenths place of a cm; a car's length on a parking board, a price on a kitchen bill",
+    "interestSlots": [
+     {
+      "interest": "vehicles",
+      "use": {
+       "hi": "Ek car 4 m 35 cm lambi hai. Parking board par yahi lambai metre mein likhi jaati hai, kyunki 35 cm metre ke 35 hundredths hain.",
+       "en": "A car is 4 m 35 cm long. On a parking board the same length is written in metres, because 35 cm is 35 hundredths of a metre."
+      }
+     },
+     {
+      "interest": "cooking",
+      "use": {
+       "hi": "Kitchen ke saaman ka bill dekho: ₹1 mein 100 paise hote hain, isliye paise rupaye ke baad point ke aage do jagah mein likhe jaate hain.",
+       "en": "Look at a bill for kitchen things: ₹1 has 100 paise, so paise are written in the two places after the point, following the rupees."
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "a height of 1 m 25 cm: 25 cm = 25 hundredths of a metre → 1.25 m on the zoomed line; adding cm adds hundredths → the child adds 5 cm and gets 1.3 m (not 1.75 m)",
+     "mustSay": [
+      { "hi": "100 cm = 1 m", "en": "100 cm = 1 m" },
+      { "hi": "1 m 25 cm = 1.25 m", "en": "1 m 25 cm = 1.25 m" }
+     ],
+     "board": { "template": "number-line-zoom@1", "params": { "value": 1.25 } },
+     "point": {
+      "hi": "Ek bachche ki oonchai 1 m 25 cm hai. 100 cm = 1 m, toh 25 cm metre ke 25 hundredths hain. Isliye 1 m 25 cm = 1.25 m, jo is line par 1 aur 2 ke beech hai.",
+      "en": "A child's height is 1 m 25 cm. 100 cm = 1 m, so 25 cm is 25 hundredths of a metre. So 1 m 25 cm = 1.25 m, which is between 1 and 2 on this line."
+     },
+     "ask": {
+      "prompt": { "hi": "Is 1.25 m wali oonchai mein 5 cm aur jodo, toh nayi oonchai kitne metre hogi?", "en": "Add 5 cm to this height of 1.25 m. How many metres is the new height?" },
+      "key": "1.3 m",
+      "accept": ["1.30 m", "1.3", "1.30", "130 cm"],
+      "targets": "c7-maths-ch03-t01-m-cm-decimal",
+      "wrongIfMis": "1.75 m",
+      "why": { "hi": "1.25 m = 125 cm, aur 125 + 5 = 130 cm = 1.30 m", "en": "1.25 m = 125 cm, and 125 + 5 = 130 cm = 1.30 m" }
+     },
+     "simpler": { "hi": "100 cm = 1 m, toh 25 cm metre ke 25 hundredths hain. Isliye 1 m 25 cm = 1.25 m.", "en": "100 cm = 1 m, so 25 cm is 25 hundredths of a metre. So 1 m 25 cm = 1.25 m." }
+    },
+    {
+     "id": "e2",
+     "convey": "80 cm = 80 hundredths = 0.80 m, but 8 cm = 8 hundredths = 0.08 m: with fewer than 10 cm the tenths place holds 0 → the child adds 1 cm to 8 cm and writes 0.09 m (not 0.9 m)",
+     "mustSay": [
+      { "hi": "8 cm = 0.08 m", "en": "8 cm = 0.08 m" },
+      { "hi": "tenths ki jagah 0", "en": "0 in the tenths place" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "80 cm", "items": ["0.80 m"] }, "right": { "title": "8 cm", "items": ["0.08 m"] } } },
+     "point": {
+      "hi": "80 cm metre ke 80 hundredths hain, yaani 0.80 m. Par 8 cm sirf 8 hundredths hain, isliye tenths ki jagah 0 aata hai aur 8 cm = 0.08 m.",
+      "en": "80 cm is 80 hundredths of a metre, that is 0.80 m. But 8 cm is only 8 hundredths, so the tenths place gets 0 and 8 cm = 0.08 m."
+     },
+     "ask": {
+      "prompt": { "hi": "Is 8 cm wale tukde mein 1 cm aur jodo, toh woh kitne metre ka hoga?", "en": "Add 1 cm to this 8 cm piece. How many metres long will it be?" },
+      "key": "0.09 m",
+      "accept": ["0.09", "9/100 m", "9/100"],
+      "targets": "c7-maths-ch03-t01-m-cm-decimal",
+      "wrongIfMis": "0.9 m",
+      "why": { "hi": "8 + 1 = 9 cm, aur 9 cm metre ke 9 hundredths hain", "en": "8 + 1 = 9 cm, and 9 cm is 9 hundredths of a metre" }
+     },
+     "simpler": { "hi": "80 cm metre ke 80 hundredths hain, yaani 0.80 m. Par 8 cm sirf 8 hundredths hain, isliye tenths ki jagah 0 aata hai: 0.08 m.", "en": "80 cm is 80 hundredths of a metre, 0.80 m. But 8 cm is only 8 hundredths, so the tenths place gets 0: 0.08 m." }
+    },
+    {
+     "id": "e3",
+     "convey": "1 cm = 10 equal mm → 1 mm = 1/10 cm = 0.1 cm: mm go in the tenths place of a cm, not the hundredths → the child writes 23 mm in cm",
+     "mustSay": [
+      { "hi": "1 cm = 10 mm", "en": "1 cm = 10 mm" },
+      { "hi": "1 mm = 0.1 cm", "en": "1 mm = 0.1 cm" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "1 cm", "items": ["10 mm"] }, "right": { "title": "1 mm", "items": ["1/10 cm", "0.1 cm"] } } },
+     "point": {
+      "hi": "1 cm mein 10 barabar mm hote hain. Isliye 1 mm = 1/10 cm = 0.1 cm. Yahan mm, cm ka tenth hai, hundredth nahi.",
+      "en": "1 cm has 10 equal mm. So 1 mm = 1/10 cm = 0.1 cm. Here a mm is a tenth of a cm, not a hundredth."
+     },
+     "ask": {
+      "prompt": { "hi": "Ek keeda 23 mm lamba hai. Woh kitne cm ka hai?", "en": "An insect is 23 mm long. How many cm is it?" },
+      "key": "2.3 cm",
+      "accept": ["2.3", "23/10 cm", "2 3/10 cm"],
+      "why": { "hi": "10 mm = 1 cm, toh 23 mm = 2 cm aur 3 mm = 2.3 cm", "en": "10 mm = 1 cm, so 23 mm = 2 cm and 3 mm = 2.3 cm" }
+     },
+     "simpler": { "hi": "1 cm mein 10 barabar mm hote hain. Isliye ek mm, ek cm ka dasva hissa hai: 0.1 cm.", "en": "1 cm has 10 equal mm. So one mm is a tenth of a cm: 0.1 cm." }
+    },
+    {
+     "id": "e4",
+     "convey": "₹1 = 100 paise → 1 paisa = 1/100 rupee = ₹0.01: paise take the two places after the point, so a single-digit paise amount needs a 0 in the tenths place → the child writes ₹6 and 4 paise as ₹6.04 (not ₹6.4)",
+     "mustSay": [
+      { "hi": "₹1 = 100 paise", "en": "₹1 = 100 paise" },
+      { "hi": "1 paisa = ₹0.01", "en": "1 paisa = ₹0.01" }
+     ],
+     "board": { "template": "compare@1", "params": { "left": { "title": "₹1", "items": ["100 paise"] }, "right": { "title": "1 paisa", "items": ["1/100 rupaya", "₹0.01"] } } },
+     "point": {
+      "hi": "₹1 mein 100 paise hote hain, toh 1 paisa = 1/100 rupaya = ₹0.01. Isliye paise hamesha point ke baad ki do jagah lete hain.",
+      "en": "₹1 has 100 paise, so 1 paisa = 1/100 rupee = ₹0.01. That is why paise always take the two places after the point."
+     },
+     "ask": {
+      "prompt": { "hi": "₹6 aur 4 paise ko rupaye mein decimal se likho.", "en": "Write ₹6 and 4 paise in rupees as a decimal." },
+      "key": "₹6.04",
+      "accept": ["6.04", "Rs 6.04", "6.04 rupaye", "6.04 rupees"],
+      "targets": "c7-maths-ch03-t01-m-same-digit",
+      "wrongIfMis": "₹6.4",
+      "why": { "hi": "4 paise = ₹0.04, aur paise point ke baad do jagah lete hain", "en": "4 paise = ₹0.04, and paise take two places after the point" }
+     },
+     "simpler": { "hi": "₹1 mein 100 paise hote hain, toh 1 paisa = ₹0.01. Paise hamesha point ke baad do jagah lete hain.", "en": "₹1 has 100 paise, so 1 paisa = ₹0.01. Paise always take two places after the point." }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek almaari 2 m 7 cm oonchi hai. Uski oonchai sirf metre mein, decimal se likho.",
+     "en": "A cupboard is 2 m 7 cm tall. Write its height in metres only, as a decimal."
+    },
+    "givens": [
+     { "hi": "almaari 2 m 7 cm oonchi hai", "en": "the cupboard is 2 m 7 cm tall" },
+     { "hi": "1 m mein 100 cm hote hain", "en": "1 m has 100 cm" }
+    ],
+    "find": { "hi": "oonchai metre mein, decimal se", "en": "the height in metres, as a decimal" },
+    "steps": [
+     {
+      "do": { "hi": "1 cm ko metre mein badlo", "en": "Change 1 cm into metres" },
+      "result": "1 cm = 1/100 m = 0.01 m",
+      "why": { "hi": "100 barabar cm milkar 1 metre banate hain", "en": "100 equal cm make 1 metre" },
+      "simpler": { "hi": "100 barabar cm milkar 1 metre banate hain. Isliye 1 cm = 1/100 m = 0.01 m.", "en": "100 equal cm make 1 metre. So 1 cm = 1/100 m = 0.01 m." }
+     },
+     {
+      "do": { "hi": "7 cm ko metre mein likho", "en": "Write 7 cm in metres" },
+      "result": "7 cm = 7/100 m = 0.07 m",
+      "why": { "hi": "har cm metre ka ek hundredth hai", "en": "each cm is one hundredth of a metre" },
+      "simpler": { "hi": "Har cm metre ka ek hundredth hai. Toh 7 cm = 7/100 m = 0.07 m.", "en": "Each cm is one hundredth of a metre. So 7 cm = 7/100 m = 0.07 m." }
+     },
+     {
+      "do": { "hi": "tenths ki jagah dekho", "en": "Look at the tenths place" },
+      "result": "tenths ki jagah 0",
+      "why": { "hi": "7 cm mein ek bhi poora tenth yaani 10 cm nahi hai", "en": "7 cm does not hold even one whole tenth, that is 10 cm" },
+      "simpler": { "hi": "7 cm mein ek poora tenth bhi nahi banta. Isliye tenths ki jagah 0 aata hai.", "en": "7 cm does not make even one whole tenth. So the tenths place gets 0." }
+     }
+    ],
+    "yourStep": {
+     "prompt": { "hi": "Ab 2 m aur 0.07 m ko saath likho. Almaari kitne metre oonchi hai?", "en": "Now put 2 m and 0.07 m together. How many metres tall is the cupboard?" },
+     "key": "2.07 m",
+     "accept": ["2.07"],
+     "targets": "c7-maths-ch03-t01-m-cm-decimal",
+     "wrongIfMis": "2.7 m",
+     "simpler": { "hi": "Poore 2 m point se pehle likho. Phir point ke baad 0.07 wale digits likho.", "en": "Write the 2 whole m before the point. Then write the digits of 0.07 after the point." }
+    },
+    "answer": { "hi": "almaari 2 m 7 cm yaani 2.07 m oonchi hai", "en": "the cupboard is 2 m 7 cm, that is 2.07 m, tall" },
+    "why": {
+     "hi": "7 cm sirf 7 hundredths metre hai, isliye 7 point ke baad doosri jagah par aata hai aur tenths ki jagah 0 rehta hai",
+     "en": "7 cm is only 7 hundredths of a metre, so the 7 goes in the second place after the point and the tenths place stays 0"
+    },
+    "board": { "template": "compare@1", "params": { "left": { "title": "almaari", "items": ["2 m 7 cm"] }, "right": { "title": "7 cm", "items": ["7/100 m", "0.07 m"] } } }
+   },
+   "checks": [
+    {
+     "id": "c1",
+     "prompt": {
+      "hi": "Ek pauda ek hafte mein 9 cm bada hua. Yeh badhat kitne metre hai?",
+      "en": "A plant grew 9 cm in a week. How many metres is this growth?"
+     },
+     "key": "0.09 m",
+     "accept": ["0.09", "9/100 m", "9/100"],
+     "targets": "c7-maths-ch03-t01-m-cm-decimal",
+     "wrongIfMis": "0.9 m",
+     "board": { "template": "compare@1", "params": { "left": { "title": "pauda", "items": ["9 cm"] }, "right": { "title": "badhat", "items": ["kitne metre"] } } },
+     "why": { "hi": "9 cm metre ke sirf 9 hundredths hain, toh tenths ki jagah 0 aata hai", "en": "9 cm is only 9 hundredths of a metre, so the tenths place is 0" },
+     "simpler": { "hi": "9 cm metre ke sirf 9 hundredths hain. Socho, tenths ki jagah par kya aayega.", "en": "9 cm is only 9 hundredths of a metre. Think what goes in the tenths place." }
+    },
+    {
+     "id": "c2",
+     "prompt": {
+      "hi": "Ek pen ₹8 aur 3 paise ka hai. Uska daam rupaye mein decimal se likho.",
+      "en": "A pen costs ₹8 and 3 paise. Write its price in rupees as a decimal."
+     },
+     "key": "₹8.03",
+     "accept": ["8.03", "Rs 8.03", "8.03 rupaye", "8.03 rupees"],
+     "targets": "c7-maths-ch03-t01-m-same-digit",
+     "wrongIfMis": "₹8.3",
+     "board": { "template": "compare@1", "params": { "left": { "title": "pen", "items": ["₹8", "3 paise"] }, "right": { "title": "daam", "items": ["rupaye mein"] } } },
+     "why": { "hi": "3 paise = ₹0.03, aur ₹8 + ₹0.03 = ₹8.03", "en": "3 paise = ₹0.03, and ₹8 + ₹0.03 = ₹8.03" },
+     "simpler": { "hi": "3 paise rupaye ke 3 hundredths hain. Paise point ke baad do jagah lete hain.", "en": "3 paise is 3 hundredths of a rupee. Paise take two places after the point." }
+    },
+    {
+     "id": "c3",
+     "prompt": {
+      "hi": "Sports day par Neha ki chhalaang 2 m 6 cm thi aur Kiran ki 2.6 m. Dono chhalaangon mein kitne cm ka farak hai?",
+      "en": "On sports day Neha's jump was 2 m 6 cm and Kiran's was 2.6 m. How many cm apart are the two jumps?"
+     },
+     "key": "54 cm",
+     "accept": ["54", "0.54 m"],
+     "targets": "c7-maths-ch03-t01-m-cm-decimal",
+     "wrongIfMis": "0 cm",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Neha", "items": ["2 m 6 cm"] }, "right": { "title": "Kiran", "items": ["2.6 m"] } } },
+     "why": { "hi": "2.6 m = 2 m 60 cm, aur 60 − 6 = 54", "en": "2.6 m = 2 m 60 cm, and 60 − 6 = 54" },
+     "simpler": { "hi": "Kiran ki 2.6 m ko m aur cm mein badlo. Phir dono chhalaangon ke cm milao.", "en": "Change Kiran's 2.6 m into m and cm. Then compare the cm of the two jumps." }
+    }
+   ],
+   "ladder": [
+    { "itemId": "c7-maths-ch03-t01-i06", "why": "first straight use: a height of 1 m 45 cm → 1.45 m" },
+    { "itemId": "c7-maths-ch03-t01-i09", "why": "₹3 and 5 paise → ₹3.05, the 0 that holds the tenths place" },
+    { "itemId": "c7-maths-ch03-t01-i08", "why": "error-spot: 8 cm written as 0.8 m → it is 0.08 m, and 0.8 m would be 80 cm" },
+    { "itemId": "c7-maths-ch03-t01-i10", "why": "far transfer: two sports-day jumps, 3 m 8 cm against 3.8 m → who jumped further, by 72 cm" }
+   ],
+   "remediation": [
+    {
+     "targets": "c7-maths-ch03-t01-m-cm-decimal",
+     "move": "metre strip marked in cm: 1 m is 100 cm, not 10, so 5 cm is 5 of 100 parts = 0.05 m; 0.5 m is 50 cm, half the strip",
+     "say": {
+      "hi": "1 metre mein 100 cm hote hain, 10 nahi. Isliye 5 cm = 0.05 m hai, aur 0.5 m toh 50 cm hota hai.",
+      "en": "1 metre has 100 cm, not 10. So 5 cm = 0.05 m, and 0.5 m is 50 cm."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "5 cm", "items": ["0.05 m"] }, "right": { "title": "50 cm", "items": ["0.5 m"] } } },
+     "then": {
+      "prompt": {
+       "hi": "Ek rubber 4 cm lamba hai. Yeh kitne metre hai?",
+       "en": "An eraser is 4 cm long. How many metres is that?"
+      },
+      "key": "0.04 m",
+      "accept": ["0.04", "4/100 m", "4/100"],
+      "targets": "c7-maths-ch03-t01-m-cm-decimal",
+      "wrongIfMis": "0.4 m",
+      "board": { "template": "compare@1", "params": { "left": { "title": "rubber", "items": ["4 cm"] }, "right": { "title": "metre mein", "items": ["kitne metre"] } } },
+      "why": { "hi": "4 cm metre ke 4 hundredths hain, toh tenths ki jagah 0 aata hai", "en": "4 cm is 4 hundredths of a metre, so the tenths place is 0" },
+      "simpler": { "hi": "4 cm metre ke 4 hundredths hain. Tenths ki jagah ka dhyaan rakho.", "en": "4 cm is 4 hundredths of a metre. Mind the tenths place." }
+     }
+    },
+    {
+     "targets": "c7-maths-ch03-t01-m-same-digit",
+     "move": "paise fill two places after the point: 5 paise = ₹0.05, so ₹3 and 5 paise = ₹3.05; ₹3.5 would be ₹3 and 50 paise",
+     "say": {
+      "hi": "Paise ko rupaye mein likhne par point ke baad do jagah bharti hain. 5 paise = ₹0.05, isliye ₹3 aur 5 paise = ₹3.05, aur ₹3.5 toh ₹3 aur 50 paise hai.",
+      "en": "When you write paise in rupees, two places after the point fill up. 5 paise = ₹0.05, so ₹3 and 5 paise = ₹3.05, and ₹3.5 is ₹3 and 50 paise."
+     },
+     "board": { "template": "compare@1", "params": { "left": { "title": "₹3.05", "items": ["₹3 aur 5 paise"] }, "right": { "title": "₹3.5", "items": ["₹3 aur 50 paise"] } } },
+     "then": {
+      "prompt": {
+       "hi": "₹5 aur 9 paise ko rupaye mein decimal se likho.",
+       "en": "Write ₹5 and 9 paise in rupees as a decimal."
+      },
+      "key": "₹5.09",
+      "accept": ["5.09", "Rs 5.09", "5.09 rupaye", "5.09 rupees"],
+      "targets": "c7-maths-ch03-t01-m-same-digit",
+      "wrongIfMis": "₹5.9",
+      "board": { "template": "compare@1", "params": { "left": { "title": "₹5 aur 9 paise", "items": ["rupaye mein"] }, "right": { "title": "decimal", "items": ["likho"] } } },
+      "why": { "hi": "9 paise = ₹0.09, aur ₹5 + ₹0.09 = ₹5.09", "en": "9 paise = ₹0.09, and ₹5 + ₹0.09 = ₹5.09" },
+      "simpler": { "hi": "9 paise rupaye ke 9 hundredths hain. Paise point ke baad do jagah lete hain.", "en": "9 paise is 9 hundredths of a rupee. Paise take two places after the point." }
+     }
+    }
+   ],
+   "bridgeToNext": null
+  }
+ ]
+}

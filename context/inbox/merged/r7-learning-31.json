@@ -1,0 +1,45 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-coldstart-placement",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F (main 2026-11-07 (c)): a new child's start per subject comes from two onboarding answers (the parent's view hard/fine/easy, the child's pick tricky/okay/easy) as one wide Gaussian site on the KT θ scale, written as a placement row (source 'onboarding'); no quiz. Topic choice, R9 and the θ prior read it unchanged. Reverse if: real first-week data shows answer-started children settling no faster than calendar-started ones."
+  },
+  {
+   "id": "dc-r7-coldstart-refine-theta",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: covert refinement. Once a subject's live θ (kt_ability) has sd ≤ 0.7, topic choice and the conductor's foundation share read the start from θ (mu − 0.25 sd) instead of the placement row (store.js liveResultsOf). Settling is by sd, not n_obs, because kt_ability.n_obs counts only the current epoch. Reverse if: θ-driven starts swing between lessons enough to repeat or skip chapters."
+  },
+  {
+   "id": "dc-r7-r15-first-week",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: conductor rule R15. A subject started from onboarding answers runs its first two lessons success-first with newSkillBudget 0, then success-first until its θ settles (view key learner.firstWeek, late key). Reverse if: children in the warm lessons close 'bored' more than others."
+  },
+  {
+   "id": "dc-r7-placement-note",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: the parent's placement note is built from registered report shapes (templates.js place.*), so it gets the report gate and HOW copy. Each claim is re-derived from the stored answers (note.js checkPlacementNote) and dropped if it fails. It never shows a level word or a class number. Reverse if: parents read 'starts a little before the class's chapter' as a verdict on the child."
+  },
+  {
+   "id": "m-r7-coldstart-sim",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "Cold-start placement sim (evals/placement-coldstart/sim.mjs; n=300/class, classes 3-8, 3 first-try answers/lesson, real θ engine): model population, onboarding vs class rule: median 6 (p75 12), by5 0.47, by10 0.72, err1 0.97, high1 0.39, err5 0.46 vs median 9 (p75 16), by5 0.29, by10 0.57, err1 1.51, high1 0.68, err5 1.16."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-coldstart-placement",
+   "rel": "measured_by",
+   "dst": "m-r7-coldstart-sim"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-coldstart-placement` (2026-11-07, F Learning)\nA new child's starting point per subject comes from onboarding answers, never from a quiz (main 2026-11-07 item (c); comprehension-engine-program: no quiz-style checking as the main signal).\n\n**The answers.** The parent's view is `hard | fine | easy | unsure` (parent corner FeelPicker, and App's set-up step via docs/patches/to-app/007). The child's own pick at Hello is `tricky | okay | easy`.\n\n**How they become a start** (server/placement/coldstart.js, pure):\n- Each answer is a Gaussian site on GE, relative to the class's expected level today:\n  - parent: hard −1.2 (sd 1.3), fine 0 (1.5), easy +0.5 (1.5);\n  - child: tricky −0.8 (1.8), okay 0 (2.0), easy +0.4 (2.0), with sd ×1.5 for classes 1-2.\n- The product of the sites, floored at sd 1.0 like every placement site, is combined with the class MIXTURE prior (ability.js classPriorComponents, new export; the Normal fit dragged a \"fine\" answer a class low).\n- The start is the posterior mean − 0.25 sd, never above the class's expected level and never below GE 0.\n\n**Where it goes.** It is written as a placement row (`result.source = 'onboarding'`). Existing readers take it unchanged:\n- next-topic.js startGE (a school chapter still wins);\n- placementGapOf → R9 foundation share;\n- kt/placement.js → the θ prior site (written once per subject, so changing an answer never stacks a second site).\n\nA subject with its own placement round keeps the round. The answers are stored in `child.onboarding_answers` (migration 047). Routes: POST /api/placement/onboarding and GET /api/placement/note.\n\n**Reverse if:** real first-week data shows answer-started children settling no faster than calendar-started ones.\n\n## `dc-r7-coldstart-refine-theta` (2026-11-07, F Learning)\nRefinement is covert. `refinedStart` reads the subject's live θ from kt_ability; once its sd ≤ 0.7 (SETTLE_SD), the start is θ.mu − 0.25 sd, and it may then sit above the class level. `store.js liveResultsOf` applies this for topic choice (reports/truth.js nextTopicForPlan) and for the conductor's placementGap (view.js).\n\nThe rule is by sd, not by an observation count: kt_ability.n_obs is the current epoch's count (openEpoch folds earlier sessions into the base), while the sd carries every session. The prior alone never reaches 0.7 (the class prior combined with a site floored at 1.0 has sd > 0.8).\n\nSETTLE_SD 0.7 and Z_START 0.25 were picked by sweeping z ∈ {0, .25, .5} × settle ∈ {.5, .6, .7}. z = 0 settles one lesson sooner but starts 43% of model-population children too hard, against 36% at z = .25.\n\n**Reverse if:** θ-driven starts swing between lessons enough to repeat or skip chapters.\n\n## `dc-r7-r15-first-week` (2026-11-07, F Learning)\nConductor rule R15 reads the view key `learner.firstWeek` (a late key). It holds `{ [subject]: { lessons, settled } }` for onboarding-started subjects, counted from live lesson topic ids and kt_ability.\n\n- For a lesson in such a subject, the first two lessons (WARM_LESSONS) are success-first with newSkillBudget 0.\n- After that, the lesson stays success-first until θ settles.\n- A subject that is settled and past FIRST_WEEK_LESSONS (5) drops out of the view.\n- A child without such subjects plans and hashes exactly as before.\n\n**Reverse if:** children in the warm lessons close \"bored\" more than others.\n\n## `dc-r7-placement-note` (2026-11-07, F Learning)\nThe note is \"what we think and what we used\" (server/placement/note.js). Per subject it gives:\n- `place.start`: the topic it begins with, computed by topic choice's own rule;\n- `place.easier`: when the gap is ≥ 0.5;\n- the parent's answer (`place.parent_<v>`) and the child's pick (`place.child_<v>`);\n\nthen one `place.firstweek` line at the end. These are registered SHAPES with HOW copy, so they get lineViolations (banned and locked words, digits, the exact template) and the reports-gate tests.\n\ncheckPlacementNote re-derives every claim from `child.onboarding_answers` and the round's date: the start, the topic, the answer lines and the name. A failing claim is dropped, along with its subject's other lines, and never shown. It never shows a level word (lexicon: behind, on track) or a class number (rejected grade-equivalent-parent-band).\n\n**Reverse if:** parents read \"starts a little before the class's chapter\" as a verdict on the child.",
+  "measurements": "## `m-r7-coldstart-sim` (2026-11-07, F Learning)\nScript: evals/placement-coldstart/sim.mjs (seed 7). Children with known true θ (maths, GE scale), n=300 per class for classes 3-8, 3 first-try answers per lesson, 20 lessons, all through the real θ engine (initialBase, openEpoch, addObs, currentTheta).\n\n**Answers.** The parent sees the child's level through noise sd 0.8 (15% unsure). The child sees it through noise sd 1.2.\n\n**Populations.**\n- `model`: the classPrior mixture itself.\n- `ontrack`: 80% within ±0.6 of expected, 20% at −1.5.\n\n**Answer models.**\n- The engine's own 4PL.\n- `missp`: a = 1.0, guess .1, slip .15.\n\n**Conditions.**\n- class: today's calendar start with the class prior.\n- onboarding: the answers' site and start.\n\n**Columns.**\n- settle: lessons until the start reads θ and |θ̂ − θ| ≤ 0.5 holds to the end (never = lessons + 1).\n- by5 / by10: share settled by lesson 5 / 10.\n- err1 / err5: mean |start − θ| at lesson 1 / 5.\n- high1: share starting more than 0.5 GE above θ.\n\n| pop | answers | cond | settle median | p75 | by5 | by10 | err1 | high1 | err5 |\n|---|---|---|---|---|---|---|---|---|---|\n| model | model | class | 9 | 16 | 0.29 | 0.57 | 1.51 | 0.68 | 1.16 |\n| model | model | onboarding | 6 | 12 | 0.47 | 0.72 | 0.97 | 0.39 | 0.46 |\n| model | missp | class | 14 | 21 | 0.19 | 0.39 | 1.5 | 0.68 | 1.1 |\n| model | missp | onboarding | 13 | 21 | 0.24 | 0.42 | 1.02 | 0.39 | 0.64 |\n| ontrack | model | class | 8 | 13 | 0.33 | 0.66 | 0.68 | 0.28 | 0.6 |\n| ontrack | model | onboarding | 6 | 12 | 0.46 | 0.7 | 0.79 | 0.08 | 0.46 |\n| ontrack | missp | class | 16 | 21 | 0.19 | 0.37 | 0.68 | 0.29 | 0.66 |\n| ontrack | missp | onboarding | 17 | 21 | 0.23 | 0.37 | 0.77 | 0.08 | 0.67 |\n\n**Read-out.**\n- With 5 answers per lesson (out-obs5.json), the model population settles at a median of 4 lessons with answers, against 6 without.\n- Under the misspecified answer model, both conditions settle slowly (12-17 lessons). That is the θ engine's fit, not placement.\n- In the on-track population the answers cost 0.1 GE of day-one error (starts sit a little low) and cut too-hard starts from 28% to 8%."
+ }
+}

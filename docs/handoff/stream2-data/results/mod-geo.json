@@ -1,0 +1,366 @@
+{
+ "v": 1,
+ "qa": "forge3-qa@2",
+ "at": "2026-10-10T08:31:13.193Z",
+ "viewports": [
+  "p360",
+  "p412",
+  "l1366"
+ ],
+ "boxes": "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
+ "source": "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish",
+ "engines": {
+  "geoboard@1": {
+   "modes": {
+    "*": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": true,
+       "l1366": false
+      },
+      "n": 1,
+      "fails": [
+       "p360:Q1.legible",
+       "p360:Q2.whole",
+       "p412:Q1.legible",
+       "l1366:Q1.legible"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 1,
+      "fails": [
+       "p360:Q1.legible",
+       "p360:Q2.whole",
+       "p360:Q4.touchable",
+       "p412:Q1.legible",
+       "p412:Q2.whole",
+       "p412:Q4.touchable",
+       "l1366:Q1.legible",
+       "l1366:Q2.whole",
+       "l1366:Q4.touchable"
+      ]
+     }
+    },
+    "measure": {
+     "young": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 1,
+      "fails": [
+       "p360:Q1.legible",
+       "p360:Q2.whole",
+       "p412:Q1.legible",
+       "p412:Q2.whole",
+       "l1366:Q1.legible",
+       "l1366:Q2.whole"
+      ]
+     },
+     "older": {
+      "byViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "serveByViewport": {
+       "p360": false,
+       "p412": false,
+       "l1366": false
+      },
+      "n": 1,
+      "fails": [
+       "p360:Q1.legible",
+       "p360:Q2.whole",
+       "p360:Q4.touchable",
+       "p412:Q4.touchable",
+       "l1366:Q1.legible",
+       "l1366:Q2.whole",
+       "l1366:Q4.touchable"
+      ]
+     }
+    }
+   }
+  }
+ },
+ "samples": [
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "young",
+   "topicId": "c2-maths-ch04-t02",
+   "params": {
+    "topicId": "c2-maths-ch04-t02",
+    "skillId": "c2-maths-ch04-t02-s3",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Aisi shape rango jiska\" 13.5 px",
+      "Q2.whole 2 text runs and 2 targets past the frame"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": true,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 15.8,
+     "detail": [
+      "Q1.legible 1 runs < 16 px, e.g. \"Aisi shape rango jiska\" 15.8 px"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible"
+     ],
+     "minPx": 13.7,
+     "detail": [
+      "Q1.legible 4 runs < 16 px, e.g. \"Aisi shape rango jiska\" 13.7 px"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "young",
+   "topicId": "c3-maths-ch05-t02",
+   "params": {
+    "topicId": "c3-maths-ch05-t02",
+    "skillId": "c3-maths-ch05-t02-s3",
+    "lang": "hinglish",
+    "mode": "measure",
+    "shape": "rect:2x3",
+    "ask": "area",
+    "w": 3,
+    "h": 3
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 3 runs < 16 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 6 text runs and 6 targets past the frame"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 3 runs < 16 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 0 text runs and 1 targets past the frame"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 3 runs < 16 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 3 text runs and 3 targets past the frame"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "*",
+   "band": "older",
+   "topicId": "c5-maths-ch03-t02",
+   "params": {
+    "topicId": "c5-maths-ch03-t02",
+    "skillId": "c5-maths-ch03-t02-s2",
+    "lang": "hinglish",
+    "fractions": [],
+    "numbers": [
+     3,
+     4
+    ]
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole",
+      "Q4.touchable"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 1 runs < 14 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 9 text runs and 9 targets past the frame",
+      "Q4.touchable 48 targets < 44 px, e.g. \"square 1, 1\" 40x40"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole",
+      "Q4.touchable"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 1 runs < 14 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 1 text runs and 1 targets past the frame",
+      "Q4.touchable 48 targets < 44 px, e.g. \"square 1, 1\" 40x40"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole",
+      "Q4.touchable"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 1 runs < 14 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 6 text runs and 9 targets past the frame",
+      "Q4.touchable 48 targets < 44 px, e.g. \"square 1, 1\" 40x40"
+     ],
+     "err": null
+    }
+   ]
+  },
+  {
+   "engine": "geoboard@1",
+   "mode": "measure",
+   "band": "older",
+   "topicId": "c5-maths-ch11-t01",
+   "params": {
+    "topicId": "c5-maths-ch11-t01",
+    "skillId": "c5-maths-ch11-t01-s1",
+    "lang": "hinglish",
+    "mode": "measure",
+    "shape": "rect:4x3",
+    "ask": "area",
+    "w": 4,
+    "h": 3,
+    "itemId": "c5-maths-ch11-t01-i01"
+   },
+   "views": [
+    {
+     "vp": "p360",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole",
+      "Q4.touchable"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 1 runs < 14 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 1 text runs and 1 targets past the frame",
+      "Q4.touchable 24 targets < 44 px, e.g. \"square 1, 1\" 42x42"
+     ],
+     "err": null
+    },
+    {
+     "vp": "p412",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q4.touchable"
+     ],
+     "minPx": 15.9,
+     "detail": [
+      "Q4.touchable 12 targets < 44 px, e.g. \"1\" 42x42"
+     ],
+     "err": null
+    },
+    {
+     "vp": "l1366",
+     "pass": false,
+     "serve": false,
+     "fails": [
+      "Q1.legible",
+      "Q2.whole",
+      "Q4.touchable"
+     ],
+     "minPx": 13.5,
+     "detail": [
+      "Q1.legible 1 runs < 14 px, e.g. \"Iska kitna hai:\" 13.5 px",
+      "Q2.whole 1 text runs and 1 targets past the frame",
+      "Q4.touchable 24 targets < 44 px, e.g. \"square 1, 1\" 42x42"
+     ],
+     "err": null
+    }
+   ]
+  }
+ ]
+}

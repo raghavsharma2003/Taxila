@@ -30,11 +30,14 @@ const NUM: Record<string, number> = {
 /** whole-word fractions ("aadha" = 1/2, "paav" = 1/4, "teen chauthai" = 3/4 is handled as a number + "chauthai") */
 const FRAC: Record<string, [number, number]> = { aadha: [1, 2], adha: [1, 2], half: [1, 2], "आधा": [1, 2], paav: [1, 4], pav: [1, 4], quarter: [1, 4], "पाव": [1, 4], tihai: [1, 3], third: [1, 3] };
 const DENOM: Record<string, number> = { chauthai: 4, quarters: 4, tihai: 3, thirds: 3, halves: 2, "चौथाई": 4 };
+/** the spoken Hindi "weigh!" (taraazu/weigh's Tolo) */
+const TOLO_HI = "तोलो"; // lint-ui: speech
 const VERB: Record<string, VoiceIntent["verb"]> = {
   todo: "split", tod: "split", todna: "split", split: "split", divide: "split", bhaag: "split", "तोड़ो": "split", "तोड़": "split",
   kaato: "cut", kaat: "cut", kato: "cut", cut: "cut", "काटो": "cut",
   yahan: "here", yaha: "here", yahin: "here", here: "here", "यहाँ": "here", "यहां": "here",
   chalao: "run", chala: "run", run: "run", start: "run", "चलाओ": "run",
+  tolo: "run", tol: "run", weigh: "run", [TOLO_HI]: "run",            // r7 taraazu/weigh: "Tolo" unlocks the beam
   kholo: "open", khol: "open", open: "open", "खोलो": "open",
   wapas: "undo", undo: "undo", "वापस": "undo",
   left: "left", baayein: "left", right: "right", daayein: "right",

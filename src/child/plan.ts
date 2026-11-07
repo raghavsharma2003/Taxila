@@ -43,6 +43,10 @@ export interface HomePlan {
   testWindow: { subject: string; from: string; to: string } | null;
   /** The parent's per-child "Tap and type only" (server truth, any device). */
   textOnly: boolean;
+  /** r7 app-home-plan-states: the parent's homework help is on until this time (state "homework"). */
+  homework?: { until: string } | null;
+  /** r7: questions parked in earlier lessons and still waiting (the Question jar; null until the server stores them). */
+  jarWaiting?: number;
 }
 
 const STATES = new Set<ChildHomeState>(["start", "first", "resume", "done", "capped", "resting", "homework", "test_window", "safety_hold"]);
@@ -66,6 +70,12 @@ function writeCache(cid: string, c: Cached): void {
 }
 
 const ALL_SURFACES = { map: true, notebook: true, resume: true };
+
+/** r7 app-nav-unified: the parent's hidden surfaces as last seen on this device (the dock on screens that do not read the
+ *  plan). Everything shows until a plan read says otherwise. */
+export function cachedSurfaces(cid: string): HomePlan["surfaces"] {
+  return { ...ALL_SURFACES, ...(readCache(cid)?.surfaces ?? {}) };
+}
 
 /** r5 QA D24: the lesson route reopens a lesson by id (POST /api/lesson/start {resumeLessonId}; the cascade and text lanes
  *  every home start uses), so "Continue" is true now. */
@@ -92,6 +102,8 @@ export function fromServer(r: ChildPlanResponse): HomePlan {
     madeFor: Array.isArray(r.madeFor) ? r.madeFor.slice(0, 3) : [],
     testWindow: r.testWindow ?? null,
     textOnly: !!r.textOnly,
+    homework: r.homework ?? null,
+    jarWaiting: Math.max(0, Number(r.jar?.waiting) || 0),
   };
 }
 

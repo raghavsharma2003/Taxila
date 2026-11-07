@@ -1,0 +1,17 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-staging-test-db-only",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "taxila-staging can never reach production data, by construction. scripts/staging.mjs deploys it with TAXILA_DB=test AND re-points DATABASE_URL itself at the TEST branch, and it removes DATABASE_URL_DIRECT, so code that reads DATABASE_URL directly still lands on TEST. deploy-azure --create now copies only the secrets the new app's env and registries reference, so production's database URL is not even stored on the staging app. The apply refuses if the TEST host equals the production host, and after the deploy it reads the staging app's own DATABASE_URL secret and compares host hashes. Chat runs on the southindia account and TAXILA_DUPLEX is on. Its worker copies taxila-staging's env (deploy-worker --web) and has no scheduled jobs, so a staging canary never pages the owner. Creating it waits for the owner's yes on cost (~$40/mo). Reverse if the owner prefers to repurpose taxila-sin-staging (then --env taxila-sin-env and its RG)."
+    },
+    {
+      "id": "dc-r7-d5-relay-ticket",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "The India D5 relay (taxila-d5-sin, South India) runs the same image with TAXILA_ROLE=d5relay: only /api/health and the /api/duplex/voicelive upgrade. It has no database and no session cookie. taxila-web authorizes the child as today (authorizeD5) and mints a 60-second, single-use HMAC ticket bound to that lesson (server/relay-ticket.js, key TAXILA_D5_TICKET_KEY). The relay only verifies the ticket. The relay app carries only Voice Live's endpoint and key and the ticket key, never production's database URL or model keys. Browsers are pointed at it by one variable on taxila-web (TAXILA_D5_RELAY_URL); unsetting it is the rollback, and the client falls back once to the same-origin path. Voice wires the mint, accept and client parts (docs/patches/from-platform/002); scripts/region/d5-relay.mjs refuses to deploy a sha without them. We chose the ticket over an ephemeral Voice Live token to the browser because the server keeps the Voice Live key and session config. Reverse if Front Door path routing on taxila.dev arrives first (same origin, the cookie works, no ticket needed)."
+    }
+  ],
+  "edges": []
+}

@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "test": "node --test tests/",
+    "test:shard": "node scripts/test-shard.mjs",
+    "test:all": "node scripts/test-shard.mjs --all",
     "verify": "node scripts/verify-release.mjs",
     "context": "node scripts/context.mjs",
     "migrate": "node scripts/migrate.mjs"
@@ -15,6 +17,7 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.2.0",
     "framer-motion": "^13.5.1",
+    "opusscript": "0.1.1",
     "pg": "^8.23.1",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",

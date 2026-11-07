@@ -1,0 +1,34 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-board-prewarm",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "Board-first lookahead (C1 studio-board-timing): studioSeam.prewarmWhiteboard(askAhead) picks the next turn's board after this turn's response (board-first.js prewarm), stored under that turn's intentId with the ask's signature (skill, need, misconception, items, request, mode, beat). The next turn's preselect serves it at once only to an ask with the same signature and never as a page shown since; her real line still re-gates it. Code only. Brain calls it from turn.js (docs/patches/to-brain/002-board-prewarm-lookahead.patch) with this beat + the item on deck until planBeat's lookahead lands. Counters: GET /api/studio/timing boardFirst.prewarm {made, hit, used, stale}. The live planner (planWhiteboard) is not prewarmed: that is a model call per predicted beat (spend; main's call). Reversal: stale >> hit live (the prediction is wrong more than right) once Brain's planner feeds it."
+    },
+    {
+      "id": "ms-r7-board-first-pick-ms",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 250,
+      "method": "board-first preselect wall time per first explain move (classes 4-7, p412 certification), local, measured while the test suite ran in parallel (upper bound)",
+      "title": "Board-first pick: p50 15 ms, p90 42 ms, max 1.9 s per ask, on the turn's critical path before her line is written; the lookahead moves it off that path when the prediction holds."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-board-prewarm",
+      "rel": "measured_by",
+      "dst": "ms-r7-board-first-pick-ms"
+    },
+    {
+      "src": "dc-r7-board-prewarm",
+      "rel": "extends",
+      "dst": "ms-r7-board-first-coverage"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-board-prewarm: the next turn's board is picked ahead (2026-11-04)\n\nAfter each turn, Studio can pick the board the next turn is predicted to need, so that turn does not spend the pick time before her line. The pick is used only if the next turn really asks for the same thing, and only if it is not a page already shown; her line still checks it. Brain wires the call (patch 002) and will feed it from its beat planner.\n",
+    "measurements": "## ms-r7-board-first-pick-ms (2026-11-04, n = 250)\n\nThe board-first pick takes 15 ms at the median, 42 ms at p90, 1.9 s at worst (measured under load, so an upper bound). It runs before her line is written; prewarming takes it off that path when the guess is right.\n"
+  }
+}

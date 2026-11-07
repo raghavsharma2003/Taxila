@@ -39,8 +39,10 @@ test("Hello's AI disclosure is unchanged and comes before anything she chooses",
   assert.match(hello, /useState<Card>\("greet"\)/, "Hello opens on the greeting");
   assert.match(hello, /if \(card === "greet" && clip\.played\) setCard\("ai"\)/, "the greeting moves to the AI card");
   // the only ways out of the greeting go to the AI card; only "Got it" leaves the AI card
-  assert.equal((hello.match(/setCard\("picture"\)/g) ?? []).length, 1);
+  // r7: one Got it per look (classic and the Kaksha boot sequence), and nothing else goes to the picture card
+  assert.equal((hello.match(/setCard\("picture"\)/g) ?? []).length, 2);
   assert.match(hello, /onClick={\(\) => setCard\("picture"\)} data-testid="hello-gotit">{t\("gotIt"\)}/);
+  assert.match(hello, /<Cta onClick={\(\) => setCard\("picture"\)} testid="hello-gotit">{t\("gotIt"\)}<\/Cta>/);
   assert.doesNotMatch(hello.slice(hello.indexOf('case "greet"'), hello.indexOf('case "ai"')), /finish\(|setCard\("(picture|likes|change|hi)"\)/);
   // she picks what she likes when the parent chose none; then "say hi" (Skip always there); then the lesson
   assert.match(hello, /afterPicture = \(\) => setCard\(parentPicks\.length \? "likes" : "change"\)/);

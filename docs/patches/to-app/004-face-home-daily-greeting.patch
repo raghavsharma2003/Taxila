@@ -1,0 +1,90 @@
+diff --git a/src/ui-v3/kaksha/Shell.tsx b/src/ui-v3/kaksha/Shell.tsx
+index eca9cd69..14d6bdda 100644
+--- a/src/ui-v3/kaksha/Shell.tsx
++++ b/src/ui-v3/kaksha/Shell.tsx
+@@ -17,6 +17,7 @@ import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
+ import { kakshaThemeFor } from "./tokens.ts";
+ import { kt } from "./copy.ts";
+ import { lookAttr } from "./look.ts";
++import type { TapSource } from "../../avatar/tap.ts";
+ 
+ export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
+   return (
+@@ -127,14 +128,16 @@ export interface CommsProps {
+   showName?: boolean;
+   className?: string;
+   style?: CSSProperties;
++  /** Her output meters (lip-sync) when she speaks outside a lesson: the home's daily greeting (Face stream). */
++  meters?: TapSource[];
+ }
+ 
+-export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style }: CommsProps) {
++export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style, meters }: CommsProps) {
+   const speaking = floor === "speaking" || floor === "showing";
+   return (
+     <figure className={`kx-comms kx-cut${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
+       <div className="kx-comms-lit" aria-hidden="true" />
+-      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false}
++      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false} meters={meters}
+         lights="up" reducedMotion={reducedMotion} className="kx-comms-face" />
+       <i className="kx-tick kx-tick--a" aria-hidden="true" />
+       <i className="kx-tick kx-tick--b" aria-hidden="true" />
+diff --git a/src/ui-v3/kaksha/screens/KakshaHome.tsx b/src/ui-v3/kaksha/screens/KakshaHome.tsx
+index dbfd7a48..f450e8b2 100644
+--- a/src/ui-v3/kaksha/screens/KakshaHome.tsx
++++ b/src/ui-v3/kaksha/screens/KakshaHome.tsx
+@@ -10,6 +10,7 @@ import { usePlan } from "../../../child/plan.ts";
+ import { artTierD } from "../../../child/art.tsx";
+ import { Home as ClassicHome, faceFormOf } from "../../../child/screens/Home.tsx";
+ import { useTeacher } from "../../../ui/teacher/useTeacher.ts";
++import { useDailyGreeting } from "../../../face-puppet/useDailyGreeting.ts";
+ import { KakshaRoot } from "../Shell.tsx";
+ import { HomeView, type HomeViewProps } from "../views.tsx";
+ 
+@@ -24,6 +25,8 @@ export function KakshaHome() {
+   const { plan } = usePlan(cid);
+   const nav = useNavigate();
+   const rec = useTeacher(child.teacher_id, band);
++  // her once-a-day greeting (Face stream): spoken after the child's first tap, then a glance at Start
++  const hello = useDailyGreeting(cid, { enabled: prefs.face !== "voice" });
+   useEffect(() => preloadLessonRoute(), []); // r5-latency: the lesson's code loads while the home is idle
+   if (!prefs.hello && !child.avatar) return <Navigate to={`/c/${cid}/hello`} replace />;
+   if (plan.state === "safety_hold" || plan.state === "offline" || plan.signedOut) return <ClassicHome />;
+@@ -41,6 +44,7 @@ export function KakshaHome() {
+       <div data-plan-state={plan.source === "loading" ? "loading" : plan.state} data-plan-source={plan.source}>
+         <HomeView childName={child.first_name} family={family} reducedMotion={reducedMotion} state={state} greeting={greetingFor()}
+           teacher={{ id: child.teacher_id, name: rec.name, band, form: face.form, tier: face.tier }}
++          floor={hello.floor ?? undefined} meters={hello.meters}
+           startTo={continueTo ?? startTo} resuming={!!continueTo} worldTo={`/c/${cid}/map`} parentTo="/parent" whoTo={me.children.length >= 2 ? "/who" : null} opensAt={plan.opensAt} go={(to) => nav(to)} />
+       </div>
+     </KakshaRoot>
+diff --git a/src/ui-v3/kaksha/views.tsx b/src/ui-v3/kaksha/views.tsx
+index 8e9a9be5..8a59cd64 100644
+--- a/src/ui-v3/kaksha/views.tsx
++++ b/src/ui-v3/kaksha/views.tsx
+@@ -11,6 +11,7 @@ import { BASE } from "./Base.tsx";
+ import { futurist } from "./look.ts";
+ import type { HangarItem, World } from "./world.ts";
+ import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
++import type { TapSource } from "../../avatar/tap.ts";
+ 
+ export type Go = (to: string) => void;
+ 
+@@ -56,6 +57,8 @@ export interface HomeViewProps {
+   resuming?: boolean;
+   go?: Go;
+   floor?: TeacherFloor;
++  /** Her output meters while she speaks her daily greeting (Face stream useDailyGreeting). */
++  meters?: TapSource[];
+ }
+ 
+ export function HomeView(p: HomeViewProps) {
+@@ -71,7 +74,7 @@ export function HomeView(p: HomeViewProps) {
+       </header>
+       <main className="kx-home-main">
+         <Comms className="kx-home-face" teacherId={p.teacher.id} teacherName={p.teacher.name} band={p.teacher.band} form={p.teacher.form} tier={p.teacher.tier}
+-          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} />
++          floor={p.floor ?? "idle"} framing="medium" reducedMotion={p.reducedMotion} meters={p.meters} />
+         <section className="kx-home-copy" data-testid="primary-card" data-state={p.state}>
+           <h1 className="kx-h1">{greet}</h1>
+           <p className="kx-sub">{sub}</p>

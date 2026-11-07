@@ -4,7 +4,7 @@
 // light-only, `ds-band-fork-older`), the child's Light / Dark / Match phone choice for Older. No child-facing error
 // copy beyond the designed T8 line: a missing session asks for a grown-up.
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ApiError, getMe, type ChildRow, type MeResponse } from "./api.ts";
 import { bandForClass, effectiveBand, familyOf, type Band, type Family } from "./band.ts";
 import { t, type Lang } from "./copy.ts";
@@ -14,6 +14,8 @@ import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
 import { prefetchDuplexConfig } from "../duplex/flags.ts";
 import "./child.css";
 import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
+import { BootMark, kxBoot } from "../app/Shell.tsx";
+import { Cta, Ghost, Glyph, KxRoot, StatePanel } from "../ui-v3/kaksha/kit.tsx";
 
 export interface ChildCtx {
   cid: string;
@@ -73,6 +75,7 @@ function useHtmlAttrs(band: Band | null, theme: "light" | "dark" | undefined, re
 
 export function ChildShell({ children }: { children?: ReactNode }) {
   const { cid = "" } = useParams();
+  const nav = useNavigate();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [state, setState] = useState<"loading" | "ok" | "signedout" | "missing" | "error">("loading");
   const [n, setN] = useState(0);
@@ -121,7 +124,26 @@ export function ChildShell({ children }: { children?: ReactNode }) {
     return (
       <div {...rootAttrs}>
         <main className="cs-gate" aria-busy={state === "loading"} data-testid="child-gate">
-          {state !== "loading" && (
+          {/* r7 app-cold-start-loading: the Volt mark while /api/me answers (the first paint's own look), never a blank */}
+          {state === "loading" && kxBoot() && <BootMark />}
+          {state !== "loading" && kxBoot() && (
+            // Kaksha boot look (r7 app-secondary-screens-kaksha): the gate is a Kaksha state panel, not the old card
+            <KxRoot family="older" reducedMotion={false} screen="gate">
+              <div className="kx-screen kx-page"><main className="kx-page-main kx-home-state">
+                <StatePanel glyph={state === "error" ? "offline" : "door"} tone={state === "error" ? "rose" : undefined} headId="kx-gate-h"
+                  title={state === "error" ? t("connectionWeak") : t("grownupSignIn")}>
+                  {state === "error" ? (
+                    <Ghost onClick={() => setN((x) => x + 1)}><Glyph name="replay" size={20} /> {t("tryAgain")}</Ghost>
+                  ) : (
+                    <Cta to={state === "signedout" ? `/start/phone?login=1&next=${encodeURIComponent(location.pathname)}` : "/who"} go={(to) => nav(to)}>
+                      {state === "signedout" ? t("signIn") : t("home")}
+                    </Cta>
+                  )}
+                </StatePanel>
+              </main></div>
+            </KxRoot>
+          )}
+          {state !== "loading" && !kxBoot() && (
             <div className="cs-card cs-gate-card">
               <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : t("grownupSignIn")}</h1>
               {state === "error" ? (

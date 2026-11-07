@@ -4,8 +4,8 @@
 import { useEffect } from "react";
 
 export type Band = "b1" | "b2" | "b3" | "b4";
-/** Class → band: B1 classes 1-2, B2 3-4, B3 5-7, B4 8-9 (§5.2). */
-export const bandForClass = (cl: number): Band => (cl <= 2 ? "b1" : cl <= 4 ? "b2" : cl <= 7 ? "b3" : "b4");
+/** Class → band: B1 classes 1-2, B2 class 3, B3 4-7, B4 8-9 (r7 D3: class 4 has the older look; src/child/band.ts). */
+export { bandForClass } from "../child/band.ts";
 
 const FONT_URL = {
   baloo: "https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700&display=swap",

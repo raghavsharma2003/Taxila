@@ -1,0 +1,3937 @@
+TAP version 13
+# Subtest: B3 parent payloads and account deletion (child process, Neon test branch)
+ok 1 - B3 parent payloads and account deletion (child process, Neon test branch)
+  ---
+  duration_ms: 222.021981
+  type: 'test'
+  ...
+# Subtest: readUtterance: pata-nahi, just-tell-me and minimal answers in Hinglish, Hindi and English
+ok 2 - readUtterance: pata-nahi, just-tell-me and minimal answers in Hinglish, Hindi and English
+  ---
+  duration_ms: 5.721364
+  type: 'test'
+  ...
+# Subtest: frustration loop after three don't-knows; a real answer resets it
+ok 3 - frustration loop after three don't-knows; a real answer resets it
+  ---
+  duration_ms: 0.749394
+  type: 'test'
+  ...
+# Subtest: gaming: repeated just-tell-me or cycling through different wrong answers discounts evidence
+ok 4 - gaming: repeated just-tell-me or cycling through different wrong answers discounts evidence
+  ---
+  duration_ms: 0.95357
+  type: 'test'
+  ...
+# Subtest: wheel-spinning: ten opportunities without three in a row
+ok 5 - wheel-spinning: ten opportunities without three in a row
+  ---
+  duration_ms: 0.401875
+  type: 'test'
+  ...
+# Subtest: revealsAnswer: a key the question does not name leaks anywhere; a named option only in a verdict
+ok 6 - revealsAnswer: a key the question does not name leaks anywhere; a named option only in a verdict
+  ---
+  duration_ms: 8.37566
+  type: 'test'
+  ...
+# Subtest: practice queue: teach-back held back, the diagnostic third or later (content F0, RS-6); isomorphic stays on skill
+ok 7 - practice queue: teach-back held back, the diagnostic third or later (content F0, RS-6); isomorphic stays on skill
+  ---
+  duration_ms: 6.28278
+  type: 'test'
+  ...
+# Subtest: safety predicate: self-harm, abuse and fear families in three scripts; idioms stay quiet
+ok 8 - safety predicate: self-harm, abuse and fear families in three scripts; idioms stay quiet
+  ---
+  duration_ms: 244.618084
+  type: 'test'
+  ...
+# Subtest: lip: silence keeps the jaw shut and her floor off
+ok 9 - lip: silence keeps the jaw shut and her floor off
+  ---
+  duration_ms: 9.807186
+  type: 'test'
+  ...
+# Subtest: lip: onset after 2 voiced frames, offset only after ≥ 250 ms of silence (§3.1 VAD)
+ok 10 - lip: onset after 2 voiced frames, offset only after ≥ 250 ms of silence (§3.1 VAD)
+  ---
+  duration_ms: 21.298277
+  type: 'test'
+  ...
+# Subtest: lip: the jaw opens on voice and closes on silence within ~150 ms (τ 50 ms)
+ok 11 - lip: the jaw opens on voice and closes on silence within ~150 ms (τ 50 ms)
+  ---
+  duration_ms: 18.535671
+  type: 'test'
+  ...
+# Subtest: lip: level-normalised: the same speech 10 dB quieter converges to a similar jaw (GR-9)
+ok 12 - lip: level-normalised: the same speech 10 dB quieter converges to a similar jaw (GR-9)
+  ---
+  duration_ms: 704.187173
+  type: 'test'
+  ...
+# Subtest: lip: mouthClose never exceeds jawOpen; shapes are hints below the jaw
+ok 13 - lip: mouthClose never exceeds jawOpen; shapes are hints below the jaw
+  ---
+  duration_ms: 36.320548
+  type: 'test'
+  ...
+# Subtest: lip ring: reads the frame at t − faceDelay; flush empties it
+ok 14 - lip ring: reads the frame at t − faceDelay; flush empties it
+  ---
+  duration_ms: 0.594963
+  type: 'test'
+  ...
+# Subtest: amplitude fallback: a meter level maps back to the RMS the meter heard
+ok 15 - amplitude fallback: a meter level maps back to the RMS the meter heard
+  ---
+  duration_ms: 0.869269
+  type: 'test'
+  ...
+# Subtest: floorState: the tap is canonical for her speech; the child talking wins; status is the cross-check
+ok 16 - floorState: the tap is canonical for her speech; the child talking wins; status is the cross-check
+  ---
+  duration_ms: 0.289454
+  type: 'test'
+  ...
+# Subtest: contract 2 (events suppressed): with status stuck at 'thinking' the face still goes speaking → your_turn from the tap
+ok 17 - contract 2 (events suppressed): with status stuck at 'thinking' the face still goes speaking → your_turn from the tap
+  ---
+  duration_ms: 28.741459
+  type: 'test'
+  ...
+# Subtest: I-blink: per-state rates hold (idle ≈ 17/min, speaking ≈ 26/min) and both lids always move together
+ok 18 - I-blink: per-state rates hold (idle ≈ 17/min, speaking ≈ 26/min) and both lids always move together
+  ---
+  duration_ms: 261.019827
+  type: 'test'
+  ...
+# Subtest: I13: a blink's closing phase is visible at the 20 and 30 fps caps (≥ 1 frame between open and shut)
+ok 19 - I13: a blink's closing phase is visible at the 20 and 30 fps caps (≥ 1 frame between open and shut)
+  ---
+  duration_ms: 107.373396
+  type: 'test'
+  ...
+# Subtest: I12: no continuous mutual gaze longer than 4 s, in every state
+ok 20 - I12: no continuous mutual gaze longer than 4 s, in every state
+  ---
+  duration_ms: 62.364764
+  type: 'test'
+  ...
+# Subtest: I10: eye-in-head stays inside ±25° yaw / +20…−25° pitch; head ≤ 20°
+ok 21 - I10: eye-in-head stays inside ±25° yaw / +20…−25° pitch; head ≤ 20°
+  ---
+  duration_ms: 81.837188
+  type: 'test'
+  ...
+# Subtest: I8: nod peak is frame-rate independent (±20% at 15/24/30 fps; GR-1.2)
+ok 22 - I8: nod peak is frame-rate independent (±20% at 15/24/30 fps; GR-1.2)
+  ---
+  duration_ms: 0.531025
+  type: 'test'
+  ...
+# Subtest: I1: THINKING is verdict-neutral: an expression is released within 300 ms of entering it
+ok 23 - I1: THINKING is verdict-neutral: an expression is released within 300 ms of entering it
+  ---
+  duration_ms: 1.154216
+  type: 'test'
+  ...
+# Subtest: reduced motion: head motion ≥ 3× smaller, blinks unchanged; gentle face never touches brows or blinks
+ok 24 - reduced motion: head motion ≥ 3× smaller, blinks unchanged; gentle face never touches brows or blinks
+  ---
+  duration_ms: 41.778629
+  type: 'test'
+  ...
+# Subtest: compositor: lips own the jaw, mouthClose ≤ jawOpen, the jaw ceiling holds, deltas are capped, tiny weights zeroed
+ok 25 - compositor: lips own the jaw, mouthClose ≤ jawOpen, the jaw ceiling holds, deltas are capped, tiny weights zeroed
+  ---
+  duration_ms: 0.96295
+  type: 'test'
+  ...
+# Subtest: static tier: only KNOWN-bad GPUs go down; everything else starts at B
+ok 26 - static tier: only KNOWN-bad GPUs go down; everything else starts at B
+  ---
+  duration_ms: 1.057738
+  type: 'test'
+  ...
+# Subtest: probe: a slow 2 s probe moves B → B-lite or D; a fast one keeps B
+ok 27 - probe: a slow 2 s probe moves B → B-lite or D; a fast one keeps B
+  ---
+  duration_ms: 0.405999
+  type: 'test'
+  ...
+# Subtest: governor: a steady 20 fps cap is not 'bad' (regression: 50 ms frames were counted as long)
+ok 28 - governor: a steady 20 fps cap is not 'bad' (regression: 50 ms frames were counted as long)
+  ---
+  duration_ms: 4.815824
+  type: 'test'
+  ...
+# Subtest: governor: pixels first, then ONE tier step, only in her silence, after 5 s of bad
+ok 29 - governor: pixels first, then ONE tier step, only in her silence, after 5 s of bad
+  ---
+  duration_ms: 2.315515
+  type: 'test'
+  ...
+# Subtest: contract 1 (static): src/avatar/** creates no AudioContext, output, delay, worklet or media-source node
+ok 30 - contract 1 (static): src/avatar/** creates no AudioContext, output, delay, worklet or media-source node
+  ---
+  duration_ms: 4.123529
+  type: 'test'
+  ...
+# Subtest: contract 1 (runtime) + 3 (reconnect): the tap adds one analysis-only node per stream, never connected onward
+ok 31 - contract 1 (runtime) + 3 (reconnect): the tap adds one analysis-only node per stream, never connected onward
+  ---
+  duration_ms: 4.114713
+  type: 'test'
+  ...
+# Subtest: LevelMeter.onTap: fires now when attached, on every attach, and with null on detach
+ok 32 - LevelMeter.onTap: fires now when attached, on every attach, and with null on detach
+  ---
+  duration_ms: 0.28398
+  type: 'test'
+  ...
+# Subtest: plate mouth: 5 cells with hysteresis (no flicker on a boundary)
+ok 33 - plate mouth: 5 cells with hysteresis (no flicker on a boundary)
+  ---
+  duration_ms: 0.20544
+  type: 'test'
+  ...
+# Subtest: mutation check: I12, I1 and lid symmetry each trip on their mutation (and hold unmutated)
+ok 34 - mutation check: I12, I1 and lid symmetry each trip on their mutation (and hold unmutated)
+  ---
+  duration_ms: 46.978678
+  type: 'test'
+  ...
+# Subtest: mutation check: I8 trips when the spring integrates one step per frame (the pre-GR-1.2 bug)
+ok 35 - mutation check: I8 trips when the spring integrates one step per frame (the pre-GR-1.2 bug)
+  ---
+  duration_ms: 0.375695
+  type: 'test'
+  ...
+# Subtest: every tutor's lookId is published with B+, B-lite and its own rendered plate
+ok 36 - every tutor's lookId is published with B+, B-lite and its own rendered plate
+  ---
+  duration_ms: 2.109579
+  type: 'test'
+  ...
+# Subtest: published files live under /assets/teacher/<look>/<rev>/ with content-hashed names (immutable by serve.mjs's rule)
+ok 37 - published files live under /assets/teacher/<look>/<rev>/ with content-hashed names (immutable by serve.mjs's rule)
+  ---
+  duration_ms: 43.950957
+  type: 'test'
+  ...
+# Subtest: each published runtime.json follows the contract and names only published tiers
+ok 38 - each published runtime.json follows the contract and names only published tiers
+  ---
+  duration_ms: 4.306993
+  type: 'test'
+  ...
+# Subtest: each published GLB's JSON follows the contract (meshes, bones, ARKit morph names)
+ok 39 - each published GLB's JSON follows the contract (meshes, bones, ARKit morph names)
+  ---
+  duration_ms: 12.876293
+  type: 'test'
+  ...
+# Subtest: each published GLB's meshopt-compressed buffer views really decode with the runtime's MeshoptDecoder
+ok 40 - each published GLB's meshopt-compressed buffer views really decode with the runtime's MeshoptDecoder
+  ---
+  duration_ms: 75.698224
+  type: 'test'
+  ...
+# Subtest: validateRuntime names what breaks the contract
+ok 41 - validateRuntime names what breaks the contract
+  ---
+  duration_ms: 0.916649
+  type: 'test'
+  ...
+# Subtest: resolveShading: iteration-2 defaults; merged when declared or implied; candidate fixes are flags
+ok 42 - resolveShading: iteration-2 defaults; merged when declared or implied; candidate fixes are flags
+  ---
+  duration_ms: 0.851711
+  type: 'test'
+  ...
+# Subtest: the shader defines every per-look switch resolveShading can raise
+ok 43 - the shader defines every per-look switch resolveShading can raise
+  ---
+  duration_ms: 0.595791
+  type: 'test'
+  ...
+# Subtest: finalWeights: B+ folds visemes, H passes them; clamp; jaw ceiling; correctives are products of clamped parents
+ok 44 - finalWeights: B+ folds visemes, H passes them; clamp; jaw ceiling; correctives are products of clamped parents
+  ---
+  duration_ms: 1.537175
+  type: 'test'
+  ...
+# Subtest: rigTierFor and coverBox
+ok 45 - rigTierFor and coverBox
+  ---
+  duration_ms: 0.876912
+  type: 'test'
+  ...
+# Subtest: GLTFLoader / KTX2Loader / MeshoptDecoder are imported only by the lazy rig module
+ok 46 - GLTFLoader / KTX2Loader / MeshoptDecoder are imported only by the lazy rig module
+  ---
+  duration_ms: 94.535874
+  type: 'test'
+  ...
+# Subtest: the rig renders on a hand-made opaque WebGL2 context with Neutral tone mapping (gap 10)
+ok 47 - the rig renders on a hand-made opaque WebGL2 context with Neutral tone mapping (gap 10)
+  ---
+  duration_ms: 0.622424
+  type: 'test'
+  ...
+# Subtest: audio floor: the rig, the plate and the stage never create or route audio
+ok 48 - audio floor: the rig, the plate and the stage never create or route audio
+  ---
+  duration_ms: 0.825808
+  type: 'test'
+  ...
+# Subtest: face.rig is off by default and switched only by the build env or this device's storage (?facerig= writes it)
+ok 49 - face.rig is off by default and switched only by the build env or this device's storage (?facerig= writes it)
+  ---
+  duration_ms: 0.30517
+  type: 'test'
+  ...
+# Subtest: publish-look refuses a source without a complete plate, before writing anything
+ok 50 - publish-look refuses a source without a complete plate, before writing anything
+  ---
+  duration_ms: 186.742312
+  type: 'test'
+  ...
+# Subtest: asset hygiene: no bake-off identity and no unversioned look file is under public/
+ok 51 - asset hygiene: no bake-off identity and no unversioned look file is under public/
+  ---
+  duration_ms: 42.8746
+  type: 'test'
+  ...
+# Subtest: avatar tutor routes
+    # Subtest: GET: auth on the child id; current may be null; live comes from the open-lesson query
+    ok 1 - GET: auth on the child id; current may be null; live comes from the open-lesson query
+      ---
+      duration_ms: 6.844445
+      type: 'test'
+      ...
+    # Subtest: POST: the pick is one statement (live check + update + log) with from_id = the previous teacher
+    ok 2 - POST: the pick is one statement (live check + update + log) with from_id = the previous teacher
+      ---
+      duration_ms: 1.465993
+      type: 'test'
+      ...
+    # Subtest: POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success
+    ok 3 - POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success
+      ---
+      duration_ms: 0.64196
+      type: 'test'
+      ...
+    # Subtest: POST: an open lesson → 409 before any write; a parked tutor (anyone but Asha) → 403, under any offer mode
+    ok 4 - POST: an open lesson → 409 before any write; a parked tutor (anyone but Asha) → 403, under any offer mode
+      ---
+      duration_ms: 1.320235
+      type: 'test'
+      ...
+    # Subtest: GET: the offer is [asha] for every class, mode single (no picker)
+    ok 5 - GET: the offer is [asha] for every class, mode single (no picker)
+      ---
+      duration_ms: 2.608665
+      type: 'test'
+      ...
+    # Subtest: POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen
+    ok 6 - POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen
+      ---
+      duration_ms: 1.035042
+      type: 'test'
+      ...
+    # Subtest: teacherFor: Asha for every class and saved row (single teacher); the rollback bounds a saved pick by the sheet's classes
+    ok 7 - teacherFor: Asha for every class and saved row (single teacher); the rollback bounds a saved pick by the sheet's classes
+      ---
+      duration_ms: 0.751116
+      type: 'test'
+      ...
+    # Subtest: teacherForLesson: the lesson's pinned teacher wins over the child's current pick
+    ok 8 - teacherForLesson: the lesson's pinned teacher wins over the child's current pick
+      ---
+      duration_ms: 0.376497
+      type: 'test'
+      ...
+    1..8
+ok 52 - avatar tutor routes
+  ---
+  duration_ms: 16.922224
+  type: 'suite'
+  ...
+# Subtest: cast: Asha live; Arjun and Uma parked (dc-r4-single-teacher-asha); every live tutor has a persona sheet; style notes ≤ 8 words with no friendship claim
+ok 53 - cast: Asha live; Arjun and Uma parked (dc-r4-single-teacher-asha); every live tutor has a persona sheet; style notes ≤ 8 words with no friendship claim
+  ---
+  duration_ms: 3.31189
+  type: 'test'
+  ...
+# Subtest: eligibility (sheet ranges): Asha alone for every class → no picker
+ok 54 - eligibility (sheet ranges): Asha alone for every class → no picker
+  ---
+  duration_ms: 1.258794
+  type: 'test'
+  ...
+# Subtest: eligibility: parked tutors never appear, not even in a draft-inclusive preview or the wide offer
+ok 55 - eligibility: parked tutors never appear, not even in a draft-inclusive preview or the wide offer
+  ---
+  duration_ms: 0.477679
+  type: 'test'
+  ...
+# Subtest: eligibility (wide ranges, two live looks): option counts per band stay in range
+ok 56 - eligibility (wide ranges, two live looks): option counts per band stay in range
+  ---
+  duration_ms: 1.075526
+  type: 'test'
+  ...
+# Subtest: order: stable per child, shuffled across children, no position bias (n = 4,000 ids, 2 tutors)
+ok 57 - order: stable per child, shuffled across children, no position bias (n = 4,000 ids, 2 tutors)
+  ---
+  duration_ms: 21.207998
+  type: 'test'
+  ...
+# Subtest: pickCovering keeps ≥ 1 per presented gender when it must drop tutors
+ok 58 - pickCovering keeps ≥ 1 per presented gender when it must drop tutors
+  ---
+  duration_ms: 0.441209
+  type: 'test'
+  ...
+# Subtest: decideChoice: unknown → 400, live lesson → 409, anyone but Asha → 403, a B1 switch needs the parent
+ok 59 - decideChoice: unknown → 400, live lesson → 409, anyone but Asha → 403, a B1 switch needs the parent
+  ---
+  duration_ms: 0.501809
+  type: 'test'
+  ...
+# Subtest: the cast's server registry and the manifest agree (a character, its voice and its face are one unit)
+ok 60 - the cast's server registry and the manifest agree (a character, its voice and its face are one unit)
+  ---
+  duration_ms: 0.389024
+  type: 'test'
+  ...
+# Subtest: migration 008 is additive only
+ok 61 - migration 008 is additive only
+  ---
+  duration_ms: 5.787135
+  type: 'test'
+  ...
+# [azure] chat [REDACTED:REFRESH_DEPLOY_GPT6_LUNA] 200 106ms
+# [azure] chat [REDACTED:REFRESH_DEPLOY_GPT61_SOL] 200 1ms
+# [azure] chat grok-4-1-fast-non-reasoning 200 1ms
+# Subtest: reasoning family: OpenAI reasoning deployments incl. every gpt-6 name; open models are not
+ok 62 - reasoning family: OpenAI reasoning deployments incl. every gpt-6 name; open models are not
+  ---
+  duration_ms: 1.733952
+  type: 'test'
+  ...
+# Subtest: effort floor: 'none' becomes 'low' on gpt-6.1-sol and gpt-6-astra only
+ok 63 - effort floor: 'none' becomes 'low' on gpt-6.1-sol and gpt-6-astra only
+  ---
+  duration_ms: 0.498521
+  type: 'test'
+  ...
+# Subtest: gpt-6 deployments get no classify hedge, like [REDACTED:DEPLOY_FAST]; open models keep 1500 ms
+ok 64 - gpt-6 deployments get no classify hedge, like [REDACTED:DEPLOY_FAST]; open models keep 1500 ms
+  ---
+  duration_ms: 0.378419
+  type: 'test'
+  ...
+# Subtest: image lane (A4): gpt-image-2.5-flare by default, quality always low, gpt-image-2 then sunburst as fallbacks
+ok 65 - image lane (A4): gpt-image-2.5-flare by default, quality always low, gpt-image-2 then sunburst as fallbacks
+  ---
+  duration_ms: 2.425578
+  type: 'test'
+  ...
+# Subtest: chat() body: gpt-6 gets max_completion_tokens + reasoning_effort, never max_tokens
+ok 66 - chat() body: gpt-6 gets max_completion_tokens + reasoning_effort, never max_tokens
+  ---
+  duration_ms: 119.185839
+  type: 'test'
+  ...
+# Subtest: update: correct raises, wrong lowers, no_evidence is a no-op
+ok 67 - update: correct raises, wrong lowers, no_evidence is a no-op
+  ---
+  duration_ms: 1.282043
+  type: 'test'
+  ...
+# Subtest: update: every hint rung weakens a success; at the assertion it is almost no evidence
+ok 68 - update: every hint rung weakens a success; at the assertion it is almost no evidence
+  ---
+  duration_ms: 0.394396
+  type: 'test'
+  ...
+# Subtest: update: hints do not soften a wrong answer, weight scales the move, partial is half a success
+ok 69 - update: hints do not soften a wrong answer, weight scales the move, partial is half a success
+  ---
+  duration_ms: 1.900922
+  type: 'test'
+  ...
+# Subtest: status ladder: practice alone never reaches learned_today; a generative pass does
+ok 70 - status ladder: practice alone never reaches learned_today; a generative pass does
+  ---
+  duration_ms: 1.056791
+  type: 'test'
+  ...
+# Subtest: mastery needs a delayed retrieval pass in a LATER session
+ok 71 - mastery needs a delayed retrieval pass in a LATER session
+  ---
+  duration_ms: 0.783268
+  type: 'test'
+  ...
+# Subtest: review schedule expands on delayed success and restarts on failure
+ok 72 - review schedule expands on delayed success and restarts on failure
+  ---
+  duration_ms: 0.487636
+  type: 'test'
+  ...
+# Subtest: no decay by absence: time alone never lowers pKnown; it only makes a skill due
+ok 73 - no decay by absence: time alone never lowers pKnown; it only makes a skill due
+  ---
+  duration_ms: 0.271644
+  type: 'test'
+  ...
+# Subtest: legacy delayed retrieval uses the 20 h rule (PRODUCT-DESIGN §6.4.1): 19 h later is not delayed, 20 h is
+ok 74 - legacy delayed retrieval uses the 20 h rule (PRODUCT-DESIGN §6.4.1): 19 h later is not delayed, 20 h is
+  ---
+  duration_ms: 0.262279
+  type: 'test'
+  ...
+# Subtest: ranks: priority = 100 − 10 × rank + urgency; the Director's proposal ranks read back exactly (W2-C proposal.js)
+ok 75 - ranks: priority = 100 − 10 × rank + urgency; the Director's proposal ranks read back exactly (W2-C proposal.js)
+  ---
+  duration_ms: 4.935691
+  type: 'test'
+  ...
+# Subtest: G-KERNEL-PURE: equal inputs give a byte-equal plan; a planted clock or random call is caught
+ok 76 - G-KERNEL-PURE: equal inputs give a byte-equal plan; a planted clock or random call is caught
+  ---
+  duration_ms: 118.221207
+  type: 'test'
+  ...
+# Subtest: G-KERNEL-ORDER: no accepted proposal sits under a higher accepted proposal's veto (5k generated turns)
+ok 77 - G-KERNEL-ORDER: no accepted proposal sits under a higher accepted proposal's veto (5k generated turns)
+  ---
+  duration_ms: 143.503667
+  type: 'test'
+  ...
+# Subtest: G-BUDGET: 10k turns — exactly one move, ≤ 1 new thing on screen, never a reveal on a closing move, no callback in a correction
+ok 78 - G-BUDGET: 10k turns — exactly one move, ≤ 1 new thing on screen, never a reveal on a closing move, no callback in a correction
+  ---
+  duration_ms: 97.627829
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY: a child's goodbye beside any pedagogy, plan or Studio proposal → RELEASE wins in 100% of 10k turns (safety alone outranks it)
+ok 79 - G-AUTHORITY: a child's goodbye beside any pedagogy, plan or Studio proposal → RELEASE wins in 100% of 10k turns (safety alone outranks it)
+  ---
+  duration_ms: 176.469976
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY: a teacher-owned repair (OWN_SLIP / AFFIRM_RECHECK) is accepted and precedes the Director's next item
+ok 80 - G-AUTHORITY: a teacher-owned repair (OWN_SLIP / AFFIRM_RECHECK) is accepted and precedes the Director's next item
+  ---
+  duration_ms: 0.973387
+  type: 'test'
+  ...
+# Subtest: relational floor: SAFETY freezes everything below; floorFix is carried; rapport never rides a correction
+ok 81 - relational floor: SAFETY freezes everything below; floorFix is carried; rapport never rides a correction
+  ---
+  duration_ms: 0.453913
+  type: 'test'
+  ...
+# Subtest: Studio: a reveal needs the attention slot (rejected beside a new module or chips); the whiteboard ask follows the same rule
+ok 82 - Studio: a reveal needs the attention slot (rejected beside a new module or chips); the whiteboard ask follows the same rule
+  ---
+  duration_ms: 0.58378
+  type: 'test'
+  ...
+# Subtest: G-LAT: kernel p99 ≤ 10 ms over 10k simulated turns
+ok 83 - G-LAT: kernel p99 ≤ 10 ms over 10k simulated turns
+  ---
+  duration_ms: 254.91326
+  type: 'test'
+  ...
+# Subtest: reasons: a closed vocabulary — every code the proposers emit is known; a typo throws
+ok 84 - reasons: a closed vocabulary — every code the proposers emit is known; a typo throws
+  ---
+  duration_ms: 51.618535
+  type: 'test'
+  ...
+# Subtest: trace rows: codes and digests only (no words), one statement per turn, idempotent per (lesson, turn)
+ok 85 - trace rows: codes and digests only (no words), one statement per turn, idempotent per (lesson, turn)
+  ---
+  duration_ms: 1.957886
+  type: 'test'
+  ...
+# Subtest: the whiteboard ask (W2-E fixer): only on moves that explain, never over an interactive piece or a ready reveal; it REPLACES the template rung
+ok 86 - the whiteboard ask (W2-E fixer): only on moves that explain, never over an interactive piece or a ready reveal; it REPLACES the template rung
+  ---
+  duration_ms: 0.592561
+  type: 'test'
+  ...
+# Subtest: relational adapter: HOLD_ONE_TURN is surfaced (holdOneTurn) rather than silently dropped
+ok 87 - relational adapter: HOLD_ONE_TURN is surfaced (holdOneTurn) rather than silently dropped
+  ---
+  duration_ms: 0.982004
+  type: 'test'
+  ...
+# Subtest: trace rows: item_id / misconception_id only when the database has the columns; the comprehension trail is codes
+ok 88 - trace rows: item_id / misconception_id only when the database has the columns; the comprehension trail is codes
+  ---
+  duration_ms: 1.702802
+  type: 'test'
+  ...
+# Subtest: G-QUOTA: 20 Studio races + a consolidation burst on a shared deployment → 0 hot-path 429s (the control arm without lanes does 429)
+ok 89 - G-QUOTA: 20 Studio races + a consolidation burst on a shared deployment → 0 hot-path 429s (the control arm without lanes does 429)
+  ---
+  duration_ms: 301.767871
+  type: 'test'
+  ...
+# Subtest: admit: hot and untagged calls never wait; background waits only when its 30% share is spent; a hot 429 pauses background
+ok 90 - admit: hot and untagged calls never wait; background waits only when its 30% share is spent; a hot 429 pauses background
+  ---
+  duration_ms: 18.486569
+  type: 'test'
+  ...
+# Subtest: the module's default lanes keep the azure.js contract: admit → undefined for hot and a first background call; settle never throws
+ok 91 - the module's default lanes keep the azure.js contract: admit → undefined for hot and a first background call; settle never throws
+  ---
+  duration_ms: 0.75643
+  type: 'test'
+  ...
+# Subtest: the 30% cap is for SHARED deployments only: 40 builds on a Studio arm are never delayed, and the live whiteboard never queues behind builds
+ok 92 - the 30% cap is for SHARED deployments only: 40 builds on a Studio arm are never delayed, and the live whiteboard never queues behind builds
+  ---
+  duration_ms: 0.690659
+  type: 'test'
+  ...
+# Subtest: sharedHot: the default pools, TAXILA_SHARED_HOT overrides, and the hot DEPLOY_* the server runs on are always included
+ok 93 - sharedHot: the default pools, TAXILA_SHARED_HOT overrides, and the hot DEPLOY_* the server runs on are always included
+  ---
+  duration_ms: 3.068339
+  type: 'test'
+  ...
+# Subtest: G-MOMENT: flipping the verdict correct ↔ not_yet with the same relational affect changes `verdict` and nothing else
+ok 94 - G-MOMENT: flipping the verdict correct ↔ not_yet with the same relational affect changes `verdict` and nothing else
+  ---
+  duration_ms: 4.975299
+  type: 'test'
+  ...
+# Subtest: teacherAffect has one producer: the relational directive; without one the Moment is neutral_warm (cause none), never a correct-keyed delight
+ok 95 - teacherAffect has one producer: the relational directive; without one the Moment is neutral_warm (cause none), never a correct-keyed delight
+  ---
+  duration_ms: 0.382387
+  type: 'test'
+  ...
+# Subtest: TA8: safety suppresses affect (calm_steady, cause safety), whatever the directive says; no prelude on a safety turn
+ok 96 - TA8: safety suppresses affect (calm_steady, cause safety), whatever the directive says; no prelude on a safety turn
+  ---
+  duration_ms: 0.238676
+  type: 'test'
+  ...
+# Subtest: L3 uptake prelude: the child's own key token, verdict-neutral; off by default; never on the realtime lane or a typed turn
+ok 97 - L3 uptake prelude: the child's own key token, verdict-neutral; off by default; never on the realtime lane or a typed turn
+  ---
+  duration_ms: 1.963185
+  type: 'test'
+  ...
+# Subtest: the Moment's band, language, bond stage and thinking-aloud licence
+ok 98 - the Moment's band, language, bond stage and thinking-aloud licence
+  ---
+  duration_ms: 1.540843
+  type: 'test'
+  ...
+# Subtest: engagement comes from the child's words and actions only, and strain follows the frustration loop (signals add, never remove)
+ok 99 - engagement comes from the child's words and actions only, and strain follows the frustration loop (signals add, never remove)
+  ---
+  duration_ms: 0.676771
+  type: 'test'
+  ...
+# Subtest: beats: moves map onto beat types; a beat keeps its id while it lasts; a misconception re-teach is a contrast beat
+ok 100 - beats: moves map onto beat types; a beat keeps its id while it lasts; a misconception re-teach is a contrast beat
+  ---
+  duration_ms: 1.990175
+  type: 'test'
+  ...
+# Subtest: the turn is deterministic, and every turn answers, traces once, and carries its beat and Moment (10 lessons)
+ok 101 - the turn is deterministic, and every turn answers, traces once, and carries its beat and Moment (10 lessons)
+  ---
+  duration_ms: 17491.410899
+  type: 'test'
+  ...
+# Subtest: BR5: a scripted RELEASE ends the lesson that turn (the Director's goodbye); a teacher-owned slip rides state.rel
+ok 102 - BR5: a scripted RELEASE ends the lesson that turn (the Director's goodbye); a teacher-owned slip rides state.rel
+  ---
+  duration_ms: 5492.151575
+  type: 'test'
+  ...
+# Subtest: failure drill: the classify deployment is gone → every turn answers on the fallback deployment, no error reaches the child
+ok 103 - failure drill: the classify deployment is gone → every turn answers on the fallback deployment, no error reaches the child
+  ---
+  duration_ms: 6011.743216
+  type: 'test'
+  ...
+# Subtest: TB4 signals block: parsed strictly, mirrored to flags only when true, in the schema only when switched on
+ok 104 - TB4 signals block: parsed strictly, mirrored to flags only when true, in the schema only when switched on
+  ---
+  duration_ms: 566.596426
+  type: 'test'
+  ...
+# Subtest: owner priority 6: on explain turns the live board is asked for and reaches the tray; the template rung is replaced, never stacked
+ok 105 - owner priority 6: on explain turns the live board is asked for and reaches the tray; the template rung is replaced, never stacked
+  ---
+  duration_ms: 9038.05484
+  type: 'test'
+  ...
+# Subtest: the trace answers the comprehension question: one cls.*, one cls_source.* and one verdict.* per turn, the verdict the child saw
+ok 106 - the trace answers the comprehension question: one cls.*, one cls_source.* and one verdict.* per turn, the verdict the child saw
+  ---
+  duration_ms: 6623.556705
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a disclosure beside a goodbye is safeguarding with a helpline
+ok 107 - G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a disclosure beside a goodbye is safeguarding with a helpline
+  ---
+  duration_ms: 11301.831893
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on the second stop
+ok 108 - G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on the second stop
+  ---
+  duration_ms: 5811.199666
+  type: 'test'
+  ...
+# Subtest: failure drill, the hard case: the classify deployment HANGS → every turn answers within 4 s on the fallback, no error reaches the child
+ok 109 - failure drill, the hard case: the classify deployment HANGS → every turn answers within 4 s on the fallback, no error reaches the child
+  ---
+  duration_ms: 34926.705547
+  type: 'test'
+  ...
+# Subtest: hedgedFallback: the hedge goes to the fallback deployment; a fast failure starts it at once; a filter block decides; both down rejects
+ok 110 - hedgedFallback: the hedge goes to the fallback deployment; a fast failure starts it at once; a filter block decides; both down rejects
+  ---
+  duration_ms: 93.170395
+  type: 'test'
+  ...
+# Subtest: thresholds follow the beat and the answer form: high for a why-probe or a teach-back, none for a number or a tap
+ok 111 - thresholds follow the beat and the answer form: high for a why-probe or a teach-back, none for a number or a tap
+  ---
+  duration_ms: 2.242011
+  type: 'test'
+  ...
+# Subtest: the transcript heuristic: a trailing conjunction or filler is mid-thought; a number or a question is done
+ok 112 - the transcript heuristic: a trailing conjunction or filler is mid-thought; a number or a question is done
+  ---
+  duration_ms: 1.720922
+  type: 'test'
+  ...
+# Subtest: the merger holds an unfinished fragment, merges the child's continuation into ONE turn, and sends a finished one at once
+ok 113 - the merger holds an unfinished fragment, merges the child's continuation into ONE turn, and sends a finished one at once
+  ---
+  duration_ms: 3.132464
+  type: 'test'
+  ...
+# Subtest: mergeFinals keeps the first onset and the weaker ASR confidence; the turn context comes from the ui
+ok 114 - mergeFinals keeps the first onset and the weaker ASR confidence; the turn context comes from the ui
+  ---
+  duration_ms: 0.564249
+  type: 'test'
+  ...
+# Subtest: a held fragment is never lost: drain() force-sends it even after the child resumed, and a resumed hold has a ceiling
+ok 115 - a held fragment is never lost: drain() force-sends it even after the child resumed, and a resumed hold has a ceiling
+  ---
+  duration_ms: 3.362788
+  type: 'test'
+  ...
+# Subtest: deskPhaseOf: in-phase moves never change the phase; phase moves do; the server's ui.phase wins
+ok 116 - deskPhaseOf: in-phase moves never change the phase; phase moves do; the server's ui.phase wins
+  ---
+  duration_ms: 1.908998
+  type: 'test'
+  ...
+# Subtest: ledgeChipFits: Young keeps numerals, pictures and short words; drops sentences
+ok 117 - ledgeChipFits: Young keeps numerals, pictures and short words; drops sentences
+  ---
+  duration_ms: 1.402838
+  type: 'test'
+  ...
+# Subtest: ledgeChipFits: the safeguarding helplines always reach the Young ledge (safety by predicate)
+ok 118 - ledgeChipFits: the safeguarding helplines always reach the Young ledge (safety by predicate)
+  ---
+  duration_ms: 0.312697
+  type: 'test'
+  ...
+# Subtest: open mic: only Older, only with a headset (or a passed probe), never after EchoGuard demotion
+ok 119 - open mic: only Older, only with a headset (or a passed probe), never after EchoGuard demotion
+  ---
+  duration_ms: 0.751089
+  type: 'test'
+  ...
+# Subtest: planDay: the IST calendar day
+ok 120 - planDay: the IST calendar day
+  ---
+  duration_ms: 39.785192
+  type: 'test'
+  ...
+# Subtest: UiBridge: a cascade start builds a CascadeLink (never a TextLink); a typed start a TextLink
+ok 121 - UiBridge: a cascade start builds a CascadeLink (never a TextLink); a typed start a TextLink
+  ---
+  duration_ms: 66.57433
+  type: 'test'
+  ...
+# Subtest: UiBridge: the pause hold delays teacher speech until released, and an abort while held rejects
+ok 122 - UiBridge: the pause hold delays teacher speech until released, and an abort while held rejects
+  ---
+  duration_ms: 22.914705
+  type: 'test'
+  ...
+# Subtest: UiBridge: the cascade stream passes through untouched and its copy lands in the buffer as WAV
+ok 123 - UiBridge: the cascade stream passes through untouched and its copy lands in the buffer as WAV
+  ---
+  duration_ms: 12.166348
+  type: 'test'
+  ...
+# Subtest: captions: dashes are clause boundaries, short tails merge, at rest the last full sentence stays up
+ok 124 - captions: dashes are clause boundaries, short tails merge, at rest the last full sentence stays up
+  ---
+  duration_ms: 2.625309
+  type: 'test'
+  ...
+# Subtest: child plan / map / teacher / summary / request / start-gate routes (child process, Neon test branch)
+ok 125 - child plan / map / teacher / summary / request / start-gate routes (child process, Neon test branch) # SKIP not run: CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing
+  ---
+  duration_ms: 223.114316
+  type: 'test'
+  ...
+# [azure] chat [REDACTED:DEPLOY_FAST] 200 74ms in=10 out=5
+# [azure] chat [REDACTED:DEPLOY_FAST] 200 1ms in=10 out=5
+# [azure] chat [REDACTED:DEPLOY_FAST] 200 1ms in=10 out=5
+# [azure] chat [REDACTED:DEPLOY_FAST] 200 1ms in=10 out=5
+# [azure] chat [REDACTED:DEPLOY_FAST] network 0ms
+# Subtest: classify
+    # Subtest: parse: key → correct, a misconception tag → its real id, other_wrong → incorrect
+    ok 1 - parse: key → correct, a misconception tag → its real id, other_wrong → incorrect
+      ---
+      duration_ms: 75.711872
+      type: 'test'
+      ...
+    # Subtest: parse: don't-know and low confidence are no evidence (never scored wrong)
+    ok 2 - parse: don't-know and low confidence are no evidence (never scored wrong)
+      ---
+      duration_ms: 7.743325
+      type: 'test'
+      ...
+    # Subtest: parse: teach-back passes at ≥60% of expectations with no misconception
+    ok 3 - parse: teach-back passes at ≥60% of expectations with no misconception
+      ---
+      duration_ms: 6.055869
+      type: 'test'
+      ...
+    # Subtest: classify: calls [REDACTED:DEPLOY_FAST] with a strict json_schema keyed to the item, and maps the answer
+    ok 4 - classify: calls [REDACTED:DEPLOY_FAST] with a strict json_schema keyed to the item, and maps the answer
+      ---
+      duration_ms: 470.984848
+      type: 'test'
+      ...
+    # Subtest: classify: deterministic paths never call the model
+    ok 5 - classify: deterministic paths never call the model
+      ---
+      duration_ms: 66.859331
+      type: 'test'
+      ...
+    # Subtest: classify: a low-ASR turn is no evidence, but its words still get a distress-only check
+    ok 6 - classify: a low-ASR turn is no evidence, but its words still get a distress-only check
+      ---
+      duration_ms: 30.630176
+      type: 'test'
+      ...
+    # Subtest: classify: the safeguarding predicate fires on the bytes, without the model
+    ok 7 - classify: the safeguarding predicate fires on the bytes, without the model
+      ---
+      duration_ms: 12.700459
+      type: 'test'
+      ...
+# [azure] chat [REDACTED:DEPLOY_FAST] network 1ms (retry)
+# [classify] model unavailable (classify and fallback): chat [REDACTED:DEPLOY_FAST] network error: connect ECONNREFUSED
+# [azure] chat [REDACTED:DEPLOY_FAST] network 0ms
+# [classify] distress check unavailable: chat [REDACTED:DEPLOY_FAST] network error: connect ECONNREFUSED
+# [azure] chat [REDACTED:DEPLOY_FAST] 200 1ms in=10 out=5
+    # Subtest: classify: model flags merge in, and an outage costs evidence, never the turn
+    ok 8 - classify: model flags merge in, and an outage costs evidence, never the turn
+      ---
+      duration_ms: 415.454043
+      type: 'test'
+      ...
+    # Subtest: parse: a reason volunteered with a correct answer is labelled right or as the misconception it expresses
+    ok 9 - parse: a reason volunteered with a correct answer is labelled right or as the misconception it expresses
+      ---
+      duration_ms: 2.832914
+      type: 'test'
+      ...
+    # Subtest: classify: the teacher's last turn goes to the classifier so an answer to another question is not evidence
+    ok 10 - classify: the teacher's last turn goes to the classifier so an answer to another question is not evidence
+      ---
+      duration_ms: 6.495897
+      type: 'test'
+      ...
+    # Subtest: parse: with no keyed item a voiced wrong belief is a flag, never graded evidence
+    ok 11 - parse: with no keyed item a voiced wrong belief is a flag, never graded evidence
+      ---
+      duration_ms: 1.32619
+      type: 'test'
+      ...
+    1..11
+ok 126 - classify
+  ---
+  duration_ms: 1099.912733
+  type: 'suite'
+  ...
+# Subtest: ledger keeps realtime ordering and reports only excess messages
+ok 127 - ledger keeps realtime ordering and reports only excess messages
+  ---
+  duration_ms: 9.99399
+  type: 'test'
+  ...
+# Subtest: protocol maps a voice turn: speech → transcript → captions → audio → done
+ok 128 - protocol maps a voice turn: speech → transcript → captions → audio → done
+  ---
+  duration_ms: 2.01941
+  type: 'test'
+  ...
+# Subtest: protocol prunes all but the last 6 messages after each response.done
+ok 129 - protocol prunes all but the last 6 messages after each response.done
+  ---
+  duration_ms: 1.095306
+  type: 'test'
+  ...
+# Subtest: protocol: barge-in during teacher audio marks the teacher turn interrupted once
+ok 130 - protocol: barge-in during teacher audio marks the teacher turn interrupted once
+  ---
+  duration_ms: 0.607492
+  type: 'test'
+  ...
+# Subtest: protocol: interrupt() cancels generation and flushes WebRTC playback; the reply waits for the cancel
+ok 131 - protocol: interrupt() cancels generation and flushes WebRTC playback; the reply waits for the cancel
+  ---
+  duration_ms: 0.939555
+  type: 'test'
+  ...
+# Subtest: protocol: a response.create the server refuses (active response) is retried after the next response.done
+ok 132 - protocol: a response.create the server refuses (active response) is retried after the next response.done
+  ---
+  duration_ms: 0.964434
+  type: 'test'
+  ...
+# Subtest: protocol: the safeguard path (interrupt, then prompt) ends in exactly one response.create after the cancel
+ok 133 - protocol: the safeguard path (interrupt, then prompt) ends in exactly one response.create after the cancel
+  ---
+  duration_ms: 0.72081
+  type: 'test'
+  ...
+# Subtest: protocol: push-to-talk turns are dated from the press; failures and benign errors
+ok 134 - protocol: push-to-talk turns are dated from the press; failures and benign errors
+  ---
+  duration_ms: 0.784958
+  type: 'test'
+  ...
+# Subtest: protocol: an accidental push-to-talk tap (empty commit) asks no reply and reports child_silent
+ok 135 - protocol: an accidental push-to-talk tap (empty commit) asks no reply and reports child_silent
+  ---
+  duration_ms: 1.003319
+  type: 'test'
+  ...
+# Subtest: protocol client events have the GA session shape
+ok 136 - protocol client events have the GA session shape
+  ---
+  duration_ms: 0.994058
+  type: 'test'
+  ...
+# Subtest: status: four states derived from link events, at most one at a time
+ok 137 - status: four states derived from link events, at most one at a time
+  ---
+  duration_ms: 0.48413
+  type: 'test'
+  ...
+# Subtest: level meter maps RMS to a 0..1 scale and is inert without an analyser
+ok 138 - level meter maps RMS to a 0..1 scale and is inert without an analyser
+  ---
+  duration_ms: 0.338826
+  type: 'test'
+  ...
+# Subtest: teacher turns go to the child turn that followed them, once, and only when finished
+ok 139 - teacher turns go to the child turn that followed them, once, and only when finished
+  ---
+  duration_ms: 0.703335
+  type: 'test'
+  ...
+# Subtest: module events: interactions and errors only ride along; milestones call at once; drops are counted
+ok 140 - module events: interactions and errors only ride along; milestones call at once; drops are counted
+  ---
+  duration_ms: 0.742711
+  type: 'test'
+  ...
+# Subtest: module channel replays live commands to late subscribers and validates them
+ok 141 - module channel replays live commands to late subscribers and validates them
+  ---
+  duration_ms: 0.772547
+  type: 'test'
+  ...
+# Subtest: frame protocol rejects malformed messages and maps events for the Director
+ok 142 - frame protocol rejects malformed messages and maps events for the Director
+  ---
+  duration_ms: 0.940051
+  type: 'test'
+  ...
+# Subtest: params resolve against the EngineDef: defaults, clamps, enums, unknowns
+ok 143 - params resolve against the EngineDef: defaults, clamps, enums, unknowns
+  ---
+  duration_ms: 0.547756
+  type: 'test'
+  ...
+# Subtest: fraction-bars: config normalisation and goal checks are exact
+ok 144 - fraction-bars: config normalisation and goal checks are exact
+  ---
+  duration_ms: 1.157388
+  type: 'test'
+  ...
+# Subtest: fraction-bars: compare answers
+ok 145 - fraction-bars: compare answers
+  ---
+  duration_ms: 0.612583
+  type: 'test'
+  ...
+# Subtest: runtime text mode: opening, typed turn, reply is spoken from its stored turn
+ok 146 - runtime text mode: opening, typed turn, reply is spoken from its stored turn
+  ---
+  duration_ms: 76.936084
+  type: 'test'
+  ...
+# Subtest: runtime: module interactions ride with the next child turn; a milestone calls at once and carries no teacher turn
+ok 147 - runtime: module interactions ride with the next child turn; a milestone calls at once and carries no teacher turn
+  ---
+  duration_ms: 15.616606
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: a transcript that lands after the reply started still carries the previous teacher turn
+ok 148 - runtime voice mode: a transcript that lands after the reply started still carries the previous teacher turn
+  ---
+  duration_ms: 2.824679
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: a milestone during a streaming reply; the child turn then carries her whole turn and the cut
+ok 149 - runtime voice mode: a milestone during a streaming reply; the child turn then carries her whole turn and the cut
+  ---
+  duration_ms: 2.65111
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: a module milestone with the floor free is voiced; a hold (no speakNow) is not
+ok 150 - runtime voice mode: a module milestone with the floor free is voiced; a hold (no speakNow) is not
+  ---
+  duration_ms: 1.566505
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: a safeguarding move is voiced at once, cutting off a reply from the old instructions
+ok 151 - runtime voice mode: a safeguarding move is voiced at once, cutting off a reply from the old instructions
+  ---
+  duration_ms: 1.717275
+  type: 'test'
+  ...
+# Subtest: runtime text mode: a safeguarding reply to a module-only turn is never deferred behind the floor
+ok 152 - runtime text mode: a safeguarding reply to a module-only turn is never deferred behind the floor
+  ---
+  duration_ms: 10.001137
+  type: 'test'
+  ...
+# Subtest: runtime: a new lesson starts with no modules, whichever way the last one was left
+ok 153 - runtime: a new lesson starts with no modules, whichever way the last one was left
+  ---
+  duration_ms: 8.104619
+  type: 'test'
+  ...
+# Subtest: runtime: an in-app exit (unmount) closes by the beacon end, so the server's grace keeps Continue honest
+ok 154 - runtime: an in-app exit (unmount) closes by the beacon end, so the server's grace keeps Continue honest
+  ---
+  duration_ms: 2.1598
+  type: 'test'
+  ...
+# Subtest: runtime: a page-hide ends the lesson by beacon; a refused beacon leaves it open for a later way out
+ok 155 - runtime: a page-hide ends the lesson by beacon; a refused beacon leaves it open for a later way out
+  ---
+  duration_ms: 2.744915
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: the Director's end is voiced as a goodbye once the floor is free, then the call ends
+ok 156 - runtime voice mode: the Director's end is voiced as a goodbye once the floor is free, then the call ends
+  ---
+  duration_ms: 6.227216
+  type: 'test'
+  ...
+# Subtest: runtime voice mode: a teacher who holds the floor past the grace is cut off for the goodbye
+ok 157 - runtime voice mode: a teacher who holds the floor past the grace is cut off for the goodbye
+  ---
+  duration_ms: 3.618837
+  type: 'test'
+  ...
+# Subtest: runtime: a failed Director call in text mode clears 'thinking'; ASR failure still reaches the Director
+ok 158 - runtime: a failed Director call in text mode clears 'thinking'; ASR failure still reaches the Director
+  ---
+  duration_ms: 15.962103
+  type: 'test'
+  ...
+# Subtest: runtime: a failed call's module events ride with the next call; drops at the cap are reported
+ok 159 - runtime: a failed call's module events ride with the next call; drops at the cap are reported
+  ---
+  duration_ms: 11.768167
+  type: 'test'
+  ...
+# Subtest: runtime: 'lesson has ended' (409) is terminal and does not end the lesson twice
+ok 160 - runtime: 'lesson has ended' (409) is terminal and does not end the lesson twice
+  ---
+  duration_ms: 2.206452
+  type: 'test'
+  ...
+# Subtest: runtime: Director end waits for the teacher to finish speaking
+ok 161 - runtime: Director end waits for the teacher to finish speaking
+  ---
+  duration_ms: 3.070964
+  type: 'test'
+  ...
+# Subtest: runtime: end() lets the Director call in flight land before closing (up to the server's worst case)
+ok 162 - runtime: end() lets the Director call in flight land before closing (up to the server's worst case)
+  ---
+  duration_ms: 8.186746
+  type: 'test'
+  ...
+# Subtest: runtime: unmount, a fatal link error and ending while starting all close the lesson on the server
+ok 163 - runtime: unmount, a fatal link error and ending while starting all close the lesson on the server
+  ---
+  duration_ms: 2.45306
+  type: 'test'
+  ...
+# Subtest: runtime: a lesson whose link cannot connect is closed on the server and reported
+ok 164 - runtime: a lesson whose link cannot connect is closed on the server and reported
+  ---
+  duration_ms: 2.361227
+  type: 'test'
+  ...
+# [lesson] item i9 does not fit the prompt budget; skipped (compile: section "lesson" needs 2267 tokens (cap 800) after every droppable part was shed; refusing to truncate)
+# Subtest: the floor is in every compiled prompt: AI disclosure, Childline 1098, Tele-MANAS 14416
+ok 165 - the floor is in every compiled prompt: AI disclosure, Childline 1098, Tele-MANAS 14416
+  ---
+  duration_ms: 130.681332
+  type: 'test'
+  ...
+# Subtest: section order is character → floor → child → lesson → move → language → last
+ok 166 - section order is character → floor → child → lesson → move → language → last
+  ---
+  duration_ms: 7.281454
+  type: 'test'
+  ...
+# Subtest: the last line is the turn-shape rule, sized by age band
+ok 167 - the last line is the turn-shape rule, sized by age band
+  ---
+  duration_ms: 11.099339
+  type: 'test'
+  ...
+# Subtest: the item prompt is verbatim content; the key is marked unsaid until rung 4
+ok 168 - the item prompt is verbatim content; the key is marked unsaid until rung 4
+  ---
+  duration_ms: 34.962597
+  type: 'test'
+  ...
+# Subtest: lanes share every byte except the voice-only branch lines
+ok 169 - lanes share every byte except the voice-only branch lines
+  ---
+  duration_ms: 14.507858
+  type: 'test'
+  ...
+# Subtest: voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form
+ok 170 - voice lane poses the item in spoken notation; the key line, the text lane and the guards keep the written form
+  ---
+  duration_ms: 6.21307
+  type: 'test'
+  ...
+# Subtest: VIBE row: one closed-vocabulary line after LESSON NOW, before the move; TURN SHAPE stays last
+ok 171 - VIBE row: one closed-vocabulary line after LESSON NOW, before the move; TURN SHAPE stays last
+  ---
+  duration_ms: 7.393631
+  type: 'test'
+  ...
+# Subtest: voice lane: helplines are digit words in the mode, never numerals; the text lane keeps the numerals
+ok 172 - voice lane: helplines are digit words in the mode, never numerals; the text lane keeps the numerals
+  ---
+  duration_ms: 50.088747
+  type: 'test'
+  ...
+# Subtest: voice instructions from a stored state carry the active item's branch, never the close fallback
+ok 173 - voice instructions from a stored state carry the active item's branch, never the close fallback
+  ---
+  duration_ms: 20.969304
+  type: 'test'
+  ...
+# Subtest: voice: a move the client reported as voiced is framed as already said; a new move clears it
+ok 174 - voice: a move the client reported as voiced is framed as already said; a new move clears it
+  ---
+  duration_ms: 13.750975
+  type: 'test'
+  ...
+# Subtest: an item whose pinned text cannot compile is skipped once, and the next question is compiled
+ok 175 - an item whose pinned text cannot compile is skipped once, and the next question is compiled
+  ---
+  duration_ms: 20.161957
+  type: 'test'
+  ...
+# Subtest: budget: optional rows are shed first, lowest priority first, the floor and turn shape never
+ok 176 - budget: optional rows are shed first, lowest priority first, the floor and turn shape never
+  ---
+  duration_ms: 5.865401
+  type: 'test'
+  ...
+# Subtest: budget: throws instead of truncating when required text cannot fit
+ok 177 - budget: throws instead of truncating when required text cannot fit
+  ---
+  duration_ms: 7.148364
+  type: 'test'
+  ...
+# Subtest: brief rows with ability labels or internal ids are dropped, never rewritten
+ok 178 - brief rows with ability labels or internal ids are dropped, never rewritten
+  ---
+  duration_ms: 6.487296
+  type: 'test'
+  ...
+# Subtest: persona notes and move shapes are shapes, not lines she could say
+ok 179 - persona notes and move shapes are shapes, not lines she could say
+  ---
+  duration_ms: 1.434963
+  type: 'test'
+  ...
+# Subtest: safeguard and wrap turns get their own last rules; the floor still precedes them
+ok 180 - safeguard and wrap turns get their own last rules; the floor still precedes them
+  ---
+  duration_ms: 3.275347
+  type: 'test'
+  ...
+# Subtest: every state × language × refresh × k7 renders a non-empty card that passes the lexicon gate
+ok 181 - every state × language × refresh × k7 renders a non-empty card that passes the lexicon gate
+  ---
+  duration_ms: 11.433738
+  type: 'test'
+  ...
+# Subtest: the English shallow row (the state after a first lesson) renders
+ok 182 - the English shallow row (the state after a first lesson) renders
+  ---
+  duration_ms: 0.240065
+  type: 'test'
+  ...
+# Subtest: days are counted in good English: 1 day, 3 days (the old card said '1 days')
+ok 183 - days are counted in good English: 1 day, 3 days (the old card said '1 days')
+  ---
+  duration_ms: 0.379454
+  type: 'test'
+  ...
+# Subtest: the card wording changes as the state rises (what w1c-three-day asserts on production)
+ok 184 - the card wording changes as the state rises (what w1c-three-day asserts on production)
+  ---
+  duration_ms: 1.059551
+  type: 'test'
+  ...
+# Subtest: comprehension store on Neon
+    # Subtest: facet state, probe log, grade audit, re-teach, weave and posteriors land; M0 refuses
+    ok 1 - facet state, probe log, grade audit, re-teach, weave and posteriors land; M0 refuses
+      ---
+      duration_ms: 435.585979
+      type: 'test'
+      ...
+    1..1
+ok 185 - comprehension store on Neon
+  ---
+  duration_ms: 1900.275375
+  type: 'suite'
+  ...
+# Subtest: shape registry: 36 shapes, each names a kit input, a closed class and an operator
+ok 186 - shape registry: 36 shapes, each names a kit input, a closed class and an operator
+  ---
+  duration_ms: 2.950981
+  type: 'test'
+  ...
+# Subtest: worked trajectory (spec §2.6): the understander reaches understood only after a delayed check + far transfer
+ok 187 - worked trajectory (spec §2.6): the understander reaches understood only after a delayed check + far transfer
+  ---
+  duration_ms: 8.268313
+  type: 'test'
+  ...
+# Subtest: the correct-answer trap stays shallow where a K-only rule would certify
+ok 188 - the correct-answer trap stays shallow where a K-only rule would certify
+  ---
+  duration_ms: 3.599854
+  type: 'test'
+  ...
+# Subtest: replay = online fold under any arrival order, re-delivery included (TP1-TP2 with comp)
+ok 189 - replay = online fold under any arrival order, re-delivery included (TP1-TP2 with comp)
+  ---
+  duration_ms: 11.359232
+  type: 'test'
+  ...
+# Subtest: E2: a dropped event (safety, low ASR, contaminated, NA) changes no byte of U, T or K
+ok 190 - E2: a dropped event (safety, low ASR, contaminated, NA) changes no byte of U, T or K
+  ---
+  duration_ms: 3.408117
+  type: 'test'
+  ...
+# Subtest: CEI4: no positive U/T update from a coincident correct, a partial, or a span-less LLM positive
+ok 191 - CEI4: no positive U/T update from a coincident correct, a partial, or a span-less LLM positive
+  ---
+  duration_ms: 0.358921
+  type: 'test'
+  ...
+# Subtest: LR(best) ≥ 1 for every facet class at every retrievability (symmetric gate)
+ok 192 - LR(best) ≥ 1 for every facet class at every retrievability (symmetric gate)
+  ---
+  duration_ms: 0.517914
+  type: 'test'
+  ...
+# Subtest: session cap ±log 20: one session can move U from 0.2 to at most ~0.83
+ok 193 - session cap ±log 20: one session can move U from 0.2 to at most ~0.83
+  ---
+  duration_ms: 0.405409
+  type: 'test'
+  ...
+# Subtest: E4 / CEI3: game-only evidence can never certify understood
+ok 194 - E4 / CEI3: game-only evidence can never certify understood
+  ---
+  duration_ms: 9.177707
+  type: 'test'
+  ...
+# Subtest: CEI2: the ladder never sits above the ledger display
+ok 195 - CEI2: the ladder never sits above the ledger display
+  ---
+  duration_ms: 0.713665
+  type: 'test'
+  ...
+# Subtest: CEI6: absence never lowers a state (reading the same fold later can only raise refresh)
+ok 196 - CEI6: absence never lowers a state (reading the same fold later can only raise refresh)
+  ---
+  duration_ms: 2.567397
+  type: 'test'
+  ...
+# Subtest: CEI1 / CE-M7: permuting voice, vibe and timing fields leaves the fold byte-identical
+ok 197 - CEI1 / CE-M7: permuting voice, vibe and timing fields leaves the fold byte-identical
+  ---
+  duration_ms: 4.823022
+  type: 'test'
+  ...
+# Subtest: misconception: p ≥ 0.85 verified by a second family → not_yet; one family alone stays shallow (checking)
+ok 198 - misconception: p ≥ 0.85 verified by a second family → not_yet; one family alone stays shallow (checking)
+  ---
+  duration_ms: 6.35599
+  type: 'test'
+  ...
+# Subtest: teaching transition lifts a low facet by ≤ 0.10 per episode and never certifies
+ok 199 - teaching transition lifts a low facet by ≤ 0.10 per episode and never certifies
+  ---
+  duration_ms: 1.54908
+  type: 'test'
+  ...
+# Subtest: NM-3 schema scan: no latency, pause, prosody, affect, mood, engagement, trust, vibe or free-text column in 007
+ok 200 - NM-3 schema scan: no latency, pause, prosody, affect, mood, engagement, trust, vibe or free-text column in 007
+  ---
+  duration_ms: 1.246557
+  type: 'test'
+  ...
+# Subtest: every outcome of every facet class has an emission (no silent NA inside the fold)
+ok 201 - every outcome of every facet class has an emission (no silent NA inside the fold)
+  ---
+  duration_ms: 0.148498
+  type: 'test'
+  ...
+# Subtest: R-KEY numbers: numerals, Indian commas, EN / Roman-HI / Devanagari words, fractions, self-correction
+ok 202 - R-KEY numbers: numerals, Indian commas, EN / Roman-HI / Devanagari words, fractions, self-correction
+  ---
+  duration_ms: 11.975214
+  type: 'test'
+  ...
+# Subtest: E6 span check is transliteration-aware and rejects invented spans
+ok 203 - E6 span check is transliteration-aware and rejects invented spans
+  ---
+  duration_ms: 1.207817
+  type: 'test'
+  ...
+# Subtest: R-OPT / R-CATCH map to class outcomes; teach-back coverage; partial is its own label
+ok 204 - R-OPT / R-CATCH map to class outcomes; teach-back coverage; partial is its own label
+  ---
+  duration_ms: 2.434029
+  type: 'test'
+  ...
+# Subtest: closed-label requests are blind: a teacher turn, name or confidence field throws (mutant VC3)
+ok 205 - closed-label requests are blind: a teacher turn, name or confidence field throws (mutant VC3)
+  ---
+  duration_ms: 0.970943
+  type: 'test'
+  ...
+# Subtest: grade_audit keeps the child's verbatim words only with transcripts_retention consent
+ok 206 - grade_audit keeps the child's verbatim words only with transcripts_retention consent
+  ---
+  duration_ms: 0.451157
+  type: 'test'
+  ...
+# Subtest: E6 fails closed: a positive LLM verdict with no spanOk field carries no facet evidence
+ok 207 - E6 fails closed: a positive LLM verdict with no spanOk field carries no facet evidence
+  ---
+  duration_ms: 0.387465
+  type: 'test'
+  ...
+# Subtest: echo guard: restating the topic title is partial, a real reason stays present
+ok 208 - echo guard: restating the topic title is partial, a real reason stays present
+  ---
+  duration_ms: 1.010809
+  type: 'test'
+  ...
+# Subtest: closed-label: schema / parse failure → NA (never wrong); positive without a findable span → absent (E6, mutant VC6)
+ok 209 - closed-label: schema / parse failure → NA (never wrong); positive without a findable span → absent (E6, mutant VC6)
+  ---
+  duration_ms: 0.814501
+  type: 'test'
+  ...
+# Subtest: re-teach: kit primary first for a confirmed misconception; failed classes excluded; two fails → prerequisite descent
+ok 210 - re-teach: kit primary first for a confirmed misconception; failed classes excluded; two fails → prerequisite descent
+  ---
+  duration_ms: 3.311204
+  type: 'test'
+  ...
+# Subtest: re-teach: exploration floor ≥ 0.2 and determinism given the seed; delayed fail → recap of the arm that worked
+ok 211 - re-teach: exploration floor ≥ 0.2 and determinism given the seed; delayed fail → recap of the arm that worked
+  ---
+  duration_ms: 11.394898
+  type: 'test'
+  ...
+# Subtest: re-teach triggers come from the belief, never from voice/vibe; voice only orders a tie (VI-1)
+ok 212 - re-teach triggers come from the belief, never from voice/vibe; voice only orders a tie (VI-1)
+  ---
+  duration_ms: 0.540407
+  type: 'test'
+  ...
+# Subtest: persona: knobs move one step after 2 consistent signals; ≤ 1 step / 10 min; strain beats explicit jokes (VI-5)
+ok 213 - persona: knobs move one step after 2 consistent signals; ≤ 1 step / 10 min; strain beats explicit jokes (VI-5)
+  ---
+  duration_ms: 11.260188
+  type: 'test'
+  ...
+# Subtest: persona: re-teach suppression, humour off within 2 turns of an error, interest faded before transfer (VI-3)
+ok 214 - persona: re-teach suppression, humour off within 2 turns of an error, interest faded before transfer (VI-3)
+  ---
+  duration_ms: 0.719084
+  type: 'test'
+  ...
+# Subtest: VIBE row: one line, closed vocabulary, no sentences, ≤ 60 tokens (VI-4)
+ok 215 - VIBE row: one line, closed vocabulary, no sentences, ≤ 60 tokens (VI-4)
+  ---
+  duration_ms: 3.593548
+  type: 'test'
+  ...
+# Subtest: parent card: evidence rows only; banned lexicon throws; no state names or labels (CEI7)
+ok 216 - parent card: evidence rows only; banned lexicon throws; no state names or labels (CEI7)
+  ---
+  duration_ms: 3.991429
+  type: 'test'
+  ...
+# Subtest: echo guard: a positive span that only restates the topic title is demoted to partial (code, request stays blind)
+ok 217 - echo guard: a positive span that only restates the topic title is demoted to partial (code, request stays blind)
+  ---
+  duration_ms: 0.886892
+  type: 'test'
+  ...
+# Subtest: resolution ladder: repaired_now → resolved_next → resolved_delayed (final), with the RT7 reward
+ok 218 - resolution ladder: repaired_now → resolved_next → resolved_delayed (final), with the RT7 reward
+  ---
+  duration_ms: 3.543318
+  type: 'test'
+  ...
+# Subtest: failures: a wrong re-check, another re-teach before any success, a different misconception, a helped answer
+ok 219 - failures: a wrong re-check, another re-teach before any success, a different misconception, a helped answer
+  ---
+  duration_ms: 1.074163
+  type: 'test'
+  ...
+# Subtest: resolveAttempts: only changed rows are written, a rewarded row is never touched again, attempts carry resolved outcomes
+ok 220 - resolveAttempts: only changed rows are written, a rewarded row is never touched again, attempts carry resolved outcomes
+  ---
+  duration_ms: 0.967874
+  type: 'test'
+  ...
+# Subtest: resolutionStmt: the posterior is paid inside the guarded update (once per attempt, only when final, no child id)
+ok 221 - resolutionStmt: the posterior is paid inside the guarded update (once per attempt, only when final, no child id)
+  ---
+  duration_ms: 0.478669
+  type: 'test'
+  ...
+# Subtest: in-lesson inputs: the arm tried last on a skill counts as failed when the trigger fires again; two → descent, three → park
+ok 222 - in-lesson inputs: the arm tried last on a skill counts as failed when the trigger fires again; two → descent, three → park
+  ---
+  duration_ms: 1.900838
+  type: 'test'
+  ...
+# Subtest: readContext: resolves, writes in the background, and pins attempts / fluency / posteriors / prerequisites for the lesson
+ok 223 - readContext: resolves, writes in the background, and pins attempts / fluency / posteriors / prerequisites for the lesson
+  ---
+  duration_ms: 32.773008
+  type: 'test'
+  ...
+# Subtest: (b) end to end: resolveAttempts → day-2 selectReteach puts the arm that repaired this child first (child_history)
+ok 224 - (b) end to end: resolveAttempts → day-2 selectReteach puts the arm that repaired this child first (child_history)
+  ---
+  duration_ms: 1.716147
+  type: 'test'
+  ...
+# Subtest: every chosen_by selectReteach can write is allowed by the reteach_attempts check (020)
+ok 225 - every chosen_by selectReteach can write is allowed by the reteach_attempts check (020)
+  ---
+  duration_ms: 10.825936
+  type: 'test'
+  ...
+# Subtest: every trigger a re-teach decision can write is allowed by the reteach_attempts check (023)
+ok 226 - every trigger a re-teach decision can write is allowed by the reteach_attempts check (023)
+  ---
+  duration_ms: 4.221141
+  type: 'test'
+  ...
+# Subtest: no optional probe in the first 3 child turns, never two probe turns in a row
+ok 227 - no optional probe in the first 3 child turns, never two probe turns in a row
+  ---
+  duration_ms: 6.104615
+  type: 'test'
+  ...
+# Subtest: planted-error shapes never before learned_today; novices get only A, D16, G, I
+ok 228 - planted-error shapes never before learned_today; novices get only A, D16, G, I
+  ---
+  duration_ms: 11.365376
+  type: 'test'
+  ...
+# Subtest: the session and per-10-turn caps hold for every band, however many turns the scheduler is asked
+ok 229 - the session and per-10-turn caps hold for every band, however many turns the scheduler is asked
+  ---
+  duration_ms: 10.841637
+  type: 'test'
+  ...
+# Subtest: ≤ 2 U probes per concept per session, from different families; B1 ≤ 1
+ok 230 - ≤ 2 U probes per concept per session, from different families; B1 ≤ 1
+  ---
+  duration_ms: 1.619251
+  type: 'test'
+  ...
+# Subtest: stop rule: a facet reading high is not probed; a low one gets exactly one probe per session
+ok 231 - stop rule: a facet reading high is not probed; a low one gets exactly one probe per session
+  ---
+  duration_ms: 1.067201
+  type: 'test'
+  ...
+# Subtest: BE2: strain defers optional probes but never a mandatory one
+ok 232 - BE2: strain defers optional probes but never a mandatory one
+  ---
+  duration_ms: 1.281253
+  type: 'test'
+  ...
+# Subtest: mandatory order: delayed check > misconception verify > coincident why > first-correct why; verify avoids the detector family
+ok 233 - mandatory order: delayed check > misconception verify > coincident why > first-correct why; verify avoids the detector family
+  ---
+  duration_ms: 0.677192
+  type: 'test'
+  ...
+# Subtest: voice followUpProbe can only move an eligible probe one slot earlier, never add one beyond the caps
+ok 234 - voice followUpProbe can only move an eligible probe one slot earlier, never add one beyond the caps
+  ---
+  duration_ms: 1.434942
+  type: 'test'
+  ...
+# Subtest: EIG is positive for an open facet and vanishes as the facet saturates; code-graded beats LLM
+ok 235 - EIG is positive for an open facet and vanishes as the facet saturates; code-graded beats LLM
+  ---
+  duration_ms: 0.99667
+  type: 'test'
+  ...
+# Subtest: CEI7: test lexicon is caught in EN, Roman Hindi and Devanagari, with word boundaries
+ok 236 - CEI7: test lexicon is caught in EN, Roman Hindi and Devanagari, with word boundaries
+  ---
+  duration_ms: 5.318164
+  type: 'test'
+  ...
+# Subtest: weave: hosted only 2-3 topics later and ≥ 20 h after the anchor; one sub-step per topic; expiry → callback opener
+ok 237 - weave: hosted only 2-3 topics later and ≥ 20 h after the anchor; one sub-step per topic; expiry → callback opener
+  ---
+  duration_ms: 1.911197
+  type: 'test'
+  ...
+# Subtest: CEI5: a woven sub-step emits exactly one event on the earlier skill (item.open or transfer.near, never both)
+ok 238 - CEI5: a woven sub-step emits exactly one event on the earlier skill (item.open or transfer.near, never both)
+  ---
+  duration_ms: 2.653054
+  type: 'test'
+  ...
+# Subtest: E9 deference discount: on only when the child agrees with a character's true AND planted statements (> 0.8 both)
+ok 239 - E9 deference discount: on only when the child agrees with a character's true AND planted statements (> 0.8 both)
+  ---
+  duration_ms: 0.848845
+  type: 'test'
+  ...
+# Subtest: weave (W1-C): an entry no kit can host becomes the callback when its woven check was due, not after the grace
+ok 240 - weave (W1-C): an entry no kit can host becomes the callback when its woven check was due, not after the grace
+  ---
+  duration_ms: 0.683844
+  type: 'test'
+  ...
+# Subtest: a verdict that lands within 600 ms is folded at the next turn (the 0 s reply case)
+ok 241 - a verdict that lands within 600 ms is folded at the next turn (the 0 s reply case)
+  ---
+  duration_ms: 177.273477
+  type: 'test'
+  ...
+# Subtest: a verdict later than the wait: the turn claims the fallback, and the late verdict becomes ONE correction
+ok 242 - a verdict later than the wait: the turn claims the fallback, and the late verdict becomes ONE correction
+  ---
+  duration_ms: 272.382616
+  type: 'test'
+  ...
+# Subtest: another replica graded it: the verdict is read from pending_grade by event id
+ok 243 - another replica graded it: the verdict is read from pending_grade by event id
+  ---
+  duration_ms: 202.164959
+  type: 'test'
+  ...
+# Subtest: the verdict lands elsewhere between the deadline and the claim: the claim returns it and the turn folds it
+ok 244 - the verdict lands elsewhere between the deadline and the claim: the claim returns it and the turn folds it
+  ---
+  duration_ms: 31.026911
+  type: 'test'
+  ...
+# Subtest: no store (database down): an unsettled event falls back after the wait, never throws
+ok 245 - no store (database down): an unsettled event falls back after the wait, never throws
+  ---
+  duration_ms: 85.77804
+  type: 'test'
+  ...
+# Subtest: lateEvent: deterministic id, via late, the grader's outcome and span check; nothing when every target is NA
+ok 246 - lateEvent: deterministic id, via late, the grader's outcome and span check; nothing when every target is NA
+  ---
+  duration_ms: 0.979598
+  type: 'test'
+  ...
+# Subtest: folding a correction: K is untouched (the fallback took the K step), U moves, replay of both rows is stable
+ok 247 - folding a correction: K is untouched (the fallback took the K step), U moves, replay of both rows is stable
+  ---
+  duration_ms: 8.081444
+  type: 'test'
+  ...
+# Subtest: a why is folded as soon as ONE target comes back present with a checked span (the slower targets cannot change it)
+ok 248 - a why is folded as soon as ONE target comes back present with a checked span (the slower targets cannot change it)
+  ---
+  duration_ms: 82.746787
+  type: 'test'
+  ...
+# Subtest: a teach-back waits for every target (its coverage rule needs all of them)
+ok 249 - a teach-back waits for every target (its coverage rule needs all of them)
+  ---
+  duration_ms: 722.519909
+  type: 'test'
+  ...
+# Subtest: until: a verdict that lands while the classifier still runs is folded; the wait ends with the classifier
+ok 250 - until: a verdict that lands while the classifier still runs is folded; the wait ends with the classifier
+  ---
+  duration_ms: 902.104102
+  type: 'test'
+  ...
+# Subtest: until: an unsettled verdict holds the turn no longer than max(600 ms, classifier), and is claimed
+ok 251 - until: an unsettled verdict holds the turn no longer than max(600 ms, classifier), and is claimed
+  ---
+  duration_ms: 2002.164838
+  type: 'test'
+  ...
+# Subtest: a late correction keeps its held event's source weight (game / module), never full weight
+ok 252 - a late correction keeps its held event's source weight (game / module), never full weight
+  ---
+  duration_ms: 1.162066
+  type: 'test'
+  ...
+# Subtest: pregrade: a grade started before the turn is classified is adopted by gradeLater, never run twice
+ok 253 - pregrade: a grade started before the turn is classified is adopted by gradeLater, never run twice
+  ---
+  duration_ms: 302.368198
+  type: 'test'
+  ...
+# Subtest: hedge: a grader call still out after HEDGE_MS is sent once more; the first real verdict wins
+ok 254 - hedge: a grader call still out after HEDGE_MS is sent once more; the first real verdict wins
+  ---
+  duration_ms: 2054.165947
+  type: 'test'
+  ...
+# Subtest: only @taxila.test guardians are test accounts
+ok 255 - only @taxila.test guardians are test accounts
+  ---
+  duration_ms: 1.374785
+  type: 'test'
+  ...
+# Subtest: nextTestOffset: absolute or relative, forward only, at most 60 days
+ok 256 - nextTestOffset: absolute or relative, forward only, at most 60 days
+  ---
+  duration_ms: 0.872359
+  type: 'test'
+  ...
+# Subtest: the migration's offset bound equals TEST_CLOCK_MAX_MS, and the lesson trigger shifts insert and end
+ok 257 - the migration's offset bound equals TEST_CLOCK_MAX_MS, and the lesson trigger shifts insert and end
+  ---
+  duration_ms: 0.880111
+  type: 'test'
+  ...
+# Subtest: offsetForToken: one cached table for every request, real accounts read 0, a failing table reads 0
+ok 258 - offsetForToken: one cached table for every request, real accounts read 0, a failing table reads 0
+  ---
+  duration_ms: 0.857593
+  type: 'test'
+  ...
+# Subtest: runWithOffset shifts Date.now and new Date() inside the context only; Dates stay Dates (child process)
+ok 259 - runWithOffset shifts Date.now and new Date() inside the context only; Dates stay Dates (child process)
+  ---
+  duration_ms: 88.598893
+  type: 'test'
+  ...
+# Subtest: GET/POST /api/test/clock: 403 and no write for a real account; a test account sets its own clock
+ok 260 - GET/POST /api/test/clock: 403 and no write for a real account; a test account sets its own clock
+  ---
+  duration_ms: 6.658907
+  type: 'test'
+  ...
+# Subtest: W1-C on the Neon test branch: settle store, late correction, posterior once, clock trigger
+ok 261 - W1-C on the Neon test branch: settle store, late correction, posterior once, clock trigger
+  ---
+  duration_ms: 45153.175653
+  type: 'test'
+  ...
+# Subtest: a failing child is blocked with doubling backoff, paged every 5th failure, and cleared on success
+ok 262 - a failing child is blocked with doubling backoff, paged every 5th failure, and cleared on success
+  ---
+  duration_ms: 3.86835
+  type: 'test'
+  ...
+# Subtest: 50 poisoned children never block a healthy one: the scan exclusion covers all of them
+ok 263 - 50 poisoned children never block a healthy one: the scan exclusion covers all of them
+  ---
+  duration_ms: 0.903179
+  type: 'test'
+  ...
+# [conductor-db] CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing
+# Subtest: conductor on Neon (test branch)
+ok 264 - conductor on Neon (test branch) # SKIP CONDUCTOR_TEST_DATABASE_URL is the PRODUCTION endpoint: refusing
+  ---
+  duration_ms: 0.766964
+  type: 'suite'
+  ...
+# [conductor] FAIL-SAFE 11111111-2222-4333-8444-555555555555 type=safety.incident: view down
+# Subtest: app.opened with no plan builds the code plan now (v1, first_open) and arms the day clock
+ok 265 - app.opened with no plan builds the code plan now (v1, first_open) and arms the day clock
+  ---
+  duration_ms: 26.856068
+  type: 'test'
+  ...
+# Subtest: decide is deterministic: equal inputs give byte-equal outputs
+ok 266 - decide is deterministic: equal inputs give byte-equal outputs
+  ---
+  duration_ms: 2.771586
+  type: 'test'
+  ...
+# Subtest: a second open the same day does not re-plan; a new learning day does
+ok 267 - a second open the same day does not re-plan; a new learning day does
+  ---
+  duration_ms: 6.580791
+  type: 'test'
+  ...
+# Subtest: learningDay = localDate(now − 4 h): a 01:30 open belongs to yesterday
+ok 268 - learningDay = localDate(now − 4 h): a 01:30 open belongs to yesterday
+  ---
+  duration_ms: 0.994321
+  type: 'test'
+  ...
+# Subtest: lesson.started → in_lesson and freezes the slot; lesson.ended → free, memory job, debounced re-plan
+ok 269 - lesson.started → in_lesson and freezes the slot; lesson.ended → free, memory job, debounced re-plan
+  ---
+  duration_ms: 3.625859
+  type: 'test'
+  ...
+# Subtest: network ending → resumable 15 min with a resume_window_end timer; reopening asks for a brief.refresh
+ok 270 - network ending → resumable 15 min with a resume_window_end timer; reopening asks for a brief.refresh
+  ---
+  duration_ms: 2.314135
+  type: 'test'
+  ...
+# Subtest: safety.incident pre-empts everything: safety_hold, jobs cancelled, rest plan, guard drops new work
+ok 271 - safety.incident pre-empts everything: safety_hold, jobs cancelled, rest plan, guard drops new work
+  ---
+  duration_ms: 3.358447
+  type: 'test'
+  ...
+# Subtest: consent revoked: queued jobs of that purpose are cancelled; consentGuard drops new ones
+ok 272 - consent revoked: queued jobs of that purpose are cancelled; consentGuard drops new ones
+  ---
+  duration_ms: 1.979982
+  type: 'test'
+  ...
+# Subtest: parent.pause → paused + pause_end timer; mid-lesson it waits for the lesson to end; resume → free
+ok 273 - parent.pause → paused + pause_end timer; mid-lesson it waits for the lesson to end; resume → free
+  ---
+  duration_ms: 5.594644
+  type: 'test'
+  ...
+# Subtest: parent lowers the daily cap: limits apply at once, a live lesson gets brief.refresh, the plan shrinks
+ok 274 - parent lowers the daily cap: limits apply at once, a live lesson gets brief.refresh, the plan shrinks
+  ---
+  duration_ms: 2.015109
+  type: 'test'
+  ...
+# Subtest: budget.threshold narrows realtime to cascade (R10 / governorGuard); the child is never told
+ok 275 - budget.threshold narrows realtime to cascade (R10 / governorGuard); the child is never told
+  ---
+  duration_ms: 1.242795
+  type: 'test'
+  ...
+# Subtest: night fold: once per learning day; a dormant child (>14 d) is not re-armed (X36), an open re-arms
+ok 276 - night fold: once per learning day; a dormant child (>14 d) is not re-armed (X36), an open re-arms
+  ---
+  duration_ms: 1.875107
+  type: 'test'
+  ...
+# Subtest: day_start re-plans only when inputsHash changed (X43)
+ok 277 - day_start re-plans only when inputsHash changed (X43)
+  ---
+  duration_ms: 1.038253
+  type: 'test'
+  ...
+# Subtest: Sunday is a free day; a parent 'off' override for today is a rest-free day; a holiday rests
+ok 278 - Sunday is a free day; a parent 'off' override for today is a rest-free day; a holiday rests
+  ---
+  duration_ms: 1.324483
+  type: 'test'
+  ...
+# Subtest: test window: lesson why carries the test, the last 2 days have newSkillBudget 0
+ok 279 - test window: lesson why carries the test, the last 2 days have newSkillBudget 0
+  ---
+  duration_ms: 1.105297
+  type: 'test'
+  ...
+# Subtest: the recorded view: only keys decide read are recorded; replay serves them and throws on a miss
+ok 280 - the recorded view: only keys decide read are recorded; replay serves them and throws on a miss
+  ---
+  duration_ms: 0.763953
+  type: 'test'
+  ...
+# Subtest: a stale view key never fires a rule (V25): stale due count → no review burst
+ok 281 - a stale view key never fires a rule (V25): stale due count → no review burst
+  ---
+  duration_ms: 1.473962
+  type: 'test'
+  ...
+# Subtest: poison: an authority event that throws gets the fail-safe; a non-authority one is quarantined
+ok 282 - poison: an authority event that throws gets the fail-safe; a non-authority one is quarantined
+  ---
+  duration_ms: 1.602186
+  type: 'test'
+  ...
+# Subtest: guards never add commands: every kept command was proposed (drop/narrow only)
+ok 283 - guards never add commands: every kept command was proposed (drop/narrow only)
+  ---
+  duration_ms: 1.154601
+  type: 'test'
+  ...
+# Subtest: fail-safe: paged, sticky (rest plans, no enqueues) until ops.fail_safe_cleared; a fail-safe pause still ends
+ok 284 - fail-safe: paged, sticky (rest plans, no enqueues) until ops.fail_safe_cleared; a fail-safe pause still ends
+  ---
+  duration_ms: 5.740906
+  type: 'test'
+  ...
+# Subtest: fail-safe limits are validated, clamped and never loosened
+ok 285 - fail-safe limits are validated, clamped and never loosened
+  ---
+  duration_ms: 1.113717
+  type: 'test'
+  ...
+# Subtest: lowersLimit orders times by the learning day: bedtime 23:30 → 00:15 is later, 21:30 → 21:00 earlier
+ok 286 - lowersLimit orders times by the learning day: bedtime 23:30 → 00:15 is later, 21:30 → 21:00 earlier
+  ---
+  duration_ms: 0.187851
+  type: 'test'
+  ...
+# Subtest: replay: loads through a reader that a write-counting shim proves issues 0 writes, and reproduces the log
+ok 287 - replay: loads through a reader that a write-counting shim proves issues 0 writes, and reproduces the log
+  ---
+  duration_ms: 3.699277
+  type: 'test'
+  ...
+# Subtest: crashed client + pending pause: the stale-lesson close applies the pause, and pause_end frees the child
+ok 288 - crashed client + pending pause: the stale-lesson close applies the pause, and pause_end frees the child
+  ---
+  duration_ms: 2.961986
+  type: 'test'
+  ...
+# Subtest: day rollover after days away re-arms today's clock even when the first event is not app.opened
+ok 289 - day rollover after days away re-arms today's clock even when the first event is not app.opened
+  ---
+  duration_ms: 1.114878
+  type: 'test'
+  ...
+# Subtest: V3 uses the month's REMAINING realtime: near-exhausted → the lesson steps down to cascade, never rejected
+ok 290 - V3 uses the month's REMAINING realtime: near-exhausted → the lesson steps down to cascade, never rejected
+  ---
+  duration_ms: 1.320913
+  type: 'test'
+  ...
+# Subtest: replay of a snapshot recorded before usage.voiceSecMonth existed serves its fallback; other misses still throw
+ok 291 - replay of a snapshot recorded before usage.voiceSecMonth existed serves its fallback; other misses still throw
+  ---
+  duration_ms: 0.241917
+  type: 'test'
+  ...
+# [conductor] hook lesson.ended not ingested for 7b0c5d3e: invalid event: lessonId id: [A-Za-z0-9_.:@-]{1,96}
+# [conductor] hook lesson.started not ingested for 7b0c5d3e: invalid event: lessonId id: [A-Za-z0-9_.:@-]{1,96}
+# [conductor] hook lesson.ended not ingested: no child id
+# Subtest: hooks: lesson start ingests app.opened (once per learning day) and lesson.started, last, via ingest_event
+ok 292 - hooks: lesson start ingests app.opened (once per learning day) and lesson.started, last, via ingest_event
+  ---
+  duration_ms: 30.185531
+  type: 'test'
+  ...
+# Subtest: hooks: a turn adds nothing (boundary facts only)
+ok 293 - hooks: a turn adds nothing (boundary facts only)
+  ---
+  duration_ms: 0.315706
+  type: 'test'
+  ...
+# Subtest: hooks: lesson end → lesson.ended with minutes from started_at and a reason from the trigger
+ok 294 - hooks: lesson end → lesson.ended with minutes from started_at and a reason from the trigger
+  ---
+  duration_ms: 2.066913
+  type: 'test'
+  ...
+# Subtest: hooks: consent → one parent.consent_changed per Conductor purpose, a fresh version per write; guardian-wide → none
+ok 295 - hooks: consent → one parent.consent_changed per Conductor purpose, a fresh version per write; guardian-wide → none
+  ---
+  duration_ms: 1.874402
+  type: 'test'
+  ...
+# Subtest: hooks: never throw; a refused event is dropped and the caller's write still lands
+ok 296 - hooks: never throw; a refused event is dropped and the caller's write still lands
+  ---
+  duration_ms: 2.797838
+  type: 'test'
+  ...
+# Subtest: hooks: the inline step is off outside production unless CONDUCTOR_INLINE=on
+ok 297 - hooks: the inline step is off outside production unless CONDUCTOR_INLINE=on
+  ---
+  duration_ms: 0.262539
+  type: 'test'
+  ...
+# Subtest: offsets: a job is due on its child's clock only when test_clock exists
+ok 298 - offsets: a job is due on its child's clock only when test_clock exists
+  ---
+  duration_ms: 0.273755
+  type: 'test'
+  ...
+# Subtest: ops: the canary passes on zeros and names what failed
+ok 299 - ops: the canary passes on zeros and names what failed
+  ---
+  duration_ms: 0.661695
+  type: 'test'
+  ...
+# Subtest: clock: IST local time, learning day, ISO week, zoned → UTC, jitter
+ok 300 - clock: IST local time, learning day, ISO week, zoned → UTC, jitter
+  ---
+  duration_ms: 24.689517
+  type: 'test'
+  ...
+# Subtest: clockPhase: morning → at_school → recovery → learning_window → wind_down → night; off days are free_day
+ok 301 - clockPhase: morning → at_school → recovery → learning_window → wind_down → night; off days are free_day
+  ---
+  duration_ms: 2.07014
+  type: 'test'
+  ...
+# Subtest: fitSegments keeps the minimum segment set and shrinks optional segments first
+ok 302 - fitSegments keeps the minimum segment set and shrinks optional segments first
+  ---
+  duration_ms: 0.673673
+  type: 'test'
+  ...
+# Subtest: planDay is pure: equal inputs → byte-equal plans; the hash moves with included fields only
+ok 303 - planDay is pure: equal inputs → byte-equal plans; the hash moves with included fields only
+  ---
+  duration_ms: 11.818314
+  type: 'test'
+  ...
+# Subtest: plans per band stay inside the cap and the 70% aim, with the minimum segment set
+ok 304 - plans per band stay inside the cap and the 70% aim, with the minimum segment set
+  ---
+  duration_ms: 7.573626
+  type: 'test'
+  ...
+# Subtest: a late open shortens the sitting by time left before bedtime − 60, never by lateness itself
+ok 305 - a late open shortens the sitting by time left before bedtime − 60, never by lateness itself
+  ---
+  duration_ms: 0.795184
+  type: 'test'
+  ...
+# Subtest: no catch-up debt: minutes already used today shrink the plan, never grow it
+ok 306 - no catch-up debt: minutes already used today shrink the plan, never grow it
+  ---
+  duration_ms: 0.920107
+  type: 'test'
+  ...
+# Subtest: V1 rejects plannedMin above the cap and homework above the band sub-cap
+ok 307 - V1 rejects plannedMin above the cap and homework above the band sub-cap
+  ---
+  duration_ms: 2.047813
+  type: 'test'
+  ...
+# Subtest: V2 rejects a slot outside the learning window or after bedtime − 60
+ok 308 - V2 rejects a slot outside the learning window or after bedtime − 60
+  ---
+  duration_ms: 1.472212
+  type: 'test'
+  ...
+# Subtest: V3 rejects realtime above the voice budget
+ok 309 - V3 rejects realtime above the voice budget
+  ---
+  duration_ms: 1.087671
+  type: 'test'
+  ...
+# Subtest: V4 rejects homework help on realtime
+ok 310 - V4 rejects homework help on realtime
+  ---
+  duration_ms: 0.831655
+  type: 'test'
+  ...
+# Subtest: V10 rejects changing or dropping a frozen (shown/started) slot
+ok 311 - V10 rejects changing or dropping a frozen (shown/started) slot
+  ---
+  duration_ms: 1.626377
+  type: 'test'
+  ...
+# Subtest: V12 rejects a plan above a normal day
+ok 312 - V12 rejects a plan above a normal day
+  ---
+  duration_ms: 0.767722
+  type: 'test'
+  ...
+# Subtest: V15 rejects out-of-bounds knobs and a lesson missing its minimum set
+ok 313 - V15 rejects out-of-bounds knobs and a lesson missing its minimum set
+  ---
+  duration_ms: 2.320653
+  type: 'test'
+  ...
+# Subtest: V30 rejects another child's id anywhere in the plan
+ok 314 - V30 rejects another child's id anywhere in the plan
+  ---
+  duration_ms: 0.614388
+  type: 'test'
+  ...
+# Subtest: events: zod refuses unknown types, unknown keys and free text; idem keys come from the fact
+ok 315 - events: zod refuses unknown types, unknown keys and free text; idem keys come from the fact
+  ---
+  duration_ms: 13.346376
+  type: 'test'
+  ...
+# Subtest: ulid: 26 Crockford chars, time-ordered
+ok 316 - ulid: 26 Crockford chars, time-ordered
+  ---
+  duration_ms: 1.086866
+  type: 'test'
+  ...
+# Subtest: 004_conductor.sql survives migrate.mjs's split: every $$ body stays one statement
+ok 317 - 004_conductor.sql survives migrate.mjs's split: every $$ body stays one statement
+  ---
+  duration_ms: 4.781491
+  type: 'test'
+  ...
+# Subtest: 004_conductor_notification.sql survives the same split and aligns notification with §4.10.3
+ok 318 - 004_conductor_notification.sql survives the same split and aligns notification with §4.10.3
+  ---
+  duration_ms: 0.839733
+  type: 'test'
+  ...
+# Subtest: planner: an open at 23:50, 00:30 or 03:59 IST (same learning day, past the window) plans NO new slot
+ok 319 - planner: an open at 23:50, 00:30 or 03:59 IST (same learning day, past the window) plans NO new slot
+  ---
+  duration_ms: 3.870255
+  type: 'test'
+  ...
+# Subtest: V2 checks the real current instant: a 16:10 plan validated at 00:30 is rejected (negative control)
+ok 320 - V2 checks the real current instant: a 16:10 plan validated at 00:30 is rejected (negative control)
+  ---
+  duration_ms: 1.833413
+  type: 'test'
+  ...
+# Subtest: events: parent.setting_changed values are per-key and refused at ingest (never clamped or quarantined later)
+ok 321 - events: parent.setting_changed values are per-key and refused at ingest (never clamped or quarantined later)
+  ---
+  duration_ms: 8.181274
+  type: 'test'
+  ...
+# Subtest: normalizeKit drops items whose key a blind solver disputed, pads hints, keeps the rest
+ok 322 - normalizeKit drops items whose key a blind solver disputed, pads hints, keeps the rest
+  ---
+  duration_ms: 32.004746
+  type: 'test'
+  ...
+# Subtest: normalizeKit returns null for a partial kit that cannot run a practice phase
+ok 323 - normalizeKit returns null for a partial kit that cannot run a practice phase
+  ---
+  duration_ms: 14.113859
+  type: 'test'
+  ...
+# Subtest: compareAnswers: only a provable numeric disagreement is 'different'
+ok 324 - compareAnswers: only a provable numeric disagreement is 'different'
+  ---
+  duration_ms: 4.64365
+  type: 'test'
+  ...
+# Subtest: curriculum: topics load in teaching order and mini-kit ids trace back to their topic
+ok 325 - curriculum: topics load in teaching order and mini-kit ids trace back to their topic
+  ---
+  duration_ms: 10.773971
+  type: 'test'
+  ...
+# Subtest: topicStatus: learned needs every kit skill; weak needs repeated low evidence
+ok 326 - topicStatus: learned needs every kit skill; weak needs repeated low evidence
+  ---
+  duration_ms: 0.531808
+  type: 'test'
+  ...
+# Subtest: pickTopic: first unfinished topic, back-chained to a weak prerequisite (TaRL)
+ok 327 - pickTopic: first unfinished topic, back-chained to a weak prerequisite (TaRL)
+  ---
+  duration_ms: 0.702533
+  type: 'test'
+  ...
+# Subtest: d5Stream: the same-origin ws URL, and only commit / VAD silence translate
+ok 328 - d5Stream: the same-origin ws URL, and only commit / VAD silence translate
+  ---
+  duration_ms: 4.627634
+  type: 'test'
+  ...
+# Subtest: d5Stream: waits for Voice Live's configured session, then sends stereo frames; her output feeds input 1
+ok 329 - d5Stream: waits for Voice Live's configured session, then sends stereo frames; her output feeds input 1
+  ---
+  duration_ms: 10.554272
+  type: 'test'
+  ...
+# Subtest: d5Stream: a refused socket rejects (the link opens D4 instead)
+ok 330 - d5Stream: a refused socket rejects (the link opens D4 instead)
+  ---
+  duration_ms: 2.66265
+  type: 'test'
+  ...
+# Subtest: D5 gate: her loud echo never opens a burst (no duck, no yield) — on D4 the same audio ducks her
+ok 331 - D5 gate: her loud echo never opens a burst (no duck, no yield) — on D4 the same audio ducks her
+  ---
+  duration_ms: 80.238004
+  type: 'test'
+  ...
+# Subtest: D5 gate: a burst Voice Live confirms is replayed from its true start, and a real barge-in yields
+ok 332 - D5 gate: a burst Voice Live confirms is replayed from its true start, and a real barge-in yields
+  ---
+  duration_ms: 80.551038
+  type: 'test'
+  ...
+# Subtest: D5 gate: with her silent the device frames drive the engine as on D4 (a turn ends on device timing)
+ok 333 - D5 gate: with her silent the device frames drive the engine as on D4 (a turn ends on device timing)
+  ---
+  duration_ms: 170.027673
+  type: 'test'
+  ...
+# Subtest: D5: a spoken turn Voice Live never heard (no item at all) is the Director's re-ask (asrConfidence 0)
+ok 334 - D5: a spoken turn Voice Live never heard (no item at all) is the Director's re-ask (asrConfidence 0)
+  ---
+  duration_ms: 18.483685
+  type: 'test'
+  ...
+# Subtest: resolveDuplexLane: d5 only when the server says so
+ok 335 - resolveDuplexLane: d5 only when the server says so
+  ---
+  duration_ms: 66.753339
+  type: 'test'
+  ...
+# Subtest: CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; the engine's VAD and commits go up the socket
+ok 336 - CascadeLink on D5: no WebRTC call; Voice Live's events reach the engine; the engine's VAD and commits go up the socket
+  ---
+  duration_ms: 61.280445
+  type: 'test'
+  ...
+# cascade: the D5 stream could not open; using the transcription call (D4) Error: d5: refused (1006)
+#     at ws.onclose (file:///home/user/Taxila/src/duplex/d5Stream.ts:123:35)
+#     at FakeWS.refuse (file:///home/user/Taxila/tests/d5-voicelive-client.test.mjs:42:58)
+#     at Timeout._onTimeout (file:///home/user/Taxila/tests/d5-voicelive-client.test.mjs:30:29)
+#     at listOnTimeout (node:internal/timers:588:17)
+#     at process.processTimers (node:internal/timers:523:7)
+# Subtest: CascadeLink on D5: a refused stream falls back to the D4 call for the lesson
+ok 337 - CascadeLink on D5: a refused stream falls back to the D4 call for the lesson
+  ---
+  duration_ms: 11.150402
+  type: 'test'
+  ...
+# [d5] stream ended test ms=0 frames=0 appends=0 events=0 dropped=0
+# Subtest: ws: the RFC 6455 accept key, upgrade checks, frame encode/decode
+ok 338 - ws: the RFC 6455 accept key, upgrade checks, frame encode/decode
+  ---
+  duration_ms: 8.535449
+  type: 'test'
+  ...
+# Subtest: ws: accept → 101, messages (text, binary, fragmented), ping → pong, close
+ok 339 - ws: accept → 101, messages (text, binary, fragmented), ping → pong, close
+  ---
+  duration_ms: 2.746977
+  type: 'test'
+  ...
+# Subtest: voicelive: config from the env (own vars first), null when absent; the url never carries the key
+ok 340 - voicelive: config from the env (own vars first), null when absent; the url never carries the key
+  ---
+  duration_ms: 0.77842
+  type: 'test'
+  ...
+# Subtest: voicelive: the session is an ear only (reference AEC on 2 channels, DNS, hi+en VAD, no responses)
+ok 341 - voicelive: the session is an ear only (reference AEC on 2 channels, DNS, hi+en VAD, no responses)
+  ---
+  duration_ms: 0.876004
+  type: 'test'
+  ...
+# Subtest: voicelive: only VAD, transcription, session status and errors reach the browser (allowlist, sanitised)
+ok 342 - voicelive: only VAD, transcription, session status and errors reach the browser (allowlist, sanitised)
+  ---
+  duration_ms: 0.731058
+  type: 'test'
+  ...
+# Subtest: voicelive: the browser can commit and set the VAD silence (clamped), nothing else
+ok 343 - voicelive: the browser can commit and set the VAD silence (clamped), nothing else
+  ---
+  duration_ms: 0.269968
+  type: 'test'
+  ...
+# Subtest: voicelive relay: the key only in the upstream header; session.update on created; audio held until configured, then batched
+ok 344 - voicelive relay: the key only in the upstream header; session.update on created; audio held until configured, then batched
+  ---
+  duration_ms: 1.229024
+  type: 'test'
+  ...
+# Subtest: voicelive relay: upstream close / the session cap end both sides once, with numbers only
+ok 345 - voicelive relay: upstream close / the session cap end both sides once, with numbers only
+  ---
+  duration_ms: 0.598792
+  type: 'test'
+  ...
+# Subtest: config: the cohort gets lane d5 only when asked for AND Voice Live is configured; nobody else ever does
+ok 346 - config: the cohort gets lane d5 only when asked for AND Voice Live is configured; nobody else ever does
+  ---
+  duration_ms: 1.705814
+  type: 'test'
+  ...
+# Subtest: d5route: the stt-token gates plus the cohort lane
+ok 347 - d5route: the stt-token gates plus the cohort lane
+  ---
+  duration_ms: 1.561178
+  type: 'test'
+  ...
+# Subtest: d5route: refuses bad upgrades and other origins before any lookup; opens the relay when allowed
+ok 348 - d5route: refuses bad upgrades and other origins before any lookup; opens the relay when allowed
+  ---
+  duration_ms: 2.727875
+  type: 'test'
+  ...
+# Subtest: d5route: a per-guardian open rate
+ok 349 - d5route: a per-guardian open rate
+  ---
+  duration_ms: 0.23147
+  type: 'test'
+  ...
+# Subtest: goal_met during the teach phase is celebrated on the step in progress; the plan does not move
+ok 350 - goal_met during the teach phase is celebrated on the step in progress; the plan does not move
+  ---
+  duration_ms: 130.378939
+  type: 'test'
+  ...
+# Subtest: stuck is a nudge on the active item that spends no hint rung; plain interactions and errors hold
+ok 351 - stuck is a nudge on the active item that spends no hint rung; plain interactions and errors hold
+  ---
+  duration_ms: 12.111952
+  type: 'test'
+  ...
+# Subtest: a machine-truth module answer runs the normal answer path
+ok 352 - a machine-truth module answer runs the normal answer path
+  ---
+  duration_ms: 11.769203
+  type: 'test'
+  ...
+# Subtest: while safeguarding (or after the wrap) an activity is never celebrated
+ok 353 - while safeguarding (or after the wrap) an activity is never celebrated
+  ---
+  duration_ms: 2.307462
+  type: 'test'
+  ...
+# Subtest: a client-supplied goal name reaches the instructions only as a short plain label
+ok 354 - a client-supplied goal name reaches the instructions only as a short plain label
+  ---
+  duration_ms: 1.944406
+  type: 'test'
+  ...
+# Subtest: every mount over every kit is an engine in ENGINES with a valid mode; bound mounts carry their item
+ok 355 - every mount over every kit is an engine in ENGINES with a valid mode; bound mounts carry their item
+  ---
+  duration_ms: 18201.284282
+  type: 'test'
+  ...
+# Subtest: a kit whose hints name no engine mounts nothing (no unknown id, no empty tray)
+ok 356 - a kit whose hints name no engine mounts nothing (no unknown id, no empty tray)
+  ---
+  duration_ms: 0.720476
+  type: 'test'
+  ...
+# Subtest: a frame error clears the module and the tray; the failed engine is not mounted again
+ok 357 - a frame error clears the module and the tray; the failed engine is not mounted again
+  ---
+  duration_ms: 1.46811
+  type: 'test'
+  ...
+# Subtest: G1: a ready lesson fill mounts on a practice item with no bound plan; graded only on the server
+ok 358 - G1: a ready lesson fill mounts on a practice item with no bound plan; graded only on the server
+  ---
+  duration_ms: 68.663034
+  type: 'test'
+  ...
+# Subtest: G1: a turn-path miss warms the item once, in the background; the next posing mounts it
+ok 359 - G1: a turn-path miss warms the item once, in the background; the next posing mounts it
+  ---
+  duration_ms: 15.836913
+  type: 'test'
+  ...
+# Subtest: a bound engine answer is the item's answer; an unbound module's answer grades nothing
+ok 360 - a bound engine answer is the item's answer; an unbound module's answer grades nothing
+  ---
+  duration_ms: 3.76875
+  type: 'test'
+  ...
+# Subtest: through step(): a novice explain turn mounts a catalog engine (never the raw hint slug)
+ok 361 - through step(): a novice explain turn mounts a catalog engine (never the raw hint slug)
+  ---
+  duration_ms: 51.336268
+  type: 'test'
+  ...
+# Subtest: kit lint: no engine id outside ENGINES; no-engine kits within the ratchet
+ok 362 - kit lint: no engine id outside ENGINES; no-engine kits within the ratchet
+  ---
+  duration_ms: 200.4444
+  type: 'test'
+  ...
+# Subtest: 13 ka square: the card's question is the one she asks — a reply that asks '10 ka square' is repaired to end on the card
+ok 363 - 13 ka square: the card's question is the one she asks — a reply that asks '10 ka square' is repaired to end on the card
+  ---
+  duration_ms: 287.30406
+  type: 'test'
+  ...
+# Subtest: 13 ka square: a typed answer is never 'say it again' — typed 100, 1 and 'yes' get a verdict or a hint, never repair
+ok 364 - 13 ka square: a typed answer is never 'say it again' — typed 100, 1 and 'yes' get a verdict or a hint, never repair
+  ---
+  duration_ms: 278.150976
+  type: 'test'
+  ...
+# Subtest: G-ASK parity predicates: ends-on-ask, one question, and the code repairs
+ok 365 - G-ASK parity predicates: ends-on-ask, one question, and the code repairs
+  ---
+  duration_ms: 2.842732
+  type: 'test'
+  ...
+# Subtest: Choices dikhao: a client request (never an answer) that puts THIS item's choices on screen, key included
+ok 366 - Choices dikhao: a client request (never an answer) that puts THIS item's choices on screen, key included
+  ---
+  duration_ms: 44.910135
+  type: 'test'
+  ...
+# Subtest: choicesFor: numbers, fractions and words; never a distractor that is an accepted form of the key
+ok 367 - choicesFor: numbers, fractions and words; never a distractor that is an accepted form of the key
+  ---
+  duration_ms: 8.685574
+  type: 'test'
+  ...
+# Subtest: help requests: every Hint-sheet and Help-menu id is known; none is graded; Skip skips the ITEM, never the lesson (flows G6)
+ok 368 - help requests: every Hint-sheet and Help-menu id is known; none is graded; Skip skips the ITEM, never the lesson (flows G6)
+  ---
+  duration_ms: 46.758775
+  type: 'test'
+  ...
+# Subtest: repair loop: unclear replies on one item are capped (the card cap: 3 turns on the card), then the item is left with no verdict and the lesson moves on
+ok 369 - repair loop: unclear replies on one item are capped (the card cap: 3 turns on the card), then the item is left with no verdict and the lesson moves on
+  ---
+  duration_ms: 36.412018
+  type: 'test'
+  ...
+# Subtest: hints: a diagnostic's card line is child-facing; rung labels and teacher shape words never reach ui.hint
+ok 370 - hints: a diagnostic's card line is child-facing; rung labels and teacher shape words never reach ui.hint
+  ---
+  duration_ms: 11.825687
+  type: 'test'
+  ...
+# Subtest: choice items: chips take the tray even with an activity mounted; tap_in_tray only with a mount
+ok 371 - choice items: chips take the tray even with an activity mounted; tap_in_tray only with a mount
+  ---
+  duration_ms: 9.887459
+  type: 'test'
+  ...
+# Subtest: wrap language: 'Aaj ke liye bas itna' on a probe turn is removed in code; a wrap move keeps its goodbye
+ok 372 - wrap language: 'Aaj ke liye bas itna' on a probe turn is removed in code; a wrap move keeps its goodbye
+  ---
+  duration_ms: 14.789165
+  type: 'test'
+  ...
+# Subtest: start refusal: practice and Ask pass a done day; the 409 names the control; open-now opens the hours, never the cap
+ok 373 - start refusal: practice and Ask pass a done day; the 409 names the control; open-now opens the hours, never the cap
+  ---
+  duration_ms: 0.673308
+  type: 'test'
+  ...
+# Subtest: help on a pending 'why?' ends the probe with no evidence and moves on (no re-teach loop)
+ok 374 - help on a pending 'why?' ends the probe with no evidence and moves on (no re-teach loop)
+  ---
+  duration_ms: 10.070682
+  type: 'test'
+  ...
+# Subtest: client: start purpose per variant, the 409 refusal body, help chip states, dots, the fraction pad
+ok 375 - client: start purpose per variant, the 409 refusal body, help chip states, dots, the fraction pad
+  ---
+  duration_ms: 2.051959
+  type: 'test'
+  ...
+# Subtest: G-PRAISE-2: after a right diagnostic tap (9), 'isliye 10' is caught and removed; the next question stays
+ok 376 - G-PRAISE-2: after a right diagnostic tap (9), 'isliye 10' is caught and removed; the next question stays
+  ---
+  duration_ms: 56.97977
+  type: 'test'
+  ...
+# Subtest: G7 verdict clock anchors on the child's last voice, not the value word (a unit word cannot eat the wait)
+ok 377 - G7 verdict clock anchors on the child's last voice, not the value word (a unit word cannot eat the wait)
+  ---
+  duration_ms: 1.25237
+  type: 'test'
+  ...
+# Subtest: IDK ends a turn only at its tail (a disclosure after 'पता नहीं' is not an idk_help turn end)
+ok 378 - IDK ends a turn only at its tail (a disclosure after 'पता नहीं' is not an idk_help turn end)
+  ---
+  duration_ms: 276.400878
+  type: 'test'
+  ...
+# Subtest: echo: her question inside a late straddling item is removed by audio span, her empty-skeleton tail too
+ok 379 - echo: her question inside a late straddling item is removed by audio span, her empty-skeleton tail too
+  ---
+  duration_ms: 3.83889
+  type: 'test'
+  ...
+# Subtest: echo: a word-timed single token on her own word is echo; the child's later repeat of it is kept
+ok 380 - echo: a word-timed single token on her own word is echo; the child's later repeat of it is kept
+  ---
+  duration_ms: 0.664044
+  type: 'test'
+  ...
+# Subtest: unreadable tail: another script in the newest words is flagged; Hinglish in either script is not
+ok 381 - unreadable tail: another script in the newest words is flagged; Hinglish in either script is not
+  ---
+  duration_ms: 1.370572
+  type: 'test'
+  ...
+# Subtest: adversarial world: sttReal is deterministic and only touches child words; slow() keeps gold consistent
+ok 382 - adversarial world: sttReal is deterministic and only touches child words; slow() keeps gold consistent
+  ---
+  duration_ms: 3.267443
+  type: 'test'
+  ...
+# Subtest: a SPEAK inside a thinking pause is a cut-off; after the end it is the gap
+ok 383 - a SPEAK inside a thinking pause is a cut-off; after the end it is the gap
+  ---
+  duration_ms: 2.443567
+  type: 'test'
+  ...
+# Subtest: a question to her answered in its pause is allowed; a hold offer only after 15 s
+ok 384 - a question to her answered in its pause is allowed; a hold offer only after 15 s
+  ---
+  duration_ms: 0.52373
+  type: 'test'
+  ...
+# Subtest: an infeasible drift cut-in is not expected, and one fired anyway is out of policy
+ok 385 - an infeasible drift cut-in is not expected, and one fired anyway is out of policy
+  ---
+  duration_ms: 0.402135
+  type: 'test'
+  ...
+# Subtest: bootstrap CI is deterministic and brackets the point
+ok 386 - bootstrap CI is deterministic and brackets the point
+  ---
+  duration_ms: 34.325247
+  type: 'test'
+  ...
+# Subtest: silence-N speaks at N ms of silence once words exist; cascade-900 waits for the final
+ok 387 - silence-N speaks at N ms of silence once words exist; cascade-900 waits for the final
+  ---
+  duration_ms: 0.89245
+  type: 'test'
+  ...
+# Subtest: smart-turn arm: judged once per silence run at 200 ms, else the 3 s timeout (Pipecat pattern)
+ok 388 - smart-turn arm: judged once per silence run at 200 ms, else the 3 s timeout (Pipecat pattern)
+  ---
+  duration_ms: 0.532415
+  type: 'test'
+  ...
+# Subtest: the device ear learns a noisy room's floor and ignores aperiodic bursts
+ok 389 - the device ear learns a noisy room's floor and ignores aperiodic bursts
+  ---
+  duration_ms: 9.894959
+  type: 'test'
+  ...
+# Subtest: echo: a fresh single token of hers is dropped, a stale one (an answer repeating her word) is kept
+ok 390 - echo: a fresh single token of hers is dropped, a stale one (an answer repeating her word) is kept
+  ---
+  duration_ms: 3.803797
+  type: 'test'
+  ...
+# Subtest: a hold request with a trailing address word is still a hold
+ok 391 - a hold request with a trailing address word is still a hold
+  ---
+  duration_ms: 295.811387
+  type: 'test'
+  ...
+# Subtest: semantic estimator: typed numbers only, open contexts only, no identity in the payload
+ok 392 - semantic estimator: typed numbers only, open contexts only, no identity in the payload
+  ---
+  duration_ms: 0.900052
+  type: 'test'
+  ...
+# Subtest: stage B: the JS head matches the exported ONNX graph on held-out ticks
+ok 393 - stage B: the JS head matches the exported ONNX graph on held-out ticks
+  ---
+  duration_ms: 32.082932
+  type: 'test'
+  ...
+# Subtest: partial safety also reads the punctuation-free text (the STT's danda after the last word)
+ok 394 - partial safety also reads the punctuation-free text (the STT's danda after the last word)
+  ---
+  duration_ms: 25.742773
+  type: 'test'
+  ...
+# Subtest: a features-only trained model never vouches for unseen audio (G5 stays)
+ok 395 - a features-only trained model never vouches for unseen audio (G5 stays)
+  ---
+  duration_ms: 1.687843
+  type: 'test'
+  ...
+# Subtest: duplex-real: fan-in coverage for items with no reported audio start (MAI streaming, D4 commit items)
+    # Subtest: a final whose item has no audio start answers the oldest commit sent before it arrived (was: dropped as stale)
+    ok 1 - a final whose item has no audio start answers the oldest commit sent before it arrived (was: dropped as stale)
+      ---
+      duration_ms: 1.900699
+      type: 'test'
+      ...
+    # Subtest: a final with a reported audio start still takes the commit at or after that start (M-D7 b04 FIFO unchanged)
+    ok 2 - a final with a reported audio start still takes the commit at or after that start (M-D7 b04 FIFO unchanged)
+      ---
+      duration_ms: 0.408574
+      type: 'test'
+      ...
+    # Subtest: commitEmpty forgets the newest pending commit, so the next final is not credited with audio it never covered
+    ok 3 - commitEmpty forgets the newest pending commit, so the next final is not credited with audio it never covered
+      ---
+      duration_ms: 0.309117
+      type: 'test'
+      ...
+    1..3
+ok 396 - duplex-real: fan-in coverage for items with no reported audio start (MAI streaming, D4 commit items)
+  ---
+  duration_ms: 3.709562
+  type: 'suite'
+  ...
+# Subtest: duplex-real: copula projection (a head noun + है with no complement yet)
+    # Subtest: "मेरा फोन नंबर है" projects its complement
+    ok 1 - "मेरा फोन नंबर है" projects its complement
+      ---
+      duration_ms: 187.899107
+      type: 'test'
+      ...
+    # Subtest: "और मेरा फोन नंबर है।" projects its complement
+    ok 2 - "और मेरा फोन नंबर है।" projects its complement
+      ---
+      duration_ms: 63.147076
+      type: 'test'
+      ...
+    # Subtest: "answer है" projects its complement
+    ok 3 - "answer है" projects its complement
+      ---
+      duration_ms: 2.349298
+      type: 'test'
+      ...
+    # Subtest: "मेरा जवाब है" projects its complement
+    ok 4 - "मेरा जवाब है" projects its complement
+      ---
+      duration_ms: 1.656107
+      type: 'test'
+      ...
+    # Subtest: "बात ये है" projects its complement
+    ok 5 - "बात ये है" projects its complement
+      ---
+      duration_ms: 1.269004
+      type: 'test'
+      ...
+    # Subtest: "mera answer hai" projects its complement
+    ok 6 - "mera answer hai" projects its complement
+      ---
+      duration_ms: 49.550764
+      type: 'test'
+      ...
+    # Subtest: "मेरा नाम रिया है।" does not
+    ok 7 - "मेरा नाम रिया है।" does not
+      ---
+      duration_ms: 2.361172
+      type: 'test'
+      ...
+    # Subtest: "मेरा answer बारह है" does not
+    ok 8 - "मेरा answer बारह है" does not
+      ---
+      duration_ms: 1.595618
+      type: 'test'
+      ...
+    # Subtest: "उसका पता है?" does not
+    ok 9 - "उसका पता है?" does not
+      ---
+      duration_ms: 1.448708
+      type: 'test'
+      ...
+    # Subtest: "नमस्ते।" does not
+    ok 10 - "नमस्ते।" does not
+      ---
+      duration_ms: 3.5998
+      type: 'test'
+      ...
+    # Subtest: "हाँ जी, बिल्कुल लगा दीजिए।" does not
+    ok 11 - "हाँ जी, बिल्कुल लगा दीजिए।" does not
+      ---
+      duration_ms: 1.894229
+      type: 'test'
+      ...
+    1..11
+ok 397 - duplex-real: copula projection (a head noun + है with no complement yet)
+  ---
+  duration_ms: 317.828
+  type: 'suite'
+  ...
+# Subtest: duplex-real: an empty micro-commit is not the child
+    # Subtest: while the engine decides, input_audio_buffer_commit_empty is consumed (the link must not emit child_silent / resume her)
+    ok 1 - while the engine decides, input_audio_buffer_commit_empty is consumed (the link must not emit child_silent / resume her)
+      ---
+      duration_ms: 8.125741
+      type: 'test'
+      ...
+    # Subtest: in shadow (the shipped path owns the call) it is left to the link, as before
+    ok 2 - in shadow (the shipped path owns the call) it is left to the link, as before
+      ---
+      duration_ms: 1.167976
+      type: 'test'
+      ...
+    1..2
+ok 398 - duplex-real: an empty micro-commit is not the child
+  ---
+  duration_ms: 9.534095
+  type: 'suite'
+  ...
+# Subtest: duplex-real: open-turn wait and the yes/no elaboration
+    # Subtest: OPEN_TURN_WAIT holds 1,100 ms outside closed answers (chosen on TRAIN)
+    ok 1 - OPEN_TURN_WAIT holds 1,100 ms outside closed answers (chosen on TRAIN)
+      ---
+      duration_ms: 1.82663
+      type: 'test'
+      ...
+    # Subtest: after a yes/no question, a bare 'हाँ जी' is a closed answer; 'हाँ जी, मेरा नाम रिया है और …' is read as a free turn
+    ok 2 - after a yes/no question, a bare 'हाँ जी' is a closed answer; 'हाँ जी, मेरा नाम रिया है और …' is read as a free turn
+      ---
+      duration_ms: 1.997002
+      type: 'test'
+      ...
+    1..2
+ok 399 - duplex-real: open-turn wait and the yes/no elaboration
+  ---
+  duration_ms: 3.964991
+  type: 'suite'
+  ...
+# Subtest: duplex-real: real-speech replay (eot-bench Hindi, real STT events)
+    # Subtest: the previous exchange's turn is committed on its own
+    ok 1 - the previous exchange's turn is committed on its own
+      ---
+      duration_ms: 0.902284
+      type: 'test'
+      ...
+    # Subtest: a revoke before her reply sounds never pulls the previous, answered turn's words into this turn
+    ok 2 - a revoke before her reply sounds never pulls the previous, answered turn's words into this turn
+      ---
+      duration_ms: 0.282898
+      type: 'test'
+      ...
+    # Subtest: a merged commit after a revoke still starts with the revoked commit's words (runtime freshWords contract)
+    ok 3 - a merged commit after a revoke still starts with the revoked commit's words (runtime freshWords contract)
+      ---
+      duration_ms: 0.234253
+      type: 'test'
+      ...
+    1..3
+ok 400 - duplex-real: real-speech replay (eot-bench Hindi, real STT events)
+  ---
+  duration_ms: 2.751059
+  type: 'suite'
+  ...
+# Subtest: duplex-real shadow telemetry
+    # Subtest: records the engine gap and the shipped gap of a turn, no cut
+    ok 1 - records the engine gap and the shipped gap of a turn, no cut
+      ---
+      duration_ms: 2.338896
+      type: 'test'
+      ...
+    # Subtest: marks an engine cut-off when the child goes on after its SPEAK, and keeps the pause length
+    ok 2 - marks an engine cut-off when the child goes on after its SPEAK, and keeps the pause length
+      ---
+      duration_ms: 0.436681
+      type: 'test'
+      ...
+    # Subtest: marks a shipped cut-off when the child goes on within 3 s of the shipped final
+    ok 3 - marks a shipped cut-off when the child goes on within 3 s of the shipped final
+      ---
+      duration_ms: 0.279936
+      type: 'test'
+      ...
+    # Subtest: an empty final is not a shipped turn; finals while she talks are not turns
+    ok 4 - an empty final is not a shipped turn; finals while she talks are not turns
+      ---
+      duration_ms: 0.266864
+      type: 'test'
+      ...
+    # Subtest: an overlap over her records engine yield vs the shipped stop
+    ok 5 - an overlap over her records engine yield vs the shipped stop
+      ---
+      duration_ms: 0.366297
+      type: 'test'
+      ...
+    # Subtest: counts safety rows and fallbacks; a short burst over her is not an overlap
+    ok 6 - counts safety rows and fallbacks; a short burst over her is not an overlap
+      ---
+      duration_ms: 1.901334
+      type: 'test'
+      ...
+    # Subtest: sanitize drops anything outside the schema: no words survive, codes are closed, numbers clamped
+    ok 7 - sanitize drops anything outside the schema: no words survive, codes are closed, numbers clamped
+      ---
+      duration_ms: 0.658033
+      type: 'test'
+      ...
+    # Subtest: the server line hashes the lesson id and carries only the sanitized summary
+    ok 8 - the server line hashes the lesson id and carries only the sanitized summary
+      ---
+      duration_ms: 1.264091
+      type: 'test'
+      ...
+    # Subtest: CascadeDuplex flushes one summary on close through the sink (shadow), with frames from the tap
+    ok 9 - CascadeDuplex flushes one summary on close through the sink (shadow), with frames from the tap
+      ---
+      duration_ms: 185.685388
+      type: 'test'
+      ...
+    1..9
+ok 401 - duplex-real shadow telemetry
+  ---
+  duration_ms: 195.544833
+  type: 'suite'
+  ...
+# Subtest: host is hands-free: no press / release / talk-button API anywhere on the engine host
+ok 402 - host is hands-free: no press / release / talk-button API anywhere on the engine host
+  ---
+  duration_ms: 2.055414
+  type: 'test'
+  ...
+# Subtest: a complete closed answer whose words cover the audio is answered with no silence wait (continuous, not silence-gated)
+ok 403 - a complete closed answer whose words cover the audio is answered with no silence wait (continuous, not silence-gated)
+  ---
+  duration_ms: 246.829036
+  type: 'test'
+  ...
+# Subtest: the lexical horizon holds the floor while the child's newest audio has no words yet
+ok 404 - the lexical horizon holds the floor while the child's newest audio has no words yet
+  ---
+  duration_ms: 83.610745
+  type: 'test'
+  ...
+# Subtest: a hold request ('एक मिनट') grants a hold; the answer after it ends the hold and is answered
+ok 405 - a hold request ('एक मिनट') grants a hold; the answer after it ends the hold and is answered
+  ---
+  duration_ms: 20.81689
+  type: 'test'
+  ...
+# Subtest: a stale hold-request prefix never re-grants a hold after the child resumed (M-D7 h01 regression)
+ok 406 - a stale hold-request prefix never re-grants a hold after the child resumed (M-D7 h01 regression)
+  ---
+  duration_ms: 14.433342
+  type: 'test'
+  ...
+# Subtest: a distress partial is sticky: quarantine + safety attend at once, only the safeguard speaks, never over the child
+ok 407 - a distress partial is sticky: quarantine + safety attend at once, only the safeguard speaks, never over the child
+  ---
+  duration_ms: 41.689837
+  type: 'test'
+  ...
+# Subtest: barge-in: a sustained child voice over her yields (resumable); a short burst at her clause boundary keeps talking
+ok 408 - barge-in: a sustained child voice over her yields (resumable); a short burst at her clause boundary keeps talking
+  ---
+  duration_ms: 16.480894
+  type: 'test'
+  ...
+# Subtest: her own words in the child's transcript are subtracted before markers, safety or drafts see them
+ok 409 - her own words in the child's transcript are subtracted before markers, safety or drafts see them
+  ---
+  duration_ms: 3.873907
+  type: 'test'
+  ...
+# Subtest: her uptake re-voices the child's words: never subtracted from the child's correction (M-D7 c01)
+ok 410 - her uptake re-voices the child's words: never subtracted from the child's correction (M-D7 c01)
+  ---
+  duration_ms: 29.515033
+  type: 'test'
+  ...
+# Subtest: shadow mode computes every tick but emits only log rows
+ok 411 - shadow mode computes every tick but emits only log rows
+  ---
+  duration_ms: 5.332582
+  type: 'test'
+  ...
+# Subtest: WT1: after her question and before any child speech only the face nudge, then the verbal ladder, may act
+ok 412 - WT1: after her question and before any child speech only the face nudge, then the verbal ladder, may act
+  ---
+  duration_ms: 9.821266
+  type: 'test'
+  ...
+# Subtest: the micro-commit probe fires at a child micro-pause on a commit-capable source, once per voiced run
+ok 413 - the micro-commit probe fires at a child micro-pause on a commit-capable source, once per voiced run
+  ---
+  duration_ms: 5.037401
+  type: 'test'
+  ...
+# Subtest: an engine fault falls back to stage A rules, then to the patient silence policy (fail patient)
+ok 414 - an engine fault falls back to stage A rules, then to the patient silence policy (fail patient)
+  ---
+  duration_ms: 10.123609
+  type: 'test'
+  ...
+# Subtest: G1 safety: distress while her audio plays yields at once; on the child's floor only HOLD / calm / the safeguard
+ok 415 - G1 safety: distress while her audio plays yields at once; on the child's floor only HOLD / calm / the safeguard
+  ---
+  duration_ms: 0.855221
+  type: 'test'
+  ...
+# Subtest: G2 barrier: no audio act before the predicate has seen text covering the audio
+ok 416 - G2 barrier: no audio act before the predicate has seen text covering the audio
+  ---
+  duration_ms: 0.487365
+  type: 'test'
+  ...
+# Subtest: G5 horizon: SPEAK is vetoed while unseen child voice exceeds 120 ms (unless a fresh acoustic estimate vouches)
+ok 417 - G5 horizon: SPEAK is vetoed while unseen child voice exceeds 120 ms (unless a fresh acoustic estimate vouches)
+  ---
+  duration_ms: 0.510681
+  type: 'test'
+  ...
+# Subtest: G6 closed CUT_IN list: an unlisted reason, the flag off, or child voice → vetoed; the hold offer is policy
+ok 418 - G6 closed CUT_IN list: an unlisted reason, the flag off, or child voice → vetoed; the hold offer is policy
+  ---
+  duration_ms: 1.105926
+  type: 'test'
+  ...
+# Subtest: G7 revoke: a child onset after SPEAK and before her verdict word yields and merges (fast mouth, late verdict)
+ok 419 - G7 revoke: a child onset after SPEAK and before her verdict word yields and merges (fast mouth, late verdict)
+  ---
+  duration_ms: 0.650103
+  type: 'test'
+  ...
+# Subtest: G7 stamp: a closed-answer SPEAK carries verdictNotBefore = last value end + VERDICT.delayMs
+ok 420 - G7 stamp: a closed-answer SPEAK carries verdictNotBefore = last value end + VERDICT.delayMs
+  ---
+  duration_ms: 0.293049
+  type: 'test'
+  ...
+# Subtest: G8: no backchannel inside a closed answer; nods rate-limited; 'haan' only in chit-chat behind its flag
+ok 421 - G8: no backchannel inside a closed answer; nods rate-limited; 'haan' only in chit-chat behind its flag
+  ---
+  duration_ms: 0.555182
+  type: 'test'
+  ...
+# Subtest: G9: before the child speaks after her question, a SPEAK that is not the WT1 ladder is vetoed
+ok 422 - G9: before the child speaks after her question, a SPEAK that is not the WT1 ladder is vetoed
+  ---
+  duration_ms: 0.312315
+  type: 'test'
+  ...
+# Subtest: G10 backstop: the engine stays unsure → silence decides only as a last resort, stretched while the child holds
+ok 423 - G10 backstop: the engine stays unsure → silence decides only as a last resort, stretched while the child holds
+  ---
+  duration_ms: 0.577789
+  type: 'test'
+  ...
+# Subtest: G11 + resume: a resumable yield whose words read as a continuer resumes her from heardUpTo
+ok 424 - G11 + resume: a resumable yield whose words read as a continuer resumes her from heardUpTo
+  ---
+  duration_ms: 1.054986
+  type: 'test'
+  ...
+# Subtest: a resumable yield with no words yet waits for the source's first-text latency before resuming (M-D7 i08)
+ok 425 - a resumable yield with no words yet waits for the source's first-text latency before resuming (M-D7 i08)
+  ---
+  duration_ms: 0.641773
+  type: 'test'
+  ...
+# Subtest: baseline governor mode keeps only safety + phase legality (baselines are measured as they are)
+ok 426 - baseline governor mode keeps only safety + phase legality (baselines are measured as they are)
+  ---
+  duration_ms: 0.285618
+  type: 'test'
+  ...
+# Subtest: stage A: a finished sentence inside a teach-back is capped below speakPc without a semantic read
+ok 427 - stage A: a finished sentence inside a teach-back is capped below speakPc without a semantic read
+  ---
+  duration_ms: 0.523471
+  type: 'test'
+  ...
+# Subtest: stage A: a repair marker after the value holds; a complete question to her is fast
+ok 428 - stage A: a repair marker after the value holds; a complete question to her is fast
+  ---
+  duration_ms: 0.355033
+  type: 'test'
+  ...
+# Subtest: stage A prepare: draft at projected pC >= 0.5, warm at >= 0.8, cancel after < 0.35 for 300 ms
+ok 429 - stage A prepare: draft at projected pC >= 0.5, warm at >= 0.8, cancel after < 0.35 for 300 ms
+  ---
+  duration_ms: 0.675249
+  type: 'test'
+  ...
+# Subtest: overlap classifier: echo keeps talking; a voice after her yes/no question yields as an answer; a short boundary burst is a continuer
+ok 430 - overlap classifier: echo keeps talking; a voice after her yes/no question yields as an answer; a short boundary burst is a continuer
+  ---
+  duration_ms: 1.141398
+  type: 'test'
+  ...
+# Subtest: face: floor behaviours only — calm in safety, content-blind nods, the shipped floor mapping
+ok 431 - face: floor behaviours only — calm in safety, content-blind nods, the shipped floor mapping
+  ---
+  duration_ms: 1.176359
+  type: 'test'
+  ...
+# Subtest: adapter: stage A by default; the trained engine only with the flag AND a model; spec mismatch refused
+ok 432 - adapter: stage A by default; the trained engine only with the flag AND a model; spec mismatch refused
+  ---
+  duration_ms: 7.505027
+  type: 'test'
+  ...
+# Subtest: adapter: the ONNX loader feeds [1, F] features and maps the heads (onnxruntime injected)
+ok 433 - adapter: the ONNX loader feeds [1, F] features and maps the heads (onnxruntime injected)
+  ---
+  duration_ms: 1.834436
+  type: 'test'
+  ...
+# Subtest: features: one fixed layout, numbers only, length = names
+ok 434 - features: one fixed layout, numbers only, length = names
+  ---
+  duration_ms: 0.469435
+  type: 'test'
+  ...
+# Subtest: fan-in: commits are answered in order — a second probe never lends its time to the first final (M-D7 b04)
+ok 435 - fan-in: commits are answered in order — a second probe never lends its time to the first final (M-D7 b04)
+  ---
+  duration_ms: 0.576853
+  type: 'test'
+  ...
+# Subtest: fan-in: epochs drop the last turn's late final; a carried overlap folds in and counts as unseen until words land
+ok 436 - fan-in: epochs drop the last turn's late final; a carried overlap folds in and counts as unseen until words land
+  ---
+  duration_ms: 0.716022
+  type: 'test'
+  ...
+# Subtest: echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers
+ok 437 - echo subtraction removes a run of her words and keeps a single-word answer that repeats one of hers
+  ---
+  duration_ms: 0.974871
+  type: 'test'
+  ...
+# Subtest: sticky safety on partials: a clean revision never un-trips; checkedThroughMs tracks coverage
+ok 438 - sticky safety on partials: a clean revision never un-trips; checkedThroughMs tracks coverage
+  ---
+  duration_ms: 0.330038
+  type: 'test'
+  ...
+# Subtest: speculator: draft by hint, promoted on text identity; warm uptake promoted on hash; safety quarantines all
+ok 439 - speculator: draft by hint, promoted on text identity; warm uptake promoted on hash; safety quarantines all
+  ---
+  duration_ms: 2.137109
+  type: 'test'
+  ...
+# Subtest: build intents from partials: a kit misconception value prefetches once; a distress turn launches nothing
+ok 440 - build intents from partials: a kit misconception value prefetches once; a distress turn launches nothing
+  ---
+  duration_ms: 3.565328
+  type: 'test'
+  ...
+# Subtest: the server slice: hashes and flags in the turn summary, never the child's words; revoke supersedes the planned row
+ok 441 - the server slice: hashes and flags in the turn summary, never the child's words; revoke supersedes the planned row
+  ---
+  duration_ms: 18.664096
+  type: 'test'
+  ...
+# Subtest: routes: authorize first, batched partials return flags only, prepare and speak round-trip
+ok 442 - routes: authorize first, batched partials return flags only, prepare and speak round-trip
+  ---
+  duration_ms: 2.758536
+  type: 'test'
+  ...
+# Subtest: host helpers: uptake is the child's own last value; word timing estimate; clause boundaries
+ok 443 - host helpers: uptake is the child's own last value; word timing estimate; clause boundaries
+  ---
+  duration_ms: 0.572109
+  type: 'test'
+  ...
+# Subtest: no override: every lane is exactly the primary endpoint and key (today's behaviour)
+ok 444 - no override: every lane is exactly the primary endpoint and key (today's behaviour)
+  ---
+  duration_ms: 1.677517
+  type: 'test'
+  ...
+# Subtest: india shape: primary southindia, TTS/IMAGE/REALTIME pinned to eastus2 with their own key
+ok 445 - india shape: primary southindia, TTS/IMAGE/REALTIME pinned to eastus2 with their own key
+  ---
+  duration_ms: 6.701295
+  type: 'test'
+  ...
+# Subtest: an override on another account without its own key is a config error, never the primary key
+ok 446 - an override on another account without its own key is a config error, never the primary key
+  ---
+  duration_ms: 1.127613
+  type: 'test'
+  ...
+# Subtest: a bare resource URL override gets the /openai/v1 path; unknown lanes are refused
+ok 447 - a bare resource URL override gets the /openai/v1 path; unknown lanes are refused
+  ---
+  duration_ms: 0.38156
+  type: 'test'
+  ...
+# Subtest: realtime secrets: a transcription session mints on TRANSCRIBE, a voice session on REALTIME
+ok 448 - realtime secrets: a transcription session mints on TRANSCRIBE, a voice session on REALTIME
+  ---
+  duration_ms: 0.428361
+  type: 'test'
+  ...
+# Subtest: azure.js endpoint() keeps its old default and error type
+ok 449 - azure.js endpoint() keeps its old default and error type
+  ---
+  duration_ms: 94.917489
+  type: 'test'
+  ...
+# Subtest: speechConfig: env only, null until configured
+ok 450 - speechConfig: env only, null until configured
+  ---
+  duration_ms: 0.424388
+  type: 'test'
+  ...
+# Subtest: pgPoolConfig: Azure PG url with sslmode=require keeps TLS verification; Neon channel_binding stripped; no-TLS refused
+ok 451 - pgPoolConfig: Azure PG url with sslmode=require keeps TLS verification; Neon channel_binding stripped; no-TLS refused
+  ---
+  duration_ms: 0.575611
+  type: 'test'
+  ...
+# Subtest: catalogue ids = frame registry ids; aliases name built engines; topic map names built engines
+ok 452 - catalogue ids = frame registry ids; aliases name built engines; topic map names built engines
+  ---
+  duration_ms: 3.38748
+  type: 'test'
+  ...
+# Subtest: resolveHint / pickEngine
+ok 453 - resolveHint / pickEngine
+  ---
+  duration_ms: 0.786433
+  type: 'test'
+  ...
+# Subtest: planEngine (every kit): what a bound plan SHOWS (via the frame's normalize) never holds a key the prompt does not
+ok 454 - planEngine (every kit): what a bound plan SHOWS (via the frame's normalize) never holds a key the prompt does not
+  ---
+  duration_ms: 405.631979
+  type: 'test'
+  ...
+# Subtest: planEngine shapes: unbound activity keeps the Director's mode; science predict asks a POE first
+ok 455 - planEngine shapes: unbound activity keeps the Director's mode; science predict asks a POE first
+  ---
+  duration_ms: 1.481609
+  type: 'test'
+  ...
+# Subtest: coverage floor and planner↔frame agreement over the class 4-7 kits
+ok 456 - coverage floor and planner↔frame agreement over the class 4-7 kits
+  ---
+  duration_ms: 1303.420115
+  type: 'test'
+  ...
+# Subtest: every kit (c1-c9): bound plans replay right as the child's action, wrong on a perturbed key; fallbacks use the item
+ok 457 - every kit (c1-c9): bound plans replay right as the child's action, wrong on a perturbed key; fallbacks use the item
+  ---
+  duration_ms: 1077.104987
+  type: 'test'
+  ...
+# Subtest: array plans grade the typed product, never the copied dimensions
+ok 458 - array plans grade the typed product, never the copied dimensions
+  ---
+  duration_ms: 5.134601
+  type: 'test'
+  ...
+# Subtest: share plans never bind (one each always reaches the fair share)
+ok 459 - share plans never bind (one each always reaches the fair share)
+  ---
+  duration_ms: 2.587443
+  type: 'test'
+  ...
+# Subtest: place-value: given pieces → read mode with counts (the numeral is never shown)
+ok 460 - place-value: given pieces → read mode with counts (the numeral is never shown)
+  ---
+  duration_ms: 1.851947
+  type: 'test'
+  ...
+# Subtest: planEngine: itemId and goal only when bound; predict kept apart from the engine's mode
+ok 461 - planEngine: itemId and goal only when bound; predict kept apart from the engine's mode
+  ---
+  duration_ms: 4.470936
+  type: 'test'
+  ...
+# Subtest: unbound fallback: the item's values reach the engine, or nothing mounts
+ok 462 - unbound fallback: the item's values reach the engine, or nothing mounts
+  ---
+  duration_ms: 5.21937
+  type: 'test'
+  ...
+# Subtest: moduleCommands: set_param only for the same engine, mode, keys, goal and binding; else remount
+ok 463 - moduleCommands: set_param only for the same engine, mode, keys, goal and binding; else remount
+  ---
+  duration_ms: 1.1652
+  type: 'test'
+  ...
+# Subtest: sky@1: the noon shadow points south where the Sun is north of the observer
+ok 464 - sky@1: the noon shadow points south where the Sun is north of the observer
+  ---
+  duration_ms: 0.34547
+  type: 'test'
+  ...
+# Subtest: data-graphs: the catalogue's readability rule matches the bar view's gridline step
+ok 465 - data-graphs: the catalogue's readability rule matches the bar view's gridline step
+  ---
+  duration_ms: 2.771892
+  type: 'test'
+  ...
+# Subtest: kit math: MathValue forms compare exactly
+ok 466 - kit math: MathValue forms compare exactly
+  ---
+  duration_ms: 3.231553
+  type: 'test'
+  ...
+# Subtest: tracker: goal once, retaps after the goal are play, stuck after 2 wrong (once), counts are deterministic
+ok 467 - tracker: goal once, retaps after the goal are play, stuck after 2 wrong (once), counts are deterministic
+  ---
+  duration_ms: 1.849115
+  type: 'test'
+  ...
+# Subtest: number-line@1: placement, reading, jumps and misconception facts
+ok 468 - number-line@1: placement, reading, jumps and misconception facts
+  ---
+  duration_ms: 2.484041
+  type: 'test'
+  ...
+# Subtest: collections@1: compare verdicts and the spread-side fact
+ok 469 - collections@1: compare verdicts and the spread-side fact
+  ---
+  duration_ms: 0.486765
+  type: 'test'
+  ...
+# Subtest: place-value@1: build with exchanges, readings and their misconception facts, compare
+ok 470 - place-value@1: build with exchanges, readings and their misconception facts, compare
+  ---
+  duration_ms: 1.243754
+  type: 'test'
+  ...
+# Subtest: fractions@1: make, compare (and its facts), equivalent, add
+ok 471 - fractions@1: make, compare (and its facts), equivalent, add
+  ---
+  duration_ms: 1.218463
+  type: 'test'
+  ...
+# Subtest: multiply-divide@1: arrays (commutative unless asked), fair shares with remainders, all factor pairs
+ok 472 - multiply-divide@1: arrays (commutative unless asked), fair shares with remainders, all factor pairs
+  ---
+  duration_ms: 0.8915
+  type: 'test'
+  ...
+# Subtest: geoboard@1: area/perimeter, construction for every buildable target, swap fact
+ok 473 - geoboard@1: area/perimeter, construction for every buildable target, swap fact
+  ---
+  duration_ms: 1220.506413
+  type: 'test'
+  ...
+# Subtest: data-graphs@1: read answers come from the data, the key fact fires only on icon counting
+ok 474 - data-graphs@1: read answers come from the data, the key fact fires only on icon counting
+  ---
+  duration_ms: 1.340585
+  type: 'test'
+  ...
+# Subtest: patterns@1: repeat, grow (add / multiply / square) and grid rules
+ok 475 - patterns@1: repeat, grow (add / multiply / square) and grid rules
+  ---
+  duration_ms: 2.439674
+  type: 'test'
+  ...
+# Subtest: measure@1: readings in divisions, end-read and counted-marks facts
+ok 476 - measure@1: readings in divisions, end-read and counted-marks facts
+  ---
+  duration_ms: 0.925127
+  type: 'test'
+  ...
+# Subtest: sky@1: physical goldens (declination, shadow, phases, day/night)
+ok 477 - sky@1: physical goldens (declination, shadow, phases, day/night)
+  ---
+  duration_ms: 1.10358
+  type: 'test'
+  ...
+# Subtest: motion-lab@1: closed-form goldens
+ok 478 - motion-lab@1: closed-form goldens
+  ---
+  duration_ms: 0.608392
+  type: 'test'
+  ...
+# Subtest: water-cycle@1: cycle routing, state plateaus, groundwater
+ok 479 - water-cycle@1: cycle routing, state plateaus, groundwater
+  ---
+  duration_ms: 1.021163
+  type: 'test'
+  ...
+# Subtest: beacon scrub: no quoted text, numbers, emails, URLs or non-ASCII script survives; stacks keep bundle frames only
+ok 480 - beacon scrub: no quoted text, numbers, emails, URLs or non-ASCII script survives; stacks keep bundle frames only
+  ---
+  duration_ms: 4.405433
+  type: 'test'
+  ...
+# Subtest: beacon rate limit: 10 per address per minute, 300 per replica
+ok 481 - beacon rate limit: 10 per address per minute, 300 per replica
+  ---
+  duration_ms: 0.644069
+  type: 'test'
+  ...
+# Subtest: POST /api/client-error answers 204 and writes one scrubbed JSON line
+ok 482 - POST /api/client-error answers 204 and writes one scrubbed JSON line
+  ---
+  duration_ms: 4.106297
+  type: 'test'
+  ...
+# Subtest: access log: one line per API request with route template, status, ms, hashed lesson id and the 5xx error class
+ok 483 - access log: one line per API request with route template, status, ms, hashed lesson id and the 5xx error class
+  ---
+  duration_ms: 22.982332
+  type: 'test'
+  ...
+# Subtest: health: shallow by default; ?ready=1 checks the database and answers 503 without one
+ok 484 - health: shallow by default; ?ready=1 checks the database and answers 503 without one
+  ---
+  duration_ms: 2.324655
+  type: 'test'
+  ...
+# Subtest: route errors: the stderr line carries the class and server frames, never the message
+ok 485 - route errors: the stderr line carries the class and server frames, never the message
+  ---
+  duration_ms: 18.965844
+  type: 'test'
+  ...
+# Subtest: ipOf keys on the rightmost x-forwarded-for hop (the one ACA's ingress appended)
+ok 486 - ipOf keys on the rightmost x-forwarded-for hop (the one ACA's ingress appended)
+  ---
+  duration_ms: 0.514741
+  type: 'test'
+  ...
+# Subtest: forced 500: an operator key is required and at most 4 fire per hour per replica
+ok 487 - forced 500: an operator key is required and at most 4 fire per hour per replica
+  ---
+  duration_ms: 8.237843
+  type: 'test'
+  ...
+# Subtest: gate: a dirty run never shadows the sha's evidence; image tags must name a commit
+ok 488 - gate: a dirty run never shadows the sha's evidence; image tags must name a commit
+  ---
+  duration_ms: 34.154905
+  type: 'test'
+  ...
+# Subtest: the floor A/B differs only in the reworded lines, and the NEW arm is quote-free there
+ok 489 - the floor A/B differs only in the reworded lines, and the NEW arm is quote-free there
+  ---
+  duration_ms: 355.087918
+  type: 'test'
+  ...
+# Subtest: child-name check: serve-time, kit-exempt, never child-free state
+    # Subtest: two children, the kit item names one of them: both get the activity, in either order
+    ok 1 - two children, the kit item names one of them: both get the activity, in either order
+      ---
+      duration_ms: 106.195067
+      type: 'test'
+      ...
+    # Subtest: a non-kit string carrying the child's name is caught for THAT child only, on a cached body too
+    ok 2 - a non-kit string carrying the child's name is caught for THAT child only, on a cached body too
+      ---
+      duration_ms: 20.454193
+      type: 'test'
+      ...
+    # Subtest: the cached gate verdict ignores the child: gateFill without a name equals gateFill with any name on kit text
+    ok 3 - the cached gate verdict ignores the child: gateFill without a name equals gateFill with any name on kit text
+      ---
+      duration_ms: 17.547351
+      type: 'test'
+      ...
+    1..3
+ok 490 - child-name check: serve-time, kit-exempt, never child-free state
+  ---
+  duration_ms: 145.553444
+  type: 'suite'
+  ...
+# Subtest: per-lesson learner snapshot
+    # Subtest: a primed snapshot personalises a call that passes no learner (same fill key as passing it)
+    ok 1 - a primed snapshot personalises a call that passes no learner (same fill key as passing it)
+      ---
+      duration_ms: 33.563028
+      type: 'test'
+      ...
+    1..1
+ok 491 - per-lesson learner snapshot
+  ---
+  duration_ms: 34.248011
+  type: 'suite'
+  ...
+# Subtest: turn path (needByMs 2000): code pick now, model pick upgrades the cache later
+    # Subtest: cold fill at 2 s makes no model call, ships the code pick with error no_time
+    ok 1 - cold fill at 2 s makes no model call, ships the code pick with error no_time
+      ---
+      duration_ms: 9.028995
+      type: 'test'
+      ...
+    # Subtest: upgrade rule: a model pick replaces a code pick; nothing else overwrites
+    ok 2 - upgrade rule: a model pick replaces a code pick; nothing else overwrites
+      ---
+      duration_ms: 0.4053
+      type: 'test'
+      ...
+    1..2
+ok 492 - turn path (needByMs 2000): code pick now, model pick upgrades the cache later
+  ---
+  duration_ms: 9.890268
+  type: 'suite'
+  ...
+# Subtest: prefetch plans before it counts
+    # Subtest: only mountable items take the slots, in the Director's practice-queue order, and the turn call is a memory hit
+    ok 1 - only mountable items take the slots, in the Director's practice-queue order, and the turn call is a memory hit
+      ---
+      duration_ms: 52.421856
+      type: 'test'
+      ...
+    # Subtest: a kit with nothing mountable spends no slots and calls nothing
+    ok 2 - a kit with nothing mountable spends no slots and calls nothing
+      ---
+      duration_ms: 39.759475
+      type: 'test'
+      ...
+    1..2
+ok 493 - prefetch plans before it counts
+  ---
+  duration_ms: 92.830872
+  type: 'suite'
+  ...
+# Subtest: gradeEvent: the event → evidence mapping (the client's correct flag is never read)
+    # Subtest: fraction-bars shade: goal_met with this fill's goal is correct; other events and other modules are not evidence
+    ok 1 - fraction-bars shade: goal_met with this fill's goal is correct; other events and other modules are not evidence
+      ---
+      duration_ms: 3.428511
+      type: 'test'
+      ...
+    # Subtest: fraction-bars compare: the value comes from the server binding; a forged correct:true on a wrong bar is incorrect
+    ok 2 - fraction-bars compare: the value comes from the server binding; a forged correct:true on a wrong bar is incorrect
+      ---
+      duration_ms: 50.33608
+      type: 'test'
+      ...
+    # Subtest: scene choice-card: key id → correct, a trap → its kit misconception, an unknown id → null
+    ok 3 - scene choice-card: key id → correct, a trap → its kit misconception, an unknown id → null
+      ---
+      duration_ms: 8.85582
+      type: 'test'
+      ...
+    # Subtest: scene sequence-steps: the exact order is correct, any other permutation incorrect, a malformed one null
+    ok 4 - scene sequence-steps: the exact order is correct, any other permutation incorrect, a malformed one null
+      ---
+      duration_ms: 10.046217
+      type: 'test'
+      ...
+    1..4
+ok 494 - gradeEvent: the event → evidence mapping (the client's correct flag is never read)
+  ---
+  duration_ms: 73.168425
+  type: 'suite'
+  ...
+# [forge-g1-serve] scene agreement: 977 fills, 2613 verdicts, 0 disagreements
+# Subtest: results are private copies
+    # Subtest: mutating a result's grade or command does not touch the shared cached fill
+    ok 1 - mutating a result's grade or command does not touch the shared cached fill
+      ---
+      duration_ms: 4.380046
+      type: 'test'
+      ...
+    1..1
+ok 495 - results are private copies
+  ---
+  duration_ms: 4.636384
+  type: 'suite'
+  ...
+# Subtest: client view and routes
+    # Subtest: a scene fill's client view carries no grade, binding, misconception map or distractors
+    ok 1 - a scene fill's client view carries no grade, binding, misconception map or distractors
+      ---
+      duration_ms: 4.555112
+      type: 'test'
+      ...
+    # Subtest: per-child limits: 30 requests a minute, then 429; another child is unaffected; the window slides
+    ok 2 - per-child limits: 30 requests a minute, then 429; another child is unaffected; the window slides
+      ---
+      duration_ms: 0.946866
+      type: 'test'
+      ...
+    1..2
+ok 496 - client view and routes
+  ---
+  duration_ms: 5.705575
+  type: 'suite'
+  ...
+# Subtest: drift pins
+    # Subtest: liveRenderers is pinned to the frame registry (with and without the scene flag)
+    ok 1 - liveRenderers is pinned to the frame registry (with and without the scene flag)
+      ---
+      duration_ms: 0.817658
+      type: 'test'
+      ...
+    # Subtest: the vendored scene@1 validator equals the docs source (header and --emit guard aside)
+    ok 2 - the vendored scene@1 validator equals the docs source (header and --emit guard aside)
+      ---
+      duration_ms: 3.490573
+      type: 'test'
+      ...
+    # Subtest: SharedKey string-to-sign follows the documented 12-header + canonical layout
+    ok 3 - SharedKey string-to-sign follows the documented 12-header + canonical layout
+      ---
+      duration_ms: 1.068032
+      type: 'test'
+      ...
+    1..3
+ok 497 - drift pins
+  ---
+  duration_ms: 5.624614
+  type: 'suite'
+  ...
+# Subtest: fill keys stay child-free under the new version
+ok 498 - fill keys stay child-free under the new version
+  ---
+  duration_ms: 0.612801
+  type: 'test'
+  ...
+# Subtest: gradeEvent agrees with the scene@1 renderer's own verdicts (src/modules/frame/scene/runtime.ts)
+    # Subtest: every choice option and a right/wrong order of every G1 scene fill in c4-c7 maths/science/EVS/English
+    ok 1 - every choice option and a right/wrong order of every G1 scene fill in c4-c7 maths/science/EVS/English
+      ---
+      duration_ms: 4913.480066
+      type: 'test'
+      ...
+    1..1
+ok 499 - gradeEvent agrees with the scene@1 renderer's own verdicts (src/modules/frame/scene/runtime.ts)
+  ---
+  duration_ms: 4913.625323
+  type: 'suite'
+  ...
+# [azure] chat [REDACTED:DEPLOY_FAST] network 1ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 2ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 1ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 0ms
+# Subtest: KitMath
+    # Subtest: parses kit answer forms exactly
+    ok 1 - parses kit answer forms exactly
+      ---
+      duration_ms: 3.929825
+      type: 'test'
+      ...
+    # Subtest: recomputes every value-keyed fraction item in c4-c7 maths with 0 disagreements against the kit (MP2 exit test)
+    ok 2 - recomputes every value-keyed fraction item in c4-c7 maths with 0 disagreements against the kit (MP2 exit test)
+      ---
+      duration_ms: 70.809022
+      type: 'test'
+      ...
+    # Subtest: a misconception rule reproduces its kit diagnostic's distractor where the diagnostic poses a fraction task
+    ok 3 - a misconception rule reproduces its kit diagnostic's distractor where the diagnostic poses a fraction task
+      ---
+      duration_ms: 36.301054
+      type: 'test'
+      ...
+    # Subtest: variants stay inside the bars domain and carry a KitMath key
+    ok 4 - variants stay inside the bars domain and carry a KitMath key
+      ---
+      duration_ms: 7.24073
+      type: 'test'
+      ...
+    1..4
+ok 500 - KitMath
+  ---
+  duration_ms: 120.025744
+  type: 'suite'
+  ...
+# Subtest: derive + the frame engine agree (fraction-bars@1 is the grader for T1)
+    # Subtest: every bars fill from a real kit item normalises with no issues, is solvable, and the engine grades the kit key right
+    ok 1 - every bars fill from a real kit item normalises with no issues, is solvable, and the engine grades the kit key right
+      ---
+      duration_ms: 52.640677
+      type: 'test'
+      ...
+    # Subtest: the gate's param table is the engine's declared param set
+    ok 2 - the gate's param table is the engine's declared param set
+      ---
+      duration_ms: 0.935438
+      type: 'test'
+      ...
+    # Subtest: choice, order and scramble activities derive their key from the kit only
+    ok 3 - choice, order and scramble activities derive their key from the kit only
+      ---
+      duration_ms: 4.371315
+      type: 'test'
+      ...
+    1..3
+ok 501 - derive + the frame engine agree (fraction-bars@1 is the grader for T1)
+  ---
+  duration_ms: 58.464356
+  type: 'suite'
+  ...
+# Subtest: strings table (pre-cleared rows)
+    # Subtest: every skin has hooks and decor; rows are short titles with no digits; decor is in the sprite library
+    ok 1 - every skin has hooks and decor; rows are short titles with no digits; decor is in the sprite library
+      ---
+      duration_ms: 1.211047
+      type: 'test'
+      ...
+    # Subtest: interests map onto the closed registry
+    ok 2 - interests map onto the closed registry
+      ---
+      duration_ms: 2.143997
+      type: 'test'
+      ...
+    # Subtest: the vendored scene validator is the pinned version
+    ok 3 - the vendored scene validator is the pinned version
+      ---
+      duration_ms: 0.390171
+      type: 'test'
+      ...
+    1..3
+ok 502 - strings table (pre-cleared rows)
+  ---
+  duration_ms: 4.203158
+  type: 'suite'
+  ...
+# Subtest: planner (pure, deterministic)
+    # Subtest: routes a fraction item to the engine, a diagnostic to choice when scenes can mount, and to bars otherwise
+    ok 1 - routes a fraction item to the engine, a diagnostic to choice when scenes can mount, and to bars otherwise
+      ---
+      duration_ms: 51.628612
+      type: 'test'
+      ...
+    # Subtest: closing moves get nothing; show moves get engines only; a scene with no shipped renderer is a catalogue entry
+    ok 2 - closing moves get nothing; show moves get engines only; a scene with no shipped renderer is a catalogue entry
+      ---
+      duration_ms: 24.736852
+      type: 'test'
+      ...
+    # Subtest: a kit item the blind solver disputed is never filled
+    ok 3 - a kit item the blind solver disputed is never filled
+      ---
+      duration_ms: 0.630223
+      type: 'test'
+      ...
+    1..3
+ok 503 - planner (pure, deterministic)
+  ---
+  duration_ms: 77.684646
+  type: 'suite'
+  ...
+# Subtest: G1 gate
+    # Subtest: clean fills from real kit items pass (0 false alarms)
+    ok 1 - clean fills from real kit items pass (0 false alarms)
+      ---
+      duration_ms: 171.43782
+      type: 'test'
+      ...
+    # Subtest: mutant caught: bars: target off by one part
+    ok 2 - mutant caught: bars: target off by one part
+      ---
+      duration_ms: 10.214276
+      type: 'test'
+      ...
+    # Subtest: mutant caught: bars: compare bars swapped question
+    ok 3 - mutant caught: bars: compare bars swapped question
+      ---
+      duration_ms: 3.712064
+      type: 'test'
+      ...
+    # Subtest: mutant caught: bars: unknown param
+    ok 4 - mutant caught: bars: unknown param
+      ---
+      duration_ms: 6.004855
+      type: 'test'
+      ...
+    # Subtest: mutant caught: bars: 13 parts
+    ok 5 - mutant caught: bars: 13 parts
+      ---
+      duration_ms: 5.011257
+      type: 'test'
+      ...
+    # Subtest: mutant caught: bars: target bar starts solved
+    ok 6 - mutant caught: bars: target bar starts solved
+      ---
+      duration_ms: 3.56547
+      type: 'test'
+      ...
+    # Subtest: mutant caught: choice: correct id moved to a distractor
+    ok 7 - mutant caught: choice: correct id moved to a distractor
+      ---
+      duration_ms: 20.203708
+      type: 'test'
+      ...
+    # Subtest: mutant caught: choice: trap tagged with an invented misconception
+    ok 8 - mutant caught: choice: trap tagged with an invented misconception
+      ---
+      duration_ms: 21.102299
+      type: 'test'
+      ...
+    # Subtest: mutant caught: sequence: starts in the solved order
+    ok 9 - mutant caught: sequence: starts in the solved order
+      ---
+      duration_ms: 18.877331
+      type: 'test'
+      ...
+    # Subtest: mutant caught: sequence: key order shuffled
+    ok 10 - mutant caught: sequence: key order shuffled
+      ---
+      duration_ms: 13.510286
+      type: 'test'
+      ...
+    # Subtest: mutant caught: hook replaced by an uncleared string
+    ok 11 - mutant caught: hook replaced by an uncleared string
+      ---
+      duration_ms: 35.770511
+      type: 'test'
+      ...
+    # Subtest: mutant caught: the child's name in a string
+    ok 12 - mutant caught: the child's name in a string
+      ---
+      duration_ms: 36.052239
+      type: 'test'
+      ...
+    # Subtest: mutant caught: decor outside the skin
+    ok 13 - mutant caught: decor outside the skin
+      ---
+      duration_ms: 31.804876
+      type: 'test'
+      ...
+    # Subtest: mutant caught: title names the answer
+    ok 14 - mutant caught: title names the answer
+      ---
+      duration_ms: 50.624915
+      type: 'test'
+      ...
+    # Subtest: mutant caught: payload over 56 KiB
+    ok 15 - mutant caught: payload over 56 KiB
+      ---
+      duration_ms: 38.118739
+      type: 'test'
+      ...
+    # Subtest: a corrupted kit key is caught by KitMath (the kit is wrong, not the child)
+    ok 16 - a corrupted kit key is caught by KitMath (the kit is wrong, not the child)
+      ---
+      duration_ms: 0.717174
+      type: 'test'
+      ...
+    1..16
+ok 504 - G1 gate
+  ---
+  duration_ms: 593.208375
+  type: 'suite'
+  ...
+# Subtest: templates
+    # Subtest: derange never returns the identity
+    ok 1 - derange never returns the identity
+      ---
+      duration_ms: 1.29566
+      type: 'test'
+      ...
+    # Subtest: misc tokens are valid scene@1 Misc ids
+    ok 2 - misc tokens are valid scene@1 Misc ids
+      ---
+      duration_ms: 0.330865
+      type: 'test'
+      ...
+    1..2
+ok 505 - templates
+  ---
+  duration_ms: 1.814007
+  type: 'suite'
+  ...
+# Subtest: requestFill (offline)
+    # Subtest: model unreachable → the code pick ships; a second call is a memory hit with the same mount
+    ok 1 - model unreachable → the code pick ships; a second call is a memory hit with the same mount
+      ---
+      duration_ms: 8.399087
+      type: 'test'
+      ...
+    # Subtest: the fill key is child-free: two children with the same skins share it; other skins do not
+    ok 2 - the fill key is child-free: two children with the same skins share it; other skins do not
+      ---
+      duration_ms: 0.708489
+      type: 'test'
+      ...
+    # Subtest: an item with no activity is a gap, not an error
+    ok 3 - an item with no activity is a gap, not an error
+      ---
+      duration_ms: 26.701694
+      type: 'test'
+      ...
+    # Subtest: lesson-start prefetch fills this child's recent wrong items first, then their misconception's diagnostic, and warms the cache
+    ok 4 - lesson-start prefetch fills this child's recent wrong items first, then their misconception's diagnostic, and warms the cache
+      ---
+      duration_ms: 14.000085
+      type: 'test'
+      ...
+    # Subtest: the client view carries no grade table
+    ok 5 - the client view carries no grade table
+      ---
+      duration_ms: 0.725199
+      type: 'test'
+      ...
+    1..5
+ok 506 - requestFill (offline)
+  ---
+  duration_ms: 51.167353
+  type: 'suite'
+  ...
+# Subtest: blob SharedKey signing is deterministic over its canonical string
+ok 507 - blob SharedKey signing is deterministic over its canonical string
+  ---
+  duration_ms: 0.7644
+  type: 'test'
+  ...
+# [azure] chat [REDACTED:DEPLOY_FAST] network 92ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 10ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 9ms
+# [azure] chat [REDACTED:DEPLOY_FAST] network 7ms
+# Subtest: levels: fraction keys come from KitMath, misconception distractors carry kit ids
+ok 508 - levels: fraction keys come from KitMath, misconception distractors carry kit ids
+  ---
+  duration_ms: 270.467225
+  type: 'test'
+  ...
+# Subtest: levels: unverified integers and long diagnostic options are not G2 items
+ok 509 - levels: unverified integers and long diagnostic options are not G2 items
+  ---
+  duration_ms: 2.059574
+  type: 'test'
+  ...
+# Subtest: levels: int distractors are positive, distinct and never the key; held-out is every third item
+ok 510 - levels: int distractors are positive, distinct and never the key; held-out is every third item
+  ---
+  duration_ms: 2.476576
+  type: 'test'
+  ...
+# Subtest: levels: archetype choice is code, and the brief carries no child data
+ok 511 - levels: archetype choice is code, and the brief carries no child data
+  ---
+  duration_ms: 79.025449
+  type: 'test'
+  ...
+# Subtest: lint: goldens pass; ambient names, randomness, forged refs, points and digits in text fail
+ok 512 - lint: goldens pass; ambient names, randomness, forged refs, points and digits in text fail
+  ---
+  duration_ms: 30.646962
+  type: 'test'
+  ...
+# Subtest: bundle: hash-only CSP over exactly the shipped inline blocks; no network; deterministic
+ok 513 - bundle: hash-only CSP over exactly the shipped inline blocks; no network; deterministic
+  ---
+  duration_ms: 4.980728
+  type: 'test'
+  ...
+# Subtest: safety: local predicates block digits, severe and mild words, PII and markup
+ok 514 - safety: local predicates block digits, severe and mild words, PII and markup
+  ---
+  duration_ms: 3.414035
+  type: 'test'
+  ...
+# Subtest: safety: Content Safety and the Hindi classifier fail closed
+ok 515 - safety: Content Safety and the Hindi classifier fail closed
+  ---
+  duration_ms: 1.640891
+  type: 'test'
+  ...
+# Subtest: qa: the host re-derives values from ITS LevelSpec, not from the frame's claim
+ok 516 - qa: the host re-derives values from ITS LevelSpec, not from the frame's claim
+  ---
+  duration_ms: 1.518602
+  type: 'test'
+  ...
+# Subtest: review: ingest copies a run container into the queue, pins the sha, marks the identity pending_review and deletes the run
+ok 517 - review: ingest copies a run container into the queue, pins the sha, marks the identity pending_review and deletes the run
+  ---
+  duration_ms: 120.023134
+  type: 'test'
+  ...
+# Subtest: review: approval needs the attested CLI and a current kit; publish is sha-pinned; waiting children get it merged
+ok 518 - review: approval needs the attested CLI and a current kit; publish is sha-pinned; waiting children get it merged
+  ---
+  duration_ms: 84.833414
+  type: 'test'
+  ...
+# Subtest: review: tampered bytes are never published; a test publish goes to the separate test container only
+ok 519 - review: tampered bytes are never published; a test publish goes to the separate test container only
+  ---
+  duration_ms: 84.410179
+  type: 'test'
+  ...
+# Subtest: review: two topics delivered to one child on one day both survive; latest.json follows the newest day
+ok 520 - review: two topics delivered to one child on one day both survive; latest.json follows the newest day
+  ---
+  duration_ms: 1.130037
+  type: 'test'
+  ...
+# Subtest: review: failures back off 1 d / 3 d / 7 d then go to triage; a lost build is closed after an hour
+ok 521 - review: failures back off 1 d / 3 d / 7 d then go to triage; a lost build is closed after an hour
+  ---
+  duration_ms: 20.244727
+  type: 'test'
+  ...
+# Subtest: conductor: forge.g2.nightly is registered with the spec the Conductor enforces
+ok 522 - conductor: forge.g2.nightly is registered with the spec the Conductor enforces
+  ---
+  duration_ms: 589.008311
+  type: 'test'
+  ...
+# Subtest: conductor: nightly delivers approved cores, single-flights builds, joins, never rebuilds a build pending review
+ok 523 - conductor: nightly delivers approved cores, single-flights builds, joins, never rebuilds a build pending review
+  ---
+  duration_ms: 245.887074
+  type: 'test'
+  ...
+# Subtest: conductor: orphan markers are taken over only by ETag; the breaker and a failed start leave nothing behind; no salt is final
+ok 524 - conductor: orphan markers are taken over only by ETag; the breaker and a failed start leave nothing behind; no salt is final
+  ---
+  duration_ms: 151.709251
+  type: 'test'
+  ...
+# Subtest: azure-job: a build starts with a SAS for its own run container only, and a trusted record written first
+ok 525 - azure-job: a build starts with a SAS for its own run container only, and a trusted record written first
+  ---
+  duration_ms: 36.700501
+  type: 'test'
+  ...
+# Subtest: design: Q0 rejects digits and bad ids; normalise fixes shape only
+ok 526 - design: Q0 rejects digits and bad ids; normalise fixes shape only
+  ---
+  duration_ms: 0.987865
+  type: 'test'
+  ...
+# Subtest: store: SharedKey signs If-Match; a SAS is minted only for a run container (never the private, public or test one)
+ok 527 - store: SharedKey signs If-Match; a SAS is minted only for a run container (never the private, public or test one)
+  ---
+  duration_ms: 1.199836
+  type: 'test'
+  ...
+# Subtest: q8: the post-build gate reuses the design-time verdict for the SAME strings and re-runs only local predicates
+ok 528 - q8: the post-build gate reuses the design-time verdict for the SAME strings and re-runs only local predicates
+  ---
+  duration_ms: 0.814175
+  type: 'test'
+  ...
+# Subtest: cost: tokens at retail with cached input discounted, plus Content Safety and ACA seconds
+ok 529 - cost: tokens at retail with cached input discounted, plus Content Safety and ACA seconds
+  ---
+  duration_ms: 0.465162
+  type: 'test'
+  ...
+# Subtest: gate (browser): both goldens pass every check; key-marking mutants are lint errors, inert on the opaque kit, caught on a leaky one
+ok 530 - gate (browser): both goldens pass every check; key-marking mutants are lint errors, inert on the opaque kit, caught on a leaky one
+  ---
+  duration_ms: 70595.704918
+  type: 'test'
+  ...
+# Subtest: harness (browser): a scripted builder that writes a valid mechanic and submits ends green; a silent one hits the format cap
+ok 531 - harness (browser): a scripted builder that writes a valid mechanic and submits ends green; a silent one hits the format cap
+  ---
+  duration_ms: 27819.886371
+  type: 'test'
+  ...
+# Subtest: serve: mount params come from the server's expansion; a forged correct:true on a distractor grades as the distractor
+ok 532 - serve: mount params come from the server's expansion; a forged correct:true on a distractor grades as the distractor
+  ---
+  duration_ms: 183.71125
+  type: 'test'
+  ...
+# Subtest: a fresh server process with no lesson start: the item misses once, then the next posing mounts its G1 fill
+ok 533 - a fresh server process with no lesson start: the item misses once, then the next posing mounts its G1 fill
+  ---
+  duration_ms: 854.739138
+  type: 'test'
+  ...
+# Subtest: the default warmer warms only real lessons (uuid ids): an eval's made-up session id fires no fill
+ok 534 - the default warmer warms only real lessons (uuid ids): an eval's made-up session id fires no fill
+  ---
+  duration_ms: 937.364446
+  type: 'test'
+  ...
+# Subtest: under the test runner (NODE_TEST_CONTEXT) or FORGE_TURN_WARM=off, importing the seam registers no warmer
+ok 535 - under the test runner (NODE_TEST_CONTEXT) or FORGE_TURN_WARM=off, importing the seam registers no warmer
+  ---
+  duration_ms: 1433.621733
+  type: 'test'
+  ...
+# Subtest: every tier — adult, verified, unverified, unknown, garbage — gets the frozen minor gates
+ok 536 - every tier — adult, verified, unverified, unknown, garbage — gets the frozen minor gates
+  ---
+  duration_ms: 1.479972
+  type: 'test'
+  ...
+# Subtest: the ratchet only restricts: a permissive set on either side comes back minor
+ok 537 - the ratchet only restricts: a permissive set on either side comes back minor
+  ---
+  duration_ms: 1.83537
+  type: 'test'
+  ...
+# Subtest: compile() gives a brief that claims adulthood the same minor floor, byte for byte
+ok 538 - compile() gives a brief that claims adulthood the same minor floor, byte for byte
+  ---
+  duration_ms: 2.584338
+  type: 'test'
+  ...
+# Subtest: no source file defines a permissive gate (romance/engagement mechanics on) for any tier
+ok 539 - no source file defines a permissive gate (romance/engagement mechanics on) for any tier
+  ---
+  duration_ms: 61.46792
+  type: 'test'
+  ...
+# Subtest: the kit load gate renders the longest correction pair the director can produce (computed, not pinned)
+ok 540 - the kit load gate renders the longest correction pair the director can produce (computed, not pinned)
+  ---
+  duration_ms: 0.644924
+  type: 'test'
+  ...
+# Subtest: assertMinorGates is a tripwire, not a live guard: it fails only on a gate set gatesFor cannot return today
+ok 541 - assertMinorGates is a tripwire, not a live guard: it fails only on a gate set gatesFor cannot return today
+  ---
+  duration_ms: 0.512451
+  type: 'test'
+  ...

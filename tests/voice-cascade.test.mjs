@@ -540,6 +540,16 @@ test("CascadeLink: microphone denied → typed lesson, her voice still plays", a
 
 // ───────────── barge-in: pause, decide, resume ─────────────
 
+/** Await a condition (polled), never a fixed wall-clock sleep: robust to CPU load (main 2026-11-04, Face's flake report). */
+async function until(pred, ms = 15_000, step = 10) {
+  const t0 = performance.now();
+  while (!pred()) {
+    if (performance.now() - t0 > ms) return false;
+    await sleep(step);
+  }
+  return true;
+}
+
 async function speakingLink(opts = {}) {
   const env = installBrowserFakes({ rtc: opts.rtc ?? "fail" });
   // 3 s of her voice: enough left after a cut for a backchannel to resume her.
@@ -551,15 +561,18 @@ async function speakingLink(opts = {}) {
   events.length = 0;
   link.promptTeacher({ text: opts.text ?? "Dekho, ek roti ke chaar barabar hisse karo. Har hissa ek chauthai hai. Ab batao, teen hisse kitne hue?", seq: 5 });
   await sleep(40);
-  assert.ok(events.some((e) => e.type === "teacher_audio_start"));
+  assert.ok(await until(() => events.some((e) => e.type === "teacher_audio_start")));
+  const audioAt = performance.now();
   events.length = 0;
-  return { env, link, events, ctx: FakeAudioContext.last };
+  return { env, link, events, ctx: FakeAudioContext.last, audioAt };
 }
 
 test("barge-in: speech_started then an EMPTY transcript → she resumes from where she was cut and finishes", async () => {
-  const { env, link, events, ctx } = await speakingLink();
+  const { env, link, events, ctx, audioAt } = await speakingLink();
   try {
     await sleep(200);
+    // how far into her line the cut lands is measured, not assumed (a loaded machine sleeps longer than 200 ms)
+    const elapsedS = (performance.now() - audioAt) / 1000;
     const before = ctx.sources.length;
     link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
     assert.ok(ctx.sources.every((s) => s.stopped || s.done), "silenced at once");
@@ -568,9 +581,9 @@ test("barge-in: speech_started then an EMPTY transcript → she resumes from whe
     await flush();
     assert.ok(ctx.sources.length > before, "the rest of the reply was rescheduled");
     const resumed = ctx.sources.at(-1);
-    // Cut ~0.2 s into her audio (after the start lead); resumed a little before that.
-    assert.ok(resumed.buffer.duration > 2.7 && resumed.buffer.duration <= 3, `resumed with ${resumed.buffer.duration.toFixed(2)} s left (a little before the cut)`);
-    await sleep(3_100);
+    // Resumed at or a little before the cut: never skips ahead of where she was cut, and never restarts from the top
+    assert.ok(resumed.buffer.duration <= 3 && resumed.buffer.duration >= 3 - elapsedS - 0.05, `resumed with ${resumed.buffer.duration.toFixed(2)} s left, cut ${elapsedS.toFixed(2)} s in`);
+    assert.ok(await until(() => events.some((e) => e.type === "response_done")), "she finished");
     assert.deepEqual(events.map((e) => e.type), ["teacher_audio_end", "child_speech_start", "child_speech_end", "child_silent", "teacher_audio_start", "teacher_audio_end", "response_done"]);
     assert.equal(events.at(-1).status, "completed");
     assert.ok(!events.some((e) => e.type === "teacher_interrupted" || e.type === "child_final"), "no turn, no interruption");
@@ -583,22 +596,22 @@ test("barge-in: speech_started then an EMPTY transcript → she resumes from whe
 
 test("barge-in: a lone 'hmm' resumes her; her own echo resumes her; a real answer stops her", async () => {
   {
-    const { env, link, events } = await speakingLink();
+    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
     try {
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "हम्म", logprobs: [{ logprob: -0.1 }] });
-      await flush();
+      await until(() => events.some((e) => e.type === "teacher_audio_start")); // load-robust: resuming goes through the player's async start
       assert.ok(events.some((e) => e.type === "teacher_audio_start"), "resumed");
       assert.ok(!events.some((e) => e.type === "child_final"));
       assert.equal(link.bargeStats.resumedBackchannel, 1);
     } finally { link.close(); env.restore(); }
   }
   {
-    const { env, link, events } = await speakingLink();
+    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
     try {
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "एक रोटी के चार बराबर हिस्से करो" });
-      await flush();
+      await until(() => events.some((e) => e.type === "teacher_audio_start"));
       assert.ok(events.some((e) => e.type === "teacher_audio_start"), "her own voice in Devanagari is recognised as echo");
       assert.equal(link.bargeStats.resumedEcho, 1);
     } finally { link.close(); env.restore(); }
@@ -657,19 +670,20 @@ test("barge-in, hands-free: the local VAD ducks her within ~150 ms of voice and 
     const t0 = performance.now();
     FakeAudioContext.micLevel = 0.1; // the child starts talking (−20 dBFS over a silent room)
     let duckAt = null, pauseAt = null;
-    while (performance.now() - t0 < 400 && pauseAt === null) {
-      await sleep(5);
+    // the ORDER is asserted here (duck, then pause, from the local VAD alone); the ≤100 / ≤140 ms budget is the frame-exact
+    // EnergyVad test above. Wall-clock bounds here raced the machine's load (Face's flake report, 2026-11-04).
+    await until(() => {
       if (duckAt === null && gain() < 0.5) duckAt = performance.now() - t0;
-      if (events.some((e) => e.type === "teacher_audio_end")) pauseAt = performance.now() - t0;
-    }
+      if (pauseAt === null && events.some((e) => e.type === "teacher_audio_end")) pauseAt = performance.now() - t0;
+      return pauseAt !== null;
+    }, 5000, 5);
     FakeAudioContext.micLevel = 0;
-    console.log(`local barge-in (20 ms polling, fake audio): duck ${duckAt?.toFixed(0)} ms, pause ${pauseAt?.toFixed(0)} ms after voice onset`);
-    assert.ok(duckAt !== null && duckAt < 150, `duck at ${duckAt} ms`);
-    assert.ok(pauseAt !== null && pauseAt < 200, `pause at ${pauseAt} ms`);
+    console.log(`local barge-in (fake audio, wall clock under this machine's load): duck ${duckAt?.toFixed(0)} ms, pause ${pauseAt?.toFixed(0)} ms after voice onset`);
+    assert.ok(duckAt !== null, "ducked");
+    assert.ok(pauseAt !== null && pauseAt >= duckAt, `paused (${pauseAt} ms) after ducking (${duckAt} ms)`);
     assert.equal(link.bargeStats.localPauses, 1);
     // The server never confirms (it was the TV): she resumes after DUCK_RELEASE_MS.
-    await sleep(800);
-    assert.ok(events.filter((e) => e.type === "teacher_audio_start").length === 1, "resumed");
+    assert.ok(await until(() => events.filter((e) => e.type === "teacher_audio_start").length === 1), "resumed");
     assert.equal(link.bargeStats.localUnconfirmed, 1);
     assert.ok(!events.some((e) => e.type === "teacher_interrupted"));
   } finally {

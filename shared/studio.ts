@@ -32,6 +32,9 @@ export interface StudioIntent {
   // round 5 (stream 2, RCA-1): what the child asked to SEE this turn (brain/propose.js requestOfSee): how, the thing named
   // (a short noun phrase, code-gated), the numbers named for a number line. The board draws this; never the child's words.
   request?: StudioRequest;
+  /** v5 B1: each later part of her line and the board it is spoken over (contracts.ts BoardSegment), in order */
+  segments?: import("./contracts.ts").BoardSegment[];
+  segmentPlan?: import("./contracts.ts").BoardSegmentPart[];
 }
 export interface StudioRequest { kind: "number_line" | "picture" | "draw" | "show" | "example"; subject?: string; said?: string[]; offKit?: boolean }
 
@@ -52,7 +55,23 @@ export type StudioStatus =
   | { state: "failed"; intentId: string; fallback: StudioFallback };
 export type StudioState = StudioStatus["state"];
 /** The one facts shape the Brain reads for whatever is on screen (shared with W2-B's moduleFacts): values, never prose. */
-export interface StudioFacts { kind: StudioKind; archetype: string; onScreen: Record<string, string | number>; step?: number; itemId?: string }
+/** round 7 (director5 SC1): what a template board draws, counted by the template (shared/whiteboard.js cleanCounts). */
+export interface ScreenCounts {
+  lines?: { gaps?: number; gapsPerWhole?: number; ticks?: number; innerTicks?: number }[];
+  /** labelled points: `at` is the point ("1/4", or "mark 3" for an asked mark), `label` what is written ("?" asked, "" none) */
+  marks?: { at: string; label: string }[];
+  parts?: number; shaded?: number; rows?: number; cols?: number; groups?: number; each?: number;
+  sides?: number; corners?: number; sideValues?: string[]; radius?: string;
+  /** director6 #2: word and other boards — compare columns (title, item count, quantities their items state), steps, events,
+   *  bars with values, labels, places, hops, digits, halves, angles, amounts */
+  columns?: { title: string; items: number; quantities: { n: number; what: string }[] }[];
+  /** director8 S3′ (fraction-bars@1, a picture's second view): each equal whole drawn, its parts, parts shaded and label
+   *  ("?" = the asked value, never shaded) */
+  wholes?: { parts: number; shaded: number; label: string }[];
+  steps?: number; events?: number; bars?: number; values?: string[]; labels?: number; places?: number; hops?: number;
+  digits?: number; halves?: number; angles?: number[]; amounts?: number[];
+}
+export interface StudioFacts { kind: StudioKind; archetype: string; onScreen: Record<string, string | number>; counts?: ScreenCounts; step?: number; itemId?: string }
 export interface BuildRecord {
   buildSha: string; identity: string; planId: string; builder: { dep: string; effort?: string };
   timings: { ttftMs: number; firstPaintMs?: number; genMs: number; qaMs: number; repairs: number; toPlayableMs: number };
@@ -110,6 +129,9 @@ export interface StudioSlot {
   intentId?: string;
   state: StudioState | "fallback_shown";
   artifact?: StudioArtifact;
+  /** round 7: a board still planning that WILL be on the stage within this many ms (a passing code board bounds the wait);
+   *  absent when nothing bounds it. The client may hold her first clause for it (src/studio/boardHold.ts). */
+  etaMs?: number;
 }
 
 /** Anything the StudioStage can render. Each kind is drawn by a renderer registered in src/studio/renderers.ts. */
@@ -122,6 +144,8 @@ export type StudioArtifact =
   /** The code skeleton (LIVE-STUDIO D1 §3.4): correct by construction; interactive and host-graded when it is the activity. */
   | { kind: "skeleton"; stage?: StageSize; skeleton: string; params: Record<string, unknown>; strings: Record<string, string>; archetype?: string; intentId?: string }
   | { kind: "image"; stage?: StageSize; src: string; alt: string }
+  /** round 7 M5a: a code-built cinematic scene (shared/scene.js), its beats bound to her clauses. */
+  | { kind: "scene"; stage?: StageSize; scene: import("./scene.js").Scene }
   /** A Stagecraft piece (STAGECRAFT P9): an RS-4 engine spec, a library variant, a passed live build or the board twin,
    *  mounted by src/stagecraft (StagecraftRenderer → StageController → the Studio v2 host). Never a loading state. */
   | { kind: "stagecraft"; stage?: StageSize; stagecraft: { rung: string; archetype?: string; spec?: unknown; boardTwin?: { values?: Record<string, unknown>; board?: { title: string; lines: string[] } } | null; board?: { values?: Record<string, unknown> } | null; cue?: { clauseIdx: number; preRollMs: number; crossFadeMs: number }; buildSha?: string | null; blobUrl?: string | null } };
@@ -165,10 +189,22 @@ export type WbOp =
   | (WbBase & { op: "label"; at: WbPoint; text: string; to?: WbPoint; target?: string })
   /** Number work laid out by code: column sums, fractions, equations, a number line. Cells are tokens, not prose. */
   | (WbBase & { op: "numwork"; at: WbPoint; layout: "column_add" | "column_sub" | "column_mul" | "long_div" | "fraction" | "equation" | "number_line";
-      rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number] })
+      rows: string[][]; marks?: { row: number; col: number; kind: "carry" | "borrow" | "circle" | "tick" }[]; range?: [number, number]; /** number_line: the line's own length (board units) */ w?: number })
   /** Draw attention to an earlier op (circle, underline, pulse) without redrawing it. */
   | (WbBase & { op: "highlight"; target: string; style: "circle" | "underline" | "pulse" })
-  | (WbBase & { op: "erase"; target: string });
+  | (WbBase & { op: "erase"; target: string })
+  /** round 7: an earlier op slides by `by` over [startMs, endMs], hopping `arc` units high (a jump); never off the board. */
+  | (WbBase & { op: "move"; target: string; by: WbPoint; arc?: number })
+  /** round 7 (M1): an earlier stroke / line / arrow / polygon / circle / sector turns `deg` (clockwise) about a point. */
+  | (WbBase & { op: "rotate"; target: string; deg: number; about: WbPoint })
+  /** round 7 (M1): an earlier shape scales by k = [kx, ky] about a point (a negative k mirrors it: a fold). */
+  | (WbBase & { op: "scale"; target: string; k: [number, number]; about: WbPoint })
+  /** round 7 (M1): an earlier op travels a path of offsets from where it is ([0,0] implied first). */
+  | (WbBase & { op: "follow"; target: string; path: WbPoint[] })
+  /** round 7 (M1): an earlier filled shape's fill sweeps in from one side. */
+  | (WbBase & { op: "sweep"; target: string; dir: "up" | "down" | "left" | "right" })
+  /** round 7 (M1): an earlier stroke's / polygon's points move to `to` (same count). */
+  | (WbBase & { op: "morph"; target: string; to: WbPoint[] });
 export type WbOpKind = WbOp["op"];
 export interface WhiteboardScript {
   v: 1;
@@ -186,6 +222,9 @@ export interface WhiteboardScript {
   /** round 4 content, the beat-by-beat board (TAXILA_BEAT_BOARD; server/stagecraft/beat-card.js): the card this beat's
    *  board is, its beat number in the lesson, and whether a check follows it. Absent with the flag off. */
   card?: BeatCard;
+  /** round 7 (director7 B1/S2): one board per segment of a turn — at each switch (in order) a new page starts; ops from
+   *  `atMs` (the estimate) to the next switch move onto clause `clause`'s real onset when the voice reports it. */
+  switches?: { clause: number; atMs: number; word?: string; wordIndex?: number }[];
 }
 export interface BeatCard { kind: "picture" | "formula" | "steps" | "example" | "takeaway"; n: number; checkpointAhead: boolean }
 /** Bounds the renderer and the gate enforce (documented here so W2-B/F/H agree; enforced in code by the owners). */

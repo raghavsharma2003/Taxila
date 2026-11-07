@@ -74,7 +74,7 @@ export function comprehensionReasons({ cls, classified, help = false, uiVerdict 
     }
   }
   if (guard) {
-    for (const k of ["replaced", "rewritten", "repaired"]) if (guard[k]) out.push(`guard.${k}`);
+    for (const k of ["replaced", "rewritten", "repaired", "emptied"]) if (guard[k]) out.push(`guard.${k}`);
     for (const c of guard.caught ?? []) out.push(`guard.${c}`);
     // round 5: the reply prompt was filter-blocked, the child's own words passed the probe, and the retry on this turn alone answered
     if (guard.filter === "context") out.push("guard.content_filter_context");
@@ -106,6 +106,17 @@ export function reteachDecisionOf(next, { lessonId, legalMode }) {
   return decisionRecordStmt({ lessonId, turn: next.turn, pointId: "RT-ARM", options: Array.isArray(d.offerPick) && d.offerPick.length ? d.offerPick : [d.armId],
     chosen: d.armId, chosenBy: String(d.chosenBy ?? "unknown"), randomised, propensity: null,
     seedRef: randomised ? `${next.seed ?? ""}:reteach:${d.skillId ?? ""}` : null, reasons: ["move.reteach"], legalMode });
+}
+
+/** round 7 (Learning patch 008): the explain format chosen this turn (director/state.js formatFor) as a decision record, or null.
+ * options carry what the night join (learner/formats.js joinFormatOutcomes) reads: eligible, skillId, topicType, band. */
+export function formatDecisionOf(next, { lessonId, legalMode }) {
+  const d = next?.formatDecision;
+  if (!d || d.turn !== next.turn || !d.skillId || !d.format) return null;
+  return decisionRecordStmt({ lessonId, turn: next.turn, pointId: d.pointId ?? "explain_format",
+    options: { eligible: d.eligible ?? [], skillId: d.skillId, topicType: d.topicType ?? null, band: d.band ?? null },
+    chosen: d.format, chosenBy: d.explored ? "explore" : "thompson", randomised: true, propensity: d.propensity ?? null,
+    seedRef: `${lessonId}:${d.skillId}`, reasons: ["move.explain"], legalMode });
 }
 
 /**

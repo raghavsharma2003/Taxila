@@ -1,0 +1,1712 @@
+{
+ "method": {
+  "date": "2026-10-21T12:58:08.424Z",
+  "label": "echo-floor-r2",
+  "turns": 14,
+  "lessons": 1,
+  "classLevel": 4,
+  "base": "in-process",
+  "root": "/home/user/Taxila/",
+  "host": "vm",
+  "loadAvg": [
+   0.04,
+   0.05
+  ],
+  "wallS": 203,
+  "prefetch": true,
+  "ack": true,
+  "turnAudio": false,
+  "debounceMs": 250,
+  "script": "items",
+  "stt": "taxila-live-transcribe",
+  "env": {
+   "TAXILA_TURN_PREFETCH": "on",
+   "TAXILA_ACK": "(default on)",
+   "AZURE_SPEECH_REGION": null,
+   "TAXILA_DB": "test"
+  },
+  "note": "synthetic child speech (gpt-4o-mini-tts ×1.2 pitch); WebSocket transcription from this US sandbox to eastus2; sound = first byte (or the ack's play time) + 60 ms lead + 50 ms NOMINAL output latency; device rules simulated"
+ },
+ "summary": {
+  "endpoint": {
+   "n": 14,
+   "p50": 1065,
+   "p90": 1149,
+   "min": 909,
+   "max": 1623
+  },
+  "stt": {
+   "n": 14,
+   "p50": 530,
+   "p90": 1125,
+   "min": 447,
+   "max": 1421
+  },
+  "lastDeltaAfterEnd": {
+   "n": 14,
+   "p50": 949,
+   "p90": 1246,
+   "min": 568,
+   "max": 1545
+  },
+  "finalAfterEnd": {
+   "n": 14,
+   "p50": 1627,
+   "p90": 2554,
+   "min": 1400,
+   "max": 2748
+  },
+  "turnAfterEnd": {
+   "n": 14,
+   "p50": 1627,
+   "p90": 2554,
+   "min": 1400,
+   "max": 2749
+  },
+  "prefetchAfterEnd": {
+   "n": 14,
+   "p50": 1199,
+   "p90": 1497,
+   "min": 818,
+   "max": 1794
+  },
+  "director": {
+   "n": 14,
+   "p50": 3109,
+   "p90": 5610,
+   "min": 487,
+   "max": 5681
+  },
+  "tts": {
+   "n": 14,
+   "p50": 262,
+   "p90": 354,
+   "min": 188,
+   "max": 382
+  },
+  "replyFirstByte": {
+   "n": 14,
+   "p50": 5299,
+   "p90": 7500,
+   "min": 2877,
+   "max": 7529
+  },
+  "replySound": {
+   "n": 14,
+   "p50": 5409,
+   "p90": 7610,
+   "min": 3174,
+   "max": 7639
+  },
+  "ackSoundAfterEnd": {
+   "n": 1,
+   "p50": 2182,
+   "p90": 2182,
+   "min": 2182,
+   "max": 2182
+  },
+  "ackReadyAfterEnd": {
+   "n": 1,
+   "p50": 2072,
+   "p90": 2072,
+   "min": 2072,
+   "max": 2072
+  },
+  "firstSound": {
+   "n": 14,
+   "p50": 5409,
+   "p90": 7610,
+   "min": 2182,
+   "max": 7639
+  },
+  "serverMs": {
+   "n": 14,
+   "p50": 3104,
+   "p90": 5601,
+   "min": 484,
+   "max": 5677
+  },
+  "firstSoundGraded": {
+   "n": 3,
+   "p50": 5409,
+   "p90": 7610,
+   "min": 2182,
+   "max": 7610
+  },
+  "firstSoundNonAnswer": {
+   "n": 11,
+   "p50": 4856,
+   "p90": 7209,
+   "min": 3174,
+   "max": 7639
+  },
+  "ackReadyRight": {
+   "n": 1,
+   "p50": 2072,
+   "p90": 2072,
+   "min": 2072,
+   "max": 2072
+  },
+  "ackReadyWrong": null,
+  "ack": {
+   "played": 1,
+   "graded": 3,
+   "of": 14,
+   "reasons": {
+    "204:token_screen": 22,
+    "204:not_an_answer": 4,
+    "204:late": 2,
+    "played": 1,
+    "204:consecutive": 1
+   }
+  },
+  "speculation": {
+   "hit": 4,
+   "of": 13
+  },
+  "prefetchAdopted": {
+   "yes": 14,
+   "of": 14,
+   "sent": 30,
+   "accepted": 30,
+   "missingRoute": 0,
+   "failed": 0
+  },
+  "skippedTurns": [
+   {
+    "lesson": 0,
+    "turn": 1,
+    "why": "transcripts incomplete after 25 s"
+   }
+  ],
+  "rewrites": 6,
+  "azure": {
+   "calls": 225,
+   "byDep": {
+    "taxila-fast": {
+     "calls": 82,
+     "s429": 0,
+     "other": 0
+    },
+    "gpt-4o-mini-tts": {
+     "calls": 29,
+     "s429": 0,
+     "other": 0
+    },
+    "/openai/v1/realtime/client_secrets": {
+     "calls": 2,
+     "s429": 0,
+     "other": 0
+    },
+    "grok-4-1-fast-non-reasoning": {
+     "calls": 84,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-gpt6-luna": {
+     "calls": 7,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-fast-bg": {
+     "calls": 1,
+     "s429": 0,
+     "other": 0
+    },
+    "/contentsafety/text:analyze": {
+     "calls": 15,
+     "s429": 0,
+     "other": 0
+    },
+    "taxila-brain": {
+     "calls": 1,
+     "s429": 0,
+     "other": 0
+    },
+    "DeepSeek-V4-Pro": {
+     "calls": 4,
+     "s429": 0,
+     "other": 0
+    }
+   },
+   "status": {
+    "200": 225
+   }
+  }
+ },
+ "rows": [
+  {
+   "lesson": 0,
+   "turn": 2,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aur phir do flat sides…",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1098,
+   "stt": 529,
+   "turnAfterEnd": 1627,
+   "lastDeltaAfterEnd": 1101,
+   "finalAfterEnd": 1627,
+   "prefetchAfterEnd": 1350,
+   "prefetchCount": 2,
+   "director": 5610,
+   "tts": 291,
+   "replyFirstByte": 7529,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 7639,
+   "firstSound": 7639,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 1 · minute 0.7 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase warmup · turn 1 · minute 0.7]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 279,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 503,
+    "parallel": null
+   },
+   "serverMs": 5601,
+   "marks": {
+    "ctx": 39,
+    "kit": 40,
+    "prefetch_adopted": 46,
+    "classified": 1111,
+    "noted": 1614,
+    "planned": 1618,
+    "kernel": 1626,
+    "replied": 5546,
+    "stored": 5601
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 714,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1344,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1519,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 2376,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 56,
+   "engine": null,
+   "guard": "thinkq,rewritten",
+   "guardDetail": {
+    "firstDraft": "Aage socho: dabbe ki do flat sides milti hain—us milne wali line ko kya kahoge?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस",
+     "atAfterEnd": 449
+    },
+    {
+     "text": "अच्छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1350
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 3,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया, दो faces जहाँ मिलते हैं वो edge है।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Aur jahan teen ya zyada edges milte hain, woh corner kehlata hai—ab box mein corners gino.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1063,
+   "stt": 485,
+   "turnAfterEnd": 1548,
+   "lastDeltaAfterEnd": 993,
+   "finalAfterEnd": 1548,
+   "prefetchAfterEnd": 1243,
+   "prefetchCount": 2,
+   "director": 2620,
+   "tts": 262,
+   "replyFirstByte": 4430,
+   "ackStatus": [
+    "204:not_an_answer",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4540,
+   "firstSound": 4540,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 2 · minute 0.9 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase warmup · turn 2 · minute 0.9]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 295,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 2615,
+   "marks": {
+    "ctx": 39,
+    "kit": 40,
+    "prefetch_adopted": 44,
+    "classified": 915,
+    "noted": 915,
+    "planned": 917,
+    "kernel": 918,
+    "replied": 2570,
+    "stored": 2615
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 718,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1081,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1165,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1637,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 47,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ, समझ गया, दो faces जहाँ मिलते हैं",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "हाँ, समझ गया, दो faces जहाँ मिलते हैं वो edge है।",
+     "atAfterEnd": 1243
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 4,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Haan, jahan edges milti hain, wahi…",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1103,
+   "stt": 752,
+   "turnAfterEnd": 1856,
+   "lastDeltaAfterEnd": 1246,
+   "finalAfterEnd": 1856,
+   "prefetchAfterEnd": 1497,
+   "prefetchCount": 3,
+   "director": 4861,
+   "tts": 382,
+   "replyFirstByte": 7099,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 7209,
+   "firstSound": 7209,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 3 · minute 1.1 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase warmup · turn 3 · minute 1.1]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 335,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 4851,
+   "marks": {
+    "ctx": 38,
+    "kit": 38,
+    "prefetch_adopted": 42,
+    "classified": 1732,
+    "noted": 1732,
+    "planned": 1735,
+    "kernel": 1741,
+    "replied": 4798,
+    "stored": 4851
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1093,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1675,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 2029,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1493,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1541,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 57,
+   "engine": null,
+   "guard": "thinkq,rewritten",
+   "guardDetail": {
+    "firstDraft": "Bas aage bolo: kitni edges milti hain?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज",
+     "atAfterEnd": 593
+    },
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज मिलते",
+     "atAfterEnd": 1013
+    },
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज मिलते हैं।",
+     "atAfterEnd": 1497
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 5,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे के फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Face ke baad, do faces jahan milte hain…",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1051,
+   "stt": 477,
+   "turnAfterEnd": 1529,
+   "lastDeltaAfterEnd": 908,
+   "finalAfterEnd": 1529,
+   "prefetchAfterEnd": 1157,
+   "prefetchCount": 2,
+   "director": 2396,
+   "tts": 354,
+   "replyFirstByte": 4279,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4389,
+   "firstSound": 4389,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 4 · minute 1.4 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase warmup · turn 4 · minute 1.4]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 366,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 2391,
+   "marks": {
+    "ctx": 46,
+    "kit": 46,
+    "prefetch_adopted": 49,
+    "classified": 830,
+    "noted": 830,
+    "planned": 832,
+    "kernel": 834,
+    "replied": 2349,
+    "stored": 2391
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 730,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1090,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1146,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1510,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 45,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे के फ्लैट साइड को फेस",
+     "atAfterEnd": 548
+    },
+    {
+     "text": "अच्छा, तो डब्बे के फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1157
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 6,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया, दो फेसेस जहाँ मिलते हैं वो एज है।",
+   "deltaEqualsFinal": true,
+   "move": "hook",
+   "reply": "Bilkul Aarav, do faces jahan milte hain, us line ko edge kehte hain. Ab ek edge ungli se dikhao.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1033,
+   "stt": 652,
+   "turnAfterEnd": 1685,
+   "lastDeltaAfterEnd": 805,
+   "finalAfterEnd": 1685,
+   "prefetchAfterEnd": 1055,
+   "prefetchCount": 1,
+   "director": 1113,
+   "tts": 266,
+   "replyFirstByte": 3064,
+   "ackStatus": [
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3174,
+   "firstSound": 3174,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 608,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 436,
+    "parallel": null
+   },
+   "serverMs": 1107,
+   "marks": {
+    "ctx": 43,
+    "kit": 44,
+    "prefetch_adopted": 46,
+    "classified": 539,
+    "noted": 975,
+    "planned": 979,
+    "kernel": 980,
+    "replied": 1062,
+    "stored": 1107
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 755,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1100,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1533,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 46,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ, समझ गया, दो फेसेस जहाँ मिलते हैं वो एज है।",
+     "atAfterEnd": 1055
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 7,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेस मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "explain",
+   "reply": "Cricket ball par ek milan-bindu socho; jahan lines milti hain, use corner kehte hain. Tum ek corner kahan dekhte ho?",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1065,
+   "stt": 530,
+   "turnAfterEnd": 1595,
+   "lastDeltaAfterEnd": 876,
+   "finalAfterEnd": 1595,
+   "prefetchAfterEnd": 1125,
+   "prefetchCount": 2,
+   "director": 5190,
+   "tts": 188,
+   "replyFirstByte": 6973,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 7083,
+   "firstSound": 7083,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 474,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 69,
+    "parallel": null
+   },
+   "serverMs": 5184,
+   "marks": {
+    "ctx": 41,
+    "kit": 42,
+    "prefetch_adopted": 53,
+    "classified": 1246,
+    "noted": 1315,
+    "planned": 1321,
+    "kernel": 1322,
+    "replied": 5084,
+    "stored": 5184
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1577,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1666,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1451,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 2237,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 88,
+   "engine": null,
+   "guard": "leak,flat,rewritten",
+   "guardDetail": {
+    "firstDraft": "Haan Aarav, jahan teen ya zyada edges milti hain, us point ko corner kehte hain. Box mein ek corner gino.",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेस",
+     "atAfterEnd": 522
+    },
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेस मिलते हैं।",
+     "atAfterEnd": 1125
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 8,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Ab usi dabbe mein, faces ke beech ki line ko dekho aur uska naam bolo.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1073,
+   "stt": 936,
+   "turnAfterEnd": 2009,
+   "lastDeltaAfterEnd": 868,
+   "finalAfterEnd": 2009,
+   "prefetchAfterEnd": 1117,
+   "prefetchCount": 3,
+   "director": 3109,
+   "tts": 346,
+   "replyFirstByte": 5464,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 5574,
+   "firstSound": 5574,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+upcoming+verdict+module [spec: - worked example: Count the faces, edges and corners of a matchbox. || real: ]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 919,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 3104,
+   "marks": {
+    "ctx": 70,
+    "kit": 71,
+    "prefetch_adopted": 75,
+    "classified": 1059,
+    "noted": 1059,
+    "planned": 1062,
+    "kernel": 1062,
+    "replied": 3058,
+    "stored": 3104
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1800,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1861,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1903,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1990,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 49,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "छा, तो डब्बे की फ्लैट साइड को फेस",
+     "atAfterEnd": 444
+    },
+    {
+     "text": "छा, तो डब्बे की फ्लैट साइड को फेस कहते",
+     "atAfterEnd": 849
+    },
+    {
+     "text": "छा, तो डब्बे की फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1117
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 9,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया, डो फेसेस जहाँ मिलते हैं वो एज है।",
+   "deltaEqualsFinal": true,
+   "move": "worked_example",
+   "reply": "Haan Aarav, do faces ki milne wali line edge hoti hai. Matchbox mein ek edge dikhao.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1623,
+   "stt": 1125,
+   "turnAfterEnd": 2749,
+   "lastDeltaAfterEnd": 1545,
+   "finalAfterEnd": 2748,
+   "prefetchAfterEnd": 1794,
+   "prefetchCount": 3,
+   "director": 1749,
+   "tts": 249,
+   "replyFirstByte": 4746,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4856,
+   "firstSound": 4856,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions [spec:  || real: - on screen now (values to use when you point at the screen; never what is hidden): board · labels ?D shape | faces | ed]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 941,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 54,
+    "parallel": null
+   },
+   "serverMs": 1740,
+   "marks": {
+    "ctx": 68,
+    "kit": 68,
+    "prefetch_adopted": 73,
+    "classified": 76,
+    "noted": 129,
+    "planned": 150,
+    "kernel": 151,
+    "replied": 1622,
+    "stored": 1740
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 726,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 924,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1439,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 83,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ, समझ गया, डो फेसेस जहाँ मिलते हैं",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "हाँ, समझ गया, डो फेसेस जहाँ मिलते हैं वो एज",
+     "atAfterEnd": 1026
+    },
+    {
+     "text": "हाँ, समझ गया, डो फेसेस जहाँ मिलते हैं वो एज है।",
+     "atAfterEnd": 1794
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 10,
+   "said": "Achha, aur corner woh point hai na jahan edges milte hain?",
+   "asked": null,
+   "heard": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज मिलते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Bilkul Aarav, jahan edges milte hain, woh point corner kehlata hai. Ab dabbe ke corners ginne ki koshish karo.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1040,
+   "stt": 740,
+   "turnAfterEnd": 1780,
+   "lastDeltaAfterEnd": 951,
+   "finalAfterEnd": 1780,
+   "prefetchAfterEnd": 1201,
+   "prefetchCount": 2,
+   "director": 2511,
+   "tts": 249,
+   "replyFirstByte": 4540,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 4650,
+   "firstSound": 4650,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+upcoming+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase practice · turn 9 · minute 2.4 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 9 · minute 2.4]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 579,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 116,
+    "parallel": null
+   },
+   "serverMs": 2508,
+   "marks": {
+    "ctx": 38,
+    "kit": 39,
+    "prefetch_adopted": 43,
+    "classified": 595,
+    "noted": 711,
+    "planned": 714,
+    "kernel": 715,
+    "replied": 2459,
+    "stored": 2508
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 996,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1131,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1740,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 52,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज",
+     "atAfterEnd": 546
+    },
+    {
+     "text": "अच्छा, और कॉर्नर वो पॉइंट है ना जहाँ एजेज मिलते हैं।",
+     "atAfterEnd": 1201
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 11,
+   "said": "Achha, toh dabbe ki flat side ko face kehte hain?",
+   "asked": null,
+   "heard": "अच्छा, तो डब्बे के फ्लैट साइड को फेस कहते हैं।",
+   "deltaEqualsFinal": true,
+   "move": "repair",
+   "reply": "Face ke kinaare wali line ko edge bolo, Aarav.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1052,
+   "stt": 529,
+   "turnAfterEnd": 1581,
+   "lastDeltaAfterEnd": 949,
+   "finalAfterEnd": 1581,
+   "prefetchAfterEnd": 1199,
+   "prefetchCount": 3,
+   "director": 4397,
+   "tts": 280,
+   "replyFirstByte": 6259,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 6369,
+   "firstSound": 6369,
+   "speculation": "miss",
+   "specDiffers": [
+    "instructions+lastMove+upcoming+verdict [spec: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase practice · turn 10 · minute 2.5 || real: - topic: Faces, edges and corners of 3D shapes (class 4 maths) · phase teach · turn 10 · minute 2.5]"
+   ],
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 383,
+   "note": {
+    "nonAnswer": true,
+    "intent": "thinking_aloud",
+    "waitedMs": 60,
+    "parallel": null
+   },
+   "serverMs": 4392,
+   "marks": {
+    "ctx": 41,
+    "kit": 42,
+    "prefetch_adopted": 47,
+    "classified": 1542,
+    "noted": 1602,
+    "planned": 1605,
+    "kernel": 1606,
+    "replied": 4335,
+    "stored": 4392
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1566,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1877,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1510,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1212,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 61,
+   "engine": null,
+   "guard": "screen,thinkq,rewritten",
+   "guardDetail": {
+    "firstDraft": "Ab ek face ko chhoo kar, uske kinaare wali line ko edge bolo. Tum kya dekhte ho?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "अच्छा, तो डब्बे के फ्लैट साइड को",
+     "atAfterEnd": 402
+    },
+    {
+     "text": "अच्छा, तो डब्बे के फ्लैट साइड को फेस",
+     "atAfterEnd": 671
+    },
+    {
+     "text": "अच्छा, तो डब्बे के फ्लैट साइड को फेस कहते हैं।",
+     "atAfterEnd": 1199
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 12,
+   "said": "Haan, samajh gaya. Do faces jahan milte hain woh edge hai.",
+   "asked": null,
+   "heard": "हाँ, समझ गया, दो faces जहाँ मिलते हैं, वो edge है।",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Faces, edges aur corners ki pehchaan ab saaf ho rahi hai. Khaali jagah bharo: Faces: top and bottom, front and back, left and right, so ___ faces.",
+   "cls": "no_evidence/model",
+   "verdict": null,
+   "endpoint": 1133,
+   "stt": 1421,
+   "turnAfterEnd": 2554,
+   "lastDeltaAfterEnd": 965,
+   "finalAfterEnd": 2554,
+   "prefetchAfterEnd": 1216,
+   "prefetchCount": 2,
+   "director": 487,
+   "tts": 250,
+   "replyFirstByte": 3290,
+   "ackStatus": [
+    "204:late",
+    "204:not_an_answer"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 3400,
+   "firstSound": 3400,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 1325,
+   "note": {
+    "nonAnswer": true,
+    "intent": "answer_correct",
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 484,
+   "marks": {
+    "ctx": 38,
+    "kit": 38,
+    "prefetch_adopted": 41,
+    "classified": 43,
+    "noted": 44,
+    "planned": 126,
+    "kernel": 127,
+    "replied": 438,
+    "stored": 484
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 809,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 949,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1229,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1632,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 50,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "हाँ, समझ गया, दो faces जहाँ मिलते हैं, वो",
+     "atAfterEnd": 603
+    },
+    {
+     "text": "हाँ, समझ गया, दो faces जहाँ मिलते हैं, वो edge है।",
+     "atAfterEnd": 1216
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 13,
+   "said": "chhe faces.",
+   "asked": "fade:1",
+   "heard": "छह faces.",
+   "deltaEqualsFinal": true,
+   "move": "practice",
+   "reply": "Haan Aarav, cube ke total six faces hote hain. Cube shape ke stage prop par teen edges ek point par milti hain. Woh point face, edge ya corner hai?",
+   "cls": "correct/model",
+   "verdict": "correct",
+   "endpoint": 1063,
+   "stt": 492,
+   "turnAfterEnd": 1556,
+   "lastDeltaAfterEnd": 568,
+   "finalAfterEnd": 1556,
+   "prefetchAfterEnd": 818,
+   "prefetchCount": 2,
+   "director": 1088,
+   "tts": 233,
+   "replyFirstByte": 2877,
+   "ackStatus": [
+    "204:late",
+    "ack:छह faces"
+   ],
+   "ackPhrase": "छह faces",
+   "ackKind": "echo",
+   "ackReadyAfterEnd": 2072,
+   "ackDecidedMs": 1213,
+   "ackPlayed": true,
+   "ackSoundAfterEnd": 2182,
+   "ackClipMs": 1550,
+   "replySound": 3972,
+   "firstSound": 2182,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 736,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 0,
+    "parallel": null
+   },
+   "serverMs": 1083,
+   "marks": {
+    "ctx": 41,
+    "kit": 41,
+    "prefetch_adopted": 47,
+    "classified": 443,
+    "noted": 443,
+    "planned": 449,
+    "kernel": 449,
+    "replied": 1006,
+    "stored": 1083
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 753,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1125,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1588,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 79,
+   "engine": null,
+   "guard": "",
+   "guardDetail": null,
+   "partials": [
+    {
+     "text": "छह",
+     "atAfterEnd": 401
+    },
+    {
+     "text": "छह faces.",
+     "atAfterEnd": 818
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 14,
+   "said": "Corner.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "Corner.",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Sahi, Aarav. Tumne kaise pehchaana ki teen edges jahan milti hain, woh corner hai?",
+   "cls": "correct/exact",
+   "verdict": "correct",
+   "endpoint": 909,
+   "stt": 491,
+   "turnAfterEnd": 1400,
+   "lastDeltaAfterEnd": 926,
+   "finalAfterEnd": 1400,
+   "prefetchAfterEnd": 1176,
+   "prefetchCount": 1,
+   "director": 3700,
+   "tts": 199,
+   "replyFirstByte": 5299,
+   "ackStatus": [
+    "204:consecutive"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 5409,
+   "firstSound": 5409,
+   "speculation": "none",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 120,
+   "note": null,
+   "serverMs": 3697,
+   "marks": {
+    "ctx": 37,
+    "kit": 38,
+    "prefetch_adopted": 44,
+    "classified": 44,
+    "planned": 148,
+    "kernel": 150,
+    "replied": 3617,
+    "stored": 3697
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1998,
+     "status": 200
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1456,
+     "status": 200
+    }
+   ],
+   "ttsPrewarmedMs": 81,
+   "engine": null,
+   "guard": "script,rewritten",
+   "guardDetail": {
+    "firstDraft": "Sahi, Aarav. Tumne pehchaana ki teen edges jahan milti hain, woh corner hota hai. Ab batao, tumhe kaise pata चला ki woh corner hai?",
+    "afterRewrite": [],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": false
+   },
+   "partials": [
+    {
+     "text": "Corner.",
+     "atAfterEnd": 1176
+    }
+   ]
+  },
+  {
+   "lesson": 0,
+   "turn": 15,
+   "said": "Kyunki maine har taraf gina, upar neeche, aage peeche, daayen baayen.",
+   "asked": "c4-maths-ch01-t01-rl-o1",
+   "heard": "क्योंकि मैंने हर तरफ गिना, ऊपर-नीचे, आगे-पीछे, दाएँ-बाएँ।",
+   "deltaEqualsFinal": true,
+   "move": "probe",
+   "reply": "Bilkul Aarav, tumne har direction ki edges gin kar sahi method lagaya. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+   "cls": "correct/model",
+   "verdict": null,
+   "endpoint": 1149,
+   "stt": 447,
+   "turnAfterEnd": 1596,
+   "lastDeltaAfterEnd": 639,
+   "finalAfterEnd": 1596,
+   "prefetchAfterEnd": 888,
+   "prefetchCount": 2,
+   "director": 5681,
+   "tts": 222,
+   "replyFirstByte": 7500,
+   "ackStatus": [
+    "204:token_screen",
+    "204:token_screen"
+   ],
+   "ackPhrase": null,
+   "ackKind": null,
+   "ackReadyAfterEnd": null,
+   "ackDecidedMs": null,
+   "ackPlayed": false,
+   "ackSoundAfterEnd": null,
+   "ackClipMs": null,
+   "replySound": 7610,
+   "firstSound": 7610,
+   "speculation": "hit",
+   "specDiffers": null,
+   "specExact": false,
+   "early": null,
+   "prefetched": true,
+   "prefetchMiss": null,
+   "prefetchAheadMs": 712,
+   "note": {
+    "nonAnswer": false,
+    "intent": null,
+    "waitedMs": 1,
+    "parallel": null
+   },
+   "serverMs": 5677,
+   "marks": {
+    "ctx": 79,
+    "kit": 79,
+    "prefetch_adopted": 88,
+    "classified": 1304,
+    "noted": 1305,
+    "planned": 1309,
+    "kernel": 1310,
+    "replied": 5595,
+    "stored": 5677
+   },
+   "calls": [
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1517,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "grok-4-1-fast-non-reasoning",
+     "ms": 1927,
+     "status": 200,
+     "pf": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 2391,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 2171,
+     "status": 200,
+     "spec": true
+    },
+    {
+     "k": "chat",
+     "dep": "taxila-fast",
+     "ms": 1541,
+     "status": 200,
+     "spec": true
+    }
+   ],
+   "ttsPrewarmedMs": 85,
+   "engine": null,
+   "guard": "noconfirm,rewritten",
+   "guardDetail": {
+    "firstDraft": "Tumne cube ki sabhi directions gin kar corner pehchaana. School display ke liye Meera sticks se cube ka frame banati hai. Kisi bhi ek corner par kitni stick-edges milti hain?",
+    "afterRewrite": [
+     "long"
+    ],
+    "rewritten": true,
+    "replaced": false,
+    "repaired": true
+   },
+   "partials": [
+    {
+     "text": "क्योंकि मैंने हर तरफ गिना, ऊपर-नीचे, आगे-पीछे",
+     "atAfterEnd": 402
+    },
+    {
+     "text": "क्योंकि मैंने हर तरफ गिना, ऊपर-नीचे, आगे-पीछे, दाएँ-बाएँ।",
+     "atAfterEnd": 888
+    }
+   ]
+  }
+ ]
+}

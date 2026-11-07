@@ -1,0 +1,48 @@
+From: G Platform (round 7, gate time; main 2026-11-05)
+Subject: unref the DB-probe timeout timer: each suite sat idle ~45 s after its tests
+
+The reachability probe races the query against setTimeout(..., 45_000) and never clears or unrefs the timer, so
+the process stays alive for the full 45 s after the tests finish (the probe itself answers in < 1 s). .unref()
+keeps the same probe timeout but no longer holds the process open. No assertion changes. Measured on a TEST
+branch, one suite per process: learner-db 45.4 -> 1.9 s, comprehension-db 45.2 -> 0.9 s, comprehension-w1c-db
+45.2 -> 5.1 s, relational-db 45.2 -> 1.2 s (all still green). Batching / concurrency turned out unnecessary.
+
+diff --git a/tests/comprehension-db.test.mjs b/tests/comprehension-db.test.mjs
+index 1b31a854..d089bca8 100644
+--- a/tests/comprehension-db.test.mjs
++++ b/tests/comprehension-db.test.mjs
+@@ -24,7 +24,7 @@ describe("comprehension store on Neon", { skip: !sql && "no TEST_DATABASE_URL (a
+   const run = (stmts) => sql.transaction((t) => stmts.map((s) => t.query(s.text, s.params)));
+   before(async () => {
+     prevFetchFn = neonConfig.fetchFunction; neonConfig.fetchFunction = nativeFetch;
+-    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
++    reachable = await Promise.race([sql.query("select 1 from comp_facet_state limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
+     if (!reachable) return;
+     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'comp-test') returning id", [`comp-test+${randomUUID()}@test.invalid`]))[0].id;
+     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode", [guardian]))[0];
+diff --git a/tests/comprehension-w1c-db.test.mjs b/tests/comprehension-w1c-db.test.mjs
+index d85dab5f..04991f72 100644
+--- a/tests/comprehension-w1c-db.test.mjs
++++ b/tests/comprehension-w1c-db.test.mjs
+@@ -21,7 +21,7 @@ const S = await import(root + "server/comprehension/session.js");
+ const { outcomeIndex } = await import(root + "server/learner/kt/outcomes.js");
+ const out = {};
+ const quiet = console.info; console.info = () => {};
+-const reach = await Promise.race([q("select 1 from pending_grade limit 1").then(() => true, (e) => e.message), new Promise((r) => setTimeout(() => r("timeout"), 45000))]);
++const reach = await Promise.race([q("select 1 from pending_grade limit 1").then(() => true, (e) => e.message), new Promise((r) => setTimeout(() => r("timeout"), 45000).unref())]);
+ if (reach !== true) { console.log(JSON.stringify({ skip: String(reach) })); process.exit(0); }
+ const g = (await q("insert into guardian (email, pw_hash, name) values ($1, 'x', 'w1c-db') returning id", ["w1c-db+" + randomUUID() + "@taxila.test"]))[0].id;
+ let realG = null;
+diff --git a/tests/learner-db.test.mjs b/tests/learner-db.test.mjs
+index 47b9f747..9a4f4ea7 100644
+--- a/tests/learner-db.test.mjs
++++ b/tests/learner-db.test.mjs
+@@ -37,7 +37,7 @@ describe("learner writer on Neon", { skip: !sql && "no TEST_DATABASE_URL (a Neon
+   before(async () => {
+     prevFetchFn = neonConfig.fetchFunction;
+     neonConfig.fetchFunction = nativeFetch;
+-    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
++    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
+     if (!reachable) return;
+     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'learner-test') returning id", [`learner-test+${randomUUID()}@test.invalid`]))[0].id;
+     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode, class_level", [guardian]))[0];

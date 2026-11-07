@@ -71,7 +71,91 @@ export function topicIdByPrefix(id) {
  * teaching order. PURE over the loaded syllabus.
  * @returns {Topic | null}
  */
+// census 14.5 (F1 round 3, main: 38aad918 c4 "geometry padhao, triangles" was told geometry is not in class 5, which has
+// "Shapes and Patterns"): the everyday name of a subject a child asks for, and the words its chapters are titled with. Tried
+// in this order only when the child's own words name no topic; curated, never model output.
+// census 14.5 (F1 round 3, main: 38aad918 c4 "geometry padhao, triangles" was told geometry is not in class 5, which has
+// "Triangles and polygons"): the everyday name of a subject a child asks for, the school subjects it belongs to, and the
+// words its TOPIC titles use (never the chapter titles: "Animal Jumps" is a maths chapter). Tried in this order only when
+// the child's own words name no topic; curated, never model output.
+const SUBJECT_WORDS = [
+  ["geometry", ["maths"], ["triangle","shape","angle","polygon","circle","symmetr"]],
+  ["shapes", ["maths"], ["shape","triangle","polygon"]],
+  ["shape", ["maths"], ["shape","triangle"]],
+  ["triangles", ["maths"], ["triangle"]],
+  ["triangle", ["maths"], ["triangle"]],
+  ["आकार", ["maths"], ["shape"]],
+  ["त्रिभुज", ["maths"], ["triangle"]],
+  ["ज्यामिति", ["maths"], ["triangle","shape","angle"]],
+  ["aakar", ["maths"], ["shape"]],
+  ["trikon", ["maths"], ["triangle"]],
+  ["algebra", ["maths"], ["algebra","equation","variable","expression"]],
+  ["equations", ["maths"], ["equation"]],
+  ["बीजगणित", ["maths"], ["algebra","equation"]],
+  ["measurement", ["maths"], ["measur","length","metre"]],
+  ["naap", ["maths"], ["measur","length"]],
+  ["time", ["maths"], ["time","clock","second","minute","hour"]],
+  ["samay", ["maths"], ["time","clock"]],
+  ["money", ["maths"], ["money","rupee"]],
+  ["paise", ["maths"], ["money","rupee"]],
+  ["multiplication", ["maths"], ["multipl"]],
+  ["guna", ["maths"], ["multipl"]],
+  ["division", ["maths"], ["divid","division"]],
+  ["bhag", ["maths"], ["divid","division"]],
+  ["addition", ["maths"], ["add"]],
+  ["jod", ["maths"], ["add"]],
+  ["subtraction", ["maths"], ["subtract"]],
+  ["ghata", ["maths"], ["subtract"]],
+  ["graphs", ["maths"], ["graph","data"]],
+  ["graph", ["maths"], ["graph","data"]],
+  ["data", ["maths"], ["data","graph"]],
+  ["decimals", ["maths"], ["decimal"]],
+  ["numbers", ["maths"], ["number"]],
+  ["counting", ["maths"], ["count","number"]],
+  ["ginti", ["maths"], ["count","number"]],
+  ["plants", ["science","evs"], ["plant"]],
+  ["paudhe", ["science","evs"], ["plant"]],
+  ["पौधे", ["science","evs"], ["plant"]],
+  ["animals", ["science","evs"], ["animal"]],
+  ["janwar", ["science","evs"], ["animal"]],
+  ["जानवर", ["science","evs"], ["animal"]],
+  ["body", ["science","evs"], ["body","organ"]],
+  ["sharir", ["science","evs"], ["body"]],
+  ["water", ["science","evs"], ["water"]],
+  ["paani", ["science","evs"], ["water"]],
+  ["food", ["science","evs"], ["food"]],
+  ["khana", ["science","evs"], ["food"]],
+  ["electricity", ["science","evs"], ["electric","circuit"]],
+  ["bijli", ["science","evs"], ["electric","circuit"]],
+  ["magnets", ["science","evs"], ["magnet"]],
+  ["light", ["science","evs"], ["light","shadow"]],
+  ["sound", ["science","evs"], ["sound"]],
+  ["space", ["sst","science","evs"], ["planet","solar system","moon","star","eclipse"]],
+  ["planets", ["sst","science","evs"], ["planet","solar system"]],
+  ["solar system", ["sst","science","evs"], ["solar","planet"]],
+  ["stars", ["sst","science","evs"], ["star"]],
+  ["moon", ["sst","science","evs"], ["moon"]],
+  ["maps", ["sst","science","evs"], ["map"]],
+  ["directions", ["sst","science","evs"], ["direction","map"]],
+  ["weather", ["sst","science","evs"], ["weather","climate"]],
+  ["history", ["sst","science","evs"], ["histor","kingdom","empire"]],
+  ["itihas", ["sst","science","evs"], ["histor"]],
+];
+/** The topic of a child's class their everyday subject word means (SUBJECT_WORDS), or null. */
+function findTopicBySubject(query, classLevel) {
+  const q = String(query ?? "").toLowerCase().normalize("NFC").trim();
+  for (const [k, subjects, ws] of SUBJECT_WORDS) {
+    if (!new RegExp(`(?<![\\p{L}\\p{M}])${k}(?![\\p{L}\\p{M}])`, "u").test(q)) continue;
+    for (const w of ws) { const t = findTopicLiteral(w, classLevel, { fields: ["title"], subjects }); if (t) return t; }
+  }
+  return null;
+}
+
 export function findTopic(query, classLevel) {
+  return findTopicLiteral(query, classLevel) ?? findTopicBySubject(query, classLevel);
+}
+
+function findTopicLiteral(query, classLevel, { fields = ["title", "chapter"], subjects = SUBJECT_ORDER } = {}) {
   const words = String(query ?? "").toLowerCase().normalize("NFC").split(/[^\p{L}\p{N}]+/u).filter((w) => w.length >= 4);
   if (!words.length) return null;
   // round 3 fix: each word must START a word of the title ("fraction" → "Fractions"), never sit inside one ("time" was found
@@ -79,8 +163,8 @@ export function findTopic(query, classLevel) {
   const res = words.map((w) => new RegExp(`(?<![\\p{L}\\p{N}])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "u"));
   const has = (text) => { const t = String(text ?? "").toLowerCase(); return res.every((re) => re.test(t)); };
   const cls = Number(classLevel);
-  for (const field of ["title", "chapter"]) {
-    for (const subject of SUBJECT_ORDER) {
+  for (const field of fields) {
+    for (const subject of subjects) {
       for (const id of topicSequence(cls, subject)) {
         const t = getTopic(id);
         if (t && has(field === "title" ? t.title : t.chapter?.title)) return t;

@@ -9,7 +9,7 @@
 // point at nodes that were renamed, decisions lose the measurements they rested
 // on, and the file quietly turns into a story about the project rather than a
 // record of it. --check is what stops that.
-import { readFileSync, existsSync } from "fs";
+import { readFileSync, existsSync, readdirSync } from "fs";
 import { join } from "path";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -37,6 +37,25 @@ if (args.includes("--check")) {
     if (!byId.has(e.dst)) problems.push(`edge to missing node: ${e.dst}`);
     if (!g.relations[e.rel]) problems.push(`unknown relation "${e.rel}" (${e.src} -> ${e.dst})`);
   }
+  // A merged inbox file whose nodes never reached the graph. merge-inbox moves a
+  // file to inbox/merged/, which git records as a rename, so a stream that keeps
+  // editing the old path merges its new entries INTO merged/ where nothing reads
+  // them (rj-r7-inbox-file-reedited-after-merge: 28 nodes hidden this way).
+  const mergedDir = join(CTX, "inbox", "merged");
+  if (existsSync(mergedDir)) {
+    for (const f of readdirSync(mergedDir).filter((x) => x.endsWith(".json"))) {
+      let j;
+      try { j = JSON.parse(readFileSync(join(mergedDir, f), "utf8")); } catch { problems.push(`inbox/merged/${f}: not valid JSON`); continue; }
+      for (const n of j.nodes || []) {
+        if (n && n.id && !byId.has(n.id)) problems.push(`inbox/merged/${f}: node ${n.id} never reached the graph (re-merge it)`);
+      }
+    }
+  }
+  // Only the known documents live in context/. merge-inbox once wrote one file per character of a string `md`
+  // (rj-r7-inbox-md-string-per-char): 1,309 files that nothing reads and the check never saw.
+  const KNOWN = new Set(["architecture.md", "decisions.md", "measurements.md", "rejected.md", "open.md", "graph.json", "inbox"]);
+  const stray = readdirSync(CTX).filter((x) => !KNOWN.has(x));
+  if (stray.length) problems.push(`context/ holds ${stray.length} unexpected file(s), e.g. ${stray.slice(0, 3).join(", ")} (only the known documents belong here)`);
   // A decision or rejection that no prose file mentions is a title with nothing
   // behind it — exactly the kind of entry that reads as knowledge and is not.
   for (const n of g.nodes) {

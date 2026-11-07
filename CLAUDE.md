@@ -14,8 +14,16 @@ child's whole learning day and reports deeply to parents.
   APIs (ElevenLabs, Sarvam, Simli, HeyGen, Suno, …) — research may cite them, builds may not call them.
   Neon Postgres is allowed (owner's separate Neon grant). Hosting moves from Vercel to Azure Container Apps.
 - **Model policy:** main loop and every build/review agent on the top model at high effort; no downgrades.
-- **Compliance is deprioritised** for now — but the child-safety floor (never deny being an AI, Childline 1098 /
-  Tele-MANAS 14416, no romance/companion register, safeguarding hand-off) is product, not compliance, and stays.
+- **Build first; test, safety and compliance later (owner, 2026-10-27).** The product (architecture, stack, UI/UX,
+  backend) is not final, so do not spend effort on safety batteries, compliance or large test runs now. Order: build
+  the full product with all features → test it ourselves and iterate on internal feedback until it fully works → only
+  before real users, do security / safety / compliance. Existing safety code stays as it is (don't remove it, don't
+  extend or measure it). Unit tests and the build gates still run on code changes.
+- **Azure usage (2026-10-27):** keep it from being unnecessarily high; ask the owner before anything that needs high
+  usage (big batteries, bulk generation). Guidance, not a ban.
+- **Judges and evaluation use Claude (2026-10-27):** rubric scoring, sim-lab judging and blind judging are done by the
+  Claude Code session itself, not by Foundry models on Azure.
+- Start here after the 2026-10-27 handoff: `HANDOFF.md`.
 
 ## Read before changing anything
 `context/` is the project memory: `graph.json` (index), `decisions.md` (with reversal conditions),
@@ -34,12 +42,15 @@ grades — classify against verified keys; identity is an authenticated child id
 - `shared/contracts.ts` — the seams between client, server and content
 - `data/curriculum/` NCERT syllabus graph; `data/kits/` verified teaching kits (blind-solved answer keys)
 - `docs/research/**` research; `docs/harvest/**` what was inherited from earlier products
-- `db/migrations/` (apply with `node scripts/migrate.mjs`), `evals/` measured harnesses
+- `db/migrations/` (apply with `node scripts/migrate.mjs`: the test branch by default, `--prod` for production), `evals/` measured harnesses
 
 ## Deploy
 `git push` first (ACR builds from GitHub), then `node scripts/deploy-azure.mjs` → Azure Container Apps `taxila-web`.
 The Vercel project `taxila` is paused (Azure-only directive); `api/[...route].js` is kept only as a shim.
 
 ## Gates
-`npx tsc -b && npx vite build && npm test` must pass before any commit that touches code. Secrets live only in
-gitignored `.env.local` (and the hosting provider's secret store) — never commit or print them.
+`npx tsc -b && npx vite build && npm run test:all` must pass before any commit that touches code (`test:all` runs every
+suite in its own process, 4 at a time: ~9 min instead of ~32; `tests/test-isolation.test.mjs` keeps module-level env and
+global writes out of tests). The main loop's integration additionally runs single-process `DATABASE_URL= npm test`, which
+is what catches state leaking between files. Secrets live only in gitignored `.env.local` (and the hosting provider's
+secret store) — never commit or print them.

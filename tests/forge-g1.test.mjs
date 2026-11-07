@@ -6,8 +6,11 @@ import { describe, test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 
-process.env.FORGE_DB_CACHE = "off";
-process.env.FORGE_BLOB = "off";
+// npm test runs every file in one process: the env this file needs is set for its tests only, and put back after
+const ENV0 = { FORGE_DB_CACHE: process.env.FORGE_DB_CACHE, FORGE_BLOB: process.env.FORGE_BLOB };
+const restoreEnv = (saved) => { for (const [k, v] of Object.entries(saved)) { if (v === undefined) delete process.env[k]; else process.env[k] = v; } };
+before(() => { process.env.FORGE_DB_CACHE = "off"; process.env.FORGE_BLOB = "off"; });
+after(() => restoreEnv(ENV0));
 
 const K = await import("../server/forge/kitmath.js");
 const { activitiesFor, barsActivity, choiceActivity, orderActivity, scrambleActivity, diagnosticItems } = await import("../server/forge/derive.js");

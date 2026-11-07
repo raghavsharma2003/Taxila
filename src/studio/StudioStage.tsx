@@ -5,13 +5,11 @@
 // centred. Every Studio artifact (a whiteboard script, a built game or animation, a skeleton, an image) renders into that
 // box and nowhere else: the box clips (`contain: strict`), the tray never grows or scrolls for it, and a resize refits it.
 //
-// The moment (filled by W2-H), at constant tray height:
-//   skeleton_shown  the sketch draws itself in pencil strokes in the accent colour (600 ms), a caption chip
-//                   "{T} is making this for you" (rotated per lesson)
-//   building        a watercolour wash fills in behind the pencil: the streamed partial, sanitised, in a script-less
-//                   sandboxed frame at 60% opacity, desaturated, inert (decoration, never interaction)
-//   ready           a tiny sparkle at the corner, no sound
-//   revealed        the veil lifts (300 ms), the pencil fades, scale 0.98 → 1.0, the first target pulses once
+// The moment, at constant tray height:
+//   planning / skeleton_shown / building / ready   round 7 (C1 app-studio-no-build-state, OWNER-RESET): the child never
+//                   sees a piece being made: no "{T} is making this" chip, no pencil sketch, no streamed-partial veil, no
+//                   sparkle. The stage keeps the last finished piece it showed (inert), or the calm ground.
+//   revealed        the finished piece appears (scale 0.98 → 1.0), the first target pulses once
 //   in_use          full interaction; answers graded by the host
 //   fallback_shown  the skeleton itself is the activity (correct, plain), host-graded; nothing says a build failed
 // Reduced motion (OS setting or the younger band's calm mode): no pencil animation, cross-fades only.
@@ -21,25 +19,19 @@
 // archetype is not offered to this child for a week), behind one small corner button.
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { STAGE_DEFAULT, type BeatCard, type StudioArtifact, type StudioSlot } from "../../shared/studio.ts";
-import { fitStage, validStage, type StageFit } from "./fit.ts";
+import { validStage, type StageFit } from "./fit.ts";
+import { boxFor, insetFor, PHONE_TRAY_MAX_W, pipKeepFor, type Rect } from "./stageBox.ts";
 import { rendererFor, type StudioStageEvent } from "./renderers.ts";
 import { StageMomentContext, type StageMoment } from "./stageContext.ts";
-import { lessonOfIntent, studioApi, usePartial, useStudioSlot } from "./useStudio.ts";
+import { lessonOfIntent, studioApi, useStudioSlot } from "./useStudio.ts";
 import { traceStage } from "../trace/lesson.ts";
-import { partialDocument } from "./kit/bundle.ts";
-import { sanitizePartial } from "./kit/sanitize.ts";
 import { boardFrame, type BoardFrame } from "./boardView.ts";
 import { twinScript, type TwinLike } from "./twinBoard.ts";
+import { intoStage, readPipZone } from "./pipZone.ts";
 import { applyTransform, BOARD_FLOOR_PX, BOARD_FLOOR_PX_YOUNG, fitBoard, rememberTransform, transformFor } from "./boardFit.ts";
-import { useTeacherName } from "../ui/teacher/useTeacher.ts";
 import { tw2h } from "../copy/en.ts";
 import "./studio.css";
 
-/** Px kept free between the box and the tray edge, so a piece never touches the rounded tray corners. */
-const STAGE_INSET = 8;
-/** On a phone-width tray every px goes to the piece (round 3 forge: a 16:10 world is width-bound at 328 px). */
-const STAGE_INSET_PHONE = 2;
-const PHONE_TRAY_MAX_W = 420;
 /**
  * The device's last line (round 3 forge, docs/design/round3/forge/RESEARCH.md): a Studio v2 world (1000 x 625 design units,
  * labels 38 units, targets 130 units: src/studio-v2/core/tokens.ts MIN) whose box makes its words smaller than the play
@@ -62,8 +54,6 @@ export const RAIL_PX = 112, RAIL_PX_YOUNG = 124;
 /** round 4 content: the beat card header (one row of 14 px chips; 16 px for classes 1-5, shared/play.ts FLOORS). */
 export const CARD_HEAD_PX = 34, CARD_HEAD_PX_YOUNG = 38;
 const SV2 = { world: 1000, label: 38, target: 130 };
-/** Upscale cap: a 400-unit piece on a wide desktop tray stays a picture, not a poster. */
-const MAX_SCALE = 3;
 /** The corner control (44 px: the touch minimum at every band). */
 const CTRL = 44;
 /** The open menu's size (studio.css .st-menu: 168 px wide; two 44 px rows, gap, padding, border). */
@@ -117,28 +107,17 @@ function useStageArea() {
   return { ref, avail };
 }
 
-/** The px kept free around the box for a stage of this width (phone-width trays give the piece every px). */
-const insetFor = (w: number) => (w <= PHONE_TRAY_MAX_W ? STAGE_INSET_PHONE : STAGE_INSET);
 
 /** The stage box for a design in the measured area; with the rail band, the box grows by the band above the world. */
-function boxFor(avail: { w: number; h: number }, design: { w: number; h: number }, railPx: number): StageFit {
-  const inset = insetFor(avail.w);
-  let next = fitStage({ w: avail.w, h: avail.h - railPx }, design, { inset, maxScale: MAX_SCALE });
-  if (railPx > 0 && next.w > 0) next = { ...next, h: next.h + railPx, y: Math.max(inset, Math.floor((avail.h - next.h - railPx) / 2)) };
-  return next;
-}
 
-/** The phase the stage draws for a tray state. */
-type Phase = "making" | "ready" | "reveal" | "live" | "empty";
+/** A slot still being made: never drawn (the child never sees build state). */
+const IN_PROGRESS: ReadonlySet<string> = new Set(["planning", "skeleton_shown", "building", "ready"]);
+/** The phase the stage draws: "held" is the last finished piece kept (inert) while the next one is made. */
+type Phase = "held" | "reveal" | "live" | "empty";
 const phaseOf = (state: StudioSlot["state"], hasArtifact: boolean): Phase => {
   if (!hasArtifact) return "empty";
-  switch (state) {
-    case "planning": case "skeleton_shown": case "building": return "making";
-    case "ready": return "ready";
-    case "revealed": return "reveal";
-    case "in_use": case "fallback_shown": return "live";
-    default: return "live";
-  }
+  if (IN_PROGRESS.has(state)) return "held";
+  return state === "revealed" ? "reveal" : "live";
 };
 
 /** A frame that failed becomes its skeleton-as-activity (same params and words); the server retires the build. */
@@ -159,7 +138,13 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
   const mountId = useRef<string>("");
   if (!mountId.current) mountId.current = `${Date.now().toString(36)}${(++mounts).toString(36)}${Math.floor(Math.random() * 1e6).toString(36)}`;
   useEffect(() => { setSwap(null); setEpoch(0); setMenu(false); setGone(false); setTwinFor(null); twinArea.current = null; }, [slot.slotId]);
-  const given0: StudioArtifact | undefined = gone ? undefined : swap ?? slot.artifact;
+  // round 7 (C1): a slot still being made shows the last FINISHED piece this stage showed (inert), or nothing; its own
+  // artifact (a skeleton sketch, a partial) is never drawn
+  const building = IN_PROGRESS.has(slot.state) && !swap;
+  const live0: StudioArtifact | undefined = gone ? undefined : swap ?? slot.artifact;
+  const held = useRef<StudioArtifact | undefined>(undefined);
+  if (!building && live0) held.current = live0;
+  const given0: StudioArtifact | undefined = building ? (gone ? undefined : held.current) : live0;
   // round 3 forge: a piece too small to use on THIS device's box (a Studio v2 world, a play level whose layout refused the
   // box, or a renderer that failed) becomes its board twin: the same idea as a legible whiteboard (twinBoard.ts)
   const [twinFor, setTwinFor] = useState<string | null>(null);
@@ -234,7 +219,26 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     [artifact, frame, playFill, avail]);
   // the rail band for a Studio v2 world on a phone-width tray
   const railPx = !!avail && avail.w <= PHONE_TRAY_MAX_W && artifact?.kind === "stagecraft" ? (young ? RAIL_PX_YOUNG : RAIL_PX) : 0;
-  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx) : null), [avail, design, railPx, boardPending]);
+  // round 7 (D7): her PiP's live keep-clear zone, read from App's slot element and re-read whenever it changes
+  const [pip, setPip] = useState<Rect | null>(null);
+  useEffect(() => {
+    const stage = ref.current;
+    const slotEl = stage?.closest("[data-stage-slot]") as HTMLElement | null;
+    if (!stage || !slotEl || typeof MutationObserver === "undefined") { setPip(null); return; }
+    const read = () => {
+      const sr = slotEl.getBoundingClientRect(), tr = stage.getBoundingClientRect();
+      const z = readPipZone(slotEl, { w: sr.width, h: sr.height });
+      const next = z ? intoStage(z, sr, tr) : null;
+      setPip((cur) => (cur && next && Math.abs(cur.x - next.x) < 1 && Math.abs(cur.y - next.y) < 1 && cur.w === next.w && cur.h === next.h) || (!cur && !next) ? cur : next);
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(slotEl, { attributes: true, attributeFilter: ["data-pip-zone", "style"] });
+    return () => mo.disconnect();
+  }, [avail]);
+  const fit: StageFit | null = useMemo(() => (avail && !boardPending ? boxFor(avail, design, railPx, pip, { keepWhole: playFill }) : null), [avail, design, railPx, boardPending, pip, playFill]);
+  // a play piece keeps its whole box; the corner her PiP covers goes to the play view to keep clear (C2 Games)
+  const pipKeep = fit && playFill ? pipKeepFor({ x: fit.x, y: fit.y, w: fit.w, h: fit.h }, pip) : null;
   // the device check: decided from the box the piece actually got (never from a viewport guess)
   useEffect(() => {
     if (!fit || !given0 || given0.kind !== "stagecraft" || twinFor === slot.slotId) return;
@@ -263,11 +267,6 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slot.slotId, state, phase, artifact, epoch, twin, swap, gone, !!fit]);
   const interactive = phase === "live" || phase === "reveal";
-  const teacher = useTeacherName()?.name || "Your teacher";
-  const caption = useMemo(() => tw2h(`making.${Math.abs(hashStr(lessonId ?? "")) % 3}` as "making.0", { T: teacher }), [lessonId, teacher]);
-
-  const partial = usePartial(lessonId, phase === "making" ? slot.intentId ?? null : null);
-  const veil = useMemo(() => (partial ? partialDocument(sanitizePartial(partial), design) : null), [partial, design]);
   const latest = useRef(onEvent);
   latest.current = onEvent;
   const emit = useCallback((e: StudioStageEvent) => {
@@ -341,24 +340,13 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
         </div>
       )}
       <div className={`st-box st-${phase}`} data-testid="studio-box" data-rail={railPx > 0 ? "1" : undefined}
-        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}) } : { visibility: "hidden" }}>
+        data-pip-keep={pipKeep ? "bottom-right" : undefined}
+        style={fit ? { width: fit.w, height: fit.h, left: fit.x, top: fit.y + headPx, ...(railPx > 0 ? { ["--rail" as string]: `${railPx}px` } : {}),
+          ...(pipKeep ? { ["--pip-keep-w" as string]: `${pipKeep.w}px`, ["--pip-keep-h" as string]: `${pipKeep.h}px` } : {}) } : { visibility: "hidden" }}>
         <StageMomentContext.Provider value={moment}>
           <div className="st-art">{body}</div>
         </StageMomentContext.Provider>
-        {phase === "making" && (
-          <div className="st-wash" aria-hidden="true">
-            {veil && fit && (
-              // the streamed partial: sanitised, in a frame with NO script permission at all, inert, under the pencil
-              <iframe className="st-veil" title="" tabIndex={-1} sandbox="" srcDoc={veil}
-                style={{ width: design.w, height: design.h, transform: `scale(${fit.w / design.w})`, transformOrigin: "0 0" }} />
-            )}
-          </div>
-        )}
-        {phase === "ready" && <span className="st-sparkle" aria-hidden="true" />}
       </div>
-      {phase === "making" && fit && (
-        <div className="st-chip" style={{ left: fit.x + 10, top: fit.y + fit.h - 40 }} data-testid="studio-chip">{caption}</div>
-      )}
       {controls && ctrlStyle && (
         <div className="st-ctrl" style={ctrlStyle}>
           <button type="button" className="st-ctrl-btn" aria-label={tw2h("more")} aria-expanded={menu} onClick={() => setMenu((m) => !m)} data-testid="studio-more">
@@ -375,5 +363,3 @@ export function StudioStage({ slot: given, young, lang, onEvent }: { slot: Studi
     </div>
   );
 }
-
-function hashStr(s: string): number { let h = 0; for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0; return h; }

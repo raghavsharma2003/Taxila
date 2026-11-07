@@ -16,7 +16,7 @@
 
 export const LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000,
   maxNumRows: 8, maxNumCols: 12, maxCellChars: 6, maxWordCellChars: 12 });
-export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase"]);
+export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
 export const INKS = Object.freeze(["chalk", "accent", "ink", "mark", "good", "soft"]);
 export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
 export const NUM_LAYOUTS = Object.freeze(["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", "number_line"]);
@@ -29,6 +29,7 @@ const isNum = (n) => typeof n === "number" && Number.isFinite(n);
 const ID_RE = /^[A-Za-z0-9_.:-]{1,32}$/;
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const round1 = (v) => Math.round(v * 10) / 10;
+const round2 = (v) => Math.round(v * 100) / 100;
 
 /** Text the board may carry: a label, a number or a short term, never narration (≤ 24 chars, no markup, one line). */
 export function textProblem(t) {
@@ -85,6 +86,8 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const prior = new Set(priorIds ?? []);
   const seen = new Set();
   const isTarget = (id) => seen.has(id) || prior.has(id);
+  const drawnById = new Map();   // this script's own ops so far (a move targets one of them)
+  const shifted = new Map();     // target id → [dx, dy] of the moves so far (moves add up: a dot hops twice)
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -193,6 +196,71 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (o.layout === "number_line") {
           if (!Array.isArray(o.range) || !isNum(o.range[0]) || !isNum(o.range[1]) || o.range[1] <= o.range[0]) { bad("number_line_range"); op = null; break; }
           op.range = [o.range[0], o.range[1]];
+          // round 7: the line's own length, when the board places marks on it (number-line-hop's dots and hops are placed
+          // on a line W long; a line sized by its label count put the start dot off the end of a short line)
+          if (isNum(o.w)) op.w = round1(clamp(o.w, 160, Math.max(160, bw - at[0])));
+        }
+        break;
+      }
+      case "move": {
+        // round 7 (C1 studio-whiteboard-motion-ops): an earlier op slides by `by` (board units) over [startMs, endMs],
+        // optionally hopping along an arc `arc` units high (a number-line jump); a fraction split is its parts moving
+        // apart. The target's FINAL box is kept on the board (the shift is clamped), so nothing ever leaves the board.
+        const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
+        if (!tgt || !Array.isArray(o.by) || o.by.length !== 2 || !isNum(o.by[0]) || !isNum(o.by[1])) { bad("move"); break; }
+        let box; try { box = opGeometry(tgt, drawnById).box; } catch { bad("move_target"); break; }
+        const [sx, sy] = shifted.get(o.target) ?? [0, 0];
+        box = { ...box, x: box.x + sx, y: box.y + sy };
+        const dx = clamp(o.by[0], -box.x, bw - box.x - box.w), dy = clamp(o.by[1], -box.y, bh - box.y - box.h);
+        if (dx !== o.by[0] || dy !== o.by[1]) bad("move:clamped");
+        if (!dx && !dy) { bad("move_nothing"); break; }
+        op = { ...base, target: o.target, by: [round1(dx), round1(dy)] };
+        shifted.set(o.target, [sx + op.by[0], sy + op.by[1]]);
+        if (isNum(o.arc) && o.arc > 0) op.arc = round1(Math.min(o.arc, box.y + Math.min(0, dy)));
+        if (tgt.startMs > op.startMs) bad("move_before_target");
+        break;
+      }
+      // round 7 (C1 studio-whiteboard-motion-ops, M1): the rest of the motion family. Each acts on an EARLIER op of this
+      // script over [startMs, endMs]; what the op may be is fixed per kind (a word is only ever translated, never turned or
+      // stretched), and the target's place after the motion must lie on the board (refused, never clamped: a motion that
+      // would carry a part off the board is no motion).
+      case "rotate":
+      case "scale":
+      case "follow":
+      case "sweep":
+      case "morph": {
+        const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
+        if (!tgt) { bad(`${o.op}_target`); break; }
+        if (!MOTION_TARGETS[o.op].includes(tgt.op) || (o.op === "sweep" && !tgt.fill)) { bad(`${o.op}_target_kind`); break; }
+        if (tgt.startMs > s) bad(`${o.op}_before_target`);
+        op = { ...base, target: o.target };
+        if (o.op === "rotate") {
+          const about = P(o.about, `${where}.about`);
+          if (!isNum(o.deg) || !o.deg || Math.abs(o.deg) > 720 || !about) { bad("rotate"); op = null; break; }
+          op.deg = round1(o.deg); op.about = about;
+        } else if (o.op === "scale") {
+          const about = P(o.about, `${where}.about`);
+          const k = isNum(o.k) ? [o.k, o.k] : Array.isArray(o.k) && o.k.length === 2 && isNum(o.k[0]) && isNum(o.k[1]) ? o.k : null;
+          if (!k || !about || k.some((v) => Math.abs(v) < 0.1 || Math.abs(v) > 4) || (k[0] === 1 && k[1] === 1)) { bad("scale"); op = null; break; }
+          if (tgt.op === "circle" && (k[0] !== k[1] || k[0] < 0)) { bad("scale_circle"); op = null; break; }
+          op.k = [round2(k[0]), round2(k[1])]; op.about = about;
+        } else if (o.op === "follow") {
+          // the path is offsets from where the target is when the follow starts ([0,0] implied first)
+          const path = Array.isArray(o.path) ? o.path.filter((q) => Array.isArray(q) && q.length === 2 && isNum(q[0]) && isNum(q[1])).slice(0, 32) : [];
+          if (path.length < 1 || path.length !== (o.path?.length ?? 0)) { bad("follow_path"); op = null; break; }
+          op.path = path.map((q) => [round1(q[0]), round1(q[1])]);
+        } else if (o.op === "sweep") {
+          op.dir = ["up", "down", "left", "right"].includes(o.dir) ? o.dir : (bad("sweep_dir"), "right");
+        } else if (o.op === "morph") {
+          const n = tgt.points?.length ?? 0;
+          const to = Array.isArray(o.to) ? o.to.map((q, j) => P(q, `${where}.to${j}`)) : [];
+          if (to.length !== n || to.some((q) => !q)) { bad("morph_points"); op = null; break; }
+          op.to = to;
+        }
+        if (op && o.op !== "sweep") {
+          // where the target ends up, after every motion so far and this one: on the board, or the motion is refused
+          let end; try { end = opGeometry(finalOp(tgt, [...ops, op]), drawnById).box; } catch { end = null; }
+          if (!end || end.x < -0.5 || end.y < -0.5 || end.x + end.w > bw + 0.5 || end.y + end.h > bh + 0.5) { bad(`${o.op}_off_board`); op = null; }
         }
         break;
       }
@@ -204,7 +272,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         break;
       }
     }
-    if (op) { ops.push(op); seen.add(op.id); }
+    if (op) { ops.push(op); seen.add(op.id); drawnById.set(op.id, op); }
   }
   if (!ops.length) errors.push("nothing_to_draw");
   const lastEnd = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
@@ -218,6 +286,17 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const script = { v: 1, scriptId: typeof raw.scriptId === "string" ? raw.scriptId.slice(0, 64) : "wb", line, anchor: "line_audio_start", board,
     mode: raw.mode === "continue" ? "continue" : "fresh", durationMs: Math.round(durationMs), ops: sorted };
   if (raw.facts && typeof raw.facts === "object" && raw.facts.onScreen && typeof raw.facts.onScreen === "object") script.facts = cleanFacts(raw.facts);
+  // round 7 (director7 B1/S2: one board per segment of a turn): the page turns at each later segment. `switches` [{ clause,
+  // atMs }] in order: the ops from atMs (the estimate) to the next switch are that segment's page (and the erase of the page
+  // before); the player moves them onto clause `clause`'s real onset when the voice reports it (lineClock.ts)
+  if (Array.isArray(raw.switches)) {
+    const sw = raw.switches.slice(0, 8).filter((x) => x && Number.isInteger(x.clause) && x.clause >= 0 && x.clause < 64 && isNum(x.atMs) && x.atMs > 0 && x.atMs < LIMITS.maxDurationMs)
+      // (#44: `word` / `wordIndex` — the segment's first spoken word and how many words of her line come before it: the
+      // player lands the page on that word's REAL onset when the voice sends word timings, else on the clause's)
+      .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs), ...(typeof x.word === "string" && x.word.length > 0 && x.word.length <= 24 ? { word: x.word } : {}),
+        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}) })).sort((a, b) => a.atMs - b.atMs);
+    if (sw.length) script.switches = sw;
+  }
   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };
 }
 
@@ -228,8 +307,48 @@ function cleanFacts(f) {
     if (isNum(v)) onScreen[k] = v;
     else if (typeof v === "string" && v.length <= 40 && !/[<>{}\n]/.test(v)) onScreen[k] = v;
   }
+  const counts = cleanCounts(f.counts);
   return { kind: typeof f.kind === "string" ? f.kind : "diagram", archetype: typeof f.archetype === "string" ? f.archetype.slice(0, 40) : "whiteboard",
-    onScreen, ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+    onScreen, ...(counts ? { counts } : {}), ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+}
+/**
+ * round 7 (director5 SC1): what a template board DRAWS, counted by the template that drew it (never read back from pixels):
+ * lines [{ gaps, gapsPerWhole?, ticks, innerTicks }] (one per scale: a two-denominator line has two), marks [{ at, label }]
+ * (label "?" = the asked mark, "" = unlabelled), parts / shaded, rows / cols, groups / each, sides / corners / sideValues
+ * ["6 cm", …], radius. Unknown keys and bad values are dropped. → the counts, or null.
+ */
+const COUNT_INTS = ["parts", "shaded", "rows", "cols", "groups", "each", "sides", "corners", "steps", "events", "bars", "labels", "places", "hops", "digits", "halves"];
+const smallStr = (v) => typeof v === "string" && v.length <= 24 && !/[<>{}\n]/.test(v);
+function cleanCounts(c) {
+  if (!c || typeof c !== "object") return null;
+  const out = {};
+  for (const k of COUNT_INTS) if (Number.isInteger(c[k]) && c[k] >= 0 && c[k] <= 500) out[k] = c[k];
+  if (Array.isArray(c.lines)) {
+    const ls = c.lines.slice(0, 3).map((l) => Object.fromEntries(["gaps", "gapsPerWhole", "ticks", "innerTicks"].filter((k) => Number.isInteger(l?.[k]) && l[k] >= 0 && l[k] <= 500).map((k) => [k, l[k]])))
+      .filter((l) => Object.keys(l).length);
+    if (ls.length) out.lines = ls;
+  }
+  if (Array.isArray(c.marks)) {
+    const ms = c.marks.slice(0, 24).filter((m) => smallStr(m?.at) && (m.label === undefined || smallStr(m.label))).map((m) => ({ at: m.at, label: m.label ?? "" }));
+    if (ms.length) out.marks = ms;
+  }
+  if (Array.isArray(c.sideValues)) { const sv = c.sideValues.slice(0, 8).filter(smallStr); if (sv.length) out.sideValues = sv; }
+  if (smallStr(c.radius)) out.radius = c.radius;
+  // (director6 #2: word boards count too) compare columns, chart values, angles, amounts
+  if (Array.isArray(c.columns)) {
+    const cs = c.columns.slice(0, 2).filter((x) => x && typeof x === "object").map((x) => ({ title: smallStr(x.title) ? x.title : "", items: Number.isInteger(x.items) && x.items >= 0 && x.items <= 12 ? x.items : 0,
+      quantities: (Array.isArray(x.quantities) ? x.quantities : []).slice(0, 6).filter((q) => Number.isInteger(q?.n) && q.n >= 0 && q.n <= 1000 && smallStr(q.what)).map((q) => ({ n: q.n, what: q.what })) }));
+    if (cs.length) out.columns = cs;
+  }
+  if (Array.isArray(c.values)) { const vs = c.values.slice(0, 8).filter(smallStr); if (vs.length) out.values = vs; }
+  // (director8 S3′: fraction-bars@1, a picture's second view — each equal whole: its parts, the parts shaded, its label)
+  if (Array.isArray(c.wholes)) {
+    const ws = c.wholes.slice(0, 3).filter((x) => Number.isInteger(x?.parts) && x.parts >= 1 && x.parts <= 24 && Number.isInteger(x?.shaded) && x.shaded >= 0 && x.shaded <= x.parts)
+      .map((x) => ({ parts: x.parts, shaded: x.shaded, label: smallStr(x.label) ? x.label : "" }));
+    if (ws.length) out.wholes = ws;
+  }
+  for (const k of ["angles", "amounts"]) if (Array.isArray(c[k])) { const ns = c[k].slice(0, 6).filter((n) => Number.isFinite(n) && n >= 0 && n <= 100000); if (ns.length) out[k] = ns; }
+  return Object.keys(out).length ? out : null;
 }
 
 // ───────────────────────────── timeline ─────────────────────────────
@@ -361,6 +480,8 @@ const bbox = (pts) => {
  * @returns {{ paths: string[], texts: { x: number, y: number, text: string, size: number, align: string, small?: boolean }[], fill?: string, box: { x: number, y: number, w: number, h: number } }}
  */
 export function opGeometry(op, byId = new Map()) {
+  // a move draws nothing of its own (the Player shifts its target)
+  if (MOTION.has(op.op)) return { paths: [], texts: [], box: { x: 0, y: 0, w: 0, h: 0 } };
   const rnd = seeded(op.id);
   const amp = 2.2 * (op.weight ?? 2);
   switch (op.op) {
@@ -492,7 +613,7 @@ function numworkGeometry(op, rnd, amp) {
   }
   if (op.layout === "number_line") {
     const [a, b] = op.range;
-    const W = Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
+    const W = Number.isFinite(op.w) ? op.w : Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
     const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
     paths.push(polyPath([[x0, y0], [x0 + W, y0]], rnd, amp * 0.4));
     const span = b - a, step = span <= 20 ? 1 : span <= 100 ? 10 : Math.pow(10, Math.floor(Math.log10(span)) - 1) * 5;
@@ -548,4 +669,137 @@ export function lintScript(script) {
     }
   }
   return issues;
+}
+
+// ───────────────────────────── motion (round 7, C1 studio-whiteboard-motion-ops) ─────────────────────────────
+
+/** The eased progress (0..1) of a move at t (smoothstep: starts and lands softly, like a hand sliding a cut-out). */
+const ease = (p) => p * p * (3 - 2 * p);
+/** The shift [dx, dy] of op `id` at time t from every move targeting it (reducedMotion: a started move is complete). */
+export function moveShift(ops, id, t, reducedMotion = false) {
+  let x = 0, y = 0;
+  for (const m of ops) {
+    if (m.op !== "move" || m.target !== id) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    const p = reducedMotion ? 1 : ease(p0);
+    x += m.by[0] * p;
+    y += m.by[1] * p - (reducedMotion || !m.arc ? 0 : m.arc * 4 * p0 * (1 - p0));
+  }
+  return [x, y];
+}
+/** An op translated by [dx, dy] (every coordinate it carries). */
+export function shiftOp(op, dx, dy) {
+  const P = (p) => [round1(p[0] + dx), round1(p[1] + dy)];
+  const o = { ...op };
+  if (Array.isArray(o.points)) o.points = o.points.map(P);
+  for (const k of ["from", "to", "at", "c"]) if (Array.isArray(o[k])) o[k] = P(o[k]);
+  return o;
+}
+/** The script as it ENDS: every moved, turned, scaled, morphed op at its final place and shape, the motion ops themselves
+ *  gone. The gates judge this too (a piece that slides onto another, or a label that ends off its part, is caught where it
+ *  lands). */
+export function settledScript(script) {
+  const ops = script?.ops ?? [];
+  if (!ops.some((o) => MOTION.has(o.op))) return script;
+  const targets = new Set(ops.flatMap((o) => (MOTION.has(o.op) ? [o.target] : [])));
+  return { ...script, ops: ops.filter((o) => !MOTION.has(o.op)).map((o) => (targets.has(o.id) ? finalOp(o, ops) : o)) };
+}
+
+// round 7 (C1 motion ops, M1): rotate / scale / follow / sweep / morph. Move, rotate, scale and follow are affine: each
+// target's transform at time t is their product in script order (a later turn is about a point on the board as it is
+// then). Sweep reveals a filled shape's fill along a direction; morph carries a stroke's or polygon's points to new ones.
+export const MOTION = new Set(["move", "rotate", "scale", "follow", "sweep", "morph"]);
+/** What each motion may act on: a word, a number line or a box of text is only ever translated (move / follow). */
+export const MOTION_TARGETS = Object.freeze({
+  rotate: ["stroke", "line", "arrow", "polygon", "circle", "sector"],
+  scale: ["stroke", "line", "arrow", "polygon", "rect", "ellipse", "circle"],
+  follow: ["stroke", "line", "arrow", "polygon", "rect", "circle", "ellipse", "sector", "text", "label", "numwork"],
+  sweep: ["rect", "circle", "ellipse", "polygon", "sector"],
+  morph: ["stroke", "polygon"],
+});
+export const isMotionOp = (o) => MOTION.has(o?.op);
+const I = [1, 0, 0, 1, 0, 0];
+// SVG matrix(a b c d e f): x' = a x + c y + e, y' = b x + d y + f; mul(M, N) = M after N
+const mul = (M, N) => [M[0] * N[0] + M[2] * N[1], M[1] * N[0] + M[3] * N[1], M[0] * N[2] + M[2] * N[3], M[1] * N[2] + M[3] * N[3], M[0] * N[4] + M[2] * N[5] + M[4], M[1] * N[4] + M[3] * N[5] + M[5]];
+const apply = (M, p) => [M[0] * p[0] + M[2] * p[1] + M[4], M[1] * p[0] + M[3] * p[1] + M[5]];
+const translate = (x, y) => [1, 0, 0, 1, x, y];
+const about = (q, M) => mul(translate(q[0], q[1]), mul(M, translate(-q[0], -q[1])));
+/** A point a share p (0..1) of the way along a polyline that starts at [0,0]. */
+function along(path, p) {
+  const pts = [[0, 0], ...path];
+  const seg = pts.slice(1).map((q, i) => Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]));
+  const total = seg.reduce((a, b) => a + b, 0);
+  if (!total) return pts.at(-1);
+  let d = p * total;
+  for (let i = 0; i < seg.length; i++) {
+    if (d <= seg[i] || i === seg.length - 1) { const k = seg[i] ? Math.min(1, d / seg[i]) : 1; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k]; }
+    d -= seg[i];
+  }
+  return pts.at(-1);
+}
+/** One affine motion op at progress p0 (0..1); `still`: the end state (no hop). */
+function stepMatrix(m, p0, still) {
+  const p = still ? 1 : ease(p0);
+  if (m.op === "move") return translate(m.by[0] * p, m.by[1] * p - (still || !m.arc ? 0 : m.arc * 4 * p0 * (1 - p0)));
+  if (m.op === "follow") { const q = along(m.path, p); return translate(q[0], q[1]); }
+  if (m.op === "rotate") { const a = (m.deg * p * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a); return about(m.about, [c, s, -s, c, 0, 0]); }
+  if (m.op === "scale") return about(m.about, [1 + (m.k[0] - 1) * p, 0, 0, 1 + (m.k[1] - 1) * p, 0, 0]);
+  return I;
+}
+/** The transform of op `id` at time t from every affine motion on it (reducedMotion: a started motion is complete). */
+export function motionMatrix(ops, id, t, reducedMotion = false) {
+  let M = I;
+  for (const m of ops) {
+    if (m.target !== id || !(m.op === "move" || m.op === "rotate" || m.op === "scale" || m.op === "follow")) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    M = mul(stepMatrix(m, reducedMotion ? 1 : p0, reducedMotion || p0 >= 1), M);
+  }
+  return M;
+}
+export const isIdentity = (M) => Math.abs(M[0] - 1) < 1e-9 && Math.abs(M[1]) < 1e-9 && Math.abs(M[2]) < 1e-9 && Math.abs(M[3] - 1) < 1e-9 && Math.abs(M[4]) < 1e-9 && Math.abs(M[5]) < 1e-9;
+/** The op's points at time t under its morphs (null when none has started). */
+export function morphAt(ops, op, t, reducedMotion = false) {
+  let pts = null;
+  for (const m of ops) {
+    if (m.op !== "morph" || m.target !== op.id) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    const p = reducedMotion ? 1 : ease(p0), from = pts ?? op.points;
+    pts = from.map((q, i) => [q[0] + (m.to[i][0] - q[0]) * p, q[1] + (m.to[i][1] - q[1]) * p]);
+  }
+  return pts;
+}
+/** How much of a filled op's fill its sweep has revealed at t, and from which side: null when no sweep targets it. */
+export function sweepAt(ops, id, t, reducedMotion = false) {
+  const m = ops.find((o) => o.op === "sweep" && o.target === id);
+  if (!m) return null;
+  const p0 = opProgress(m, t);
+  return { p: reducedMotion ? (p0 > 0 ? 1 : 0) : ease(p0), dir: m.dir };
+}
+/** An op carried by a matrix (the end of its motions): every coordinate moved, lengths scaled, a circle's radius by the
+ *  scale, a sector's angles by the turn, a rect / ellipse re-boxed (they are only ever scaled along the axes). */
+export function transformOp(op, M) {
+  if (isIdentity(M)) return op;
+  const P = (q) => { const r = apply(M, q); return [round1(r[0]), round1(r[1])]; };
+  const o = { ...op };
+  if (Array.isArray(o.points)) o.points = o.points.map(P);
+  for (const k of ["from", "to", "at"]) if (Array.isArray(o[k]) && op.op !== "rect") o[k] = P(o[k]);
+  const sx = Math.hypot(M[0], M[1]), sy = Math.hypot(M[2], M[3]);
+  if (op.op === "circle" || op.op === "sector") {
+    o.c = P(o.c); o.r = round1(o.r * Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])));
+    if (op.op === "sector") { const turn = (Math.atan2(M[1], M[0]) * 180) / Math.PI; o.fromDeg = round1(op.fromDeg + turn); o.toDeg = round1(op.toDeg + turn); }
+  } else if (op.op === "ellipse") { o.c = P(o.c); o.rx = round1(o.rx * sx); o.ry = round1(o.ry * sy); }
+  else if (op.op === "rect") {
+    const a = apply(M, op.at), b = apply(M, [op.at[0] + op.w, op.at[1] + op.h]);
+    o.at = [round1(Math.min(a[0], b[0])), round1(Math.min(a[1], b[1]))]; o.w = round1(Math.abs(b[0] - a[0])); o.h = round1(Math.abs(b[1] - a[1]));
+  } else if (Array.isArray(o.c)) o.c = P(o.c);
+  return o;
+}
+/** The op as it ends under the motions in `ops` (morphs, then the affine product). */
+export function finalOp(op, ops) {
+  const end = Number.MAX_SAFE_INTEGER;
+  const pts = morphAt(ops, op, end, true);
+  return transformOp(pts ? { ...op, points: pts.map((q) => [round1(q[0]), round1(q[1])]) } : op, motionMatrix(ops, op.id, end, true));
 }

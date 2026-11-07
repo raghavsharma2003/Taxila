@@ -2,7 +2,8 @@
 // themselves in server/reports/jobs.js, imported here so the worker's one handlers import loads them all.
 import { registerHandler } from "./jobs.js";
 import "../reports/jobs.js";
-import "../forge/g2/conductor-job.js";   // forge.g2.nightly (Forge G2 end-of-day delivery / build request)
+import "../forge/g2/conductor-job.js";
+import "../learner/formatJobs.js";       // format.join (round 7 F: explain-format outcomes → the population posterior)   // forge.g2.nightly (Forge G2 end-of-day delivery / build request)
 import { one } from "./pg.js";
 
 /**

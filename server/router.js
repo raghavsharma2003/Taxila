@@ -14,6 +14,7 @@ import { realNow, runRequestClock } from "./comprehension/testclock.js";
 // release 12 flight recorder (server/trace): one trace store per request, srv.req / srv.res at the end of it.
 import { runTrace, ridOf, pidOf, isUuid } from "./trace/context.js";
 import { record, traceStats } from "./trace/writer.js";
+import { isDraining } from "./shutdown.js";
 
 const REVISION = process.env.CONTAINER_APP_REVISION || null;
 /** The operator key (a Container App secret, deploy-azure.mjs SECRET_ENV): fresh health numbers, the forced 500. */
@@ -61,6 +62,10 @@ async function health(req, res) {
   const url = new URL(req.url || "/", "http://x");
   const out = { ok: true, at: new Date().toISOString(), driver: process.env.DB_DRIVER || "neon-http", revision: REVISION, sha: process.env.GIT_SHA || null };
   if (url.searchParams.get("ready") === "1") {
+    // a replica draining for shutdown (server/shutdown.js) is alive but must not be routed new work
+    if (isDraining()) return send(res, 503, { ...out, ok: false, draining: true });
+    // the India D5 relay (TAXILA_ROLE=d5relay) has no database: it verifies signed tickets (server/relay-ticket.js)
+    if (process.env.TAXILA_ROLE === "d5relay") return send(res, 200, { ...out, role: "d5relay" });
     const r = await dbReady();
     out.db = r.ok ? "ok" : "down";
     if (!r.ok) return send(res, 503, { ...out, ok: false });

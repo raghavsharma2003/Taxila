@@ -71,7 +71,7 @@ describe("shared/whiteboard.js", () => {
 describe("explainer templates (rungs 4-5)", () => {
   test("every template expands to a strict-valid, lint-clean script with facts", () => {
     const calls = {
-      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "fraction-of@1": { a: 1, b: 2, c: 1, d: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
+      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "fraction-line@1": { den: 5, target: [2, 5], show: true }, "fraction-of@1": { a: 1, b: 2, c: 1, d: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
       "column-op@1": { a: 4587, b: 2675, op: "add" }, "place-value@1": { value: 345678 }, "equal-groups@1": { groups: 4, each: 6 },
       "flow@1": { steps: ["bees", "pollination", "seeds", "oil", "farmer's income"] }, "cycle@1": { stages: ["evaporation", "condensation", "rain"] },
       "compare@1": { left: { title: "shrubs", items: ["woody stems"] }, right: { title: "trees", items: ["one thick trunk"] } },
@@ -82,6 +82,9 @@ describe("explainer templates (rungs 4-5)", () => {
       "symmetry@1": { line: "mirror line", dot: 3 },
       "area-grid@1": { w: 5, h: 3, mode: "area", unit: "cm" },
       "bar-chart@1": { bars: [{ label: "June", value: 140 }, { label: "July", value: 250 }, { label: "Aug", value: 230 }] },
+      "timeline@1": { events: [{ year: 1905, label: "Partition of Bengal" }, { year: 1919, label: "Jallianwala Bagh" }, { year: 1942, label: "Quit India" }] },
+      "table@1": { head: ["x", "y"], rows: [["0", "5"], ["1", "8"], ["2", "11"]], rule: "y = 3x + 5" },
+      "measured@1": { shape: "rect", w: 8, h: 5, unit: "cm" },
     };
     for (const t of TEMPLATES) {
       const x = expand({ template: t, ...calls[t] });

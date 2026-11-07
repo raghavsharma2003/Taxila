@@ -1,0 +1,3625 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj rectangles, squares aur polygons ka perimeter, cricket ground ki boundary jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1097,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ek lamba rectangle hoti hai, 22 m lambi aur 3 m chaudi. Groundsman pitch ke ek kone se chalna shuru kare, kinaare-kinaare chale aur wapas usi kone par pahunche, toh jitna woh chala, wahi pitch ka parimap hai. Theek hai, Riya.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1153,
+   "replyReadyMs": 2250,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1153,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan samajh gayi",
+   "read": "no_evidence",
+   "classifyMs": 1085,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Sabhi ko jodkar parimap milega. Is triangle ki teen bhujayein hain: 4 cm, 5 cm aur 6 cm. Ek kone se chalo, teeno bhujaon se hote hue wapas usi kone par aao. Yeh poora raasta hi triangle ka parimap hai. Toh is triangle ka parimap kitna hai?",
+   "move": "explain",
+   "card": "Toh is triangle ka parimap kitna hai?",
+   "replyMs": 1979,
+   "replyReadyMs": 3064,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1979,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 5 cm | 4 cm",
+     "numbers": "6 5 4"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "6 cm",
+      "5 cm",
+      "4 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "6",
+     "5",
+     "4"
+    ]
+   },
+   "guard": [
+    "screen",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "mustsay"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "9 cm",
+   "read": "misconception",
+   "classifyMs": 826,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Perimeter mein har side jodni hoti hai, sirf do nahi. Is khet ke kono ke naam A se F tak hain. A se shuru karo, aur har bhuja ka naam aur uski lambai bolo: AB 10 m, BC 4 m, CD 6 m, DE 5 m, EF 4 m, aur aakhir mein FA 9 m. Jod tabhi poora hota hai jab tum wapas A par pahunchte ho. Paanch kono wale khet PQRST mein PQ 8 m, QR 5 m, RS 7 m, ST 6 m aur TP 3 m hai. Khet ka parimap kitna hai?",
+   "move": "reteach",
+   "card": "Paanch kono wale khet PQRST mein PQ 8 m, QR 5 m, RS 7 m, ST 6 m aur TP 3 m hai. Khet ka parimap kitna hai?",
+   "replyMs": 2301,
+   "replyReadyMs": 3127,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3127,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch06-t01-m-missing-sides",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "hexagon",
+     "unit": "m",
+     "sides": [
+      10,
+      4,
+      6,
+      5,
+      4,
+      9
+     ],
+     "names": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-missing-sides",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c6-maths-ch06-t01-m-missing-sides",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 280,
+     "beat": "then:c6-maths-ch06-t01-m-missing-sides",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "10 m | 4 m | 6 m | 5 m | 4 m | 9 m",
+     "numbers": "10 4 6 5 9"
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6,
+     "sideValues": [
+      "10 m",
+      "4 m",
+      "6 m",
+      "5 m",
+      "4 m",
+      "9 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "hexagon",
+      "unit": "m",
+      "sides": [
+       10,
+       4,
+       6,
+       5,
+       4,
+       9
+      ],
+      "names": [
+       "A",
+       "B",
+       "C",
+       "D",
+       "E",
+       "F"
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10",
+     "4",
+     "6",
+     "5",
+     "9"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter ke liye khet ki har boundary side jodo: 8, 5, 7, 6 aur 3. In numbers ka addition karke batao. Paanch kono wale khet PQRST mein PQ 8 m, QR 5 m, RS 7 m, ST 6 m aur TP 3 m hai. Khet ka parimap kitna hai?",
+   "move": "hint",
+   "card": "Paanch kono wale khet PQRST mein PQ 8 m, QR 5 m, RS 7 m, ST 6 m aur TP 3 m hai. Khet ka parimap kitna hai?",
+   "replyMs": 937,
+   "replyReadyMs": 938,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 938,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-missing-sides",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "pentagon",
+     "unit": "m",
+     "sides": [
+      8,
+      5,
+      7,
+      6,
+      3
+     ],
+     "names": [
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-missing-sides",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "8 m | 5 m | 7 m | 6 m | 3 m | P",
+     "numbers": "8 5 7 6 3"
+    },
+    "counts": {
+     "sides": 5,
+     "corners": 5,
+     "sideValues": [
+      "8 m",
+      "5 m",
+      "7 m",
+      "6 m",
+      "3 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "8",
+     "5",
+     "7",
+     "6",
+     "3"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "29 metre",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Aur pehle wale sawaal ka jawab 15 cm tha, kyunki yeh poora raasta hi triangle ka parimap hai. Yeh hexagon hai. Iski chhah bhujayein hain aur sab barabar lambi hain. Label sirf ek bhuja par hai, 5 cm. Baaki bhujaon par kuch likha nahi hai, phir bhi woh kinaare ka hissa hain. Parimap mein har bhuja ki lambai judti hai. Toh is hexagon ka parimap kitna hai?",
+   "move": "explain",
+   "card": "Toh is hexagon ka parimap kitna hai?",
+   "replyMs": 1169,
+   "replyReadyMs": 1170,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1170,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "side": "5 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e1",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 110,
+     "beat": "e2",
+     "template": "shape@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "5 cm",
+     "numbers": "5"
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "noconfirm",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "30 centimetre",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi—har ek ki lambai 5 cm hai, aur 6 bhujayein hain.",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1650,
+   "replyReadyMs": 1651,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1651,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "side": "5 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "5 cm",
+     "numbers": "5"
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "5"
+    ]
+   },
+   "guard": [
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "woh toh ho gaya na",
+   "read": "no_evidence",
+   "classifyMs": 1258,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Kinaare par dhaaga lagega. Yeh rectangle 6 cm lamba aur 4 cm chauda hai. Parimap ek dhaage jaisa hai jo kinaare par chalta hai: upar 6 cm, phir 4 cm, neeche 6 cm, phir 4 cm. Andar ki jagah area hai, woh bilkul alag cheez hai. Is rectangle ke kinaare par ek baar dhaaga lagana hai. Kitna dhaaga lagega?",
+   "move": "explain",
+   "card": "Is rectangle ke kinaare par ek baar dhaaga lagana hai. Kitna dhaaga lagega?",
+   "replyMs": 1672,
+   "replyReadyMs": 2930,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1672,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 4 cm",
+     "numbers": "6 4"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "6",
+     "4"
+    ]
+   },
+   "guard": [
+    "screen",
+    "mustsay",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "24 cm",
+   "read": "misconception",
+   "classifyMs": 866,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "24 cm sahi nahi hai. Yeh rectangle 5 cm lamba aur 3 cm chauda hai. Iske kinaare par dhaaga lapeto, phir use seedha karke scale par napo, woh parimap hai, cm mein. Andar tiles bichhao toh woh area hai. Parimap ke liye kinaare ki bhujayein jodte hain, 5, 3, 5 aur 3, guna nahi karte. 9 cm lambe aur 2 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
+   "move": "reteach",
+   "card": "9 cm lambe aur 2 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
+   "replyMs": 1976,
+   "replyReadyMs": 2842,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2842,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 5,
+     "h": 3,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-area-perimeter",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "rem:c6-maths-ch06-t01-m-area-perimeter",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 282,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "5 cm | 3 cm",
+     "numbers": "5 3"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "5 cm",
+      "3 cm",
+      "5 cm",
+      "3 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 5,
+      "h": 3,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "5",
+     "3"
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 853,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, screen par rectangle dekho: upar aur neeche 9 cm, dono side 2 cm. Ribbon chaaro kinaaron par chalega. Ab jodo: 9 plus 2 plus 9 plus 2? 9 cm lambe aur 2 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
+   "move": "reteach",
+   "card": "9 cm lambe aur 2 cm chaude label ke kinaare par ek baar ribbon lagta hai. Ribbon kitna lamba hai?",
+   "replyMs": 1062,
+   "replyReadyMs": 1915,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1915,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 9,
+     "h": 2
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-area-perimeter",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "9 cm | 2 cm",
+     "numbers": "9 2"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "9 cm",
+      "2 cm",
+      "9 cm",
+      "2 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 9,
+      "h": 2
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "9",
+     "2"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 22 cm",
+   "read": "correct",
+   "classifyMs": 918,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, 22 cm sahi hai: 9 plus 2 plus 9 plus 2, yani ribbon ki lambai 22 cm. Aur pehle wale sawaal ka jawab 20 cm tha, kyunki andar ki jagah area hai, woh bilkul alag cheez hai. Ek triangle shape ki phoolon ki kyari hai. Iski bhujayein 7 m, 9 m aur 12 m hain. Kyari ke kinaare-kinaare ek baar baad lagani hai. Kitni lambi baad lagegi? Diya hai: kyari triangle shape ki hai, ek band shape, bhujayein 7 m, 9 m aur 12 m hain. Dhoondhna hai: baad ki lambai, yaani kyari ka parimap. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1073,
+   "replyReadyMs": 1991,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1991,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "e3",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 178,
+     "beat": "worked:problem",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   },
+   "guard": [
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1023,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Teenon sides jodni hain: 7 plus 9 plus 12. Baad kinaare par lagti hai, toh teeno bhujayein jodo: P = 7 + 9 + 12, kyunki koi bhi bhuja chhooti toh baad adhoori reh jaayegi. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2347,
+   "replyReadyMs": 3370,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2347,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   },
+   "guard": [
+    "invented",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "classifyMs": 916,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, step theek hai: ab 7, 9 aur 12 ko jodna hai. Pehle do bhujayein jodo: 7 + 9 = 16 m, kyunki ek kone se chalke do bhujayein poori hui, teesri abhi baaki hai. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 995,
+   "replyReadyMs": 1911,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 995,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1136,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ab 16 m mein teesri bhuja, 12 m, jodni hai, taaki perimeter poora ho. Ab teesri bhuja, 12 m, bhi jodo. 16 m mein 12 m jodkar kitna hua?",
+   "move": "worked_example",
+   "card": "Ab teesri bhuja, 12 m, bhi jodo. 16 m mein 12 m jodkar kitna hua?",
+   "replyMs": 1040,
+   "replyReadyMs": 2176,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1136,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle main try karun?",
+   "read": "no_evidence · selftry",
+   "classifyMs": 620,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, khud try karo: 16 m ke baad 12 m aur jodne par total kitna hoga? Ab teesri bhuja, 12 m, bhi jodo. 16 m mein 12 m jodkar kitna hua?",
+   "move": "practice",
+   "card": "Ab teesri bhuja, 12 m, bhi jodo. 16 m mein 12 m jodkar kitna hua?",
+   "replyMs": 2120,
+   "replyReadyMs": 2740,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2740,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   },
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "affirms",
+     "dodged"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "28",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Haan, 28 m. Ab batao, 28 m kaise mila—16 mein 12 jodte waqt tumne kaunsa step socha?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1057,
+   "replyReadyMs": 1057,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1057,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 9 m | 7 m",
+     "numbers": "12 9 7"
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1090,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Toh poora jawab: kyari ke liye 28 m lambi baad lagegi, kyunki baad kinaare par chalti hai aur teeno bhujayein judi hain, koi nahi chhooti, aur yeh lambai hai, isliye metre mein. Ek L-shape kamre ki 6 bhujayein hain. Ek kone se ghoomte hue unki lambai 8 m, 3 m, 5 m, 4 m, 3 m aur 7 m hai. Kamre ka parimap kitna hai?",
+   "move": "practice",
+   "card": "Ek L-shape kamre ki 6 bhujayein hain. Ek kone se ghoomte hue unki lambai 8 m, 3 m, 5 m, 4 m, 3 m aur 7 m hai. Kamre ka parimap kitna hai?",
+   "replyMs": 1100,
+   "replyReadyMs": 2190,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1100,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "polygon",
+     "unit": "m",
+     "sides": [
+      8,
+      3,
+      5,
+      4,
+      3,
+      7
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "worked",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 178,
+     "beat": "c1",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "8 m | 3 m | 5 m | 4 m | 3 m | 7 m",
+     "numbers": "8 3 5 4 7"
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6,
+     "sideValues": [
+      "8 m",
+      "3 m",
+      "5 m",
+      "4 m",
+      "3 m",
+      "7 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "polygon",
+      "unit": "m",
+      "sides": [
+       8,
+       3,
+       5,
+       4,
+       3,
+       7
+      ]
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "8",
+     "3",
+     "5",
+     "4",
+     "7"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "30 m",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, 30 m: tumne L-shape ki saari 6 bhujayein jodkar poora perimeter liya. Ek rectangle card ki bhujayein ghoomte hue 10 cm, 4 cm, 10 cm aur 4 cm hain. Iske kinaare par ek baar lace lagani hai. Kitni lace chahiye?",
+   "move": "practice",
+   "card": "Ek rectangle card ki bhujayein ghoomte hue 10 cm, 4 cm, 10 cm aur 4 cm hain. Iske kinaare par ek baar lace lagani hai. Kitni lace chahiye?",
+   "replyMs": 1091,
+   "replyReadyMs": 1092,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1092,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 10,
+     "h": 4
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "10 cm | 4 cm",
+     "numbers": "10 4"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 cm",
+      "4 cm",
+      "10 cm",
+      "4 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 10,
+      "h": 4
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10",
+     "4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "Hindi mein bolo",
+   "read": "no_evidence · language",
+   "classifyMs": 804,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, theek hai. Ab se main saral Hindi mein bolungi; parimap ke liye ghoomte hue sabhi bhujayein jodni hoti hain. Ek rectangle card ki bhujayein ghoomte hue 10 cm, 4 cm, 10 cm aur 4 cm hain. Iske kinaare par ek baar lace lagani hai. Kitni lace chahiye?",
+   "move": "practice",
+   "card": "Ek rectangle card ki bhujayein ghoomte hue 10 cm, 4 cm, 10 cm aur 4 cm hain. Iske kinaare par ek baar lace lagani hai. Kitni lace chahiye?",
+   "replyMs": 1186,
+   "replyReadyMs": 1990,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1990,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 10,
+     "h": 4
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "10 cm | 4 cm",
+     "numbers": "10 4"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 cm",
+      "4 cm",
+      "10 cm",
+      "4 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 10,
+      "h": 4
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10",
+     "4"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "28 cm hai na",
+   "read": "correct",
+   "classifyMs": 872,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Har bhuja jodna hamesha kaam karta hai. Rectangle mein lambai do baar aati hai aur chaudai bhi do baar, isliye agle hisse mein uska ek chhota tareeka dekhenge. Is rectangle mein upar aur neeche ki bhuja 10 m ki hai, yeh lambai hai. Daayein aur baayein ki bhuja 6 m ki hai, yeh chaudai hai. Aamne-saamne ki bhujayein barabar hain. Board par 10 m aur 6 m ek-ek baar likha hai, par kinaare par chalte hue lambai do baar aati hai aur chaudai bhi do baar. Toh is rectangle ka parimap kitna hai?",
+   "move": "explain",
+   "card": "Toh is rectangle ka parimap kitna hai?",
+   "replyMs": 1022,
+   "replyReadyMs": 1894,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1894,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 10,
+     "h": 6,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "c2",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 176,
+     "beat": "e1",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "10 m | 6 m",
+     "numbers": "10 6"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 m",
+      "6 m",
+      "10 m",
+      "6 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 10,
+      "h": 6,
+      "trace": true
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "32 metre",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, 32 m.",
+   "move": "probe",
+   "card": null,
+   "replyMs": 992,
+   "replyReadyMs": 993,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 993,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 10,
+     "h": 6,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "10 m | 6 m",
+     "numbers": "10 6"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 m",
+      "6 m",
+      "10 m",
+      "6 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 10,
+      "h": 6,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "10",
+     "6"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "woh wala ho gaya, aage chalo",
+   "read": "no_evidence",
+   "classifyMs": 1492,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh rectangle 12 m lamba aur 5 m chauda hai. Neeche baayein kone se chalo: 12 m lambai, phir 5 m chaudai, aur tum saamne wale kone par ho. Yeh sirf aadha raasta hai. Baaki aadha raasta bhi utna hi hai. Isliye rectangle ka parimap = 2 × (lambai + chaudai). Is rectangle ki lambai 12 m aur chaudai 5 m hai. 2 × (lambai + chaudai) se iska parimap kitna hai?",
+   "move": "explain",
+   "card": "Is rectangle ki lambai 12 m aur chaudai 5 m hai. 2 × (lambai + chaudai) se iska parimap kitna hai?",
+   "replyMs": 2369,
+   "replyReadyMs": 3861,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2369,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 12,
+     "h": 5,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 5 m",
+     "numbers": "12 5"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "12 m",
+      "5 m",
+      "12 m",
+      "5 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 12,
+      "h": 5,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "5"
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "34 m hai na",
+   "read": "correct",
+   "classifyMs": 1027,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Riya, yeh square hai. Iski chaaron bhujayein 6 cm ki hain, sab barabar. Chaar baar 6 cm jodne ki jagah seedha 4 × bhuja kar sakte ho. Toh is square ka parimap kitna hai?",
+   "move": "explain",
+   "card": "Toh is square ka parimap kitna hai?",
+   "replyMs": 2011,
+   "replyReadyMs": 3038,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3038,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "square",
+     "unit": "cm",
+     "w": 6,
+     "h": 6,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 6 cm",
+     "numbers": "6"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "6 cm",
+      "6 cm",
+      "6 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "square",
+      "unit": "cm",
+      "w": 6,
+      "h": 6,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "6"
+    ]
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "24 cm",
+   "read": "correct",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Haan, 24 cm bilkul sahi. Ab batao, 4 ko 6 se guna karke parimap kyun milta hai?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1187,
+   "replyReadyMs": 1187,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1187,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "square",
+     "unit": "cm",
+     "w": 6,
+     "h": 6,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 6 cm",
+     "numbers": "6"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "6 cm",
+      "6 cm",
+      "6 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "square",
+      "unit": "cm",
+      "w": 6,
+      "h": 6,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "6"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "shayad hisse gin ke",
+   "read": "correct",
+   "classifyMs": 2391,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Ek rectangle notebook cover 24 cm lamba aur 18 cm chauda hai. Iske kinaare par ek baar tape lagani hai. Kitni tape lagegi? Diya hai: cover rectangle shape ka hai, lambai 24 cm hai, chaudai 18 cm hai. Dhoondhna hai: tape ki lambai, yaani cover ka parimap. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3454,
+   "replyReadyMs": 5845,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3454,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:problem",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 24,
+     "h": 18,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "24 cm | 18 cm",
+     "numbers": "24 18"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "24 cm",
+      "18 cm",
+      "24 cm",
+      "18 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "24",
+     "18"
+    ]
+   },
+   "guard": [
+    "invented",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "classifyMs": 997,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehla joda: 24 cm plus 18 cm barabar 42 cm. Tape kinaare par lagti hai aur cover rectangle hai, toh parimap 2 × (lambai + chaudai) se nikalo: P = 2 × (24 + 18), kyunki kinaare par lambai do baar aati hai aur chaudai bhi do baar. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2807,
+   "replyReadyMs": 3804,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2807,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 24,
+     "h": 18,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "24 cm | 18 cm",
+     "numbers": "24 18"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "24 cm",
+      "18 cm",
+      "24 cm",
+      "18 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "24",
+     "18"
+    ]
+   },
+   "guard": [
+    "quiz",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1077,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "24 plus 18 barabar 42 cm. Pehle bracket mein ek lambai aur ek chaudai jodo: 24 + 18 = 42 cm, kyunki 42 cm sirf aadha kinaara hai, ek kone se saamne wale kone tak. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2607,
+   "replyReadyMs": 3684,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2607,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 24,
+     "h": 18,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "24 cm | 18 cm",
+     "numbers": "24 18"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "24 cm",
+      "18 cm",
+      "24 cm",
+      "18 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "24",
+     "18"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "invented"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 937,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "42 cm ek aadha kinaara hai; poora parimap paane ke liye is aadhe kinaare ko do baar lena hai. Ab is aadhe kinaare ko do baar lo. 2 × 42 kitna hota hai?",
+   "move": "worked_example",
+   "card": "Ab is aadhe kinaare ko do baar lo. 2 × 42 kitna hota hai?",
+   "replyMs": 1171,
+   "replyReadyMs": 2108,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2108,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 24,
+     "h": 18,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "24 cm | 18 cm",
+     "numbers": "24 18"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "24 cm",
+      "18 cm",
+      "24 cm",
+      "18 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "84 centimetres",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Toh poora jawab: cover par 84 cm tape lagegi, kyunki chaaron bhujayein jodne par bhi 24 + 18 + 24 + 18 = 84 cm aata hai, jabki 42 cm sirf aadha kinaara hai aur 24 × 18 andar ka area hota. Ek rectangle playground 40 m lamba aur 25 m chauda hai. Iska parimap kitna hai?",
+   "move": "practice",
+   "card": "Ek rectangle playground 40 m lamba aur 25 m chauda hai. Iska parimap kitna hai?",
+   "replyMs": 1290,
+   "replyReadyMs": 1291,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1291,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:c1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 40,
+     "h": 25
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "worked",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 204,
+     "beat": "c1",
+     "template": "measured@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "40 m | 25 m",
+     "numbers": "40 25"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "40 m",
+      "25 m",
+      "40 m",
+      "25 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 40,
+      "h": 25
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "40",
+     "25"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "130 m hai na",
+   "read": "correct",
+   "classifyMs": 1069,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Haan, 130 m sahi hai—tumne lambai aur chaudai ko do-do baar joda. Ab ek nayi practice. Ek rectangle table mat 9 cm lamba aur 5 cm chauda hai. Iske kinaare par ek baar lace silni hai. Kitni lace chahiye?",
+   "move": "practice",
+   "card": "Ek rectangle table mat 9 cm lamba aur 5 cm chauda hai. Iske kinaare par ek baar lace silni hai. Kitni lace chahiye?",
+   "replyMs": 988,
+   "replyReadyMs": 2057,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2057,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:c2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 9,
+     "h": 5
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "9 cm | 5 cm",
+     "numbers": "9 5"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "9 cm",
+      "5 cm",
+      "9 cm",
+      "5 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 9,
+      "h": 5
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "9",
+     "5"
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "28 cm hai na",
+   "read": "correct",
+   "classifyMs": 679,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Haan, 28 cm sahi. Ek square tile ki bhuja 11 cm hai. Iska parimap kitna hai?",
+   "move": "practice",
+   "card": "Ek square tile ki bhuja 11 cm hai. Iska parimap kitna hai?",
+   "replyMs": 1951,
+   "replyReadyMs": 2630,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2630,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:c3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "square",
+     "unit": "cm",
+     "w": 11,
+     "h": 11
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s2:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "11 cm | 11 cm",
+     "numbers": "11"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "11 cm",
+      "11 cm",
+      "11 cm",
+      "11 cm"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "square",
+      "unit": "cm",
+      "w": 11,
+      "h": 11
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "11"
+    ]
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 44 cm",
+   "read": "correct",
+   "classifyMs": 892,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, 44 cm: tumne square ki chaar barabar bhujayein pehchaani. Ab tak humne bhujaon se parimap nikala. Agle hisse mein ulta bhi chalenge: parimap pata ho toh bhuja nikalna, aur chakkar aur baad ka kharcha bhi. Is square ka parimap 60 m hai, aur yeh 60 m chaar barabar bhujaon mein bata hua hai. Isliye ek bhuja nikalne ke liye parimap ko 4 se bhaag karte hain, 2 se nahi. Toh is square ki ek bhuja kitni lambi hai?",
+   "move": "explain",
+   "card": "Toh is square ki ek bhuja kitni lambi hai?",
+   "replyMs": 2482,
+   "replyReadyMs": 3374,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3374,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:explain:e1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "name": "parimap 60 m"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s3:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "segments": [
+    {
+     "from": 0,
+     "beat": "c3",
+     "template": "measured@1",
+     "contradictions": 0
+    },
+    {
+     "from": 211,
+     "beat": "e1",
+     "template": "shape@1",
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "parimap 60 m",
+     "numbers": "60"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "name": "parimap 60 m"
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "screen",
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 15 m",
+   "read": "correct",
+   "classifyMs": 941,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Riya, 15 m sahi hai. Tumne 60 m ko 4 barabar bhujayon mein baanta: 60 ko 4 se bhaag kiya. Ab batao, 4 se bhaag kyun kiya?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1271,
+   "replyReadyMs": 2212,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2212,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:explain:e1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "name": "parimap 60 m"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "parimap 60 m",
+     "numbers": "60"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "name": "parimap 60 m"
+     }
+    },
+    "drawn": "preselect"
+   }
+  },
+  {
+   "who": "child",
+   "text": "jodte jodte aaya",
+   "read": "correct",
+   "classifyMs": 2588,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Is rectangle ka parimap 60 m hai aur lambai 20 m. Aadha parimap, yaani 30 m, ek lambai aur ek chaudai ke barabar hota hai. Isliye chaudai ke liye 30 m mein se lambai ghatate hain. Toh is rectangle ki chaudai kitni hai?",
+   "move": "explain",
+   "card": "Toh is rectangle ki chaudai kitni hai?",
+   "replyMs": 877,
+   "replyReadyMs": 3465,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2588,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s3:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "side": "20 m",
+     "name": "parimap 60 m"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s3:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "20 m | parimap 60 m",
+     "numbers": "20 60"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "side": "20 m",
+      "name": "parimap 60 m"
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "20",
+     "60"
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "10 m hai na",
+   "read": "correct",
+   "classifyMs": 1447,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Is rectangle plot ki lambai 12 m aur chaudai 8 m hai. Taar poore kinaare par lagegi, toh parimap 2 × (12 + 8) = 40 m. Taar ₹10 per metre hai, toh kharcha 40 × 10 = ₹400. Agar kahin gate ho jahan taar nahi lagti, toh pehle uski lambai parimap se ghatate hain, phir guna karte hain. Isi plot mein 2 m ka gate hai jahan taar nahi lagegi. Ab kitne metre taar lagegi?",
+   "move": "explain",
+   "card": "Isi plot mein 2 m ka gate hai jahan taar nahi lagegi. Ab kitne metre taar lagegi?",
+   "replyMs": 2583,
+   "replyReadyMs": 4030,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 4030,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 12,
+     "h": 8,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s3:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "12 m | 8 m",
+     "numbers": "12 8"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "12 m",
+      "8 m",
+      "12 m",
+      "8 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 12,
+      "h": 8,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "12",
+     "8"
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "mustsay",
+     "ask",
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "38 metre",
+   "read": "correct",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Rani 50 m lambe aur 30 m chaude rectangle park ke 3 chakkar daudti hai. Woh kul kitna daudti hai? Diya hai: park rectangle hai, lambai 50 m hai, chaudai 30 m hai, chakkar 3 hain. Dhoondhna hai: Rani kul kitni doori daudti hai. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2828,
+   "replyReadyMs": 2829,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2829,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:problem",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "50",
+     "30"
+    ]
+   },
+   "guard": [
+    "leak",
+    "invented",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz",
+     "noconfirm"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1175,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle ek chakkar ka parimap: 2 guna (50 plus 30) = 160 m. Ek chakkar ko park ke poore kinaare par ek baar daudna samjho: 1 chakkar = park ka parimap, kyunki chakkar kinaare par lagta hai, park ke andar nahi. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3685,
+   "replyReadyMs": 4860,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3685,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "50",
+     "30"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 987,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle ek chakkar 160 m tha. Park rectangle hai, toh parimap 2 × (lambai + chaudai) se likho: P = 2 × (50 + 30), kyunki kinaare par lambai do baar aati hai aur chaudai bhi do baar. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2605,
+   "replyReadyMs": 3592,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2605,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "50",
+     "30"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "classifyMs": 1026,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek chakkar 160 m tha. Pehle bracket jodo: 50 + 30 = 80 m, kyunki 80 m sirf aadha chakkar hai, ek kone se saamne wale kone tak. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2453,
+   "replyReadyMs": 3479,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2453,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "take",
+    "numbers": [
+     "50",
+     "30"
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1032,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ise do baar lo: 2 × 80 = 160 m, kyunki aadha chakkar do baar lene se poora chakkar banta hai. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2227,
+   "replyReadyMs": 3259,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2227,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step4",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "quiz",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1251,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek chakkar 160 m hai. Teeno chakkar barabar hain, toh ek chakkar ko 3 se guna karo: 3 chakkar = 3 × 160 m, kyunki har chakkar mein utni hi doori hai, 160 m. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 4333,
+   "replyReadyMs": 5584,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 4333,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s3:worked:worked:step5",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 50,
+     "h": 30,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "50 m | 30 m",
+     "numbers": "50 30"
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "50 m",
+      "30 m",
+      "50 m",
+      "30 m"
+     ]
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 50,
+      "h": 30,
+      "trace": true
+     }
+    },
+    "drawn": "preselect"
+   },
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1390,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj rukna chahti ho. Vikalp hain: aage badhein, thodi der ka viram lein, ya aaj ke liye band karein—tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3025,
+   "replyReadyMs": 4415,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3025,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0
+   },
+   "guard": [
+    "wrap",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}
