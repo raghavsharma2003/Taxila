@@ -18,6 +18,15 @@ export const RULES = [
   R("c7-maths-ch05-t01", "kon", "pair", "linear", { "linear-90": "linear-90" }, { tol: 3 }),
   R("c7-maths-ch07-t03", "kon", "close", "tri", {}, { tol: 3 }),
   R("c7-maths-ch09-t03", "kon", "close", "iso", { "wrong-pair": "wrong-pair" }, { tol: 3 }),
+  // r7 kon2: lines are directions. Parallel is turning line 2 until it never meets line 1, however far the run extends them
+  // (lines that miss each other on the page may still meet); perpendicular is a set-square's corner fitting the crossing
+  // whatever the tilt; a transversal's corresponding / alternate angles equal ∠1 exactly when the canals run parallel (the
+  // same-side interior angle makes 180°); a segment, a ray and a line are told apart by where their stops sit
+  R("c7-maths-ch05-t02", "kon", "lines", "parallel", { "not-meet-on-page": "not-meet-on-page" }, { tol: 2 }),
+  R("c7-maths-ch05-t02", "kon", "lines", "perp", { "perp-upright": "perp-upright" }, { tol: 3 }),
+  R("c7-maths-ch05-t03", "kon", "cross", "corr", { "corr-position": "alternate-position" }, { tol: 3 }),
+  R("c7-maths-ch05-t03", "kon", "cross", "alt", { "same-side-equal": "interior-equal", "alt-same-side": "alternate-position" }, { tol: 3 }),
+  R("c6-maths-ch02-t01", "kon", "ends", "ends", { "ray-two-ends": "ray-two-ends", "ray-order": "ray-order", "line-ends": "longer-line" }, { figs: ["seg", "ray", "ray", "line"] }),
 ];
 
 export const ACTS = {
@@ -31,4 +40,9 @@ export const ACTS = {
   "c7-maths-ch05-t01|linear": ["s1"],                   // a linear pair adds to 180°
   "c7-maths-ch07-t03|tri": ["s2"],                      // the missing angle from the angle sum
   "c7-maths-ch09-t03|iso": ["s1", "s2"],                // base angles equal; missing angles in an isosceles triangle
+  "c7-maths-ch05-t02|parallel": ["s1", "s3"],          // parallel: same direction, never meet; draw one on squared paper
+  "c7-maths-ch05-t02|perp": ["s2", "s3"],              // perpendicular: a right angle at the crossing, at any tilt
+  "c7-maths-ch05-t03|corr": ["s2", "s1", "s3"],        // corresponding angles equal when parallel (and the one beside it)
+  "c7-maths-ch05-t03|alt": ["s2", "s1", "s3"],         // alternate equal, same-side interior 180°, as a test for parallel
+  "c6-maths-ch02-t01|ends": ["s1", "s2"],              // segment / ray / line by endpoints; ray AB starts at A
 };

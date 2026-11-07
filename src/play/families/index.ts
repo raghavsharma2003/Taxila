@@ -46,6 +46,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kon/zone": asAny(konLogic),
   "kon/pair": asAny(konLogic),
   "kon/close": asAny(konLogic),
+  "kon/lines": asAny(konLogic),
+  "kon/cross": asAny(konLogic),
+  "kon/ends": asAny(konLogic),
   // r4-khand: Nazariya, drawn by the Khand block world
   "nazariya/views": asAny(viewsLogic),
   "nazariya/array": asAny(arrayLogic),

@@ -17,14 +17,18 @@
 // wrong-scale (reads the protractor's other scale: 180 − θ) · orientation (a tilted base: the "right angle" is made
 // standing straight up instead) · reflex-missing (a reflex asked, the smaller angle made) · linear-90 (a linear pair read
 // as adding to 90°) · wrong-pair (isosceles: the top angle made equal to ∠A instead of ∠B).
+// r7 kon2: lines (parallel / perpendicular on squared paper), cross (a transversal: corresponding and alternate angles) and
+// ends (segment / ray / line by where the stops sit): the law lives in kon.lines.ts; each function below hands a line goal
+// there first, so every earlier goal runs exactly the code it ran before.
 import type { Candidate, FamilyLogic, Facts, GenRequest, KonAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
+import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
-export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso";
+export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal;
 export type AngleKind = "acute" | "right" | "obtuse" | "straight" | "reflex";
 export const ANGLE_KINDS: readonly AngleKind[] = ["acute", "right", "obtuse", "straight", "reflex"];
-export interface KonParams {
+export interface KonParams extends Omit<LineParams, "goal"> {
   goal: KonGoal;
   /** the arm's heading at the start (turn) or the base arm's heading (set), degrees */
   start: number;
@@ -45,10 +49,11 @@ export interface KonParams {
   /** what the dial shows (fade): every 10°, every 30°, or only 0 / 90 / 180 */
   scale: "10" | "30" | "landmarks";
 }
-export interface KonState extends Undoable<KonState> { heading: number | null; commits: number; done: boolean; acts: number }
-export const KON_MAL = ["cw-confuse", "half-is-quarter", "wrong-scale", "orientation", "reflex-missing", "linear-90", "wrong-pair"] as const;
+export interface KonState extends Undoable<KonState> { heading: number | null; commits: number; done: boolean; acts: number; stops?: Stops }
+export const KON_MAL = ["cw-confuse", "half-is-quarter", "wrong-scale", "orientation", "reflex-missing", "linear-90", "wrong-pair", ...LINE_MAL] as const;
 /** the goals each mode plays */
-export const KON_GOALS: Record<string, readonly KonGoal[]> = { turn: ["turn"], set: ["set"], zone: ["kind", "match"], pair: ["linear"], close: ["tri", "iso"] };
+export const KON_GOALS: Record<string, readonly KonGoal[]> = { turn: ["turn"], set: ["set"], zone: ["kind", "match"], pair: ["linear"], close: ["tri", "iso"],
+  lines: ["parallel", "perp"], cross: ["corr", "alt"], ends: ["ends"] };
 export const modeOfGoal = (g: KonGoal): string => (Object.entries(KON_GOALS).find(([, gs]) => gs.includes(g))?.[0] ?? g);
 /** the angle (degrees from the base arm) each kind accepts, and the one the solver makes */
 export const KIND_ZONE: Record<AngleKind, { lo: number; hi: number; make: number }> = {
@@ -72,6 +77,7 @@ export function openingOf(p: KonParams): number {
 export const openingAt = (p: KonParams, h: number) => norm((p.mirror ? -1 : 1) * (h - p.start));
 /** whether heading h meets the goal (a zone for acute / obtuse / reflex; within tolerance of the target otherwise) */
 export function meets(p: KonParams, h: number): boolean {
+  if (isLineGoal(p.goal)) return lineMeets(p, h);
   if (p.goal === "kind" && p.kind && KIND_ZONE[p.kind].hi > 0) { const a = openingAt(p, h), z = KIND_ZONE[p.kind]; return a >= z.lo && a <= z.hi; }
   return diff(h, targetOf(p)) <= p.tol;
 }
@@ -80,11 +86,13 @@ export const norm = (d: number) => ((d % 360) + 360) % 360;
 /** the shortest unsigned difference between two headings */
 export const diff = (a: number, b: number) => { const d = Math.abs(norm(a) - norm(b)); return Math.min(d, 360 - d); };
 export function targetOf(p: KonParams): number {
+  if (isLineGoal(p.goal)) return lineTarget(p);
   if (p.goal === "turn") return norm(p.start + (p.dir === "acw" ? 1 : -1) * 90 * (p.q ?? 1));
   return norm(p.start + (p.mirror ? -1 : 1) * openingOf(p));
 }
 /** where a child holding mal-rule `mal` points the arm (null = the belief says nothing different here) */
 export function malHeading(p: KonParams, mal: string): number | null {
+  if (isLineGoal(p.goal)) return lineMalHeading(p, mal);
   const t = targetOf(p);
   let h: number | null = null;
   if (p.goal === "turn" && mal === "cw-confuse") h = norm(p.start + (p.dir === "acw" ? -1 : 1) * 90 * (p.q ?? 1));
@@ -103,6 +111,7 @@ export function malHeading(p: KonParams, mal: string): number | null {
 const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
 /** the value the child is working towards, as on-screen facts (never a sentence) */
 export function valueFacts(p: KonParams): Facts {
+  if (isLineGoal(p.goal)) return lineValueFacts(p);
   switch (p.goal) {
     case "turn": return { turn: `${p.q}/4`, dir: p.dir ?? "cw" };
     case "set": return { angle: `${p.theta}°` };
@@ -118,6 +127,7 @@ export function valueFacts(p: KonParams): Facts {
 const intIn = (v: unknown, lo: number, hi: number) => { const n = Number(v); return Number.isInteger(n) && n >= lo && n <= hi ? n : null; };
 function validate(level: PlayLevel<unknown>): PlayLevel<KonParams> | null {
   const p = level.params as Partial<KonParams> | null;
+  if (p && isLineGoal(p.goal)) { const q = validateLine(p as Partial<LineParams>); return q ? ({ ...level, params: q } as PlayLevel<KonParams>) : null; }
   if (!p || !["turn", "set", "kind", "match", "linear", "tri", "iso"].includes(p.goal as string)) return null;
   if (p.goal !== "turn" && p.goal !== "set") return validateMore(level, p);
   const start = Number(p.start), tol = Number(p.tol);
@@ -148,7 +158,9 @@ function validateMore(level: PlayLevel<unknown>, p: Partial<KonParams>): PlayLev
   }
   return q ? ({ ...level, params: q } as PlayLevel<KonParams>) : null;
 }
-const init = (_l: PlayLevel<KonParams>): KonState => ({ heading: null, commits: 0, done: false, acts: 0, prev: null, depth: 0 });
+const init = (l: PlayLevel<KonParams>): KonState => (l.params.goal === "ends"
+  ? { heading: null, commits: 0, done: false, acts: 0, prev: null, depth: 0, stops: { lo: -2, hi: -2 } }
+  : { heading: null, commits: 0, done: false, acts: 0, prev: null, depth: 0 });
 
 function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: number): { state: KonState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
@@ -161,6 +173,16 @@ function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: numbe
     if (!Number.isFinite(d)) return { state: bump(s), moments: out, refused: "bad_turn" };
     return { state: bump(pushUndo(s, { ...s, heading: norm(d) })), moments: out };
   }
+  if (act.kind === "stop") {
+    if (p.goal !== "ends") return { state: bump(s), moments: out, refused: "unknown_act" };
+    const n = p.names?.length ?? 0, at = Number(act.at);
+    if ((act.side !== "lo" && act.side !== "hi") || !Number.isInteger(at) || at < -2 || at >= n) return { state: bump(s), moments: out, refused: "bad_stop" };
+    const stops = { ...(s.stops ?? { lo: -2, hi: -2 }), [act.side]: at };
+    if (!stopsOk({ lo: stops.lo === -2 ? -1 : stops.lo, hi: stops.hi === -2 ? -1 : stops.hi })) return { state: bump(s), moments: out, refused: "stops_cross" };
+    return { state: bump(pushUndo(s, { ...s, stops })), moments: out };
+  }
+  if (act.kind === "commit" && p.goal === "ends") return commitEnds(level, s, seq, out, bump);
+  if (act.kind === "commit" && isLineGoal(p.goal)) return commitLine(level, s, seq, out, bump);
   if (act.kind === "commit") {
     if (s.heading === null) return { state: bump(s), moments: out, refused: "turn_first" };
     const t = targetOf(p), e = p.goal === "kind" && meets(p, s.heading) ? 0 : diff(s.heading, t);
@@ -177,24 +199,66 @@ function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: numbe
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+type Bump = (st: KonState) => KonState;
+type Applied = { state: KonState; moments: Moment[]; refused?: string };
+/** lines / cross: the arm is a line (h and h + 180 the same); the gap is the angle between the two lines */
+function commitLine(level: PlayLevel<KonParams>, s: KonState, seq: number, out: Moment[], bump: Bump): Applied {
+  const p = level.params;
+  if (s.heading === null) return { state: bump(s), moments: out, refused: "turn_first" };
+  const next = bump(pushUndo(s, { ...s, commits: s.commits + 1 }));
+  const t = targetOf(p), at = Math.round(s.heading), truth = Math.round(t), e = ldiff(s.heading, t);
+  if (meets(p, s.heading)) { out.push(mom("solved", seq, { ...valueFacts(p), at, truth })); return { state: { ...next, done: true }, moments: out }; }
+  const g: Facts = Math.round(e) === e ? { gap: `${e}°` } : { gap_about: `${Math.round(e)}°` };
+  for (const mal of Object.keys(level.mal)) {
+    const mh = malHeading(p, mal);
+    if (mh !== null && ldiff(s.heading, mh) <= p.tol) { out.push(mom("misconception_consequence", seq, { ...valueFacts(p), at, truth, ...g }, mal)); return { state: next, moments: out, refused: "missed" }; }
+  }
+  out.push(mom(e <= 2 * p.tol ? "near_miss" : "law_refused", seq, { ...valueFacts(p), at, truth, ...g, why: "landed_off" }));
+  return { state: next, moments: out, refused: "missed" };
+}
+/** ends: both stops placed; the figure left between them is the named one, or it is not */
+function commitEnds(level: PlayLevel<KonParams>, s: KonState, seq: number, out: Moment[], bump: Bump): Applied {
+  const p = level.params, st = s.stops ?? { lo: -2, hi: -2 };
+  if (st.lo === -2 || st.hi === -2) return { state: bump(s), moments: out, refused: "stops_first" };
+  const next = bump(pushUndo(s, { ...s, commits: s.commits + 1 }));
+  const f: Facts = { ...valueFacts(p), lo: st.lo, hi: st.hi };
+  if (sameStops(st, endsTarget(p))) { out.push(mom("solved", seq, f)); return { state: { ...next, done: true }, moments: out }; }
+  for (const mal of Object.keys(level.mal)) {
+    const ms = endsMal(p, mal);
+    if (ms && sameStops(st, ms)) { out.push(mom("misconception_consequence", seq, f, mal)); return { state: next, moments: out, refused: "missed" }; }
+  }
+  out.push(mom("law_refused", seq, { ...f, why: "other_figure" }));
+  return { state: next, moments: out, refused: "missed" };
+}
+const stopActs = (st: Stops): KonAct[] => [{ kind: "stop", side: "lo", at: st.lo }, { kind: "stop", side: "hi", at: st.hi }, { kind: "commit" }];
 const goalMet = (_l: PlayLevel<KonParams>, s: KonState) => s.done;
-const solve = (level: PlayLevel<KonParams>): KonAct[] => [{ kind: "turn", deg: targetOf(level.params) }, { kind: "commit" }];
+const solve = (level: PlayLevel<KonParams>): KonAct[] => (level.params.goal === "ends" ? stopActs(endsTarget(level.params))
+  : [{ kind: "turn", deg: targetOf(level.params) }, { kind: "commit" }]);
 /** without the concept a child can only point at a landmark it can see (right, up, left, down; on a protractor 0 / 90 /
  *  180 from the base arm); a target within tolerance of one would be passed by guessing, so it is never served */
 function shortcut(level: PlayLevel<KonParams>): KonAct[] | null {
   const p = level.params, t = targetOf(p);
+  if (p.goal === "ends") return null;   // where each stop sits IS the skill (a figure is its ends)
+  if (isLineGoal(p.goal)) {
+    // lines: the landmarks are flat and upright; cross: the protractor's 0 / 90 / 180 from the road ray at X2
+    const marks = p.goal === "corr" || p.goal === "alt" ? [0, 90, 180].map((o) => (p.start + (p.t2 === "down" ? 180 : 0) + o) % 360) : [0, 90];
+    for (const g of marks) if (meets(p, g)) return [{ kind: "turn", deg: g }, { kind: "commit" }];
+    return null;
+  }
   if (p.goal === "turn") return null;   // every quarter heading is a landmark: which one is the skill (four choices, 3 wrong)
   if (p.goal === "kind") return null;   // the kind IS the skill: right and straight are landmarks by definition
   for (const off of [0, 90, 180]) { const g = norm(p.start + (p.mirror ? -1 : 1) * off); if (diff(g, t) <= p.tol) return [{ kind: "turn", deg: g }, { kind: "commit" }]; }
   return null;
 }
 function malActs(level: PlayLevel<KonParams>, mal: string): KonAct[] | null {
+  if (level.params.goal === "ends") { const st = endsMal(level.params, mal); return st ? stopActs(st) : null; }
   const h = malHeading(level.params, mal);
   return h === null ? null : [{ kind: "turn", deg: h }, { kind: "commit" }];
 }
 
-interface KonGrammar { goal?: KonGoal; q?: (1 | 2 | 3)[]; tol?: number; mirror?: boolean; kinds?: AngleKind[]; isoBy?: ("base" | "apex")[] }
+interface KonGrammar { goal?: KonGoal; q?: (1 | 2 | 3)[]; tol?: number; mirror?: boolean; kinds?: AngleKind[]; isoBy?: ("base" | "apex")[]; figs?: Fig[]; grid?: boolean }
 function difficultyOf(p: KonParams): number {
+  if (isLineGoal(p.goal)) return lineDifficulty(p);
   if (p.goal === "kind") return Math.min(1, 0.2 + (p.kind === "reflex" ? 0.3 : p.kind === "straight" ? 0.15 : 0) + (p.start % 90 ? 0.2 : 0) + (p.mirror ? 0.1 : 0));
   if (p.goal === "match") return Math.min(1, 0.3 + (Math.abs((p.refStart ?? 0) - p.start) % 180 ? 0.2 : 0) + ((p.ref ?? 0) % 10 ? 0.1 : 0));
   if (p.goal === "linear" || p.goal === "tri" || p.goal === "iso") return Math.min(1, 0.45 + (p.scale === "landmarks" ? 0.25 : p.scale === "30" ? 0.1 : 0) + (openingOf(p) % 10 ? 0.1 : 0));
@@ -212,6 +276,7 @@ function generate(req: GenRequest): Candidate<KonParams>[] {
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: "space", seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
+  if (isLineGoal(goal)) return generateLine(goal, g, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
   if (goal === "turn") {
     for (const start of [0, 90, 180, 270]) for (const q of g.q ?? [1, 2, 3]) for (const dir of ["cw", "acw"] as const)
       out.push(mk({ goal, start, q, dir, tol: g.tol ?? 12, scale }, `turn:${start}:${q}${dir}`));
@@ -278,12 +343,19 @@ function generateMore(goal: KonGoal, g: KonGrammar, rnd: () => number, scale: Ko
 function facts(level: PlayLevel<KonParams>, s: KonState): Facts {
   const f: Facts = { goal: level.params.goal, ...valueFacts(level.params) };
   if (s.heading !== null) f.at = Math.round(s.heading);
+  if (s.stops) { f.lo = s.stops.lo; f.hi = s.stops.hi; }
   if (s.commits) f.commits = s.commits;
   if (s.done) f.done = "yes";
   return f;
 }
 function board(level: PlayLevel<KonParams>, s: KonState) {
   const p = level.params;
+  if (isLineGoal(p.goal)) {
+    const v = lineValueFacts(p);
+    const what = p.goal === "parallel" ? "line 2 parallel to line 1" : p.goal === "perp" ? "line 2 perpendicular to line 1"
+      : p.goal === "ends" ? `${v.fig} ${v.name}` : `∠1 = ${p.given}°; open ∠2 so the lines are parallel`;
+    return { title: p.goal === "ends" ? "Ends" : "Lines", lines: [what, ...(s.heading !== null ? [`now: ${Math.round(s.heading)}°`] : [])] };
+  }
   const what = p.goal === "turn" ? `${p.q}/4 ${p.dir === "acw" ? "anticlockwise" : "clockwise"}` : p.goal === "set" ? `${p.theta}°`
     : p.goal === "kind" ? `${p.kind} angle` : p.goal === "match" ? "equal to the reference" : p.goal === "linear" ? `∠AOC = ${p.given}°; open ∠COB`
     : p.goal === "tri" ? `∠A = ${p.given}°, top = ${p.apex}°; open ∠B` : p.isoBy === "apex" ? `AC = BC, top = ${p.apex}°; open ∠B` : `AC = BC, ∠A = ${p.given}°; open ∠B`;
@@ -294,6 +366,6 @@ function grade(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): Pl
 }
 
 export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
-  family: "kon", modes: ["turn", "set", "zone", "pair", "close"], malRules: KON_MAL,
+  family: "kon", modes: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"], malRules: KON_MAL,
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

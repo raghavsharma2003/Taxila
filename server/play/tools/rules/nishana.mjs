@@ -26,6 +26,12 @@ export const RULES = [
   // a product is repeated hops)
   R("c6-maths-ch10-t03", "nishana", "hop", "hop", { "subtract-smaller": "subtract-smaller", "two-neg-positive": "two-neg-positive", "sign-of-bigger": "sign-of-bigger" }, { ops: ["+", "-"] }),
   R("c7-maths-ch10-t01", "nishana", "hop", "hop", { "neg-neg": "neg-neg" }, { ops: ["×"] }),
+  // r7 nishana2: a quotient as hops from 0 that must reach the dividend (b equal hops of the pod's size; or hops OF a
+  // negative divisor, the pod counting them, backward = minus). Both sign beliefs are the kit's sign-mix (its diagnostic
+  // tags 12 ÷ (−3) = 4 there too). Not here: m-impossible (refusing gives no landing) and m-div-zero (÷ 0 has no point)
+  R("c7-maths-ch10-t02", "nishana", "hop", "hop", { "div-neg-neg": "sign-mix", "div-by-size": "sign-mix" }, { ops: ["÷"] }),
+  // r7 nishana2: decimal hops on a tenths line; a wrong lining-up of places lands visibly elsewhere
+  R("c7-maths-ch03-t04", "nishana", "hop", "hop", { "dec-right-align": "right-align", "dec-separate-parts": "separate-parts", "dec-smaller-from-larger": "smaller-from-larger" }, { ops: ["+", "-"], decimals: 2 }),
 ];
 
 export const ACTS = {
@@ -45,4 +51,6 @@ export const ACTS = {
   "c5-maths-ch01-t02|round": ["s1"],
   "c6-maths-ch10-t03|hop": ["s2", "s1", "s3"],          // add and subtract integers on the line; subtracting a negative is adding
   "c7-maths-ch10-t01|hop": ["s1", "s2"],                // a product as repeated hops; negative × negative
+  "c7-maths-ch10-t02|hop": ["s2", "s1"],                // the quotient's sign from the hops; ÷ undoes × (the chain is pod × divisor)
+  "c7-maths-ch03-t04|hop": ["s1", "s2"],                // add / subtract decimals (places lined up; 5 = 5.00); never s3 (estimating)
 };

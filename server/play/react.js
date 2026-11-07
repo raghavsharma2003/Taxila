@@ -12,6 +12,7 @@ import { nazariyaHidden } from "../../src/play/families/nazariya/index.ts";
 import { stambhHidden } from "../../src/play/families/stambh/stambh.logic.ts";
 import { pendulumHidden } from "../../src/play/families/yantra/pendulum.logic.ts";
 import { openingOf } from "../../src/play/families/kon/kon.logic.ts";
+import { angle2 } from "../../src/play/families/kon/kon.lines.ts";
 import { hopValue } from "../../src/play/families/nishana/line.logic.ts";
 import { weighHidden } from "../../src/play/families/taraazu/weigh.logic.ts";
 import { kaalHidden } from "../../src/play/families/kaal/kaal.logic.ts";
@@ -89,6 +90,7 @@ export function hiddenOf(level) {
     case "bars": case "picto": return stambhHidden(level);   // round 7: the diff bar's value
     // r7: answers the law computes from what the child is told (never what is on screen as given)
     case "pair": case "close": return [openingOf(p)];        // ∠COB = 180 − ∠AOC; ∠B from the angle sum / isosceles
+    case "cross": return [Math.round(angle2(p))];             // r7 kon2: the reading ∠2 must show (equal to ∠1, or 180° − ∠1)
     case "hop": return p.hop ? [hopValue(p.hop)] : [];        // where the hop lands
     case "pendulum": return pendulumHidden(level);           // the thread lengths that keep the beat
     case "weigh": case "fill": return weighHidden(level);    // round 7: the label in grams / ml
