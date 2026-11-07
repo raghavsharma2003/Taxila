@@ -193,6 +193,10 @@
       "hi": "Tile ko thoda-thoda ghumao aur har baar tester lagao. Tile ki jagah badalti hai, par tester har baar bilkul fit hota hai.",
       "en": "Turn the tile a little at a time and put the tester on it each time. The tile's position changes, but the tester fits exactly every time."
      },
+     "simpler": {
+      "hi": "Tile ghumane se sirf uski jagah badalti hai. Tester phir bhi har baar bilkul fit hota hai.",
+      "en": "Turning the tile only changes where it is. The tester still fits exactly every time."
+     },
      "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["tile", "ghumao"] } },
      "then": {
       "prompt": { "hi": "Ek square rumaal ko ghumakar diamond jaisa rakh diya. Kya uske kone ab bhi right angle hain?", "en": "A square handkerchief is turned and laid like a diamond. Are its corners still right angles?" },
@@ -395,6 +399,10 @@
       "hi": "Angle ka khulna pakad lo aur bhuja chhoti se lambi karte jao. Khulna wahi rehta hai, toh angle bhi wahi rehta hai.",
       "en": "Hold the angle's opening still and make its arms longer and longer. The opening stays the same, so the angle stays the same too."
      },
+     "simpler": {
+      "hi": "Bhuja lambi karo, khulna wahi rehta hai. Toh angle bhi wahi rehta hai.",
+      "en": "Make the arms longer and the opening stays the same. So the angle stays the same."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "Chhoti bhuja", "items": ["wahi khulna"] }, "right": { "title": "Lambi bhuja", "items": ["wahi khulna"] } } },
      "then": {
       "prompt": { "hi": "Do kainchi ek jitni khuli hain. Ek ki blade 5 cm, doosri ki 15 cm. Kaunsa angle bada hai, ya dono barabar?", "en": "Two scissors open by the same amount; one has 5 cm blades, one 15 cm. Which angle is bigger, or are they equal?" },
@@ -474,7 +482,7 @@
       "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances are not equal"],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
-      "why": { "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, doori barabar nahi", "en": "the edge is 8 cm from the centre on one side and 10 cm on the other, so the distances are not equal" }
+      "why": { "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, doori barabar nahi", "en": "the edge is 8 cm from the centre one way and 10 cm the other, so the distances are not equal" }
      },
      "simpler": { "hi": "Circle mein centre se har kinaara ek jitna door hota hai. Anda ek taraf lamba hai, isliye uski doori badalti rehti hai.", "en": "In a circle every point of the edge is the same distance from the centre. An egg is longer one way, so its distance keeps changing." }
     },
@@ -560,7 +568,7 @@
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "Yes",
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "kahin 5 cm" } },
-     "why": { "hi": "loop ka kinaara centre se kahin 5 cm aur kahin 6 cm hai, doori ek jaisi nahi", "en": "the loop's edge is 5 cm from the centre in some places and 6 cm in others, so the distance is not the same" },
+     "why": { "hi": "loop ka kinaara centre se kahin 5 cm aur kahin 6 cm hai, doori ek jaisi nahi", "en": "the loop's edge is 5 cm from the centre in places and 6 cm in others, so the distance changes" },
      "simpler": { "hi": "Circle mein har taraf centre se doori ek jaisi hoti hai. Is loop mein kahin 5 cm hai aur kahin 6 cm.", "en": "In a circle the distance from the centre is the same on every side. This loop has 5 cm in some places and 6 cm in others." }
     },
     {
@@ -593,6 +601,10 @@
       "hi": "String se bane circle mein centre se har point barabar door hai. Haath se bane oval mein yeh doori badalti hai, isliye oval circle nahi.",
       "en": "In the circle made with a string, every point is equally far from the centre. In an oval drawn by hand this distance changes, so the oval is not a circle."
      },
+     "simpler": {
+      "hi": "Circle mein centre se har point ki doori barabar hoti hai. Oval mein yeh doori badalti hai, isliye oval circle nahi.",
+      "en": "In a circle every point is the same distance from the centre. In an oval it changes, so an oval is not a circle."
+     },
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "barabar door", "name": "string se circle" } },
      "then": {
       "prompt": { "hi": "Ek plate ke centre se kinaara ek taraf 9 cm aur doosri taraf 11 cm hai. Kya plate circle hai?", "en": "From the centre of a plate, the edge is 9 cm on one side and 11 cm on the other. Is the plate a circle?" },
@@ -601,7 +613,7 @@
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
       "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "9 cm" } },
-      "why": { "hi": "plate ka kinaara centre se ek taraf 9 cm aur doosri taraf 11 cm hai, doori barabar nahi", "en": "the plate's edge is 9 cm from the centre on one side and 11 cm on the other, so the distances are not equal" },
+      "why": { "hi": "plate ka kinaara centre se ek taraf 9 cm aur doosri taraf 11 cm hai, doori barabar nahi", "en": "the plate's edge is 9 cm from the centre one way and 11 cm the other, so the distances differ" },
       "simpler": { "hi": "Circle mein centre se kinaara har taraf ek jitna door hota hai. Plate mein ek taraf 9 cm hai aur doosri taraf 11 cm.", "en": "In a circle the edge is the same distance from the centre on every side. The plate has 9 cm on one side and 11 cm on the other." }
      }
     }
