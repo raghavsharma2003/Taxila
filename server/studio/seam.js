@@ -1090,7 +1090,7 @@ export const studioSeam = {
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
     // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
-    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [] }) : null;
+    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], keep: onPage }) : null;
     if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     const ctxFirst = boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] });
     const first = boardFirst.takePreselected(ask, ctxFirst);

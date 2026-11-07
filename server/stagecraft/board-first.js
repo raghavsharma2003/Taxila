@@ -572,9 +572,11 @@ const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "
  * [{ from, screen }], by, template, source }) or null (one board, as before).
  */
 /** How many later pages a paged turn dropped because their own take failed (the page before them stayed up). */
-let pagesDropped = 0;
+let pagesDropped = 0, firstKept = 0;
+/** How many paged turns kept the card's board on screen for a first page whose own take failed. */
+export const firstPageKeptCount = () => firstKept;
 export const pagesDroppedCount = () => pagesDropped;
-export function pagesBoard(ask, { kit, redact = [] } = {}) {
+export function pagesBoard(ask, { kit, redact = [], keep = null } = {}) {
   try {
     let sg = segmentsOf(ask);
     if (!sg || !kit) return null;
@@ -592,7 +594,17 @@ export function pagesBoard(ask, { kit, redact = [] } = {}) {
     // (director9, Brain's replay of c5-t01 steady T21: a 3-word tail page failed W6 and took the whole turn down with it —
     // the verdict page's revealed 1/8 never reached the screen. A LATER page that fails is dropped: the page before it
     // stays up through its words. The first page failing still fails the turn: there is nothing to stand on)
-    if (!takes0[0]?.script) return null;
+    // (director10: 31 turns unpaged, each on its FIRST page — the close said over the answered card's own board, which is
+    // the board already up. That page keeps the card's board AS IT IS (`keep`, the seam's page on screen, when it is this
+    // page's board); only with no card board to keep does the turn fail)
+    if (!takes0[0]?.script) {
+      const p0 = picks.get(id), base = p0?.raw ?? p0?.script ?? null;
+      if (!keep?.ops?.length || !base || !(samePage(base, keep) || shownBefore(base, { avoid: keep }))) return null;
+      const still = { ...keep, ops: keep.ops.map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 };
+      takes0[0] = { ok: true, script: still, template: p0.template, source: "kept", by: "script", kept: true,
+        screen: screenOf({ template: p0.template, facts: { ...(base.facts ?? p0.facts ?? {}), ...(p0.counts ? { counts: p0.counts } : {}) } }, keep.facts ?? p0.facts, keep) };
+      firstKept++;
+    }
     const kept = takes0.map((t, i) => (i === 0 || t?.script ? i : -1)).filter((i) => i >= 0);
     if (kept.length < takes0.length) pagesDropped += takes0.length - kept.length;
     const takes = kept.map((i) => takes0[i]);
