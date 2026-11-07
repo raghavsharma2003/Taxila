@@ -25925,6 +25925,20 @@
    "at": "2026-11-06",
    "title": "Round 7 F: check.mjs runs W15 (named_shape_drawn) in asked mode on every script board. A line that names a square, rectangle, triangle or circle must have a board that draws that shape; otherwise the line is reworded. All 4 live pilots pass. 21 staged boards failed and were fixed by drawing the shape (shape@1, shade-grid@1) or rewording the line, except 4 c4-ch01-t02 cards, which wait on Studio exempting 'square corner' (NCERT's name for a right angle) as it did 'set-square'. Reverse if: Studio's exemption list grows past a handful of phrases; then key W15 to board intent instead of words.",
    "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "ms-r7-director10-hand-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "director10: script walk v6.1, v2.3 pilots, split policy B; int/r6 2ede8a434 + Brain de86cad2; 16 lessons, counted by hand by 4 Claude judges.\n- Beats taught 203/210 (97%); verdicts 217/219 (99%); misgrades 0/0; false keys 0 strict (2 borderline).\n- Contradictions per segment by hand: 52 (5 words / 44 drawing / 3 data). Of the drawing ones, about 29 are first-page failures that unpage the turn, about 9 are missing or wrong second views, and 6 are confirm-reveal keyed to digits.\n- `simpler` answered requests: c4 10/11, c6 11/17, c5-t02 6/9.\n- 13 of 16 lessons left skill 1 (director9: 6).\n- Turns over 60 words: 21-30 per topic.\n- Axes: listening 3-3.5; worked example 3.5-4; class-level 3.5-4; screen 2-3.5; register 2-3; promises 2.5-3.\n- Cost: 1,380 calls, ~$0.95. Reply-ready p50 2.56 s / p90 4.04 s.",
+   "source": "inbox/r7-main-21.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-2",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Script walk v6.2: the board always draws, and turns stop stacking.\n- Studio, with Brain:\n  - G1: a failing first page keeps the card's board, and never fails the turn.\n  - G2: W5/W8 accept a close in the card's authored why.\n  - G3: confirm-reveal fires on a correct verdict.\n  - G4: a second view for every card template, built from the live card's figure.\n  - G5: 'screen par dikhao' is a picture request.\n- Brain (split policy B is kept, with limits):\n  - T1: one close per turn; stale closes dropped.\n  - T2: each why said once.\n  - T3: the turn ends after a bridge.\n  - H1: hints are authored and never leak the answer.\n  - H2: asides are returned at the promised point, about the child's own words.\n  - H3: code acknowledgements.\n  - H4: Hindi without doubling.\n  - H5: every keyed answer gets a verdict.\n- Learning: `simpler` on remediations, answerBoards, whys that name values, and the data fixes.\n- Next: director11 on integration 13. The gate is unchanged; the 30-topic batch stays held.\n- Reverse if: director11 has G1-G4 in place and still has more than 10 drawing contradictions. Then boards for closes and pictures become code-composed from the card params alone, never re-taken against her line.",
+   "source": "inbox/r7-main-21.json"
   }
  ],
  "edges": [
@@ -40567,6 +40581,16 @@
    "src": "dc-r7-games-nishana2",
    "rel": "measured_by",
    "dst": "ms-r7-games-nishana2-cert"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-1"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2",
+   "rel": "measured_by",
+   "dst": "ms-r7-director10-hand-2026-11-07"
   }
  ]
 }

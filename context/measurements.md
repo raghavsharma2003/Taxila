@@ -5887,3 +5887,23 @@ nishana play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, th
 
 - **Cert:** 228/228 nishana samples pass at every size (18 entries, 16 samples on the two new hop entries; counts in server/forge3/certs/play.json). On the first run, the 8 ÷ samples failed Q2.whole at p360: the negative-divisor goal ("… A backward hop counts as minus.") was ellipsised. The goals were shortened ("… Backward = minus") and that entry was re-judged with --resume. The decimal entry passed on the first run. In the shots, tenth ticks are about 27 px apart on a 0-2 line at p360, and labels are 16 px.
 - **Tests:** tests/r7-games-nishana.test.mjs has 12 tests: the pinned levelIds; validity; an independent plain-arithmetic checker; each mal-rule named alone; picker shortcut null; generator p95 < 50 ms; a ≥ 2000-act random battery per kind; the kit's examples; forged levels refused; currentLevel serving at every fade; the answer hidden from reactions; and the words. Gate files (r7-games-*, *play*, economy, isolation): 872 tests pass. lint-ui is 354 before and after.
+
+
+<!-- merged from inbox/r7-main-21.json -->
+## `ms-r7-director10-hand-2026-11-07` (2026-11-07)
+
+director10: v6.1, v2.3 pilots, policy B. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 97% |
+| Verdicts | 99% |
+| Misgrades | 0/0 |
+| False keys | 0 strict |
+| Contradictions, by hand | 52 (words 5, drawing 44, data 3) |
+
+The drawing contradictions break down as: first-page failures about 29, second views about 9, confirm-reveal 6.
+
+`simpler` now answers most requests. 13 of 16 lessons leave skill 1. Turns over 60 words: 21-30 per topic. Cost ~$0.95; reply-ready p50 2.56 s.
+
+Full write-up: docs/design/round7/judgements/director10-2026-11-07.md.
