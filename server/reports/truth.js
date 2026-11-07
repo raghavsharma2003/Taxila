@@ -22,7 +22,7 @@ import { DELAY_MS } from "./config.js";
 import { learningDay, weekday as weekdayOf } from "../conductor/clock.js";
 import { rankSubjects, rotationOn, rotationSubjects, timetableToday } from "../conductor/rotation.js";
 import { SUBJECT_ORDER, topicSequence } from "../content/curriculum.js";
-import { placementResultsOf, startGEOf } from "../placement/store.js";
+import { liveResultsOf, startGEOf } from "../placement/store.js";
 import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 
 /** A lesson that ran this long (start → end) counts even with nothing graded (V2 §3.13: shorter is an accidental start). */
@@ -281,7 +281,7 @@ export async function nextTopicForPlan(child, { testWindow, now = new Date(), q 
     }
     return nextTopicFor(child).catch(() => null);
   }
-  const [pick, placed] = await Promise.all([subjectsToday(child, { testWindow: w, now, q }), placementResultsOf(child.id, { q_: q })]);
+  const [pick, placed] = await Promise.all([subjectsToday(child, { testWindow: w, now, q }), liveResultsOf(child.id, { q_: q })]);
   // round 7 F item 6: a finished placement round sets where a subject starts when the school's chapter is not known
   const startGE = startGEOf(placed);
   // round 7 F: a test window with chapters revises only those; retrieval-only (a topic already met) in its last 2 days

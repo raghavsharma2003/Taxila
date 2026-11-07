@@ -5,6 +5,8 @@
 //   POST /api/placement/start  { childId, subject? }                    → { placementId, item } | { skip: true }
 //   POST /api/placement/answer { childId, placementId, itemId, response, ms? } → { done: false, item } | { done: true, summary }
 //   GET  /api/placement/result?childId=                                → { results: { [subject]: PlacementSummary } }
+//   POST /api/placement/onboarding { childId, parentView?, childPicks? } → { note }   (round 7 F cold start, no quiz)
+//   GET  /api/placement/note?childId=                                  → { note }   (checked placement note, 3 languages)
 //
 // Review 2026-10-05 (zero visible failure): classes outside the bank (1-2) get { skip: true }, a malformed placementId is a
 // 404 not a Postgres 500, and a stale itemId is a 409 carrying the current item so the client re-renders instead of showing
@@ -14,6 +16,9 @@ import { requireChild } from "../auth.js";
 import { q, one } from "../db.js";
 import { startPlacement, answerPlacement, publicItem, loadBank, poolFor } from "../placement/index.js";
 import { summaryOf, placementResultsOf } from "../placement/store.js";
+import { coldStartResult, PARENT_VIEWS, CHILD_PICKS } from "../placement/coldstart.js";
+import { placementNote } from "../placement/note.js";
+import { topicSequence } from "../content/curriculum.js";
 import { writePlacementPrior } from "../placement/kt.js";
 
 const SUBJECTS = new Set(["maths", "evs", "science"]);
@@ -68,7 +73,64 @@ async function results(req, res) {
   send(res, 200, { results: Object.fromEntries(Object.entries(all).map(([s, r]) => [s, summaryOf(r, child.class_level, s)])) });
 }
 
+/** Subjects a cold start covers for a class: those with a curriculum for it. */
+export const COLD_SUBJECTS = Object.freeze(["maths", "evs", "science", "english", "hindi", "sst"]);
+export const coldSubjectsFor = (classLevel) => COLD_SUBJECTS.filter((s) => topicSequence(Number(classLevel), s).length > 0);
+
+/**
+ * PURE. Merge a request's answers into the stored ones: only known subjects for the class and known values; "unsure"
+ * clears a parent view, an absent subject keeps what was stored.
+ */
+export function mergeAnswers(stored, body, classLevel) {
+  const subjects = new Set(coldSubjectsFor(classLevel));
+  const out = { parentView: { ...(stored?.parentView ?? {}) }, childPicks: { ...(stored?.childPicks ?? {}) } };
+  for (const [s, v] of Object.entries(body?.parentView ?? {})) {
+    if (!subjects.has(s) || !PARENT_VIEWS.includes(v)) continue;
+    if (v === "unsure") delete out.parentView[s]; else out.parentView[s] = v;
+  }
+  for (const [s, v] of Object.entries(body?.childPicks ?? {})) if (subjects.has(s) && CHILD_PICKS.includes(v)) out.childPicks[s] = v;
+  return out;
+}
+
+async function noteFor(child) {
+  const [results, row] = await Promise.all([placementResultsOf(child.id), one("select onboarding_answers from child where id = $1", [child.id])]);
+  return placementNote({ child, results, answers: row?.onboarding_answers ?? {} });
+}
+
+/**
+ * POST /api/placement/onboarding: store the parent's view and/or the child's quick picks, then (re)make each answered
+ * subject's cold-start estimate as a placement row (source 'onboarding'). A subject that already has a placement round
+ * of its own (the CAT) keeps it. The θ prior site is written once per subject (the first onboarding row): a later
+ * change of answer moves where topic choice starts, never adds a second site to the ledger.
+ */
+async function onboarding(req, res, body) {
+  const { child } = await requireChild(req, body?.childId);
+  const row = await one("select onboarding_answers from child where id = $1", [child.id]);
+  const answers = mergeAnswers(row?.onboarding_answers, body, child.class_level);
+  await q("update child set onboarding_answers = $2 where id = $1", [child.id, JSON.stringify(answers)]);
+  const existing = await q(`select distinct on (subject) subject, result->>'source' as source from placement
+      where child_id = $1 and completed_at is not null and result is not null order by subject, completed_at desc`, [child.id]);
+  const had = new Map(existing.map((r) => [r.subject, r.source ?? "cat"]));
+  for (const subject of coldSubjectsFor(child.class_level)) {
+    if (had.get(subject) && had.get(subject) !== "onboarding") continue;
+    const result = coldStartResult({ subject, classLevel: Number(child.class_level), parentView: answers.parentView[subject], childPick: answers.childPicks[subject] });
+    if (!result) continue;
+    const ins = await one("insert into placement (child_id, subject, state, result, completed_at) values ($1, $2, $3, $4, now()) returning id, completed_at",
+      [child.id, subject, JSON.stringify({ source: "onboarding" }), JSON.stringify(result)]);
+    if (!had.has(subject)) await writePlacementPrior(child, { placementId: ins.id, completedAt: ins.completed_at, result });
+  }
+  send(res, 200, { note: await noteFor(child) });
+}
+
+/** GET /api/placement/note?childId= → { note: { lines: { en, hinglish, hi }, checked } } (only lines that passed). */
+async function note(req, res) {
+  const { child } = await requireChild(req, query(req).get("childId"));
+  send(res, 200, { note: await noteFor(child) });
+}
+
 export const routes = {
+  "POST /api/placement/onboarding": onboarding,
+  "GET /api/placement/note": note,
   "POST /api/placement/start": start,
   "POST /api/placement/answer": answer,
   "GET /api/placement/result": results,

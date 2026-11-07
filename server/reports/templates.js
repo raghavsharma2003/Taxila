@@ -226,6 +226,40 @@ export const SHAPES = {
     en: (s) => `At home: ${s.name} has been practising ${q(s.skill)}. With ${s.object}, ask ${s.name} to show you how it works, then name one step ${s.name} did. If it goes wrong, ask what ${s.name} tried and what to try next.`,
     hinglish: (s) => `Ghar par: ${s.name} ${q(s.skill)} par kaam kar rahe hain. ${s.object} ke saath ${s.name} se kahiye ki aapko karke dikhayein, phir ${s.name} ke kiye ek step ka naam lekar taareef kijiye. Galat ho jaaye to poochhiye: kya try kiya, aage kya try karenge?`,
     hi: (s) => `घर पर: ${s.name} ${q(s.skill)} पर काम कर रहे हैं। ${s.object} के साथ ${s.name} से कहिए कि आपको करके दिखाएँ, फिर ${s.name} के किए एक कदम का नाम लेकर तारीफ़ कीजिए। ग़लत हो जाए तो पूछिए: क्या आज़माया, आगे क्या आज़माएँगे?` },
+
+  // Cold-start placement note (round 7 F, server/placement/note.js; not a report line): where a new child begins in a
+  // subject and what that was made from. One shape per answer value, so no free word rides in a slot; never a level word
+  // (lexicon "prediction": behind / on track) and never a class number (rejected grade-equivalent-parent-band).
+  "place.start": { slots: { name: "name", subject: "subject", skill: "curriculum" },
+    en: (s) => `${s.subject}: Taxila will begin with ${q(s.skill)}, and move along as ${s.name}'s answers in lessons show the next step.`,
+    hinglish: (s) => `${s.subject}: Taxila ${q(s.skill)} se shuru karegi, aur lessons mein ${s.name} ke jawaab dekhkar aage badhegi.`,
+    hi: (s) => `${s.subject}: Taxila ${q(s.skill)} से शुरू करेगी, और पाठों में ${s.name} के जवाब देखकर आगे बढ़ेगी।` },
+  "place.easier": { slots: { subject: "subject" },
+    en: (s) => `${s.subject} starts a little before the class's current chapter, so the first lessons go smoothly.`,
+    hinglish: (s) => `${s.subject} class ke abhi ke chapter se thoda pehle se shuru hoga, taaki pehle lessons aaraam se chalein.`,
+    hi: (s) => `${s.subject} कक्षा के अभी के अध्याय से थोड़ा पहले से शुरू होगा, ताकि पहले पाठ आराम से चलें।` },
+  "place.parent_hard": { slots: { subject: "subject" },
+    en: (s) => `You told us ${s.subject} feels hard right now.`, hinglish: (s) => `Aapne bataya ki ${s.subject} abhi mushkil lagta hai.`,
+    hi: (s) => `आपने बताया कि ${s.subject} अभी मुश्किल लगता है।` },
+  "place.parent_fine": { slots: { subject: "subject" },
+    en: (s) => `You told us ${s.subject} feels about right.`, hinglish: (s) => `Aapne bataya ki ${s.subject} theek-thaak lagta hai.`,
+    hi: (s) => `आपने बताया कि ${s.subject} ठीक-ठाक लगता है।` },
+  "place.parent_easy": { slots: { subject: "subject" },
+    en: (s) => `You told us ${s.subject} feels easy.`, hinglish: (s) => `Aapne bataya ki ${s.subject} aasaan lagta hai.`,
+    hi: (s) => `आपने बताया कि ${s.subject} आसान लगता है।` },
+  "place.child_tricky": { slots: { name: "name", subject: "subject" },
+    en: (s) => `${s.name} picked “tricky” for ${s.subject}.`, hinglish: (s) => `${s.name} ne ${s.subject} ke liye “tricky” chuna.`,
+    hi: (s) => `${s.name} ने ${s.subject} के लिए “मुश्किल” चुना।` },
+  "place.child_okay": { slots: { name: "name", subject: "subject" },
+    en: (s) => `${s.name} picked “okay” for ${s.subject}.`, hinglish: (s) => `${s.name} ne ${s.subject} ke liye “okay” chuna.`,
+    hi: (s) => `${s.name} ने ${s.subject} के लिए “ठीक” चुना।` },
+  "place.child_easy": { slots: { name: "name", subject: "subject" },
+    en: (s) => `${s.name} picked “easy” for ${s.subject}.`, hinglish: (s) => `${s.name} ne ${s.subject} ke liye “easy” chuna.`,
+    hi: (s) => `${s.name} ने ${s.subject} के लिए “आसान” चुना।` },
+  "place.firstweek": { slots: {},
+    en: () => "The first two lessons stay on familiar ground, then one new idea comes in at a time.",
+    hinglish: () => "Pehle do lessons jaani-pehchaani cheezon par rahenge, phir ek baar mein ek naya idea aayega.",
+    hi: () => "पहले दो पाठ जानी-पहचानी चीज़ों पर रहेंगे, फिर एक बार में एक नई बात आएगी।" },
 };
 
 /**
@@ -297,7 +331,15 @@ const HEADER_HOW = {
   hinglish: "Is samay mein shuru hue lessons, aur shuru se khatam tak ke minute. Jo lesson band nahi hua, uska samay aakhri sawaal tak gina gaya.",
   hi: "इस समय में शुरू हुए पाठ, और शुरू से ख़त्म तक के मिनट। जो पाठ बंद नहीं हुआ, उसका समय आख़िरी सवाल तक गिना गया।",
 };
+const PLACE_HOW = { en: "Made from the answers you and your child gave when you joined, and the class. Nothing extra was asked of your child. It changes on its own once a few lessons have shown where to begin.",
+  hinglish: "Judte samay aapke aur bachche ke diye jawaab, aur class se bana. Bachche se alag se kuch nahi poochha gaya. Kuch lessons ke baad yeh apne aap badal jaata hai.",
+  hi: "जुड़ते समय आपके और बच्चे के दिए जवाब, और कक्षा से बना। बच्चे से अलग से कुछ नहीं पूछा गया। कुछ पाठों के बाद यह अपने आप बदल जाता है।" };
 export const HOW = {
+  "place.start": PLACE_HOW, "place.easier": PLACE_HOW, "place.parent_hard": PLACE_HOW, "place.parent_fine": PLACE_HOW, "place.parent_easy": PLACE_HOW,
+  "place.child_tricky": PLACE_HOW, "place.child_okay": PLACE_HOW, "place.child_easy": PLACE_HOW,
+  "place.firstweek": { en: "The plan for a new child's first lessons in a subject: two lessons with no new topic, then one new idea per lesson.",
+    hinglish: "Naye bachche ke kisi subject ke pehle lessons ka plan: do lessons bina naye topic ke, phir har lesson mein ek naya idea.",
+    hi: "नए बच्चे के किसी विषय के पहले पाठों की योजना: दो पाठ बिना नए विषय के, फिर हर पाठ में एक नई बात।" },
   "header.daily": HEADER_HOW, "header.weekly": HEADER_HOW,
   "header.zero": { en: "No lesson started in this week.", hinglish: "Is hafte koi lesson shuru nahi hua.", hi: "इस हफ़्ते कोई पाठ शुरू नहीं हुआ।" },
   "header.nolesson": { en: "No lesson started on this day. The rows below are questions or teaching outside a lesson.",

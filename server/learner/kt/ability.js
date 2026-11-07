@@ -143,14 +143,18 @@ export function inv(A, n) {
 const matVec = (A, x, n) => Array.from({ length: n }, (_, i) => x.reduce((s, xj, j) => s + A[i * n + j] * xj, 0));
 
 // ───────────── priors (§6.3 mixture; borrowing ρ) ─────────────
-/** sd0 and the mixture prior's Normal fit for a strand at a class (no placement yet). */
-export function classPrior(strand, classLevel) {
+/** The class mixture prior for a strand (no placement yet): sd0 and its components [weight, mean]. */
+export function classPriorComponents(strand, classLevel) {
   const subject = subjectOfStrand(strand);
   const sd0 = classLevel <= 2 ? 1.0 : 1.5;
   const enrolled = classLevel - 1 + 0.5;  // mid-year default [U]
   const gapFar = subject === "maths" ? Math.max(0.5, 0.6 * (classLevel - 1.8))
     : Math.min(2.5, Math.max(0.3, 0.67 * classLevel - 3.5));
-  const comps = [[0.6, enrolled - 0.5], [0.4, enrolled - gapFar]];
+  return { sd0, comps: [[0.6, enrolled - 0.5], [0.4, enrolled - gapFar]] };
+}
+/** The mixture prior's components ([weight, mean], each with sd sd0; round 7 F cold start reads them) and its Normal fit. */
+export function classPrior(strand, classLevel) {
+  const { sd0, comps } = classPriorComponents(strand, classLevel);
   const mu = comps.reduce((s, [w, m]) => s + w * m, 0);
   const v = comps.reduce((s, [w, m]) => s + w * (sd0 ** 2 + (m - mu) ** 2), 0);
   return { mu, sd: Math.sqrt(v), sd0: Math.sqrt(v) };

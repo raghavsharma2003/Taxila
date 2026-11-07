@@ -17,17 +17,21 @@
 //                   sharedPhone setting), { state: 'planned', from, to } | { state: 'none'|'in_lesson'|'done' };
 //                   computed by conductor/household.js allocate() from the guardian's children's conductor_state rows.
 //                   Stale when she shares with nobody. Never names or counts a sibling (V30). Late key.
+//   learner.firstWeek round 7 F cold start (R15): { [subject]: { lessons, settled } } for subjects whose start came from
+//                   onboarding answers (placement result.source 'onboarding'): live lessons taught in the subject so far
+//                   and whether its θ has settled (placement/coldstart.js settled). Late key.
 import { addDays, learningDay, zonedToUtc } from "./clock.js";
 
 /** Declared fallbacks: a missing or stale key returns these and never fires a rule (V25). */
 const FALLBACK = { "kt.dueCount": 0, "usage.usedMin": 0, "cal.days": {}, "usage.voiceSecMonth": {}, "school.subjects": null,
-  "kt.wheelSpin": [], "learner.placementGap": {}, "household.window": null };
+  "kt.wheelSpin": [], "learner.placementGap": {}, "household.window": null,
+  "learner.firstWeek": {} };
 /**
  * Keys added after decision logs were already being written. A snapshot recorded before a key existed was
  * decided by code that did not read it, so replay serves the declared fallback (which reproduces that code's
  * behaviour exactly: usage.voiceSecMonth {} = the full tier budget, as V3 then assumed). Any other miss throws.
  */
-const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects", "kt.wheelSpin", "learner.placementGap", "household.window"]);
+const LATE_KEYS = new Set(["usage.voiceSecMonth", "school.subjects", "kt.wheelSpin", "learner.placementGap", "household.window", "learner.firstWeek"]);
 
 export class ReplayMiss extends Error {}
 
@@ -81,13 +85,22 @@ export async function loadView(db, childId, tz, now) {
   })().catch(() => null);
   // round 7 F (R9): placed below the class's expected level, per subject (placement/store.js)
   const gapP = (async () => {
-    const { placementResultsOf, placementGapOf } = await import("../placement/store.js");
-    return placementGapOf(await placementResultsOf(childId, { q_: (t, p) => db.q(t, p) }));
+    // round 7 F cold start: refined by live θ once it has settled (store.js liveResultsOf)
+    const { liveResultsOf, placementGapOf } = await import("../placement/store.js");
+    return placementGapOf(await liveResultsOf(childId, { q_: (t, p) => db.q(t, p) }));
+  })().catch(() => null);
+  // round 7 F cold start (R15): onboarding-started subjects, their live lessons so far and whether θ has settled
+  const firstWeekP = (async () => {
+    const [{ placementResultsOf, abilityOf }, { firstWeekView }] = await Promise.all([import("../placement/store.js"), import("../placement/coldstart.js")]);
+    const q_ = (t, p) => db.q(t, p);
+    const [results, thetas, lessons] = await Promise.all([placementResultsOf(childId, { q_ }), abilityOf(childId, { q_ }),
+      db.q("select topic_id from lesson where child_id = $1 and kind = 'live'", [childId])]);
+    return firstWeekView(results, thetas, lessons.map((r) => r.topic_id));
   })().catch(() => null);
   // round 7 F (household v1): the guardian's children's conductor states (only when more than one shares the phone)
   const siblingsP = db.q(`select s.state from conductor_state s join child c on c.id = s.child_id
       where c.guardian_id = (select guardian_id from child where id = $1)`, [childId]).catch(() => []);
-  const [due, usage, logged, cal, voice, subjects, wheel, gap, siblings] = await Promise.all([
+  const [due, usage, logged, cal, voice, subjects, wheel, gap, siblings, firstWeek] = await Promise.all([
     db.q("select count(*)::int as n from skill_state where child_id = $1 and next_review is not null and next_review <= $2", [childId, asOf]),
     db.q("select used_min from conductor_usage where child_id = $1 and learning_day = $2", [childId, day]),
     db.q(`select coalesce(sum((body->>'minutes')::real), 0) as m from student_event
@@ -97,7 +110,7 @@ export async function loadView(db, childId, tz, now) {
     db.q(`select l.key as lane, coalesce(sum(case when jsonb_typeof(l.value) = 'number' then (l.value)::text::real end), 0) as sec
             from conductor_usage u, jsonb_each(u.voice_sec) l
            where u.child_id = $1 and u.learning_day between $2::date and $3::date group by l.key`, [childId, monthStart, day]),
-    subjectsP, wheelP, gapP, siblingsP,
+    subjectsP, wheelP, gapP, siblingsP, firstWeekP,
   ]);
   const calendar = Object.fromEntries(cal.map((r) => [r.day, r.kind]));
   let hh = null;
@@ -116,5 +129,6 @@ export async function loadView(db, childId, tz, now) {
     "kt.wheelSpin": wheel ? { value: wheel, asOf, src: "kt_skill_state", stale: false } : { value: [], asOf, src: "fallback", stale: true },
     "learner.placementGap": gap ? { value: gap, asOf, src: "placement", stale: false } : { value: {}, asOf, src: "fallback", stale: true },
     "household.window": hh ? { value: hh, asOf, src: "household", stale: false } : { value: null, asOf, src: "fallback", stale: true },
+    "learner.firstWeek": firstWeek && Object.keys(firstWeek).length ? { value: firstWeek, asOf, src: "placement", stale: false } : { value: {}, asOf, src: "fallback", stale: true },
   };
 }
