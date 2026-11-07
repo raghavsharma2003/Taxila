@@ -1,0 +1,13 @@
+{
+  "nodes": [
+    { "id": "dc-r7-games-run-redraw-window", "kind": "decision", "title": "A play view keeps the stage drawing until its run's last timed beat has landed (kon lines view: RUN_END 2.0 s)", "at": "2026-11-07" },
+    { "id": "ms-r7-games-runshots-nishana-kon", "kind": "measurement", "title": "Real-Chromium run shots at 360 px of nishana ÷ / decimals ± and kon lines / cross / ends: every run reads correctly; one bug (cross 'off by' chip never drawn) found and fixed", "at": "2026-11-07" }
+  ],
+  "edges": [
+    { "src": "dc-r7-games-run-redraw-window", "rel": "measured_by", "dst": "ms-r7-games-runshots-nishana-kon" }
+  ],
+  "md": {
+    "decisions": "## `dc-r7-games-run-redraw-window`\n\nThe 2D stage redraws only while a view reports `busy()`. In kon's lines view, `busy()` closed at 1.6 s after the commit, while the cross run's \"off by\" chip draws only after 1.6 s and its miss ring fades in until 1.7 s. On a real phone the child's missed transversal run therefore showed no \"off by\" at all and a faint ring. The fix keeps the stage drawing until `RUN_END` (2.0 s), and a test in tests/r7-games-kon.test.mjs reads the view's own timed beats (`api.t - truthAt > x` and `(api.t - truthAt - a) / b`) and asserts each lands before `RUN_END`. Rule for every view: a run's busy window must outlast its last timed beat. Reverse if the stage ever redraws continuously instead of on demand.",
+    "measurements": "## `ms-r7-games-runshots-nishana-kon`\n\nMethod: the play dev harness (src/play/dev) built with the server's generator; for each new nishana goal (c7-ch10-t02 ÷, c7-ch03-t04 decimals ±, fades 1 and 3) and each new kon goal (parallel, perp, corr, alt, ends), the opening board, the law's solve() acts and one malActs() rule were applied through window.__play.dispatch, the run played in real time (4.5 s), and Chromium took a 360 x 740 screenshot at 2x (stored at 1x). n = 35 shots, 0 page errors. Every solved run reads correctly (the hop chain lands on the flag; the set-square fits the corner; the light runs past the open end). Every misconception run misses visibly with its own consequence (the hop chain runs the wrong way; the lines meet off the sheet; off by N°). One bug: the cross run's \"off by\" chip was never drawn (see dc-r7-games-run-redraw-window), fixed and re-shot. 14 of the shots are in docs/design/round7/games/runshots-r7/ with a README."
+  }
+}
