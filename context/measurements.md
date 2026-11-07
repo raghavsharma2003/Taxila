@@ -5869,3 +5869,21 @@ koshtak play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l13
 - **Cert:** 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
 - **Run states:** the solved and the believed run of each goal were driven in the harness by taps and looked at (the cert itself shoots the opening state).
 - **Tests:** tests/r7-games-koshtak.test.mjs, 32 tests. An independent checker has its own tokenizer and recursive-descent parser for + − × and brackets, its own tray counter and its own copy of the set-up fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.
+
+
+<!-- merged from inbox/r7-games-kon2.json -->
+## `ms-r7-games-kon2-cert`
+
+kon play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-kon.test.mjs has 18 tests. Each new goal is checked on validate / solve / shortcut-free, on every mal-rule naming its own misconception, and on 2000 or more random acts. An independent coordinate checker judges any goal the law calls met: cross and dot products of direction vectors, a 2×2 solve for where two lines cross, and its own reading of a figure's ends. Generator p95 stays at or below 50 ms. Every new coverage entry serves through currentLevel. The earlier goals' generator hashes and served levelIds are pinned. tests/r7-games-kon-angles.test.mjs and tests/r4-games-core-kon.test.mjs still pass unchanged.
+
+
+<!-- merged from inbox/r7-games-nishana2.json -->
+## `ms-r7-games-nishana2-cert`
+
+nishana play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 228/228 nishana samples pass at every size (18 entries, 16 samples on the two new hop entries; counts in server/forge3/certs/play.json). On the first run, the 8 ÷ samples failed Q2.whole at p360: the negative-divisor goal ("… A backward hop counts as minus.") was ellipsised. The goals were shortened ("… Backward = minus") and that entry was re-judged with --resume. The decimal entry passed on the first run. In the shots, tenth ticks are about 27 px apart on a 0-2 line at p360, and labels are 16 px.
+- **Tests:** tests/r7-games-nishana.test.mjs has 12 tests: the pinned levelIds; validity; an independent plain-arithmetic checker; each mal-rule named alone; picker shortcut null; generator p95 < 50 ms; a ≥ 2000-act random battery per kind; the kit's examples; forged levels refused; currentLevel serving at every fade; the answer hidden from reactions; and the words. Gate files (r7-games-*, *play*, economy, isolation): 872 tests pass. lint-ui is 354 before and after.

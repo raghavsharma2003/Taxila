@@ -8499,3 +8499,38 @@ Mal-rules map only to the topic's own kit ids: left-to-right (one tray per numbe
 Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch02-t02-s4 (swapping and grouping smartly; cards that carry their signs cannot show the sign-detach belief), c7-maths-ch04-t02-s1 (substituting a value: the answer is a number the child would type; concatenate has no physical set-up), c7-maths-ch04-t02-s3 (growing patterns; kram serves c7-maths-ch04-t03).
 
 **Reverse if** a child pilot shows walls, lids or turns set by trying runs until one passes rather than by reading the signs (watch runs per level and changes between runs).
+
+
+<!-- merged from inbox/r7-games-kon2.json -->
+## `dc-r7-games-kon2`
+
+**kon** (angles as turning) now also covers three arena-only line topics. It does this with three new modes on the same turning arm, plus one new act, `stop`. No new family was added. The law is in `src/play/families/kon/kon.lines.ts` and the boards are in `kon.lines.view.ts`. Each kon function sends a line goal to that code first, so every earlier goal runs the same code as before. A test pins the generator's output hash for each earlier goal (7 goals × 3 fades × 3 seeds). A second test pins the levelId each earlier coverage entry serves. Nothing in it is timed, and no turn snaps into place.
+
+- **c7-maths-ch05-t02 · lines/parallel.** The board is squared paper (plain at fade 3). Line 1 is drawn short through O, at least 18° off flat and off upright. The child turns line 2 about P, a point off line 1. The run extends both lines past the sheet and zooms out until they meet, if they do. When they are parallel it shows the gap is equal at two places. Mal-rule `not-meet-on-page` → kit `not-meet-on-page`: a line 7° off whose crossing lies outside the sheet (checked in the test).
+- **c7-maths-ch05-t02 · lines/perp.** The child turns line 2 about O on a tilted line 1. The run lays a set-square on the crossing. Mal-rule `perp-upright` → kit `perp-upright`: line 2 stood straight up.
+- **c7-maths-ch05-t03 · cross/corr, cross/alt.** A road crosses canal 1 at X1, where only a stub of the canal shows, marked with ∠1 and its number. At X2 a one-scale protractor sits on the road ray of ∠2. The child opens ∠2 so canal 2 runs parallel to canal 1. The run opens canal 1 to full length and zooms out to the crossing if there is one. corr: ∠2 is the corresponding angle (equal to ∠1) or the angle beside it on the same road ray (180° − ∠1). alt: ∠1 lies between the canals, and ∠2 is its alternate angle (equal) or its same-side interior angle (180° − ∠1). Either way, copying ∠1's number never passes every level. Mal-rules: `corr-position` → kit `alternate-position` (the beside angle given ∠1's number); `same-side-equal` → kit `interior-equal`; `alt-same-side` → kit `alternate-position` (the same-side angle taken as the alternate, so the real alternate is opened to 180° − ∠1).
+- **c6-maths-ch02-t01 · ends/ends.** There are 3 or 4 lettered points on one faint track. The child drags two stops onto points, or off the end of the track (that end then goes on forever), until only the named segment, ray or line is left. ◀ ▶ also move each stop. The run sends a light along every open end. Mal-rules: `ray-two-ends` → kit `ray-two-ends`; `ray-order` → kit `ray-order` (ray XY started at Y); `line-ends` → kit `longer-line` (a line stopped at its two letters, as if it had a length).
+- **Not covered:** kit `c7-maths-ch05-t02-m-same-length` (a judging belief; no producing act shows it, though the parallel run shows a short line 1 and a long line 2 with an equal gap); `c7-maths-ch05-t03-m-always-equal` (needs a pair of non-parallel lines whose angles the child would copy; no honest single act was found); skill c6-ch02-t01-s3 (counting segments) and its kit `only-sides` (it needs a join-pairs mechanic, which is a different act).
+- **Reversal:** if children solve lines by eye without using the grid or the angles, or play ends as a pick from four, drop the mode and serve those topics with ITEM-ARENA again.
+
+
+<!-- merged from inbox/r7-games-nishana2.json -->
+## `dc-r7-games-nishana2`
+
+**nishana**'s hop mode (number line) now covers two more topics that only the arena served before. There is no new mode or goal: the hop goal takes a `÷` op and decimal operands. Nothing is timed and there is no answer box: the child places the pod on the line and commits. Every existing level is unchanged. Before the change, the generator, validator, shortcut and mal set-ups were hashed for every existing nishana entry over seeds 1, 2, 3, 7 and 42 × fades 1..3 (240 hashes), and the hashes are identical after it. tests/r7-games-nishana.test.mjs pins one served levelId per existing entry kind.
+
+- **c7-maths-ch10-t02 (dividing integers).** The dividend is a flag on the line ("reach here") and the pod is the quotient. A chain of hops starts at 0 and ends at pod × divisor. A positive divisor is that many equal hops, each the pod's size ("−12 ÷ 3: 3 equal hops, 0 to −12. How big is each?"). A negative divisor is hops OF the divisor, and the pod counts them; a backward hop counts as minus ("12 ÷ (−3): how many hops of −3, 0 to 12?"). So the sign comes from which way the hops have to go. The chain is drawn live at fade 1 (the kit's own remediation: multiply back) and only after a commit at fades 2-3. Mal-rules: div-neg-neg ((−20) ÷ (−5) = −4) and div-by-size (12 ÷ (−3) = 4). Both map to the kit's m-sign-mix, whose diagnostic tags 12 ÷ (−3) = 4 too. Each covers its own sign case, so a level names exactly one. Skills s2 and s1. Not covered: m-impossible (refusing to divide gives no landing), m-div-zero (÷ 0 has no point on a line) and s3 (contexts).
+- **c7-maths-ch03-t04 (adding and subtracting decimals).** The pod starts on a decimal drawn on a line between whole numbers (2 to 4 long, a tick per tenth, a taller tick at each half). The child lands it where "2.5 + 1.25" ends, within 0.03, so a tenth off is a different answer. A subtraction may start from a whole number (5 − 1.25). Mal-rules, all from kit ids: dec-right-align → m-right-align (2.5 + 1.25 = 1.50; 0.5 + 0.25 = 0.30), dec-separate-parts → m-separate-parts (2.7 + 1.5 = 3.12), and dec-smaller-from-larger → m-smaller-from-larger (5.3 − 2.8 = 3.5; 5 − 1.25 = 4.25). A sum where a belief lands within 3 tolerances of the truth is not generated. When it fits, the line is widened so the wrong lining-up lands visibly on it. Skills s1 and s2. Not covered: s3 (estimating).
+- **Reversal.** If children at fade 1 just slide the pod until the chain meets the flag without taking in the sign, move the live chain to after the commit. If decimal landings within 0.03 prove too fiddly on phones (nudge steps are 0.025), widen the line or loosen the tolerance to 0.04.
+
+## `dc-r7-shape-word-asked` (2026-11-06)
+
+Learning's check.mjs runs Studio's W15 (named_shape_drawn) in asked mode on every script board. A line that names a square, rectangle, triangle or circle must have a board that draws that shape; otherwise the line is reworded.
+
+- All 4 live pilots pass.
+- 21 staged boards failed. Each was fixed by drawing the shape (shape@1, shade-grid@1) or by rewording the line.
+- The last 4 c4-ch01-t02 cards were cleared by Studio's "square corner" exemption (fdf0c0ee).
+
+**Reverse if** Studio's exemption list grows past a handful of phrases. Then key W15 to the board's intent instead of to words.
+
+(Written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the node without an md entry.)

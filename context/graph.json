@@ -25876,6 +25876,55 @@
    "at": "2026-11-06",
    "title": "koshtak play-cert (forge3-qa, p360/p412/l1366, game mounted): 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px); 32 law and server tests pass.",
    "source": "inbox/r7-games-koshtak.json"
+  },
+  {
+   "id": "dc-r7-games-kon2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "kon extended to lines and angles: lines/parallel and lines/perp (c7-maths-ch05-t02), cross/corr and cross/alt (c7-maths-ch05-t03), ends/ends (c6-maths-ch02-t01); three new modes on kon's arm, one new act (stop); earlier kon levels unchanged. Reverse: children align line 2 by eye without the grid or the angles, or ends is played as a four-way pick.",
+   "source": "inbox/r7-games-kon2.json"
+  },
+  {
+   "id": "ms-r7-games-kon2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json).",
+   "source": "inbox/r7-games-kon2.json"
+  },
+  {
+   "id": "dc-r7-games-nishana2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "nishana hop extended to c7-maths-ch10-t02 (÷: the pod is the quotient, a chain of hops from 0 must reach the dividend's flag) and c7-maths-ch03-t04 (decimal hops on a tenths line); no new mode or goal, existing levels unchanged. Reverse: the ÷ chain read as an answer meter at fade 1, or decimal landings too fiddly at p360.",
+   "source": "inbox/r7-games-nishana2.json"
+  },
+  {
+   "id": "ms-r7-games-nishana2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "nishana play-cert after nishana2: 228/228 nishana samples pass at p360, p412 and l1366 with the game mounted (18 entries; 16 samples on the 2 new entries); the first ÷ run failed Q2.whole at p360 (goal text ellipsised) until the goal copy was shortened.",
+   "source": "inbox/r7-games-nishana2.json"
+  },
+  {
+   "id": "dc-r7-script-v23-simpler",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (dc-r7-script-walk-v6-1, director9): script format v2.3 gives every explain beat, worked step, yourStep, check and then-card an authored simpler {hi,en}: at most 35 words, no '?', only numbers from that item's givens or key, and never the key (a yes/no key is exempt from the leak test). check.mjs enforces this (SIMPLER_MAX_WORDS), and Brain's validator checks shape, so a child who is stuck hears a scripted easier line, not a generated one. The 4 live pilots went to 2.3 in integration 12b (db128cebb). The 30 staged scripts have simpler but stay at 2.2, held. Reverse if: a director run shows simpler lines being recited where a re-ask would serve better, or the 35-word cap cuts a needed step.",
+   "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "dc-r7-answer-board",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: answerBoard {template,params} on a KeyedAsk or check is drawn only in that card's close, is the one board allowed to show the key, and is certified by check.mjs against the key plus why. The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 shaded). Reverse if: a run shows the answerBoard drawn before the child answers.",
+   "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "dc-r7-shape-word-asked",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: check.mjs runs W15 (named_shape_drawn) in asked mode on every script board. A line that names a square, rectangle, triangle or circle must have a board that draws that shape; otherwise the line is reworded. All 4 live pilots pass. 21 staged boards failed and were fixed by drawing the shape (shape@1, shade-grid@1) or rewording the line, except 4 c4-ch01-t02 cards, which wait on Studio exempting 'square corner' (NCERT's name for a right angle) as it did 'set-square'. Reverse if: Studio's exemption list grows past a handful of phrases; then key W15 to board intent instead of words.",
+   "source": "inbox/r7-learning-30.json"
   }
  ],
  "edges": [
@@ -40508,6 +40557,16 @@
    "src": "dc-r7-games-koshtak",
    "rel": "measured_by",
    "dst": "ms-r7-games-koshtak-cert"
+  },
+  {
+   "src": "dc-r7-games-kon2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kon2-cert"
+  },
+  {
+   "src": "dc-r7-games-nishana2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-nishana2-cert"
   }
  ]
 }
