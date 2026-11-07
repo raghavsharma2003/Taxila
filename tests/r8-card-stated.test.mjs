@@ -303,3 +303,27 @@ test("director9 (Brain's replay of c5-t01 steady T21): a later page whose own ta
   assert.ok(v.artifact.script.ops.some((o) => o.op === "text" && o.text === "1/8"), "the verdict page's 1/8 is drawn");
   assert.ok(v.artifact.screens.length >= 1 && v.artifact.screens.length <= 3);
 });
+
+test("director10 unpaged: a FIRST page whose take fails keeps the card's board already up (steady-c4-ch05-t01 T62); with no card board up the turn still fails", () => {
+  const T = "c4-maths-ch05-t01", kit = kitOf(T);
+  const e1 = { template: "equal-groups@1", params: { groups: 2, each: 4 } }, e2 = { template: "equal-groups@1", params: { groups: 3, each: 2 } };
+  const sb = (id) => ({ scriptId: "s", beatId: id, kind: "explain" });
+  const t62 = "Haan, sahi hai, kyunki 12 laddoo ke 2 barabar group mein har group mein 6 aate hain, 2 × 6 = 12. Ab 6 kele 3 barabar group mein hain, har group mein 2. 1/3 mein neeche ka 3 batata hai kitne barabar group banane hain. Upar ka 1 batata hai kitne group lene hain. Toh 6 ka 1/3 = 2 kele. Yeh kadam saaf hai?";
+  const segs = [{ atChar: 97, boardRef: e2, scriptBeat: sb("e2") }];
+  // T60: the e1 board goes up
+  const s = showCard(T, kit, e1, "explain", null, "12 laddoo ko 2 barabar samoohon mein baanto, har samooh mein 4. Gino aur batao. Ab dibbe mein 12 laddoo hain. 12 ka aadha kitna hai?");
+  assert.equal(s.first?.state, "revealed", "e1 is up");
+  // T62: the close on e1 (its own take refuses "6 aate hain" over 4 a group), then e2
+  const v = s.turn(t62, { scriptBeat: sb("e1"), segments: segs });
+  assert.equal(v?.state, "revealed", "the turn draws: e1 kept for its close, e2 from its words");
+  assert.ok(v.artifact.script.switches?.length === 1, "two pages");
+  assert.ok(v.artifact.script.ops.some((o) => o.id.startsWith("b.")), "e2's page");
+  assert.equal(v.artifact.screen.template, "equal-groups@1");
+  // with NO card board up (a fresh lesson), a first page that fails still fails the paged turn
+  const fresh = showCard(T, kit, e2, "explain", null, "Ab 6 kele 3 barabar group mein hain, har group mein 2.");
+  const L2 = fresh.first?.slotId?.split(":")[0];
+  assert.ok(L2);
+  const BFk = BF.pagesBoard({ intent: { intentId: `${L2}:wb:99`, lessonId: L2, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: e1, scriptBeat: sb("e1"), segments: segs },
+    line: { lessonId: L2, text: t62 }, mode: "fresh", kit: { topicId: T, content: [] } }, { kit, keep: null });
+  assert.equal(BFk, null);
+});
