@@ -80,6 +80,10 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Koshtak (expressions): put the tray walls / the lid / turn the jumps and run the counter; put like terms in bins
   koshtak: { tray: { act: "place", hi: "tray ki deewar ya dhakkan lagao aur counter chalao", en: "set the tray walls or the lid and run the counter" },
     bin: { act: "place", hi: "ek jaise term ek dibbe mein daalo aur dibbe band karo", en: "put like terms in one bin and close the bins" } },
+  // r7 games: Parkar (constructions): open the compass, swing arcs, lay the protractor / set-square, pin crossings, then run
+  parkar: { build: { act: "set", hi: "parkar kholo, nishaan lagao aur tribhuj banao", en: "open the compass, swing the arcs and build the triangle" },
+    bisect: { act: "set", hi: "barabar parkar se nishaan lagao aur rekha milao", en: "swing equal arcs and join the crossings" },
+    drop: { act: "place", hi: "set-square ko saamne ki bhuja par rakho aur lamb kheencho", en: "lay the set-square along the opposite side and draw the altitude" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

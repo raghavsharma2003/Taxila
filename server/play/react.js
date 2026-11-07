@@ -26,6 +26,7 @@ import { kramHidden } from "../../src/play/families/kram/kram.logic.ts";
 import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
 import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
 import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts";
+import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -80,6 +81,9 @@ export function hiddenOf(level) {
   // r7 koshtak: the row's worth, the lid's run of numbers, the bracket's worth and its opened row, the simplest form are
   // never said first. Checked by family first: modes may share names with other families
   if (level.family === "koshtak") return koshtakHidden(level);
+  // r7 parkar: the parts a construction fixes that the card does not give (the third side, the angle, the stick, the half
+  // length or angle, the altitude) are never said first. Checked by family first: modes may share names with other families
+  if (level.family === "parkar") return parkarHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

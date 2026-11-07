@@ -24,6 +24,7 @@ import { makeGunaView } from "./guna/guna.view.ts";
 import { makeKramView } from "./kram/kram.view.ts";
 import { makeHissaView } from "./hissa/hissa.view.ts";
 import { makeKoshtakView } from "./koshtak/koshtak.view.ts";
+import { makeParkarView } from "./parkar/parkar.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeFeetaView } from "./feeta/feeta.view.ts";
 
@@ -92,5 +93,8 @@ export const VIEWS: Record<string, MakeView> = {
   "hissa/story": makeHissaView,
   "koshtak/tray": makeKoshtakView,
   "koshtak/bin": makeKoshtakView,
+  "parkar/build": makeParkarView,
+  "parkar/bisect": makeParkarView,
+  "parkar/drop": makeParkarView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
