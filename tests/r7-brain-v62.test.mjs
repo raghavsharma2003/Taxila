@@ -91,8 +91,8 @@ describe("r7-brain-v62.test.mjs", () => {
   });
 
   test("G5: 'screen par dikhao (na)' is a picture request", () => {
-    for (const t of ["screen par dikhao", "screen par dikhao na", "screen pe dikhao na"]) assert.equal(requestOf(t)?.type, "visual", t);
-    assert.equal(requestOf("screen par 1/4 hai"), null);
+    for (const t of ["screen par dikhao", "screen par dikhao na", "screen pe dikhao na", "board par dikha do", "स्क्रीन पर दिखाओ ना", "whiteboard mein dikhao", "slate pe dikhaiye"]) assert.equal(requestOf(t)?.type, "visual", t);
+    for (const t of ["screen par 1/4 hai", "dikhao na", "screen par dekho", "screen par toh sab dikh raha hai"]) assert.equal(requestOf(t), null, t);
   });
 
   test("T3 replay director10 c6 steady: a turn ends after the bridge; the new skill's point and card come on the next turn", async () => {
