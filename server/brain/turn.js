@@ -1688,10 +1688,13 @@ export async function planTurn(base, cls, c) {
   // dc-r7-script-walk-v3 K1: a key closes once affirmed: the same answer said again right after it was called right is never
   // "not right" now (no verdict contradicts the previous turn's)
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
-  if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid) next.lastVerdict = "ungraded";
+  // (v6.2 H5, director10 c5-t01 steering T47: "1/3", right for c1, was the new card c2's listed wrong answer and got no verdict:
+  // a repeat of the last right answer is no answer only on the SAME card)
+  if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid
+    && (!state.lastGraded?.itemId || state.lastGraded.itemId === activeItem?.id)) next.lastVerdict = "ungraded";
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
-  if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
+  if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { itemId: activeItem.id, key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
     prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
     // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
     // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception

@@ -1781,11 +1781,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     if (ss.length < before) guard.strayDropped = before - ss.length;
     // v5 B5: one verdict sentence per turn ("Haan, sahi hai. Haan, 4/6 sahi hai."): a second verdict of the same sign right after
     // the lead is one too many; the richer of the two stays (a bare code verdict gives way to hers)
-    const polarity = (x) => (NOT_RIGHT.test(String(x).split(/[,—–-]/)[0]) && !affirmsAnswer(x) ? "no" : affirmsAnswer(x) ? "yes" : null);
+    // (v6.2 H5, director10 c5-t02 steering T19: "Koi baat nahi, isko ek baar aur aaram se dekhte hain." read as a "no" and replaced
+    // code's "1/8 sahi nahi hai.": a consolation is no verdict)
+    const polarity = (x) => { const y = String(x).replace(/\bkoi\s+baat\s+nahi?n?\b/gi, "").replace(/^[\s,]+/, "");
+      return NOT_RIGHT.test(y.split(/[,—–-]/)[0]) && !affirmsAnswer(y) ? "no" : affirmsAnswer(y) ? "yes" : null; };
     const verdictLike = (x) => polarity(x) && words(x) <= 12 && !/[?？]/.test(x);
     while (lead && ss.length && verdictLike(ss[0]) && polarity(ss[0]) === polarity(lead)) {
       const nxt = ss.shift();
-      if (words(lead) <= 4 && words(nxt) > words(lead)) lead = nxt;
+      if (words(lead) <= 4 && words(nxt) > words(lead) && !guard.verdictCode) lead = nxt;
     }
     // v6 R5 (director8: "Haan, sahi hai. Haan, 28 m." 9× in c6, 5× in c5-t02): one verdict sentence per turn. A later sentence of
     // hers that opens with a verdict of the same sign loses its verdict words; what is left stays only when it says something
@@ -1944,6 +1947,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // v6.1 R8: the live card's authored simpler on "pata nahi" / "samajh nahi aaya" (never a model-written hint)
       body = sentences(norm(state.lastMove.simpler)).map(norm).filter(Boolean).map(dot);
       guard.smaller = "authored";
+    } else if (graded && verdict === "not_yet" && !workedLines?.length) {
+      // v6.2 H1 (director10: "Upar khaye tukde likho: 3. Neeche kul barabar tukde: 4." over the live card): a hint after a
+      // wrong answer is authored or nothing; with no simpler the turn is code's verdict and the card
+      body = [];
+      if (ss.length) guard.hintDropped = ss.length;
     } else {
       body = ss;
       if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
@@ -2006,8 +2014,29 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         if (kept.length && kept.length < body.length) { guard.trimmedHers = body.length - kept.length; body = kept; }
       }
     }
-    const prevPart = once([lead, ...noQ([ack, missS, gaveS, doneS].filter(Boolean))]);
-    const closedP = once([closedS]);
+    // v6.2 T1 (main, director10 c4 stuck T15: chocolate, roti and cakes in one turn): at most one close per turn: the worked close,
+    // else a give-up, else a missed card's close (a stale one is dropped, never stacked)
+    let [g2, d2, c2] = [gaveS, doneS, closedS];
+    if (d2) { if (g2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; if (c2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; g2 = null; c2 = null; }
+    else if (g2 && c2) { c2 = null; guard.closeDropped = (guard.closeDropped ?? 0) + 1; }
+    // v6.2 T2 (director10 c5-t01 ×5, c4 ×2): each why is said once — not again in this turn, nor straight after her last turn said it
+    {
+      const usedWhy = [];
+      const keyW = (w) => String(w ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+      const prevW = keyW(herPrev);
+      const once1 = (x) => {
+        if (!x) return x;
+        const m = /,\s*(?:kyunki|because)\s+([^.!?\u0964]+)([.!?\u0964]?)\s*$/iu.exec(x);
+        if (!m) return x;
+        const k = keyW(m[1]);
+        if (k && (usedWhy.includes(k) || (prevW && prevW.includes(k)))) { guard.whyOnce = (guard.whyOnce ?? 0) + 1; return `${x.slice(0, m.index)}${m[2] || "."}`; }
+        usedWhy.push(k);
+        return x;
+      };
+      lead = once1(lead); g2 = once1(g2); d2 = once1(d2); c2 = once1(c2);
+    }
+    const prevPart = once([lead, ...noQ([ack, missS, g2, d2].filter(Boolean))]);
+    const closedP = once([c2]);
     first.splice(0, first.length, ...once(first));
     const asideP = once(noQ(aside));
     body = once(noQ(body));
@@ -2019,7 +2048,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
     if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
-    guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedS ? { closed: hw(norm(closedS)) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
+    guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(c2 ? { closed: hw(norm(c2)) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
       ...(lead ? { verdict: hw(norm(lead)) } : {}) };
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard

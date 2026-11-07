@@ -2843,9 +2843,15 @@ export function step(prev, input) {
   // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
   // scripted card, a don't-know or a "didn't understand" gets the card's AUTHORED simpler (a one-step hint, never its key)
   if (!move.simpler && scriptOn() && item && isScriptCard(item) && ["hint", "reteach", "repair", "practice"].includes(move.kind)
-    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) {
+    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused"
+      // v6.2 H1 (main, director10: 12 model-written hints in c4, 4 of them giving the live answer): a wrong answer's hint is the
+      // card's authored simpler too
+      || ["incorrect", "misconception", "partial"].includes(input?.cls?.outcome))) {
     const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
-    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : null;
+    // (an explain beat's card with no simpler of its own: its beat's simpler — Learning's v2.3 pilots put it on the beat)
+    const beatSimpler = !meta?.simpler && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
+      ? skillScriptOf(input.kit, item.skillId)?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.simpler ?? null : null;
+    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : beatSimpler ? saidIn(beatSimpler, s.ctx?.lang ?? "hinglish") : null;
     if (sm && String(sm).trim()) move.simpler = String(sm).trim();
   }
   if (p.probeAck) move.probeAck = true;
@@ -2994,9 +3000,12 @@ export function splitLong(out, input) {
   // v6.1 (main's split policy B, on director9: 45 split turns slowed skill 1 to 66 turns): closures never cause a split on
   // their own; they stay in the beat's turn (brain/say.js trims her own words first). Only authored teaching plus its card
   // that still do not fit is split. TAXILA_R7_SPLIT_CLOSE=on brings back the closing split.
-  if (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on") return splitTeach(out, input, cap);
+  // v6.2 T3 (main, director10: c6's bridge turns ran 121-132 words): a turn ends after a bridge; the new skill's first point and
+  // its card come on the next turn (the closing split, whatever the split policy)
+  const bridgeTurn = !!move.bridgeSaid;
+  if (!bridgeTurn && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
-  if (wordsIn(closing, teaching) + 12 <= cap) return out;
+  if (!bridgeTurn && wordsIn(closing, teaching) + 12 <= cap) return out;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
