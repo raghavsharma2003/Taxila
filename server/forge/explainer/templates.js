@@ -148,9 +148,11 @@ function fractionBars(c, tl) {
   bars.forEach((b, k) => {
     const y0 = top + k * (H + gapY), pw = W / b.parts, label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
     // (paced for her explanation, as the fraction line: each bar, its cuts one by one, its shading, then its name — W6)
-    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
-    for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, 260, { gap: 140 });
-    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 420, { gap: 260 });
+    // (director10: a two-bar compare is said in ~20 words, ~8 s: the cuts and shading quicken with the parts — W6 refused 7 + 7)
+    const cutMs = b.parts > 6 ? 160 : 260, shadeMs = b.shade > 3 ? 260 : 420;
+    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 700, { gap: k ? 500 : 0 });
+    for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
+    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
     tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
@@ -1431,17 +1433,23 @@ function numberLineScale(c, tl) {
   const { from, to, step } = c;
   if (!isInt(from, 0, 99999) || !isInt(to, 1, 100000) || to <= from || !isInt(step, 1, 100000) || (to - from) % step) return { error: "scale_range" };
   const N = (to - from) / step, digits = String(to).length;
-  // (2-10 intervals; a 6-digit end allows 5 — "100000" labels touch beyond that)
-  if (N < 2 || N > (digits >= 6 ? 5 : 10)) return { error: "scale_ticks" };
+  if (N < 2 || N > 10) return { error: "scale_ticks" };
   const marks = Array.isArray(c.marks) ? c.marks : [];
   if (marks.length > 3 || marks.some((m) => !isInt(m?.value, from, to) || (m.label !== undefined && m.label !== "?" && (!fitsLabel(String(m.label)) || textProblem(String(m.label)))))) return { error: "scale_marks" };
   const x0 = 30, W = 340, y = 180;
   const X = (u) => round1(x0 + 12 + ((u - from) / (to - from)) * (W - 24));
-  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: N + 1 }, (_, i) => String(from + i * step))], range: [from, to], w: W, weight: 2 }, 1200);
+  // (App's render check, 2026-11-07: tick labels draw at 19.2 units, 11.5 a digit — "100200300…" at 0-1000 step 100, and
+  // "80000100000" — so a label needs digits × 11.5 + 6 of its own; when a step is narrower, every k-th tick is labelled, both
+  // ends always, and an inner label too close to the end gives way to it)
+  const px = (W - 24) / N, need = (k) => [String(from + k * step).length, digits].reduce((a, b) => Math.max(a, b)) * 0.6 * 19.2 + 6;
+  // (k divides N when it can, so the labelled ticks stay evenly spaced: 0, 5000, 10000 — never 0, 3000, 6000, 10000)
+  const k0 = Math.max(1, Math.ceil(need(N) / px)), every = Array.from({ length: N - k0 + 1 }, (_, j) => k0 + j).find((k) => N % k === 0) ?? N;
+  const shown = Array.from({ length: N + 1 }, (_, i) => i === 0 || i === N || (i % every === 0 && (N - i) * px >= need(N)));
+  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: N + 1 }, (_, i) => (shown[i] ? String(from + i * step) : ""))], range: [from, to], w: W, weight: 2 }, 1200);
   // (paced for her explanation, as the fraction line: each step of the scale marked in turn, then the values — W6)
   for (let i = 1; i < N; i++) tl.add({ op: "line", from: [X(from + i * step), y - 7], to: [X(from + i * step), y + 7], weight: 1 }, 320, { gap: 160 });
   // (labels above in up to two rows: a label moves up when it would touch its left neighbour)
-  const rows = [y - 46, y - 74], right = [-Infinity, -Infinity], pts = [];
+  const rows = [y - 46, y - 74, y - 102], right = [-Infinity, -Infinity, -Infinity], pts = [];
   for (const m of [...marks].sort((a, b) => a.value - b.value)) {
     const label = m.label === undefined ? String(m.value) : String(m.label), x = X(m.value), half = textBox(label, "s").w / 2;
     const r = right.findIndex((e) => x - half >= e + 6);
@@ -1453,7 +1461,7 @@ function numberLineScale(c, tl) {
     tl.add({ op: "text", at: [round1(lx), rows[r]], text: label, size: "s", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 120 });
     pts.push({ at: String(m.value), label });
   }
-  return { counts: { lines: [{ gaps: N, ticks: N + 1, innerTicks: N - 1 }], ...(pts.length ? { marks: pts } : {}) },
+  return { counts: { lines: [{ gaps: N, ticks: N + 1, innerTicks: N - 1 }], ...(pts.length ? { marks: pts } : {}), labels: shown.filter(Boolean).length },
     facts: { line: `${from} to ${to}`, step: `every ${step}`, ...(pts.length ? { marks: pts.map((q) => (q.label === "?" ? "?" : q.label)).join(", ").slice(0, 40) } : {}) } };
 }
 

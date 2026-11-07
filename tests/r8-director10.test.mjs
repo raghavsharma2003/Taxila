@@ -145,3 +145,48 @@ test("director10 G4: every picture request over a card's board draws a SECOND vi
   assert.ok(strips.ok);
   assert.equal(strips.script.ops.filter((o) => o.op === "circle").length, 0, "strips, not circles");
 });
+
+test("App's render check (BOARDS-RENDER.md): number-line-scale@1 tick labels never touch — every k-th tick labelled (k divides the steps, both ends kept) at the player's real digit width; marks get a third row; the lint flags touching row labels", async () => {
+  const { lintScript, textBox } = await import("../shared/whiteboard.js");
+  const rows = (c) => expand({ template: "number-line-scale@1", ...c }).script.ops.find((o) => o.layout === "number_line").rows[0];
+  assert.deepEqual(rows({ from: 0, to: 1000, step: 100 }), ["0", "", "200", "", "400", "", "600", "", "800", "", "1000"]);
+  assert.deepEqual(rows({ from: 0, to: 100000, step: 20000 }), ["0", "", "", "", "", "100000"]);
+  assert.deepEqual(rows({ from: 0, to: 10000, step: 1000 }), ["0", "", "", "", "", "5000", "", "", "", "", "10000"]);
+  assert.deepEqual(rows({ from: 0, to: 10, step: 1 }), ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"], "short labels: every tick");
+  // App's case: marks 300, 400, 500 on 0-1000 step 100, all three labelled, none touching
+  const x = expand({ template: "number-line-scale@1", from: 0, to: 1000, step: 100, marks: [{ value: 300 }, { value: 400 }, { value: 500 }] });
+  assert.ok(x.ok, String(x.errors));
+  assert.deepEqual(lintScript(x.script), []);
+  assert.deepEqual(x.script.facts.counts.marks.map((m) => m.label), ["300", "400", "500"]);
+  // the player's digits: 0.6 em (11.5 units at 19.2), not the letter estimate
+  assert.equal(Math.round(textBox("100000", "m").w), Math.round(6 * 24 * 0.6));
+  // a number line whose own labels touch is a lint issue
+  const crowded = { scriptId: "c", board: { w: 400, h: 300 }, durationMs: 2000, ops: [{ id: "nl", op: "numwork", at: [30, 180], layout: "number_line", rows: [["0", "100", "200", "300", "400", "500", "600", "700", "800", "900", "1000"]], range: [0, 1000], w: 340, startMs: 0, endMs: 1200 }] };
+  assert.ok(lintScript(crowded).some((i) => i.check === "row_labels_touch"));
+});
+
+test("main, G2 addendum: W8 takes a two-bar compare whose bars ARE the two fractions her line compares (Learning's c5-t02 cards, moved back to lines only for W8) — live and in certification", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const B = (...fs) => ({ template: "fraction-bars@1", params: { bars: fs.map((f) => { const [a, d] = f.split("/").map(Number); return { parts: d, shade: a, label: f }; }) } });
+  // c5-t02 s2 e2's ask (Learning 7e9f32e0): "Rohan kehta hai ki 3/7 aur 5/7 barabar hain" — 3 + 5 shaded pieces of one size
+  for (const [ref, line] of [
+    [B("3/7", "5/7"), "Rohan kehta hai ki 3/7 aur 5/7 barabar hain, kyunki dono sevenths hain. Kya woh sahi hai, haan ya nahi?"],
+    [B("1/4", "1/8"), "1/4 aur 1/8 mein kaunsa bada hai?"],
+    [B("1/10", "1/5"), "Kaunsa ek tukda bada hai, 1/10 ya 1/5?"],
+    [B("5/8", "3/8"), "Ek hi bar ke 5/8 aur 3/8 mein kaunsa bada hai?"],
+    [B("2/3", "3/10"), "Do ek jaisi bar hain: ek ka 2/3, doosre ka 3/10. Kaunsa bada hai, 2/3 ya 3/10?"],
+  ]) {
+    const r = await certifyBoardRef(ref, { line, withhold: { values: [] } });
+    assert.ok(r.ok, `${line}: ${JSON.stringify(r.failed)}`);
+  }
+  // live, on the card's own board under its prompt
+  const T = "c5-maths-ch02-t02", kit = kitOf(T), L = `r8d10w8-${lessonN++}`;
+  const a = { intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: B("3/7", "5/7"), scriptBeat: sb("e2", "check", { answers: ["no", "nahi"] }) }, line: { lessonId: L, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } };
+  BF.preselect(a, { kit });
+  const real = { ...a, line: { lessonId: L, text: "Rohan kehta hai ki 3/7 aur 5/7 barabar hain, kyunki dono sevenths hain. Kya woh sahi hai, haan ya nahi?" } };
+  const t = BF.takePreselected(real, gateCtxFor(real, { kit, redact: [], prior: [] }));
+  assert.deepEqual(t?.screen?.counts?.wholes, [{ parts: 7, shaded: 3, label: "3/7" }, { parts: 7, shaded: 5, label: "5/7" }], BF.pickState(real));
+  // (a count she never says still binds: 3 bars over a line that compares two fractions)
+  const r3 = await certifyBoardRef(B("1/4", "1/8", "1/2"), { line: "1/4 aur 1/8 mein kaunsa bada hai?", withhold: { values: [] } });
+  assert.equal(r3.ok, false);
+});

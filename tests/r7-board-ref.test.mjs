@@ -286,7 +286,8 @@ test("Learning's template asks: 4-digit place value, a 0-10000 scale, short/long
   const ref = { template: "number-line-scale@1", from: 0, to: 10000, step: 1000, marks: [{ value: 4815 }] };
   const x = expand(ref);
   assert.ok(x.ok, String(x.errors));
-  assert.deepEqual(x.script.facts.counts, { lines: [{ gaps: 10, ticks: 11, innerTicks: 9 }], marks: [{ at: "4815", label: "4815" }] });
+  // (App's render check: 0, 5000, 10000 labelled — 5-digit labels on every 1000 run together at 360 dp)
+  assert.deepEqual(x.script.facts.counts, { lines: [{ gaps: 10, ticks: 11, innerTicks: 9 }], marks: [{ at: "4815", label: "4815" }], labels: 3 });
   const nl = await certifyBoardRef(ref, { line: "Screen par 0 se 10000 tak ki sankhya rekha hai, har 1000 par ek nishaan. 4815 yahan hai: 4000 aur 5000 ke beech, 5000 ke zyada paas. Isliye 4815 ko nikatatam hazaar tak 5000 likhte hain." });
   assert.equal(nl.ok, true, JSON.stringify(nl.failed));
   assert.equal(expand({ template: "number-line-scale@1", from: 4000, to: 5000, step: 100, marks: [{ value: 4815, label: "?" }] }).script.facts.counts.marks[0].label, "?");
