@@ -1,0 +1,106 @@
+// dc-r7-script-walk-v6-2 (main's director10 judgement): turn limits T1-T3, runtime H1-H5, Studio seams G3/G5. The replays walk the
+// run's own rows through turn.js planTurn (tests/fixtures/replay.mjs) with the run's own v2.3 scripts.
+import { describe, test, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { replay } from "./fixtures/replay.mjs";
+import { textReply, replyDeps } from "../server/brain/say.js";
+import { chat } from "../server/azure.js";
+import { instructionsFor } from "../server/compiler/instructions.js";
+import { setScriptForTest } from "../server/director/script.js";
+import { revealOnVerdict } from "../server/brain/propose.js";
+import { requestOf } from "../server/director/requests.js";
+
+// Scoped to this file's describe, as tests/fixtures/kit-path.mjs asks.
+describe("r7-brain-v62.test.mjs", () => {
+  const RUN = "2026-11-07-director10";
+  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+  /** The run's row `upto` replayed: her line from the run's own text as the model's draft. */
+  const at = async (persona, T, upto, draft = null, state = null) => {
+    setScriptForTest(T, runScript(T));
+    const { kit, rows, last } = await replay(RUN, persona, T, upto);
+    replyDeps.chat = async () => ({ text: draft ?? rows[upto - 1].text });
+    const st = state ? state(last.state) : last.state;
+    const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    return { out, last, rows };
+  };
+
+  test("H1 replay director10 c4 stuck T23: a wrong answer's hint is the authored simpler, never her hint", async () => {
+    const { out, rows } = await at("stuck", "c4-maths-ch05-t01", 23);
+    assert.match(out.reply, /^2\/1 sahi nahi hai\. /, out.reply);
+    assert.doesNotMatch(out.reply, /Tumne 2 ko upar rakha/, "her hint goes");
+    assert.ok(out.reply.includes("Circle ke 3 barabar hisse hain"), out.reply);
+    assert.ok(!rows[22].text.includes("Circle ke 3 barabar hisse hain"), "(the run said hers)");
+  });
+
+  test("H5 replay director10 c5-t01 steering T47: '1/3' — right for c1, c2's listed wrong answer — gets its verdict", async () => {
+    const { out, last } = await at("steering", "c5-maths-ch02-t01", 47);
+    assert.equal(last.state.lastVerdict, "not_yet", "graded (it was 'ungraded' as a repeat of the last right answer)");
+    assert.match(out.reply, /^1\/3 sahi nahi hai\./, out.reply);
+  });
+
+  test("H5 replay director10 c5-t02 steering T19: a consolation ('Koi baat nahi, …') is no verdict and never replaces code's", async () => {
+    const { out } = await at("steering", "c5-maths-ch02-t02", 19);
+    assert.match(out.reply, /^1\/8 sahi nahi hai\./, out.reply);
+  });
+
+  test("T1/T2 replay director10 c5-t01 steering T43: one close, and a why said in her last turn is not said again", async () => {
+    const { out, rows } = await at("steering", "c5-maths-ch02-t01", 43);
+    assert.equal((rows[42].text.match(/raasta 4 barabar gaps mein bata hai/g) ?? []).length, 2, "(the run said the why twice, after its last turn said it)");
+    assert.doesNotMatch(out.reply, /raasta 4 barabar gaps mein bata hai/, out.reply);
+    assert.doesNotMatch(out.reply, /Pichhle sawaal ka jawab/, "the give-up and the worked close are not both said");
+    assert.match(out.reply, /^Toh poora jawab: pehla khamba ghar se 1\/4 km door hai\./, out.reply);
+  });
+
+  test("H4 replays director10 c4: no doubled sentence after Hindi words, no 'Now try.', no 'Bilkul, no sahi hai'", async () => {
+    const a = (await at("steady", "c4-maths-ch05-t01", 41)).out.reply;
+    assert.equal((a.match(/Ab in dono numbers se bhinn likho\./g) ?? []).length, 1, a);
+    const b = (await at("offtopic", "c4-maths-ch05-t01", 33)).out.reply;
+    assert.doesNotMatch(b, /Now try/, b);
+    const c = (await at("offtopic", "c4-maths-ch05-t01", 23)).out.reply;
+    assert.match(c, /^Bilkul, sahi hai/, c);
+  });
+
+  test("H3: code's probe acknowledgement says they told how they thought only when they did", async () => {
+    const T = "c4-maths-ch05-t01";
+    setScriptForTest(T, runScript(T));
+    const { kit, last } = await replay(RUN, "steady", T, 9);
+    const st = { ...last.state, lastMove: { ...last.state.lastMove, probeAck: true } };
+    const card = last.p.r.ui.ask?.text ?? "";
+    const sayTo = async (childText) => { replyDeps.chat = async () => ({ text: card }); return textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText, history: [], ui: last.p.r.ui, module: null }); };
+    const noReason = await sayTo("woh toh ho gaya na");
+    assert.doesNotMatch(noReason.reply, /tumhari soch|tareeka bataya|kaise socha/, noReason.reply);
+    const reason = await sayTo("maine pehle tukde gine, phir upar likha");
+    assert.match(reason.reply, /tumhari soch|tareeka bataya|kaise socha/, reason.reply);
+  });
+
+  test("G3: a right answer's verdict segment on the answered card's board carries the key (revealKey, answers)", () => {
+    const board = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, mark: 1 } };
+    const next = { lastVerdict: "correct", lastGraded: { key: "1/8 km", accept: ["1/8"] }, lastMove: { closeBeat: { beatId: "then:x", board } } };
+    const bp = { boardRef: board, scriptBeat: { scriptId: "s", beatId: "then:x", kind: "check" } };
+    assert.deepEqual(revealOnVerdict(bp, next).scriptBeat, { scriptId: "s", beatId: "then:x", kind: "check", revealKey: "1/8 km", answers: ["1/8 km", "1/8"] });
+    assert.equal(revealOnVerdict(bp, { ...next, lastVerdict: "not_yet" }), bp, "never on a wrong answer");
+    assert.equal(revealOnVerdict({ ...bp, boardRef: { template: "fraction-line@1", params: { den: 2 } } }, next).scriptBeat.revealKey, undefined, "only on the answered card's board");
+  });
+
+  test("G5: 'screen par dikhao (na)' is a picture request", () => {
+    for (const t of ["screen par dikhao", "screen par dikhao na", "screen pe dikhao na"]) assert.equal(requestOf(t)?.type, "visual", t);
+    assert.equal(requestOf("screen par 1/4 hai"), null);
+  });
+
+  test("T3 replay director10 c6 steady: a turn ends after the bridge; the new skill's point and card come on the next turn", async () => {
+    const T = "c6-maths-ch06-t01";
+    setScriptForTest(T, runScript(T));
+    const bridged = [];
+    await replay(RUN, "steady", T, 83, { onPlan: (p) => { if (p.state.lastMove?.bridgeSaid) bridged.push(p); } });
+    assert.ok(bridged.length >= 1, "the replay crosses a skill boundary");
+    for (const p of bridged) {
+      assert.equal(p.state.lastMove.splitClose, true, `T${p.row}: the bridge turn is its own turn`);
+      assert.equal(p.state.activeItemId, undefined, `T${p.row}: no card live on the bridge turn`);
+      assert.ok(p.state.splitHold?.move, `T${p.row}: the new skill's beat is held for the next turn`);
+    }
+  });
+});

@@ -161,7 +161,7 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       // boardRef/scriptBeat (as before: the beat's board when nothing is closed and the card shares it); each later part is a
       // segment from its character offset in the FINAL line (a closure → the beat's board → the card's own board)
       // v6: the assembled parts' texts (brain/say.js guard.parts) place them exactly when the line has them
-      ...boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null),
+      ...revealOnVerdict(boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null), next),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -223,6 +223,18 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  * unsegmented and read against the next card's board); a missed card's close is its own part; a bridge with its own board
  * (move.bridgeBeat) is its own part, and with none it stays on the board before it (its words point at nothing, say.js).
  */
+/**
+ * v6.2 G3 (main, director10, with Studio): a right answer's verdict segment carries the key, so Studio's confirm-reveal fires on the
+ * answered card's board whether or not her page says the digits: { revealKey, answers } on the first segment's scriptBeat, when that
+ * segment is on the answered card's board (move.closeBeat) and this turn graded the card right (turn.js lastVerdict / lastGraded).
+ */
+export function revealOnVerdict(bp, next) {
+  const g = next?.lastGraded, cb = next?.lastMove?.closeBeat;
+  if (!bp?.scriptBeat || !bp.boardRef || next?.lastVerdict !== "correct" || !g?.key || !cb?.board) return bp;
+  if (JSON.stringify(bp.boardRef) !== JSON.stringify(cb.board)) return bp;
+  const answers = bp.scriptBeat.answers?.length ? bp.scriptBeat.answers : [g.key, ...(g.accept ?? [])].map(String);
+  return { ...bp, scriptBeat: { ...bp.scriptBeat, revealKey: String(g.key), answers } };
+}
 export function boardPartsOf(move, line, card, parts = null) {
   const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;
   const plan = [

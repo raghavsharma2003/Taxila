@@ -2883,12 +2883,25 @@ export function step(prev, input) {
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
   // v6 R4 (main: "'turant baad' means the next turn"): in a scripted lesson an aside parked on the last turn is returned to on
   // this one, whatever the move (never on a safeguard, a wrap or a break)
+  // v6.2 H2 (main, director10: c5-t02 5 of 6 returns early, mid-card): the promise is "after this part": an aside parked while a
+  // card was live is returned to once that card is resolved (answered, let go, or another card up), never while it is still live
+  if (scriptOn() && scriptIdOf(input.kit)) {
+    for (const e of s.later ?? []) if (e.share && e.at === s.turn && e.onItem === undefined) { e.onItem = prev.activeItemId ?? null; e.said ??= String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80); }
+  }
   if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
-    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1);
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share }; }
+    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1
+      && (!e.onItem || (s.activeItemId !== e.onItem && !(s.splitHold?.activeItemId === e.onItem))));
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   if (s.servedNow?.topic) {
-    const line = asideFactOf(s.servedNow.topic, s.ctx.lang ?? "hinglish");
+    // v6.2 H2 (director10: the canned "ek over mein chhe ball" repeated, "Virat ke sixer" invented): a topic's plain fact is said at
+    // most once a lesson; after that the return is about what THEY said, in their own words
+    const lang = s.ctx.lang ?? "hinglish";
+    const fact = asideFactOf(s.servedNow.topic, lang);
+    const used = (s.asideFactsSaid ?? []).includes(fact);
+    const said = s.servedNow.said && !unsafeChildPhrase(s.servedNow.said) ? s.servedNow.said.replace(/[.!?]+$/, "") : null;
+    const line = fact && !used ? fact : said ? (lang === "english" ? `you told me "${said}", and I liked hearing it.` : `tumne bataya tha "${said}", sunke achha laga.`) : null;
+    if (fact && !used) s.asideFactsSaid = [...(s.asideFactsSaid ?? []), fact];
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
   // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for

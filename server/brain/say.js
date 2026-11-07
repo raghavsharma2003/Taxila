@@ -43,9 +43,13 @@ const WORKED_FRAME_PART = { hinglish: ["Pehla kadam dekho.", "Iska shuruaati his
 const SPLIT_ASK = { hinglish: ["Ab aage chalte hain.", "Chalo, ab aage.", "Ab agla hissa."], english: ["Now let's go on.", "On to the next bit.", "Now the next part."] };
 // v6.1 R9: a teaching turn past its beat's one check-in ends on a statement
 const WORKED_GO = { hinglish: ["Ab agla kadam dekhte hain.", "Chalo, aage dekhte hain.", "Ab isse aage chalte hain."], english: ["Now the next step.", "Let's go on.", "Now we go on from here."] };
+/** v6.2: a check-in after teaching that is no worked step. */
+const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?"], english: ["Does that make sense so far?", "Clear so far?"] };
 const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?"] };
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
+/** v6.2 H3: a child's turn that gives a reason or a way of working (what a "you told me how you thought" ack takes up). */
+const REASON_SAID = /(?<![\p{L}])(?:kyunki|kyonki|isliye|maine|mene|humne|socha|sochi|gina|gini|ginke|ginkar|jod\w*|ghata\w*|dekha|dekhkar|dekh\s+ke|pehle|phir|because|so\s+i|i\s+(?:counted|added|thought|saw|did)|first|then)(?![\p{L}])/iu;
 const PROBE_ACK = {
   hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi.", "Achha, ab samajh aaya tumne kaise socha."],
   english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking.", "Okay, now I see how you thought about it."],
@@ -1838,6 +1842,13 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         guard.rightWhy = why ? "authored" : "none";
       }
     }
+    // v6.2 H4 (director10 c4: "Zaroor. Now try."): a bare English filler in a Hinglish lesson goes
+    if (lang !== "english") { const n0 = ss.length; ss = ss.filter((x) => !/^(?:now\s+try|try\s+now|let'?s\s+(?:try|go|see)|try\s+it|go\s+on|okay|ok|good|great|nice|well\s+done)[.!]?$/i.test(norm(x))); if (ss.length < n0) guard.fillerDropped = n0 - ss.length; }
+    // (director10 c4 offtopic T23: "Bilkul, no sahi hai: …" — their English word said back in the verdict): code's yes
+    if (lead && verdict === "correct" && lang !== "english" && /(?<![\p{L}])(?:no|yes)(?![\p{L}])/iu.test(lead)) {
+      const w0 = graded0?.why ? String(graded0.why).trim() : null;
+      lead = dot(`${lang === "english" ? "Yes, that's right" : "Haan, sahi hai"}${w0 ? (lang === "english" ? `, because ${joinable(w0, { lower: true })}` : `, kyunki ${joinable(w0, { lower: true })}`) : ""}`);
+      guard.verdictCode = "echo"; }
     // (every scripted turn: the teaching is the script's; a rule or reason in her words is model-written teaching)
     { const n0 = ss.length; ss = ss.filter((x) => !RULE_SAID.test(x)); if (ss.length < n0) guard.ruleDropped = n0 - ss.length; }
     // v4 W6: a topic parked this turn keeps its promise sentence, and a parked topic served now keeps its return (code says a
@@ -1866,7 +1877,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const parkOk = mine.filter((x) => !/\d/.test(x) && !LESSON_W.test(x) && !/(?<![\p{L}])(?:jaisa|jaise|jaisi|ki\s+tarah|bhi|like)(?![\p{L}])/iu.test(x) && !RULE_SAID.test(x));
       if (kind === "park" && mine.length > parkOk.length) guard.parkFiltered = mine.length - parkOk.length;
       aside.push(...(kind === "park" ? (parkOk.length ? parkOk : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
-        : real.length ? real : authoredReturn ? [authoredReturn] : []));
+        : authoredReturn ? [authoredReturn] : real.length ? real.slice(0, 1) : []));
       if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
     }
     // v5 B5 (director7 c5-t01 T61): her lines never put a method in the child's mouth ("Tumne upar ke 2 ko neeche ke 5 se
@@ -1887,7 +1898,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // as the acknowledgement and said over e2's board): hers is the acknowledgement only when it takes up what THEY said
       const takesUp = (x) => /^(?:achha|accha|acha|theek|thik|hmm+|ok(?:ay)?|samajh\s+(?:gayi|gaya)|i\s+see|good|nice)\b|(?<![\p{L}])(?:tumne|tumhara|tumhari|tumhe|you|your)(?![\p{L}])/iu.test(x);
       if (a0 && words(a0) <= 12 && !/\d/.test(a0) && !/[?？]/.test(a0) && !polarity(a0) && takesUp(a0) && !RULE_SAID.test(a0)) { ack = a0; ss = ss.slice(1); }
-      else ack = pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state);
+      // v6.2 H3 (main, director10: "Theek, yeh tumhari soch thi." to "woh toh ho gaya na"): code's line says they told how they thought
+      // only when they did (a reason in their words); anything else is a plain "okay"
+      else ack = REASON_SAID.test(saidNow) ? pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state) : lang === "english" ? "Okay." : "Theek hai.";
       guard.probeAck = true;
     }
     // v6 R3: a repeated miss on an adding card names exactly what their total left out
@@ -1954,7 +1967,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (ss.length) guard.hintDropped = ss.length;
     } else {
       body = ss;
-      if (!body.length && card && state.lastMove?.cardPoint) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
+      // (v6.2, director10 c4 offtopic T29: "Yaad karo: …" re-read the point over the second view a picture ask drew)
+      if (!body.length && card && state.lastMove?.cardPoint && !asked) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
     }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
     const closedW = whyS(state.lastMove?.closed?.why);
@@ -1970,7 +1984,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
     // (a worked step with no card ends on a short check-in, never mid-air)
     // v6.1 R9: a check-in only where state.js allowed one (once per beat, on new teaching); else a statement that goes on
-    const goOn = () => pickOf((state.lastMove?.checkinOk ? WORKED_ASK : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
+    // (v6.2, director10: "Yeh kadam saaf hai?" after something that was no step: a step's check-in names a step only on a worked step)
+    const goOn = () => pickOf((state.lastMove?.checkinOk ? (kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK) : WORKED_GO)[lang === "english" ? "english" : "hinglish"], state);
     const tail = card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
       : state.lastMove?.splitClose ? pickOf(SPLIT_ASK[lang === "english" ? "english" : "hinglish"], state)
       : state.lastMove?.splitTeach ? goOn() : null);
@@ -2047,9 +2062,31 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
     const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
     if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
+    // v6.2 H4 (main, director10 c4 ×10: "Ab in dono numbers se bhinn likho. Ab in dono numbers se bhinn likho."): a sentence is said
+    // once, after the Hindi words too (two that differed only by "fraction" / "bhinn" are one); a copy in the card is the one kept
+    {
+      const kS = (x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+      const cardT = card ? kS(hw(card)) : "";
+      const all = sentences(reply).map(norm).filter(Boolean);
+      const out = [];
+      all.forEach((x, i) => {
+        const k = kS(x);
+        const later = all.slice(i + 1).some((y) => kS(y) === k);
+        if (k.length > 10 && (out.some((y) => kS(y) === k) || (later && cardT.includes(k)))) { guard.dupDropped = (guard.dupDropped ?? 0) + 1; return; }
+        out.push(x);
+      });
+      const r2 = out.join(" ").replace(/\s+/g, " ").trim();
+      if (r2 && r2 !== reply) reply = r2;
+    }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
     guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(c2 ? { closed: hw(norm(c2)) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
       ...(lead ? { verdict: hw(norm(lead)) } : {}) };
+  }
+  // v6.2 H4 (director10 c4 offtopic T23, a break move: "Bilkul, no sahi hai: …"): on any move, a right answer is never confirmed by
+  // saying their English word back
+  if (answeredNow && verdict === "correct" && lang !== "english" && !clause.sent) {
+    const r0 = String(reply).replace(/^((?:\p{L}+,\s*)?)(?:no|yes)\s+(sahi\s+hai)/iu, (m, a, b) => `${a}${b}`);
+    if (r0 !== reply) { reply = r0; guard.echoVerdict = true; }
   }
   // round 7 A5: a sent clause is never withdrawn (see streamAsk); the lock's fallback passes every guard
   if (clause.sent && !String(reply).replace(/\s+/g, " ").trim().startsWith(clause.sent.s1)) { reply = clause.sent.fallback; guard.clauseFallback = true; }
