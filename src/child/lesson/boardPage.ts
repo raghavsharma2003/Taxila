@@ -27,9 +27,21 @@ export function boardOnTray(slot: unknown): BoardOnTray | null {
   return { key: `${s.scriptId ?? ""}:${s.line?.lessonId ?? ""}:${s.line?.teacherReplySeq ?? ""}`, line: s.line, switches, ...(ofCard !== undefined ? { ofCard } : {}) };
 }
 
+/** QA only (scripts/live-checks.mjs, localStorage tx.qa = "1"): each page turn the Desk computes, on performance.now(), so a
+ *  live check can compare it with the board player's own page turn. Off (nothing written) for everyone else. */
+function qaLog(key: string, page: number, last: number) {
+  try {
+    if (typeof window === "undefined" || localStorage.getItem("tx.qa") !== "1") return;
+    const w = window as unknown as { __txPageLog?: { t: number; key: string; page: number; last: number }[] };
+    (w.__txPageLog ??= []).push({ t: performance.now(), key, page, last });
+  } catch { /* storage refused: no log */ }
+}
+
 /** The page of `board` now up (0 before its first switch). Re-renders at each page turn. */
 export function useBoardPage(board: BoardOnTray | null): number {
   const [page, setPage] = useState(0);
+  const key0 = board?.key ?? "", last0 = board?.switches?.length ?? 0;
+  useEffect(() => { if (page > 0) qaLog(key0, page, last0); }, [page, key0, last0]);
   const key = board?.key ?? "";
   const n = board?.switches?.length ?? 0;
   useEffect(() => {
