@@ -179,14 +179,14 @@ function wholes(c, tl) {
   if (list.length < 1 || list.length > 2) return { error: "wholes_count" };
   for (const w of list) {
     if (!isInt(w?.parts, 2, 12) || !isInt(w.shade ?? 0, 0, w.parts) || (w.title !== undefined && (!fitsLabel(String(w.title)) || textProblem(String(w.title))))) return { error: "wholes_range" };
-    if (w.equal === false && w.parts < 3) return { error: "wholes_unequal_parts" };
   }
   if (c.as === "bar") return wholesAsBars(list, tl);
   const n = list.length, colW = 400 / n, r = n === 1 ? 95 : 72, cy = 128, counts = [], facts = {};
   list.forEach((w, k) => {
     const cx = round1(colW * k + colW / 2), shade = w.shade ?? 0;
     // the cuts, in degrees from 12 o'clock: equal pieces, or one half and the other half shared by the rest
-    const cuts = w.equal === false ? [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
+    // (Learning's D1: two unequal pieces — the roti's "ek bada, ek chhota" — two thirds and one third)
+    const cuts = w.equal === false ? (w.parts === 2 ? [0, 240] : [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))]) : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
     tl.add({ id: `w${k}`, op: "circle", c: [cx, cy], r, weight: 2 }, 800, { gap: k ? 300 : 0 });
     for (const a of cuts) tl.add({ op: "line", from: [cx, cy], to: [round1(cx + r * Math.sin(rad(a))), round1(cy - r * Math.cos(rad(a)))], weight: 1 }, 220, { gap: 60 });
     const edges = [...cuts, 360];
@@ -210,7 +210,7 @@ function wholesAsBars(list, tl) {
   list.forEach((w, k) => {
     const y0 = top + k * (H + gapY), shade = w.shade ?? 0;
     // the cuts, as fractions of the strip: equal pieces, or one half and the other half shared by the rest
-    const cuts = w.equal === false ? [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
+    const cuts = w.equal === false ? (w.parts === 2 ? [2 / 3] : [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))]) : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
     tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
     for (const f of cuts) tl.add({ op: "line", from: [round1(x0 + f * W), y0], to: [round1(x0 + f * W), y0 + H], weight: 1 }, 260, { gap: 140 });
     const edges = [0, ...cuts, 1];
@@ -598,6 +598,7 @@ function placeValue(c, tl) {
 }
 
 function equalGroups(c, tl) {
+  if (Array.isArray(c.sizes)) return unequalGroups(c, tl);
   const { groups, each } = c;
   if (!isInt(groups, 2, 6) || !isInt(each, 1, 8)) return { error: "groups_range" };
   const gw = 340 / groups;
@@ -619,6 +620,34 @@ function equalGroups(c, tl) {
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
   return { counts: { groups, each }, facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+}
+
+/**
+ * Learning's D1 (c4 s2 checks[1] marbles 7, 3, 3, 3; pencils 6, 3, 3): equal-groups@1 with `sizes` [2-6 groups of 1-10] —
+ * the same heap shared out into groups of THESE sizes, the groups not all the same. No equation: whether it is a fair share
+ * is the card's question. counts { groups, values: the sizes }.
+ */
+function unequalGroups(c, tl) {
+  const sizes = c.sizes;
+  if (sizes.length < 2 || sizes.length > 6 || sizes.some((n) => !isInt(n, 1, 10))) return { error: "groups_sizes" };
+  const groups = sizes.length, gw = 340 / groups, N = sizes.reduce((a, b) => a + b, 0), hc = Math.min(12, N), claims = [];
+  for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 66, weight: 1 }, 300, { gap: 80 });
+  const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 196 + Math.floor(k / hc) * 11];
+  for (let k = 0; k < N; k++) tl.add({ id: `g${k}`, op: "circle", c: heap(k), r: 4.5, fill: "accent", ink: "accent", weight: 1 }, 40, { gap: 10 });
+  let k = 0;
+  sizes.forEach((each, g) => {
+    const gx = 30 + g * gw;
+    for (let i = 0; i < each; i++, k++) {
+      const cols = each > 4 ? 2 : 1;
+      const x = gx + gw / 2 + (cols === 2 ? (i % 2 ? 9 : -9) : 0), y = 110 - ((Math.ceil(each / cols) - 1) * 13) / 2 + Math.floor(i / cols) * 13;
+      const [hx, hy] = heap(k);
+      tl.add({ op: "move", target: `g${k}`, by: [round1(x - hx), round1(y - hy)] }, 650, i ? { with: true } : { gap: 220 });
+      claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
+    }
+    // each group's own count under it
+    tl.add({ op: "text", at: [round1(gx + gw / 2), 196], text: String(each), size: "s", ink: "soft" }, 300, { gap: 120 });
+  });
+  return { counts: { groups, values: sizes.map(String) }, facts: { groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no" }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────
