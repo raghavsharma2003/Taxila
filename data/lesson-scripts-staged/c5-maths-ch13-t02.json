@@ -76,7 +76,7 @@
        "en": "These 6 chairs also fit in 2 equal rows, and in 3 equal rows. With 4 or 5 rows a chair is left over. So what are all the factors of 6?"
       },
       "key": "1, 2, 3, 6",
-      "why": { "hi": "1 × 6, 2 × 3, 3 × 2 aur 6 × 1 mein koi kursi nahi bachti, toh rows 1, 2, 3 ya 6 ho sakti hain", "en": "1 × 6, 2 × 3, 3 × 2 and 6 × 1 leave no chair over, so the rows can be 1, 2, 3 or 6" },
+      "why": { "hi": "1 × 6 aur 2 × 3 mein koi kursi nahi bachti, toh rows 1, 2, 3 ya 6 ho sakti hain", "en": "1 × 6 and 2 × 3 leave no chair over, so the rows can be 1, 2, 3 or 6" },
       "accept": ["1 2 3 6", "1, 2, 3 aur 6", "1, 2, 3 and 6"],
       "targets": "c5-maths-ch13-t02-m-one-and-self",
       "wrongIfMis": "2, 3"
@@ -228,6 +228,10 @@
       "hi": "Yeh 9 kursiyan ek lambi row mein hain, yaani 9 columns, aur saari kursiyan lag gayin. Yeh bhi barabar rows hain, isliye 1 aur khud number hamesha factor hote hain.",
       "en": "These 9 chairs are in one long row, that is 9 columns, and every chair is used. This is equal rows too, so 1 and the number itself are always factors."
      },
+     "simpler": {
+      "hi": "9 kursiyan ek lambi row mein bhi barabar rows hain. Isliye 1 aur khud number hamesha factor hote hain.",
+      "en": "9 chairs in one long row are equal rows too. So 1 and the number itself are always factors."
+     },
      "board": { "template": "shade-grid@1", "params": { "rows": 1, "cols": 9, "shade": 0 } },
      "then": {
       "prompt": {
@@ -256,6 +260,10 @@
       "hi": "12 kursiyan 1 × 12, 2 × 6 aur 3 × 4 teen rectangle banati hain, par 13 kursiyan sirf 1 × 13. Number bada hone se factors zyada nahi ho jaate.",
       "en": "12 chairs made three rectangles, 1 × 12, 2 × 6 and 3 × 4, but 13 chairs only 1 × 13. A bigger number does not mean more factors."
      },
+     "simpler": {
+      "hi": "12 kursiyan teen rectangle banati hain, par 13 kursiyan sirf 1 × 13. Bada number matlab zyada factors nahi.",
+      "en": "12 chairs make three rectangles, but 13 chairs make only 1 × 13. A bigger number does not mean more factors."
+     },
      "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 4, "shade": 0, "labels": false } },
      "then": {
       "prompt": {
@@ -283,6 +291,10 @@
      "say": {
       "hi": "Yeh rectangle 3 rows aur 9 columns ka hai. Har rectangle do factor deta hai, isliye 3 ke saath 9 bhi 27 ka factor hai.",
       "en": "This rectangle has 3 rows and 9 columns. Every rectangle gives two factors, so along with 3, 9 is also a factor of 27."
+     },
+     "simpler": {
+      "hi": "3 rows aur 9 columns se 27 banta hai. Isliye 3 aur 9 dono 27 ke factors hain.",
+      "en": "3 rows and 9 columns make 27. So 3 and 9 are both factors of 27."
      },
      "board": { "template": "shade-grid@1", "params": { "rows": 3, "cols": 9, "shade": 0 } },
      "then": {
@@ -516,6 +528,10 @@
       "hi": "Har factor ka ek saathi hota hai, jiske saath guna karke number banta hai. 24 mein 3 mila, toh uska saathi 8 bhi likho, 24 ki jodiyan hain 1 × 24, 2 × 12, 3 × 8, 4 × 6.",
       "en": "Every factor has a partner that multiplies with it to make the number. In 24 we found 3, so write its partner 8 too, as in 1 × 24, 2 × 12, 3 × 8, 4 × 6."
      },
+     "simpler": {
+      "hi": "Har factor ka ek saathi hota hai. 24 mein 3 mila, toh uska saathi 8 bhi likho: 3 × 8 = 24.",
+      "en": "Every factor has a partner. In 24 we found 3, so write its partner 8 too: 3 × 8 = 24."
+     },
      "board": {
       "template": "compare@1",
       "params": {
@@ -529,7 +545,7 @@
        "en": "{friend} wrote the factors of 36: 1, 2, 3, 4, 6, 12, 18, 36. Which factor is missing?"
       },
       "key": "9",
-      "why": { "hi": "36 ki jodiyan 1 × 36, 2 × 18, 3 × 12, 4 × 9 aur 6 × 6 hain, aur 4 ka saathi 9 chhoot gaya", "en": "36's pairs are 1 × 36, 2 × 18, 3 × 12, 4 × 9 and 6 × 6, and 4's partner 9 was missed" },
+      "why": { "hi": "36 ki jodiyon mein 4 × 9 bhi hai, par list mein 4 ka saathi 9 chhoot gaya", "en": "36's pairs include 4 × 9, and the list has 4 but missed its partner 9" },
       "accept": ["nau", "nine", "9 chhoot gaya"],
       "targets": "c5-maths-ch13-t02-m-miss-pairs",
       "wrongIfMis": "none, the list is complete",
@@ -549,6 +565,10 @@
      "say": {
       "hi": "1 × 15 bhi ek poori jodi hai, bilkul ek lambi row jaisi. Isliye 15 ki jodiyan 1 × 15 aur 3 × 5 hain, aur 1 aur 15 bhi uske factors hain.",
       "en": "1 × 15 is also a full pair, just like one long row. So the pairs of 15 are 1 × 15 and 3 × 5, and 1 and 15 are factors of it too."
+     },
+     "simpler": {
+      "hi": "1 × 15 bhi ek jodi hai, jaise ek lambi row. Toh 15 ke factors 1, 3, 5 aur 15 hain.",
+      "en": "1 × 15 is a pair too, like one long row. So the factors of 15 are 1, 3, 5 and 15."
      },
      "board": {
       "template": "compare@1",
@@ -653,7 +673,7 @@
        "en": "Now think about 15. Out of 30, 5, 45 and 3, which are factors of 15?"
       },
       "key": "3 and 5",
-      "why": { "hi": "3 × 5 = 15, toh 3 aur 5 dono 15 ko poora baantte hain, jabki 30 aur 45, 15 se bade hain", "en": "3 × 5 = 15, so 3 and 5 both divide 15 exactly, while 30 and 45 are bigger than 15" },
+      "why": { "hi": "3 × 5 = 15, toh 3 aur 5, 15 ko poora baantte hain, par 30 aur 45, 15 se bade hain", "en": "3 × 5 = 15, so 3 and 5 both divide 15 exactly, while 30 and 45 are bigger than 15" },
       "accept": ["3, 5", "3 aur 5", "5 and 3", "5 aur 3", "5, 3"],
       "targets": "c5-maths-ch13-t02-m-factor-multiple-swap",
       "wrongIfMis": "30 and 45"
@@ -807,6 +827,10 @@
      "say": {
       "hi": "4-4 ki chhalaang 0 se 4, 8 aur 12 par girti hai, aur teen chhalaang mein theek 12 aata hai. Chhalaang ka size 4 factor hai, aur girne ki jagah 12 multiple hai.",
       "en": "Jumps of 4 from 0 land on 4, 8 and 12, and three jumps reach exactly 12. The jump size 4 is the factor, and the landing spot 12 is the multiple."
+     },
+     "simpler": {
+      "hi": "4-4 ki teen chhalaang theek 12 par girti hain. Chhalaang ka size 4 factor hai, aur 12 multiple hai.",
+      "en": "Three jumps of 4 land exactly on 12. The jump size 4 is the factor, and 12 is the multiple."
      },
      "board": { "template": "number-line-hop@1", "params": { "start": 0, "hops": [4, 4, 4] } },
      "then": {
