@@ -7,7 +7,8 @@ const read = (p) => fs.readFileSync(new URL(`../${p}`, import.meta.url), "utf8")
 
 test("the Notebook opens the Made page from ?made= and the shelf replays a piece with no lesson in its intent", () => {
   const n = read("src/child/screens/Notebook.tsx");
-  assert.match(n, /useState<"lessons" \| "made" \| "jar">\(madeId \? "made" : "lessons"\)/);
+  // (r7 "Then and now" added the growth page, opened by ?page=growth)
+  assert.match(n, /useState<"lessons" \| "made" \| "jar" \| "growth">\(madeId \? "made" : search\.get\("page"\) === "growth" \? "growth" : "lessons"\)/);
   assert.match(n, /<MadeShelf cid=\{cid\} young=\{young\} openId=\{madeId\}/);
   const m = read("src/child/screens/NotebookMade.tsx");
   assert.match(m, /\/api\/studio\/made-for\?childId=/);
@@ -22,7 +23,7 @@ test("an empty shelf says what will be there, with her name", () => {
 
 test("the Questions page shows only when Learning's jar route answers; waiting first, answered struck with the day", async () => {
   const n = read("src/child/screens/Notebook.tsx");
-  assert.match(n, /\(jar \? \(\["lessons", "made", "jar"\] as const\) : \(\["lessons", "made"\] as const\)\)/);
+  assert.match(n, /\(jar \? \(\["lessons", "growth", "made", "jar"\] as const\) : \(\["lessons", "growth", "made"\] as const\)\)/);
   const j = read("src/child/screens/NotebookJar.tsx");
   assert.match(j, /<s data-speech="">\{i\.topic\}<\/s>/);
   assert.doesNotMatch(j, /\.length\}|onClick|"DELETE"/, "no counts, nothing to press or delete");
