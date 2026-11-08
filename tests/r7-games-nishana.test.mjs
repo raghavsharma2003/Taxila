@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { lineLogic, malHop, hopText } from "../src/play/families/nishana/line.logic.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const DIV = { grammar: { ops: ["÷"] }, misMap: { "div-neg-neg": "k-sign-mix", "div-by-size": "k-sign-mix" } };
@@ -91,7 +92,7 @@ for (const [name, kind] of [["÷", DIV], ["decimal", DEC]]) {
     for (let seed = 1; seed <= 40; seed++) {
       const fade = 1 + (seed % 3);
       let best = Infinity, r = null;
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); r = pickLevels(lineLogic, req(seed, kind, fade)); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); r = pickLevels(lineLogic, req(seed, kind, fade)); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       assert.ok(r, `seed ${seed}`);
       for (const lv of [r.garam, r.teekha].filter(Boolean)) {

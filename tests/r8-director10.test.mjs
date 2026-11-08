@@ -122,7 +122,7 @@ test("director10 G4: every picture request over a card's board draws a SECOND vi
     ["c6-maths-ch06-t01", { template: "shape@1", params: { shape: "hexagon", side: "5 cm" } }, "explain", "unrolled", "unrolled@1", ["5 cm", "5 cm", "5 cm", "5 cm", "5 cm", "5 cm", "?"]],
     ["c5-maths-ch02-t02", { template: "fraction-bars@1", params: { bars: [{ parts: 6, shade: 1, label: "1/6" }, { parts: 3, shade: 1, label: "1/3" }] } }, "explain", "line", "fraction-line@1", ["1/6", "1/3"]],
     // (c5-t01: the card asks about the 8-gap scale under the 1/4 — both scales are the card's figure, not the 1/4 alone)
-    ["c5-maths-ch02-t01", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "explain", "parts", "fraction-bars@1", ["1/4", "?"]],
+    ["c5-maths-ch02-t01", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "explain", "parts", "fraction-bars@1", ["1/4", "0", "1", "?", "0", "1"]],
   ];
   for (const [T, ref, kind, view, template, written] of rows) {
     // (Brain's "show": a picture ask that names nothing — "screen par dikhao na", patch 014 — is a request too)
@@ -253,7 +253,8 @@ test("main A1: a second view of a LIVE card never draws its key — c5-t01 e2's 
   assert.deepEqual(texts(px.script), ["8 m", "5 m", "7 m", "6 m", "?", "?"]);
   // a fraction ask (key 1/3) over its circle: the bar is unnamed and unshaded
   const third = { template: "fraction-parts@1", params: { parts: 3, shade: 1, whole: "circle" } };
-  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 0, label: "?" }]);
+  // (director11 S1: only the VALUE is hidden — the card's own figure shows the shading, the bar keeps it, its name is "?")
+  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 1, label: "?" }]);
   // and on the seam: e2's card up, the picture asked — no 8-part bar while the card is live
   const s = lesson("c5-maths-ch02-t01");
   const beat = keyed(["8", "8 gaps"]);
@@ -288,4 +289,19 @@ test("main B: unrolled@1 draws the shape itself beside the strip, so a line that
   const tri = expand({ template: "unrolled@1", sides: [7, 9, 12], unit: "m", figure: { shape: "triangle", sides: [7, 9, 12] } });
   assert.ok(tri.ok && tri.script.ops.some((o) => o.op === "polygon" && o.points.length === 3));
   assert.equal(expand({ template: "unrolled@1", sides: [1, 2, 9], unit: "m", figure: { shape: "triangle", sides: [1, 2, 9] } }).ok, false, "no triangle with those sides");
+});
+
+test("Learning's c4 watermelon then-card: two cakes cut into 6 and 3 (wholes@1, unlabelled) certify and draw — the template's exact radii are not a model's circle 'cut by lines' (W8)", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const melons = { template: "wholes@1", params: { wholes: [{ parts: 6 }, { parts: 3 }] } };
+  const prompt = "Do ek jaise tarbooz: ek ke 6 barabar slice, doosre ke 3. Rahul kehta hai 6 wala slice bada hai. Kya Rahul sahi hai?";
+  const r = await certifyBoardRef(melons, { line: prompt, withhold: { values: [] } });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  // live, as the then-card's own board on its prompt
+  const T = "c4-maths-ch05-t01", kit = kitOf(T), L = `r8d10wm-${lessonN++}`;
+  const a = { intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: melons, scriptBeat: sb("then:c4-maths-ch05-t01-m-bigger-denominator", "check", { answers: ["No", "nahi"] }) }, line: { lessonId: L, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } };
+  BF.preselect(a, { kit });
+  const real = { ...a, line: { lessonId: L, text: prompt } };
+  const t = BF.takePreselected(real, gateCtxFor(real, { kit, redact: [], prior: [] }));
+  assert.deepEqual(t?.screen?.counts?.wholes?.map((w) => w.parts), [6, 3], BF.pickState(real));
 });

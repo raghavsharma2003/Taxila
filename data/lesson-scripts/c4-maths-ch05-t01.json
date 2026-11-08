@@ -426,10 +426,7 @@
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "Ek cake ke 4 tukde kiye: 2 bade aur 2 chhote. {friend} ne 1 chhota tukda liya. Kya yeh chhota tukda cake ka ek-chauthaai hai?",
-      "en": "A cake is cut into 4 pieces: 2 big and 2 small. {friend} takes 1 small piece. Is that small piece one quarter of the cake?"
-     },
+     "prompt": { "hi": "Ek cake ke 4 tukde kiye: 1 bada aur 3 chhote. {friend} ne 1 chhota tukda liya. Kya yeh chhota tukda cake ka ek-chauthaai hai?", "en": "A cake is cut into 4 pieces: 1 big and 3 small. {friend} takes 1 small piece. Is that small piece one quarter of the cake?" },
      "key": "No",
      "accept": [
       "nahi",
@@ -440,12 +437,12 @@
      ],
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "wrongIfMis": "Yes",
-     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}]} },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "equal": false}]} },
      "why": {
       "hi": "cake ke 4 tukde barabar nahi hain, aur ek-chauthaai 4 barabar tukdon mein se 1 hota hai",
       "en": "the cake's 4 pieces are not equal, and one quarter is 1 of 4 equal pieces"
      },
-     "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":4,"shade":1,"title":"4 barabar tukde"}]} },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "equal": false, "title": "Cake"}, {"parts": 4, "title": "Barabar"}]} },
      "simpler": {
       "hi": "Ek-chauthaai tab hota hai jab 4 tukde bilkul barabar hon. Yahan bade aur chhote dono tukde hain, yeh dhyaan do.",
       "en": "It is one quarter only when the 4 pieces are exactly equal. Notice that here there are big and small pieces."
@@ -479,11 +476,11 @@
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "move": "fair-sharing story: 3 friends, one watermelon cut as 1 big slice + 2 small → fair? no; then paper strip folded into 3 same-size parts beside it → only same-size parts carry the name third",
      "say": {
-      "hi": "Tarbooz ka 1 bada slice aur 2 chhote slice barabar nahi hain, toh koi slice 1/3 nahi. Kaagaz ki patti ke 3 barabar hisse hain, toh har hissa 1/3 hai.",
+      "hi": "Tarbooz ka 1 bada tukda aur 2 chhote tukde barabar nahi hain, toh koi tukda 1/3 nahi. Kaagaz ki patti ke 3 barabar hisse hain, toh har hissa 1/3 hai.",
       "en": "A watermelon in 1 big slice and 2 small slices is not equal, so no slice is 1/3. A paper strip has 3 equal parts, so each part is 1/3."
      },
      "simpler": {
-      "hi": "Tukde barabar hon, tabhi 1/3 hota hai. Tarbooz ke slice chhote-bade hain, patti ke 3 hisse barabar hain.",
+      "hi": "Tukde barabar hon, tabhi 1/3 hota hai. Tarbooz ke tukde chhote-bade hain, patti ke 3 hisse barabar hain.",
       "en": "Only equal pieces make 1/3. The watermelon slices are big and small; the strip's 3 parts are equal."
      },
      "board": {
@@ -492,8 +489,8 @@
        "left": {
         "title": "Tarbooz",
         "items": [
-         "1 bada slice",
-         "2 chhote slice",
+         "1 bada tukda",
+         "2 chhote tukde",
          "barabar nahi, 1/3 nahi"
         ]
        },
@@ -520,12 +517,12 @@
       ],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
       "wrongIfMis": "Yes",
-      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "title": "Aadha"}]} },
+      "board": { "template": "compare@1", "params": {"left": {"title": "Roti", "items": ["2 tukde"]}, "right": {"title": "Tukde", "items": ["ek bada", "ek chhota"]}} },
       "why": {
        "hi": "roti ke dono tukde barabar nahi hain, aur aadha 2 barabar tukdon mein se ek hota hai",
        "en": "the roti's two pieces are not equal, and a half is one of 2 equal pieces"
       },
-      "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":2,"shade":1,"title":"Aadha"}]} },
+      
       "simpler": {
        "hi": "Aadha tab hota hai jab roti ke 2 tukde bilkul barabar hon. Yahan ek tukda bada hai aur ek chhota.",
        "en": "It is half only when the roti's 2 pieces are exactly equal. Here one piece is bigger and one is smaller."
@@ -539,10 +536,7 @@
       "hi": "Poori roti ke 4 barabar tukde neeche aate hain, aur khaya hua 1 rangin tukda upar. Bache hue tukde neeche kabhi nahi aate.",
       "en": "The 4 equal pieces of the whole roti go at the bottom, and the 1 shaded piece eaten goes on top. The pieces left over never go at the bottom."
      },
-     "simpler": {
-      "hi": "Neeche poori roti ke 4 tukde, upar khaya hua 1 tukda. Bache hue tukde neeche nahi aate.",
-      "en": "Bottom: all 4 pieces of the roti. Top: the 1 piece eaten. The pieces left over never go at the bottom."
-     },
+     "simpler": { "hi": "Neeche poori roti ke saare barabar tukde, upar sirf khaye hue tukde. Bache hue tukde neeche kabhi nahi aate.", "en": "Bottom: all the equal pieces of the whole roti. Top: only the pieces eaten. The pieces left over never go at the bottom." },
      "board": {
       "template": "fraction-parts@1",
       "params": {
@@ -893,7 +887,7 @@
       "hi": "group 7, 3, 3, 3 barabar nahi; 16 ke ek-chauthaai mein har group 4 ka hota, 4 × 4 = 16",
       "en": "groups 7, 3, 3, 3 are not equal; quarters of 16 would be 4 in each group, 4 × 4 = 16"
      },
-     "answerBoard": { "template": "equal-groups@1", "params": {"groups":4,"each":4} },
+     
      "simpler": {
       "hi": "Ek-chauthaai ke liye 4 group barabar hone chahiye. Dekho ki 7, 3, 3 aur 3 sab barabar hain ya nahi.",
       "en": "For one-quarter, the 4 groups must be equal. See whether 7, 3, 3 and 3 are all the same."
@@ -1018,7 +1012,7 @@
        "hi": "group 6, 3, 3 barabar nahi; 12 ke ek-tihaai mein har group 4 ka hota, 3 × 4 = 12",
        "en": "groups 6, 3, 3 are not equal; thirds of 12 would be 4 in each group, 3 × 4 = 12"
       },
-      "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":4} },
+      
       "simpler": {
        "hi": "Ek-tihaai ke liye 3 group barabar hone chahiye. Dekho ki 6, 3 aur 3 barabar hain ya nahi.",
        "en": "For one-third, the 3 groups must be equal. See whether 6, 3 and 3 are equal or not."
@@ -1398,10 +1392,7 @@
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "Ek hi cake ke yeh tukde chhote se bade ke kram mein lagao: 1/2, 1/4, 1/3. Sabse chhota pehle.",
-      "en": "Put these pieces of the same cake in order, smallest first: 1/2, 1/4, 1/3."
-     },
+     "prompt": { "hi": "Ek hi chocolate bar ke yeh tukde chhote se bade ke kram mein lagao: 1/2, 1/4, 1/3. Sabse chhota pehle.", "en": "Put these pieces of the same chocolate bar in order, smallest first: 1/2, 1/4, 1/3." },
      "key": "1/4, 1/3, 1/2",
      "accept": [
       "1/4 1/3 1/2",
@@ -1411,15 +1402,9 @@
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "1/2, 1/3, 1/4",
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "?"}, {"parts": 3, "shade": 1, "label": "?"}, {"parts": 2, "shade": 1, "label": "?"}]} },
-     "why": {
-      "hi": "ek hi cake ke jitne zyada barabar tukde, har tukda utna chhota, toh kram 1/4, 1/3, 1/2 hai",
-      "en": "the more equal pieces of one cake, the smaller each, so the order is 1/4, 1/3, 1/2"
-     },
+     "why": { "hi": "ek hi bar ke jitne zyada barabar tukde, har tukda utna chhota, toh kram 1/4, 1/3, 1/2 hai", "en": "the more equal pieces of one bar, the smaller each, so the order is 1/4, 1/3, 1/2" },
      "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":4,"shade":1,"label":"1/4"},{"parts":3,"shade":1,"label":"1/3"},{"parts":2,"shade":1,"label":"1/2"}]} },
-     "simpler": {
-      "hi": "Ek hi cake mein neeche ka number jitna bada, tukda utna chhota. Neeche ke numbers dekho aur sabse bade se shuru karo.",
-      "en": "For the same cake, the bigger the bottom number, the smaller the piece. Look at the bottom numbers and start with the biggest."
-     }
+     "simpler": { "hi": "Ek hi bar mein neeche ka number jitna bada, tukda utna chhota. Neeche ke numbers dekho aur sabse bade se shuru karo.", "en": "For the same bar, the bigger the bottom number, the smaller the piece. Look at the bottom numbers and start with the biggest." }
     }
    ],
    "ladder": [
@@ -1477,8 +1462,8 @@
      },
      "then": {
       "prompt": {
-       "hi": "Do ek jaise tarbooz: ek ke 6 barabar slice, doosre ke 3. Rahul kehta hai 6 wala slice bada hai. Kya Rahul sahi hai?",
-       "en": "Two same watermelons: one in 6 equal slices, the other in 3. Rahul says the 6-cut slice is bigger. Is Rahul right?"
+       "hi": "Do ek jaise cake: ek ke 6 barabar tukde, doosre ke 3 barabar tukde. Rahul: 6 wala tukda bada hai. Kya woh sahi hai?",
+       "en": "Two same cakes: one in 6 equal slices, one in 3 equal slices. Rahul says a 6-cake slice is bigger. Is he right?"
       },
       "key": "No",
       "accept": [
@@ -1490,15 +1475,12 @@
       ],
       "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
       "wrongIfMis": "Yes",
-      "board": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1} },
-      "why": {
-       "hi": "ek jaise tarbooz mein 6 slice wala 1/6 slice, 3 slice wale 1/3 slice ka aadha hai",
-       "en": "in identical watermelons, a 1/6 slice out of 6 is half a 1/3 slice out of 3"
-      },
-      "answerBoard": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1, "marks": [[1, 3], [1, 6]]} },
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 6, "title": "Cake"}, {"parts": 3, "title": "Cake"}]} },
+      "why": { "hi": "6 barabar tukdon wale cake ka 1/6 tukda, 3 barabar tukdon wale cake ke 1/3 tukde ka aadha hai", "en": "a 1/6 slice of the 6-slice cake is half a 1/3 slice of the 3-slice cake" },
+      "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 6, "title": "1/6"}, {"parts": 3, "title": "1/3"}]} },
       "simpler": {
-       "hi": "Dono tarbooz ek jaise hain. Jis tarbooz ke zyada slice bane, uska har slice chhota hota hai.",
-       "en": "Both watermelons are the same. The one made into more slices has smaller slices."
+       "hi": "Dono cake ek jaise hain. Jis cake ke zyada tukde bane, uska har tukda chhota hota hai.",
+       "en": "Both cakes are the same. The one cut into more slices has smaller slices."
       }
      }
     }

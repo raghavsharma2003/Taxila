@@ -273,10 +273,23 @@ export function partitionCounts(text) {
 /** Families of equal shapes: sectors of one circle, boxes of one size, circles of one radius (each ≥ 2 members). */
 function shapeFamilies(ops) {
   const fam = new Map();
-  const key = (o) => o.op === "sector" ? `sector@${Math.round(o.c[0] / 4)},${Math.round(o.c[1] / 4)},${Math.round(o.r / 4)}`
+  // (Learning's D1, 2026-11-08: a whole's SHADING laid over its pieces is not more pieces — "4 barabar tukde, 3 rangin" over
+  // a cut circle counted 4 + 3 = "sector x7". A filled sector over an unfilled one of the same angles is that piece's
+  // shading and is not counted; a filled sector that IS a piece, with no twin under it, still is)
+  const near = (a, b) => Math.abs(a - b) <= 2;
+  const overlay = (o) => o.op === "sector" && o.fill && ops.some((u) => u !== o && u.op === "sector" && !u.fill && near(u.c[0], o.c[0]) && near(u.c[1], o.c[1])
+    && near(u.fromDeg, o.fromDeg) && near(u.toDeg, o.toDeg));
+  const key = (o) => overlay(o) ? null : o.op === "sector" ? `sector@${Math.round(o.c[0] / 4)},${Math.round(o.c[1] / 4)},${Math.round(o.r / 4)}`
     : o.op === "rect" ? `rect@${Math.round(o.w / 3)}x${Math.round(o.h / 3)}` : o.op === "circle" && o.r < 40 ? `dot@${Math.round(o.r / 3)}` : null;
   for (const o of ops) { const k = key(o); if (k) fam.set(k, [...(fam.get(k) ?? []), o]); }
-  return [...fam].filter(([, v]) => v.length >= 2).map(([k, v]) => ({ kind: k.split("@")[0], n: v.length }));
+  const out = [...fam].filter(([, v]) => v.length >= 2).map(([k, v]) => ({ kind: k.split("@")[0], n: v.length }));
+  // (a round whole cut by its RADII — wholes@1, an authored card — has as many pieces as radii: her count binds it too)
+  for (const c of ops.filter((o) => o.op === "circle" && o.r >= 30)) {
+    const radii = ops.filter((o) => o.op === "line" && [[o.from, o.to], [o.to, o.from]].some(([a, b]) => Math.hypot(a[0] - c.c[0], a[1] - c.c[1]) <= 6 && Math.abs(Math.hypot(b[0] - c.c[0], b[1] - c.c[1]) - c.r) <= c.r * 0.15)).length;
+    const sectors = ops.some((o) => o.op === "sector" && !o.fill && Math.abs(o.c[0] - c.c[0]) <= 2 && Math.abs(o.c[1] - c.c[1]) <= 2);
+    if (radii >= 2 && !sectors) out.push({ kind: "slice", n: radii });
+  }
+  return out;
 }
 /** A circle cut by line strokes through (near) its centre: the parts cannot be checked equal; sectors can. */
 function circleCutByLines(ops) {

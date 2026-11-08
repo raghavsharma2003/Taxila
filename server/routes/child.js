@@ -166,10 +166,25 @@ export async function limitsFor(child, now = new Date()) {
 async function boot(req, res) {
   const { guardian, child } = await requireChild(req, childIdOf(query(req).get("childId")));
   const { meData } = await import("./account.js");
-  const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
   // release 12 flight recorder: the same trace tier GET /api/me carries (the child app boots from here)
   const { traceMeFor } = await import("../trace/tier.js");
+  if (guardian.deviceChildId) {
+    // a paired child device (migration 041): this child only. No guardian row (email, name), no sibling, no consents.
+    const p = await planFor(child, guardian);
+    return send(res, 200, { me: { ...(await deviceMe(guardian, child)), trace: traceMeFor(guardian) }, plan: p });
+  }
+  const [me, p] = await Promise.all([meData(guardian), planFor(child, guardian)]);
   send(res, 200, { me: { ...me, trace: traceMeFor(guardian) }, plan: p });
+}
+
+/** The fields GET /api/me sends for each child (account.js meData), and nothing else of the child row. */
+export const ME_CHILD_FIELDS = ["id", "first_name", "class_level", "board", "school_medium", "language_pref", "teacher_id", "teacher_name", "avatar", "interests", "name_spoken"];
+/** A paired device's `me`: App's shape (docs/design/round7/app/PAIRING.md), the ui flags derived from the account, no PII. */
+export async function deviceMe(guardian, child) {
+  const { clientChild } = await import("./account.js");
+  const { uiFlagsFor } = await import("../ui/kaksha-cohort.js");
+  const own = Object.fromEntries(ME_CHILD_FIELDS.map((k) => [k, child[k] ?? null]));
+  return { scope: "child", guardian: null, children: [clientChild(own)], consents: [], ui: uiFlagsFor(guardian) };
 }
 
 /** GET /api/child/plan */

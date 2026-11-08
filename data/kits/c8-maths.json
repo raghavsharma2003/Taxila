@@ -1065,6 +1065,46 @@
       "representation": "A 3 by 3 by 3 cube of 27 small cubes with one edge highlighted",
       "moveShape": "Child counts the cubes along one edge; ask what number used three times in a multiplication gives 27"
      }
+    },
+    {
+     "id": "c8-maths-ch01-t03-m-sum-cube-split",
+     "skillId": "c8-maths-ch01-t03-s3",
+     "belief": "Thinks the sum of two cubes equals the cube of the sum, so a³ + b³ = (a + b)³ (for example 1³ + 12³ = 13³).",
+     "signs": [
+      "Writes 2³ + 3³ = 5³ = 125",
+      "Adds the numbers first, then cubes once, when asked for a sum of cubes",
+      "Claims 1729 = 13³ because 1 + 12 = 13"
+     ],
+     "diagnostic": {
+      "prompt_en": "What is 2³ + 3³?",
+      "prompt_hi": "2³ + 3³ kitna hota hai?",
+      "options": [
+       {
+        "text": "35",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "125",
+        "misconceptionId": "c8-maths-ch01-t03-m-sum-cube-split",
+        "correct": false
+       },
+       {
+        "text": "15",
+        "misconceptionId": "c8-maths-ch01-t03-m-cube-times3",
+        "correct": false
+       },
+       {
+        "text": "13",
+        "misconceptionId": "c8-maths-ch01-t03-m-cube-square",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Unit-cube blocks: a 2-by-2-by-2 cube (8 blocks) and a 3-by-3-by-3 cube (27 blocks) next to a 5-by-5-by-5 cube (125 blocks); the two small cubes fill only 35 of the 125",
+      "moveShape": "build each cube separately → 8 and 27 → put together → 35 → compare with the 5-edge cube → 125, far bigger → cube each part, then add"
+     }
     }
    ],
    "items": [
@@ -1350,6 +1390,104 @@
       "solverAnswer": "3 (7^3=343)",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch01-t03-i13",
+     "skillId": "c8-maths-ch01-t03-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Work out 1³ + 2³ + 3³. Is the total a perfect square?",
+     "prompt_hi": "1³ + 2³ + 3³ nikalo. Kya total ek perfect square hai?",
+     "answer": "36; yes, 36 = 6²",
+     "acceptable": [
+      "36, yes",
+      "36 = 6 × 6"
+     ],
+     "hints": [
+      "What is each cube on its own?",
+      "1³ = 1, 2³ = 8, 3³ = 27.",
+      "1 + 8 + 27 = ___; is it some number times itself?",
+      "36 = 6 × 6, so yes, it is a perfect square."
+     ],
+     "verified": {
+      "solverAnswer": "1 + 8 + 27 = 36, which is a perfect square (6²).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch01-t03-i14",
+     "skillId": "c8-maths-ch01-t03-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Riya wrote: 3³ + 4³ = 7³ = 343. Check her work and give the correct total.",
+     "prompt_hi": "Riya ne likha: 3³ + 4³ = 7³ = 343. Uska kaam check karo aur sahi total batao.",
+     "answer": "Wrong; 3³ + 4³ = 27 + 64 = 91, not 343. Cube each number first, then add",
+     "acceptable": [
+      "91",
+      "Wrong, it is 91"
+     ],
+     "hints": [
+      "What did Riya do first, add or cube?",
+      "Find 3³ and 4³ separately.",
+      "27 + 64 = ___. Is that 343?",
+      "3³ + 4³ = 91; adding first and then cubing gives the wrong number."
+     ],
+     "targetsMisconception": "c8-maths-ch01-t03-m-sum-cube-split",
+     "verified": {
+      "solverAnswer": "Riya is wrong: a sum of cubes is not the cube of the sum. 3³ + 4³ = 27 + 64 = 91 (not 343).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch01-t03-i15",
+     "skillId": "c8-maths-ch01-t03-s3",
+     "kind": "predict",
+     "difficulty": 3,
+     "prompt_en": "1³ + 2³ + 3³ is a perfect square. Predict whether 1³ + 2³ + 3³ + 4³ is also a perfect square, then check. Which number is it the square of?",
+     "prompt_hi": "1³ + 2³ + 3³ ek perfect square hai. Predict karo ki 1³ + 2³ + 3³ + 4³ bhi perfect square hai ya nahi, phir check karo. Yeh kis number ka square hai?",
+     "answer": "Yes; 1 + 8 + 27 + 64 = 100 = 10², and 10 = 1 + 2 + 3 + 4",
+     "acceptable": [
+      "100, the square of 10",
+      "Yes, 10²",
+      "10"
+     ],
+     "hints": [
+      "What did 1³ + 2³ + 3³ come to?",
+      "Add 4³ = 64 to that total.",
+      "36 + 64 = ___; which number times itself gives it?",
+      "100 = 10², and 10 = 1 + 2 + 3 + 4."
+     ],
+     "verified": {
+      "solverAnswer": "Yes: 1 + 8 + 27 + 64 = 100 = 10², the square of 10 (= 1 + 2 + 3 + 4).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch01-t03-i16",
+     "skillId": "c8-maths-ch01-t03-s3",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "13,832 = 2³ + 24³. Find another way to write 13,832 as a sum of two cubes, using cubes of numbers from 15 to 20.",
+     "prompt_hi": "13,832 = 2³ + 24³. 15 se 20 tak ke numbers ke cubes use karke 13,832 ko do cubes ke sum ki tarah ek aur tareeke se likho.",
+     "answer": "13,832 = 18³ + 20³ = 5,832 + 8,000",
+     "acceptable": [
+      "18³ + 20³",
+      "18 and 20"
+     ],
+     "hints": [
+      "Which is the biggest cube in that range?",
+      "20³ = 8,000; subtract it from 13,832.",
+      "13,832 − 8,000 = 5,832; which number cubed gives ___?",
+      "5,832 = 18³, so 13,832 = 18³ + 20³."
+     ],
+     "verified": {
+      "solverAnswer": "13,832 = 18³ + 20³ = 5,832 + 8,000.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -1367,7 +1505,8 @@
      "Every prime is in a triplet, so 1,728 ___ a perfect cube.",
      "One from each triplet: 2 × 2 × 3 = ___.",
      "Check: 12 × 12 × 12 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch01-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -1389,6 +1528,70 @@
     "Rubik's cube",
     "Ramanujan's taxi",
     "water tank volumes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch01-t03-s1",
+     "problem": "Find 12³ and 13³. Use them to decide whether 2,000 is a perfect cube.",
+     "givens": [
+      "n³ = n × n × n",
+      "number to test = 2,000"
+     ],
+     "find": "12³, 13³, and whether 2,000 is a perfect cube",
+     "steps": [
+      {
+       "do": "12 × 12 first",
+       "result": "12 × 12 = 144"
+      },
+      {
+       "do": "× 12 once more → 12³ (three equal factors, not × 3)",
+       "result": "144 × 12 = 1728"
+      },
+      {
+       "do": "13³ the same way",
+       "result": "13 × 13 × 13 = 2197"
+      },
+      {
+       "do": "place 2,000 between consecutive cubes",
+       "result": "1728 < 2000 < 2197"
+      },
+      {
+       "do": "no whole number between 12 and 13 → no whole-number cube root",
+       "result": "2000 is not a perfect cube"
+      }
+     ],
+     "answer": "12³ = 1,728 and 13³ = 2,197; 2,000 lies strictly between them, so it is not a perfect cube",
+     "why": "cube = n × n × n → consecutive cubes jump in big steps → a number strictly between two consecutive cubes has no whole-number cube root"
+    },
+    {
+     "skillId": "c8-maths-ch01-t03-s3",
+     "problem": "Find two different ways to write 4,104 as a sum of two cubes of positive whole numbers.",
+     "givens": [
+      "target = 4,104",
+      "cubes: 13³ = 2,197, 14³ = 2,744, 15³ = 3,375, 16³ = 4,096, 17³ = 4,913"
+     ],
+     "find": "two pairs a, b with a³ + b³ = 4,104",
+     "steps": [
+      {
+       "do": "largest cube not above 4,104 → 16³; subtract and check remainder against the cube list",
+       "result": "4104 − 4096 = 8 = 2³"
+      },
+      {
+       "do": "next cube down 15³ → remainder",
+       "result": "4104 − 3375 = 729 = 9³"
+      },
+      {
+       "do": "14³ and 13³ → remainders",
+       "result": "4104 − 2744 = 1360; 4104 − 2197 = 1907 → neither is a cube"
+      },
+      {
+       "do": "larger cube 12³ or less → both cubes at most 1,728 → total too small → no more pairs",
+       "result": "1728 + 1728 = 3456"
+      }
+     ],
+     "answer": "4,104 = 2³ + 16³ = 8 + 4,096, and 4,104 = 9³ + 15³ = 729 + 3,375",
+     "why": "taxicab number → same total from two different cube pairs → search from the largest cube down → each remainder checked against the cube list; cube each number first, then add (never add then cube)"
+    }
    ]
   },
   {
@@ -2985,6 +3188,46 @@
       "representation": "Side-by-side: 15 in our columns (tens, ones) versus XV as 10 + 5",
       "moveShape": "Child explains what each symbol is worth in both; ask whether moving a Roman letter to the left makes it worth more"
      }
+    },
+    {
+     "id": "c8-maths-ch03-t01-m-additive-order",
+     "skillId": "c8-maths-ch03-t01-s2",
+     "belief": "Thinks the order of symbols in an additive system (Egyptian-style or tally) changes the number, the way the order of digits does in our place-value system.",
+     "signs": [
+      "Says '3 heel bones then 5 strokes is 35, but 5 strokes then 3 heel bones is 53'",
+      "Insists symbols must be written biggest-first or the number is a different one",
+      "Reads the number of symbols of each kind as digits in the order they appear"
+     ],
+     "diagnostic": {
+      "prompt_en": "In an Egyptian-style system (stroke = 1, heel bone = 10, coil = 100), Arjun carves 2 coils followed by 4 strokes. Meera carves the same symbols in the other order: 4 strokes followed by 2 coils. Which is true?",
+      "prompt_hi": "Egyptian-style system mein (stroke = 1, heel bone = 10, coil = 100) Arjun 2 coils aur phir 4 strokes banata hai. Meera wahi symbols ulte order mein banati hai: pehle 4 strokes, phir 2 coils. Kaunsi baat sahi hai?",
+      "options": [
+       {
+        "text": "Both carvings show 204",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Arjun's shows 204 but Meera's shows a different number, because the order changed",
+        "misconceptionId": "c8-maths-ch03-t01-m-additive-order",
+        "correct": false
+       },
+       {
+        "text": "Both carvings show 6",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "Both carvings show 24",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Coins as symbols: 2 hundred-rupee notes and 4 one-rupee coins laid on a table in two different orders, with the total written under each; then the same with coil and stroke cards",
+      "moveShape": "value of each symbol → fixed, whatever its position → add the values → same total in any order → contrast: in 204 vs 402 our digits move places and change worth"
+     }
     }
    ],
    "items": [
@@ -3268,6 +3511,102 @@
       "solverAnswer": "MCMXCIX",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch03-t01-i13",
+     "skillId": "c8-maths-ch03-t01-s2",
+     "kind": "practice",
+     "difficulty": 1,
+     "prompt_en": "A shopkeeper keeps count of sold mangoes in tally marks. How many full bundles of 5 and how many extra strokes show 37?",
+     "prompt_hi": "Ek dukaandaar beche hue aamon ki ginti tally marks mein rakhta hai. 37 dikhane ke liye 5 ke kitne poore bundles aur kitne extra strokes chahiye?",
+     "answer": "7 bundles of 5 and 2 extra strokes",
+     "acceptable": [
+      "7 bundles and 2 strokes",
+      "7 and 2"
+     ],
+     "hints": [
+      "How many strokes make one tally bundle?",
+      "One bundle = 5 strokes; count fives in 37.",
+      "7 × 5 = 35, so 37 − 35 = ___ extra.",
+      "37 = 7 bundles of 5 + 2 extra strokes."
+     ],
+     "verified": {
+      "solverAnswer": "7 full bundles of 5 and 2 extra strokes (7 × 5 + 2 = 37).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch03-t01-i14",
+     "skillId": "c8-maths-ch03-t01-s2",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "In an Egyptian-style system (stroke = 1, heel bone = 10, coil = 100, lotus = 1,000), what number is shown by 1 lotus, 4 coils and 6 strokes?",
+     "prompt_hi": "Egyptian-style system mein (stroke = 1, heel bone = 10, coil = 100, lotus = 1,000), 1 lotus, 4 coils aur 6 strokes kaunsa number dikhate hain?",
+     "answer": "1,406",
+     "acceptable": [
+      "1406"
+     ],
+     "hints": [
+      "What is each symbol worth?",
+      "Add 1,000 for the lotus and 100 for each coil.",
+      "1,000 + 400 + 6 = ___; there are no heel bones, so the tens place is 0.",
+      "1,000 + 400 + 0 + 6 = 1,406."
+     ],
+     "verified": {
+      "solverAnswer": "1,406",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch03-t01-i15",
+     "skillId": "c8-maths-ch03-t01-s2",
+     "kind": "contrast",
+     "difficulty": 3,
+     "prompt_en": "Two Egyptian-style carvings use the same symbols: one shows 3 heel bones then 5 strokes, the other shows 5 strokes then 3 heel bones. What number does each show? Why?",
+     "prompt_hi": "Do Egyptian-style carvings mein same symbols hain: ek mein pehle 3 heel bones phir 5 strokes, doosre mein pehle 5 strokes phir 3 heel bones. Har ek kaunsa number dikhata hai? Kyun?",
+     "answer": "Both show 35; in an additive system each symbol has a fixed value, so order does not change the total",
+     "acceptable": [
+      "Both 35",
+      "35 and 35"
+     ],
+     "hints": [
+      "Does a heel bone change its value if it moves?",
+      "Add up the values of the symbols in each carving.",
+      "3 × 10 + 5 × 1 = ___ for both.",
+      "Both are 35: values are added, so order does not matter."
+     ],
+     "targetsMisconception": "c8-maths-ch03-t01-m-additive-order",
+     "verified": {
+      "solverAnswer": "Both show 35. The system is additive: each symbol has a fixed value and they are just added, so order does not matter.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch03-t01-i16",
+     "skillId": "c8-maths-ch03-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "Write 4,090 in the Egyptian-style system (stroke = 1, heel bone = 10, coil = 100, lotus = 1,000). How many symbols does it need, and how many digits does our numeral 4,090 use?",
+     "prompt_hi": "4,090 ko Egyptian-style system mein likho (stroke = 1, heel bone = 10, coil = 100, lotus = 1,000). Kitne symbols lagte hain, aur hamare numeral 4,090 mein kitne digits hain?",
+     "answer": "4 lotus flowers and 9 heel bones: 13 symbols; our numeral uses 4 digits",
+     "acceptable": [
+      "13 symbols and 4 digits",
+      "4 lotus, 9 heel bones; 13 vs 4"
+     ],
+     "hints": [
+      "Split 4,090 into thousands, hundreds, tens and ones.",
+      "4,090 = 4,000 + 0 + 90 + 0.",
+      "4 lotus + 9 heel bones = ___ symbols; no coils, no strokes.",
+      "13 Egyptian symbols, but only 4 digits for us because 0 holds the empty places."
+     ],
+     "verified": {
+      "solverAnswer": "4 lotus flowers and 9 heel bones (no coils, no strokes): 13 symbols. Our numeral 4,090 uses 4 digits.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -3287,7 +3626,8 @@
      "40 = 50 − 10 = ___.",
      "8 = 5 + 3 = ___.",
      "So 1,648 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch03-t01-s1"
    },
    "formats": {
     "primary": "F4",
@@ -3309,6 +3649,78 @@
     "cricket match scorebooks",
     "old coins in a museum",
     "Olympic years"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch03-t01-s2",
+     "problem": "In an Egyptian-style system, a stroke is 1, a heel bone is 10, a coil of rope is 100 and a lotus flower is 1,000. Write 2,307 in this system. How many symbols do you need?",
+     "givens": [
+      "stroke = 1, heel bone = 10, coil = 100, lotus = 1,000",
+      "number = 2,307"
+     ],
+     "find": "the symbols for 2,307 and how many symbols in all",
+     "steps": [
+      {
+       "do": "split by place",
+       "result": "2307 = 2000 + 300 + 0 + 7"
+      },
+      {
+       "do": "thousands → lotus flowers, one per thousand",
+       "result": "2 lotus flowers"
+      },
+      {
+       "do": "hundreds → coils, one per hundred",
+       "result": "3 coils"
+      },
+      {
+       "do": "tens = 0 → no heel bones; the empty place is simply left out",
+       "result": "0 heel bones"
+      },
+      {
+       "do": "ones → strokes, one per unit",
+       "result": "7 strokes"
+      },
+      {
+       "do": "total symbols",
+       "result": "2 + 3 + 0 + 7 = 12"
+      }
+     ],
+     "answer": "2 lotus flowers, 3 coils and 7 strokes (no heel bones): 12 symbols",
+     "why": "additive system → value = sum of the symbols' values → each symbol repeated up to 9 times → order of symbols does not change the value → empty place needs no zero, it is just missing"
+    },
+    {
+     "skillId": "c8-maths-ch03-t01-s3",
+     "problem": "Write 3,808 in Roman numerals. Compare how many symbols the Roman numeral uses with how many digits our numeral uses, and explain the difference.",
+     "givens": [
+      "M = 1,000, D = 500, C = 100, L = 50, X = 10, V = 5, I = 1",
+      "number = 3,808"
+     ],
+     "find": "3,808 in Roman numerals, the symbol counts, and the reason for the difference",
+     "steps": [
+      {
+       "do": "split by place",
+       "result": "3808 = 3000 + 800 + 0 + 8"
+      },
+      {
+       "do": "each part → Roman letters; empty tens → nothing written",
+       "result": "MMM + DCCC + VIII = MMMDCCCVIII"
+      },
+      {
+       "do": "count Roman symbols",
+       "result": "3 + 4 + 4 = 11"
+      },
+      {
+       "do": "ours → one digit per place, 0 holds the empty tens",
+       "result": "3808 → 4 digits"
+      },
+      {
+       "do": "compare",
+       "result": "11 symbols vs 4 digits"
+      }
+     ],
+     "answer": "MMMDCCCVIII uses 11 symbols; 3808 uses only 4 digits, because place value lets one digit per place show the count and 0 marks the empty tens place",
+     "why": "no place value → value built by adding letters → long numerals; no zero → an empty place is skipped, not shown; ours → position sets worth → 10 digits write any number briefly"
+    }
    ]
   },
   {
@@ -3909,6 +4321,81 @@
       "representation": "Two drawings, a square and a long rectangle, with the corner angles split by a diagonal and measured",
       "moveShape": "Child measures both split angles; ask what about the square makes the two parts equal"
      }
+    },
+    {
+     "id": "c8-maths-ch04-t01-m-opp-sides-enough",
+     "skillId": "c8-maths-ch04-t01-s1",
+     "belief": "Thinks any quadrilateral with both pairs of opposite sides equal is a rectangle, forgetting that all four angles must be 90°.",
+     "signs": [
+      "Calls a slanted parallelogram with sides 6, 4, 6, 4 a rectangle",
+      "Checks only side lengths with a ruler and never the corners",
+      "Says 'opposite sides are equal, so the angles must be 90°'"
+     ],
+     "diagnostic": {
+      "prompt_en": "A quadrilateral has sides 6 cm, 4 cm, 6 cm and 4 cm in order, and one of its angles is 70°. Is it a rectangle?",
+      "prompt_hi": "Ek quadrilateral ki sides order mein 6 cm, 4 cm, 6 cm aur 4 cm hain, aur uska ek angle 70° hai. Kya yeh rectangle hai?",
+      "options": [
+       {
+        "text": "No, because a rectangle needs every angle to be 90°",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, because its opposite sides are equal",
+        "misconceptionId": "c8-maths-ch04-t01-m-opp-sides-enough",
+        "correct": false
+       },
+       {
+        "text": "Yes, because it has four sides in two pairs",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "No, because its sides are not all equal",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A frame of four geostrips (two of 6 cm, two of 4 cm) pinned at the corners: pushed from a rectangle into a slanted parallelogram while the side lengths stay the same",
+      "moveShape": "push the frame → sides unchanged → corners change → same sides, many shapes → only the one with 90° corners is a rectangle → check angles as well as sides"
+     }
+    },
+    {
+     "id": "c8-maths-ch04-t01-m-equal-diag-enough",
+     "skillId": "c8-maths-ch04-t01-s3",
+     "belief": "Thinks a quadrilateral with equal diagonals must be a rectangle, without checking that the diagonals bisect each other",
+     "signs": [
+      "Calls a shape a rectangle after measuring only the two diagonal lengths",
+      "Never looks at where the diagonals cross",
+      "Says a kite-like shape with equal diagonals is a rectangle"
+     ],
+     "diagnostic": {
+      "prompt_en": "A quadrilateral has two diagonals of 8 cm each. Where they cross, one diagonal is cut into 3 cm and 5 cm. Is it a rectangle?",
+      "prompt_hi": "Ek quadrilateral ke dono diagonals 8 cm ke hain. Jahan woh kaat-te hain, wahan ek diagonal 3 cm aur 5 cm mein bat-ta hai. Kya yeh rectangle hai?",
+      "options": [
+       {
+        "text": "No: the diagonals are equal but do not bisect each other",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: the diagonals are equal",
+        "misconceptionId": "c8-maths-ch04-t01-m-equal-diag-enough",
+        "correct": false
+       },
+       {
+        "text": "Yes: it has four sides and two equal diagonals",
+        "misconceptionId": "c8-maths-ch04-t01-m-equal-diag-enough",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two 8 cm straws crossed at their midpoints, then slid so they cross at 3 cm and 5 cm; join the ends each time",
+      "moveShape": "Child joins the ends in both cases and checks the corners with a set square; ask which crossing gives right angles"
+     }
     }
    ],
    "items": [
@@ -4188,6 +4675,129 @@
       "solverAnswer": "Diagonals are equal and bisect each other",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i13",
+     "skillId": "c8-maths-ch04-t01-s1",
+     "kind": "practice",
+     "difficulty": 1,
+     "prompt_en": "A rectangular school notice board is 120 cm long and 90 cm wide. What is each of its four corner angles, and how long is the side opposite the 90 cm side?",
+     "prompt_hi": "School ka ek rectangular notice board 120 cm lamba aur 90 cm chauda hai. Uske chaaron corner angles kitne hain, aur 90 cm wali side ke saamne wali side kitni lambi hai?",
+     "answer": "Each angle is 90°; the opposite side is 90 cm",
+     "acceptable": [
+      "90° and 90 cm",
+      "90 degrees each, 90 cm"
+     ],
+     "hints": [
+      "What do you know about a rectangle's corners?",
+      "Every corner of a rectangle is a right angle.",
+      "Opposite sides of a rectangle are ___.",
+      "Each angle is 90°, and the side opposite the 90 cm side is also 90 cm."
+     ],
+     "verified": {
+      "solverAnswer": "Each corner angle is 90°; the side opposite the 90 cm side is 90 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i14",
+     "skillId": "c8-maths-ch04-t01-s1",
+     "kind": "near_transfer",
+     "difficulty": 2,
+     "prompt_en": "A square rangoli has a border of perimeter 96 cm. How long is each side, and what is each angle?",
+     "prompt_hi": "Ek square rangoli ke border ka perimeter 96 cm hai. Har side kitni lambi hai, aur har angle kitna hai?",
+     "answer": "Each side is 24 cm and each angle is 90°",
+     "acceptable": [
+      "24 cm, 90°",
+      "24 cm and 90 degrees"
+     ],
+     "hints": [
+      "How many equal sides does a square have?",
+      "Perimeter of a square = 4 × side.",
+      "96 ÷ 4 = ___ cm.",
+      "Each side is 24 cm, and every angle of a square is 90°."
+     ],
+     "verified": {
+      "solverAnswer": "Each side 96 ÷ 4 = 24 cm; each angle 90°.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i15",
+     "skillId": "c8-maths-ch04-t01-s1",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Dev drew a quadrilateral with sides 8 cm, 5 cm, 8 cm and 5 cm in order, but one corner measures 100°. He says it is a rectangle because its opposite sides are equal. Is he right?",
+     "prompt_hi": "Dev ne ek quadrilateral banaya jiski sides order mein 8 cm, 5 cm, 8 cm aur 5 cm hain, par ek corner 100° ka hai. Woh kehta hai yeh rectangle hai kyunki opposite sides barabar hain. Kya woh sahi hai?",
+     "answer": "No; a rectangle must have all four angles 90°. Equal opposite sides alone give a parallelogram, and this one has a 100° corner",
+     "acceptable": [
+      "No",
+      "No, the angles must be 90°",
+      "Nahi, 100° corner hai"
+     ],
+     "hints": [
+      "Is checking the sides enough for a rectangle?",
+      "A rectangle needs equal opposite sides and also ___ angles.",
+      "Is 100° a right angle?",
+      "No: with a 100° corner it is a parallelogram, not a rectangle."
+     ],
+     "targetsMisconception": "c8-maths-ch04-t01-m-opp-sides-enough",
+     "verified": {
+      "solverAnswer": "No. Equal opposite sides only make it a parallelogram; a rectangle needs every angle 90°, and a 100° corner rules that out.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i16",
+     "skillId": "c8-maths-ch04-t01-s1",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "In rectangle ABCD, AB = (3x − 4) cm, CD = (2x + 5) cm and BC = x cm. Find x and the perimeter of ABCD.",
+     "prompt_hi": "Rectangle ABCD mein AB = (3x − 4) cm, CD = (2x + 5) cm aur BC = x cm hai. x aur ABCD ka perimeter nikalo.",
+     "answer": "x = 9; perimeter = 64 cm (AB = 23 cm, BC = 9 cm)",
+     "acceptable": [
+      "x = 9, 64 cm",
+      "64 cm"
+     ],
+     "hints": [
+      "Which two sides of the rectangle must be equal?",
+      "AB and CD are opposite, so 3x − 4 = 2x + 5.",
+      "x = ___, so AB = 23 cm and BC = 9 cm.",
+      "x = 9; perimeter = 2 × (23 + 9) = 64 cm."
+     ],
+     "verified": {
+      "solverAnswer": "3x − 4 = 2x + 5 → x = 9; AB = 23 cm, BC = 9 cm; perimeter = 2(23 + 9) = 64 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i17",
+     "skillId": "c8-maths-ch04-t01-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Ravi measures both diagonals of a quadrilateral: each is 8 cm. He says, 'Equal diagonals, so it must be a rectangle.' What else must he check, and how?",
+     "prompt_hi": "Ravi ek quadrilateral ke dono diagonals naapta hai: dono 8 cm hain. Woh kehta hai, 'Diagonals barabar hain, isliye yeh rectangle hi hoga.' Use aur kya check karna chahiye, aur kaise?",
+     "answer": "He must also check that the diagonals bisect each other: measure from the crossing point, each part should be 4 cm",
+     "acceptable": [
+      "that the diagonals bisect each other",
+      "that they cut each other in half, 4 cm each part"
+     ],
+     "hints": [
+      "Is 'equal diagonals' the whole rectangle test from the chapter?",
+      "The test needs the diagonals to be equal AND to do something to each other.",
+      "Where they cross, each 8 cm diagonal should be cut into two parts of ___ cm.",
+      "He must check they bisect each other: 4 cm + 4 cm on both diagonals."
+     ],
+     "targetsMisconception": "c8-maths-ch04-t01-m-equal-diag-enough",
+     "verified": {
+      "solverAnswer": "Equal diagonals are not enough; Ravi must check the diagonals bisect each other, each splitting into 4 cm + 4 cm at the crossing point.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (pilot scope fix)"
+     }
     }
    ],
    "workedExample": {
@@ -4203,7 +4813,8 @@
      "Diagonals of a rectangle are ___, so QS = PR = 8 cm.",
      "Diagonals meet at 90° only when the rectangle is a ___.",
      "We are not told PQRS is a square, so angle POQ ___ be 90°."
-    ]
+    ],
+    "skillId": "c8-maths-ch04-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -4225,6 +4836,71 @@
     "phone screens",
     "carrom board",
     "classroom floor"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch04-t01-s1",
+     "problem": "In rectangle PQRS, PQ = (2x + 3) cm, RS = 15 cm and QR = (x + 2) cm. Find x, the length of QR, each angle of PQRS, and its perimeter.",
+     "givens": [
+      "PQRS is a rectangle",
+      "PQ = 2x + 3 cm, RS = 15 cm, QR = x + 2 cm"
+     ],
+     "find": "x, QR, the angles and the perimeter",
+     "steps": [
+      {
+       "do": "opposite sides of a rectangle equal → PQ = RS",
+       "result": "2x + 3 = 15"
+      },
+      {
+       "do": "solve for x",
+       "result": "2x = 12 → x = 6"
+      },
+      {
+       "do": "QR from x; opposite side SP the same",
+       "result": "QR = 6 + 2 = 8 cm"
+      },
+      {
+       "do": "every angle of a rectangle → 90°; check the angle sum",
+       "result": "90 + 90 + 90 + 90 = 360"
+      },
+      {
+       "do": "perimeter = 2 × (length + breadth)",
+       "result": "2 × (15 + 8) = 46 cm"
+      }
+     ],
+     "answer": "x = 6, QR = 8 cm, each angle is 90°, perimeter = 46 cm",
+     "why": "rectangle → opposite sides equal and all four angles 90° → equal sides give an equation → solve → perimeter from the two side lengths"
+    },
+    {
+     "skillId": "c8-maths-ch04-t01-s3",
+     "problem": "In quadrilateral KLMN, the diagonals KM and LN are both 10 cm long and cross at O, with KO = OM and LO = ON. Is KLMN a rectangle? If also KL = LM, is it a square? Justify using properties.",
+     "givens": [
+      "KM = LN = 10 cm",
+      "KO = OM and LO = ON",
+      "second part: KL = LM"
+     ],
+     "find": "whether KLMN is a rectangle, and whether it is a square when KL = LM",
+     "steps": [
+      {
+       "do": "equal diagonals, each cut in half at O",
+       "result": "OK = OL = OM = ON = 10 ÷ 2 = 5 cm"
+      },
+      {
+       "do": "diagonals equal and bisecting each other → every corner angle 90°, opposite sides equal",
+       "result": "KLMN is a rectangle"
+      },
+      {
+       "do": "rectangle + KL = LM → opposite sides also equal → all four sides equal",
+       "result": "KL = LM = MN = NK"
+      },
+      {
+       "do": "rectangle with all four sides equal",
+       "result": "KLMN is a square"
+      }
+     ],
+     "answer": "KLMN is a rectangle; when also KL = LM it is a square, and still a rectangle",
+     "why": "equal diagonals that bisect each other → rectangle; rectangle + two equal adjacent sides → square, which is still a rectangle"
+    }
    ]
   },
   {
@@ -5317,6 +5993,86 @@
       "representation": "Multiples of 2, 6 and 12 shaded on a hundred-chart",
       "moveShape": "Child finds numbers shaded for 2 and 6 but not for 12; ask what 2 and 6 have in common"
      }
+    },
+    {
+     "id": "c8-maths-ch05-t01-m-three-means-nine",
+     "skillId": "c8-maths-ch05-t01-s1",
+     "belief": "Thinks that if the digit sum is divisible by 3, the number is also divisible by 9 (mixes up the 3 and 9 digit-sum tests).",
+     "signs": [
+      "Says '5,214 has digit sum 12, divisible by 3, so it is divisible by 9 too'",
+      "Uses one check ('digit sum works') for both 3 and 9 without asking which multiple the sum is",
+      "Lists every multiple of 3 as a multiple of 9"
+     ],
+     "diagnostic": {
+      "prompt_en": "The digits of 5,214 add up to 12. Which statement is true?",
+      "prompt_hi": "5,214 ke digits ka sum 12 hai. Inmein se kaunsi baat sahi hai?",
+      "options": [
+       {
+        "text": "5,214 is divisible by 3 but not by 9",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "5,214 is divisible by both 3 and 9",
+        "misconceptionId": "c8-maths-ch05-t01-m-three-means-nine",
+        "correct": false
+       },
+       {
+        "text": "5,214 is divisible by neither 3 nor 9",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "5,214 is divisible by 9 but not by 3",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two lists side by side: multiples of 3 (3, 6, 9, 12, 15, 18 …) and multiples of 9 (9, 18, 27 …), with the digit sum 12 placed on each list; then 5,214 = 9 × 579 + 3 written out",
+      "moveShape": "digit sum 12 → which list holds 12? → only the 3-list → every multiple of 9 is a multiple of 3, not the other way → test each divisor against its own list"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t01-m-eleven-needs-zero",
+     "skillId": "c8-maths-ch05-t01-s3",
+     "belief": "Thinks a number is divisible by 11 only when its alternating digit sum is exactly 0, so rejects numbers whose alternating sum is 11, −11, 22 and so on.",
+     "signs": [
+      "Says '8,294 gives −11, not 0, so it is not divisible by 11'",
+      "Accepts 121 or 1,331 (sum 0) but rejects 209 (sum 11)",
+      "Stops at a non-zero alternating sum without asking whether it is a multiple of 11"
+     ],
+     "diagnostic": {
+      "prompt_en": "For 8,294 the alternating sum of digits from the right is 4 − 9 + 2 − 8 = −11. Is 8,294 divisible by 11?",
+      "prompt_hi": "8,294 ke liye right se alternating sum hai 4 − 9 + 2 − 8 = −11. Kya 8,294, 11 se divisible hai?",
+      "options": [
+       {
+        "text": "Yes, because −11 is a multiple of 11",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "No, because the alternating sum is not 0",
+        "misconceptionId": "c8-maths-ch05-t01-m-eleven-needs-zero",
+        "correct": false
+       },
+       {
+        "text": "No, because the digit sum 23 is not a multiple of 11",
+        "misconceptionId": null,
+        "correct": false
+       },
+       {
+        "text": "It cannot be decided without dividing",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Place-value split 8,294 = 8 × 1001 + 2 × 99 + 9 × 11 + (−8 + 2 − 9 + 4), with the multiples of 11 boxed and the leftover −11 shown; then 8,294 = 11 × 754",
+      "moveShape": "boxed parts → already multiples of 11 → leftover −11 → itself a multiple → whole number a multiple; the test asks 'multiple of 11?', and 0 is just one such multiple"
+     }
     }
    ],
    "items": [
@@ -5621,6 +6377,82 @@
       "solverAnswer": "2 (522 = 9 x 58)",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch05-t01-i14",
+     "skillId": "c8-maths-ch05-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Is 61,809 divisible by 11? Use the alternating sum of the digits.",
+     "prompt_hi": "Kya 61,809, 11 se divisible hai? Digits ka alternating sum use karo.",
+     "answer": "Yes; 9 − 0 + 8 − 1 + 6 = 22, a multiple of 11 (61,809 = 11 × 5,619)",
+     "acceptable": [
+      "Yes",
+      "Yes, alternating sum 22",
+      "Haan, 22 is a multiple of 11"
+     ],
+     "hints": [
+      "Which digit do you start with?",
+      "From the right: +, −, +, −, +.",
+      "9 − 0 + 8 − 1 + 6 = ___; is that a multiple of 11?",
+      "22 = 11 × 2, so 61,809 is divisible by 11."
+     ],
+     "targetsMisconception": "c8-maths-ch05-t01-m-eleven-needs-zero",
+     "verified": {
+      "solverAnswer": "Yes. From the right: 9 − 0 + 8 − 1 + 6 = 22, a multiple of 11 (61,809 = 11 × 5,619).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t01-i15",
+     "skillId": "c8-maths-ch05-t01-s3",
+     "kind": "near_transfer",
+     "difficulty": 4,
+     "prompt_en": "A railway coach number is 47_23, with one digit smudged. Which digit in the blank makes the number divisible by 11?",
+     "prompt_hi": "Ek railway coach ka number 47_23 hai, ek digit mit gaya hai. Blank mein kaunsa digit aaye ki number 11 se divisible ho?",
+     "answer": "2 (47,223 = 11 × 4,293)",
+     "acceptable": [
+      "2",
+      "47223"
+     ],
+     "hints": [
+      "Call the missing digit d. Where does it sit from the right?",
+      "Alternating sum from the right: 3 − 2 + d − 7 + 4.",
+      "That is d − 2. Which digit 0-9 makes d − 2 a multiple of 11?",
+      "d − 2 = 0, so d = 2 and 47,223 = 11 × 4,293."
+     ],
+     "verified": {
+      "solverAnswer": "2 (47,223: alternating sum 3 − 2 + 2 − 7 + 4 = 0; 47,223 = 11 × 4,293). It is the only digit that works.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t01-i16",
+     "skillId": "c8-maths-ch05-t01-s1",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Ananya says: 'The digits of 4,236 add up to 15, which is divisible by 3, so 4,236 is divisible by 9 too.' Is she right?",
+     "prompt_hi": "Ananya kehti hai: '4,236 ke digits ka sum 15 hai, jo 3 se divisible hai, isliye 4,236, 9 se bhi divisible hai.' Kya woh sahi hai?",
+     "answer": "No; 15 is divisible by 3 but not by 9, so 4,236 is divisible by 3 but not by 9",
+     "acceptable": [
+      "No",
+      "No, 15 is not a multiple of 9",
+      "Nahi, sirf 3 se divisible hai"
+     ],
+     "hints": [
+      "Which test does 9 need?",
+      "For 9, the digit sum itself must be a multiple of 9.",
+      "Is 15 in the list 9, 18, 27, …?",
+      "No: 15 is not a multiple of 9, so 4,236 is divisible by 3 only."
+     ],
+     "targetsMisconception": "c8-maths-ch05-t01-m-three-means-nine",
+     "verified": {
+      "solverAnswer": "No. 15 is divisible by 3, so 4,236 is divisible by 3, but 15 is not a multiple of 9, so 4,236 is not divisible by 9 (4,236 ÷ 9 = 470 r 6).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -5636,7 +6468,8 @@
      "Test for 3: 7 + 3 + 1 + 5 + 2 = ___, divisible by 3.",
      "Test for 4: last two digits ___ = 4 × 13.",
      "It passes both, so 73,152 ___ divisible by 12."
-    ]
+    ],
+    "skillId": "c8-maths-ch05-t01-s4"
    },
    "formats": {
     "primary": "F2",
@@ -5658,6 +6491,96 @@
     "cricket scores",
     "packing laddoos in boxes",
     "mobile numbers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch05-t01-s1",
+     "problem": "Without dividing, decide whether 8,46,327 is divisible by 3 and whether it is divisible by 9.",
+     "givens": [
+      "number = 8,46,327",
+      "test for 3 and 9 = digit sum"
+     ],
+     "find": "whether 8,46,327 is divisible by 3, and by 9",
+     "steps": [
+      {
+       "do": "add all the digits → digit sum",
+       "result": "8 + 4 + 6 + 3 + 2 + 7 = 30"
+      },
+      {
+       "do": "digit sum a multiple of 3? → number divisible by 3",
+       "result": "30 = 3 × 10 → yes"
+      },
+      {
+       "do": "digit sum a multiple of 9? → nearest multiples of 9 around 30",
+       "result": "27 < 30 < 36 → no"
+      },
+      {
+       "do": "check the 3 result by dividing",
+       "result": "8,46,327 = 3 × 2,82,109"
+      }
+     ],
+     "answer": "Divisible by 3 (digit sum 30 is a multiple of 3) but not by 9 (30 is not a multiple of 9)",
+     "why": "each place value = (multiple of 9) + 1 → number = (multiple of 9) + digit sum → digit sum decides for 9, and for 3 since 9 is a multiple of 3; passing 3 does not mean passing 9"
+    },
+    {
+     "skillId": "c8-maths-ch05-t01-s2",
+     "problem": "Without dividing, decide whether 3,61,428 is divisible by 4 and whether it is divisible by 8.",
+     "givens": [
+      "number = 3,61,428",
+      "100 is a multiple of 4",
+      "1000 is a multiple of 8"
+     ],
+     "find": "whether 3,61,428 is divisible by 4, and by 8",
+     "steps": [
+      {
+       "do": "test for 4 → last two digits only (hundreds and above are multiples of 4)",
+       "result": "28 = 4 × 7 → divisible by 4"
+      },
+      {
+       "do": "test for 8 → last three digits only (thousands and above are multiples of 8)",
+       "result": "428 = 8 × 53 + 4 → remainder 4"
+      },
+      {
+       "do": "conclude for each divisor",
+       "result": "divisible by 4, not divisible by 8"
+      },
+      {
+       "do": "check the 4 result by dividing",
+       "result": "3,61,428 = 4 × 90,357"
+      }
+     ],
+     "answer": "Divisible by 4 (28 is a multiple of 4) but not by 8 (428 leaves remainder 4 when divided by 8)",
+     "why": "100 = 4 × 25 and 1000 = 8 × 125 → everything above the last two (or three) digits is already a multiple → only the tail decides; last digit alone is not enough"
+    },
+    {
+     "skillId": "c8-maths-ch05-t01-s3",
+     "problem": "Without dividing, decide whether 9,08,193 is divisible by 11.",
+     "givens": [
+      "number = 9,08,193",
+      "test for 11 = alternating sum of digits from the right"
+     ],
+     "find": "whether 9,08,193 is divisible by 11",
+     "steps": [
+      {
+       "do": "digits from the right with signs + − + − + −",
+       "result": "3 − 9 + 1 − 8 + 0 − 9 = −22"
+      },
+      {
+       "do": "alternating sum 0 or a multiple of 11 (positive or negative)? → divisible",
+       "result": "−22 = 11 × (−2) → yes"
+      },
+      {
+       "do": "cross-check: (sum of odd places) − (sum of even places)",
+       "result": "(3 + 1 + 0) − (9 + 8 + 9) = −22"
+      },
+      {
+       "do": "check by dividing",
+       "result": "9,08,193 = 11 × 82,563"
+      }
+     ],
+     "answer": "Yes; the alternating sum is −22, a multiple of 11 (9,08,193 = 11 × 82,563)",
+     "why": "10 = 11 − 1, 100 = 99 + 1, 1000 = 1001 − 1 → place values alternate (multiple of 11) ± 1 → number = (multiple of 11) + alternating sum → any multiple of 11, including negatives, passes"
+    }
    ]
   },
   {
@@ -5792,6 +6715,41 @@
      "remediation": {
       "representation": "A column-addition frame showing the largest case 99 + 99",
       "moveShape": "Child adds the largest possible numbers; ask what the biggest carry into the hundreds can be"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t02-m-odd-plus-odd",
+     "skillId": "c8-maths-ch05-t02-s2",
+     "belief": "Thinks adding two odd numbers gives an odd number, so the units digit of a sum of two odd digits must be odd",
+     "signs": [
+      "Says the last digit of 7 + 9 must be odd",
+      "Rules out an even units digit when both added units digits are odd",
+      "Copies the parity of the addends onto the sum instead of working it out"
+     ],
+     "diagnostic": {
+      "prompt_en": "A and B are both odd digits. Is the last digit of A + B odd or even?",
+      "prompt_hi": "A aur B dono odd digits hain. A + B ka last digit odd hoga ya even?",
+      "options": [
+       {
+        "text": "Always even, because odd + odd is even",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Always odd, because both numbers are odd",
+        "misconceptionId": "c8-maths-ch05-t02-m-odd-plus-odd",
+        "correct": false
+       },
+       {
+        "text": "It depends on which odd digits A and B are",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Dot pictures: each odd number drawn as pairs of dots with one dot left over; two such pictures pushed together",
+      "moveShape": "odd → pairs + 1 leftover → two odds → two leftovers → leftovers form a pair → nothing left over → even; test on 3 + 5 and 7 + 9"
      }
     }
    ],
@@ -6085,6 +7043,81 @@
       "solverAnswer": "Different letters = different digits; same letter same digit; leading digit not zero",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch05-t02-i13",
+     "skillId": "c8-maths-ch05-t02-s2",
+     "kind": "predict",
+     "difficulty": 2,
+     "prompt_en": "P and Q are different odd digits, and P + Q = RS is a two-digit number. Without solving, predict: can S be 5?",
+     "prompt_hi": "P aur Q alag odd digits hain, aur P + Q = RS ek two-digit number hai. Bina solve kiye guess karo: kya S, 5 ho sakta hai?",
+     "answer": "No; odd + odd is even, so S must be even",
+     "acceptable": [
+      "no",
+      "S must be even"
+     ],
+     "hints": [
+      "What kind of number do you get from odd + odd?",
+      "Try 3 + 7 and 5 + 9.",
+      "odd + odd = ___ , so S is ___",
+      "No: P + Q is even, so S is even, never 5."
+     ],
+     "targetsMisconception": "c8-maths-ch05-t02-m-odd-plus-odd",
+     "verified": {
+      "solverAnswer": "No. Odd + odd is even, so the units digit S of the sum is even (0, 2, 4 or 6 here), never 5.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t02-i14",
+     "skillId": "c8-maths-ch05-t02-s2",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "Find every solution of A × A = BA, where A and B are different digits and B is not 0.",
+     "prompt_hi": "A × A = BA ke saare solutions dhoondho, jahan A aur B alag digits hain aur B, 0 nahi hai.",
+     "answer": "A = 5, B = 2 (5 × 5 = 25) and A = 6, B = 3 (6 × 6 = 36)",
+     "acceptable": [
+      "25 and 36",
+      "5 × 5 = 25, 6 × 6 = 36",
+      "A=5 B=2, A=6 B=3"
+     ],
+     "hints": [
+      "A × A must end in the digit A.",
+      "Which digits have squares ending in themselves?",
+      "Only 0, 1, 5, 6; which of these give a two-digit square?",
+      "25 and 36: A = 5, B = 2 or A = 6, B = 3."
+     ],
+     "verified": {
+      "solverAnswer": "A = 5, B = 2 (5 × 5 = 25) and A = 6, B = 3 (6 × 6 = 36).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch05-t02-i15",
+     "skillId": "c8-maths-ch05-t02-s2",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "Find every solution of A × A × A = BCA, where A, B, C are different digits and B is not 0.",
+     "prompt_hi": "A × A × A = BCA ke saare solutions dhoondho, jahan A, B, C alag digits hain aur B, 0 nahi hai.",
+     "answer": "Three solutions: 5 × 5 × 5 = 125, 6 × 6 × 6 = 216, 9 × 9 × 9 = 729",
+     "acceptable": [
+      "125, 216, 729",
+      "A = 5, 6, 9",
+      "A=5 B=1 C=2; A=6 B=2 C=1; A=9 B=7 C=2"
+     ],
+     "hints": [
+      "Which cubes have three digits?",
+      "Only 5³ to 9³: 125, 216, 343, 512, 729.",
+      "Keep the cubes whose last digit is the digit you cubed: ___",
+      "125, 216 and 729."
+     ],
+     "verified": {
+      "solverAnswer": "Three solutions: 5³ = 125, 6³ = 216, 9³ = 729.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -6102,7 +7135,8 @@
      "Divide by 2: 10A + B = ___, so the number AB is 50C.",
      "AB is a two-digit number, so C = ___ and AB = 50.",
      "Check: 50 + 50 + 50 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch05-t02-s3"
    },
    "formats": {
     "primary": "F6",
@@ -6124,6 +7158,72 @@
     "spy games",
     "school quiz club",
     "festival treasure hunt"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch05-t02-s1",
+     "problem": "Solve AB + CB = BDA, where A, B, C, D are different digits and no number starts with 0.",
+     "givens": [
+      "AB and CB are two-digit numbers",
+      "their sum BDA has three digits",
+      "different letters → different digits; leading digits not 0"
+     ],
+     "find": "the digits A, B, C and D",
+     "steps": [
+      {
+       "do": "two 2-digit numbers → sum at most 99 + 99 = 198 → front digit of BDA",
+       "result": "B = 1"
+      },
+      {
+       "do": "units column: B + B → its last digit is A",
+       "result": "1 + 1 = 2, so A = 2 with no carry"
+      },
+      {
+       "do": "tens column: A + C must carry 1 into the hundreds",
+       "result": "2 + C = 10 + D, so C = 8 + D"
+      },
+      {
+       "do": "C is one digit → D = 0 or 1; D = 1 is taken by B",
+       "result": "D = 0, C = 8"
+      },
+      {
+       "do": "substitute back and check the letters differ",
+       "result": "21 + 81 = 102"
+      }
+     ],
+     "answer": "A = 2, B = 1, C = 8, D = 0 (21 + 81 = 102)",
+     "why": "carry into a new front place is at most 1 → that letter is fixed first → each column then pins the next letter → check by substituting"
+    },
+    {
+     "skillId": "c8-maths-ch05-t02-s2",
+     "problem": "Find every solution of AB × B = CCB, where A, B, C are different digits and A, C are not 0.",
+     "givens": [
+      "AB is a two-digit number multiplied by its own units digit B",
+      "the product CCB has three digits and ends in B",
+      "different letters → different digits"
+     ],
+     "find": "all possible values of A, B and C",
+     "steps": [
+      {
+       "do": "last digit of AB × B = last digit of B × B → must equal B",
+       "result": "B can only be 0, 1, 5 or 6"
+      },
+      {
+       "do": "rule out B = 0 (product 0) and B = 1 (AB × 1 has only 2 digits)",
+       "result": "B = 5 or B = 6"
+      },
+      {
+       "do": "B = 5: (10A + 5) × 5 = 110C + 5 → 5A + 2 = 11C",
+       "result": "C = 2, A = 4: 45 × 5 = 225"
+      },
+      {
+       "do": "B = 6: (10A + 6) × 6 = 110C + 6 → 6A + 3 = 11C",
+       "result": "C = 3, A = 5: 56 × 6 = 336"
+      }
+     ],
+     "answer": "Two solutions: 45 × 5 = 225 (A = 4, B = 5, C = 2) and 56 × 6 = 336 (A = 5, B = 6, C = 3)",
+     "why": "last digit of a product depends only on the last digits → B × B must end in B → only 0, 1, 5, 6 survive → test each survivor"
+    }
    ]
   },
   {
@@ -7049,6 +8149,77 @@
       "solverAnswer": "441",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch06-t02-i14",
+     "skillId": "c8-maths-ch06-t02-s2",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A square chowk has side (p − 6) metres. Write its area without brackets.",
+     "prompt_hi": "Ek square chowk ki side (p − 6) metre hai. Uska area bina brackets ke likho.",
+     "answer": "p² − 12p + 36 square metres",
+     "acceptable": [
+      "p² − 12p + 36",
+      "p^2 - 12p + 36"
+     ],
+     "hints": [
+      "Area of a square = side × side.",
+      "Use (a − b)² with a = p, b = 6.",
+      "a² − 2ab + b² = p² − ___ + ___",
+      "p² − 12p + 36."
+     ],
+     "targetsMisconception": "c8-maths-ch06-t02-m-minus-square",
+     "verified": {
+      "solverAnswer": "(p − 6)² = p² − 12p + 36 square metres.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch06-t02-i15",
+     "skillId": "c8-maths-ch06-t02-s2",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "Find the value of x² − 2xy + y² when x = 47 and y = 37, without squaring 47 or 37.",
+     "prompt_hi": "x = 47 aur y = 37 ho to x² − 2xy + y² ki value nikalo, 47 ya 37 ka square kiye bina.",
+     "answer": "100, since x² − 2xy + y² = (x − y)² = 10²",
+     "acceptable": [
+      "100"
+     ],
+     "hints": [
+      "Does x² − 2xy + y² look like a known identity?",
+      "It is (a − b)² read backwards.",
+      "(47 − 37)² = ___",
+      "100."
+     ],
+     "verified": {
+      "solverAnswer": "x² − 2xy + y² = (x − y)² = 10² = 100.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch06-t02-i16",
+     "skillId": "c8-maths-ch06-t02-s2",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "If a − b = 4 and ab = 21, find a² + b².",
+     "prompt_hi": "Agar a − b = 4 aur ab = 21 hai, to a² + b² nikalo.",
+     "answer": "58, since (a − b)² = a² + b² − 2ab gives 16 = a² + b² − 42",
+     "acceptable": [
+      "58"
+     ],
+     "hints": [
+      "Which identity contains a − b, ab and a² + b² together?",
+      "(a − b)² = a² − 2ab + b².",
+      "4² = a² + b² − 2 × 21, so a² + b² = 16 + ___",
+      "58."
+     ],
+     "verified": {
+      "solverAnswer": "a² + b² = (a − b)² + 2ab = 16 + 42 = 58.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -7064,7 +8235,8 @@
      "Use (a − b)² = a² − ___ + b² with a = 1000, b = 2.",
      "a² = 10,00,000; 2ab = ___; b² = 4.",
      "998² = 10,00,000 − 4,000 + 4 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch06-t02-s4"
    },
    "formats": {
     "primary": "F3",
@@ -7086,6 +8258,109 @@
     "mental maths quiz",
     "photo frames",
     "tiles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch06-t02-s1",
+     "problem": "Expand (3p + 4q)² using the area of a square of side 3p + 4q.",
+     "givens": [
+      "side of the square = 3p + 4q",
+      "(a + b)² = a² + 2ab + b²"
+     ],
+     "find": "(3p + 4q)² without brackets",
+     "steps": [
+      {
+       "do": "match to (a + b)²",
+       "result": "a = 3p, b = 4q"
+      },
+      {
+       "do": "big corner square a × a",
+       "result": "(3p)² = 9p²"
+      },
+      {
+       "do": "two strips a × b",
+       "result": "2 × 3p × 4q = 24pq"
+      },
+      {
+       "do": "small corner square b × b",
+       "result": "(4q)² = 16q²"
+      },
+      {
+       "do": "add the four pieces",
+       "result": "9p² + 24pq + 16q²"
+      },
+      {
+       "do": "check with p = 1, q = 1",
+       "result": "(3 + 4) × (3 + 4) = 49 and 9 + 24 + 16 = 49"
+      }
+     ],
+     "answer": "9p² + 24pq + 16q²",
+     "why": "square of side a + b → cut into a², b² and two ab strips → middle term 2ab never disappears"
+    },
+    {
+     "skillId": "c8-maths-ch06-t02-s2",
+     "problem": "Expand (5m − 2n)².",
+     "givens": [
+      "(a − b)² = a² − 2ab + b²"
+     ],
+     "find": "(5m − 2n)² without brackets",
+     "steps": [
+      {
+       "do": "match to (a − b)²",
+       "result": "a = 5m, b = 2n"
+      },
+      {
+       "do": "a²",
+       "result": "(5m)² = 25m²"
+      },
+      {
+       "do": "2ab, taken with a minus sign",
+       "result": "2 × 5m × 2n = 20mn, so −20mn"
+      },
+      {
+       "do": "b², always plus: (−2n) × (−2n)",
+       "result": "+4n²"
+      },
+      {
+       "do": "write together and check with m = 1, n = 1",
+       "result": "25m² − 20mn + 4n²; (5 − 2) × (5 − 2) = 9 and 25 − 20 + 4 = 9"
+      }
+     ],
+     "answer": "25m² − 20mn + 4n²",
+     "why": "minus × minus → plus → last term +b²; only the middle term carries the minus sign"
+    },
+    {
+     "skillId": "c8-maths-ch06-t02-s3",
+     "problem": "Expand (6x + 5y)(6x − 5y).",
+     "givens": [
+      "(a + b)(a − b) = a² − b²"
+     ],
+     "find": "the product without brackets",
+     "steps": [
+      {
+       "do": "same two terms, one bracket +, one bracket − → (a + b)(a − b)",
+       "result": "a = 6x, b = 5y"
+      },
+      {
+       "do": "a²",
+       "result": "(6x)² = 36x²"
+      },
+      {
+       "do": "b²",
+       "result": "(5y)² = 25y²"
+      },
+      {
+       "do": "middle terms +30xy and −30xy cancel → a² − b²",
+       "result": "36x² − 25y²"
+      },
+      {
+       "do": "check with x = 1, y = 1",
+       "result": "11 × 1 = 11 and 36 − 25 = 11"
+      }
+     ],
+     "answer": "36x² − 25y²",
+     "why": "sum × difference of the same two terms → cross terms +ab and −ab cancel → no middle term, b² subtracted"
+    }
    ]
   },
   {
@@ -7221,6 +8496,41 @@
      "remediation": {
       "representation": "Sharing story: (x + 5) sweets shared by 5 children; each gets x/5 of the first pile plus 1 of the 5",
       "moveShape": "Child puts x = 10 and computes (10 + 5)/5 = 3; ask whether it matches x = 10"
+     }
+    },
+    {
+     "id": "c8-maths-ch06-t03-m-one-check-proves",
+     "skillId": "c8-maths-ch06-t03-s3",
+     "belief": "Thinks that if a step gives equal values for one or two test numbers, the step is proved correct",
+     "signs": [
+      "Stops after one matching substitution and calls the step right",
+      "Tests only with x = 0 or x = 1",
+      "Says 'it worked for 1, so it is always true'"
+     ],
+     "diagnostic": {
+      "prompt_en": "Ankit tests 2x + 2x = 4x² with x = 1. Both sides give 4, so he says the step is correct. Is he right?",
+      "prompt_hi": "Ankit ne 2x + 2x = 4x² ko x = 1 se test kiya. Dono sides 4 aaye, to woh kehta hai step sahi hai. Kya woh sahi hai?",
+      "options": [
+       {
+        "text": "No: one match does not prove it; at x = 2 the sides are 8 and 16",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes, the check with x = 1 worked, so the step is correct",
+        "misconceptionId": "c8-maths-ch06-t03-m-one-check-proves",
+        "correct": false
+       },
+       {
+        "text": "Yes, but only for whole numbers",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A two-column table of left-side and right-side values for x = 0, 1, 2, 3",
+      "moveShape": "one row matches → ask: does every row match? → child fills rows x = 2, 3 → a mismatch kills the claim → a match only means not caught yet → prefer test values like 2 or 3 over 0 and 1"
      }
     }
    ],
@@ -7529,6 +8839,82 @@
       "solverAnswer": "x-4",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch06-t03-i14",
+     "skillId": "c8-maths-ch06-t03-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Check the step 3(x + 4) = 3x + 4 by putting x = 2. Is it correct? If not, fix it.",
+     "prompt_hi": "Step 3(x + 4) = 3x + 4 ko x = 2 rakh kar check karo. Kya yeh sahi hai? Agar nahi, to theek karo.",
+     "answer": "Not correct: at x = 2 the left is 18 and the right is 10; correct is 3x + 12",
+     "acceptable": [
+      "3x + 12",
+      "no, 18 vs 10"
+     ],
+     "hints": [
+      "Work out each side separately with x = 2.",
+      "Left: 3 × (2 + 4). Right: 3 × 2 + 4.",
+      "18 and ___: equal or not?",
+      "Not equal; the 3 multiplies the 4 too: 3x + 12."
+     ],
+     "verified": {
+      "solverAnswer": "Not correct: at x = 2, 3(2 + 4) = 18 but 3·2 + 4 = 10. Fix: 3(x + 4) = 3x + 12 (gives 18 at x = 2).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch06-t03-i15",
+     "skillId": "c8-maths-ch06-t03-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Rohan claims x² + x = 2x. He tests x = 0 (both sides 0) and x = 1 (both sides 2) and says it is proved. Is he right? Test x = 3.",
+     "prompt_hi": "Rohan kehta hai x² + x = 2x. Usne x = 0 (dono sides 0) aur x = 1 (dono sides 2) test kiya aur kehta hai proof ho gaya. Kya woh sahi hai? x = 3 se test karo.",
+     "answer": "No: at x = 3 the left is 12 and the right is 6, so the claim is false; the matches at 0 and 1 were by chance",
+     "acceptable": [
+      "no",
+      "12 vs 6",
+      "false"
+     ],
+     "hints": [
+      "Do two matches make something always true?",
+      "Try x = 3 on both sides.",
+      "Left: 9 + 3 = ___. Right: 2 × 3 = ___.",
+      "12 ≠ 6, so the claim is false; matches are not proof."
+     ],
+     "targetsMisconception": "c8-maths-ch06-t03-m-one-check-proves",
+     "verified": {
+      "solverAnswer": "No. At x = 3: 9 + 3 = 12 but 2·3 = 6. x² + x = 2x only holds for x = 0 and x = 1, so it is not an identity.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch06-t03-i16",
+     "skillId": "c8-maths-ch06-t03-s3",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "Someone wrote (x + 3)² = x² + 9. Which test value catches the error: x = 0 or x = 1? Which values of x can never catch it?",
+     "prompt_hi": "Kisi ne likha (x + 3)² = x² + 9. Kaunsi test value galti pakadti hai: x = 0 ya x = 1? x ki kaunsi values ise kabhi nahi pakad sakti?",
+     "answer": "x = 1 catches it (16 versus 10); x = 0 does not (9 and 9). The sides differ by 6x, so only x = 0 can never catch it",
+     "acceptable": [
+      "x = 1",
+      "only x = 0 fails",
+      "differ by 6x"
+     ],
+     "hints": [
+      "Try both test values on both sides.",
+      "x = 0 gives 9 and 9; x = 1 gives 16 and 10.",
+      "(x + 3)² = x² + 6x + 9, so the gap is ___",
+      "x = 1 catches it; the gap 6x is 0 only at x = 0."
+     ],
+     "targetsMisconception": "c8-maths-ch06-t03-m-one-check-proves",
+     "verified": {
+      "solverAnswer": "x = 1 catches it (16 vs 10); x = 0 does not (9 = 9). Since (x + 3)² = x² + 6x + 9, the sides differ by 6x, so only x = 0 can never catch the error.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -7546,7 +8932,8 @@
      "So line 1 should be 4 − 2x ___ 6.",
      "Correct answer: ___ − 2x.",
      "Check with x = 0: 4 − 2(−3) = ___ and 10 − 0 = 10."
-    ]
+    ],
+    "skillId": "c8-maths-ch06-t03-s1"
    },
    "formats": {
     "primary": "F7",
@@ -7568,6 +8955,69 @@
     "detective game",
     "cricket scorer's corrections",
     "teacher's red pen"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch06-t03-s2",
+     "problem": "Ravi wrote (x + 2)(x + 3) = x² + 6. Find his error and give the correct expansion.",
+     "givens": [
+      "Ravi's line: (x + 2)(x + 3) = x² + 6"
+     ],
+     "find": "the error and the correct expansion",
+     "steps": [
+      {
+       "do": "each term of the first bracket × each term of the second → 4 products",
+       "result": "x × x, x × 3, 2 × x, 2 × 3"
+      },
+      {
+       "do": "write the 4 products",
+       "result": "x² + 3x + 2x + 6"
+      },
+      {
+       "do": "compare with Ravi → which products are missing",
+       "result": "the cross terms 3x and 2x"
+      },
+      {
+       "do": "combine like terms 3x and 2x",
+       "result": "x² + 5x + 6"
+      },
+      {
+       "do": "check with x = 1",
+       "result": "3 × 4 = 12; 1 + 5 + 6 = 12; Ravi's 1 + 6 = 7"
+      }
+     ],
+     "answer": "He multiplied only first × first and last × last, dropping the cross terms; correct is x² + 5x + 6",
+     "why": "two brackets → 4 products, never 2 → like terms (3x, 2x) combine into the middle term"
+    },
+    {
+     "skillId": "c8-maths-ch06-t03-s3",
+     "problem": "Asha says (x + 1)² = x² + 1 is correct because both sides equal 1 when x = 0. Is her check a proof? Test x = 2 and decide.",
+     "givens": [
+      "claim: (x + 1)² = x² + 1",
+      "Asha's test: x = 0 gives 1 on both sides"
+     ],
+     "find": "whether the claim is true, and what her check shows",
+     "steps": [
+      {
+       "do": "redo Asha's test, x = 0",
+       "result": "(0 + 1) × (0 + 1) = 1; 0 × 0 + 1 = 1"
+      },
+      {
+       "do": "new test value x = 2",
+       "result": "(2 + 1) × (2 + 1) = 9; 2 × 2 + 1 = 5"
+      },
+      {
+       "do": "one mismatch → claim is false for x = 2 → so false as an identity",
+       "result": "9 ≠ 5"
+      },
+      {
+       "do": "expand properly → see why x = 0 matched by chance",
+       "result": "(x + 1)² = x² + 2x + 1; the extra 2x is 0 only when x = 0"
+      }
+     ],
+     "answer": "Not a proof: at x = 2 the sides are 9 and 5, so the claim is false; the correct expansion is x² + 2x + 1",
+     "why": "one mismatch → disproves; a match → only 'not caught yet' → test values like 0 and 1 hide errors → pick 2 or 3"
+    }
    ]
   },
   {
@@ -11025,6 +12475,41 @@
       "representation": "Squares of area 36 and 64 cut up and fitted into a square of area 100",
       "moveShape": "Child checks the area of each square; ask whether the sides or the areas add up"
      }
+    },
+    {
+     "id": "c8-maths-ch09-t02-m-converse-wrong-side",
+     "skillId": "c8-maths-ch09-t02-s4",
+     "belief": "When testing whether a triangle is right-angled, uses whichever side is written last as c instead of the longest side",
+     "signs": [
+      "Tests 12² + 13² against 5² for sides 12, 13, 5",
+      "Declares a right triangle 'not right-angled' because of the order the sides were listed",
+      "Never checks which side is the longest before testing"
+     ],
+     "diagnostic": {
+      "prompt_en": "A triangle has sides 12 cm, 13 cm and 5 cm. Neha checks 12² + 13² against 5², gets 313 ≠ 25, and says it is not right-angled. Is the triangle right-angled?",
+      "prompt_hi": "Ek triangle ki sides 12 cm, 13 cm aur 5 cm hain. Neha ne 12² + 13² ko 5² se compare kiya, 313 ≠ 25 aaya, aur boli yeh right-angled nahi hai. Kya triangle right-angled hai?",
+      "options": [
+       {
+        "text": "Yes: the longest side is 13 cm, and 5² + 12² = 169 = 13²",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "No, because 12² + 13² is not equal to 5²",
+        "misconceptionId": "c8-maths-ch09-t02-m-converse-wrong-side",
+        "correct": false
+       },
+       {
+        "text": "You cannot tell without measuring the angles",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Three squares drawn on the three sides of the triangle, side by side by size",
+      "moveShape": "sort the sides by length first → biggest square is the only one that can equal the other two together → test small + middle against biggest → order of listing never matters"
+     }
     }
    ],
    "items": [
@@ -11332,6 +12817,80 @@
       "solverAnswer": "15 cm",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch09-t02-i14",
+     "skillId": "c8-maths-ch09-t02-s4",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A triangle has sides 9 cm, 40 cm and 41 cm. Is it right-angled?",
+     "prompt_hi": "Ek triangle ki sides 9 cm, 40 cm aur 41 cm hain. Kya yeh right-angled hai?",
+     "answer": "Yes: 9² + 40² = 81 + 1600 = 1681 = 41²",
+     "acceptable": [
+      "yes"
+     ],
+     "hints": [
+      "Which side would be the hypotenuse?",
+      "The longest one, 41 cm.",
+      "81 + 1600 = ___, and 41² = ___",
+      "Both are 1681, so yes."
+     ],
+     "verified": {
+      "solverAnswer": "Yes: 9² + 40² = 81 + 1,600 = 1,681 = 41². Right angle between the 9 cm and 40 cm sides.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch09-t02-i15",
+     "skillId": "c8-maths-ch09-t02-s4",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "A mason checks the corner of a room. He marks 60 cm along one wall and 80 cm along the other, then measures 99 cm between the two marks. Is the corner a right angle? What should the distance be for a right angle?",
+     "prompt_hi": "Ek mistri kamre ka corner check karta hai. Woh ek deewar par 60 cm aur doosri par 80 cm mark karta hai, phir dono marks ke beech 99 cm naapta hai. Kya corner right angle hai? Right angle ke liye distance kitna hona chahiye?",
+     "answer": "No; for a right angle the distance must be 100 cm, since 60² + 80² = 10,000 = 100²",
+     "acceptable": [
+      "no, 100 cm",
+      "100 cm",
+      "no"
+     ],
+     "hints": [
+      "The two marks and the corner make a triangle.",
+      "If the corner is 90°, the 99 cm line is the hypotenuse.",
+      "3600 + 6400 = ___, and √10,000 = ___",
+      "It should be 100 cm, so 99 cm means no right angle."
+     ],
+     "verified": {
+      "solverAnswer": "No. For a right angle the distance should be √(60² + 80²) = √10,000 = 100 cm; 99 cm means the corner is slightly less than 90°.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch09-t02-i16",
+     "skillId": "c8-maths-ch09-t02-s4",
+     "kind": "error_spot",
+     "difficulty": 4,
+     "prompt_en": "A triangle has sides 2.5 cm, 6.5 cm and 6 cm. Kabir compares 2.5² + 6.5² with 6², finds they differ, and says it is not right-angled. Is he correct?",
+     "prompt_hi": "Ek triangle ki sides 2.5 cm, 6.5 cm aur 6 cm hain. Kabir ne 2.5² + 6.5² ko 6² se compare kiya, alag aaye, aur bola yeh right-angled nahi hai. Kya woh sahi hai?",
+     "answer": "No; test against the longest side 6.5 cm: 2.5² + 6² = 6.25 + 36 = 42.25 = 6.5², so it is right-angled",
+     "acceptable": [
+      "no",
+      "it is right-angled",
+      "yes it is right-angled"
+     ],
+     "hints": [
+      "Which side must play the hypotenuse in the test?",
+      "The longest side, 6.5 cm.",
+      "6.25 + 36 = ___, and 6.5² = ___",
+      "Both are 42.25: right-angled, so Kabir is wrong."
+     ],
+     "targetsMisconception": "c8-maths-ch09-t02-m-converse-wrong-side",
+     "verified": {
+      "solverAnswer": "No, Kabir is wrong: he must test the longest side (6.5 cm). 2.5² + 6² = 6.25 + 36 = 42.25 = 6.5², so it is right-angled, with the right angle between the 2.5 cm and 6 cm sides.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -11347,7 +12906,8 @@
      "48² = ___ and 36² = 1,296.",
      "Sum: 2,304 + 1,296 = ___.",
      "Diagonal = √3,600 = ___ cm."
-    ]
+    ],
+    "skillId": "c8-maths-ch09-t02-s2"
    },
    "formats": {
     "primary": "F2",
@@ -11369,6 +12929,104 @@
     "shortcuts across fields",
     "kite strings",
     "cricket boundary throws"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch09-t02-s1",
+     "problem": "In triangle PQR, angle Q = 90°, PQ = 9 cm and QR = 12 cm. Name the hypotenuse, write the theorem for this triangle, and check that the hypotenuse is the longest side.",
+     "givens": [
+      "angle Q = 90°",
+      "PQ = 9 cm",
+      "QR = 12 cm"
+     ],
+     "find": "the hypotenuse, the theorem for PQR, and the hypotenuse's length",
+     "steps": [
+      {
+       "do": "right angle at Q → hypotenuse = side opposite Q",
+       "result": "PR"
+      },
+      {
+       "do": "theorem: square on hypotenuse = sum of squares on the other two sides",
+       "result": "PR² = PQ² + QR²"
+      },
+      {
+       "do": "substitute the two shorter sides",
+       "result": "81 + 144 = 225"
+      },
+      {
+       "do": "square root",
+       "result": "PR = 15 cm"
+      },
+      {
+       "do": "compare with the other sides",
+       "result": "15 > 12 and 15 > 9, so PR is the longest"
+      }
+     ],
+     "answer": "Hypotenuse PR; PR² = PQ² + QR²; PR = 15 cm, the longest side",
+     "why": "find the right angle first → the side facing it is the hypotenuse → its square is the sum of the other two squares → so it is the longest"
+    },
+    {
+     "skillId": "c8-maths-ch09-t02-s3",
+     "problem": "For Independence Day, a 17 m rope runs from the top of a vertical school flagpole to a peg on the flat ground 8 m from the pole's foot. Find the height of the flagpole.",
+     "givens": [
+      "rope (top of pole to peg) = 17 m",
+      "peg to foot of pole = 8 m",
+      "pole is vertical → right angle at the foot"
+     ],
+     "find": "the height of the flagpole",
+     "steps": [
+      {
+       "do": "right angle at the foot → rope is the hypotenuse; height is a shorter side",
+       "result": "17² = height² + 8²"
+      },
+      {
+       "do": "missing side is NOT the hypotenuse → subtract the squares",
+       "result": "height² = 17² − 8²"
+      },
+      {
+       "do": "square and subtract",
+       "result": "289 − 64 = 225"
+      },
+      {
+       "do": "square root",
+       "result": "height = 15 m"
+      },
+      {
+       "do": "check: 15 is shorter than the 17 m hypotenuse",
+       "result": "225 + 64 = 289"
+      }
+     ],
+     "answer": "15 m",
+     "why": "unknown is a shorter side → hypotenuse² − known side² → never add when the hypotenuse is given"
+    },
+    {
+     "skillId": "c8-maths-ch09-t02-s4",
+     "problem": "A carpenter makes a triangular frame with sides 20 cm, 21 cm and 29 cm. Is it right-angled? If so, where is the right angle?",
+     "givens": [
+      "sides 20 cm, 21 cm, 29 cm"
+     ],
+     "find": "whether the frame has a right angle, and where",
+     "steps": [
+      {
+       "do": "longest side → candidate hypotenuse",
+       "result": "29 cm"
+      },
+      {
+       "do": "squares of the two shorter sides, added",
+       "result": "400 + 441 = 841"
+      },
+      {
+       "do": "square of the longest side",
+       "result": "29 × 29 = 841"
+      },
+      {
+       "do": "equal → converse → right angle opposite the longest side",
+       "result": "right angle between the 20 cm and 21 cm sides"
+      }
+     ],
+     "answer": "Yes; 20² + 21² = 841 = 29², so the right angle is between the 20 cm and 21 cm sides (opposite the 29 cm side)",
+     "why": "converse: shorter² + shorter² = longest² → right angle → it sits opposite the longest side"
+    }
    ]
   },
   {
@@ -11979,6 +13637,41 @@
       "representation": "Three coloured bars for the three terms, all stretched together by the same factor",
       "moveShape": "Child stretches all three bars; ask what happens to the mix if one bar isn't stretched"
      }
+    },
+    {
+     "id": "c8-maths-ch10-t01-m-map-multiply",
+     "skillId": "c8-maths-ch10-t01-s2",
+     "belief": "To find a map distance from a real distance, multiplies by the scale (as when going map → real) instead of dividing",
+     "signs": [
+      "Gets a map length bigger than the real-world number, like 200 cm for a 40 km road at 1 cm : 5 km",
+      "Uses the same operation in both directions",
+      "Does not ask whether the map length should be smaller"
+     ],
+     "diagnostic": {
+      "prompt_en": "On a map, 1 cm stands for 5 km. A road is 40 km long. How long is it on the map?",
+      "prompt_hi": "Ek map par 1 cm ka matlab 5 km hai. Ek road 40 km lambi hai. Map par woh kitni lambi hogi?",
+      "options": [
+       {
+        "text": "8 cm",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "200 cm",
+        "misconceptionId": "c8-maths-ch10-t01-m-map-multiply",
+        "correct": false
+       },
+       {
+        "text": "45 cm",
+        "misconceptionId": "c8-maths-ch10-t01-m-scale-additive",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A double number line: map cm on top (0, 1, 2, 3 …) and real km below (0, 5, 10, 15 …)",
+      "moveShape": "map is smaller than the ground → map number must come out smaller → how many 5 km jumps make 40 km → that many cm → so real → map is a divide"
+     }
     }
    ],
    "items": [
@@ -12283,6 +13976,78 @@
       "solverAnswer": "2:3:5",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch10-t01-i14",
+     "skillId": "c8-maths-ch10-t01-s2",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "On a district map, 1 cm stands for 4 km. Two towns are 36 km apart by road. How long is the road on the map?",
+     "prompt_hi": "District ke map par 1 cm ka matlab 4 km hai. Do towns road se 36 km door hain. Map par road kitni lambi hogi?",
+     "answer": "9 cm",
+     "acceptable": [
+      "9"
+     ],
+     "hints": [
+      "Should the map length be a bigger or smaller number than 36?",
+      "Each cm covers 4 km.",
+      "How many 4s make 36? 36 ÷ 4 = ___",
+      "9 cm."
+     ],
+     "targetsMisconception": "c8-maths-ch10-t01-m-map-multiply",
+     "verified": {
+      "solverAnswer": "36 ÷ 4 = 9 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch10-t01-i15",
+     "skillId": "c8-maths-ch10-t01-s2",
+     "kind": "near_transfer",
+     "difficulty": 3,
+     "prompt_en": "A railway map has scale 1 : 50,000. The line between two stations is 7.5 km long. How long is it on the map?",
+     "prompt_hi": "Railway map ka scale 1 : 50,000 hai. Do stations ke beech line 7.5 km lambi hai. Map par woh kitni lambi hogi?",
+     "answer": "15 cm",
+     "acceptable": [
+      "15"
+     ],
+     "hints": [
+      "Put the real length in the same unit as the scale.",
+      "7.5 km = 7,50,000 cm.",
+      "7,50,000 ÷ 50,000 = ___",
+      "15 cm."
+     ],
+     "targetsMisconception": "c8-maths-ch10-t01-m-scale-units",
+     "verified": {
+      "solverAnswer": "7.5 km = 7,50,000 cm; ÷ 50,000 = 15 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch10-t01-i16",
+     "skillId": "c8-maths-ch10-t01-s2",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "Riya draws her school campus at a scale of 1 : 2,000. The campus is 450 m long and 520 m wide. What size is it on the map, and will it fit on a 20 cm × 30 cm sheet?",
+     "prompt_hi": "Riya apne school campus ka map 1 : 2,000 scale par banati hai. Campus 450 m lamba aur 520 m chauda hai. Map par uska size kya hoga, aur kya woh 20 cm × 30 cm sheet par fit hoga?",
+     "answer": "22.5 cm by 26 cm; it does not fit, because both sides are longer than 20 cm, whichever way the sheet is turned",
+     "acceptable": [
+      "22.5 cm × 26 cm, no",
+      "no"
+     ],
+     "hints": [
+      "Change each length to cm first.",
+      "450 m = 45,000 cm and 520 m = 52,000 cm.",
+      "Divide each by 2,000: ___ cm and ___ cm.",
+      "22.5 cm by 26 cm: both are over 20 cm, so it doesn't fit."
+     ],
+     "verified": {
+      "solverAnswer": "22.5 cm × 26 cm (45,000 ÷ 2,000 and 52,000 ÷ 2,000). It will not fit on a 20 cm × 30 cm sheet in either orientation: 22.5 > 20 and 26 > 20, so the shorter sheet side cannot hold either dimension.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -12298,7 +14063,8 @@
      "Convert to m: 18,00,000 ÷ 100 = ___ m.",
      "Convert to km: 18,000 ÷ 1000 = ___ km.",
      "So the town is ___ km away."
-    ]
+    ],
+    "skillId": "c8-maths-ch10-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -12320,6 +14086,71 @@
     "school trip planning",
     "masala blends",
     "railway maps"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch10-t01-s2",
+     "problem": "A town map has scale 1 : 25,000. A new road will be 3.5 km long. How long should it be drawn on the map?",
+     "givens": [
+      "scale 1 : 25,000 (1 cm on the map = 25,000 cm on the ground)",
+      "real length = 3.5 km"
+     ],
+     "find": "the length of the road on the map, in cm",
+     "steps": [
+      {
+       "do": "km → m",
+       "result": "3.5 × 1000 = 3500 m"
+      },
+      {
+       "do": "m → cm, the same unit as the scale",
+       "result": "3500 × 100 = 3,50,000 cm"
+      },
+      {
+       "do": "map is smaller → divide by the scale factor",
+       "result": "3,50,000 ÷ 25,000 = 14 cm"
+      },
+      {
+       "do": "check backwards: map × scale factor",
+       "result": "14 × 25,000 = 3,50,000 cm"
+      }
+     ],
+     "answer": "14 cm",
+     "why": "real → map means shrinking → divide by the scale factor → both lengths in the same unit before dividing"
+    },
+    {
+     "skillId": "c8-maths-ch10-t01-s3",
+     "problem": "In a gully cricket match, runs scored by Aman : Bunty = 3 : 4 and Bunty : Chetan = 6 : 5. Find Aman : Bunty : Chetan. If Aman scored 27 runs, how many did the other two score?",
+     "givens": [
+      "Aman : Bunty = 3 : 4",
+      "Bunty : Chetan = 6 : 5",
+      "Aman = 27 runs"
+     ],
+     "find": "Aman : Bunty : Chetan, and Bunty's and Chetan's runs",
+     "steps": [
+      {
+       "do": "Bunty is in both ratios → make his terms equal: LCM of 4 and 6",
+       "result": "12"
+      },
+      {
+       "do": "multiply both terms of 3 : 4 by 3",
+       "result": "3 : 4 = 9 : 12"
+      },
+      {
+       "do": "multiply both terms of 6 : 5 by 2",
+       "result": "6 : 5 = 12 : 10"
+      },
+      {
+       "do": "join on the common middle term",
+       "result": "Aman : Bunty : Chetan = 9 : 12 : 10"
+      },
+      {
+       "do": "Aman 27 = 9 × 3 → multiply all three terms by 3",
+       "result": "27 : 36 : 30"
+      }
+     ],
+     "answer": "9 : 12 : 10; Bunty scored 36 runs and Chetan 30 runs",
+     "why": "shared term → same number in both ratios → join → every term multiplied by one factor keeps the ratio"
+    }
    ]
   },
   {
@@ -13879,6 +15710,41 @@
       "representation": "Zooming in on tiles (same tile again at the same size) versus zooming in on a fern (smaller fern shapes appear)",
       "moveShape": "Child zooms into each; ask what new appears when you zoom in"
      }
+    },
+    {
+     "id": "c8-maths-ch11-t01-m-one-piece",
+     "skillId": "c8-maths-ch11-t01-s1",
+     "belief": "Applies the rule to only one piece (often the newest or biggest) of the last stage, instead of to every piece",
+     "signs": [
+      "Draws Sierpinski stage 2 with 5 shaded triangles instead of 9",
+      "Changes only one square when making the next carpet stage",
+      "Says each stage adds a few pieces rather than multiplying them"
+     ],
+     "diagnostic": {
+      "prompt_en": "Stage 1 of the Sierpinski carpet has 8 squares. To make stage 2, which squares does the rule act on?",
+      "prompt_hi": "Sierpinski carpet ke stage 1 mein 8 squares hain. Stage 2 banane ke liye rule kin squares par lagta hai?",
+      "options": [
+       {
+        "text": "On all 8 squares, so stage 2 has 64 squares",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Only on one of the squares, so stage 2 has 15 squares",
+        "misconceptionId": "c8-maths-ch11-t01-m-one-piece",
+        "correct": false
+       },
+       {
+        "text": "Only on the middle hole, so stage 2 still has 8 squares",
+        "misconceptionId": "c8-maths-ch11-t01-m-one-piece",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Stage 1 with its 8 squares numbered 1 to 8, each one split again in its own colour",
+      "moveShape": "Child applies the rule to square 1, then 2, and so on; ask how many squares each one leaves"
+     }
     }
    ],
    "items": [
@@ -14162,6 +16028,130 @@
       "solverAnswer": "27 triangles; 27/64",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch11-t01-i13",
+     "skillId": "c8-maths-ch11-t01-s1",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Rule: divide a square into a 3 by 3 grid of equal small squares and remove the middle one. Apply this once to a square of side 9 cm. How many squares are left, and what is the side of each?",
+     "prompt_hi": "Rule: ek square ko 3 by 3 grid ke barabar chhote squares mein baanto aur beech wala hata do. Yeh rule 9 cm side wale square par ek baar lagao. Kitne squares bachte hain, aur har ek ki side kitni hai?",
+     "answer": "8 squares, each of side 3 cm",
+     "acceptable": [
+      "8 squares of 3 cm",
+      "8, side 3 cm"
+     ],
+     "hints": [
+      "How many small squares does a 3 by 3 grid make?",
+      "A 3 by 3 grid has 9 squares; one is removed.",
+      "Side of each small square = 9 ÷ 3 = ___ cm.",
+      "8 squares are left, each 3 cm on a side."
+     ],
+     "verified": {
+      "solverAnswer": "8 squares are left, each of side 3 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch11-t01-i14",
+     "skillId": "c8-maths-ch11-t01-s1",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Meena makes stage 2 of the Sierpinski triangle by removing the middle triangle from only the top one of the 3 shaded triangles of stage 1. What did she do wrong, and how many shaded triangles should stage 2 have?",
+     "prompt_hi": "Meena Sierpinski triangle ka stage 2 banati hai, lekin stage 1 ke 3 shaded triangles mein se sirf upar wale ka middle triangle hatati hai. Usne kya galti ki, aur stage 2 mein kitne shaded triangles hone chahiye?",
+     "answer": "The rule must be applied to every shaded triangle, not just one; stage 2 should have 9 shaded triangles",
+     "acceptable": [
+      "She must apply the rule to all 3 triangles; 9",
+      "9 shaded triangles"
+     ],
+     "hints": [
+      "Which triangles does the rule act on?",
+      "The rule is for every shaded triangle of the last stage.",
+      "Each of the 3 triangles gives 3, so 3 × 3 = ___.",
+      "Apply the rule to all 3: stage 2 has 9 shaded triangles."
+     ],
+     "verified": {
+      "solverAnswer": "She applied the rule to only one triangle; it must be applied to every shaded triangle of stage 1. Stage 2 should have 3 × 3 = 9 shaded triangles.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     },
+     "targetsMisconception": "c8-maths-ch11-t01-m-one-piece"
+    },
+    {
+     "id": "c8-maths-ch11-t01-i15",
+     "skillId": "c8-maths-ch11-t01-s1",
+     "kind": "predict",
+     "difficulty": 4,
+     "prompt_en": "A Koch snowflake starts (stage 0) as an equilateral triangle with sides of 9 cm. Rule: every side is replaced by 4 sides, each 1/3 as long. Predict first: will the perimeter at stage 2 be more or less than 27 cm? Then find the number of sides, the length of each side and the perimeter at stage 2.",
+     "prompt_hi": "Koch snowflake stage 0 par ek equilateral triangle hai jiski har side 9 cm hai. Rule: har side ki jagah 4 sides aati hain, har ek 1/3 lambi. Pehle socho: stage 2 par perimeter 27 cm se zyada hoga ya kam? Phir stage 2 par sides ki ginti, har side ki lambai aur perimeter nikalo.",
+     "answer": "More: 48 sides of 1 cm each, perimeter 48 cm",
+     "acceptable": [
+      "48 sides, 1 cm each, 48 cm",
+      "more; 48 cm"
+     ],
+     "hints": [
+      "What happens to the number of sides, and to each side's length, at every stage?",
+      "Sides multiply by 4 each stage; each side's length is divided by 3.",
+      "Sides: 3, 12, ___; length: 9, 3, ___ cm.",
+      "Stage 2: 48 sides of 1 cm, so the perimeter is 48 × 1 = 48 cm."
+     ],
+     "verified": {
+      "solverAnswer": "More than 27 cm: stage 2 has 3 × 4 × 4 = 48 sides of 9 ÷ 9 = 1 cm, perimeter 48 cm (stage 1: 12 sides of 3 cm = 36 cm).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (pilot scope fix)"
+     }
+    },
+    {
+     "id": "c8-maths-ch11-t01-i16",
+     "skillId": "c8-maths-ch11-t01-s3",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Which of these is fractal-like: a fern leaf, a chessboard, or a row of identical bangles? Give the reason.",
+     "prompt_hi": "Inmein se kaunsa fractal jaisa hai: fern ki patti, chessboard, ya ek jaisi bangles ki line? Reason batao.",
+     "answer": "The fern leaf: each leaflet looks like a smaller copy of the whole leaf; the chessboard and bangles only repeat at the same size",
+     "acceptable": [
+      "The fern leaf",
+      "Fern, because its parts are small copies of the whole"
+     ],
+     "hints": [
+      "Which one has parts that look like the whole?",
+      "Look at one side leaflet of the fern.",
+      "Is a chessboard square a small copy of the whole board pattern at a smaller scale, or just the same square repeated?",
+      "The fern: its leaflets are smaller copies of the whole leaf."
+     ],
+     "targetsMisconception": "c8-maths-ch11-t01-m-repeat-is-fractal",
+     "verified": {
+      "solverAnswer": "The fern leaf: each leaflet (and its sub-leaflets) looks like a smaller copy of the whole leaf. The chessboard and the bangles only repeat identical same-size pieces, not smaller copies of the whole.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
+    },
+    {
+     "id": "c8-maths-ch11-t01-i17",
+     "skillId": "c8-maths-ch11-t01-s3",
+     "kind": "far_transfer",
+     "difficulty": 4,
+     "prompt_en": "Seen from a plane, a river has streams joining it, and each stream has smaller streams joining it in the same branching pattern. Is this self-similar? Give one way it differs from a mathematical fractal like the Sierpinski triangle.",
+     "prompt_hi": "Plane se dekho to ek nadi mein streams milti hain, aur har stream mein usi branching pattern se aur chhoti streams milti hain. Kya yeh self-similar hai? Sierpinski triangle jaise mathematical fractal se yeh ek tarah se kaise alag hai?",
+     "answer": "Yes, each stream network looks like a smaller copy of the whole; but in nature the copies are only roughly alike and stop after a few levels, while a mathematical fractal repeats exactly at every smaller scale without end",
+     "acceptable": [
+      "Yes; natural copies are only approximate",
+      "Yes; in nature it stops after a few levels",
+      "Yes; the river is not an exact copy at each level"
+     ],
+     "hints": [
+      "Does a part of the river network look like the whole?",
+      "Compare one stream with its small streams to the river with its streams.",
+      "In the Sierpinski triangle the copies are exact and go on forever; in the river they are ___.",
+      "Self-similar, yes; but only roughly and for a few levels, unlike an exact mathematical fractal."
+     ],
+     "targetsMisconception": "c8-maths-ch11-t01-m-computer-only",
+     "verified": {
+      "solverAnswer": "Yes, it is (approximately) self-similar: each stream with its tributaries looks like a smaller copy of the river system. Difference: the pattern stops after a few levels and the copies are not exact, whereas the Sierpinski triangle repeats exactly at every level forever.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+     }
     }
    ],
    "workedExample": {
@@ -14177,7 +16167,8 @@
      "Stage 1: each shaded triangle becomes ___; 3 triangles, 3/4 shaded.",
      "Stage 2: each of the 3 becomes 3; ___ triangles.",
      "Shaded fraction: 3/4 of 3/4 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch11-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -14199,6 +16190,67 @@
     "cauliflower",
     "tree branches",
     "river deltas"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch11-t01-s1",
+     "problem": "Start with a square of side 27 cm (stage 0). Rule: divide every square into a 3 by 3 grid of equal small squares and remove the middle one. Describe stage 1 and stage 2: how many squares are left, and what is the side of each?",
+     "givens": [
+      "stage 0 = one square of side 27 cm",
+      "rule = split every square into 9 equal squares and remove the middle one"
+     ],
+     "find": "number of squares left and the side of each at stage 1 and stage 2",
+     "steps": [
+      {
+       "do": "stage 0 → apply the rule to the one square: split into a 3 by 3 grid",
+       "result": "27 ÷ 3 = 9"
+      },
+      {
+       "do": "remove the middle small square → stage 1",
+       "result": "9 − 1 = 8 squares of side 9 cm"
+      },
+      {
+       "do": "apply the same rule to EACH of the 8 squares, not just one",
+       "result": "9 ÷ 3 = 3"
+      },
+      {
+       "do": "each 9 cm square → 8 squares of side 3 cm → stage 2",
+       "result": "8 × 8 = 64"
+      }
+     ],
+     "answer": "Stage 1: 8 squares of side 9 cm; stage 2: 64 squares of side 3 cm",
+     "why": "rule acts on every square of the previous stage → each stage = 8 shrunken copies of the one before → same rule, smaller scale"
+    },
+    {
+     "skillId": "c8-maths-ch11-t01-s3",
+     "problem": "A Romanesco cauliflower head is 16 cm across. Each floret is a cone of spiralling bumps, 1/4 as wide as the head, and each floret's buds are again cones of spiralling bumps, 1/4 as wide as the floret. How wide is one bud, and is the cauliflower self-similar?",
+     "givens": [
+      "head width = 16 cm",
+      "floret = 1/4 of head, same cone shape",
+      "bud = 1/4 of floret, same cone shape"
+     ],
+     "find": "the width of one bud, and whether the cauliflower is self-similar",
+     "steps": [
+      {
+       "do": "compare one floret with the whole head → shape",
+       "result": "same cone of spiralling bumps"
+      },
+      {
+       "do": "scale head → floret",
+       "result": "16 × 1/4 = 4 cm"
+      },
+      {
+       "do": "zoom into a floret → its buds, scale floret → bud",
+       "result": "4 × 1/4 = 1 cm"
+      },
+      {
+       "do": "test: part = smaller copy of the whole, at more than one level?",
+       "result": "yes, at 2 levels → self-similar"
+      }
+     ],
+     "answer": "Each bud is 1 cm across; yes, the cauliflower is self-similar because each floret and each bud is a smaller copy of the whole head",
+     "why": "self-similar → a part looks like the whole at a smaller scale, and again inside that part; plain repetition at one size (tiles, bricks) does not count"
+    }
    ]
   },
   {

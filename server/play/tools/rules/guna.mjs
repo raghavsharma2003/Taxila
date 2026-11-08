@@ -33,6 +33,20 @@
 // round early (the leftover a share or more) is "remainder-too-big"; the leftover dropped where everyone must go is
 // "no-remainder" (ignores the leftover). Not admitted: order-doesnt-matter (sharing fewer things than friends gives no whole
 // share here, and the dock / packets never swap roles).
+// r7 place2 (two arena-only place-value topics, a new mode "yard"): c4-maths-ch04-t01 numbers up to 9999: a docket names a
+// 4-digit number ("4 thousand 50", the expanded form "4000 + 50", or the numeral "4050") and the truck of six racks (crates of
+// 1 … 10^5, nine at most to a rack) must weigh exactly that: filling each place's rack IS writing the number place by place
+// (s1), the crates per rack ARE its thousands, hundreds, tens and ones (s2), and an empty rack IS the zero that holds a place
+// (s3, also the expanded form). The parts written in full one after another (4 thousand 50 loaded as 4,00,050) is "concat";
+// the parts' counts side by side, the empty places dropped (450) is "drop-zero". c7-maths-ch01-t01 lakhs and crores: the
+// docket names the number in lakhs and crores ("3 crore 5 lakh 9") or in millions ("7 million 250 thousand") and the truck
+// of eight racks (up to crates of a crore) must weigh it (s1, s2): the counts side by side without the empty places (3 crore
+// 5 lakh → 35,00,000) is "zero-placeholder"; a crore taken as a million, or a million read as a crore, is "crore-million".
+// The commas goal (s1): the number stands on the truck and the child sets comma posts between the racks so it reads in
+// lakhs and crores; a post after every three places is "intl-commas". Not admitted: c7-maths-ch01-t01-s3 (comparing and
+// ordering: no kit belief this truck shows honestly) stays with the net; c4 kit belief teen-ty (the dockets name the
+// parts with digits, so a -teen / -ty word never appears) and face-value (a crate on a rack is always worth its place) have no
+// set-up here.
 import { R } from "./rule.mjs";
 
 export const family = "guna";
@@ -56,6 +70,10 @@ export const RULES = [
   R("c4-maths-ch09-t02", G, "pack", "each", { short: "remainder-too-big" }, { cap: [2, 6], q: [2, 9] }),
   R("c4-maths-ch09-t02", G, "story", "full", { short: "remainder-too-big" }, { cap: [3, 9], q: [2, 9] }),
   R("c4-maths-ch09-t02", G, "story", "all", { drop: "no-remainder" }, { cap: [3, 9], q: [2, 9] }),
+  // r7 place2
+  R("c4-maths-ch04-t01", G, "yard", "build", { concat: "concat", "drop-zero": "drop-zero" }, { forms: ["named", "expanded", "numeral"] }),
+  R("c7-maths-ch01-t01", G, "yard", "build", { "drop-zero": "zero-placeholder", "crore-million": "crore-million" }, { big: true, forms: ["named", "intl"] }),
+  R("c7-maths-ch01-t01", G, "yard", "commas", { "intl-commas": "intl-commas" }, {}),
 ];
 
 export const ACTS = {
@@ -76,4 +94,7 @@ export const ACTS = {
   "c4-maths-ch09-t02|each": ["s1", "s3"],          // share equally (how many each), the leftover less than a round
   "c4-maths-ch09-t02|full": ["s2", "s3"],          // equal groups (how many packets of b), the leftover less than a packet
   "c4-maths-ch09-t02|all": ["s3"],                 // a leftover that still needs one more
+  "c4-maths-ch04-t01|build": ["s1", "s2", "s3"],   // write a named number place by place; its thousands … ones; zeros and the expanded form
+  "c7-maths-ch01-t01|build": ["s1", "s2"],         // write a number named in lakhs and crores; or named in millions
+  "c7-maths-ch01-t01|commas": ["s1"],              // Indian commas: three places, then every two
 };

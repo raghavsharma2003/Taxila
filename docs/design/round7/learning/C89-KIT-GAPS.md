@@ -47,3 +47,23 @@ How each column is counted:
   2. Science.
   3. English, Hindi and SST.
 - **Pilot first:** about 10 topics of c8 maths end to end, with lint, blind-solve and agreement measured. The rest follows only on main's go.
+
+## Author brief: chapter scope (main, 2026-11-08)
+
+The pilot put two items outside the NCERT chapter:
+- the Cantor set, which *Exploring Some Geometric Themes* does not build (it builds the Sierpinski carpet, Sierpinski gasket and Koch snowflake);
+- a rectangle test that leaned on parallelogram facts from a later topic.
+
+Every author prompt for the c8/c9 batches therefore carries these rules, and each batch's hand read checks them.
+
+1. **Chapter only.** Use only the objects, constructions, results and tests the chapter itself states, and only in the chapter's own form. For example, the chapter's rectangle converse is "equal diagonals **that bisect each other**", not "equal diagonals".
+2. **Order inside the chapter.** A topic may use earlier topics and prerequisite chapters. It may not use a later topic of the same chapter (t01 may not lean on t03's parallelogram facts).
+3. **Name the source.** Each new example, item and misconception notes the chapter section it draws on. The hand read rejects any that cite none.
+4. **Out of scope → error-spot or nothing.** If a natural question needs a result the chapter does not state (for example a converse), it becomes an error-spot item on the forward fact, or it is dropped.
+5. **Misconceptions are about the skill's own move.** A misconception attached to a skill must be an error a child makes while doing that skill, not a neighbouring belief. For example, for "follow the rule": applying the rule to one piece instead of every piece.
+
+**Pilot fixes applied (blind-solved 6/6):**
+- ch11-t01: the s1 example is now the Sierpinski carpet. i15 is now a Koch-snowflake predict item.
+- ch11-t01 s1 has a new misconception, `m-one-piece`. i14 now targets it.
+- ch04-t01: the s3 example uses the chapter's test.
+- ch04-t01 has a new error-spot item, i17 ("equal diagonals alone"), with the new misconception `m-equal-diag-enough`.

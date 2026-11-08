@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import { pendulumLogic, PENDULUM_MAL } from "../src/play/families/yantra/pendulum.logic.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
 import { gradeActs } from "../server/play/grade.js";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const L = pendulumLogic;
 const MATCH_MIS = { "heavier-faster": "k-m1", "amplitude-period": "k-m2" };
@@ -176,7 +177,7 @@ test("pendulum: the generator is fast (p95 ≤ 50 ms, best of 3) and determinist
     const times = [];
     for (let g = 0; g < 40; g++) {
       let best = Infinity, a = null;
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); a = L.generate(req(goal, 300 + g)); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); a = L.generate(req(goal, 300 + g)); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       assert.deepEqual(L.generate(req(goal, 300 + g)).map((c) => c.signature), a.map((c) => c.signature));
       assert.ok(a.length >= 8, `${goal} seed ${300 + g}: ${a.length} candidates`);

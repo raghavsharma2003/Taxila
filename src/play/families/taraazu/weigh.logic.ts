@@ -15,6 +15,12 @@
 //   mixed-concat   the numbers joined: 2 kg 50 g → 250 g, 2 l 50 ml → 250 ml (only a two-digit small part; no big weight)
 //   fifty-as-half  weigh: 2 kg 50 g read as 2.50 kg = 2500 g (3 kg 20 g → 3200 g; a two-digit small part)
 // Each is offered only where its amount is loadable, differs from the label by ≥ 100 and from every other mapped belief.
+// Fractions of a measure (r7 maap, c4-maths-ch05-t02): the label is "¾ kg", "½ l" or a sum "½ kg + ¼ kg" (form "frac",
+// big 0, small = the truth in g / ml; parts = the fractions). The box holds no weight / jug equal to the label (no 250 g at
+// all), so the fraction of the big unit has to be made in the small one. Their mal-rules (the c4 kit's own beliefs):
+//   half-is-50       every ½ in the label taken as 50 (½ kg → 50 g; ½ kg + ¼ kg → 300 g; ½ l → 50 ml)
+//   quarter-is-4     every ¼ taken as 400 ("paav kilo is 400 g"; ¼ l → 400 ml; ½ kg + ¼ kg → 900 g)
+//   pieces-not-size  ¾ taken as 3 pieces of 100 whatever the whole (¾ kg → 300 g; ¾ l → 300 ml); single ¾ labels only
 // (number-only, "900 g is heavier than 1 kg", needs a compare goal; that goal is not built: see the round 7 report.)
 import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, WeighAct } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
@@ -25,8 +31,10 @@ export interface WeighParams {
   goal: "balance" | "fill";
   /** the label: whole big units (kg / l) and small units (g / ml); the truth is big × 1000 + small */
   big: number; small: number;
-  /** "mixed" writes "1 kg 250 g"; "small" writes the whole amount in the small unit ("1250 g") */
-  form: "mixed" | "small";
+  /** "mixed" writes "1 kg 250 g"; "small" writes the whole amount in the small unit ("1250 g"); "frac" writes `parts` */
+  form: "mixed" | "small" | "frac";
+  /** form "frac" only: the fractions of ONE big unit the label adds up ([[3, 4]] is "¾ kg"; [[1, 2], [1, 4]] "½ kg + ¼ kg") */
+  parts?: [number, number][];
   /** weigh: the weights in the box (size in g → copies); fill: the jugs (size in ml, n = 0: refilled, unlimited) */
   box: { size: number; n: number }[];
   /** fill: what the vessel holds at the brim (ml); weigh: 0 */
@@ -43,10 +51,10 @@ export interface WeighState extends Undoable<WeighState> {
   done: boolean;
   acts: number;
 }
-export const WEIGH_MAL = ["kg-is-100g", "mixed-concat", "fifty-as-half", "l-is-100ml"] as const;
+export const WEIGH_MAL = ["kg-is-100g", "mixed-concat", "fifty-as-half", "l-is-100ml", "half-is-50", "quarter-is-4", "pieces-not-size"] as const;
 const MAL_OF: Record<WeighMode, readonly string[]> = {
-  weigh: ["kg-is-100g", "mixed-concat", "fifty-as-half"],
-  fill: ["l-is-100ml", "mixed-concat"],
+  weigh: ["kg-is-100g", "mixed-concat", "fifty-as-half", "half-is-50", "quarter-is-4", "pieces-not-size"],
+  fill: ["l-is-100ml", "mixed-concat", "half-is-50", "quarter-is-4", "pieces-not-size"],
 };
 export const DENOMS: Record<WeighMode, readonly number[]> = { weigh: [1000, 500, 200, 100, 50, 20, 10], fill: [1000, 500, 200, 100, 50] };
 export const UNITS: Record<WeighMode, { big: string; small: string }> = { weigh: { big: "kg", small: "g" }, fill: { big: "l", small: "ml" } };
@@ -56,6 +64,12 @@ export const BOX_KG = Object.freeze([{ size: 1000, n: 3 }, { size: 500, n: 1 }, 
 export const BOX_G = Object.freeze([{ size: 500, n: 8 }, { size: 200, n: 2 }, { size: 100, n: 1 }, { size: 50, n: 1 }, { size: 20, n: 2 }, { size: 10, n: 1 }]);
 export const JUGS_L = Object.freeze([1000, 500, 200, 100, 50].map((size) => ({ size, n: 0 })));
 export const JUGS_ML = Object.freeze([500, 200, 100, 50].map((size) => ({ size, n: 0 })));
+/** the fraction boxes: never a weight / jug equal to a label; with and without the 500 (never on a ½ label) */
+export const BOX_FR = Object.freeze([{ size: 200, n: 5 }, { size: 100, n: 3 }, { size: 50, n: 2 }, { size: 20, n: 2 }, { size: 10, n: 1 }]);
+export const BOX_FR5 = Object.freeze([{ size: 500, n: 1 }, { size: 200, n: 3 }, { size: 100, n: 3 }, { size: 50, n: 2 }, { size: 20, n: 2 }, { size: 10, n: 1 }]);
+export const JUGS_FR = Object.freeze([200, 100, 50].map((size) => ({ size, n: 0 })));
+/** the fractions a label may carry, as written */
+export const FRACS: Record<string, string> = { "1/2": "½", "1/4": "¼", "3/4": "¾" };
 /** the most weights a pan holds / pours a level takes */
 export const MAX_ON = 16;
 const MAX_TOTAL = 3990;
@@ -73,6 +87,7 @@ export function sizeLabel(size: number, mode: WeighMode): string {
 export function labelOf(p: WeighParams): string {
   const u = UNITS[modeOf(p)];
   if (p.form === "small") return `${truthOf(p)} ${u.small}`;
+  if (p.form === "frac") return (p.parts ?? []).map(([n, d]) => `${FRACS[`${n}/${d}`]} ${u.big}`).join(" + ");
   if (p.big && p.small) return `${p.big} ${u.big} ${p.small} ${u.small}`;
   return p.big ? `${p.big} ${u.big}` : `${p.small} ${u.small}`;
 }
@@ -124,7 +139,9 @@ function gcd(a: number, b: number): number { while (b) [a, b] = [b, a % b]; retu
 /** the amount a child holding `mal` loads / pours (before checking it differs, fits and is unique), or null */
 function rawMal(p: WeighParams, mal: string): number | null {
   const mode = modeOf(p);
-  if (!MAL_OF[mode].includes(mal) || p.form !== "mixed" || p.big === 0) return null;
+  if (!MAL_OF[mode].includes(mal)) return null;
+  if (p.form === "frac") return fracMal(p.parts ?? [], mal);
+  if (p.form !== "mixed" || p.big === 0) return null;
   switch (mal) {
     case "kg-is-100g": case "l-is-100ml":
       return hasBig(p) ? null : 100 * p.big + p.small;
@@ -132,6 +149,20 @@ function rawMal(p: WeighParams, mal: string): number | null {
       return hasBig(p) || p.small < 1 || p.small > 99 ? null : Number(`${p.big}${p.small}`);
     case "fifty-as-half":
       return p.small < 10 || p.small > 99 ? null : p.big * 1000 + p.small * 10;
+  }
+  return null;
+}
+/** a fraction label as a child holding `mal` makes it: every ½ as 50, every ¼ as 400, a lone ¾ as 3 × 100; else null */
+function fracMal(parts: readonly [number, number][], mal: string): number | null {
+  const as = (f: (n: number, d: number) => number | null) => {
+    let hit = false, sum = 0;
+    for (const [n, d] of parts) { const v = f(n, d); if (v === null) sum += (1000 * n) / d; else { hit = true; sum += v; } }
+    return hit ? sum : null;
+  };
+  switch (mal) {
+    case "half-is-50": return as((n, d) => (n === 1 && d === 2 ? 50 : null));
+    case "quarter-is-4": return as((n, d) => (n === 1 && d === 4 ? 400 : null));
+    case "pieces-not-size": return parts.length === 1 && parts[0][0] === 3 && parts[0][1] === 4 ? 300 : null;
   }
   return null;
 }
@@ -157,13 +188,25 @@ function validate(level: PlayLevel<unknown>): PlayLevel<WeighParams> | null {
   if (!p || (mode !== "weigh" && mode !== "fill")) return null;
   if (mode === "weigh" ? p.goal !== "balance" : p.goal !== "fill") return null;
   const big = p.big, small = p.small;
-  if (!isInt(big) || !isInt(small) || big < 0 || big > 3 || small < 0 || small > 999) return null;
+  const frac = p.form === "frac";
+  if (!isInt(big) || !isInt(small) || big < 0 || big > 3 || small < 0 || small > (frac ? 1000 : 999)) return null;
   const step = mode === "weigh" ? 10 : 50;
   if (small % step) return null;
   const total = big * 1000 + small;
   if (total <= 0 || total > MAX_TOTAL) return null;
-  const form = p.form === "small" ? "small" : p.form === "mixed" ? "mixed" : null;
+  const form = p.form === "small" ? "small" : p.form === "mixed" ? "mixed" : frac ? "frac" : null;
   if (!form) return null;
+  let parts: [number, number][] | null = null;
+  if (frac) {
+    // the label is the fractions; big 0 and small their sum in g / ml (checked, never trusted)
+    if (!Array.isArray(p.parts) || p.parts.length < 1 || p.parts.length > 2 || big !== 0) return null;
+    parts = [];
+    for (const q of p.parts) {
+      if (!Array.isArray(q) || q.length !== 2 || !isInt(q[0]) || !isInt(q[1]) || !FRACS[`${q[0]}/${q[1]}`]) return null;
+      parts.push([q[0], q[1]]);
+    }
+    if (parts.reduce((a, [n, d]) => a + (1000 * n) / d, 0) !== small) return null;
+  } else if (p.parts !== undefined) return null;
   if (!Array.isArray(p.box) || p.box.length < 2 || p.box.length > 7) return null;
   const sizes = new Set<number>();
   const box: { size: number; n: number }[] = [];
@@ -177,7 +220,7 @@ function validate(level: PlayLevel<unknown>): PlayLevel<WeighParams> | null {
   const cap = p.cap;
   if (!isInt(cap) || (mode === "fill" ? cap <= total || cap > 5000 || cap % 500 : cap !== 0)) return null;
   if (typeof p.ctx !== "string" || !CONTEXTS[mode].includes(p.ctx)) return null;
-  const params: WeighParams = { goal: p.goal as WeighParams["goal"], big, small, form, box, cap, ctx: p.ctx };
+  const params: WeighParams = { goal: p.goal as WeighParams["goal"], big, small, form, box, cap, ctx: p.ctx, ...(parts ? { parts } : {}) };
   if (!decompose(total, box, mode === "fill")) return null;     // solvable from this box
   return { ...level, params } as PlayLevel<WeighParams>;
 }
@@ -257,15 +300,44 @@ function shortcut(level: PlayLevel<WeighParams>): WeighAct[] | null {
   return null;
 }
 function malActs(level: PlayLevel<WeighParams>, mal: string): WeighAct[] | null {
-  const v = malAmount(level.params, mal, Object.keys(level.mal));
-  return v === null ? null : actsFor(level.params, v);
+  const p = level.params, v = malAmount(p, mal, Object.keys(level.mal));
+  if (v === null) return null;
+  // the pieces belief is acted as the kit sees it: three small 100 g / 100 ml pieces, one by one (when the box has them)
+  if (mal === "pieces-not-size" && p.box.some((b) => b.size === 100 && (b.n === 0 || b.n >= 3))) {
+    const fill = modeOf(p) === "fill";
+    return [...[0, 1, 2].map((): WeighAct => (fill ? { kind: "pour", jug: 100 } : { kind: "load", weight: 100 })), { kind: "weigh" }];
+  }
+  return actsFor(p, v);
 }
 
-interface WeighGrammar { smalls?: "simple" | "mixed"; maxBig?: number }
+interface WeighGrammar { smalls?: "simple" | "mixed"; maxBig?: number; frac?: "one" | "sum" }
 const SIMPLE = [0, 100, 200, 250, 300, 400, 500, 600, 700, 750, 800, 900];
 function difficultyOf(p: WeighParams): number {
   const parts = decompose(truthOf(p), p.box, modeOf(p) === "fill")?.length ?? 6;
+  if (p.form === "frac") return Math.min(1, 0.2 + 0.05 * parts + 0.1 * ((p.parts?.length ?? 1) - 1) + (p.parts?.some(([n]) => n === 3) ? 0.08 : 0));
   return Math.min(1, 0.12 + 0.05 * parts + (hasBig(p) ? 0 : 0.15) + (p.form === "small" ? 0.12 : 0) + (p.small > 0 && p.small < 100 ? 0.12 : 0) + 0.04 * p.big);
+}
+/** the fraction labels: one fraction of a kg / l, or (grammar "sum") also two added */
+const ONE: [number, number][][] = [[[1, 2]], [[1, 4]], [[3, 4]]];
+const SUMS: [number, number][][] = [[[1, 2], [1, 4]], [[1, 4], [1, 2]], [[1, 4], [1, 4]], [[1, 2], [1, 2]], [[3, 4], [1, 4]], [[1, 4], [3, 4]]];
+function generateFrac(req: GenRequest, g: WeighGrammar, mode: WeighMode, goal: WeighParams["goal"], mk: (p: WeighParams, sig: string) => Candidate<WeighParams>): Candidate<WeighParams>[] {
+  const rnd = mulberry32(req.seed), out: Candidate<WeighParams>[] = [], seen = new Set<string>();
+  const pick = <T>(a: readonly T[]): T => a[Math.floor(rnd() * a.length)];
+  const labels = g.frac === "sum" ? [...ONE, ...SUMS] : ONE;
+  for (let k = 0; k < 60 && out.length < 24; k++) {
+    const parts = pick(labels).map(([n, d]) => [n, d] as [number, number]);
+    const small = parts.reduce((a, [n, d]) => a + (1000 * n) / d, 0);
+    const five = rnd() < 0.5;
+    const box = mode === "fill" ? (five ? JUGS_ML : JUGS_FR) : (five ? BOX_FR5 : BOX_FR);
+    const params: WeighParams = { goal, big: 0, small, form: "frac", parts, box: box.map((b) => ({ ...b })), cap: mode === "fill" ? 2000 : 0, ctx: pick(CONTEXTS[mode]) };
+    if (box.some((b) => b.size === small) || !decompose(small, params.box, mode === "fill")) continue;
+    // one candidate per label (its box drawn at random), so "recent" steers the child to a new fraction, not a new box
+    const sig = `${mode}:${parts.map(([n, d]) => `${n}/${d}`).join("+")}${UNITS[mode].big}`;
+    if (seen.has(sig)) continue;
+    seen.add(sig);
+    out.push(mk(params, sig));
+  }
+  return out;
 }
 function generate(req: GenRequest): Candidate<WeighParams>[] {
   const g = req.grammar as WeighGrammar;
@@ -280,6 +352,7 @@ function generate(req: GenRequest): Candidate<WeighParams>[] {
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: params.ctx, seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
+  if (g.frac) return generateFrac(req, g, mode, goal, mk);
   for (let k = 0; k < 80 && out.length < 24; k++) {
     const withBig = rnd() < 0.45;
     let big = Math.floor(rnd() * (maxBig + 1));

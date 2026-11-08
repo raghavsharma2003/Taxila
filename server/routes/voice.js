@@ -208,13 +208,15 @@ async function ttsStream(req, res, body) {
     return streamParts(res, { entry: warm, t0, setupMs: Math.round(performance.now() - t0), prewarmed: Math.round(performance.now() - warm.at), framed, codec });
   }
   // Driven from the session, so an expired session is a 401 before anything about the turn is revealed.
-  const row = await one(`select s.guardian_id as session_guardian, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
+  const row = await one(`select s.guardian_id as session_guardian, (select d.child_id from device_session d where d.token_hash = s.token_hash) as device_child, t.text as turn_text, t.seq as turn_seq, l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
       from (select $3::text as h) k
       left join auth_session s on s.token_hash = k.h and s.expires_at > now()
       left join lesson l on l.id = $1
       left join turn t on t.lesson_id = l.id and t.seq = $2 and t.speaker = 'teacher'
       left join child c on c.id = l.child_id`, [lessonId, seq, tokenHash]);
   if (!row?.session_guardian) throw unauthorized("session expired");
+  // a paired child device (migration 041): its own child's lessons only, checked before anything about the turn shows
+  if (row.device_child && row.device_child !== row.id) throw forbidden("child not found for this account");
   if (row.turn_seq == null) throw notFound("no teacher turn to speak");
   if (row.guardian_id !== row.session_guardian) throw forbidden("child not found for this account");
   const guardian = { id: row.session_guardian };
@@ -565,7 +567,8 @@ function warmPrelude(req, body, tokenHash) {
     if (!token) return;
     const row = await one(`select l.state->'ctx'->>'teacherId' as lesson_teacher, l.state->'ctx'->>'teacherName' as lesson_teacher_name, (l.state ? 'laneSwitch') as lane_switched, c.*
         from auth_session s join lesson l on l.id = $1 join child c on c.id = l.child_id and c.guardian_id = s.guardian_id
-        where s.token_hash = $2 and s.expires_at > now()`, [body.lessonId, tokenHash]);
+        where s.token_hash = $2 and s.expires_at > now()
+          and not exists (select 1 from device_session d where d.token_hash = s.token_hash and d.child_id <> c.id)`, [body.lessonId, tokenHash]);
     if (!row) return;
     const { lesson_teacher: t, lesson_teacher_name: n, lane_switched: ls, ...child } = row;
     // the same screen align() applies, plus the child's own name (never echoed): prelude.js

@@ -15,7 +15,7 @@ export const BOARD_REFS = Object.freeze({
   "fraction-line@1": { subject: "maths", params: "den 2-12, to (or wholes) 1-3, from 0; explain: marks [{ num, label? }] (labelled points; a label must equal num/den, e.g. '3/6 = 1/2') and/or hop { num } (one jump per 1/den from 0); asks: mark k (the named mark, '?') | target [a, den] (asked, not placed); show + target [a, den] = hop to a/den and name it; two denominators: dens [d1, d2] (2-12 each, to 1-2), marks [[a, d], ...] labelled points (d1 above, d2 below), target [[a, d], ...] the pair to compare, nothing placed", example: { den: 4, to: 2, marks: [{ num: 4, label: "1" }, { num: 7, label: "7/4" }], hop: { num: 7 } } },
   // director9 (Learning: c5-t02 worked bars, c4 unequal pizza): a picture's second views, also authorable
   "fraction-bars@1": { subject: "maths", params: "bars [{ parts 1-12, shade 0-parts, label? (the bar's fraction shade/parts, or \"?\" = asked) }] (1-3, equal wholes stacked)", example: { bars: [{ parts: 6, shade: 1, label: "1/6" }, { parts: 3, shade: 1, label: "1/3" }] } },
-  "wholes@1": { subject: "maths", params: "wholes [{ parts 2-12, equal? (false: one half + the rest in the other half — needs parts ≥ 3), shade?, title? }] (1-2 circles side by side; as \"bar\": strips, one under the other)", example: { wholes: [{ parts: 3, equal: false, title: "Pizza A" }, { parts: 3, equal: true, title: "Pizza B" }] } },
+  "wholes@1": { subject: "maths", params: "wholes [{ parts 2-12, equal? (false: one half + the rest in the other half; 2 parts: two thirds + one third), shade?, title? }] (1-2 circles side by side; as \"bar\": strips, one under the other)", example: { wholes: [{ parts: 3, equal: false, title: "Pizza A" }, { parts: 3, equal: true, title: "Pizza B" }] } },
   // director10 G4: measured@1's second view (the boundary laid straight on a ruler: "seedha karke scale par napo")
   "unrolled@1": { subject: "maths", params: "sides [2-8 lengths, in order], unit cm|m, total? (the sum, or \"?\" = asked; default \"?\"), hide? [side indices drawn \"?\"], figure? { shape rect (w, h) | triangle (sides [3]) | polygon (n 3-8) } (the shape, small, beside the strip)", example: { sides: [7, 9, 12], unit: "m", total: "?", figure: { shape: "triangle", sides: [7, 9, 12] } } },
   "fraction-parts@1": { subject: "maths", params: "parts 2-12, shade 0-parts, whole circle|bar|roti", example: { parts: 4, shade: 3, whole: "roti" } },
@@ -26,7 +26,7 @@ export const BOARD_REFS = Object.freeze({
   "number-line-zoom@1": { subject: "maths", params: "value: a decimal with 1-2 places, 0-10", example: { value: 2.45 } },
   "column-op@1": { subject: "maths", params: "a, b 0-99999, op add|sub (b ≤ a), hideResult?", example: { a: 478, b: 356, op: "add" } },
   "place-value@1": { subject: "maths", params: "value 1-9999999", example: { value: 3456 } },
-  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult?", example: { groups: 3, each: 4 } },
+  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult? | sizes [2-6 groups of 1-10] (groups NOT all equal, each group's count under it, no equation)", example: { groups: 3, each: 4 } },
   "shade-grid@1": { subject: "maths", params: "rows 1-6, cols 1-10, shade 0-rows*cols | block [r, c], labels?, hideResult?", example: { rows: 3, cols: 5, shade: 6, labels: true, hideResult: true } },
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
@@ -94,7 +94,9 @@ export async function certifyBoardRef(ref, { kit = null, item = null, line, with
   // compare that draws live over its 20-word card failed certification on W6 alone)
   const speechMs = Math.max(1500, speechMsOf(text));
   const w = withhold ?? (item && kit ? withheldValues(kit, { itemId: item.id, line: text }) : { values: [] });
-  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w });
+  // (an authored ref is certified as the live gate takes a card's own board — board-sync gateCtxFor authoredRef: its cuts
+  // are the template's exact radii, not a model's circle cut by lines; Learning's c4 watermelon then-card, 2026-11-08)
+  const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w, authoredRef: true });
   // round 7 (main, director4 S2): the board must SHOW the numbers the ref authors (a template that cannot draw them, or
   // draws one as "?", fails the ref, never the child's screen)
   // (a grouped number — "4,815", "1,00,000" — is one number: place-value@1's Indian grouping failed numbers_not_shown)

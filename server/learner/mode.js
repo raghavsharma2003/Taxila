@@ -86,6 +86,9 @@ export const KEPT_TABLES = Object.freeze({
   wakeup: "scheduler rows",
   notification: "guardian messages (safety/account intents)",
   notify_slot: "set-null tombstone (probe F3)",
+  // 041 (round 7 G, child device pairing): auth rows, no learner content; unpair or erasing the child removes them
+  device_session: "a paired device's session, bound to the child: auth only",
+  pair_code: "a parent's 10-minute pairing code: auth only",
 });
 
 /**

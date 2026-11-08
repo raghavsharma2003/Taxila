@@ -694,7 +694,7 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board), ...gaveWorked(), ...sayFirst });
+        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board, item), ...gaveWorked(), ...sayFirst });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
@@ -839,9 +839,14 @@ function cardBeatRef(s, kit, item) {
   if (!sk) return null;
   const base = { scriptId: scriptIdOf(kit), skillId: item.skillId };
   if (item.scriptAsk) {
+    const worked = item.scriptAsk.beatId === "worked";
     const b = sk.explain?.find((x) => x.id === item.scriptAsk.beatId);
-    const board = item.scriptAsk.beatId === "worked" ? sk.workedExample?.board : b?.board;
-    return { ...base, beatId: item.scriptAsk.beatId, kind: item.scriptAsk.beatId === "worked" ? "worked" : "explain", ...(board ? { board } : {}) };
+    // (main, 2026-11-08, for Studio's second views: an ask with its OWN figure — ask.board / yourStep.board, unmarked — is drawn
+    // as the card's board while it is live, ownBoard like a check's; and its answers ride along, so a second view of a live card
+    // knows the key it must not draw (Studio e101bdc1 reads scriptBeat.answers[0]))
+    const own = (worked ? sk.workedExample?.yourStep?.board : b?.ask?.board) ?? null;
+    const board = own ?? (worked ? sk.workedExample?.board : b?.board);
+    return { ...base, beatId: item.scriptAsk.beatId, kind: worked ? "worked" : "explain", ...(board ? { board } : {}), ...(own ? { ownBoard: true } : {}), ...answersOf(item) };
   }
   if (item.scriptCheck) {
     const own = sk.checks?.find((c) => c.id === item.scriptCheck.checkId)?.board ?? null;

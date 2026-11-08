@@ -1,0 +1,34 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-device-lesson-joins",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Every lesson-keyed path a paired child device can reach checks that the lesson's child is the device's child, not only the guardian. The one-query session joins (brain/turn.js loadTurnContext, voice.js tts-stream and the uptake prelude, studio.js lessonFor) read device_session in the same query; the other lesson routes go through requireChild, which already admits only the device's child. A sibling's real lessonId answers 403. Reverse: none expected; identity is the authenticated child id (inherited law).",
+   "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "dc-r7-device-cohort-override-later",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Known limit, left for later (main, 2026-11-08): duplex/config.js and face-puppet/config.js read the owner-cohort override only when a tx_session cookie is present, so a paired child device (tx_child only) in the owner cohort gets the environment default for hands-free and the face look. Reverse: when the cohort override is wanted on paired devices, resolve the cohort from the device session's guardian as well.",
+   "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "ms-r7-device-lesson-joins-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "tests/pair-db.run.mjs test 4 on the Neon test branch (2026-11-08, n=4 paths with a sibling's real lesson): turn, tts-stream, studio slot and lesson end each answer 403 to the paired device; the device's own lesson answers 200 on studio slot, and the parent's session reaches the sibling's. With the three join changes reverted the same test fails. Migration ordering: scripts/migrate-core.mjs applies the set difference, so 041 is applied after 044-047 (unit test in tests/migrate-tooling.test.mjs; also seen on the branch database).",
+   "source": "inbox/r7-platform-7.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-device-lesson-joins", "rel": "part_of", "dst": "dc-r7-child-device-pairing" },
+  { "src": "dc-r7-device-cohort-override-later", "rel": "part_of", "dst": "dc-r7-child-device-pairing" },
+  { "src": "dc-r7-device-lesson-joins", "rel": "measured_by", "dst": "ms-r7-device-lesson-joins-2026-11-08" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-device-lesson-joins`\nA paired device can open only its own child's lessons: a sibling's lesson is refused on every path that takes a lesson id.\n\n## `dc-r7-device-cohort-override-later`\nOn a paired device, the owner's test-group switches for hands-free and the face look are not applied yet; the device gets the default until this is picked up.\n",
+  "measurements": "## `ms-r7-device-lesson-joins-2026-11-08`\nFour lesson paths were tried with a sibling's real lesson from a paired device and each refused it; the same test fails when the fix is taken out. A lower-numbered migration added late is still applied.\n"
+ }
+}

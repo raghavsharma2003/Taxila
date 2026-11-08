@@ -26177,6 +26177,139 @@
    "at": "2026-11-07",
    "title": "paheli play-cert (forge3-qa, p360/p412/l1366, game mounted) and law tests: independent checker agrees over random play; four goals solved by real taps at 360 px.",
    "source": "inbox/r7-games-paheli.json"
+  },
+  {
+   "id": "dc-r7-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7: a child can learn on their own device. The parent corner shows a 6-character code (unambiguous alphabet, 10-minute life, single use, QR too); /pair on the child's device redeems it for a child-scoped session bound to the authenticated child id; the session reaches child routes only and every parent route refuses it; the parent lists and unpairs devices from the corner, which ends the session server-side. App builds the client (pairing card, /pair, shell handling, unpair); Platform builds the routes in auth.js. Why: today child mode exists only on a phone where the parent is signed in, so every lesson starts by borrowing the parent's phone; picked over the Notebook growth page (next) and World/Hangar depth. Reverse: the owner prefers another route (e.g. a phone OTP for the child once a provider exists), or real families pair less than they borrow.",
+   "source": "inbox/r7-main-25.json"
+  },
+  {
+   "id": "dc-r7-games-maap",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "c4-maths-ch05-t02 (fractions in measurement) is played on taraazu weigh / fill, not feeta: labels '¾ kg', '½ l', '½ kg + ¼ kg' made from a box with no weight / jug equal to the label (no 250 g), so the fraction is made in g / ml. Mal-rules = the kit's three beliefs (half-is-50, quarter-is-4, pieces-not-size). s1 and s3 covered; s2 (½ / ¼ / ¾ m in cm) not admitted. Why: all three kit misconceptions and two of three skills are about kg and litres, and the kit's remediations are a balance and a jug. Reverse: a pilot shows children fill the vessel by eye or by trial weighings without converting, or feeta gains a fraction-of-a-metre cut that carries the same beliefs.",
+   "source": "inbox/r7-games-maap.json"
+  },
+  {
+   "id": "ms-r7-games-maap-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "taraazu play-cert after the maap extension (forge3-qa, p360/p412/l1366, game mounted): 3744/3744 taraazu samples pass at every size, the new c4-maths-ch05-t02 weigh / fill cells included. 29 taraazu weigh / fill law and server tests pass. Existing taraazu levels unchanged: generator hashes and 72 served levelIds (8 entries × 3 fades × 3 children) pinned before and after.",
+   "source": "inbox/r7-games-maap.json"
+  },
+  {
+   "id": "dc-r7-games-nazariya2",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "nazariya extended with two 2D modes: tri (the area of a triangle as a cloth on the floor plot: lay its rectangle, lay as much floor, give tent B more cloth than A) for c6-maths-ch06-t03 s1-s3, and solid (stamp every face, run along every edge, pin every corner of a cube, cuboid, pyramid or prism turned in the hand; only what is in sight can be marked) for c4-maths-ch01-t01 s1-s3; existing nazariya levels unchanged; never timed. Reverse: children lay floors by trial against the tile count, or mark solids by tapping everything in every turn.",
+   "source": "inbox/r7-games-nazariya2.json"
+  },
+  {
+   "id": "ms-r7-games-nazariya2-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "nazariya play-cert after nazariya2: 280/280 nazariya samples pass at p360, p412 and l1366 with the game mounted (56 new tri / solid samples, 7 new entries); the whole table 3784/3784; tests/r7-games-nazariya.test.mjs 28 tests pass (independent checker: shoelace area, Euler counts); r7-games and play suites 1085 tests pass; lint-ui 354 before and after; five goals solved with real taps at 360 px.",
+   "source": "inbox/r7-games-nazariya2.json"
+  },
+  {
+   "id": "dc-r7-games-place2",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "guna extended to place value: new mode yard (build: a truck of place racks loaded to a named number; commas: comma posts set between the racks for lakhs and crores) for c4-maths-ch04-t01 and c7-maths-ch01-t01 (s1, s2; s3 comparing stays with the net); existing guna levels unchanged. Reverse: children load from the rack labels without reading the docket, or posts are set by trial.",
+   "source": "inbox/r7-games-place2.json"
+  },
+  {
+   "id": "ms-r7-games-place2-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "guna play-cert after place2: 160/160 guna samples pass at p360, p412 and l1366 with the game mounted (20 entries × 2 seeds × 4 art directions, 3 entries new, 24 yard samples; smallest text 16 px; on a short phone tray the build truck stands in two halves of 44 px rows); 116 guna law and server tests pass; lint-ui 354 before and after.",
+   "source": "inbox/r7-games-place2.json"
+  },
+  {
+   "id": "ms-r7-director11-hand-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "director11: script walk v6.2 on b14df7ad (int/r6 29be9fa4c integration 14a + Studio 42534c19 + Brain f3cf4464), 16 lessons (4 topics × 4 personas), 1,397 calls ~$0.958, reply-ready p50 2.80 s / p90 4.42 s; counted by hand by 4 Claude judges: beats 212/217 (98%), verdicts 212/212, misgrades 0/0, false keys 0 (3 borderline), contradictions 36 (judge classes words 11 / drawing 12 / data 13; by mechanism paging 13 / second view 9 / data 13 / model words 1) vs director10 52 (5/44/3); unpaged 31→0; turns over 60 words 95→75, longest 132→105; picture requests drawing a new view from the live card c5-t02 4/4, c5-t01 4/4 (asked mark dropped), c6 3/4, c4 3/4; asides on time and about the child 1/24; code checker summed 139 (114 verdictSeg flags, nearly all overruled).",
+   "source": "inbox/r7-main-26.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-3",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Script walk v6.3: every line on its own board; turns and promises as predicates. Brain: P1 every part on its own source's board (close → answered card's answerBoard; remediation simpler/say → remediation board, then-card on its own page; probe → answered card; a line naming a figure → the board drawing it; no page switch inside a sentence); T1′ predicate 0 turns with two closes and 0 closes for a card not answered in the child's preceding turn (missed close dropped); H2′ canned aside facts deleted, return only after a park, at the promised point, reusing a content word of the child's aside; H1′ escalate miss 1 simpler → miss 2 remediation say → miss 3 answer with why, no line twice per card, only the live card's simpler after it is posed; W1 no answer before the child's turn, worked examples pose the question; R1 single-page verdicts draw the answerBoard; R2 code ack unless confident, Hindi number agreement, no raw park template; harness reads what is drawn. Studio: S1 second views keep the asked mark's position and scale labels (A1 hides only the key's value); S2 captions from drawn titles, real shade-grid second view, a line naming the original figure brings it back; S3 board labels switch with Hindi. Learning: D1 judgement-card answerBoards draw the judged figure with its answer state (beside the equal one when contrasted); D2 a why naming a figure must match its answerBoard; D3–D5 c5-t02 c3 on lines, c5-t01 'Bhinn hisse…' reworded, c4 borderline lines checked. Why: director11 passes beats/verdicts/misgrades/false keys for the sixth run and drawing fell 44→12, but 36 contradictions remain (paging 13, data 13, second view 9, model words 1) and register/promises fail in every topic because v6.2's T1 and H2, built as behaviour, did not hold. Reverse: director12 still shows more than 10 paging + second-view contradictions with P1 and S1–S3 in place → one code-drawn board per card, held (the v6.2 clause); or model-written words exceed 10 → board sentences move to a code voice (the v6.1 clause).",
+   "source": "inbox/r7-main-26.json"
+  },
+  {
+   "id": "dc-r7-child-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "A child's own device pairs by a one-time 6-character code from the parent (10 min, single use, a new one replaces the old) and then holds a child-scoped session: an auth_session row plus a device_session row naming the child (migration 041), cookie tx_child (a d.-prefixed token, never taken for a parent token). Scope is deny-by-default: server/pair/scope.js lists the child routes the router marks, requireGuardian answers a device only on those and requireChild admits only its own child; every other route answers 403 scope.child_device. Unpair deletes the session row, ending the session on the next request. Reverse: when the parent corner is to be reachable from a paired device without the parent's own sign-in, or when route-level scope proves too coarse (a per-route capability instead).",
+   "source": "inbox/r7-platform-6.json"
+  },
+  {
+   "id": "ms-r7-pairing-db-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "Pairing against the Neon test branch (tests/pair-db.run.mjs, n=4 route tests, 2026-11-08): a code lives 10 min and works once, a replaced code and an expired code answer the same 400 pair.invalid as a wrong one, a device reaches its own child's route (200) and gets 403 on the sibling, the parent corner, the placement note and the pairing admin, and after unpair its next request is 401. Unit: redeem is rate-limited per address (10 / 10 min) and per code (5 / 10 min).",
+   "source": "inbox/r7-platform-6.json"
+  },
+  {
+   "id": "dc-r7-device-lesson-joins",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Every lesson-keyed path a paired child device can reach checks that the lesson's child is the device's child, not only the guardian. The one-query session joins (brain/turn.js loadTurnContext, voice.js tts-stream and the uptake prelude, studio.js lessonFor) read device_session in the same query; the other lesson routes go through requireChild, which already admits only the device's child. A sibling's real lessonId answers 403. Reverse: none expected; identity is the authenticated child id (inherited law).",
+   "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "dc-r7-device-cohort-override-later",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Known limit, left for later (main, 2026-11-08): duplex/config.js and face-puppet/config.js read the owner-cohort override only when a tx_session cookie is present, so a paired child device (tx_child only) in the owner cohort gets the environment default for hands-free and the face look. Reverse: when the cohort override is wanted on paired devices, resolve the cohort from the device session's guardian as well.",
+   "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "ms-r7-device-lesson-joins-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "tests/pair-db.run.mjs test 4 on the Neon test branch (2026-11-08, n=4 paths with a sibling's real lesson): turn, tts-stream, studio slot and lesson end each answer 403 to the paired device; the device's own lesson answers 200 on studio slot, and the parent's session reaches the sibling's. With the three join changes reverted the same test fails. Migration ordering: scripts/migrate-core.mjs applies the set difference, so 041 is applied after 044-047 (unit test in tests/migrate-tooling.test.mjs; also seen on the branch database).",
+   "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "dc-r7-app-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The child's own phone or tablet joins its profile with a one-time code the parent makes in the corner (Children: 'Put Taxila on {name}'s device', code plus QR, 10 minutes, one use, Unpair per device), redeemed at /pair into a child-scoped session. On that session /api/me is scope:'child', guardian:null, one child. Who opens that child, and /parent/* asks for the grown-up's own sign-in. Platform owns the routes (main's shape); App asks for a separate child-session cookie so a parent sign-in on the device does not erase the pairing. Identity stays the authenticated child id; the device holds only a revocable session. Reverse: the owner prefers child-mode PINs on a parent-signed-in device, or Platform cannot scope sessions.",
+   "source": "inbox/r7-app-28.json"
+  },
+  {
+   "id": "dc-r7-app-device-boot",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "A paired child device boots child mode from the readable tx_paired cookie and GET /api/child/boot, never /api/me (403 scope.child_device on a device-only browser). The boot's me is cut client-side to scope:'child', guardian:null, that one child. A 401 with tx_paired set means unpaired: back to /pair with a gentle note. Supersedes the /api/me scope:'child' ask in dc-r7-app-device-pairing. Reverse: Platform serves a child-scoped /api/me.",
+   "source": "inbox/r7-app-29.json"
+  },
+  {
+   "id": "dc-r7-app-growth-page",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The Notebook's 'Then and now' page lists each skill that became pakka at a known time (the map's secureSince, 046), newest first, at most 12. Each entry shows 'First met on {date}' with the first Notebook lesson on its topic before then ('with a hint' when that lesson's card says so; never 'wrong'), that lesson's first board (replayable), 'Pakka since {date}', and the made-for pieces on the topic built before it was pakka ('This helped'). No counts, scores or streaks; no new server work. Also fixes the Notebook's board frame (the Studio stage filled the whole page entry). Reverse: Learning ships a per-skill first-try record, which then replaces the first-lesson proxy.",
+   "source": "inbox/r7-app-30.json"
+  },
+  {
+   "id": "dc-r7-script-why-figure",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: a lesson-script card's why must name only the figure its closing board draws (check.mjs whyFigureErrors: line/mark, bar, round whole, group sizes, 'not equal'), and a judgement card's answerBoard draws the judged figure; where no template can draw it (2 unequal parts, unequal groups) the card has no answerBoard rather than an equal stand-in. Reverse if: Studio ships templates for unequal parts and groups (then the removed answerBoards return) or the runtime stops speaking the why over the board.",
+   "source": "inbox/r7-learning-33.json"
+  },
+  {
+   "id": "dc-r7-kit-chapter-scope",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: class 8-9 kit additions stay inside the NCERT chapter's own statements and topic order (no Cantor set; the rectangle converse only as 'equal diagonals that bisect each other'; no later-topic facts); anything needing an unstated result becomes an error-spot on the forward fact or is dropped. Reverse if: a board other than NCERT is targeted whose chapter states more.",
+   "source": "inbox/r7-learning-33.json"
   }
  ],
  "edges": [
@@ -40949,6 +41082,66 @@
    "src": "dc-r7-script-walk-v6-2-brain",
    "rel": "supersedes",
    "dst": "dc-r7-script-walk-v6-1-brain"
+  },
+  {
+   "src": "dc-r7-games-maap",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-maap-cert"
+  },
+  {
+   "src": "dc-r7-games-nazariya2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-nazariya2-cert"
+  },
+  {
+   "src": "dc-r7-games-place2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-place2-cert"
+  },
+  {
+   "src": "dc-r7-games-place2",
+   "rel": "inherits",
+   "dst": "dc-r7-games-guna2"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-3",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-3",
+   "rel": "measured_by",
+   "dst": "ms-r7-director11-hand-2026-11-08"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2",
+   "rel": "measured_by",
+   "dst": "ms-r7-director11-hand-2026-11-08"
+  },
+  {
+   "src": "dc-r7-child-device-pairing",
+   "rel": "measured_by",
+   "dst": "ms-r7-pairing-db-2026-11-08"
+  },
+  {
+   "src": "dc-r7-device-lesson-joins",
+   "rel": "part_of",
+   "dst": "dc-r7-child-device-pairing"
+  },
+  {
+   "src": "dc-r7-device-cohort-override-later",
+   "rel": "part_of",
+   "dst": "dc-r7-child-device-pairing"
+  },
+  {
+   "src": "dc-r7-device-lesson-joins",
+   "rel": "measured_by",
+   "dst": "ms-r7-device-lesson-joins-2026-11-08"
+  },
+  {
+   "src": "dc-r7-app-device-boot",
+   "rel": "supersedes",
+   "dst": "dc-r7-app-device-pairing"
   }
  ]
 }
