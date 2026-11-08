@@ -59,7 +59,7 @@ export const MODES = {
   ghadi: ["set", "run", "race", "calendar"],
   darpan: ["mirror", "turn"],
   feeta: ["measure", "fence", "trip", "compare"],
-  guna: ["field", "pack", "story"],
+  guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
   koshtak: ["tray", "bin"],
@@ -310,6 +310,7 @@ export type GunaAct =
   | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
   | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
+  | { kind: "post"; at: number }                         // yard (commas): a comma post left of place `at` (again = lifted)
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
 // Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step

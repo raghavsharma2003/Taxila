@@ -99,6 +99,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   "guna/field": asAny(gunaLogic),
   "guna/pack": asAny(gunaLogic),
   "guna/story": asAny(gunaLogic),
+  "guna/yard": asAny(gunaLogic),
   // round 7: Kram, growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines,
   // rhythms of short and long beats, L-pieces and staircases nested into a square); never timed
   "kram/grow": asAny(kramLogic),
