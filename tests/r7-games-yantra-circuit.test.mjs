@@ -10,6 +10,7 @@ import { pickLevels } from "../src/play/core/pick.ts";
 import { coverage, currentLevel, entryKey, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { GAME_WEIGHT, sanitizeActs } from "../shared/play.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ALL = Object.fromEntries(CIRCUIT_MAL.map((m) => [m, `k-${m}`]));
 const req = (goal, seed, o = {}) => ({ family: "yantra", mode: "circuit", goal, topicId: "t", skillId: "t-s1", classLevel: 7, fade: 1, mis: {}, misMap: ALL, grammar: {}, recent: [], seed, ...o });
@@ -156,7 +157,7 @@ for (const goal of ["light", "switch"]) {
     for (let g = 0; g < 40; g++) {
       let best = Infinity, picked = null;
       // best of 3 (the picker is deterministic; a neighbour's load spike on a shared runner is not its cost)
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); picked = pickLevels(L, req(goal, 200 + g, { fade: 1 + (g % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); picked = pickLevels(L, req(goal, 200 + g, { fade: 1 + (g % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       const cands = L.generate(req(goal, 200 + g, { fade: 1 + (g % 3) })).slice(0, 5).map((c) => L.validate(c.level));
       for (const level of [picked.garam, ...cands]) {

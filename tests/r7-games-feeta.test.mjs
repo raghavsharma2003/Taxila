@@ -15,6 +15,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const ALL = Object.fromEntries(FEETA_MAL.map((m) => [m, `k-${m}`]));
@@ -236,7 +237,7 @@ for (const [mode, goal, grammar] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = feetaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = feetaLogic.generate(req(mode, goal, 100 + gi, { grammar, fade: 1 + (gi % 3) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = feetaLogic.validate(c.level), p = level.params, sol = feetaLogic.solve(level), n = p.items.length;

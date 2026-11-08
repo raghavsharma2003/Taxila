@@ -14,6 +14,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
@@ -286,7 +287,7 @@ for (const [mode, goal, grammar, mals] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = darpanLogic.generate(req(mode, goal, 100 + gi, { grammar, misMap: mapOf(mals) })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = darpanLogic.generate(req(mode, goal, 100 + gi, { grammar, misMap: mapOf(mals) })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 3)) {
         const level = darpanLogic.validate(c.level), p = level.params, sol = darpanLogic.solve(level);
