@@ -51,10 +51,13 @@ const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "
 // grades their reason (a probe is never right or wrong)
 /** v6.2 H3: a child's turn that gives a reason or a way of working (what a "you told me how you thought" ack takes up). */
 const REASON_SAID = /(?<![\p{L}])(?:kyunki|kyonki|isliye|maine|mene|humne|socha|sochi|gina|gini|ginke|ginkar|jod\w*|ghata\w*|dekha|dekhkar|dekh\s+ke|pehle|phir|because|so\s+i|i\s+(?:counted|added|thought|saw|did)|first|then)(?![\p{L}])/iu;
+// (v6.4 R3, main on director12: "Achha, ab samajh aaya tumne kaise socha" goes: she has not shown that she understood it)
 const PROBE_ACK = {
-  hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi.", "Achha, ab samajh aaya tumne kaise socha."],
-  english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking.", "Okay, now I see how you thought about it."],
+  hinglish: ["Achha, tumne apna tareeka bataya.", "Theek, yeh tumhari soch thi."],
+  english: ["Okay, thanks for telling me how you thought.", "Right, that was your way of thinking."],
 };
+/** v6.4 R3: the acknowledgement when the read of what they said is not confident: neutral, it claims nothing about it. */
+const NEUTRAL_ACK = { hinglish: ["Achha.", "Theek hai."], english: ["Okay.", "Alright."] };
 /**
  * v6 R3 (director8 c6 stuck T39–T43: "23 m" three times, the same generic hint each time): on an adding card (its key is the
  * sum of every number the card gives) a total that leaves numbers out names exactly the ones left out. null otherwise.
@@ -1963,6 +1966,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
     let ack = null;
+    // (v6.4 R3: her own "ab samajh aaya tumne kaise socha" goes too)
+    { const n0 = ss.length; ss = ss.filter((x) => !/samajh\s+aa(?:ya|yi)\s+(?:ki\s+)?(?:tumne|tum)\s+kaise\s+soch|now\s+i\s+see\s+how\s+you\s+thought/i.test(x)); if (ss.length < n0) guard.seeDropped = true; }
     if (state.lastMove?.probeAck && answeredNow) {
       const a0 = ss[0];
       // v6.1 R8 (main, director9 c6 stuck T23: "Is aayat ke kinaare par ek baar dhaaga lagana hai." — e3's opening — was taken
@@ -1974,7 +1979,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       // only when they did (a reason in their words); anything else is a plain "okay"
       else {
         if (a0 && state.lastReadConfident === false && takesUp(a0) && !/[?？]/.test(a0)) { ss = ss.slice(1); guard.ackCode = true; }
-        ack = REASON_SAID.test(saidNow) ? pickOf(PROBE_ACK[lang === "english" ? "english" : "hinglish"], state) : lang === "english" ? "Okay." : "Theek hai.";
+        // v6.4 R3 (main, director12): a line about how they thought only on a confident read; otherwise a neutral one
+        const L0 = lang === "english" ? "english" : "hinglish";
+        ack = state.lastReadConfident === true && REASON_SAID.test(saidNow) ? pickOf(PROBE_ACK[L0], state) : pickOf(NEUTRAL_ACK[L0], state);
+        guard.ackNeutral = ack !== null && NEUTRAL_ACK[L0].includes(ack);
       }
       guard.probeAck = true;
     }
@@ -2091,7 +2099,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const NON_ANSWER = new Set(["selftry", "repeat", "unclear", "off_format", "which"]);
     if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded) { if (body.length) guard.reposeOnly = body.length; body = []; }
     // v6.4 R3: a card said again word for word gets a frame ("Phir se dekho:"), never the same words with nothing new
-    if (card && !lead && !body.length && herPrev && herPrev.includes(norm(card).toLowerCase())) { body = [lang === "english" ? "Here it is again:" : "Phir se dekho:"]; guard.reposeFrame = true; }
+    const prevHas = (c) => { const k = norm(c).toLowerCase(); return herPrev.includes(k) || (state.ctx?.lang === "hindi" && inHindiWords(herPrev).toLowerCase().includes(k)); };
+    if (card && !lead && !body.length && herPrev && prevHas(card)) { body = [lang === "english" ? "Here it is again:" : "Phir se dekho:"]; guard.reposeFrame = true; }
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;

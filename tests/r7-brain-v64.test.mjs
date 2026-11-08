@@ -241,4 +241,31 @@ describe("r7-brain-v64.test.mjs", () => {
     }
     assert.deepEqual(bad, []);
   });
+
+  // R3 — rendering: neutral acknowledgements unless confident; no "ab samajh aaya"; no bare word-for-word re-pose
+  async function renderFaults(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [];
+    let prev = "";
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      if (!rows[n]) continue;
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      const r = out.reply.trim();
+      if (/samajh\s+aaya\s+tumne\s+kaise\s+socha/i.test(r)) bad.push(`row ${n} "ab samajh aaya" | ${r.slice(0, 120)}`);
+      if (out.guard.probeAck && pl.state.lastReadConfident !== true && /tumhari soch thi|apna tareeka bataya/i.test(r)) bad.push(`row ${n} a reading ack on an unconfident read | ${r.slice(0, 120)}`);
+      const card = String(pl.p.r.ui?.ask?.text ?? "").trim();
+      if (card.length > 40 && prev.includes(card) && r === card) bad.push(`row ${n} the card said again word for word, bare | ${r.slice(0, 120)}`);
+      prev = r;
+    }
+    return bad;
+  }
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`R3 predicate: neutral acknowledgements unless confident, no "ab samajh aaya", no bare word-for-word re-pose (${persona} ${topic})`, async () => {
+      assert.deepEqual(await renderFaults(persona, topic), []);
+    });
+  }
 });
