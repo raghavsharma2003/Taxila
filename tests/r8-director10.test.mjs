@@ -122,7 +122,7 @@ test("director10 G4: every picture request over a card's board draws a SECOND vi
     ["c6-maths-ch06-t01", { template: "shape@1", params: { shape: "hexagon", side: "5 cm" } }, "explain", "unrolled", "unrolled@1", ["5 cm", "5 cm", "5 cm", "5 cm", "5 cm", "5 cm", "?"]],
     ["c5-maths-ch02-t02", { template: "fraction-bars@1", params: { bars: [{ parts: 6, shade: 1, label: "1/6" }, { parts: 3, shade: 1, label: "1/3" }] } }, "explain", "line", "fraction-line@1", ["1/6", "1/3"]],
     // (c5-t01: the card asks about the 8-gap scale under the 1/4 — both scales are the card's figure, not the 1/4 alone)
-    ["c5-maths-ch02-t01", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "explain", "parts", "fraction-bars@1", ["1/4", "?"]],
+    ["c5-maths-ch02-t01", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "explain", "parts", "fraction-bars@1", ["1/4", "0", "1", "?", "0", "1"]],
   ];
   for (const [T, ref, kind, view, template, written] of rows) {
     // (Brain's "show": a picture ask that names nothing — "screen par dikhao na", patch 014 — is a request too)
@@ -253,7 +253,8 @@ test("main A1: a second view of a LIVE card never draws its key — c5-t01 e2's 
   assert.deepEqual(texts(px.script), ["8 m", "5 m", "7 m", "6 m", "?", "?"]);
   // a fraction ask (key 1/3) over its circle: the bar is unnamed and unshaded
   const third = { template: "fraction-parts@1", params: { parts: 3, shade: 1, whole: "circle" } };
-  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 0, label: "?" }]);
+  // (director11 S1: only the VALUE is hidden — the card's own figure shows the shading, the bar keeps it, its name is "?")
+  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 1, label: "?" }]);
   // and on the seam: e2's card up, the picture asked — no 8-part bar while the card is live
   const s = lesson("c5-maths-ch02-t01");
   const beat = keyed(["8", "8 gaps"]);

@@ -140,7 +140,7 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   const wholesN = authoredRef ? refWholes(ask.intent.boardRef) : null;
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
     ...(revealText ? { revealText } : {}),
-    ...(authoredRef ? { authoredRef: true, extraWords: refWords(ask.intent.boardRef).filter((w) => !(withhold?.words ?? []).map((x) => String(x).toLowerCase()).includes(w)), authoredNumbers: refNums } : {}),
+    ...(authoredRef ? { authoredRef: true, extraWords: [...TEMPLATE_WORDS, ...refWords(ask.intent.boardRef)].filter((w) => !(withhold?.words ?? []).map((x) => String(x).toLowerCase()).includes(w)), authoredNumbers: refNums } : {}),
     ...(wholesN ? { wholes: wholesN } : {}),
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
@@ -193,6 +193,8 @@ function withoutLabels(w, ref, { authored = false } = {}) {
     return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !vals.some((l) => Math.abs(l - x) < 1e-9); }) };
   } catch { return w; }
 }
+/** director11 S3: the words a template itself writes in Hindi mode ("2 barabar hisse", "parimap") — the board's own. */
+const TEMPLATE_WORDS = ["barabar", "hisse", "parimap"];
 /** The words a script board ref authors (every string in its params: titles, items, labels …), lower case. */
 function refWords(ref) {
   const out = new Set();
