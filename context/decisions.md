@@ -8805,3 +8805,18 @@ Reverse if a child pilot shows the across stroke is pressed by rhythm rather tha
 Mal-rules map only to the topic's own kit beliefs: two-odds → odd-plus-odd, odd-count → three-odds-even, like-sum (trays chosen by reading their parity with the sum rules) → product-like-sum, rows and rows-cols (every row, or every row and column, on the sum) → rows-only, ignore-carry (each column alone, the carry dropped) → ignore-carry, big-carry (the leading letter of a one-digit-longer sum as 2) → big-carry. Not admitted: c6-ch03-t02-s1 (digit sums: setting a number with a given digit sum would be an answer box) and c6-ch03-t02-s3 (Kaprekar); they stay with ITEM-ARENA. Kit beliefs with no honest set-up here: trial-only, add-breaks, few-works, digitsum-size, kaprekar-zero.
 
 Reverse if a child pilot shows bags, tiles or digits are found by blind trial (many runs per level with no parity, centre or carry reasoning), or the reverse-and-add start is guessed rather than steered by A + B.
+
+
+<!-- merged from inbox/r7-main-25.json -->
+## `dc-r7-device-pairing` (2026-11-08)
+
+A child can learn on their own device.
+
+- **Parent corner:** "Put Taxila on {name}'s device" shows a 6-character code (no 0/O/1/I), with a 10-minute life, single use, and a QR.
+- **Child's device:** /pair redeems the code for a child-scoped session bound to the authenticated child id. It reaches child routes only; every parent route refuses it. The parent corner stays behind the parent's own sign-in.
+- **Unpair:** the parent lists and unpairs devices from the corner, which ends the session server-side.
+- **Owners:** App builds the client, Platform the routes in auth.js.
+
+**Why:** child mode exists only on a phone where the parent is signed in, so every lesson starts by borrowing the parent's phone. Picked over the Notebook growth page (next) and World/Hangar depth.
+
+**Reverse if:** the owner prefers another route (for example a child phone OTP once a provider exists), or real families pair less than they borrow.
