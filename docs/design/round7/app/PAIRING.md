@@ -1,35 +1,44 @@
 # Putting Taxila on the child's own device (r7 App, 2026-11-08)
 
-The client is built (App) against main's route shape for Platform (server/auth.js). Until Platform's routes land, the
-client's calls return 404. The card then makes no code and shows "The code could not be made…". `/pair` says the code
-did not work.
+The client is built against Platform's routes at claude/r7-platform 703b1968 (draft PR #79).
 
-## The routes the client calls
+## Routes
 
 | Route | Auth | Answer |
 |---|---|---|
-| `POST /api/pair/code { childId }` | parent | `{ code, expiresAt }`. 6 characters from `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (no 0/O/1/I), 10 minutes, one use; a new code replaces the old one |
-| `POST /api/pair/redeem { code }` | none | `{ childId, name }` plus the child-scoped session cookie. Rate-limited per IP and per code; a wrong, used or expired code is a 400/404/410 that names nothing |
-| `GET /api/pair/devices?childId=` | parent | `{ devices: [{ id, label?, createdAt, lastSeenAt? }] }` |
-| `DELETE /api/pair/devices/:id` | parent | `{ ok }`. That device's session ends server-side at once |
+| `POST /api/pair/code { childId }` | parent | `{ code, expiresAt }`. 6 characters from `23456789ABCDEFGHJKLMNPQRSTUVWXYZ`, 10 minutes, one use; a new code replaces the old one |
+| `POST /api/pair/redeem { code, label? }` | none | `{ childId, name }`. Sets `tx_child=d.<token>` (HttpOnly) and `tx_paired=<childId>` (readable), 180 days. A wrong, used or expired code: `400 pair.invalid`. Too many tries: `429 pair.rate_limited` |
+| `GET /api/pair/devices[?childId=]` | parent | `{ devices: [{ id, childId, childName, label, pairedAt, lastSeenAt }] }`, newest first |
+| `DELETE /api/pair/devices?id=` (and the body `{ id }`) | parent | `{ ok: true }`. The device's next request is a 401 |
 
-## Two things the client also needs from Platform
+**On a device-only browser,** `/api/me` and every parent route answer `403 { code: "scope.child_device" }`. A parent who signs in on the device wins.
 
-1. **`GET /api/me` on a child-scoped session** answers `{ scope: "child", guardian: null, children: [that child only], consents: [] }`. A parent session may send `scope: "parent"` (absent is read as parent).
-   - **Who:** goes straight to that child, with no picker and no other names.
-   - **Parent corner:** `/parent/*` shows "Grown-ups only" with "Sign in as the grown-up" (`/start/phone?login=1&next=/parent`).
-   - **Sign-in screen:** treats the child session as no parent sign-in.
-2. **A separate cookie for the child session**, not the parent's session cookie. A grown-up who signs in on the paired device then does not erase the pairing, and signing out returns the device to the child.
-   - When both are present, `/api/me` answers the parent's.
-   - Parent routes accept only the parent's session. A child session on any parent route is a 401 or 403.
+## The client
 
-## Where it is in the app
-
-- **`/pair`** (`src/app/Pair.tsx`): the code field. Spaces, dashes and lower case are fine, and the read-alikes are dropped. A QR link's `?code=` goes on by itself. Success refreshes `/api/me` and opens `/c/{childId}`.
+- **Boot** (`src/app/device.ts`):
+  - When `/api/me` is refused with `scope.child_device` (or answers 401 while `tx_paired` is set), the app reads the paired child id from `tx_paired`.
+  - It then calls `GET /api/child/boot?childId=` and cuts the boot's `me` to `{ scope: "child", guardian: null, children: [that child], consents: [] }`.
+  - Both `loadMe` (`src/app/api.ts`) and the child shell's `getMe` (`src/child/api.ts`) go through it.
+- **Who:** opens the paired child at once.
+- **Parent corner:** `/parent/*` shows "Ask your parent to sign in", linking to the grown-up's own sign-in (`src/app/ParentOnly.tsx`). The sign-in screen treats the device session as no parent sign-in.
+- **The landing:** greets a paired device as signed in ("Go to Taxila").
+- **Unpaired:** a 401 in the child shell while `tx_paired` is set goes to `/pair?unpaired=1`, "This device was unpaired. Ask your grown-up for a new code to use it again."
+- **`/pair`** (`src/app/Pair.tsx`): the code field forgives case, spaces and dashes. A QR link's `?code=` goes on by itself. Success opens `/c/{childId}`.
 - **Parent corner, Children** (`src/app/PairCard.tsx`, one line in `src/parent/Pages.tsx`): "Put Taxila on {name}'s device".
-  - The code is shown large in two halves, with a QR to `{origin}/pair?code=` (`qrcode-generator`, loaded only then) and a countdown. "New code" and "Done".
-  - The device list has "Unpair", which asks once ("Remove it" / "Keep").
-- **Shell:** `Me.scope` and `guardian: null` (`src/app/api.ts`), Who, the `ParentOnly` guard (`src/app/ParentOnly.tsx`) and `Account.tsx`.
+  - The code is shown in two halves with a QR to `{origin}/pair?code=` (`qrcode-generator`, loaded only then), a countdown, "New code" and "Done".
+  - Paired devices show "{label} · added … · last used …" with "Unpair", which asks once.
 
-Shots: `shots-pair/` (the corner's code box, `/pair` typed and refused, and `/parent` on a paired device) at 360/412/1280.
+## For Platform
+
+`GET /api/child/boot` on a device-only browser answers the guardian's whole `me`: their email, and every child's name. The client
+keeps only the paired child, but the device still receives the rest. Cutting it server-side (the same shape the client builds)
+would keep a sibling's name and the parent's email off the child's device.
+
+Shots: `shots-pair/` at 360/412/1280:
+- the corner's code box;
+- `/pair` refused and typed;
+- the device's home (Riya only);
+- `/parent` on the device;
+- the unpaired note.
+
 Tests: `tests/r7-app-pair.test.mjs`.

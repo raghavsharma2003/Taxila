@@ -1,5 +1,6 @@
 // Account-level API used by the shell, onboarding, the picker and the Parent corner. Same-origin fetch with
 // the httpOnly guardian cookie (src/lesson/api.ts request helper); the client never holds a token.
+import { meOrChildDevice } from "./device.ts";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 import { takeEarlyMe } from "./boot.ts";
 
@@ -24,7 +25,8 @@ let cached: Promise<Me | null> | null = null;
 export function loadMe(): Promise<Me | null> {
   if (!cached) {
     const early = takeEarlyMe<Me>();
-    const read = () => getJson<Me>("/api/me");
+    // r7 device pairing: a paired child device reads the child's own Me (device.ts), never the parent's
+    const read = () => meOrChildDevice<Me>(() => getJson<Me>("/api/me"));
     cached = (early ? early.catch(read) : read()).catch((e) => {
       cached = null;
       if (e instanceof ApiError && e.status === 401) return null;

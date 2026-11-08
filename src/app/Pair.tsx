@@ -41,6 +41,7 @@ export default function Pair() {
   return (
     <StepFrame step={null} title="Put Taxila on this device" why="Your grown-up has a 6-character code in the parent corner. Type it here." docTitle="Put Taxila on this device">
       <form className="stack" onSubmit={submit} noValidate data-testid="pair-form">
+        {sp.get("unpaired") && <p className="t-note" role="status" data-testid="pair-unpaired">This device was unpaired. Ask your grown-up for a new code to use it again.</p>}
         <div className="field">
           <label htmlFor="pair-code">The code</label>
           <input id="pair-code" ref={field} className="input code-input" autoComplete="off" autoCapitalize="characters" spellCheck={false}

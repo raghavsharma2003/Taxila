@@ -2,6 +2,7 @@
 // (requireChild), so a cross-family id is a 404, never data. A failed read gives the screen's designed empty or
 // fallback state, never an error string aimed at the child (§4.7 "raw API strings are never shown").
 import { takeEarlyMe } from "../app/boot.ts";
+import { meOrChildDevice } from "../app/device.ts";
 import type { ChildMapResponse, ChildMapSkill, ChildMemoryDeleteRequest, ChildMemoryResponse, DidCard, HomeworkMatch, HomeworkMatchRequest, HomeworkMatchResponse, LessonSummary, MapState } from "../../shared/contracts.ts";
 import { tutorById } from "../../shared/tutors.js";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
@@ -22,14 +23,18 @@ export interface ChildRow {
   timing_multiplier?: number | null;
 }
 export interface MeResponse {
-  guardian: { id: string; email: string; name: string };
+  /** r7 device pairing: "child" on a paired child device (no guardian there). */
+  scope?: "parent" | "child";
+  guardian: { id: string; email: string; name: string } | null;
   children: ChildRow[];
 }
 
 /** /api/me for the child shell: the boot read index.html started (one hop with the plan), else a normal read. */
 export const getMe = () => {
   const early = takeEarlyMe<MeResponse>();
-  return early ? early.catch(() => getJson<MeResponse>("/api/me")) : getJson<MeResponse>("/api/me");
+  // r7 device pairing: on a paired child device /api/me is refused (scope.child_device): the child's own Me instead
+  const read = () => meOrChildDevice<MeResponse>(() => getJson<MeResponse>("/api/me"));
+  return early ? early.catch(read) : read();
 };
 
 export type { ChildMapResponse, ChildMapSkill, MapState };

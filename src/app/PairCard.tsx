@@ -105,7 +105,7 @@ export function PairCard({ childId, name }: { childId: string; name: string }) {
         <ul className="pair-devices" aria-label={`${name}'s devices`} data-testid="pair-devices">
           {devices.map((d) => (
             <li key={d.id} className="pair-device">
-              <span>{d.label || "A device"}<span className="pa-meta">{` · added ${when(d.createdAt)}${d.lastSeenAt ? ` · last used ${when(d.lastSeenAt)}` : ""}`}</span></span>
+              <span>{d.label || "A device"}<span className="pa-meta">{` · added ${when(d.pairedAt)}${d.lastSeenAt ? ` · last used ${when(d.lastSeenAt)}` : ""}`}</span></span>
               {confirm === d.id ? (
                 <span className="pa-actions">
                   <Button small variant="secondary" onClick={() => void unpair(d.id)} data-testid="pair-unpair-yes">Remove it</Button>

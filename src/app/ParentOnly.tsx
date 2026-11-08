@@ -15,7 +15,7 @@ export function ParentOnly({ children }: { children: ReactNode }) {
   if (me?.scope !== "child") return <>{children}</>;
   const name = me.children[0]?.first_name ?? "your child";
   return (
-    <StepFrame step={null} title="Grown-ups only" why={`This device is set up for ${name}. The parent corner opens with your own sign-in.`} docTitle="Parent corner">
+    <StepFrame step={null} title="Ask your parent to sign in" why={`This device is set up for ${name}. The parent corner opens only with your grown-up's own sign-in.`} docTitle="Parent corner">
       <div className="stack" data-testid="parent-only">
         <Link to="/start/phone?login=1&next=/parent" className="btn btn-primary btn-block" data-testid="parent-only-signin">Sign in as the grown-up</Link>
         <Link to="/who" className="link-quiet">{`Back to ${name}'s lessons`}</Link>
