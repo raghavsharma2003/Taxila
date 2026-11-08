@@ -20,7 +20,7 @@
 //      exactly as before, so this can only add boards, never remove one.
 // Kill switch TAXILA_BOARD_FIRST=0: nothing is preselected and nothing changes.
 import { answersRequest, samePage, shownBefore } from "../studio/request.js";
-import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf, anchorSteps } from "./board-sync.js";
+import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf, anchorSteps, answerValues, revealOf } from "./board-sync.js";
 import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
@@ -264,12 +264,12 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // (director10 G4: the card on screen by its ref — the page up was drawn, masked and labelled, on its own line)
     const cardUp = !!avoidRef && refKey(ask?.intent?.boardRef) === avoidRef;
     if (card0 && (cardUp || samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
-      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
+      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, "") });
       const { view, ...ac } = ac0 ?? {};
       const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
       const say = !ac0 ? "" : ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ") : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
-        : ac.sides ? `${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v) => `${v} ${ac.unit}`).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
+        : ac.sides ? `${ac.figure ? `Is ${ac.figure.shape === "rect" ? (ac.figure.w === ac.figure.h ? "square" : "rectangle") : ac.figure.shape === "triangle" ? "triangle" : "aakaar"} ki ` : ""}${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v, i) => (ac.hide?.includes(i) ? "?" : `${v} ${ac.unit}`)).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
         : Array.isArray(ac.dens) ? `0 se 1 ki do sankhya rekhayein, ${ac.dens.join(" aur ")} barabar gaps, nishaan ${ac.marks.map((m) => `${m[0]}/${m[1]}`).join(", ")} par`
         : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
       if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: ALT_VIEWS.has(view) ? view : "parts", say });
@@ -447,7 +447,7 @@ export function statedMark(script, ref, line) {
  */
 export function altView(ask, ctx) {
   try {
-    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
+    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [], keys: liveKeys(ask, String(ctx?.reply ?? ask?.line?.text ?? "")) });
     const { view, ...call } = call0 ?? {};
     const x = call0 ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
     if (!x?.ok) return null;
@@ -483,20 +483,65 @@ const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled"]);
 function sidesOf(c) {
   const unit = c.unit === "m" || c.unit === "cm" ? c.unit : null;
   if (c.template === "measured@1" && unit) {
-    if (c.shape === "rect" || c.shape === "square") { const w = Number(c.w), h = Number(c.h ?? c.w); return w > 0 && h > 0 ? { sides: [w, h, w, h], unit } : null; }
-    if (c.shape !== "circle" && Array.isArray(c.sides) && c.sides.length >= 3 && c.sides.every((v) => Number(v) > 0)) return { sides: c.sides.map(Number), unit };
+    if (c.shape === "rect" || c.shape === "square") { const w = Number(c.w), h = Number(c.h ?? c.w); return w > 0 && h > 0 ? { sides: [w, h, w, h], unit, figure: { shape: "rect", w, h } } : null; }
+    if (c.shape !== "circle" && Array.isArray(c.sides) && c.sides.length >= 3 && c.sides.every((v) => Number(v) > 0)) {
+      const sides = c.sides.map(Number);
+      return { sides, unit, figure: sides.length === 3 ? { shape: "triangle", sides } : { shape: "polygon", n: sides.length } };
+    }
     return null;
   }
   if (c.template === "shape@1") {
     const n = { triangle: 3, square: 4, pentagon: 5, hexagon: 6, heptagon: 7, octagon: 8 }[String(c.shape ?? "").toLowerCase()];
     const m = /(\d+(?:\.\d+)?)\s*(cm|m)\b/.exec(String(c.side ?? ""));
-    return n && m && Number(m[1]) > 0 ? { sides: Array.from({ length: n }, () => Number(m[1])), unit: m[2] } : null;
+    const v = m ? Number(m[1]) : 0;
+    return n && m && v > 0 ? { sides: Array.from({ length: n }, () => v), unit: m[2], figure: n === 4 ? { shape: "rect", w: v, h: v } : n === 3 ? { shape: "triangle", sides: [v, v, v] } : { shape: "polygon", n } } : null;
   }
   return null;
 }
 
+/**
+ * main (director10 cause #2, A1): the live card's KEY values a second view must never draw or label — the card's answers
+ * (scriptBeat.answers[0]) her line does not state; none once a correct verdict reveals them (scriptBeat.reveal). → string[]
+ */
+export function liveKeys(ask, line = "") {
+  const beat = ask?.intent?.scriptBeat;
+  if (!Array.isArray(beat?.answers) || !beat.answers.length || revealOf(beat).length) return [];
+  return answerValues(beat.answers, line);
+}
+/** The second view's call without the live card's key: a count key cuts no scale into that many parts (the scale is drawn
+ *  uncut, unnamed), a fraction key names and shades no bar, a length key labels no side or total. → the call, or null. */
+function keyless(call, keys) {
+  if (!call || !keys.length) return call;
+  const val = (t) => { const m = /^(\d+(?:\.\d+)?)(?:\/(\d+))?$/.exec(String(t).replace(/\s+/g, "")); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+  const fracKeys = keys.filter((k) => String(k).includes("/")).map(val).filter((v) => v != null);
+  const numKeys = keys.filter((k) => !String(k).includes("/")).map(Number).filter(Number.isFinite);
+  const isFrac = (a, b) => b > 0 && fracKeys.some((v) => Math.abs(v - a / b) < 1e-9);
+  if (call.template === "fraction-bars@1") {
+    const bars = call.bars.map((b) => (numKeys.includes(b.parts) ? { parts: 1, shade: 0, label: "?" } : isFrac(b.shade, b.parts) ? { parts: b.parts, shade: 0, label: "?" } : b));
+    return { ...call, bars };
+  }
+  if (call.template === "fraction-line@1") {
+    if ((call.den && numKeys.includes(call.den)) || (Array.isArray(call.dens) && call.dens.some((d) => numKeys.includes(d)))) return null;
+    const marks = (call.marks ?? []).filter((m) => (Array.isArray(m) ? !isFrac(m[0], m[1]) : !isFrac(m.num, call.den)));
+    return marks.length ? { ...call, marks } : null;
+  }
+  if (call.template === "unrolled@1") {
+    const sum = call.sides.reduce((a, b) => a + b, 0);
+    const hide = call.sides.map((v, i) => (numKeys.includes(v) ? i : -1)).filter((i) => i >= 0);
+    return { ...call, ...(hide.length ? { hide } : {}), total: numKeys.some((k) => Math.abs(k - sum) < 1e-6) ? "?" : call.total };
+  }
+  return call;
+}
+
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
-export function altCall(ref, { line = "", withheld = [] } = {}) {
+export function altCall(ref, { line = "", withheld = [], keys = [] } = {}) {
+  try {
+    const out = altCall0(ref, { line, withheld });
+    const k = keyless(out, keys);
+    return k ? { ...k, ...(out?.view && !k.view ? { view: out.view } : {}) } : null;
+  } catch { return null; }
+}
+function altCall0(ref, { line = "", withheld = [] } = {}) {
   try {
     const r = resolveBoardRef(ref, {});
     if (!r.ok) return null;
@@ -509,7 +554,7 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;
       const said = (String(line).match(/\d+(?:\.\d+)?/g) ?? []).map(Number).includes(sum);
       const held = withheld.map(String).some((w) => Number(w) === sum);
-      return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", view: "unrolled" };
+      return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", ...(ps.figure ? { figure: ps.figure } : {}), view: "unrolled" };
     }
     if (c.template === "fraction-bars@1" && Array.isArray(c.bars)) {
       const named = c.bars.filter((b) => b && b.label !== "?" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
