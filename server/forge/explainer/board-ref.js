@@ -87,10 +87,12 @@ export function refNumbersOf(call) {
 export async function certifyBoardRef(ref, { kit = null, item = null, line, withhold = null } = {}) {
   const r = resolveBoardRef(ref, { kit, item });
   if (!r.ok) return { ok: false, failed: [r.why] };
-  const [{ gateWhiteboard, withheldValues }, { retimeToLine, regate }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js")]);
+  const [{ gateWhiteboard, withheldValues }, { retimeToLine, regate }, { speechMsOf }] = await Promise.all([import("../../studio/qa/whiteboard.js"), import("../../stagecraft/board-sync.js"), import("../../studio/plan.js")]);
   const x = expand(r.call);
   const text = String(line ?? "");
-  const speechMs = Math.max(1500, text.split(/\s+/).length * 400);
+  // (director10: the live gate's own estimate of her line — board-sync gateCtxFor — not a stricter 400 ms a word: a two-bar
+  // compare that draws live over its 20-word card failed certification on W6 alone)
+  const speechMs = Math.max(1500, speechMsOf(text));
   const w = withhold ?? (item && kit ? withheldValues(kit, { itemId: item.id, line: text }) : { values: [] });
   const g = gateWhiteboard(retimeToLine(x.script, text), { reply: text, speechMs, withhold: w });
   // round 7 (main, director4 S2): the board must SHOW the numbers the ref authors (a template that cannot draw them, or

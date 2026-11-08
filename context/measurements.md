@@ -5981,3 +5981,20 @@ Replaying director10's rows through the seam, with Brain's bare-first-page join 
 - **First pages refused on their own close:** 30 → 4. Each of the 4 is a close over another item's board. Two of them are kept as the card's board and still contradict the close (Brain or Learning to fix).
 
 The replay made no model calls and used no database. tests/r8-director10.test.mjs pins one row per item.
+
+
+<!-- merged from inbox/r7-main-22.json -->
+## `ms-r7-m4-day1-2026-11-06` (2026-11-08)
+
+The M3/M4 60-day clock started on **day 1 = 2026-11-06** (now closed) and **completes 2027-01-04**. That is within even the worst-case deadline (2027-01-04, counting from the 2026-07-08 sponsorship start).
+
+| Day | Services ≥ $1 | Breakdown |
+|---|---|---|
+| 2026-11-06 | **8** | ACA 4.45, PG 4.00, Models 3.33, VM 2.20, ACR 1.75, Storage 1.46, Tools 1.45, LB 1.26. VNet was 0.90 because the spares only started mid-day. |
+| 2026-11-07, near-final | **9** | ACA 4.46, PG 2.63, Models 1.93, VM 2.67, ACR 2.27, Storage 1.47, Tools 1.39, LB 1.92, VNet 1.56. Subscription total $20.5/day. |
+
+**Keeper.** 16 runs on 2026-11-07, alternating between ACA and the VM every 1.5 h. The verifier reported OK.
+
+**Runway.** Projected ₹129,630 remaining at 2027-01-12.
+
+**Method.** `scripts/m3.mjs status`, reading Cost Management ActualCost grouped by ServiceName.

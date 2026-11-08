@@ -45,9 +45,14 @@ export function textProblem(t) {
 }
 
 /** A text's box in board units (centre-anchored when align is middle). */
+/** The player's numerals (Geist Mono, App's render measure 2026-11-07: 11.5 board units a digit at 19.2): 0.6 em each. */
+export const DIGIT_ADVANCE = 0.6;
+const NUMERAL = /^[\d\s.,/:?+\-−×÷=%°]+$/u;
 export function textBox(text, size = "m", at = [0, 0], align = "middle") {
   const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
-  const w = Math.max(fs * 0.6, [...String(text)].length * fs * ADVANCE);
+  // (a number is drawn in monospace digits, wider than the average letter the estimate assumes: App's 360 dp shots had
+  // "100200300" run together where the estimate saw room)
+  const w = Math.max(fs * 0.6, [...String(text)].length * fs * (NUMERAL.test(String(text)) ? DIGIT_ADVANCE : ADVANCE));
   const h = fs * 1.2;
   const x = align === "start" ? at[0] : align === "end" ? at[0] - w : at[0] - w / 2;
   return { x, y: at[1] - h * 0.75, w, h };
@@ -620,8 +625,9 @@ function numworkGeometry(op, rnd, amp) {
     let ticks = 0;
     for (let v = Math.ceil(a / step) * step; v <= b + 1e-9 && ticks < 41; v += step, ticks++) paths.push(`M${f1(xOf(v))},${f1(y0 - 7)} L${f1(xOf(v))},${f1(y0 + 7)}`);
     for (const c of rows[0] ?? []) {
+      // (an empty cell is an unlabelled tick: number-line-scale@1 labels every k-th tick when the labels would touch)
       const v = Number(c);
-      if (Number.isFinite(v) && v >= a && v <= b) texts.push({ x: xOf(v), y: y0 + rh * 0.95, text: c, size: fs * 0.8, align: "middle" });
+      if (c !== "" && Number.isFinite(v) && v >= a && v <= b) texts.push({ x: xOf(v), y: y0 + rh * 0.95, text: c, size: fs * 0.8, align: "middle" });
     }
     return { paths, texts, box: { x: x0, y: y0 - 10, w: W, h: rh * 1.3 } };
   }
@@ -656,6 +662,14 @@ export function lintScript(script) {
     const b = g.box;
     if (b.x < -2 || b.y < -2 || b.x + b.w > BW + 2 || b.y + b.h > BH + 2) issues.push({ id: o.id, check: "inside_board", detail: b });
     if (o.op === "text" || o.op === "label" || o.op === "numwork") textOps.push({ o, b });
+    // a number line's own row labels never touch each other (App, 2026-11-07: "100200300…" at 0-1000 step 100, 360 dp)
+    if (o.op === "numwork" && o.layout === "number_line") {
+      const xs = g.texts.map((t) => ({ x: t.x, w: [...String(t.text)].length * t.size * DIGIT_ADVANCE })).sort((p, q) => p.x - q.x);
+      for (let k = 1; k < xs.length; k++) {
+        const gap = (xs[k].x - xs[k].w / 2) - (xs[k - 1].x + xs[k - 1].w / 2);
+        if (gap < 6) { issues.push({ id: o.id, check: "row_labels_touch", detail: { gap: Math.round(gap), at: k } }); break; }
+      }
+    }
   }
   for (let i = 0; i < textOps.length; i++) {
     for (let j = i + 1; j < textOps.length; j++) {
