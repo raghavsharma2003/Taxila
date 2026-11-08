@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Round 7 F (main 2026-11-05): fill the kit gaps the lesson-script pipeline found, before the 30-topic script batch.
-// Per topic: a full worked example for every skill the topic's one `workedExample` does not teach (`skillExamples`), and a
-// real misconception for every skill no item targets (`misconceptions[]` entries with a `skillId`). Claude authors them
+// Per topic: a full worked example for every skill the topic's one `workedExample` does not teach (`skillExamples`), a
+// real misconception for every skill no item targets (`misconceptions[]` entries with a `skillId`), and (class 8-9 depth,
+// 2026-11-08) new practice items (`newItems`, kit item shape) until every skill has ≥ 3. Claude authors them
 // in session and a SEPARATE Claude agent blind-solves them (no Azure). This script is the code part:
 //   lint(add, kit)          → error strings (shape, ids, coverage, exact arithmetic of "a op b = c" step results)
 //   blind(adds)             → the solver's packet: problems and diagnostics, no answers
@@ -25,12 +26,13 @@ export const kitTopic = (topicId) => JSON.parse(readFileSync(kitFile(topicId), "
  */
 export function wrongArithmetic(text) {
   // a list of facts ("9 × 6 = 54, 9 × 7 = 63") is judged clause by clause
-  const clauses = String(text).replace(/(\d),(?=\d{3}\b)/g, "$1").split(/[,;]|\band\b|→/);
+  // digit grouping, Indian (3,50,000) or international (350,000): a comma followed by 2-digit groups ending in 3 digits
+  const clauses = String(text).replace(/(\d),(?=(?:\d{2},)*\d{3}\b)/g, "$1").split(/[,;]|\band\b|→/);
   if (clauses.length > 1) return clauses.flatMap((c) => wrongClause(c));
   return wrongClause(text);
 }
 function wrongClause(text) {
-  const norm = String(text).replace(/(\d),(?=\d{2,3}\b)/g, "$1").replace(/[×✕]/g, "*").replace(/(\d)\s*x\s*(\d)/g, "$1*$2")
+  const norm = String(text).replace(/(\d),(?=(?:\d{2},)*\d{3}\b)/g, "$1").replace(/[×✕]/g, "*").replace(/(\d)\s*x\s*(\d)/g, "$1*$2")
     .replace(/÷/g, "/").replace(/[−–]/g, "-").replace(/₹/g, "");
   const parts = norm.split("=").map((x) => x.trim().replace(/\s*(cm|mm|km|m|kg|g|ml|l|°|rupees?|days?|minutes?|hours?)\.?$/i, "").trim());
   const vals = [];
@@ -85,6 +87,28 @@ export function lint(add, kit) {
     if (!o.some((x) => !x.correct && x.misconceptionId === m.id)) e.push(`${at}: no option carries this belief's answer`);
     if (new Set(o.map((x) => String(x.text).trim())).size !== o.length) e.push(`${at}: duplicate options`);
   }
+  // round 7 F class 8-9 depth (main 2026-11-08): new practice items so every skill has a ≥ 3-rung ladder
+  const KINDS = new Set(["practice", "near_transfer", "far_transfer", "predict", "contrast", "why", "teachback", "retrieval", "error_spot", "translate_rep"]);
+  const itemIds = new Set(kit.items.map((i) => i.id));
+  const perSkill = Object.fromEntries(skillIds.map((sid) => [sid, kit.items.filter((i) => i.skillId === sid).length]));
+  for (const it of add.newItems ?? []) {
+    const at = `item ${it.id}`;
+    if (!it.id?.startsWith(`${add.topicId}-`)) e.push(`${at}: id must start ${add.topicId}-`);
+    if (itemIds.has(it.id)) e.push(`${at}: duplicates a kit id`);
+    itemIds.add(it.id);
+    if (!skillIds.includes(it.skillId)) e.push(`${at}: skillId`);
+    else perSkill[it.skillId]++;
+    if (!KINDS.has(it.kind)) e.push(`${at}: kind ${it.kind}`);
+    if (![1, 2, 3, 4, 5].includes(it.difficulty)) e.push(`${at}: difficulty 1-5`);
+    if (!it.prompt_en || !it.prompt_hi || !it.answer) e.push(`${at}: prompt_en, prompt_hi and answer`);
+    if (!Array.isArray(it.acceptable)) e.push(`${at}: acceptable []`);
+    if (!Array.isArray(it.hints) || it.hints.length !== 4 || it.hints.some((h) => !String(h ?? "").trim())) e.push(`${at}: 4 hints (pump, hint, prompt, assertion)`);
+    if (prompts.has(String(it.prompt_en ?? "").trim().toLowerCase())) e.push(`${at}: copies a kit prompt`);
+    if (it.targetsMisconception && !existing.has(it.targetsMisconception) && !(add.newMisconceptions ?? []).some((m) => m.id === it.targetsMisconception)) e.push(`${at}: targetsMisconception unknown`);
+    if (it.verified) e.push(`${at}: verified is set by the blind solve, never authored`);
+    for (const w of wrongArithmetic(it.answer)) e.push(`${at}: ${w}`);
+  }
+  if (add.newItems) for (const [sid, n] of Object.entries(perSkill)) if (n < 3) e.push(`${sid}: ${n} items after the additions, want ≥ 3`);
   return e;
 }
 
@@ -96,6 +120,10 @@ export function blind(adds) {
       const id = `${x.skillId}/example`;
       questions.push({ id, kind: "solve", problem: x.problem, steps: x.steps.map((s) => s.do) });
       keys.push({ id, key: x.answer, steps: x.steps });
+    }
+    for (const it of a.newItems ?? []) {
+      questions.push({ id: `${it.id}/item`, kind: "answer", prompt: it.prompt_en });
+      keys.push({ id: `${it.id}/item`, key: it.answer, acceptable: it.acceptable });
     }
     for (const m of a.newMisconceptions ?? []) {
       const id = `${m.id}/diagnostic`;
@@ -118,6 +146,9 @@ export function apply(add, topic) {
   const mis = new Map(t.misconceptions.map((m) => [m.id, m]));
   for (const m of add.newMisconceptions ?? []) mis.set(m.id, m);
   t.misconceptions = [...mis.values()];
+  const items = new Map(t.items.map((i) => [i.id, i]));
+  for (const it of add.newItems ?? []) items.set(it.id, it);
+  t.items = [...items.values()];
   return t;
 }
 
@@ -127,7 +158,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const adds = files.map((f) => JSON.parse(readFileSync(join(dir, f), "utf8")));
   if (cmd === "lint") {
     let bad = 0;
-    for (const a of adds) { const e = lint(a, kitTopic(a.topicId)); console.log(`${a.topicId}: ${e.length ? "FAIL" : "ok"} (${(a.skillExamples ?? []).length} examples, ${(a.newMisconceptions ?? []).length} misconceptions)`); for (const x of e) console.log(`  ${x}`); if (e.length) bad++; }
+    for (const a of adds) { const e = lint(a, kitTopic(a.topicId)); console.log(`${a.topicId}: ${e.length ? "FAIL" : "ok"} (${(a.skillExamples ?? []).length} examples, ${(a.newMisconceptions ?? []).length} misconceptions, ${(a.newItems ?? []).length} items)`); for (const x of e) console.log(`  ${x}`); if (e.length) bad++; }
     process.exit(bad ? 1 : 0);
   } else if (cmd === "blind") {
     const p = blind(adds);
