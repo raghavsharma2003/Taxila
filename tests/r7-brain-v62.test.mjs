@@ -51,11 +51,12 @@ describe("r7-brain-v62.test.mjs", () => {
     assert.match(out.reply, /^1\/8 sahi nahi hai\./, out.reply);
   });
 
-  test("T1/T2 replay director10 c5-t01 steady T37: one close, and a why said in her last turn is not said again", async () => {
+  test("T1/T2 replay director10 c5-t01 steady T37: a why said in her last turn is not said again; (v6.3 T1′) no worked close on the probe's answer", async () => {
     const { out, rows } = await at("steady", "c5-maths-ch02-t01", 37);
     assert.ok(rows[34].text.includes("kyunki raasta 4 barabar gaps mein bata hai") && rows[36].text.includes("kyunki raasta 4 barabar gaps mein bata hai"), "(the run said the why on T35 and again on T37)");
     assert.doesNotMatch(out.reply, /raasta 4 barabar gaps mein bata hai/, out.reply);
-    assert.match(out.reply, /Toh poora jawab: pehla khamba ghar se 1\/4 km door hai\./, out.reply);
+    // (v6.3 T1′: the verdict with its why closed the worked card on T35; T37 answers the why-probe, so no close is said)
+    assert.doesNotMatch(out.reply, /Toh poora jawab/, out.reply);
   });
 
   test("H4 replays director10 c4: no doubled sentence after Hindi words, no 'Now try.', no 'Bilkul, no sahi hai'", async () => {

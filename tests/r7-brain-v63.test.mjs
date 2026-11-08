@@ -7,7 +7,10 @@ import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
-import { step } from "../server/director/state.js";
+import { step, scriptKeyOf } from "../server/director/state.js";
+import { findItem } from "../server/director/items.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
 
 /** T1′: the closes a turn says — a right answer's verdict with its why, a give-up / worked answer, a carried close of another card. */
 export function closesOf(reply) {
@@ -26,14 +29,19 @@ describe("r7-brain-v63.test.mjs", () => {
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
   const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
-  /** The judges' "T<n>" is the run's row n (0-based: the teacher's turn after the child's row n-1). */
-  const at = async (persona, topic, n) => {
+  /** The judges' "T<n>", checked per judge on the rows they quote: c4 and c6 count the run's rows from 0 (row n); c5-t01 counts
+   *  her turns from 1 (row 2(n-1): stuck T22 = T23 is rows 42 = 44); c5-t02 counts the rows from 1 (row n-1: steady T17 is row 16,
+   *  the two-close "Aur pehle wale sawaal ka jawab 1/4 tha"). */
+  const kitOf = (topic) => kitFromFile(getTopic(TOPIC[topic]));
+  const rowOf = (topic, n) => (topic === "c5-t01" ? 2 * (n - 1) : topic === "c5-t02" ? n - 1 : n);
+  const at = async (persona, topic, t) => {
     const T = TOPIC[topic];
+    const n = rowOf(topic, t);
     setScriptForTest(T, runScriptOf(RUN, T));
     const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
     replyDeps.chat = async () => ({ text: rows[n].text });
     const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-    return { out, rows, last };
+    return { out, rows, last, n };
   };
 
   const T1_ROWS = [["steady", "c6", 20], ["steady", "c6", 32], ["stuck", "c6", 52], ["offtopic", "c6", 28], ["steering", "c6", 12], ["steering", "c6", 32],
@@ -42,10 +50,20 @@ describe("r7-brain-v63.test.mjs", () => {
     ["steady", "c5-t02", 17], ["stuck", "c5-t02", 15], ["offtopic", "c5-t02", 11]];
   test("T1′ predicate: one close at most, and never a close of a card other than the one just answered (judges' 19 rows)", async () => {
     const bad = [];
-    for (const [persona, topic, n] of T1_ROWS) {
-      const { out, rows } = await at(persona, topic, n);
+    for (const [persona, topic, t] of T1_ROWS) {
+      const { out, rows, n, last } = await at(persona, topic, t);
       const was = closesOf(rows[n].text), now = closesOf(out.reply);
-      if (now.length > 1 || now.includes("carried")) bad.push(`${persona} ${topic} T${n}: ${now.join("+")} (run: ${was.join("+")}) | ${out.reply.slice(0, 160)}`);
+      if (now.length > 1 || now.includes("carried")) bad.push(`${persona} ${topic} T${t}: ${now.join("+")} (run: ${was.join("+")}) | ${out.reply.slice(0, 160)}`);
+      // (a close of a card not answered in their last turn: a worked close on a why-probe's answer; a closed card's key said again)
+      const b = last.before;
+      if (now.includes("worked") && b.pendingWhy && b.pendingWhy === b.activeItemId) bad.push(`${persona} ${topic} T${t}: worked close on a probe answer | ${out.reply.slice(0, 120)}`);
+      const keys = [...(b.itemsDone ?? []), ...(b.skipped ?? [])].filter((id) => String(id).startsWith("script:") && id !== b.activeItemId).map((id) => scriptKeyOf(kitOf(topic), id)).filter((a) => a != null && /\d/.test(String(a)));
+      // (in the parts said ON the card — its reminder and its simpler — never in the just-answered card's own close)
+      const lm = last.state.lastMove ?? {};
+      const onCard = [lm.cardPoint, lm.simpler].filter(Boolean).join(" ");
+      const said = keys.filter((k) => new RegExp(`(?<![\\d/])${String(k).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\d/])`).test(onCard) && out.reply.includes(onCard.split(/(?<=[.!?])\s/)[0]));
+      if (now.includes("worked") && !/:ask:worked$/.test(String(b.activeItemId ?? ""))) bad.push(`${persona} ${topic} T${t}: worked close on another card's turn | ${out.reply.slice(0, 120)}`);
+      if (said.length) bad.push(`${persona} ${topic} T${t}: a closed card's key said again (${said.join(", ")}) | ${out.reply.slice(0, 160)}`);
     }
     assert.deepEqual(bad, []);
   });
@@ -103,4 +121,45 @@ describe("r7-brain-v63.test.mjs", () => {
     assert.equal(r.move.returned?.topic, "cricket", JSON.stringify(r.move).slice(0, 300));
     assert.match(r.move.returned.line ?? "", /tumhe cricket pasand hai/);
   });
+  const H1_ROWS = [["steady", "c5-t02", 33], ["stuck", "c5-t02", 49], ["steering", "c5-t02", 45], ["offtopic", "c5-t02", 55],
+    ["stuck", "c4", 48], ["stuck", "c4", 58], ["stuck", "c6", 42], ["steering", "c6", 42]];
+  test("H1′ predicate: only the live card's simpler, and only once it has been posed (judges' 8 rows)", async () => {
+    const bad = [];
+    for (const [persona, topic, t] of H1_ROWS) {
+      const { out, last } = await at(persona, topic, t);
+      const lm = last.state.lastMove ?? {};
+      if (lm.simpler && last.before.activeItemId !== last.state.activeItemId) bad.push(`${persona} ${topic} T${t}: simpler of a card posed this turn | ${out.reply.slice(0, 160)}`);
+    }
+    assert.deepEqual(bad, []);
+  });
+
+  test("H1′ predicate: miss 3 is the live card's answer with its why (c5-t01 stuck T24: 1/8 m, never the worked card's 1/4 km)", async () => {
+    const { out, last } = await at("stuck", "c5-t01", 24);
+    assert.equal(last.state.lastMove?.gave?.answer, "1/8 m", JSON.stringify(last.state.lastMove?.gave));
+    assert.match(out.reply, /1\/8 m/, out.reply);
+    assert.doesNotMatch(out.reply, /1\/4 km/, out.reply);
+    assert.ok(last.state.lastMove.gave.why, "with its why");
+  });
+
+  /** H1′ over a whole lesson: a helper line said twice on one card, or a second miss on a card that says the first miss's line. */
+  async function repeats(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { plans } = await replay(RUN, persona, T, 1e9);
+    const said = {};
+    const bad = [];
+    for (const pl of plans) {
+      const lm = pl.state.lastMove ?? {}, id = pl.state.activeItemId;
+      if (!lm.simpler || !id) continue;
+      const k = lm.simpler.toLowerCase().replace(/[^\p{L}\p{N}/]+/gu, " ").trim();
+      if ((said[id] ??= new Set()).has(k)) bad.push(`row ${pl.row - 1} ${id.split(":").slice(-1)[0]}: ${lm.simpler.slice(0, 80)}`);
+      said[id].add(k);
+    }
+    return bad;
+  }
+  for (const persona of ["stuck", "steady", "offtopic", "steering"]) for (const topic of Object.keys(TOPIC)) {
+    test(`H1′ predicate: no helper line twice on one card (${persona} ${topic})`, async () => {
+      assert.deepEqual(await repeats(persona, topic), []);
+    });
+  }
 });
