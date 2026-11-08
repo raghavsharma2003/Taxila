@@ -2974,6 +2974,33 @@
    ],
    "skillExamples": [
     {
+     "skillId": "c9-english-ch05-t01-s2",
+     "problem": "Sort each sentence into fact or opinion and name the word that signals the opinion: A: 'Pochampally saris are woven in Telangana.' B: 'In my view, they are the loveliest saris in the country.'",
+     "givens": [
+      "sentence A",
+      "sentence B",
+      "fact = can be checked; opinion = a judgement people may disagree with"
+     ],
+     "find": "fact or opinion for each, and the signal words",
+     "steps": [
+      {
+       "do": "A → can it be checked (a map, a weaver)?",
+       "result": "yes → fact"
+      },
+      {
+       "do": "B → could someone disagree?",
+       "result": "yes → opinion"
+      },
+      {
+       "do": "find the viewpoint words in B",
+       "result": "'In my view' and the judging word 'loveliest'"
+      }
+     ],
+     "answer": "A is a fact; B is an opinion, signalled by 'In my view' and 'loveliest'",
+     "why": "a fact can be proved true or false → an opinion is a judgement → phrases like 'in my view, I think' and judging adjectives like 'best, loveliest, beautiful' mark the writer's viewpoint",
+     "source": "Winds of Change — language point: fact vs opinion and viewpoint signal words"
+    },
+    {
      "skillId": "c9-english-ch05-t01-s3",
      "problem": "Change to the passive: 'Weavers dye the silk threads in Kanchipuram.'",
      "givens": [
@@ -3526,6 +3553,34 @@
    ],
    "skillExamples": [
     {
+     "skillId": "c9-english-ch06-t01-s2",
+     "problem": "Name the sense each image appeals to: A: 'The pressure cooker whistles from the kitchen.' B: 'The cold marble floor stings my bare feet.' C: 'The lemon pickle leaves a sour bite on my tongue.'",
+     "givens": [
+      "image A",
+      "image B",
+      "image C",
+      "the five senses: sight, hearing, smell, taste, touch"
+     ],
+     "find": "the sense for each image",
+     "steps": [
+      {
+       "do": "A → key word 'whistles' → a sound",
+       "result": "hearing"
+      },
+      {
+       "do": "B → key words 'cold', 'stings my feet' → felt on the skin",
+       "result": "touch"
+      },
+      {
+       "do": "C → key words 'sour', 'tongue' → in the mouth",
+       "result": "taste"
+      }
+     ],
+     "answer": "A hearing; B touch; C taste",
+     "why": "imagery is any word picture for a sense, not only sight → find the key word → ask which body part receives it (ear, skin, tongue, nose, eye) → that names the sense",
+     "source": "Canvas of Soil — language point: sensory imagery and the sense each image appeals to"
+    },
+    {
      "skillId": "c9-english-ch06-t01-s4",
      "problem": "Fill with a or an: '___ MLA', '___ European tourist', '___ hour-long show', '___ one-rupee coin'.",
      "givens": [
@@ -4048,7 +4103,35 @@
     "a festival family gathering",
     "the 1983 World Cup that Dadaji still talks about"
    ],
-   "skillExamples": []
+   "skillExamples": [
+    {
+     "skillId": "c9-english-ch07-t01-s4",
+     "problem": "Fill each blank with remember, remind or forget in the right form: (a) 'Please ___ me to buy milk.' (b) 'This old radio ___ Dadaji of his village.' (c) 'Don't ___ to lock the door.'",
+     "givens": [
+      "remember = keep in mind yourself",
+      "remind = make someone else remember",
+      "forget = fail to keep in mind"
+     ],
+     "find": "the word and form for each blank",
+     "steps": [
+      {
+       "do": "(a) one person makes another remember → remind + person + to + verb",
+       "result": "remind me to buy"
+      },
+      {
+       "do": "(b) a thing makes a person remember → remind + person + of; subject 'radio' is singular, present",
+       "result": "reminds Dadaji of"
+      },
+      {
+       "do": "(c) a warning not to fail to do something → forget + to + verb",
+       "result": "Don't forget to lock"
+      }
+     ],
+     "answer": "(a) remind; (b) reminds; (c) forget",
+     "why": "remember and forget happen inside one person → remind needs two (the one who makes and the one who remembers) → remind someone TO do a task, remind someone OF a thing or memory",
+     "source": "Vitamin-M — language point: remember, remind and forget with their patterns (remind someone of / to)"
+    }
+   ]
   },
   {
    "topicId": "c9-english-ch08-t01",
@@ -5988,6 +6071,47 @@
       "representation": "An iceberg card: the words above the water line, the feeling below; the child writes the feeling under each line of Tara's",
       "moveShape": "Teacher says Tara's line flat and then with hurt; child names the hidden feeling and the clue (the frown, the case set down hard)"
      }
+    },
+    {
+     "id": "c9-english-ch11-t01-m-play-keeps-quotes",
+     "skillId": "c9-english-ch11-t01-s4",
+     "belief": "Play format is story dialogue with the name added, so the quotation marks and 'he said / she asked' stay in",
+     "signs": [
+      "Writes MEERA: 'Where is my notebook?' she asked.",
+      "Keeps 'said' or 'replied' after the speaker's name",
+      "Leaves the action ('angrily') in the narration instead of in brackets"
+     ],
+     "diagnostic": {
+      "prompt_en": "Which is the correct play format for: 'I am late,' said Ravi sadly.",
+      "prompt_hi": "'I am late,' said Ravi sadly — iska sahi play format kaunsa hai?",
+      "options": [
+       {
+        "text": "RAVI: (sadly) I am late.",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "RAVI: 'I am late,' he said sadly.",
+        "misconceptionId": "c9-english-ch11-t01-m-play-keeps-quotes",
+        "correct": false
+       },
+       {
+        "text": "(RAVI) sadly: I am late, said Ravi.",
+        "misconceptionId": "c9-english-ch11-t01-m-play-keeps-quotes",
+        "correct": false
+       },
+       {
+        "text": "Ravi said sadly that he was late.",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A story line and its play line side by side, with the quotation marks and 'said' crossed out and the adverb shown moving into brackets",
+      "moveShape": "Child marks name, spoken words and manner in a story line, then rebuilds it as NAME: (manner) words"
+     },
+     "source": "Twin Melodies — language point: play format drops quotation marks and reporting verbs"
     }
    ],
    "items": [
@@ -6310,6 +6434,33 @@
       "agrees": true,
       "note": "Blind answer matches key; English correct, class-9 appropriate, original text, prompt_hi faithful, hints graded."
      }
+    },
+    {
+     "id": "c9-english-ch11-t01-i14",
+     "skillId": "c9-english-ch11-t01-s4",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "Rewrite in play format: 'Can I borrow your pencil?' asked Arjun shyly.",
+     "prompt_hi": "Ise play format mein likho: 'Can I borrow your pencil?' asked Arjun shyly.",
+     "answer": "ARJUN: (shyly) Can I borrow your pencil?",
+     "acceptable": [
+      "ARJUN: (shyly) Can I borrow your pencil?",
+      "Arjun: (shyly) Can I borrow your pencil?",
+      "ARJUN (shyly): Can I borrow your pencil?"
+     ],
+     "hints": [
+      "In a play, who says the words, and is there a narrator?",
+      "Drop the quotation marks and 'asked'; the manner goes in brackets.",
+      "ARJUN: (___) Can I borrow your pencil?",
+      "ARJUN: (shyly) Can I borrow your pencil?"
+     ],
+     "targetsMisconception": "c9-english-ch11-t01-m-play-keeps-quotes",
+     "source": "Twin Melodies — language point: converting a story line of dialogue into play format",
+     "verified": {
+      "solverAnswer": "ARJUN: (shyly) Can I borrow your pencil?",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (language skills, follow-up)"
+     }
     }
    ],
    "workedExample": {
@@ -6352,7 +6503,38 @@
     "a dance duo for a festival show",
     "a group project at school"
    ],
-   "skillExamples": []
+   "skillExamples": [
+    {
+     "skillId": "c9-english-ch11-t01-s4",
+     "problem": "Rewrite in play format: 'Where is my notebook?' Meera asked crossly. Kabir laughed and said, 'It is under your bag.'",
+     "givens": [
+      "speakers: Meera, Kabir",
+      "actions: asked crossly; laughed"
+     ],
+     "find": "the two lines in play format",
+     "steps": [
+      {
+       "do": "speaker's name first, in capitals, then a colon",
+       "result": "MEERA: / KABIR:"
+      },
+      {
+       "do": "remove the quotation marks and the reporting verbs (asked, said)",
+       "result": "Where is my notebook? / It is under your bag."
+      },
+      {
+       "do": "turn the manner or action into a stage direction in brackets",
+       "result": "(crossly) / (laughing)"
+      },
+      {
+       "do": "put each speaker on a new line",
+       "result": "MEERA: (crossly) Where is my notebook? KABIR: (laughing) It is under your bag."
+      }
+     ],
+     "answer": "MEERA: (crossly) Where is my notebook?\nKABIR: (laughing) It is under your bag.",
+     "why": "a play is spoken, not narrated → no narrator, so no 'said' or quotation marks → the name tells who speaks → how they speak or act moves into brackets for the actor",
+     "source": "Twin Melodies — language point: writing lines of dialogue in play format"
+    }
+   ]
   },
   {
    "topicId": "c9-english-ch12-t01",

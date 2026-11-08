@@ -3397,6 +3397,35 @@
       "agrees": true,
       "note": "blind-solved 2026-11-08, agreement read by hand (language skills, EN8)"
      }
+    },
+    {
+     "id": "c8-english-ch06-t01-i15",
+     "skillId": "c8-english-ch06-t01-s4",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "This is an informal reply to a grandmother. Find the two mistakes and correct them: 'Dear Nani, I am writing to tell that I passed my exam with good marks. Yours faithfully, Riya'",
+     "prompt_hi": "Yeh Nani ko likha gaya informal reply hai. Isme do galtiyan dhoondho aur theek karo: 'Dear Nani, I am writing to tell that I passed my exam with good marks. Yours faithfully, Riya'",
+     "answer": "'to tell that' → 'to tell you that'; 'Yours faithfully' → an informal closing such as 'With love' or 'Lots of love'",
+     "acceptable": [
+      "Dear Nani, I am writing to tell you that I passed my exam with good marks. With love, Riya",
+      "to tell you that; With love",
+      "tell you that, Lots of love",
+      "to tell you that; Lots of love",
+      "to tell you that; Your loving granddaughter"
+     ],
+     "hints": [
+      "Read the middle sentence and the closing again.",
+      "'Tell' needs a person after it; and is 'Yours faithfully' warm enough for Nani?",
+      "I am writing to tell ___ that ... ___ love, Riya",
+      "'to tell you that' and an informal closing such as 'With love'."
+     ],
+     "targetsMisconception": "c8-english-ch06-t01-m-register-mix",
+     "source": "Verghese Kurien— I Too Had A Dream — language point: one tone in a reply ('Yours faithfully' is formal) and the slip 'to tell that'",
+     "verified": {
+      "solverAnswer": "1) 'I am writing to tell that' -> 'I am writing to tell you that' ('tell' needs a person after it). 2) 'Yours faithfully' -> an informal closing such as 'Your loving granddaughter' / 'Lots of love'.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (language skills, follow-up)"
+     }
     }
    ],
    "workedExample": {
@@ -3494,6 +3523,41 @@
      "answer": "coexist: to live or exist together at the same time and place",
      "why": "co- adds the idea 'together' → it keeps the base word's part of speech → operate → cooperate (work together), exist → coexist (exist together)",
      "source": "Verghese Kurien— I Too Had A Dream — language point: Build and use cooperation vocabulary with the prefix co- (cooperate, cooperative, co-owner, coexist)"
+    },
+    {
+     "skillId": "c8-english-ch06-t01-s4",
+     "problem": "Your friend Arjun wrote: 'Can you come to my birthday party on Sunday?' Correct this informal reply so it answers him, keeps one tone and has no slips: 'Respected Arjun, Myself Neha. I am writing to tell that I will come. Yours faithfully, Neha'",
+     "givens": [
+      "reader: a friend → informal",
+      "his question: can you come on Sunday?",
+      "the draft reply"
+     ],
+     "find": "the corrected reply",
+     "steps": [
+      {
+       "do": "reader is a friend → informal salutation",
+       "result": "Respected Arjun → Dear Arjun"
+      },
+      {
+       "do": "he knows who is writing → drop the self-introduction",
+       "result": "Myself Neha → (removed)"
+      },
+      {
+       "do": "'tell' needs a person after it",
+       "result": "to tell that → to tell you that"
+      },
+      {
+       "do": "answer his exact question → yes + the day",
+       "result": "I will come to your party on Sunday."
+      },
+      {
+       "do": "informal closing to match the opening",
+       "result": "Yours faithfully → With love"
+      }
+     ],
+     "answer": "Dear Arjun, Thank you for inviting me. I am writing to tell you that I will come to your party on Sunday. With love, Neha",
+     "why": "the reader decides the tone → a friend gets 'Dear' and 'With love' all through → 'Myself Neha' is not English; the name goes at the end → 'tell' takes an object (tell you that) → a reply first answers what was asked",
+     "source": "Verghese Kurien— I Too Had A Dream — language point: replying to a letter in one tone without Indian-English slips ('myself...', 'to tell that')"
     }
    ]
   },
@@ -3995,6 +4059,37 @@
     "who ate the last ladoo at Diwali"
    ],
    "skillExamples": [
+    {
+     "skillId": "c8-english-ch07-t01-s3",
+     "problem": "Complete the alibi with the past continuous or the simple past: 'At 4 o'clock I ___ (water) the plants in the school garden when the lights ___ (go) off.'",
+     "givens": [
+      "verbs: water, go",
+      "one action was in progress at 4 o'clock",
+      "one action happened suddenly and was over"
+     ],
+     "find": "the two verb forms",
+     "steps": [
+      {
+       "do": "which action was going on for a while → background",
+       "result": "water the plants → in progress"
+      },
+      {
+       "do": "background action → was/were + -ing",
+       "result": "I was watering"
+      },
+      {
+       "do": "which action broke in and finished → completed",
+       "result": "the lights go off → sudden, over"
+      },
+      {
+       "do": "completed action → simple past (go is irregular)",
+       "result": "went"
+      }
+     ],
+     "answer": "At 4 o'clock I was watering the plants in the school garden when the lights went off.",
+     "why": "an alibi says what you were in the middle of → longer background action = past continuous → the short event that cut in = simple past → 'when' joins the two",
+     "source": "The Case of the Fifth Word — language point: past continuous for background actions, simple past for completed actions"
+    },
     {
      "skillId": "c8-english-ch07-t01-s4",
      "problem": "Fill each blank with one word from (suspected, alibi, evidence, evidences): 'The police ___ the gardener, but he had a strong ___: he was at a wedding all evening. They needed more ___ before they could arrest anyone.'",
