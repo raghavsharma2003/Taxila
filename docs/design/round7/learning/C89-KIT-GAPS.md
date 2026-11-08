@@ -67,3 +67,54 @@ Every author prompt for the c8/c9 batches therefore carries these rules, and eac
 - ch11-t01 s1 has a new misconception, `m-one-piece`. i14 now targets it.
 - ch04-t01: the s3 example uses the chapter's test.
 - ch04-t01 has a new error-spot item, i17 ("equal diagonals alone"), with the new misconception `m-equal-diag-enough`.
+
+## Maths batches applied (2026-11-08)
+
+Every skill in c8 and c9 maths now has three things: a worked example, a ladder of at least 3 items, and a real misconception. Every item is blind-verified.
+
+A separate Claude agent solved each packet blind, and every pair was read by hand.
+
+| batch | chapters | topics | examples | misconceptions | items | agreement |
+|---|---|---|---|---|---|---|
+| c8 pilot | (10 topics) | 10 | n/a | n/a | n/a | applied earlier |
+| c8 A | ch01-04 | 8 | 16 | 2 | 0 | 18/18 |
+| c8 B | ch06-09 | 9 | 19 | 3 | 1 | 23/23 |
+| c8 C | ch10-14 | 10 | 20 | 2 | 5 | 27/27 |
+| c9 D | ch01-04 | 12 | 24 | 9 | 6 | 39/39 |
+| c9 E | ch05-09 | 15 | 30 | 7 | 4 | 41/41 |
+| c9 F | ch10-14 | 14 | 28 | 6 | 3 | 37/37 |
+
+There were no wrong keys. The solver flagged some wording, which was fixed:
+- **Reworded and re-solved:** the c8 day count, "who is right" and a 3-D viewpoint; the c9 √2 domain and Euclid's stopping rule.
+- **Keys widened (no re-solve needed):** c9 ch13-t01 accepts the divided-through form.
+- **Diagnostic tag:** a second belief option was tagged in c9 ch06-t04.
+
+## NCERT PDF re-check list (ncert.nic.in returned 503; main: don't block)
+
+The scope checks below rest on study-site quotes, on the kit's own skill titles and items, or on the curriculum file. Re-read the NCERT chapter for each.
+
+**c8:**
+- ch11-t01: the carpet, gasket and Koch snowflake; no Cantor set.
+- ch04-t01: the rectangle converse ("equal diagonals that bisect each other").
+- ch04-t02-s3: polygons beyond the quadrilateral were left out.
+- ch04-t03-s2: the trapezium example uses a class 7 angle fact. Main says prior-class facts are in scope.
+- ch03-t02-s3: 27 in base 4.
+- ch01-t02-s3: square roots by last digit and bracketing.
+- ch07-t03: km/h to m/s and area units.
+- ch09-t03: the (2m, m² − 1, m² + 1) formula.
+- ch06-t01: negative multipliers.
+- ch08-t03: successive discounts.
+- ch13-t02-s3: the calendar column.
+- ch12-t02-s3: interpolating between readings.
+
+**c9:**
+- ch03-t03: the √2 proof (the even-even argument).
+- ch03-t04: the terminating-decimal test, in its 2s-and-5s form.
+- ch03-t01-s3: Brahmagupta's rules.
+- ch02-t03-s3: where two lines meet.
+- ch05: the diameter is the longest chord.
+- ch06: the notch from the middle of a side; the ring area; Heron's formula in ch06-t02-i15.
+- ch07-t01: P(not A) = 1 − P(A).
+- ch08-t03: the Sierpinski carpet as a GP (prerequisite c8 ch11-t01).
+- ch12-t02: the medians' 2 : 1 split.
+- ch11-t03: binary search counted as halvings + 1.

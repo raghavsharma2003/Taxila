@@ -90,3 +90,19 @@ test("c8 pilot scope (NCERT chapter only): no Cantor set; the rectangle converse
   assert.ok(fr.misconceptions.some((m) => m.skillId === "c8-maths-ch11-t01-s1"), "a misconception about following the rule");
   assert.equal(fr.items.find((i) => i.id === "c8-maths-ch11-t01-i14").targetsMisconception, "c8-maths-ch11-t01-m-one-piece");
 });
+
+test("c9 maths (Ganita Manjari, batches D-F): every skill has a worked example, a ≥ 3-item ladder and a misconception; every item blind-verified", () => {
+  const C9 = JSON.parse(readFileSync(new URL("../data/kits/c9-maths.json", import.meta.url), "utf8")).topics.map((t) => t.topicId);
+  assert.equal(C9.length, 41);
+  for (const id of C9) {
+    const k = kitTopic(id);
+    const ex = new Set([k.workedExample.skillId, ...(k.skillExamples ?? []).map((x) => x.skillId)]);
+    const mis = new Set([...k.items.filter((i) => i.targetsMisconception).map((i) => i.skillId), ...k.misconceptions.map((m) => m.skillId).filter(Boolean)]);
+    for (const s of k.skills) {
+      assert.ok(ex.has(s.id), `${s.id}: worked example`);
+      assert.ok(k.items.filter((i) => i.skillId === s.id).length >= 3, `${s.id}: ladder`);
+      assert.ok(mis.has(s.id), `${s.id}: misconception`);
+    }
+    assert.ok(k.items.every((i) => i.verified?.agrees === true), `${id}: every item verified`);
+  }
+});
