@@ -295,6 +295,15 @@ function installBrowserFakes({ rtc = "fail", mic = "ok" } = {}) {
 }
 
 /** `chunks` × 0.25 s of PCM (default 1 s), the first after `delayMs`. */
+/** Her whole line at once (no pacing): the amount buffered never depends on how loaded the machine is. */
+function pcmBurst(chunks = 40) {
+  return async (_req, signal) => new ReadableStream({
+    start(c) {
+      for (let i = 0; i < chunks && !signal.aborted; i++) c.enqueue(new Uint8Array(12_000));
+      c.close();
+    },
+  });
+}
 function pcmStream(delayMs = 5, chunks = 4) {
   return async (_req, signal) => new ReadableStream({
     async start(c) {
@@ -596,8 +605,11 @@ test("barge-in: speech_started then an EMPTY transcript → she resumes from whe
 
 test("barge-in: a lone 'hmm' resumes her; her own echo resumes her; a real answer stops her", async () => {
   {
-    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
+    const { env, link, events } = await speakingLink({ link: { speech: pcmBurst(40) } }); // her whole 10 s line at once: what is buffered never depends on load
     try {
+      // the verdict's precondition, explicit: >= BACKCHANNEL_MIN_REMAINING_S (1 s) of her reply is buffered when the child
+      // speaks (main 2026-11-08: under test:all load the chunks arrived slower than she played and "hmm" read as a turn)
+      assert.ok(await until(() => link.current?.playback?.remainingS() >= 2), "2 s of her reply buffered");
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "हम्म", logprobs: [{ logprob: -0.1 }] });
       await until(() => events.some((e) => e.type === "teacher_audio_start")); // load-robust: resuming goes through the player's async start
@@ -607,8 +619,9 @@ test("barge-in: a lone 'hmm' resumes her; her own echo resumes her; a real answe
     } finally { link.close(); env.restore(); }
   }
   {
-    const { env, link, events } = await speakingLink({ link: { speech: pcmStream(5, 40) } }); // 10 s of her: a loaded machine still has some left to resume
+    const { env, link, events } = await speakingLink({ link: { speech: pcmBurst(40) } }); // her whole 10 s line at once: what is buffered never depends on load
     try {
+      assert.ok(await until(() => link.current?.playback?.remainingS() >= 2), "2 s of her reply buffered");
       link.protocol.handle({ type: "input_audio_buffer.speech_started", item_id: "c1" });
       link.protocol.handle({ type: "conversation.item.input_audio_transcription.completed", item_id: "c1", transcript: "एक रोटी के चार बराबर हिस्से करो" });
       await until(() => events.some((e) => e.type === "teacher_audio_start"));
