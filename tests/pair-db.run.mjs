@@ -111,6 +111,26 @@ describe("child device pairing (test branch)", { skip: SKIP, concurrency: false,
     assert.equal((await call(`/api/child/equip?childId=${sib}`, { cookie: both })).status, 200, "the parent signed in on the device: the parent session");
   });
 
+  test("lesson-id joins: a device gets 403 on a sibling's REAL lesson on every lesson-keyed path (identity is the child id)", async () => {
+    resetLimits();
+    const { cookie } = await pair(kid);
+    const lessonOf = async (c) => (await one("insert into lesson (child_id, topic_id) values ($1, 'pair-test') returning id", [c])).id;
+    const sibLesson = await lessonOf(sib), ownLesson = await lessonOf(kid);
+    for (const l of [sibLesson, ownLesson]) await q("insert into turn (lesson_id, seq, speaker, text) values ($1, 1, 'teacher', 'namaste')", [l]);
+    const cases = [
+      ["turn (brain/turn.js loadTurnContext)", "/api/lesson/turn", "POST", { lessonId: sibLesson, text: "hello" }],
+      ["tts-stream (voice.js, its one-query join)", "/api/voice/tts-stream", "POST", { lessonId: sibLesson, seq: 1 }],
+      ["studio slot (studio.js lessonFor)", `/api/studio/slot?lessonId=${sibLesson}&intentId=i1`, "GET"],
+      ["lesson end (lesson.js loadLessonFor → requireChild)", "/api/lesson/end", "POST", { lessonId: sibLesson }],
+    ];
+    for (const [name, path, method, body] of cases) {
+      const r = await call(path, { method, body, cookie });
+      assert.equal(r.status, 403, `${name}: ${r.status} ${JSON.stringify(r.body)}`);
+    }
+    assert.equal((await call(`/api/studio/slot?lessonId=${ownLesson}&intentId=i1`, { cookie })).status, 200, "its own child's lesson");
+    assert.equal((await call(`/api/studio/slot?lessonId=${sibLesson}&intentId=i1`, { cookie: parent })).status, 200, "the parent reaches both children's");
+  });
+
   test("devices list and unpair: the session ends at once, only the parent can do it", async () => {
     resetLimits();
     const { cookie } = await pair(kid);
