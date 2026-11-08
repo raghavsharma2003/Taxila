@@ -3,7 +3,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay } from "./fixtures/replay.mjs";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -16,7 +16,7 @@ import { requestOf } from "../server/director/requests.js";
 // Scoped to this file's describe, as tests/fixtures/kit-path.mjs asks.
 describe("r7-brain-v62.test.mjs", () => {
   const RUN = "2026-11-07-director10";
-  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const runScript = (T) => runScriptOf(RUN, T);
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
@@ -121,8 +121,9 @@ describe("r7-brain-v62.test.mjs", () => {
   });
 
   test("T7 replay director10 c4 offtopic (main: 'a practice turn that parks the Virat aside drew nothing'): the card's line on its own board pages", async () => {
-    // (in the director10 tree Studio's W8 rejected the line — it never said the whole's parts — and the run fell back to the
-    // preselect; Studio's G2 (integration 13) counts a card's own board params as authored, so the take now draws)
+    // (in the director10 tree Studio's W8 refused the take — its cutByLines read the roti's own authored centre cut as "a round
+    // whole cut by lines" — and the run fell back to the preselect; Studio's G2 (integration 13) skips that check on a card's own
+    // authored board, so the take now draws)
     const T = "c4-maths-ch05-t01";
     setScriptForTest(T, runScript(T));
     const { kit, rows, last } = await replay(RUN, "offtopic", T, 7);
@@ -160,5 +161,8 @@ describe("r7-brain-v62.test.mjs", () => {
     const onBarfi = pages.filter((p) => p.atChar <= at).at(-1);
     assert.equal(onBarfi.scriptBeat?.beatId, "worked", JSON.stringify(pages.map((p) => [p.atChar, p.scriptBeat?.beatId])));
     assert.deepEqual(onBarfi.boardRef.params, { rows: 1, cols: 3, shade: 2, labels: false, hideResult: true }, "the barfi's 3 parts, 2 eaten — never the 3/4 grid");
+    // App 3b: only the new card's page (the last one) is the open card's board
+    assert.deepEqual(pages.map((p) => p.ofCard ?? a.intent.ofCard), [...pages.slice(0, -1).map(() => false), true], JSON.stringify(pages.map((p) => [p.atChar, p.ofCard])));
+    assert.equal(a.intent.ofCard, false, "the first page (the answered card's board) is not the open card's");
   });
 });

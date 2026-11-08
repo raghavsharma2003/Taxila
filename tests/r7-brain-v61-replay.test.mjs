@@ -5,7 +5,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay } from "./fixtures/replay.mjs";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { whiteboardIntentOf, boardItemOf, altViewOfRow, segmentsAt } from "../server/brain/propose.js";
@@ -20,7 +20,7 @@ import * as seam from "../server/studio/seam.js";
 describe("r7-brain-v61-replay.test.mjs", () => {
 
   const RUN = "2026-11-06-director9";
-  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const runScript = (T) => runScriptOf(RUN, T);
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
@@ -106,7 +106,7 @@ describe("r7-brain-v61-replay.test.mjs", () => {
 
   test("director10 offtopic c4 T9 (unpaged): the bare code verdict 'Nahi, yeh jawab nahi hai.' is no first page of its own; the turn pages", async () => {
     const R10 = "2026-11-07-director10", T = "c4-maths-ch05-t01";
-    setScriptForTest(T, JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${R10}/scripts/${T}.json`, import.meta.url), "utf8")));
+    setScriptForTest(T, runScriptOf(R10, T));
     const { kit, last } = await replay(R10, "offtopic", T, 9);
     assert.equal(last.child, "Yes");
     assert.equal(last.p.r.move.kind, "reteach", "the run's own move");

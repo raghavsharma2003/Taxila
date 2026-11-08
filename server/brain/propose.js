@@ -161,7 +161,7 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       // boardRef/scriptBeat (as before: the beat's board when nothing is closed and the card shares it); each later part is a
       // segment from its character offset in the FINAL line (a closure → the beat's board → the card's own board)
       // v6: the assembled parts' texts (brain/say.js guard.parts) place them exactly when the line has them
-      ...revealOnVerdict(boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null), next),
+      ...ofCardMarks(revealOnVerdict(boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null), next), next),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -229,6 +229,21 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  * the key is put first) on the first segment's scriptBeat, when that
  * segment is on the answered card's board (move.closeBeat) and this turn graded the card right (turn.js lastVerdict / lastGraded).
  */
+/**
+ * App's replay (LESSON-REPLAY-d10 3b, main approved): while the board on screen is not the open card's board, App collapses the
+ * card to "your question is waiting". Each page Brain sends says so: `ofCard` true on a page drawn on the open card's own board
+ * (state.js cardBeat, else the beat the card is asked on), false on any other. No open card, or no board: no field (today's
+ * behaviour). In a paged turn a new card is always on the LAST page (the card part is last in the plan, and segmentsAt never
+ * places a page after it), so App's pinned card switches at the last page switch.
+ */
+export function ofCardMarks(bp, next) {
+  const move = next?.lastMove;
+  const cardBoard = next?.activeItemId ? (move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null) : null;
+  if (!cardBoard || !bp?.boardRef) return bp;
+  const key = JSON.stringify(cardBoard);
+  const of = (b) => JSON.stringify(b) === key;
+  return { ...bp, ofCard: of(bp.boardRef), ...(bp.segments ? { segments: bp.segments.map((g) => (g.boardRef ? { ...g, ofCard: of(g.boardRef) } : g)) } : {}) };
+}
 export function revealOnVerdict(bp, next) {
   const g = next?.lastGraded, cb = next?.lastMove?.closeBeat;
   if (!bp?.scriptBeat || !bp.boardRef || next?.lastVerdict !== "correct" || !g?.key || !cb?.board) return bp;

@@ -3,7 +3,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay } from "./fixtures/replay.mjs";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps, RULE_SAID } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -20,7 +20,7 @@ import { altViewOfRow } from "../server/brain/propose.js";
 describe("r7-brain-v61.test.mjs", () => {
 
   const RUN = "2026-11-06-director9";
-  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const runScript = (T) => runScriptOf(RUN, T);
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });

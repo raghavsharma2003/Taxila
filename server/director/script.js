@@ -130,7 +130,7 @@ export function saidIn(x, lang = "hinglish") {
 }
 const isSaid = (x) => !!x && typeof x === "object" && String(x.hi ?? "").trim() && String(x.en ?? "").trim();
 /** One v2 skill's script against its kit: the v1 checks that still apply, plus F1-F4. */
-export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } = {}) {
+export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2, recordedRun = null } = {}) {
   const errors = [];
   const err = (m) => errors.push(`${sk?.skillId ?? "?"}: ${m}`);
   if (!(kit?.skills ?? []).some((k) => k.id === sk?.skillId)) err("skillId is not a skill of the kit");
@@ -242,6 +242,18 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2 } 
   for (const [i, st] of (sk?.workedExample?.steps ?? []).entries()) simplerOk(`workedExample.steps[${i}].simpler`, st?.simpler);
   for (const [i, c] of (sk?.checks ?? []).entries()) simplerOk(`checks[${i}].simpler`, c?.simpler, c?.key);
   for (const [i, r] of (sk?.remediation ?? []).entries()) { simplerOk(`remediation[${i}].simpler`, r?.simpler, null, 3); simplerOk(`remediation[${i}].then.simpler`, r?.then?.simpler, r?.then?.key); }
+  // (director10, Learning: the runtime silently dropped a why over its cap) a card's why rides whole after "kyunki" in its close,
+  // so in 2.3 one over WHY_MAX_WORDS is an error here, never a why the runtime quietly leaves unsaid (check.mjs refuses it too)
+  // (a recorded run's own copy, replayed by tests/fixtures/replay.mjs runScriptOf, is validated as that run validated it)
+  if (Number(v21) >= 2.3 && !recordedRun) {
+    const whyOk = (where, x) => { for (const f of ["hi", "en"]) { const n = String(x?.[f] ?? "").trim().split(/\s+/).filter(Boolean).length; if (n > WHY_MAX_WORDS) err(`${where}.${f}: ${n} words; a card's why is at most ${WHY_MAX_WORDS}`); } };
+    for (const [i, b] of (sk?.explain ?? []).entries()) if (b?.ask?.why) whyOk(`explain[${i}].ask.why`, b.ask.why);
+    if (sk?.workedExample?.why) whyOk("workedExample.why", sk.workedExample.why);
+    for (const [i, st] of (sk?.workedExample?.steps ?? []).entries()) if (st?.why) whyOk(`workedExample.steps[${i}].why`, st.why);
+    if (sk?.workedExample?.yourStep?.why) whyOk("workedExample.yourStep.why", sk.workedExample.yourStep.why);
+    for (const [i, c] of (sk?.checks ?? []).entries()) if (c?.why) whyOk(`checks[${i}].why`, c.why);
+    for (const [i, r] of (sk?.remediation ?? []).entries()) if (r?.then?.why) whyOk(`remediation[${i}].then.why`, r.then.why);
+  }
   // ── v2.1 (dc-r7-script-walk-v3, director5's data findings), for scripts marked version 2.1 ──
   if (Number(v21) >= 2.1) {
     const spoken = [];
@@ -294,7 +306,7 @@ export function validateTopicScript(sc, kit) {
   const ok = [];
   const topicBad = errors.length > 0;
   for (const sk of sc.skills ?? []) {
-    const e = (Number(sc.version) >= 2 ? validateSkillScriptV2 : validateSkillScript)(sk, kit, { classLevel: sc.classLevel, version: Number(sc.version) });
+    const e = (Number(sc.version) >= 2 ? validateSkillScriptV2 : validateSkillScript)(sk, kit, { classLevel: sc.classLevel, version: Number(sc.version), recordedRun: sc.recordedRun ?? null });
     if (!e.length && !topicBad) ok.push(sk.skillId);
     errors.push(...e);
   }
@@ -304,6 +316,8 @@ export function validateTopicScript(sc, kit) {
 // ───────────── T2: the Director walks the script (kill switch TAXILA_R7_SCRIPT=off) ─────────────
 /** The one list of script versions: the validator accepts these and the Director walks these. A new data version is added here,
  *  with its validator rules, before any script carries it (tests/r7-brain-live-scripts.test.mjs fails otherwise). */
+/** The most words a card's authored why may have: it is said whole after "kyunki" in its close (state.js scriptWhyOf). */
+export const WHY_MAX_WORDS = 22;
 export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2, 2.3]);
 /** The script versions the Director walks: SCRIPT_VERSIONS (the validator's accepted versions), never a second list. */
 export const WALK_VERSIONS = new Set(SCRIPT_VERSIONS);
