@@ -637,7 +637,9 @@ const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "
  * [{ from, screen }], by, template, source }) or null (one board, as before).
  */
 /** How many later pages a paged turn dropped because their own take failed (the page before them stayed up). */
-let pagesDropped = 0, firstKept = 0;
+let pagesDropped = 0, firstKept = 0, firstSame = 0, pagesStilled = 0;
+/** (App's T55) first pages kept as the same board already up; pages drawn still because their motion ran past the switch. */
+export const pageTimingCounts = () => ({ firstSame, stilled: pagesStilled });
 /** How many paged turns kept the card's board on screen for a first page whose own take failed. */
 export const firstPageKeptCount = () => firstKept;
 export const pagesDroppedCount = () => pagesDropped;
@@ -667,13 +669,22 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     // (director10: 31 turns unpaged, each on its FIRST page — the close said over the answered card's own board, which is
     // the board already up. That page keeps the card's board AS IT IS (`keep`, the seam's page on screen, when it is this
     // page's board); only with no card board to keep does the turn fail)
+    // (App's director10 replay, steady-c6 T55: page 0, "36 cm sahi nahi hai.", 1.67 s, REDREW the 6 cm square T53 had just
+    // left on screen, its perimeter walk squeezed to nothing. A first page that draws the board already up — the same card,
+    // nothing new written — is that board, kept still: no redraw)
+    // (a kept page is shown complete at once: its end state, no motion replayed in 200 ms)
+    const stillOf = (k) => ({ ...k, ops: k.ops.filter((o) => !isMotionOp(o)).map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 });
+    if (takes0.length > 1 && takes0[0]?.script && keep?.ops?.length && !!keepRef && refKey(sg[0].boardRef) === keepRef && samePage(takes0[0].script, keep)) {
+      takes0[0] = { ...takes0[0], script: stillOf(keep), source: "kept", kept: true };
+      firstSame++;
+    }
     if (!takes0[0]?.script) {
       const p0 = picks.get(id), base = p0?.raw ?? p0?.script ?? null;
       // (director10 G1, replayed: the card's board on screen was drawn on ITS line, masked and labelled for that line, so it
       // is rarely the same page as this pick; it is the same card when the page on screen was drawn from this ref)
       const sameRef = !!keepRef && refKey(sg[0].boardRef) === keepRef;
       if (!keep?.ops?.length || !base || !(sameRef || samePage(base, keep) || shownBefore(base, { avoid: keep }))) return null;
-      const still = { ...keep, ops: keep.ops.map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 };
+      const still = stillOf(keep);
       takes0[0] = { ok: true, script: still, template: p0.template, source: "kept", by: "script", kept: true,
         screen: screenOf({ template: p0.template, facts: { ...(base.facts ?? p0.facts ?? {}), ...(p0.counts ? { counts: p0.counts } : {}) } }, keep.facts ?? p0.facts, keep) };
       firstKept++;
@@ -695,7 +706,16 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     takes.forEach((t, i) => {
       const at = starts[i], next = starts[i + 1];
       const pre = i ? `${"abcdefgh"[i]}.` : "a.";
-      const page = rename(t.script.ops, pre).map((o) => {
+      // (App, T55: a page whose drawing cannot finish before its switch loses its motion to the clamp — three of four
+      // `follow` ops in 120 ms. It is drawn still instead, as takePreselected draws a refused split)
+      // (the switch is HER onset on the client — lineClock moves the next page onto it — and a short page is spoken faster
+      // than the estimate: T55's 5 words took 1.67 s against ~3 s. A page must fit a fast reading, ~330 ms a word)
+      const words = String(sg[i].text ?? "").split(/\s+/).filter(Boolean).length;
+      const due = next === undefined ? undefined : Math.min(next, at + Math.max(600, words * 330));
+      const late = due !== undefined && t.script.ops.some((o) => o.endMs + at > due);
+      const own = late && t.script.ops.some(isMotionOp) ? t.script.ops.filter((o) => !isMotionOp(o)) : t.script.ops;
+      if (own !== t.script.ops) pagesStilled++;
+      const page = rename(own, pre).map((o) => {
         const s0 = o.startMs + at, e0 = o.endMs + at;
         return next !== undefined ? { ...o, startMs: Math.min(s0, Math.max(at, next - 120)), endMs: Math.min(e0, next) } : { ...o, startMs: s0, endMs: e0 };
       });
@@ -711,7 +731,7 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     if (!n.ok || !n.script?.switches?.length) return null;
     pageStats.drawn++;
     return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0,
-      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef };
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef, lastPage: last.script };
   } catch { return null; }
 }
 /** (director7's first form) */

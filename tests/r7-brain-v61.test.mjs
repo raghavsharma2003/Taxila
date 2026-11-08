@@ -3,7 +3,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay } from "./fixtures/replay.mjs";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps, RULE_SAID } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -20,7 +20,7 @@ import { altViewOfRow } from "../server/brain/propose.js";
 describe("r7-brain-v61.test.mjs", () => {
 
   const RUN = "2026-11-06-director9";
-  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const runScript = (T) => runScriptOf(RUN, T);
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
@@ -29,15 +29,20 @@ describe("r7-brain-v61.test.mjs", () => {
   const T1 = "c5-maths-ch02-t01";
   const T27_DRAFT = "10 barabar gaps mein, chhota denominator wala fraction pehle aata hai, aur bada denominator wala chhota gap hota hai. Agar yahi line 10 barabar gaps mein bati ho, toh 0 ke zyada paas kaun hoga: 1/5 ya 1/10?";
 
-  test("R7 replay director9 c5-t01 offtopic T27: 'samajh nahi aaya' on e3 never gets her own 'smaller' lines (the misconception as a rule), only authored words", async () => {
+  // (director9's offtopic c5-t01 rows were replayed here; since v6.2 that lesson takes another path from T11 — the then-card's own
+  // simpler after "mujhe nahi pata" — so the same cases are walked on the run's script instead)
+  const toE1 = () => { const L = walkOf(T1); for (let i = 0; i < 8 && !/:ask:e1$/.test(String(L.r.state.activeItemId ?? "")); i++) L.t("haan"); return L; };
+  const sayL = (L, draft, childText = "samajh nahi aaya") => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text" }, kit: L.K, childText, history: [], ui: L.r.ui, module: null }); };
+
+  test("R7 (director9 c5-t01 offtopic T27): 'samajh nahi aaya' on an explain beat never gets her own 'smaller' lines (the misconception as a rule), only authored words", async () => {
     setScriptForTest(T1, runScript(T1));
-    const { kit, last } = await replay(RUN, "offtopic", T1, 27);
-    assert.equal(last.child, "samajh nahi aaya");
-    assert.equal(last.state.lastMove?.smaller, true);
-    const out = await sayAt(kit, last, T27_DRAFT);
+    const L = toE1();
+    L.t("samajh nahi aaya", { ...cls("no_evidence"), flags: { dontKnow: true } });
+    assert.equal(L.r.state.lastMove?.smaller, true, JSON.stringify({ kind: L.r.move.kind, beat: L.r.move.scriptBeat?.beatId }));
+    const out = await sayL(L, T27_DRAFT);
     assert.doesNotMatch(out.reply, /chhota denominator wala fraction pehle aata hai/, out.reply);
     assert.equal(out.guard.smaller, "point");
-    assert.ok(out.reply.startsWith(last.state.lastMove.point.split(/(?<=\.)\s/)[0]), out.reply);
+    assert.ok(out.reply.startsWith(L.r.state.lastMove.point.split(/(?<=\.)\s/)[0]), out.reply);
   });
 
   test("R7/R8 (format 2.3): an explain beat's authored simpler is what 'samajh nahi aaya' gets", async () => {
@@ -45,11 +50,12 @@ describe("r7-brain-v61.test.mjs", () => {
     const simplerOf = (id) => ({ hi: `Ek roti ko barabar tukdon mein kaato, ${id} wala tukda dekho. Jitne zyada tukde, utna chhota har tukda.`, en: `Cut a roti into equal pieces and look at piece ${id}. More pieces, smaller each.` });
     for (const b of sc.skills[0].explain) b.simpler = simplerOf(b.id);
     setScriptForTest(T1, { ...sc, version: 2.3 });
-    const { kit, last } = await replay(RUN, "offtopic", T1, 27);
-    const beat = last.state.lastMove?.scriptBeat?.beatId;
-    assert.equal(last.state.lastMove?.smaller, true, `smaller on ${beat}`);
-    assert.equal(last.state.lastMove?.simpler, simplerOf(beat).hi);
-    const out = await sayAt(kit, last, T27_DRAFT);
+    const L = toE1();
+    L.t("samajh nahi aaya", { ...cls("no_evidence"), flags: { dontKnow: true } });
+    const beat = L.r.state.lastMove?.scriptBeat?.beatId;
+    assert.equal(L.r.state.lastMove?.smaller, true, `smaller on ${beat}`);
+    assert.equal(L.r.state.lastMove?.simpler, simplerOf(beat).hi);
+    const out = await sayL(L, T27_DRAFT);
     assert.ok(out.reply.startsWith(simplerOf(beat).hi), out.reply);
     assert.equal(out.guard.smaller, "authored");
     assert.ok(SCRIPT_VERSIONS.includes(2.3));
@@ -80,12 +86,12 @@ describe("r7-brain-v61.test.mjs", () => {
 
   test("R7: a sentence of hers that states the live card's listed wrong answer as true goes; a rule of hers in a scripted turn goes", async () => {
     setScriptForTest(T1, runScript(T1));
-    const { kit, last } = await replay(RUN, "offtopic", T1, 25); // e3's card is live (wrongIfMis 1/5)
-    assert.equal(last.p.r.move.kind, "practice");
-    const out = await sayAt(kit, last, `Socho, 1/5 zero ke zyada paas hai. Sadak ke hisse hamesha barabar hote hain. ${last.p.r.ui.ask.text}`);
-    assert.doesNotMatch(out.reply, /1\/5 zero ke zyada paas hai/, out.reply);
+    const L = toE1(); // e1's card is live (wrongIfMis "near 3")
+    const card = L.r.ui.ask.text;
+    const out = await sayL(L, `Socho, 1/3 near 3 hai. Sadak ke hisse hamesha barabar hote hain. ${card}`, "haan");
+    assert.doesNotMatch(out.reply, /1\/3 near 3 hai/, out.reply);
     assert.doesNotMatch(out.reply, /hamesha barabar hote hain/, out.reply);
-    assert.ok(out.reply.endsWith(last.p.r.ui.ask.text.trim()), "the card stays");
+    assert.ok(out.reply.endsWith(card.trim()), "the card stays");
     assert.ok(RULE_SAID.test("Cheenti har kinaare se do baar guzarti hai.") && !RULE_SAID.test("Chalo, ek baar aur dekhte hain."));
   });
 
