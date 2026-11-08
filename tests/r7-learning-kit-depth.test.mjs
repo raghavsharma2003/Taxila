@@ -17,9 +17,9 @@ const kit = {
     { id: `${T}-i04`, skillId: `${T}-s2`, kind: "practice", prompt_en: "s2 q1", targetsMisconception: `${T}-m-old` },
   ],
 };
-const example = { skillId: `${T}-s2`, problem: "new problem", givens: ["g"], find: "f", steps: [{ do: "add → total", result: "2 + 3 = 5" }, { do: "check", result: "5" }], answer: "5", why: "parts → whole" };
+const example = { skillId: `${T}-s2`, problem: "new problem", givens: ["g"], find: "f", steps: [{ do: "add → total", result: "2 + 3 = 5" }, { do: "check", result: "5" }], answer: "5", why: "parts → whole", source: "ch99 — adding parts" };
 const item = (n, over = {}) => ({ id: `${T}-i${String(n).padStart(2, "0")}`, skillId: `${T}-s2`, kind: "practice", difficulty: 2, prompt_en: `new s2 q${n}`,
-  prompt_hi: `naya sawaal ${n}`, answer: String(n), acceptable: [], hints: ["pump", "hint", "prompt", "assertion"], ...over });
+  prompt_hi: `naya sawaal ${n}`, answer: String(n), acceptable: [], hints: ["pump", "hint", "prompt", "assertion"], source: "ch99 — practice", ...over });
 const add = (items) => ({ topicId: T, workedExampleSkill: `${T}-s1`, skillExamples: [example], newMisconceptions: [], newItems: items });
 
 test("newItems: a skill below 3 items after the additions is refused; two new rungs make it clean", () => {
@@ -104,5 +104,26 @@ test("c9 maths (Ganita Manjari, batches D-F): every skill has a worked example, 
       assert.ok(mis.has(s.id), `${s.id}: misconception`);
     }
     assert.ok(k.items.every((i) => i.verified?.agrees === true), `${id}: every item verified`);
+  }
+});
+
+test("scoped adds (language skills only): coverage is judged for the scoped skills; skipped literature skills are not demanded", () => {
+  const scoped = { topicId: T, scope: [`${T}-s2`], skillExamples: [example], newMisconceptions: [], newItems: [item(5), item(6)] };
+  assert.deepEqual(lint(scoped, kit), [], "s1 (outside the scope) is not asked for");
+  assert.ok(lint({ ...scoped, newItems: [item(5)] }, kit).some((e) => /s2: 2 items/.test(e)), "the scoped skill still needs its ladder");
+  assert.ok(lint({ ...scoped, scope: [`${T}-s2`, "nope"] }, kit).some((e) => /scope nope/.test(e)));
+  assert.ok(lint({ ...scoped, skillExamples: [example, { ...example, skillId: `${T}-s1` }] }, kit).some((e) => /outside the add's scope/.test(e)));
+  assert.ok(lint({ ...scoped, newItems: [item(5), item(6, { source: "" })] }, kit).some((e) => /i06: no source/.test(e)), "a scoped add names its source");
+  assert.equal(apply(scoped, kit).workedExample.skillId, kit.workedExample.skillId, "no workedExampleSkill → the kit's worked example keeps its own label");
+});
+
+test("c8/c9 English and Hindi language-skill depth (scoped): every item blind-verified; every added example cites its source; no literature skill gains a guessed worked-example label", () => {
+  for (const f of ["c8-english", "c9-english", "c8-hindi", "c9-hindi"]) {
+    const k = JSON.parse(readFileSync(new URL(`../data/kits/${f}.json`, import.meta.url), "utf8"));
+    for (const t of k.topics) {
+      assert.ok(t.items.every((i) => i.verified?.agrees === true), `${t.topicId}: every item verified`);
+      for (const x of t.skillExamples ?? []) assert.ok(String(x.source ?? "").trim(), `${x.skillId}: example source`);
+      assert.ok(!("scope" in t), `${t.topicId}: scope is an add's field, never the kit's`);
+    }
   }
 });
