@@ -9,6 +9,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const MODE = { parallel: "lines", perp: "lines", corr: "cross", alt: "cross", ends: "ends" };
 const MIS = {
@@ -164,9 +165,9 @@ for (const goal of Object.keys(MODE)) {
     const rnd = () => ((seed = (seed * 1103515245 + 12345) >>> 0) / 2 ** 32);
     const times = [];
     for (let k = 0; k < 40; k++) {
-      const t0 = performance.now();
+      const t0 = cpuNow();
       const cands = konLogic.generate(req(goal, 200 + k, 1 + (k % 3)));
-      times.push(performance.now() - t0);
+      times.push(cpuNow() - t0);
       for (const c of cands.slice(0, 5)) {
         const level = konLogic.validate(c.level), sol = konLogic.solve(level);
         let s = konLogic.init(level), last = null;

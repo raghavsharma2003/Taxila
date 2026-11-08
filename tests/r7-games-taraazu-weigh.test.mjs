@@ -15,6 +15,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf, playCheck } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, MODES, sanitizeActs } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const C4W = { "kg-is-100g": "k-kg100" }, C5W = { "mixed-concat": "k-concat", "fifty-as-half": "k-half" };
 const C4F = { "l-is-100ml": "k-l100" }, C5F = { "mixed-concat": "k-concat-ml" };
@@ -212,7 +213,7 @@ for (const [mode, grammar, misMap] of CASES) {
     const times = [];
     for (let g = 0; g < 40; g++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = weighLogic.generate(req(mode, 300 + g, misMap, { grammar })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = weighLogic.generate(req(mode, 300 + g, misMap, { grammar })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = weighLogic.validate(c.level), sol = weighLogic.solve(level), t = oracle(level);

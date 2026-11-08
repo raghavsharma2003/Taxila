@@ -5,6 +5,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { beamLogic, trace, reflect } from "../src/play/families/yantra/beam.logic.ts";
 import coverage from "../data/play/coverage.json" with { type: "json" };
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const req = (goal, seed, extra = {}) => ({ family: "yantra", mode: "beam", goal, topicId: "t", skillId: "t-s1", classLevel: 7, fade: 1, mis: {}, misMap: {}, grammar: {}, recent: [], seed, ...extra });
 const run = (level, acts) => { let s = beamLogic.init(level); const ms = []; acts.forEach((a, i) => { const r = beamLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); }); return { s, ms }; };
@@ -42,7 +43,7 @@ for (const goal of ["route", "periscope"]) {
     let n = 0;
     for (let seed = 1; seed <= 20; seed++) for (const fade of [1, 2]) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = beamLogic.generate(req(goal, seed, { fade })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = beamLogic.generate(req(goal, seed, { fade })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands) {
         const lv = beamLogic.validate(c.level);

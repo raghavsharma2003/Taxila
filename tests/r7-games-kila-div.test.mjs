@@ -16,6 +16,7 @@ import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { readFileSync } from "node:fs";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const words = JSON.parse(readFileSync(new URL("../data/play/engine-words.json", import.meta.url), "utf8"));
 
@@ -168,7 +169,7 @@ for (const [goal, grammar] of CASES.slice(0, 4)) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = kilaLogic.generate(req(goal, 300 + gi, { grammar })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = kilaLogic.generate(req(goal, 300 + gi, { grammar })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = kilaLogic.validate(c.level), p = level.params, sol = kilaLogic.solve(level);
