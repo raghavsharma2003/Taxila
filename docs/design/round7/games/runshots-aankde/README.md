@@ -20,3 +20,4 @@ here at 1x, 64 colours.
 | `aankde-c7-ch13-t02-middle-mal-unordered` | line/middle: the written line pegged in its middle; the fold ends on 5 and 39, and the out-of-order cards are marked |
 | `aankde-middle-taps-sol` | the cards swapped into order by real taps, the peg in the gap between 21 and 24; "middle: 22.5" |
 | `aankde-mode-taps-sol` | tally/mode solved by real taps: the sizes tallied, the stock crate on size 9 (sold 6 times) |
+| `even-sol-doors-p360` | after the doors fix: the levelled towers' bottom row stands clear of the Warm / Spicy doors (before, the doors covered it) |
