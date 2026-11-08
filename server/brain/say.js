@@ -1781,7 +1781,9 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if ((op === "+" && a1 + b1 === c1) || (op === "-" && a1 - b1 === c1) || ("×x*".includes(op) && a1 * b1 === c1)) ok.add(m[4]); } return ok; };
     const strayNums = (x) => { const w = worked(x); return (String(x).match(/\d+(?:[./]\d+)?/g) ?? []).filter((n) => !okNums.has(n) && !w.has(n)); };
     const inventedDraft = (guard.caught ?? []).includes("invented");
-    const codeVerdict = () => (verdict === "not_yet" ? notRightLead(key0s && saidNow.includes(key0s) ? "" : saidNow, lang) : lang === "english" ? "Yes, that's right." : "Haan, sahi hai.");
+    // (v6.4 P2, director12 c5-t02 stuck 46: "1/10 sahi nahi hai." was a 5-word page of its own before the remediation's page, and
+    // the turn could not be paged: when another board's page follows the verdict, it is the bare one, said on that page)
+    const codeVerdict = () => (verdict === "not_yet" ? notRightLead(key0s && saidNow.includes(key0s) || (state.lastMove?.simplerBeat?.board && JSON.stringify(state.lastMove.simplerBeat.board) !== JSON.stringify(state.lastMove?.cardBeat?.board ?? state.lastMove?.scriptBeat?.board ?? null)) ? "" : saidNow, lang) : lang === "english" ? "Yes, that's right." : "Haan, sahi hai.");
     if (lead && (inventedDraft || strayNums(lead).length)) { guard.falseNumbers = [...(guard.falseNumbers ?? []), ...strayNums(lead)]; lead = codeVerdict(); guard.verdictCode = true; }
     // v6.1 R11 (director9 c4 ×8: "Yes sahi nahi hai", their English said back): a not-right verdict in a scripted turn is code's
     if (lead && verdict === "not_yet" && !guard.verdictCode) { const cv = codeVerdict(); if (norm(lead) !== norm(cv)) { lead = cv; guard.verdictCode = "notRight"; } }
@@ -1808,7 +1810,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       const sign = polarity(lead);
       const yesHead = /^(?:(?:haan|ha|yes|bilkul|sahi|shabash|bahut\s+badhiya|well\s+done|right|correct|exactly|ekdam)\b[\s,!.—–-]*)+/iu;
       const noHead = /^(?:(?:nahi|nahin|no|not\s+quite|galat)\b[\s,!.—–-]*)+/iu;
-      const nameHead = /^\p{Lu}\p{Ll}+[\s,!.—–-]+/u;
+      // (v6.4 P2, director12 c5-t02 steady 64: "Haan, Gopi ke paas zyada hai." lost "Gopi" as if it were her name: only the child's
+      // own name is a name head)
+      const fn = String(state.ctx?.firstName ?? "").trim().split(/\s+/)[0];
+      const nameHead = fn ? new RegExp(`^${fn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[\\s,!.—–-]+`, "iu") : /^\u0000/u;
       const verdictWords = sign === "yes" ? /^(?:[\d/.]+(?:\s*(?:cm|m|km|kg|g|l|ml))?\s+)?(?:bilkul\s+)?(?:sahi|right|correct)(?:\s+(?:hai|h|is))?[\s,!.—–-]*/iu
         : /^(?:\S+\s+){0,3}?(?:sahi\s+nahi|galat|not\s+right)(?:\s+(?:hai|h|is))?[\s,!.—–-]*/iu;
       ss = ss.flatMap((x) => {
@@ -1999,7 +2004,8 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         if (body.length < n0) guard.teachDropped = n0 - body.length;
       }
       // (v6.2, director10 c4 offtopic T29: "Yaad karo: …" re-read the point over the second view a picture ask drew)
-      if (!body.length && card && state.lastMove?.cardPoint && !asked) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
+      // (v6.4 Q1, main on director12: "Yaad karo: …" recited over the live card ×9: a live card is never under a recital; a bare card
+      // turn is the card, framed below when it is said again)
     }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
     const closedW = whyS(state.lastMove?.closed?.why);
@@ -2024,6 +2030,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : pickOf(SPLIT_CARD[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
+    // v6.4 Q1 (main, director12: "mujhe khud try karne do", "sawaal kya hai?", "phir se bolo", an unclear reply each got a recital
+    // before the card): a turn that answered nothing re-poses ONLY the card — no teaching, no recap, none of her lines
+    const NON_ANSWER = new Set(["selftry", "repeat", "unclear", "off_format", "which"]);
+    if (card && NON_ANSWER.has(String(state.lastMove?.request ?? "")) && !graded) { if (body.length) guard.reposeOnly = body.length; body = []; }
+    // v6.4 R3: a card said again word for word gets a frame ("Phir se dekho:"), never the same words with nothing new
+    if (card && !lead && !body.length && herPrev && herPrev.includes(norm(card).toLowerCase())) { body = [lang === "english" ? "Here it is again:" : "Phir se dekho:"]; guard.reposeFrame = true; }
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
@@ -2113,6 +2125,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
         const k = kS(x);
         const later = all.slice(i + 1).some((y) => kS(y) === k);
         if (k.length > 10 && (out.some((y) => kS(y) === k) || (later && cardT.includes(k)))) { guard.dupDropped = (guard.dupDropped ?? 0) + 1; return; }
+        // v6.4 P2 (main, director12: "Riya.", "Ke paas zyada hai." left by a strip): a sentence that is only her name, or opens on a
+        // postposition, is a fragment, never said
+        const fnm = String(state.ctx?.firstName ?? "").trim().split(/\s+/)[0];
+        if ((fnm && new RegExp(`^${fnm}[.!,]?$`, "i").test(x.trim())) || /^(?:ke|ki|ka|se|mein|ko|ne)\s/i.test(x.trim())) { guard.fragmentDropped = (guard.fragmentDropped ?? 0) + 1; return; }
         out.push(x);
       });
       const r2 = out.join(" ").replace(/\s+/g, " ").trim();

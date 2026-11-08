@@ -8,7 +8,7 @@ const HINDI = [
   [/\bslices\b/gi, "tukde"], [/\bslice\b/gi, "tukda"], [/\bperimeter\b/gi, "parimap"], [/\bsides\b/gi, "bhujayein"], [/\bside\b/gi, "bhuja"],
   [/\btotal\b/gi, "kul"], [/\banswer\b/gi, "jawab"], [/\bsteps?\b/gi, "kadam"], [/\brectangles?\b/gi, "aayat"], [/\bsquares?\b/gi, "varg"],
   [/\btriangles?\b/gi, "tribhuj"], [/\blength\b/gi, "lambai"], [/\b(?:breadth|width)\b/gi, "chaudai"], [/\bshapes?\b/gi, "aakaar"],
-  [/\bhalf\b/gi, "aadha"], [/\bcompare\b/gi, "tulna karo"], [/\bbigger\b/gi, "bada"], [/\bsmaller\b/gi, "chhota"], [/\bgroups?\b/gi, "samooh"],
+  [/\bhalf\b/gi, "aadha"], [/\bcompare(?=\s+kar)/gi, "tulna"], [/\bcompare\b/gi, "tulna karo"], [/\bbigger\b/gi, "bada"], [/\bsmaller\b/gi, "chhota"], [/\bgroups?\b/gi, "samooh"],
   [/\bsiblings\b/gi, "bhai-behen"], [/\bcorrect\b/gi, "sahi"], [/\bclear\b/gi, "saaf"],
 ];
 const keepCase = (from, to) => (/^[A-Z]/.test(from) ? to.charAt(0).toUpperCase() + to.slice(1) : to);
@@ -29,6 +29,6 @@ export function inHindiWords(line, { keep = [], card = null } = {}) {
  *  takes the plural (tukde, hisse, bhujayein), one word between allowed; a fraction's denominator ("1/4 hissa") is no count. */
 const PLURAL = { tukda: "tukde", hissa: "hisse", bhuja: "bhujayein" };
 export function agree(text) {
-  return String(text ?? "").replace(/(?<![\d/.])\b([2-9]|[1-9]\d+)(\s+(?:\p{L}+\s+)?)(tukda|hissa|bhuja)(?![\p{L}])/giu,
+  return String(text ?? "").replace(/\btulna karo (?=kar)/giu, "tulna ").replace(/(?<![\d/.])\b([2-9]|[1-9]\d+)(\s+(?:\p{L}+\s+)?)(tukda|hissa|bhuja)(?![\p{L}])/giu,
     (m, n, mid, w) => (/^(?:ka|ki|ke|wala|wali|wale|se|mein|par)\s+$/i.test(mid.trim() + " ") ? m : `${n}${mid}${keepCase(w, PLURAL[w.toLowerCase()])}`));
 }

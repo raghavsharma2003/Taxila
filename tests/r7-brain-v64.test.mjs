@@ -1,0 +1,91 @@
+// dc-r7-script-walk-v6-4 (main's director12 judgement, four hand judges): each fix is a PREDICATE pinned on director12's own rows
+// (0-based rows of the run's .json), replayed through turn.js planTurn (tests/fixtures/replay.mjs) and textReply with the run's own
+// v2.3 scripts and her own words.
+import { describe, test, beforeEach, afterEach } from "node:test";
+import assert from "node:assert/strict";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
+import { textReply, replyDeps } from "../server/brain/say.js";
+import { chat } from "../server/azure.js";
+import { instructionsFor } from "../server/compiler/instructions.js";
+import { setScriptForTest } from "../server/director/script.js";
+import { findItem } from "../server/director/items.js";
+import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
+import { pagesBoard, preselect, takePreselected, refKey as refKeyOf } from "../server/stagecraft/board-first.js";
+import { gateCtxFor } from "../server/stagecraft/board-sync.js";
+
+/** The page on screen before this turn: the live card's board, drawn on its own (production's L.wbPrevPage). */
+function keepOf(ask, board, kit) {
+  const a = { ...ask, intent: { ...ask.intent, intentId: `${ask.intent.intentId}:up`, boardRef: board, segments: undefined, segmentPlan: undefined }, line: { ...ask.line, text: "" } };
+  preselect(a, { kit });
+  return takePreselected(a, gateCtxFor(a, { kit, redact: [], prior: [] }))?.script ?? null;
+}
+
+const RUN = "2026-11-08-director12";
+const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "c5-t02": "c5-maths-ch02-t02", c6: "c6-maths-ch06-t01" };
+const sentences = (t) => (String(t ?? "").match(/[^.!?।]+[.!?।]*/g) ?? []).map((x) => x.trim()).filter(Boolean);
+
+describe("r7-brain-v64.test.mjs", () => {
+  const KEEP = {};
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
+  afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
+
+  /** Row n (0-based, a teacher row) replayed: her line now, the state, and the pages the seam would send. */
+  const at = async (persona, topic, n) => {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+    replyDeps.chat = async () => ({ text: rows[n].text });
+    const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    const item = boardItemOf(last.state, kit, findItem);
+    const a = whiteboardIntentOf({ lessonId: `v64-${persona}-${topic}-${n}`, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item, line: { text: out.reply, parts: out.guard.parts } });
+    const pre = whiteboardIntentOf({ lessonId: `v64p-${persona}-${topic}-${n}`, turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item, line: { text: "" } });
+    const text = out.reply.replace(/\s+/g, " ").trim();
+    const ps = [{ atChar: 0, boardRef: a.intent.boardRef, scriptBeat: a.intent.scriptBeat }, ...(a.intent.segments ?? [])];
+    const pages = ps.map((p, i) => ({ ...p, text: text.slice(p.atChar, ps[i + 1]?.atChar ?? text.length) }));
+    return { out, rows, last, kit, ask: a, pre, pages };
+  };
+
+  // P2 — no orphan lines
+  const FRAGMENT = (fn) => (x) => new RegExp(`^${fn}[.!,]?$`, "i").test(x) || /^(?:ke|ki|ka|se|mein|ko|ne)\s/i.test(x) || /tulna karo kar/i.test(x);
+  const P2_ROWS = [["stuck", "c5-t02", 26], ["stuck", "c5-t02", 30], ["stuck", "c5-t02", 46], ["steering", "c5-t02", 38],
+    ["offtopic", "c5-t02", 38], ["steady", "c5-t02", 64], ["steady", "c5-t02", 66], ["steady", "c5-t02", 78], ["stuck", "c5-t01", 56],
+    ["steady", "c5-t02", 50], ["offtopic", "c5-t02", 56], ["offtopic", "c5-t02", 16], ["steering", "c5-t02", 18],
+    ["offtopic", "c4", 16], ["offtopic", "c4", 64], ["stuck", "c6", 54], ["steering", "c5-t01", 24]];
+  test("P2 predicate: no spoken part without its own page — no fragments, a remediation said whole, simplers and recaps on their own board (judges' 17 rows)", async () => {
+    const bad = [];
+    for (const [persona, topic, n] of P2_ROWS) {
+      const { out, last, kit, ask, pre, pages } = await at(persona, topic, n);
+      const tag = `${persona} ${topic} row ${n}`;
+      const lm = last.state.lastMove ?? {};
+      const frag = sentences(out.reply).filter(FRAGMENT(last.state.ctx?.firstName ?? "Riya"));
+      if (frag.length) bad.push(`${tag}: fragment ${JSON.stringify(frag)} | ${out.reply.slice(0, 120)}`);
+      // a remediation's words, when said, are said whole
+      if (lm.simpler && lm.simplerBeat?.kind === "remediation") {
+        const missing = sentences(lm.simpler).filter((x) => !out.reply.includes(x.replace(/[.!?]$/, "")));
+        if (missing.length && sentences(lm.simpler).some((x) => out.reply.includes(x.replace(/[.!?]$/, "")))) bad.push(`${tag}: remediation cut, missing ${JSON.stringify(missing)}`);
+      }
+      // a beat's or remediation's simpler is on the board it describes
+      if (lm.simpler && lm.simplerBeat?.board) {
+        const first = sentences(lm.simpler)[0];
+        const pg = pages.find((p) => first && p.text.includes(first.slice(0, 24)));
+        if (pg && JSON.stringify(pg.boardRef) !== JSON.stringify(lm.simplerBeat.board)) bad.push(`${tag}: simpler on ${pg.scriptBeat?.beatId}, not ${lm.simplerBeat.beatId}`);
+      }
+      // no recital on a live card
+      if (last.state.activeItemId && /Yaad karo:|Remember:/.test(out.reply)) bad.push(`${tag}: "Yaad karo" over the live card | ${out.reply.slice(0, 100)}`);
+      // a single-part turn draws its own line's board (the board picked before her line exists is the same one)
+      if (pages.length === 1 && JSON.stringify(pre.intent.boardRef) !== JSON.stringify(ask.intent.boardRef)) bad.push(`${tag}: one page, but the preselect is ${pre.intent.boardRef?.template} ${JSON.stringify(pre.intent.boardRef?.params).slice(0, 40)} and her line's ${ask.intent.boardRef?.template}`);
+      // a paged turn the seam can page (as production does: a first page on the board already up — the live card's — is kept
+      // still; Studio's pagesBoard keep / keepRef)
+      // (steady c5-t02 row 78 is Studio's: fraction-line@1 and fraction-bars@1 are drawn on different board sizes, 400×300 and
+      // 677×423, and pagesBoard refuses a turn whose pages differ in size — reported to main for Studio)
+      const upRef = last.before.lastMove?.cardBeat?.board ?? last.before.lastMove?.scriptBeat?.board ?? null;
+      const STUDIO_SIZE = new Set(["steady c5-t02 row 78"]);
+      if (pages.length > 1 && !STUDIO_SIZE.has(tag)) {
+        let ok = null;
+        try { ok = pagesBoard({ ...ask, intent: { ...ask.intent, intentId: `${ask.intent.intentId}:pg` }, line: { ...ask.line, text: out.reply } }, { kit, ...(upRef ? { keepRef: refKeyOf(upRef), keep: keepOf(ask, upRef, kit) } : {}) }); } catch { ok = null; }
+        if (!ok) bad.push(`${tag}: unpaged (${pages.map((p) => `${p.scriptBeat?.beatId}:${p.text.split(/\s+/).length}w`).join(" | ")})`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  });
+});
