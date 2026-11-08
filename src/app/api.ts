@@ -10,7 +10,11 @@ export interface ChildRow {
   teacher_id: string; avatar: string | null; interests: string[];
 }
 export interface Me {
-  guardian: { id: string; email: string; name: string; locale: string };
+  /** r7 device pairing: "child" = a paired child device's session (child routes only, one child, no guardian); absent or
+   *  "parent" = the parent's own sign-in. */
+  scope?: "parent" | "child";
+  /** null on a child-scoped session (the parent corner then asks for the parent's own sign-in). */
+  guardian: { id: string; email: string; name: string; locale: string } | null;
   children: ChildRow[];
   consents: { child_id: string | null; purpose: string; granted: boolean; version: string; created_at: string }[];
 }
