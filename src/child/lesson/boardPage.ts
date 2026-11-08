@@ -21,7 +21,8 @@ export function boardOnTray(slot: unknown): BoardOnTray | null {
     ? (s.switches as Record<string, unknown>[]).filter((x) => Number.isFinite(x?.atMs) && Number.isInteger(x?.clause))
       .map((x): PageSwitch => ({ clause: x.clause as number, atMs: x.atMs as number, ...(typeof x.ofCard === "boolean" ? { ofCard: x.ofCard } : {}) }))
     : [];
-  // Brain's flag on the board (placeholder name `ofCard`, main 2026-11-08): on the script, else on the artifact
+  // Brain's `ofCard` (BoardSegment, 2026-11-08), carried onto the script by Studio (to-studio/002): page 0 on the
+  // script (else the artifact), each later page on its switch
   const ofCard = typeof s.ofCard === "boolean" ? s.ofCard : typeof a.ofCard === "boolean" ? a.ofCard : undefined;
   return { key: `${s.scriptId ?? ""}:${s.line?.lessonId ?? ""}:${s.line?.teacherReplySeq ?? ""}`, line: s.line, switches, ...(ofCard !== undefined ? { ofCard } : {}) };
 }

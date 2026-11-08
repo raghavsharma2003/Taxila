@@ -8,8 +8,10 @@
 //      promotes a queued card if the last page never turned (a dropped page, a missed anchor).
 //      Assumption, pending Brain's confirmation: the new card belongs to the last page.
 // (3b) While the board on screen is NOT the open card's board, the card collapses to a quiet "your question is waiting";
-//      it comes back when the card's board is up again, or when she hands over. The signal is Brain's, not ours: a board
-//      (or a page of a paged board) marked `ofCard: false`. Absent → today's behaviour: the card never collapses.
+//      it comes back when the card's board is up again, or when she hands over. The signal is Brain's, not ours: `ofCard`
+//      (shared/contracts.ts BoardSegment, Brain v6.2 T46: page 0 on the whiteboard intent, each later page on its
+//      segment), carried onto the script by Studio (to-studio/002: script.ofCard, switches[k].ofCard). Absent → today's
+//      behaviour: the card never collapses. Brain confirmed (2026-11-08) that a paged turn's new card is its last page.
 
 /** A page turn of a paged whiteboard script, as the server writes it (board-first.js pagesBoard `switches`). */
 export interface PageSwitch { clause: number; atMs: number; ofCard?: boolean }
