@@ -113,11 +113,11 @@ describe("script walk v2", () => {
     L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "worked");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:worked`);
-    // after their step (right here) the worked answer and its why are said; never as a give-up reveal
+    // after their step (right here) the worked answer is closed on that turn (the verdict with its why, or "Toh poora jawab");
+    // never as a give-up reveal, and (v6.3 T1′) never on a later turn, after a probe's answer or an okay
     L.t("20 m", cls("correct"));
-    let said = null;
-    for (let k = 0; k < 3 && !said; k++) { assert.ok(!L.r.move.gave, "no give-up reveal after a right step"); said = L.r.move.workedDone ?? null; if (!said) L.t("haan"); }
-    assert.ok(said && /20 m/.test(said.answer), "Toh poora jawab");
+    assert.ok(!L.r.move.gave, "no give-up reveal after a right step");
+    for (let k = 0; k < 3; k++) { L.t("haan"); assert.ok(!L.r.move.workedDone, "no worked close on a later turn: " + JSON.stringify(L.r.move.workedDone)); }
   });
 
   test("F4: the greet promises the slot's interest, not one the script cannot use", () => {

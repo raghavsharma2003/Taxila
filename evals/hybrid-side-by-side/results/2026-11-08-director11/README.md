@@ -70,6 +70,22 @@ claude/r4-conversation **b14df7ad**:
 | Parks said | 10 | 10 |
 | Segments logged (rows with ≥ 2 parts) | 355 in 167 turns | 395 in 172 |
 
+### Corrected proxy (main, 2026-11-08: the `verdictMisplaced` fix, rechecked offline)
+
+The checker fix is in `evals/hybrid-side-by-side/checks.mjs`. `verdictMisplaced` now:
+- accepts the card's authored `answerBoard` as the answered board;
+- treats a bare verdict (under 6 words, no digit) the same way as Brain's first-page join.
+
+It was rechecked over this run's rows and scripts with `node evals/hybrid-side-by-side/recheck-verdictseg.mjs evals/hybrid-side-by-side/results/2026-11-08-director11`, with no model calls. The table above stays as the harness produced it.
+
+| | director11, as run | director11, corrected checker |
+|---|---|---|
+| `verdictSeg` flags | 120 | **6** (cleared: 105 answerBoard closes, 9 bare verdicts) |
+| Contradictions, all kinds | 139 | **25** |
+| … c4 / c5-t01 / c5-t02 / c6 | 39 / 32 / 39 / 29 | **3 / 4 / 13 / 5** |
+
+The 6 that remain are single-page turns with no segment rows, so their first board cannot be matched to an answerBoard offline. They are counted as flagged.
+
 **Per topic** (contradictions as summed / turns over 60 words):
 - c4: 39 / 18
 - c5-t01: 32 / 17

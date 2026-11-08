@@ -253,11 +253,18 @@ export function revealOnVerdict(bp, next) {
   return { ...bp, scriptBeat: { ...bp.scriptBeat, reveal: true, answers } };
 }
 export function boardPartsOf(move, line, card, parts = null) {
+  // v6.3 P1 (main, director11 c4 steady T58: "Tumne 12 ko 2 se barabar baanta." paged back off the answered card's answer board):
+  // a probe about the card just answered (its why) is asked on that card's board, the one its close is on
+  if (move?.kind === "probe" && move?.closeBeat?.board && move?.scriptBeat?.beatId && move.scriptBeat.beatId === move.closeBeat.beatId) {
+    move = { ...move, scriptBeat: { ...move.scriptBeat, board: move.closeBeat.board }, ...(move.cardBeat?.beatId === move.closeBeat.beatId ? { cardBeat: { ...move.cardBeat, board: move.closeBeat.board } } : {}) };
+  }
   const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;
   const plan = [
     ...(closing && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat), ...(move?.sayFirst?.length ? { said: [...move.sayFirst] } : {}) }] : []),
     ...(move?.closed && (move?.closedBeat ?? move?.closeBeat)?.board ? [{ part: "closed", boardRef: (move.closedBeat ?? move.closeBeat).board, scriptBeat: refOf(move.closedBeat ?? move.closeBeat) }] : []),
     ...(parts?.bridge && move?.bridgeBeat?.board ? [{ part: "bridge", boardRef: move.bridgeBeat.board, scriptBeat: refOf(move.bridgeBeat) }] : []),
+    // v6.3 P1: a remediation's words (its say or simpler, as a miss's rung) on that remediation's board; the card then gets its own page
+    ...(parts?.simpler && move?.simplerBeat?.board ? [{ part: "simpler", boardRef: move.simplerBeat.board, scriptBeat: refOf(move.simplerBeat) }] : []),
     ...(move?.scriptBeat?.board ? [{ part: "body", boardRef: move.scriptBeat.board, scriptBeat: refOf(move.scriptBeat) }] : []),
     ...(move?.cardBeat?.board ? [{ part: "card", boardRef: move.cardBeat.board, scriptBeat: refOf(move.cardBeat) }] : []),
   ];
@@ -297,7 +304,19 @@ export function segmentsAt(plan, line, card, parts = null) {
     const cm = CLOSED.exec(text);
     closedAt = cm ? cm.index : null;
   }
-  const at = { close: 0, closed: closedAt, bridge: bridgeAt, body: bodyAt, card: cardAt(text, card) };
+  // (v6.3 P1, director11 c4 steady T74, offtopic T50, stuck T54: "Tumne khaye hue tukde 1 ko upar …", her line taking up what they
+  // did on the card just closed, was paged onto the next card's board): a sentence of hers about what THEY did, straight after
+  // the close, stays on the close's page
+  if (bodyAt && (prevS || closePart)) {
+    const rest = text.slice(bodyAt);
+    const m = /^(?:Tumne|Tum ne|Aapne|You)\b[^.!?\u0964]*[.!?\u0964]+\s*/u.exec(rest);
+    const cardStart = cardAt(text, card);
+    if (m && !/[?？]/.test(m[0]) && !(cardStart != null && cardStart < bodyAt + m[0].length)) bodyAt += m[0].length;
+  }
+  // (v6.3 P1: a simpler part of its own is placed by its text; what follows it — the body, the card — starts after it)
+  const simplerS = parts?.simpler && plan.some((p) => p.part === "simpler") ? spanOf(text, parts.simpler) : null;
+  if (simplerS) bodyAt = Math.max(bodyAt ?? 0, simplerS[1]);
+  const at = { close: 0, closed: closedAt, bridge: bridgeAt, simpler: simplerS?.[0] ?? null, body: bodyAt, card: cardAt(text, card) };
   if (!text) {
     const one = plan.find((p) => p.part === "body") ?? plan.find((p) => p.part === "card") ?? plan[0];
     return [{ atChar: 0, boardRef: one.boardRef, scriptBeat: one.scriptBeat }];

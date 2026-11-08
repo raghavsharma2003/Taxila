@@ -39,6 +39,12 @@ test("(d) a verdict with content said over a board other than the answered card'
   assert.equal(verdictMisplaced({ graded: "correct", verdict: "Bilkul, 22 cm sahi hai.", firstBoard: a, answeredBoard: a }), false);
   assert.equal(verdictMisplaced({ graded: "correct", verdict: "Haan, sahi hai.", firstBoard: b, answeredBoard: a }), false, "a bare yes says nothing a board contradicts");
   assert.equal(verdictMisplaced({ graded: null, verdict: "x 5", firstBoard: b, answeredBoard: a }), false);
+  // (director11, main) the bare-verdict rule is Brain's first-page join: under 6 words, no digit
+  assert.equal(verdictMisplaced({ graded: "not_yet", verdict: "Nahi, yeh jawab nahi hai.", firstBoard: b, answeredBoard: a }), false);
+  assert.equal(verdictMisplaced({ graded: "not_yet", verdict: "Nahi, yeh jawab abhi sahi nahi hai.", firstBoard: b, answeredBoard: a }), true);
+  // (v2.3) a right answer's close on the card's authored answerBoard is on the answered card's board
+  assert.equal(verdictMisplaced({ graded: "correct", verdict: "Bilkul, 22 cm sahi hai, kyunki 9 + 2 + 9 + 2 = 22.", firstBoard: b, answeredBoard: a, answerBoard: b }), false);
+  assert.equal(verdictMisplaced({ graded: "correct", verdict: "Bilkul, 22 cm sahi hai, kyunki 9 + 2 + 9 + 2 = 22.", firstBoard: b, answeredBoard: a, answerBoard: a }), true);
 });
 
 test("widened false keys: any number stated as an answer that no key, accept form, question or their words carry", () => {

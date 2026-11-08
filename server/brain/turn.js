@@ -1693,6 +1693,8 @@ export async function planTurn(base, cls, c) {
   // The verdict this turn's words must agree with (G-PRAISE-1): a kit item graded against its key, or "ungraded".
   const gradedTarget = targetFor(state, kit, activeItem);
   next.lastVerdict = verdictFor(cls, gradedTarget, { childText: c.childText });
+  // v6.3 R2 (main, director11): her own acknowledgement of a probe's answer is used only on a confident read; else code's
+  next.lastReadConfident = Number(cls?.confidence ?? 0) >= 0.85 && !/fallback|default/i.test(String(cls?.source ?? ""));
   // dc-r7-script-walk-v3 K1: a key closes once affirmed: the same answer said again right after it was called right is never
   // "not right" now (no verdict contradicts the previous turn's)
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
