@@ -182,4 +182,39 @@ describe("r7-brain-v64.test.mjs", () => {
       assert.deepEqual(bad, []);
     });
   }
+
+  // T1″ — one close per worked card; no carried close after a probe reply
+  /** Every turn of one replayed lesson that closes a card twice: a verdict carrying its why AND "Toh poora jawab", or a
+   *  "Pichhle sawaal ka jawab" for a card whose verdict already closed it before the why-probe. */
+  async function twoCloses(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [];
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      if (!rows[n]) continue;
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      const ss = sentences(out.reply);
+      const done = ss.findIndex((x) => /^(?:Toh poora jawab|So the full answer)/i.test(x));
+      if (done > 0 && ss.slice(0, done).some((x) => /(?<![\p{L}])(?:kyunki|because)(?![\p{L}])/iu.test(x))) bad.push(`row ${n} verdict+why and "Toh poora jawab" | ${out.reply.slice(0, 160)}`);
+      const was = pl.before.activeItemId;
+      if (was && pl.before.pendingWhy === was && /(?:Pichhle sawaal ka (?:sahi )?jawab|The last question's)/i.test(out.reply)) bad.push(`row ${n} carried close after a probe reply | ${out.reply.slice(0, 160)}`);
+    }
+    return bad;
+  }
+  test("T1″: the probe reply carries no close of a card its verdict already closed (judges' c4 steering 28, c6 offtopic 36)", async () => {
+    for (const [persona, topic, n] of [["steering", "c4", 28], ["offtopic", "c6", 36]]) {
+      const { out, last } = await at(persona, topic, n);
+      assert.equal(last.before.pendingWhy, last.before.activeItemId, "the row is a probe reply on a card closed by its verdict");
+      assert.doesNotMatch(out.reply, /Pichhle sawaal ka (?:sahi )?jawab/i, `${persona} ${topic} row ${n}: ${out.reply}`);
+      assert.equal(last.state.lastMove?.gave, undefined);
+    }
+  });
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`T1″ predicate: one close per worked card, no carried close after a probe reply (${persona} ${topic})`, async () => {
+      assert.deepEqual(await twoCloses(persona, topic), []);
+    });
+  }
 });

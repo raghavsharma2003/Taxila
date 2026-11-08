@@ -2064,7 +2064,16 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const closedS = closedA && !sameAnswer(closedA, gaveA) && !sameAnswer(closedA, wdA) ? (lang === "english" ? (yesNo(closedA) ? `And the earlier question's right answer: ${closedA}${closedW}.` : `And the earlier question's answer was ${closedA}${closedW}.`)
       : yesNo(closedA) ? `Aur pehle wale sawaal ka sahi jawab: ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
     if (closedS || closedA) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
-    const doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
+    let doneS = wdA ? (lang === "english" ? `So the full answer: ${wdA}${wdW ? `, because ${wdW}` : ""}.` : `Toh poora jawab: ${wdA}${wdW ? `, kyunki ${wdW}` : ""}.`) : null;
+    // v6.4 T1″ (main, director12: 9 turns "Haan, sahi hai, kyunki … Toh poora jawab: …" on the worked card answered right): one close
+    // per worked card. "Toh poora jawab" with its why is the close; the verdict before it is said bare (its own praise kept). With
+    // no authored why for the close, the verdict's why is the close and "Toh poora jawab" is not said.
+    if (doneS && lead && verdict === "correct") {
+      const b = String(lead).split(/(?<![\p{L}])(?:kyunki|because)(?![\p{L}])/iu)[0].replace(/[\s,;:—–-]+$/, "").trim();
+      if (b.length < String(lead).replace(/[.!?।]+$/, "").trim().length) {
+        if (wdW) { lead = dot(b); guard.oneClose = "worked"; } else { doneS = null; guard.oneClose = "verdict"; }
+      }
+    }
     // (a worked step with no card ends on a short check-in, never mid-air)
     // v6.1 R9: a check-in only where state.js allowed one (once per beat, on new teaching); else a statement that goes on
     // (v6.2, director10: "Yeh kadam saaf hai?" after something that was no step: a step's check-in names a step only on a worked step)

@@ -2992,7 +2992,10 @@ export function step(prev, input) {
   // has its key said by code, whichever path left it, unless the move already says one
   {
     const was = prev.activeItemId && String(prev.activeItemId).startsWith("script:") ? prev.activeItemId : null;
-    if (was && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
+    // (v6.4 T1″, director12 c4 steering 28, c6 offtopic 36: a card graded right whose why-probe was answered was closed by its
+    // verdict already — the probe reply never says "Pichhle sawaal ka jawab" for it again)
+    const closedByVerdict = !!prev.pendingWhy && prev.pendingWhy === was;
+    if (was && !closedByVerdict && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
       const left = findItem(prev, input.kit, was);
       if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: scriptWhyOf(input.kit, left, s.ctx.lang) ?? "" };
     }
