@@ -511,11 +511,25 @@ function numberLineHop(c, tl) {
   const all = [start, ...ends];
   const lo = Math.min(...all), hi = Math.max(...all);
   const span = Math.max(4, hi - lo);
-  const a = lo - Math.max(1, Math.round(span * 0.1)), b = a + span + 2 * Math.max(1, Math.round(span * 0.1));
-  if (b - a > 40) return { error: "line_too_long" };
   const x0 = 30, W = 340, y = 170;
+  // (main / Learning, 2026-11-08: the padded ends were 1 unit from the start or the last landing, and at the player's digit
+  // width "3|4" and "13|14" touched — 41 of 84 boards of start 0-20 × three equal hops of 2-5. The ends are padded
+  // enough that every label has its own room — 2 units or more — and a line of counting numbers never starts below 0;
+  // if no pad gives room, the ends are drawn unlabelled)
+  const room = (a, b, labs) => {
+    const px = (v) => ((v - a) / (b - a)) * (W - 24), wd = (t) => String(t).length * 0.6 * 19.2;
+    return labs.every((t, i) => i === 0 || px(t) - px(labs[i - 1]) - (wd(t) + wd(labs[i - 1])) / 2 >= 6);
+  };
+  let a = null, b = null, labelEnds = true;
+  for (let pad = Math.max(2, Math.round(span * 0.1)); pad <= 6 && a == null; pad++) {
+    const a1 = lo >= 0 ? (lo - pad >= 0 ? lo - pad : 0) : lo - pad, b1 = Math.max(hi + pad, a1 + span + 2);
+    if (b1 - a1 > 40) break;
+    if (room(a1, b1, [...new Set([a1, ...all, b1])].sort((p, q) => p - q))) { a = a1; b = b1; }
+  }
+  if (a == null) { a = lo >= 0 ? Math.max(0, lo - 2) : lo - 2; b = Math.max(hi + 2, a + span + 2); labelEnds = false; }
+  if (b - a > 40) return { error: "line_too_long" };
   const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
-  const labels = [...new Set([a, ...all, b])].sort((p, q) => p - q).map(String);
+  const labels = [...new Set([...(labelEnds ? [a, b] : []), ...all])].sort((p, q) => p - q).map(String);
   tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], w: W, weight: 2 }, 1100);
   const dot = tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
   all.slice(1).forEach((e, i) => {
@@ -597,10 +611,21 @@ function placeValue(c, tl) {
   return { facts: { number: indian, digits: n, places: PLACES.slice(0, n).reverse().join(" ") }, claims };
 }
 
+/** Learning (c4 s2 e1, 2026-11-08): an optional short `title` over a groups board — "8 ka 1/2 = 4", the fraction the board
+ *  shows. → its facts, or { error }. */
+function groupsTitle(c, tl) {
+  if (c.title === undefined) return {};
+  const t = String(c.title);
+  if (!fitsLabel(t) || textProblem(t)) return { error: "groups_title" };
+  writeFit(tl, t, 200, 26, 360, {}, { id: "title", ink: "accent", gap: 0, size: "m" });
+  return { title: t };
+}
 function equalGroups(c, tl) {
   if (Array.isArray(c.sizes)) return unequalGroups(c, tl);
   const { groups, each } = c;
   if (!isInt(groups, 2, 6) || !isInt(each, 1, 8)) return { error: "groups_range" };
+  const head = groupsTitle(c, tl);
+  if (head.error) return head;
   const gw = 340 / groups;
   // round 7 (M2): all the dots first, in one heap under the groups; then they are SHARED OUT, one group at a time, each
   // dot sliding to its place in its group (ending where the still board drew it): "equal groups" seen happening
@@ -619,7 +644,7 @@ function equalGroups(c, tl) {
     }
   }
   tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { counts: { groups, each }, facts: { groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+  return { counts: { groups, each }, facts: { ...head, groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
 }
 
 /**
@@ -630,6 +655,8 @@ function equalGroups(c, tl) {
 function unequalGroups(c, tl) {
   const sizes = c.sizes;
   if (sizes.length < 2 || sizes.length > 6 || sizes.some((n) => !isInt(n, 1, 10))) return { error: "groups_sizes" };
+  const head = groupsTitle(c, tl);
+  if (head.error) return head;
   const groups = sizes.length, gw = 340 / groups, N = sizes.reduce((a, b) => a + b, 0), hc = Math.min(12, N), claims = [];
   for (let g = 0; g < groups; g++) tl.add({ op: "ellipse", c: [30 + g * gw + gw / 2, 110], rx: gw / 2 - 6, ry: 66, weight: 1 }, 300, { gap: 80 });
   const heap = (k) => [200 - ((hc - 1) * 12) / 2 + (k % hc) * 12, 196 + Math.floor(k / hc) * 11];
@@ -647,7 +674,7 @@ function unequalGroups(c, tl) {
     // each group's own count under it
     tl.add({ op: "text", at: [round1(gx + gw / 2), 196], text: String(each), size: "s", ink: "soft" }, 300, { gap: 120 });
   });
-  return { counts: { groups, values: sizes.map(String) }, facts: { groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no" }, claims };
+  return { counts: { groups, values: sizes.map(String) }, facts: { ...head, groups, sizes: sizes.join(", "), total: N, equal: sizes.every((n) => n === sizes[0]) ? "yes" : "no" }, claims };
 }
 
 // ───────────────────────────── diagrams ─────────────────────────────

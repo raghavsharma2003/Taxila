@@ -140,3 +140,61 @@ test("Learning's D1: wholes@1 takes two unequal parts (the roti's 'ek bada, ek c
   const bad = await certifyBoardRef({ template: "wholes@1", params: { wholes: [{ parts: 4, shade: 1, title: "Roti" }] } }, { line: "Roti ke 3 barabar tukde hain, 1 rangin hai. Rangin hissa kitna hai?", withhold: { values: [] } });
   assert.equal(bad.ok, false);
 });
+
+test("Learning's regression on 2b78db98: number-line-hop@1 never draws touching labels — the 84-board sweep (start 0-20 × three equal hops of 2-5) expands, lints and certifies; every staged hop board certifies on its own line; W4 takes a padded end as the axis, never a far one", async () => {
+  const fs = await import("node:fs");
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { lintScript } = await import("../shared/whiteboard.js");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const bad = [];
+  for (let start = 0; start <= 20; start++) for (let h = 2; h <= 5; h++) {
+    const x = expand({ template: "number-line-hop@1", start, hops: [h, h, h] });
+    if (!x.ok || lintScript(x.script).length) { bad.push(`${start}+${h}: ${x.errors ?? "lint"}`); continue; }
+    const r = await certifyBoardRef({ template: "number-line-hop@1", params: { start, hops: [h, h, h] } }, { line: `${start} se shuru karo aur ${h} ki teen chhalang lagao: ${start} + ${h} + ${h} + ${h} = ${start + 3 * h}.`, withhold: { values: [] } });
+    if (!r.ok) bad.push(`${start}+${h}: ${r.failed}`);
+  }
+  assert.deepEqual(bad, []);
+  // the staged scripts' own hop boards, each on its beat's own words (no data change)
+  const staged = [];
+  for (const f of fs.readdirSync("data/lesson-scripts-staged").filter((x) => x.endsWith(".json"))) {
+    const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts-staged/${f}`, "utf8"));
+    const walk = (o) => { if (!o || typeof o !== "object") return; for (const v of Object.values(o)) walk(v); if (o.template === "number-line-hop@1" && o.params) staged.push({ f, ref: o }); };
+    walk(sc);
+  }
+  assert.ok(staged.length >= 16, `staged hop boards: ${staged.length}`);
+  for (const s of staged) {
+    const x = expand({ template: "number-line-hop@1", ...s.ref.params });
+    assert.ok(x.ok, `${s.f} ${JSON.stringify(s.ref.params)}: ${x.errors}`);
+    assert.deepEqual(lintScript(x.script), [], `${s.f} ${JSON.stringify(s.ref.params)}`);
+  }
+  // the calendar column, 4 + 7 + 7 + 7 (c4-ch03-t02 s3 e2): its ends have room, and its padded end is the axis's
+  const cal = expand({ template: "number-line-hop@1", start: 4, hops: [7, 7, 7] });
+  const line = "Isliye column mein neeche jaane par har baar 7 judta hai: 4, 11, 18, 25.";
+  const r = await certifyBoardRef({ template: "number-line-hop@1", params: { start: 4, hops: [7, 7, 7] } }, { line, withhold: { values: [] } });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  // a far end — a line to 60 under numbers that stop at 25 — is still an invented number
+  const far = { ...cal.script, ops: cal.script.ops.map((o) => (o.layout === "number_line" ? { ...o, range: [1, 60], rows: [["1", "4", "11", "18", "25", "60"]] } : o)) };
+  const g = gateWhiteboard(far, { reply: line, speechMs: 8000, withhold: { values: [] } });
+  assert.ok(g.checks.find((c) => c.id === "W4.numbers_from_truth" && !c.pass), "60 is no axis end of 25");
+});
+
+test("Learning (c4 s2 e1): equal-groups@1 takes a short `title` — '8 ka 1/2 = 4' over the 2 × 4 board, '8 ka 1/4 = 2' over the 4 × 2 — its numbers drawn and gated (a wrong one, '= 5', is refused)", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { lintScript } = await import("../shared/whiteboard.js");
+  for (const [p, line] of [
+    [{ groups: 2, each: 4, title: "8 ka 1/2 = 4" }, "Dekho, 8 laddoo 2 barabar group mein hain, har group mein 4. Ek group 8 ka aadha hai. Toh 8 ka 1/2 = 4. Check karo: 2 × 4 = 8."],
+    [{ groups: 4, each: 2, title: "8 ka 1/4 = 2" }, "Ab wahi 8 laddoo 4 barabar group mein: har group mein 2. Toh 8 ka 1/4 = 2."],
+    [{ sizes: [6, 3, 3], title: "12 pencil" }, "12 pencil 3 bachchon mein baanti: ek ko 6, doosre do ko 3-3. Kya har bachche ko 1/3 mila?"],
+  ]) {
+    const x = expand({ template: "equal-groups@1", ...p });
+    assert.ok(x.ok, String(x.errors));
+    assert.deepEqual(lintScript(x.script), []);
+    assert.ok(texts(x.script).includes(p.title));
+    assert.equal(x.script.facts.onScreen.title, p.title);
+    const r = await certifyBoardRef({ template: "equal-groups@1", params: p }, { line, withhold: { values: [] } });
+    assert.ok(r.ok, JSON.stringify(r.failed));
+  }
+  const wrong = await certifyBoardRef({ template: "equal-groups@1", params: { groups: 2, each: 4, title: "8 ka 1/2 = 5" } }, { line: "Dekho, 8 laddoo 2 barabar group mein hain, har group mein 4. Toh 8 ka 1/2 = 4.", withhold: { values: [] } });
+  assert.ok(!wrong.ok && wrong.failed.includes("W4.numbers_from_truth"));
+  assert.equal(expand({ template: "equal-groups@1", groups: 2, each: 4, title: "x".repeat(60) }).ok, false, "a title over LABEL_MAX is refused");
+});
