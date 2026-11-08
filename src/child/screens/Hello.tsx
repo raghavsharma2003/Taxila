@@ -20,7 +20,9 @@ import { preloadLessonRoute } from "../preload.ts";
 import { useNavigate } from "react-router-dom";
 import { Teacher } from "../../ui/teacher/Teacher.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
-import { updateChild } from "../api.ts";
+import { postFeelPicks, updateChild } from "../api.ts";
+import { feelBody, feelSubjects, PICKS, SUBJECT_LABEL, type ChildPick } from "../feel.ts";
+import { FeelFace } from "../FeelFaces.tsx";
 import { Spot } from "../art.tsx";
 import { useChild } from "../ChildShell.tsx";
 import { INTERESTS, interestIds } from "../interests.ts";
@@ -36,13 +38,13 @@ import { Cta, Ghost, Glyph, KxPage, Panel } from "../../ui-v3/kaksha/kit.tsx";
 
 /** The boot log: each step's line (Kaksha Hello). "change" is the likes step too. */
 const BOOT: { card: Card; key: KxKey }[] = [
-  { card: "greet", key: "bootHello" }, { card: "ai", key: "bootAi" }, { card: "picture", key: "bootPicture" }, { card: "likes", key: "bootLikes" }, { card: "hi", key: "bootHi" },
+  { card: "greet", key: "bootHello" }, { card: "ai", key: "bootAi" }, { card: "picture", key: "bootPicture" }, { card: "likes", key: "bootLikes" }, { card: "feel", key: "bootFeel" }, { card: "hi", key: "bootHi" },
 ];
 const bootIndex = (c: Card) => BOOT.findIndex((b) => b.card === (c === "change" ? "likes" : c));
 
 const label = (id: string) => id.charAt(0).toUpperCase() + id.slice(1);
 
-type Card = "greet" | "ai" | "picture" | "likes" | "change" | "hi";
+type Card = "greet" | "ai" | "picture" | "likes" | "change" | "feel" | "hi";
 
 function InterestTile({ id, on, toggle }: { id: string; on: boolean; toggle?: () => void }) {
   const body = (
@@ -106,7 +108,29 @@ export function Hello() {
     }
     nav(`/c/${cid}/lesson/new`, { replace: true });
   };
-  const afterLikes = (picks: string[]) => { setLikes(picks); setCard("hi"); };
+  const afterLikes = (picks: string[]) => { setLikes(picks); setCard("feel"); };
+  // r7 (Learning to-app/007): "Maths feels…", one tap per main subject; sent once on Next, never blocking Hello
+  const subjects = feelSubjects(Number(child.class_level) || 1);
+  const [feel, setFeel] = useState<Record<string, ChildPick | undefined>>({});
+  const afterFeel = () => {
+    const body = feelBody(cid, feel);
+    if (body) void postFeelPicks(body).catch(() => { /* the parent's answer, or the lessons, place her instead */ });
+    setCard("hi");
+  };
+  const feelRows = (kx: boolean) => subjects.map((s) => (
+    <div key={s} className={kx ? "kx-feel-row" : "feel-row"} data-testid={`feel-${s}`}>
+      <p className={kx ? "kx-feel-label" : "feel-label"} id={`feel-${s}-l`}>{tr7("feel.row", { S: SUBJECT_LABEL[s] ?? s })}</p>
+      <div className={kx ? "kx-feel-faces" : "feel-faces"} role="radiogroup" aria-labelledby={`feel-${s}-l`}>
+        {PICKS.map((p) => (
+          <button key={p} type="button" role="radio" aria-checked={feel[s] === p} className={kx ? "kx-feel kx-cut" : "feel-btn"}
+            onClick={() => setFeel((f) => ({ ...f, [s]: p }))} data-testid={`feel-${s}-${p}`}>
+            <FeelFace pick={p} size={young ? 48 : 38} /><span>{tr7(`feel.${p}`)}</span>
+          </button>
+        ))}
+      </div>
+      {feel[s] && <p className={kx ? "kx-feel-got" : "feel-got"} role="status">{tr7("feel.got")}</p>}
+    </div>
+  ));
   const afterPicture = () => setCard(parentPicks.length ? "likes" : "change");
   const sayHi = () => {
     setHi("listening");
@@ -198,6 +222,16 @@ export function Hello() {
             ))}
           </div>
           <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={() => afterLikes(likes)} data-testid="hello-done">{t("done")}</button>
+        </>
+      );
+      break;
+    case "feel":
+      body = (
+        <>
+          <h2 tabIndex={-1} className="hello-q">{tr7("feel.title")}</h2>
+          <p className="hello-line2">{tr7("feel.sub")}</p>
+          {feelRows(false)}
+          <button type="button" className="cs-btn cs-btn--primary hello-go" onClick={afterFeel} data-testid="hello-feel-next">{tr7("feel.next")}</button>
         </>
       );
       break;
@@ -295,6 +329,16 @@ export function Hello() {
               ))}
             </div>
             <Cta onClick={() => afterLikes(likes)} testid="hello-done">{t("done")}</Cta>
+          </>
+        );
+        break;
+      case "feel":
+        kbody = (
+          <>
+            <h2 tabIndex={-1} className="kx-h3">{tr7("feel.title")}</h2>
+            <p className="kx-sub">{tr7("feel.sub")}</p>
+            {feelRows(true)}
+            <Cta onClick={afterFeel} testid="hello-feel-next">{tr7("feel.next")}</Cta>
           </>
         );
         break;
