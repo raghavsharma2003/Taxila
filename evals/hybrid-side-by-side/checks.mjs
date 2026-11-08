@@ -51,9 +51,13 @@ const OBJECTS = ["pizza", "roti", "cake", "laddoo", "chocolate", "patti", "strip
  * (b) a picture-request line against what is drawn: a sentence of hers that points at the screen and names a thing the board
  * does not draw ("Screen par dekho: poora pizza…" over a word table). Returns the things named.
  */
-export function pictureMismatch(text, board) {
+export function pictureMismatch(text, board, altView = null) {
   if (!board || board.auto) return [];
-  const has = boardNouns(board);
+  // (v6.4 harness, main on director12: a picture asked with the card's board up draws Studio's SECOND view — bars for a line,
+  // a line for bars — and her words describe that view: what it draws counts as drawn too)
+  const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate", round: "circle gol parts hisse tukde", example: "bar patti strip parts hisse tukde" };
+  const av = typeof altView === "string" ? altView : altView?.view ?? null;
+  const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];
   for (const s of sentencesOf(text)) {
     if (!POINT.test(s)) continue;

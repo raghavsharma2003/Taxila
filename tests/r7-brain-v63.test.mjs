@@ -2,6 +2,7 @@
 // replayed through turn.js planTurn (tests/fixtures/replay.mjs) and textReply with the run's own v2.3 scripts and her own words.
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { inHindiWords } from "../server/brain/register.js";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
@@ -81,11 +82,15 @@ describe("r7-brain-v63.test.mjs", () => {
     for (const pl of plans) {
       const n = pl.row - 1;
       if (!rows[n]) continue;
-      replyDeps.chat = async () => ({ text: rows[n].text });
+      // (v6.4 H2″: the return is hers, or one short retry call: the stub answers that call with a line about their words)
+      const r0 = pl.state.lastMove?.returned;
+      replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "") && r0
+        ? { text: `Wah, ${String(r0.said ?? r0.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? r0.topic} sunkar mazaa aa gaya!` }
+        : { text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
       said[pl.state.turn] = out.reply;
       if (/^\p{L}+: (?:iski baat|pakka)/iu.test(out.reply)) bad.push(`T${n} raw park template | ${out.reply.slice(0, 80)}`);
-      if (/Cricket mein ek over mein chhe ball|Virat Kohli India ke liye batting karte hain/i.test(out.reply)) bad.push(`T${n} canned fact | ${out.reply.slice(0, 120)}`);
+      if (/Cricket mein ek over mein chhe ball|Virat Kohli India ke liye batting karte hain/i.test(out.reply)) bad.push(`T${n} canned fact | ${out.reply}`);
       const ret = pl.state.lastMove?.returned;
       if (!ret) continue;
       const e = (pl.state.later ?? []).find((x) => x.servedAt === pl.state.turn && x.share);
@@ -97,7 +102,8 @@ describe("r7-brain-v63.test.mjs", () => {
       else if (live === e.onItem || String(live ?? "").includes(":then:") && was === e.onItem) why.push("promised card not closed");
       if (live && live === was) why.push("mid-card");
       if (String(live ?? "").includes(":then:")) why.push("mid-remediation");
-      if (/^worked:/.test(pl.state.lastMove?.scriptBeat?.beatId ?? "")) why.push("mid-worked");
+      // (v6.4 H2″: the worked example's opening is a boundary; its steps and card are not)
+      if (/^worked(?::step|$)/.test(pl.state.lastMove?.scriptBeat?.beatId ?? "")) why.push("mid-worked");
       if (pl.state.lastMove?.request) why.push("request turn");
       // (a content word of their aside, said in the return itself: not only in its "Aur X ki baat:" lead)
       const body = out.reply.replace(/\b(?:aur|and about)\s+\p{L}+\s+(?:ki baat)?:/giu, " ").toLowerCase();
@@ -115,12 +121,15 @@ describe("r7-brain-v63.test.mjs", () => {
     const T = TOPIC["c5-t01"];
     setScriptForTest(T, runScriptOf(RUN, T));
     const { kit, plans } = await replay(RUN, "steering", T, 1e9);
-    const s0 = plans.at(-1).state;
+    // (v6.4 H2″ returns it at the first boundary now, so the run's end has it served: re-open it there to test the close)
+    const s0 = { ...plans.at(-1).state };
+    s0.later = (s0.later ?? []).map((e) => e.topic === "cricket" ? { ...e, servedAt: null } : e);
     assert.ok((s0.later ?? []).some((e) => e.share && e.servedAt == null && e.topic === "cricket"), "open at the end of the run");
     const s1 = { ...s0, ctx: { ...s0.ctx, lessonBrief: { ...(s0.ctx.lessonBrief ?? {}), hardStopAt: new Date(0).toISOString() } } };
     const r = step(s1, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 0.9, flags: {} }, text: "haan", now: 10_000_000 });
     assert.equal(r.move.returned?.topic, "cricket", JSON.stringify(r.move).slice(0, 300));
-    assert.match(r.move.returned.line ?? "", /tumhe cricket pasand hai/);
+    // (v6.4 H2″: the line is hers, answering their words; the move carries those words)
+    assert.ok(String(r.move.returned.said ?? "").length > 0, "their words carried");
   });
   const H1_ROWS = [["steady", "c5-t02", 33], ["stuck", "c5-t02", 49], ["steering", "c5-t02", 45], ["offtopic", "c5-t02", 55],
     ["stuck", "c4", 48], ["stuck", "c4", 58], ["stuck", "c6", 42], ["steering", "c6", 42]];
@@ -179,7 +188,9 @@ describe("r7-brain-v63.test.mjs", () => {
       const kit = kitOf(topic);
       const ps = pagesOf(last, out, kit);
       const lm = last.state.lastMove;
-      const sm = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
+      const sm0 = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
+      // (v6.4 L1: in the Hindi mode her words, the simpler's too, are said in Hindi words)
+      const sm = last.state.ctx?.lang === "hindi" && last.state.ctx?.langPinned ? inHindiWords(sm0) : sm0;
       const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
       const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
       if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);

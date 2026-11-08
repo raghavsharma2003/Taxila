@@ -250,7 +250,8 @@ test("director9: the confirming VERDICT segment on the answered card's own board
 test("director9 S3′ on the run path: every picture request of the run, with the card's board already up, draws a second view through the seam (preselectWhiteboard → requestIntent)", () => {
   // (the 11 director9 rows, r4-conversation f4cf2561: the board up the turn before, then the child's picture ask)
   const ROWS = [
-    ["c5-maths-ch02-t02", "stuck T18", { template: "fraction-parts@1", params: { parts: 8, shade: 1, whole: "bar" } }, "line", "fraction-line@1"],
+    // (director12 S4: a bar's second view is the same whole, round — no longer its number line)
+    ["c5-maths-ch02-t02", "stuck T18", { template: "fraction-parts@1", params: { parts: 8, shade: 1, whole: "bar" } }, "round", "fraction-parts@1"],
     ["c5-maths-ch02-t02", "offtopic T26", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 2, label: "1/4" }] } }, "parts", "fraction-bars@1"],
     ["c5-maths-ch02-t02", "steering T14", { template: "fraction-line@1", params: { dens: [7, 9], from: 0, to: 1, marks: [[1, 7], [1, 9]] } }, "parts", "fraction-bars@1"],
     ["c5-maths-ch02-t01", "steady T34 / offtopic T28", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 4, label: "1/2" }] } }, "parts", "fraction-bars@1"],
@@ -265,6 +266,8 @@ test("director9 S3′ on the run path: every picture request of the run, with th
     if (bars.length) return `Yeh dekho: ${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] !== "0" ? `, ${b[2]} rangin${b[3] === "?" ? "" : ` (${b[3]})`}` : ""}`).join("; ")}.`;
     const ws = [...String(row ?? "").matchAll(/whole\d (?:[^:·]+: )?(\d+) (equal|unequal) parts/g)];
     if (ws.length) return `Yeh dekho: ${ws.map((w, i) => `Cake ${"AB"[i]}: ${w[1]} ${w[2] === "equal" ? "barabar" : "alag-alag"} tukde`).join("; ")}.`;
+    const wr = /whole (circle|bar) · parts (\d+) · shaded (\d+)(?: · fraction (\d+\/\d+))?/.exec(String(row ?? ""));
+    if (wr) return `Yeh dekho: wahi poora ab ${wr[1] === "circle" ? "gol" : "patti"}, ${wr[2]} barabar hisse, ${wr[3]} rangin${wr[4] ? ` (${wr[4]})` : ""}.`;
     const m = /gaps (\d+) equal gaps.*marks ([\d/ ,]+)/.exec(String(row ?? ""));
     return m ? `Yeh dekho: 0 se 1 ki sankhya rekha, ${m[1]} barabar gaps, aur nishaan ${m[2].trim()} par.` : "Yeh dekho.";
   };

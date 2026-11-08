@@ -266,16 +266,17 @@ describe("R4 in the lesson (c6 skill-1 v2 fixture)", () => {
     if (L.r.state.activeItemId === card) assert.equal(L.r.move.returned, undefined, "never while the card it was parked on is live");
     for (let i = 0; i < 4 && !L.r.move.returned; i++) L.t(String(L.r.state.scriptCard?.answer ?? "haan"), cls("correct"));
     assert.match(L.r.move.returned?.topic ?? "", /virat/i, JSON.stringify(L.r.move));
-    assert.match(L.r.move.returned?.line ?? "", /tumne mujhse Virat ke baare mein poocha tha/);
+    // (v6.4 H2″: no code line; the move carries their words for her one line)
+    assert.match(L.r.move.returned?.said ?? "", /virat pasand/i);
   });
 
   test("a return of hers that is an analogy or puts words in their mouth goes; the real line is said", async () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
-    const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, line: asideReturnLine("aapko virat pasand hai?", "Virat") } };
-    const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
+    const lm = { ...L.r.state.lastMove, returned: { topic: "Virat", share: true, said: "aapko virat pasand hai?" } };
+    const out = await say(L, `Virat ke baare mein tumne kaha tha ki tumhe woh pasand hain. Virat mujhe bhi bahut pasand hain, unki batting kamaal ki hai. Virat ka cover drive boundary ke poore round jaisa hai. ${L.r.ui.ask.text}`, { state: { lastMove: lm } });
     assert.doesNotMatch(out.reply, /tumne kaha|jaisa hai/, out.reply);
-    assert.match(out.reply, /tumne mujhse Virat ke baare mein poocha tha/, out.reply);
+    assert.match(out.reply, /Virat mujhe bhi bahut pasand hain/, out.reply);
   });
 
   test("after 'hindi mein batao' her later turns are visibly in Hindi words", async () => {

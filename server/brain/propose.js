@@ -363,6 +363,12 @@ export function segmentsAt(plan, line, card, parts = null) {
  */
 export function altViewOfRow(row, hint = null) {
   const r = String(row ?? "");
+  const hv = hint?.view ?? hint;
+  // (Studio director12 S4: a count-key card's second view is a smaller case of the same rule — "bar1 4 equal parts, 1 shaded
+  // = 1/4" — and a bar card's is the same whole round, a circle card's the bar: "whole circle · parts 8 · shaded 1 · fraction 1/8")
+  if (hv === "example") { const b = /\bbar1\s+(\d+)\s+equal parts,\s*(\d+)\s+shaded\s*=\s*(\d+\/\d+)/.exec(r); return b ? { view: "example", labels: [b[3]], parts: Number(b[1]) } : null; }
+  const one = /\bwhole (circle|bar) · parts (\d+) · shaded (\d+)(?: · fraction (\d+\/\d+))?/.exec(r);
+  if (one && (hv === "round" || hv === "parts")) return { view: one[1] === "circle" ? "round" : "parts", labels: one[4] ? [one[4]] : [], parts: Number(one[2]), shaded: Number(one[3]) };
   if (hint === "line" || (hint && hint.view === "line")) {
     const marks = (/\bmarks\s+([\d/ ,]+)/.exec(r)?.[1] ?? "").match(/\d+\/\d+/g) ?? [];
     const gaps = Number(/\bgaps\s+(\d+)\s+equal gaps/.exec(r)?.[1]) || null;

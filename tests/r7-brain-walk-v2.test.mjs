@@ -74,8 +74,23 @@ describe("script walk v2", () => {
     assert.ok(L.r.move.rendered.some((x) => /cheenti/.test(x)), "its authored explanation, in Hinglish, spoken by code");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:then:c6-maths-ch06-t01-m-missing-sides`);
     L.t("38 m", cls("correct"));
+    // (v6.4 K1: the card the remediation took over is asked again, once, before the walk goes on — after a why-probe, if one comes)
+    for (let k = 0; k < 2 && L.r.ui.ask?.itemId !== `script:${S1.skillId}:ask:e1`; k++) L.t("har bhuja jodi", cls("no_evidence"));
+    assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`, "the missed card again: " + JSON.stringify(L.r.move.scriptBeat));
+    L.t("12 cm", cls("correct"));
     let i = 0; while (i++ < 3 && L.r.move.scriptBeat?.beatId !== "e2") L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "e2", "then the walk goes on");
+  });
+
+  test("v6.4 K1: the card missed again after its remediation is let go with its key and why", () => {
+    const L = run(); toBeat(L, "e1");
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    L.t("38 m", cls("correct"));
+    for (let k = 0; k < 2 && L.r.ui.ask?.itemId !== `script:${S1.skillId}:ask:e1`; k++) L.t("har bhuja jodi", cls("no_evidence"));
+    assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`);
+    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+    assert.ok(L.r.move.gave?.answer, "its key is said: " + JSON.stringify(L.r.move));
+    assert.notEqual(L.r.move.scriptBeat?.kind, "remediation", "no second remediation round");
   });
 
   test("R2: a diversion does not use the beat up", () => {

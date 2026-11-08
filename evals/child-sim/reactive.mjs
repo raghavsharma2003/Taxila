@@ -33,7 +33,9 @@ export const MIN_TURNS = 20;
 export const WHICH_MAX = 2;
 /** Her line poses a question: a "?" or an imperative ask ("batao", "bolo", "likho", "kitna", "kaunsa", "kya hoga"; English
  *  "tell", "what", "how many", "which", "find", "write"). director9: "…fraction mein batao." was never answered. */
-export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|nikalo|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write)\b/i;
+// (v6.4, main on director12 c5-t02 stuck: "…chhote se bade ke kram mein lagao." was never answered: the imperatives that pose a
+// task — lagao, karo, jodo, bharo, chuno, gino, milao, dikhao — pose a question too)
+export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|likhiye|nikalo|lagao|lagaiye|(?<!yaad\s)karo|kariye|jodo|bharo|chuno|gino|milao|dikhao|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write|put|arrange|order)\b/i;
 const posed = (teacher) => ASK_RE.test(String(teacher ?? ""));
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
 export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", "selftry"]);
