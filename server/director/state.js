@@ -672,7 +672,12 @@ function walkNextV2(s, input, prefix, sk) {
     // the new skill opens on; the hook's interest line likewise
     const bridge = w.bridge ? saidIn(w.bridge, lang) ?? null : null;
     // v6: a bridge Learning gave its own board (SkillScriptV2.bridgeBoard) is its own segment on that board (brain/propose.js)
-    const bridgeBeat = bridge && w.bridgeBoard ? { bridgeBeat: { scriptId: scriptIdOf(kit), skillId, beatId: "bridge", kind: "bridge", board: w.bridgeBoard } } : {};
+    // v6.3 P1 (main, director11 c6 steering T48: a lone bridge said over the last card's board): a bridge with no board of its own
+    // is drawn on the board of the beat it leads into (the new skill's hook, explain beat or worked example)
+    const intoBoard = kind === "hook" ? sk.hook?.board ?? sk.explain?.[0]?.board ?? null : kind === "explain" ? sk.explain?.find((x) => x.id === id)?.board ?? null
+      : kind === "worked" ? sk.workedExample?.board ?? null : null;
+    const bridgeBoard = w.bridgeBoard ?? intoBoard;
+    const bridgeBeat = bridge && bridgeBoard ? { bridgeBeat: { scriptId: scriptIdOf(kit), skillId, beatId: "bridge", kind: "bridge", board: bridgeBoard } } : {};
     if (bridge) { delete w.bridge; delete w.bridgeBoard; }
     const bridgeLine = bridge ? [`bridge from what they just did: ${bridge}`] : [];
     const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge, ...bridgeBeat } : {};
@@ -2899,13 +2904,17 @@ export function step(prev, input) {
     // (an explain beat's card with no simpler of its own: its beat's simpler — Learning's v2.3 pilots put it on the beat)
     const beatSimpler = !meta?.simpler && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
       ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.simpler ?? null : null;
-    const own = remSimpler ?? meta?.simpler ?? beatSimpler ?? null;
     const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
+    const remOf = (r) => (r?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: `rem:${r.targets}`, kind: "remediation", board: r.board } : null);
+    const remJust = remBeat.startsWith("rem:") ? sk?.remediation?.find((r) => `rem:${r.targets}` === remBeat) ?? null : null;
+    // (v6.3 P1: a rung that is a remediation's words is drawn on that remediation's board, never over the card's)
+    const own = remSimpler ? { text: remSimpler, beat: remOf(remJust) } : { text: meta?.simpler ?? beatSimpler ?? null, beat: null };
     const help = s.cardHelp?.id === item.id ? s.cardHelp : { id: item.id, said: [], misses: 0 };
     help.misses += 1;
-    const rungs = (help.misses >= 2 ? [rem?.say, rem?.simpler, own] : [own, rem?.say, rem?.simpler]).map((x) => (x ? saidIn(x, lang) : null)).filter((x) => x && String(x).trim());
-    const sm = rungs.find((x) => !help.said.includes(normLine(x))) ?? null;
-    if (sm) { move.simpler = String(sm).trim(); help.said = [...help.said, normLine(sm)]; help.counted = s.turn; }
+    const remRungs = [{ text: rem?.say, beat: remOf(rem) }, { text: rem?.simpler, beat: remOf(rem) }];
+    const rungs = (help.misses >= 2 ? [...remRungs, own] : [own, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
+    const sm = rungs.find((x) => !help.said.includes(normLine(x.text))) ?? null;
+    if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn; }
     s.cardHelp = help;
   }
   // (whichever path chose it — a request's smaller re-teach, a beat's simpler — a helper line already said on this live card is
@@ -2919,8 +2928,11 @@ export function step(prev, input) {
       const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
       const beat = live?.scriptAsk?.beatId && live.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === live.scriptAsk.beatId) : null;
       const lang = s.ctx?.lang ?? "hinglish";
-      const next = [meta?.simpler, beat?.simpler, rem?.say, rem?.simpler].map((x) => (x ? saidIn(x, lang) : null)).filter((x) => x && String(x).trim()).find((x) => !help.said.includes(normLine(x)));
-      if (next) move.simpler = String(next).trim(); else delete move.simpler;
+      const rb = rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `rem:${rem.targets}`, kind: "remediation", board: rem.board } : null;
+      const next = [{ t: meta?.simpler }, { t: beat?.simpler }, { t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
+        .filter((x) => x.t && String(x.t).trim()).find((x) => !help.said.includes(normLine(x.t)));
+      delete move.simplerBeat;
+      if (next) { move.simpler = String(next.t).trim(); if (next.b) move.simplerBeat = next.b; } else delete move.simpler;
     }
     if (move.simpler && !help.said.includes(normLine(move.simpler))) help.said = [...help.said, normLine(move.simpler)];
     s.cardHelp = help;
@@ -3170,7 +3182,8 @@ function heldTurn(prev, input) {
     const lang = s.ctx?.lang ?? "hinglish";
     const meta = item?.scriptThen ?? item?.scriptCheck ?? item?.scriptAsk;
     const sm = rem?.simpler ? saidIn(rem.simpler, lang) : meta?.simpler ? saidIn(meta.simpler, lang) : null;
-    const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true } : {}) };
+    const remBeatOf = rem?.simpler && rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: remId, kind: "remediation", board: rem.board } : null;
+    const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) } : {}) };
     // (v6.3 H1′: the line is said on this card, so a later miss on it climbs past it)
     if (sm) { const hp = s.cardHelp?.id === h.activeItemId ? s.cardHelp : { id: h.activeItemId, said: [], misses: 0 }; s.cardHelp = { ...hp, said: [...hp.said, normLine(sm)] }; }
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;

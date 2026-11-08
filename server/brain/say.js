@@ -2099,8 +2099,12 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (r2 && r2 !== reply) reply = r2;
     }
     const bridgeS = state.lastMove?.bridgeSaid ? first.find((x) => x === unpointed(dot(state.lastMove.bridgeSaid))) ?? null : null;
+    // v6.3 P1 (main, director11: a remediation's simpler said over the follow-up card's board): the authored simpler said this turn
+    // is a part of its own, so it pages on the board its words describe (state.js simplerBeat)
+    const simplerK = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
+    const simplerP = simplerK ? body.filter((x) => simplerK.has(keyS(x))) : [];
     guard.parts = { ...(prevPart.length ? { prev: hw(prevPart.join(" ")) } : {}), ...(closedP.length ? { closed: hw(closedP.join(" ")) } : {}), ...(bridgeS ? { bridge: hw(norm(bridgeS)) } : {}),
-      ...(lead ? { verdict: hw(norm(lead)) } : {}) };
+      ...(lead ? { verdict: hw(norm(lead)) } : {}), ...(simplerP.length ? { simpler: hw(simplerP.join(" ")) } : {}) };
   }
   // v6.2 H4 (director10 c4 offtopic T23, a break move: "Bilkul, no sahi hai: …"): on any move, a right answer is never confirmed by
   // saying their English word back

@@ -9,6 +9,7 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { step, scriptKeyOf } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
+import { whiteboardIntentOf, boardItemOf, segmentsAt } from "../server/brain/propose.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 
@@ -162,4 +163,65 @@ describe("r7-brain-v63.test.mjs", () => {
       assert.deepEqual(await repeats(persona, topic), []);
     });
   }
+  /** The pages of her line as the seam sends them (page 0 = boardRef/scriptBeat, then segments), each with its text. */
+  const pagesOf = (last, out, kit) => {
+    const a = whiteboardIntentOf({ lessonId: "v63", turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit, item: boardItemOf(last.state, kit, findItem), line: { text: out.reply, parts: out.guard.parts } });
+    const text = out.reply.replace(/\s+/g, " ").trim();
+    const ps = [{ atChar: 0, boardRef: a.intent.boardRef, scriptBeat: a.intent.scriptBeat }, ...(a.intent.segments ?? [])];
+    return ps.map((p, i) => ({ ...p, text: text.slice(p.atChar, ps[i + 1]?.atChar ?? text.length) }));
+  };
+  const P1_REM = [["stuck", "c6", 46], ["stuck", "c6", 60], ["offtopic", "c6", 56], ["stuck", "c5-t01", 21], ["offtopic", "c5-t01", 6], ["steering", "c5-t01", 7],
+    ["stuck", "c5-t02", 13], ["stuck", "c4", 12]];
+  test("P1 predicate: a remediation's words on the remediation's board, then the card on its own page (judges' 8 rows)", async () => {
+    const bad = [];
+    for (const [persona, topic, t] of P1_REM) {
+      const { out, last } = await at(persona, topic, t);
+      const kit = kitOf(topic);
+      const ps = pagesOf(last, out, kit);
+      const lm = last.state.lastMove;
+      const sm = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
+      const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
+      const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
+      if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);
+      if (!rem) bad.push(`${persona} ${topic} T${t}: no remediation board`);
+      if (JSON.stringify(ps.at(-1).boardRef) !== JSON.stringify(lm.cardBeat?.board)) bad.push(`${persona} ${topic} T${t}: the card is not on its own board`);
+    }
+    assert.deepEqual(bad, []);
+  });
+
+  test("P1 predicate: a probe about the card just answered is asked on that card's board (c4 steady T58)", async () => {
+    const { out, last } = await at("steady", "c4", 58);
+    const ps = pagesOf(last, out, kitOf("c4"));
+    assert.equal(last.state.lastMove.kind, "probe");
+    for (const p of ps) assert.deepEqual(p.boardRef, last.state.lastMove.closeBeat.board, JSON.stringify(ps.map((x) => [x.scriptBeat?.beatId, x.text.slice(0, 40)])));
+  });
+
+  test("P1 predicate: a lone bridge is on the board that draws what it names: its own, else the beat it leads into (c6 steering T48)", async () => {
+    const { out, last } = await at("steering", "c6", 48);
+    const ps = pagesOf(last, out, kitOf("c6"));
+    const sc = runScriptOf(RUN, TOPIC.c6);
+    assert.deepEqual(ps[0].boardRef, sc.skills[0].bridgeBoard, "its own authored board (\"Is 6 cm lambe aur 4 cm chaude …\")");
+    // with no board of its own: the board of the beat it leads into
+    const T = TOPIC.c6;
+    const bare = structuredClone(sc); delete bare.skills[0].bridgeBoard;
+    setScriptForTest(T, bare);
+    const { kit, rows, last: l2 } = await replay(RUN, "steering", T, 49);
+    replyDeps.chat = async () => ({ text: rows[48].text });
+    const o2 = await textReply({ instructions: instructionsFor(l2.state, kit), state: l2.state, kit, childText: l2.child, history: [], ui: l2.p.r.ui, module: null });
+    const p2 = pagesOf(l2, o2, kit);
+    const sk1 = bare.skills[1];
+    assert.deepEqual(p2[0].boardRef, sk1.hook?.board ?? sk1.explain[0].board, JSON.stringify(p2.map((x) => [x.scriptBeat?.beatId, x.boardRef?.params])));
+  });
+
+  test("P1: her sentence about what they did, straight after the close, stays on the close's page (c4 steady T74, offtopic T50, stuck T54)", () => {
+    const A = { template: "fraction-parts@1", params: { parts: 3, shade: 1 } }, B = { template: "compare@1", params: { left: { title: "Cake" } } };
+    const verdict = "Haan, sahi hai, kyunki chocolate ke 3 barabar tukde the aur unme se 1 khaya gaya, yaani 1/3.";
+    const theirs = "Tumne khaye hue tukde 1 ko upar aur kul tukde 3 ko neeche rakha.";
+    const card = "Ek cake ke 4 tukde kiye: 2 bade aur 2 chhote. Kya yeh chhota tukda cake ka ek-chauthaai hai?";
+    const line = `${verdict} ${theirs} ${card}`;
+    const plan = [{ part: "close", boardRef: A, scriptBeat: { beatId: "c2" } }, { part: "body", boardRef: B, scriptBeat: { beatId: "c3" } }, { part: "card", boardRef: B, scriptBeat: { beatId: "c3" } }];
+    const out = segmentsAt(plan, line, card, { prev: verdict, verdict });
+    assert.equal(out.length, 2);
+    assert.equal(out[1].atChar, line.indexOf("Ek cake"), "the switch is after her sentence about them, never before it");
+  });
 });
