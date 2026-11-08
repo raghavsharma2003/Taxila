@@ -13,6 +13,7 @@ import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { GAME_WEIGHT, FAMILIES, MODES, FAMILY_ARTS } from "../shared/play.ts";
 import { LOGIC } from "../src/play/families/index.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ALL = Object.fromEntries(KILA_MAL.map((m) => [m, `k-${m}`]));
 const req = (mode, goal, seed, o = {}) => ({ family: "kila", mode, goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade: 1, mis: {}, misMap: ALL, grammar: {}, recent: [], seed, ...o });
@@ -214,7 +215,7 @@ for (const [mode, goal, grammar] of CASES) {
     const times = [];
     for (let gi = 0; gi < 40; gi++) {
       let best = Infinity, cands = [];
-      for (let k = 0; k < 3; k++) { const t0 = performance.now(); cands = kilaLogic.generate(req(mode, goal, 100 + gi, { grammar })); best = Math.min(best, performance.now() - t0); }
+      for (let k = 0; k < 3; k++) { const t0 = cpuNow(); cands = kilaLogic.generate(req(mode, goal, 100 + gi, { grammar })); best = Math.min(best, cpuNow() - t0); }
       times.push(best);
       for (const c of cands.slice(0, 4)) {
         const level = kilaLogic.validate(c.level), p = level.params, sol = kilaLogic.solve(level);

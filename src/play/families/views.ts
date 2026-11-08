@@ -13,6 +13,8 @@ import { makeStambhView } from "./stambh/stambh.view.ts";
 import { makeBeamView } from "./yantra/beam.view.ts";
 import { makePendulumView } from "./yantra/pendulum.view.ts";
 import { makePlotView } from "./nazariya/plot.view.ts";   // r4-khand: the 2D board twin of the Khand engine
+import { makeTriView } from "./nazariya/tri.view.ts";     // r7 nazariya2
+import { makeSolidView } from "./nazariya/solid.view.ts"; // r7 nazariya2
 import { makeArenaView } from "./arena/arena.view.ts";
 import { makeCircuitView } from "./yantra/circuit.view.ts";
 import { makeKaalView } from "./kaal/kaal.view.ts";
@@ -55,6 +57,8 @@ export const VIEWS: Record<string, MakeView> = {
   "nazariya/floor": makePlotView,
   "nazariya/powers": makePlotView,
   "nazariya/mirror": makePlotView,
+  "nazariya/tri": makeTriView,
+  "nazariya/solid": makeSolidView,
   "arena/pick": makeArenaView,
   "stambh/bars": makeStambhView,
   "stambh/picto": makeStambhView,
@@ -85,6 +89,7 @@ export const VIEWS: Record<string, MakeView> = {
   "guna/field": makeGunaView,
   "guna/pack": makeGunaView,
   "guna/story": makeGunaView,
+  "guna/yard": makeGunaView,
   "kram/grow": makeKramView,
   "kram/machine": makeKramView,
   "kram/beats": makeKramView,
