@@ -53,6 +53,10 @@
    under her tile. Absent = nothing reserved. */
 .pl-root[data-keep] .pl-controls { padding-right: max(12px, var(--pl-keep-w, 0px)); min-height: var(--pl-keep-h, 0px); box-sizing: border-box; }
 .pl-root[data-keep] .pl-controls:empty { display: flex; }
+/* r7: once a level is solved its controls empty and the row collapsed, so the world grew to the bottom and the doors
+   (absolute, over the root's foot) covered the world's last rows (seen in a real browser: aankde's levelled towers). While
+   the doors show, the empty controls row keeps their height, so the world ends where the doors begin. */
+.pl-root[data-doors] .pl-controls:empty { display: flex; min-height: 100px; box-sizing: border-box; }
 .pl-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pl-row--pad { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 6px; }
 .pl-btn { min-height: 48px; min-width: 48px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--pl-line); background: var(--pl-btn); color: var(--pl-btn-ink);

@@ -27,6 +27,8 @@ import { gunaHidden } from "../../src/play/families/guna/guna.logic.ts";
 import { hissaHidden } from "../../src/play/families/hissa/hissa.logic.ts";
 import { koshtakHidden } from "../../src/play/families/koshtak/koshtak.logic.ts";
 import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
+import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
+import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -84,6 +86,12 @@ export function hiddenOf(level) {
   // r7 parkar: the parts a construction fixes that the card does not give (the third side, the angle, the stick, the half
   // length or angle, the altitude) are never said first. Checked by family first: modes may share names with other families
   if (level.family === "parkar") return parkarHidden(level);
+  // r7 aankde: each row's count, the lost row's count, the size sold most, the towers' level (the mean) and the median are
+  // never said first. Checked by family first: modes may share names with other families ("line")
+  if (level.family === "aankde") return aankdeHidden(level);
+  // r7 paheli: the bags that make the load, the magic sum and the centre, the cracked digits, the starts that reach the
+  // palindrome are never said first. Checked by family first: modes may share names with other families
+  if (level.family === "paheli") return paheliHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
