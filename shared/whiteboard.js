@@ -291,6 +291,8 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const script = { v: 1, scriptId: typeof raw.scriptId === "string" ? raw.scriptId.slice(0, 64) : "wb", line, anchor: "line_audio_start", board,
     mode: raw.mode === "continue" ? "continue" : "fresh", durationMs: Math.round(durationMs), ops: sorted };
   if (raw.facts && typeof raw.facts === "object" && raw.facts.onScreen && typeof raw.facts.onScreen === "object") script.facts = cleanFacts(raw.facts);
+  // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's whiteboard intent; absent = no card open, today's behaviour)
+  if (typeof raw.ofCard === "boolean") script.ofCard = raw.ofCard;
   // round 7 (director7 B1/S2: one board per segment of a turn): the page turns at each later segment. `switches` [{ clause,
   // atMs }] in order: the ops from atMs (the estimate) to the next switch are that segment's page (and the erase of the page
   // before); the player moves them onto clause `clause`'s real onset when the voice reports it (lineClock.ts)
@@ -299,7 +301,9 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
       // (#44: `word` / `wordIndex` — the segment's first spoken word and how many words of her line come before it: the
       // player lands the page on that word's REAL onset when the voice sends word timings, else on the clause's)
       .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs), ...(typeof x.word === "string" && x.word.length > 0 && x.word.length <= 24 ? { word: x.word } : {}),
-        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}) })).sort((a, b) => a.atMs - b.atMs);
+        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}),
+        // (main 2026-11-08, App 3b: Brain's segment `ofCard`, is this page the open card's own board; the card waits when not)
+        ...(typeof x.ofCard === "boolean" ? { ofCard: x.ofCard } : {}) })).sort((a, b) => a.atMs - b.atMs);
     if (sw.length) script.switches = sw;
   }
   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };

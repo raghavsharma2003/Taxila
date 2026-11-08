@@ -289,3 +289,18 @@ test("main B: unrolled@1 draws the shape itself beside the strip, so a line that
   assert.ok(tri.ok && tri.script.ops.some((o) => o.op === "polygon" && o.points.length === 3));
   assert.equal(expand({ template: "unrolled@1", sides: [1, 2, 9], unit: "m", figure: { shape: "triangle", sides: [1, 2, 9] } }).ok, false, "no triangle with those sides");
 });
+
+test("Learning's c4 watermelon then-card: two cakes cut into 6 and 3 (wholes@1, unlabelled) certify and draw — the template's exact radii are not a model's circle 'cut by lines' (W8)", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const melons = { template: "wholes@1", params: { wholes: [{ parts: 6 }, { parts: 3 }] } };
+  const prompt = "Do ek jaise tarbooz: ek ke 6 barabar slice, doosre ke 3. Rahul kehta hai 6 wala slice bada hai. Kya Rahul sahi hai?";
+  const r = await certifyBoardRef(melons, { line: prompt, withhold: { values: [] } });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  // live, as the then-card's own board on its prompt
+  const T = "c4-maths-ch05-t01", kit = kitOf(T), L = `r8d10wm-${lessonN++}`;
+  const a = { intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: melons, scriptBeat: sb("then:c4-maths-ch05-t01-m-bigger-denominator", "check", { answers: ["No", "nahi"] }) }, line: { lessonId: L, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } };
+  BF.preselect(a, { kit });
+  const real = { ...a, line: { lessonId: L, text: prompt } };
+  const t = BF.takePreselected(real, gateCtxFor(real, { kit, redact: [], prior: [] }));
+  assert.deepEqual(t?.screen?.counts?.wholes?.map((w) => w.parts), [6, 3], BF.pickState(real));
+});
