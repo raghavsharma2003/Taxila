@@ -2,6 +2,7 @@
 // replayed through turn.js planTurn (tests/fixtures/replay.mjs) and textReply with the run's own v2.3 scripts and her own words.
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { inHindiWords } from "../server/brain/register.js";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
@@ -187,7 +188,9 @@ describe("r7-brain-v63.test.mjs", () => {
       const kit = kitOf(topic);
       const ps = pagesOf(last, out, kit);
       const lm = last.state.lastMove;
-      const sm = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
+      const sm0 = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
+      // (v6.4 L1: in the Hindi mode her words, the simpler's too, are said in Hindi words)
+      const sm = last.state.ctx?.lang === "hindi" && last.state.ctx?.langPinned ? inHindiWords(sm0) : sm0;
       const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
       const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
       if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);

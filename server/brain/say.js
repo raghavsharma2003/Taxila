@@ -85,7 +85,8 @@ const GAVE_LINE = {
   hinglish: [(a, w) => `Pichhle sawaal ka jawab ${a} tha${w ? `, kyunki ${w}` : ""}.`, (a, w) => `Woh wala: jawab ${a}${w ? `; ${w}` : ""}.`, (a, w) => `Pichhla sawaal: ${w ? `${w}, ` : ""}yaani jawab ${a}.`],
   english: [(a, w) => `The last one's answer was ${a}${w ? `, because ${w}` : ""}.`, (a, w) => `That one: the answer is ${a}${w ? `; ${w}` : ""}.`, (a, w) => `The last question: ${w ? `${w}, ` : ""}so the answer is ${a}.`],
 };
-const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Hindi mein? Zaroor."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
+// (v6.4 L1: every variant says the switch in words; "Hindi mein? Zaroor." read as the bare "Zaroor." main flagged)
+const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Haan, ab se Hindi mein bolti hoon."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
 // v6.3 R2 (main, director11: "cricket: iski baat …" is the raw template, said lower-case): the topic leads a whole sentence
 const capT = (t) => { const x = String(t ?? "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
 const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad karenge.`, (t) => `${capT(t)} yaad rahega; yeh sawaal khatam karke uspar aate hain.`, (t) => `${capT(t)} ke baare mein is sawaal ke baad baat karenge, pakka.`],
@@ -2169,6 +2170,18 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
     const hw = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
     if (hindiOn) { const h = hw(reply); if (h !== reply) { reply = h; guard.hindiWords = true; } }
+    // v6.4 L1 (main, director12: c6 0/4, c5-t01 "Zaroor." and the same Hinglish): on a scripted turn the assembly is built from her
+    // sentences, so code's switch acknowledgement (the repair above) never reached it — c4's 4/4 were her own words. A language
+    // request's turn opens with code's acknowledgement in place of a bare filler of hers ("Zaroor.", "Theek hai.")
+    if (state.lastMove?.request === "language" && kindNow !== "safeguard") {
+      const ss0 = sentences(reply).map(norm).filter(Boolean);
+      const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
+      while (ss0.length > 1 && filler(ss0[0])) ss0.shift();
+      const named = /\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(ss0[0] ?? "");
+      const ack = named ? [] : [pickOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
+      const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
+      if (r2 !== reply) { reply = r2; guard.langAck = true; }
+    }
     // v6.2 H4 (main, director10 c4 ×10: "Ab in dono numbers se bhinn likho. Ab in dono numbers se bhinn likho."): a sentence is said
     // once, after the Hindi words too (two that differed only by "fraction" / "bhinn" are one); a copy in the card is the one kept
     {

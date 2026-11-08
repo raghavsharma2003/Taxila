@@ -217,4 +217,28 @@ describe("r7-brain-v64.test.mjs", () => {
       assert.deepEqual(await twoCloses(persona, topic), []);
     });
   }
+
+  // L1 — a Hindi request is heard and switches her lines
+  const L1_ROWS = [["offtopic", "c4", 34], ["offtopic", "c5-t01", 34], ["offtopic", "c5-t02", 34], ["offtopic", "c6", 32], ["steady", "c4", 36],
+    ["steady", "c5-t01", 38], ["steady", "c5-t02", 36], ["steady", "c6", 36], ["steering", "c4", 8], ["steering", "c5-t01", 8],
+    ["steering", "c5-t02", 8], ["steering", "c6", 8], ["stuck", "c4", 8]];
+  const ENGLISH_W = /(?<![\p{L}])(?:fractions?|parts?|pieces?|sides?|perimeter|total|marks?|lines?|equal|answer|steps?)(?![\p{L}])/iu;
+  test("L1 predicate: a Hindi request turn opens by saying the switch (never a bare \"Zaroor.\"), and her lines after it carry no English teaching words (judges' 13 requests)", async () => {
+    const bad = [];
+    for (const [persona, topic, n] of L1_ROWS) {
+      const { out, last } = await at(persona, topic, n);
+      const tag = `${persona} ${topic} row ${n}`;
+      if (last.state.lastMove?.request !== "language") { bad.push(`${tag}: not read as a language request`); continue; }
+      const first = sentences(out.reply)[0] ?? "";
+      if (!/hindi/i.test(first) || /^zaroor[.!]?$/i.test(first)) bad.push(`${tag}: no switch said | ${out.reply.slice(0, 120)}`);
+      for (const k of [n, n + 2, n + 4]) {
+        const r = k === n ? { out, last } : await at(persona, topic, k);
+        const item = r.last.state.activeItemId ? findItem(r.last.state, r.kit, r.last.state.activeItemId) : null;
+        const keyW = [item?.answer, ...(item?.acceptable ?? [])].map((x) => String(x ?? "").toLowerCase()).join(" ");
+        const eng = (r.out.reply.match(new RegExp(ENGLISH_W.source, "giu")) ?? []).filter((w) => !keyW.includes(w.toLowerCase()));
+        if (eng.length) bad.push(`${tag} (+${k - n}): English words ${eng.join(", ")} | ${r.out.reply.slice(0, 140)}`);
+      }
+    }
+    assert.deepEqual(bad, []);
+  });
 });
