@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 134,
-  "entries": 425,
-  "withMisconceptionMap": 136,
-  "mappedMisconceptions": 262,
+  "topicsCovered": 136,
+  "entries": 431,
+  "withMisconceptionMap": 138,
+  "mappedMisconceptions": 267,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 115
+    "covered": 117
    },
    "science": {
     "inScope": 146,
@@ -44,11 +44,11 @@
    },
    "6": {
     "inScope": 69,
-    "covered": 33
+    "covered": 34
    },
    "7": {
     "inScope": 79,
-    "covered": 42
+    "covered": 43
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 148,
+  "topicsCoveredAll": 150,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 115
+    "covered": 117
    },
    "science": {
     "topics": 146,
@@ -87,13 +87,14 @@
     "covered": 7
    }
   },
-  "arenaOnly": 103,
-  "arenaOnlyClass4to7": 16,
+  "arenaOnly": 101,
+  "arenaOnlyClass4to7": 14,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 8,
    "nishana": 16,
    "kyun-lab": 14,
+   "aankde": 2,
    "darpan": 4,
    "feeta": 4,
    "ghadi": 4,
@@ -1718,6 +1719,98 @@
    },
    "contexts": [],
    "why": "RULES c7-science-ch11-t02 kyun-lab/fair-test/predict · ACTS"
+  },
+  "c6-maths-ch04-t01-s2": {
+   "topicId": "c6-maths-ch04-t01",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "sort",
+   "grammar": {
+    "cats": [
+     3,
+     4
+    ],
+    "slips": [
+     10,
+     26
+    ]
+   },
+   "misMap": {
+    "tally-five": "c6-maths-ch04-t01-m-tally-five",
+    "total-mismatch": "c6-maths-ch04-t01-m-total-mismatch"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch04-t01 aankde/tally/sort · ACTS"
+  },
+  "c6-maths-ch04-t01-s3": {
+   "topicId": "c6-maths-ch04-t01",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "missing",
+   "grammar": {
+    "cats": [
+     3,
+     4
+    ]
+   },
+   "misMap": {
+    "tally-five": "c6-maths-ch04-t01-m-tally-five"
+   },
+   "contexts": [],
+   "why": "RULES c6-maths-ch04-t01 aankde/tally/missing · ACTS"
+  },
+  "c7-maths-ch13-t02-s1": {
+   "topicId": "c7-maths-ch13-t02",
+   "family": "aankde",
+   "mode": "stack",
+   "goal": "even",
+   "grammar": {
+    "n": [
+     3,
+     5
+    ]
+   },
+   "misMap": {},
+   "contexts": [],
+   "why": "RULES c7-maths-ch13-t02 aankde/stack/even · ACTS"
+  },
+  "c7-maths-ch13-t02-s2": {
+   "topicId": "c7-maths-ch13-t02",
+   "family": "aankde",
+   "mode": "line",
+   "goal": "middle",
+   "grammar": {
+    "n": [
+     5,
+     8
+    ]
+   },
+   "misMap": {
+    "unordered": "c7-maths-ch13-t02-m-median-unordered"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch13-t02 aankde/line/middle · ACTS"
+  },
+  "c7-maths-ch13-t02-s3": {
+   "topicId": "c7-maths-ch13-t02",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "mode",
+   "grammar": {
+    "cats": [
+     3,
+     5
+    ],
+    "slips": [
+     8,
+     18
+    ]
+   },
+   "misMap": {
+    "mean-size": "c7-maths-ch13-t02-m-mean-in-data"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch13-t02 aankde/tally/mode · ACTS"
   },
   "c4-maths-ch11-t01-s2": {
    "topicId": "c4-maths-ch11-t01",
@@ -7907,30 +8000,6 @@
    "contexts": [],
    "why": "RULES c6-maths-ch03-t02 arena/pick/pick · ACTS"
   },
-  "c6-maths-ch04-t01-s2": {
-   "topicId": "c6-maths-ch04-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch04-t01 arena/pick/pick · ACTS"
-  },
-  "c6-maths-ch04-t01-s3": {
-   "topicId": "c6-maths-ch04-t01",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c6-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c6-maths-ch04-t01 arena/pick/pick · ACTS"
-  },
   "c6-maths-ch04-t02-s1": {
    "topicId": "c6-maths-ch04-t02",
    "family": "arena",
@@ -8614,42 +8683,6 @@
    "misMap": {},
    "contexts": [],
    "why": "RULES c7-maths-ch12-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch13-t02-s1": {
-   "topicId": "c7-maths-ch13-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch13-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch13-t02-s2": {
-   "topicId": "c7-maths-ch13-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch13-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch13-t02-s3": {
-   "topicId": "c7-maths-ch13-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch13-t02 arena/pick/pick · ACTS"
   },
   "c7-maths-ch14-t02-s1": {
    "topicId": "c7-maths-ch14-t02",
@@ -10023,7 +10056,6 @@
   "c4-maths-ch04-t01",
   "c4-maths-ch05-t02",
   "c6-maths-ch03-t02",
-  "c6-maths-ch04-t01",
   "c6-maths-ch06-t03",
   "c6-science-ch05-t02",
   "c6-science-ch07-t02",
@@ -10032,7 +10064,6 @@
   "c7-maths-ch06-t02",
   "c7-maths-ch06-t04",
   "c7-maths-ch11-t03",
-  "c7-maths-ch13-t02",
   "c7-maths-ch14-t02",
   "c7-maths-ch15-t03",
   "c8-maths-ch01-t02",
@@ -11455,6 +11486,147 @@
    },
    "misMap": {
     "shadow-same-size": "c7-science-ch11-t02-m3"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch04-t01",
+   "title": "Collecting and organising data",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "sort",
+   "skillId": "c6-maths-ch04-t01-s2",
+   "skillIds": [
+    "c6-maths-ch04-t01-s2"
+   ],
+   "grammar": {
+    "cats": [
+     3,
+     4
+    ],
+    "slips": [
+     10,
+     26
+    ]
+   },
+   "misMap": {
+    "tally-five": "c6-maths-ch04-t01-m-tally-five",
+    "total-mismatch": "c6-maths-ch04-t01-m-total-mismatch"
+   }
+  },
+  {
+   "topicId": "c6-maths-ch04-t01",
+   "title": "Collecting and organising data",
+   "classLevel": 6,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "missing",
+   "skillId": "c6-maths-ch04-t01-s3",
+   "skillIds": [
+    "c6-maths-ch04-t01-s3",
+    "c6-maths-ch04-t01-s2"
+   ],
+   "grammar": {
+    "cats": [
+     3,
+     4
+    ]
+   },
+   "misMap": {
+    "tally-five": "c6-maths-ch04-t01-m-tally-five"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch13-t02",
+   "title": "Representative values: mean, median, mode",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "stack",
+   "goal": "even",
+   "skillId": "c7-maths-ch13-t02-s1",
+   "skillIds": [
+    "c7-maths-ch13-t02-s1"
+   ],
+   "grammar": {
+    "n": [
+     3,
+     5
+    ]
+   },
+   "misMap": {}
+  },
+  {
+   "topicId": "c7-maths-ch13-t02",
+   "title": "Representative values: mean, median, mode",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "stack",
+   "goal": "pour",
+   "skillId": "c7-maths-ch13-t02-s1",
+   "skillIds": [
+    "c7-maths-ch13-t02-s1"
+   ],
+   "grammar": {
+    "n": [
+     4,
+     6
+    ]
+   },
+   "misMap": {
+    "middle-value": "c7-maths-ch13-t02-m-mean-in-data",
+    "outlier": "c7-maths-ch13-t02-m-outlier"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch13-t02",
+   "title": "Representative values: mean, median, mode",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "line",
+   "goal": "middle",
+   "skillId": "c7-maths-ch13-t02-s2",
+   "skillIds": [
+    "c7-maths-ch13-t02-s2"
+   ],
+   "grammar": {
+    "n": [
+     5,
+     8
+    ]
+   },
+   "misMap": {
+    "unordered": "c7-maths-ch13-t02-m-median-unordered"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch13-t02",
+   "title": "Representative values: mean, median, mode",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "aankde",
+   "mode": "tally",
+   "goal": "mode",
+   "skillId": "c7-maths-ch13-t02-s3",
+   "skillIds": [
+    "c7-maths-ch13-t02-s3"
+   ],
+   "grammar": {
+    "cats": [
+     3,
+     5
+    ],
+    "slips": [
+     8,
+     18
+    ]
+   },
+   "misMap": {
+    "mean-size": "c7-maths-ch13-t02-m-mean-in-data"
    }
   },
   {
