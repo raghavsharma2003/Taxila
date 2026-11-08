@@ -65,6 +65,25 @@ export const PLAY_ACTS = Object.freeze({
   guna: { field: { act: "load", hi: "khet kaato aur truck bharo", en: "cut the field and load the truck" },
     pack: { act: "load", hi: "godown ka maal trucks mein barabar baanto", en: "share the godown equally into the trucks" },
     story: { act: "set", hi: "gaadiyan ya packet rakho aur kahani chalao", en: "set out the vehicles or packets and run the story" } },
+  // r7 games: Kram (growing patterns and sequences): grow the figure or fill the bag; set the machine; lay the rhythms; pick
+  // the pieces for the square
+  kram: { grow: { act: "place", hi: "tiles rakh kar agla aakaar banao, ya door ke aakaar ke liye thaila bharo", en: "lay tiles to grow the next stage, or fill the bag for a far stage" },
+    machine: { act: "set", hi: "machine ka niyam set karo aur chalao", en: "set the machine's rule and run it" },
+    beats: { act: "place", hi: "chhote aur lambe beat ki saari laya rakho aur bajao", en: "lay every rhythm of short and long beats and play them" },
+    nest: { act: "place", hi: "tukde varg mein bithao aur bharo", en: "fit the pieces into the square and fill it" } },
+  // r7 games: Hissa (multiplying and dividing fractions and decimals): fold the sheet and tag the piece; pour the jug into cups;
+  // shade the tenths grid or slide the digits; fold the bar or the recipe in the story
+  hissa: { fold: { act: "fold", hi: "kaagaz modo, rang bharo aur tukda gino", en: "fold the sheet, shade it and count the piece" },
+    pour: { act: "fill", hi: "jug se cup bharo aur bacha hissa naapo", en: "pour the jug into cups and name the part cup" },
+    grid: { act: "set", hi: "grid mein dasvein bharo ya ank khiskao", en: "shade the tenths or slide the digits" },
+    story: { act: "fold", hi: "kahani padho, patti modo aur hissa lo", en: "read the story, fold the bar and take the part" } },
+  // r7 games: Koshtak (expressions): put the tray walls / the lid / turn the jumps and run the counter; put like terms in bins
+  koshtak: { tray: { act: "place", hi: "tray ki deewar ya dhakkan lagao aur counter chalao", en: "set the tray walls or the lid and run the counter" },
+    bin: { act: "place", hi: "ek jaise term ek dibbe mein daalo aur dibbe band karo", en: "put like terms in one bin and close the bins" } },
+  // r7 games: Parkar (constructions): open the compass, swing arcs, lay the protractor / set-square, pin crossings, then run
+  parkar: { build: { act: "set", hi: "parkar kholo, nishaan lagao aur tribhuj banao", en: "open the compass, swing the arcs and build the triangle" },
+    bisect: { act: "set", hi: "barabar parkar se nishaan lagao aur rekha milao", en: "swing equal arcs and join the crossings" },
+    drop: { act: "place", hi: "set-square ko saamne ki bhuja par rakho aur lamb kheencho", en: "lay the set-square along the opposite side and draw the altitude" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

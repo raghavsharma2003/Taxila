@@ -25568,6 +25568,503 @@
    "at": "2026-11-06",
    "title": "Apply the M3 automation (scripts/m3.mjs apply --apply --start-now --vm) by 2026-11-07, so that day 1 is 2026-11-08 at the latest, which fits even the worst-case deadline. The VM is taken as a yes from the owner's 2026-11-06 message ('rent or whatever we need'): 7 services, 2 spare. The PostgreSQL downsize stays off until the owner says yes, because it touches a database and is not needed to qualify. Blocked: this environment has no Azure keys. Reverse if the Founders Hub portal shows a different verification date, or if the owner declines the VM.",
    "source": "inbox/r7-main-15.json"
+  },
+  {
+   "id": "ms-r7-m3-applied-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "M3 applied live on 2026-11-06 at 08:24 UTC, with the owner's keys, from int/r6 plus the m3-ledger fix (49e45cb44): `apply --apply --start-now --vm`. Created or changed: taxilacr Basic → Premium; container taxilaforge/m3-ledger; ACA jobs m3-keeper (17 3,15 * * *) and m3-verify (41 6 * * *) in taxila-env; action group m3-owner (Owner role + team@vyakti.ai); alert rules m3-alert-lines and m3-verify-silent; RG taxila-m3-rg with taxila-m3-vm (D2as_v5, private, no public IP). M3_SINCE = 2026-11-07, so day 60 = 2027-01-05. At 09:10 UTC taxila-cin-pg was downsized D2ds_v5 → B2s (owner yes), $6.30 → $2.63/day. Before applying, a 1-call probe each: taxila-fast 200, taxila-brain 200, centralindia speech token 200. The first keeper execution (m3-keeper-wlth24y) had $1.25 on the models lane in the ledger at 08:51. Method: m3.mjs output and ARM reads. n = 1 apply.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "fd-r7-m3-subscription-inventory-2026-11-06",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "The subscription hosts Taxila (rg-raghavsharma1729-7190, taxila-sin), Vyakti (vyakti-voice; vp-research-rg with VM vl-vm-cin, D2as_v5) and the companion and sales-enabler projects (Foundry projects on raghavsharma1729-compan-resource). Milestones count services across the whole subscription. Cost Management, 2026-10-22 to 11-04, closed days:\n- ≥ $1 every day: PostgreSQL 6.27, Container Apps 4.4 (including Vyakti's apps), Virtual Machines 1.33 (Vyakti's VM only).\n- Fluctuating: Foundry Models (−0.06 to 7.84) and Foundry Tools (0.02 to 5.14).\n- Under $1: Container Registry 0.77, Load Balancer 0.60, Virtual Network 0.24, Storage ~0.15, Azure Monitor 0.15.\n\nThe deploy service principal is Contributor at the subscription (plus Foundry Owner on compan-resource). It cannot create role assignments or resource locks. Container Instances has 0 core quota on this sponsorship. Public IP quota is 100 per region.\n\ntaxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory ~30% of 8 GB. The India staging app taxila-sin-staging carries a DATABASE_URL.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "rj-r7-m3-container-name-m3",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "The M3 ledger container was named \"m3\". Azure blob container names must be 3-63 characters, so the first live dry run failed with 400 OutOfRangeInput. tests/m3-plan.test.mjs passed because its fake Azure never validated names. It was renamed to m3-ledger before anything was applied, and a test now pins the name as legal and the same in all three files. Lesson: a fake must enforce the real service's input rules, or the first live run is the real test.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "dc-r7-m4-without-fail",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Target Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) rather than M3 alone, holding 9 services (2 spare) with no single point of failure, independent of whether anyone keeps developing Taxila or Vyakti. Owner, 2026-11-06: \"without fail\", fully autonomous and break-tested.\n- Spares: Load Balancer (an internal Standard LB with 8 rules) and Virtual Network (Standard public IPs), both in taxila-m3-rg.\n- Two independent runners share one leased ledger: ACA jobs every 3 h (eastus2), plus a systemd timer on taxila-m3-vm (centralindia), offset by 90 minutes.\n- Closed-loop lane targets come from Cost Management actuals.\n- The verifier runs twice a day in M4 mode (alert below 8 services), with a credit-runway alarm and a burst alarm.\n- Multi-address alert email.\n- Owner-made CanNotDelete locks on the M3 resources.\n\nBuilt on claude/r7-m4; the main loop applies it live and break-tests it live. Reverse if: Microsoft counts workloads by something other than ServiceName in a way that drops us below 7; the credit cannot cover 60 days at ~$20-24/day; or the owner declines the spares.",
+   "source": "inbox/r7-main-16.json"
+  },
+  {
+   "id": "ms-r7-director8-hand-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director8 (script walk v5, v2.2 scripts, H1.2; int/r6 7e2d7eea7 + harness fbaa0f4c), 16 lessons, judged by hand by 4 Claude judges.\n- Beats taught 174/182 (96%); verdicts 200/202 (99%).\n- Right called wrong: 1. Wrong called right: 0. False keys: 1.\n- Contradictions per segment by hand: 73 (code checker: 2). About 45 are Studio's \"?\" over stated numbers, 6 are empty picture requests, and about 22 come from runtime segment assembly; director7 had 51 runtime contradictions.\n- Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register 2.5-3; promises 2.5-3.\n- Cost: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.\n- Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns, 2,265 calls, ~$1.42.",
+   "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6: every sentence on its own board, and requests and parks done for real.\n- Brain R1-R6: segment assembly for verdicts, closes and bridges; a close's why only from the closed card; the invented guard replaces the line and keys are checked in every phrasing; requests as moves (smaller re-explanation, picture redraw, specific hint, probe acknowledgement); real returns and a language mode that holds; render hygiene (one verdict, no duplicates or double questions, no early results, ~60 words split into turns).\n- Studio S1'/S3': only the asked value may be '?'; a confirmed answer is revealed; a picture request draws the live card's figure.\n- Learning: v2.2 data fixes (a why per key, a board per bridge, asked figures drawn, shading, must-says, distractors).\n- Harness: the checker models '?', picture lines, foreign whys and misplaced verdicts; per-segment board and time logged; events in context.\n- Next run: director9 on integration 11. The gate is unchanged. The 30-topic batch stays held.\n- Reverse if: director9 implements R1-R6 and S1'/S3' and still has more than 10 hand-counted contradictions. Then contradictions are not a sentence-placement problem: move to a code-rendered teaching voice for every sentence that describes the board, with the model kept to verdict framing and diversions.",
+   "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "rj-r7-code-spec-unstreamed",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "Rejected: speculating the reply on code-classified turns in parallel with the distress read, without the clause stream (TAXILA_CODE_SPEC, Brain 61fb6850).\n- A/B on the 4 steady lessons (160 turns, 939 calls, ~$0.62): first-audio-ready p50/p90 was 1,954/3,498 ms against a baseline of 1,852/3,123.\n- Why it lost: the speculated reply has no clause stream, so it displaced the early-first-clause path (970 ms); 19% of speculations missed on the on-screen facts row; and model-classified turns were slower.\n- The flag stays off. Proposed instead: stream the speculation and hold its first guarded clause until the read is clean.",
+   "source": "inbox/r7-main-17.json"
+  },
+  {
+   "id": "ms-r7-m3-owner-facts-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Owner-read facts for M3/M4, 2026-11-06.\n- Credit: ₹230,490.71 remaining (MCA billing profile 'Raghav Sharma'; the detailed Azure credits panel would not load). The Startups dashboard says '$5,000 of $150,000 unlocked', with $4,770 in credits expiring 2027-04-04.\n- ARM billingProperty: StartupSponsorship of $5,000, start 2026-07-08T10:58Z, end 2027-04-04, status LimitRemoved. Subscription quotaId Sponsored_2016-01-01; billing type Benefit.\n- The deploy SP is 'sales-enabler-deployer'. Its secret expires 2027-03-30.\n- The Milestones card was not reachable, so the verification date is still unconfirmed by the portal.\n- microsoftazuresponsorships.com shows 'no sponsorship', because this sponsorship sits on an MCA billing profile.\n\nAt 09:55 UTC the owner granted the SP User Access Administrator, conditioned to exclude the Owner, UAA and RBAC Admin roles. The main loop then placed CanNotDelete locks 'm3-credit-do-not-delete' on taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, m3-keeper, m3-verify, m3-owner, m3-alert-lines and m3-verify-silent.",
+   "source": "inbox/r7-main-18.json"
+  },
+  {
+   "id": "dc-r7-app-site-config",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "The public site reads one config, src/app/site.ts. SITE.origin is https://taxila.dev, confirmed from the trace default and the Front Door plan. PRICES holds every price and is \"TBD\" until the owner sets it. With TBD the landing says no price is set yet; with a number it shows ₹ per month. No literal amount is allowed in the landing source. The canonical link and og:url are set per public path from SITE.origin. Reverse: the owner picks another domain, or pricing moves to a server-served plan table.",
+   "source": "inbox/r7-app-20.json"
+  },
+  {
+   "id": "dc-r7-code-spec",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "On a turn the bytes decided (classifyFast has a result), her reply starts alongside the model distress read instead of after it (server/latency/perceive.js rule 6, TAXILA_CODE_SPEC: off in production, on in the turn replay). Release is unchanged: the turn plans only after the read, uses the reply only on an exact reply-key match, and a distress read's plan never matches; nothing streams from it. Reverse if any release beats the read.",
+   "source": "inbox/r7-brain-16.json"
+  },
+  {
+   "id": "ms-r7-turn-replay-int10",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Turn replay on integration 10 (int/r6 7e2d7eea7, director8's 16 lessons, real lesson start + turn path, throwaway local Postgres, 432 turns, 2,265 calls, about $1.42): first-audio-ready (first guarded clause, no TTS) p50 1,896 ms, p90 3,055 ms. Code-classified turns (275) waited about 800 ms for the model distress read before planning. 3 script cards were skipped on a move-section budget overflow (fixed in 9b2c3b4d).",
+   "source": "inbox/r7-brain-16.json"
+  },
+  {
+   "id": "ms-r7-code-spec-ab",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Turn-replay A/B of dc-r7-code-spec on integration 10 (4 steady lessons, 160 turns, 939 calls, about $0.62): first-audio-ready p50/p90 1,852/3,123 ms → 1,954/3,498 ms with the flag on. On code turns the speculated reply cut the read's wait (used replies 1,490 ms) but gave up the streamed early clause (baseline early-clause code turns 970 ms) and missed on 19%. No gain as built; the flag stays off.",
+   "source": "inbox/r7-brain-17.json"
+  },
+  {
+   "id": "ms-r7-checker-v6-offline",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "The v6 checker kinds (evals/hybrid-side-by-side/checks.mjs) re-run offline on director8's saved rows, no model calls: c5-t02 '?' draws stated 31 turns (judges: 40 of 45 firm, the old checker 0); c4 / c6 '?' 0 (judges: none). Borrowed whys 9 / 8 / 10 / 9 per topic; verdicts with content over another board 8 / 10 / 11 / 2 (c4, c5-t01, c5-t02, c6); picture lines naming an undrawn thing 2 / 0 / 1 / 2. Approximate: the saved rows hold one screen per turn, not per segment.",
+   "source": "inbox/r7-brain-18.json"
+  },
+  {
+   "id": "dc-r7-games-hissa",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "hissa (multiplying and dividing fractions and decimals) as one never-timed law family for class 7: fold (a sheet folded across and down, the overlap tagged by counting; rope pieces laid on a metre track), pour (a jug poured into full cups, the part-cup tagged as a fraction of a cup; fractions and decimals), grid (a tenths grid shaded both ways and the label's point placed; digits slid past a fixed point), story (a bar spent twice, the second fold on what is left; a recipe folded into shares per person). 5 topics: c7-maths-ch08-t01, c7-maths-ch08-t02, c7-maths-ch08-t03, c7-maths-ch12-t01, c7-maths-ch12-t02. Why: the five topics were served only by ITEM-ARENA. Reverse: a child pilot shows tags set by trial runs rather than by counting.",
+   "source": "inbox/r7-games-hissa.json"
+  },
+  {
+   "id": "ms-r7-games-hissa-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "hissa play-cert (forge3-qa, p360/p412/l1366, game mounted): 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px); 64 law and server tests pass.",
+   "source": "inbox/r7-games-hissa.json"
+  },
+  {
+   "id": "dc-r7-games-kram",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "kram (growing patterns and number sequences) as one never-timed law family for classes 4-7: grow (a tile figure grown to its next stage on a copy of the last; a bag filled with exactly the pieces a far stage needs, grown stage by stage out of it), machine (a step machine walked along a list; a rule machine a × n + b fed the stage number), beats (every rhythm of n beats laid from the shelves above, S or L in front; a bag for a far beat count), nest (L-pieces or two staircases picked to fill a square). 7 topics: c4-maths-ch03-t02, c5-maths-ch07-t02, c6-maths-ch01-t02, c6-maths-ch01-t03, c6-maths-ch01-t04, c7-maths-ch04-t03, c7-maths-ch06-t03. Why: the pattern topics were served only by ITEM-ARENA. Reverse: a child pilot shows the bag and dials used as answer boxes, so the beliefs never surface.",
+   "source": "inbox/r7-games-kram.json"
+  },
+  {
+   "id": "ms-r7-games-kram-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "kram play-cert (forge3-qa, p360/p412/l1366, game mounted): every kram sample passes at every size; 73 law and server tests pass.",
+   "source": "inbox/r7-games-kram.json"
+  },
+  {
+   "id": "dc-r7-staged-batch-30",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (dc-r7-script-walk-v4): the next-30 ranked topics are authored in script format v2.2 into data/lesson-scripts-staged/ (not live). Each one passes check.mjs (structure, boards, runtime) and a blind solve: a Claude solver that sees only each ask's prompt and the line said just before answers every keyed question, flags leaks, ambiguity and missing givens, and its answers are compared with the separately kept keys. All 30 matched every key; every flag was fixed before commit. Two kit items were added where a ladder lacked 3 practice rungs (c5-ch05-t01 i19, c4-ch14-t01 i19). Held until director8 passes. Reverse if: director8 shows a staged-script defect class the blind solve cannot see (board/speech timing, child requests); add that check before promotion.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-friend-pool-names",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: a v2.2 script never writes a name the {friend} slot can fill (server/director/friend.js: Zoya, Kabir, Meera, Arjun, Ishaan, Tara, Diya, Aman), keys and accepts included. When the slot filled with the same name, two characters shared it ('Tara painted 3/5 … {friend} painted …; who painted more? Tara'). check.mjs poolNameErrors enforces it, and a test keeps its list in step with friend.js. 2 live and 10 staged scripts were renamed (same gender). Reverse if: friend.js learns to skip names already in the card text, so a fixed character can share the pool.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-kit-friendf",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director6): kit card characters Riya/Asha become the {friendF} slot (237 units in 35 kits). A unit already naming Zoya/Meera/Tara/Diya renames that character first (7 units). Fields the runtime does not fill (worked examples, passages) say Nisha (13). Pushed only once Games' serve-time fill (cefab3548) was in base, so the slot never reaches a child unfilled; data/arena, vakya and coverage regenerated in the same commit. Reverse if: a served surface shows '{friendF}' raw; fill it there rather than revert the kits.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-child-events-in-context",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (director7, dc-r7-script-walk-v5): the H1.2 reactive child plays a scheduled event only on a turn where it fits. A self-try ('pehle main try karun?') only while a question she just asked is open, never after a why-probe or once answered; a pata-nahi only to an open question; a picture request never in place of a reason. An event that does not fit waits for the first turn that does. Reverse if: events then cluster at lesson ends and the walk loses coverage of a request kind inside MIN_TURNS.",
+   "source": "inbox/r7-learning-29.json"
+  },
+  {
+   "id": "dc-r7-card-board-asked-only",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "A scripted card's board writes \"?\" only over the value the card asks: board-sync answerValues withholds the numbers of the KEY (scriptBeat.answers[0]) that her line does not state (as itself or an equal fraction), and never a label the card's own board authors (\"before 2/4\" over the card's 2/4 mark). Accept forms withhold nothing: they quote the card's givens (\"5 wali roti ka tukda\", \"her brother, 4/6\"); director7's rule withheld every number in key and accept forms and drew c5-t02's givens as \"?\". A fraction-line@1 asked `mark` whose value her line states is labelled with it (board-first statedMark); the card's board still on screen on her confirming turn stays a candidate (sameCard): re-taken, a value she now states is drawn, else it is kept. Reverse if a card's key is a given its own board must hide (Learning's check.mjs would then need a withhold field on the card).",
+   "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "dc-r7-picture-second-view",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Amends director5 SC2 (a picture request re-shows the live card's own board): when the card's own board is ALREADY the page on screen, a picture request draws a second view of the same numbers instead: fraction-bars@1 (1-3 equal bars, parts and shaded parts per bar, counts.wholes), chosen at preselect so her line is written from its row, and flagged artifact.altView = \"parts\" for Brain. Only a fraction line within one whole (marks, an asked mark, a hop) or a compare whose title or item IS a fraction gives one; the value the card withholds is an unshaded \"?\" bar. Anything else is re-shown as before, and with another board on screen SC2 stands unchanged (the card's board). The card's own board always answers a picture request, a words-only compare included (answersRequest skipped it, nothing was picked and the ladder drew an unrelated code board). Main approved 2026-11-06. Reverse if judges find the second view confuses a child more than it helps: go back to re-showing the card's board.",
+   "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "ms-r7-director8-card-question-replay-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director8's own card turns (results on claude/r4-conversation 9dbf3101a: per-turn boardRef, card, screen) re-drawn with dc-r7-card-board-asked-only: turns whose board wrote \"?\" over a number the card states and its board authors, before → after: c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 0/30 → 0, c6 0/28 → 0. Of all 81 director8 turns that drew a \"?\", 42 still do: each an open question whose value her line has not stated. tests/r8-card-stated.test.mjs: every check and then-card of the 4 pilot scripts and Learning's 29 staged scripts draws no stated number as \"?\"; a picture request returns a figure on every pilot card and on all staged cards but 7, each a card whose prompt names a shape (circle, chord) over a words-only compare board (W15.named_shape_drawn; Learning data).",
+   "source": "inbox/r7-studio-25.json"
+  },
+  {
+   "id": "dc-r7-m4-no-spend-without-ledger",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "With two runners, nothing spends without the shared ledger, with one exception: the VM in its last slot (22:47 UTC) spends each lane to target against its local mirror of the last shared ledger it saw, records it offline, and folds it into the shared ledger (offlineUsd) once it can reach it. This replaces M3's rule (the 03:17 run spent each target once blind; the 15:17 run skipped): with two runners and 16 runs a day, a blind spend can double-spend, and the retry density makes it unnecessary for transient faults. A corrupt ledger never spends. Safe because the ACA runner never spends without a write-ahead to the shared ledger: if the ledger is really down, nobody else spent since the VM last saw it. Reverse if a one-sided partition (the VM cannot reach the ledger while ACA can) is ever observed: offlineUsd and ACA spend on the same lane and day in a ledger; or if a full-day eastus2 storage outage costs a day that a blind ACA spend would have saved.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-price-lb-pip-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Load Balancer and public IP prices, read 2026-11-06. Retail Prices API: Standard LB meters are Global rows ('Standard Included LB Rules and Outbound Rules' $0.025/h, 27827eb0; 'Standard Overage LB Rules and Outbound Rules' $0.01/rule-h, c36503b7). armRegionName eq 'centralindia' finds none. Standard IPv4 Static Public IP centralindia: $0.005/h (9c150bf9); there is no separate idle meter for Standard. Cost Management agrees for 7/7 closed days (2026-10-30 to 11-05): capp-svc-lb (2 rules) billed 24 Included hours = $0.60/day, and Vyakti's 2 attached IPs billed 48 IP-hours = $0.24/day. So 8 rules = $1.32/day and 11 IPs = $1.32/day. n = 1 retail read per meter + 7 days of actuals (Cost Management query grouped by ServiceName and Meter).",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-price-fallbacks-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Fallback prices, read 2026-11-06 from the Retail Prices API. gpt-5.6-luna GlobalStandard in southindia: $0.20 input / $0.02 cached / $1.20 output per 1M tokens (a05ffb45 / 5489ae4f / d01c83fd), the same as eastus2. S1 Neural TTS is $15 per 1M characters in 34 regions including swedencentral (meter 0f98e708), but there are 0 rows in southindia. Then `m3.mjs prices` re-read all 26 hard-coded rows by meter id: 26/26 unchanged. The first run hit a 429, which exposed retail()'s missing retry on a non-JSON reply; that is fixed. n = 1 read per row.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "fd-r7-m4-live-inventory-2026-11-06",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "Live, read-only, 2026-11-06. The deploy SP was Contributor only (notActions Microsoft.Authorization/*/Write), so it could not create locks. The owner then gave it User Access Administrator (conditioned: it cannot assign Owner, UAA or RBAC Admin) and hand-made CanNotDelete locks 'm3-credit-do-not-delete' on 11 targets. The dry run reads all 11 as present. AZURE_SPEECH_KEY_SIN belongs to taxila-ai-centralindia (matched by hash in memory, never printed). Chat deployments on Taxila-owned accounts exist only on taxila-ai-southindia: taxila-fast, taxila-brain, taxila-fast-bg (luna) and others. taxila-m3-nsg has 0 custom rules; its defaults deny internet inbound. taxila-m3-vm is running; its VM agent is Ready (2.16.0.2) with no outbound. taxilaforge and the AOAI account are public-network (no ACL).",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "fd-r7-m4-lb-empty-pool-unknown",
+   "kind": "finding",
+   "at": "2026-11-06",
+   "title": "Microsoft's Load Balancer pricing page bills 'configured load-balancing and outbound rules'. It states that a Standard LB with no rules has no hourly charge, and says nothing about rules whose backend pool is empty (read 2026-11-06). Not measured here. Design consequence: taxila-m3-lb's pool holds taxila-m3-vm's NIC, so the answer does not matter.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-break-tests-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Fake-Azure break tests, 2026-11-06. tests/m4-break.test.mjs: 22/22. tests/m3-plan.test.mjs: 18/18 (updated to the v2 keeper). The fake (tests/fixtures/m3-fake-azure.mjs) has blob leases on a settable clock, per-endpoint faults and a network-down switch. Results: a run killed after a paid batch leaves its lease held (a retry 30 s later waits, spends $0), and the next slot adopts its write-ahead as orphanUsd and finishes under every cap. Two runners at once: the VM run started mid ACA batch saw the lease and spent nothing. When every ACA run fails, the VM alone reaches all three targets. With eastus2 down all day, the VM's 22:47 local fallback spends models via fallback2 and TTS once, a re-run spends $0, and the next day folds it into the old ledger (only storage short). Primary 404 → after 1 batch (6 calls, $0 billed), primary 429 → fallback after 3 batches, both to target under the cap. A TTS 401 alerts before the lane ends. A corrupt ledger and a seen-then-unreachable ledger spend $0. Closed loop: 1.0 → 1.82, 0 → 2.50 (cap 2.65), and a raise never drops. Boundary: no batch at 23:40+, a run crossing 23:40 stops before its first batch, 00:01 starts the next ledger. After M3_UNTIL: 0 requests. Verifier M4: 9 → OK; 8 → OK + WARN; 7 → ALERT, with the clock still running; reset alerts, and an M3-era report is not a reset; runway INR; burst > $60 only for recent days; cost-query failure; runner-missing; keeper-auth-failed; secret expiry at 20 days but not 22, after M3_UNTIL. The CLI dry run against a fake ARM, in 4 scenarios, made no write and printed no secret. NOT measured: anything live.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-live-dry-run-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "`node scripts/m3.mjs apply --vm --only pips,lb,runner,locks` dry run against live Azure, 2026-11-06 (read-only GETs and list* POSTs, no writes, no secret in the output by an in-memory scan of 14 secret values). VM ok and running. pips: live $0.005/h → $1.320/day; NSG denies internet inbound; WOULD create 11 IPs and attach pip-01 to the NIC. lb: live $0.025 + 3 x $0.01 per hour → $1.320/day; WOULD create subnet lb 10.73.0.64/27, taxila-m3-lb, and put the NIC in its pool. runner: WOULD create Run Command m3-runner (script ~22 KB, Node v22.23.4 sha256-pinned, the keeper as a file, a timer at 01/3:47 UTC), with fallback2 = taxila-ai-southindia/taxila-fast-bg and the TTS fallback = taxila-ai-swc. locks: 11/11 present. A jobs/actiongroup/alerts dry run would update m3-keeper (cron, script, env, secrets) and m3-verify (cron, script, env); actiongroup and alerts are unchanged. n = 1 run each.",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "open-r7-m4-billing-assumptions",
+   "kind": "open",
+   "at": "2026-11-06",
+   "title": "To verify on the first closed day after the M4 apply (2026-11-08 or later, visible about 2 days later), with `m3.mjs status` or Cost Management by Meter. (1) Do the 10 unattached Standard public IPs bill $0.005/h each? Expect Virtual Network ≈ $1.56. If it is ≈ $0.36, attach them as secondary ipconfigs. (2) Does taxila-m3-lb bill 24 Included + 72 Overage hours = $1.32? (3) Did the Run Command pass the protectedParameter (look for M3-RUNNER-OK in the apply output)? (4) Does the ledger show runs by both aca and vm, and does the day-1 report count 2026-11-06?",
+   "source": "inbox/r7-m4-1.json"
+  },
+  {
+   "id": "ms-r7-m4-applied-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "M4 hardening applied live on 2026-11-06 at ~10:55 UTC from int/r6 725ead5e9, via `apply --vm --apply`. Image skipped; see rj-r7-m3-image-409.\n- Created 11 Standard public IPs and taxila-m3-lb (internal, 8 rules, VM NIC in its pool). pip-01 gives the VM outbound.\n- Installed m3-runner on taxila-m3-vm: M3-RUNNER-OK, node v22.23.4, a systemd timer at 01/3:47 UTC.\n- Updated m3-keeper (17 */3) and m3-verify (41 6,18; M4 mode).\n- The action group mails 2 addresses plus the Owner role.\n- Locks verified on all 11 critical resources.\n\nLive break test at 11:02 UTC: two ACA keeper executions and the VM runner fired at once. The ledger recorded runs vm@11:02:10 and aca@11:02:27; the third found the lease held and did nothing. Lane totals stayed $1.35 / $1.35 / $1.25: no double spend, and both runners reached the ledger. A test notification was sent through m3-owner (createNotifications returned accepted). Not yet live-tested: a whole day with ACA down. That is covered only by tests/m4-break.test.mjs (22/22).",
+   "source": "inbox/r7-main-19.json"
+  },
+  {
+   "id": "rj-r7-m3-image-409",
+   "kind": "rejection",
+   "at": "2026-11-06",
+   "title": "M3 image step: with the tag present, a NoForce ACR import's async-operation poll answers 409 \"Tag … already exists\". arm() threw it, so the whole apply aborted at step 2 on the first M4 apply. Fixed: the poll reads that 409 as the 'already present' outcome. Verified live: `apply --only image` prints 'already present'. A fake that never models a provider's async-poll error codes misses this class.",
+   "source": "inbox/r7-main-19.json"
+  },
+  {
+   "id": "ms-r7-director9-hand-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director9: script walk v6, int/r6 4ebc45fe2 + Brain 3d6f7e7c, 16 lessons, counted by hand by 4 Claude judges.\n- Beats taught 173.5/181 (96%); verdicts 154/156 (99%).\n- Right/wrong called the other way 0/0. False keys: 1, a stated wrong rule.\n- Contradictions per segment by hand: 41 (code: 10). Of these, 14 are confirm-reveal not firing on the run path, 13 are picture requests that draw nothing new, 8 are the c6 L-shape over a regular polygon (data + Studio), and 6 are runtime placement.\n- \"samajh nahi aaya\" / \"pata nahi\" got a real smaller re-explanation 16 of 58 times.\n- 52-53 of 136 turns end in a check-in.\n- Axes: listening 2.5-3; worked example 3-4; class-level 3-3.5; screen 2.5-3; register 2.5-3; promises 2-3.\n- 1,424 calls, ~$0.937. Reply-ready p50 2.33 s / p90 3.58 s.",
+   "source": "inbox/r7-main-20.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-1",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6.1.\n- P1: replay director9's rows through the real turn path to find why confirm-reveal and S3' are dead there; fix and pin them with run-path tests.\n- P2: every picture request draws something new, with a second view for compare and shade-grid too.\n- R7: no model-written teaching in script mode (authored `simpler` and whys; model sentences stating rules or numbers are checked against the key and the misconception).\n- R8: requests as moves; never give away the live answer.\n- R9: one check-in per beat, after new teaching, and a non-yes is acted on.\n- R10: parks, and the language mode extends to cards.\n- R11: rendering.\n- Data v2.3 (additive): `simpler` on every explain beat, worked step and card; prompt shape words checked against the board.\n- Harness: the child treats an imperative as a question; the checker models confirm-reveal and picture draws.\n- Next: director10 on integration 12. The gate is unchanged, plus a stated wrong rule counts as a false key.\n- Reverse if: director10 has P1-P2 in place and still more than 10 runtime-class contradictions; then board-describing sentences go to a code-rendered voice. The 30-topic batch stays held.",
+   "source": "inbox/r7-main-20.json"
+  },
+  {
+   "id": "dc-r7-app-signin-code",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Guardians can sign in with a 6-digit code sent by email, at /signin. The server is server/signin/code.js: POST /api/auth/code and /api/auth/code/verify, with the same createSession as password login. One provider interface: email goes through ACS Email (the existing sendAcsEmail, Azure-managed domain); phone has the same shape and refuses with 501 phone.unavailable, because ACS SMS does not reach Indian numbers. There is no migration: codes are password_reset rows keyed code:+sha256(guardian, code), so reset links and codes share the 5-an-hour mail limit and a password reset spends open codes. A code lives 10 minutes, and 5 wrong tries spend it. An unknown email gets the same answers as a known one. Platform registers the routes (to-platform/002); Learning adds the links (to-learning/004). Reverse: an Indian SMS or WhatsApp route on Azure fills PROVIDERS.phone, or Learning wants a dedicated table (then a migration number from Platform).",
+   "source": "inbox/r7-app-21.json"
+  },
+  {
+   "id": "dc-r7-app-pricing-page",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "/pricing shows three plan cards, Set-up (free), One child (PRICES.monthly) and Brother or sister (PRICES.sibling), all built from src/app/site.ts PLANS. There is no payment step: every action is the free set-up, a TBD price reads 'Not set yet' on its card, and a callout says paying is not open and no card is asked for. The cards list only what the product does today; cancellation is described as future, never as a feature. Linked from the site header, the footer and the landing's price section. Reverse: the owner chooses a payment provider (then a checkout seam from Platform), or renames or drops a plan in PLANS.",
+   "source": "inbox/r7-app-22.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-1-brain",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Script walk v6.1, Brain's half of main's dc-r7-script-walk-v6-1 (director9 hand judgement). P1: run-path replays through planTurn → textReply → whiteboardIntentOf → Studio's seam. c5-t01 T21's dropped confirm-reveal was Brain's: a 3-word tail page that Studio could not draw failed the whole paged turn. A page under 5 words with no card is now no page. R7: no model-written teaching in script mode (authored simpler / point / why only; her rule sentences and wrongIfMis statements go). R8: dodges never let a scripted card go with its key; probe acknowledgement only when it takes up their words. R9: one check-in per beat; a 'nahi' to it gets the same teaching smaller. R10: asides with no request read are parked; cards in Hindi words in the Hindi mode. R11: step labels, 'Is sawaal' vs 'Pichhle sawaal', code not-right verdict, no Devanagari switch. Format 2.3 (`simpler`) is read and validated. Reverse a part if director10's hand count shows it adds a contradiction, a lost card or a longer skill 1.",
+   "source": "inbox/r7-brain-19.json"
+  },
+  {
+   "id": "ms-r7-run-path-replay-d9",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Run-path replay of director9 rows (tests/fixtures/replay.mjs: recorded child turns read by classifyFast or the run's recorded model read, planned by turn.js planTurn). The replay matches all 10 of the run's moves up to c5-t01 steady T21. T21 through Studio's seam (Studio a402e724 merged): before the fix 'planning' (no page; take of the 3-word tail page rejected W6.timing); after it 'revealed', page 0 counts.marks [mark 1 = 1/8]. c5-t02 stuck T18: the second view (number line, 8 gaps, 1/8) is drawn and named; in the run tree Studio's a402e724 was missing.",
+   "source": "inbox/r7-brain-19.json"
+  },
+  {
+   "id": "dc-r7-games-guna2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "guna extended to c7-maths-ch01-t03 (round × round to 7 racks, big estimates), c5-maths-ch04-t02 (field/check: the estimate built, then dockets marked) and c4-maths-ch09-t02 (pack/each sharing; story full / all at small numbers); rack limit 7, existing levels unchanged. Reverse: dockets marked without the estimate, or the column truck read as labels.",
+   "source": "inbox/r7-games-guna2.json"
+  },
+  {
+   "id": "ms-r7-games-guna2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "guna play-cert after guna2: 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px); 97 guna law and server tests pass.",
+   "source": "inbox/r7-games-guna2.json"
+  },
+  {
+   "id": "dc-r7-games-koshtak",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "koshtak (expressions: terms, brackets, order of evaluation, like terms) as one never-timed law family for class 7: tray (walls snapped between the terms of a row and a counter that works each tray then joins them; one lid laid so the row makes a value; a bracket after a minus opened into jumps whose directions the child turns, walked against the bracketed row on one number line), bin (term cards with their signs put into bins that close into one term only when every card has the same letter part, checked against the belt with numbers for the letters). 2 topics: c7-maths-ch02-t02, c7-maths-ch04-t02. Why: both were served only by ITEM-ARENA. Reverse: a child pilot shows walls / lids / turns set by trial runs rather than by reading the signs.",
+   "source": "inbox/r7-games-koshtak.json"
+  },
+  {
+   "id": "ms-r7-games-koshtak-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "koshtak play-cert (forge3-qa, p360/p412/l1366, game mounted): 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px); 32 law and server tests pass.",
+   "source": "inbox/r7-games-koshtak.json"
+  },
+  {
+   "id": "dc-r7-games-kon2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "kon extended to lines and angles: lines/parallel and lines/perp (c7-maths-ch05-t02), cross/corr and cross/alt (c7-maths-ch05-t03), ends/ends (c6-maths-ch02-t01); three new modes on kon's arm, one new act (stop); earlier kon levels unchanged. Reverse: children align line 2 by eye without the grid or the angles, or ends is played as a four-way pick.",
+   "source": "inbox/r7-games-kon2.json"
+  },
+  {
+   "id": "ms-r7-games-kon2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json).",
+   "source": "inbox/r7-games-kon2.json"
+  },
+  {
+   "id": "dc-r7-games-nishana2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "nishana hop extended to c7-maths-ch10-t02 (÷: the pod is the quotient, a chain of hops from 0 must reach the dividend's flag) and c7-maths-ch03-t04 (decimal hops on a tenths line); no new mode or goal, existing levels unchanged. Reverse: the ÷ chain read as an answer meter at fade 1, or decimal landings too fiddly at p360.",
+   "source": "inbox/r7-games-nishana2.json"
+  },
+  {
+   "id": "ms-r7-games-nishana2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "nishana play-cert after nishana2: 228/228 nishana samples pass at p360, p412 and l1366 with the game mounted (18 entries; 16 samples on the 2 new entries); the first ÷ run failed Q2.whole at p360 (goal text ellipsised) until the goal copy was shortened.",
+   "source": "inbox/r7-games-nishana2.json"
+  },
+  {
+   "id": "dc-r7-script-v23-simpler",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F (dc-r7-script-walk-v6-1, director9): script format v2.3 gives every explain beat, worked step, yourStep, check and then-card an authored simpler {hi,en}: at most 35 words, no '?', only numbers from that item's givens or key, and never the key (a yes/no key is exempt from the leak test). check.mjs enforces this (SIMPLER_MAX_WORDS), and Brain's validator checks shape, so a child who is stuck hears a scripted easier line, not a generated one. The 4 live pilots went to 2.3 in integration 12b (db128cebb). The 30 staged scripts have simpler but stay at 2.2, held. Reverse if: a director run shows simpler lines being recited where a re-ask would serve better, or the 35-word cap cuts a needed step.",
+   "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "dc-r7-answer-board",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: answerBoard {template,params} on a KeyedAsk or check is drawn only in that card's close, is the one board allowed to show the key, and is certified by check.mjs against the key plus why. The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 shaded). Reverse if: a run shows the answerBoard drawn before the child answers.",
+   "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "dc-r7-shape-word-asked",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Round 7 F: check.mjs runs W15 (named_shape_drawn) in asked mode on every script board. A line that names a square, rectangle, triangle or circle must have a board that draws that shape; otherwise the line is reworded. All 4 live pilots pass. 21 staged boards failed and were fixed by drawing the shape (shape@1, shade-grid@1) or rewording the line, except 4 c4-ch01-t02 cards, which wait on Studio exempting 'square corner' (NCERT's name for a right angle) as it did 'set-square'. Reverse if: Studio's exemption list grows past a handful of phrases; then key W15 to board intent instead of words.",
+   "source": "inbox/r7-learning-30.json"
+  },
+  {
+   "id": "ms-r7-director10-hand-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "director10: script walk v6.1, v2.3 pilots, split policy B; int/r6 2ede8a434 + Brain de86cad2; 16 lessons, counted by hand by 4 Claude judges.\n- Beats taught 203/210 (97%); verdicts 217/219 (99%); misgrades 0/0; false keys 0 strict (2 borderline).\n- Contradictions per segment by hand: 52 (5 words / 44 drawing / 3 data). Of the drawing ones, about 29 are first-page failures that unpage the turn, about 9 are missing or wrong second views, and 6 are confirm-reveal keyed to digits.\n- `simpler` answered requests: c4 10/11, c6 11/17, c5-t02 6/9.\n- 13 of 16 lessons left skill 1 (director9: 6).\n- Turns over 60 words: 21-30 per topic.\n- Axes: listening 3-3.5; worked example 3.5-4; class-level 3.5-4; screen 2-3.5; register 2-3; promises 2.5-3.\n- Cost: 1,380 calls, ~$0.95. Reply-ready p50 2.56 s / p90 4.04 s.",
+   "source": "inbox/r7-main-21.json"
+  },
+  {
+   "id": "dc-r7-script-walk-v6-2",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Script walk v6.2: the board always draws, and turns stop stacking.\n- Studio, with Brain:\n  - G1: a failing first page keeps the card's board, and never fails the turn.\n  - G2: W5/W8 accept a close in the card's authored why.\n  - G3: confirm-reveal fires on a correct verdict.\n  - G4: a second view for every card template, built from the live card's figure.\n  - G5: 'screen par dikhao' is a picture request.\n- Brain (split policy B is kept, with limits):\n  - T1: one close per turn; stale closes dropped.\n  - T2: each why said once.\n  - T3: the turn ends after a bridge.\n  - H1: hints are authored and never leak the answer.\n  - H2: asides are returned at the promised point, about the child's own words.\n  - H3: code acknowledgements.\n  - H4: Hindi without doubling.\n  - H5: every keyed answer gets a verdict.\n- Learning: `simpler` on remediations, answerBoards, whys that name values, and the data fixes.\n- Next: director11 on integration 13. The gate is unchanged; the 30-topic batch stays held.\n- Reverse if: director11 has G1-G4 in place and still has more than 10 drawing contradictions. Then boards for closes and pictures become code-composed from the card params alone, never re-taken against her line.",
+   "source": "inbox/r7-main-21.json"
+  },
+  {
+   "id": "m-r7-app-studio-templates-render-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "Studio's new templates drawn in the real Desk at 360/412/1280 (r4-content 3ef08301f, expand() at B3, 9 cases + 7 confirm-reveal swaps, n=48 renders). fraction-bars@1 (incl. the shaded '?' second view), wholes@1, lines@1 (cross and 8-angle parallel, revealed) and fraction-line@1 were clean: no text overlap and nothing off the board. number-line-scale@1 tick labels overlap at 0-1000 step 100 and at 0-100000 step 20000: the player draws them at 19.2 units in Geist Mono, 11.5 units per digit, while the template allows intervals of 31.6 and 63.2 units. textBox estimates about 10.4 units per digit, and the numwork layout has no row-label lint.",
+   "source": "inbox/r7-app-23.json"
+  },
+  {
+   "id": "dc-r7-games-parkar",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "parkar (ruler-and-compass constructions) as one never-timed law family for classes 6-7: build (a triangle from arcs, protractor rays or the set-square's right angle; the longest / shortest third stick; both SSA triangles), bisect (perpendicular bisector, the tank on the road, angle bisector, 60°), drop (the altitude by set-square). A spot exists only where tool marks cross. 5 topics: c7-maths-ch07-t01, c7-maths-ch07-t02, c7-maths-ch09-t02, c7-maths-ch14-t01, c6-maths-ch08-t03. Why: the five construction topics were served only by ITEM-ARENA. Reverse: a child pilot shows the crossings are tapped by trial rather than built, or the compass opening is guessed rather than read off the given lengths.",
+   "source": "inbox/r7-games-parkar.json"
+  },
+  {
+   "id": "ms-r7-games-parkar-cert",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "parkar play-cert (forge3-qa, p360/p412/l1366, game mounted): every parkar sample passes at every size; 68 law and server tests pass.",
+   "source": "inbox/r7-games-parkar.json"
+  },
+  {
+   "id": "dc-r7-games-run-redraw-window",
+   "kind": "decision",
+   "title": "A play view keeps the stage drawing until its run's last timed beat has landed (kon lines view: RUN_END 2.0 s)",
+   "at": "2026-11-07",
+   "source": "inbox/r7-games-runshots.json"
+  },
+  {
+   "id": "ms-r7-games-runshots-nishana-kon",
+   "kind": "measurement",
+   "title": "Real-Chromium run shots at 360 px of nishana ÷ / decimals ± and kon lines / cross / ends: every run reads correctly; one bug (cross 'off by' chip never drawn) found and fixed",
+   "at": "2026-11-07",
+   "source": "inbox/r7-games-runshots.json"
+  },
+  {
+   "id": "dc-r7-coldstart-placement",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F (main 2026-11-07 (c)): a new child's start per subject comes from two onboarding answers (the parent's view hard/fine/easy, the child's pick tricky/okay/easy) as one wide Gaussian site on the KT θ scale, written as a placement row (source 'onboarding'); no quiz. Topic choice, R9 and the θ prior read it unchanged. Reverse if: real first-week data shows answer-started children settling no faster than calendar-started ones.",
+   "source": "inbox/r7-learning-31.json"
+  },
+  {
+   "id": "dc-r7-coldstart-refine-theta",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: covert refinement. Once a subject's live θ (kt_ability) has sd ≤ 0.7, topic choice and the conductor's foundation share read the start from θ (mu − 0.25 sd) instead of the placement row (store.js liveResultsOf). Settling is by sd, not n_obs, because kt_ability.n_obs counts only the current epoch. Reverse if: θ-driven starts swing between lessons enough to repeat or skip chapters.",
+   "source": "inbox/r7-learning-31.json"
+  },
+  {
+   "id": "dc-r7-r15-first-week",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: conductor rule R15. A subject started from onboarding answers runs its first two lessons success-first with newSkillBudget 0, then success-first until its θ settles (view key learner.firstWeek, late key). Reverse if: children in the warm lessons close 'bored' more than others.",
+   "source": "inbox/r7-learning-31.json"
+  },
+  {
+   "id": "dc-r7-placement-note",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: the parent's placement note is built from registered report shapes (templates.js place.*), so it gets the report gate and HOW copy. Each claim is re-derived from the stored answers (note.js checkPlacementNote) and dropped if it fails. It never shows a level word or a class number. Reverse if: parents read 'starts a little before the class's chapter' as a verdict on the child.",
+   "source": "inbox/r7-learning-31.json"
+  },
+  {
+   "id": "m-r7-coldstart-sim",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "Cold-start placement sim (evals/placement-coldstart/sim.mjs; n=300/class, classes 3-8, 3 first-try answers/lesson, real θ engine): model population, onboarding vs class rule: median 6 (p75 12), by5 0.47, by10 0.72, err1 0.97, high1 0.39, err5 0.46 vs median 9 (p75 16), by5 0.29, by10 0.57, err1 1.51, high1 0.68, err5 1.16.",
+   "source": "inbox/r7-learning-31.json"
+  },
+  {
+   "id": "dc-r7-report-s15-rest",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: PARENT-REPORT S15 (routine and rest, MH-M12) is built for weekly and monthly reports. One line fires behind an absolute floor: either ≥ 3 lessons started after the parent's bedtime (or before 04:00) in the last 14 days, or longer lessons (each 14-day half with ≥ 4 closed lessons, median up ≥ 10 min and ≥ 1.5×). It states the fact plus one Parent-corner suggestion. Reverse if: replay on real families shows either rule firing for more than ~5% of children a month (the false-alarm budget).",
+   "source": "inbox/r7-learning-32.json"
+  },
+  {
+   "id": "o-r7-report-s8-s10-need-signals",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "Round 7 F: PARENT-REPORT S8 (How sure) and S10 (style lines) stay unbuilt. Nothing captures the child's 'pakka / shayad / andaaza' bet, and no gated interaction-signature (ISP) dimension is computed. Both need upstream signals before a report line can be true. S18 is deferred by the owner. Reverse if: a lesson starts collecting how-sure bets (S8), or ISP dimensions with their TV gates exist (S10).",
+   "source": "inbox/r7-learning-32.json"
+  },
+  {
+   "id": "dc-r7-card-board-authored-gate",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "director10 G2: a scripted card's OWN board (an explain/worked beat's board, a then-card, a check's ownBoard) is gated as authored content. Its params' words count as kit words (W5: \"bada\", \"chhota\", \"jaisi\", \"kram\" on compare@1 cards). Two or three separate wholes side by side (fraction-bars bars, wholes) are a count of wholes, not a partition she must say (W8). A round whole the card authors cut by radii is not a model's circle cut by lines (W8 cutByLines). A board that writes only the card's authored numbers needs none of hers (W17: c6's 12/9/7 m under \"jawab 28 m tha\"). W9 (nothing withheld drawn) and her counts against a board's parts still bind: steady-c4 T62's \"12 laddoo, 6 a group\" over e1's 2 groups of 4 is still refused. Reverse if judges count a close drawn over its card's board that contradicts it (then W5/W8 apply to card boards as before and the card needs an answerBoard).",
+   "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "dc-r7-first-page-keep-by-ref",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "director10 G1: the seam records the ref of the card whose board is the page on screen (L.wbPrevRef, the last page's ref for a paged board; none for a second view or a model board). A paged turn whose first page fails keeps the page on screen when it was drawn from that page's ref: the card's board was drawn masked and labelled on its own line, so comparing pages missed 16 of 17 keeps. The same identity says which card's board is up for a picture request (G4). Reverse if a ref ever names two different drawings in one lesson (then compare pages again).",
+   "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "dc-r7-verdict-reveal",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "director10 G3: a correct verdict reveals the answered card's key on its board whatever her page says: Brain's verdict beat (the first page's scriptBeat, or the segment's) carries `reveal: true` (the key, answers[0]) or `reveal: [values]`. Studio frees those values from the withheld set and writes an asked fraction-line mark or lines@1 angle with them (statedMark); screen.counts follow. Without the hint the old rule stands (a value her line states). Reverse if a reveal ever reaches a card the child has not answered (then Studio checks the verdict itself).",
+   "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "dc-r7-second-view-every-template",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "director10 G4, extends dc-r7-picture-second-view: every board template a card can use has a second view, built from the card whose board is up (by ref). wholes@1 → the same wholes as strips (wholes@1 as \"bar\", altView \"strips\"). measured@1 (rect, square, triangle, polygon) and shape@1 (a regular polygon with a side length) → unrolled@1, the boundary laid straight on a ruler, each side labelled and the total \"?\" unless her line states it (altView \"unrolled\"). fraction-bars@1 → its fraction line (one denominator: marks; two: a two-scale line). A two-scale fraction line → a bar per scale, the unmarked scale an unnamed \"?\" bar (c5-t01 drew only the marked 1/4). Brain's {kind: \"show\"} request draws them too. Reverse if judges find a view confuses more than the card's own board.",
+   "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "ms-r7-director10-drawing-replay-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "director10's rows (claude/r4-conversation 14883b7f) replayed through Studio's seam on the director10 tree + int/r6 5534e97a, with Brain's bare-first-page join (1f2c46de) applied to the recorded segments. The 31 unpaged turns now draw 29/31. The 2 still failing are a close over a board that contradicts it: steady-c4 T62 (\"12 laddoo, 6 a group\" over e1's 8 dots) and c5-t02 steady T50 (\"5 rang wale\" over the 3/7 patti). Both are Learning data (no answerBoard). The 16 picture-request rows draw a second view 16/16: c4 wholes 0/2 → 2/2 strips; c6 measured and hexagon 0/4 → 4/4 unrolled (offtopic was already 1/1); fraction-bars → line 1/1; c5-t01's 3 two-scale rows now draw both scales. A first page refused on its own close went 30/31 → 4/31. The 26 freed were W5 on compare@1 words 13, W8 on two wholes 4, W8 on authored radii 8, and W17 1. The 4 left are each a close spoken over ANOTHER item's board: steady-c4 T46 (barfi 2/3 over the 3/4 grid), T62 and T72 (the 12- and 32-laddoo checks over e1's and e3's groups), and c5-t02 T50 (5/7 over 3/7). Two of these, T46 and T72, are kept as the card's board on screen (G1) and still contradict the close: that needs Brain's segment labels or Learning's answerBoard. Method: the card's board up on its run line (or the row Brain's line is written from), then the turn's segments; DATABASE_URL unset, no model calls. tests/r8-director10.test.mjs pins one row per item.",
+   "source": "inbox/r7-studio-26.json"
+  },
+  {
+   "id": "ms-r7-m4-day1-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "M3/M4 60-day clock: day 1 = 2026-11-06, confirmed closed (Cost Management ActualCost by ServiceName, read 2026-11-08 09:16 UTC). Completes 2027-01-04, which meets even the worst-case reading of the 180-day clause (from the 2026-07-08 sponsorship start).\n\n2026-11-06 closed with 8 services ≥ $1: Container Apps 4.45, PostgreSQL 4.00, Foundry Models 3.33, Virtual Machines 2.20, Container Registry 1.75, Storage 1.46, Foundry Tools 1.45, Load Balancer 1.26. Virtual Network was 0.90, because the spares started ~10:55 UTC.\n\n2026-11-07 (near-final): 9 services ≥ $1 — ACA 4.46, PG 2.63, Models 1.93, VM 2.67, ACR 2.27, Storage 1.47, Tools 1.39, LB 1.92, VNet 1.56. Whole subscription $20.5/day.\n\nKeeper ledgers: 2026-11-07 had 16 runs (ACA + VM alternating every 1.5 h); 2026-11-08 had 6 runs by 09:00. The verifier report for 2026-11-08 is OK, with a projected runway of ₹129,630 at 2027-01-12.",
+   "source": "inbox/r7-main-22.json"
   }
  ],
  "edges": [
@@ -40010,6 +40507,281 @@
    "src": "dc-r7-m3-apply-by-2026-11-07",
    "rel": "part_of",
    "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "part_of",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-subscription-inventory-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m3-apply-by-2026-11-07",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-applied-2026-11-06"
+  },
+  {
+   "src": "rj-r7-m3-container-name-m3",
+   "rel": "constrains",
+   "dst": "dc-r7-m3-credit-unlock"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v5"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-hand-2026-11-06"
+  },
+  {
+   "src": "rj-r7-code-spec-unstreamed",
+   "rel": "constrains",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m3-owner-facts-2026-11-06"
+  },
+  {
+   "src": "dc-r7-code-spec",
+   "rel": "caused_by",
+   "dst": "ms-r7-turn-replay-int10"
+  },
+  {
+   "src": "dc-r7-code-spec",
+   "rel": "measured_by",
+   "dst": "ms-r7-code-spec-ab"
+  },
+  {
+   "src": "dc-r7-script-walk-v6",
+   "rel": "caused_by",
+   "dst": "ms-r7-checker-v6-offline"
+  },
+  {
+   "src": "dc-r7-games-hissa",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-hissa-cert"
+  },
+  {
+   "src": "dc-r7-games-kram",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kram-cert"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "constrains",
+   "dst": "dc-r7-script-board-withholding"
+  },
+  {
+   "src": "dc-r7-card-board-asked-only",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-card-question-replay-2026-11-06"
+  },
+  {
+   "src": "dc-r7-picture-second-view",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-picture-second-view",
+   "rel": "measured_by",
+   "dst": "ms-r7-director8-card-question-replay-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m3-rule-2026-11-05"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "caused_by",
+   "dst": "fd-r7-m4-lb-empty-pool-unknown"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-price-lb-pip-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-price-fallbacks-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-break-tests-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-live-dry-run-2026-11-06"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-azure-spend-2026-10-24"
+  },
+  {
+   "src": "dc-r7-m4-no-spend-without-ledger",
+   "rel": "part_of",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-m4-no-spend-without-ledger",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-break-tests-2026-11-06"
+  },
+  {
+   "src": "fd-r7-m4-live-inventory-2026-11-06",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-owner-2026-10-27-azure-soft",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "open-r7-m4-billing-assumptions",
+   "rel": "blocks",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-applied-2026-11-06"
+  },
+  {
+   "src": "rj-r7-m3-image-409",
+   "rel": "constrains",
+   "dst": "dc-r7-m4-without-fail"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1",
+   "rel": "measured_by",
+   "dst": "ms-r7-director9-hand-2026-11-06"
+  },
+  {
+   "src": "dc-r7-app-pricing-page",
+   "rel": "part_of",
+   "dst": "dc-r7-app-site-config"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-1-brain",
+   "rel": "caused_by",
+   "dst": "ms-r7-run-path-replay-d9"
+  },
+  {
+   "src": "dc-r7-games-guna2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-guna2-cert"
+  },
+  {
+   "src": "dc-r7-games-koshtak",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-koshtak-cert"
+  },
+  {
+   "src": "dc-r7-games-kon2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kon2-cert"
+  },
+  {
+   "src": "dc-r7-games-nishana2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-nishana2-cert"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v6-1"
+  },
+  {
+   "src": "dc-r7-script-walk-v6-2",
+   "rel": "measured_by",
+   "dst": "ms-r7-director10-hand-2026-11-07"
+  },
+  {
+   "src": "dc-r7-games-parkar",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-parkar-cert"
+  },
+  {
+   "src": "dc-r7-games-run-redraw-window",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-runshots-nishana-kon"
+  },
+  {
+   "src": "dc-r7-coldstart-placement",
+   "rel": "measured_by",
+   "dst": "m-r7-coldstart-sim"
+  },
+  {
+   "src": "dc-r7-card-board-authored-gate",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-first-page-keep-by-ref",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-verdict-reveal",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-second-view-every-template",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-second-view-every-template",
+   "rel": "supersedes",
+   "dst": "dc-r7-picture-second-view"
+  },
+  {
+   "src": "dc-r7-verdict-reveal",
+   "rel": "constrains",
+   "dst": "dc-r7-card-board-asked-only"
+  },
+  {
+   "src": "dc-r7-card-board-authored-gate",
+   "rel": "measured_by",
+   "dst": "ms-r7-director10-drawing-replay-2026-11-07"
+  },
+  {
+   "src": "dc-r7-first-page-keep-by-ref",
+   "rel": "measured_by",
+   "dst": "ms-r7-director10-drawing-replay-2026-11-07"
+  },
+  {
+   "src": "dc-r7-second-view-every-template",
+   "rel": "measured_by",
+   "dst": "ms-r7-director10-drawing-replay-2026-11-07"
+  },
+  {
+   "src": "dc-r7-m4-without-fail",
+   "rel": "measured_by",
+   "dst": "ms-r7-m4-day1-2026-11-06"
   }
  ]
 }

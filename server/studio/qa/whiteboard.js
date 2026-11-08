@@ -226,7 +226,14 @@ function opNumbers(o, allowed) {
       nums.push(...[a, b].map(String).filter((x) => !["0", "1"].includes(x)));
       // tick labels inside a range she named: k/d for a denominator she said, or whole numbers of a short range
       const dens = [...allowed].filter((x) => /^\d+$/.test(x) && +x >= 2 && +x <= 12).map(Number);
-      for (const c of o.rows[0] ?? []) {
+      // (a big scale — 0, 1000, … 10000: number-line-scale@1 — is an axis, not invented, when its ticks step evenly from end
+      // to end and her line says the step, or two neighbouring ticks)
+      const whole = (o.rows[0] ?? []).map((c) => (/^\d+$/.test(String(c)) ? Number(c) : NaN));
+      const stepAx = whole.length >= 3 && whole.every(Number.isFinite) ? whole[1] - whole[0] : 0;
+      const even = stepAx > 0 && whole[0] === a && whole.at(-1) === b && whole.every((v, i) => !i || v - whole[i - 1] === stepAx);
+      const named = even && (allowed.has(String(stepAx)) || whole.some((v, i) => i && allowed.has(String(v)) && allowed.has(String(whole[i - 1]))));
+      if (named) { derived.push(...whole.map((v) => canon(String(v)))); }
+      else for (const c of o.rows[0] ?? []) {
         const r = rat(c); if (!r) continue;
         const v = r[0] / r[1];
         const inRange = v >= a - 1e-9 && v <= b + 1e-9;
@@ -290,7 +297,10 @@ function circleCutByLines(ops) {
  *  draws some closed shape, never draws. A 4-point polygon counts as a rectangle only when its corners are right angles. PURE. */
 const SHAPE_NAMES = [
   ["rectangle", /\b(?:rectangle|rectangular|aayat|aayatakar)\b|आयत/iu],
-  ["square", /\b(?:square|varg|vargakar)\b|वर्ग/iu],
+  // (not the instrument — "set-square", "set square" — nor a unit: "square cm", "varg metre"; Learning's c7 card on a
+  // set-square tripped W15 on a picture request)
+  // (nor "square corner" / "square kona": NCERT c4's name for a right angle, Learning's staged angles topic)
+  ["square", /(?<!set[- ])\b(?:square|varg|vargakar)\b(?!\s*(?:cm|mm|km|m|metre|meter|centimet\w*|unit|ikaai|corners?|kona|kone|cornered)\b)|वर्ग/iu],
   ["triangle", /\b(?:triangle|tribhuj|trikon)\b|त्रिभुज/iu],
   ["circle", /\b(?:circle|gola|vritt|vrutt)\b|वृत्त/iu],
 ];
@@ -601,9 +611,23 @@ export function gateWhiteboard(raw, ctx) {
   // round2 content: "3 equal groups, each with 5 dots" is 15 dots: a count she partitions by (said) times a number she says
   // (owner-5 on prod 2026-10-06: the kit's own equal-groups board of 15 dots was refused against exactly that line)
   const okCount = (n) => said.has(n) || lineNums.has(n) || [...said].some((a) => [...said, ...lineNums].some((b) => a * b === n));
-  const badCount = said.size ? fams.filter((f) => !okCount(f.n)).map((f) => `${f.kind} x${f.n}`) : [];
+  // (director10 G2: a card's authored board of two or three separate wholes — fraction-bars, wholes — is that many wholes
+  // side by side: the bars' outlines are wholes, never a partition she must say; each bar's own parts are still counted)
+  // (main, director10 G2: Learning's two-bar compares — "1/4 aur 1/8 mein kaunsa bada hai?" over a bar of 4 and a bar of 8 —
+  // were refused, so 13 c5-t02 boards went back to number lines: two equal wholes side by side are the fractions she
+  // compares, one whole per fraction, and each bar's parts and shaded parts are that fraction's own numbers)
+  const saidFracs = [...new Set((String(ctx.reply ?? "").match(/(?<![\d/])\d+\s*\/\s*\d+(?![\d/])/g) ?? []).map((f) => f.replace(/\s+/g, "")))];
+  const fracNums = new Set(saidFracs.flatMap((f) => f.split("/").map(Number)));
+  // (… and two bars of the same parts, 3/7 and 5/7, shade 3 + 5 = 8 pieces of one size: a sum of her numerators)
+  const nums = saidFracs.slice(0, 4).map((f) => Number(f.split("/")[0]));
+  const numSums = new Set(nums.flatMap((_, i) => nums.slice(i + 1).map((b) => nums[i] + b)));
+  if (nums.length >= 2) numSums.add(nums.reduce((a, b) => a + b, 0));
+  const okFrac = (n) => (saidFracs.length >= 2 && n === saidFracs.length) || fracNums.has(n) || numSums.has(n);
+  const badCount = said.size ? fams.filter((f) => !okCount(f.n) && !okFrac(f.n) && !(ctx.wholes && f.n === ctx.wholes)).map((f) => `${f.kind} x${f.n}`) : [];
   // (a clock's hands run from its centre: ctx.face, the asked thing is a face of numbers, studio/request.js faceDrawing)
-  const cut = ctx.face ? [] : circleCutByLines(ops);
+  // (director10 G2: a card's OWN authored board cuts its wholes the way Learning authored them — wholes@1's radii, "1 bada,
+  // 2 chhote" — certified with the card: the rule is for boards that draw a round whole of their own)
+  const cut = ctx.face || ctx.authoredRef ? [] : circleCutByLines(ops);
   add("W8.counts_match_line", badCount.length === 0 && cut.length === 0, { said: [...said], families: fams.map((f) => `${f.kind} x${f.n}`), bad: badCount, cutByLines: cut });
   // W2b words clear of lines: no text or label box crossed by a drawn line, arrow or box edge (legibility at 360 dp)
   const crossed = textsCrossed(ops, byId);
@@ -641,7 +665,10 @@ export function gateWhiteboard(raw, ctx) {
   const boardNums = [...new Set(numbersIn(per.flatMap((p) => p.nums).join(" ")))];
   // ... and a board whose every number her line says, in digits or in words ("five equal gaps" over a 5), is hers too
   const saidAll = new Set(numbersIn(ctx.reply));
-  const notHers = !ctx.face && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
+  // (director10 G2: a card's OWN board writes the numbers Learning authored on it — c6's 12 m, 9 m, 7 m under "Pichhle sawaal
+  // ka jawab 28 m tha": the board is the card, not other maths. W17 is for boards that write numbers of their own)
+  const authoredAll = Array.isArray(ctx.authoredNumbers) && ctx.authoredNumbers.length > 0 && boardNums.every((n) => ctx.authoredNumbers.map(String).includes(n));
+  const notHers = !ctx.face && !authoredAll && hers.size >= 2 && boardNums.length > 0 && !boardNums.some((n) => hers.has(n)) && !boardNums.every((n) => saidAll.has(n));
   add("W17.her_numbers", !notHers, notHers ? { hers: [...hers].slice(0, 6), board: boardNums.slice(0, 6) } : []);
   // W18 (QA pass 14, main's release blocker: catalogue c6-maths-ch06-t01 beat L6 "2 × (50 + 30) = 160 metres" under her
   // "50 m, 30 m, 50 m, 30 m … Total kitna?"): when her line ASKS, the board never writes what her question asks for, i.e.

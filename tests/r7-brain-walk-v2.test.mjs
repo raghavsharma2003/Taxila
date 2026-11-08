@@ -17,8 +17,9 @@ const KEEP = {};
 const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_ONE_LIVE"];
 
 describe("script walk v2", () => {
-  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } setScriptForTest(); setScriptForTest(K.topicId, SC); });
-  afterEach(() => { setScriptForTest(); for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
+  // (v6 R5: these pin one-turn shapes; the split of a long turn into two is pinned in r7-brain-v6)
+  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } KEEP.split = process.env.TAXILA_R7_SPLIT; process.env.TAXILA_R7_SPLIT = "off"; setScriptForTest(); setScriptForTest(K.topicId, SC); });
+  afterEach(() => { setScriptForTest(); for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } if (KEEP.split === undefined) delete process.env.TAXILA_R7_SPLIT; else process.env.TAXILA_R7_SPLIT = KEEP.split; });
   const run = (ctx = {}) => {
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"], ...ctx }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     const moves = [r.move];

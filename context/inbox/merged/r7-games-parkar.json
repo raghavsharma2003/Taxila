@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-parkar",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "parkar (ruler-and-compass constructions) as one never-timed law family for classes 6-7: build (a triangle from arcs, protractor rays or the set-square's right angle; the longest / shortest third stick; both SSA triangles), bisect (perpendicular bisector, the tank on the road, angle bisector, 60°), drop (the altitude by set-square). A spot exists only where tool marks cross. 5 topics: c7-maths-ch07-t01, c7-maths-ch07-t02, c7-maths-ch09-t02, c7-maths-ch14-t01, c6-maths-ch08-t03. Why: the five construction topics were served only by ITEM-ARENA. Reverse: a child pilot shows the crossings are tapped by trial rather than built, or the compass opening is guessed rather than read off the given lengths."
+  },
+  {
+   "id": "ms-r7-games-parkar-cert",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "parkar play-cert (forge3-qa, p360/p412/l1366, game mounted): every parkar sample passes at every size; 68 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-parkar",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-parkar-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-parkar`\n\n**parkar** (ruler-and-compass constructions, classes 6-7) is a law family. Nothing in it runs on a clock and nothing is dragged into place by eye: the child opens the compass on its ruler, swings arcs from spots, lays the protractor at a vertex or the set-square along a line, joins two spots with the ruler, and pins a spot only where two marks cross. On go the law checks the construction by plain coordinate geometry (cm).\n\n- **build** (c7-ch07-t01, c7-ch09-t02): sss (arcs of CA from A and BC from B), sas (the protractor's ray at A, an arc of CA along it), asa (two rays), rhs (the set-square's right angle at B, the hypotenuse as an arc from A); the run lays a tracing of the card's triangle over the child's (the mirror image across AB fits too). long / short: AB is laid and CA's arc swung; open the compass for the longest / shortest whole-cm third stick that still closes the frame; the run hinges the sticks (close, lie flat, gap). ssa: an arc from B cuts the ray at A twice; every triangle must be pinned.\n- **bisect** (c7-ch14-t01, c6-ch08-t03): perp (equal arcs from A and B, join the crossings; the run walks a spot along the line with a string to each end), equi (the water tank on a road, as far from one house as from the other), angle (arc from O, equal arcs from the cut-spots, join), sixty (the opening stepped once round its own arc).\n- **drop** (c7-ch07-t02): the set-square along the opposite side (extended when the foot is outside), its edge through A.\n\nMal-rules map only to the topic's own kit beliefs: equal-sum and any-three (c7-ch07-t01), ssa (the SAS angle built at B, and only one SSA triangle pinned), compass-change / unequal-arcs (the opening changed between arcs that must be equal), median-confusion, vertical-height and inside-only (c7-ch07-t02). Not admitted: c7-ch07-t02-s3 (height in a real object / area) and c6-ch08-t03-s1 (a rectangle's diagonals): no honest construction mechanic yet. Kit beliefs with no honest set-up here: check-one-pair, aaa, order-mismatch, protractor, short-radius, midpoint-only, diag-right-angle.\n\nReverse if a child pilot shows the crossings are tapped by trial rather than built, or the compass opening is guessed rather than read off the given lengths.",
+  "measurements": "## `ms-r7-games-parkar-cert`\n\nparkar play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** every parkar sample passes at every size. Counts are in server/forge3/certs/play.json.\n- **Tests:** tests/r7-games-parkar.test.mjs, 68 tests. An independent checker (its own circle–circle and circle–line crossings, distances and angles; a built triangle compared with the card's by its six parts; the longest / shortest stick found by trying every whole cm) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.\n- **Browser runs:** a solved run and a misconception run per goal driven at 360 px in the dev harness (and sss, sas, alt solved by real taps only); the end states were looked at.\n- **lint-ui:** 354 findings before and after (no new finding)."
+ }
+}

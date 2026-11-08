@@ -55,10 +55,12 @@
       "en": "This is a circle and the dot in the middle is its centre. The arrow from the centre to the edge is the radius, 4 cm. Take any place on the edge, and its distance from the centre stays 4 cm."
      },
      "ask": {
-      "prompt": { "hi": "Is circle ke kinaare par do points P aur Q hain. Centre se P ki doori aur centre se Q ki doori jodo, toh kitna hoga?", "en": "There are two points P and Q on the edge of this circle. Add the distance from the centre to P and the distance from the centre to Q. What do you get?" },
+      "prompt": { "hi": "Is circle ke kinaare par koi do alag points lo. Centre se dono ki doori jodo, toh kitna hoga?", "en": "Take any two different points on the edge of this circle. Add their distances from the centre. What do you get?" },
       "key": "8 cm",
-      "accept": ["8", "8 centimetre", "8 centimetres"]
-     }
+      "accept": ["8", "8 centimetre", "8 centimetres"],
+      "why": { "hi": "kinaare ka har point centre se 4 cm par hai, aur 4 + 4 = 8", "en": "every point on the edge is 4 cm from the centre, and 4 + 4 = 8" }
+     },
+     "simpler": { "hi": "Centre se kinaare tak ki doori radius hai, 4 cm. Kinaare par koi bhi jagah lo, woh centre se 4 cm hi door hogi.", "en": "The distance from the centre to the edge is the radius, 4 cm. Any place on the edge is 4 cm from the centre." }
     },
     {
      "id": "e2",
@@ -68,7 +70,7 @@
       { "hi": "centre se guzarti hai", "en": "passes through the centre" },
       { "hi": "2 × radius", "en": "2 × radius" }
      ],
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter AB" } },
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "diameter": "diameter AB" } },
      "point": {
       "hi": "Line AB circle ke ek kinaare se doosre kinaare tak jaati hai, aur beech mein centre O se guzarti hai. Aisi line diameter kehlati hai. AB mein do radius hain, OA aur OB, isliye diameter = 2 × radius.",
       "en": "Line AB goes from one edge of the circle to the other edge, and passes through the centre O on the way. Such a line is called a diameter. AB holds two radii, OA and OB, so diameter = 2 × radius."
@@ -78,8 +80,10 @@
       "key": "12 cm",
       "accept": ["12", "12 centimetre", "12 centimetres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
-      "wrongIfMis": "3 cm"
-     }
+      "wrongIfMis": "3 cm",
+      "why": { "hi": "AB mein do radius hain, OA aur OB, aur 6 + 6 = 12", "en": "AB holds two radii, OA and OB, and 6 + 6 = 12" }
+     },
+     "simpler": { "hi": "AB ek kinaare se doosre kinaare tak centre O se hokar jaati hai. Ismein do radius hain, OA aur OB, isliye diameter = 2 × radius.", "en": "AB goes from edge to edge through the centre O. It holds two radii, OA and OB, so diameter = 2 × radius." }
     },
     {
      "id": "e3",
@@ -89,7 +93,7 @@
       { "hi": "centre se nahi guzarti", "en": "does not pass through the centre" },
       { "hi": "sabse lambi", "en": "the longest" }
      ],
-     "board": { "template": "compare@1", "params": { "left": { "title": "AB", "items": ["centre se guzarti", "diameter"] }, "right": { "title": "CD", "items": ["centre se nahi", "chord"] } } },
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "diameter": "AB diameter", "chord": "CD chord" } },
      "point": {
       "hi": "AB aur CD dono circle ke ek kinaare se doosre kinaare tak jaati hain. AB centre se guzarti hai, isliye woh diameter hai. CD centre se nahi guzarti, woh ek chord hai. Diameter circle ki sabse lambi chord hoti hai.",
       "en": "AB and CD both go from one edge of the circle to the other. AB passes through the centre, so it is a diameter. CD does not pass through the centre; it is a chord. The diameter is the longest chord of a circle."
@@ -99,8 +103,10 @@
       "key": "5 cm",
       "accept": ["5", "5 centimetre", "5 centimetres"],
       "targets": "c6-maths-ch08-t01-m-chord-diameter",
-      "wrongIfMis": "4 cm"
-     }
+      "wrongIfMis": "4 cm",
+      "why": { "hi": "AB centre se guzarti hai toh diameter 10 cm hai, aur 10 ÷ 2 = 5", "en": "AB passes through the centre so the diameter is 10 cm, and 10 ÷ 2 = 5" }
+     },
+     "simpler": { "hi": "AB centre se guzarti hai, isliye woh diameter hai. CD centre se nahi guzarti, woh bas ek chord hai.", "en": "AB passes through the centre, so it is the diameter. CD does not pass through the centre; it is just a chord." }
     }
    ],
    "workedExample": {
@@ -119,22 +125,26 @@
      {
       "do": { "hi": "OA ko dekho, yeh centre O se kinaare tak jaati hai", "en": "Look at OA; it goes from the centre O to the edge" },
       "result": "OA ek radius hai, 7 cm",
-      "why": { "hi": "centre se kinaare tak ki seedhi line radius hoti hai", "en": "a straight line from the centre to the edge is a radius" }
+      "why": { "hi": "centre se kinaare tak ki seedhi line radius hoti hai", "en": "a straight line from the centre to the edge is a radius" },
+      "simpler": { "hi": "OA centre O se kinaare tak jaati hai. Centre se kinaare tak ki seedhi line radius hoti hai, yahan 7 cm.", "en": "OA goes from the centre O to the edge. A straight line from the centre to the edge is a radius, here 7 cm." }
      },
      {
       "do": { "hi": "Ab OB ko dekho, yeh bhi O se kinaare tak hai", "en": "Now look at OB; it also goes from O to the edge" },
       "result": "OB bhi radius hai, 7 cm",
-      "why": { "hi": "ek circle ke saare radius barabar hote hain", "en": "all the radii of one circle are equal" }
+      "why": { "hi": "ek circle ke saare radius barabar hote hain", "en": "all the radii of one circle are equal" },
+      "simpler": { "hi": "OB bhi O se kinaare tak jaati hai. Ek circle ke saare radius barabar hote hain, toh OB bhi 7 cm hai.", "en": "OB also goes from O to the edge. All radii of one circle are equal, so OB is 7 cm too." }
      },
      {
       "do": { "hi": "AB ko dekho, yeh kinaare se O se hote hue kinaare tak hai", "en": "Look at AB; it goes from edge to edge through O" },
       "result": "AB diameter hai",
-      "why": { "hi": "yeh centre se guzarti hai aur dono kinaaron ko jodti hai", "en": "it passes through the centre and joins the two edges" }
+      "why": { "hi": "yeh centre se guzarti hai aur dono kinaaron ko jodti hai", "en": "it passes through the centre and joins the two edges" },
+      "simpler": { "hi": "AB ek kinaare se doosre kinaare tak O se hokar jaati hai. Centre se guzarne wali aisi line diameter hai.", "en": "AB goes from one edge to the other through O. Such a line through the centre is a diameter." }
      },
      {
       "do": { "hi": "AB ko O ke dono taraf dekho: OA aur OB", "en": "Look at AB on both sides of O: OA and OB" },
       "result": "AB = OA + OB = 7 + 7",
-      "why": { "hi": "diameter mein centre ke dono taraf ek-ek radius hota hai", "en": "the diameter has one radius on each side of the centre" }
+      "why": { "hi": "diameter mein centre ke dono taraf ek-ek radius hota hai", "en": "the diameter has one radius on each side of the centre" },
+      "simpler": { "hi": "AB mein O ke dono taraf ek-ek radius hai, OA aur OB. Isliye AB = 7 + 7.", "en": "AB has one radius on each side of O, OA and OB. So AB = 7 + 7." }
      }
     ],
     "yourStep": {
@@ -142,14 +152,15 @@
      "key": "14 cm",
      "accept": ["14", "14 centimetre", "14 centimetres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
-     "wrongIfMis": "7 cm"
+     "wrongIfMis": "7 cm",
+     "simpler": { "hi": "7 mein ek aur 7 jodo. Wahi AB ki lambai hai.", "en": "Add another 7 to 7. That is the length of AB." }
     },
     "answer": { "hi": "OA aur OB radius hain, 7 cm har ek, aur AB diameter hai, 14 cm lamba", "en": "OA and OB are radii, 7 cm each, and AB is the diameter, 14 cm long" },
     "why": {
      "hi": "diameter mein centre ke ek taraf ek radius hai aur doosri taraf doosra, isliye diameter radius ka dugna hota hai",
-     "en": "the diameter has one radius on one side of the centre and another on the other side, so the diameter is twice the radius"
+     "en": "the diameter has one radius on each side of the centre, so the diameter is twice the radius"
     },
-    "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "OA = 7 cm" } }
+    "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "radius": "OA = 7 cm", "diameter": "AB" } }
    },
    "checks": [
     {
@@ -162,7 +173,9 @@
      "accept": ["9", "9 centimetre", "9 centimetres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
      "wrongIfMis": "36 cm",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 18 cm" } }
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 18 cm" } },
+     "why": { "hi": "radius diameter ka aadha hai, aur 18 ÷ 2 = 9", "en": "the radius is half the diameter, and 18 ÷ 2 = 9" },
+     "simpler": { "hi": "Radius diameter ka aadha hota hai. 18 ko do barabar hisson mein baanto.", "en": "The radius is half the diameter. Share 18 into two equal parts." }
     },
     {
      "id": "c2",
@@ -174,7 +187,9 @@
      "accept": ["6", "6 centimetre", "6 centimetres"],
      "targets": "c6-maths-ch08-t01-m-chord-diameter",
      "wrongIfMis": "4.5 cm",
-     "board": { "template": "compare@1", "params": { "left": { "title": "PQ", "items": ["9 cm", "centre se nahi"] }, "right": { "title": "RS", "items": ["12 cm", "centre se guzarti"] } } }
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "diameter": "RS 12 cm", "chord": "PQ 9 cm" } },
+     "why": { "hi": "RS centre se guzarti hai toh diameter 12 cm hai, aur 12 ÷ 2 = 6", "en": "RS passes through the centre so the diameter is 12 cm, and 12 ÷ 2 = 6" },
+     "simpler": { "hi": "Jo line centre se guzarti hai, wahi diameter hai, yahan RS. Ab uska aadha nikalo.", "en": "The line through the centre is the diameter, here RS. Now find half of it." }
     }
    ],
    "ladder": [
@@ -191,6 +206,7 @@
       "hi": "Radius centre se kinaare tak jaata hai, aur diameter ek kinaare se centre se hote hue doosre kinaare tak. Diameter ko centre par mod kar dekho, usme do radius poore aa jaate hain.",
       "en": "The radius goes from the centre to the edge, and the diameter goes from one edge through the centre to the other edge. Fold the diameter at the centre and see: two whole radii fit in it."
      },
+     "simpler": { "hi": "Radius centre se kinaare tak jaata hai. Diameter ko centre par modo, toh usme do radius aa jaate hain.", "en": "The radius goes from the centre to the edge. Fold the diameter at the centre and two radii fit in it." },
      "board": { "template": "compare@1", "params": { "left": { "title": "radius", "items": ["centre se kinaare tak"] }, "right": { "title": "diameter", "items": ["kinaare se kinaare tak", "do radius"] } } },
      "then": {
       "prompt": {
@@ -201,7 +217,9 @@
       "accept": ["11", "11 centimetre", "11 centimetres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
       "wrongIfMis": "44 cm",
-      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 22 cm" } }
+      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 22 cm" } },
+      "why": { "hi": "radius diameter ka aadha hai, aur 22 ÷ 2 = 11", "en": "the radius is half the diameter, and 22 ÷ 2 = 11" },
+      "simpler": { "hi": "Radius diameter ka aadha hota hai. 22 ko do barabar hisson mein baanto.", "en": "The radius is half the diameter. Share 22 into two equal parts." }
      }
     },
     {
@@ -211,6 +229,7 @@
       "hi": "Ek line ko circle ke upar se kinaare se kinaare tak dheere-dheere khiskao. Woh tab sabse lambi hoti hai jab centre se guzarti hai, aur sirf wahi diameter hai.",
       "en": "Slide a line slowly across the circle, edge to edge. It is longest when it passes through the centre, and only that line is the diameter."
      },
+     "simpler": { "hi": "Kinaare se kinaare tak wali line centre se guzre tabhi sabse lambi hoti hai. Wahi line diameter hai.", "en": "An edge-to-edge line is longest only when it passes through the centre. That line is the diameter." },
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "name": "sabse lambi" } },
      "then": {
       "prompt": {
@@ -221,14 +240,17 @@
       "accept": ["7", "7 centimetre", "7 centimetres"],
       "targets": "c6-maths-ch08-t01-m-chord-diameter",
       "wrongIfMis": "5 cm",
-      "board": { "template": "compare@1", "params": { "left": { "title": "AB", "items": ["14 cm", "centre se guzarti"] }, "right": { "title": "CD", "items": ["10 cm", "centre se nahi"] } } }
+      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "diameter": "AB 14 cm", "chord": "CD 10 cm" } },
+      "why": { "hi": "AB centre se guzarti hai toh diameter 14 cm hai, aur 14 ÷ 2 = 7", "en": "AB passes through the centre so the diameter is 14 cm, and 14 ÷ 2 = 7" },
+      "simpler": { "hi": "Centre se guzarne wali line AB diameter hai. Uska aadha nikalo, aur CD ko chhod do.", "en": "AB, the line through the centre, is the diameter. Find half of it and leave CD aside." }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Ab centre, radius aur diameter pehchaan liye. Agle hisse mein compass se khud ek diye hue radius ka circle banayenge.",
     "en": "Now we can recognise the centre, the radius and the diameter. In the next part we will draw a circle of a given radius ourselves with a compass."
-   }
+   },
+   "bridgeBoard": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "radius" } }
   },
   {
    "skillId": "c6-maths-ch08-t01-s2",
@@ -270,8 +292,10 @@
       "key": "6 cm",
       "accept": ["6", "6 centimetre", "6 centimetres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
-      "wrongIfMis": "3 cm"
-     }
+      "wrongIfMis": "3 cm",
+      "why": { "hi": "3 cm ka khulaav hi radius hai, aur diameter = 2 × 3 = 6", "en": "the 3 cm opening is the radius, and the diameter = 2 × 3 = 6" }
+     },
+     "simpler": { "hi": "Compass ki nok aur pencil ke beech ki doori khulaav hai, aur wahi radius banti hai. Yahan khulaav 3 cm hai, toh radius 3 cm.", "en": "The gap between the compass point and the pencil is the opening, and it becomes the radius. Here the opening is 3 cm, so the radius is 3 cm." }
     },
     {
      "id": "e2",
@@ -291,8 +315,10 @@
       "key": "7 cm",
       "accept": ["7", "7 centimetre", "7 centimetres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
-      "wrongIfMis": "14 cm"
-     }
+      "wrongIfMis": "14 cm",
+      "why": { "hi": "compass sirf centre se kinaare tak khulta hai, aur 14 ÷ 2 = 7", "en": "the compass opens only from the centre to the edge, and 14 ÷ 2 = 7" }
+     },
+     "simpler": { "hi": "Compass ki nok centre par aur pencil kinaare par rehti hai. Isliye compass sirf centre se kinaare tak khulta hai, yaani diameter ka aadha.", "en": "The compass point stays on the centre and the pencil on the edge. So the compass opens only from centre to edge, half the diameter." }
     },
     {
      "id": "e3",
@@ -312,8 +338,10 @@
       "key": "nahi",
       "accept": ["no", "nahin", "na", "circle nahi hogi"],
       "targets": "c6-maths-ch08-t01-m-radius-changes",
-      "wrongIfMis": "haan"
-     }
+      "wrongIfMis": "haan",
+      "why": { "hi": "khulaav badla toh kuch points centre se 4 cm par aaye aur kuch 5 cm par", "en": "the opening changed, so some points came 4 cm from the centre and some 5 cm" }
+     },
+     "simpler": { "hi": "Compass 4 cm kholo aur nok centre par rakho. Ghumate waqt khulaav same rahe, tabhi har point 4 cm par aata hai.", "en": "Open the compass to 4 cm and put the point on the centre. Only if the opening stays the same while turning does every point land at 4 cm." }
     }
    ],
    "workedExample": {
@@ -330,12 +358,14 @@
      {
       "do": { "hi": "Kaagaz par centre ka ek nishaan lagao, O", "en": "Put a mark for the centre on the paper, O" },
       "result": "centre O tay hua",
-      "why": { "hi": "compass ki nok yahin tiki rahegi", "en": "the compass point will stay fixed here" }
+      "why": { "hi": "compass ki nok yahin tiki rahegi", "en": "the compass point will stay fixed here" },
+      "simpler": { "hi": "Kagaz par ek nishaan lagao, yeh centre O hai. Compass ki nok yahin tiki rahegi.", "en": "Put a mark on the paper; this is the centre O. The compass point will stay fixed here." }
      },
      {
       "do": { "hi": "Socho compass kitna khulega: nok centre par, pencil kinaare par", "en": "Think how wide the compass opens: point on the centre, pencil on the edge" },
       "result": "khulaav = radius = diameter ka aadha",
-      "why": { "hi": "nok se pencil tak sirf centre se kinaare tak ki doori hoti hai", "en": "from the point to the pencil is only the distance from the centre to the edge" }
+      "why": { "hi": "nok se pencil tak sirf centre se kinaare tak ki doori hoti hai", "en": "from the point to the pencil is only the distance from the centre to the edge" },
+      "simpler": { "hi": "Nok centre par hai aur pencil kinaare par. Toh khulaav sirf centre se kinaare tak hai, yaani diameter ka aadha.", "en": "The point is on the centre and the pencil on the edge. So the opening is only centre to edge, half the diameter." }
      }
     ],
     "yourStep": {
@@ -343,7 +373,8 @@
      "key": "5 cm",
      "accept": ["5", "5 centimetre", "5 centimetres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
-     "wrongIfMis": "10 cm"
+     "wrongIfMis": "10 cm",
+     "simpler": { "hi": "10 ko do barabar hisson mein baanto. Ek hissa compass ka khulaav hai.", "en": "Share 10 into two equal parts. One part is the compass opening." }
     },
     "answer": { "hi": "compass ko scale se 5 cm kholo, nok O par rakho, aur khulaav badle bina pencil ek poora chakkar ghumao", "en": "open the compass to 5 cm with the ruler, put its point on O, and turn the pencil one full round without changing the opening" },
     "why": {
@@ -363,7 +394,9 @@
      "accept": ["8", "8 centimetre", "8 centimetres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
      "wrongIfMis": "16 cm",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 16 cm" } }
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 16 cm" } },
+     "why": { "hi": "compass radius jitna khulta hai, aur 16 ÷ 2 = 8", "en": "the compass opens as wide as the radius, and 16 ÷ 2 = 8" },
+     "simpler": { "hi": "Compass radius jitna khulta hai, aur radius diameter ka aadha hai. 16 ka aadha nikalo.", "en": "The compass opens as wide as the radius, and the radius is half the diameter. Find half of 16." }
     },
     {
      "id": "c2",
@@ -375,7 +408,9 @@
      "accept": ["no", "nahin", "na"],
      "targets": "c6-maths-ch08-t01-m-radius-changes",
      "wrongIfMis": "haan",
-     "board": { "template": "compare@1", "params": { "left": { "title": "shuru mein", "items": ["5 cm"] }, "right": { "title": "aadhe ke baad", "items": ["6 cm"] } } }
+     "board": { "template": "compare@1", "params": { "left": { "title": "shuru mein", "items": ["5 cm"] }, "right": { "title": "aadhe ke baad", "items": ["6 cm"] } } },
+     "why": { "hi": "pehle aadhe ke points centre se 5 cm par hain aur baaki 6 cm par", "en": "the points of the first half are 5 cm from the centre and the rest 6 cm" },
+     "simpler": { "hi": "Pehle aadhe mein compass 5 cm khula tha, baad mein 6 cm. Socho, dono hisson ke points centre se ek hi doori par hain ya alag.", "en": "For the first half the compass was open 5 cm, later 6 cm. Think whether points of both halves are the same distance from the centre." }
     },
     {
      "id": "c3",
@@ -387,7 +422,9 @@
      "accept": ["6", "6 centimetre", "6 centimetres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
      "wrongIfMis": "12 cm",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "name": "diameter 12 cm" } }
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "name": "diameter 12 cm" } },
+     "why": { "hi": "arc bhi usi circle ka hissa hai, toh khulaav radius hai, 12 ÷ 2 = 6", "en": "the arc is part of the same circle, so the opening is the radius, 12 ÷ 2 = 6" },
+     "simpler": { "hi": "Arc usi circle ka hissa hai, toh khulaav radius hi hai. 12 cm diameter ka aadha nikalo.", "en": "The arc is part of the same circle, so the opening is the radius. Find half of the 12 cm diameter." }
     }
    ],
    "ladder": [
@@ -404,6 +441,7 @@
       "hi": "Compass ki nok centre par tikti hai aur pencil kinaare par chalti hai. Isliye khulaav sirf centre se kinaare tak hota hai, yaani radius, jo diameter ka aadha hai.",
       "en": "The compass point rests on the centre and the pencil moves on the edge. So the opening is only from the centre to the edge, that is the radius, which is half the diameter."
      },
+     "simpler": { "hi": "Compass ki nok centre par hai aur pencil kinaare par. Khulaav centre se kinaare tak hai, yaani radius, jo diameter ka aadha hai.", "en": "The compass point is on the centre and the pencil on the edge. The opening is centre to edge: the radius, half the diameter." },
      "board": { "template": "compare@1", "params": { "left": { "title": "nok", "items": ["centre par"] }, "right": { "title": "pencil", "items": ["kinaare par"] } } },
      "then": {
       "prompt": {
@@ -414,7 +452,9 @@
       "accept": ["10", "10 centimetre", "10 centimetres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
       "wrongIfMis": "20 cm",
-      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 20 cm" } }
+      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "O", "name": "diameter 20 cm" } },
+      "why": { "hi": "compass radius jitna khulta hai, aur 20 ÷ 2 = 10", "en": "the compass opens as wide as the radius, and 20 ÷ 2 = 10" },
+      "simpler": { "hi": "Compass radius jitna khulta hai, jo diameter ka aadha hai. 20 ka aadha nikalo.", "en": "The compass opens as wide as the radius, which is half the diameter. Find half of 20." }
      }
     },
     {
@@ -424,22 +464,26 @@
       "hi": "Compass ka khulaav khoonti se bandhi tight dori jaisa hai. Dori ki lambai nahi badli, toh har nishaan centre se utni hi door aata hai, kisi bhi taraf.",
       "en": "The compass opening is like a tight string tied to a peg. The string's length did not change, so every mark comes the same distance from the centre, in any direction."
      },
+     "simpler": { "hi": "Khulaav tight dori jaisa hai, uski lambai nahi badalti. Isliye har nishaan centre se utni hi door hai.", "en": "The opening is like a tight string; its length does not change. So every mark is the same distance from the centre." },
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "khoonti", "name": "tight dori" } },
      "then": {
       "prompt": {
-       "hi": "Compass 4 cm khol ke circle banaya, khulaav nahi badla. Upar wale aur neeche-left wale point ki centre se doori jodo.",
-       "en": "Compass open 4 cm, opening unchanged, circle drawn. Add the top and bottom-left points' distances from the centre."
+       "hi": "Compass 4 cm khol ke circle banaya, khulaav nahi badla. Kinaare ke do alag points ki centre se doori jodo.",
+       "en": "Compass open 4 cm, opening unchanged, circle drawn. Add two different edge points' distances from the centre."
       },
       "key": "8 cm",
       "accept": ["8", "8 centimetre", "8 centimetres"],
-      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 4, "unit": "cm" } }
+      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 4, "unit": "cm" } },
+      "why": { "hi": "khulaav nahi badla toh dono points centre se 4 cm par hain, aur 4 + 4 = 8", "en": "the opening did not change so both points are 4 cm from the centre, and 4 + 4 = 8" },
+      "simpler": { "hi": "Khulaav nahi badla, toh kinaare ka har point centre se 4 cm door hai. Ab do points ki doori jodo.", "en": "The opening did not change, so every edge point is 4 cm from the centre. Now add the two points' distances." }
      }
     }
    ],
    "bridgeToNext": {
     "hi": "Compass ne dikhaya ki circle ka har point centre se ek hi doori par hota hai. Agle hisse mein isi baat se pata karenge ki koi cheez circle par hai, andar hai ya bahar.",
     "en": "The compass showed that every point of a circle is the same distance from the centre. In the next part we will use this to tell whether something is on the circle, inside it or outside it."
-   }
+   },
+   "bridgeBoard": { "template": "shape@1", "params": { "shape": "circle", "centre": "centre", "radius": "ek hi doori" } }
   },
   {
    "skillId": "c6-maths-ch08-t01-s3",
@@ -477,10 +521,12 @@
       "en": "There is a pole in the middle, and chairs are to go all around it, each chair exactly 5 m from the pole. All such points together make a circle whose centre is the pole and radius is 5 m. Every point of this circle is at that same distance from the pole."
      },
      "ask": {
-      "prompt": { "hi": "Is circle par ek kursi sabse upar hai aur ek neeche-left. Dono kursiyon ki pole se doori jodo, toh kitni hui?", "en": "On this circle one chair is at the very top and one at the bottom-left. Add the two chairs' distances from the pole. What do you get?" },
+      "prompt": { "hi": "Is circle par do alag kursiyan hain. Dono kursiyon ki pole se doori jodo, toh kitni hui?", "en": "There are two different chairs on this circle. Add the two chairs' distances from the pole. What do you get?" },
       "key": "10 m",
-      "accept": ["10", "10 metre", "10 metres"]
-     }
+      "accept": ["10", "10 metre", "10 metres"],
+      "why": { "hi": "har kursi pole se 5 m par hai, aur 5 + 5 = 10", "en": "every chair is 5 m from the pole, and 5 + 5 = 10" }
+     },
+     "simpler": { "hi": "Har kursi pole se theek 5 m door hai. Aise saare points milkar ek circle banate hain, jiska centre pole hai.", "en": "Every chair is exactly 5 m from the pole. All such points together make a circle with the pole as its centre." }
     },
     {
      "id": "e2",
@@ -498,8 +544,10 @@
      "ask": {
       "prompt": { "hi": "Ek point O se 8 m door hai. Woh is circle ke andar hai, circle par hai, ya bahar?", "en": "A point is 8 m from O. Is it inside this circle, on the circle, or outside?" },
       "key": "bahar",
-      "accept": ["outside", "circle ke bahar", "baahar"]
-     }
+      "accept": ["outside", "circle ke bahar", "baahar"],
+      "why": { "hi": "8 m radius ke 6 m se zyada hai", "en": "8 m is more than the 6 m radius" }
+     },
+     "simpler": { "hi": "Radius 6 m hai. O se theek 6 m wala point circle par hai, kam wala andar, aur zyada wala circle ke paar.", "en": "The radius is 6 m. A point exactly 6 m from O is on the circle, a nearer one is inside, and a farther one is beyond it." }
     }
    ],
    "workedExample": {
@@ -518,23 +566,27 @@
      {
       "do": { "hi": "Pehle niyam yaad karo", "en": "First recall the rule" },
       "result": "kinaare par matlab O se theek 4 m",
-      "why": { "hi": "circle ka har point centre se theek ek radius door hota hai", "en": "every point of a circle is exactly one radius from the centre" }
+      "why": { "hi": "circle ka har point centre se theek ek radius door hota hai", "en": "every point of a circle is exactly one radius from the centre" },
+      "simpler": { "hi": "Circle ka har point centre se theek ek radius door hota hai. Yahan radius 4 m hai.", "en": "Every point of a circle is exactly one radius from the centre. Here the radius is 4 m." }
      },
      {
       "do": { "hi": "Nal T ki doori radius se milao: 4 m aur 4 m", "en": "Compare tap T's distance with the radius: 4 m and 4 m" },
       "result": "4 = 4, T kinaare par",
-      "why": { "hi": "uski doori radius ke barabar hai", "en": "its distance equals the radius" }
+      "why": { "hi": "uski doori radius ke barabar hai", "en": "its distance equals the radius" },
+      "simpler": { "hi": "Tap T, O se 4 m door hai, aur radius bhi 4 m hai. Dono barabar hain, isliye T kinaare par hai.", "en": "Tap T is 4 m from O, and the radius is 4 m too. They are equal, so T is on the edge." }
      },
      {
       "do": { "hi": "Bench B ki doori radius se milao: 3 m aur 4 m", "en": "Compare bench B's distance with the radius: 3 m and 4 m" },
       "result": "3 < 4, B andar",
-      "why": { "hi": "woh centre se radius se kam doori par hai", "en": "it is less than a radius from the centre" }
+      "why": { "hi": "woh centre se radius se kam doori par hai", "en": "it is less than a radius from the centre" },
+      "simpler": { "hi": "Bench B, O se 3 m door hai, jo 4 m se kam hai. Isliye B andar hai.", "en": "Bench B is 3 m from O, which is less than 4 m. So B is inside." }
      }
     ],
     "yourStep": {
      "prompt": { "hi": "Gate G, O se 5 m door hai aur radius 4 m. G kyari ke andar hai, kinaare par, ya bahar?", "en": "Gate G is 5 m from O and the radius is 4 m. Is G inside the bed, on the edge, or outside?" },
      "key": "bahar",
-     "accept": ["outside", "kyari ke bahar", "baahar"]
+     "accept": ["outside", "kyari ke bahar", "baahar"],
+     "simpler": { "hi": "G ki doori 5 m hai aur radius 4 m. Dekho G ki doori radius se zyada hai ya kam.", "en": "G is 5 m away and the radius is 4 m. See whether G's distance is more or less than the radius." }
     },
     "answer": { "hi": "nal T kinaare par hai, bench B andar hai, aur gate G bahar hai", "en": "tap T is on the edge, bench B is inside, and gate G is outside" },
     "why": {
@@ -554,7 +606,9 @@
      "accept": ["yes", "ha", "dono circle par"],
      "targets": "c6-maths-ch08-t01-m-radius-changes",
      "wrongIfMis": "nahi",
-     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "H", "name": "radius 3 km" } }
+     "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "H", "name": "radius 3 km" } },
+     "why": { "hi": "dono stations H se 3 km par hain, aur radius bhi 3 km hai", "en": "both stations are 3 km from H, and the radius is 3 km too" },
+     "simpler": { "hi": "Circle ka radius 3 km hai. Dekho dono stations H se kitni door hain, aur use radius se milao.", "en": "The circle's radius is 3 km. See how far each station is from H, and compare that with the radius." }
     },
     {
      "id": "c2",
@@ -566,7 +620,9 @@
      "accept": ["8", "8 metre", "8 metres"],
      "targets": "c6-maths-ch08-t01-m-diameter-radius",
      "wrongIfMis": "4 m",
-     "board": { "template": "measured@1", "params": { "shape": "circle", "r": 4, "unit": "m" } }
+     "board": { "template": "measured@1", "params": { "shape": "circle", "r": 4, "unit": "m" } },
+     "why": { "hi": "rassi radius hai, aur poori chaudai diameter hai, 2 × 4 = 8", "en": "the rope is the radius, and the width all across is the diameter, 2 × 4 = 8" },
+     "simpler": { "hi": "Rassi radius hai, 4 m. Poori chaudai diameter hai, jo do radius jitni hoti hai.", "en": "The rope is the radius, 4 m. The width all across is the diameter, which is two radii." }
     }
    ],
    "ladder": [
@@ -583,15 +639,18 @@
       "hi": "Rangoli ke liye khoonti se dori baandhi aur chalk ghumaya. Dori tight rahi aur uski lambai kahin nahi badli, isliye har nishaan khoonti se utni hi door hai.",
       "en": "For a rangoli, a string was tied to a peg and the chalk was taken round. The string stayed tight and its length never changed, so every mark is the same distance from the peg."
      },
+     "simpler": { "hi": "Dori ki lambai kabhi nahi badli. Isliye har nishaan khoonti se utni hi door hai.", "en": "The string's length never changed. So every mark is the same distance from the peg." },
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "khoonti", "name": "tight dori" } },
      "then": {
       "prompt": {
-       "hi": "2 m ki tight dori se khoonti par rangoli circle bana. Upar aur neeche-left ke nishaan ki khoonti se doori jodo.",
-       "en": "A rangoli circle made with a tight 2 m string on a peg. Add the top and bottom-left marks' distances from the peg."
+       "hi": "2 m ki tight dori se khoonti par rangoli circle bana. Kinaare ke do alag nishaanon ki khoonti se doori jodo.",
+       "en": "A rangoli circle made with a tight 2 m string on a peg. Add two different edge marks' distances from the peg."
       },
       "key": "4 m",
       "accept": ["4", "4 metre", "4 metres"],
-      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 2, "unit": "m" } }
+      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 2, "unit": "m" } },
+      "why": { "hi": "dori 2 m ki hai toh dono nishaan khoonti se 2 m par hain, aur 2 + 2 = 4", "en": "the string is 2 m so both marks are 2 m from the peg, and 2 + 2 = 4" },
+      "simpler": { "hi": "Dori tight hai, toh kinaare ka har nishaan khoonti se 2 m door hai. Dono nishaanon ki doori jodo.", "en": "The string is tight, so every edge mark is 2 m from the peg. Add the two marks' distances." }
      }
     },
     {
@@ -601,6 +660,7 @@
       "hi": "Bakri khoonti ke ek taraf rassi bhar ja sakti hai, aur ulti taraf bhi rassi bhar. Isliye us gol jagah ki poori chaudai rassi ki dugni hai.",
       "en": "The goat can go one rope-length on one side of the peg, and one rope-length on the opposite side too. So the full width of that round patch is twice the rope."
      },
+     "simpler": { "hi": "Bakri ek taraf rassi bhar jaati hai, aur ulti taraf bhi rassi bhar. Isliye poori chaudai rassi ki dugni hai.", "en": "The goat goes one rope-length each way from the peg. So the full width is twice the rope." },
      "board": { "template": "shape@1", "params": { "shape": "circle", "centre": "khoonti", "name": "poori chaudai" } },
      "then": {
       "prompt": {
@@ -611,7 +671,9 @@
       "accept": ["10", "10 metre", "10 metres"],
       "targets": "c6-maths-ch08-t01-m-diameter-radius",
       "wrongIfMis": "5 m",
-      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 5, "unit": "m" } }
+      "board": { "template": "measured@1", "params": { "shape": "circle", "r": 5, "unit": "m" } },
+      "why": { "hi": "rassi radius hai, aur poori chaudai diameter hai, 2 × 5 = 10", "en": "the rope is the radius, and the width all across is the diameter, 2 × 5 = 10" },
+      "simpler": { "hi": "Rassi radius hai, 5 m. Poori chaudai diameter hai, jo do radius jitni hoti hai.", "en": "The rope is the radius, 5 m. The width all across is the diameter, which is two radii." }
      }
     }
    ],

@@ -132,10 +132,16 @@ const qs = (o: Record<string, string>) => new URLSearchParams(o).toString();
 export interface ChapterRef { number: number; title: string }
 export interface SchoolOut { chapters: Record<string, ChapterRef[]>; pointer: Record<string, number>; timetable: Record<string, string[]> }
 
-export interface PlacementSummary { subject: string; level: "behind" | "on_track" | "ahead"; startGE: number; skipAhead: boolean; chapter: ChapterRef | null }
+export interface PlacementSummary { subject: string; level?: "behind" | "on_track" | "ahead"; startGE: number; skipAhead: boolean; chapter: ChapterRef | null; source?: "onboarding" | "round" }
+/** Round 7 F cold start: the parent's view of a subject, and the checked placement note (server/placement/note.js). */
+export type ParentView = "hard" | "fine" | "easy" | "unsure";
+export interface PlacementNoteLine { id: string; shapeId: string; subject: string | null; text: string }
+export interface PlacementNote { lines: Record<"en" | "hinglish" | "hi", PlacementNoteLine[]>; checked: { total: number; shown: number; dropped: string[] } }
 
 export const parentApi = {
   placement: (childId: string) => getJson<{ results: Record<string, PlacementSummary> }>(`/api/placement/result?${qs({ childId })}`),
+  placementNote: (childId: string) => getJson<{ note: PlacementNote }>(`/api/placement/note?${qs({ childId })}`),
+  setParentView: (childId: string, parentView: Record<string, ParentView>) => postJson<{ note: PlacementNote }>("/api/placement/onboarding", { childId, parentView }),
   school: (childId: string) => getJson<SchoolOut>(`/api/parent/school?${qs({ childId })}`),
   chapters: (classLevel: number) => getJson<{ chapters: Record<string, ChapterRef[]> }>(`/api/parent/chapters?${qs({ classLevel: String(classLevel) })}`),
   setSchoolChapter: (childId: string, subject: string, chapter: number | null) =>

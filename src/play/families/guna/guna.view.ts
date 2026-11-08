@@ -11,6 +11,11 @@
 //                  into ten of the next place); the trucks below fill as the rounds go; send them when the rest is on the dock.
 //   story          the story's things and how many go in one; the vehicles / packets set out (or the jar's count) with the
 //                  pads; the run fills them in turn and leaves on the dock what does not fit.
+//   field (check)  as round, and three dockets on the board (a × b as someone wrote it): a tap marks one "could be right"
+//                  (a tick), again "send back" (a cross); the bridge checks the estimate and every mark.
+//   big trucks     (r7 guna2, class 7: 6 or 7 racks, crates up to 10^6) the racks stand as columns, + above and − below,
+//                  so seven fit a phone's width with 44 px targets; places from 10^4 up are labelled as powers (10⁵).
+//   pack (each)    one column of loose things and the friends' plates below: "share" gives one to every friend.
 // After a missed run only magnifiers mark what is not as it should be (a rack, the dock, a vehicle, the jar); never the key.
 import type { GunaAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
@@ -18,7 +23,7 @@ import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { digits, isRound, leadOf, partsOf, placesOf, RACK, STORY_MAX, unitOf, want, type GunaParams, type GunaState } from "./guna.logic.ts";
+import { digits, dockets, isRound, leadOf, partsOf, placesOf, RACK, rightMarks, STORY_MAX, unitOf, want, type GunaParams, type GunaState } from "./guna.logic.ts";
 
 const SWEEP = 1.4;   // s a weighbridge / send / story run takes on screen (cosmetic: the law has already answered)
 /** the colour of a tile / crate of 10^e */
@@ -30,42 +35,51 @@ const STORY: Record<string, readonly [string, string][]> = {
   full: [["sweet", "packet"], ["rice", "sack"], ["marble", "bag"]],
   left: [["sweet", "packet"], ["marble", "bag"], ["rice", "sack"]],
 };
+/** each: the things shared among the friends */
+const EACH_ITEM = ["sweet", "marble", "book"];
+const SUP = "⁰¹²³⁴⁵⁶⁷⁸⁹";
+/** a rack's label: 1, 10, 100, 1000, then 10⁴, 10⁵, 10⁶ (a column is too narrow for 1000000) */
+const placeLabel = (e: number) => (e <= 3 ? String(10 ** e) : `10${[...String(e)].map((d) => SUP[Number(d)]).join("")}`);
 
 export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<GunaParams, GunaState, GunaAct>;
   const { level, ctl, lang } = deps;
-  const p = level.params, field = p.goal === "area" || p.goal === "round", story = p.goal === "all" || p.goal === "full" || p.goal === "left";
+  const p = level.params, field = p.goal === "area" || p.goal === "round" || p.goal === "check", story = p.goal === "all" || p.goal === "full" || p.goal === "left";
+  const rounding = p.goal === "round" || p.goal === "check", pack = p.goal === "share" || p.goal === "each";
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
-  const racks = field ? st().crates.length : 0;
+  const racks = field ? st().crates.length : 0, cols = racks > 5;
   // the round lengths either side of a side (round goal)
   const lo = (x: number) => Math.floor(x / unitOf(x)) * unitOf(x), hi = (x: number) => Math.ceil(x / unitOf(x)) * unitOf(x);
-  const drawA = p.goal === "round" ? hi(p.a) : p.a, drawB = p.goal === "round" ? hi(p.b) : p.b;
+  const drawA = rounding ? hi(p.a) : p.a, drawB = rounding ? hi(p.b) : p.b;
 
   let w = 360, h = 480;
   let boardY = 8, boardH = 40;
   // field: origin and scale; the truck's racks
-  let ox = 0, oy = 0, sx = 1, sy = 1, rowH = 46, rackX = 8, rackY = 0, rackW = 300;
+  let ox = 0, oy = 0, sx = 1, sy = 1, rowH = 46, rackX = 8, rackY = 0, rackW = 300, colK = 44;
+  // a big truck's columns: + (44), nine crates, − (44), the label
+  const CRATE_H = 10, COL_H = 44 + 6 + RACK * CRATE_H + 6 + 44 + 24;
   // pack: the godown's columns and the trucks
   let colW = 90, colX = 8, colY = 0, stackH = 120, btnY = 0, truckY = 0, truckW = 60, truckH = 64, perRow = 5;
   // story: the grid of vehicles / packets and the jar
-  let gx = 8, gy = 0, cell = 48, cols = 10, jarX = 8, jarY = 0, jarW = 120, jarH = 90, dockY = 0;
+  let gx = 8, gy = 0, cell = 48, gcols = 10, jarX = 8, jarY = 0, jarW = 120, jarH = 90, dockY = 0;
   const DOCK_H = 56;
   let drag: null | { side: 0 | 1; v: number } = null;
   let runAt = -1;
 
   function layout(bw: number, bh: number): void {
     w = bw; h = bh;
-    boardY = 8; boardH = story || p.goal === "share" ? 64 : 40;
+    boardY = 8; boardH = story || pack ? 64 : p.goal === "check" ? 60 : 40;
     if (field) {
       const wide = w > h * 1.15;
       rowH = 46;
-      const truckH0 = racks * rowH + 22;
+      const truckH0 = cols ? COL_H + 18 : racks * rowH + 22;
       // portrait: field above, truck below; landscape: field left, truck right
       const fx = 8, fy = boardY + boardH + 8;
       const fw = wide ? w * 0.56 - 16 : w - 16;
       const fh = wide ? h - fy - 8 : h - fy - truckH0 - 16;
       rackW = Math.min(wide ? w - fw - 32 : w - 16, 380);
+      if (cols) { colK = Math.min(56, Math.max(44, rackW / racks)); rackW = colK * racks; }
       rackX = wide ? fx + fw + 16 + (w - fw - 32 - rackW) / 2 : (w - rackW) / 2;
       rackY = wide ? Math.max(fy, (h - truckH0) / 2) : h - truckH0 - 8;
       const aw = fw - 56, ah = fh - 52;
@@ -77,7 +91,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (sx > STRETCH * sy) sx = STRETCH * sy;
       ox = fx + 52 + Math.max(0, (aw - drawA * sx) / 2);
       oy = fy + 48 + Math.max(0, (ah - drawB * sy) / 2);
-    } else if (p.goal === "share") {
+    } else if (pack) {
       const n = st().dock.length;
       colW = Math.min(120, (w - 16 - 8 * (n - 1)) / n); colX = (w - (colW * n + 8 * (n - 1))) / 2; colY = boardY + boardH + 10;
       perRow = Math.min(p.b, Math.max(3, Math.floor((w - 16 + 8) / (64 + 8))));
@@ -92,10 +106,10 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (p.goal === "left") { jarW = Math.min(w - 16, 300); jarH = 84; jarX = (w - jarW) / 2; jarY = y; y += jarH + 8; }
       gy = y + (p.goal === "left" ? 0 : 30);
       const n = Math.max(1, gridN(), p.goal === "left" ? Math.ceil(p.a / p.b) : 0);
-      cols = clamp(Math.ceil(Math.sqrt(n * 1.6)), 4, 10);
-      const rows = Math.ceil(n / cols);
-      cell = Math.min(64, (w - 16) / cols, (h - gy - 44) / Math.max(1, rows));
-      gx = (w - cell * cols) / 2;
+      gcols = clamp(Math.ceil(Math.sqrt(n * 1.6)), 4, 10);
+      const rows = Math.ceil(n / gcols);
+      cell = Math.min(64, (w - 16) / gcols, (h - gy - 44) / Math.max(1, rows));
+      gx = (w - cell * gcols) / 2;
     }
   }
   /** how many vehicles / packets the story grid shows now (left: the machine's packets appear only on the run, so the jar
@@ -137,11 +151,11 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   // ── field geometry ──
   const lenOf = (side: 0 | 1) => {
     const s = st();
-    if (p.goal === "round") return side === 0 ? s.ra || p.a : s.rb || p.b;
+    if (rounding) return side === 0 ? s.ra || p.a : s.rb || p.b;
     return side === 0 ? p.a : p.b;
   };
   /** a side can be cut (area: not one place already) / stretched (round) */
-  const cuttable = (side: 0 | 1) => (p.goal === "round" ? true : !isRound(side === 0 ? p.a : p.b));
+  const cuttable = (side: 0 | 1) => (rounding ? true : !isRound(side === 0 ? p.a : p.b));
   function snapCut(side: 0 | 1, pos: number): number {
     const len = side === 0 ? p.a : p.b, u = len >= 100 ? 10 : 1;
     return clamp(Math.round(pos / u) * u, u, len - 1 < u ? 1 : Math.floor((len - 1) / u) * u);
@@ -158,26 +172,29 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const id = api.hit(x, y);
         if (id === "edge-a" || id === "edge-b") {
           const side: 0 | 1 = id === "edge-a" ? 0 : 1, pos = side === 0 ? (x - ox) / sx : (y - oy) / sy;
-          drag = { side, v: p.goal === "round" ? snapRound(side, pos) : snapCut(side, pos) };
+          drag = { side, v: rounding ? snapRound(side, pos) : snapCut(side, pos) };
           ctl.finger(true); api.sfx("select");
+        } else if (id?.startsWith("docket-")) {
+          const i = Number(id.slice(7));
+          act({ kind: "stamp", i, to: s.marks[i] === 1 ? 2 : 1 });
         } else if (id?.startsWith("rack-")) {
           const [, pl, dir] = id.split("-");
           act({ kind: "crate", place: Number(pl), by: dir === "add" ? 1 : -1 });
         }
       } else if (kind === "move" && drag) {
         const pos = drag.side === 0 ? (x - ox) / sx : (y - oy) / sy;
-        drag.v = p.goal === "round" ? snapRound(drag.side, pos) : snapCut(drag.side, pos);
+        drag.v = rounding ? snapRound(drag.side, pos) : snapCut(drag.side, pos);
       } else if ((kind === "up" || kind === "cancel") && drag) {
         const d0 = drag; drag = null; ctl.finger(false);
         if (kind === "up") {
-          if (p.goal === "round") { if (d0.v !== (d0.side === 0 ? s.ra : s.rb)) act({ kind: "round", side: d0.side, to: d0.v }); }
+          if (rounding) { if (d0.v !== (d0.side === 0 ? s.ra : s.rb)) act({ kind: "round", side: d0.side, to: d0.v }); }
           else act({ kind: "cut", side: d0.side, at: d0.v });
         }
       }
       api.invalidate(); if (kind !== "move") deps.changed();
       return;
     }
-    if (p.goal === "share" && kind === "down") {
+    if (pack && kind === "down") {
       const id = api.hit(x, y);
       if (id?.startsWith("deal-")) act({ kind: "deal", place: Number(id.slice(5)) });
       else if (id?.startsWith("open-")) act({ kind: "open", place: Number(id.slice(5)) });
@@ -229,23 +246,24 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   function drawField(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), end = shownEnd();
-    // the board: the field asked for
-    P.text(c, `${p.goal === "round" ? "≈ " : ""}${p.a} × ${p.b}`, w / 2, boardY + boardH / 2, { size: 24, role: "ink", weight: 800, font: "mono" });
+    // the board: the field asked for (check: and the three dockets beside it)
+    if (p.goal === "check") drawDockets(c, end);
+    else P.text(c, `${p.goal === "round" ? "≈ " : ""}${p.a} × ${p.b}`, w / 2, boardY + boardH / 2, { size: 24, role: "ink", weight: 800, font: "mono" });
     // the sides as they stand (a drag shows its preview; the law is not asked until the finger lifts)
     let A = lenOf(0), B = lenOf(1), cx = [...s.cx], cy = [...s.cy];
-    if (drag && p.goal === "round") { if (drag.side === 0) A = drag.v; else B = drag.v; }
+    if (drag && rounding) { if (drag.side === 0) A = drag.v; else B = drag.v; }
     if (drag && p.goal === "area") {
       const list = drag.side === 0 ? cx : cy;
       if (!list.includes(drag.v)) list.push(drag.v);
       list.sort((x0, y0) => x0 - y0);
     }
-    if (p.goal === "round") {
+    if (rounding) {
       // the field as asked, dashed; the child's field over it
       P.stroke(c, [[ox, oy], [ox + p.a * sx, oy], [ox + p.a * sx, oy + p.b * sy], [ox, oy + p.b * sy]], { role: "ink3", width: 2, dash: [6, 5], closed: true });
     }
     if (cuttable(0)) api.target("edge-a", ox - 6, oy - 48, Math.max(44, A * sx + 12), 46);
     if (cuttable(1)) api.target("edge-b", ox - 50, oy - 6, 48, Math.max(44, B * sy + 12));
-    const pa = p.goal === "round" ? [A] : partsOf(A, cx), pb = p.goal === "round" ? [B] : partsOf(B, cy);
+    const pa = rounding ? [A] : partsOf(A, cx), pb = rounding ? [B] : partsOf(B, cy);
     const ready = p.goal === "area" || (!!(s.ra && s.rb) && !drag);
     let yy = oy;
     for (const b0 of pb) {
@@ -278,7 +296,51 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     sideLabels(c, 1, pb, sy);
     drawTruck(c, end);
   }
+  /** check: a × b and the three dockets someone wrote; a tick = could be right, a cross = send back */
+  function drawDockets(c: CanvasRenderingContext2D, end: boolean): void {
+    const P = api.P, s = st(), ds = dockets(p), right = rightMarks(p);
+    const bw = Math.min(w - 16, 460), bx = (w - bw) / 2, lw = Math.min(110, bw * 0.3), gap = 6;
+    P.textFit(c, `${p.a} × ${p.b}`, bx + lw / 2, boardY + boardH / 2, lw - 4, boardH, { size: 20, role: "ink", weight: 800, font: "mono" });
+    const dw = (bw - lw - gap * (ds.length - 1)) / ds.length;
+    ds.forEach((d, i) => {
+      const x = bx + lw + i * (dw + gap), m = s.marks[i], bad = end && !s.done && m !== right[i];
+      if (!s.done) api.target(`docket-${i}`, x, boardY, dw, boardH);
+      P.body(c, x, boardY, dw, boardH, { role: m === 1 ? "q2" : "panel", r: 8, state: bad ? "look" : "idle", seed: 90 + i });
+      P.textFit(c, String(d.v), x + dw / 2, boardY + 18, dw - 8, 24, { size: 18, weight: 800, font: "mono", on: m === 1 ? "q2" : "panel" });
+      const gy0 = boardY + boardH - 17;
+      if (m === 1) P.tick(c, x + dw / 2, gy0, 14, 1);
+      else if (m === 2) { P.stroke(c, [[x + dw / 2 - 7, gy0 - 7], [x + dw / 2 + 7, gy0 + 7]], { role: "ink", width: 3 }); P.stroke(c, [[x + dw / 2 + 7, gy0 - 7], [x + dw / 2 - 7, gy0 + 7]], { role: "ink", width: 3 }); }
+      else P.stroke(c, [[x + dw / 2 - 8, gy0 + 6], [x + dw / 2 + 8, gy0 + 6]], { role: "ink3", width: 2 });
+      if (bad) P.magnifier(c, x + dw - 12, boardY + boardH - 12, 12);
+    });
+  }
+  /** a big truck (more than five racks): one column per place, biggest on the left as the number is written */
+  function drawTruckCols(c: CanvasRenderingContext2D, end: boolean): void {
+    const P = api.P, s = st(), wantDigits = placesOf(want(p), racks);
+    P.body(c, rackX - 4, rackY - 4, rackW + 8, COL_H + 4, { role: "panel", r: 10, state: end && !s.done ? "look" : "idle" });
+    for (const fx of [0.2, 0.8]) P.circle(c, rackX + rackW * fx, rackY + COL_H + 8, 8, { role: "ink2", fill: true });
+    for (let k0 = 0; k0 < racks; k0++) {
+      const place = racks - 1 - k0, x = rackX + k0 * colK, cx = x + colK / 2, n = s.crates[place];
+      const addY = rackY, slotY = rackY + 44 + 6, takeY = slotY + RACK * CRATE_H + 6, labY = takeY + 44 + 12;
+      if (!s.done) { api.target(`rack-${place}-add`, x, addY, colK, 44); api.target(`rack-${place}-take`, x, takeY, colK, 44); }
+      P.body(c, x + 2, addY + 2, colK - 4, 40, { role: "panel", r: 8 });
+      P.text(c, "+", cx, addY + 22, { size: 22, role: n < RACK ? "ink" : "ink3", weight: 800 });
+      P.body(c, x + 2, takeY + 2, colK - 4, 40, { role: "panel", r: 8 });
+      P.text(c, "−", cx, takeY + 22, { size: 22, role: n > 0 ? "ink" : "ink3", weight: 800 });
+      // the crates stack up from the bottom of the column
+      for (let k = 0; k < RACK; k++) {
+        const y = slotY + (RACK - 1 - k) * CRATE_H;
+        if (k < n) P.body(c, x + 6, y + 1, colK - 12, CRATE_H - 2, { role: placeRole(place), r: 2, seed: place * 10 + k });
+        else if (k === 0) P.stroke(c, [[x + 6, y + CRATE_H - 1], [x + colK - 6, y + CRATE_H - 1]], { role: "ink3", width: 1.5 });
+      }
+      P.text(c, placeLabel(place), cx, labY, { size: 16, role: "ink2", weight: 700, font: "mono", maxW: colK - 2 });
+      if (k0 > 0) P.stroke(c, [[x, slotY], [x, slotY + RACK * CRATE_H]], { role: "ink3", width: 1 });
+      if (end && !s.done && n !== wantDigits[place]) P.magnifier(c, cx + colK / 2 - 10, slotY + 10, 12);
+    }
+    if (end && s.done) P.tick(c, rackX + rackW / 2, rackY - 18, 26, 1);
+  }
   function drawTruck(c: CanvasRenderingContext2D, end: boolean): void {
+    if (cols) { drawTruckCols(c, end); return; }
     const P = api.P, s = st(), wantDigits = placesOf(want(p), racks);
     const labW = 60, slotX = rackX + labW + 46, slotW = (rackW - labW - 92 - 8) / RACK;
     // the truck's bed and wheels
@@ -304,10 +366,11 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   function drawPack(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), end = shownEnd(), n = s.dock.length;
-    boardRows(c, [[W("guna.godown"), String(p.a)], [W("guna.trucks"), String(p.b)]]);
+    const each = p.goal === "each";
+    boardRows(c, each ? [[W(`guna.item.${EACH_ITEM[p.ctx] ?? EACH_ITEM[0]}`), String(p.a)], [W("guna.friends"), String(p.b)]] : [[W("guna.godown"), String(p.a)], [W("guna.trucks"), String(p.b)]]);
     for (let i = 0; i < n; i++) {
       const place = n - 1 - i, x = colX + i * (colW + 8), count = s.dock[place];
-      P.text(c, String(10 ** place), x + colW / 2, colY + 10, { size: 16, role: "ink2", weight: 700, font: "mono" });
+      if (!each) P.text(c, String(10 ** place), x + colW / 2, colY + 10, { size: 16, role: "ink2", weight: 700, font: "mono" });
       // the stack: crates in rows of five (the count beside it once it is more than fits)
       const per = 5, sz = Math.min(18, (colW - 12) / per), cap = Math.max(per, Math.floor((stackH - 26) / (sz + 2)) * per);
       P.body(c, x, colY + 22, colW, stackH, { role: "panel", r: 8, state: end && !s.done && count > 0 && (place > 0 || count >= p.b) ? "look" : "idle" });
@@ -332,9 +395,11 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let t = 0; t < p.b; t++) {
       const row = Math.floor(t / perRow), col = t % perRow, inRow = Math.min(perRow, p.b - row * perRow);
       const x = (w - (inRow * truckW + (inRow - 1) * 8)) / 2 + col * (truckW + 8) + off, y = truckY + row * (truckH + 8);
-      P.body(c, x, y, truckW, truckH - 8, { role: "panel", r: 6, seed: 70 + t });
-      P.circle(c, x + truckW * 0.25, y + truckH - 6, 5, { role: "ink2", fill: true });
-      P.circle(c, x + truckW * 0.75, y + truckH - 6, 5, { role: "ink2", fill: true });
+      P.body(c, x, y, truckW, truckH - 8, { role: "panel", r: each ? 14 : 6, seed: 70 + t });
+      if (!each) {
+        P.circle(c, x + truckW * 0.25, y + truckH - 6, 5, { role: "ink2", fill: true });
+        P.circle(c, x + truckW * 0.75, y + truckH - 6, 5, { role: "ink2", fill: true });
+      }
       // the crates inside: one row per place, biggest on top
       const ms = Math.max(3, Math.min(7, (truckW - 8) / 10 - 1));
       let ry = y + 5;
@@ -400,7 +465,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (bad) P.magnifier(c, jarX + jarW - 18, jarY + jarH - 18, 16);
     }
     // the vehicles / packets: set out (all / full; their count above them) or made by the machine on the run (left)
-    const n = gridN(), rows = Math.ceil(n / cols), pool = p.goal === "left" ? p.a - s.n : p.a;
+    const n = gridN(), rows = Math.ceil(n / gcols), pool = p.goal === "left" ? p.a - s.n : p.a;
     if (p.goal !== "left") {
       const iy = gy - 16;
       P.body(c, w / 2 - 44, iy - 10, 30, 20, { role: "panel", r: 4 });
@@ -408,7 +473,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.text(c, String(s.n), w / 2 + 10, iy, { size: 22, role: "ink", weight: 800, font: "mono", align: "left" });
     }
     for (let i = 0; i < n; i++) {
-      const x = gx + (i % cols) * cell, y = gy + Math.floor(i / cols) * cell;
+      const x = gx + (i % gcols) * cell, y = gy + Math.floor(i / gcols) * cell;
       const hold = clamp(pool - i * p.b, 0, p.b);
       const fillK = ran ? clamp(k * n - i, 0, 1) * (hold / p.b) : 0;
       const bad = end && !s.done && ((p.goal === "all" && hold === 0) || (p.goal !== "all" && hold < p.b));
@@ -422,14 +487,15 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   function draw(c: CanvasRenderingContext2D): void {
     if (field) drawField(c);
-    else if (p.goal === "share") drawPack(c);
+    else if (pack) drawPack(c);
     else drawStory(c);
   }
 
   function goal(): string {
     const s = st();
     if (s.ended && !s.done && runK() >= 1) return W("guna.again");
-    if (story) return W(`guna.goal.${p.goal}${p.ctx}`);
+    if (story || p.goal === "each") return W(`guna.goal.${p.goal}${p.ctx}`);
+    if (p.goal === "area" && cols) return W("guna.goal.big");
     return W(`guna.goal.${p.goal}`);
   }
   // no readout of the load, the shares or the answer: the crates and vehicles ARE them
@@ -447,7 +513,8 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (p.goal !== "left") ready = ready && s.n > 0;
     }
     if (p.goal === "area") ready = ready && s.crates.some((x) => x > 0);
-    if (p.goal === "round") ready = ready && !!s.ra && !!s.rb && s.crates.some((x) => x > 0);
+    if (rounding) ready = ready && !!s.ra && !!s.rb && s.crates.some((x) => x > 0);
+    if (p.goal === "check") ready = ready && s.marks.every((m) => m > 0);
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
     const runKey = field ? "guna.drive" : p.goal === "share" ? "guna.send" : "guna.go";
     out.push({ id: "run", label: W(runKey), aria: "run it", kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "run" }) });

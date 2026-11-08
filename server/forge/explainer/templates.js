@@ -22,7 +22,7 @@ export const TEMPLATES = ["fraction-parts@1", "fraction-line@1", "fraction-of@1"
   "flow@1", "cycle@1", "compare@1", "parts@1", "label@1", "angle@1", "shape@1", "symmetry@1", "area-grid@1", "bar-chart@1", "timeline@1", "table@1", "measured@1"];
 /** The StudioFacts kind each template is (what the Brain reads as "what is on screen"). */
 export const KIND_OF = { "flow@1": "diagram", "cycle@1": "diagram", "compare@1": "diagram", "parts@1": "diagram", "label@1": "diagram",
-  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "fraction-line@1": "diagram" };
+  "angle@1": "diagram", "shape@1": "diagram", "symmetry@1": "diagram", "bar-chart@1": "diagram", "lines@1": "diagram", "fraction-bars@1": "diagram", "wholes@1": "diagram", "unrolled@1": "diagram", "timeline@1": "diagram", "table@1": "diagram", "measured@1": "diagram", "places@1": "diagram", "number-line-zoom@1": "diagram", "number-line-scale@1": "diagram", "fraction-line@1": "diagram" };
 export const SKETCHES = ["plant", "flower", "leaf", "insect", "circuit", "cellPlant", "cellAnimal", "atom"];
 
 /** Pace by band: a younger child gets slower strokes and longer gaps (B1/B2 ≈ 1.35x). */
@@ -128,6 +128,128 @@ function fractionParts(c, tl) {
  *   mark k  (the item names a mark and asks its fraction) that mark is ringed and marked "?": its fraction is never written
  *   target  (the item names a/den and asks where it goes) a/den is written above the line, no point is drawn
  */
+/**
+ * director8 S3′ (a picture asked for while the card's own board is up): the SAME fractions as equal wholes, one bar each,
+ * stacked so their pieces compare by eye. `bars` [{ parts 1-12, shade 0-parts, label? }] (1-3): the label is the bar's
+ * fraction ("1/3"), or "?" for the value the card asks (drawn unshaded: the view never answers). → counts.wholes.
+ */
+function fractionBars(c, tl) {
+  const bars = Array.isArray(c.bars) ? c.bars : [];
+  if (bars.length < 1 || bars.length > 3) return { error: "fraction_bars_count" };
+  for (const b of bars) {
+    if (!isInt(b?.parts, 1, 12) || !isInt(b?.shade, 0, b.parts)) return { error: "fraction_bars_range" };
+    const label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
+    if (label !== "?" && (!fitsLabel(label) || textProblem(label))) return { error: "fraction_bars_label" };
+    // (a "?" bar may be shaded: the shading is the given and its NAME the question — a shade-grid card's second view)
+    if (label !== "?") { const m = /^(\d+)\s*\/\s*(\d+)$/.exec(label); if (!m || Number(m[1]) * b.parts !== b.shade * Number(m[2])) return { error: `fraction_bars_label_value:${label}` }; }
+  }
+  const x0 = 30, W = 270, H = 46, gapY = 30, top = Math.round((BOARD.h - (bars.length * H + (bars.length - 1) * gapY)) / 2);
+  const wholes = [];
+  bars.forEach((b, k) => {
+    const y0 = top + k * (H + gapY), pw = W / b.parts, label = b.label == null ? `${b.shade}/${b.parts}` : String(b.label);
+    // (paced for her explanation, as the fraction line: each bar, its cuts one by one, its shading, then its name — W6)
+    // (director10: a two-bar compare is said in ~20 words, ~8 s: the cuts and shading quicken with the parts — W6 refused 7 + 7)
+    const cutMs = b.parts > 6 ? 160 : 260, shadeMs = b.shade > 3 ? 260 : 420;
+    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 700, { gap: k ? 500 : 0 });
+    for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
+    for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
+    tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+    wholes.push({ parts: b.parts, shaded: b.shade, label });
+  });
+  // (one short fact per bar: the facts row keeps values of up to 40 characters)
+  return { counts: { wholes }, facts: { wholes: `${wholes.length} equal bars`, ...Object.fromEntries(wholes.map((w, k) => [`bar${k + 1}`, `${w.parts} equal parts, ${w.shaded} shaded = ${w.label}`])) } };
+}
+
+/**
+ * director9 P2 (main: "every picture request draws something new", c4's Cake A / Cake B compare): up to two WHOLES side by
+ * side, each a circle cut into `parts` (2-12) pieces — equal, or not (`equal: false`: one half and the rest of the pieces in
+ * the other half: "1 bada, 2 chhote") — `shade` pieces coloured, a short title under each. counts.wholes [{ parts, shaded,
+ * label: title }]; facts say equal / not equal per whole.
+ */
+function wholes(c, tl) {
+  const list = Array.isArray(c.wholes) ? c.wholes : [];
+  if (list.length < 1 || list.length > 2) return { error: "wholes_count" };
+  for (const w of list) {
+    if (!isInt(w?.parts, 2, 12) || !isInt(w.shade ?? 0, 0, w.parts) || (w.title !== undefined && (!fitsLabel(String(w.title)) || textProblem(String(w.title))))) return { error: "wholes_range" };
+    if (w.equal === false && w.parts < 3) return { error: "wholes_unequal_parts" };
+  }
+  if (c.as === "bar") return wholesAsBars(list, tl);
+  const n = list.length, colW = 400 / n, r = n === 1 ? 95 : 72, cy = 128, counts = [], facts = {};
+  list.forEach((w, k) => {
+    const cx = round1(colW * k + colW / 2), shade = w.shade ?? 0;
+    // the cuts, in degrees from 12 o'clock: equal pieces, or one half and the other half shared by the rest
+    const cuts = w.equal === false ? [0, 180, ...Array.from({ length: w.parts - 2 }, (_, i) => 180 + (180 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts }, (_, i) => (360 * i) / w.parts);
+    tl.add({ id: `w${k}`, op: "circle", c: [cx, cy], r, weight: 2 }, 800, { gap: k ? 300 : 0 });
+    for (const a of cuts) tl.add({ op: "line", from: [cx, cy], to: [round1(cx + r * Math.sin(rad(a))), round1(cy - r * Math.cos(rad(a)))], weight: 1 }, 220, { gap: 60 });
+    const edges = [...cuts, 360];
+    for (let i = 0; i < shade; i++) tl.add({ op: "sector", c: [cx, cy], r: r - 2, fromDeg: edges[i], toDeg: edges[i + 1], fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
+    const title = w.title !== undefined ? String(w.title) : "";
+    if (title) writeFit(tl, title, cx, cy + r + 34, colW - 12, {}, { id: `t${k}`, ink: "accent", gap: 160, size: "s" });
+    counts.push({ parts: w.parts, shaded: shade, label: title });
+    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+  });
+  return { counts: { wholes: counts }, facts };
+}
+
+/**
+ * director10 G4 (a second view of wholes@1): the same wholes as STRIPS, one under the other — equal pieces, or one half and
+ * the rest of the pieces in the other half — `shade` pieces coloured, the title beside each. Counts as wholes@1.
+ */
+function wholesAsBars(list, tl) {
+  const x0 = 30, W = 250, H = 46, gapY = 40, top = Math.round((BOARD.h - (list.length * H + (list.length - 1) * gapY)) / 2);
+  const counts = [], facts = {};
+  list.forEach((w, k) => {
+    const y0 = top + k * (H + gapY), shade = w.shade ?? 0;
+    // the cuts, as fractions of the strip: equal pieces, or one half and the other half shared by the rest
+    const cuts = w.equal === false ? [0.5, ...Array.from({ length: w.parts - 2 }, (_, i) => 0.5 + (0.5 * (i + 1)) / (w.parts - 1))] : Array.from({ length: w.parts - 1 }, (_, i) => (i + 1) / w.parts);
+    tl.add({ id: `w${k}`, op: "rect", at: [x0, y0], w: W, h: H, weight: 2 }, 900, { gap: k ? 900 : 0 });
+    for (const f of cuts) tl.add({ op: "line", from: [round1(x0 + f * W), y0], to: [round1(x0 + f * W), y0 + H], weight: 1 }, 260, { gap: 140 });
+    const edges = [0, ...cuts, 1];
+    for (let i = 0; i < shade; i++) tl.add({ op: "rect", at: [round1(x0 + edges[i] * W + 3), y0 + 3], w: round1((edges[i + 1] - edges[i]) * W - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 420, { gap: 260 });
+    const title = w.title !== undefined ? String(w.title) : "";
+    if (title) writeFit(tl, title, x0 + W + 60, y0 + H / 2 + 6, 110, {}, { id: `t${k}`, ink: "accent", gap: 300, size: "s" });
+    counts.push({ parts: w.parts, shaded: shade, label: title });
+    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+  });
+  return { counts: { wholes: counts }, facts: { ...facts, view: "strips" } };
+}
+
+/**
+ * director10 G4 (main: measured@1's second view, "seedha karke scale par napo"): a shape's boundary UNROLLED onto a ruler —
+ * its sides laid end to end on one straight line, to scale, each labelled with its length; under them a measuring line from
+ * the start to the end, labelled with the total (a number, or "?" — the card's asked perimeter). unit cm | m; sides 2-8.
+ * counts { sides, sideValues }.
+ */
+function unrolled(c, tl) {
+  const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
+  if (!unit) return { error: "unit" };
+  const sides = Array.isArray(c.sides) ? c.sides.map(Number) : [];
+  if (sides.length < 2 || sides.length > 8 || sides.some((v) => !(v > 0 && v <= 10000))) return { error: "unrolled_sides" };
+  const num = (v) => (Number.isInteger(v) ? String(v) : String(Math.round(v * 10) / 10));
+  const total = c.total === "?" || c.total == null ? "?" : Number(c.total);
+  if (total !== "?" && !(Number.isFinite(total) && Math.abs(total - sides.reduce((a, b) => a + b, 0)) < 1e-6)) return { error: "unrolled_total" };
+  const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
+  let x = x0;
+  const xs = [x0];
+  sides.forEach((v, i) => {
+    const x1 = round1(x + (v / sum) * W);
+    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
+    tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
+    // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
+    const lab = `${num(v)} ${unit}`, mid = round1((x + x1) / 2), roomy = textBox(lab, "s").w + 6 <= x1 - x;
+    tl.add({ op: "text", at: [mid, roomy || i % 2 === 0 ? y - 18 : y + 30], text: lab, size: "s" }, 400, { gap: 120 });
+    x = x1; xs.push(x1);
+  });
+  tl.add({ op: "line", from: [x0, y - 9], to: [x0, y + 9], weight: 1 }, 160, { gap: 0 });
+  // the ruler: a measuring line under the pieces, start to end, and the total
+  const yr = y + 62;
+  tl.add({ id: "ruler", op: "arrow", from: [x0, yr], to: [round1(x), yr], weight: 1 }, 700, { gap: 300 });
+  tl.add({ op: "line", from: [x0, yr - 7], to: [x0, yr + 7], weight: 1 }, 160, { gap: 0 });
+  tl.add({ id: "total", op: "text", at: [round1((x0 + x) / 2), yr + 30], text: total === "?" ? "?" : `${num(total)} ${unit}`, size: "m", ink: total === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+  const sideValues = sides.map((v) => `${num(v)} ${unit}`);
+  return { counts: { sides: sides.length, sideValues }, facts: { sides: `${sides.length} sides laid in a straight line`, lengths: sideValues.join(", ").slice(0, 40), total: total === "?" ? "?" : `${num(total)} ${unit}` } };
+}
+
 function fractionLine(c, tl) {
   if (Array.isArray(c.dens)) return fractionLine2(c, tl);
   const den = c.den, w = c.wholes ?? c.to ?? 1;
@@ -798,13 +920,14 @@ const arcPts = (cx, cy, r, deg) => Array.from({ length: Math.max(3, Math.round(d
 
 function angle(c, tl) {
   const list = Array.isArray(c.angles) ? c.angles : [];
-  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)))) return { error: "angles" };
+  if (list.length < 1 || list.length > 3 || !list.every((a) => a && isInt(a.deg, 10, 180) && (a.name === undefined || fitsLabel(a.name)) && (a.len === undefined || a.len === "short" || a.len === "long"))) return { error: "angles" };
   const n = list.length, colW = 400 / n, Lbase = n === 1 ? 150 : n === 2 ? 110 : 82;
   const facts = { angles: n }, claims = [];
   list.forEach((a, i) => {
     const th = rad(a.deg);
     // the arms are as long as the column allows for this opening (an obtuse angle spans more than its arm)
-    const L = Math.min(Lbase, (colW - 14) / (Math.max(1, Math.cos(th)) - Math.min(0, Math.cos(th))));
+    // (Learning: "short arms, long arms, the same angle": `len` "short" draws the arms at half length; the opening is the same)
+    const L = Math.min(Lbase, (colW - 14) / (Math.max(1, Math.cos(th)) - Math.min(0, Math.cos(th)))) * (a.len === "short" ? 0.5 : 1);
     const xs = [0, L, L * Math.cos(th)], minX = Math.min(...xs), maxX = Math.max(...xs);
     const vx = i * colW + colW / 2 - (minX + maxX) / 2, vy = n === 1 ? 215 : 205;
     tl.add({ id: `h${i}`, op: "line", from: [vx, vy], to: [vx + L, vy], weight: 2 }, 520, { gap: i ? 260 : 120 });
@@ -826,6 +949,99 @@ function angle(c, tl) {
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
   });
   return { facts, claims };
+}
+
+/**
+ * round 7 (main + Learning, c7 staged: vertically opposite angles, parallel lines): LINES, not one angle.
+ *   kind "cross"    two lines crossing at a point: `deg` (20-160) between them, `ends` up to 4 letters [A, B, C, D] (line 1's
+ *                   left / right ends, line 2's lower / upper ends), `point` (the crossing, "O"), `angles` [{ at 1-4, value?,
+ *                   name? }]: at 1 = between B and D (deg), 2 = D-A (180-deg), 3 = A-C (deg), 4 = C-B (180-deg).
+ *   kind "parallel" two parallel lines (`names` ["AB", "CD"]: two letters each, at the ends; or one name each), parallel
+ *                   marks on both; `transversal` { deg 30-150, name? } crossing both, `angles` [{ at 1-8 }] (1-4 round the
+ *                   upper crossing, 5-8 the lower, numbered as for a cross); `gap` (a label, "3 cm") marks the gap between
+ *                   the lines at two places — the same gap.
+ * A labelled angle writes its `value` in degrees (which must BE the angle drawn there), or "?" (the asked angle), or its
+ * `name` ("a", "∠1"). counts.angles: the degrees written; counts.marks: every angle label [{ at: "angle 1", label }].
+ */
+function lines(c, tl) {
+  const okLetter = (t) => typeof t === "string" && /^[A-Z][A-Z]?$/.test(t);
+  const list = Array.isArray(c.angles) ? c.angles : [];
+  const kind = c.kind === "parallel" ? "parallel" : c.kind === "cross" ? "cross" : null;
+  if (!kind) return { error: "lines_kind" };
+  const deg = kind === "cross" ? c.deg : c.transversal?.deg;
+  if (kind === "cross" && !isInt(deg, 20, 160)) return { error: "lines_deg" };
+  if (kind === "parallel" && c.transversal != null && !isInt(deg, 30, 150)) return { error: "lines_transversal" };
+  const maxAt = kind === "cross" ? 4 : c.transversal ? 8 : 0;
+  if (list.length > maxAt || list.some((a) => !a || !isInt(a.at, 1, maxAt) || (a.value !== undefined && a.value !== "?" && !isInt(a.value, 1, 179)) || (a.name !== undefined && !fitsLabel(a.name)))) return { error: "lines_angles" };
+  if (new Set(list.map((a) => a.at)).size !== list.length) return { error: "lines_angles_repeat" };
+  // (a written value must be the angle drawn there: 1 and 3 are `deg`, 2 and 4 its supplement)
+  const trueAt = (at) => ((at - 1) % 2 === 0 ? deg : 180 - deg);
+  for (const a of list) if (typeof a.value === "number" && a.value !== trueAt(a.at)) return { error: `lines_angle_value:${a.at}` };
+  const facts = {}, marks = [], written = [];
+  // the four rays from a crossing at (x, y): 0 right, deg up-right, 180 left, 180+deg down-left (screen y grows down)
+  const ray = (x, y, a, L) => [round1(x + L * Math.cos(rad(a))), round1(y - L * Math.sin(rad(a)))];
+  const arcBetween = (x, y, r, a0, a1) => { const n = Math.max(4, Math.round((a1 - a0) / 10) + 1); return Array.from({ length: n }, (_, k) => ray(x, y, a0 + ((a1 - a0) * k) / (n - 1), r)); };
+  const labelAngles = (x, y, base) => {
+    for (const a of list.filter((q) => q.at > base && q.at <= base + 4)) {
+      const i = a.at - base, from = [0, deg, 180, 180 + deg][i - 1], to = [deg, 180, 180 + deg, 360][i - 1];
+      const r = 28 + (i % 2 ? 0 : 4);
+      if (Math.round(to - from) === 90) {
+        const p1 = ray(x, y, from, 16), p2 = ray(x, y, to, 16), p3 = [round1(p1[0] + p2[0] - x), round1(p1[1] + p2[1] - y)];
+        tl.add({ op: "stroke", points: [p1, p3, p2], ink: "mark", weight: 2 }, 360, { gap: 120 });
+      } else tl.add({ op: "stroke", points: arcBetween(x, y, r, from, to), ink: "mark", weight: 2 }, 420, { gap: 140 });
+      const text = a.value === "?" ? "?" : typeof a.value === "number" ? `${a.value}°` : a.name ?? "?";
+      const [lx, ly] = ray(x, y, (from + to) / 2, r + 22);
+      tl.add({ op: "text", at: [lx, ly + 5], text, size: "s", ink: text === "?" ? "mark" : "accent" }, 360, { gap: 80 });
+      marks.push({ at: `angle ${a.at}`, label: text });
+      if (typeof a.value === "number") written.push(a.value);
+    }
+  };
+  if (kind === "cross") {
+    const ends = Array.isArray(c.ends) ? c.ends : [];
+    if (ends.length > 4 || ends.some((e) => !okLetter(e)) || (c.point !== undefined && !okLetter(c.point))) return { error: "lines_names" };
+    const x = 200, y = 150, L = 125;
+    const [A, B] = [ray(x, y, 180, L), ray(x, y, 0, L)], [C, D] = [ray(x, y, 180 + deg, L), ray(x, y, deg, L)];
+    tl.add({ id: "l1", op: "line", from: A, to: B, weight: 2 }, 600);
+    tl.add({ id: "l2", op: "line", from: C, to: D, weight: 2, ink: "accent" }, 600, { gap: 160 });
+    tl.add({ op: "circle", c: [x, y], r: 4, fill: "accent", ink: "accent", weight: 1 }, 160, { gap: 60 });
+    [[A, 180], [B, 0], [C, 180 + deg], [D, deg]].forEach(([p, a], k) => { if (ends[k]) tl.add({ op: "text", at: [round1(p[0] + 14 * Math.cos(rad(a))), round1(p[1] - 14 * Math.sin(rad(a)) + 5)], text: ends[k], size: "s" }, 220, { gap: 40 }); });
+    // (the point's name inside the arcs, in the lower right angle, clear of both lines)
+    if (c.point) { const [px, py] = ray(x, y, (180 + deg + 360) / 2, 16); tl.add({ op: "text", at: [px, py + 5], text: c.point, size: "s" }, 220, { gap: 40 }); }
+    labelAngles(x, y, 0);
+    // (no stray digits in the row her line is written from: "two lines", "first line AB" — a "2" or "line1" is a number W17
+    // holds her to)
+    Object.assign(facts, { lines: `two lines crossing${c.point ? ` at ${c.point}` : ""}`, ...(ends.length === 4 ? { first: `line ${ends[0]}${ends[1]}`, second: `line ${ends[2]}${ends[3]}` } : {}) });
+  } else {
+    const names = Array.isArray(c.names) ? c.names.slice(0, 2) : [];
+    if (names.some((n) => typeof n !== "string" || !(/^[A-Z]{2}$/.test(n) || fitsLabel(n)))) return { error: "lines_names" };
+    if (c.gap !== undefined && !fitsLabel(c.gap)) return { error: "lines_gap" };
+    if (c.transversal?.name !== undefined && !/^[A-Z]{2}$/.test(c.transversal.name)) return { error: "lines_transversal_name" };
+    const ys = [105, 205], x0 = 40, x1 = 360;
+    ys.forEach((y, k) => {
+      tl.add({ id: `p${k}`, op: "line", from: [x0, y], to: [x1, y], weight: 2 }, 600, { gap: k ? 160 : 0 });
+      // (parallel marks: one chevron on each line, the same way)
+      tl.add({ op: "stroke", points: [[292, y - 6], [300, y], [292, y + 6]], ink: "soft", weight: 2 }, 200, { gap: 40 });
+      const n = names[k];
+      if (n && /^[A-Z]{2}$/.test(n)) { tl.add({ op: "text", at: [x0 - 14, y + 5], text: n[0], size: "s" }, 200, { gap: 40 }); tl.add({ op: "text", at: [x1 + 14, y + 5], text: n[1], size: "s" }, 200, { gap: 40 }); }
+      else if (n) tl.add({ op: "text", at: [x1 - 28, y - 12], text: n, size: "s" }, 200, { gap: 40 });
+    });
+    if (c.gap !== undefined) for (const gx of [80, 240]) {
+      tl.add({ op: "line", from: [gx, ys[0] + 4], to: [gx, ys[1] - 4], weight: 1, ink: "soft" }, 260, { gap: 80 });
+      tl.add({ op: "text", at: [gx + 30, (ys[0] + ys[1]) / 2 + 5], text: c.gap, size: "s", ink: "soft" }, 260, { gap: 40 });
+    }
+    if (c.transversal) {
+      const dx = 50 / Math.tan(rad(deg)), I1 = [round1(200 + dx), ys[0]], I2 = [round1(200 - dx), ys[1]];
+      const P = ray(I1[0], I1[1], deg, 45), Q = ray(I2[0], I2[1], 180 + deg, 45);
+      tl.add({ id: "t", op: "line", from: Q, to: P, weight: 2, ink: "accent" }, 600, { gap: 160 });
+      if (c.transversal.name) { tl.add({ op: "text", at: [P[0] + 10, P[1] - 4], text: c.transversal.name[0], size: "s" }, 200, { gap: 40 }); tl.add({ op: "text", at: [Q[0] - 10, Q[1] + 12], text: c.transversal.name[1], size: "s" }, 200, { gap: 40 }); }
+      labelAngles(I1[0], I1[1], 0);
+      labelAngles(I2[0], I2[1], 4);
+    }
+    Object.assign(facts, { lines: "two parallel lines", ...(names.length ? { names: names.join(", ") } : {}), ...(c.transversal ? { transversal: c.transversal.name ?? "1 line crossing both" } : {}), ...(c.gap ? { gap: `${c.gap} at two places` } : {}) });
+  }
+  // (the angles it WRITES: the asked "?" is no fact)
+  if (written.length) facts.angles = marks.filter((m) => m.label !== "?").map((m) => m.label).join(" | ").slice(0, 40);
+  return { facts, counts: { ...(written.length ? { angles: written } : {}), ...(marks.length ? { marks, labels: marks.length } : {}) } };
 }
 
 const SIDES = { triangle: 3, square: 4, rectangle: 4, quadrilateral: 4, pentagon: 5, hexagon: 6, octagon: 8, circle: 0 };
@@ -1207,6 +1423,48 @@ function placesBoard(c, tl) {
  * lines; the stretched unit gets its ten tenths, and the value is marked on it. Every label is a normal size: the zoom is
  * in the drawing, never in the text. The stretched unit ends exactly on the lower line (a claim expand() checks).
  */
+/**
+ * round 7 (Learning, staged c4-c5 large numbers: "4815 lies between 4000 and 5000", rounding): a number line on a big
+ * scale. `from` 0-99999 to `to` (≤ 100000), ticks every `step` (2-10 intervals; fewer when the labels are long, so they
+ * never touch), `marks` [{ value, label? }] (1-3): a tall tick at the value with its label — the value itself by default,
+ * "?" for the asked one, or a short word ("Ram ka ghar"). counts: lines [{ gaps, ticks, innerTicks }], marks [{ at, label }].
+ */
+function numberLineScale(c, tl) {
+  const { from, to, step } = c;
+  if (!isInt(from, 0, 99999) || !isInt(to, 1, 100000) || to <= from || !isInt(step, 1, 100000) || (to - from) % step) return { error: "scale_range" };
+  const N = (to - from) / step, digits = String(to).length;
+  if (N < 2 || N > 10) return { error: "scale_ticks" };
+  const marks = Array.isArray(c.marks) ? c.marks : [];
+  if (marks.length > 3 || marks.some((m) => !isInt(m?.value, from, to) || (m.label !== undefined && m.label !== "?" && (!fitsLabel(String(m.label)) || textProblem(String(m.label)))))) return { error: "scale_marks" };
+  const x0 = 30, W = 340, y = 180;
+  const X = (u) => round1(x0 + 12 + ((u - from) / (to - from)) * (W - 24));
+  // (App's render check, 2026-11-07: tick labels draw at 19.2 units, 11.5 a digit — "100200300…" at 0-1000 step 100, and
+  // "80000100000" — so a label needs digits × 11.5 + 6 of its own; when a step is narrower, every k-th tick is labelled, both
+  // ends always, and an inner label too close to the end gives way to it)
+  const px = (W - 24) / N, need = (k) => [String(from + k * step).length, digits].reduce((a, b) => Math.max(a, b)) * 0.6 * 19.2 + 6;
+  // (k divides N when it can, so the labelled ticks stay evenly spaced: 0, 5000, 10000 — never 0, 3000, 6000, 10000)
+  const k0 = Math.max(1, Math.ceil(need(N) / px)), every = Array.from({ length: N - k0 + 1 }, (_, j) => k0 + j).find((k) => N % k === 0) ?? N;
+  const shown = Array.from({ length: N + 1 }, (_, i) => i === 0 || i === N || (i % every === 0 && (N - i) * px >= need(N)));
+  tl.add({ id: "line", op: "numwork", at: [x0, y], layout: "number_line", rows: [Array.from({ length: N + 1 }, (_, i) => (shown[i] ? String(from + i * step) : ""))], range: [from, to], w: W, weight: 2 }, 1200);
+  // (paced for her explanation, as the fraction line: each step of the scale marked in turn, then the values — W6)
+  for (let i = 1; i < N; i++) tl.add({ op: "line", from: [X(from + i * step), y - 7], to: [X(from + i * step), y + 7], weight: 1 }, 320, { gap: 160 });
+  // (labels above in up to two rows: a label moves up when it would touch its left neighbour)
+  const rows = [y - 46, y - 74, y - 102], right = [-Infinity, -Infinity, -Infinity], pts = [];
+  for (const m of [...marks].sort((a, b) => a.value - b.value)) {
+    const label = m.label === undefined ? String(m.value) : String(m.label), x = X(m.value), half = textBox(label, "s").w / 2;
+    const r = right.findIndex((e) => x - half >= e + 6);
+    if (r < 0) return { error: "scale_marks_crowded" };
+    right[r] = x + half;
+    const lx = Math.min(BOARD.w - 4 - half, Math.max(4 + half, x));
+    tl.add({ op: "line", from: [x, y - 14], to: [x, y + 14], weight: 3, ink: "mark" }, 500, { gap: 700 });
+    tl.add({ op: "line", from: [x, y - 12], to: [x, rows[r] + 6], weight: 1, ink: "soft" }, 300, { gap: 120 });
+    tl.add({ op: "text", at: [round1(lx), rows[r]], text: label, size: "s", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 120 });
+    pts.push({ at: String(m.value), label });
+  }
+  return { counts: { lines: [{ gaps: N, ticks: N + 1, innerTicks: N - 1 }], ...(pts.length ? { marks: pts } : {}), labels: shown.filter(Boolean).length },
+    facts: { line: `${from} to ${to}`, step: `every ${step}`, ...(pts.length ? { marks: pts.map((q) => (q.label === "?" ? "?" : q.label)).join(", ").slice(0, 40) } : {}) } };
+}
+
 function numberLineZoom(c, tl) {
   const v = Number(c.value);
   if (!(v > 0 && v < 10) || Math.abs(Math.round(v * 100) - v * 100) > 1e-6 || Number.isInteger(v)) return { error: "zoom_value" };
@@ -1294,6 +1552,12 @@ function traceBoundary(tl, corners) {
   return [{ id, c: [round1(at[0]), round1(at[1])] }];
 }
 
+/** Does a right-angled walk (R D L U per side) with these lengths come back to where it started? */
+function closes(sides, walk) {
+  let x = 0, y = 0;
+  for (let i = 0; i < sides.length; i++) { const d = sides[i], w = walk[i]; if (w === "R") x += d; else if (w === "L") x -= d; else if (w === "D") y += d; else if (w === "U") y -= d; else return false; }
+  return Math.abs(x) < 1e-9 && Math.abs(y) < 1e-9;
+}
 function measuredBoard(c, tl) {
   const unit = c.unit === "m" ? "m" : c.unit === "cm" ? "cm" : null;
   if (!unit) return { error: "unit" };
@@ -1345,6 +1609,47 @@ function measuredBoard(c, tl) {
     if (n < 3 || n > 8 || sides.length !== n || !sides.every((v) => v > 0)) return { error: "polygon_sides" };
     const names = Array.isArray(c.names) ? c.names.map(String) : [];
     if (names.length && (names.length !== n || names.some((x) => !fitsLabel(x) || [...x].length > 3))) return { error: "polygon_names" };
+    // director9 (c6 "L-shape kamra", 8 contradictions: drawn as a regular hexagon): a right-angled outline is drawn TO SCALE.
+    // `walk` names each side's direction (R D L U, clockwise from the top-left corner); a 6-sided shape whose sides close as
+    // an L (R D L D L U: 8, 3, 5, 4, 3, 7) is one without being told. A walk that does not close is refused.
+    const walk = typeof c.walk === "string" ? c.walk.toUpperCase() : n === 6 && closes(sides, "RDLDLU") ? "RDLDLU" : null;
+    if (walk !== null) {
+      if (walk.length !== n || !/^[RDLU]+$/.test(walk) || !closes(sides, walk)) return { error: "polygon_walk" };
+      const V = [[0, 0]];
+      for (let i = 0; i < n - 1; i++) { const [x, y] = V[i], d = sides[i]; V.push(walk[i] === "R" ? [x + d, y] : walk[i] === "L" ? [x - d, y] : walk[i] === "D" ? [x, y + d] : [x, y - d]); }
+      const xs = V.map((v) => v[0]), ys = V.map((v) => v[1]), w = Math.max(...xs) - Math.min(...xs), h = Math.max(...ys) - Math.min(...ys);
+      const k = Math.min((BW - 40) / w, (BH - 20) / h), ox = cx - (w * k) / 2 - Math.min(...xs) * k, oy = cy - (h * k) / 2 - Math.min(...ys) * k;
+      const P = V.map(([x, y]) => [round1(ox + x * k), round1(oy + y * k)]);
+      tl.add({ id: "shape", op: "polygon", points: P, weight: 2 }, 1000);
+      const boxes = [];
+      const boxOf = (t, at) => { const b = textBox(t, "s"); return { x0: at[0] - b.w / 2 - 2, x1: at[0] + b.w / 2 + 2, y0: at[1] - b.h, y1: at[1] + 3 }; };
+      const hits = (q) => boxes.some((b) => q.x0 < b.x1 && b.x0 < q.x1 && q.y0 < b.y1 && b.y0 < q.y1);
+      // the outward normal of side i (a clockwise walk's outside is to its left)
+      const normal = (i) => { const A = P[i], B = P[(i + 1) % n]; return [Math.sign(B[1] - A[1]), -Math.sign(B[0] - A[0])]; };
+      for (let i = 0; i < n; i++) {
+        const A = P[i], B = P[(i + 1) % n], m = [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
+        const [nx, ny] = normal(i), t = fmt(sides[i]), half = textBox(t, "s").w / 2;
+        const at = [round1(m[0] + nx * (half + 10)), round1(m[1] + ny * 16 + 5)];
+        boxes.push(boxOf(t, at));
+        tl.add({ op: "text", at, text: t, size: "s", ink: "accent" }, 320, { gap: 120 });
+      }
+      // a corner's name on its outward diagonal (the sum of its two sides' outward normals: into the notch at the inner
+      // corner), pushed out
+      // until it is clear of every side's length
+      names.forEach((nm, i) => {
+        const [x, y] = P[i], a = normal((i + n - 1) % n), b = normal(i);
+        let d = [a[0] + b[0], a[1] + b[1]];
+        if (!d[0] && !d[1]) d = a;
+        let at = null;
+        for (const r of [12, 20, 28, 36]) { const q = [round1(x + d[0] * r), round1(y + d[1] * r + 5)]; if (!hits(boxOf(nm, q))) { at = q; break; } }
+        if (!at) return;
+        boxes.push(boxOf(nm, at));
+        tl.add({ op: "text", at, text: nm, size: "s", ink: "soft" }, 200, { gap: 40 });
+      });
+      const claims = c.trace ? traceBoundary(tl, P) : [];
+      return { claims, counts: { sides: n, corners: n, sideValues: sides.map(fmt) },
+        facts: { shape: `${n}-sided shape`, outline: walk === "RDLDLU" ? "L-shape, right angles" : "right angles", sides: sides.map(num).join(", ") + ` ${unit}`, ...(names.length ? { corners: names.join(" ") } : {}) } };
+    }
     const P = Array.from({ length: n }, (_, i) => { const a = ((-90 + 180 / n + (360 * i) / n) * Math.PI) / 180; return [round1(cx + 92 * Math.cos(a)), round1(cy + 4 + 92 * Math.sin(a))]; });
     tl.add({ id: "shape", op: "polygon", points: P, weight: 2 }, 1000);
     for (let i = 0; i < n; i++) {
@@ -1372,7 +1677,7 @@ function measuredBoard(c, tl) {
 }
 
 const BUILD = {
-  "fraction-parts@1": fractionParts, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "column-op@1": columnOp,
+  "fraction-parts@1": fractionParts, "fraction-bars@1": fractionBars, "wholes@1": wholes, "unrolled@1": unrolled, "lines@1": lines, "fraction-line@1": fractionLine, "fraction-of@1": fractionOf, "combine-count@1": combineCount, "number-line-hop@1": numberLineHop, "number-line-scale@1": numberLineScale, "column-op@1": columnOp,
   "place-value@1": placeValue, "equal-groups@1": equalGroups, "flow@1": flow, "cycle@1": cycle, "compare@1": compare, "parts@1": parts, "label@1": label,
   "angle@1": angle, "shape@1": shape, "symmetry@1": symmetry, "area-grid@1": areaGrid, "bar-chart@1": barChart, "timeline@1": timelineBoard, "table@1": tableBoard, "measured@1": measuredBoard, "places@1": placesBoard, "number-line-zoom@1": numberLineZoom,
   // code-only (the claims board): not offered to any model, so not in TEMPLATES
@@ -1407,7 +1712,14 @@ function claimsBroken(script, claims) {
  * table's rows and columns, a chart's bars and values, labels, places, hops, digits. → counts, or null.
  */
 function derivedCounts(call, facts = {}) {
-  const qty = (t) => { const m = String(t ?? "").trim().match(/^(\d+)\s+(\p{L}[\p{L} ]{0,20}?)(?=\s*(?:[=,(]|$))/u); return m ? { n: Number(m[1]), what: m[2].trim() } : null; };
+  // (director8 bridge rows: "8 ka 1/2 = 4" → { n: 4, what: "8 ka 1/2" }; "= 4 laddoo" → { n: 4, what: "laddoo" })
+  const qty = (t) => {
+    const x = String(t ?? "").trim();
+    const m = x.match(/^(\d+)\s+(\p{L}[\p{L} ]{0,20}?)(?=\s*(?:[=,(]|$))/u);
+    if (m) return { n: Number(m[1]), what: m[2].trim() };
+    const e = x.match(/^(.{0,20}?)\s*=\s*(\d+)\s*(\p{L}[\p{L} ]{0,20})?$/u);
+    return e && (e[3] || e[1]) ? { n: Number(e[2]), what: (e[3] || e[1]).trim().slice(0, 24) } : null;
+  };
   const col = (side) => side && typeof side === "object" ? { title: String(side.title ?? "").slice(0, 24), items: (side.items ?? []).length,
     quantities: (side.items ?? []).map(qty).filter(Boolean) } : null;
   switch (call.template) {

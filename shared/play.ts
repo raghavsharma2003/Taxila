@@ -33,6 +33,10 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "darpan",     // round 7: symmetry (mirror lines laid and folded; a turntable's smallest turn and order of turn symmetry)
   "feeta",      // round 7: length and distance (a ribbon cut against a ruler, a rope off a cm tape, a garden fence, a trip meter, routes in order)
   "guna",       // round 7: multi-digit multiplication and division (a field cut into place-value pieces, a godown shared into trucks, stories with leftovers)
+  "kram",       // round 7: growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines, rhythms, L-pieces)
+  "hissa",      // round 7: multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths grid, a place-value slide, stories)
+  "koshtak",    // round 7: expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms in bins)
+  "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -41,7 +45,7 @@ export const MODES = {
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
-  kon: ["turn", "set", "zone", "pair", "close"],
+  kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
   nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
   arena: ["pick"],
   stambh: ["bars", "picto"],
@@ -54,6 +58,10 @@ export const MODES = {
   darpan: ["mirror", "turn"],
   feeta: ["measure", "fence", "trip", "compare"],
   guna: ["field", "pack", "story"],
+  kram: ["grow", "machine", "beats", "nest"],
+  hissa: ["fold", "pour", "grid", "story"],
+  koshtak: ["tray", "bin"],
+  parkar: ["build", "bisect", "drop"],
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -195,6 +203,7 @@ export type LabAct =
 // Kon (round 4 G1, angles)
 export type KonAct =
   | { kind: "turn"; deg: number }                       // point the arm at heading `deg` (degrees, 0 = right, anticlockwise +)
+  | { kind: "stop"; side: "lo" | "hi"; at: number }      // r7 kon2 ends: a stop on point `at`, −1 off the track's end (open), −2 parked
   | { kind: "commit" }
   | { kind: "undo" };
 // Nazariya (r4-khand): the block plot. A build act changes column heights (gravity: a block rests on the ground or a block).
@@ -296,9 +305,58 @@ export type GunaAct =
   | { kind: "open"; place: number }                      // pack: one crate of 10^place opened into ten of the next place down
   | { kind: "deal"; place: number }                      // pack: one crate of 10^place into every truck (one round)
   | { kind: "count"; n: number }                         // story: the vehicles / packets set out, or the jar's count
+  | { kind: "stamp"; i: number; to: number }             // field (check): docket i marked 1 (could be right) or 2 (send back)
   | { kind: "run" }                                      // drive onto the weighbridge / send the trucks / run the story: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct;
+// Kram (round 7, growing patterns and sequences): tiles laid to grow a figure a stage, a bag filled for a far stage, a step
+// or rule machine's dials set, rhythms laid on a shelf, L-pieces / staircases picked for a frame; the law answers on "run"
+export type KramAct =
+  | { kind: "cell"; x: number; y: number }                // next: a tile laid on (or lifted off) the build board at (x, y)
+  | { kind: "bag"; place: number; by: number }            // far / count: one piece of 10^place into (+1) or out of (−1) the bag
+  | { kind: "dial"; which: number; to: number }           // machine: dial 0 (step: the sign · rule: a) or 1 (the number · b) set to `to`
+  | { kind: "lay"; r: string }                            // lay: a rhythm of S / L laid on the new shelf (again = lifted)
+  | { kind: "pick"; i: number }                           // nest: tray piece i picked (again = put back)
+  | { kind: "run" }                                       // grow it / run the machine / play the rhythms / nest the pieces: the law answers
+  | { kind: "undo" };
+// Parkar (round 7, ruler-and-compass constructions): open the compass on its ruler, swing arcs from spots, lay the
+// protractor or the set-square, join two spots with the ruler, pin where two marks cross; the law (plain coordinate geometry)
+// answers on "run", never on a clock. A spot exists only where tool marks put it: nothing is dragged into place
+export type ParkarAct =
+  | { kind: "open"; r: number }                          // the compass opened to r cm on its ruler
+  | { kind: "arc"; at: string }                          // an arc swung round spot `at` at the present opening
+  | { kind: "ray"; at: string; deg: number }             // the protractor at vertex `at`, zero on its arm: a ray at `deg`
+  | { kind: "square"; at: string; on: number }           // the set-square along mark `on` (−1: the page's edge), its edge through `at`
+  | { kind: "join"; p: string; q: string }               // the ruler through two spots
+  | { kind: "pin"; a: number; b: number; k: number }     // a spot pinned at crossing k of marks a and b
+  | { kind: "run" }                                      // lay the tracing / walk the line / measure: the law answers
+  | { kind: "undo" };
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct;
+// Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
+// counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
+// cup; a tenths grid shaded both ways and the label's point placed; digits slid on a place-value chart; a bar spent twice
+// (the second fold laid on the piece left or the whole bar); a recipe's cup folded into shares and laid per person
+export type HissaAct =
+  | { kind: "fold"; side: number; n: number }            // fold side 0 (across / the whole bar / the cup's amount) or 1 (down / the second bar) into n parts
+  | { kind: "shade"; side: number; k: number }           // shade / take k of that side's parts (grid: k tenths)
+  | { kind: "base"; on: number }                         // story (rest): the second fold lies on the piece left (1) or the whole bar (2)
+  | { kind: "lay"; n: number }                           // rope pieces laid / recipe shares laid
+  | { kind: "pour" }                                     // one full cup from the jug (a cup it cannot fill is refused)
+  | { kind: "tag"; part: number; v: number }             // the tag's top (0) or bottom (1)
+  | { kind: "slide"; by: number }                        // the chart's digits one place left (+1, × 10) or right (−1)
+  | { kind: "zero" }                                     // a zero written at the end of the digits (again = rubbed out)
+  | { kind: "point"; at: number }                        // the label's decimal point, `at` digits from the right
+  | { kind: "run" }                                      // cut / pour / read the chart / run the story: the law answers
+  | { kind: "undo" };
+// Koshtak (round 7, expressions): tray walls snapped between the numbers of a row (the counter works each tray, then joins
+// them); one lid laid over a run of numbers; an opened bracket's jumps turned forward / back; term cards put into bins
+// (each bin closes into one term); the law answers on "run"
+export type KoshtakAct =
+  | { kind: "wall"; at: number }                         // terms: a tray wall in gap `at` (between number at and at + 1; again = lifted)
+  | { kind: "lid"; from: number; to: number }            // lid: the lid over numbers from..to (the same lid again = lifted)
+  | { kind: "flip"; at: number }                         // open: the jump after gap `at` turned forward / back
+  | { kind: "bin"; card: number; to: number }            // like: card `card` into bin `to` (−1 = back on the belt)
+  | { kind: "run" }                                      // run the counter / walk both / close the bins: the law answers
+  | { kind: "undo" };
 
 /** Field names that look like a verdict claim. Stripped from every act before replay (rj-ot-frame-claim-as-grade). */
 export const CLAIM_KEYS = Object.freeze(["correct", "verdict", "right", "isCorrect", "score", "pass", "solved", "grade"]);
@@ -460,6 +518,10 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   darpan: ["kagaz", "blueprint", "chalk", "raat"],
   feeta: ["kagaz", "chalk", "blueprint", "raat"],
   guna: ["kagaz", "chalk", "blueprint", "raat"],
+  kram: ["kagaz", "chalk", "blueprint", "raat"],
+  hissa: ["kagaz", "chalk", "blueprint", "raat"],
+  koshtak: ["kagaz", "chalk", "blueprint", "raat"],
+  parkar: ["kagaz", "blueprint", "chalk", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

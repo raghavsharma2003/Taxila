@@ -120,24 +120,31 @@ test("director7 S1 live guard: a '?' drawn over a number her line states is flag
   const { gateCtxFor, statedAsUnknown } = await import("../server/stagecraft/board-sync.js");
   const c6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
   const ref = { template: "measured@1", params: { shape: "polygon", unit: "m", sides: [8, 3, 5, 4, 3, 7] } };
-  const run = (id, answers, text) => {
+  // (`force`: a withheld set that names a value her line states — what any upstream rule that masks a stated number would
+  // hand the gate; since director8 the card-answers rule never does, so the guard is driven here directly)
+  const run = (id, answers, text, force = null) => {
     const a = { intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
       scriptBeat: { scriptId: "s", beatId: "c1", kind: "check", answers } }, line: { lessonId: id, text }, mode: "fresh", kit: { topicId: "c6-maths-ch06-t01", content: [] } };
     BF.preselect({ ...a, line: { lessonId: id, text: "" } }, { kit: c6 });
-    const t = BF.takePreselected(a, gateCtxFor(a, { kit: c6, redact: [], prior: [] }));
+    const ctx = gateCtxFor(a, { kit: c6, redact: [], prior: [] });
+    const t = BF.takePreselected(a, force ? { ...ctx, withhold: { values: force, words: [], phrases: [] } } : ctx);
     return { t, flagged: statedAsUnknown(t.script, text, a.intent.intentId) };
   };
-  // a card whose answer (8) her line states: the board writes "? m" over it — flagged
-  const bad = run("d7g1", ["8"], "Ek side 8 m hai, baaki dekho. Parimap kitna hai?");
+  // a board that writes "? m" over the 8 her line states — flagged
+  const bad = run("d7g1", ["30"], "Ek side 8 m hai, baaki dekho. Parimap kitna hai?", ["8"]);
   assert.ok(texts(bad.t.script.ops).includes("? m"));
   assert.deepEqual(bad.flagged, ["8"]);
+  // (director8: a card whose KEY her line states never masks it in the first place)
+  const said = run("d7g0", ["8"], "Ek side 8 m hai, baaki dekho. Parimap kitna hai?");
+  assert.ok(!texts(said.t.script.ops).includes("? m"));
+  assert.deepEqual(said.flagged, []);
   // the card's real answer (30), unsaid: nothing is "?" over a stated number
   const ok = run("d7g2", ["30"], "Ek side 8 m hai. Parimap kitna hai?");
   assert.deepEqual(ok.flagged, []);
   // a "?" over a value her line does NOT state is the question, not a flag
   const q = run("d7g3", ["8"], "Ek side ki lambai kitni hai?");
   assert.deepEqual(q.flagged, []);
-  // through the seam: the drawn artifact carries statedAsUnknown (director runs read it beside the screen)
+  // through the seam (director8): a card whose key her line states draws it — no "?", nothing to flag on the artifact
   const T6 = "c6-maths-ch06-t01", sid = "d7g-seam";
   seam.studioSeam.prefetch({ lessonId: sid, purpose: "practice", kit: c6, topicId: T6, child: { id: "child-d7g", class_level: 6, language_pref: "hinglish" } });
   const A = { intent: { intentId: `${sid}:wb:1`, lessonId: sid, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref,
@@ -146,11 +153,39 @@ test("director7 S1 live guard: a '?' drawn over a number her line states is flag
   BF.preselect({ ...A, line: { ...A.line, text: "" } }, { kit: c6 });
   const ack = seam.studioSeam.requestIntent(A);
   assert.equal(ack?.state, "revealed");
-  assert.deepEqual(ack.artifact.statedAsUnknown, ["8"]);
+  assert.ok(!texts(ack.artifact.script.ops).includes("? m"));
+  assert.equal(ack.artifact.statedAsUnknown, undefined);
   // (Brain's interim cardBoard, should one arrive, pages like a then-marker: the say at 0, the card where its text starts)
   const cb = ask("d7-cb"); const th = cb.intent.then; delete cb.intent.then;
   cb.intent.cardBoard = { boardRef: th.boardRef, scriptBeat: th.scriptBeat, cardText: then };
   const sg = BF.segmentsOf(cb);
   assert.equal(sg?.length, 2);
   assert.equal(sg[1].from, say.length + 1);
+});
+
+test("#44 word timings: a page turns on its segment's first WORD onset; with no word timings, on the clause onset; with neither, the estimate", async () => {
+  const { switchOnsets, normWord } = await import("../src/modules/whiteboard/lineClock.ts");
+  const id = "d7-words";
+  seam.studioSeam.prefetch({ lessonId: id, purpose: "practice", kit, topicId: T, child: { id: "child-d7w", class_level: 5, language_pref: "hinglish" } });
+  const ack = seam.studioSeam.requestIntent(ask(id));
+  const s = ack.artifact.script, sw = s.switches[0];
+  // the server stamps the switch with the then-prompt's first word and how many of her words come before it
+  assert.equal(sw.word, normWord(then.split(/\s+/)[0]));
+  assert.equal(sw.wordIndex, say.split(/\s+/).filter((w) => normWord(w)).length);
+  const startB = (sc) => Math.min(...sc.ops.filter((o) => o.id.startsWith("b.")).map((o) => o.startMs));
+  const b0 = startB(s);
+  // the voice's words (her line as spoken, onsets on the board's clock): the then-prompt's first word sounds 1,250 ms late
+  const spoken = line.split(/\s+/).map((w, i) => ({ w, at: 300 + i * 280 }));
+  const k = sw.wordIndex; spoken[k] = { ...spoken[k], at: sw.atMs + 1250 };
+  const clauses = []; clauses[sw.clause] = sw.atMs + 900;
+  const at = switchOnsets(s, spoken, clauses);
+  assert.equal(at[0], sw.atMs + 1250, "the word onset");
+  assert.equal(startB(onLineClock(s, clauses, at)), b0 + 1250, "page B on the word");
+  // no word timings (the voice sent none, or none matched): the clause onset
+  assert.deepEqual(switchOnsets(s, [], clauses), [undefined]);
+  assert.equal(startB(onLineClock(s, clauses, switchOnsets(s, undefined, clauses))), b0 + 900, "page B on the clause");
+  // a words list that never says the switch's word: the clause onset still
+  assert.equal(startB(onLineClock(s, clauses, switchOnsets(s, [{ w: "kuch", at: 50 }], clauses))), b0 + 900);
+  // neither: the estimate stands
+  assert.equal(onLineClock(s, [], switchOnsets(s, undefined, [])), s);
 });

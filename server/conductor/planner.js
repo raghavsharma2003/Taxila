@@ -4,9 +4,11 @@
 // M0 implements R0 (band template + priority stack), the R1 "one bad close → success-first only" (X45),
 // R8's re-anchor opener, R10 (voice rung) and the frozen-slot rule V10. Round 7 F adds R2 (late sittings get the
 // minimum segment set), R5 (a prerequisite check for a wheel-spinning skill) and R9 (the foundation share for a child
-// placed below her class): conductor/adapt.js. R4, R6, R7 and R11-R14 are not built yet.
+// placed below her class): conductor/adapt.js. R15 (cold start): a subject started from onboarding answers runs its
+// first week success-first (placement/coldstart.js firstWeekRule). R4, R6, R7 and R11-R14 are not built yet.
 import { BAND, PLAN, PLANNER_V, TIER, cfgDigest } from "./config.js";
 import { R5, foundationShare, prereqPick } from "./adapt.js";
+import { firstWeekRule } from "../placement/coldstart.js";
 import { addMin, dayMin, daysBetween, fromDayMin, learningWindow, localTime, minTime, weekday } from "./clock.js";
 import { jcs, sha256hex } from "./ids.js";
 
@@ -50,7 +52,7 @@ export function buildPlannerInputs(state, ctx) {
     .sort((a, b2) => (a.subject + a.to < b2.subject + b2.to ? -1 : 1));
   const gapDays = state.counters.lastActiveDay ? Math.min(30, daysBetween(state.counters.lastActiveDay, day)) : null;
   // round 7 F (R2, R5, R9): present only when they can fire, so a plan that reads none of them hashes as before
-  const wheel = ctx.view.get("kt.wheelSpin"), placeGap = ctx.view.get("learner.placementGap");
+  const wheel = ctx.view.get("kt.wheelSpin"), placeGap = ctx.view.get("learner.placementGap"), firstWeek = ctx.view.get("learner.firstWeek");
   // round 7 F household v1: a window on the phone she shares with siblings (null when she shares with nobody)
   const hhv = ctx.view.get("household.window");
   const household = !hhv.stale && hhv.value?.state === "planned" && hhv.value.from && hhv.value.to
@@ -60,6 +62,7 @@ export function buildPlannerInputs(state, ctx) {
   const viewAdd = {
     ...(!wheel.stale && wheel.value?.length ? { "kt.wheelSpin": { value: wheel.value, src: wheel.src, stale: false } } : {}),
     ...(!placeGap.stale && placeGap.value && Object.keys(placeGap.value).length ? { "learner.placementGap": { value: placeGap.value, src: placeGap.src, stale: false } } : {}),
+    ...(!firstWeek.stale && firstWeek.value && Object.keys(firstWeek.value).length ? { "learner.firstWeek": { value: firstWeek.value, src: firstWeek.src, stale: false } } : {}),
   };
   return {
     v: 1,
@@ -225,14 +228,19 @@ export function planDay(inputs) {
       // R9: a child placed below her class gets a foundation share of the lesson (halved in a test window)
       const fshare = subj ? foundationShare(inputs.view["learner.placementGap"]?.value?.[subj.subject], !!testWindow) : null;
       if (fshare !== null) fire("R9", "kt", "foundationShare", fshare, ["learner.placementGap"]);
+      // R15 (round 7 F cold start): a subject started from onboarding answers runs its first week success-first, the
+      // first two lessons with no new skill, until its θ has settled (placement/coldstart.js firstWeekRule)
+      const fw = subj ? firstWeekRule(inputs.view["learner.firstWeek"]?.value?.[subj.subject]) : null;
+      if (fw?.successFirst && !adapt.successFirst) fire("R15", "kt", "successFirst", true, ["learner.firstWeek"]);
+      if (fw?.newSkillBudget === 0) fire("R15", "kt", "newSkillBudget", 0, ["learner.firstWeek"]);
       slots.push({ id: `${day.learningDay}:L1`, kind: "live_lesson", targetMin, window: slotWindow, segments,
         ...(pick ? { prereqCheck: { skillId: pick.skillId, forTopicId: pick.topicId, prereqTopicId: pick.prereq.topicId } } : {}),
         ...(fshare !== null ? { foundationShare: fshare } : {}),
         ...(subj ? { subject: subj.subject } : {}),
         // round 7 F item 8: her open promises (teacher.promise, e.g. a Question-jar revisit) this lesson keeps
         ...(inputs.promises.length ? { promisesDue: inputs.promises.slice(0, 2).map((p) => p.id) } : {}),
-        voiceSecWanted: voiceOf(segments), why, opener, successFirst: !!adapt.successFirst,
-        pace: { newSkillBudget: testWindow && daysBetween(day.learningDay, testWindow.to) < 2 ? 0 : 1 },
+        voiceSecWanted: voiceOf(segments), why, opener, successFirst: !!adapt.successFirst || !!fw?.successFirst,
+        pace: { newSkillBudget: (testWindow && daysBetween(day.learningDay, testWindow.to) < 2) || fw?.newSkillBudget === 0 ? 0 : 1 },
         ...(testWindow ? { testChapters: testWindow.chapters } : {}) });
       remaining -= targetMin;
     }

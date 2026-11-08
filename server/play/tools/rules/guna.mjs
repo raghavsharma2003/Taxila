@@ -18,6 +18,21 @@
 // rounds, not chunks), c5-maths-ch06-t01-s3 (the written column method), c5-maths-ch06-t02-s2 (doubling and halving). Kit
 // beliefs with no honest set-up here: drop-zero-quotient / zero-in-quotient (the trucks hold the crates, so a place is never
 // dropped), remainder-as-decimal, ignore-remainder (the leftover stays on the dock), mult-makes-bigger, double-both.
+// r7 guna2 (three more arena-only topics): c7-maths-ch01-t03 patterns in products: a field of round sides 3000 × 400 fills with
+// 3 × 4 tiles of 1000 × 100 and the truck (up to crates of 10^6) must weigh it exactly; the zeros of both sides ARE the
+// tile's size, so the rack chosen IS the zero count and the racks used ARE the product's digits (s1, s3); the big round goal
+// (4872 × 312 pulled to 5000 × 300) IS estimating a large product by rounding (s2). The fact's own zero lost is
+// "hidden-zero"; one attached zero too few (where the fact does not end in 0) or too many is "zero-miscount".
+// c5-maths-ch04-t02 checking reasonableness: the child builds the estimate (round sides, the truck loaded) and then marks
+// three dockets a × b someone wrote (the true product, ten times it, a tenth of it) could-be-right / send-back: every docket
+// kept is "steps-mean-right", every docket sent back because none equals the estimate is "estimate-must-equal" (s1). Not
+// admitted: s2 (inverse operations for + and −: no multiply / divide mechanic) and s3 (sense in a story), and the kit belief
+// inverse-wrong. c4-maths-ch09-t02 division as grouping and sharing, at small numbers: equal SHARING is the pack/each goal
+// (loose things dealt one to every friend per round, until a round cannot go: s1, s3), equal GROUPING is the story/full goal
+// (packets of b set out: how many b's in a: s2, s3), and a leftover that still needs a vehicle is story/all (s3). Stopping a
+// round early (the leftover a share or more) is "remainder-too-big"; the leftover dropped where everyone must go is
+// "no-remainder" (ignores the leftover). Not admitted: order-doesnt-matter (sharing fewer things than friends gives no whole
+// share here, and the dock / packets never swap roles).
 import { R } from "./rule.mjs";
 
 export const family = "guna";
@@ -34,6 +49,13 @@ export const RULES = [
   R("c5-maths-ch09-t02", G, "story", "all", { drop: "always-drop" }, { cap: [3, 12], q: [2, 20] }),
   R("c5-maths-ch09-t02", G, "story", "full", { up: "always-up" }, { cap: [3, 12], q: [2, 20] }),
   R("c5-maths-ch09-t02", G, "story", "left", { quotient: "quotient-always" }, { cap: [3, 12], q: [2, 20] }),
+  // r7 guna2
+  R("c7-maths-ch01-t03", G, "field", "area", { "zero-count": "hidden-zero", "zero-less": "zero-miscount", "zero-more": "zero-miscount" }, { shapes: ["BIG"] }),
+  R("c7-maths-ch01-t03", G, "field", "round", { "zero-count": "hidden-zero", "zero-less": "zero-miscount", "zero-more": "zero-miscount" }, { big: true }),
+  R("c5-maths-ch04-t02", G, "field", "check", { trusts: "steps-mean-right", "must-equal": "estimate-must-equal" }, {}),
+  R("c4-maths-ch09-t02", G, "pack", "each", { short: "remainder-too-big" }, { cap: [2, 6], q: [2, 9] }),
+  R("c4-maths-ch09-t02", G, "story", "full", { short: "remainder-too-big" }, { cap: [3, 9], q: [2, 9] }),
+  R("c4-maths-ch09-t02", G, "story", "all", { drop: "no-remainder" }, { cap: [3, 9], q: [2, 9] }),
 ];
 
 export const ACTS = {
@@ -48,4 +70,10 @@ export const ACTS = {
   "c5-maths-ch09-t02|all": ["s1"],                 // round up when everyone must be included
   "c5-maths-ch09-t02|full": ["s2"],                // round down when only full groups count
   "c5-maths-ch09-t02|left": ["s3"],                // the remainder itself when the leftover is asked
+  "c7-maths-ch01-t03|area": ["s1", "s3"],          // round × round by the zeros of both sides; the racks used are the product's digits
+  "c7-maths-ch01-t03|round": ["s2"],               // estimate a large product by rounding first
+  "c5-maths-ch04-t02|check": ["s1"],               // check an answer by estimating first
+  "c4-maths-ch09-t02|each": ["s1", "s3"],          // share equally (how many each), the leftover less than a round
+  "c4-maths-ch09-t02|full": ["s2", "s3"],          // equal groups (how many packets of b), the leftover less than a packet
+  "c4-maths-ch09-t02|all": ["s3"],                 // a leftover that still needs one more
 };

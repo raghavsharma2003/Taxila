@@ -111,23 +111,64 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   // sends (scriptBeat.answers: its key and accept forms) withholds THOSE only — the asked value is the one "?"; every other
   // number its board writes is drawn, whatever her line happens to say this turn (the card's numbers are on the card, not
   // always in line.text)
-  const cardAnswers = sk === "check" && Array.isArray(ask?.intent?.scriptBeat?.answers) ? answerValues(ask.intent.scriptBeat.answers) : null;
-  const withhold = !sk ? withhold1 : cardAnswers ? { values: cardAnswers, words: [], phrases: [] } : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
+  // (director8, c5-t02: ~40 "?" over stated numbers — every number in the ACCEPT forms was withheld: "5 wali roti ka
+  // tukda", "her brother, 4/6" hid the card's own givens. Only the KEY's values are withheld, and never one her line —
+  // which carries the spoken card — states: "1/12, 1/6, 1/3" is an order of numbers the card gives)
+  // (director10 G3: a correct verdict's reveal frees the key as if her line said it)
+  const revealed = revealOf(ask?.intent?.scriptBeat);
+  const revealText = revealed.join(" ");
+  const cardAnswers = sk === "check" && Array.isArray(ask?.intent?.scriptBeat?.answers) ? answerValues(ask.intent.scriptBeat.answers, `${text} ${revealText}`) : null;
+  // (and a card's OWN board writes the labels Learning authored and certified against its answers: "before 2/4" names the
+  // 2/4 its board labels — that label is the card's given, never the "?")
+  const withhold0b = !sk ? withhold1 : cardAnswers ? withoutLabels({ values: cardAnswers, words: [], phrases: [] }, ask.intent.boardRef, { authored: ownCard }) : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
     : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
-  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef) : [];
+  const rv = (n) => { const m = /^(\d+(?:\.\d+)?)(?:\/(\d+))?$/.exec(String(n).replace(/\s+/g, "")); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+  const withhold = revealed.length && Array.isArray(withhold0b?.values)
+    ? { ...withhold0b, values: withhold0b.values.filter((v) => { const x = rv(v); return x == null ? !revealed.includes(String(v)) : !revealed.some((r) => rv(r) != null && Math.abs(rv(r) - x) < 1e-9); }) } : withhold0b;
+  // (a card's OWN board writes the numbers Learning authored — "70°" given beside the asked "?" — as an explain board does:
+  // they are not invented (W4); the values it withholds stay out)
+  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef)
+    : sk === "check" && ownCard ? refNumbers(ask.intent.boardRef).filter((v) => !(withhold?.values ?? []).map(String).includes(v)) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
   // main 14.4: the answer her own question asks for, when her line already states it (selfAnswer): never drawn (W18)
   const sa = selfAnswer(spoken, { worked: String(kit?.workedExample?.problem ?? "") });
+  // (director10 G2: a close said in the closed card's authored why — "cake ke 4 tukde barabar nahi hain" — over that card's
+  // OWN board: the board's words are the ones Learning authored on the card (W5), its separate wholes are wholes, not her
+  // parts (W8), and its numbers are the card's (W17). W9 — nothing withheld drawn — and her counts against its parts stay)
+  const authoredRef = !!sk && (sk !== "check" || ownCard);
+  const wholesN = authoredRef ? refWholes(ask.intent.boardRef) : null;
   return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
+    ...(revealText ? { revealText } : {}),
+    ...(authoredRef ? { authoredRef: true, extraWords: refWords(ask.intent.boardRef).filter((w) => !(withhold?.words ?? []).map((x) => String(x).toLowerCase()).includes(w)), authoredNumbers: refNums } : {}),
+    ...(wholesN ? { wholes: wholesN } : {}),
     ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
     ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
 }
-/** A card's answers as withheld values: every number in its key and accept forms ("between 0 and 1/3" → "0", "1/3"). */
-function answerValues(answers) {
-  const out = new Set();
-  for (const a of answers.slice(0, 12)) for (const m of String(a ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []) out.add(m.replace(/\s+/g, ""));
-  return [...out];
+/** A card's answers as withheld values: the numbers in its KEY (answers[0]; "between 0 and 1/3" → "0", "1/3") that her line
+ *  does not state (as itself or an equal fraction: "2/4" states 1/2). Accept forms withhold nothing: they quote the card's
+ *  givens ("5 wali roti ka tukda", "her brother, 4/6"). */
+/**
+ * director10 G3: the values a CORRECT verdict reveals on the answered card's board, from Brain's verdict segment
+ * (scriptBeat.reveal): `true` → the card's key (answers[0]); an array → those values. Her page need not say the digits:
+ * "Haan, sahi hai" over the card's "?" writes the key. → string[] (empty when no reveal).
+ */
+export function revealOf(beat) {
+  try {
+    const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((m) => m.replace(/\s+/g, ""));
+    const r = beat?.reveal;
+    if (r === true) return Array.isArray(beat?.answers) && beat.answers.length ? [...new Set(nums(beat.answers[0]))] : [];
+    if (Array.isArray(r)) return [...new Set(r.flatMap((v) => nums(v)))].slice(0, 8);
+    if (typeof r === "string" || typeof r === "number") return nums(r);
+    return [];
+  } catch { return []; }
+}
+export function answerValues(answers, line = "") {
+  const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((m) => m.replace(/\s+/g, ""));
+  const val = (n) => { const m = /^(\d+)\/(\d+)$/.exec(n); return m ? (Number(m[2]) ? Number(m[1]) / Number(m[2]) : NaN) : Number(n); };
+  const said = nums(line).map((n) => ({ n, v: val(n) }));
+  const stated = (n) => said.some((s) => s.n === n || (n.includes("/") && s.n.includes("/") && Math.abs(s.v - val(n)) < 1e-9));
+  return [...new Set(nums(answers[0]).filter((n) => !stated(n)))];
 }
 /**
  * A withheld set without the values a board ref AUTHORS to show (rational equality: "2/4" frees "1/2"): mark labels, side
@@ -143,12 +184,31 @@ function withoutLabels(w, ref, { authored = false } = {}) {
     const shown = [];
     for (const m of Array.isArray(params.marks) ? params.marks : []) if (m && typeof m === "object" && !Array.isArray(m)) shown.push(...nums(m.label));
     if (authored) for (const k of ["sides", "w", "h", "r", "value"]) for (const v of [params[k]].flat()) if (v != null) shown.push(...nums(v));
+    // (lines@1: an angle the card's board writes as a value — the asked one is authored "?", never a value)
+    if (authored && Array.isArray(params.angles) && params.angles.some((a) => a && "at" in a)) for (const a of Array.isArray(params.angles) ? params.angles : []) if (typeof a?.value === "number") shown.push(String(a.value));
     if (authored) for (const k of ["items", "steps", "stages", "parts", "names"]) for (const v of [params[k], params.left?.[k], params.right?.[k]].flat()) if (typeof v === "string") shown.push(...nums(v));
     if (authored) for (const t of [params.left?.title, params.right?.title, params.whole, params.centre]) if (typeof t === "string") shown.push(...nums(t));
     const vals = shown.map(val).filter((v) => v != null);
     if (!vals.length || !w?.values?.length) return w;
     return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !vals.some((l) => Math.abs(l - x) < 1e-9); }) };
   } catch { return w; }
+}
+/** The words a script board ref authors (every string in its params: titles, items, labels …), lower case. */
+function refWords(ref) {
+  const out = new Set();
+  const walk = (v) => {
+    if (typeof v === "string") for (const w of v.toLowerCase().match(/\p{L}+/gu) ?? []) out.add(w);
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === "object") Object.values(v).forEach(walk);
+  };
+  try { walk(ref?.params); } catch { /* a ref is data */ }
+  return [...out];
+}
+/** How many separate wholes a script board ref draws side by side (bars, wholes): a count of WHOLES, never a partition. */
+function refWholes(ref) {
+  const p = ref?.params ?? {};
+  const n = Array.isArray(p.bars) ? p.bars.length : Array.isArray(p.wholes) ? p.wholes.length : 0;
+  return n >= 2 ? n : null;
 }
 /** The numbers a script board ref authors (its params, nested or flat: sides, w, h, marks, labels …), as strings. */
 function refNumbers(ref) {

@@ -80,7 +80,9 @@ export function whiteboardAskOf({ beat, lane, late, strained, move = null, studi
   // release 13 (A): a picture nothing can make was asked for: no board this turn (the release-13 replay drew the maths table
   // beside "aloo gol, bhura hota hai")
   if (move?.request === "visual_unavailable") return { proposals: [], declined: "studio_rejected.not_explain" };
-  if (move && !WHITEBOARD_MOVES.has(move.kind)) return { proposals: [], declined: "studio_rejected.not_explain" };
+  // (v6.1, director9 c5-t02 offtopic T26: "drawing karke samjhao" over a live card is a `practice` move, the card re-posed;
+  // the child's own picture ask is honoured on it, as on any beat, never declined as "not an explanation")
+  if (move && !WHITEBOARD_MOVES.has(move.kind) && !(requested && move.request === "visual")) return { proposals: [], declined: "studio_rejected.not_explain" };
   if (!requested && lane === "voice") return { proposals: [], declined: "studio_rejected.voice_lane" };
   if (!requested && strained) return { proposals: [], declined: "studio_rejected.strained" };
   const on = studioView?.onScreen;
@@ -143,7 +145,10 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
   // named), this turn only. Studio draws THAT; it is never the child's words, only the request's shape and subject.
   // (state.js sets lastMove on every step, so a see from an earlier turn never rides on a later move)
   // an example asked for ("ek example do") is drawn as her worked example, on a new page
-  const request = requestOfSee(next?.lastMove?.request === "visual" ? next.lastMove.see : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
+  // (v6.1, director9 c5-t02: "picture dikhao" with nothing named carries no `see`, so the ask carried no request and Studio's
+  // second view — keyed on a request — never came: a picture ask is always a request, at least "show")
+  const visualNow = next?.lastMove?.request === "visual" || (!!next?.lastMove?.visual && next.lastMove.visual !== "game");
+  const request = (visualNow ? requestOfSee(next.lastMove.see) ?? { kind: "show" } : null) ?? (next?.lastMove?.request === "example" ? { kind: "example" } : null);
   return {
     intent: {
       intentId: `${lessonId}:wb:${turn}`, lessonId, kind: "whiteboard", skillId, ...(item?.id ? { itemIds: [item.id] } : {}),
@@ -155,7 +160,8 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
       // v5 B1 (main; Studio's segments): the line's parts each have the board they describe. The first part's board is
       // boardRef/scriptBeat (as before: the beat's board when nothing is closed and the card shares it); each later part is a
       // segment from its character offset in the FINAL line (a closure → the beat's board → the card's own board)
-      ...boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null),
+      // v6: the assembled parts' texts (brain/say.js guard.parts) place them exactly when the line has them
+      ...boardPartsOf(next?.lastMove, String(line.text ?? ""), item ? ((next?.ctx?.lang === "english" ? item.prompt_en : item.prompt_hi) || item.prompt_en || null) : null, line.parts ?? null),
     },
     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
     // a page drawn for the child's request is a new page: it clears the board (never drawn over what was there)
@@ -212,32 +218,55 @@ const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ..
  * board; the beat; the card. `segmentPlan` [{ part, boardRef, scriptBeat, said? }] always when there is more than one part
  * (Studio places it on a line it replaces with segmentsAt); on a line with text: boardRef/scriptBeat = the first part's,
  * `segments` [{ atChar, atClause, boardRef, scriptBeat }] = each later part whose board differs. {} with no scripted board.
+ * v6 (main, director8 hand judges): `parts` (brain/say.js guard.parts: the texts of the assembled parts) makes the first part
+ * everything about the card just answered: the verdict with its reason too (a graded-right "Haan, sahi hai, kyunki …" was
+ * unsegmented and read against the next card's board); a missed card's close is its own part; a bridge with its own board
+ * (move.bridgeBeat) is its own part, and with none it stays on the board before it (its words point at nothing, say.js).
  */
-export function boardPartsOf(move, line, card) {
-  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length;
+export function boardPartsOf(move, line, card, parts = null) {
+  const closing = move?.gave || move?.workedDone || move?.sayFirst?.length || parts?.prev;
   const plan = [
     ...(closing && move?.closeBeat?.board ? [{ part: "close", boardRef: move.closeBeat.board, scriptBeat: refOf(move.closeBeat), ...(move?.sayFirst?.length ? { said: [...move.sayFirst] } : {}) }] : []),
     ...(move?.closed && (move?.closedBeat ?? move?.closeBeat)?.board ? [{ part: "closed", boardRef: (move.closedBeat ?? move.closeBeat).board, scriptBeat: refOf(move.closedBeat ?? move.closeBeat) }] : []),
+    ...(parts?.bridge && move?.bridgeBeat?.board ? [{ part: "bridge", boardRef: move.bridgeBeat.board, scriptBeat: refOf(move.bridgeBeat) }] : []),
     ...(move?.scriptBeat?.board ? [{ part: "body", boardRef: move.scriptBeat.board, scriptBeat: refOf(move.scriptBeat) }] : []),
     ...(move?.cardBeat?.board ? [{ part: "card", boardRef: move.cardBeat.board, scriptBeat: refOf(move.cardBeat) }] : []),
   ];
   if (!plan.length) return move?.scriptBeat ? { scriptBeat: refOf(move.scriptBeat) } : {};
-  const placed = segmentsAt(plan, line, card);
+  const placed = segmentsAt(plan, line, card, parts);
   const first = placed[0];
   return { boardRef: first.boardRef, scriptBeat: first.scriptBeat, ...(placed.length > 1 ? { segments: placed.slice(1) } : {}), ...(plan.length > 1 ? { segmentPlan: plan } : {}) };
+}
+/** Where a part's text starts and ends in the line ([start, end] after the trailing space), or null. */
+function spanOf(text, part) {
+  const t = norm1(part);
+  if (!t) return null;
+  const i = text.indexOf(t);
+  return i < 0 ? null : [i, skipSpace(text, i + t.length)];
 }
 /**
  * A segment plan placed on a line: the closure part from 0; a missed card's close from its sentence; the beat after the last
  * closure sentence and any bridge line; the card where its text starts. Consecutive parts on the same board merge, empty parts
  * drop. With no text (a preselect before her line exists) the parts cannot be placed: the beat's (else the first) alone.
+ * v6: with `parts` (say.js guard.parts) the closure, the missed card's close and the bridge are found by their own texts.
  */
-export function segmentsAt(plan, line, card) {
+export const PAGE_MIN_WORDS = 5;
+export function segmentsAt(plan, line, card, parts = null) {
   const text = norm1(line);
   const closePart = plan.find((p) => p.part === "close");
-  let bodyAt = closureEnd(text);
-  for (const said of closePart?.said ?? []) { const t = norm1(said).replace(/[.!?\u0964]+$/, ""); const i = t ? text.indexOf(t) : -1; if (i >= 0) bodyAt = Math.max(bodyAt, skipSpace(text, text.indexOf(" ", i + t.length) < 0 ? text.length : i + t.length + 1)); }
-  const cm = CLOSED.exec(text);
-  const at = { close: 0, closed: cm ? cm.index : null, body: bodyAt, card: cardAt(text, card) };
+  let bodyAt, closedAt, bridgeAt = null;
+  const prevS = parts?.prev ? spanOf(text, parts.prev) : null, closedS = parts?.closed ? spanOf(text, parts.closed) : null, bridgeS = parts?.bridge ? spanOf(text, parts.bridge) : null;
+  if (prevS || closedS || bridgeS) {
+    bodyAt = Math.max(prevS?.[1] ?? 0, closedS?.[1] ?? 0, bridgeS?.[1] ?? 0);
+    closedAt = closedS?.[0] ?? null;
+    bridgeAt = bridgeS?.[0] ?? null;
+  } else {
+    bodyAt = closureEnd(text);
+    for (const said of closePart?.said ?? []) { const t = norm1(said).replace(/[.!?\u0964]+$/, ""); const i = t ? text.indexOf(t) : -1; if (i >= 0) bodyAt = Math.max(bodyAt, skipSpace(text, text.indexOf(" ", i + t.length) < 0 ? text.length : i + t.length + 1)); }
+    const cm = CLOSED.exec(text);
+    closedAt = cm ? cm.index : null;
+  }
+  const at = { close: 0, closed: closedAt, bridge: bridgeAt, body: bodyAt, card: cardAt(text, card) };
   if (!text) {
     const one = plan.find((p) => p.part === "body") ?? plan.find((p) => p.part === "card") ?? plan[0];
     return [{ atChar: 0, boardRef: one.boardRef, scriptBeat: one.scriptBeat }];
@@ -245,7 +274,7 @@ export function segmentsAt(plan, line, card) {
   const out = [];
   for (const p of plan) {
     const a = at[p.part];
-    if (a == null || (p.part === "close" && !bodyAt && !cm)) continue;
+    if (a == null || (p.part === "close" && !bodyAt && closedAt == null)) continue;
     const prev = out.at(-1);
     if (prev && a <= prev.atChar) out.pop();
     const keep = out.at(-1);
@@ -254,5 +283,39 @@ export function segmentsAt(plan, line, card) {
   }
   if (!out.length) out.push({ atChar: 0, atClause: 0, boardRef: plan.at(-1).boardRef, scriptBeat: plan.at(-1).scriptBeat });
   out[0] = { ...out[0], atChar: 0, atClause: 0 };
+  // (dc-r7-script-walk-v6-1 P1, replay of director9 c5-t01 steady T21: a page whose own words are a bare transition — "Ab agla
+  // hissa.", 3 words, back on the answered card's board — cannot be drawn in its time (Studio W6.timing), so the whole paged
+  // turn failed and the verdict page's revealed 1/8 never reached the screen. A page switch with fewer than PAGE_MIN_WORDS
+  // words and no card of its own is no page: the board before it stays up while it is said)
+  for (let i = out.length - 1; i > 0; i--) {
+    const seg = text.slice(out[i].atChar, out[i + 1]?.atChar ?? text.length);
+    const hasCard = at.card != null && at.card >= out[i].atChar && at.card < (out[i + 1]?.atChar ?? text.length + 1);
+    if (!hasCard && seg.split(/\s+/).filter(Boolean).length < PAGE_MIN_WORDS) out.splice(i, 1);
+  }
+  for (let i = out.length - 1; i > 0; i--) if (JSON.stringify(out[i].boardRef) === JSON.stringify(out[i - 1].boardRef)) out.splice(i, 1);
   return out;
+}
+
+/**
+ * v6 (Studio's S3′ second view; main on integration 11: preselectWhiteboard returns the facts row, a string, so the pick's
+ * altView never reached Brain): the second view of the same numbers, read off the preselected row itself. Bars ("bar1 6 equal
+ * parts, 1 shaded = 1/6"; an asked bar "… 3 shaded = ?") → { view: "parts", labels }; with Studio's hint "line" (a bar card's
+ * second view is a number line: "line 0 to 1 · gaps 8 equal gaps in each whole · each 1/8 · marks 1/8") → { view: "line",
+ * labels, gaps }. Labels never carry an asked "?". null when the row is no second view. Pure.
+ */
+export function altViewOfRow(row, hint = null) {
+  const r = String(row ?? "");
+  if (hint === "line" || (hint && hint.view === "line")) {
+    const marks = (/\bmarks\s+([\d/ ,]+)/.exec(r)?.[1] ?? "").match(/\d+\/\d+/g) ?? [];
+    const gaps = Number(/\bgaps\s+(\d+)\s+equal gaps/.exec(r)?.[1]) || null;
+    return { view: "line", labels: marks, ...(gaps ? { gaps } : {}) };
+  }
+  // (Studio wholes@1, a compare card's two wholes: "whole1 3 unequal parts · whole2 3 equal parts, 1 shaded")
+  const wholes = [...r.matchAll(/\bwhole\d+\s+(\d+)\s+(equal|unequal)\s+parts(?:,\s*(\d+)\s+shaded)?/g)];
+  if (wholes.length && (hint === "wholes" || hint?.view === "wholes" || !/\bbar\d+\s/.test(r))) {
+    return { view: "wholes", labels: [], wholes: wholes.map((w) => ({ parts: Number(w[1]), equal: w[2] === "equal", ...(w[3] != null ? { shaded: Number(w[3]) } : {}) })) };
+  }
+  const bars = [...r.matchAll(/\bbar\d+\s+(\d+)\s+equal parts,\s*(?:(\d+)\s+shaded\s*=\s*(\d+\/\d+|\?)|\?\s*\(asked\))/g)];
+  if (!bars.length) return null;
+  return { view: "parts", labels: bars.map((b) => b[3]).filter((x) => x && x !== "?") };
 }

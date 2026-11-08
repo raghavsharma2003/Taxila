@@ -5570,3 +5570,431 @@ guna play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366,
 
 - **Cert:** every guna sample passes at every size (counts in server/forge3/certs/play.json).
 - **Tests:** tests/r7-games-guna.test.mjs, 65 tests. An independent checker uses plain arithmetic (a * b, Math.floor(a / b), a % b, Math.ceil, its own nearest-round reading) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms (measured runs are a few ms).
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `ms-r7-m3-applied-2026-11-06` (2026-11-06)
+
+M3 went live on 2026-11-06 at 08:24 UTC with the owner's keys, from int/r6 plus the m3-ledger fix (49e45cb44). Command: `apply --apply --start-now --vm`.
+
+**Created or changed:**
+- taxilacr: Basic → Premium.
+- taxilaforge/m3-ledger: new container.
+- In taxila-env, the ACA jobs m3-keeper (`17 3,15 * * *`) and m3-verify (`41 6 * * *`).
+- Action group m3-owner, and the alert rules m3-alert-lines and m3-verify-silent.
+- taxila-m3-rg, containing taxila-m3-vm.
+
+**Dates:** M3_SINCE is 2026-11-07, so day 60 is 2027-01-05.
+
+**Database:** at 09:10 UTC, taxila-cin-pg was moved to B2s ($6.30 → $2.63/day).
+
+**Probes before applying:** taxila-fast, taxila-brain and the speech token each returned 200.
+
+**First keeper run:** at 08:51, its ledger showed $1.25 on the models lane.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `ms-r7-director8-hand-2026-11-06` (2026-11-06)
+
+director8: script walk v5, v2.2 scripts, H1.2 child, int/r6 7e2d7eea7. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 174/182 (96%) |
+| Verdicts | 200/202 (99%) |
+| Right called wrong | 1 |
+| Wrong called right | 0 |
+| False keys | 1 |
+| Contradictions, by hand | 73 (code checker: 2) |
+
+Where the contradictions come from: about 45 Studio "?", 6 empty picture requests, about 22 runtime segment placement (director7: 51).
+
+Axes: listening 3; worked example 3.5; class-level 3.5-4; screen 1.5-3; register 2.5-3; promises 2.5-3.
+
+Cost and speed: 1,173 calls, ~$0.804. Reply-ready p50 2.29 s / p90 3.76 s.
+
+Turn-replay on the same tree: first-audio-ready p50 1.90 s / p90 3.06 s, n = 432 turns. Full write-up: docs/design/round7/judgements/director8-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-main-18.json -->
+## `ms-r7-m3-owner-facts-2026-11-06` (2026-11-06)
+
+**Credit and sponsorship**
+- Credit: ₹230,490.71 remaining, from the MCA billing profile. The Startups dashboard shows $4,770 of $5,000, expiring 2027-04-04.
+- The billing record shows a StartupSponsorship of $5,000 from 2026-07-08 to 2027-04-04, with status LimitRemoved.
+- If Microsoft counts the 180 days from 2026-07-08, day 60 must fall on or before 2027-01-04, so day 1 must be 2026-11-06. All lanes and the registry and VM were already above $1 for 11-06 by 08:58 UTC; to be confirmed once Cost Management closes the day.
+- microsoftazuresponsorships.com does not show this sponsorship, because it sits on an MCA billing profile.
+
+**Deploy SP (sales-enabler-deployer)**
+- Its secret expires 2027-03-30.
+- It now holds User Access Administrator, conditioned so it cannot grant Owner, UAA or RBAC Admin.
+
+**Locks.** CanNotDelete `m3-credit-do-not-delete` on 11 M3-critical resources: the RG taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, both m3 jobs, the action group and both alert rules.
+
+
+<!-- merged from inbox/r7-brain-16.json -->
+## `ms-r7-turn-replay-int10` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs over director8's 16 lessons (4 topics × 4 personas, H1.2 reactive child), on int/r6 7e2d7eea7.
+- POST /api/lesson/start, then /turn on the in-process API: cascade spoken turns on the clause stream, so speculation, the distress read, the note, the guards and the store all run.
+- A throwaway localhost Postgres with every migration applied; Neon never touched.
+- No TTS.
+
+**n:** 432 teacher turns. 2,265 calls, about $1.42, against a cap of 3,200 / $2.00.
+
+**Results:**
+- first-audio-ready (the first guarded clause) p50 1,896 ms, p90 3,055 ms.
+
+| Path | Turns | p50 |
+|---|---|---|
+| Speculation hit | 81 | 1,612 ms |
+| Speculation miss | 76 | 2,491 ms |
+| Code-classified | 275 | 1,779 ms (`@classified` at 799 ms) |
+| Rewritten | 164 | 2,718 ms |
+| Cut 1 skip | 44 | 1,599 ms |
+
+- 3 script cards were skipped on a move-section budget overflow (c4 s1 e3 ×2, e4 ×1); fixed in Brain 9b2c3b4d.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10/README.md.
+
+
+<!-- merged from inbox/r7-brain-17.json -->
+## `ms-r7-code-spec-ab` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/turn-replay.mjs, `--personas steady`.
+- int/r6 7e2d7eea7, plus the harness-only fbaa0f4c, plus Brain 61fb6850 (`TAXILA_CODE_SPEC=on`).
+- Baseline: the steady rows of 2026-11-06-int10, on the same tree without 61fb6850.
+- n = 160 turns each. 939 calls, about $0.62, against a cap of 1,000 / $0.70.
+
+**first-audio-ready p50 / p90:**
+
+| | Baseline | Flag on |
+|---|---|---|
+| All turns | 1,852 / 3,123 ms | 1,954 / 3,498 ms |
+| Code-classified turns | 1,710 ms | 1,747 ms |
+| … speculated reply used (78) | – | 1,490 ms |
+| … missed (18) | – | 2,168 ms |
+| … early clause streamed | 21 turns at 970 ms | 3 turns |
+
+**Conclusion:** as built, the speculated reply loses the streamed early clause. The flag stays off.
+
+**Proposed next step:** stream the speculated reply and hold its first guarded clause until the read returns clean. Fix the 19% misses first: the facts row differs between the speculated and the real plan.
+
+**Source:** evals/turn-replay/results/2026-11-06-int10-codespec/README.md.
+
+
+<!-- merged from inbox/r7-brain-18.json -->
+## `ms-r7-checker-v6-offline` (2026-11-06, stream A Brain)
+
+**Method:**
+- evals/hybrid-side-by-side/checks.mjs (the four kinds main named, plus widened false keys).
+- Run over the saved rows of evals/hybrid-side-by-side/results/2026-11-06-director8/ (16 lessons).
+- No model calls.
+- Approximate: a row keeps one screen per turn, not one per segment. The previous turn's board stands in for the answered card's board.
+
+**Results (per topic: c4, c5-t01, c5-t02, c6):**
+
+| Kind | c4 | c5-t01 | c5-t02 | c6 | Judges / old checker |
+|---|---|---|---|---|---|
+| '?' board, value stated (turns) | 0 | 5 | 31 | 0 | judges 40 of c5-t02's 45 |
+| Borrowed why | 9 | 8 | 10 | 9 | |
+| Verdict with content over another board | 8 | 10 | 11 | 2 | |
+| Picture line names an undrawn thing | 2 | 0 | 1 | 2 | |
+| Old per-segment checker | 1 | 1 | 0 | 0 | judges 10 / – / 45 / 4 |
+
+**Source:** tests/r7-brain-v6-checks.test.mjs pins each kind on a director8 row.
+
+
+<!-- merged from inbox/r7-games-hissa.json -->
+## `ms-r7-games-hissa-cert`
+
+hissa play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-hissa.test.mjs, 64 tests. An independent checker uses plain integer arithmetic (numerators and denominators cross-multiplied, the chart in millionths) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.
+
+
+<!-- merged from inbox/r7-games-kram.json -->
+## `ms-r7-games-kram-cert`
+
+kram play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every kram sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-kram.test.mjs, 73 tests. An independent checker agrees with the law over at least 2000 random acts per case. It counts stick houses and rows stick by stick, pairs of points by a double loop, snowflake sides by repeated × 4 and rhythms by brute force over S / L strings, and compares tile figures under its own turns and flips. Generator p95 is under 50 ms (grow/next about 25 ms with cold starts, every other goal under 2 ms).
+
+
+<!-- merged from inbox/r7-studio-25.json -->
+## `ms-r7-director8-card-question-replay-2026-11-06`
+
+director8's card turns re-drawn with the asked-only rule: "?" over a stated, authored number c5-t02 14/38 → 0, c5-t01 1/30 → 0, c4 and c6 0 → 0; 42 of 81 "?" turns remain, each an open question. tests/r8-card-stated.test.mjs covers the 4 pilot and 29 staged scripts; 7 staged cards (shape named in the prompt, words-only compare board) fail a picture request on W15 — Learning data.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## ms-r7-m4-price-lb-pip-2026-11-06 (2026-11-06, Retail Prices API + Cost Management actuals)
+
+The filter that finds the LB rows: `serviceName eq 'Load Balancer' and armRegionName eq 'Global' and skuName eq 'Standard' and priceType eq 'Consumption'`. The regional filter returns nothing because the Standard LB meters are Global.
+- Standard Included LB Rules and Outbound Rules (first 5): $0.025/h, meter 27827eb0-7f60-4928-940b-f5fe15e7a4cb.
+- Standard Overage LB Rules and Outbound Rules: $0.01 per rule-hour, meter c36503b7-0df1-4de0-af90-ea407086432c.
+- Standard IPv4 Static Public IP, centralindia: $0.005/h, meter 9c150bf9-2bad-430e-a53c-c213804f49ef. The filter is `serviceName eq 'Virtual Network' and armRegionName eq 'centralindia'`. There is no separate idle meter for Standard.
+
+Cost Management, by ServiceName and Meter, 2026-10-30 to 2026-11-05 (7 closed days):
+- Load Balancer: 24 Included hours = $0.60/day (capp-svc-lb, 2 rules, IP-based pool of 2).
+- Virtual Network: 48 IP-hours = $0.24/day (Vyakti's vl-ip and taxila-sin-env's capp-svc-lb-ip, both attached).
+
+So 8 rules = $1.32/day and 11 IPs = $1.32/day.
+
+## ms-r7-m4-price-fallbacks-2026-11-06 (2026-11-06, Retail Prices API)
+
+- gpt-5.6-luna ShortCo Std Gl, southindia: input $0.20, cached $0.02, output $1.20 per 1M tokens (a05ffb45 / 5489ae4f / d01c83fd). The same as eastus2. The filter is `armRegionName eq 'southindia' and contains(meterName,'5.6 luna')`.
+- S1 Neural Text To Speech Characters (0f98e708): $15 per 1M in 34 regions, including swedencentral; 0 rows in southindia.
+- `node scripts/m3.mjs prices` re-read all 26 rows by meter id: 26/26 unchanged. The first attempt hit a 429 on acr:Premium; the throttled reply is plain text and escaped retail()'s retry. Fixed in the same commit.
+
+## ms-r7-m4-break-tests-2026-11-06 (2026-11-06, node --test)
+
+- tests/m4-break.test.mjs: 22/22. tests/m3-plan.test.mjs: 18/18, updated to the v2 keeper.
+- The fake: tests/fixtures/m3-fake-azure.mjs has blob leases on a settable clock, per-endpoint fault hooks, a storage-down switch and a slow-reply hook. tests/fixtures/m3-fake-arm.mjs runs the CLI's dry run in a child process and throws on any write.
+
+Keeper:
+- A run killed after a paid batch: its retry 30 s later waits and spends $0. The VM slot adopts the orphan (= that batch's worst case, $0.0436) and finishes, with models within one batch of target and every lane under its cap.
+- Two runners at once: the VM run started mid ACA batch saw the lease and spent nothing.
+- When every ACA run fails, the VM alone reaches all targets, and the verifier then reports runner-missing aca.
+- With eastus2 down all day, ACA and the VM before 22:00 spend nothing. The 22:47 local fallback reaches models via fallback2 and TTS; a re-run spends $0; the next day folds it into the old ledger, where only storage is short.
+- Storms: a primary 404 moves on after 1 batch (6 calls, $0 billed). A 429 storm moves on after 3 batches. Both reach target under the cap.
+- A TTS 401 alerts before the lane ends, and is recorded for the verifier.
+- A corrupt ledger (truncated JSON, wrong date) spends $0. A ledger seen and then unreachable: the 22:47 fallback spends $0.
+- Closed loop: actual 1.0 → 1.82; 0 → 2.50 (cap 2.65); 1.19 → 1.53; 1.20 → no raise; a day before M3_SINCE → no raise; a healthier later report does not lower a raise. End to end: models 1.82-2.00 and TTS 2.50-2.65 spent.
+- Boundary: no batch at 23:45 (no ledger created). A run starting at 23:39:59.999 stops before its first batch. 00:01 starts the next ledger and leaves the old one untouched.
+- After M3_UNTIL: 0 requests of any kind.
+
+Verifier, M4:
+- 9 → OK; 8 → OK + WARN; 7 → ALERT with the 7-service clock still at 18 days.
+- A dip to 6 → streak-reset. An M3-era previous report → no reset.
+- Runway: ₹230,490.71 → OK; ₹120,000 → runway-low, from 68 days at each day's INR cost.
+- Burst on the last closed day → alert; 5 days back → none.
+- A failed cost query → alert, exit 1.
+- runner-missing and keeper-auth-failed fire; no runner alert before M3_RUNNERS_SINCE.
+- The secret's expiry alerts at 20 days, not at 22, and after M3_UNTIL.
+
+CLI dry run against a fake ARM, 4 scenarios: fresh, done, rights, open-nsg (refuses). No write, no secret.
+
+Not measured: anything live.
+
+## ms-r7-m4-live-dry-run-2026-11-06 (2026-11-06, read-only against live Azure)
+
+The command was `NODE_USE_ENV_PROXY=1 node --env-file=<.env.local> scripts/m3.mjs apply --vm --only pips,lb,runner,locks`. An in-memory scan for 14 secret values found none in the output.
+- VM: ok and running.
+- pips: live $1.320/day; the NSG denies internet inbound (0 custom rules); WOULD create 11 IPs and attach pip-01.
+- lb: live $1.320/day; WOULD create the subnet, the LB and the NIC pool membership.
+- runner: VM agent Ready; WOULD create m3-runner, with fallback2 taxila-ai-southindia/taxila-fast-bg and TTS fallback taxila-ai-swc.
+- locks: 11/11 present.
+
+On the same day, a jobs/actiongroup/alerts dry run would update m3-keeper (cron, script, env, secrets) and m3-verify (cron, script, env). actiongroup and alerts are unchanged.
+
+
+<!-- merged from inbox/r7-main-19.json -->
+## `ms-r7-m4-applied-2026-11-06` (2026-11-06)
+
+M4 hardening applied live at ~10:55 UTC from int/r6 725ead5e9.
+
+**What was created or changed**
+- Spares: 11 public IPs, plus taxila-m3-lb (8 rules, with the VM in its pool).
+- VM runner installed (M3-RUNNER-OK): node 22.23.4, a timer every 3 h at :47.
+- Keeper changed to every 3 h; verifier runs twice a day in M4 mode.
+- Alerts go to 2 emails plus the Owner role.
+- Locks verified.
+
+**Live break test, 11:02 UTC**
+- 2 ACA keeper executions and the VM runner started at once.
+- The ledger shows one VM run and one ACA run; the third found the lease held.
+- Lane totals were unchanged at $1.35 / $1.35 / $1.25: no double spend.
+- A test notification was sent.
+
+**Not yet live-tested:** a full ACA-down day. tests/m4-break.test.mjs covers it (22/22).
+
+
+<!-- merged from inbox/r7-main-20.json -->
+## `ms-r7-director9-hand-2026-11-06` (2026-11-06)
+
+director9: script walk v6, 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 96% |
+| Verdicts | 99% |
+| Right called wrong / wrong called right | 0/0 |
+| False keys | 1 (a stated wrong rule) |
+| Contradictions, by hand | 41 (code: 10; director8: 73) |
+
+Where the contradictions come from:
+- confirm-reveal dead on the run path: 14;
+- picture requests that draw nothing new: 13;
+- the L-shape card's data: 8;
+- runtime: 6.
+
+Requests got a real smaller re-explanation 16 times out of 58. Cost: ~$0.94. Reply-ready p50 2.33 s. Full write-up: docs/design/round7/judgements/director9-2026-11-06.md.
+
+
+<!-- merged from inbox/r7-brain-19.json -->
+## `ms-r7-run-path-replay-d9` (2026-11-06, stream A Brain)
+
+**Method:**
+- tests/fixtures/replay.mjs walks the run's recorded child turns from evals/hybrid-side-by-side/results/2026-11-06-director9/.
+- Each turn is read by classifyFast, or by the run's recorded model read (outcome · request type).
+- Each turn is planned by turn.js planTurn, with the run's own scripts.
+- No model calls: her line uses a fixed draft and code assembly.
+
+**Results:**
+- **c5-t01 steady:** the replay matches all 10 recorded moves up to T21.
+- **T21 through Studio's seam:** before the fix 'planning' (the tail page's take rejected W6.timing); after it 'revealed' with page 0 counts.marks [mark 1 = 1/8].
+- **c5-t02 stuck T18:** the alt view is 'line' (8 gaps, 1/8), and her line is "Dekho, yahi 0 se 1 ki sankhya rekha par, 8 barabar gaps, nishaan 1/8 par."
+- **Caveat:** a replay past the first turn whose move changes no longer follows the run (the recorded child answered the run's teacher).
+
+
+<!-- merged from inbox/r7-games-guna2.json -->
+## `ms-r7-games-guna2-cert`
+
+guna play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 136/136 guna samples pass at p360, p412 and l1366 with the game mounted (17 entries × 2 seeds × 4 art directions, 6 of the entries new; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-guna.test.mjs has 97 tests, including the new cases: BIG area, big round, check, each, and small full / all. The independent plain-arithmetic checker judges check by the band the rounded sides allow (both down … both up). Each new mal-rule lands on its own misconception. Generator p95 is under 50 ms. Every new coverage entry serves through currentLevel at every fade. 43 gate files: 828 tests pass. lint-ui is 354 before and after.
+
+
+<!-- merged from inbox/r7-games-koshtak.json -->
+## `ms-r7-games-koshtak-cert`
+
+koshtak play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).
+- **Run states:** the solved and the believed run of each goal were driven in the harness by taps and looked at (the cert itself shoots the opening state).
+- **Tests:** tests/r7-games-koshtak.test.mjs, 32 tests. An independent checker has its own tokenizer and recursive-descent parser for + − × and brackets, its own tray counter and its own copy of the set-up fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.
+
+
+<!-- merged from inbox/r7-games-kon2.json -->
+## `ms-r7-games-kon2-cert`
+
+kon play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json).
+- **Tests:** tests/r7-games-kon.test.mjs has 18 tests. Each new goal is checked on validate / solve / shortcut-free, on every mal-rule naming its own misconception, and on 2000 or more random acts. An independent coordinate checker judges any goal the law calls met: cross and dot products of direction vectors, a 2×2 solve for where two lines cross, and its own reading of a figure's ends. Generator p95 stays at or below 50 ms. Every new coverage entry serves through currentLevel. The earlier goals' generator hashes and served levelIds are pinned. tests/r7-games-kon-angles.test.mjs and tests/r4-games-core-kon.test.mjs still pass unchanged.
+
+
+<!-- merged from inbox/r7-games-nishana2.json -->
+## `ms-r7-games-nishana2-cert`
+
+nishana play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 228/228 nishana samples pass at every size (18 entries, 16 samples on the two new hop entries; counts in server/forge3/certs/play.json). On the first run, the 8 ÷ samples failed Q2.whole at p360: the negative-divisor goal ("… A backward hop counts as minus.") was ellipsised. The goals were shortened ("… Backward = minus") and that entry was re-judged with --resume. The decimal entry passed on the first run. In the shots, tenth ticks are about 27 px apart on a 0-2 line at p360, and labels are 16 px.
+- **Tests:** tests/r7-games-nishana.test.mjs has 12 tests: the pinned levelIds; validity; an independent plain-arithmetic checker; each mal-rule named alone; picker shortcut null; generator p95 < 50 ms; a ≥ 2000-act random battery per kind; the kit's examples; forged levels refused; currentLevel serving at every fade; the answer hidden from reactions; and the words. Gate files (r7-games-*, *play*, economy, isolation): 872 tests pass. lint-ui is 354 before and after.
+
+
+<!-- merged from inbox/r7-main-21.json -->
+## `ms-r7-director10-hand-2026-11-07` (2026-11-07)
+
+director10: v6.1, v2.3 pilots, policy B. 16 lessons, counted by hand by 4 judges.
+
+| Line | Count |
+|---|---|
+| Beats taught | 97% |
+| Verdicts | 99% |
+| Misgrades | 0/0 |
+| False keys | 0 strict |
+| Contradictions, by hand | 52 (words 5, drawing 44, data 3) |
+
+The drawing contradictions break down as: first-page failures about 29, second views about 9, confirm-reveal 6.
+
+`simpler` now answers most requests. 13 of 16 lessons leave skill 1. Turns over 60 words: 21-30 per topic. Cost ~$0.95; reply-ready p50 2.56 s.
+
+Full write-up: docs/design/round7/judgements/director10-2026-11-07.md.
+
+
+<!-- merged from inbox/r7-app-23.json -->
+## `m-r7-app-studio-templates-render-2026-11-07`
+Method: Studio's own expand() boards injected into the dev Desk's work tray (window.__deskScript), shot after the full board duration, with drawn SVG text boxes tested pairwise and against the board. Details and the suggested rule are in docs/design/round7/app/BOARDS-RENDER.md.
+
+
+<!-- merged from inbox/r7-games-parkar.json -->
+## `ms-r7-games-parkar-cert`
+
+parkar play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** every parkar sample passes at every size. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-parkar.test.mjs, 68 tests. An independent checker (its own circle–circle and circle–line crossings, distances and angles; a built triangle compared with the card's by its six parts; the longest / shortest stick found by trying every whole cm) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.
+- **Browser runs:** a solved run and a misconception run per goal driven at 360 px in the dev harness (and sss, sas, alt solved by real taps only); the end states were looked at.
+- **lint-ui:** 354 findings before and after (no new finding).
+
+
+<!-- merged from inbox/r7-games-runshots.json -->
+## `ms-r7-games-runshots-nishana-kon`
+
+Method: the play dev harness (src/play/dev) built with the server's generator; for each new nishana goal (c7-ch10-t02 ÷, c7-ch03-t04 decimals ±, fades 1 and 3) and each new kon goal (parallel, perp, corr, alt, ends), the opening board, the law's solve() acts and one malActs() rule were applied through window.__play.dispatch, the run played in real time (4.5 s), and Chromium took a 360 x 740 screenshot at 2x (stored at 1x). n = 35 shots, 0 page errors. Every solved run reads correctly (the hop chain lands on the flag; the set-square fits the corner; the light runs past the open end). Every misconception run misses visibly with its own consequence (the hop chain runs the wrong way; the lines meet off the sheet; off by N°). One bug: the cross run's "off by" chip was never drawn (see dc-r7-games-run-redraw-window), fixed and re-shot. 14 of the shots are in docs/design/round7/games/runshots-r7/ with a README.
+
+
+<!-- merged from inbox/r7-learning-31.json -->
+## `m-r7-coldstart-sim` (2026-11-07, F Learning)
+Script: evals/placement-coldstart/sim.mjs (seed 7). Children with known true θ (maths, GE scale), n=300 per class for classes 3-8, 3 first-try answers per lesson, 20 lessons, all through the real θ engine (initialBase, openEpoch, addObs, currentTheta).
+
+**Answers.** The parent sees the child's level through noise sd 0.8 (15% unsure). The child sees it through noise sd 1.2.
+
+**Populations.**
+- `model`: the classPrior mixture itself.
+- `ontrack`: 80% within ±0.6 of expected, 20% at −1.5.
+
+**Answer models.**
+- The engine's own 4PL.
+- `missp`: a = 1.0, guess .1, slip .15.
+
+**Conditions.**
+- class: today's calendar start with the class prior.
+- onboarding: the answers' site and start.
+
+**Columns.**
+- settle: lessons until the start reads θ and |θ̂ − θ| ≤ 0.5 holds to the end (never = lessons + 1).
+- by5 / by10: share settled by lesson 5 / 10.
+- err1 / err5: mean |start − θ| at lesson 1 / 5.
+- high1: share starting more than 0.5 GE above θ.
+
+| pop | answers | cond | settle median | p75 | by5 | by10 | err1 | high1 | err5 |
+|---|---|---|---|---|---|---|---|---|---|
+| model | model | class | 9 | 16 | 0.29 | 0.57 | 1.51 | 0.68 | 1.16 |
+| model | model | onboarding | 6 | 12 | 0.47 | 0.72 | 0.97 | 0.39 | 0.46 |
+| model | missp | class | 14 | 21 | 0.19 | 0.39 | 1.5 | 0.68 | 1.1 |
+| model | missp | onboarding | 13 | 21 | 0.24 | 0.42 | 1.02 | 0.39 | 0.64 |
+| ontrack | model | class | 8 | 13 | 0.33 | 0.66 | 0.68 | 0.28 | 0.6 |
+| ontrack | model | onboarding | 6 | 12 | 0.46 | 0.7 | 0.79 | 0.08 | 0.46 |
+| ontrack | missp | class | 16 | 21 | 0.19 | 0.37 | 0.68 | 0.29 | 0.66 |
+| ontrack | missp | onboarding | 17 | 21 | 0.23 | 0.37 | 0.77 | 0.08 | 0.67 |
+
+**Read-out.**
+- With 5 answers per lesson (out-obs5.json), the model population settles at a median of 4 lessons with answers, against 6 without.
+- Under the misspecified answer model, both conditions settle slowly (12-17 lessons). That is the θ engine's fit, not placement.
+- In the on-track population the answers cost 0.1 GE of day-one error (starts sit a little low) and cut too-hard starts from 28% to 8%.
+
+
+<!-- merged from inbox/r7-studio-26.json -->
+## `ms-r7-director10-drawing-replay-2026-11-07`
+
+Replaying director10's rows through the seam, with Brain's bare-first-page join applied, gives these results:
+- **Unpaged turns:** 29/31 now draw. The 2 left are closes over a contradicting board, both Learning data with no answerBoard.
+- **Picture requests:** 16/16 draw a second view built from the card on screen.
+- **First pages refused on their own close:** 30 → 4. Each of the 4 is a close over another item's board. Two of them are kept as the card's board and still contradict the close (Brain or Learning to fix).
+
+The replay made no model calls and used no database. tests/r8-director10.test.mjs pins one row per item.
+
+
+<!-- merged from inbox/r7-main-22.json -->
+## `ms-r7-m4-day1-2026-11-06` (2026-11-08)
+
+The M3/M4 60-day clock started on **day 1 = 2026-11-06** (now closed) and **completes 2027-01-04**. That is within even the worst-case deadline (2027-01-04, counting from the 2026-07-08 sponsorship start).
+
+| Day | Services ≥ $1 | Breakdown |
+|---|---|---|
+| 2026-11-06 | **8** | ACA 4.45, PG 4.00, Models 3.33, VM 2.20, ACR 1.75, Storage 1.46, Tools 1.45, LB 1.26. VNet was 0.90 because the spares only started mid-day. |
+| 2026-11-07, near-final | **9** | ACA 4.46, PG 2.63, Models 1.93, VM 2.67, ACR 2.27, Storage 1.47, Tools 1.39, LB 1.92, VNet 1.56. Subscription total $20.5/day. |
+
+**Keeper.** 16 runs on 2026-11-07, alternating between ACA and the VM every 1.5 h. The verifier reported OK.
+
+**Runway.** Projected ₹129,630 remaining at 2027-01-12.
+
+**Method.** `scripts/m3.mjs status`, reading Cost Management ActualCost grouped by ServiceName.

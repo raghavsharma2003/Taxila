@@ -8162,3 +8162,545 @@ Apply `node scripts/m3.mjs apply --apply --start-now --vm` by 2026-11-07, so tha
 - **Blocked on:** the Azure keys. This environment has no environment variables and no network secrets.
 
 **Reverse if** the Founders Hub portal shows a different verification date, or the owner declines the VM.
+
+
+<!-- merged from inbox/r7-main-16.json -->
+## `dc-r7-m4-without-fail` (2026-11-06)
+
+Go for Milestone 4 ($50k: 7 services ≥ $1 for 60 continuous days) by holding 9 services, so 2 are spare, with no single point of failure. The owner's words: "without fail", "totally autonomous and fully scheduled, and fully break tested".
+
+**What gets built:**
+- **Spares:** a Load Balancer (an internal Standard LB with 8 rules) and Virtual Network (Standard public IPs), both in taxila-m3-rg.
+- **Two independent runners on one leased ledger:** the ACA jobs every 3 h, and a systemd timer on taxila-m3-vm offset by 90 minutes.
+- **Closed-loop lane targets** from Cost Management actuals.
+- **The verifier,** twice a day, in M4 mode (it alerts below 8 services), plus a runway alarm and a burst alarm.
+- **Multi-address alert email.**
+- **CanNotDelete locks** on the M3 resources, made by the owner, since the service principal is Contributor only.
+
+**Reverse if:**
+- Microsoft's counting drops us below 7;
+- the credit cannot cover 60 days at ~$20-24/day;
+- the owner declines the spares.
+
+
+<!-- merged from inbox/r7-main-17.json -->
+## `dc-r7-script-walk-v6` (2026-11-06)
+
+Every sentence on its own board, and requests and parks done for real.
+
+**Brain:**
+- R1: segment assembly for verdicts, closes and bridges.
+- R2: a close's why only from the closed card.
+- R3: the invented guard replaces the line; keys are checked in every phrasing.
+- R4: requests as moves.
+- R5: real returns, and a language mode that holds.
+- R6: render hygiene.
+
+**Studio:**
+- S1': only the asked value may be "?", and confirmed answers are revealed.
+- S3': a picture request draws the live card's figure.
+
+**Learning:** v2.2 data fixes (a why per key, a board per bridge, and the rest).
+
+**Harness:** the checker models what the judges found.
+
+Next run: director9 on integration 11. The gate is unchanged, and the 30-topic batch stays held.
+
+**Reverse if:** director9 has R1-R6 and S1'/S3' in place and still more than 10 contradictions by hand. Then move to a code-rendered voice for every board-describing sentence.
+
+
+<!-- merged from inbox/r7-app-20.json -->
+## `dc-r7-app-site-config`
+The owner's price goes into one value, `PRICES.monthly` in src/app/site.ts, and the landing picks it up with no other code change. Until then the page says plainly that no price is set. The canonical origin is taxila.dev for every public page, so the eastus2 container FQDN is never indexed. The landing captures were re-shot from the r7 lesson shell: a stage-first board, the teacher in a corner, and the hands-free dock.
+
+
+<!-- merged from inbox/r7-brain-16.json -->
+## `dc-r7-code-spec` (2026-11-06, stream A Brain; approved by main)
+
+**What:** on a turn the bytes decided (classifyFast has a result: an exact key, a script key, a request, a lexical read), her reply for that result's plan starts at once, alongside the model distress read. Before this, it waited for the read.
+
+- Mechanism: server/latency/perceive.js rule 6.
+- Flag: `TAXILA_CODE_SPEC`. Off by default in production; on in the eval tree (evals/turn-replay.mjs) until a turn replay confirms it.
+
+**Why:** ms-r7-turn-replay-int10. On 275 of 432 turns `@classified` sat at a p50 of 799 ms, waiting on grok's distress read (p50 781 ms), before the plan and her reply.
+
+**Safety (unchanged, pinned by tests/r7-brain-code-spec.test.mjs):**
+- The turn plans only after it awaits classify(), and so the distress read.
+- It uses a speculated reply only through pickSpeculation's exact reply-key match.
+- A distress read changes the plan (safeguard), so the speculated key never matches and the reply is discarded.
+- The speculated call carries no clause hook, so nothing streams to TTS or the client before the read.
+- The safety code itself is untouched.
+
+**Reverse if:** any release (a clause, TTS or the client response) happens before the distress read has returned, on any turn.
+
+
+<!-- merged from inbox/r7-brain-18.json -->
+## `dc-r7-script-walk-v6` (2026-11-06, stream A Brain; main's director8 hand judgement, three of four judges)
+
+**R1 segment assembly**
+- Everything about the card just answered is said first and together: the verdict with its reason, a give-up, the worked answer. It is the first segment, on that card's board (state.js closeBeat on every scripted move; say.js guard.parts; propose.js places parts by their texts).
+- A missed card's close is its own segment on its own board.
+- A bridge with an authored board (SkillScriptV2.bridgeBoard) is its own segment. With none, it stays on the board before it and its screen pointer is removed.
+- A close's why is only the card's authored why: KeyedAsk.why / CheckQuestionV2.why, or the worked example's why. Never the last sentence of a point or a remediation.
+- A worked close is said once.
+- A yes/no key is named ("sahi jawab: nahi"), never "jawab nahi tha".
+
+**R2 false keys**
+- In a scripted turn, every number she says must be carried by this turn's authored text, the card just graded (its key once graded right), or the child's words.
+- A stray number drops her sentence. A verdict lead with one is replaced by code's verdict.
+- A draft the invented guard caught keeps none of her sentences.
+
+**R3 requests**
+- "kya poochha, phir se bolo na" is a repeat.
+- "pata nahi" or "samajh nahi aaya" re-says the same explain beat smaller (her new lines, else one sentence of the point). On a worked step it re-says that step reason-first, never the next step.
+- No sentence of her last turn is said again.
+- A probe answered gets one line taking it up.
+- A repeated miss on an adding card names the piece left out (only when unique).
+- A picture asked for is described in code from the board sent (brain/board-words.js).
+
+**R4 returns and register**
+- An aside parked on one turn is returned to on the next, with a short true fact for common asides (asideFactOf), or her own sentence when it is about the thing. Never an analogy to the lesson, never words put in their mouth.
+- After "hindi mein batao", her English words become Hindi in code (brain/register.js). The card and must-say words are kept.
+
+**R5 hygiene**
+- A closing turn over the cap is two turns: the closures with no card live, ending on "shall we go on?", then the beat. Authored teaching plus its card over the cap is also two turns: the teaching, ending on a check-in, then the card on its own board.
+- A confused reply or a stop lets the held half go.
+- Kill switch: TAXILA_R7_SPLIT=off.
+- One verdict sentence; a sentence is said once; the card is the one question; a scripted worked frame carries no number; their English phrase is never echoed.
+
+**Reverse if:** director9's hand judges count more contradictions, more lost cards, or a held half said after a stop, on any of these. Reverse that part alone.
+
+
+<!-- merged from inbox/r7-games-hissa.json -->
+## `dc-r7-games-hissa`
+
+**hissa** (multiplying and dividing fractions and decimals, class 7) is a law family. Nothing in it runs on a clock: every fold, shade, pour, slide and tag moves only on a touch, and the law answers only on run. It is a different mechanic from todo-jodo's strips (one bar cut into equal parts for naming, comparing and adding), guna's field (whole-number place-value area model and truck) and nishana (placing on a line). Every value is exact (integer numerators and denominators; decimals as tenths and hundredths).
+
+- **fold/of** (c7-maths-ch08-t01 s2): a unit sheet is folded across and shaded (the first fraction), then folded down and only the shaded part is taken (the second). The overlap is the product; the child tags it by counting pieces taken twice over pieces in the whole sheet (any equal tag; finer folds are allowed).
+- **fold/times** (c7-maths-ch08-t01 s1): w rope pieces of a/b m are laid end to end on a metre track marked in b parts, and the rope's length is tagged.
+- **pour/fit, pour/part, pour/deci** (c7-maths-ch08-t02 s1/s2/s3, c7-maths-ch12-t02 s3): a jug is poured into full cups one at a time; the jug refuses a cup it cannot fill. The part-cup left is tagged as a fraction OF A CUP; on run the rest pours into the last cup, the jug must be empty and the tag must be that cup's level. Pouring every full cup IS the division (how many fit), so it is not a shortcut.
+- **grid/mul** (c7-maths-ch12-t01 s2): a grid of units cut in tenths; a/10 shaded across, c/10 down. The overlap's small squares are counted onto a label and the child moves its decimal point.
+- **grid/shift** (c7-maths-ch12-t01 s1, c7-maths-ch12-t02 s2): digits on a place-value chart (hundreds to thousandths), the point fixed; the child slides the digits one place per push. A zero may be written at the end; it moves nothing.
+- **story/rest** (c7-maths-ch08-t03 s2): a bar (rupees or a ribbon) is folded and shaded for the first spend; the child picks the bar the second fold lies on (the piece left, or the whole) and folds and shades it.
+- **story/scale** (c7-maths-ch08-t03 s1): a recipe's amount is folded into one share per person it was for, and one share is laid into the pot per person eating now.
+
+Mal-rules map only to the topic's own kit ids: keep-denominator, whole-both, mult-bigger (ch08-t01); div-smaller, no-flip, flip-first (ch08-t02); fraction-of-original, scale-flip (ch08-t03); point-03, times10-zero (ch12-t01); div-half, div-smaller, scale-one (ch12-t02). ÷ 10 / 100 / 1000 on the chart maps no belief (the kit has none for it).
+
+Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch08-t01-s3 (predicting bigger or smaller), c7-maths-ch08-t03-s3 (checking size and units), c7-maths-ch12-t01-s3 (estimating products), c7-maths-ch12-t02-s1 (a decimal ÷ a whole number, which is sharing, not how many fit). Kit beliefs with no honest set-up: last-op (the story's action is done, never chosen as an operation word), half-bigger.
+
+**Reverse if** a child pilot shows the tag is set by trying numbers until the run passes rather than by counting the sheet, the cups or the grid (watch for runs per level and tag changes between runs).
+
+
+<!-- merged from inbox/r7-games-kram.json -->
+## `dc-r7-games-kram`
+
+**kram** (growing patterns and number sequences, classes 4-7) is a law family. Nothing in it runs on a clock: the child builds the pattern's next stage, a bag for a far stage, a machine's rule, a shelf of rhythms or a choice of pieces, presses run, and the law answers with plain counting. No answer box anywhere: the tiles, the bag, the dials and the pieces ARE the answer.
+
+- **grow/next** (c5-maths-ch07-t02 s1 with L / plus / staircase / oblong tiles; c6-maths-ch01-t02 s1/s2 with dot squares and staircases): stages n-3..n-1 stand built; the build board starts as a copy of the last one; the child lays / lifts tiles until it is stage n (any turn, flip or slide of it counts).
+- **grow/far** (c5-maths-ch07-t02 s3 and c7-maths-ch04-t03 s2 with stick houses / rows of squares / rows of triangles; c6-maths-ch01-t04 s2/s3 with points joined in every pair and the snowflake): fill a bag (racks of 1, 10, 100, 1000; nine to a rack) with exactly the pieces stage N needs; the run grows the figure stage by stage out of the bag.
+- **machine/step** (c4-maths-ch03-t02 s1-s3: going up, going down, doubling, halving, a calendar column; c5-maths-ch07-t02 s2: a stick figure's counts): set the machine's sign and number; the run walks it from the first number along every given step, then fills the two blanks.
+- **machine/rule** (c7-maths-ch04-t03 s1): set a and b in "a × n + b", fed the stage number; the run makes stages 1-4, then the far stage.
+- **beats/lay** (c7-maths-ch06-t03 s1/s3): lay every rhythm of n beats; a rhythm one shelf up goes on with S in front, two shelves up with L in front (the recursion is the move); pads compose one by hand. **beats/count** (s2): a bag for the rhythms of N beats.
+- **nest/odd** (c6-maths-ch01-t03 s1): pick the L-pieces that fill a k × k frame; **nest/pair** (s2): pick the two staircases that fill it.
+
+Mal-rules map only to the topic's own kit ids:
+
+| Mal-rule | Kit id |
+|---|---|
+| only-increase (+ for −, × for ÷) | only-increase |
+| first-step (+ (t2 − t1) for a doubling / halving list) | first-step-only |
+| plus-one (+ 1 down a calendar column) | calendar-plus-one |
+| copy (the last stage run unchanged) | guess-next |
+| times-first (N × stage 1) | whole-object (c5) / proportional (c7 far) |
+| step-only (N × the step) | forget-start |
+| corner (row + column, no corner) | corner |
+| rows-only (k rows of k + 1) | any-arrangement |
+| double (lines from both ends), same-step (last step again) | line-jump |
+| sides-plus (snowflake sides added) | sides-plus |
+| recursive (n + d) | recursive-only |
+| proportional (a × n, b = 0) | proportional |
+| order-ignored (one rhythm per mix of S and L) | order-ignored |
+| add-one, doubling (rhythm counts) | add-one |
+| skip-start (odd pieces from 3) | skip-start |
+
+**Not admitted** (no honest mechanic yet): c4-maths-ch03-t02 changing-step lists (1, 2, 4, 7, 11); c6-maths-ch01-t02-s3, c6-maths-ch01-t03-s3, c6-maths-ch01-t04-s1, c7-maths-ch04-t03-s3; and the whole of c7-maths-ch01-t03 (patterns in products): its kit beliefs are zero-counting in round products, which is guna's field of round sides, so it stays with ITEM-ARENA (a guna rule is the honest home). Kit beliefs with no honest set-up: decoration, three-cases, odd-sum-odd, unrelated, cant-generalise, europe-first.
+
+**Why:** the seven pattern topics were served only by ITEM-ARENA.
+
+**Reverse if** a child pilot shows the bag and the dials are used as answer boxes (typed, trial-and-error) rather than read off the figure, so the far-stage and rule beliefs never surface.
+
+
+<!-- merged from inbox/r7-learning-29.json -->
+## `dc-r7-staged-batch-30` (2026-11-06, F Learning)
+
+The 30 highest-ranked next topics (next-topics.mjs) are written in v2.2 and staged, not live. Gate per script: `check.mjs` ok, then a blind solve — a solver sees only each keyed question and the line said just before it, answers it, and flags LEAK / AMBIGUOUS / MISSING; its answers are compared with keys kept in a separate folder. All 30 matched every key. The flags were mostly a point that stated the rule the ask only had to repeat, and "the fourth mark from 0" read two ways; all were fixed, and the lessons went into SPEC-AUTHOR's wave notes. Two kit items were added for 3-rung ladders. **Reverse if:** director8 shows a defect class the blind solve cannot see; add that check before promotion.
+
+## `dc-r7-friend-pool-names` (2026-11-06, F Learning)
+
+A script character named Tara and a `{friend}` slot that filled with Tara gave one lesson two Taras, and a "who has more" key that names one of them. `check.mjs` now rejects the slot's names anywhere in a v2.2 script (keys too); a test fails if its list drifts from `server/director/friend.js`. **Reverse if:** the slot learns to skip names already on the card.
+
+## `dc-r7-kit-friendf` (2026-11-06, F Learning)
+
+Kit card characters Riya/Asha → `{friendF}` (237 units, 35 kits); pool names already on a unit renamed first (7); unfilled fields → Nisha (13). Pushed only after Games' serve-time fill was in base; the Games banks were regenerated in the same commit. **Reverse if:** a served surface shows the raw slot — fill it there.
+
+## `dc-r7-child-events-in-context` (2026-11-06, F Learning)
+
+Director7 found the reactive child firing events out of context ("pehle main try karun?" right after a why-probe; "let me try" after the answer was given). Events now wait for a turn that fits. **Reverse if:** events cluster late and a request kind drops out of MIN_TURNS.
+
+
+<!-- merged from inbox/r7-studio-25.json -->
+## `dc-r7-card-board-asked-only`
+
+A scripted card's board shows every number the card states; only the asked value is "?". The key's numbers are withheld unless her line states them (the spoken card is in her line) or the card's own board authors them as labels; accept forms quote the givens and withhold nothing. An asked mark on a fraction line is labelled once her line states its value, and the card's board still on screen on her confirming turn is re-taken (so the confirmed value appears) or kept, never replaced by the code's bare line. Reverse if a card's key is a given its own board must hide.
+
+## `dc-r7-picture-second-view`
+
+Amends SC2. A picture asked for while the card's own board is already up draws the same numbers as equal bars (fraction-bars@1, counts.wholes per bar, artifact.altView "parts"); the asked value is an unshaded "?" bar. Only for a fraction line within one whole or a compare whose entries are fractions; otherwise the card's board is re-shown, and with another board up the card's board is drawn (SC2 unchanged). The card's own board always answers a picture request. Reverse if judges find the second view confuses a child more than it helps.
+
+
+<!-- merged from inbox/r7-m4-1.json -->
+## dc-r7-m4-without-fail (2026-11-06, round 7 M4 hardening)
+
+The owner's requirement: whatever happens (Taxila or Vyakti development stops, a service fails, a job does not run), at least 7 Azure services each stay above $1 on every UTC day for 60 days. One gap day resets the clock and loses Milestone 4 ($50,000). M3 went live on 2026-11-06 with 7 candidates, so M4 had 0 spares.
+
+The design (docs/design/round7/M3.md):
+
+- **9 services.** Two new spares sit in taxila-m3-rg, and each holds $1.25 by itself:
+  - Load Balancer: taxila-m3-lb, a Standard internal LB with 8 TCP rules, $1.32/day. The VM's NIC is in its pool, because Microsoft's pricing page is silent on empty pools.
+  - Virtual Network: 11 Standard static public IPs, $1.32/day. pip-01 is the VM's only outbound; the NSG keeps Azure's default inbound denial.
+- **Two keeper runners on one ledger.** The ACA job runs every 3 h at :17 (eastus2). taxila-m3-vm runs from a systemd timer every 3 h at :47 past 01, 04, ... (centralindia), installed over Run Command with Node sha256-pinned and the env in a root-only file sent as a protectedParameter.
+  - A 60 s blob lease lets one runner spend at a time.
+  - The write-ahead rule stays. The next lease holder adopts a dead run's pending as orphanUsd.
+- **Closed loop.** A lane whose service billed < $1.20 on the last closed day gets today's target x target/actual, capped at $2.50; that day's cap is target + $0.15. The raise is recorded in the ledger and never drops within a day.
+- **Faults.** A 401/403 raises M3-ALERT naming the lane at once and moves to the next endpoint; a 404 does the same. Models fall back to taxila-brain, then taxila-ai-southindia/taxila-fast-bg; TTS falls back from centralindia to swedencentral.
+- **No batch in the last 20 minutes of a UTC day.**
+- **m3-verify in M4 mode, twice a day.**
+  - Alerts: 7 required, alert under 8; runner-missing; recorded keeper 401s; a whole-subscription day > $60; INR runway < ₹15,000 at M3_SINCE + 66 (default balance ₹230,490.71 on 2026-11-06); the principal's secret within 21 days (default 2027-03-30); a streak reset, never against an M3-era report.
+  - A single spare under $1.10 prints M3-WARN only: the owner's '8 → OK'.
+- **Locks.** CanNotDelete 'm3-credit-do-not-delete' on 11 targets. The owner made them; the `locks` step reads them, creates missing ones when permitted, and otherwise prints portal steps.
+
+Why this design:
+- Fixed resources are the cheapest per service and need no runtime.
+- Two runners in two regions remove the single job as a point of failure.
+- The lease and the write-ahead keep two runners from ever spending the same dollar twice.
+
+Reverse or change if:
+- the first closed day shows Load Balancer or Virtual Network under $1.25 from the m3 resources (open-r7-m4-billing-assumptions);
+- lease waits leave lanes short (seen in the ledger's runs);
+- Microsoft defines a workload other than as a ServiceName;
+- or the runway alarm fires.
+
+## dc-r7-m4-no-spend-without-ledger (2026-11-06)
+
+With two runners, nothing spends without the shared ledger, except the VM in its last slot (22:47 UTC). There it spends to target against its local mirror of the last shared ledger it saw. The spend is kept offline and folded in later as offlineUsd. A corrupt ledger never spends.
+
+This supersedes M3's blind rule (the 03:17 run spent each target once without the ledger; the 15:17 run skipped). That rule was right for one runner and 2 runs a day. With 2 runners and 16 runs a day it can double-spend, and the retry density makes it unnecessary for transient faults.
+
+Why the exception is safe: ACA never spends without a write-ahead to the shared ledger, so if the ledger is really down, nobody has spent since the VM last saw it. The one double-spend left is a one-sided partition (the VM cannot reach the ledger while ACA can) lasting to 22:47. It is bounded by each lane's target, and runner-missing reports it.
+
+Reverse if such a partition is ever seen (offlineUsd next to ACA spend on the same lane and day), or if a full-day eastus2 storage outage costs a day that a blind ACA spend would have saved.
+
+
+<!-- merged from inbox/r7-main-20.json -->
+## `dc-r7-script-walk-v6-1` (2026-11-06)
+
+- **Run path (P1-P2):** fix confirm-reveal and picture drawing where they actually run, pinned by replay tests on director9's rows. Every picture request draws something new.
+- **Brain (R7-R11):**
+  - no model-written teaching in script mode;
+  - requests as moves, never giving away the live answer;
+  - one check-in per beat, and a non-yes is acted on;
+  - parks, and Hindi extended to cards;
+  - rendering.
+- **Learning, data v2.3 (additive):** an authored `simpler` everywhere; prompt shape words checked against the board.
+- **Harness:** the imperative-ask fix; the checker models confirm-reveal and picture draws.
+
+Next: director10 on integration 12. The gate is unchanged.
+
+**Reverse if:** P1-P2 are in place and there are still more than 10 runtime contradictions. Then move to a code-rendered board voice.
+
+
+<!-- merged from inbox/r7-app-21.json -->
+## `dc-r7-app-signin-code`
+A parent who forgot the password, or never wants one, types their email, gets a code, and is in. The sent line reads the same whether or not the email has an account. Phone codes keep their place in the interface and say plainly that they are not ready, so the day an Azure route reaches Indian numbers only `PROVIDERS.phone.send` changes.
+
+
+<!-- merged from inbox/r7-app-22.json -->
+## `dc-r7-app-pricing-page`
+The owner's prices drop into one file, and the plan cards, the landing line and the header link all follow. Until then the page is honest: set-up is free, lesson prices are not set, and nothing can be paid.
+
+
+<!-- merged from inbox/r7-brain-19.json -->
+## `dc-r7-script-walk-v6-1-brain` (2026-11-06, stream A Brain; main's dc-r7-script-walk-v6-1)
+
+**P1 run path (with Studio)**
+- tests/fixtures/replay.mjs replays a recorded lesson through turn.js planTurn. tests/r7-brain-v61-replay.test.mjs carries both rows through textReply, whiteboardIntentOf and Studio's seam.
+- c5-t01 steady T21 (confirm-reveal): the dropping side was Brain. A 3-word tail ("Ab agla hissa.") was its own page back on the answered card's board. Studio's take rejected it (W6.timing), the paged turn fell back, and the verdict page's revealed 1/8 never reached the screen. Fix: propose.js segmentsAt folds a page under PAGE_MIN_WORDS (5) with no card into the page before it.
+- c5-t02 stuck T18 (picture): works once Studio's a402e724 is in; that commit was missing from the run tree.
+- Harness: `gate.v6.unpaged` (the seam's pagesBoard over the whole line) and `gate.v6.nothingNew` (a picture ask that re-draws the board already up).
+
+**R7 no model-written teaching (script mode)**
+- A "smaller" re-explanation is the beat's authored `simpler` (format 2.3), else one sentence of the point. It is never her own lines.
+- An explain point is said in its authored words, never her paraphrase.
+- A right answer's reason is the card's authored why (turn.js lastGraded.why), else none.
+- A rule or reason in her words (say.js RULE_SAID) goes from every scripted turn, and so does a sentence stating the card's wrongIfMis as true.
+
+**R8 requests**
+- A card's `simpler` answers "pata nahi" / "samajh nahi aaya".
+- Try-first, repeat, clarify and confused turns never let a scripted card go with its key. This never applies to a model's guessed request.
+- Her first sentence is the probe acknowledgement only when it takes up their words; else code's.
+
+**R9 check-ins**
+- A worked step's turn, or a split teaching half, may end on a check-in once per beat (state.js checkinFor). Otherwise it ends on a statement.
+- A "nahi" to a check-in gets the same step or teaching smaller, with the card still held.
+
+**R10**
+- In a scripted lesson, a turn that answers nothing and names an aside topic is a share: it is parked, and read before a held split half.
+- Her park line is the promise alone, never an analogy.
+- In the Hindi mode a scripted card is in Hindi words, except its key's and accept forms' words.
+
+**R11**
+- Worked steps are labelled by their own step.
+- "Is sawaal ka jawab … hai" when no new card follows; "Pichhle sawaal" only once another card is up.
+- A not-right verdict is code's. A Devanagari sentence of hers goes. "X (x)" loses its bracket.
+
+**Format 2.3**
+- SCRIPT_VERSIONS gains 2.3.
+- `simpler` is on explain beats, worked steps, checks and follow-up cards.
+- The validator checks it is a statement of at most 2 sentences and never its card's key.
+
+**Reverse if:** director10's hand count shows a part adds a contradiction, a lost card, or a longer skill 1. Reverse that part alone.
+
+
+<!-- merged from inbox/r7-games-guna2.json -->
+## `dc-r7-games-guna2`
+
+**guna** (multi-digit multiplication and division) is extended to three more arena-only topics, with no new mode and every earlier guna level unchanged. Before the change, the generator's output for every existing grammar was hashed over seeds 1..60 × fades 1..3 (73,440 candidates: params, solver, every mal set-up). After the change the hash is identical, and a test pins a levelId per existing entry. Nothing in it is timed.
+
+- **c7-maths-ch01-t03 (patterns in products).** field/area with both sides round and a truck of 6 or 7 racks, e.g. 3000 × 400. The field fills with 3 × 4 tiles of 1000 × 100 each, and the truck must weigh exactly 12,00,000. The zeros of both sides set the tile's size, so the rack the child picks is the zero count (s1), and the racks used are the product's digits (s3). field/round with 4-digit × 2- or 3-digit sides (4872 × 312 → 5000 × 300) is a large estimate (s2). Mal-rules: zero-count → hidden-zero (the basic fact's own zero lost). The new zero-less (one attached zero too few, only where the fact does not end in 0) and zero-more (one too many, where it fits) → zero-miscount.
+- **Rack limit.** RACKS = 7 (crates up to 10^6), only as far as c7-ch01-t03 needs. A test pins it: every c7 product fits, some need all 7, and every earlier entry still uses at most 5. A truck of more than 5 racks is drawn as columns (+ above, nine crates, − below, 44 px wide) so seven fit a 324 px phone tray. Places from 10^4 up are labelled as powers (10⁴, 10⁵, 10⁶).
+- **c5-maths-ch04-t02 (checking reasonableness).** New goal field/check. The child pulls the sides to round lengths and loads the estimate, then marks three dockets someone wrote for a × b: the true product, ten times it, and a tenth of it. Each docket is marked could-be-right or send-back. The law checks the estimate and every mark. Every docket kept → steps-mean-right; every docket sent back (none equals the estimate) → estimate-must-equal. Admits s1 only. s2 (inverse operations for + and −) and s3 (sense in a story) stay with the arena; inverse-wrong has no set-up.
+- **c4-maths-ch09-t02 (grouping and sharing).** Small numbers. New goal pack/each is equal SHARING: loose things, and one deal gives one to every friend until a round cannot go (s1, s3). story/full is equal GROUPING: packets of b, how many b's in a (s2, s3). story/all covers a leftover that still needs a vehicle (s3). Mal-rules: short → remainder-too-big; drop → no-remainder. order-doesnt-matter has no honest set-up here.
+
+**Reverse if** children solve check levels by marking dockets without loading the estimate first (watch mark changes between runs), or the 7-column truck reads as a quiz of labels rather than a load (watch rack corrections on c7 levels).
+
+
+<!-- merged from inbox/r7-games-koshtak.json -->
+## `dc-r7-games-koshtak`
+
+**koshtak** (expressions, class 7) is a law family. Nothing in it runs on a clock: every wall, lid, jump and card moves only on a touch, and the law answers only on run. It is a different mechanic from kram's rule machine (a × n + b fed the stage number), taraazu's balance (solving for a hidden bag) and nishana's hops (integer operations on a line): here the child decides the STRUCTURE of an expression (where its terms are, where its bracket goes, which way each opened term points, which terms are like) and a machine that only follows that structure does the arithmetic.
+
+- **tray/terms** (c7-maths-ch02-t02 s1, s2): a row of numbers joined by + − × stands on trays; the child snaps tray walls into gaps. The counter works each tray on its own (left to right inside it) and then joins the trays left to right. Every level is built so that ONLY walls at the + and − gaps make what the row is worth, so a wall IS splitting into terms.
+- **tray/lid** (c7-maths-ch02-t02 s2): a value to make and a row; the child lays one lid (a bracket) over a run of numbers; the lid's inside is worked out first. Built so exactly one lid makes the value (and the row without a lid never does).
+- **tray/open** (c7-maths-ch02-t02 s3): a − (b ± c …) ± d; the bracket opens into jumps that keep their written signs (the minus stays on the first). The child turns jumps forward / back; two walks run on one number line (the bracket as one big jump back, and the opened jumps) and must land together. Built so only the true signs land.
+- **bin/like** (c7-maths-ch04-t02 s2): term cards with their signs printed on a belt; bins close into ONE term only when every card has the same letter part (a lone letter counts as one of it). Every card binned, every bin closed, one bin per kind; the shelf is tried against the belt with numbers for the letters.
+
+Mal-rules map only to the topic's own kit ids: left-to-right (one tray per number; or no lid where the row read left to right makes the value), minus-first-only (no jump turned), unlike-combine (letter cards of different kinds in one bin), lone-letter (the lone letters left on the belt as if they were nothing: 6k − k → 6k; the kit's own sign is "6", which needs a typed answer).
+
+Not admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch02-t02-s4 (swapping and grouping smartly; cards that carry their signs cannot show the sign-detach belief), c7-maths-ch04-t02-s1 (substituting a value: the answer is a number the child would type; concatenate has no physical set-up), c7-maths-ch04-t02-s3 (growing patterns; kram serves c7-maths-ch04-t03).
+
+**Reverse if** a child pilot shows walls, lids or turns set by trying runs until one passes rather than by reading the signs (watch runs per level and changes between runs).
+
+
+<!-- merged from inbox/r7-games-kon2.json -->
+## `dc-r7-games-kon2`
+
+**kon** (angles as turning) now also covers three arena-only line topics. It does this with three new modes on the same turning arm, plus one new act, `stop`. No new family was added. The law is in `src/play/families/kon/kon.lines.ts` and the boards are in `kon.lines.view.ts`. Each kon function sends a line goal to that code first, so every earlier goal runs the same code as before. A test pins the generator's output hash for each earlier goal (7 goals × 3 fades × 3 seeds). A second test pins the levelId each earlier coverage entry serves. Nothing in it is timed, and no turn snaps into place.
+
+- **c7-maths-ch05-t02 · lines/parallel.** The board is squared paper (plain at fade 3). Line 1 is drawn short through O, at least 18° off flat and off upright. The child turns line 2 about P, a point off line 1. The run extends both lines past the sheet and zooms out until they meet, if they do. When they are parallel it shows the gap is equal at two places. Mal-rule `not-meet-on-page` → kit `not-meet-on-page`: a line 7° off whose crossing lies outside the sheet (checked in the test).
+- **c7-maths-ch05-t02 · lines/perp.** The child turns line 2 about O on a tilted line 1. The run lays a set-square on the crossing. Mal-rule `perp-upright` → kit `perp-upright`: line 2 stood straight up.
+- **c7-maths-ch05-t03 · cross/corr, cross/alt.** A road crosses canal 1 at X1, where only a stub of the canal shows, marked with ∠1 and its number. At X2 a one-scale protractor sits on the road ray of ∠2. The child opens ∠2 so canal 2 runs parallel to canal 1. The run opens canal 1 to full length and zooms out to the crossing if there is one. corr: ∠2 is the corresponding angle (equal to ∠1) or the angle beside it on the same road ray (180° − ∠1). alt: ∠1 lies between the canals, and ∠2 is its alternate angle (equal) or its same-side interior angle (180° − ∠1). Either way, copying ∠1's number never passes every level. Mal-rules: `corr-position` → kit `alternate-position` (the beside angle given ∠1's number); `same-side-equal` → kit `interior-equal`; `alt-same-side` → kit `alternate-position` (the same-side angle taken as the alternate, so the real alternate is opened to 180° − ∠1).
+- **c6-maths-ch02-t01 · ends/ends.** There are 3 or 4 lettered points on one faint track. The child drags two stops onto points, or off the end of the track (that end then goes on forever), until only the named segment, ray or line is left. ◀ ▶ also move each stop. The run sends a light along every open end. Mal-rules: `ray-two-ends` → kit `ray-two-ends`; `ray-order` → kit `ray-order` (ray XY started at Y); `line-ends` → kit `longer-line` (a line stopped at its two letters, as if it had a length).
+- **Not covered:** kit `c7-maths-ch05-t02-m-same-length` (a judging belief; no producing act shows it, though the parallel run shows a short line 1 and a long line 2 with an equal gap); `c7-maths-ch05-t03-m-always-equal` (needs a pair of non-parallel lines whose angles the child would copy; no honest single act was found); skill c6-ch02-t01-s3 (counting segments) and its kit `only-sides` (it needs a join-pairs mechanic, which is a different act).
+- **Reversal:** if children solve lines by eye without using the grid or the angles, or play ends as a pick from four, drop the mode and serve those topics with ITEM-ARENA again.
+
+
+<!-- merged from inbox/r7-games-nishana2.json -->
+## `dc-r7-games-nishana2`
+
+**nishana**'s hop mode (number line) now covers two more topics that only the arena served before. There is no new mode or goal: the hop goal takes a `÷` op and decimal operands. Nothing is timed and there is no answer box: the child places the pod on the line and commits. Every existing level is unchanged. Before the change, the generator, validator, shortcut and mal set-ups were hashed for every existing nishana entry over seeds 1, 2, 3, 7 and 42 × fades 1..3 (240 hashes), and the hashes are identical after it. tests/r7-games-nishana.test.mjs pins one served levelId per existing entry kind.
+
+- **c7-maths-ch10-t02 (dividing integers).** The dividend is a flag on the line ("reach here") and the pod is the quotient. A chain of hops starts at 0 and ends at pod × divisor. A positive divisor is that many equal hops, each the pod's size ("−12 ÷ 3: 3 equal hops, 0 to −12. How big is each?"). A negative divisor is hops OF the divisor, and the pod counts them; a backward hop counts as minus ("12 ÷ (−3): how many hops of −3, 0 to 12?"). So the sign comes from which way the hops have to go. The chain is drawn live at fade 1 (the kit's own remediation: multiply back) and only after a commit at fades 2-3. Mal-rules: div-neg-neg ((−20) ÷ (−5) = −4) and div-by-size (12 ÷ (−3) = 4). Both map to the kit's m-sign-mix, whose diagnostic tags 12 ÷ (−3) = 4 too. Each covers its own sign case, so a level names exactly one. Skills s2 and s1. Not covered: m-impossible (refusing to divide gives no landing), m-div-zero (÷ 0 has no point on a line) and s3 (contexts).
+- **c7-maths-ch03-t04 (adding and subtracting decimals).** The pod starts on a decimal drawn on a line between whole numbers (2 to 4 long, a tick per tenth, a taller tick at each half). The child lands it where "2.5 + 1.25" ends, within 0.03, so a tenth off is a different answer. A subtraction may start from a whole number (5 − 1.25). Mal-rules, all from kit ids: dec-right-align → m-right-align (2.5 + 1.25 = 1.50; 0.5 + 0.25 = 0.30), dec-separate-parts → m-separate-parts (2.7 + 1.5 = 3.12), and dec-smaller-from-larger → m-smaller-from-larger (5.3 − 2.8 = 3.5; 5 − 1.25 = 4.25). A sum where a belief lands within 3 tolerances of the truth is not generated. When it fits, the line is widened so the wrong lining-up lands visibly on it. Skills s1 and s2. Not covered: s3 (estimating).
+- **Reversal.** If children at fade 1 just slide the pod until the chain meets the flag without taking in the sign, move the live chain to after the commit. If decimal landings within 0.03 prove too fiddly on phones (nudge steps are 0.025), widen the line or loosen the tolerance to 0.04.
+
+## `dc-r7-shape-word-asked` (2026-11-06)
+
+Learning's check.mjs runs Studio's W15 (named_shape_drawn) in asked mode on every script board. A line that names a square, rectangle, triangle or circle must have a board that draws that shape; otherwise the line is reworded.
+
+- All 4 live pilots pass.
+- 21 staged boards failed. Each was fixed by drawing the shape (shape@1, shade-grid@1) or by rewording the line.
+- The last 4 c4-ch01-t02 cards were cleared by Studio's "square corner" exemption (fdf0c0ee).
+
+**Reverse if** Studio's exemption list grows past a handful of phrases. Then key W15 to the board's intent instead of to words.
+
+(Written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the node without an md entry.)
+
+## `dc-r7-script-v23-simpler` (2026-11-06)
+
+Script format v2.3 (part of dc-r7-script-walk-v6-1, after director9): every explain beat, worked step, yourStep, check and then-card carries an authored `simpler` {hi, en}. Each `simpler`:
+- is at most 35 words;
+- has no "?";
+- uses only numbers from that item's givens or key;
+- never states the key (a yes/no key is exempt from the leak test).
+
+check.mjs enforces this (SIMPLER_MAX_WORDS), and Brain's validator checks the shape, so a stuck child hears an authored easier line, not a generated one.
+
+- The 4 live pilots moved to 2.3 in integration 12b (db128cebb).
+- The 30 staged scripts have `simpler` but stay at 2.2, held.
+
+**Reverse if** a director run shows `simpler` lines recited where a re-ask would serve better, or the 35-word cap cuts a needed step.
+
+## `dc-r7-answer-board` (2026-11-06)
+
+`answerBoard` {template, params} on a KeyedAsk or check:
+- is drawn only in that card's close;
+- is the one board allowed to show the key;
+- is certified by check.mjs against the key plus the why.
+
+The first one is on c4-maths-ch05-t01 s1 e3 (fraction-parts@1, 3 parts with 2 shaded), for director9's "what if" ask whose confirmed answer had no board. Brain draws it over the close (c3c63dc91).
+
+**Reverse if** a run shows an answerBoard drawn before the child answers.
+
+(Both written up by the main loop at integration 12c: Learning's inbox r7-learning-30 carried the nodes without md entries.)
+
+
+<!-- merged from inbox/r7-main-21.json -->
+## `dc-r7-script-walk-v6-2` (2026-11-07)
+
+**Studio, with Brain (G1-G5):**
+- G1: a failing first page keeps the card's board, and never fails the turn.
+- G2: W5/W8 accept the card's authored why.
+- G3: confirm-reveal fires on a correct verdict.
+- G4: a second view for every card template, built from the live card's figure.
+- G5: 'screen par dikhao' is a picture request.
+
+**Brain:**
+- Policy B is kept, with limits:
+  - T1: one close per turn; stale closes dropped.
+  - T2: each why said once.
+  - T3: the turn ends after a bridge.
+- H1: hints are authored and never leak the answer.
+- H2: asides are returned on time, about the child's words.
+- H3: code acknowledgements.
+- H4: Hindi without doubling.
+- H5: every keyed answer gets a verdict.
+
+**Learning:** the data fixes.
+
+Next: director11. The gate is unchanged, and the batch stays held.
+
+**Reverse if:** G1-G4 are in place and drawing contradictions are still above 10. Then close and picture boards are code-composed from card params only.
+
+
+<!-- merged from inbox/r7-games-parkar.json -->
+## `dc-r7-games-parkar`
+
+**parkar** (ruler-and-compass constructions, classes 6-7) is a law family. Nothing in it runs on a clock and nothing is dragged into place by eye: the child opens the compass on its ruler, swings arcs from spots, lays the protractor at a vertex or the set-square along a line, joins two spots with the ruler, and pins a spot only where two marks cross. On go the law checks the construction by plain coordinate geometry (cm).
+
+- **build** (c7-ch07-t01, c7-ch09-t02): sss (arcs of CA from A and BC from B), sas (the protractor's ray at A, an arc of CA along it), asa (two rays), rhs (the set-square's right angle at B, the hypotenuse as an arc from A); the run lays a tracing of the card's triangle over the child's (the mirror image across AB fits too). long / short: AB is laid and CA's arc swung; open the compass for the longest / shortest whole-cm third stick that still closes the frame; the run hinges the sticks (close, lie flat, gap). ssa: an arc from B cuts the ray at A twice; every triangle must be pinned.
+- **bisect** (c7-ch14-t01, c6-ch08-t03): perp (equal arcs from A and B, join the crossings; the run walks a spot along the line with a string to each end), equi (the water tank on a road, as far from one house as from the other), angle (arc from O, equal arcs from the cut-spots, join), sixty (the opening stepped once round its own arc).
+- **drop** (c7-ch07-t02): the set-square along the opposite side (extended when the foot is outside), its edge through A.
+
+Mal-rules map only to the topic's own kit beliefs: equal-sum and any-three (c7-ch07-t01), ssa (the SAS angle built at B, and only one SSA triangle pinned), compass-change / unequal-arcs (the opening changed between arcs that must be equal), median-confusion, vertical-height and inside-only (c7-ch07-t02). Not admitted: c7-ch07-t02-s3 (height in a real object / area) and c6-ch08-t03-s1 (a rectangle's diagonals): no honest construction mechanic yet. Kit beliefs with no honest set-up here: check-one-pair, aaa, order-mismatch, protractor, short-radius, midpoint-only, diag-right-angle.
+
+Reverse if a child pilot shows the crossings are tapped by trial rather than built, or the compass opening is guessed rather than read off the given lengths.
+
+
+<!-- merged from inbox/r7-games-runshots.json -->
+## `dc-r7-games-run-redraw-window`
+
+The 2D stage redraws only while a view reports `busy()`. In kon's lines view, `busy()` closed at 1.6 s after the commit, while the cross run's "off by" chip draws only after 1.6 s and its miss ring fades in until 1.7 s. On a real phone the child's missed transversal run therefore showed no "off by" at all and a faint ring. The fix keeps the stage drawing until `RUN_END` (2.0 s), and a test in tests/r7-games-kon.test.mjs reads the view's own timed beats (`api.t - truthAt > x` and `(api.t - truthAt - a) / b`) and asserts each lands before `RUN_END`. Rule for every view: a run's busy window must outlast its last timed beat. Reverse if the stage ever redraws continuously instead of on demand.
+
+
+<!-- merged from inbox/r7-learning-31.json -->
+## `dc-r7-coldstart-placement` (2026-11-07, F Learning)
+A new child's starting point per subject comes from onboarding answers, never from a quiz (main 2026-11-07 item (c); comprehension-engine-program: no quiz-style checking as the main signal).
+
+**The answers.** The parent's view is `hard | fine | easy | unsure` (parent corner FeelPicker, and App's set-up step via docs/patches/to-app/007). The child's own pick at Hello is `tricky | okay | easy`.
+
+**How they become a start** (server/placement/coldstart.js, pure):
+- Each answer is a Gaussian site on GE, relative to the class's expected level today:
+  - parent: hard −1.2 (sd 1.3), fine 0 (1.5), easy +0.5 (1.5);
+  - child: tricky −0.8 (1.8), okay 0 (2.0), easy +0.4 (2.0), with sd ×1.5 for classes 1-2.
+- The product of the sites, floored at sd 1.0 like every placement site, is combined with the class MIXTURE prior (ability.js classPriorComponents, new export; the Normal fit dragged a "fine" answer a class low).
+- The start is the posterior mean − 0.25 sd, never above the class's expected level and never below GE 0.
+
+**Where it goes.** It is written as a placement row (`result.source = 'onboarding'`). Existing readers take it unchanged:
+- next-topic.js startGE (a school chapter still wins);
+- placementGapOf → R9 foundation share;
+- kt/placement.js → the θ prior site (written once per subject, so changing an answer never stacks a second site).
+
+A subject with its own placement round keeps the round. The answers are stored in `child.onboarding_answers` (migration 047). Routes: POST /api/placement/onboarding and GET /api/placement/note.
+
+**Reverse if:** real first-week data shows answer-started children settling no faster than calendar-started ones.
+
+## `dc-r7-coldstart-refine-theta` (2026-11-07, F Learning)
+Refinement is covert. `refinedStart` reads the subject's live θ from kt_ability; once its sd ≤ 0.7 (SETTLE_SD), the start is θ.mu − 0.25 sd, and it may then sit above the class level. `store.js liveResultsOf` applies this for topic choice (reports/truth.js nextTopicForPlan) and for the conductor's placementGap (view.js).
+
+The rule is by sd, not by an observation count: kt_ability.n_obs is the current epoch's count (openEpoch folds earlier sessions into the base), while the sd carries every session. The prior alone never reaches 0.7 (the class prior combined with a site floored at 1.0 has sd > 0.8).
+
+SETTLE_SD 0.7 and Z_START 0.25 were picked by sweeping z ∈ {0, .25, .5} × settle ∈ {.5, .6, .7}. z = 0 settles one lesson sooner but starts 43% of model-population children too hard, against 36% at z = .25.
+
+**Reverse if:** θ-driven starts swing between lessons enough to repeat or skip chapters.
+
+## `dc-r7-r15-first-week` (2026-11-07, F Learning)
+Conductor rule R15 reads the view key `learner.firstWeek` (a late key). It holds `{ [subject]: { lessons, settled } }` for onboarding-started subjects, counted from live lesson topic ids and kt_ability.
+
+- For a lesson in such a subject, the first two lessons (WARM_LESSONS) are success-first with newSkillBudget 0.
+- After that, the lesson stays success-first until θ settles.
+- A subject that is settled and past FIRST_WEEK_LESSONS (5) drops out of the view.
+- A child without such subjects plans and hashes exactly as before.
+
+**Reverse if:** children in the warm lessons close "bored" more than others.
+
+## `dc-r7-placement-note` (2026-11-07, F Learning)
+The note is "what we think and what we used" (server/placement/note.js). Per subject it gives:
+- `place.start`: the topic it begins with, computed by topic choice's own rule;
+- `place.easier`: when the gap is ≥ 0.5;
+- the parent's answer (`place.parent_<v>`) and the child's pick (`place.child_<v>`);
+
+then one `place.firstweek` line at the end. These are registered SHAPES with HOW copy, so they get lineViolations (banned and locked words, digits, the exact template) and the reports-gate tests.
+
+checkPlacementNote re-derives every claim from `child.onboarding_answers` and the round's date: the start, the topic, the answer lines and the name. A failing claim is dropped, along with its subject's other lines, and never shown. It never shows a level word (lexicon: behind, on track) or a class number (rejected grade-equivalent-parent-band).
+
+**Reverse if:** parents read "starts a little before the class's chapter" as a verdict on the child.
+
+
+<!-- merged from inbox/r7-learning-32.json -->
+## `dc-r7-report-s15-rest` (2026-11-07, F Learning)
+S15 "A note about routine and rest" (PARENT-REPORT §5; RESEARCH-PROGRAM MH-M12). The pure rule lives in server/reports/rest.js; claims.js reads it from the facts and check.js re-derives it from its own lesson query.
+
+**When a line appears.** Weekly and monthly reports only (CAPS.rest 1; daily and term 0). Each line has an absolute floor and a minimum count, never an own-percentile rule (MH R9: ~46% false alarms a year).
+- `rest.afterbed`: k ≥ 3 counted lessons in the last 14 days started after the bedtime set in Parent corner (child_routine.bedtime), or after midnight and before 04:00.
+- `rest.longer`: each 14-day half has ≥ 4 closed lessons, and the recent median length is ≥ 10 min AND ≥ 1.5× the earlier one.
+
+**What a line says.** The fact plus one Parent-corner suggestion (change the bedtime; set a lesson length). The spec's "Taxila has gone back to a shorter plan" is NOT said, because no conductor rule does it yet. There are no alarm words (the lexicon bans sleep*, neend, late night*, addict*, screen time), and distress never appears here (that is the safeguarding route).
+
+**Reverse if:** replay on real families shows either rule firing for more than ~5% of children a month.
+
+## `o-r7-report-s8-s10-need-signals` (2026-11-07, F Learning)
+PARENT-REPORT S8 (How sure, B2+) and S10 (How learning with Taxila goes best lately) stay unbuilt. Their data does not exist yet:
+- **S8** needs the child's per-item "how sure" bet (pakka / shayad / andaaza), which no lesson asks or stores, and a calibration gate.
+- **S10** needs gated ISP dimensions (warm-up turns before free answers, pace, words) with consistent/changing status, and its section kill-switch studies (R-VIBE, R-VIGNETTE).
+
+S18 is deferred by the owner. All other sections (S1-S7, S9, S11-S17) exist.
+
+**Reverse if:** a lesson starts capturing how-sure bets (then build S8 on them), or ISP dimensions with their TV gates exist (then build S10).
+
+
+<!-- merged from inbox/r7-studio-26.json -->
+## `dc-r7-card-board-authored-gate`
+
+A card's own board is authored content. Its words pass W5, its separate wholes are not a count she must say (W8), its authored radii are not a circle cut by lines (W8), and its authored numbers need none of hers (W17). W9 and her counts against the board's parts still apply. Reverse if judges count a close over its own card's board that contradicts it.
+
+## `dc-r7-first-page-keep-by-ref`
+
+The seam remembers which card's ref drew the page on screen. A failing first page keeps that page when it is the same card, matched by ref, not by comparing pages (the card was drawn masked on its own line). Picture requests use the same identity. Reverse if one ref ever names two drawings in a lesson.
+
+## `dc-r7-verdict-reveal`
+
+A correct verdict reveals the card's key on its board even when her page says no digits. Brain's verdict beat carries `reveal: true` or `reveal: [values]`; Studio frees them and writes the asked mark. Reverse if a reveal reaches an unanswered card.
+
+## `dc-r7-second-view-every-template`
+
+Extends the picture second view to every card template, built from the card on screen. Wholes become strips; measured and regular shapes are unrolled onto a ruler; bars become their line; a two-scale line becomes a bar per scale. Brain's `show` request draws them too. Reverse if a view confuses more than the card's own board.

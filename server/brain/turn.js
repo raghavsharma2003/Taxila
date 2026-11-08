@@ -23,7 +23,7 @@ import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
-import { step, evidenceFrom, upcomingItem } from "../director/state.js";
+import { step, evidenceFrom, upcomingItem, scriptWhyOf } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
@@ -47,7 +47,7 @@ import { relationalSeam } from "../relational/seam.js";
 import { expressiveSeam } from "../voice/expressive/seam.js";
 import { affirmOpenerFix, fallbackReply, floorContentOf, harmTalk, safeguardLine, safetyTalkAllowed, scrubbed, textReply, UNNUMBERED_TIERS } from "./say.js";
 import { arbitrate } from "./kernel.js";
-import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE } from "./propose.js";
+import { boardItemOf, proposalsOf, turnStudioOf, whiteboardAskOf, whiteboardIntentOf, requestOfSee, RUNG_ENGINE, altViewOfRow } from "./propose.js";
 import { INTERACTIVE_ASKS } from "../forge3/compose.js";
 
 /** round 3 forge: the child asked to play / see it move and an engine (not the template rung) is in the tray: keep it. */
@@ -714,6 +714,16 @@ export async function lessonTurn(req, body, hooks = {}) {
     ? seamSafe("studio.preselectWhiteboard", () => studioSeam.preselectWhiteboard({ ...whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
       item: boardItemOf(next, kit, findItem), line: { text: "" } }), ...(turnStudioOf(kernel.arb)?.retire ? { replaces: String(turnStudioOf(kernel.arb).retire) } : {}) }), null)
     : null;
+  // v6 (Studio's alternate view on a picture ask): the take's flag rides on the move, so her line says it is a new view of the
+  // same numbers (brain/say.js)
+  // (preselectWhiteboard returns the facts row, a string: the pick's altView comes from Studio's sibling seam)
+  if (r.move?.request === "visual" && wbFirstRow && next.lastMove) {
+    // (Studio's sibling seam when it has one; else the row itself, whose bars name the second view)
+    const hint = typeof studioSeam.preselectedAltView === "function" ? seamSafe("studio.preselectedAltView", () => studioSeam.preselectedAltView(lesson.id), null) : null;
+    // (the row names the view's numbers; the seam's hint says which view: "parts", or "line" for a bar card)
+    const altView = altViewOfRow(wbFirstRow, hint) ?? hint;
+    if (altView) next.lastMove = { ...next.lastMove, altView };
+  }
   // round 7 (C1 studio-board-pointing-truth): a thing they asked to see is pointed at once only when a certified board-first
   // page is ready BEFORE her line (it lands as she speaks); otherwise the board draws later and she describes it in words
   if (!late && r.move?.request === "visual" && pointShapeFor(next.lastMove?.shape, { boardFirst: !!wbFirstRow }) !== next.lastMove?.shape) {
@@ -1053,7 +1063,7 @@ export async function lessonTurn(req, body, hooks = {}) {
       // line, is a picture OF a thing ("Aloo ka picture: brown skin, gol shape") asks the board for THAT thing (code-gated:
       // drawableSubject), so the page and her words meet; owner replay of a95d2ff1 turn 22 drew the rules table under it
       const wbAsk = whiteboardIntentOf({ lessonId: lesson.id, turn: next.turn, beat: kernel.beat ?? { id: "visual", type: "explain" }, next, kit,
-        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq } });
+        item: next.lastMove?.itemId ? findItem(next, kit, next.lastMove.itemId) : null, line: { text: teacherReply, teacherReplySeq, ...(guard?.parts ? { parts: guard.parts } : {}) } });
       const lineThing = r.move?.request === "visual" && !wbAsk.intent.request?.subject && r.move?.visual !== "game" ? pictureSubjectOf(teacherReply) : null;
       if (lineThing && drawableSubject(lineThing)) { wbAsk.intent = { ...wbAsk.intent, request: { kind: "picture", subject: lineThing } }; wbAsk.mode = "fresh"; }
       const ack = seamSafe("studio.requestIntent", () => (typeof studioSeam.requestIntent === "function"
@@ -1680,6 +1690,14 @@ export async function planTurn(base, cls, c) {
   const said = String(c.childText ?? "").toLowerCase().replace(/[^\p{L}\p{N}/.]+/gu, " ").trim();
   if (k1On() && next.lastVerdict === "not_yet" && state.lastVerdict === "correct" && said && said === state.lastAnswerSaid) next.lastVerdict = "ungraded";
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
+  // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
+  if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
+    prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
+    // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
+    // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception
+    ...((() => { const w = scriptWhyOf(kit, activeItem, next.ctx?.lang ?? "hinglish"); return w ? { why: w } : {}; })()),
+    ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: String((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
+  else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];
   if (wrongShown.length) next.lastRight = { key: String(gradedTarget.key), wrong: wrongShown };

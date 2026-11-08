@@ -20,6 +20,10 @@ import { kilaLogic } from "./kila/kila.logic.ts";
 import { ghadiLogic } from "./ghadi/ghadi.logic.ts";
 import { nakshaLogic } from "./naksha/naksha.logic.ts";
 import { gunaLogic } from "./guna/guna.logic.ts";
+import { kramLogic } from "./kram/kram.logic.ts";
+import { hissaLogic } from "./hissa/hissa.logic.ts";
+import { koshtakLogic } from "./koshtak/koshtak.logic.ts";
+import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
@@ -43,6 +47,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "kon/zone": asAny(konLogic),
   "kon/pair": asAny(konLogic),
   "kon/close": asAny(konLogic),
+  "kon/lines": asAny(konLogic),
+  "kon/cross": asAny(konLogic),
+  "kon/ends": asAny(konLogic),
   // r4-khand: Nazariya, drawn by the Khand block world
   "nazariya/views": asAny(viewsLogic),
   "nazariya/array": asAny(arrayLogic),
@@ -90,5 +97,25 @@ export const LOGIC: Record<string, AnyLogic> = {
   "guna/field": asAny(gunaLogic),
   "guna/pack": asAny(gunaLogic),
   "guna/story": asAny(gunaLogic),
+  // round 7: Kram, growing patterns and sequences (a figure grown a stage, a bag for a far stage, step / rule machines,
+  // rhythms of short and long beats, L-pieces and staircases nested into a square); never timed
+  "kram/grow": asAny(kramLogic),
+  "kram/machine": asAny(kramLogic),
+  "kram/beats": asAny(kramLogic),
+  "kram/nest": asAny(kramLogic),
+  // round 7: Hissa, multiplying and dividing fractions and decimals (a sheet folded twice, a jug poured into cups, a tenths
+  // grid and a place-value slide, stories spent and scaled); nothing runs on a clock
+  "hissa/fold": asAny(hissaLogic),
+  "hissa/pour": asAny(hissaLogic),
+  "hissa/grid": asAny(hissaLogic),
+  "hissa/story": asAny(hissaLogic),
+  // round 7: Koshtak, expressions (tray walls between terms, one lid to make a value, a bracket opened as jumps, like terms
+  // in bins); nothing runs on a clock
+  "koshtak/tray": asAny(koshtakLogic),
+  "koshtak/bin": asAny(koshtakLogic),
+  // round 7: Parkar, ruler-and-compass constructions (triangles from arcs and rays, bisectors, 60°, altitudes); never timed
+  "parkar/build": asAny(parkarLogic),
+  "parkar/bisect": asAny(parkarLogic),
+  "parkar/drop": asAny(parkarLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

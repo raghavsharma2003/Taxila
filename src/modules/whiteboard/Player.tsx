@@ -36,6 +36,8 @@ export interface WhiteboardPlayerProps {
    * carries one. An op whose clause has no onset is drawn from the anchor.
    */
   clauseOnsets?: readonly number[];
+  /** #44: a paged script's per-switch onsets from Voice's word timings (lineClock switchOnsets); beats `clauseOnsets`. */
+  switchAt?: readonly (number | undefined)[];
   /**
    * Once the drawing is done, every written word (text / label op) becomes a tap target and reports its op (W2-B fixer,
    * minor 12: "point to the stamen" style covert checks, graded by the host from the op id, never by the frame).
@@ -73,8 +75,8 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, onTapText, skin }: WhiteboardPlayerProps) {
-  const script = useMemo(() => onLineClock(given, clauseOnsets), [given, clauseOnsets]);
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin }: WhiteboardPlayerProps) {
+  const script = useMemo(() => onLineClock(given, clauseOnsets, switchAt), [given, clauseOnsets, switchAt]);
   // r4: under a skin (Kaksha) the board takes the skin's palette and faces; without one, exactly as before
   const pal = skin?.palette ?? paletteFor(script.board.ground);
   const { w: BW, h: BH } = script.board;

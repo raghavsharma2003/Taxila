@@ -772,6 +772,15 @@ export interface KeyedAsk {
   wrongIfMis?: string | null;
   /** v2.1: a follow-up card's board */
   board?: BoardRef | null;
+  /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
+   *  Absent: the close says the answer alone (never a sentence borrowed from a point or a remediation) */
+  why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 /** The closed interest list (server/persona/signals.js INTERESTS). */
 export type InterestKey = "cricket" | "football" | "space" | "animals" | "dinosaurs" | "cooking" | "cartoons" | "music" | "drawing" | "games" | "vehicles" | "nature";
@@ -780,7 +789,7 @@ export interface TopicScriptV2 {
   classLevel: number;
   /** 2, or 2.1 (dc-r7-script-walk-v3: a {friend} slot for card characters, never the child's name or "Asha"; no "?" glyph in
    *  spoken text; an ask never answered by a number its point states; worked ≤ 3 steps for classes 4-5; follow-ups carry boards) */
-  version: 2 | 2.1 | 2.2;
+  version: 2 | 2.1 | 2.2 | 2.3;
   status: "draft" | "reviewed" | "live";
   terms: Array<{ hi: string; en: string }>;
   skills: SkillScriptV2[];
@@ -802,6 +811,8 @@ export interface SkillScriptV2 {
   ladder: Array<{ itemId: string; why: string }>;
   remediation: RemediationV2[];
   bridgeToNext: Said | null;
+  /** v6: the bridge's own board, when it shows something (it is then its own segment; with none the bridge points at nothing) */
+  bridgeBoard?: BoardRef | null;
 }
 export interface ExplainBeatV2 {
   id: string;
@@ -814,13 +825,16 @@ export interface ExplainBeatV2 {
   point?: Said;
   /** the beat's keyed micro-question: the beat is done only when it is answered and judged */
   ask: KeyedAsk;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 export interface WorkedExampleV2 {
   problem: Said;
   givens: Said[];
   find: Said;
   /** every step but the last, each said with its result and why */
-  steps: Array<{ do: Said; result: string; why: Said }>;
+  steps: Array<{ do: Said; result: string; why: Said; /** v2.3: the step said smaller */ simpler?: Said }>;
   /** the last step, asked of the child (its key is that step's result) */
   yourStep: KeyedAsk;
   /** said after their step: the answer and why it is right */
@@ -837,6 +851,14 @@ export interface CheckQuestionV2 {
   targets: string;
   wrongIfMis: string;
   board?: BoardRef | null;
+  /** v6: why the key is right (see KeyedAsk.why) */
+  why?: Said;
+  /** v2.3 (director9 item 4): the answer-state board, drawn over the card's close (verdict + why, give-up, a missed card's
+   *  close), never while the card is live; it may show the key. Certified against `why` (Learning check.mjs) */
+  answerBoard?: BoardRef | null;
+  /** v2.3 (dc-r7-script-walk-v6-1): one smaller re-explanation, said on "samajh nahi aaya" / "pata nahi" instead of anything
+   *  model-written. On a card: a one-step hint toward the key that never states it. At most 2 sentences, no "?" */
+  simpler?: Said;
 }
 export interface RemediationV2 {
   targets: string;
@@ -867,4 +889,4 @@ export interface ScriptBeatOnAsk {
  * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
  */
 export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
-export interface BoardSegmentPart { part: "close" | "closed" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }
+export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }
