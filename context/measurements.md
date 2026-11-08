@@ -6173,3 +6173,17 @@ What went to zero: carried closes (from 22), canned aside facts (from 17), raw p
 Cost ~$0.936 for 1,380 calls. Reply-ready p50 2.64 s.
 
 Full write-up: docs/design/round7/judgements/director12-2026-11-08.md.
+
+
+<!-- merged from inbox/r7-games-feeta-naap.json -->
+## `ms-r7-games-feeta-naap-cert`
+
+feeta naap, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 112 of 112 feeta samples pass at p360, p412 and l1366 (the 64 new naap samples among them; the table: 3944 of 3944). Counts in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-feeta-naap.test.mjs. An independent checker (arcs sampled through the circle of their three points; the thermometer ranges parsed out of the kit's expectation text; foot-rulers laid one at a time) agrees with the law over ≥ 2000 random acts per goal; every number the law uses is asserted to be in the topic kit; each mal-rule lands on its own kit id; first levels differ across 20 children; generator and picker p95 in CPU time.
+- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 (look 1) and 17 (look 3), lanes and the eraser also dragged; every mal-rule state reached by real taps; smallest target 44 px; a separate audit of 2,535 targets (6 seeds × 3 looks × 8 goals) found none under 44 px or outside the box. Shots in docs/design/round7/games/runshots-feeta-naap/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r7-director12-drawing-replay-2026-11-08` (2026-11-08): director12's 17 picture-request rows (claude/r4-conversation e71b1caf, 2026-11-08-director12; 0-based rows) were replayed through Studio's seam on claude/r4-content (int/r6 c7fb65d36 merged). Method: the page up drawn on its own run line (the last segment of the turn before), then the picture turn on its exact text, with the card's prompt and key from the run's script. 16 of the 17 replay (steady-c5-t02 row 34 returns no take in the harness, before and after). Second views drawn: 7/16 → 15/16. Turns that bring the card back as a second page: 0 → 12. 3 of them come from S5's card words (c5-t01 steering 14 at "Wahi"; c6 steady 18 and offtopic 28 at "Paanch"). The other 9 come from director11's figure words (bar, line) in the run's old lines, which Brain rewrites from the new row. Every row main cited draws one: c4 steady 18, stuck 18 and steering 14 draw round (steady keeps the 3 shaded parts); c5-t01 stuck 18 draws example (no 8 written); c5-t02 steady 18 and stuck 18 draw parts (two unnamed bars, 0 and 1 kept); c5-t01 steering 14 turns back to the road at "Wahi"; c6 steady/offtopic 18/28 turn back at "Paanch". The one replayed row without a second view is uncited and the same before this change: offtopic-c4 row 28. There, row 26's circle was drawn by the ladder, not as the card's board, so no card ref is up. c5-t02 steady row 78 replayed through pagesBoard: null (catalogue 677×423 beside 400×300) → 2 pages, fraction-line then fraction-bars. No model calls, DATABASE_URL unset. tests/r8-director12.test.mjs pins each item.
