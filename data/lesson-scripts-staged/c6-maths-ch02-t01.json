@@ -62,7 +62,7 @@
        "en": "The bottom edge of the blackboard goes from one corner to the other corner, and we can measure it with a ruler. Is it a point or a line segment?"
       },
       "key": "line segment",
-      "why": { "hi": "kinaara ek kone se shuru hokar doosre kone par rukta hai aur ruler se naapa jaata hai, yaani do endpoints aur ek lambai", "en": "the edge starts at one corner, stops at the other and can be measured with a ruler: two endpoints and a length" },
+      "why": { "hi": "kinaara ek kone se doosre kone tak jaata hai aur ruler se naapa jaata hai, yaani do endpoints aur ek lambai", "en": "the edge starts at one corner, stops at the other and can be measured with a ruler: two endpoints and a length" },
       "accept": ["rekhakhand", "segment", "a line segment"]
      },
      "simpler": { "hi": "Bindu sirf ek jagah hai, jaise pencil ki nok ka nishaan, uski lambai nahi hoti. Rekhakhand 2 endpoints par rukta hai, isliye use ruler se naap sakte hain.", "en": "A point is just a spot, like a pencil-tip mark, with no length. A piece that stops at 2 endpoints can be measured with a ruler." }
@@ -165,8 +165,8 @@
     },
     "answer": { "hi": "(a) bindu, (b) ray, (c) line segment aur (d) line", "en": "(a) point, (b) ray, (c) line segment and (d) line" },
     "why": {
-     "hi": "har ek ke endpoints alag hain: bindu sirf ek jagah hai, ray ka ek endpoint hai, line segment ke do aur line ka koi nahi",
-     "en": "each has a different number of endpoints: a point is only a position, a ray has one endpoint, a line segment two and a line none"
+     "hi": "har ek ke endpoints alag hain: bindu ek jagah hai, ray ka ek endpoint, line segment ke do, line ka koi nahi",
+     "en": "each differs in endpoints: a point is just a position, a ray has one, a line segment two, a line none"
     },
     "board": { "template": "compare@1", "params": { "left": { "title": "P aur laser", "items": ["P: bindu", "laser: ray"] }, "right": { "title": "kinaara", "items": ["do endpoints", "rekhakhand"] } } }
    },
@@ -215,6 +215,10 @@
       "hi": "Line ke dono taraf ke arrows batate hain ki line kaagaz ke bahar bhi chalti rehti hai. Drawing chhoti ho ya lambi, woh usi line ka sirf ek hissa hai. Rekhakhand do endpoints par rukta hai, isliye sirf usi ko naap sakte hain.",
       "en": "The arrows at both ends of a line say it goes on beyond the paper. Whether the drawing is short or long, it is only a part of the same line. A line segment stops at two endpoints, so only it can be measured."
      },
+     "simpler": {
+      "hi": "Line ke arrows batate hain ki woh aage chalti rehti hai. Rekhakhand do endpoints par rukta hai, isliye sirf usi ko naap sakte hain.",
+      "en": "A line's arrows say it goes on and on. A line segment stops at two endpoints, so only it can be measured."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "line", "items": ["dono taraf arrows", "naap nahi sakte"] }, "right": { "title": "rekhakhand", "items": ["do endpoints", "naap sakte"] } } },
      "then": {
       "prompt": {
@@ -237,6 +241,10 @@
       "hi": "Torch jahan hai, wahin se roshni shuru hoti hai, yahi ray ka endpoint hai. Roshni kahan khatam hoti hai, yeh koi nahi bata sakta, woh aage chalti rehti hai. Isliye ray ka sirf ek endpoint hota hai.",
       "en": "The light starts where the torch is; that is the ray's endpoint. Nobody can say where the light ends; it keeps going. So a ray has only one endpoint."
      },
+     "simpler": {
+      "hi": "Roshni torch se shuru hoti hai, yahi endpoint hai. Woh kahin khatam nahi hoti. Isliye ray ka sirf ek endpoint hai.",
+      "en": "The light starts at the torch; that is the endpoint. It never ends. So a ray has only one endpoint."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "torch", "items": ["roshni shuru"] }, "right": { "title": "roshni", "items": ["aage chalti rehti"] } } },
      "then": {
       "prompt": {
@@ -244,7 +252,7 @@
        "en": "A lighthouse's light starts at the lighthouse and keeps going out over the sea. How many endpoints does it have?"
       },
       "key": "1",
-      "why": { "hi": "roshni sirf lighthouse par shuru hoti hai, aur samundar ki taraf kahin rukti nahi", "en": "the light starts only at the lighthouse and never stops out over the sea" },
+      "why": { "hi": "roshni sirf lighthouse par shuru hoti hai aur samundar ki taraf kahin rukti nahi, toh 1 endpoint", "en": "the light starts only at the lighthouse and never stops out over the sea, so 1 endpoint" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
@@ -341,7 +349,7 @@
      "ask": {
       "prompt": { "hi": "Ray KL ke naam mein bhi do letters hain. Iske kitne endpoints hain?", "en": "Ray KL's name also has two letters. How many endpoints does it have?" },
       "key": "1",
-      "why": { "hi": "ray KL sirf K se shuru hoti hai, L par rukti nahi, aage chalti rehti hai", "en": "ray KL starts only at K; it does not stop at L but keeps going" },
+      "why": { "hi": "ray KL sirf K se shuru hoti hai, L par rukti nahi, aage chalti rehti hai, toh 1 endpoint", "en": "ray KL starts only at K; it does not stop at L but keeps going, so 1 endpoint" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2"
@@ -411,7 +419,7 @@
       "en": "A ray starts at point G and passes through H. How many endpoints does this ray have?"
      },
      "key": "1",
-     "why": { "hi": "ray sirf G par shuru hoti hai, aur H se guzarkar aage chalti rehti hai", "en": "the ray starts only at G, then passes through H and keeps going" },
+     "why": { "hi": "ray sirf G par shuru hoti hai aur H se guzarkar aage chalti rehti hai, toh 1 endpoint", "en": "the ray starts only at G, passes through H and keeps going, so 1 endpoint" },
      "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
      "targets": "c6-maths-ch02-t01-m-ray-two-ends",
      "wrongIfMis": "2",
@@ -448,6 +456,10 @@
       "hi": "Socho A par ek torch hai jo B ki taraf chamakti hai: ray AB. B par doosri torch A ki taraf chamakti hai: ray BA. Dono ki roshni alag disha mein jaati hai, aur naam ka pehla letter batata hai ki torch kahan hai.",
       "en": "Picture a torch at A shining towards B; that is ray AB. A second torch at B shines towards A; that is ray BA. The two lights go in different directions, and the first letter of the name tells where the torch is."
      },
+     "simpler": {
+      "hi": "A par torch B ki taraf chamke toh ray AB. B par torch A ki taraf chamke toh ray BA. Pehla letter batata hai torch kahan hai.",
+      "en": "A torch at A shining to B is ray AB. A torch at B shining to A is ray BA. The first letter tells where the torch is."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "torch A par", "items": ["B ki taraf"] }, "right": { "title": "torch B par", "items": ["A ki taraf"] } } },
      "then": {
       "prompt": { "hi": "Ray DE mein torch kis point par hogi, D ya E?", "en": "In ray DE, at which point is the torch, D or E?" },
@@ -467,6 +479,10 @@
       "hi": "Ray AB mein A endpoint hai, matlab roshni wahin se shuru hoti hai. B sirf raaste par ek point hai: roshni B se guzarti hai, wahan rukti nahi, aage chalti rehti hai.",
       "en": "In ray AB, A is the endpoint, meaning the light starts there. B is just a point on the way: the light passes through B, does not stop there, and keeps going."
      },
+     "simpler": {
+      "hi": "Ray AB mein roshni A se shuru hoti hai. B raaste ka ek point hai, roshni wahan rukti nahi.",
+      "en": "In ray AB the light starts at A. B is just a point on the way; the light does not stop there."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "A", "items": ["endpoint"] }, "right": { "title": "B", "items": ["raaste par"] } } },
      "then": {
       "prompt": {
@@ -474,7 +490,7 @@
        "en": "In a game a laser comes out of U, passes through V and keeps going. How many endpoints does this ray have?"
       },
       "key": "1",
-      "why": { "hi": "laser sirf U se nikalta hai, aur V par rukta nahi, aage chalta rehta hai", "en": "the laser comes out only at U and does not stop at V but keeps going" },
+      "why": { "hi": "laser sirf U se nikalta hai aur V par rukta nahi, aage chalta rehta hai, toh 1 endpoint", "en": "the laser comes out only at U and does not stop at V but keeps going, so 1 endpoint" },
       "accept": ["ek", "one", "1 endpoint", "ek endpoint"],
       "targets": "c6-maths-ch02-t01-m-ray-two-ends",
       "wrongIfMis": "2",
@@ -598,7 +614,7 @@
     },
     "answer": { "hi": "6 bus stops ko jodne ke liye 15 taarein yaani 15 line segments banenge", "en": "15 wires, that is 15 line segments, join the 6 bus stops" },
     "why": {
-     "hi": "har jodi ki ek hi taar hai, koi jodi do baar nahi gini, aur koi teen bus stops ek seedhi line par nahi hain",
+     "hi": "har jodi ki ek hi taar hai, koi jodi do baar nahi gini, aur koi teen bus stops ek seedh mein nahi",
      "en": "each pair has exactly one wire, no pair was counted twice, and no three bus stops are on one straight line"
     },
     "board": { "template": "shape@1", "params": { "shape": "hexagon" } }
@@ -625,7 +641,7 @@
       "en": "An octagon has 8 corners. Join every two corners with a line segment. How many line segments are there in all?"
      },
      "key": "28",
-     "why": { "hi": "pehle kone se 7 nayi jodi, phir 6, 5, 4, 3, 2, 1, aur 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28", "en": "the first corner gives 7 new pairs, then 6, 5, 4, 3, 2, 1, and 7 + 6 + 5 + 4 + 3 + 2 + 1 = 28" },
+     "why": { "hi": "pehla kona 7 nayi jodiyan deta hai, phir 6, 5, 4, 3, 2, 1, aur inka jod 28 hai", "en": "the first corner gives 7 new pairs, then 6, 5, 4, 3, 2, 1, and these add to 28" },
      "accept": ["28 line segments", "attaais", "twenty-eight"],
      "targets": "c6-maths-ch02-t01-m-only-sides",
      "wrongIfMis": "8",
@@ -645,6 +661,10 @@
      "say": {
       "hi": "Sirf kinaare ginna kaafi nahi hai. A ko dekho, woh C ke saath bhi ek jodi hai, aur AC beech se jaata hai. Pehle A ki saari jodiyan likho, phir B ki sirf nayi, phir C ki nayi.",
       "en": "Counting only the edges is not enough. Look at A: it also makes a pair with C, and AC goes across the middle. First list all of A's pairs, then only B's new ones, then C's new ones."
+     },
+     "simpler": {
+      "hi": "Sirf kinaare mat gino. A aur C bhi ek jodi hai. Pehle A ki saari jodiyan likho, phir B ki nayi, phir C ki nayi.",
+      "en": "Do not count only the edges. A and C are a pair too. First list all of A's pairs, then B's new ones, then C's new ones."
      },
      "board": { "template": "shape@1", "params": { "shape": "quadrilateral", "names": ["A", "B", "C", "D"] } },
      "then": {

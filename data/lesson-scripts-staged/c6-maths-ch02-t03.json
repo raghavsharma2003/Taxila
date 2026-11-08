@@ -153,8 +153,8 @@
     },
     "answer": { "hi": "angle PQR 70° ka hai", "en": "angle PQR is 70°" },
     "why": {
-     "hi": "centre vertex Q par aur baseline QR par rakhne se ginti QR ke 0 se shuru hui, aur patla angle 90° se kam hi hota hai",
-     "en": "with the centre on vertex Q and the baseline on QR, the counting started from the 0 on QR, and a narrow angle is always less than 90°"
+     "hi": "centre Q par, baseline QR par: ginti QR ke 0 se shuru hui, aur patla angle 90° se kam hota hai",
+     "en": "centre on Q, baseline on QR: counting starts from the 0 on QR, and a narrow angle is under 90°"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 70, "name": "angle PQR" }], "arm": "QR" } }
    },
@@ -197,6 +197,10 @@
       "hi": "Protractor ke saare numbers centre mark ke chaaron taraf bane hain, isliye centre mark angle ke vertex ke theek upar rakho, yaani naam ke beech wale letter par. Centre kahin aur ho toh reading kuch degree galat aati hai.",
       "en": "All the protractor's numbers are drawn round its centre mark, so put the centre mark exactly over the angle's vertex, the middle letter of its name. If the centre is anywhere else, the reading comes out a few degrees wrong."
      },
+     "simpler": {
+      "hi": "Protractor ke numbers centre mark ke chaaron taraf hain. Isliye centre mark ko vertex ke theek upar rakho, warna reading galat aati hai.",
+      "en": "The protractor's numbers go round its centre mark. So put the centre mark exactly on the vertex, or the reading comes out wrong."
+     },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 45, "name": "angle" }] } },
      "then": {
       "prompt": { "hi": "Angle STU naapna hai aur baseline arm TU par hai. Centre mark kis point par hona chahiye?", "en": "Angle STU is to be measured and the baseline is on arm TU. On which point must the centre mark be?" },
@@ -215,6 +219,10 @@
      "say": {
       "hi": "Degree ghumaav naapti hai, arms ki lambai ya protractor ka size nahi. Chhota ho ya bada, har protractor aadhe chakkar ko 180 barabar hisson mein baantta hai, toh ek hi angle par dono ki reading barabar aati hai.",
       "en": "A degree measures turn, not the length of the arms or the size of the protractor. Small or big, every protractor shares a half turn into 180 equal parts, so on one angle both give the same reading."
+     },
+     "simpler": {
+      "hi": "Degree ghumaav naapti hai, protractor ka size nahi. Har protractor aadhe chakkar ke 180 barabar hisse karta hai, toh reading same aati hai.",
+      "en": "A degree measures turn, not the protractor's size. Every protractor splits a half turn into 180 equal parts, so the reading is the same."
      },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "ek hi angle" }] } },
      "then": {
@@ -359,8 +367,8 @@
     },
     "answer": { "hi": "angle XYZ 145° ka hai", "en": "angle XYZ is 145°" },
     "why": {
-     "hi": "ginti arm YZ ke 0 se shuru hui, chauda angle 90° se zyada hota hai, aur 35 doosre scale ki reading hai, 180 − 145",
-     "en": "the counting started from the 0 on arm YZ, a wide angle is more than 90°, and 35 is the other scale's reading, 180 − 145"
+     "hi": "ginti YZ ke 0 se shuru hui, chauda angle 90° se zyada hai, aur 35 doosre scale par hai: 180 − 145",
+     "en": "counting started from the 0 on YZ, a wide angle is over 90°, and 35 is the other scale: 180 − 145"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 145, "name": "angle XYZ" }], "arm": "YZ" } }
    },
@@ -402,6 +410,10 @@
      "say": {
       "hi": "Pehle socho, angle patla hai ya chauda. Phir baseline wali arm ke 0 se ginti shuru karo aur usi scale par doosri arm tak chalo. Patla angle ho toh reading 90° se kam honi chahiye.",
       "en": "First think: is the angle narrow or wide? Then start counting from the 0 on the baseline arm and follow that same scale to the other arm. For a narrow angle the reading must be under 90°."
+     },
+     "simpler": {
+      "hi": "Pehle dekho, angle patla hai ya chauda. Baseline wali arm ke 0 se gino. Patla angle ho toh reading 90° se kam hogi.",
+      "en": "First see if the angle is narrow or wide. Count from the 0 on the baseline arm. A narrow angle reads under 90°."
      },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "patla angle" }] } },
      "then": {
@@ -531,8 +543,8 @@
     },
     "answer": { "hi": "P ko Q se jodne par angle PQR 125° ka ban jaata hai", "en": "joining P to Q makes angle PQR of 125°" },
     "why": {
-     "hi": "dono arms vertex Q se nikalti hain, aur doosre scale par P ke paas 55 dikhta hai, jo 180 − 125 hai, toh chauda angle sahi bana",
-     "en": "both arms leave the vertex Q, and the other scale shows 55 at P, which is 180 − 125, so the wide angle is right"
+     "hi": "dono arms Q se nikalti hain, doosre scale par P ke paas 55 hai, 180 − 125, toh chauda angle sahi hai",
+     "en": "both arms leave Q, and the other scale shows 55 at P, 180 − 125, so the wide angle is right"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 125, "name": "angle PQR" }], "arm": "QR" } }
    },
@@ -573,6 +585,10 @@
       "hi": "Arm jis taraf hai, usi taraf ka 0 dhoondho aur ginti wahin se shuru karo. Bindu lagane ke baad dekho: chhota degree ho toh angle patla dikhna chahiye, bada ho toh chauda.",
       "en": "Find the 0 on the side the arm points to and start counting there. After marking the dot, look: a small number of degrees should look narrow, a big one wide."
      },
+     "simpler": {
+      "hi": "Arm jis taraf hai, usi taraf ke 0 se gino. Phir dekho: chhota degree patla dikhe, bada degree chauda.",
+      "en": "Count from the 0 on the side the arm points to. Then check: a small number of degrees looks narrow, a big one wide."
+     },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 30, "name": "patla angle" }], "arm": "arm" } },
      "then": {
       "prompt": { "hi": "Arm daayein ki taraf hai. 65° ke liye galti se baayein 0 wale scale par 65 dekha. Bana angle kitne degree ka hai?", "en": "The arm points right. For 65°, 65 was read by mistake on the left-hand 0 scale. How many degrees is the drawn angle?" },
@@ -591,6 +607,10 @@
      "say": {
       "hi": "Kaagaz ki do patti socho jo ek pin se B par judi hain. Ek patti BC par padi hai, doosri ghoomkar bindu A tak jaati hai. Dono patti pin se hi nikalti hain, isliye nayi arm hamesha vertex B se kheenchte hain.",
       "en": "Think of two paper strips pinned together at B. One strip lies on BC, the other swings round to dot A. Both strips leave from the pin, so the new arm is always drawn from the vertex B."
+     },
+     "simpler": {
+      "hi": "Do patti B par pin se judi hain. Dono pin se hi nikalti hain, isliye nayi arm hamesha vertex B se kheencho.",
+      "en": "Two strips are pinned at B. Both leave from the pin, so always draw the new arm from the vertex B."
      },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 40, "name": "angle ABC" }], "vertex": "B", "arm": "BC" } },
      "then": {

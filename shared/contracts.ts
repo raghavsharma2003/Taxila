@@ -869,6 +869,8 @@ export interface RemediationV2 {
   board?: BoardRef | null;
   /** the follow-up card, keyed */
   then: KeyedAsk;
+  /** v2.3 (Learning, director10): a smaller, plainer restatement of `say`, said when the child is still lost after it */
+  simpler?: Said;
 }
 /** On a move the Director took from a script (T2): which beat it is (Studio reads intent.boardRef / intent.scriptBeat). */
 export interface ScriptBeatRef {
@@ -881,6 +883,9 @@ export interface ScriptBeatRef {
 /** A scripted beat as the board ask names it (v5: a card's own board says so; its answers are all the board withholds). */
 export interface ScriptBeatOnAsk {
   scriptId: string; beatId: string; kind: ScriptBeatRef["kind"]; ownBoard?: true; answers?: string[];
+  /** v6.2 G3 (Studio's shape): on a right answer's verdict segment, reveal the withheld value on this board. `true` reveals
+   *  answers[0] (the key); a list gives the values. Never sent on a wrong or missed verdict. */
+  reveal?: true | string[];
 }
 /**
  * v5 B1 (dc-r7-script-walk-v5; Studio's segments): a part of her line spoken over its own board. intent.boardRef /
@@ -888,5 +893,7 @@ export interface ScriptBeatOnAsk {
  * (`atClause`: the same point as brain/clauses.js numbers the reply). `segmentPlan` names the parts in order (a closure, the
  * beat, the card) so a line Studio replaces can be re-placed (brain/propose.js segmentsAt).
  */
-export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk }
+/** `ofCard` (App's LESSON-REPLAY-d10 3b): this page's board is the open card's own board (true) or another (false); absent when no
+ *  card is open — the same field rides on the intent for its first page. A new card is always on the last page. */
+export interface BoardSegment { atChar: number; atClause?: number | null; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; ofCard?: boolean }
 export interface BoardSegmentPart { part: "close" | "closed" | "bridge" | "body" | "card"; boardRef: BoardRef; scriptBeat: ScriptBeatOnAsk; said?: string[] }

@@ -158,7 +158,7 @@
        "hi": "pizza ke teeno tukde barabar nahi hain, aur ek-tihaai 3 barabar tukdon mein se ek hota hai",
        "en": "the pizza's three pieces are not equal, and one-third is one of 3 equal pieces"
       },
-      "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":3,"equal":false,"title":"Pizza"}]} }
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Pizza"}]} }, "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":3,"equal":false,"title":"Pizza"}]} }
      },
      "simpler": {
       "hi": "Ek-tihaai tabhi hota hai jab 3 tukde bilkul barabar hon. Cake A ke tukde chhote-bade hain, Cake B ke sab barabar hain.",
@@ -349,7 +349,7 @@
       "hi": "Upar khaye hue tukde aate hain aur neeche saare tukde. Dono numbers ke beech ek line kheencho.",
       "en": "The eaten pieces go on top and all the pieces go at the bottom. Draw a line between the two numbers."
      },
-     "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":2,"whole":"bar"} }
+     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 0, "whole": "bar"} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":2,"whole":"bar"} }
     },
     "answer": {
      "hi": "barfi ka 2/3 hissa khaya gaya",
@@ -387,24 +387,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "wrongIfMis": "Yes",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Laddoo",
-        "items": [
-         "3 tukde"
-        ]
-       },
-       "right": {
-        "title": "Tukde",
-        "items": [
-         "ek bada",
-         "do chhote"
-        ]
-       }
-      }
-     },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3, "equal": false, "title": "Laddoo"}]} },
      "why": {
       "hi": "laddoo ke 3 tukde barabar nahi hain, ek bada aur do chhote",
       "en": "the laddoo's 3 pieces are not equal: one big and two small"
@@ -430,16 +413,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "1/2",
-     "board": {
-      "template": "shade-grid@1",
-      "params": {
-       "rows": 1,
-       "cols": 3,
-       "shade": 1,
-       "labels": false,
-       "hideResult": true
-      }
-     },
+     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 0, "whole": "bar"} },
      "why": {
       "hi": "chocolate ke 3 barabar tukde the aur unme se 1 khaya gaya, yaani 1/3",
       "en": "the chocolate had 3 equal pieces and 1 of them was eaten, that is 1/3"
@@ -466,24 +440,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "wrongIfMis": "Yes",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Cake",
-        "items": [
-         "4 tukde"
-        ]
-       },
-       "right": {
-        "title": "Tukde",
-        "items": [
-         "2 bade",
-         "2 chhote"
-        ]
-       }
-      }
-     },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}]} },
      "why": {
       "hi": "cake ke 4 tukde barabar nahi hain, aur ek-chauthaai 4 barabar tukdon mein se 1 hota hai",
       "en": "the cake's 4 pieces are not equal, and one quarter is 1 of 4 equal pieces"
@@ -563,24 +520,7 @@
       ],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
       "wrongIfMis": "Yes",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Roti",
-         "items": [
-          "2 tukde"
-         ]
-        },
-        "right": {
-         "title": "Tukde",
-         "items": [
-          "ek bada",
-          "ek chhota"
-         ]
-        }
-       }
-      },
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "title": "Aadha"}]} },
       "why": {
        "hi": "roti ke dono tukde barabar nahi hain, aur aadha 2 barabar tukdon mein se ek hota hai",
        "en": "the roti's two pieces are not equal, and a half is one of 2 equal pieces"
@@ -626,16 +566,7 @@
       ],
       "targets": "c4-maths-ch05-t01-m-part-part",
       "wrongIfMis": "3/1",
-      "board": {
-       "template": "shade-grid@1",
-       "params": {
-        "rows": 1,
-        "cols": 4,
-        "shade": 3,
-        "labels": false,
-        "hideResult": true
-       }
-      },
+      "board": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 0, "whole": "bar"} },
       "why": {
        "hi": "bar ke 4 barabar tukde the aur unme se 3 khaye gaye, yaani 3/4",
        "en": "the bar had 4 equal pieces and 3 of them were eaten, that is 3/4"
@@ -733,7 +664,7 @@
        "hi": "12 laddoo ke 2 barabar group mein har group mein 6 aate hain, 2 × 6 = 12",
        "en": "12 laddoos in 2 equal groups give 6 in each group, 2 × 6 = 12"
       },
-      "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
+      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 4, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
      },
      "simpler": {
       "hi": "8 laddoo ko 2 barabar group mein baanto, har group mein 4 aate hain. Ek group hi 8 ka aadha hai.",
@@ -779,7 +710,7 @@
        "hi": "21 kele 3 barabar group mein baantne par har group mein 7 aate hain, 3 × 7 = 21",
        "en": "21 bananas shared into 3 equal groups give 7 in each group, 3 × 7 = 21"
       },
-      "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":7} }
+      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 7, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":7} }
      },
      "simpler": {
       "hi": "1/3 ka matlab hai 3 barabar group banao aur 1 group lo. 6 kele 3 group mein baante, toh ek group mein 2.",
@@ -825,7 +756,7 @@
        "hi": "32 kanche 4 barabar group mein baantne par har group mein 8 aate hain, 4 × 8 = 32",
        "en": "32 marbles shared into 4 equal groups give 8 in each group, 4 × 8 = 32"
       },
-      "answerBoard": { "template": "equal-groups@1", "params": {"groups":4,"each":8} }
+      "board": { "template": "shade-grid@1", "params": {"rows": 4, "cols": 8, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":4,"each":8} }
      },
      "simpler": {
       "hi": "Neeche ka 4 kehta hai, 4 barabar group banao. 12 kanche 4 group mein, toh ek group mein 3, wahi jawab.",
@@ -885,7 +816,7 @@
       "hi": "15 pencil ek-ek karke 3 group mein baari-baari se rakho. Jab saari khatam ho jaayein, ek group gin lo.",
       "en": "Put the 15 pencils one by one into the 3 groups in turn. When they are all used up, count one group."
      },
-     "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":5} }
+     "board": { "template": "shade-grid@1", "params": {"rows": 5, "cols": 3, "shade": 0, "labels": false, "hideResult": true} }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":5} }
     },
     "answer": {
      "hi": "15 pencil ka 1/3 = 5 pencil",
@@ -930,24 +861,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "1/2",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "18 laddoo",
-        "items": [
-         "3 plate",
-         "barabar"
-        ]
-       },
-       "right": {
-        "title": "Ravi",
-        "items": [
-         "1 plate"
-        ]
-       }
-      }
-     },
+     "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 6, "shade": 0, "labels": false, "hideResult": true} },
      "why": {
       "hi": "18 laddoo 3 barabar plate mein the, har plate mein 6; Ravi ne unme se 1 plate li, yaani 1/3",
       "en": "the 18 laddoos were on 3 equal plates, 6 on each; Ravi took 1 of them, that is 1/3"
@@ -974,23 +888,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "wrongIfMis": "Yes",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "16 kanche",
-        "items": [
-         "7 + 3 + 3 + 3"
-        ]
-       },
-       "right": {
-        "title": "7 wala group",
-        "items": [
-         "7 kanche"
-        ]
-       }
-      }
-     },
+     "board": { "template": "shade-grid@1", "params": {"rows": 2, "cols": 8, "shade": 0, "labels": false, "hideResult": true} },
      "why": {
       "hi": "group 7, 3, 3, 3 barabar nahi; 16 ke ek-chauthaai mein har group 4 ka hota, 4 × 4 = 16",
       "en": "groups 7, 3, 3, 3 are not equal; quarters of 16 would be 4 in each group, 4 × 4 = 16"
@@ -1059,16 +957,7 @@
       ],
       "targets": "c4-maths-ch05-t01-m-part-part",
       "wrongIfMis": "1/3",
-      "board": {
-       "template": "shade-grid@1",
-       "params": {
-        "rows": 1,
-        "cols": 4,
-        "shade": 1,
-        "labels": false,
-        "hideResult": true
-       }
-      },
+      "board": { "template": "equal-groups@1", "params": {"groups": 4, "each": 5, "hideResult": true} },
       "why": {
        "hi": "20 kele 4 barabar thailon mein the, har thaile mein 5; unme se 1 thaila diya gaya, yaani 1/4",
        "en": "the 20 bananas were in 4 equal bags, 5 in each; 1 bag was given away, that is 1/4"
@@ -1124,23 +1013,7 @@
       ],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
       "wrongIfMis": "Yes",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "12 pencil",
-         "items": [
-          "6 + 3 + 3"
-         ]
-        },
-        "right": {
-         "title": "6 wala group",
-         "items": [
-          "6 pencil"
-         ]
-        }
-       }
-      },
+      "board": { "template": "shade-grid@1", "params": {"rows": 2, "cols": 6, "shade": 0, "labels": false, "hideResult": true} },
       "why": {
        "hi": "group 6, 3, 3 barabar nahi; 12 ke ek-tihaai mein har group 4 ka hota, 3 × 4 = 12",
        "en": "groups 6, 3, 3 are not equal; thirds of 12 would be 4 in each group, 3 × 4 = 12"
@@ -1242,7 +1115,7 @@
        "hi": "wahi patti 4 barabar hisson mein bate toh har hissa 1/4 hai, yaani 1/2 ka bhi aadha",
        "en": "when the same bar is in 4 equal parts, each part is 1/4, half of 1/2"
       },
-      "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":2,"shade":1,"label":"1/2"},{"parts":4,"shade":1,"label":"1/4"}]} }
+      "board": { "template": "fraction-line@1", "params": {"dens": [2, 4], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":2,"shade":1,"label":"1/2"},{"parts":4,"shade":1,"label":"1/4"}]} }
      },
      "simpler": {
       "hi": "Patti ke 2 barabar hisse hain, aur rangin hissa beech tak jaata hai. Yeh aadha hai, yaani 1/2.",
@@ -1292,7 +1165,7 @@
        "hi": "ek jaise pizza mein 2 slice wala 1/2 slice, 4 slice wale 1/4 slice se do guna bada hai",
        "en": "in identical pizzas, a 1/2 slice out of 2 is twice as big as a 1/4 slice out of 4"
       },
-      "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":4,"title":"1/4"},{"parts":2,"title":"1/2"}]} }
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}, {"parts": 2}]} }, "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":4,"title":"1/4"},{"parts":2,"title":"1/2"}]} }
      },
      "simpler": {
       "hi": "Wahi patti ab 4 barabar hisson mein hai. Har hissa 1/4 hai, jo aadhe se chhota hai.",
@@ -1356,7 +1229,7 @@
        "hi": "ek hi roti ke 4 hisse 2 hisson se chhote hote hain, toh 1/4, 1/2 se chhota hai",
        "en": "the same roti in 4 parts gives smaller parts than in 2, so 1/4 is smaller than 1/2"
       },
-      "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":4,"title":"1/4"},{"parts":2,"title":"1/2"}]} }
+      "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}, {"parts": 2}]} }, "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":4,"title":"1/4"},{"parts":2,"title":"1/2"}]} }
      },
      "simpler": {
       "hi": "Ek hi patti ke 2 hisse karo toh tukda bada, 4 hisse karo toh tukda chhota. Zyada hisse matlab chhota tukda.",
@@ -1439,7 +1312,7 @@
       "hi": "3 hisson wala ek tukda aur 4 hisson wala ek tukda socho. Kam hisson wala tukda bada hota hai.",
       "en": "Think of one piece out of 3 parts and one piece out of 4 parts. The piece from fewer parts is bigger."
      },
-     "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":1,"whole":"bar"} }
+     "board": { "template": "fraction-parts@1", "params": {"parts": 3, "shade": 0, "whole": "bar"} }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts":3,"shade":1,"whole":"bar"} }
     },
     "answer": {
      "hi": "chocolate bar ka 1/3 bada hai",
@@ -1447,7 +1320,7 @@
     },
     "why": {
      "hi": "wahi bar 4 hisson mein bate toh har hissa 3 hisson wale hisse se chhota hota hai, chahe 4 bada number ho",
-     "en": "when the same bar is split into 4 parts each part is smaller than a part out of 3, even though 4 is a bigger number"
+     "en": "split into 4 parts, each part of the same bar is smaller than a part out of 3, though 4 is bigger"
     },
     "board": {
      "template": "compare@1",
@@ -1484,23 +1357,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "1/3",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Ek roti",
-        "items": [
-         "3 barabar tukde"
-        ]
-       },
-       "right": {
-        "title": "Doosri roti",
-        "items": [
-         "2 barabar tukde"
-        ]
-       }
-      }
-     },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 3}, {"parts": 2}]} },
      "why": {
       "hi": "ek jaisi roti mein 2 barabar tukdon wala 1/2 tukda, 3 tukdon wale 1/3 se bada hai",
       "en": "in same-size rotis, a 1/2 piece out of 2 equal pieces is bigger than a 1/3 piece out of 3"
@@ -1528,23 +1385,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "Yes",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Ek bar",
-        "items": [
-         "4 bachchon mein"
-        ]
-       },
-       "right": {
-        "title": "Doosri bar",
-        "items": [
-         "2 bachchon mein"
-        ]
-       }
-      }
-     },
+     "board": { "template": "fraction-line@1", "params": {"dens": [4, 2], "from": 0, "to": 1} },
      "why": {
       "hi": "4 bachchon mein bati bar ka har hissa 1/4 hai, 2 bachchon wale 1/2 ka aadha, toh Farhan ko kam mila",
       "en": "each share of a bar split among 4 is 1/4, half of the 1/2 share among 2, so Farhan gets less"
@@ -1569,25 +1410,7 @@
      ],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "1/2, 1/3, 1/4",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Ek hi cake",
-        "items": [
-         "1/2",
-         "1/4",
-         "1/3"
-        ]
-       },
-       "right": {
-        "title": "Kram",
-        "items": [
-         "sabse chhota pehle"
-        ]
-       }
-      }
-     },
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 1, "label": "?"}, {"parts": 3, "shade": 1, "label": "?"}, {"parts": 2, "shade": 1, "label": "?"}]} },
      "why": {
       "hi": "ek hi cake ke jitne zyada barabar tukde, har tukda utna chhota, toh kram 1/4, 1/3, 1/2 hai",
       "en": "the more equal pieces of one cake, the smaller each, so the order is 1/4, 1/3, 1/2"
@@ -1667,28 +1490,12 @@
       ],
       "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
       "wrongIfMis": "Yes",
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "Ek tarbooz",
-         "items": [
-          "6 barabar slice"
-         ]
-        },
-        "right": {
-         "title": "Doosre tarbooz",
-         "items": [
-          "3 barabar slice"
-         ]
-        }
-       }
-      },
+      "board": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1} },
       "why": {
        "hi": "ek jaise tarbooz mein 6 slice wala 1/6 slice, 3 slice wale 1/3 slice ka aadha hai",
        "en": "in identical watermelons, a 1/6 slice out of 6 is half a 1/3 slice out of 3"
       },
-      "answerBoard": { "template": "wholes@1", "params": {"wholes":[{"parts":6,"title":"1/6"},{"parts":3,"title":"1/3"}]} },
+      "answerBoard": { "template": "fraction-line@1", "params": {"dens": [3, 6], "from": 0, "to": 1, "marks": [[1, 3], [1, 6]]} },
       "simpler": {
        "hi": "Dono tarbooz ek jaise hain. Jis tarbooz ke zyada slice bane, uska har slice chhota hota hai.",
        "en": "Both watermelons are the same. The one made into more slices has smaller slices."

@@ -107,7 +107,7 @@
       "accept": ["40", "40 centimetre", "40 centimetres"],
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
       "wrongIfMis": "kabhi nahi",
-      "why": { "hi": "daayein kinaare par doori 4 cm hai, aur har 1 cm ghatne mein 10 cm lagte hain, 4 × 10 = 40", "en": "the gap at the right edge is 4 cm, and every 1 cm of shrinking takes 10 cm, 4 × 10 = 40" }
+      "why": { "hi": "daayein kinaare par doori 4 cm hai, aur har 1 cm ghatne mein 10 cm lagte hain, 4 × 10 = 40", "en": "the right-edge gap is 4 cm, and each 1 cm of shrinking takes 10 cm: 4 × 10 = 40" }
      },
      "simpler": { "hi": "Yahan doori 6 cm se ghat kar 4 cm ho gayi. Ghatti doori matlab lines paas aa rahi hain, aage jaakar zaroor milengi.", "en": "Here the gap shrinks from 6 cm to 4 cm. A shrinking gap means the lines are coming closer, and further on they will surely meet." }
     }
@@ -146,8 +146,8 @@
     },
     "answer": { "hi": "haan, dono shelves parallel hain", "en": "yes, the two shelves are parallel" },
     "why": {
-     "hi": "dono ek hi disha mein hain aur doori har jagah 25 cm hai, aur shelf ki lambai se parallel hone par koi farak nahi padta",
-     "en": "both go in the same direction and the gap is 25 cm everywhere, and a shelf's length makes no difference to being parallel"
+     "hi": "dono ek hi disha mein hain aur doori har jagah 25 cm hai; shelf ki lambai se koi farak nahi padta",
+     "en": "both go in the same direction and the gap is 25 cm everywhere; a shelf's length does not affect being parallel"
     },
     "board": { "template": "compare@1", "params": { "left": { "title": "upar wali shelf", "items": ["90 cm", "doori 25 cm"] }, "right": { "title": "neeche wali shelf", "items": ["60 cm", "doori 25 cm"] } } }
    },
@@ -196,6 +196,7 @@
       "hi": "Chhote segment ko usi disha mein aage badhao, woh lamba hota jaata hai par doori wahi rehti hai. Lambai toh hum kabhi bhi badha sakte hain, isliye parallel hona sirf disha aur doori se tay hota hai.",
       "en": "Extend the short segment in the same direction: it keeps getting longer but the gap stays the same. We can always change a length, so being parallel is decided only by direction and gap."
      },
+     "simpler": { "hi": "Segment ko usi disha mein badhao, doori wahi rehti hai. Parallel hona sirf disha aur doori se tay hota hai, lambai se nahi.", "en": "Extend the segment in the same direction and the gap stays the same. Being parallel depends only on direction and gap, not length." },
      "board": { "template": "compare@1", "params": { "left": { "title": "chhote segment ko", "items": ["aage badhao"] }, "right": { "title": "doori", "items": ["wahi rehti hai"] } } },
      "then": {
       "prompt": { "hi": "AB 3 cm, CD 3 cm, EF 9 cm. AB se CD ki doori 2 cm se 1 cm hai, EF tak har jagah 2 cm. AB ke parallel kaun, CD ya EF?", "en": "AB, CD, EF are 3 cm, 3 cm, 9 cm. Gap AB to CD: 2 cm then 1 cm; AB to EF: 2 cm everywhere. Parallel to AB: CD or EF?" },
@@ -215,6 +216,7 @@
       "hi": "Page ka kinaara line ka ant nahi hai, line aage bhi chalti hai. Agar doori ghat rahi hai, toh aage chalte-chalte woh khatam ho jaayegi, aur wahin dono lines milengi.",
       "en": "The edge of the page is not the end of a line; the line goes on. If the gap is shrinking, it will run out further along, and right there the two lines will meet."
      },
+     "simpler": { "hi": "Line page ke kinaare par khatam nahi hoti. Doori ghat rahi hai, toh aage jaakar dono lines milengi.", "en": "A line does not end at the page edge. If the gap is shrinking, the two lines will meet further on." },
      "board": { "template": "compare@1", "params": { "left": { "title": "doori ghat rahi", "items": ["lines milengi"] }, "right": { "title": "page ka kinaara", "items": ["line ka ant nahi"] } } },
      "then": {
       "prompt": { "hi": "Do lines ki doori ek jagah 8 cm hai, 10 cm aage 7 cm. Isi tarah ghatti rahe toh 7 cm wali jagah se kitna aage milengi?", "en": "Two lines are 8 cm apart, and 7 cm apart 10 cm further on. Shrinking so, how far past the 7 cm point do they meet?" },
@@ -223,7 +225,7 @@
       "targets": "c7-maths-ch05-t02-m-not-meet-on-page",
       "wrongIfMis": "kabhi nahi",
       "board": { "template": "compare@1", "params": { "left": { "title": "ek jagah", "items": ["doori 8 cm"] }, "right": { "title": "10 cm aage", "items": ["doori 7 cm"] } } },
-      "why": { "hi": "7 cm wali jagah par doori 7 cm bachi hai, aur har 1 cm ghatne mein 10 cm lagte hain, 7 × 10 = 70", "en": "at the 7 cm point the gap left is 7 cm, and every 1 cm of shrinking takes 10 cm, 7 × 10 = 70" },
+      "why": { "hi": "wahan doori 7 cm hai, aur har 1 cm ghatne mein 10 cm lagte hain: 7 × 10 = 70", "en": "there the gap is 7 cm, and each 1 cm of shrinking takes 10 cm: 7 × 10 = 70" },
       "simpler": { "hi": "Har 10 cm par doori 8 se 7, yaani ek cm ghatti hai. Bachi 7 cm doori khatam hone mein aise kitne 10 cm lagenge, woh gino.", "en": "Every 10 cm the gap drops from 8 to 7, that is by one cm. Count how many such 10 cm steps it takes to use up the remaining 7 cm." }
      }
     }
@@ -273,7 +275,7 @@
       "prompt": { "hi": "In dono lines ko milne wale bindu ke aar-paar aage badhao, toh ek crossing banegi. Crossing par bane angles mein se kitne angle 90° ke honge?", "en": "Extend both lines through the meeting point and a crossing forms. How many of the angles at the crossing will be 90°?" },
       "key": "4",
       "accept": ["chaar", "chaaron", "four", "all four", "sab", "4 angle", "chaaron angle"],
-      "why": { "hi": "aar-paar badhane par chaar angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives four angles, and each is 180° − 90° = 90°" }
+      "why": { "hi": "aar-paar badhane par 4 angle bante hain, aur har ek 180° − 90° = 90° hai", "en": "extending through gives 4 angles, and each is 180° − 90° = 90°" }
      },
      "simpler": { "hi": "Jab do lines milkar kona bilkul 90° ka banati hain, tab woh perpendicular kehlati hain. Kone par bana chhota nishaan isi samkon ko dikhata hai.", "en": "When two lines meet and make a corner of exactly 90°, they are called perpendicular. The small mark at the corner shows this right angle." }
     },
@@ -295,7 +297,7 @@
       "accept": ["do", "two", "2 bhujayein", "do bhujayein", "two sides"],
       "targets": "c7-maths-ch05-t02-m-perp-upright",
       "wrongIfMis": "0",
-      "why": { "hi": "square ke har kone par samkon hai, toh chuni bhuja se judi dono bhujayein perpendicular hain", "en": "every corner of a square is a right angle, so both sides joined to the chosen side are perpendicular" }
+      "why": { "hi": "square ke har kone par samkon hai, toh chuni bhuja se judi 2 bhujayein perpendicular hain", "en": "every corner of a square is a right angle, so the 2 sides joined to the chosen side are perpendicular" }
      },
      "simpler": { "hi": "Square ko ghumao toh bhi uske kone samkon hi rehte hain. Tircha dikhne se angle nahi badalta.", "en": "Even when you turn a square, its corners stay right angles. Looking tilted does not change the angle." }
     },
@@ -420,6 +422,7 @@
       "hi": "Set-square ka kona samkon hai. Use kitna bhi ghumao, kone ka angle wahi rehta hai. Isliye tirchhi crossing par set-square ko bhi ghuma kar rakho, kona fit ho jaaye toh lines perpendicular hain.",
       "en": "The corner of a set-square is a right angle. However much you turn it, the corner's angle stays the same. So on a tilted crossing, turn the set-square too; if the corner fits, the lines are perpendicular."
      },
+     "simpler": { "hi": "Set-square ka kona ghumane par bhi samkon rehta hai. Tirchhi crossing par use ghuma kar rakho; kona fit ho toh lines perpendicular hain.", "en": "A set-square's corner stays a right angle when turned. On a tilted crossing, turn it too; if the corner fits, the lines are perpendicular." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "set-square ka kona" }] } },
      "then": {
       "prompt": { "hi": "Crossing A: ek line khadi, ek leti, angle 85°. Crossing B: dono lines tirchhi, angle 90°. Perpendicular kaunsi, A ya B?", "en": "Crossing A: one line upright, one flat, 85°. Crossing B: both tilted, 90°. Which is perpendicular, A or B?" },
@@ -439,6 +442,7 @@
       "hi": "Perpendicular hone ke liye sirf milne ka angle dekho. Kisi line ko lamba ya chhota karo, milne ka angle wahi rehta hai, aur woh 90° ho toh bas.",
       "en": "For perpendicular, look only at the angle where the lines meet. Make a line longer or shorter and the meeting angle stays the same; if it is 90°, that is all it takes."
      },
+     "simpler": { "hi": "Sirf milne ka angle dekho. Line lambi ya chhoti karne se woh nahi badalta; 90° ho toh lines perpendicular hain.", "en": "Look only at the meeting angle. Making a line longer or shorter does not change it; if it is 90°, the lines are perpendicular." },
      "board": { "template": "compare@1", "params": { "left": { "title": "line lamba karo", "items": ["angle wahi"] }, "right": { "title": "perpendicular", "items": ["angle 90°"] } } },
      "then": {
       "prompt": { "hi": "Joda P: 5 cm aur 5 cm ke segment, 80° par milte. Joda Q: 2 cm aur 9 cm ke, 90° par. Perpendicular kaunsa, P ya Q?", "en": "Pair P: 5 cm and 5 cm segments meeting at 80°. Pair Q: 2 cm and 9 cm, at 90°. Which is perpendicular, P or Q?" },
@@ -633,6 +637,7 @@
       "hi": "Samkon jaanchne wala kona, chahe set-square ka ho ya mode hue kaagaz ka, crossing ke hisaab se ghumate hain. Lines kitni bhi tirchhi hon, kona fit ho jaaye toh woh perpendicular hain.",
       "en": "A right-angle corner, whether a set-square's or a folded paper's, is turned to match the crossing. However tilted the lines are, if the corner fits, they are perpendicular."
      },
+     "simpler": { "hi": "Samkon wala kona crossing ke hisaab se ghumao. Kona fit ho jaaye toh lines perpendicular hain, chahe kitni bhi tirchhi hon.", "en": "Turn the right-angle corner to match the crossing. If it fits, the lines are perpendicular, however tilted they are." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "kaagaz ka kona" }] } },
      "then": {
       "prompt": { "hi": "Tirchhi crossing par ghumaya kaagaz ka kona: ek line kinaare par, doosri kinaare se 3° andar. Angle kitna hai?", "en": "A turned paper corner on a tilted crossing: one line on an edge, the other 3° inside the other edge. What is the angle?" },
@@ -650,6 +655,7 @@
       "hi": "Jaanch ke liye do door-door jagah doori naapo. Doori thodi si bhi alag ho, toh lines aage jaakar milengi, chahe page par na milein.",
       "en": "To check, measure the gap at two places far apart. If the gap differs even a little, the lines will meet further on, even if they don't meet on the page."
      },
+     "simpler": { "hi": "Do door-door jagah doori naapo. Doori zara bhi alag ho, toh lines aage jaakar milengi.", "en": "Measure the gap at two places far apart. If it differs even a little, the lines will meet further on." },
      "board": { "template": "compare@1", "params": { "left": { "title": "door-door", "items": ["doori naapo"] }, "right": { "title": "doori alag", "items": ["aage milengi"] } } },
      "then": {
       "prompt": { "hi": "Do lines ki doori baayein 7 cm aur daayein 6.8 cm hai. Parallel banane ke liye daayein doori kitni aur badhani hogi?", "en": "Two lines are 7 cm apart on the left and 6.8 cm on the right. By how much must the right gap grow to make them parallel?" },

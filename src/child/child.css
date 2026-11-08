@@ -426,3 +426,11 @@
 /* r7: the older family's identity emblems (pictos.tsx Emblem): a chamfered dark tile, the glyph in the look's hue */
 .avatar-em { display: inline-grid; place-items: center; flex: none; background: var(--k-deep, var(--surface-2)); border: 1px solid currentColor;
   clip-path: polygon(22% 0, 100% 0, 100% 78%, 78% 100%, 0 100%, 0 22%); box-shadow: inset 0 0 18px color-mix(in srgb, currentColor 22%, transparent); }
+
+/* r7 (Learning to-app/007) "Maths feels…" at Hello, classic look */
+.feel-row { display: grid; gap: 8px; margin-top: 12px; width: 100%; }
+.feel-label { margin: 0; font-weight: 600; }
+.feel-faces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.feel-btn { display: grid; justify-items: center; gap: var(--space-1); min-height: 88px; padding: var(--space-2); border-radius: var(--radius-tile); border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.feel-btn[aria-checked="true"] { border: 3px solid var(--nib); background: var(--nib-soft); }
+.feel-got { margin: 0; font-size: 14px; }

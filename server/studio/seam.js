@@ -1055,7 +1055,10 @@ export const studioSeam = {
       // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
       p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
+      // (App's T55: the page left on screen — a paged board's LAST page, not the whole turn's pages)
+      L.wbPrevPage = r.lastPage ?? r.script;
       // (director10 G1: the card that drew the page on screen; a second view or a kept page names no card of its own)
+      p.lastPage = L.wbPrevPage;
       L.wbPrevRef = p.refKey = r.lastRef !== undefined ? r.lastRef : r.source === "kept" ? (L.wbPrevRef ?? null)
         : r.source === "first" && r.by === "script" && !r.altView ? boardFirst.refKey(ask?.intent?.boardRef) : null;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
@@ -1093,7 +1096,7 @@ export const studioSeam = {
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
     // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
-    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], keep: onPage, keepRef: L.wbPrevRef ?? null }) : null;
+    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], keep: onPage ? L.wbPrevPage ?? onPage : null, keepRef: L.wbPrevRef ?? null }) : null;
     if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     const ctxFirst = boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] });
     const first = boardFirst.takePreselected(ask, ctxFirst);
@@ -1353,7 +1356,7 @@ export const studioSeam = {
     if (on) retirePiece(L, on.intentId, "replaced");
     L.pieces.set(intentId, p);
     L.onScreen = intentId;
-    L.wbPrev = null; L.wbPrevRef = null; L.wbUnder = [];
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbUnder = [];
     const slot = slotOf(p, "revealed");
     push(L, { t: "slot", slot });
     push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "image", facts: p.facts } });
@@ -1366,7 +1369,7 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     if (!L) return false;
     if (L.onScreen) retirePiece(L, L.onScreen, "cleared");
-    L.wbPrev = null; L.wbPrevRef = null; L.wbUnder = []; L.wbBeatHead = null;
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbUnder = []; L.wbBeatHead = null;
     return true;
   },
 
@@ -1401,7 +1404,7 @@ function boardBack(L, on, line, withhold, move) {
   const g = gatedSlot(L, prev, prev.state, "on_screen");
   if (!g) return null;
   retirePiece(L, on.intentId, "replaced");
-  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbPrevRef = prev.refKey ?? null; L.wbUnder = [...prev.artifact.script.ops];
+  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbPrevPage = prev.lastPage ?? prev.artifact.script; L.wbPrevRef = prev.refKey ?? null; L.wbUnder = [...prev.artifact.script.ops];
   L.shown = { intentId: prev.intentId, revealing: false };
   prev.lines = [...(prev.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
   traceRecord("studio.board_back", { intentId: prev.intentId, from: on.intentId });

@@ -46,7 +46,9 @@ test("Hello's AI disclosure is unchanged and comes before anything she chooses",
   assert.doesNotMatch(hello.slice(hello.indexOf('case "greet"'), hello.indexOf('case "ai"')), /finish\(|setCard\("(picture|likes|change|hi)"\)/);
   // she picks what she likes when the parent chose none; then "say hi" (Skip always there); then the lesson
   assert.match(hello, /afterPicture = \(\) => setCard\(parentPicks\.length \? "likes" : "change"\)/);
-  assert.match(hello, /afterLikes = \(picks: string\[\]\) => { setLikes\(picks\); setCard\("hi"\); }/);
+  // r7 (Learning to-app/007): then "how school feels" (three faces, never a test), then "say hi"
+  assert.match(hello, /afterLikes = \(picks: string\[\]\) => { setLikes\(picks\); setCard\("feel"\); }/);
+  assert.match(hello, /const afterFeel = \(\) => {[\s\S]*?setCard\("hi"\);\s*};/);
   const hi = hello.slice(hello.indexOf('case "hi"'));
   assert.match(hi, /data-testid="hello-skip"/);
   assert.match(hello, /if \(r === "none"\) setPrefs\({ quiet: true }\)/, "no mic: this device starts in tap-and-type");

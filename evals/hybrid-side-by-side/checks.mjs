@@ -39,8 +39,10 @@ export function withheldStated(text, screen) {
 export function boardNouns(board) {
   const p = paramsOf(board);
   const t = String(board?.template ?? "").split("@")[0];
-  const words = [p.whole, p.shape, p.name, p.left?.title, p.right?.title, ...(p.left?.items ?? []), ...(p.right?.items ?? []), ...(p.names ?? [])].filter((x) => typeof x === "string").join(" ").toLowerCase();
-  const kind = { "fraction-line": "line rekha number", "fraction-parts": "parts hisse tukde", "equal-groups": "group samooh plate", measured: "shape bhuja side", shape: "shape", compare: "" }[t] ?? "";
+  const words = [p.whole, p.shape, p.name, p.left?.title, p.right?.title, ...(p.left?.items ?? []), ...(p.right?.items ?? []), ...(p.names ?? []),
+    ...(Array.isArray(p.wholes) ? p.wholes.map((w) => w?.title) : [])].filter((x) => typeof x === "string").join(" ").toLowerCase();
+  const kind = { "fraction-line": "line rekha number", "fraction-parts": "parts hisse tukde", "equal-groups": "group samooh plate", measured: "shape bhuja side", shape: "shape", compare: "",
+    "fraction-bars": "bar patti strip parts hisse tukde", wholes: "parts hisse tukde" }[t] ?? "";
   return `${words} ${kind}`;
 }
 const OBJECTS = ["pizza", "roti", "cake", "laddoo", "chocolate", "patti", "strip", "bottle", "circle", "line", "rekha", "rectangle", "triangle", "square", "hexagon", "pentagon",

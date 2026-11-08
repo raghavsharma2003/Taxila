@@ -140,8 +140,8 @@
     },
     "answer": { "hi": "25° acute hai, 90° right angle hai aur 145° obtuse hai", "en": "25° is acute, 90° is a right angle and 145° is obtuse" },
     "why": {
-     "hi": "type sirf angle ke naap se tay hota hai: 90° se kam acute, theek 90° right, aur 90° se 180° ke beech obtuse",
-     "en": "the type is decided only by the measure: less than 90° is acute, exactly 90° is right, and between 90° and 180° is obtuse"
+     "hi": "type sirf naap se tay hota hai: 90° se kam acute, theek 90° right, aur 90° se 180° ke beech obtuse",
+     "en": "the type depends only on the measure: under 90° is acute, exactly 90° is right, between 90° and 180° is obtuse"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 25 }, { "deg": 90 }, { "deg": 145 }] } }
    },
@@ -153,7 +153,7 @@
       "en": "A square book lies tilted on the table. How many degrees is the angle at the book's corner?"
      },
      "key": "90°",
-     "why": { "hi": "square kitaab ka har kona right angle hai, aur tirchhi rakhne se kona utna hi khula rehta hai", "en": "every corner of a square book is a right angle, and lying tilted leaves it open just as much" },
+     "why": { "hi": "square kitaab ka har kona 90° hai, aur tirchhi rakhne se kona utna hi khula rehta hai", "en": "every corner of a square book is 90°, and lying tilted leaves it open just as much" },
      "accept": ["90", "90 degree", "90 degrees", "right angle"],
      "targets": "c6-maths-ch02-t04-m-orientation",
      "wrongIfMis": "acute",
@@ -189,6 +189,10 @@
      "say": {
       "hi": "Kaagaz ko do baar modkar ek right angle tester banao. Ise seedha ya tirchha, kisi bhi kone par rakho. Tester kone par poora baith jaaye toh woh kona 90° hai, chahe kaise bhi ghooma ho.",
       "en": "Fold a sheet of paper twice to make a right-angle tester. Put it on any corner, straight or tilted. If the tester fits the corner exactly, that corner is 90°, however it is turned."
+     },
+     "simpler": {
+      "hi": "Kaagaz do baar modo, right angle tester ban jaata hai. Tester kone par poora baith jaaye toh kona 90° hai, chahe tirchha ho.",
+      "en": "Fold paper twice to make a right-angle tester. If it fits a corner exactly, that corner is 90°, even when tilted."
      },
      "board": { "template": "shape@1", "params": { "shape": "square", "copies": 2, "names": ["seedha", "tirchha"] } },
      "then": {
@@ -346,8 +350,8 @@
      "en": "angle AOC = 180° is a straight angle, angle BOC = 130° is obtuse, and the outside angle of AOB, 310°, is reflex"
     },
     "why": {
-     "hi": "ulti disha wali arms 180° banati hain, andar aur bahar wala angle milkar 360° hote hain, aur 180° se 360° ke beech ka angle reflex hota hai",
-     "en": "arms pointing opposite ways make 180°, the inside and outside angles add to 360°, and an angle between 180° and 360° is reflex"
+     "hi": "ulti disha ki arms 180° banati hain, andar aur bahar milkar 360° hain, aur 180° se 360° ke beech reflex hai",
+     "en": "opposite arms make 180°, the inside and outside angles add to 360°, and an angle between 180° and 360° is reflex"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 50, "name": "angle AOB" }, { "deg": 180, "name": "angle AOC" }] } }
    },
@@ -410,6 +414,10 @@
       "hi": "Angle-maker ko dheere-dheere kholo: pehle acute, phir right, phir obtuse. Aur kholo toh dono arms ek seedh mein aa jaati hain. Ghumaav gaayab nahi hua, yeh aadha chakkar hai, 180°.",
       "en": "Open the angle-maker slowly: first acute, then right, then obtuse. Open it more and the two arms come into one line. The turn has not vanished; it is half a turn, 180°."
      },
+     "simpler": {
+      "hi": "Angle-maker kholte jao: acute, right, obtuse. Arms ek seedh mein aa jaayein toh yeh aadha chakkar hai, 180°.",
+      "en": "Keep opening the angle-maker: acute, right, obtuse. When the arms come into one line, it is half a turn, 180°."
+     },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "aadha chakkar" }] } },
      "then": {
       "prompt": {
@@ -431,6 +439,10 @@
      "say": {
       "hi": "Ghadi mein 2 baje suiyon ke beech chhota angle 60° hai. Ab bahar ka bada hissa doosre rang se bharo. Dono hisse milkar poora chakkar, 360°, banate hain, toh bahar wala 300° hai, reflex angle.",
       "en": "At 2 o'clock the small angle between the hands is 60°. Now shade the big outside part in another colour. The two parts together make a full turn, 360°, so the outside one is 300°, a reflex angle."
+     },
+     "simpler": {
+      "hi": "2 baje chhota angle 60° hai. Dono hisse milkar 360° hain, toh bahar wala 300° hai, reflex.",
+      "en": "At 2 o'clock the small angle is 60°. The two parts make 360°, so the outside one is 300°, reflex."
      },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "2 baje" }] } },
      "then": {
@@ -567,7 +579,7 @@
      {
       "do": { "hi": "60° ka type dekho", "en": "See the type of 60°" },
       "result": "chhota angle acute hai",
-      "why": { "hi": "60° toh 90° se kam hai, aur yaad rakho, jo angle 180° se zyada aur 360° se kam ho woh reflex hota hai", "en": "60° is less than 90°, and remember, an angle more than 180° and less than 360° is reflex" },
+      "why": { "hi": "60° toh 90° se kam hai, aur jo angle 180° se zyada aur 360° se kam ho woh reflex hota hai", "en": "60° is less than 90°, and remember, an angle more than 180° and less than 360° is reflex" },
       "simpler": { "hi": "60° page ke kone se kam khula hai. Kone se kam khula angle acute hota hai.", "en": "60° opens less than a page corner. An angle that opens less than a corner is acute." }
      }
     ],
@@ -581,7 +593,7 @@
     },
     "answer": { "hi": "chhota angle 60° acute hai aur bada angle 300° reflex hai", "en": "the smaller angle is 60°, acute, and the larger angle is 300°, reflex" },
     "why": {
-     "hi": "ghadi ka har khaana 30° ka hai, chhota aur bada angle milkar 360° banate hain, aur 180° se zyada wala bada angle reflex hota hai",
+     "hi": "ghadi ka har khaana 30° hai, dono angle milkar 360° banate hain, aur 180° se bada angle reflex hota hai",
      "en": "each clock space is 30°, the smaller and larger angles add to 360°, and the larger one, more than 180°, is reflex"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60, "name": "10 baje" }] } }
@@ -629,6 +641,10 @@
       "hi": "Ek patti ko seedhi sadak maan lo, uska angle 180° hai. Doosri patti ko beech mein pin karke ghumao: ek kona khulta hai toh bagal wala utna hi band hota hai. Dono milkar hamesha 180° rehte hain.",
       "en": "Take one strip as a straight road; its angle is 180°. Pin a second strip in the middle and turn it: as one corner opens, the neighbouring one closes by the same amount. Together they always stay 180°."
      },
+     "simpler": {
+      "hi": "Seedhi patti 180° hai. Beech mein doosri patti ghumao: ek kona khulta hai toh bagal wala utna hi band hota hai. Dono milkar 180° rehte hain.",
+      "en": "A straight strip is 180°. Turn a second strip in the middle: as one corner opens, the other closes as much. Together they stay 180°."
+     },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi sadak" }] } },
      "then": {
       "prompt": {
@@ -650,6 +666,10 @@
      "say": {
       "hi": "Ghadi mein 3 baje chhota angle 90° hai. Bahar ka bada hissa doosre rang se bharo. Dono hisse milkar 360° banate hain, toh bada angle 270° hai, reflex.",
       "en": "At 3 o'clock the small angle is 90°. Shade the big outside part in another colour. The two parts together make 360°, so the large angle is 270°, reflex."
+     },
+     "simpler": {
+      "hi": "3 baje chhota angle 90° hai. Dono hisse milkar 360° hain, toh bada angle 270° hai, reflex.",
+      "en": "At 3 o'clock the small angle is 90°. The two parts make 360°, so the large angle is 270°, reflex."
      },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 90, "name": "3 baje" }] } },
      "then": {

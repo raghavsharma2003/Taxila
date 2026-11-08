@@ -42,3 +42,9 @@ export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
   }
   return { kit, rows, plans, last: plans.at(-1) };
 }
+
+/**
+ * A run's own copy of a lesson script, marked `recordedRun`: Brain's validator checks it as that run's validator did (a why over
+ * WHY_MAX_WORDS, refused since 2.3's rule, was then silently left unsaid by scriptWhyOf), so the replay walks what the run walked.
+ */
+export const runScriptOf = (run, T) => ({ ...JSON.parse(readFileSync(new URL(`../../evals/hybrid-side-by-side/results/${run}/scripts/${T}.json`, import.meta.url), "utf8")), recordedRun: run });

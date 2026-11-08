@@ -214,6 +214,36 @@ export function v21Errors(s) {
 export const THEN_MAX = 120;
 export const SAY_MAX_WORDS = 45;
 export const SIMPLER_MAX_WORDS = 35;
+/**
+ * The posed figure of a board: what is drawn, never what answers (shade, marks, labels, hops). Equivalent drawings of
+ * one figure compare equal, so a card may pose it one way and reveal it another:
+ *   fractions   fraction-bars@1 parts and a 0-1 fraction-line@1's dens are both "these (distinct) denominators"
+ *   a shape     area-grid@1 (w = h → square), shape@1 and measured@1 are "this kind of shape" (its unknown side is the
+ *               answer, so dimensions are not part of the figure)
+ *   groups      equal-groups@1 is its total (groups × each), the same as a shade-grid@1 of that many cells (the
+ *               undivided collection); a card whose prompt gives the groups keeps them
+ * PURE.
+ */
+export function figureOf(board) {
+  if (!board?.template) return null;
+  const p = board.params ?? {};
+  const sorted = (xs) => [...new Set([...xs].map(Number))].sort((a, b) => a - b);   // distinct denominators
+  const kind = (k) => ({ rect: "rectangle", rectangle: "rectangle", square: "square" }[k] ?? k);
+  switch (board.template) {
+    case "fraction-bars@1": return `fractions${JSON.stringify(sorted((p.bars ?? []).map((x) => x.parts)))}`;
+    case "fraction-line@1": return (p.from ?? 0) === 0 && (p.to ?? 1) === 1 ? `fractions${JSON.stringify(sorted(p.dens ?? [p.den]))}` : `line${JSON.stringify([p.dens ?? [p.den], p.from, p.to])}`;
+    case "area-grid@1": return `shape["${Number(p.w) === Number(p.h) ? "square" : "rectangle"}"]`;
+    case "shape@1": case "measured@1": return `shape["${kind(p.shape)}"]`;
+    case "fraction-parts@1": return `parts${JSON.stringify([p.parts, p.whole ?? null])}`;
+    case "wholes@1": return `wholes${JSON.stringify((p.wholes ?? []).map((w) => [w.parts, w.equal !== false]))}`;
+    case "equal-groups@1": return `groups[${Number(p.groups) * Number(p.each)}]`;
+    case "shade-grid@1": return `groups[${Number(p.rows) * Number(p.cols)}]`;
+    case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
+    default: return `${board.template}${JSON.stringify(p)}`;
+  }
+}
+/** state.js scriptWhyOf drops a why longer than this. */
+export const WHY_MAX_WORDS = 22;
 const EN_WORDS = /\b(each|is|are|piece|pieces|gap|gaps|the|and|of|part|parts|so|left|more|less)\b/i;
 const numsOf = (t) => (String(t ?? "").match(/\d+(?:\/\d+|\.\d+)?/g) ?? []).sort().join(",");
 /**
@@ -267,6 +297,24 @@ export function v22Errors(s) {
       if (!String(c.why?.hi ?? "").trim() || !String(c.why?.en ?? "").trim()) { e.push(at(`${where}: an authored why { hi, en } for its key`)); continue; }
       if (/^\s*kyunki\b/i.test(c.why.hi)) e.push(at(`${where}.why: starts with "kyunki" (the runtime adds it)`));
       if (/^\s*toh\b/i.test(c.why.hi)) e.push(at(`${where}.why: a clause with no leading "Toh"`));
+    }
+    // director10 cause #2 (Studio, main 2026-11-08): an ask poses the figure its answerBoard reveals; the board on screen
+    // while it is asked (its own `board`, else its beat's) must draw that same figure, unmarked. Compared by figureOf.
+    const shown = [...k.explain.filter((b) => b.ask?.answerBoard).map((b) => [`${b.id}.ask`, b.ask, b.ask.board ?? b.board]),
+      ...k.checks.map((c, i) => [`checks[${i}]`, c, c.board]).filter(([, c]) => c.answerBoard),
+      ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board]).filter(([, c]) => c?.answerBoard),
+      ...(we.yourStep?.answerBoard ? [["workedExample.yourStep", we.yourStep, we.yourStep.board ?? we.board]] : [])];
+    for (const [where, c, board] of shown) {
+      const a = figureOf(c.answerBoard), b = figureOf(board);
+      if (a !== b) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
+    }
+    // integration 13 (Brain, state.js scriptWhyOf): the runtime silently drops a why over WHY_MAX_WORDS, so the checker
+    // refuses one: every authored why (cards, worked example, its steps and yourStep) in hi and en
+    const whys = [...cards.map(([where, c]) => [where, c.why]), ["workedExample", we.why], ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.why]),
+      ...(we.yourStep?.why ? [["workedExample.yourStep", we.yourStep.why]] : [])];
+    for (const [where, w] of whys) for (const lang of ["hi", "en"]) {
+      const n = String(w?.[lang] ?? "").split(/\s+/).filter(Boolean).length;
+      if (n > WHY_MAX_WORDS) e.push(at(`${where}.why${lang === "en" ? " (en)" : ""}: ${n} words > ${WHY_MAX_WORDS} (the runtime drops it)`));
     }
     if (k.bridgeToNext && !k.bridgeBoard?.template) e.push(at("bridgeToNext: a bridgeBoard { template, params } it points at"));
     // director9 (dc-r7-script-walk-v6-1, format v2.3, additive): an authored smaller re-explanation on every beat, worked

@@ -190,3 +190,102 @@ test("main, G2 addendum: W8 takes a two-bar compare whose bars ARE the two fract
   const r3 = await certifyBoardRef(B("1/4", "1/8", "1/2"), { line: "1/4 aur 1/8 mein kaunsa bada hai?", withhold: { values: [] } });
   assert.equal(r3.ok, false);
 });
+
+test("App's T55 (steady-c6, director10 index 54): page 0 that draws the board already up — T52's last page, the 6 cm square — is kept still, not redrawn with its perimeter walk crushed", async () => {
+  const { isMotionOp } = await import("../shared/whiteboard.js");
+  const T = "c6-maths-ch06-t01", s = lesson(T);
+  const rect12 = { template: "measured@1", params: { shape: "rect", unit: "m", w: 12, h: 5, trace: true } };
+  const sq6 = { template: "measured@1", params: { shape: "square", unit: "cm", w: 6, h: 6, trace: true } };
+  const rect7 = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 7, h: 3, trace: true } };
+  const t52 = "Haan, sahi hai, kyunki 2 × (12 + 5) = 2 × 17 = 34 m. Yeh square hai. Iski chaaron bhujayein 6 cm ki hain, sab barabar. Chaar baar 6 cm jodne ki jagah seedha 4 × bhuja kar sakte ho. Jawab ek lambai hai, isliye cm mein aayega, square cm mein nahi. Toh is varg ka parimap kitna hai?";
+  const a = await s.turn(rect12, sb("e2"), t52, { segments: [{ atChar: 53, atClause: 1, boardRef: sq6, scriptBeat: sb("e3") }] });
+  assert.equal(a.state, "revealed");
+  assert.equal(a.artifact.script.switches?.length, 1, "T52: two pages, the square last");
+  const before = BF.pageTimingCounts().firstSame;
+  const t54 = "36 cm sahi nahi hai. Yeh aayat 7 cm lamba aur 3 cm chauda hai. Andar 1 cm ke tiles bichhao toh 7 × 3 = 21 tiles, woh area hai, varg cm mein. Dhaaga kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo, jawab cm mein. Ab tak samajh aaya?";
+  const v = await s.turn(sq6, sb("e3"), t54, { segments: [{ atChar: 21, atClause: 1, boardRef: rect7, scriptBeat: sb("rem:c6-maths-ch06-t01-m-area-perimeter", "remediation") }] });
+  assert.equal(v.state, "revealed");
+  assert.equal(BF.pageTimingCounts().firstSame, before + 1, "page 0 is the square already up, kept");
+  const sw = v.artifact.script.switches[0].atMs;
+  const p0 = v.artifact.script.ops.filter((o) => o.id.startsWith("a.") && o.op !== "erase");
+  assert.ok(p0.length && p0.every((o) => o.endMs <= 200 && !isMotionOp(o)), "page 0 is shown complete at once, no motion");
+  assert.ok(sw > 200);
+  // the second page is the 7 × 3 rectangle, its walk intact
+  assert.ok(v.artifact.script.ops.some((o) => o.id.startsWith("b.") && isMotionOp(o)), "page 1 keeps its motion");
+});
+
+test("App's T55, the other half: a page whose retimed drawing runs past its switch is drawn STILL (its motion ops dropped), never squeezed into the last 120 ms", async () => {
+  const { isMotionOp } = await import("../shared/whiteboard.js");
+  const T = "c6-maths-ch06-t01", s = lesson(T);
+  const sq6 = { template: "measured@1", params: { shape: "square", unit: "cm", w: 6, h: 6, trace: true } };
+  const rect7 = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 7, h: 3, trace: true } };
+  const before = BF.pageTimingCounts().stilled;
+  // a fresh lesson (nothing up to keep): page 0 is the square on its 5-word verdict, far shorter than its walk
+  const v = await s.turn(sq6, sb("e3"), "36 cm sahi nahi hai. Yeh aayat 7 cm lamba aur 3 cm chauda hai. Dhaaga kinaare par chalta hai, toh 7, 3, 7 aur 3 jodo, jawab cm mein. Ab tak samajh aaya?",
+    { segments: [{ atChar: 21, atClause: 1, boardRef: rect7, scriptBeat: sb("rem:c6-maths-ch06-t01-m-area-perimeter", "remediation") }] });
+  assert.equal(v.state, "revealed");
+  const sw = v.artifact.script.switches[0].atMs;
+  const p0 = v.artifact.script.ops.filter((o) => o.id.startsWith("a.") && o.op !== "erase");
+  assert.ok(p0.length, "page 0 is drawn");
+  assert.ok(!p0.some(isMotionOp), "its walk did not fit before the switch: the still square");
+  assert.ok(p0.every((o) => o.endMs <= sw), "everything on page 0 is drawn by its switch");
+  // (… and by her real onset: 5 words, ~1.67 s on the voice, App's measure)
+  assert.ok(p0.every((o) => o.endMs <= 1650), JSON.stringify(p0.map((o) => o.endMs)));
+  assert.equal(BF.pageTimingCounts().stilled, before + 1);
+});
+
+test("main A1: a second view of a LIVE card never draws its key — c5-t01 e2's 8-gap scale is drawn uncut; a perimeter ask's total and a missing side are '?'; a fraction ask's bar is unnamed and unshaded; a correct verdict's reveal lifts it", async () => {
+  const keyed = (answers, more = {}) => ({ scriptId: "s", beatId: "ask", kind: "explain", answers, ...more });
+  const call = (ref, beat, line = "") => BF.altCall(ref, { line, withheld: [], keys: BF.liveKeys({ intent: { scriptBeat: beat } }, line) });
+  // e2's ask, key "8" (gaps): the 1/4 scale stays; the asked 8-gap scale is one uncut, unnamed bar
+  const two = { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } };
+  assert.deepEqual(call(two, keyed(["8", "8 gaps"])).bars, [{ parts: 4, shade: 1, label: "1/4" }, { parts: 1, shade: 0, label: "?" }]);
+  assert.deepEqual(call(two, keyed(["8"], { reveal: true })).bars[1], { parts: 8, shade: 0, label: "?" }, "revealed: the scale is cut again");
+  // c6's perimeter ask on the 6 × 4 rectangle (key 20 cm): the total stays "?" even when her line happens to say 20
+  const rect = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 6, h: 4, trace: true } };
+  assert.equal(call(rect, keyed(["20 cm", "20"]), "Kitna dhaaga lagega?").total, "?");
+  // c6's missing-side then-card (pentagon 8, 5, 7, 6, 3; asked: the 3 m side): that side is "?", the rest labelled
+  const pent = { template: "measured@1", params: { shape: "pentagon", unit: "m", sides: [8, 5, 7, 6, 3], names: ["P", "Q", "R", "S", "T"] } };
+  const pc = call(pent, keyed(["3 m", "3"]));
+  assert.deepEqual(pc.hide, [4]);
+  const px = expand(pc);
+  assert.ok(px.ok, String(px.errors));
+  assert.deepEqual(texts(px.script), ["8 m", "5 m", "7 m", "6 m", "?", "?"]);
+  // a fraction ask (key 1/3) over its circle: the bar is unnamed and unshaded
+  const third = { template: "fraction-parts@1", params: { parts: 3, shade: 1, whole: "circle" } };
+  assert.deepEqual(call(third, keyed(["1/3", "ek-tihaai"])).bars, [{ parts: 3, shade: 0, label: "?" }]);
+  // and on the seam: e2's card up, the picture asked — no 8-part bar while the card is live
+  const s = lesson("c5-maths-ch02-t01");
+  const beat = keyed(["8", "8 gaps"]);
+  assert.equal((await s.up(two, beat)).state, "revealed");
+  const v = await s.turn(two, beat, "", { request: { kind: "picture" } });
+  assert.equal(v.artifact.altView, "parts");
+  assert.deepEqual(v.artifact.screen.counts.wholes.map((w) => w.parts), [4, 1]);
+});
+
+test("main B: unrolled@1 draws the shape itself beside the strip, so a line that names it is true — c6 steady T14 → T16 → T18 (rectangle) and steering T14 (hexagon) on the run's own lines", async () => {
+  const T = "c6-maths-ch06-t01";
+  const rect = { template: "measured@1", params: { shape: "rect", unit: "cm", w: 6, h: 4, trace: true } };
+  const s = lesson(T);
+  for (const line of ["Dhaaga sirf kinaare par chalta hai: 6 cm, 4 cm, 6 cm, 4 cm. Andar ki jagah area hai, use yahan nahi ginte. Ab isse aage chalte hain.",
+    "Riya, ab isi rectangle ke kinaare par dhaaga lagane ka socho. Is rectangle ke kinaare par ek baar dhaaga lagana hai. Kitna dhaaga lagega?"]) {
+    const u = await s.up(rect, sb("e3"), line);
+    assert.equal(u.artifact.screen.template, "measured@1");
+  }
+  const v = await s.turn(rect, sb("e3"), "Screen par ek rectangle hai, 6 cm lamba aur 4 cm chauda. In sabko jodkar dhaage ki lambai batao. Is rectangle ke kinaare par ek baar dhaaga lagana hai. Kitna dhaaga lagega?", { request: { kind: "picture" } });
+  assert.equal(v.state, "revealed");
+  assert.equal(v.artifact.altView, "unrolled", "the run's line names the rectangle: the rectangle is on screen beside its sides");
+  assert.ok(v.artifact.script.ops.some((o) => o.op === "rect" && o.w < 100), "the small rectangle");
+  assert.deepEqual(texts(v.artifact.script), ["6 cm", "4 cm", "6 cm", "4 cm", "?"]);
+  // steering-c6 T14: the hexagon card up, then "Screen par ek hexagon hai. Ek kinaare se ghoomkar sabhi chhah jodo …"
+  const hex = { template: "shape@1", params: { shape: "hexagon", side: "5 cm" } };
+  const h = lesson(T);
+  assert.equal((await h.up(hex, sb("e2"))).state, "revealed");
+  const hv = await h.turn(hex, sb("e2"), "Screen par ek hexagon hai. Ek kinaare se ghoomkar sabhi chhah jodo. Toh is hexagon ka parimap kitna hai?", { request: { kind: "picture" } });
+  assert.equal(hv.artifact.altView, "unrolled");
+  assert.ok(hv.artifact.script.ops.some((o) => o.op === "polygon" && o.points.length === 6), "the small hexagon");
+  // a triangle from its three sides
+  const tri = expand({ template: "unrolled@1", sides: [7, 9, 12], unit: "m", figure: { shape: "triangle", sides: [7, 9, 12] } });
+  assert.ok(tri.ok && tri.script.ops.some((o) => o.op === "polygon" && o.points.length === 3));
+  assert.equal(expand({ template: "unrolled@1", sides: [1, 2, 9], unit: "m", figure: { shape: "triangle", sides: [1, 2, 9] } }).ok, false, "no triangle with those sides");
+});

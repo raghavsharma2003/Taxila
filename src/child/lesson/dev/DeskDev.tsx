@@ -39,6 +39,8 @@ export type FixtureName = (typeof FIXTURES)[number];
 const noop = () => {};
 /** A board a render check injects (window.__deskScript, set by Playwright's addInitScript); else the half ka half board. */
 const devScript = () => (typeof window !== "undefined" && (window as unknown as { __deskScript?: unknown }).__deskScript) || BEAT_SCRIPT;
+/** Her line and the card's question a replay injects with the board (window.__deskLine / __deskAsk); else the fixture's. */
+const devText = (k: "__deskLine" | "__deskAsk") => (typeof window !== "undefined" ? (window as unknown as Record<string, string | undefined>)[k] : undefined);
 /** The "half ka half" board (server fraction-of@1, a/b = c/d = 1/2) with its beat card, as the server sends it (dev only). */
 const BEAT_SCRIPT = {
   v: 1, scriptId: "dev-beat", line: { lessonId: "dev" }, anchor: "line_audio_start", board: { w: 400, h: 300, ground: "chalk" }, mode: "fresh", durationMs: 1200,
@@ -84,7 +86,7 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   };
   const floor = floorOf(name);
   const askModel: DeskModel["ask"] = name === "idle" || name === "locked" ? null
-    : { text: young ? "Which one is half?" : "How many quarters make one half?", source: "server", lines: [] };
+    : { text: devText("__deskAsk") ?? (young ? "Which one is half?" : "How many quarters make one half?"), source: "server", lines: [] };
   if (askModel && (name === "hint-line" || name === "not_yet")) askModel.lines = [{ kind: "hint", level: 1, text: young ? "Count the two equal parts." : "Count the shaded quarters on the board." }];
   if (askModel && name === "with-help") askModel.lines = [{ kind: "hint", level: 2, text: "Two quarters fill one half." }];
   const answered = ["teachback-correct", "teachback-not_yet", "heard", "thinking", "work-heard", "work-thinking", "correct", "not_yet", "partial", "with-help", "board-correct", "board-not_yet", "T1", "T2", "T4", "RC", "thinking-4s"].includes(name);
@@ -109,11 +111,13 @@ export function fixtureModel(name: string, band: Band, size: DeskSize, faceForm:
   const stripH = strip && isStrip(strip) ? stripHeight(strip, { noPack: true, young, width: Math.min(size.w, 600) - 32 }) : 0;
   const layout = solveDesk({ width: size.w, height: size.h, family, geometry, keyboard: keyboard && !young, fontScale: size.fontScale, captionsOn: band !== "b1", strip: stripH, cardNeed: play ? 0 : size.cardNeed, stripNeed: size.stripNeed, trayNeed: size.trayNeed, play });
   const sheet: Sheet = name === "pause" ? "pause" : name === "end" ? "end" : name === "hint" ? "hint" : name === "help" ? "help" : name === "grownup" ? "grownup" : null;
-  const caption = young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?";
+  const caption = devText("__deskLine") ?? (young ? "Do barabar tukde gino. Kaunsa aadha hai?" : "Board dekho: 1/2 barabar 2/4. Toh ek half mein kitne quarters hote hain?");
   return {
     band, family, teacher: { id: rec.id, name: rec.name }, childName: young ? "Riya" : "Kabir",
     floor, sheet, strip, noPack: true, ask: askModel, answer,
     caption: { text: caption, speaking: floor === "speaking" || floor === "showing", mode: "phrase", lang: "hi-Latn" },
+    // r7 (3b): a replay marks the board as not the card's (window.__deskWaiting)
+    askWaiting: typeof window !== "undefined" && !!(window as unknown as { __deskWaiting?: boolean }).__deskWaiting,
     // r7: Me → "Voice only" (fixtures voice / voice-board)
     faceHidden: name === "voice" || name === "voice-board",
     // r7: the Later list and the moment cards (Brain's ui.later / ui.moment)

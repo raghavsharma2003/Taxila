@@ -48,3 +48,13 @@ test("widened false keys: any number stated as an answer that no key, accept for
   assert.deepEqual(falseAnswerNumbers("Isliye 8 + 3 = 11 hua.", { keys, given: "8 m, 3 m" }), [], "a shown working is not a stated key");
   assert.deepEqual(falseAnswerNumbers("Roti ke 3 tukde hain.", { keys, given: "" }), [], "not an answer statement");
 });
+
+import { boardWords } from "../server/brain/board-words.js";
+test("Studio's fraction-bars@1 and wholes@1 (Learning's c5-t02 worked board, c4 e2): code describes them, and the checker knows what they draw", () => {
+  const bars = { template: "fraction-bars@1", params: { bars: [{ parts: 6, shade: 1, label: "1/6" }, { parts: 3, shade: 1, label: "1/3" }] } };
+  const wholes = { template: "wholes@1", params: { wholes: [{ parts: 3, equal: false, title: "Cake A" }, { parts: 3, title: "Cake B" }] } };
+  assert.equal(boardWords(bars, "hinglish"), "Screen par 2 ek jaisi pattiyan hain: ek 6 barabar hisson mein, 1 rangin aur ek 3 barabar hisson mein, 1 rangin.");
+  assert.equal(boardWords(wholes, "hinglish"), "Screen par: Cake A ke 3 alag-alag tukde; Cake B ke 3 barabar tukde.");
+  assert.deepEqual(pictureMismatch("Screen par dekho, do patti hain.", bars), []);
+  assert.deepEqual(pictureMismatch("Screen par dekho, ek pizza hai.", bars), ["pizza"]);
+});

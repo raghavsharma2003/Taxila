@@ -20,7 +20,7 @@
 //      exactly as before, so this can only add boards, never remove one.
 // Kill switch TAXILA_BOARD_FIRST=0: nothing is preselected and nothing changes.
 import { answersRequest, samePage, shownBefore } from "../studio/request.js";
-import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf, anchorSteps } from "./board-sync.js";
+import { gateCtxFor, regate, retime, withSectors, withSplit, predictedLineOf, anchorSteps, answerValues, revealOf } from "./board-sync.js";
 import { speechMsOf, WB_BOARD } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
 import { catalogueEntry } from "./catalogue.js";
@@ -264,12 +264,12 @@ export function preselect(ask, { kit, redact = [], now = Date.now(), certify = n
     // (director10 G4: the card on screen by its ref — the page up was drawn, masked and labelled, on its own line)
     const cardUp = !!avoidRef && refKey(ask?.intent?.boardRef) === avoidRef;
     if (card0 && (cardUp || samePage(card0.script, avoid) || shownBefore(card0.script, { avoid }))) {
-      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [] });
+      const ac0 = altCall(ask.intent.boardRef, { line: predicted, withheld: ctx.withhold?.values ?? [], keys: liveKeys(ask, "") });
       const { view, ...ac } = ac0 ?? {};
       const ax = ac0 ? expand(ac, { band }) : null;
       // (judged against a line that says the bars — her line is written from this row: "2 barabar bar: ek 6 barabar hisson mein …")
       const say = !ac0 ? "" : ac.wholes ? ac.wholes.map((w) => `${w.title ?? "ek"}: ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${w.shade ? `, ${w.shade} rangin` : ""}`).join("; ") : ac.bars ? `${ac.bars.length} barabar bar: ${ac.bars.map((b) => `ek ${b.parts} barabar hisson mein${b.shade ? `, ${b.shade} rangin${b.label === "?" ? "" : ` (${b.label})`}` : ""}`).join("; ")}`
-        : ac.sides ? `${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v) => `${v} ${ac.unit}`).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
+        : ac.sides ? `${ac.figure ? `Is ${ac.figure.shape === "rect" ? (ac.figure.w === ac.figure.h ? "square" : "rectangle") : ac.figure.shape === "triangle" ? "triangle" : "aakaar"} ki ` : ""}${ac.sides.length} bhujayein seedhi karke ek line par: ${ac.sides.map((v, i) => (ac.hide?.includes(i) ? "?" : `${v} ${ac.unit}`)).join(", ")}; kul lambai ${ac.total === "?" ? "kitni" : `${ac.total} ${ac.unit}`}`
         : Array.isArray(ac.dens) ? `0 se 1 ki do sankhya rekhayein, ${ac.dens.join(" aur ")} barabar gaps, nishaan ${ac.marks.map((m) => `${m[0]}/${m[1]}`).join(", ")} par`
         : `0 se 1 ki sankhya rekha, ${ac.den} barabar gaps, nishaan ${ac.marks.map((m) => m.label).join(", ")} par`;
       if (ax?.ok) cands.unshift({ by: "script", template: ac.template, script: ax.script, facts: ax.script.facts, altView: ALT_VIEWS.has(view) ? view : "parts", say });
@@ -447,7 +447,7 @@ export function statedMark(script, ref, line) {
  */
 export function altView(ask, ctx) {
   try {
-    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [] });
+    const call0 = altCall(ask?.intent?.boardRef, { line: String(ctx?.reply ?? ask?.line?.text ?? ""), withheld: ctx?.withhold?.values ?? [], keys: liveKeys(ask, String(ctx?.reply ?? ask?.line?.text ?? "")) });
     const { view, ...call } = call0 ?? {};
     const x = call0 ? expand(call, { band: ask?.intent?.style?.band ?? "B3" }) : null;
     if (!x?.ok) return null;
@@ -483,20 +483,65 @@ const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled"]);
 function sidesOf(c) {
   const unit = c.unit === "m" || c.unit === "cm" ? c.unit : null;
   if (c.template === "measured@1" && unit) {
-    if (c.shape === "rect" || c.shape === "square") { const w = Number(c.w), h = Number(c.h ?? c.w); return w > 0 && h > 0 ? { sides: [w, h, w, h], unit } : null; }
-    if (c.shape !== "circle" && Array.isArray(c.sides) && c.sides.length >= 3 && c.sides.every((v) => Number(v) > 0)) return { sides: c.sides.map(Number), unit };
+    if (c.shape === "rect" || c.shape === "square") { const w = Number(c.w), h = Number(c.h ?? c.w); return w > 0 && h > 0 ? { sides: [w, h, w, h], unit, figure: { shape: "rect", w, h } } : null; }
+    if (c.shape !== "circle" && Array.isArray(c.sides) && c.sides.length >= 3 && c.sides.every((v) => Number(v) > 0)) {
+      const sides = c.sides.map(Number);
+      return { sides, unit, figure: sides.length === 3 ? { shape: "triangle", sides } : { shape: "polygon", n: sides.length } };
+    }
     return null;
   }
   if (c.template === "shape@1") {
     const n = { triangle: 3, square: 4, pentagon: 5, hexagon: 6, heptagon: 7, octagon: 8 }[String(c.shape ?? "").toLowerCase()];
     const m = /(\d+(?:\.\d+)?)\s*(cm|m)\b/.exec(String(c.side ?? ""));
-    return n && m && Number(m[1]) > 0 ? { sides: Array.from({ length: n }, () => Number(m[1])), unit: m[2] } : null;
+    const v = m ? Number(m[1]) : 0;
+    return n && m && v > 0 ? { sides: Array.from({ length: n }, () => v), unit: m[2], figure: n === 4 ? { shape: "rect", w: v, h: v } : n === 3 ? { shape: "triangle", sides: [v, v, v] } : { shape: "polygon", n } } : null;
   }
   return null;
 }
 
+/**
+ * main (director10 cause #2, A1): the live card's KEY values a second view must never draw or label — the card's answers
+ * (scriptBeat.answers[0]) her line does not state; none once a correct verdict reveals them (scriptBeat.reveal). → string[]
+ */
+export function liveKeys(ask, line = "") {
+  const beat = ask?.intent?.scriptBeat;
+  if (!Array.isArray(beat?.answers) || !beat.answers.length || revealOf(beat).length) return [];
+  return answerValues(beat.answers, line);
+}
+/** The second view's call without the live card's key: a count key cuts no scale into that many parts (the scale is drawn
+ *  uncut, unnamed), a fraction key names and shades no bar, a length key labels no side or total. → the call, or null. */
+function keyless(call, keys) {
+  if (!call || !keys.length) return call;
+  const val = (t) => { const m = /^(\d+(?:\.\d+)?)(?:\/(\d+))?$/.exec(String(t).replace(/\s+/g, "")); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+  const fracKeys = keys.filter((k) => String(k).includes("/")).map(val).filter((v) => v != null);
+  const numKeys = keys.filter((k) => !String(k).includes("/")).map(Number).filter(Number.isFinite);
+  const isFrac = (a, b) => b > 0 && fracKeys.some((v) => Math.abs(v - a / b) < 1e-9);
+  if (call.template === "fraction-bars@1") {
+    const bars = call.bars.map((b) => (numKeys.includes(b.parts) ? { parts: 1, shade: 0, label: "?" } : isFrac(b.shade, b.parts) ? { parts: b.parts, shade: 0, label: "?" } : b));
+    return { ...call, bars };
+  }
+  if (call.template === "fraction-line@1") {
+    if ((call.den && numKeys.includes(call.den)) || (Array.isArray(call.dens) && call.dens.some((d) => numKeys.includes(d)))) return null;
+    const marks = (call.marks ?? []).filter((m) => (Array.isArray(m) ? !isFrac(m[0], m[1]) : !isFrac(m.num, call.den)));
+    return marks.length ? { ...call, marks } : null;
+  }
+  if (call.template === "unrolled@1") {
+    const sum = call.sides.reduce((a, b) => a + b, 0);
+    const hide = call.sides.map((v, i) => (numKeys.includes(v) ? i : -1)).filter((i) => i >= 0);
+    return { ...call, ...(hide.length ? { hide } : {}), total: numKeys.some((k) => Math.abs(k - sum) < 1e-6) ? "?" : call.total };
+  }
+  return call;
+}
+
 /** The second view's call: the card board's fractions as fraction-bars@1 bars (withheld → "?", unshaded), or null. */
-export function altCall(ref, { line = "", withheld = [] } = {}) {
+export function altCall(ref, { line = "", withheld = [], keys = [] } = {}) {
+  try {
+    const out = altCall0(ref, { line, withheld });
+    const k = keyless(out, keys);
+    return k ? { ...k, ...(out?.view && !k.view ? { view: out.view } : {}) } : null;
+  } catch { return null; }
+}
+function altCall0(ref, { line = "", withheld = [] } = {}) {
   try {
     const r = resolveBoardRef(ref, {});
     if (!r.ok) return null;
@@ -509,7 +554,7 @@ export function altCall(ref, { line = "", withheld = [] } = {}) {
       const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;
       const said = (String(line).match(/\d+(?:\.\d+)?/g) ?? []).map(Number).includes(sum);
       const held = withheld.map(String).some((w) => Number(w) === sum);
-      return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", view: "unrolled" };
+      return { template: "unrolled@1", sides: ps.sides, unit: ps.unit, total: said && !held ? sum : "?", ...(ps.figure ? { figure: ps.figure } : {}), view: "unrolled" };
     }
     if (c.template === "fraction-bars@1" && Array.isArray(c.bars)) {
       const named = c.bars.filter((b) => b && b.label !== "?" && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade) && b.shade >= 1 && b.shade <= b.parts);
@@ -637,7 +682,9 @@ const DRAWN = new Set(["stroke", "line", "arrow", "rect", "circle", "ellipse", "
  * [{ from, screen }], by, template, source }) or null (one board, as before).
  */
 /** How many later pages a paged turn dropped because their own take failed (the page before them stayed up). */
-let pagesDropped = 0, firstKept = 0;
+let pagesDropped = 0, firstKept = 0, firstSame = 0, pagesStilled = 0;
+/** (App's T55) first pages kept as the same board already up; pages drawn still because their motion ran past the switch. */
+export const pageTimingCounts = () => ({ firstSame, stilled: pagesStilled });
 /** How many paged turns kept the card's board on screen for a first page whose own take failed. */
 export const firstPageKeptCount = () => firstKept;
 export const pagesDroppedCount = () => pagesDropped;
@@ -667,13 +714,22 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     // (director10: 31 turns unpaged, each on its FIRST page — the close said over the answered card's own board, which is
     // the board already up. That page keeps the card's board AS IT IS (`keep`, the seam's page on screen, when it is this
     // page's board); only with no card board to keep does the turn fail)
+    // (App's director10 replay, steady-c6 T55: page 0, "36 cm sahi nahi hai.", 1.67 s, REDREW the 6 cm square T53 had just
+    // left on screen, its perimeter walk squeezed to nothing. A first page that draws the board already up — the same card,
+    // nothing new written — is that board, kept still: no redraw)
+    // (a kept page is shown complete at once: its end state, no motion replayed in 200 ms)
+    const stillOf = (k) => ({ ...k, ops: k.ops.filter((o) => !isMotionOp(o)).map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 });
+    if (takes0.length > 1 && takes0[0]?.script && keep?.ops?.length && !!keepRef && refKey(sg[0].boardRef) === keepRef && samePage(takes0[0].script, keep)) {
+      takes0[0] = { ...takes0[0], script: stillOf(keep), source: "kept", kept: true };
+      firstSame++;
+    }
     if (!takes0[0]?.script) {
       const p0 = picks.get(id), base = p0?.raw ?? p0?.script ?? null;
       // (director10 G1, replayed: the card's board on screen was drawn on ITS line, masked and labelled for that line, so it
       // is rarely the same page as this pick; it is the same card when the page on screen was drawn from this ref)
       const sameRef = !!keepRef && refKey(sg[0].boardRef) === keepRef;
       if (!keep?.ops?.length || !base || !(sameRef || samePage(base, keep) || shownBefore(base, { avoid: keep }))) return null;
-      const still = { ...keep, ops: keep.ops.map((o) => ({ ...o, startMs: 0, endMs: Math.min(Math.max(1, o.endMs - o.startMs), 200) })), durationMs: 200 };
+      const still = stillOf(keep);
       takes0[0] = { ok: true, script: still, template: p0.template, source: "kept", by: "script", kept: true,
         screen: screenOf({ template: p0.template, facts: { ...(base.facts ?? p0.facts ?? {}), ...(p0.counts ? { counts: p0.counts } : {}) } }, keep.facts ?? p0.facts, keep) };
       firstKept++;
@@ -695,7 +751,16 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     takes.forEach((t, i) => {
       const at = starts[i], next = starts[i + 1];
       const pre = i ? `${"abcdefgh"[i]}.` : "a.";
-      const page = rename(t.script.ops, pre).map((o) => {
+      // (App, T55: a page whose drawing cannot finish before its switch loses its motion to the clamp — three of four
+      // `follow` ops in 120 ms. It is drawn still instead, as takePreselected draws a refused split)
+      // (the switch is HER onset on the client — lineClock moves the next page onto it — and a short page is spoken faster
+      // than the estimate: T55's 5 words took 1.67 s against ~3 s. A page must fit a fast reading, ~330 ms a word)
+      const words = String(sg[i].text ?? "").split(/\s+/).filter(Boolean).length;
+      const due = next === undefined ? undefined : Math.min(next, at + Math.max(600, words * 330));
+      const late = due !== undefined && t.script.ops.some((o) => o.endMs + at > due);
+      const own = late && t.script.ops.some(isMotionOp) ? t.script.ops.filter((o) => !isMotionOp(o)) : t.script.ops;
+      if (own !== t.script.ops) pagesStilled++;
+      const page = rename(own, pre).map((o) => {
         const s0 = o.startMs + at, e0 = o.endMs + at;
         return next !== undefined ? { ...o, startMs: Math.min(s0, Math.max(at, next - 120)), endMs: Math.min(e0, next) } : { ...o, startMs: s0, endMs: e0 };
       });
@@ -711,7 +776,7 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     if (!n.ok || !n.script?.switches?.length) return null;
     pageStats.drawn++;
     return { ok: true, script: n.script, gate: last.gate, usd: 0, ms: 0, source: "first", by: "script", template: last.template, syncMs: 0,
-      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef };
+      screen: last.screen, screens: sg.map((g, i) => ({ from: g.from, ...takes[i].screen })), lastRef, lastPage: last.script };
   } catch { return null; }
 }
 /** (director7's first form) */

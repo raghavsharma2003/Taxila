@@ -5998,3 +5998,35 @@ The M3/M4 60-day clock started on **day 1 = 2026-11-06** (now closed) and **comp
 **Runway.** Projected ₹129,630 remaining at 2027-01-12.
 
 **Method.** `scripts/m3.mjs status`, reading Cost Management ActualCost grouped by ServiceName.
+
+
+<!-- merged from inbox/r7-app-24.json -->
+## `m-r7-app-lesson-replay-d10-2026-11-07`
+Method and per-turn findings: docs/design/round7/app/LESSON-REPLAY-d10.md.
+
+
+<!-- merged from inbox/r7-app-25.json -->
+## `m-r7-app-card-rerun-d10-2026-11-08`
+Method and per-render list: docs/design/round7/app/LESSON-REPLAY-d10.md, 'After main's calls'.
+
+
+<!-- merged from inbox/r7-games-aankde.json -->
+## `ms-r7-games-aankde-cert`
+
+aankde play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 48 of 48 aankde samples pass at every size (p360, p412, l1366) with the game mounted, in all four art directions; the smallest text 16 px. Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-aankde.test.mjs, 42 tests. An independent checker (its own tally reader, frequency counts, sums, means, medians and modes; its own copy of the set-up fed every act the law accepted) agrees with the law over at least 2000 random acts per case; every coverage entry serves a proven level through the play server at every fade.
+- **Browser runs:** the opening board, a solved run and a misconception run per goal driven at 360 px in the dev harness, and all six goals solved by real taps only (page.mouse on the canvas targets, the run button by its role); the end states were looked at.
+- **lint-ui:** 354 findings before and after (no new finding).
+
+
+<!-- merged from inbox/r7-games-paheli.json -->
+## `ms-r7-games-paheli-cert`
+
+paheli play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).
+
+- **Cert:** 48 of 48 paheli samples pass at p360, p412 and l1366 with the game mounted (smallest text 16 px; 3656 of 3656 samples in the file). Counts are in server/forge3/certs/play.json.
+- **Tests:** tests/r7-games-paheli.test.mjs, 40 tests. An independent checker (it counts each bag's or tray's counters one by one, adds the 8 grid lines from its own index list, builds each letter row's number digit by digit, reverses through the decimal string) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.
+- **Browser runs:** the opening board, a solved run and a misconception run per goal at 360 px in the dev harness; square, letters, load and reach solved by real taps only (page.mouse on the canvas targets, getByRole on the run button). Shots in docs/design/round7/games/runshots-paheli/.
+- **lint-ui:** 354 findings before and after (no new finding).
