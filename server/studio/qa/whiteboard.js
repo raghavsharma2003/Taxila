@@ -223,7 +223,13 @@ function opNumbers(o, allowed) {
       }
     } else if (o.layout === "number_line") {
       const [a, b] = o.range;
-      nums.push(...[a, b].map(String).filter((x) => !["0", "1"].includes(x)));
+      // (main / Learning 2026-11-08, number-line-hop@1: a line is padded past its outermost numbers so the end labels have
+      // room — "4, 11, 18, 25" on a line from 1 to 28. An END that lies just beyond the outermost number she says, within
+      // max(3, 15% of the line), is the axis's own extent, labelled or not, never an invented fact)
+      const saidOn = (o.rows[0] ?? []).map((c) => (/^-?\d+$/.test(String(c)) ? Number(c) : NaN)).filter((v) => Number.isFinite(v) && allowed.has(String(v)));
+      const pad = Math.max(3, (b - a) * 0.15);
+      const axisEnd = (v) => saidOn.length >= 2 && ((v <= Math.min(...saidOn) && Math.min(...saidOn) - v <= pad) || (v >= Math.max(...saidOn) && v - Math.max(...saidOn) <= pad));
+      for (const v of [a, b]) { if (axisEnd(v)) derived.push(String(v)); else if (!["0", "1"].includes(String(v))) nums.push(String(v)); }
       // tick labels inside a range she named: k/d for a denominator she said, or whole numbers of a short range
       const dens = [...allowed].filter((x) => /^\d+$/.test(x) && +x >= 2 && +x <= 12).map(Number);
       // (a big scale — 0, 1000, … 10000: number-line-scale@1 — is an axis, not invented, when its ticks step evenly from end

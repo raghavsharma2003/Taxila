@@ -511,11 +511,25 @@ function numberLineHop(c, tl) {
   const all = [start, ...ends];
   const lo = Math.min(...all), hi = Math.max(...all);
   const span = Math.max(4, hi - lo);
-  const a = lo - Math.max(1, Math.round(span * 0.1)), b = a + span + 2 * Math.max(1, Math.round(span * 0.1));
-  if (b - a > 40) return { error: "line_too_long" };
   const x0 = 30, W = 340, y = 170;
+  // (main / Learning, 2026-11-08: the padded ends were 1 unit from the start or the last landing, and at the player's digit
+  // width "3|4" and "13|14" touched — 41 of 84 boards of start 0-20 × three equal hops of 2-5. The ends are padded
+  // enough that every label has its own room — 2 units or more — and a line of counting numbers never starts below 0;
+  // if no pad gives room, the ends are drawn unlabelled)
+  const room = (a, b, labs) => {
+    const px = (v) => ((v - a) / (b - a)) * (W - 24), wd = (t) => String(t).length * 0.6 * 19.2;
+    return labs.every((t, i) => i === 0 || px(t) - px(labs[i - 1]) - (wd(t) + wd(labs[i - 1])) / 2 >= 6);
+  };
+  let a = null, b = null, labelEnds = true;
+  for (let pad = Math.max(2, Math.round(span * 0.1)); pad <= 6 && a == null; pad++) {
+    const a1 = lo >= 0 ? (lo - pad >= 0 ? lo - pad : 0) : lo - pad, b1 = Math.max(hi + pad, a1 + span + 2);
+    if (b1 - a1 > 40) break;
+    if (room(a1, b1, [...new Set([a1, ...all, b1])].sort((p, q) => p - q))) { a = a1; b = b1; }
+  }
+  if (a == null) { a = lo >= 0 ? Math.max(0, lo - 2) : lo - 2; b = Math.max(hi + 2, a + span + 2); labelEnds = false; }
+  if (b - a > 40) return { error: "line_too_long" };
   const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
-  const labels = [...new Set([a, ...all, b])].sort((p, q) => p - q).map(String);
+  const labels = [...new Set([...(labelEnds ? [a, b] : []), ...all])].sort((p, q) => p - q).map(String);
   tl.add({ op: "numwork", at: [x0, y], layout: "number_line", rows: [labels], range: [a, b], w: W, weight: 2 }, 1100);
   const dot = tl.add({ op: "circle", c: [xOf(start), y], r: 7, fill: "accent", ink: "accent" }, 300);
   all.slice(1).forEach((e, i) => {

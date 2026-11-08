@@ -140,3 +140,40 @@ test("Learning's D1: wholes@1 takes two unequal parts (the roti's 'ek bada, ek c
   const bad = await certifyBoardRef({ template: "wholes@1", params: { wholes: [{ parts: 4, shade: 1, title: "Roti" }] } }, { line: "Roti ke 3 barabar tukde hain, 1 rangin hai. Rangin hissa kitna hai?", withhold: { values: [] } });
   assert.equal(bad.ok, false);
 });
+
+test("Learning's regression on 2b78db98: number-line-hop@1 never draws touching labels — the 84-board sweep (start 0-20 × three equal hops of 2-5) expands, lints and certifies; every staged hop board certifies on its own line; W4 takes a padded end as the axis, never a far one", async () => {
+  const fs = await import("node:fs");
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { lintScript } = await import("../shared/whiteboard.js");
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const bad = [];
+  for (let start = 0; start <= 20; start++) for (let h = 2; h <= 5; h++) {
+    const x = expand({ template: "number-line-hop@1", start, hops: [h, h, h] });
+    if (!x.ok || lintScript(x.script).length) { bad.push(`${start}+${h}: ${x.errors ?? "lint"}`); continue; }
+    const r = await certifyBoardRef({ template: "number-line-hop@1", params: { start, hops: [h, h, h] } }, { line: `${start} se shuru karo aur ${h} ki teen chhalang lagao: ${start} + ${h} + ${h} + ${h} = ${start + 3 * h}.`, withhold: { values: [] } });
+    if (!r.ok) bad.push(`${start}+${h}: ${r.failed}`);
+  }
+  assert.deepEqual(bad, []);
+  // the staged scripts' own hop boards, each on its beat's own words (no data change)
+  const staged = [];
+  for (const f of fs.readdirSync("data/lesson-scripts-staged").filter((x) => x.endsWith(".json"))) {
+    const sc = JSON.parse(fs.readFileSync(`data/lesson-scripts-staged/${f}`, "utf8"));
+    const walk = (o) => { if (!o || typeof o !== "object") return; for (const v of Object.values(o)) walk(v); if (o.template === "number-line-hop@1" && o.params) staged.push({ f, ref: o }); };
+    walk(sc);
+  }
+  assert.ok(staged.length >= 16, `staged hop boards: ${staged.length}`);
+  for (const s of staged) {
+    const x = expand({ template: "number-line-hop@1", ...s.ref.params });
+    assert.ok(x.ok, `${s.f} ${JSON.stringify(s.ref.params)}: ${x.errors}`);
+    assert.deepEqual(lintScript(x.script), [], `${s.f} ${JSON.stringify(s.ref.params)}`);
+  }
+  // the calendar column, 4 + 7 + 7 + 7 (c4-ch03-t02 s3 e2): its ends have room, and its padded end is the axis's
+  const cal = expand({ template: "number-line-hop@1", start: 4, hops: [7, 7, 7] });
+  const line = "Isliye column mein neeche jaane par har baar 7 judta hai: 4, 11, 18, 25.";
+  const r = await certifyBoardRef({ template: "number-line-hop@1", params: { start: 4, hops: [7, 7, 7] } }, { line, withhold: { values: [] } });
+  assert.ok(r.ok, JSON.stringify(r.failed));
+  // a far end — a line to 60 under numbers that stop at 25 — is still an invented number
+  const far = { ...cal.script, ops: cal.script.ops.map((o) => (o.layout === "number_line" ? { ...o, range: [1, 60], rows: [["1", "4", "11", "18", "25", "60"]] } : o)) };
+  const g = gateWhiteboard(far, { reply: line, speechMs: 8000, withhold: { values: [] } });
+  assert.ok(g.checks.find((c) => c.id === "W4.numbers_from_truth" && !c.pass), "60 is no axis end of 25");
+});
