@@ -151,7 +151,7 @@
      "simpler": { "hi": "Aadha chakkar 2 quarter turn hai, aur uske baad ek quarter turn aur liya. Ab saare quarter turn jodkar gino.", "en": "A half turn is 2 quarter turns, and after that one more quarter turn was made. Now add up all the quarter turns." }
     },
     "answer": { "hi": "Kavya almirah ki taraf dekh rahi hai aur kul 3/4 chakkar, yaani teen-chauthai chakkar ghoomi hai", "en": "Kavya faces the almirah and has turned a 3/4 turn in all, a three-quarter turn" },
-    "why": { "hi": "aadha chakkar 2 quarter turn hai aur usme ek quarter turn aur juda, toh poore chakkar ke 4 mein se 3 quarter hue", "en": "a half turn is 2 quarter turns and one more quarter turn was added, so it is 3 of the 4 quarters of a full turn" },
+    "why": { "hi": "aadha chakkar 2 quarter turn hai, ek aur quarter juda, toh poore chakkar ke 4 mein se 3 quarter hue", "en": "a half turn is 2 quarter turns plus one more quarter, so it is 3 of a full turn's 4 quarters" },
     "board": { "template": "compare@1", "params": { "left": { "title": "shuru mein", "items": ["aage darwaza", "peeche khidki", "daayein blackboard", "baayein almirah"] }, "right": { "title": "Kavya ghoomti hai", "items": ["aadha chakkar", "quarter turn"] } } }
    },
    "checks": [
@@ -199,6 +199,10 @@
       "hi": "Farsh par ek gol socho, 4 barabar hisson mein. Ek quarter ghoomo toh side ki deewar dikhti hai, do quarter ghoomo toh peeche ki deewar. Aadha chakkar matlab 2 quarter, yaani 2/4.",
       "en": "Picture a circle on the floor in 4 equal parts. Turn one quarter and you see the side wall; turn two quarters and you see the back wall. A half turn means 2 quarters, that is 2/4."
      },
+     "simpler": {
+      "hi": "Farsh par gol ke 4 barabar hisse socho. Do quarter ghoomo toh peeche ki deewar dikhti hai. Aadha chakkar matlab 2 quarter, yaani 2/4.",
+      "en": "Picture a floor circle in 4 equal parts. Turn two quarters and you face the back wall. A half turn means 2 quarters, that is 2/4."
+     },
      "board": { "template": "fraction-parts@1", "params": { "parts": 4, "shade": 2, "whole": "circle" } },
      "then": {
       "prompt": { "hi": "Pehle tum TV ki taraf dekh rahe ho, phir aadha chakkar ghoomte ho. Ab TV kahaan hai: peeche ya side mein?", "en": "You are facing the TV and make a half turn. Where is the TV now: behind you or at your side?" },
@@ -217,6 +221,10 @@
      "say": {
       "hi": "Do kaagaz ke pankhe socho, ek chhota pankha aur ek bada pankha, dono utne hi khule. Chhote pankhe ko bade ke upar kone se milao: dono ki bhujayein ek hi taraf jaati hain, isliye angle barabar hai.",
       "en": "Picture two paper fans, a small one and a big one, both open the same amount. Lay the small fan on the big one, corner on corner: the arms of both point the same way, so the angle is the same."
+     },
+     "simpler": {
+      "hi": "Chhota pankha aur bada pankha, dono utne hi khule. Kone par kona rakho: bhujayein ek hi taraf jaati hain, toh angle barabar hai.",
+      "en": "A small fan and a big fan, open the same amount. Put corner on corner: the arms point the same way, so the angle is the same."
      },
      "board": { "template": "compare@1", "params": { "left": { "title": "chhota pankha", "items": ["utne hi khule"] }, "right": { "title": "bada pankha", "items": ["utne hi khule"] } } },
      "then": {
@@ -321,7 +329,7 @@
      "ask": {
       "prompt": { "hi": "Ek robot teen-chauthai chakkar anticlockwise ghoomta hai. Clockwise kitne quarter turn lekar woh usi taraf muh kar lega?", "en": "A robot makes a three-quarter turn anticlockwise. How many quarter turns clockwise would make it face the same way?" },
       "key": "1 quarter turn",
-      "why": { "hi": "teen-chauthai chakkar anticlockwise ke baad poore chakkar ka sirf 1/4 bachta hai, jo clockwise ek quarter turn hai", "en": "three quarters anticlockwise leaves just 1/4 of the full turn, which is one quarter turn clockwise" },
+      "why": { "hi": "teen-chauthai chakkar anticlockwise ke baad poore chakkar ka sirf 1/4 bachta hai, jo clockwise 1 quarter turn hai", "en": "three quarters anticlockwise leaves just 1/4 of the full turn, which is 1 quarter turn clockwise" },
       "accept": ["1", "ek", "ek quarter turn", "one quarter turn", "one", "quarter turn"],
       "targets": "c5-maths-ch03-t01-m-cw-confuse",
       "wrongIfMis": "3 quarter turns"
@@ -411,6 +419,10 @@
       "hi": "Ghadi par ungli rakho aur sui ke raaste par chalao: 12 se 1, 2, 3 ki taraf. Yahi clockwise hai. Ungli 12 se 11, 10, 9 ki taraf chale, toh woh anticlockwise hai.",
       "en": "Put a finger on the clock and move it along the hand's path: from 12 towards 1, 2, 3. That is clockwise. If the finger goes from 12 towards 11, 10, 9, that is anticlockwise."
      },
+     "simpler": {
+      "hi": "Sui ke raaste chalo: 12 se 1, 2, 3 ki taraf, yeh clockwise hai. 12 se 11, 10, 9 ki taraf ulta, yeh anticlockwise hai.",
+      "en": "Follow the hand's path: 12 towards 1, 2, 3 is clockwise. 12 towards 11, 10, 9, the other way, is anticlockwise."
+     },
      "board": { "template": "compare@1", "params": { "left": { "title": "clockwise", "items": ["12 se 1, 2, 3"] }, "right": { "title": "anticlockwise", "items": ["12 se 11, 10, 9"] } } },
      "then": {
       "prompt": { "hi": "Shuru mein sui 5 par hai. Woh quarter turn clockwise ghoomti hai. Sui kis number par rukegi?", "en": "At the start the hand is at 5. It makes a quarter turn clockwise. At which number does it stop?" },
@@ -491,7 +503,7 @@
      "ask": {
       "prompt": { "hi": "Sui 12 se 6 tak clockwise ghoomti hai. Woh kitne right angle ghoomi?", "en": "The hand turns clockwise from 12 to 6. How many right angles has it turned?" },
       "key": "2",
-      "why": { "hi": "12 se 3 ek right angle hai aur 3 se 6 doosra", "en": "12 to 3 is one right angle and 3 to 6 is another" },
+      "why": { "hi": "12 se 3 ek right angle hai aur 3 se 6 doosra, yaani 2 right angle", "en": "12 to 3 is one right angle and 3 to 6 is another, so 2 right angles" },
       "accept": ["2 right angle", "2 right angles", "do", "two"],
       "targets": "c5-maths-ch03-t01-m-half-is-quarter",
       "wrongIfMis": "1"
@@ -543,7 +555,7 @@
       "en": "The minute hand goes clockwise from 3 to 9. How many right angles has it turned?"
      },
      "key": "2",
-     "why": { "hi": "3 se 6 ek right angle hai aur 6 se 9 doosra", "en": "3 to 6 is one right angle and 6 to 9 is another" },
+     "why": { "hi": "3 se 6 ek right angle hai aur 6 se 9 doosra, yaani 2 right angle", "en": "3 to 6 is one right angle and 6 to 9 is another, so 2 right angles" },
      "accept": ["2 right angle", "2 right angles", "do", "two"],
      "targets": "c5-maths-ch03-t01-m-half-is-quarter",
      "wrongIfMis": "1",
@@ -579,6 +591,10 @@
       "hi": "Ghadi ko 4 quarter mein socho. 12 se 3 ek quarter hai, ek right angle. 12 se 6 do quarter hain, yaani 2/4, aadha chakkar, 2 right angle.",
       "en": "Think of the clock in 4 quarters. 12 to 3 is one quarter, one right angle. 12 to 6 is two quarters, that is 2/4, a half turn, 2 right angles."
      },
+     "simpler": {
+      "hi": "Ghadi ke 4 quarter socho. 12 se 3 ek right angle hai. 12 se 6 do quarter, yaani aadha chakkar, 2 right angle.",
+      "en": "Think of the clock in 4 quarters. 12 to 3 is one right angle. 12 to 6 is two quarters, a half turn, 2 right angles."
+     },
      "board": { "template": "fraction-parts@1", "params": { "parts": 4, "shade": 2, "whole": "circle" } },
      "then": {
       "prompt": { "hi": "Sui 1 se 7 tak clockwise jaati hai. Yeh kaunsa turn hai: quarter turn ya aadha chakkar?", "en": "The hand goes clockwise from 1 to 7. Which turn is that: a quarter turn or a half turn?" },
@@ -597,6 +613,10 @@
      "say": {
       "hi": "Ungli ghadi par sui ke raaste chalao: 12 se 1, 2, 3. Yeh clockwise hai. 12 se 11, 10, 9 ki taraf ulti chaal anticlockwise hai.",
       "en": "Move a finger on the clock along the hand's path: 12 to 1, 2, 3. That is clockwise. The other way, from 12 towards 11, 10, 9, is anticlockwise."
+     },
+     "simpler": {
+      "hi": "12 se 1, 2, 3 ki taraf chalna clockwise hai. 12 se 11, 10, 9 ki taraf ulta chalna anticlockwise hai.",
+      "en": "Going from 12 towards 1, 2, 3 is clockwise. Going the other way, from 12 towards 11, 10, 9, is anticlockwise."
      },
      "board": { "template": "compare@1", "params": { "left": { "title": "clockwise", "items": ["12 se 1, 2, 3"] }, "right": { "title": "anticlockwise", "items": ["12 se 11, 10, 9"] } } },
      "then": {

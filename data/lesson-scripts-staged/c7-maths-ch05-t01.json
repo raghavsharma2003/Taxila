@@ -117,7 +117,7 @@
     },
     "answer": { "hi": "dono angle 75° aur 105° hain", "en": "the two angles are 75° and 105°" },
     "why": {
-     "hi": "75° + 105° = 180° hai, yaani dono milkar seedhi patri bharte hain, aur 105° − 75° = 30° bhi sahi baithta hai",
+     "hi": "75° + 105° = 180°, yaani dono milkar seedhi patri bharte hain, aur 105° − 75° = 30° bhi sahi hai",
      "en": "75° + 105° = 180°, so together they fill the straight track, and 105° − 75° = 30° fits as well"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180, "name": "seedhi patri" }] } }
@@ -180,6 +180,7 @@
       "hi": "Protractor ko seedhi line par rakho: ek siraa 0° par, doosra 180° par. Seedhi line aadha chakkar hai, 180°, aur 90° toh sirf ek kona hai, uska aadha.",
       "en": "Put a protractor on the straight line: one end at 0°, the other at 180°. A straight line is half a turn, 180°, and 90° is only a corner, half of it."
      },
+     "simpler": { "hi": "Seedhi line aadha chakkar hai, 180°. 90° toh sirf ek kona hai, uska aadha.", "en": "A straight line is half a turn, 180°. 90° is only a corner, half of it." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180 }, { "deg": 90 }] } },
      "then": {
       "prompt": {
@@ -202,6 +203,7 @@
       "hi": "Seedhi line par ray ko ghumao: ek angle khulta hai toh bagal wala band hota hai, jod 180° hi rehta hai. Isliye 60° ke bagal wala angle 120° hai, 60° nahi.",
       "en": "Turn the ray on the straight line: when one angle opens, the one next to it closes, and the sum stays 180°. So the angle next to 60° is 120°, not 60°."
      },
+     "simpler": { "hi": "Seedhi line par dono angle milkar hamesha 180° rehte hain. Isliye 60° ke bagal wala angle 120° hai, 60° nahi.", "en": "On a straight line the two angles always add to 180°. So the angle next to 60° is 120°, not 60°." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60 }, { "deg": 120 }] } },
      "then": {
       "prompt": {
@@ -411,6 +413,7 @@
       "hi": "Vertically ka matlab upar-neeche nahi, vertex yaani crossing bindu hai. X ko kitna bhi ghumao, saamne wale angle hamesha bindu ke aar-paar rehte hain, bagal mein nahi.",
       "en": "'Vertically' does not mean up and down; it refers to the vertex, the crossing point. However much you turn the X, opposite angles always stay across the point, never side by side."
      },
+     "simpler": { "hi": "Vertically ka matlab vertex hai, yaani crossing bindu. Saamne wale angle hamesha bindu ke aar-paar hote hain, bagal mein nahi.", "en": "'Vertically' refers to the vertex, the crossing point. Opposite angles are always across that point, never side by side." },
      "board": { "template": "compare@1", "params": { "left": { "title": "vertex", "items": ["crossing bindu"] }, "right": { "title": "saamne wale angle", "items": ["bindu ke aar-paar"] } } },
      "then": {
       "prompt": {
@@ -433,6 +436,7 @@
       "hi": "Ek line ko dheere-dheere ghumao: upar aur neeche wale angle saath mein badhte hain, aur daayein aur baayein wale saath mein ghatte hain. Isliye sirf saamne wale angle barabar hote hain, bagal wale nahi.",
       "en": "Turn one line slowly: the top and bottom angles grow together, and the right and left ones shrink together. So only opposite angles are equal, not neighbouring ones."
      },
+     "simpler": { "hi": "Line ghumao toh saamne wale angle saath mein badhte ya ghatte hain. Isliye sirf saamne wale angle barabar hote hain, bagal wale nahi.", "en": "Turn a line and opposite angles grow or shrink together. So only opposite angles are equal, not neighbouring ones." },
      "board": { "template": "compare@1", "params": { "left": { "title": "upar aur neeche", "items": ["saath mein badhte"] }, "right": { "title": "daayein aur baayein", "items": ["saath mein ghatte"] } } },
      "then": {
       "prompt": {
@@ -556,7 +560,7 @@
     },
     "answer": { "hi": "baaki teeno angle 72°, 108° aur 108° hain", "en": "the other three angles are 72°, 108° and 108°" },
     "why": {
-     "hi": "saamne wale angle barabar hain aur bagal wale milkar 180° banate hain, aur 72° + 108° + 72° + 108° = 360° bhi milta hai",
+     "hi": "saamne wale angle barabar, bagal wale milkar 180°, aur 72° + 108° + 72° + 108° = 360° bhi milta hai",
      "en": "opposite angles are equal and neighbouring ones make 180°, and 72° + 108° + 72° + 108° = 360° checks out too"
     },
     "board": { "template": "angle@1", "params": { "angles": [{ "deg": 72 }] } }
@@ -620,6 +624,7 @@
       "hi": "Ek angle 60° ho toh sirf uske saamne wala angle 60° hota hai. Bagal wale dono angle uske saath seedhi line bharte hain, isliye woh 120° hain.",
       "en": "If one angle is 60°, only the angle opposite it is 60°. The two neighbouring angles fill a straight line with it, so they are 120°."
      },
+     "simpler": { "hi": "60° ke saamne wala angle bhi 60° hai. Bagal wale dono uske saath seedhi line banate hain, isliye woh 120° hain.", "en": "The angle opposite 60° is also 60°. The two neighbours make a straight line with it, so they are 120°." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 60 }, { "deg": 120 }] } },
      "then": {
       "prompt": {
@@ -642,6 +647,7 @@
       "hi": "Bagal wale do angle milkar ek seedhi line banate hain, aur seedhi line 180° hai, 90° nahi. 90° toh sirf ek kona hai, seedhi line ka aadha.",
       "en": "Two neighbouring angles together make a straight line, and a straight line is 180°, not 90°. 90° is only a corner, half of a straight line."
      },
+     "simpler": { "hi": "Bagal wale do angle milkar seedhi line banate hain, yaani 180°, 90° nahi.", "en": "Two neighbouring angles together make a straight line, which is 180°, not 90°." },
      "board": { "template": "angle@1", "params": { "angles": [{ "deg": 180 }, { "deg": 90 }] } },
      "then": {
       "prompt": {
@@ -664,6 +670,7 @@
       "hi": "Saamne wala angle crossing bindu ke aar-paar hota hai: baayein ke saamne daayein, aur upar ke saamne neeche. Baayein wale ke upar jo angle hai, woh uska bagal wala hai.",
       "en": "The opposite angle is across the crossing point: right is opposite left, and bottom is opposite top. The angle above the left one is its neighbour."
      },
+     "simpler": { "hi": "Saamne wala angle bindu ke aar-paar hota hai: baayein ke saamne daayein, upar ke saamne neeche.", "en": "The opposite angle is across the point: right is opposite left, bottom is opposite top." },
      "board": { "template": "compare@1", "params": { "left": { "title": "baayein", "items": ["saamne daayein"] }, "right": { "title": "upar", "items": ["saamne neeche"] } } },
      "then": {
       "prompt": {

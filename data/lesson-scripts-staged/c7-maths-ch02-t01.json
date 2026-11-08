@@ -149,8 +149,8 @@
     },
     "answer": { "hi": "expression 500 − (2 × 55 + 3 × 20) hai, aur Raju ko ₹330 wapas milenge", "en": "the expression is 500 − (2 × 55 + 3 × 20), and Raju gets ₹330 back" },
     "why": {
-     "hi": "pehle har cheez ka daam guna se bana, phir poora bill jod se, aur bracket ne poore bill ko ek saath ₹500 mein se ghataya",
-     "en": "each item's cost came from multiplying, the whole bill from adding, and the brackets took the whole bill away from ₹500 at once"
+     "hi": "har cheez ka daam guna se, poora bill jod se bana, aur bracket ne poora bill ek saath ₹500 mein se ghataya",
+     "en": "each item's cost came from multiplying, the bill from adding, and the brackets took the whole bill from ₹500 at once"
     },
     "board": { "template": "compare@1", "params": { "left": { "title": "Raju", "items": ["2 kg chawal, ₹55 kilo", "3 packet biscuit, ₹20"] }, "right": { "title": "Deta hai", "items": ["₹500 ka note"] } } }
    },
@@ -199,6 +199,7 @@
       "hi": "'40 se 9 kam' mein dot pehle 40 par rakho, kyunki kam 40 se hona hai. Phir 9 peeche jump karo. Jahan se shuru kiya, wahi expression mein pehle aata hai: 40 − 9.",
       "en": "For '9 less than 40', put the dot on 40 first, because it is 40 that becomes less. Then jump 9 back. Where you started comes first in the expression: 40 − 9."
      },
+     "simpler": { "hi": "Jisse kam karna hai, wahan se shuru karo, yahan 40. Phir 9 peeche jao: 40 − 9.", "en": "Start at the number that becomes less, here 40. Then go 9 back: 40 − 9." },
      "board": { "template": "number-line-hop@1", "params": { "start": 40, "hops": [-9] } },
      "then": {
       "prompt": { "hi": "Shabd hain '75 se 8 kam'. Inka expression likho.", "en": "The words are '8 less than 75'. Write their expression." },
@@ -383,6 +384,7 @@
       "hi": "Ek patti socho: pehle uske do hisse 50 aur 30 hain. 30 wale hisse se 1 tukda uthakar 50 wale mein rakh do, toh baad mein hisse 51 aur 29 hain. Tukda sirf ek hisse se doosre mein gaya, poori patti utni hi lambi rahi.",
       "en": "Picture a strip: at first its two parts are 50 and 30. Move 1 block from the 30 part to the 50 part; now the parts are 51 and 29. The block only moved between parts; the whole strip stayed just as long."
      },
+     "simpler": { "hi": "Patti ke hisse 50 aur 30 the, phir 51 aur 29 hue. Tukda sirf ek hisse se doosre mein gaya, poori patti utni hi rahi.", "en": "The strip's parts were 50 and 30, then 51 and 29. A block only moved between parts; the whole strip stayed the same." },
      "board": { "template": "compare@1", "params": { "left": { "title": "Pehle", "items": ["50 + 30"] }, "right": { "title": "Baad mein", "items": ["51 + 29"] } } },
      "then": {
       "prompt": { "hi": "Pehla 68 + 17 hai, doosra 70 + 15. Bina jode batao: kaun bada hai, ya dono barabar hain?", "en": "The first is 68 + 17, the second 70 + 15. Without adding: which is bigger, or are they equal?" },
@@ -402,6 +404,7 @@
       "hi": "Do jebon mein ₹200 hain. Ek jeb se ₹58 nikle, doosri se ₹49. Pehli jeb se zyada nikla, isliye usmein kam bacha: 200 − 58 chhota hai.",
       "en": "Two pockets have ₹200 each. ₹58 came out of one, ₹49 out of the other. More came out of the first pocket, so less is left in it: 200 − 58 is smaller."
      },
+     "simpler": { "hi": "Dono jebon mein ₹200 the. Pehli se ₹58 nikle, doosri se ₹49. Zyada nikla toh kam bacha: 200 − 58 chhota hai.", "en": "Both pockets had ₹200. ₹58 came out of the first, ₹49 out of the second. More out means less left: 200 − 58 is smaller." },
      "board": { "template": "compare@1", "params": { "left": { "title": "200 − 58", "items": ["₹58 nikle"] }, "right": { "title": "200 − 49", "items": ["₹49 nikle"] } } },
      "then": {
       "prompt": { "hi": "Pehla 80 − 19 hai, doosra 80 − 12. Bina ghataye batao, kismein zyada bachta hai: pehle mein ya doosre mein?", "en": "The first is 80 − 19, the second 80 − 12. Without subtracting, which leaves more: the first or the second?" },
@@ -573,6 +576,7 @@
       "hi": "40 + 3 × 5 mein 3 × 5 ko pehle ek block maano: ₹5 ke 3 sikke, ek dher. Kahani yeh banti hai: ₹40 the, aur ₹5 ke 3 sikke mile.",
       "en": "In 40 + 3 × 5, treat 3 × 5 as one block first: three ₹5 coins, one heap. The story becomes: there was ₹40, and three ₹5 coins came in."
      },
+     "simpler": { "hi": "3 × 5 ek dher hai: ₹5 ke 3 sikke. ₹40 the, aur yeh dher mila.", "en": "3 × 5 is one heap: three ₹5 coins. There was ₹40, and this heap came in." },
      "board": { "template": "compare@1", "params": { "left": { "title": "40 + 3 × 5", "items": ["40", "3 × 5 ek block"] }, "right": { "title": "Kahani", "items": ["₹40 the", "₹5 ke 3 sikke mile"] } } },
      "then": {
       "prompt": { "hi": "25 + 6 × 10 ki kahani: ₹25 the, phir ₹10 ke 6 note mile. Ab kitne rupaye hain?", "en": "A story for 25 + 6 × 10: there was ₹25, then six ₹10 notes came in. How many rupees are there now?" },

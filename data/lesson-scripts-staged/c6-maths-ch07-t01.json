@@ -58,7 +58,7 @@
       "prompt": { "hi": "Isi roti ko 4 ki jagah 8 barabar hisson mein baanto. Tab ek hissa poori roti ka kaunsa fractional unit hoga?", "en": "Share this same roti into 8 equal parts instead of 4. Then which fractional unit of the whole roti is one part?" },
       "key": "1/8",
       "accept": ["one eighth", "ek bata aath", "1 by 8", "ek-aathvaan"],
-      "why": { "hi": "roti 8 barabar hisson mein bati, aur ek hissa un 8 mein se 1 hai", "en": "the roti is in 8 equal parts, and one part is 1 of those 8" }
+      "why": { "hi": "roti 8 barabar hisson mein bati, aur ek hissa un 8 mein se 1, yaani 1/8 hai", "en": "the roti is in 8 equal parts, and one part is 1 of those 8, so 1/8" }
      },
      "simpler": { "hi": "Roti 4 barabar hisson mein bati hai, toh ek hissa 1/4 hai. Neeche ka number batata hai ki kitne barabar hisse hain.", "en": "The roti is in 4 equal parts, so one part is 1/4. The bottom number tells how many equal parts there are." }
     },
@@ -156,7 +156,7 @@
      "targets": "c6-maths-ch07-t01-m-unequal-parts",
      "wrongIfMis": "4",
      "board": { "template": "compare@1", "params": { "left": { "title": "Chocolate bar", "items": ["16 cm", "4 tukde"] }, "right": { "title": "Tukde", "items": ["6 cm, 6 cm", "2 cm, 2 cm"] } } },
-     "why": { "hi": "16 cm ka 1/4 4 cm hai, aur koi bhi tukda 4 cm ka nahi", "en": "1/4 of 16 cm is 4 cm, and no piece is 4 cm" },
+     "why": { "hi": "16 cm ka 1/4 4 cm hai, aur koi bhi tukda 4 cm ka nahi, isliye 0", "en": "1/4 of 16 cm is 4 cm, and no piece is 4 cm, so 0" },
      "simpler": { "hi": "Pehle 16 cm ka 1/4 nikalo, yaani 16 ÷ 4. Phir dekho kaunse tukde theek utne lambe hain.", "en": "First find 1/4 of 16 cm, that is 16 ÷ 4. Then see which pieces are exactly that long." }
     },
     {
@@ -189,6 +189,7 @@
       "hi": "Barabar patti ke 3 hisse sab ek hi lambai ke hain, toh har hissa 1/3 hai. Koi tukda tabhi 1/3 hai jab woh is hisse se theek match kare, aur toote bar ke 1 bade aur 2 chhote tukde match nahi karte.",
       "en": "The equal strip's 3 parts are all the same length, so each part is 1/3. A piece is 1/3 only if it matches that part exactly, and the broken bar's 1 big and 2 small pieces do not."
      },
+     "simpler": { "hi": "Barabar patti ka har hissa 1/3 hai. Toote bar ke tukde us hisse se match nahi karte, isliye woh 1/3 nahi hain.", "en": "Each part of the equal strip is 1/3. The broken bar's pieces do not match that part, so they are not 1/3." },
      "board": { "template": "compare@1", "params": { "left": { "title": "Barabar patti", "items": ["3 barabar hisse", "har hissa 1/3"] }, "right": { "title": "Toote bar ke tukde", "items": ["1 bade, 2 chhote"] } } },
      "then": {
       "prompt": {
@@ -211,6 +212,7 @@
       "hi": "1/2 ka matlab hai apne poore ka aadha. 40 cm ki patti ka 1/2 hai 20 cm, aur 10 cm ki patti ka 1/2 sirf 5 cm. Naam ek hi hai, par poora alag, toh lambai bhi alag.",
       "en": "1/2 means half of its own whole. 1/2 of a 40 cm strip is 20 cm, and 1/2 of a 10 cm strip is only 5 cm. The name is the same, but the whole is different, so the length is different too."
      },
+     "simpler": { "hi": "1/2 matlab apne poore ka aadha. 40 cm ka aadha 20 cm hai, aur 10 cm ka aadha sirf 5 cm.", "en": "1/2 means half of its own whole. Half of 40 cm is 20 cm, and half of 10 cm is only 5 cm." },
      "board": { "template": "compare@1", "params": { "left": { "title": "Patti, 40 cm", "items": ["1/2 = 20 cm"] }, "right": { "title": "Patti, 10 cm", "items": ["1/2 = 5 cm"] } } },
      "then": {
       "prompt": {
@@ -274,7 +276,7 @@
       "accept": ["one quarter", "ek-chauthaai", "ek chauthaai", "1 by 4"],
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
       "wrongIfMis": "1/5",
-      "why": { "hi": "wahi line kam hisson mein bate toh har hissa bada hota hai, aur 4 hisse 5 se kam hain", "en": "when the same line is split into fewer parts each part is longer, and 4 parts are fewer than 5" }
+      "why": { "hi": "wahi line kam hisson mein bate toh hissa bada hota hai; 4 hisse 5 se kam, isliye 1/4 bada", "en": "fewer parts of the same line means longer parts; 4 parts are fewer than 5, so 1/4 is longer" }
      },
      "simpler": { "hi": "Line 6 barabar hisson mein hai, toh ek hissa 1/6 hai. Jitne kam hisse, utna lamba har hissa, isliye 1/3 bada hai.", "en": "The line is in 6 equal parts, so one part is 1/6. Fewer parts make each part longer, so 1/3 is bigger." }
     },
@@ -296,7 +298,7 @@
       "accept": ["1/10 1/5 1/3", "1/10 < 1/5 < 1/3", "1/10, 1/5 aur 1/3"],
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
       "wrongIfMis": "1/3, 1/5, 1/10",
-      "why": { "hi": "zyada barabar hisse matlab chhota hissa, aur 10 sabse zyada hisse hain, 3 sabse kam", "en": "more equal parts means a smaller part, and 10 is the most parts, 3 the fewest" }
+      "why": { "hi": "zyada barabar hisse matlab chhota hissa, toh 1/10 sabse chhota, phir 1/5, phir 1/3", "en": "more equal parts means a smaller part, so 1/10 is smallest, then 1/5, then 1/3" }
      },
      "simpler": { "hi": "Pizza jitne zyada doston mein bate, har dost ka hissa utna chhota. 1/2 bada, 1/4 chhota, 1/8 aur bhi chhota.", "en": "The more friends share the pizza, the smaller each share. 1/2 is big, 1/4 is smaller, 1/8 smaller still." }
     }
@@ -372,7 +374,7 @@
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
      "wrongIfMis": "1/2, 1/3, 1/6, 1/9",
      "board": { "template": "compare@1", "params": { "left": { "title": "Lagaya kram", "items": ["1/2, 1/3, 1/6, 1/9"] }, "right": { "title": "Sahi kram", "items": ["sabse chhota pehle"] } } },
-     "why": { "hi": "ek hi poore ke 9 hisse sabse chhote hote hain aur 2 hisse sabse bade", "en": "of one whole, ninths are the smallest parts and halves the biggest" },
+     "why": { "hi": "ek hi poore ke 9 hisse sabse chhote aur 2 sabse bade, isliye 1/9, 1/6, 1/3, 1/2", "en": "of one whole, ninths are smallest and halves biggest, so 1/9, 1/6, 1/3, 1/2" },
      "simpler": { "hi": "Sab ek hi poore ke hisse hain. Neeche ka number jitna bada, hissa utna chhota, toh sabse bade neeche wale number se shuru karo.", "en": "These are all parts of one whole. The bigger the bottom number, the smaller the part, so start with the biggest bottom number." }
     },
     {
@@ -405,6 +407,7 @@
       "hi": "Yeh 0 se 1 ki line 8 barabar hisson mein hai, aur pehla nishaan 1/8 hai. Wahi line 4 hisson mein hoti toh pehla hissa doosre nishaan tak jaata, 2/8 = 1/4. Hisse do guna hue, toh har hissa aadha reh gaya.",
       "en": "This 0-to-1 line has 8 equal parts, and the first mark is 1/8. If the same line were in 4 parts, the first part would reach the second mark, 2/8 = 1/4. Twice as many parts, so each part is half as long."
      },
+     "simpler": { "hi": "Wahi line 8 hisson mein ho toh har hissa 1/8. 4 hisson mein ho toh har hissa 1/4, jo do guna lamba hai.", "en": "The same line in 8 parts makes each part 1/8. In 4 parts each part is 1/4, which is twice as long." },
      "board": { "template": "fraction-line@1", "params": { "den": 8, "from": 0, "to": 1, "marks": [{ "num": 1, "label": "1/8" }, { "num": 2, "label": "2/8 = 1/4" }] } },
      "then": {
       "prompt": {
@@ -416,7 +419,7 @@
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
       "wrongIfMis": "1/10",
       "board": { "template": "compare@1", "params": { "left": { "title": "Ek cake", "items": ["5 doston mein"] }, "right": { "title": "Doosra cake", "items": ["10 doston mein"] } } },
-      "why": { "hi": "ek jaisa cake 5 mein bate toh har hissa 10 mein bate hisse se bada hota hai", "en": "the same cake shared by 5 gives a bigger part than shared by 10" },
+      "why": { "hi": "ek jaisa cake 5 mein bate toh hissa 10 mein bate hisse se bada, isliye 1/5", "en": "the same cake shared by 5 gives a bigger part than shared by 10, so 1/5" },
       "simpler": { "hi": "Dono cake ek jaise hain. Kam doston mein baantne par har ek ko bada hissa milta hai.", "en": "The two cakes are the same. Sharing among fewer friends gives each one a bigger share." }
      }
     }
@@ -557,8 +560,8 @@
     },
     "answer": { "hi": "har bachche ko 5/3 laddoo milta hai, yaani 1 poora laddoo aur 2/3", "en": "each child gets 5/3 of a laddoo, that is 1 whole laddoo and 2/3 more" },
     "why": {
-     "hi": "har bachche ko har laddoo se 1/3 mila aur laddoo 5 the, aur laddoo bachchon se zyada hain, isliye hissa 1 se zyada hai",
-     "en": "each child got 1/3 from each of the 5 laddoos, and there are more laddoos than children, so the share is more than 1"
+     "hi": "har bachche ko har laddoo se 1/3 mila aur laddoo 5 the; laddoo bachchon se zyada, isliye hissa 1 se zyada",
+     "en": "each child got 1/3 from each of 5 laddoos; there are more laddoos than children, so the share is over 1"
     },
     "board": { "template": "compare@1", "params": { "left": { "title": "5 laddoo", "items": ["har laddoo: 3 hisse"] }, "right": { "title": "3 bachche", "items": ["15 hisse baante"] } } }
    },
@@ -602,7 +605,7 @@
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "6/4",
      "board": { "template": "compare@1", "params": { "left": { "title": "4 roti", "items": ["6 bachche"] }, "right": { "title": "Likha", "items": ["6/4 roti"] } } },
-     "why": { "hi": "baanti jaane wali 4 roti upar aati hain aur 6 bachche neeche", "en": "the 4 rotis being shared go on top and the 6 children below" },
+     "why": { "hi": "baanti jaane wali 4 roti upar aati hain aur 6 bachche neeche, yaani 4/6", "en": "the 4 rotis being shared go on top and the 6 children below, so 4/6" },
      "simpler": { "hi": "Jo cheez baanti ja rahi hai woh upar aati hai, aur baantne wale neeche. Yahan roti 4 hain aur bachche 6.", "en": "The thing being shared goes on top and the sharers go below. Here there are 4 rotis and 6 children." }
     }
    ],
@@ -620,6 +623,7 @@
       "hi": "2 roti 5 bachchon mein baanto: har roti ke 5 barabar hisse, aur har bachche ko har roti se 1/5. Do roti se 1/5 + 1/5 = 2/5. Roti bachchon se kam hain, toh hissa 1 se kam hi hoga, 5/2 nahi.",
       "en": "Share 2 rotis among 5 children: 5 equal parts of each roti, and every child gets 1/5 from each roti. Two rotis give 1/5 + 1/5 = 2/5. There are fewer rotis than children, so the share must be less than 1, not 5/2."
      },
+     "simpler": { "hi": "Har bachche ko har roti se 1/5 milta hai, toh 2 roti se 2/5. Roti bachchon se kam hain, isliye hissa 1 se kam hai.", "en": "Each child gets 1/5 from each roti, so 2/5 from 2 rotis. There are fewer rotis than children, so the share is less than 1." },
      "board": { "template": "compare@1", "params": { "left": { "title": "Roti 1", "items": ["5 barabar hisse", "har bachche ko 1/5"] }, "right": { "title": "Roti 2", "items": ["5 barabar hisse", "har bachche ko 1/5"] } } },
      "then": {
       "prompt": {
