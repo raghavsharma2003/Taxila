@@ -85,6 +85,7 @@ export const VIEWS: Record<string, MakeView> = {
   "guna/field": makeGunaView,
   "guna/pack": makeGunaView,
   "guna/story": makeGunaView,
+  "guna/yard": makeGunaView,
   "kram/grow": makeKramView,
   "kram/machine": makeKramView,
   "kram/beats": makeKramView,
