@@ -139,6 +139,42 @@
       "representation": "Squares of 2, 20, 200 written one under the other: 4, 400, 40000",
       "moveShape": "Child spots how the zeros grow two at a time; ask what happens to the zeros when a number ending in 0 is multiplied by itself"
      }
+    },
+    {
+     "id": "c8-maths-ch01-t01-m-odd-sum-last-term",
+     "skillId": "c8-maths-ch01-t01-s2",
+     "source": "A Square and A Cube — the sum of the first n odd numbers is n²",
+     "belief": "Squares the last odd number in the sum instead of counting how many odd numbers are added (1 + 3 + … + 13 = 13²)",
+     "signs": [
+      "Writes 1 + 3 + 5 + 7 + 9 + 11 + 13 = 169",
+      "Never counts the terms before squaring",
+      "Gives a sum bigger than the terms could possibly add up to"
+     ],
+     "diagnostic": {
+      "prompt_en": "Gopal says 1 + 3 + 5 + 7 + 9 + 11 + 13 = 13² = 169. What is the sum?",
+      "prompt_hi": "Gopal kehta hai 1 + 3 + 5 + 7 + 9 + 11 + 13 = 13² = 169. Sahi sum kya hai?",
+      "options": [
+       {
+        "text": "49, because 7 odd numbers are added and 7² = 49",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "169, because the last odd number is 13",
+        "misconceptionId": "c8-maths-ch01-t01-m-odd-sum-last-term",
+        "correct": false
+       },
+       {
+        "text": "91, because 7 × 13 = 91",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A dot square built from L-shaped layers: 1 dot, then 3, then 5, each odd number one new L around the corner",
+      "moveShape": "one odd number = one L-layer → n layers make an n by n square → find n from the last odd number: n = (last + 1) ÷ 2 → square n, not the last number"
+     }
     }
    ],
    "items": [
@@ -442,7 +478,8 @@
      "The nth odd number is 2n − 1, so 19 is the ___th odd number.",
      "The sum of the first n odd numbers is ___.",
      "So the sum is 10² = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch01-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -464,6 +501,62 @@
     "rangoli dot grids",
     "laddoo trays",
     "cricket ground seating blocks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch01-t01-s1",
+     "source": "A Square and A Cube — square numbers as n × n arrangements",
+     "problem": "For the school assembly, Ravi has 121 square tiles and Meena has 130. Each wants to lay all of their tiles as one full square with no tile left over. Who can do it?",
+     "givens": [
+      "Ravi: 121 tiles",
+      "Meena: 130 tiles",
+      "a full square of n rows uses n × n tiles"
+     ],
+     "find": "whether 121 and 130 are square numbers",
+     "steps": [
+      {
+       "do": "square the whole numbers near the totals",
+       "result": "10 × 10 = 100, 11 × 11 = 121, 12 × 12 = 144"
+      },
+      {
+       "do": "121 matches a square",
+       "result": "121 = 11 × 11 → 11 rows of 11"
+      },
+      {
+       "do": "130 sits between two neighbouring squares",
+       "result": "121 < 130 < 144 → no whole number n gives n × n = 130"
+      }
+     ],
+     "answer": "Ravi can (121 = 11², an 11 by 11 square); Meena cannot, since 130 lies between 11² = 121 and 12² = 144",
+     "why": "square number = n × n for a whole number n → list the squares around the number → it is a square only if it equals one of them, never if it falls between two neighbours"
+    },
+    {
+     "skillId": "c8-maths-ch01-t01-s3",
+     "source": "A Square and A Cube — last digits of squares and the even number of zeros at the end of a square",
+     "problem": "Without finding any square root, decide which of 2,437, 81,000 and 4,900 cannot be perfect squares. For the one that is left, check whether it really is a square.",
+     "givens": [
+      "2,437",
+      "81,000",
+      "4,900"
+     ],
+     "find": "which numbers are ruled out, and whether the remaining one is a square",
+     "steps": [
+      {
+       "do": "squares end only in 0, 1, 4, 5, 6 or 9 → check last digits",
+       "result": "2,437 ends in 7 → not a perfect square"
+      },
+      {
+       "do": "a square ends in an even number of zeros → count zeros",
+       "result": "81,000 ends in 3 zeros (odd) → not a perfect square"
+      },
+      {
+       "do": "4,900 passes both tests → the clue only says 'may be', so test it",
+       "result": "70 × 70 = 4,900"
+      }
+     ],
+     "answer": "2,437 and 81,000 cannot be perfect squares; 4,900 is a perfect square, 4,900 = 70²",
+     "why": "last digit 2, 3, 7 or 8, or an odd number of zeros → never a square → passing these tests is not proof → confirm by finding n with n × n equal to the number"
+    }
    ]
   },
   {
@@ -600,6 +693,42 @@
      "remediation": {
       "representation": "Prime factors shown as matched pairs of coloured beads, one bead from each pair moved to a 'root' tray",
       "moveShape": "Child groups the factors into two identical halves and checks that one half times itself is the number"
+     }
+    },
+    {
+     "id": "c8-maths-ch01-t02-m-sqrt-nearest-whole",
+     "skillId": "c8-maths-ch01-t02-s2",
+     "source": "A Square and A Cube — estimating square roots of numbers that are not perfect squares",
+     "belief": "Thinks every number has a whole-number square root, so writes the root of a non-square as the nearest whole number (√50 = 7)",
+     "signs": [
+      "Writes √50 = 7 because 7 × 7 = 49 is 'close'",
+      "Does not check whether the square of the answer equals the number",
+      "Says a number lies 'at' a whole number instead of between two"
+     ],
+     "diagnostic": {
+      "prompt_en": "Ankit says √50 = 7. Which statement about √50 is correct?",
+      "prompt_hi": "Ankit kehta hai √50 = 7. √50 ke baare mein kaunsi baat sahi hai?",
+      "options": [
+       {
+        "text": "√50 lies between 7 and 8, because 7² = 49 < 50 < 64 = 8²",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "√50 = 7, because 7² = 49 is the square closest to 50",
+        "misconceptionId": "c8-maths-ch01-t02-m-sqrt-nearest-whole",
+        "correct": false
+       },
+       {
+        "text": "√50 = 25, because half of 50 is 25",
+        "misconceptionId": "c8-maths-ch01-t02-m-sqrt-half",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A number line with the squares 36, 49, 64 marked above 6, 7, 8 and the number 50 marked just past 49",
+      "moveShape": "square the candidate → 7² = 49, not 50 → 50 sits between 49 and 64 → so √50 sits between 7 and 8, just above 7 → a whole-number root exists only for a perfect square"
      }
     }
    ],
@@ -907,7 +1036,8 @@
      "So 1,764 = (2 × 2) × (3 × 3) × (___ × ___).",
      "Take one from each pair: 2 × 3 × 7 = ___.",
      "Check: 42 × 42 = ___, so √1,764 = 42."
-    ]
+    ],
+    "skillId": "c8-maths-ch01-t02-s1"
    },
    "formats": {
     "primary": "F2",
@@ -929,6 +1059,63 @@
     "floor tiles",
     "chess board",
     "school assembly ground"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch01-t02-s2",
+     "source": "A Square and A Cube — estimating the square root of a non-square number between consecutive whole numbers",
+     "problem": "Harpreet's farm has a square field of area 300 m². Between which two consecutive whole numbers of metres does the length of its side lie?",
+     "givens": [
+      "square field",
+      "area = 300 m²"
+     ],
+     "find": "the two consecutive whole numbers between which √300 lies",
+     "steps": [
+      {
+       "do": "side = √300 → look for the squares just below and just above 300",
+       "result": "17 × 17 = 289"
+      },
+      {
+       "do": "next square up",
+       "result": "18 × 18 = 324"
+      },
+      {
+       "do": "place 300 between them",
+       "result": "289 < 300 < 324 → 17 < √300 < 18"
+      }
+     ],
+     "answer": "The side is between 17 m and 18 m (17² = 289 < 300 < 324 = 18²)",
+     "why": "bigger number → bigger square root → trap the number between two neighbouring squares → its root is trapped between their roots"
+    },
+    {
+     "skillId": "c8-maths-ch01-t02-s3",
+     "source": "A Square and A Cube — last digit of a square and of its square root; locating the root between multiples of 10",
+     "problem": "2,116 is a perfect square. Find √2,116 by first reasoning about its last digit, without prime factorisation.",
+     "givens": [
+      "2,116 is a perfect square"
+     ],
+     "find": "√2,116",
+     "steps": [
+      {
+       "do": "square ends in 6 → root ends in 4 or 6",
+       "result": "4 × 4 = 16 and 6 × 6 = 36"
+      },
+      {
+       "do": "trap 2,116 between squares of tens",
+       "result": "40 × 40 = 1,600 and 50 × 50 = 2,500 → root is 44 or 46"
+      },
+      {
+       "do": "compare with the square of the middle number",
+       "result": "45 × 45 = 2,025 < 2,116 → root is above 45 → 46"
+      },
+      {
+       "do": "check",
+       "result": "46 × 46 = 2,116"
+      }
+     ],
+     "answer": "√2,116 = 46",
+     "why": "last digit of a square depends only on the root's last digit → only 4 or 6 can give 6 → squares of tens give the tens digit → 45² splits the two candidates"
+    }
    ]
   },
   {
@@ -2059,7 +2246,8 @@
      "After 1 fold: 2; after 2 folds: 2 × 2 = ___.",
      "After 7 folds: 2 multiplied ___ times = 2⁷.",
      "2⁷ = ___ layers."
-    ]
+    ],
+    "skillId": "c8-maths-ch02-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -2081,6 +2269,66 @@
     "chessboard and rice grains",
     "bank savings",
     "bacteria in curd"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch02-t01-s2",
+     "source": "Power Play — evaluating powers, including powers of negative numbers",
+     "problem": "Simran has to evaluate 3⁴, (−3)⁴ and (−3)³. Find each value and say which of them are negative.",
+     "givens": [
+      "3⁴",
+      "(−3)⁴",
+      "(−3)³"
+     ],
+     "find": "the three values and their signs",
+     "steps": [
+      {
+       "do": "3⁴ → four 3s multiplied",
+       "result": "3 × 3 × 3 × 3 = 81"
+      },
+      {
+       "do": "(−3)³ → three (−3)s multiplied; a pair of negatives gives a positive",
+       "result": "(−3) × (−3) × (−3) = −27"
+      },
+      {
+       "do": "(−3)⁴ → one more (−3)",
+       "result": "(−27) × (−3) = 81"
+      },
+      {
+       "do": "count the negative factors",
+       "result": "even number of (−3)s → positive; odd number → negative"
+      }
+     ],
+     "answer": "3⁴ = 81, (−3)⁴ = 81, (−3)³ = −27; only (−3)³ is negative",
+     "why": "exponent = how many times the base is multiplied → negative factors cancel in pairs → even exponent leaves a positive, odd exponent leaves one negative"
+    },
+    {
+     "skillId": "c8-maths-ch02-t01-s3",
+     "source": "Power Play — repeated addition (linear growth) against repeated multiplication (exponential growth)",
+     "problem": "Dadi puts ₹1 in Tara's money box today. Plan A: on each of the next 10 days, ₹2 is put into the box. Plan B: on each of the next 10 days, the money in the box is doubled. How much is in the box after those 10 days in each plan?",
+     "givens": [
+      "both plans start at ₹1",
+      "Plan A: + ₹2 each day for 10 days",
+      "Plan B: × 2 each day for 10 days"
+     ],
+     "find": "the amount after 10 days in each plan",
+     "steps": [
+      {
+       "do": "Plan A → 2 added ten times",
+       "result": "1 + 2 × 10 = 21"
+      },
+      {
+       "do": "Plan B → 2 multiplied ten times → 1 × 2¹⁰",
+       "result": "2, 4, 8, 16, 32, 64, 128, 256, 512, 1,024"
+      },
+      {
+       "do": "compare",
+       "result": "₹1,024 against ₹21"
+      }
+     ],
+     "answer": "Plan A gives ₹21; Plan B gives ₹1,024 (2¹⁰)",
+     "why": "adding 2 grows by the same amount each day → doubling grows by the whole amount so far → each step is bigger than the last → powers soon leave repeated addition far behind"
+    }
    ]
   },
   {
@@ -2540,7 +2788,8 @@
      "Denominator: (3²)³ = 3 to the power ___.",
      "Divide: 3⁹ ÷ 3⁶ = 3 to the power ___.",
      "Evaluate: 3³ = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch02-t02-s1"
    },
    "formats": {
     "primary": "F2",
@@ -2562,6 +2811,68 @@
     "cell division",
     "folding paper",
     "cricket tournament knockouts"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch02-t02-s2",
+     "source": "Power Play — dividing powers with the same base; the zero exponent",
+     "problem": "A godown in Nagpur has 2⁹ bags of rice. They are shared equally among 2⁵ trucks. How many bags go in each truck? Then use the same rule on 2⁵ ÷ 2⁵ to find 2⁰.",
+     "givens": [
+      "2⁹ bags",
+      "2⁵ trucks, equal shares"
+     ],
+     "find": "bags per truck, and the value of 2⁰",
+     "steps": [
+      {
+       "do": "same base → subtract exponents",
+       "result": "2⁹ ÷ 2⁵ = 2⁹⁻⁵ = 2⁴"
+      },
+      {
+       "do": "evaluate",
+       "result": "2 × 2 × 2 × 2 = 16"
+      },
+      {
+       "do": "check with the numbers",
+       "result": "512 ÷ 32 = 16"
+      },
+      {
+       "do": "2⁵ ÷ 2⁵ two ways: rule and plain division",
+       "result": "2⁵⁻⁵ = 2⁰, and 32 ÷ 32 = 1 → 2⁰ = 1"
+      }
+     ],
+     "answer": "16 bags per truck (2⁴); 2⁰ = 1",
+     "why": "a⁹ ÷ a⁵ → five pairs of a cancel → a⁴ left → same base: subtract exponents → a number divided by itself is 1 → so a⁰ = 1, never 0"
+    },
+    {
+     "skillId": "c8-maths-ch02-t02-s3",
+     "source": "Power Play — power of a power and power of a product",
+     "problem": "Simplify (2³)⁴ and find its value. Then find 4³ × 25³ quickly.",
+     "givens": [
+      "(2³)⁴",
+      "4³ × 25³"
+     ],
+     "find": "the value of (2³)⁴ and of 4³ × 25³",
+     "steps": [
+      {
+       "do": "(2³)⁴ → four groups of three 2s → multiply exponents",
+       "result": "(2³)⁴ = 2¹²"
+      },
+      {
+       "do": "2¹² = 2⁶ × 2⁶",
+       "result": "64 × 64 = 4,096"
+      },
+      {
+       "do": "same exponent → pair the bases: 4³ × 25³ = (4 × 25)³",
+       "result": "4 × 25 = 100"
+      },
+      {
+       "do": "cube the product",
+       "result": "100 × 100 × 100 = 10,00,000"
+      }
+     ],
+     "answer": "(2³)⁴ = 2¹² = 4,096; 4³ × 25³ = 100³ = 10,00,000",
+     "why": "power of a power → the base repeats exponent × exponent times → multiply exponents → equal exponents → each 4 pairs with a 25 → (ab)ⁿ = aⁿ × bⁿ"
+    }
    ]
   },
   {
@@ -3031,7 +3342,8 @@
      "So 0.000072 = 7.2 × 10 to the power ___.",
      "Same 7.2, and 10⁻⁵ is ___ than 10⁻³.",
      "So 0.000072 ___ 7.2 × 10⁻³."
-    ]
+    ],
+    "skillId": "c8-maths-ch02-t03-s3"
    },
    "formats": {
     "primary": "F3",
@@ -3053,6 +3365,64 @@
     "India's population",
     "phone storage",
     "ISRO missions"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch02-t03-s1",
+     "source": "Power Play — negative exponents as reciprocals (continuing the pattern 10², 10¹, 10⁰, 10⁻¹, …)",
+     "problem": "Write 3⁻² and 10⁻³ as fractions, and write 10⁻³ as a decimal. Then show that 3⁻² × 3² = 1.",
+     "givens": [
+      "3⁻²",
+      "10⁻³"
+     ],
+     "find": "3⁻² and 10⁻³ as fractions, 10⁻³ as a decimal, and the product 3⁻² × 3²",
+     "steps": [
+      {
+       "do": "negative exponent → reciprocal of the positive power",
+       "result": "3⁻² = 1/3² = 1/9"
+      },
+      {
+       "do": "same for 10⁻³",
+       "result": "10⁻³ = 1/10³ = 1/1000 = 0.001"
+      },
+      {
+       "do": "multiply by the matching positive power",
+       "result": "1/9 × 9 = 1"
+      }
+     ],
+     "answer": "3⁻² = 1/9; 10⁻³ = 1/1000 = 0.001; 3⁻² × 3² = 1",
+     "why": "each step down the exponent divides by the base once more → below 0 we get 1/a, 1/a², … → a⁻ⁿ = 1/aⁿ is a positive fraction, never a negative number"
+    },
+    {
+     "skillId": "c8-maths-ch02-t03-s2",
+     "source": "Power Play — writing large numbers in scientific notation and back",
+     "problem": "A big cricket stadium in Ahmedabad seats about 1,32,000 people. Write this number in scientific notation. Then write 2.5 × 10⁶ as an ordinary number.",
+     "givens": [
+      "1,32,000",
+      "2.5 × 10⁶"
+     ],
+     "find": "1,32,000 in scientific notation, and 2.5 × 10⁶ in ordinary form",
+     "steps": [
+      {
+       "do": "first part must be at least 1 and less than 10",
+       "result": "1.32"
+      },
+      {
+       "do": "count the places the point moves left from 1,32,000 to 1.32",
+       "result": "5 places → 1,32,000 = 1.32 × 10⁵"
+      },
+      {
+       "do": "2.5 × 10⁶ → move the point 6 places right",
+       "result": "2.5 × 1000000 = 2500000"
+      },
+      {
+       "do": "group in the Indian system",
+       "result": "25,00,000 (25 lakh)"
+      }
+     ],
+     "answer": "1,32,000 = 1.32 × 10⁵; 2.5 × 10⁶ = 25,00,000",
+     "why": "scientific notation = (number from 1 up to 10) × power of 10 → each place the point moves = one factor of 10 → the exponent counts the moves"
+    }
    ]
   },
   {
@@ -4162,7 +4532,8 @@
      "13 − 8 = 5; 5 − 4 = ___; 2 is not used; 1 − 1 = 0.",
      "Places 32, 16, 8, 4, 2, 1 → 1, 0, 1, 1, ___, 1.",
      "45 = ___ in base 2."
-    ]
+    ],
+    "skillId": "c8-maths-ch03-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -4184,6 +4555,72 @@
     "egg trays",
     "Brahmi numerals",
     "money in notes and coins"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch03-t02-s1",
+     "source": "A Story of Numbers — the Indian base-10 place value system with zero as a placeholder",
+     "problem": "A school library in Jaipur has 60,408 books. Expand 60,408 using powers of 10, and say what each 0 does.",
+     "givens": [
+      "60,408"
+     ],
+     "find": "the expanded form of 60,408 and the job of its zeros",
+     "steps": [
+      {
+       "do": "read each digit with its place",
+       "result": "6 ten thousands, 0 thousands, 4 hundreds, 0 tens, 8 ones"
+      },
+      {
+       "do": "write the places as powers of 10",
+       "result": "6 × 10⁴ + 0 × 10³ + 4 × 10² + 0 × 10¹ + 8 × 1"
+      },
+      {
+       "do": "check the total",
+       "result": "6 × 10000 + 4 × 100 + 8 = 60,408"
+      },
+      {
+       "do": "drop the zeros and compare",
+       "result": "648 is a different number → the zeros hold the empty places"
+      }
+     ],
+     "answer": "60,408 = 6 × 10⁴ + 0 × 10³ + 4 × 10² + 0 × 10¹ + 8 × 1; each 0 marks an empty place so the 6 and 4 stay in the right places",
+     "why": "a digit's value = digit × power of 10 for its place → an empty place still needs a symbol → 0 keeps every other digit in its place"
+    },
+    {
+     "skillId": "c8-maths-ch03-t02-s3",
+     "source": "A Story of Numbers — grouping into bundles: the idea of a base other than 10",
+     "problem": "Rekha bundles 27 matchsticks in groups of 4, and every 4 bundles into one big bundle. Write 27 in base 4, and say which digits base 4 needs.",
+     "givens": [
+      "27 matchsticks",
+      "bundle = 4 sticks",
+      "big bundle = 4 bundles"
+     ],
+     "find": "27 in base 4, and the digits base 4 uses",
+     "steps": [
+      {
+       "do": "size of a big bundle",
+       "result": "4 × 4 = 16 sticks"
+      },
+      {
+       "do": "take out one big bundle",
+       "result": "27 − 16 = 11"
+      },
+      {
+       "do": "make bundles of 4 from what is left",
+       "result": "11 = 2 × 4 + 3"
+      },
+      {
+       "do": "write big bundles, bundles, loose sticks",
+       "result": "27 = 123 in base 4"
+      },
+      {
+       "do": "a place can never reach 4 → it becomes a bundle",
+       "result": "digits needed: 0, 1, 2, 3"
+      }
+     ],
+     "answer": "27 = 123 in base 4 (1 sixteen, 2 fours, 3 ones); base 4 uses only the digits 0, 1, 2 and 3",
+     "why": "base = bundle size → each place is a bundle of the place before → a place full with the base count rolls into the next place → so digits run from 0 to base − 1"
+    }
    ]
   },
   {
@@ -5360,7 +5797,8 @@
      "A + B = 75° + 110° = ___.",
      "C + D = 360° − 185° = ___.",
      "C = D, so C = 175° ÷ 2 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch04-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -5382,6 +5820,69 @@
     "kites",
     "notebook doodles",
     "road junctions"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch04-t02-s1",
+     "source": "Quadrilaterals — angle sum of a quadrilateral by drawing a diagonal to make two triangles",
+     "problem": "In a quadrilateral flower bed PQRS, the diagonal PR splits it into triangles PQR and PRS. In triangle PQR, ∠Q = 75°, ∠QPR = 40° and ∠QRP = 65°. In triangle PRS, ∠S = 100°, ∠SPR = 30° and ∠SRP = 50°. Find ∠P and ∠R of the quadrilateral and show that its four angles add up to 360°.",
+     "givens": [
+      "triangle PQR: ∠Q = 75°, ∠QPR = 40°, ∠QRP = 65°",
+      "triangle PRS: ∠S = 100°, ∠SPR = 30°, ∠SRP = 50°"
+     ],
+     "find": "∠P, ∠R, and the sum of the four angles of PQRS",
+     "steps": [
+      {
+       "do": "each triangle's angles → 180°",
+       "result": "40 + 75 + 65 = 180 and 30 + 100 + 50 = 180"
+      },
+      {
+       "do": "diagonal splits ∠P and ∠R into two parts → add the parts",
+       "result": "∠P = 40° + 30° = 70°, ∠R = 65° + 50° = 115°"
+      },
+      {
+       "do": "add the four angles of PQRS",
+       "result": "70 + 75 + 115 + 100 = 360"
+      },
+      {
+       "do": "same angles as the two triangles together",
+       "result": "180 + 180 = 360"
+      }
+     ],
+     "answer": "∠P = 70°, ∠R = 115°; ∠P + ∠Q + ∠R + ∠S = 70° + 75° + 115° + 100° = 360°",
+     "why": "a diagonal cuts the quadrilateral into two triangles → the six triangle angles make up exactly the four corner angles → 2 × 180° = 360°"
+    },
+    {
+     "skillId": "c8-maths-ch04-t02-s3",
+     "source": "Quadrilaterals — the angle sum of every quadrilateral is 360°, whatever its size or shape",
+     "problem": "Aditi draws a quadrilateral in her notebook with angles 90°, 90°, 60° and 120°. The school marks a quadrilateral on the playground with the same shape but 100 times bigger. Kabir draws a very different, thin quadrilateral with angles 30°, 150°, 45° and 135°. Find the angle sum of each and explain why they match.",
+     "givens": [
+      "notebook quadrilateral: 90°, 90°, 60°, 120°",
+      "playground: same shape, 100 times bigger",
+      "Kabir's quadrilateral: 30°, 150°, 45°, 135°"
+     ],
+     "find": "the three angle sums, and why they are equal",
+     "steps": [
+      {
+       "do": "add the notebook angles",
+       "result": "90 + 90 + 60 + 120 = 360"
+      },
+      {
+       "do": "same shape, bigger → sides grow, angles stay",
+       "result": "playground angles 90°, 90°, 60°, 120° → sum 360°"
+      },
+      {
+       "do": "add Kabir's angles",
+       "result": "30 + 150 + 45 + 135 = 360"
+      },
+      {
+       "do": "reason: any quadrilateral → one diagonal → two triangles",
+       "result": "2 × 180 = 360"
+      }
+     ],
+     "answer": "All three have an angle sum of 360°",
+     "why": "angle sum comes from two triangles, not from side lengths → enlarging changes lengths, not angles → every quadrilateral splits into two triangles → always 2 × 180° = 360°"
+    }
    ]
   },
   {
@@ -5835,7 +6336,8 @@
      "Adjacent angles add to ___: angle Q = 180° − 60° = 120°.",
      "Angle S = angle Q = ___.",
      "Its angles are not 90°, so it ___ a square."
-    ]
+    ],
+    "skillId": "c8-maths-ch04-t03-s1"
    },
    "formats": {
     "primary": "F3",
@@ -5857,6 +6359,69 @@
     "tile patterns",
     "bangle boxes",
     "window grills"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch04-t03-s2",
+     "source": "Quadrilaterals — trapezium: a pair of parallel sides, with the angles a transversal makes between parallel lines (prior class)",
+     "problem": "A table top PQRS is a trapezium with PQ ∥ SR. ∠P = 70° and ∠Q = 55°. Find ∠S and ∠R.",
+     "givens": [
+      "PQ ∥ SR",
+      "∠P = 70°",
+      "∠Q = 55°"
+     ],
+     "find": "∠S and ∠R",
+     "steps": [
+      {
+       "do": "PS cuts the parallel sides → angles on the same side add to 180°",
+       "result": "∠P + ∠S = 180°"
+      },
+      {
+       "do": "find ∠S",
+       "result": "180 − 70 = 110"
+      },
+      {
+       "do": "QR cuts the parallel sides → ∠Q + ∠R = 180°",
+       "result": "180 − 55 = 125"
+      },
+      {
+       "do": "check with the angle sum of a quadrilateral",
+       "result": "70 + 55 + 125 + 110 = 360"
+      }
+     ],
+     "answer": "∠S = 110°, ∠R = 125°",
+     "why": "trapezium → one pair of parallel sides → each slanting side is a transversal → the two angles on that side add to 180° → total 360° confirms"
+    },
+    {
+     "skillId": "c8-maths-ch04-t03-s3",
+     "source": "Quadrilaterals — classifying by properties and the family of quadrilaterals (square, rectangle, rhombus, parallelogram)",
+     "problem": "A quadrilateral road sign has all four sides 7 cm, and one of its angles is 90°. Give its most precise name, and list the other family names it also has.",
+     "givens": [
+      "all four sides 7 cm",
+      "one angle = 90°"
+     ],
+     "find": "the most precise name and the other names",
+     "steps": [
+      {
+       "do": "all sides equal",
+       "result": "rhombus → so a parallelogram"
+      },
+      {
+       "do": "parallelogram → adjacent angles add to 180°, opposite angles equal",
+       "result": "180 − 90 = 90 → all four angles 90°"
+      },
+      {
+       "do": "all angles 90°",
+       "result": "rectangle"
+      },
+      {
+       "do": "rectangle with all sides equal",
+       "result": "square"
+      }
+     ],
+     "answer": "A square; it is also a rectangle, a rhombus and a parallelogram",
+     "why": "name by properties, not by how it is turned → equal sides give rhombus → one right angle in a parallelogram forces all four → right angles + equal sides = square → a square keeps every family name above it"
+    }
    ]
   },
   {
@@ -7683,7 +8248,8 @@
      "Add the four products: 2x² − 8x + 3x − ___.",
      "Combine like terms: 2x² − ___ − 12.",
      "Check with x = 1: (5)(−3) = ___ and 2 − 5 − 12 = −15."
-    ]
+    ],
+    "skillId": "c8-maths-ch06-t01-s3"
    },
    "formats": {
     "primary": "F3",
@@ -7705,6 +8271,63 @@
     "garden plots",
     "school fete stalls",
     "cricket run totals"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch06-t01-s1",
+     "source": "We Distribute, Yet Things Multiply — distributivity: the outside number multiplies every term inside the bracket",
+     "problem": "Expand −5(3m − 2), and check your answer by putting m = 1.",
+     "givens": [
+      "the expression −5(3m − 2)"
+     ],
+     "find": "the expanded form of −5(3m − 2)",
+     "steps": [
+      {
+       "do": "−5 × first term inside",
+       "result": "−5 × 3m = −15m"
+      },
+      {
+       "do": "−5 × second term inside (−2)",
+       "result": "−5 × −2 = 10"
+      },
+      {
+       "do": "write both products together",
+       "result": "−15m + 10"
+      },
+      {
+       "do": "check with m = 1",
+       "result": "−5 × (3 − 2) = −5 and −15 + 10 = −5"
+      }
+     ],
+     "answer": "−5(3m − 2) = −15m + 10",
+     "why": "the outside number multiplies every term inside → −5 times −2 is +10 → the check at m = 1 gives −5 both ways"
+    },
+    {
+     "skillId": "c8-maths-ch06-t01-s2",
+     "source": "We Distribute, Yet Things Multiply — distributivity for mental multiplication (23 × 102 = 23 × 100 + 23 × 2)",
+     "problem": "A school buys 48 chairs at ₹105 each. Find the total cost in your head by splitting 105.",
+     "givens": [
+      "48 chairs",
+      "₹105 per chair"
+     ],
+     "find": "the total cost",
+     "steps": [
+      {
+       "do": "split 105 into friendly parts",
+       "result": "105 = 100 + 5"
+      },
+      {
+       "do": "distribute 48 over both parts",
+       "result": "48 × 105 = 48 × 100 + 48 × 5"
+      },
+      {
+       "do": "multiply each part and add",
+       "result": "4800 + 240 = 5040"
+      }
+     ],
+     "answer": "₹5,040",
+     "why": "105 = 100 + 5 → 48 multiplies each part → 4,800 and 240 are easy to add in the head"
+    }
    ]
   },
   {
@@ -9471,7 +10094,8 @@
      "Ratio: 750 : ___.",
      "The HCF of 750 and 500 is ___.",
      "750 ÷ 250 : 500 ÷ 250 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch07-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -9493,6 +10117,68 @@
     "cricket strike rates",
     "class girls and boys",
     "rice and dal"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch07-t01-s1",
+     "source": "Proportional Reasoning-1 — ratios: the order of the terms matters; part : part and part : whole",
+     "problem": "A class library has 14 Hindi books and 9 English books. Write the ratio of English books to Hindi books, and the ratio of Hindi books to all the books.",
+     "givens": [
+      "14 Hindi books",
+      "9 English books"
+     ],
+     "find": "English : Hindi, and Hindi : all books",
+     "steps": [
+      {
+       "do": "first-named quantity goes first",
+       "result": "English : Hindi = 9 : 14"
+      },
+      {
+       "do": "find the total",
+       "result": "14 + 9 = 23"
+      },
+      {
+       "do": "Hindi first, then the total",
+       "result": "Hindi : all books = 14 : 23"
+      },
+      {
+       "do": "check for a common factor",
+       "result": "9 and 14 share none; 14 and 23 share none → already simplest"
+      }
+     ],
+     "answer": "English : Hindi = 9 : 14; Hindi : all books = 14 : 23",
+     "why": "the words decide the order → 'English to Hindi' puts 9 first → part : whole needs the total 23 as the second term"
+    },
+    {
+     "skillId": "c8-maths-ch07-t01-s3",
+     "source": "Proportional Reasoning-1 — equivalent ratios: multiply or divide both terms by the same number",
+     "problem": "A recipe for khichdi uses rice and water in the ratio 2 : 3 (cups). Asha puts 6 cups of rice in a big pot. How many cups of water keep the same ratio? Her brother says 7 cups, because he added 4 to both terms. Is he right?",
+     "givens": [
+      "rice : water = 2 : 3",
+      "6 cups of rice"
+     ],
+     "find": "the cups of water for 6 cups of rice, and whether 7 cups is right",
+     "steps": [
+      {
+       "do": "how many times the rice grew",
+       "result": "6 ÷ 2 = 3"
+      },
+      {
+       "do": "multiply both terms by 3",
+       "result": "2 : 3 becomes 6 : 9"
+      },
+      {
+       "do": "test the brother's way: add 4 to both terms",
+       "result": "6 : 7"
+      },
+      {
+       "do": "simplify each",
+       "result": "6 : 9 = 2 : 3 (divide by 3); 6 : 7 cannot be simplified, so it is not 2 : 3"
+      }
+     ],
+     "answer": "9 cups of water; 7 cups is wrong because 6 : 7 is not equivalent to 2 : 3",
+     "why": "a ratio compares by how many times → multiply both terms by the same number → adding the same number changes the comparison"
+    }
    ]
   },
   {
@@ -9929,7 +10615,8 @@
      "Unit rate: 135 ÷ 3 = ___ km per litre.",
      "For 7 litres: 45 × 7 = ___ km.",
      "Check: 315 ÷ 7 = ___, the same rate."
-    ]
+    ],
+    "skillId": "c8-maths-ch07-t02-s3"
    },
    "formats": {
     "primary": "F4",
@@ -9951,6 +10638,60 @@
     "roti making",
     "auto and taxi fares",
     "mobile data packs"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch07-t02-s1",
+     "source": "Proportional Reasoning-1 — are two quantities proportional? check that the ratio stays the same",
+     "problem": "Two shops rent out cycles. Shop A: 2 hours ₹60, 3 hours ₹90, 5 hours ₹150. Shop B: 2 hours ₹70, 3 hours ₹90, 5 hours ₹130. In which shop is the rent proportional to the hours?",
+     "givens": [
+      "Shop A: (2 h, ₹60), (3 h, ₹90), (5 h, ₹150)",
+      "Shop B: (2 h, ₹70), (3 h, ₹90), (5 h, ₹130)"
+     ],
+     "find": "which shop's rent is proportional to the hours",
+     "steps": [
+      {
+       "do": "Shop A: rent ÷ hours for each row",
+       "result": "60 ÷ 2 = 30, 90 ÷ 3 = 30, 150 ÷ 5 = 30"
+      },
+      {
+       "do": "Shop B: rent ÷ hours for each row",
+       "result": "70 ÷ 2 = 35, 90 ÷ 3 = 30, 130 ÷ 5 = 26"
+      },
+      {
+       "do": "same ratio every row? → proportional",
+       "result": "A: always ₹30 per hour → proportional; B: changes → not proportional"
+      }
+     ],
+     "answer": "Shop A (₹30 per hour in every row); Shop B is not proportional",
+     "why": "proportional means the ratio never changes → divide in every row → A stays at 30, B keeps changing"
+    },
+    {
+     "skillId": "c8-maths-ch07-t02-s2",
+     "source": "Proportional Reasoning-1 — unit rates: find the value for 1, compare per the same amount",
+     "problem": "A 4 kg bag of atta costs ₹212 and a 10 kg bag costs ₹490. Find the price per kg of each bag. Which is cheaper per kg?",
+     "givens": [
+      "4 kg for ₹212",
+      "10 kg for ₹490"
+     ],
+     "find": "the price of 1 kg in each bag, and the cheaper one",
+     "steps": [
+      {
+       "do": "small bag: rupees ÷ kg",
+       "result": "212 ÷ 4 = 53"
+      },
+      {
+       "do": "big bag: rupees ÷ kg",
+       "result": "490 ÷ 10 = 49"
+      },
+      {
+       "do": "compare the two per-kg prices",
+       "result": "₹49 < ₹53"
+      }
+     ],
+     "answer": "Small bag ₹53 per kg, big bag ₹49 per kg; the 10 kg bag is cheaper per kg",
+     "why": "different amounts cannot be compared directly → bring both to 1 kg → rupees ÷ kg is the unit rate"
+    }
    ]
   },
   {
@@ -10085,6 +10826,42 @@
      "remediation": {
       "representation": "A clock face with half the dial shaded for 0.5 hour",
       "moveShape": "Child counts the minutes in the shaded half; ask how many minutes make a whole hour"
+     }
+    },
+    {
+     "id": "c8-maths-ch07-t03-m-compound-one-part",
+     "skillId": "c8-maths-ch07-t03-s2",
+     "source": "Proportional Reasoning-1 — unit conversions: km/h to m/s (1 km = 1000 m and 1 h = 3600 s)",
+     "belief": "Converts only the top unit of a compound unit: changes km to m but keeps the same number of 'per hour' and calls it per second",
+     "signs": [
+      "Writes 72 km/h = 72,000 m/s",
+      "Multiplies by 1000 and never divides by 3600",
+      "Accepts a train speed of tens of thousands of metres every second without surprise"
+     ],
+     "diagnostic": {
+      "prompt_en": "A train runs at 54 km/h. What is that in m/s?",
+      "prompt_hi": "Ek train 54 km/h ki speed se chal rahi hai. Yeh kitne m/s hua?",
+      "options": [
+       {
+        "text": "15 m/s",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "54,000 m/s",
+        "misconceptionId": "c8-maths-ch07-t03-m-compound-one-part",
+        "correct": false
+       },
+       {
+        "text": "194.4 m/s",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "The speed written as a fraction, 54 km over 1 h, with the top and the bottom converted on two separate lines",
+      "moveShape": "convert the top: 54 km → 54,000 m → convert the bottom: 1 h → 3600 s → divide top by bottom → sanity check: can a train cover 54 km in one second?"
      }
     }
    ],
@@ -10408,7 +11185,8 @@
      "1 hour = ___ minutes.",
      "Per minute: 18,000 ÷ 60 = ___ m.",
      "Check with m/s: 18 × 5/18 = ___ m/s, and 5 × 60 = 300 m."
-    ]
+    ],
+    "skillId": "c8-maths-ch07-t03-s2"
    },
    "formats": {
     "primary": "F2",
@@ -10430,6 +11208,56 @@
     "kitchen measures",
     "cricket ground sizes",
     "tailor measurements"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch07-t03-s1",
+     "source": "Proportional Reasoning-1 — unit conversions: 1 L = 1000 mL; to a smaller unit, multiply",
+     "problem": "A jug holds 1.75 L of nimbu pani. How many 250 mL glasses can it fill?",
+     "givens": [
+      "jug = 1.75 L",
+      "one glass = 250 mL"
+     ],
+     "find": "the number of glasses",
+     "steps": [
+      {
+       "do": "same unit first: L → mL (smaller unit, so multiply by 1000)",
+       "result": "1.75 × 1000 = 1750"
+      },
+      {
+       "do": "glasses = total mL ÷ mL in one glass",
+       "result": "1750 ÷ 250 = 7"
+      }
+     ],
+     "answer": "7 glasses (1.75 L = 1,750 mL)",
+     "why": "both amounts must be in one unit → mL is smaller, so the number grows → then divide by one glass"
+    },
+    {
+     "skillId": "c8-maths-ch07-t03-s3",
+     "source": "Proportional Reasoning-1 — unit conversions for area: 1 m² = 100 × 100 cm²",
+     "problem": "A rectangular table top is 1.2 m long and 0.5 m wide. Find its area in cm².",
+     "givens": [
+      "length = 1.2 m",
+      "width = 0.5 m"
+     ],
+     "find": "the area in cm²",
+     "steps": [
+      {
+       "do": "convert each length to cm",
+       "result": "1.2 m = 120 cm; 0.5 m = 50 cm"
+      },
+      {
+       "do": "area = length × width",
+       "result": "120 × 50 = 6000"
+      },
+      {
+       "do": "check in m², then × 10,000",
+       "result": "1.2 × 0.5 = 0.6; 0.6 × 10,000 = 6000"
+      }
+     ],
+     "answer": "6,000 cm²",
+     "why": "area units grow by the square of the length factor → 1 m² = 10,000 cm², not 100 → converting the sides first gives the same 6,000"
+    }
    ]
   },
   {
@@ -10887,7 +11715,8 @@
      "7/8 × 100 = ___/8.",
      "700 ÷ 8 = ___.",
      "So 7/8 = 87.5% = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch08-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -10909,6 +11738,60 @@
     "plant growth",
     "school enrolment",
     "phone battery"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch08-t01-s2",
+     "source": "Fractions in Disguise — decimals and percentages (per cent means out of 100)",
+     "problem": "In a school survey, 0.625 of the students walk to school and 4.5% come by bus. Write 0.625 as a percentage and 4.5% as a decimal.",
+     "givens": [
+      "0.625 of the students walk",
+      "4.5% come by bus"
+     ],
+     "find": "0.625 as a percentage, and 4.5% as a decimal",
+     "steps": [
+      {
+       "do": "decimal → percentage: × 100",
+       "result": "0.625 × 100 = 62.5"
+      },
+      {
+       "do": "percentage → decimal: ÷ 100",
+       "result": "4.5 ÷ 100 = 0.045"
+      }
+     ],
+     "answer": "0.625 = 62.5%; 4.5% = 0.045",
+     "why": "per cent means out of 100 → a decimal is a part of 1, and 1 whole = 100% → so multiply by 100 one way, divide by 100 the other"
+    },
+    {
+     "skillId": "c8-maths-ch08-t01-s3",
+     "source": "Fractions in Disguise — percentages more than 100, and comparing using percentages",
+     "problem": "Mango sapling A grew from 40 cm to 90 cm. Sapling B grew from 60 cm to 120 cm. Write each new height as a percentage of its old height. Which sapling grew more compared with where it started?",
+     "givens": [
+      "A: 40 cm → 90 cm",
+      "B: 60 cm → 120 cm"
+     ],
+     "find": "each new height as a percentage of the old height, and which grew more relative to its start",
+     "steps": [
+      {
+       "do": "A: new ÷ old (old is the whole)",
+       "result": "90 ÷ 40 = 2.25"
+      },
+      {
+       "do": "× 100",
+       "result": "2.25 × 100 = 225"
+      },
+      {
+       "do": "B: new ÷ old, × 100",
+       "result": "120 ÷ 60 × 100 = 200"
+      },
+      {
+       "do": "compare the percentages",
+       "result": "225% > 200%"
+      }
+     ],
+     "answer": "A is 225% of its old height, B is 200%; A grew more compared with its start",
+     "why": "the old height is the whole (100%) → the new height is bigger than the whole → so the percentage is above 100 → percentages put both on the same 'out of 100' scale"
+    }
    ]
   },
   {
@@ -11043,6 +11926,42 @@
      "remediation": {
       "representation": "A 60-length bar with 15 shaded, and a 100% scale underneath",
       "moveShape": "Child matches the bar to the scale; ask which number sits at 100%"
+     }
+    },
+    {
+     "id": "c8-maths-ch08-t02-m-divide-by-percent",
+     "skillId": "c8-maths-ch08-t02-s1",
+     "source": "Fractions in Disguise — percentage of a quantity: p% of a quantity = p/100 × the quantity",
+     "belief": "Finds p% of a quantity by dividing the quantity by p (25% of 80 = 80 ÷ 25)",
+     "signs": [
+      "Writes 25% of 80 = 3.2",
+      "Writes 20% of ₹500 = ₹25",
+      "Gets a 'percentage of' that shrinks when the percentage gets bigger"
+     ],
+     "diagnostic": {
+      "prompt_en": "What is 25% of ₹80?",
+      "prompt_hi": "₹80 ka 25% kitna hota hai?",
+      "options": [
+       {
+        "text": "₹20",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "₹3.20",
+        "misconceptionId": "c8-maths-ch08-t02-m-divide-by-percent",
+        "correct": false
+       },
+       {
+        "text": "₹55",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A bar for ₹80 split into 100 equal parts, with 25 of them shaded (a quarter of the bar)",
+      "moveShape": "per cent → out of 100 → divide the quantity by 100 to get 1% → multiply by p → sanity check: 25% is a quarter, 50% is half"
      }
     }
    ],
@@ -11362,7 +12281,8 @@
      "12% = 12 × 25 = ₹___.",
      "Final price = 2,500 + 300 = ₹___.",
      "Check: 2,500 × ___ = 2,800."
-    ]
+    ],
+    "skillId": "c8-maths-ch08-t02-s1"
    },
    "formats": {
     "primary": "F2",
@@ -11384,6 +12304,59 @@
     "exam pass rates",
     "cricket ticket sales",
     "mobile recharge offers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch08-t02-s2",
+     "source": "Fractions in Disguise — finding the whole when a part and its percentage are known",
+     "problem": "Sunita's family spends ₹3,600 a month on milk. This is 12% of their monthly budget. What is the monthly budget?",
+     "givens": [
+      "₹3,600 is 12% of the budget"
+     ],
+     "find": "the whole monthly budget",
+     "steps": [
+      {
+       "do": "12% ↔ ₹3,600 → find 1%",
+       "result": "3,600 ÷ 12 = 300"
+      },
+      {
+       "do": "1% → 100%",
+       "result": "300 × 100 = 30,000"
+      },
+      {
+       "do": "check: 12% of the whole",
+       "result": "30,000 × 12 ÷ 100 = 3,600"
+      }
+     ],
+     "answer": "₹30,000",
+     "why": "₹3,600 is a part, not the whole → bring it down to 1% → build back up to 100%"
+    },
+    {
+     "skillId": "c8-maths-ch08-t02-s3",
+     "source": "Fractions in Disguise — what percent one quantity is of another; x% of y = y% of x",
+     "problem": "In a class of 40 students, 14 play kho-kho. What percentage of the class plays kho-kho? Then find 16% of 25 the quick way.",
+     "givens": [
+      "14 of 40 students play kho-kho",
+      "16% of 25"
+     ],
+     "find": "the percentage who play kho-kho, and 16% of 25",
+     "steps": [
+      {
+       "do": "whole = the class; part ÷ whole × 100",
+       "result": "14 ÷ 40 × 100 = 35"
+      },
+      {
+       "do": "swap: 16% of 25 = 25% of 16",
+       "result": "25% is a quarter"
+      },
+      {
+       "do": "a quarter of 16",
+       "result": "16 ÷ 4 = 4"
+      }
+     ],
+     "answer": "35% play kho-kho; 16% of 25 = 4",
+     "why": "the 'of' quantity is the whole → divide by it → and x% of y = xy/100 = y% of x, so pick the easier order"
+    }
    ]
   },
   {
@@ -11852,7 +12825,8 @@
      "Discount: 13,200 × ___ = ₹11,880.",
      "Change: 12,000 − 11,880 = ₹___ less.",
      "Overall: 120 ÷ 12,000 × 100 = ___% decrease."
-    ]
+    ],
+    "skillId": "c8-maths-ch08-t03-s4"
    },
    "formats": {
     "primary": "F4",
@@ -11874,6 +12848,86 @@
     "mobile phone prices",
     "town population",
     "petrol price changes"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch08-t03-s1",
+     "source": "Fractions in Disguise — percentage increase and decrease (change ÷ original × 100)",
+     "problem": "A school had 640 students last year and has 720 this year. Find the percentage increase.",
+     "givens": [
+      "last year 640 students",
+      "this year 720 students"
+     ],
+     "find": "the percentage increase",
+     "steps": [
+      {
+       "do": "change = new − original",
+       "result": "720 − 640 = 80"
+      },
+      {
+       "do": "divide by the ORIGINAL",
+       "result": "80 ÷ 640 = 0.125"
+      },
+      {
+       "do": "× 100",
+       "result": "0.125 × 100 = 12.5"
+      }
+     ],
+     "answer": "12.5% increase",
+     "why": "the change is measured against where we started → the original 640 is the whole → change ÷ original × 100"
+    },
+    {
+     "skillId": "c8-maths-ch08-t03-s2",
+     "source": "Fractions in Disguise — profit and loss percentages, worked out on the cost price",
+     "problem": "A fruit seller buys a crate of mangoes for ₹800. Some mangoes get spoilt and he sells the crate for ₹680. Find his profit or loss percentage.",
+     "givens": [
+      "cost price ₹800",
+      "selling price ₹680"
+     ],
+     "find": "the profit or loss percentage",
+     "steps": [
+      {
+       "do": "SP < CP → loss; loss = CP − SP",
+       "result": "800 − 680 = 120"
+      },
+      {
+       "do": "loss ÷ cost price × 100",
+       "result": "120 ÷ 800 × 100 = 15"
+      }
+     ],
+     "answer": "Loss of 15%",
+     "why": "selling for less than cost is a loss → profit and loss are measured against what was paid → the cost price is the base"
+    },
+    {
+     "skillId": "c8-maths-ch08-t03-s3",
+     "source": "Fractions in Disguise — discounts, including a second discount on the reduced price",
+     "problem": "A ₹1,600 school bag has 20% off, and then an extra 5% off at the billing counter. Find the final price and the overall discount percentage.",
+     "givens": [
+      "marked price ₹1,600",
+      "20% off, then a further 5% off"
+     ],
+     "find": "the final price and the overall discount percentage",
+     "steps": [
+      {
+       "do": "first discount: × (1 − 0.20)",
+       "result": "1,600 × 0.8 = 1,280"
+      },
+      {
+       "do": "second discount on the NEW price: × (1 − 0.05)",
+       "result": "1,280 × 0.95 = 1,216"
+      },
+      {
+       "do": "total saved",
+       "result": "1,600 − 1,216 = 384"
+      },
+      {
+       "do": "overall % on the marked price",
+       "result": "384 ÷ 1,600 × 100 = 24"
+      }
+     ],
+     "answer": "Final price ₹1,216; overall discount 24% (not 25%)",
+     "why": "the second 5% is taken from ₹1,280, not ₹1,600 → it saves less → so the two discounts give 24%, less than 20 + 5"
+    }
    ]
   },
   {
@@ -12297,6 +13351,33 @@
       "solverAnswer": "9 times",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch09-t01-i13",
+     "skillId": "c8-maths-ch09-t01-s3",
+     "source": "The Baudhayana-Pythagoras Theorem — halving a square by joining the midpoints of its sides",
+     "kind": "near_transfer",
+     "difficulty": 2,
+     "prompt_en": "A square school courtyard has side 10 m. Rani marks the midpoint of each side and joins them to make a square flower bed inside. What is the area of the flower bed?",
+     "prompt_hi": "School ka ek square courtyard hai jiski side 10 m hai. Rani har side ka midpoint mark karke unhe jodti hai, aur andar ek square flower bed banta hai. Flower bed ka area kitna hai?",
+     "answer": "50 m² (half of 10 × 10 = 100 m²)",
+     "acceptable": [
+      "50",
+      "50 m²",
+      "50 sq m",
+      "50 square metres"
+     ],
+     "hints": [
+      "What happens to the area when you join the midpoints of a square's sides?",
+      "The inner square has exactly half the area of the outer square.",
+      "Outer area = 10 × 10 = ___, and half of it is ___",
+      "100 m² ÷ 2 = 50 m²."
+     ],
+     "verified": {
+      "solverAnswer": "Courtyard = 100 m², so the flower bed = half of it = 50 m².",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch B)"
+     }
     }
    ],
    "workedExample": {
@@ -12314,7 +13395,8 @@
      "Build a new square using the diagonal as its ___.",
      "The original is 4 small triangles; the new square is ___ of them.",
      "So the new area is 2 × 9 = ___ cm²."
-    ]
+    ],
+    "skillId": "c8-maths-ch09-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -12336,6 +13418,68 @@
     "square gardens",
     "rangoli squares",
     "paper folding"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch09-t01-s1",
+     "source": "The Baudhayana-Pythagoras Theorem — side and area of a square (area = side × side)",
+     "problem": "A square vegetable plot has side 12 m. A second square plot has half that side. Find both areas. Does the second plot have half the area?",
+     "givens": [
+      "first plot: side 12 m",
+      "second plot: side half of 12 m"
+     ],
+     "find": "both areas, and how they compare",
+     "steps": [
+      {
+       "do": "area = side × side",
+       "result": "12 × 12 = 144"
+      },
+      {
+       "do": "halve the side",
+       "result": "12 ÷ 2 = 6"
+      },
+      {
+       "do": "area of the smaller plot",
+       "result": "6 × 6 = 36"
+      },
+      {
+       "do": "compare the areas",
+       "result": "144 ÷ 36 = 4"
+      }
+     ],
+     "answer": "144 m² and 36 m²; the smaller plot has a quarter of the area, not half",
+     "why": "area uses the side twice (side × side) → halving the side halves both factors → ½ × ½ = ¼ of the area"
+    },
+    {
+     "skillId": "c8-maths-ch09-t01-s3",
+     "source": "The Baudhayana-Pythagoras Theorem — halving a square by joining the midpoints of its sides",
+     "problem": "A square tile has side 6 cm. Join the midpoints of its four sides to make a tilted square inside. Find the area of the inner square and show why it is half of the tile.",
+     "givens": [
+      "square tile, side 6 cm",
+      "inner square joins the midpoints of the sides"
+     ],
+     "find": "the area of the inner square",
+     "steps": [
+      {
+       "do": "area of the tile",
+       "result": "6 × 6 = 36"
+      },
+      {
+       "do": "join opposite midpoints → 4 small squares",
+       "result": "each small square is 3 × 3 = 9"
+      },
+      {
+       "do": "each side of the inner square cuts one small square in half",
+       "result": "8 equal triangles, 4 of them inside the inner square"
+      },
+      {
+       "do": "inner square = half the tile",
+       "result": "36 ÷ 2 = 18"
+      }
+     ],
+     "answer": "18 cm², exactly half of 36 cm²",
+     "why": "joining opposite midpoints makes 4 small squares → the inner square takes the inner half of each → 4 of the 8 triangles = half the area"
+    }
    ]
   },
   {
@@ -13166,6 +14310,42 @@
       "representation": "Number cards that the child sorts smallest to largest before testing",
       "moveShape": "Child sorts the cards first; ask which number must be on its own on one side of the equation"
      }
+    },
+    {
+     "id": "c8-maths-ch09-t03-m-square-as-double",
+     "skillId": "c8-maths-ch09-t03-s3",
+     "source": "The Baudhayana-Pythagoras Theorem — generating triples with (2m, m² − 1, m² + 1)",
+     "belief": "Reads m² in the triple formula as 2m, so (2m, m² − 1, m² + 1) becomes (2m, 2m − 1, 2m + 1)",
+     "signs": [
+      "With m = 4 writes the 'triple' 8, 7, 9",
+      "Gets three numbers next to each other on the number line",
+      "Skips the check, or is surprised when 7² + 8² ≠ 9²"
+     ],
+     "diagnostic": {
+      "prompt_en": "Use the formula (2m, m² − 1, m² + 1) with m = 5. Which triple do you get?",
+      "prompt_hi": "Formula (2m, m² − 1, m² + 1) mein m = 5 rakho. Kaunsa triple milta hai?",
+      "options": [
+       {
+        "text": "10, 24, 26",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "10, 9, 11",
+        "misconceptionId": "c8-maths-ch09-t03-m-square-as-double",
+        "correct": false
+       },
+       {
+        "text": "10, 16, 36",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A square of 5 × 5 dots next to a row of 5 + 5 dots, for m² against 2m",
+      "moveShape": "m² means m × m → work out m² first, then subtract and add 1 → always check: (2m)² + (m² − 1)² should equal (m² + 1)²"
+     }
     }
    ],
    "items": [
@@ -13485,7 +14665,8 @@
      "2mn = 2 × 5 × 2 = ___.",
      "m² + n² = 25 + 4 = ___.",
      "Check: 20² + 21² = 400 + 441 = ___ = 29²."
-    ]
+    ],
+    "skillId": "c8-maths-ch09-t03-s3"
    },
    "formats": {
     "primary": "F6",
@@ -13507,6 +14688,67 @@
     "cricket pitch layout",
     "building sites",
     "number puzzles"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch09-t03-s1",
+     "source": "The Baudhayana-Pythagoras Theorem — Pythagorean triples: a² + b² = c² with the largest number as c",
+     "problem": "Is 25, 7, 24 a Pythagorean triple?",
+     "givens": [
+      "the numbers 25, 7, 24"
+     ],
+     "find": "whether they form a Pythagorean triple",
+     "steps": [
+      {
+       "do": "largest number → c",
+       "result": "c = 25"
+      },
+      {
+       "do": "square the other two and add",
+       "result": "7 × 7 + 24 × 24 = 49 + 576 = 625"
+      },
+      {
+       "do": "square the largest",
+       "result": "25 × 25 = 625"
+      },
+      {
+       "do": "equal → triple",
+       "result": "625 = 625"
+      }
+     ],
+     "answer": "Yes: 7² + 24² = 625 = 25², so 7, 24, 25 is a Pythagorean triple",
+     "why": "the hypotenuse is the longest side → only the largest number can be c → the listed order never matters"
+    },
+    {
+     "skillId": "c8-maths-ch09-t03-s2",
+     "source": "The Baudhayana-Pythagoras Theorem — multiples of a Pythagorean triple are triples",
+     "problem": "Starting from the triple 5, 12, 13, make a triple whose smallest number is 15, and check it.",
+     "givens": [
+      "5, 12, 13 is a triple",
+      "the new smallest number is 15"
+     ],
+     "find": "the new triple",
+     "steps": [
+      {
+       "do": "scale factor = new smallest ÷ old smallest",
+       "result": "15 ÷ 5 = 3"
+      },
+      {
+       "do": "multiply every number by 3",
+       "result": "15, 36, 39"
+      },
+      {
+       "do": "check the two smaller squares",
+       "result": "15 × 15 + 36 × 36 = 225 + 1296 = 1521"
+      },
+      {
+       "do": "check the largest square",
+       "result": "39 × 39 = 1521"
+      }
+     ],
+     "answer": "15, 36, 39",
+     "why": "multiplying every side by 3 multiplies every square by 9 → a² + b² = c² stays true → so a multiple of a triple is a triple"
+    }
    ]
   },
   {
@@ -14602,7 +15844,8 @@
      "One part: 2,400 ÷ 12 = ₹___.",
      "Anu: 3 × 200 = ₹600; Bunty: 4 × 200 = ₹___; Chaman: 5 × 200 = ₹1,000.",
      "Check: 600 + 800 + 1,000 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch10-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -14624,6 +15867,64 @@
     "business partners",
     "water tanks",
     "Diwali sweets"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch10-t02-s1",
+     "source": "Proportional Reasoning-2 — Dividing a whole in a given ratio (total parts, value of one part)",
+     "problem": "Rahul and Seema share 84 marbles in the ratio 3 : 4. How many equal parts is the whole cut into, and how many marbles make one part?",
+     "givens": [
+      "84 marbles in all",
+      "ratio Rahul : Seema = 3 : 4"
+     ],
+     "find": "the total number of parts and the value of one part",
+     "steps": [
+      {
+       "do": "add the ratio terms → total parts",
+       "result": "3 + 4 = 7"
+      },
+      {
+       "do": "whole ÷ total parts → one part",
+       "result": "84 ÷ 7 = 12"
+      },
+      {
+       "do": "check: all the parts rebuild the whole",
+       "result": "7 × 12 = 84"
+      }
+     ],
+     "answer": "7 parts in all; one part = 12 marbles",
+     "why": "the ratio terms count equal parts → their sum counts the parts of the whole → whole ÷ that sum = one part"
+    },
+    {
+     "skillId": "c8-maths-ch10-t02-s2",
+     "source": "Proportional Reasoning-2 — Dividing a whole in a given ratio (two-term ratio)",
+     "problem": "Amma makes 750 ml of sharbat by mixing syrup and water in the ratio 1 : 4. How much syrup and how much water does she use?",
+     "givens": [
+      "750 ml of sharbat",
+      "syrup : water = 1 : 4"
+     ],
+     "find": "the amount of syrup and the amount of water",
+     "steps": [
+      {
+       "do": "total parts",
+       "result": "1 + 4 = 5"
+      },
+      {
+       "do": "one part",
+       "result": "750 ÷ 5 = 150 ml"
+      },
+      {
+       "do": "each share = its term × one part",
+       "result": "syrup 1 × 150 = 150 ml, water 4 × 150 = 600 ml"
+      },
+      {
+       "do": "check the shares add to the whole",
+       "result": "150 + 600 = 750 ml"
+      }
+     ],
+     "answer": "Syrup 150 ml, water 600 ml",
+     "why": "1 : 4 means 5 equal parts → one part = 750 ÷ 5 → each share takes as many parts as its term"
+    }
    ]
   },
   {
@@ -15078,7 +16379,8 @@
      "Each cup = 360 ÷ 120 = ___°.",
      "Chai 54 × 3 = ___°; coffee 36 × 3 = 108°; lassi 30 × 3 = 90°.",
      "Check: 162 + 108 + 90 = ___°."
-    ]
+    ],
+    "skillId": "c8-maths-ch10-t03-s2"
    },
    "formats": {
     "primary": "F3",
@@ -15100,6 +16402,68 @@
     "tea stall sales",
     "how students come to school",
     "time spent in a day"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch10-t03-s1",
+     "source": "Proportional Reasoning-2 — Pie charts (reading a sector as a part of the whole)",
+     "problem": "A pie chart shows how the 240 students of a school in Jaipur come to school. The 'bus' sector has an angle of 135°. What fraction and what percentage of the students come by bus, and how many students is that?",
+     "givens": [
+      "240 students in all",
+      "bus sector = 135°",
+      "the whole circle = 360°"
+     ],
+     "find": "the fraction, the percentage and the number of bus students",
+     "steps": [
+      {
+       "do": "sector angle ÷ full circle → fraction",
+       "result": "135/360 = 3/8"
+      },
+      {
+       "do": "fraction × 100 → percentage",
+       "result": "3/8 × 100 = 37.5"
+      },
+      {
+       "do": "fraction of the total students",
+       "result": "240 ÷ 8 × 3 = 90"
+      }
+     ],
+     "answer": "3/8 of the students, which is 37.5%, so 90 students come by bus",
+     "why": "the full circle (360°) stands for all 240 students → a sector's share of 360° is its share of the data → same fraction of 240"
+    },
+    {
+     "skillId": "c8-maths-ch10-t03-s3",
+     "source": "Proportional Reasoning-2 — Pie charts (sector angles add up to 360°)",
+     "problem": "Meena's family pie chart of monthly spending has sectors Food 126°, Rent 90°, Education 54° and Savings 36°, and one more sector, Others. What must the angle for Others be? Which sector is the same size as Others?",
+     "givens": [
+      "Food 126°",
+      "Rent 90°",
+      "Education 54°",
+      "Savings 36°",
+      "one more sector: Others"
+     ],
+     "find": "the angle for Others, and the sector of equal size",
+     "steps": [
+      {
+       "do": "add the known sectors",
+       "result": "126 + 90 + 54 + 36 = 306"
+      },
+      {
+       "do": "all sectors together make the full circle → subtract from 360",
+       "result": "360 − 306 = 54"
+      },
+      {
+       "do": "compare with the other sectors",
+       "result": "Others = Education = 54°"
+      },
+      {
+       "do": "check the total",
+       "result": "306 + 54 = 360"
+      }
+     ],
+     "answer": "Others = 54°, the same size as Education",
+     "why": "the sectors together are the whole data → the whole is one full circle → their angles must total exactly 360°"
+    }
    ]
   },
   {
@@ -15556,7 +16920,8 @@
      "Total work = 12 × 10 = ___ worker-days.",
      "Workers needed = 120 ÷ 8 = ___.",
      "Check: 15 × 8 = ___, and fewer days needs more workers."
-    ]
+    ],
+    "skillId": "c8-maths-ch10-t04-s2"
    },
    "formats": {
     "primary": "F4",
@@ -15578,6 +16943,60 @@
     "hostel food stock",
     "water tanks and taps",
     "harvest with farm workers"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch10-t04-s1",
+     "source": "Proportional Reasoning-2 — Inverse proportion (the product stays the same)",
+     "problem": "60 laddoos are shared equally among some children. With 2 children each gets 30, with 3 each gets 20, with 4 each gets 15 and with 5 each gets 12. Are the number of children and the laddoos per child inversely proportional?",
+     "givens": [
+      "children 2, 3, 4, 5",
+      "laddoos per child 30, 20, 15, 12"
+     ],
+     "find": "whether the two quantities are inversely proportional",
+     "steps": [
+      {
+       "do": "multiply each pair",
+       "result": "2 × 30 = 60, 3 × 20 = 60, 4 × 15 = 60, 5 × 12 = 60"
+      },
+      {
+       "do": "is the product the same every time?",
+       "result": "yes, always 60"
+      },
+      {
+       "do": "constant product → inverse proportion",
+       "result": "inversely proportional"
+      }
+     ],
+     "answer": "Yes; children × laddoos per child = 60 every time, so they are inversely proportional",
+     "why": "the total being shared stays 60 → children × share = 60 always → a constant product is what inverse proportion means"
+    },
+    {
+     "skillId": "c8-maths-ch10-t04-s3",
+     "source": "Proportional Reasoning-2 — Inverse proportion (constant product, compared with other relationships)",
+     "problem": "Ravi is reading a 200-page book. After reading 50 pages he has 150 left; after 100 pages he has 100 left; after 150 pages he has 50 left. As pages read go up, pages left go down. Are pages read and pages left inversely proportional?",
+     "givens": [
+      "book of 200 pages",
+      "pairs (read, left): (50, 150), (100, 100), (150, 50)"
+     ],
+     "find": "whether pages read and pages left are inversely proportional",
+     "steps": [
+      {
+       "do": "multiply each pair",
+       "result": "50 × 150 = 7500, 100 × 100 = 10000, 150 × 50 = 7500"
+      },
+      {
+       "do": "products not all equal",
+       "result": "not inverse proportion"
+      },
+      {
+       "do": "find what does stay the same",
+       "result": "50 + 150 = 200, 100 + 100 = 200, 150 + 50 = 200"
+      }
+     ],
+     "answer": "No; the products change (7500, 10000, 7500). It is the sum, 200, that stays the same, so this is not inverse proportion",
+     "why": "one going up while the other goes down is not enough → inverse proportion needs the product to stay constant → here only the sum is constant"
+    }
    ]
   },
   {
@@ -16693,6 +18112,57 @@
       "solverAnswer": "2",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch11-t02-i14",
+     "source": "Exploring Some Geometric Themes — Visualising solids: front, top and side views",
+     "skillId": "c8-maths-ch11-t02-s2",
+     "kind": "practice",
+     "difficulty": 1,
+     "prompt_en": "Four identical cubes sit on a table in one layer, making a 2 by 2 square. Describe the front view and the top view.",
+     "prompt_hi": "Chaar same cubes table par ek hi layer mein rakhe hain, ek 2 by 2 square bana ke. Front view aur top view kaisa dikhega, batao.",
+     "answer": "Front view: 2 squares side by side in a row; top view: a 2 by 2 square of 4 squares",
+     "acceptable": [
+      "front: a row of 2 squares; top: 2 by 2 square",
+      "front 2 squares, top 4 squares"
+     ],
+     "hints": [
+      "From the front, can you see the back row of cubes?",
+      "The back cubes hide behind the front cubes, and there is only one layer.",
+      "Front: ___ squares in a row; top: ___ squares in a 2 by 2 block.",
+      "Front shows 2 squares in a row; top shows a 2 by 2 square."
+     ],
+     "verified": {
+      "solverAnswer": "Front view: 2 squares side by side in one row (the back cubes are hidden). Top view: a 2 by 2 square of 4 squares.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch C)"
+     }
+    },
+    {
+     "id": "c8-maths-ch11-t02-i15",
+     "source": "Exploring Some Geometric Themes — Visualising solids: front, top and side views",
+     "skillId": "c8-maths-ch11-t02-s2",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Two cubes are stacked one on top of the other. Looking from the front, a third cube sits on the table just to the right of the stack, touching it. Rahul says the top view looks the same as the front view. Is he right? Describe both views.",
+     "prompt_hi": "Do cubes ek ke upar ek rakhe hain. Saamne se dekho toh teesra cube table par stack ke bilkul right mein, usse chhoota hua rakha hai. Rahul kehta hai ki top view aur front view same dikhte hain. Kya woh sahi hai? Dono views batao.",
+     "answer": "No. Front view: an L of 3 squares (2 stacked on the left, 1 on the right); top view: a row of 2 squares",
+     "acceptable": [
+      "no",
+      "no, front is an L of 3 squares and top is 2 squares in a row"
+     ],
+     "hints": [
+      "From the top, can you see the lower cube of the stack?",
+      "From above, the top cube hides the cube below it, so you see one square per spot on the table.",
+      "Front: ___ squares in an L; top: ___ squares in a row.",
+      "Front shows 3 squares, top shows 2, so the views are different and Rahul is wrong."
+     ],
+     "targetsMisconception": "c8-maths-ch11-t02-m-views-same",
+     "verified": {
+      "solverAnswer": "Rahul is wrong: the front view is an L of 3 squares (2 stacked on the left, 1 on the right); the top view is 2 squares side by side (re-solved after the viewpoint was stated).",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch C)"
+     }
     }
    ],
    "workedExample": {
@@ -16708,7 +18178,8 @@
      "Vertices: 6 on the top hexagon + 6 on the bottom = ___.",
      "Edges: 6 on top + 6 on bottom + 6 upright = ___.",
      "F + V − E = 8 + 12 − 18 = ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch11-t02-s3"
    },
    "formats": {
     "primary": "F3",
@@ -16730,6 +18201,65 @@
     "footballs",
     "tents",
     "Toblerone and gift packaging"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch11-t02-s1",
+     "source": "Exploring Some Geometric Themes — Visualising solids: nets of a cube",
+     "problem": "Six squares are joined like this: four squares in a row (call them 1, 2, 3, 4 from left to right), one more square attached above square 2, and one more attached below square 4. Will this fold into a cube?",
+     "givens": [
+      "a row of 4 squares: 1, 2, 3, 4",
+      "one square above square 2",
+      "one square below square 4"
+     ],
+     "find": "whether the arrangement is a net of a cube",
+     "steps": [
+      {
+       "do": "fold the row of 4 into a loop",
+       "result": "squares 1, 2, 3, 4 become the four side faces"
+      },
+      {
+       "do": "fold the square above square 2 over the loop",
+       "result": "it closes the top"
+      },
+      {
+       "do": "fold the square below square 4 under the loop",
+       "result": "it closes the bottom"
+      },
+      {
+       "do": "check every face appears once, no overlap",
+       "result": "4 sides + 1 top + 1 bottom = 6 faces"
+      }
+     ],
+     "answer": "Yes, it folds into a cube: the row makes the four sides, one extra square is the top and the other is the bottom",
+     "why": "a cube needs 6 faces with no two on the same spot → the row of 4 wraps round as the sides → one square on each side of the row closes top and bottom"
+    },
+    {
+     "skillId": "c8-maths-ch11-t02-s2",
+     "source": "Exploring Some Geometric Themes — Visualising solids: front, top and side views",
+     "problem": "Five identical cubes are placed on a table: three in a row from left to right, and two more stacked one above the other on the middle cube. Describe the front view, the top view and the view from the right side.",
+     "givens": [
+      "3 cubes in a row on the table",
+      "2 cubes stacked on the middle cube"
+     ],
+     "find": "the front, top and right-side views",
+     "steps": [
+      {
+       "do": "front: count the cubes seen in each column, left to right",
+       "result": "columns of 1, 3, 1 squares"
+      },
+      {
+       "do": "top: look down, one square per occupied spot on the table",
+       "result": "a row of 3 squares"
+      },
+      {
+       "do": "right side: the three columns hide one another, the tallest shows",
+       "result": "a column of 3 squares"
+      }
+     ],
+     "answer": "Front: 3 squares along the bottom with 2 more stacked on the middle one (columns 1, 3, 1); top: a row of 3 squares; right side: a single column of 3 squares",
+     "why": "each view shows only what is seen from that direction → front sees heights of columns → top sees the floor plan → side sees the tallest stack in each line"
+    }
    ]
   },
   {
@@ -16865,6 +18395,42 @@
      "remediation": {
       "representation": "A balance beam with three weights at 2 and one far away at 50",
       "moveShape": "Child predicts where the beam balances, then calculates; ask how far the single weight pulled the pivot"
+     }
+    },
+    {
+     "id": "c8-maths-ch12-t01-m-missing-is-mean",
+     "source": "Tales by Dots and Lines — The mean: finding a missing value",
+     "skillId": "c8-maths-ch12-t01-s3",
+     "belief": "Thinks a missing value must be equal to the mean, instead of working it out from the total (mean × number of values)",
+     "signs": [
+      "Answers 'the third number is 10' when told the mean of three numbers is 10",
+      "Never multiplies the mean by the number of values",
+      "Does not check that the values add up to mean × count"
+     ],
+     "diagnostic": {
+      "prompt_en": "The mean of three numbers is 10. Two of the numbers are 8 and 9. What is the third number?",
+      "prompt_hi": "Teen numbers ka mean 10 hai. Unmein se do numbers 8 aur 9 hain. Teesra number kya hai?",
+      "options": [
+       {
+        "text": "13, because the three must add up to 3 × 10 = 30",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "10, because the missing number has to be the mean",
+        "misconceptionId": "c8-maths-ch12-t01-m-missing-is-mean",
+        "correct": false
+       },
+       {
+        "text": "8.5, the mean of 8 and 9",
+        "misconceptionId": null,
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Three towers of blocks levelled to height 10, with two towers shown as 8 and 9 and the third hidden",
+      "moveShape": "levelled towers show the total → 3 towers of 10 = 30 blocks → known towers use 17 → the hidden tower holds what is left → check by levelling again"
      }
     }
    ],
@@ -17182,7 +18748,8 @@
      "Below 50: 40 is 10 less, 30 is 20 less, total ___ below.",
      "Above 50: 55 is 5 more, 65 is 15 more, 60 is 10 more, total ___ above.",
      "30 below balances 30 above, so ₹50 is ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch12-t01-s1"
    },
    "formats": {
     "primary": "F3",
@@ -17204,6 +18771,67 @@
     "daily temperatures",
     "pocket money",
     "rainfall in monsoon"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch12-t01-s2",
+     "source": "Tales by Dots and Lines — The mean as levelling out and as a balance point",
+     "problem": "Four stacks of coins have 7, 3, 9 and 5 coins. Level them out by moving coins so every stack is the same height. How tall is each stack, and show that what is above that height balances what is below.",
+     "givens": [
+      "stacks of 7, 3, 9 and 5 coins"
+     ],
+     "find": "the levelled height, and the balance of extra and missing coins",
+     "steps": [
+      {
+       "do": "total coins ÷ number of stacks",
+       "result": "(7 + 3 + 9 + 5) ÷ 4 = 6"
+      },
+      {
+       "do": "extra above 6",
+       "result": "7 − 6 = 1 and 9 − 6 = 3, total 4 extra"
+      },
+      {
+       "do": "missing below 6",
+       "result": "6 − 3 = 3 and 6 − 5 = 1, total 4 missing"
+      },
+      {
+       "do": "move the extra into the gaps",
+       "result": "4 extra fill 4 missing → every stack is 6"
+      }
+     ],
+     "answer": "Each stack becomes 6 coins (the mean); the 4 coins above 6 exactly fill the 4 gaps below 6",
+     "why": "levelling keeps the total the same → equal share = total ÷ count = mean → so the amounts above the mean must equal the amounts below"
+    },
+    {
+     "skillId": "c8-maths-ch12-t01-s3",
+     "source": "Tales by Dots and Lines — The mean: total = mean × number of values",
+     "problem": "The mean of Priya's 5 test scores is 16. Four of the scores are 14, 19, 12 and 17. Find the fifth score. Then say how the mean would change if the fifth score were 5 more.",
+     "givens": [
+      "5 scores, mean 16",
+      "four scores: 14, 19, 12, 17"
+     ],
+     "find": "the fifth score, and the new mean if it were 5 more",
+     "steps": [
+      {
+       "do": "mean × count → total of all 5",
+       "result": "5 × 16 = 80"
+      },
+      {
+       "do": "add the four known scores",
+       "result": "14 + 19 + 12 + 17 = 62"
+      },
+      {
+       "do": "total − known → missing score",
+       "result": "80 − 62 = 18"
+      },
+      {
+       "do": "5 more on one score → total up by 5 → share it over 5",
+       "result": "(80 + 5) ÷ 5 = 17"
+      }
+     ],
+     "answer": "The fifth score is 18; if it were 23 instead, the mean would rise by 1, to 17",
+     "why": "mean = total ÷ count → total = mean × count → missing value = total − the rest → extra added anywhere is shared equally over all values"
+    }
    ]
   },
   {
@@ -17644,6 +19272,32 @@
       "solverAnswer": "Decrease",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch12-t02-i14",
+     "source": "Tales by Dots and Lines — Line graphs: choosing a scale",
+     "skillId": "c8-maths-ch12-t02-s2",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A neem tree's height was recorded each year: 40 cm, 95 cm, 160 cm, 230 cm and 310 cm. The graph paper is 8 cm tall and the vertical axis starts at 0. Which scale uses the most paper but still fits: 1 cm = 25 cm, 1 cm = 50 cm or 1 cm = 100 cm?",
+     "prompt_hi": "Ek neem ke ped ki height har saal note ki gayi: 40 cm, 95 cm, 160 cm, 230 cm aur 310 cm. Graph paper 8 cm lamba hai aur vertical axis 0 se start hota hai. Kaunsa scale paper ka sabse zyada use karega aur phir bhi fit hoga: 1 cm = 25 cm, 1 cm = 50 cm ya 1 cm = 100 cm?",
+     "answer": "1 cm = 50 cm (310 cm needs 6.2 cm; 1 cm = 25 cm would need 12.4 cm, too tall; 1 cm = 100 cm uses only 3.1 cm)",
+     "acceptable": [
+      "1 cm = 50 cm",
+      "50 cm",
+      "1 cm to 50 cm"
+     ],
+     "hints": [
+      "Which value decides whether a scale fits?",
+      "The largest height, 310 cm, must fit within 8 cm.",
+      "310 ÷ 25 = ___ cm, 310 ÷ 50 = ___ cm, 310 ÷ 100 = ___ cm.",
+      "Only 6.2 cm and 3.1 cm fit, and 6.2 cm uses more paper, so 1 cm = 50 cm."
+     ],
+     "verified": {
+      "solverAnswer": "1 cm = 50 cm: 310 cm needs 6.2 cm (fits), whereas 1 cm = 25 cm needs 12.4 cm (too tall) and 1 cm = 100 cm uses only 3.1 cm.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch C)"
+     }
     }
    ],
    "workedExample": {
@@ -17661,7 +19315,8 @@
      "Rises: 6-9 am +6, 9-12 +___, 12-3 pm +2.",
      "The fastest rise is 9 am to 12 pm, the ___ part.",
      "The highest temperature is ___ at 3 pm."
-    ]
+    ],
+    "skillId": "c8-maths-ch12-t02-s1"
    },
    "formats": {
     "primary": "F3",
@@ -17683,6 +19338,65 @@
     "train journeys",
     "daily temperature",
     "plant growth experiments"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch12-t02-s2",
+     "source": "Tales by Dots and Lines — Line graphs: drawing with axes and a scale",
+     "problem": "Kabir weighed his puppy every week: week 1: 2 kg, week 2: 3.5 kg, week 3: 5 kg, week 4: 6 kg, week 5: 7.5 kg. His graph paper is 10 cm tall. Choose the axes and a scale, and say how to draw the line graph.",
+     "givens": [
+      "weights 2, 3.5, 5, 6, 7.5 kg for weeks 1 to 5",
+      "graph paper 10 cm tall"
+     ],
+     "find": "the axes, a sensible scale, and how to draw the graph",
+     "steps": [
+      {
+       "do": "time on the horizontal axis, weight on the vertical axis",
+       "result": "weeks across, kg up"
+      },
+      {
+       "do": "largest value → pick a scale that fits in 10 cm, starting at 0",
+       "result": "1 cm = 1 kg, so 7.5 kg is 7.5 cm high"
+      },
+      {
+       "do": "plot one point per week at its weight",
+       "result": "(1, 2), (2, 3.5), (3, 5), (4, 6), (5, 7.5)"
+      },
+      {
+       "do": "join the points in order, left to right",
+       "result": "a line that keeps rising"
+      }
+     ],
+     "answer": "Weeks on the horizontal axis (1 cm = 1 week), weight on the vertical axis from 0 with 1 cm = 1 kg; plot the five points and join them in order: the line rises every week",
+     "why": "time goes along, the changing quantity goes up → the scale is set by the largest value and the paper size → joining in time order shows the trend"
+    },
+    {
+     "skillId": "c8-maths-ch12-t02-s3",
+     "source": "Tales by Dots and Lines — Line graphs: when to join points and reading between them",
+     "problem": "A baby's weight was measured at birth: 3 kg, at 3 months: 5.6 kg and at 6 months: 7.4 kg. Is a line graph a sensible way to show this? Use it to estimate the baby's weight at 4½ months.",
+     "givens": [
+      "birth: 3 kg",
+      "3 months: 5.6 kg",
+      "6 months: 7.4 kg"
+     ],
+     "find": "whether a line graph fits, and an estimate at 4½ months",
+     "steps": [
+      {
+       "do": "does the weight exist between the measurements?",
+       "result": "yes, it changes steadily over time, so joining points makes sense"
+      },
+      {
+       "do": "place 4½ months between the points",
+       "result": "halfway between 3 and 6 months"
+      },
+      {
+       "do": "read halfway along the line between 5.6 kg and 7.4 kg",
+       "result": "(5.6 + 7.4) ÷ 2 = 6.5"
+      }
+     ],
+     "answer": "Yes, a line graph suits it; the estimate at 4½ months is about 6.5 kg",
+     "why": "weight has a value at every moment → the line between two points gives in-between estimates → halfway in time ≈ halfway in value on a straight piece"
+    }
    ]
   },
   {
@@ -18119,7 +19833,8 @@
      "Subtract 4: 2x + 10. Halve: x + ___.",
      "Subtract the number: x + 5 − x = ___.",
      "The x ___, so the answer is 5 for every starting number."
-    ]
+    ],
+    "skillId": "c8-maths-ch13-t01-s2"
    },
    "formats": {
     "primary": "F6",
@@ -18141,6 +19856,67 @@
     "school maths club",
     "puzzle shows",
     "birthday number tricks"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch13-t01-s1",
+     "source": "Algebra Play — Think of a number: writing the steps as an expression",
+     "problem": "Write one expression for these steps: think of a number, subtract 3, multiply by 4, then add 12.",
+     "givens": [
+      "the steps: subtract 3, multiply by 4, add 12"
+     ],
+     "find": "an expression for the result",
+     "steps": [
+      {
+       "do": "name the number",
+       "result": "x"
+      },
+      {
+       "do": "subtract 3",
+       "result": "x − 3"
+      },
+      {
+       "do": "multiply the whole result by 4 → brackets",
+       "result": "4(x − 3)"
+      },
+      {
+       "do": "add 12",
+       "result": "4(x − 3) + 12"
+      }
+     ],
+     "answer": "4(x − 3) + 12, which simplifies to 4x",
+     "why": "each step acts on the whole result so far → a multiply after an add/subtract needs brackets → the order of steps is the order inside the expression"
+    },
+    {
+     "skillId": "c8-maths-ch13-t01-s3",
+     "source": "Algebra Play — Think of a number: examples versus a proof for all numbers",
+     "problem": "Kavya made a trick: think of a number, add 6, double it, subtract 8, halve it, then subtract the number you thought of. She tried 1, 5 and 20 and got 2 each time. Does that prove the trick always gives 2? Show whether it works for every number.",
+     "givens": [
+      "steps: add 6, double, subtract 8, halve, subtract the starting number",
+      "tried with 1, 5, 20: answer 2 each time"
+     ],
+     "find": "whether the trick gives 2 for every number",
+     "steps": [
+      {
+       "do": "a few examples only cover those numbers",
+       "result": "1, 5 and 20 checked, every other number untested"
+      },
+      {
+       "do": "let the number be x; add 6, double",
+       "result": "2(x + 6) = 2x + 12"
+      },
+      {
+       "do": "subtract 8, halve",
+       "result": "2x + 4 → x + 2"
+      },
+      {
+       "do": "subtract the starting number",
+       "result": "x + 2 − x = 2"
+      }
+     ],
+     "answer": "Her three examples do not prove it; the algebra does: the result is x + 2 − x = 2 for every number x",
+     "why": "examples check only the numbers tried → x stands for any number → the x cancels → so the answer is 2 whatever is chosen"
+    }
    ]
   },
   {
@@ -18583,6 +20359,30 @@
       "agrees": true,
       "note": "Solver flagged a hint leak (an early rung stated the key). Key re-derived and correct; rung 2 rewritten as a nudge that no longer states the answer."
      }
+    },
+    {
+     "id": "c8-maths-ch13-t02-i14",
+     "source": "Algebra Play — Number pyramids (each brick is the sum of the two below)",
+     "skillId": "c8-maths-ch13-t02-s1",
+     "kind": "practice",
+     "difficulty": 2,
+     "prompt_en": "A 4-row number pyramid has bottom bricks 4, 7, 2 and 5. Each brick is the sum of the two bricks below it. Find the top brick.",
+     "prompt_hi": "Ek 4-row number pyramid ki bottom bricks 4, 7, 2 aur 5 hain. Har brick apne neeche wali do bricks ka sum hai. Top brick kya hogi?",
+     "answer": "36 (second row 11, 9, 7; third row 20, 16; top 36)",
+     "acceptable": [
+      "36"
+     ],
+     "hints": [
+      "Which bricks do you add to get a brick in the second row?",
+      "Add the two bricks just below: 4 + 7, 7 + 2, 2 + 5.",
+      "Second row 11, 9, 7; third row 11 + 9 = ___ and 9 + 7 = ___.",
+      "Third row 20 and 16, so the top is 36."
+     ],
+     "verified": {
+      "solverAnswer": "Rows: 4, 7, 2, 5 → 11, 9, 7 → 20, 16 → top brick 36.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch C)"
+     }
     }
    ],
    "workedExample": {
@@ -18600,7 +20400,8 @@
      "Top: (7 + b) + (b + 3) = 2b + ___.",
      "2b + 10 = 26, so 2b = 16 and b = ___.",
      "Check: middle row 15 and 11; top ___."
-    ]
+    ],
+    "skillId": "c8-maths-ch13-t02-s2"
    },
    "formats": {
     "primary": "F6",
@@ -18622,6 +20423,64 @@
     "hundred charts",
     "brick walls",
     "puzzle books"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch13-t02-s1",
+     "source": "Algebra Play — Number pyramids (each brick is the sum of the two below)",
+     "problem": "A 4-row number pyramid has bottom bricks 2, 5, 1 and 4. Each brick is the sum of the two bricks just below it. Fill in the pyramid and find the top brick.",
+     "givens": [
+      "bottom row: 2, 5, 1, 4",
+      "each brick = sum of the two below"
+     ],
+     "find": "every brick, and the top",
+     "steps": [
+      {
+       "do": "second row: add neighbouring bottom bricks",
+       "result": "2 + 5 = 7, 5 + 1 = 6, 1 + 4 = 5"
+      },
+      {
+       "do": "third row: add neighbours in the second row",
+       "result": "7 + 6 = 13, 6 + 5 = 11"
+      },
+      {
+       "do": "top: add the two third-row bricks",
+       "result": "13 + 11 = 24"
+      }
+     ],
+     "answer": "Rows from the bottom: 2, 5, 1, 4; then 7, 6, 5; then 13, 11; top 24",
+     "why": "each brick sits on two bricks → it is their sum → each row has one brick fewer → build row by row up to the single top brick"
+    },
+    {
+     "skillId": "c8-maths-ch13-t02-s3",
+     "source": "Algebra Play — Calendar patterns explained with algebra",
+     "problem": "On a calendar page, Sana circles three dates one below the other in a column. Use algebra to show that their sum is always 3 times the middle date. If the three dates add up to 48, which dates did she circle?",
+     "givens": [
+      "three dates in one column of a calendar (7 days per row)",
+      "their sum is 48"
+     ],
+     "find": "a rule for the sum, and the three dates",
+     "steps": [
+      {
+       "do": "call the middle date n; one row up is 7 less, one row down is 7 more",
+       "result": "n − 7, n, n + 7"
+      },
+      {
+       "do": "add them",
+       "result": "(n − 7) + n + (n + 7) = 3n"
+      },
+      {
+       "do": "sum is 48",
+       "result": "3n = 48, so n = 16"
+      },
+      {
+       "do": "write the three dates and check",
+       "result": "9 + 16 + 23 = 48"
+      }
+     ],
+     "answer": "The sum is 3n, three times the middle date; the dates are 9, 16 and 23",
+     "why": "dates in a column differ by 7 → the −7 and +7 cancel → the sum is 3 × the middle date for any such column"
+    }
    ]
   },
   {
@@ -18757,6 +20616,42 @@
      "remediation": {
       "representation": "A shape covered with unit squares next to the same shape with a string around its edge",
       "moveShape": "Child counts squares and measures the string; ask which number is area and which is perimeter"
+     }
+    },
+    {
+     "id": "c8-maths-ch14-t01-m-height-wrong-base",
+     "source": "Area — Area of a parallelogram: base and its own perpendicular height",
+     "skillId": "c8-maths-ch14-t01-s3",
+     "belief": "Multiplies a base by a height that was drawn to a different side",
+     "signs": [
+      "Uses the height onto the long side with the short side as base",
+      "Gets two different areas for the same parallelogram when switching bases",
+      "Does not check which side the height is perpendicular to"
+     ],
+     "diagnostic": {
+      "prompt_en": "A parallelogram has sides 12 cm and 8 cm. The height drawn onto the 12 cm side is 4 cm. Asha says the area is 8 × 4 = 32 cm². What is the area?",
+      "prompt_hi": "Ek parallelogram ki sides 12 cm aur 8 cm hain. 12 cm wali side par height 4 cm hai. Asha kehti hai area 8 × 4 = 32 cm² hai. Area kitna hai?",
+      "options": [
+       {
+        "text": "48 cm², because the 4 cm height belongs with the 12 cm base",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "32 cm², the 8 cm side times the 4 cm height",
+        "misconceptionId": "c8-maths-ch14-t01-m-height-wrong-base",
+        "correct": false
+       },
+       {
+        "text": "96 cm², the 12 cm side times the 8 cm side",
+        "misconceptionId": "c8-maths-ch14-t01-m-slant-height",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "A parallelogram drawn twice, once standing on each side, with its height drawn at a right angle to that side",
+      "moveShape": "choose the base first → find the height that meets this base at a right angle → multiply only that pair → switching base switches height, area stays the same"
      }
     }
    ],
@@ -19067,6 +20962,33 @@
       "solverAnswer": "28 cm^2",
       "agrees": true
      }
+    },
+    {
+     "id": "c8-maths-ch14-t01-i14",
+     "source": "Area — Area of a parallelogram: base and its own perpendicular height",
+     "skillId": "c8-maths-ch14-t01-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "A parallelogram has sides 10 cm and 5 cm. The height onto the 5 cm side is 8 cm, and the height onto the 10 cm side is 4 cm. Ravi says the area is 10 × 8 = 80 cm². Is he right? Find the area.",
+     "prompt_hi": "Ek parallelogram ki sides 10 cm aur 5 cm hain. 5 cm wali side par height 8 cm hai, aur 10 cm wali side par height 4 cm hai. Ravi kehta hai area 10 × 8 = 80 cm² hai. Kya woh sahi hai? Area nikalo.",
+     "answer": "No; each base goes with its own height: 10 × 4 = 40 cm², and 5 × 8 = 40 cm² too",
+     "acceptable": [
+      "40 cm²",
+      "no, 40 cm²",
+      "40"
+     ],
+     "hints": [
+      "Which side is the 8 cm height perpendicular to?",
+      "The 8 cm height belongs to the 5 cm side, and the 4 cm height to the 10 cm side.",
+      "10 × 4 = ___ and 5 × 8 = ___.",
+      "Both give 40 cm², so Ravi mixed a base with the wrong height."
+     ],
+     "targetsMisconception": "c8-maths-ch14-t01-m-height-wrong-base",
+     "verified": {
+      "solverAnswer": "No, Ravi paired a base with the wrong height; area = 10 × 4 = 5 × 8 = 40 cm².",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (c8 maths batch C)"
+     }
     }
    ],
    "workedExample": {
@@ -19082,7 +21004,8 @@
      "The diagonal splits it into two ___ triangles.",
      "Each triangle = 84 ÷ 2 = ___ cm².",
      "Check: ½ × 12 × 7 = ___ cm²."
-    ]
+    ],
+    "skillId": "c8-maths-ch14-t01-s2"
    },
    "formats": {
     "primary": "F3",
@@ -19104,6 +21027,71 @@
     "kites",
     "roof gables",
     "garden beds"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch14-t01-s1",
+     "source": "Area — Area of a parallelogram by cutting and moving into a rectangle",
+     "problem": "A field in a village is shaped like a parallelogram ABCD. AB = 15 m, the slanting side AD = 10 m, and the perpendicular distance between AB and DC is 8 m. Find the area of the field.",
+     "givens": [
+      "base AB = 15 m",
+      "slanting side AD = 10 m",
+      "perpendicular height between AB and DC = 8 m"
+     ],
+     "find": "the area of the field",
+     "steps": [
+      {
+       "do": "drop a perpendicular from D to AB → cut off a right triangle",
+       "result": "height = 8 m"
+      },
+      {
+       "do": "move the triangle to the other end → rectangle",
+       "result": "rectangle 15 m by 8 m, same area"
+      },
+      {
+       "do": "rectangle area = base × height",
+       "result": "15 × 8 = 120 m²"
+      },
+      {
+       "do": "slanting side not used",
+       "result": "AD = 10 m plays no part in the area"
+      }
+     ],
+     "answer": "120 m²",
+     "why": "cut along the height and move the piece → a rectangle with the same base and height → no area added or lost → area = base × perpendicular height"
+    },
+    {
+     "skillId": "c8-maths-ch14-t01-s3",
+     "source": "Area — Area of a triangle with the height falling outside the triangle",
+     "problem": "In triangle PQR, angle Q is obtuse. Take QR = 6 cm as the base. The perpendicular from P meets RQ extended (outside the triangle) at S, and PS = 5 cm. The side PQ is 7 cm. Find the area of the triangle.",
+     "givens": [
+      "base QR = 6 cm",
+      "perpendicular from P to RQ extended: PS = 5 cm",
+      "PQ = 7 cm",
+      "angle Q is obtuse"
+     ],
+     "find": "the area of triangle PQR",
+     "steps": [
+      {
+       "do": "base QR → its height is the perpendicular from the opposite vertex P to the line QR",
+       "result": "height = PS = 5 cm"
+      },
+      {
+       "do": "the foot S lies outside → the height is still PS, not the side PQ",
+       "result": "PQ = 7 cm is not used"
+      },
+      {
+       "do": "base × height",
+       "result": "6 × 5 = 30"
+      },
+      {
+       "do": "halve for a triangle",
+       "result": "30 ÷ 2 = 15 cm²"
+      }
+     ],
+     "answer": "15 cm²",
+     "why": "a triangle is half of a parallelogram on the same base and height → height = perpendicular distance from the opposite vertex to the base line → even when it falls outside"
+    }
    ]
   },
   {
@@ -19561,7 +21549,8 @@
      "Rectangle: 12 × 8 = ___ m².",
      "Triangle: ½ × 8 × 6 = ___ m².",
      "Total area = 96 + 24 = ___ m²."
-    ]
+    ],
+    "skillId": "c8-maths-ch14-t02-s2"
    },
    "formats": {
     "primary": "F3",
@@ -19583,6 +21572,65 @@
     "garden paths",
     "hut walls",
     "school playground"
+   ],
+   "skillExamples": [
+    {
+     "skillId": "c8-maths-ch14-t02-s1",
+     "source": "Area — Area of a trapezium: ½ × (sum of parallel sides) × height",
+     "problem": "A farmer's field in Punjab is a trapezium. Its parallel sides are 45 m and 35 m, and they are 24 m apart. Find the area of the field.",
+     "givens": [
+      "parallel sides 45 m and 35 m",
+      "distance between them (height) 24 m"
+     ],
+     "find": "the area of the field",
+     "steps": [
+      {
+       "do": "add the parallel sides",
+       "result": "45 + 35 = 80"
+      },
+      {
+       "do": "multiply by the height",
+       "result": "80 × 24 = 1920"
+      },
+      {
+       "do": "halve",
+       "result": "1920 ÷ 2 = 960 m²"
+      }
+     ],
+     "answer": "960 m²",
+     "why": "two copies of the trapezium, one turned round, make a parallelogram with base 45 + 35 and the same height → the field is half of it"
+    },
+    {
+     "skillId": "c8-maths-ch14-t02-s3",
+     "source": "Area — Composite figures: subtracting a cut-out",
+     "problem": "A classroom wall is 6 m long and 3 m high. It has a door 1 m wide and 2 m high, and a window 1.5 m wide and 1 m high. What area of the wall needs paint?",
+     "givens": [
+      "wall 6 m by 3 m",
+      "door 1 m by 2 m",
+      "window 1.5 m by 1 m"
+     ],
+     "find": "the area to be painted",
+     "steps": [
+      {
+       "do": "the painted part has holes → whole wall minus cut-outs is easier than adding pieces",
+       "result": "subtract"
+      },
+      {
+       "do": "whole wall",
+       "result": "6 × 3 = 18 m²"
+      },
+      {
+       "do": "door and window",
+       "result": "1 × 2 = 2 m², 1.5 × 1 = 1.5 m²"
+      },
+      {
+       "do": "subtract the cut-outs",
+       "result": "18 − 2 − 1.5 = 14.5 m²"
+      }
+     ],
+     "answer": "14.5 m²",
+     "why": "the painted region = whole rectangle with two holes → area of whole − area of each hole → each hole taken away once"
+    }
    ]
   }
  ]
