@@ -2829,3 +2829,21 @@ Rejected: treating ACR's async-poll 409 "Tag … already exists" as a failure. I
 Now read as "already present", and verified live.
 
 Lesson: fakes must model a provider's async-poll error codes.
+
+
+<!-- merged from inbox/r7-main-27.json -->
+## `rj-r7-main-push-on-testall-only` (2026-11-08)
+
+The main loop pushed integration 14e (int/r6 694f58557) after reading only the test:all summary. The status file said tsc=1 vite=1.
+
+The cause was the integration worktree's stale node_modules: App's new `qrcode-generator` dependency was in package.json and the lockfile but not installed. So the pushed tree was sound; after `npm ci`, tsc and vite both passed.
+
+**What broke:** the push step never read the tsc and vite lines.
+
+**Fix:**
+- Before a push, every status line (tsc, vite, testall) must be 0.
+- Any integration whose merge touches package-lock.json runs `npm ci` before its gate.
+
+**The same session also edited the tree mid-gate.** It merged integration 14e into the worktree while 14d's single-process run was still going. The run reported 2 failures: the old 3-tab r7-app-notebook test read App's new 4-tab Notebook source. That was the edit, not the code.
+
+**Fix:** no merge, `npm ci` or file edit in the integration worktree until every gate stage, single-process included, has written its status. A contaminated run is re-run, not read.

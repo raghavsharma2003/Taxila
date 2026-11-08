@@ -6095,3 +6095,31 @@ Four route tests on the test branch: the code expires and works once, a device s
 <!-- merged from inbox/r7-platform-7.json -->
 ## `ms-r7-device-lesson-joins-2026-11-08`
 Four lesson paths were tried with a sibling's real lesson from a paired device and each refused it; the same test fails when the fix is taken out. A lower-numbered migration added late is still applied.
+
+
+<!-- merged from inbox/r7-games-kila2.json -->
+## `ms-r7-games-kila2-cert`
+
+kila play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction; counts in server/forge3/certs/play.json).
+
+- **Cert:** 136/136 kila samples pass at p360, p412 and l1366 with the game mounted (20 new samples for the five c7-maths-ch11-t03 entries, 4 art directions); the whole table 3840/3840.
+- **Tests:** tests/r7-games-kila-hl.test.mjs has 34 tests, all passing. They check that:
+  - every new goal's levels validate, solve cleanly and are shortcut-free;
+  - each mal-rule lands on its own misconception and commits the belief's own set-up;
+  - an independent checker (a plain wave counting shots, strides found by trial division) agrees with the law over 2,000+ random acts per goal;
+  - generator p95 stays under 50 ms;
+  - the levels vary across seeds (13 or more distinct first levels in 16 seeds per goal, and missing hides all three values);
+  - every new entry is served through currentLevel at every fade (three or more distinct levels for four children), and each mapped kit misconception is served;
+  - the existing levels are pinned.
+- **Other suites:** npm run test:all: 5630 tests, 5557 pass; the only failing suite is engines-browser.test.mjs (60 tests, the known worktree node_modules symlink timeout); r7-games and play suites 1155 tests pass; lint-ui 354 before and after.
+- **Real-browser run shots** at 360 × 740: every goal was opened, solved and shown with each belief. All five goals were solved with real taps only (page.mouse on the squares, getByRole on the buttons), on two seeds each. The shots led to three fixes: the wave on a 72-square path never finished in the shot (the run now rolls n ÷ 4 squares a second), goal lines were cut off, and coprime's pads were invisible (they now show as plinths). Shots are in docs/design/round7/games/runshots-kila2/.
+
+
+<!-- merged from inbox/r7-games-tilings2.json -->
+## `ms-r7-games-tilings2-cert`
+
+darpan play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction; counts in server/forge3/certs/play.json).
+
+- **Cert:** every darpan sample passes at every size, the new tile entries (close, alone, any) included.
+- **Tests:** tests/r7-games-darpan-tile.test.mjs and tests/r7-games-darpan.test.mjs, 67 tests, all pass. Every tile level validates, solves clean, and is shortcut-free. Each mal-rule lands on its own kit misconception. An independent checker ((n − 2) × 180 ÷ n, plain sums, and each drawn copy's corner measured off its points) agrees with the law over at least 2,000 random acts per goal. The solver's copies lie on the drawn floor. The generator p95 is under 50 ms. The level is served through currentLevel at every fade. The picker variety is checked, and the mirror / turn generator hash and served levelIds are pinned.
+- **Real-browser run shots** at 360 × 740: every goal opened, set up, solved and shown with its belief at fades 1-3 (36 shots, no page errors). All three goals were also solved with real taps only, each after a wrong go, a lift by a finger on the floor, and undos. Fixes made from looking at the shots: the uneven tile was too small and its labels collided (it is now drawn larger on its own card); the floor drawn under a closed triangle corner did not match the copies (the solver now lays edge to edge, and the floor is drawn only when the copies meet edge to edge); the goal lines were cut to fit one line. Shots are in docs/design/round7/games/runshots-tilings2/.

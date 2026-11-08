@@ -26310,6 +26310,62 @@
    "at": "2026-11-08",
    "title": "Round 7 F: class 8-9 kit additions stay inside the NCERT chapter's own statements and topic order (no Cantor set; the rectangle converse only as 'equal diagonals that bisect each other'; no later-topic facts); anything needing an unstated result becomes an error-spot on the forward fact or is dropped. Reverse if: a board other than NCERT is targeted whose chapter states more.",
    "source": "inbox/r7-learning-33.json"
+  },
+  {
+   "id": "dc-r7-app-emote-flourish",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The equipped Hangar emote (emote-spark / -wave / -star, the one cosmetic slot that showed nowhere) rises once in its hue beside 'Sent to {T}' when the child sends the Debrief goodbye; it is static under reduced motion. Colour and shape only: the goodbye on the wire stays the child's tap from the closed set (wave / thanks / fun), and an item counts only while it is open (the same rule as hull, trail, board and rim). With this every Hangar slot shows somewhere: hull and trail in the base ship and the play engine, board and rim in the lesson, emote in the Debrief. Reverse: Learning widens ChildEmote to send the equipped emote itself.",
+   "source": "inbox/r7-app-31.json"
+  },
+  {
+   "id": "dc-r7-games-kila2",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "kila's lcm mode extended to HCF × LCM = product (c7-maths-ch11-t03 s1-s3) with five goals: balance, missing, three, coprime, mend. A brick wall (the HCF) lays a brick on every h-th square, and a scale under the path lays wall × trap beside the product. Kit beliefs mapped: three-numbers, coprime-prime, any-pair. Existing kila levels are unchanged; never timed. Reverse if children solve by trying squares wave after wave.",
+   "source": "inbox/r7-games-kila2.json"
+  },
+  {
+   "id": "ms-r7-games-kila2-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "kila play-cert after kila2: 136/136 kila samples pass at p360, p412 and l1366 with the game mounted (20 new samples for the five c7-maths-ch11-t03 entries, 4 art directions); table 3840/3840; tests/r7-games-kila-hl.test.mjs 34 tests pass; lint-ui 354 before and after; all five goals solved with real taps at 360 px.",
+   "source": "inbox/r7-games-kila2.json"
+  },
+  {
+   "id": "dc-r7-games-tilings2",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "darpan extended with a tile mode for c7-maths-ch14-t02 (tilings, s1-s3): copies of a tile laid round one point until the corner closes; close (fill a part-laid corner from a tray of regular tiles), alone (one kind of regular tile that floors on its own), any (a scalene triangle or uneven four-sided tile, choosing which corner meets the point); mal-rules gap-ok, any-regular, only-regular (kit ids verified); existing darpan levels unchanged; never timed. Reverse: children close corners by laying and lifting copies until the picture looks shut, without the angles.",
+   "source": "inbox/r7-games-tilings2.json"
+  },
+  {
+   "id": "ms-r7-games-tilings2-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "darpan play-cert after tilings2: every darpan cell passes at p360, p412 and l1366 with the game mounted (new tile entries included); tests/r7-games-darpan-tile.test.mjs and r7-games-darpan.test.mjs 67 tests pass (independent plain-arithmetic checker; the generator hash and served levelIds of mirror / turn pinned); lint-ui 354 before and after; all three tile goals solved with real taps at 360 px.",
+   "source": "inbox/r7-games-tilings2.json"
+  },
+  {
+   "id": "o-r7-skill-first-try-stamp",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F follow-up (not built): App's growth page (growth.ts) could use a per-skill 'first try' stamp: the date and outcome of a child's first unaided attempt on each skill, so growth reads from a true start. Learning would derive it from kt_evidence (first C0/other per skill). Build when App asks for it. Reverse if: growth.ts finds an equivalent from existing evidence rows.",
+   "source": "inbox/r7-learning-34.json"
+  },
+  {
+   "id": "dc-r7-c8-scope-sources-secondary",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: the c8 maths scope fixes (Sierpinski carpet and Koch snowflake for the Cantor set; the rectangle converse as 'equal diagonals that bisect each other') were checked against study-site quotes of the NCERT chapters, because ncert.nic.in returned 503. Each affected kit entry says so in its `source` field. Reverse if: a re-read of the NCERT PDFs (hegp104, the fractals chapter of part 2) differs; then re-scope those entries.",
+   "source": "inbox/r7-learning-34.json"
+  },
+  {
+   "id": "rj-r7-main-push-on-testall-only",
+   "kind": "rejection",
+   "at": "2026-11-08",
+   "title": "Main loop: pushing an integration after reading only the test:all summary. Integration 14e (int/r6 694f58557) was pushed while its status file said tsc=1 vite=1; the cause was the integration worktree's stale node_modules (App's new qrcode-generator dependency was in package.json and the lockfile but not installed), so the pushed tree was in fact sound, confirmed by npm ci then tsc 0, vite 0. What broke: the wait-loop printed only the test:all tail and the push step did not read the tsc/vite lines. Fix: the push step checks every status line (tsc, vite, testall) is 0, and an integration whose merge touches package-lock.json runs npm ci before its gate. The same session also merged integration 14e into the worktree while 14d's single-process `DATABASE_URL= npm test` was still running; it reported 2 failures (r7-app-notebook: the old 3-tab test read App's new 4-tab Notebook source), which were the edit, not the code. Fix: no merge, npm ci or file edit in the integration worktree until every gate stage, single-process included, has written its status; a contaminated run is re-run, not read.",
+   "source": "inbox/r7-main-27.json"
   }
  ],
  "edges": [
@@ -41142,6 +41198,16 @@
    "src": "dc-r7-app-device-boot",
    "rel": "supersedes",
    "dst": "dc-r7-app-device-pairing"
+  },
+  {
+   "src": "dc-r7-games-kila2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kila2-cert"
+  },
+  {
+   "src": "dc-r7-games-tilings2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-tilings2-cert"
   }
  ]
 }
