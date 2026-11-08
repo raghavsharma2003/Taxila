@@ -54,6 +54,8 @@ export function useVisitor(): "new" | "signed-in" | "app" {
   useEffect(() => {
     if (app) return;
     // no session marker on this browser: nobody is signed in, so no GET /api/me (and no 401 on the public landing)
+    // r7 device pairing: a paired child device (tx_paired, no tx_in) is someone signed in here: "Go to Taxila"
+    if (/(?:^|; )tx_paired=/.test(document.cookie) && !/(?:^|; )tx_in=1/.test(document.cookie)) { setState("signed-in"); return; }
     if (!/(?:^|; )tx_in=1/.test(document.cookie)) return;
     let live = true;
     const run = () => {

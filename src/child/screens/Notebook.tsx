@@ -19,11 +19,12 @@
 // SUMMARY_CONCURRENCY at a time. Replace the source with a server list (GET /api/child/notebook) when it exists.
 import { useEffect, useState } from "react";
 import { Navigate, useSearchParams } from "react-router-dom";
-import { MadeShelf } from "./NotebookMade.tsx";
+import { MadeShelf, readMadeCards } from "./NotebookMade.tsx";
+import { dayOf, growthEntries, type GrowthEntry } from "../growth.ts";
 import { JarPage, readJar, type JarItem } from "./NotebookJar.tsx";
 import { useTeacher } from "../../ui/teacher/useTeacher.ts";
 import type { LessonSummary } from "../../../shared/contracts.ts";
-import { bestCard, getLessonSummary } from "../api.ts";
+import { bestCard, getChildMap, getLessonSummary } from "../api.ts";
 import { Spot } from "../art.tsx";
 import { ChildScreen, useKx } from "../chrome.tsx";
 import { Glyph, Panel, StatePanel } from "../../ui-v3/kaksha/kit.tsx";
@@ -99,7 +100,7 @@ export function Notebook() {
   // r7 app-notebook-log: Lessons | Made for you; ?made=<id> (Home, Debrief) opens that piece on the Made page
   const [search] = useSearchParams();
   const madeId = search.get("made");
-  const [page, setPage] = useState<"lessons" | "made" | "jar">(madeId ? "made" : "lessons");
+  const [page, setPage] = useState<"lessons" | "made" | "jar" | "growth">(madeId ? "made" : search.get("page") === "growth" ? "growth" : "lessons");
   // the Question jar (Learning's GET /api/child/jar): its page shows only when the route answers
   const [jar, setJar] = useState<JarItem[] | null>(null);
   useEffect(() => {
@@ -149,13 +150,13 @@ export function Notebook() {
     return (
       <ChildScreen testid="notebook" ground="shelf" title={t("notebook")} surfaces={plan.surfaces} className="kx-notebook">
         <div className="kx-seg kx-nb-tabs" role="tablist" aria-label={t("notebook")}>
-          {(jar ? (["lessons", "made", "jar"] as const) : (["lessons", "made"] as const)).map((k) => (
+          {(jar ? (["lessons", "growth", "made", "jar"] as const) : (["lessons", "growth", "made"] as const)).map((k) => (
             <button key={k} type="button" role="tab" aria-selected={page === k} onClick={() => setPage(k)} data-testid={`nb-tab-${k}`}>
-              {tr7(k === "lessons" ? "nb.lessons" : k === "made" ? "nb.made" : "nb.jar")}
+              {tr7(k === "lessons" ? "nb.lessons" : k === "growth" ? "nb.growth" : k === "made" ? "nb.made" : "nb.jar")}
             </button>
           ))}
         </div>
-        {page === "jar" && jar ? <JarPage items={jar} name={rec.name} /> : page === "made" ? <MadeShelf cid={cid} young={young} openId={madeId} name={rec.name} /> : pages && !shown.length ? (
+        {page === "growth" ? <GrowthPage cid={cid} pages={pages ?? []} young={young} /> : page === "jar" && jar ? <JarPage items={jar} name={rec.name} /> : page === "made" ? <MadeShelf cid={cid} young={young} openId={madeId} name={rec.name} /> : pages && !shown.length ? (
           plan.source === "loading" ? <div className="kx-wait" aria-busy="true" /> :
           <StatePanel glyph="notebook" line={emptyLine} testid="notebook-empty" />
         ) : (
@@ -231,8 +232,53 @@ export function Notebook() {
   );
 }
 
+/**
+ * r7 "Then and now" (src/child/growth.ts): each skill that became pakka, newest first: when, the first lesson on it before
+ * then (its first board, replayable), and the made-for piece that helped. One entry per skill; no counts, no score.
+ */
+function GrowthPage({ cid, pages, young }: { cid: string; pages: Page[]; young: boolean }) {
+  const [entries, setEntries] = useState<GrowthEntry[] | null>(null);
+  useEffect(() => {
+    const ac = new AbortController();
+    void Promise.all([getChildMap(cid, "sky", ac.signal).catch(() => null), readMadeCards(cid, ac.signal)]).then(([map, made]) => {
+      if (ac.signal.aborted) return;
+      const gp = pages.map((p) => ({ lessonId: p.lessonId, topicId: p.topicId ?? null, at: p.at, topic: p.topic, boards: p.boards,
+        hint: !!p.summary?.cards.some((c) => c.withHelp) }));
+      setEntries(growthEntries(map?.skills ?? [], gp, (made ?? []).map((m) => ({ id: m.id, title: m.title, topicId: m.topicId, at: m.at }))));
+    });
+    return () => ac.abort();
+  }, [cid, pages]);
+  if (!entries) return <div className="kx-wait" aria-busy="true" />;
+  if (!entries.length) return <StatePanel glyph="notebook" line={tr7("growth.empty")} testid="growth-empty" />;
+  return (
+    <ol className="kx-log kx-growth" aria-label={tr7("nb.growth")} data-testid="growth">
+      {entries.map((e) => {
+        const thenPage = e.then ? pages.find((p) => p.lessonId === e.then!.lessonId) ?? null : null;
+        return (
+          <Panel as="li" key={e.skillId} className="kx-log-page kx-growth-entry" testid="growth-entry">
+            <h2 className="kx-panel-title">{e.title}</h2>
+            <div className="kx-growth-pair">
+              <div className="kx-growth-then">
+                {e.then ? <p className="kx-tagline">{tr7(e.then.hint ? "growth.thenHint" : "growth.then", { date: dayOf(e.then.at) })}</p> : null}
+                {thenPage && (thenPage.boards ?? 0) > 0 && <BoardPage cid={cid} page={thenPage} young={young} kx noContinue />}
+              </div>
+              <p className="kx-growth-now" data-testid="growth-now"><Glyph name="tick" size={20} /> <span>{tr7("growth.now", { date: dayOf(e.nowAt) })}</span></p>
+            </div>
+            {e.helped.length > 0 && (
+              <p className="kx-growth-helped">
+                <span className="kx-tagline">{tr7("growth.helped")}</span>{" "}
+                {e.helped.map((m, i) => <span key={m.id}>{i ? " · " : ""}<Link to={`/c/${cid}/notebook?made=${encodeURIComponent(m.id)}`}>{m.title}</Link></span>)}
+              </p>
+            )}
+          </Panel>
+        );
+      })}
+    </ol>
+  );
+}
+
 /** A lesson's boards: the first as a still, "Replay" redraws them all in order, "Continue this lesson" starts its topic. */
-function BoardPage({ cid, page, young, kx }: { cid: string; page: Page; young: boolean; kx?: boolean }) {
+function BoardPage({ cid, page, young, kx, noContinue }: { cid: string; page: Page; young: boolean; kx?: boolean; noContinue?: boolean }) {
   const [replay, setReplay] = useState<Replay | null>(null);
   const [i, setI] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -276,7 +322,7 @@ function BoardPage({ cid, page, young, kx }: { cid: string; page: Page; young: b
             <button type="button" className={c.text} onClick={open} disabled={loading} data-testid="notebook-replay">{tnb("replay")}</button>
           </>
         )}
-        {page.topicId && <Link className={c.go} to={`/c/${cid}/lesson/new?topic=${encodeURIComponent(page.topicId)}`} data-testid="notebook-continue">{tnb("continue")}</Link>}
+        {page.topicId && !noContinue && <Link className={c.go} to={`/c/${cid}/lesson/new?topic=${encodeURIComponent(page.topicId)}`} data-testid="notebook-continue">{tnb("continue")}</Link>}
       </div>
     </div>
   );

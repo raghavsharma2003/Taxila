@@ -52,6 +52,8 @@ export default function Who() {
     loadMe().then((me) => {
       // r5 QA D18: signed out on a phone that has had a learner here (a remembered last child) → Sign in, not a new account
       if (!me) return nav(readStore<string | null>(LAST_CHILD_KEY, null) ? "/start/phone?login=1" : "/start/lang", { replace: true });
+      // r7 device pairing: a paired child device opens its one child, with no picker and no other names on this device
+      if (me.scope === "child" && me.children[0]) return nav(`/c/${me.children[0].id}`, { replace: true });
       if (!me.children.length) return nav("/start/child", { replace: true });
       setKids(me.children);
       // After a lesson finish the next tap must be a deliberate pick (§2.5.1): ?fresh=1 skips the pre-select.
