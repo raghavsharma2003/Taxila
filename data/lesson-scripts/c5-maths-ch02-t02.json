@@ -180,9 +180,9 @@
      "accept": ["one fifth", "1/5 wala", "5 wali roti ka tukda", "the piece from the roti cut into 5"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "1/10",
-     "board": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 10, "shade": 1, "label": "?" }, { "parts": 5, "shade": 1, "label": "?" } ] } },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 10, "title": "Roti"}, {"parts": 5, "title": "Roti"}]} },
      "why": { "hi": "5 tukdon wali roti ka har 1/5 tukda 10 tukdon wali roti ke 1/10 tukde se do guna hai", "en": "each 1/5 piece of the roti cut into 5 is twice a 1/10 piece of the roti cut into 10" },
-     "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 10, "shade": 1, "label": "1/10" }, { "parts": 5, "shade": 1, "label": "1/5" } ] } },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 10, "title": "1/10"}, {"parts": 5, "title": "1/5"}]} },
      "simpler": { "hi": "Dono roti ek jaisi hain. Jis roti ke kam tukde hain, uska har tukda bada hota hai.", "en": "Both rotis are the same size. The roti with fewer pieces has bigger pieces." }
     },
     {
@@ -212,7 +212,7 @@
      "wrongIfMis": "smaller",
      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} },
      "why": { "hi": "ringed nishaan 1/4 hai, aur 1/4 do 1/8 ke barabar hai, isliye woh 1/8 se bada hai", "en": "the circled mark is 1/4, and 1/4 equals two 1/8s, so it is bigger than 1/8" },
-     "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } },
+     "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1, "marks": [[1, 4], [1, 8]]} },
      "simpler": { "hi": "Line 4 barabar hisson mein bati hai, toh pehla nishaan ek chauthai par hai. Kam hisse matlab bada hissa.", "en": "The line is split into 4 equal parts, so the first mark is at one quarter. Fewer parts means bigger parts." }
     }
    ],
@@ -423,7 +423,7 @@
      "accept": ["Raju ne", "Raju ne kam khaya", "Raju, 3/8"],
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
      "wrongIfMis": "they ate the same",
-     "board": { "template": "fraction-line@1", "params": {"dens": [8, 8], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 8, "shade": 5, "label": "5/8" }, { "parts": 8, "shade": 3, "label": "3/8" } ] } },
+     "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/8"}, {"num": 5, "label": "5/8"}]} },
      "simpler": { "hi": "Sab tukde ek size ke hain. Jisne kam tukde khaye, usne kam cake khaya.", "en": "All the pieces are the same size. Whoever ate fewer pieces ate less cake." }
     },
     "answer": { "hi": "Raju ne kam cake khaya, sirf 3/8", "en": "Raju ate less cake, only 3/8" },
@@ -462,9 +462,9 @@
      "accept": ["Ben ke paas", "Ben ke", "Ben has more", "Ben, 2/4"],
      "targets": "c5-maths-ch02-t02-m-tops-only",
      "wrongIfMis": "{friend}",
-     "board": { "template": "fraction-line@1", "params": {"dens": [4, 12], "from": 0, "to": 1} },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "title": "Cake"}, {"parts": 12, "title": "Cake"}]} },
      "why": { "hi": "Ben ka 2/4 aadha cake hai, par 3/12 sirf 1/4 cake hai, isliye Ben ke paas zyada hai", "en": "Ben's 2/4 is half the cake, but 3/12 is only 1/4 of the cake, so Ben has more" },
-     "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 2, "label": "2/4" }, { "parts": 12, "shade": 3, "label": "3/12" } ] } },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "title": "2/4"}, {"parts": 12, "title": "3/12"}]} },
      "simpler": { "hi": "12 tukdon wale cake ke 3 tukde milkar 4 tukdon wale cake ke ek tukde jitne hain. Ab dono ke hisson ki tulna karo.", "en": "3 pieces of the cake in 12 pieces together equal one piece of the cake in 4 pieces. Now compare the two shares." }
     },
     {
