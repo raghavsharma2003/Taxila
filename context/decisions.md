@@ -8727,3 +8727,81 @@ an ask whose posed figure differs from its beat's board carries its own unmarked
 ## `dc-r7-unrolled-shows-shape` (2026-11-08)
 
 unrolled@1 (the perimeter second view) draws a small copy of the shape beside the strip of its sides laid straight, so 'this shape, laid straight on a ruler' is on the screen and a picture line naming the rectangle or hexagon is true (W15 passes). Why: Studio's replay of steady-c6 T14→T18 found preselect picked the unrolled view but W15 refused it because her line named the rectangle, falling back to re-showing the card's board, so no new picture was drawn; the script's own move is 'seedha karke scale par napo', which is the idea of perimeter. Reverse: the side-by-side copy crowds the strip at 360 px, or judges find the child reads the copy as a second, different shape.
+
+
+<!-- merged from inbox/r7-app-25.json -->
+## `dc-r7-app-card-last-page`
+The question on the card now changes when its picture appears, not before and not long after.
+
+## `dc-r7-app-card-waiting`
+While she draws a different example, the question steps back to one quiet line and the board gets the room. It comes back with its picture.
+
+
+<!-- merged from inbox/r7-app-26.json -->
+## `dc-r7-app-coldstart-answers`
+Most children now arrive on day one with a feel for where to begin: the parent's tap in set-up, the child's face at Hello. Neither is a test, and either one alone is enough.
+
+
+<!-- merged from inbox/r7-app-27.json -->
+## `dc-r7-app-ofcard-wire`
+The flag that tells the card to wait travels on the board itself, page by page, so the phone needs nothing else from the turn.
+
+
+<!-- merged from inbox/r7-brain-20.json -->
+## `dc-r7-script-walk-v6-2-brain` (2026-11-07, stream A Brain; main's dc-r7-script-walk-v6-2)
+
+**Turn limits**
+- T1: one close per turn (gave / done / closed, the first that applies).
+- T2: a `, kyunki X` already said this turn or in her previous turn is not said again.
+- T3: a bridge turn always splits; the new skill's point and card come next turn.
+
+**Runtime**
+- H1: after a wrong answer her hint goes; the card's authored simpler (else the remediation say) teaches. Reteach moves are excluded.
+- H2: a parked aside records its card and the child's words; the return is due only once that card resolves. An authored aside fact is said once (s.asideFactsSaid), else a quote line of what they said.
+- H3: code's probe ack names their reasoning only when the child's words give one (REASON_SAID), else "Theek hai.".
+- H4: English filler and a duplicated sentence after a Hindi switch go; "(no|yes) sahi hai" becomes "sahi hai" on every move.
+- H5: "koi baat nahi" is no polarity, and code's verdict is never swapped out. turn.js repeatOfLastRight: the last right answer said again is ungraded only on the same card.
+- Remediation: `remediation[i].simpler` answers a lost child straight after that remediation (held teach half or next turn), before the card's simpler.
+
+**Studio seams**
+- G3: propose.js revealOnVerdict adds `revealKey` and `answers` to the verdict segment's scriptBeat when the answer was right and the segment is on the answered card's close board.
+- G5: requests.js VISUAL reads "screen par/pe dikhao".
+- First page: a bare first page under 6 words with no digit and no card joins the next page.
+
+**Held** until the judges decide: W8 counts, compare W5, policy-B turn length.
+
+**Tests:** tests/r7-brain-v62.test.mjs (replays of director10 rows plus units); tests/r7-brain-v61.test.mjs cases that replayed director9 past T11 now walk the run's script.
+
+**Reverse if:** director11's hand count shows a part adds a contradiction, a lost card or a longer skill 1. Reverse that part alone.
+
+
+<!-- merged from inbox/r7-games-aankde.json -->
+## `dc-r7-games-aankde`
+
+**aankde** (data and statistics, classes 6-7) is a law family. Nothing in it runs on a clock, and the law reads only what the child built: the strokes in each tally row, the slips taken, the stock crate, the towers' blocks, the level line, the order of the cards and the peg.
+
+- **tally/sort** (c6-ch04-t01 s2): a pile of survey slips (a fruit stall, the vehicles at the gate, favourite sports); the child takes the top slip into a row as ONE stroke, upright or across the four before it. On count the table reads each row as a reader does (a stroke across closes a bundle that reads five whatever it holds) and adds the total row against the survey. Solved: the pile empty, every slip in its row, every row bundled.
+- **tally/missing** (s3, s2): N children chose one each; every row but one stands tallied; the child strokes the lost row until the total row makes N.
+- **stack/even** (c7-ch13-t02 s1): blocks moved from tall towers to short ones until every tower is level (blocks are never made or lost, so the level IS the mean; the mean is never one of the towers on pour levels).
+- **stack/pour** (s1): the level line set where the blocks above exactly fill the gaps below; on pour they drop in one by one, and what is left over or still empty shows.
+- **line/middle** (s2): value cards swapped into order, the peg set on a card or in the gap between two; the line folds from both ends to its middle (the median; halfway for an even count).
+- **tally/mode** (s3): the sizes a shoe shop sold are tallied as in sort; the stock crate goes on the size sold most.
+
+Mal-rules map only to the topic's own kit beliefs: tally-five (the fifth stroke drawn upright; the standing bundles read as four) and total-mismatch (counted with slips still on the pile) for c6-ch04-t01; mean-in-data (the line at the data value nearest the mean; the crate on the size nearest the mean, the kit's own shoe item), outlier (the line where the towers stand without the one far taller) and median-unordered (the written line pegged in its middle) for c7-ch13-t02. zero-dropped (an empty tower left out of the levelling) and one-card (one middle card pegged for an even count) are implemented but no kit names them, so they are never claimed. Not admitted: c6-ch04-t01-s1 (choosing a clear survey question: a written judgement). Kit beliefs with no honest set-up: raw-organised (the pile must be emptied to count), median-mean (the peg names a place, not a worked value). Pictographs and bar graphs stay with stambh.
+
+Reverse if a child pilot shows the across stroke is pressed by rhythm rather than by counting to five, or the level line is found by sliding until the counters agree without the child looking at the towers.
+
+
+<!-- merged from inbox/r7-games-paheli.json -->
+## `dc-r7-games-paheli`
+
+**paheli** (number puzzles, classes 6-7) is a law family. Nothing in it runs on a clock and nothing is an answer box: the child loads bags, places number tiles, gives letters digit tiles or sets a start, and on go the law answers by plain arithmetic (pairing counters, adding every line, column addition with carries, reverse-and-add).
+
+- **pairs/load** (c7-ch06-t01 s1, s3): a boat with k seats must carry exactly T counters; bag cards (look 1: counters drawn in pairs, an odd bag's lone counter apart). Every level is built so that the k odd bags nearest T can never make it (two odds for an odd T, three or five odds for an even T). The sail pairs each bag inside, slides the lone counters together to pair up, then lays the total against the flag. **pairs/trays** (s2): the same boat with trays of rows × columns; odd × odd is the only odd tray.
+- **magic/square** (c7-ch06-t02 s1, s2): tiles 1-9 on a 3 × 3 grid (the centre and two cells given at look 1, a corner and an edge at look 2, one edge at look 3); the run adds all 8 lines and writes each sum at its end. **magic/shift** (s3): nine numbers in other steps (2-10, 3-11, 11-19, 2-18 by 2, 1-17 by 2): the magic sum and the centre move with the numbers and are never told.
+- **cipher/letters** (c7-ch06-t04 s1-s3): a letter sum with exactly one solution (look 1: at most two letters to find); a key per letter and a 0-9 pad (each digit once, no leading 0); the run adds from the ones with a carry box over every column and stops at the first column that does not write its letter.
+- **mirror/reach** (c6-ch03-t02 s2): a target palindrome (55-121, 121-484, 1111-44044 by look); two digit wheels set a 2-digit start; the run writes every reverse-and-add line until the first palindrome, which must be the target (AB + BA depends on A + B alone).
+
+Mal-rules map only to the topic's own kit beliefs: two-odds → odd-plus-odd, odd-count → three-odds-even, like-sum (trays chosen by reading their parity with the sum rules) → product-like-sum, rows and rows-cols (every row, or every row and column, on the sum) → rows-only, ignore-carry (each column alone, the carry dropped) → ignore-carry, big-carry (the leading letter of a one-digit-longer sum as 2) → big-carry. Not admitted: c6-ch03-t02-s1 (digit sums: setting a number with a given digit sum would be an answer box) and c6-ch03-t02-s3 (Kaprekar); they stay with ITEM-ARENA. Kit beliefs with no honest set-up here: trial-only, add-breaks, few-works, digitsum-size, kaprekar-zero.
+
+Reverse if a child pilot shows bags, tiles or digits are found by blind trial (many runs per level with no parity, centre or carry reasoning), or the reverse-and-add start is guessed rather than steered by A + B.
