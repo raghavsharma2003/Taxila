@@ -24,6 +24,17 @@ export function cosmeticsFor(equipped: Readonly<Record<string, string>>, items: 
 /** r7 app-world-hangar-depth: the lesson's own look from the equipped board theme and Comms rim (hue names, which the
  *  lesson frame turns into --k-hue-* vars). Same rule as the engine: an item counts only if it is open now. Colour only. */
 export interface LessonLook { board: string | null; rim: string | null }
+
+/** r7 app-world-hangar-depth: the equipped (and open) emote as the Debrief's goodbye flourish: which glyph, in which
+ *  hue. Colour and shape only: what the goodbye SAYS stays the child's tap (wave / thanks / fun, the closed wire set). */
+export type EmoteGlyph = "spark" | "hand" | "star";
+const EMOTE_GLYPH: Record<string, EmoteGlyph> = { "emote-spark": "spark", "emote-wave": "hand", "emote-star": "star" };
+export interface EmoteLook { glyph: EmoteGlyph; hue: string }
+export function emoteLook(equipped: Readonly<Record<string, string>>, items: ReadonlyArray<Pick<HangarItem, "id" | "kind" | "hue" | "open">>): EmoteLook | null {
+  const it = items.find((i) => i.id === equipped.emote && i.kind === "emote" && i.open);
+  const glyph = it ? EMOTE_GLYPH[it.id] : undefined;
+  return it && glyph && /^[a-z]+$/.test(it.hue) ? { glyph, hue: it.hue } : null;
+}
 export function lessonLook(equipped: Readonly<Record<string, string>>, items: ReadonlyArray<Pick<HangarItem, "id" | "kind" | "hue" | "open">>): LessonLook {
   const pick = (slot: "board" | "rim"): string | null => {
     const it = items.find((i) => i.id === equipped[slot] && i.kind === slot && i.open);
