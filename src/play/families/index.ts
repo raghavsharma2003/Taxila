@@ -29,6 +29,7 @@ import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
 import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
 import { gatiLogic } from "./gati/gati.logic.ts";
+import { bhaapLogic } from "./bhaap/bhaap.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -154,5 +155,11 @@ export const LOGIC: Record<string, AnyLogic> = {
   "gati/drishti": asAny(gatiLogic),
   "gati/raftaar": asAny(gatiLogic),
   "gati/nishaan": asAny(gatiLogic),
+  // round 7: Bhaap, processes of water and air (class 6-7 science): the pot heated and cooled through its states, water
+  // evaporating and condensing, convection on the beach and in a room, the water cycle and the ground; a step per tap
+  "bhaap/avastha": asAny(bhaapLogic),
+  "bhaap/bhaapan": asAny(bhaapLogic),
+  "bhaap/hawa": asAny(bhaapLogic),
+  "bhaap/chakra": asAny(bhaapLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

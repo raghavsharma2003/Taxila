@@ -34,6 +34,7 @@ import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
 import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
 import { chhaanoHidden } from "../../src/play/families/chhaano/chhaano.logic.ts";
 import { gatiHidden } from "../../src/play/families/gati/gati.logic.ts";
+import { bhaapHidden } from "../../src/play/families/bhaap/bhaap.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -108,6 +109,8 @@ export function hiddenOf(level) {
   if (level.family === "chhaano") return chhaanoHidden(level);
   // r7 gati: the speed a trip makes and the m/s a speedometer reading is are never said first. Checked by family first
   if (level.family === "gati") return gatiHidden(level);
+  // r7 bhaap: the tools a process needs (and, for a device, where it goes) are never said first. Checked by family first
+  if (level.family === "bhaap") return bhaapHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];
