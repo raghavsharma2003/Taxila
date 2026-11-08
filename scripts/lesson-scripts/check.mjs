@@ -36,7 +36,9 @@ export const rangeOk = (b) => (RANGE[b.template] ? RANGE[b.template](b.params ??
 export const RANGE = {
   "fraction-parts@1": (p) => p.parts >= 2 && p.parts <= 12 && p.shade >= 0 && p.shade <= p.parts,
   "fraction-of@1": (p) => p.b >= 2 && p.b <= 6 && p.d >= 2 && p.d <= 6 && p.a >= 1 && p.a <= p.b && p.c >= 1 && p.c <= p.d,
-  "equal-groups@1": (p) => p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8,
+  // Studio cb7108d7: `sizes` [2-6 groups of 1-10] draws the same heap shared into groups of THOSE sizes (unequal allowed)
+  "equal-groups@1": (p) => (Array.isArray(p.sizes) ? p.sizes.length >= 2 && p.sizes.length <= 6 && p.sizes.every((n) => Number.isInteger(n) && n >= 1 && n <= 10)
+    : p.groups >= 2 && p.groups <= 6 && p.each >= 1 && p.each <= 8),
   "compare@1": (p) => p.left?.items?.length >= 1 && p.right?.items?.length >= 1,
   // Studio 3dc6208a: measured@1 also draws polygons (sides 3-8, all labelled; names one per corner, ≤ 3 chars)
   "measured@1": (p) => ["m", "cm"].includes(p.unit) && (["rect", "square", "triangle", "circle"].includes(p.shape)
@@ -239,10 +241,11 @@ export function whyFigureErrors(why, board) {
   const sizes = /\b(?:groups?|samooh)\s+(\d+(?:\s*,\s*\d+)+(?:\s*(?:,|and|aur)\s*\d+)?)/.exec(t);
   if (sizes && tpl === "equal-groups@1") {
     const ns = sizes[1].split(/\s*(?:,|and|aur)\s*/).map(Number);
-    if (new Set(ns).size > 1) out.push(`its why lists unequal groups ${ns.join(", ")}, the board draws ${p.groups} equal groups of ${p.each}`);
+    if (Array.isArray(p.sizes)) { if (ns.join() !== p.sizes.join()) out.push(`its why lists groups ${ns.join(", ")}, the board draws groups ${p.sizes.join(", ")}`); }
+    else if (new Set(ns).size > 1) out.push(`its why lists unequal groups ${ns.join(", ")}, the board draws ${p.groups} equal groups of ${p.each}`);
   }
   const notEqual = /\b(not equal|barabar nahi|unequal)\b/.test(t);
-  const onlyEqual = (tpl === "wholes@1" && (p.wholes ?? []).every((w) => w.equal !== false)) || tpl === "equal-groups@1" || (tpl === "fraction-parts@1");
+  const onlyEqual = (tpl === "wholes@1" && (p.wholes ?? []).every((w) => w.equal !== false)) || (tpl === "equal-groups@1" && !(Array.isArray(p.sizes) && new Set(p.sizes).size > 1)) || (tpl === "fraction-parts@1");
   if (notEqual && onlyEqual) out.push(`its why judges "not equal", the board draws only equal parts (draw the judged figure)`);
   return out;
 }
@@ -269,7 +272,7 @@ export function figureOf(board) {
     case "shape@1": case "measured@1": return `shape["${kind(p.shape)}"]`;
     case "fraction-parts@1": return `parts${JSON.stringify([p.parts, p.whole ?? null])}`;
     case "wholes@1": return `wholes${JSON.stringify((p.wholes ?? []).map((w) => [w.parts, w.equal !== false]))}`;
-    case "equal-groups@1": return `groups[${Number(p.groups) * Number(p.each)}]`;
+    case "equal-groups@1": return `groups[${Array.isArray(p.sizes) ? p.sizes.reduce((a, b) => a + Number(b), 0) : Number(p.groups) * Number(p.each)}]`;
     case "shade-grid@1": return `groups[${Number(p.rows) * Number(p.cols)}]`;
     case "number-line-scale@1": return `scale${JSON.stringify([p.from, p.to, p.step])}`;
     default: return `${board.template}${JSON.stringify(p)}`;
