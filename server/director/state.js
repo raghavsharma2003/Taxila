@@ -900,10 +900,9 @@ function walkRemedy(s, input, item) {
   const sayLine = r.say ? saidIn(r.say, s.ctx.lang ?? "hinglish") : null;
   if (sayLine) {
     activate(s, then);
-    // v4 W4 (director6 c6: 8 missed cards never answered): the card they missed is closed with its answer once the follow-up
-    // is done (brain/say.js says it after the verdict)
-    { const b0 = cardBeatRef(s, kit, item) ?? null, ab = answerBoardOf(item);
-      s.pendingClose = { thenId: then.id, answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "", beat: ab ? { ...(b0 ?? {}), board: ab, answerBoard: true } : b0 }; }
+    // (v4 W4 closed the missed card with its answer once the follow-up was done. v6.3 T1′, main's director11 judges, 16 of 19
+    // two-close turns: "Haan, sahi hai, kyunki … Aur pehle wale sawaal ka jawab X tha, kyunki …" — a close is only ever of the
+    // card answered in the child's last turn; the missed card's close is dropped, never carried)
     const mis0 = kit.misconceptions.find((m) => m.id === targets);
     logReteach(s, "kit", item.skillId, mis0 ?? null);
     return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
