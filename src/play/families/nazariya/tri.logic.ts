@@ -235,6 +235,7 @@ function malActs(level: PlayLevel<TriParams>, mal: string): NazariyaAct[] | null
   return n !== null && n <= p.w * p.d ? [...floorActs(p, n), { kind: "check" }] : null;
 }
 
+const JITTER = 0.35;
 function generate(req: GenRequest): Candidate<TriParams>[] {
   const g = req.grammar as { plot?: [number, number]; any?: boolean };
   const goal = (req.goal as TriGoal) ?? "match";
@@ -252,7 +253,8 @@ function generate(req: GenRequest): Candidate<TriParams>[] {
       const xa = goal === "match" && g.any ? x0 + 1 + Math.floor(rnd() * (b - 1)) : right ? x1 : x0;
       const params: TriParams = { ...plot, goal, tri: { x0, x1, zb, xa, za } };
       if (!validate(params)) continue;
-      const diff = Math.min(1, (b * h) / 70 + (goal === "more" ? 0.15 : goal === "match" ? 0.1 : 0) + (g.any ? 0.1 : 0));
+      // a seeded nudge (± JITTER / 2): without it the picker's nearest-to-band triangle was the same for every child (3-4-5)
+      const diff = Math.max(0, Math.min(1, (b * h) / 70 + (goal === "more" ? 0.15 : goal === "match" ? 0.1 : 0) + (g.any ? 0.1 : 0) + (rnd() - 0.5) * JITTER));
       out.push({ signature: `${goal}:${b}x${h}:${xa - x0}`, difficulty: diff, level: lvl(req, "tri", goal, params, `${goal}-${b}x${h}-${right}-${x0}-${za}`, "khand") });
     }
   }
