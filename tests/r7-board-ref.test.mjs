@@ -326,5 +326,6 @@ test("director9: an L-shaped room (6 sides that close as an L) is drawn TO SCALE
   const W = expand({ template: "wholes@1", wholes: [{ parts: 3, equal: false, title: "Cake A" }, { parts: 3, equal: true, title: "Cake B" }] });
   assert.ok(W.ok, String(W.errors));
   assert.deepEqual(W.script.facts.counts.wholes, [{ parts: 3, shaded: 0, label: "Cake A" }, { parts: 3, shaded: 0, label: "Cake B" }]);
-  assert.deepEqual(W.script.facts.onScreen, { whole1: "3 unequal parts", whole2: "3 equal parts" });
+  // (director11 S2: each whole is named by its drawn title in the facts her line is written from)
+  assert.deepEqual(W.script.facts.onScreen, { whole1: "Cake A: 3 unequal parts", whole2: "Cake B: 3 equal parts" });
 });

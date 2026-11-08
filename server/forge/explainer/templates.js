@@ -103,7 +103,8 @@ function fractionParts(c, tl) {
     for (let i = 1; i < parts; i++) tl.add({ op: "line", from: [x0 + i * pw, y0], to: [x0 + i * pw, y0 + H], weight: 1 }, 260, { gap: 60 });
     for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "rect", at: [x0 + i * pw + 3, y0 + 3], w: pw - 6, h: H - 6, fill: "accent", ink: "accent", weight: 1 }, 380, { gap: 120 });
     // the parts count under the bar, then the fraction
-    tl.add({ op: "text", at: [200, 175], text: `${parts} equal parts`, size: "s", ink: "soft" }, 500);
+    // (director11 S3: the board's own words follow the lesson's Hindi mode — "2 equal parts" stayed English over Hindi lines)
+    tl.add({ op: "text", at: [200, 175], text: c.lang === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft" }, 500);
   } else {
     const cx = 130, cy = 150, r = 95;
     tl.add({ op: "circle", c: [cx, cy], r, weight: 2, ...(whole === "roti" ? { fill: "soft" } : {}) }, 900);
@@ -115,8 +116,10 @@ function fractionParts(c, tl) {
   }
   const fx = whole === "bar" ? 200 : 310, fy = whole === "bar" ? 225 : 120;
   // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
-  if (shade > 0) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
-  if (shade > 0) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
+  // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
+  if (shade > 0 && !c.hideResult) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
+  if (shade > 0 && !c.hideResult) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
+  if (c.hideResult) delete facts.fraction;
   return { facts, counts: { parts, shaded: shade } };
 }
 
@@ -154,6 +157,11 @@ function fractionBars(c, tl) {
     for (let i = 1; i < b.parts; i++) tl.add({ op: "line", from: [round1(x0 + i * pw), y0], to: [round1(x0 + i * pw), y0 + H], weight: 1 }, cutMs, { gap: b.parts > 6 ? 60 : 140 });
     for (let i = 0; i < b.shade; i++) tl.add({ op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1 }, shadeMs, { gap: b.shade > 3 ? 120 : 260 });
     tl.add({ op: "text", at: [x0 + W + 45, y0 + H / 2 + 6], text: label, size: "m", ink: label === "?" ? "mark" : "accent" }, 500, { gap: 300 });
+    // (director11 S1: `ends` — the bars of a 0-1 line keep its 0 and 1, under each bar's ends)
+    if (c.ends) {
+      tl.add({ op: "text", at: [x0, y0 + H + 16], text: "0", size: "s", ink: "soft" }, 200, { gap: 60 });
+      tl.add({ op: "text", at: [x0 + W, y0 + H + 16], text: "1", size: "s", ink: "soft" }, 200, { gap: 40 });
+    }
     wholes.push({ parts: b.parts, shaded: b.shade, label });
   });
   // (one short fact per bar: the facts row keeps values of up to 40 characters)
@@ -186,7 +194,8 @@ function wholes(c, tl) {
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, cx, cy + r + 34, colW - 12, {}, { id: `t${k}`, ink: "accent", gap: 160, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
-    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+    // (director11 S2: the whole is named by the title DRAWN under it — her line said "1 wala … 2 wala" over Cake A | Cake B)
+    facts[`whole${k + 1}`] = `${title ? `${title}: ` : ""}${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`.slice(0, 40);
   });
   return { counts: { wholes: counts }, facts };
 }
@@ -209,7 +218,8 @@ function wholesAsBars(list, tl) {
     const title = w.title !== undefined ? String(w.title) : "";
     if (title) writeFit(tl, title, x0 + W + 60, y0 + H / 2 + 6, 110, {}, { id: `t${k}`, ink: "accent", gap: 300, size: "s" });
     counts.push({ parts: w.parts, shaded: shade, label: title });
-    facts[`whole${k + 1}`] = `${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`;
+    // (director11 S2: the whole is named by the title DRAWN under it — her line said "1 wala … 2 wala" over Cake A | Cake B)
+    facts[`whole${k + 1}`] = `${title ? `${title}: ` : ""}${w.parts} ${w.equal === false ? "unequal" : "equal"} parts${shade ? `, ${shade} shaded` : ""}`.slice(0, 40);
   });
   return { counts: { wholes: counts }, facts: { ...facts, view: "strips" } };
 }
@@ -1558,8 +1568,9 @@ function nameShape(tl, c, word, b) {
   if (!c.name) return {};
   const y = Math.max(20, b.y - 16);
   tl.add({ op: "text", at: [b.x, y], text: word, size: "s", ink: "soft", align: "start" }, 300, { gap: 120 });
-  if (c.trace && textBox(word, "s").w + textBox("perimeter", "s").w + 16 <= b.w) {
-    tl.add({ op: "text", at: [b.x + b.w, y], text: "perimeter", size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
+  const per = c.lang === "hi" ? "parimap" : "perimeter";
+  if (c.trace && textBox(word, "s").w + textBox(per, "s").w + 16 <= b.w) {
+    tl.add({ op: "text", at: [b.x + b.w, y], text: per, size: "s", ink: "mark", align: "end" }, 300, { gap: 60 });
     return { name: word, shows: "perimeter" };
   }
   return { name: word };
@@ -1770,7 +1781,9 @@ function derivedCounts(call, facts = {}) {
   }
 }
 
-export function expand(call, { band = "B3", lessonId = "", scriptId } = {}) {
+export function expand(call0, { band = "B3", lessonId = "", scriptId, lang = null } = {}) {
+  // (director11 S3: the lesson's language — the whiteboard intent's style.lang, "hi" in Hindi mode — for the words a template writes)
+  const call = lang && call0 && call0.lang == null ? { ...call0, lang } : call0;
   const build = BUILD[call?.template];
   if (!build) return { ok: false, script: null, facts: null, errors: [`unknown_template:${call?.template}`] };
   const tl = timeline(PACE[band] ?? 1);

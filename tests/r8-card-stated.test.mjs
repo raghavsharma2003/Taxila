@@ -121,7 +121,8 @@ test("director8 S3′: a picture asked while the card's board is up draws a SECO
   assert.equal(seam.studioSeam.preselectedAltView(pic.slotId.split(":")[0]), "parts");
   assert.equal(pic.artifact.screen.template, "fraction-bars@1");
   assert.deepEqual(pic.artifact.screen.counts.wholes, [{ parts: 6, shaded: 1, label: "1/6" }, { parts: 3, shaded: 1, label: "1/3" }]);
-  assert.deepEqual([...new Set(pic.artifact.screen.numbers)].sort(), ["1/3", "1/6"]);
+  // (director11 S1: the bars of a 0-1 line keep its 0 and 1)
+  assert.deepEqual([...new Set(pic.artifact.screen.numbers)].sort(), ["0", "1", "1/3", "1/6"]);
   // another board up: the picture is the card's own board (SC2 unchanged)
   const other = { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 2, label: "1/4" }] } };
   const o = showCard(T, kit, other, "explain", null, "Line par 1/8 aur 1/4 dekho.");
@@ -137,7 +138,9 @@ test("director8 S3′: a picture asked while the card's board is up draws a SECO
   const qp = q.turn("Yeh dekho: 1 barabar bar, 3 barabar hisson mein. Pehla mark kaunsa fraction hai?", { request: { kind: "picture" } });
   assert.equal(qp.state, "revealed");
   if (qp.artifact.altView) {
-    assert.deepEqual(qp.artifact.screen.counts.wholes, [{ parts: 3, shaded: 0, label: "?" }]);
+    // (director11 S1: the asked mark keeps its position — 1 of 3 shaded — and its value is "?"; her line goes on to name
+    // the "mark", so the card's own line comes back as the second page: the bars are the first page's screen)
+    assert.deepEqual((qp.artifact.screens?.[0] ?? qp.artifact.screen).counts.wholes, [{ parts: 3, shaded: 1, label: "?" }]);
     assert.ok(!texts(qp.artifact.script).includes("1/3"));
   }
   assert.ok(!texts(qp.artifact.script).some((t) => /(?<![\d/])1\/3(?![\d/])/.test(t)), "the asked 1/3 is never written");
@@ -252,14 +255,15 @@ test("director9 S3′ on the run path: every picture request of the run, with th
     ["c5-maths-ch02-t02", "steering T14", { template: "fraction-line@1", params: { dens: [7, 9], from: 0, to: 1, marks: [[1, 7], [1, 9]] } }, "parts", "fraction-bars@1"],
     ["c5-maths-ch02-t01", "steady T34 / offtopic T28", { template: "fraction-line@1", params: { den: 8, from: 0, to: 1, marks: [{ num: 1, label: "1/8" }, { num: 4, label: "1/2" }] } }, "parts", "fraction-bars@1"],
     ["c5-maths-ch02-t01", "stuck T18 / steering T14", { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1, marks: [[1, 4]] } }, "parts", "fraction-bars@1"],
-    ["c4-maths-ch05-t01", "stuck T18 / steering T14", { template: "shade-grid@1", params: { rows: 1, cols: 4, shade: 3, labels: false, hideResult: true } }, "parts", "fraction-bars@1"],
+    // (director11 S2: a one-row grid is already a strip — its second view is the same whole, round)
+    ["c4-maths-ch05-t01", "stuck T18 / steering T14", { template: "shade-grid@1", params: { rows: 1, cols: 4, shade: 3, labels: false, hideResult: true } }, "round", "fraction-parts@1"],
     ["c4-maths-ch05-t01", "offtopic T26 / steady T18", { template: "compare@1", params: { left: { title: "Cake A", items: ["3 tukde", "1 bada, 2 chhote", "1/3 nahi"] }, right: { title: "Cake B", items: ["3 tukde", "sab barabar", "har tukda 1/3"] } } }, "wholes", "wholes@1",
       "Screen par Cake A aur Cake B: dono ke 3 tukde. Cake A mein 1 bada, 2 chhote, isliye 1/3 nahi; Cake B mein sab barabar, har tukda 1/3."],
   ];
   const lineFor = (row) => {
     const bars = [...String(row ?? "").matchAll(/bar\d (\d+) equal parts, (\d+) shaded = (\d+\/\d+|\?)/g)];
     if (bars.length) return `Yeh dekho: ${bars.length} barabar bar: ${bars.map((b) => `ek ${b[1]} barabar hisson mein${b[2] !== "0" ? `, ${b[2]} rangin${b[3] === "?" ? "" : ` (${b[3]})`}` : ""}`).join("; ")}.`;
-    const ws = [...String(row ?? "").matchAll(/whole\d (\d+) (equal|unequal) parts/g)];
+    const ws = [...String(row ?? "").matchAll(/whole\d (?:[^:·]+: )?(\d+) (equal|unequal) parts/g)];
     if (ws.length) return `Yeh dekho: ${ws.map((w, i) => `Cake ${"AB"[i]}: ${w[1]} ${w[2] === "equal" ? "barabar" : "alag-alag"} tukde`).join("; ")}.`;
     const m = /gaps (\d+) equal gaps.*marks ([\d/ ,]+)/.exec(String(row ?? ""));
     return m ? `Yeh dekho: 0 se 1 ki sankhya rekha, ${m[1]} barabar gaps, aur nishaan ${m[2].trim()} par.` : "Yeh dekho.";
