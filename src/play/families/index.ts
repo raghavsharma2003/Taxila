@@ -11,7 +11,7 @@ import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { beamLogic } from "./yantra/beam.logic.ts";
 import { pendulumLogic } from "./yantra/pendulum.logic.ts";
-import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic } from "./nazariya/index.ts";   // r4-khand
+import { viewsLogic, arrayLogic, floorLogic, powersLogic, mirrorLogic, triLogic, solidLogic } from "./nazariya/index.ts";   // r4-khand
 import { arenaLogic } from "./arena/arena.logic.ts";
 import { circuitLogic } from "./yantra/circuit.logic.ts";
 import { kaalLogic } from "./kaal/kaal.logic.ts";
@@ -58,6 +58,8 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nazariya/floor": asAny(floorLogic),
   "nazariya/powers": asAny(powersLogic),
   "nazariya/mirror": asAny(mirrorLogic),
+  "nazariya/tri": asAny(triLogic),       // r7 nazariya2: the cloth as half a rectangle (c6-maths-ch06-t03)
+  "nazariya/solid": asAny(solidLogic),   // r7 nazariya2: faces, edges and corners of a solid turned in the hand (c4-maths-ch01-t01)
   "arena/pick": asAny(arenaLogic),
   // round 7: Stambh, bar graphs and pictographs
   "stambh/bars": asAny(stambhLogic),

@@ -48,7 +48,7 @@ export const MODES = {
   nishana: ["place", "compare", "hop"],
   "kyun-lab": ["fair-test"],
   kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
-  nazariya: ["views", "array", "floor", "powers", "mirror"],   // r4-khand
+  nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
   stambh: ["bars", "picto"],
   yantra: ["beam", "circuit", "pendulum"],
@@ -219,6 +219,9 @@ export type NazariyaAct =
   | { kind: "name"; n: number }                         // say how many blocks (array count; the next square / cube number)
   | { kind: "predict"; same: boolean }                  // array "turn": the turned array takes the same number of blocks?
   | { kind: "check" }                                   // commit the build: the law compares it with the goal
+  | { kind: "apex"; x: number; z: number }              // tri "more": the second tent's top corner to grid point (x, z)
+  | { kind: "turn"; dir: "left" | "right" | "over" }    // solid: turn the solid a quarter round, or tip it over
+  | { kind: "mark"; el: "face" | "edge" | "corner"; i: number }   // solid: stamp face i / run along edge i / pin corner i
   | { kind: "undo" };
 // ITEM-ARENA (round 4 G1)
 export type ArenaAct =
