@@ -1999,7 +1999,7 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     // still gets an acknowledgement: a picture ask is never ignored, and the beat and card stay)
     const visualAsk = (state.lastMove?.request === "visual" || !!state.lastMove?.visual) && state.lastMove?.visual !== "game";
     const alt = visualAsk ? state.lastMove?.altView ?? null : null;
-    const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"] };
+    const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"], round: ["gol", "a circle"] };
     const asked = !visualAsk ? null
       : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
         // (Studio: a bar card's second view is a number line: "0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par")
@@ -2011,6 +2011,11 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
             return lang === "english" ? `${n} in ${w.parts} ${w.equal ? "equal" : "unequal"} pieces${sh}` : `${n} ke ${w.parts} ${w.equal ? "barabar" : "alag-alag"} tukde${sh}`; };
           return lang === "english" ? `Look: ${alt.wholes.map(one).join("; ")}.` : `Dekho: ${alt.wholes.map(one).join("; ")}.`;
         }
+        // (Studio director12 S4: a count-key card's smaller case — never "yahi", it is another strip — and a bar card's circle)
+        if ((alt.view ?? alt) === "example" && alt.parts) { const f = alt.labels?.[0] ?? `1/${alt.parts}`;
+          return lang === "english" ? `Look at a smaller case: a strip in ${alt.parts} equal parts, one part is ${f}.` : `Ek chhota udaharan dekho: ek patti ${alt.parts} barabar hisson mein, ek hissa ${f}.`; }
+        if ((alt.view ?? alt) === "round") return lang === "english" ? `Look, the same whole as a circle${alt.parts ? `, in ${alt.parts} equal parts` : ""}${alt.shaded ? `, ${alt.shaded} shaded` : ""}${nums.length ? ` (${nums.join(", ")})` : ""}.`
+          : `Dekho, wahi poora ab gol${alt.parts ? `, ${alt.parts} barabar hisse` : ""}${alt.shaded ? `, ${alt.shaded} rangin` : ""}${nums.length ? ` (${nums.join(", ")})` : ""}.`;
         if ((alt.view ?? alt) === "line") return lang === "english" ? `Look, the same on a number line from 0 to 1${alt.gaps ? `, ${alt.gaps} equal gaps` : ""}${nums.length ? `, marked at ${nums.join(" and ")}` : ""}.`
           : `Dekho, yahi 0 se 1 ki sankhya rekha par${alt.gaps ? `, ${alt.gaps} barabar gaps` : ""}${nums.length ? `, nishaan ${nums.join(" aur ")} par` : ""}.`;
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()

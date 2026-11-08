@@ -55,7 +55,7 @@ export function pictureMismatch(text, board, altView = null) {
   if (!board || board.auto) return [];
   // (v6.4 harness, main on director12: a picture asked with the card's board up draws Studio's SECOND view — bars for a line,
   // a line for bars — and her words describe that view: what it draws counts as drawn too)
-  const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate" };
+  const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate", round: "circle gol parts hisse tukde", example: "bar patti strip parts hisse tukde" };
   const av = typeof altView === "string" ? altView : altView?.view ?? null;
   const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];

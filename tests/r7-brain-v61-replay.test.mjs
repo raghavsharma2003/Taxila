@@ -90,17 +90,15 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     const row = seam.studioSeam.preselectWhiteboard(a);
     const hint = typeof seam.studioSeam.preselectedAltView === "function" ? seam.studioSeam.preselectedAltView(L) : null;
     const alt = altViewOfRow(row, hint) ?? hint;
-    // (until Brain's patch 015: altViewOfRow reads no round row, so the hint stands alone, and her opener says "patti")
-    assert.equal(alt, "round", `the second view (row: ${String(row).slice(0, 160)})`);
+    assert.deepEqual(alt, { view: "round", labels: ["1/8"], parts: 8, shaded: 1 }, `the second view (row: ${String(row).slice(0, 160)})`);
     const st = { ...last.state, lastMove: { ...last.state.lastMove, altView: alt } };
     replyDeps.chat = async () => ({ text: `Screen par ek bar hai, 8 barabar hisson mein bata hua, 1 hissa rangin. ${rows[16].text}` });
     const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-    assert.match(out.reply, /^Dekho, yahi numbers ab patti par\./, out.reply);
+    assert.match(out.reply, /^Dekho, wahi poora ab gol, 8 barabar hisse, 1 rangin \(1\/8\)\./, out.reply);
     assert.doesNotMatch(out.reply, /Screen par ek bar hai/, "her words about the old drawing go");
     const v = seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
     assert.equal(v?.state, "revealed");
-    // (a circle her line calls a "patti" is refused; the card's own bar is re-shown — patch 015 draws the circle)
-    assert.equal(v.artifact.altView, undefined);
+    assert.equal(v.artifact.altView, "round", "something new is drawn (it was the same bar again)");
     const scr = v.artifact.screens?.[0] ?? v.artifact.screen;
     assert.equal(scr.template, "fraction-parts@1");
     assert.deepEqual(scr.counts, { parts: 8, shaded: 1 });
@@ -134,3 +132,8 @@ describe("r7-brain-v61-replay.test.mjs", () => {
 
 });
 
+test("Studio director12 S4 (patch 015): a count-key card's smaller case and a bar card's circle are read from Studio's row by their hint", () => {
+  assert.deepEqual(altViewOfRow("board · wholes 1 equal bars · bar1 4 equal parts, 1 shaded = 1/4", "example"), { view: "example", labels: ["1/4"], parts: 4 });
+  assert.deepEqual(altViewOfRow("board · equal parts 4, 3 · whole circle · parts 4 · shaded 3", "round"), { view: "round", labels: [], parts: 4, shaded: 3 });
+  assert.deepEqual(altViewOfRow("board · whole bar · parts 3 · shaded 1 · fraction 1/3", "parts"), { view: "parts", labels: ["1/3"], parts: 3, shaded: 1 });
+});
