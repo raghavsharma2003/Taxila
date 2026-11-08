@@ -93,6 +93,8 @@ export const PLAY_ACTS = Object.freeze({
     magic: { act: "place", hi: "har khaane mein ek number rakho, har line ka jod barabar", en: "put a number in every cell so every line adds the same" },
     cipher: { act: "set", hi: "har akshar ko ek ank do aur jod karo", en: "give each letter a digit and add it up" },
     mirror: { act: "set", hi: "shuru ka number set karo, ulta karke jodo", en: "set a start, then reverse and add" } },
+  // r7 games: Galti Pakdo (a friend's working): weigh the claim in the question, catch the first wrong line, mend it
+  "galti-pakdo": { kaapi: { act: "check", hi: "taraazu par jaancho aur pehli galat line pakdo", en: "check it on the balance and catch the first wrong line" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

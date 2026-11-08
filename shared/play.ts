@@ -39,6 +39,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "parkar",     // round 7: ruler-and-compass constructions (triangles built from arcs and rays, bisectors, the 60° angle, altitudes by set-square)
   "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
   "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
+  "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -66,6 +67,7 @@ export const MODES = {
   parkar: ["build", "bisect", "drop"],
   aankde: ["tally", "stack", "line"],
   paheli: ["pairs", "magic", "cipher", "mirror"],
+  "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -352,7 +354,7 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct;
 // Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
 // start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
 export type PaheliAct =
@@ -361,6 +363,14 @@ export type PaheliAct =
   | { kind: "digit"; l: string; d: number }               // cipher: letter l takes digit tile d (−1 = none)
   | { kind: "start"; n: number }                          // mirror: the 2-digit start
   | { kind: "run" }                                       // sail / add the lines / add it up / reverse and add: the law answers
+  | { kind: "undo" };
+// Galti Pakdo (round 7, checking a friend's working of an equation): the claim weighed in a line on the taraazu, the first
+// line that breaks flagged, its fix taken from three offers, or "sab sahi"; the law answers at once, never on a clock
+export type GaltiAct =
+  | { kind: "check"; line: number }                       // the claim x = v weighed in line `line` (0 = the question)
+  | { kind: "flag"; line: number }                        // line `line` is the first that breaks (the flagged line again: the offers reopen)
+  | { kind: "fix"; i: number }                            // mend: offer i takes the flagged line's place; the law rewrites below it
+  | { kind: "sab" }                                       // "sab sahi": every line follows
   | { kind: "undo" };
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
@@ -555,6 +565,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   parkar: ["kagaz", "blueprint", "chalk", "raat"],
   aankde: ["kagaz", "chalk", "blueprint", "raat"],
   paheli: ["kagaz", "chalk", "blueprint", "raat"],
+  "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
