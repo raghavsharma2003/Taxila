@@ -104,6 +104,10 @@ export const PLAY_ACTS = Object.freeze({
   // r7 games: Chhaano (separating mixtures, class 6 science): methods applied in turn to a pile or a vessel of water
   chhaano: { sukha: { act: "separate", hi: "tareeke ek ke baad ek lagao, har cheez alag karo", en: "use the methods in turn until every part is on its own" },
     geela: { act: "separate", hi: "baithne do, nithaaro, filter karo ya sukhao, har cheez dabbe mein lo", en: "settle, decant, filter or dry it, and get each part into its jar" } },
+  // r7 games: Gati (motion): step the clock and watch from a reference, set a speed from a marked track, compare the marks
+  gati: { drishti: { act: "watch", hi: "ghadi aage badhao aur har cheez se dekho", en: "step the clock and watch from each thing" },
+    raftaar: { act: "step", hi: "ghadi aage badhao aur track par doori dekho", en: "step the clock and read the distance on the track" },
+    nishaan: { act: "step", hi: "ghadi aage badhao aur nishaanon ki doori dekho", en: "step the clock and compare the gaps between the marks" } },
 });
 
 // Round 7: families / modes this table does not list are read from Games' own data file, data/play/verbs.json, shape

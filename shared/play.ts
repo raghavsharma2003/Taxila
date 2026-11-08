@@ -41,6 +41,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
   "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
   "chhaano",    // round 7: separating mixtures (class 6 science): methods chosen and applied in turn until every part is recovered
+  "gati",       // round 7: motion (a reference point, the types of motion, speed on a marked track, uniform trails); the child steps the clock
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -70,6 +71,7 @@ export const MODES = {
   paheli: ["pairs", "magic", "cipher", "mirror"],
   "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
   chhaano: ["sukha", "geela"], // dry mixtures (handpick, thresh, winnow, sieve); mixtures in water (settle, decant, filter, evaporate)
+  gati: ["drishti", "raftaar", "nishaan"],   // the viewpoint (drishti), speed (raftaar), the marks (nishaan)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -365,7 +367,7 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct;
 // Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
 // solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
 export type ChhaanoAct =
@@ -389,6 +391,17 @@ export type GaltiAct =
   | { kind: "flag"; line: number }                        // line `line` is the first that breaks (the flagged line again: the offers reopen)
   | { kind: "fix"; i: number }                            // mend: offer i takes the flagged line's place; the law rewrites below it
   | { kind: "sab" }                                       // "sab sahi": every line follows
+  | { kind: "undo" };
+// Gati (round 7, motion): the clock steps only when the child taps it; watch from a reference (or ride along), put things
+// on bins, tick types, flag the faster mover, set the speedometer; the law answers on "run"
+export type GatiAct =
+  | { kind: "tick" }                                      // the clock steps one interval (never on its own)
+  | { kind: "view"; ref: number }                         // watch from reference `ref` (do-gati: 0 the ground, 1 riding along)
+  | { kind: "put"; lane: number; at: number }             // lane `lane` onto bin `at` (at rest / moving; a type; uniform / not)
+  | { kind: "tag"; lane: number; at: number }             // do-gati: type `at` ticked on (or off) for lane `lane`
+  | { kind: "pick"; lane: number }                        // raftaar/aage: the lane flagged faster
+  | { kind: "mark"; at: number }                          // the speedometer / m/s counter set to `at`
+  | { kind: "run" }                                       // the law answers the set-up
   | { kind: "undo" };
 // Hissa (round 7, multiplying and dividing fractions and decimals): a sheet folded across and down (the overlap tagged by
 // counting pieces); rope pieces laid on a metre track; a jug poured into full cups, the part-cup tagged as a fraction of a
@@ -585,6 +598,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   paheli: ["kagaz", "chalk", "blueprint", "raat"],
   "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
   chhaano: ["kagaz", "chalk", "blueprint", "raat"],
+  gati: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;

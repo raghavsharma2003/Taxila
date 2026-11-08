@@ -28,6 +28,7 @@ import { aankdeLogic } from "./aankde/aankde.logic.ts";
 import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
 import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
+import { gatiLogic } from "./gati/gati.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -149,5 +150,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   // a beaker of water settled, decanted, filtered and dried in the sun, every solid scooped into its jar
   "chhaano/sukha": asAny(chhaanoLogic),
   "chhaano/geela": asAny(chhaanoLogic),
+  // round 7: Gati, motion (a reference point, the types of motion, speed on a marked track, uniform trails); never timed
+  "gati/drishti": asAny(gatiLogic),
+  "gati/raftaar": asAny(gatiLogic),
+  "gati/nishaan": asAny(gatiLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }
