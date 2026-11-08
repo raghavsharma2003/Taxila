@@ -59,7 +59,7 @@ export const MODES = {
   naksha: ["locate", "route", "scale", "shape"],
   ghadi: ["set", "run", "race", "calendar"],
   darpan: ["mirror", "turn", "tile"],   // r7 tilings2: tile (copies laid round one point until the corner closes)
-  feeta: ["measure", "fence", "trip", "compare"],
+  feeta: ["measure", "fence", "trip", "compare", "thread", "thermo", "scale", "touch"],   // r7 naap: science measuring (a thread along a curve, thermometers, a scale read right, touch against a thermometer)
   guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
   kram: ["grow", "machine", "beats", "nest"],
   hissa: ["fold", "pour", "grid", "story"],
@@ -300,11 +300,20 @@ export type DarpanAct =
   | { kind: "run" }                                      // fold / spin / tile the floor: the law answers
   | { kind: "undo" };
 // Feeta (round 7, length and distance): set a measuring instrument (a ribbon's cut on a ruler from 0, a cm tape, a fence
-// roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock
+// roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock.
+// r7 naap (science measuring, class 6): a thread laid along a curve and straightened on a scale, thermometers matched to
+// jobs, dipped and read, a scale read from its zero with the eye above, things put on a warmth shelf before a thermometer
+// checks them; the reading set on the same counter wheels
 export type FeetaAct =
   | { kind: "mark"; at: number }                         // the instrument set to `at` of its own unit (cm, m): the cut / the meter
-  | { kind: "put"; lane: number; at: number }            // compare: item `lane` onto slot `at` (0 = shortest; swaps)
-  | { kind: "run" }                                      // lay the ribbon / fence the garden / ride the trip / ride the routes: the law answers
+  | { kind: "put"; lane: number; at: number }            // compare: item `lane` onto slot `at` (0 = shortest; swaps); naap: onto bin / step `at`
+  | { kind: "tool"; t: number }                          // thread: take the thread (0), the rubber band (1) or the ruler (2)
+  | { kind: "pin"; i: number }                           // thread: press the tool at point i of the curve (again = lifted off it)
+  | { kind: "lift" }                                     // thread: straighten what is laid onto the scale (again = lay it again)
+  | { kind: "dip" }                                      // thermo/read: the thermometer into the liquid (again = taken out)
+  | { kind: "slide"; at: number }                        // scale/ruler: the object's left end lined up at cm position `at`
+  | { kind: "eye"; at: number }                          // scale/ruler: the eye left of (−1), above (0) or right of (1) the end
+  | { kind: "run" }                                    // lay the ribbon / fence the garden / ride the trip / ride the routes: the law answers
   | { kind: "undo" };
 // Guna (round 7, multi-digit multiplication and division): a field a × b cut into place-value pieces (each fills with its
 // tiles) and a truck loaded with place-value crates; a godown of crates shared one round at a time into equal trucks (a
