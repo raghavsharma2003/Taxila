@@ -26,7 +26,7 @@ export const BOARD_REFS = Object.freeze({
   "number-line-zoom@1": { subject: "maths", params: "value: a decimal with 1-2 places, 0-10", example: { value: 2.45 } },
   "column-op@1": { subject: "maths", params: "a, b 0-99999, op add|sub (b ≤ a), hideResult?", example: { a: 478, b: 356, op: "add" } },
   "place-value@1": { subject: "maths", params: "value 1-9999999", example: { value: 3456 } },
-  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult? | sizes [2-6 groups of 1-10] (groups NOT all equal, each group's count under it, no equation)", example: { groups: 3, each: 4 } },
+  "equal-groups@1": { subject: "maths", params: "groups 2-6, each 1-8, hideResult? | sizes [2-6 groups of 1-10] (groups NOT all equal, each group's count under it, no equation); title? (short, over the board: \"8 ka 1/2 = 4\")", example: { groups: 3, each: 4 } },
   "shade-grid@1": { subject: "maths", params: "rows 1-6, cols 1-10, shade 0-rows*cols | block [r, c], labels?, hideResult?", example: { rows: 3, cols: 5, shade: 6, labels: true, hideResult: true } },
   "area-grid@1": { subject: "maths", params: "w, h (ints), mode area|perimeter, unit cm|m|…, hideResult?", example: { w: 5, h: 3, mode: "area", unit: "cm" } },
   "measured@1": { subject: "maths", params: "shape rect|square (w, h) | triangle (sides [3]) | circle (r) | pentagon|hexagon|octagon|quadrilateral|polygon (sides [3-8], names? one per corner; labelled, not to scale); unit cm|m; name?, trace? (perimeter walk)", example: { shape: "rect", w: 6, h: 4, unit: "cm", name: true, trace: true } },
