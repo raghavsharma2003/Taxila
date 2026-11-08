@@ -3,14 +3,14 @@
  "note": "built by server/play/tools/build-coverage.mjs from RULES + ACTS; do not edit by hand; counts are law families only (ITEM-ARENA is a net, its arena-only topics are listed in arenaOnly)",
  "counts": {
   "topicsInScope": 514,
-  "topicsCovered": 145,
-  "entries": 449,
-  "withMisconceptionMap": 146,
-  "mappedMisconceptions": 286,
+  "topicsCovered": 146,
+  "entries": 452,
+  "withMisconceptionMap": 147,
+  "mappedMisconceptions": 289,
   "bySubject": {
    "maths": {
     "inScope": 304,
-    "covered": 126
+    "covered": 127
    },
    "science": {
     "inScope": 146,
@@ -48,7 +48,7 @@
    },
    "7": {
     "inScope": 79,
-    "covered": 47
+    "covered": 48
    },
    "8": {
     "inScope": 71,
@@ -60,7 +60,7 @@
    }
   },
   "topicsAll": 830,
-  "topicsCoveredAll": 159,
+  "topicsCoveredAll": 160,
   "bySubjectAll": {
    "english": {
     "topics": 118,
@@ -76,7 +76,7 @@
    },
    "maths": {
     "topics": 304,
-    "covered": 126
+    "covered": 127
    },
    "science": {
     "topics": 146,
@@ -87,15 +87,15 @@
     "covered": 7
    }
   },
-  "arenaOnly": 92,
-  "arenaOnlyClass4to7": 5,
+  "arenaOnly": 91,
+  "arenaOnlyClass4to7": 4,
   "byFamily": {
    "todo-jodo": 15,
    "taraazu": 9,
    "nishana": 16,
    "kyun-lab": 14,
    "aankde": 2,
-   "darpan": 4,
+   "darpan": 5,
    "feeta": 4,
    "ghadi": 4,
    "guna": 11,
@@ -124,7 +124,7 @@
     "covered": 0
    }
   },
-  "skillsAdmitted": 679,
+  "skillsAdmitted": 680,
   "rulesNotAdmitted": 2
  },
  "skills": {
@@ -2072,6 +2072,75 @@
    },
    "contexts": [],
    "why": "RULES c6-maths-ch09-t02 darpan/turn/order · ACTS"
+  },
+  "c7-maths-ch14-t02-s1": {
+   "topicId": "c7-maths-ch14-t02",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "close",
+   "grammar": {
+    "ns": [
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ]
+   },
+   "misMap": {
+    "gap-ok": "c7-maths-ch14-t02-m-gap-ok"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch14-t02 darpan/tile/close · ACTS"
+  },
+  "c7-maths-ch14-t02-s3": {
+   "topicId": "c7-maths-ch14-t02",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "close",
+   "grammar": {
+    "ns": [
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ]
+   },
+   "misMap": {
+    "gap-ok": "c7-maths-ch14-t02-m-gap-ok"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch14-t02 darpan/tile/close · ACTS"
+  },
+  "c7-maths-ch14-t02-s2": {
+   "topicId": "c7-maths-ch14-t02",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "alone",
+   "grammar": {
+    "ns": [
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ]
+   },
+   "misMap": {
+    "any-regular": "c7-maths-ch14-t02-m-any-regular"
+   },
+   "contexts": [],
+   "why": "RULES c7-maths-ch14-t02 darpan/tile/alone · ACTS"
   },
   "c4-maths-ch06-t01-s1": {
    "topicId": "c4-maths-ch06-t01",
@@ -8826,30 +8895,6 @@
    "contexts": [],
    "why": "RULES c7-maths-ch12-t02 arena/pick/pick · ACTS"
   },
-  "c7-maths-ch14-t02-s1": {
-   "topicId": "c7-maths-ch14-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch14-t02 arena/pick/pick · ACTS"
-  },
-  "c7-maths-ch14-t02-s2": {
-   "topicId": "c7-maths-ch14-t02",
-   "family": "arena",
-   "mode": "pick",
-   "goal": "pick",
-   "grammar": {
-    "bank": "c7-maths"
-   },
-   "misMap": {},
-   "contexts": [],
-   "why": "RULES c7-maths-ch14-t02 arena/pick/pick · ACTS"
-  },
   "c7-maths-ch15-t03-s1": {
    "topicId": "c7-maths-ch15-t03",
    "family": "arena",
@@ -10197,7 +10242,6 @@
   "c6-science-ch05-t02",
   "c6-science-ch07-t02",
   "c7-maths-ch11-t03",
-  "c7-maths-ch14-t02",
   "c7-maths-ch15-t03",
   "c8-maths-ch01-t02",
   "c8-maths-ch01-t03",
@@ -11986,6 +12030,86 @@
    "misMap": {
     "full-turn": "c6-maths-ch09-t02-m-full-turn",
     "mirror-only": "c6-maths-ch09-t02-m-needs-line"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch14-t02",
+   "title": "Tilings",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "close",
+   "skillId": "c7-maths-ch14-t02-s1",
+   "skillIds": [
+    "c7-maths-ch14-t02-s1",
+    "c7-maths-ch14-t02-s3"
+   ],
+   "grammar": {
+    "ns": [
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ]
+   },
+   "misMap": {
+    "gap-ok": "c7-maths-ch14-t02-m-gap-ok"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch14-t02",
+   "title": "Tilings",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "alone",
+   "skillId": "c7-maths-ch14-t02-s2",
+   "skillIds": [
+    "c7-maths-ch14-t02-s2",
+    "c7-maths-ch14-t02-s1"
+   ],
+   "grammar": {
+    "ns": [
+     3,
+     4,
+     5,
+     6,
+     8,
+     9,
+     10,
+     12
+    ]
+   },
+   "misMap": {
+    "any-regular": "c7-maths-ch14-t02-m-any-regular"
+   }
+  },
+  {
+   "topicId": "c7-maths-ch14-t02",
+   "title": "Tilings",
+   "classLevel": 7,
+   "subject": "maths",
+   "family": "darpan",
+   "mode": "tile",
+   "goal": "any",
+   "skillId": "c7-maths-ch14-t02-s3",
+   "skillIds": [
+    "c7-maths-ch14-t02-s3"
+   ],
+   "grammar": {
+    "shapes": [
+     "tri",
+     "quad"
+    ]
+   },
+   "misMap": {
+    "only-regular": "c7-maths-ch14-t02-m-only-regular"
    }
   },
   {
