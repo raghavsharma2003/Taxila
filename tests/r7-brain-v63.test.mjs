@@ -224,4 +224,9 @@ describe("r7-brain-v63.test.mjs", () => {
     assert.equal(out.length, 2);
     assert.equal(out[1].atChar, line.indexOf("Ek cake"), "the switch is after her sentence about them, never before it");
   });
+  test("R7 (main's D5 row): her own lesson claim before a scripted card goes (c4 steady T48: 'Dobara check karke dekha: tukde barabar hain')", async () => {
+    const { out } = await at("steady", "c4", 48);
+    assert.doesNotMatch(out.reply, /tukde barabar hain aur 1 tukda khaya gaya/, out.reply);
+    assert.match(out.reply, /Chocolate ka kitna hissa khaya, bhinn mein batao\./, "the card stays: " + out.reply);
+  });
 });

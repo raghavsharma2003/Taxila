@@ -392,7 +392,7 @@ describe("R5: render hygiene", () => {
     assert.equal(notRightLead("Yes"), "Nahi, yeh jawab nahi hai.", "director9: a word of theirs is never said back");
   });
 
-  test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes, a reason stays", async () => {
+  test("one verdict sentence: a second 'Haan, …' loses its verdict words; a bare restatement goes; (v6.3 R7) a reason of hers goes too", async () => {
     const L = toCard();
     const card = L.r.ui.ask.text;
     const out = await say(L, `Haan, sahi hai. Haan, 15 cm. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
@@ -401,7 +401,10 @@ describe("R5: render hygiene", () => {
     const practice = { ...L.r.state.lastMove, kind: "practice", point: undefined, mustSay: [] };
     const out2 = await say(L, `Haan, sahi hai. Haan, 15 cm sahi hai—har bhuja ek hi baar gini gayi. ${card}`, { childText: "15 cm", verdict: "correct", state: { lastMove: practice, lastGraded: { key: "15 cm", accept: [], prompt: "" } } });
     assert.equal(out2.reply.match(/\bHaan\b/g)?.length, 1, out2.reply);
-    assert.match(out2.reply, /Har bhuja ek hi baar gini gayi\./, out2.reply);
+    // (v6.3 R7, main on director11 c4 steady T48: on a scripted card her own reason is model-written teaching; the why is only the
+    // card's authored one, and this card has none)
+    assert.doesNotMatch(out2.reply, /ek hi baar gini gayi/, out2.reply);
+    assert.ok(out2.reply.includes(card), out2.reply);
   });
 
   test("a sentence is said once, and the card is the one question", async () => {

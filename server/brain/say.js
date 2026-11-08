@@ -91,6 +91,8 @@ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad k
   english: [(t) => `We'll talk about ${t} after this question.`, (t) => `I'll remember ${t}; we'll come back to it once this question is done.`, (t) => `${capT(t)}: yes, right after this question.`] };
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
 const PROMISE_SAID = /(?<![\p{L}])(?:wapas\s+aa\w*|laut\w*|baat\s+kar(?:enge|ungi|unga)|uspar\s+aa\w*|baad\s+mein\s+(?:aa|baat)\w*|come\s+back|talk\s+about\s+it)(?![\p{L}])/iu;
+/** v6.3 R7: a sentence that talks about the lesson's own things (parts, fractions, sides, the line), not a framing line. */
+const LESSON_SAID = /(?<![\p{L}])(?:fraction\w*|bhinn\w*|tukd\w*|hiss\w*|barabar|equal|parts?|pieces?|line|rekha|gap\w*|mark\w*|nishaan\w*|bhuja\w*|sides?|parimap|perimeter|denominator|numerator|ansh|har|upar|neeche|total|kul|jod\w*|guna\w*|khaya|khaye|khayi)(?![\p{L}])/iu;
 /** v6.1 R7: a sentence that states a rule or a reason (a teaching claim), not a framing line. */
 export const RULE_SAID = /(?<![\p{L}])(?:kyunki|kyonki|isliye|matlab|yaani|hamesha|because|means|therefore|always)(?![\p{L}])|(?<![\p{L}])(?:hota|hoti|hote|aata|aati|aate|banta|banti|bante|guzarta|guzarti|guzarte|milta|milti|milte)\s+(?:hai|hain)(?![\p{L}])/iu;
 export const ENFORCED = new Set(["leak", "praise", "deny", "claim", "corrects", "math", "invented", "screen", "parts", "affirms", "negates", "notheard",
@@ -1983,6 +1985,14 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (ss.length) guard.hintDropped = ss.length;
     } else {
       body = ss;
+      // v6.3 R7 (main, director11 c4 steady T48: "Dobara check karke dekha: tukde barabar hain aur 1 tukda khaya gaya." — hers,
+      // false for the unequal laddoo, said before the next card): on a scripted card turn her own words are framing only; a sentence
+      // of hers that carries the lesson (a number, a lesson word, a rule) is model-written teaching and goes
+      if (card && state.lastMove?.scriptBeat) {
+        const n0 = body.length;
+        body = body.filter((x) => !/\d/.test(x) && !LESSON_SAID.test(x) && !RULE_SAID.test(x));
+        if (body.length < n0) guard.teachDropped = n0 - body.length;
+      }
       // (v6.2, director10 c4 offtopic T29: "Yaad karo: …" re-read the point over the second view a picture ask drew)
       if (!body.length && card && state.lastMove?.cardPoint && !asked) { body = [`${lang === "english" ? "Remember:" : "Yaad karo:"} ${dot(state.lastMove.cardPoint)}`]; guard.cardPoint = true; }
     }
