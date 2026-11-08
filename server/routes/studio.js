@@ -39,7 +39,8 @@ async function lessonFor(req, lessonId) {
   const token = sessionTokenHash(req);
   if (!token) throw new HttpError(401, "not signed in");
   const row = await one(
-    `select l.id, l.started_at, l.ended_at, to_jsonb(c) as child_row, (s.guardian_id = c.guardian_id) as mine
+    `select l.id, l.started_at, l.ended_at, to_jsonb(c) as child_row,
+            (s.guardian_id = c.guardian_id and coalesce((select d.child_id from device_session d where d.token_hash = s.token_hash) = c.id, true)) as mine
        from lesson l join child c on c.id = l.child_id
        left join auth_session s on s.token_hash = $2 and s.expires_at > now()
       where l.id = $1`, [lessonId, token]);
