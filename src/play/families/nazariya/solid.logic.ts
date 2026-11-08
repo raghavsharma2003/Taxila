@@ -214,6 +214,7 @@ function malActs(level: PlayLevel<SolidParams>, mal: string): NazariyaAct[] | nu
   return null;
 }
 
+const JITTER = 0.2, clamp01 = (x: number) => Math.max(0, Math.min(1, x));
 function generate(req: GenRequest): Candidate<SolidParams>[] {
   const g = req.grammar as { solids?: SolidKind[] };
   const goal = (req.goal as SolidGoal) ?? "faces", solids = (g.solids ?? ["cube", "cuboid"]).filter((x) => SOLIDS.includes(x));
@@ -223,7 +224,9 @@ function generate(req: GenRequest): Candidate<SolidParams>[] {
       if (start >= 4 && rnd() < 0.6) continue;   // most start seen from above, as a picture of a box on a table is
       const params: SolidParams = { goal, solid, dims, start };
       const geo = geoOf(params), n = countOf(geo, elOf(goal)), seen = visibleAt(geo, start)[elOf(goal)].length;
-      out.push({ signature: `${goal}:${solid}:${di}:${start}`, difficulty: Math.min(1, n / 16 + (n - seen) / 16 + (solid === "pyramid" || solid === "prism" ? 0.1 : 0)), level: lvl(req, "solid", goal, params, `${goal}-${solid}-${di}-${start}`, "khand") });
+      // a seeded nudge (± JITTER / 2) so the picker's nearest-to-band level differs from child to child; without it every
+      // child met the same solid from the same view first (one pyramid, one cube)
+      out.push({ signature: `${goal}:${solid}:${di}:${start}`, difficulty: clamp01(n / 16 + (n - seen) / 16 + (solid === "pyramid" || solid === "prism" ? 0.1 : 0) + (rnd() - 0.5) * JITTER), level: lvl(req, "solid", goal, params, `${goal}-${solid}-${di}-${start}`, "khand") });
     }
   });
   return out;
