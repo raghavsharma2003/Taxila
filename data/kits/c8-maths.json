@@ -4361,6 +4361,41 @@
       "representation": "A frame of four geostrips (two of 6 cm, two of 4 cm) pinned at the corners: pushed from a rectangle into a slanted parallelogram while the side lengths stay the same",
       "moveShape": "push the frame → sides unchanged → corners change → same sides, many shapes → only the one with 90° corners is a rectangle → check angles as well as sides"
      }
+    },
+    {
+     "id": "c8-maths-ch04-t01-m-equal-diag-enough",
+     "skillId": "c8-maths-ch04-t01-s3",
+     "belief": "Thinks a quadrilateral with equal diagonals must be a rectangle, without checking that the diagonals bisect each other",
+     "signs": [
+      "Calls a shape a rectangle after measuring only the two diagonal lengths",
+      "Never looks at where the diagonals cross",
+      "Says a kite-like shape with equal diagonals is a rectangle"
+     ],
+     "diagnostic": {
+      "prompt_en": "A quadrilateral has two diagonals of 8 cm each. Where they cross, one diagonal is cut into 3 cm and 5 cm. Is it a rectangle?",
+      "prompt_hi": "Ek quadrilateral ke dono diagonals 8 cm ke hain. Jahan woh kaat-te hain, wahan ek diagonal 3 cm aur 5 cm mein bat-ta hai. Kya yeh rectangle hai?",
+      "options": [
+       {
+        "text": "No: the diagonals are equal but do not bisect each other",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Yes: the diagonals are equal",
+        "misconceptionId": "c8-maths-ch04-t01-m-equal-diag-enough",
+        "correct": false
+       },
+       {
+        "text": "Yes: it has four sides and two equal diagonals",
+        "misconceptionId": "c8-maths-ch04-t01-m-equal-diag-enough",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Two 8 cm straws crossed at their midpoints, then slid so they cross at 3 cm and 5 cm; join the ends each time",
+      "moveShape": "Child joins the ends in both cases and checks the corners with a set square; ask which crossing gives right angles"
+     }
     }
    ],
    "items": [
@@ -4738,6 +4773,31 @@
       "agrees": true,
       "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
      }
+    },
+    {
+     "id": "c8-maths-ch04-t01-i17",
+     "skillId": "c8-maths-ch04-t01-s3",
+     "kind": "error_spot",
+     "difficulty": 3,
+     "prompt_en": "Ravi measures both diagonals of a quadrilateral: each is 8 cm. He says, 'Equal diagonals, so it must be a rectangle.' What else must he check, and how?",
+     "prompt_hi": "Ravi ek quadrilateral ke dono diagonals naapta hai: dono 8 cm hain. Woh kehta hai, 'Diagonals barabar hain, isliye yeh rectangle hi hoga.' Use aur kya check karna chahiye, aur kaise?",
+     "answer": "He must also check that the diagonals bisect each other: measure from the crossing point, each part should be 4 cm",
+     "acceptable": [
+      "that the diagonals bisect each other",
+      "that they cut each other in half, 4 cm each part"
+     ],
+     "hints": [
+      "Is 'equal diagonals' the whole rectangle test from the chapter?",
+      "The test needs the diagonals to be equal AND to do something to each other.",
+      "Where they cross, each 8 cm diagonal should be cut into two parts of ___ cm.",
+      "He must check they bisect each other: 4 cm + 4 cm on both diagonals."
+     ],
+     "targetsMisconception": "c8-maths-ch04-t01-m-equal-diag-enough",
+     "verified": {
+      "solverAnswer": "Equal diagonals are not enough; Ravi must check the diagonals bisect each other, each splitting into 4 cm + 4 cm at the crossing point.",
+      "agrees": true,
+      "note": "blind-solved 2026-11-08, agreement read by hand (pilot scope fix)"
+     }
     }
    ],
    "workedExample": {
@@ -4813,32 +4873,33 @@
     },
     {
      "skillId": "c8-maths-ch04-t01-s3",
-     "problem": "A quadrilateral KLMN has all four sides 6 cm, and its two diagonals are equal in length. Is it a rectangle? Is it a square? Justify using properties.",
+     "problem": "In quadrilateral KLMN, the diagonals KM and LN are both 10 cm long and cross at O, with KO = OM and LO = ON. Is KLMN a rectangle? If also KL = LM, is it a square? Justify using properties.",
      "givens": [
-      "KL = LM = MN = NK = 6 cm",
-      "KM = LN"
+      "KM = LN = 10 cm",
+      "KO = OM and LO = ON",
+      "second part: KL = LM"
      ],
-     "find": "whether KLMN is a rectangle, and whether it is a square",
+     "find": "whether KLMN is a rectangle, and whether it is a square when KL = LM",
      "steps": [
       {
-       "do": "all sides equal → both pairs of opposite sides equal → parallelogram",
-       "result": "KLMN is a parallelogram"
+       "do": "equal diagonals, each cut in half at O",
+       "result": "OK = OL = OM = ON = 10 ÷ 2 = 5 cm"
       },
       {
-       "do": "parallelogram with equal diagonals → triangles KLN and LKM congruent (SSS) → angle K = angle L, and K + L = 180°",
-       "result": "angle K = angle L = 90°"
-      },
-      {
-       "do": "four right angles + opposite sides equal → rectangle",
+       "do": "diagonals equal and bisecting each other → every corner angle 90°, opposite sides equal",
        "result": "KLMN is a rectangle"
       },
       {
-       "do": "rectangle + all sides equal → square",
+       "do": "rectangle + KL = LM → opposite sides also equal → all four sides equal",
+       "result": "KL = LM = MN = NK"
+      },
+      {
+       "do": "rectangle with all four sides equal",
        "result": "KLMN is a square"
       }
      ],
-     "answer": "KLMN is a square, and therefore it is also a rectangle",
-     "why": "square = rectangle + all sides equal → it passes every rectangle test → both names are true; 'square' is just the more special name"
+     "answer": "KLMN is a rectangle; when also KL = LM it is a square, and still a rectangle",
+     "why": "equal diagonals that bisect each other → rectangle; rectangle + two equal adjacent sides → square, which is still a rectangle"
     }
    ]
   },
@@ -15649,6 +15710,41 @@
       "representation": "Zooming in on tiles (same tile again at the same size) versus zooming in on a fern (smaller fern shapes appear)",
       "moveShape": "Child zooms into each; ask what new appears when you zoom in"
      }
+    },
+    {
+     "id": "c8-maths-ch11-t01-m-one-piece",
+     "skillId": "c8-maths-ch11-t01-s1",
+     "belief": "Applies the rule to only one piece (often the newest or biggest) of the last stage, instead of to every piece",
+     "signs": [
+      "Draws Sierpinski stage 2 with 5 shaded triangles instead of 9",
+      "Changes only one square when making the next carpet stage",
+      "Says each stage adds a few pieces rather than multiplying them"
+     ],
+     "diagnostic": {
+      "prompt_en": "Stage 1 of the Sierpinski carpet has 8 squares. To make stage 2, which squares does the rule act on?",
+      "prompt_hi": "Sierpinski carpet ke stage 1 mein 8 squares hain. Stage 2 banane ke liye rule kin squares par lagta hai?",
+      "options": [
+       {
+        "text": "On all 8 squares, so stage 2 has 64 squares",
+        "misconceptionId": null,
+        "correct": true
+       },
+       {
+        "text": "Only on one of the squares, so stage 2 has 15 squares",
+        "misconceptionId": "c8-maths-ch11-t01-m-one-piece",
+        "correct": false
+       },
+       {
+        "text": "Only on the middle hole, so stage 2 still has 8 squares",
+        "misconceptionId": "c8-maths-ch11-t01-m-one-piece",
+        "correct": false
+       }
+      ]
+     },
+     "remediation": {
+      "representation": "Stage 1 with its 8 squares numbered 1 to 8, each one split again in its own colour",
+      "moveShape": "Child applies the rule to square 1, then 2, and so on; ask how many squares each one leaves"
+     }
     }
    ],
    "items": [
@@ -15979,30 +16075,31 @@
       "solverAnswer": "She applied the rule to only one triangle; it must be applied to every shaded triangle of stage 1. Stage 2 should have 3 × 3 = 9 shaded triangles.",
       "agrees": true,
       "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
-     }
+     },
+     "targetsMisconception": "c8-maths-ch11-t01-m-one-piece"
     },
     {
      "id": "c8-maths-ch11-t01-i15",
      "skillId": "c8-maths-ch11-t01-s1",
      "kind": "predict",
      "difficulty": 4,
-     "prompt_en": "Start with a line 27 cm long and keep applying the rule 'remove the middle third of every segment'. At which stage are the segments first 1 cm long, and how many segments are there then?",
-     "prompt_hi": "27 cm lambi line se shuru karo aur baar baar rule lagao: 'har segment ka beech wala tihai hissa hata do'. Kaunse stage par segments pehli baar 1 cm ke hote hain, aur tab kitne segments hote hain?",
-     "answer": "Stage 3: 8 segments of 1 cm each",
+     "prompt_en": "A Koch snowflake starts (stage 0) as an equilateral triangle with sides of 9 cm. Rule: every side is replaced by 4 sides, each 1/3 as long. Predict first: will the perimeter at stage 2 be more or less than 27 cm? Then find the number of sides, the length of each side and the perimeter at stage 2.",
+     "prompt_hi": "Koch snowflake stage 0 par ek equilateral triangle hai jiski har side 9 cm hai. Rule: har side ki jagah 4 sides aati hain, har ek 1/3 lambi. Pehle socho: stage 2 par perimeter 27 cm se zyada hoga ya kam? Phir stage 2 par sides ki ginti, har side ki lambai aur perimeter nikalo.",
+     "answer": "More: 48 sides of 1 cm each, perimeter 48 cm",
      "acceptable": [
-      "Stage 3, 8 segments",
-      "3rd stage, 8"
+      "48 sides, 1 cm each, 48 cm",
+      "more; 48 cm"
      ],
      "hints": [
-      "What happens to the length of each segment at every stage?",
-      "Each stage divides the length by 3: 27, 9, 3, …",
-      "Length 1 cm at stage ___; segments double each stage: 1, 2, 4, ___.",
-      "Stage 3: 27 ÷ 27 = 1 cm, and 2 × 2 × 2 = 8 segments."
+      "What happens to the number of sides, and to each side's length, at every stage?",
+      "Sides multiply by 4 each stage; each side's length is divided by 3.",
+      "Sides: 3, 12, ___; length: 9, 3, ___ cm.",
+      "Stage 2: 48 sides of 1 cm, so the perimeter is 48 × 1 = 48 cm."
      ],
      "verified": {
-      "solverAnswer": "Stage 3 (27 → 9 → 3 → 1 cm), with 2³ = 8 segments.",
+      "solverAnswer": "More than 27 cm: stage 2 has 3 × 4 × 4 = 48 sides of 9 ÷ 9 = 1 cm, perimeter 48 cm (stage 1: 12 sides of 3 cm = 36 cm).",
       "agrees": true,
-      "note": "blind-solved 2026-11-08, agreement read by hand (c8 depth pilot)"
+      "note": "blind-solved 2026-11-08, agreement read by hand (pilot scope fix)"
      }
     },
     {
@@ -16097,32 +16194,32 @@
    "skillExamples": [
     {
      "skillId": "c8-maths-ch11-t01-s1",
-     "problem": "Start with a straight line 27 cm long (stage 0). Rule: remove the middle third of every segment. Describe stage 1 and stage 2: how many segments, and how long is each?",
+     "problem": "Start with a square of side 27 cm (stage 0). Rule: divide every square into a 3 by 3 grid of equal small squares and remove the middle one. Describe stage 1 and stage 2: how many squares are left, and what is the side of each?",
      "givens": [
-      "stage 0 = one segment of 27 cm",
-      "rule = cut every segment into 3 equal parts and remove the middle part"
+      "stage 0 = one square of side 27 cm",
+      "rule = split every square into 9 equal squares and remove the middle one"
      ],
-     "find": "number of segments and length of each at stage 1 and stage 2",
+     "find": "number of squares left and the side of each at stage 1 and stage 2",
      "steps": [
       {
-       "do": "stage 0 → apply the rule to the one segment: cut into thirds",
+       "do": "stage 0 → apply the rule to the one square: split into a 3 by 3 grid",
        "result": "27 ÷ 3 = 9"
       },
       {
-       "do": "drop the middle third → stage 1",
-       "result": "2 segments of 9 cm"
+       "do": "remove the middle small square → stage 1",
+       "result": "9 − 1 = 8 squares of side 9 cm"
       },
       {
-       "do": "apply the same rule to EACH stage-1 segment, not just one",
+       "do": "apply the same rule to EACH of the 8 squares, not just one",
        "result": "9 ÷ 3 = 3"
       },
       {
-       "do": "each 9 cm segment → 2 segments of 3 cm → stage 2",
-       "result": "2 × 2 = 4"
+       "do": "each 9 cm square → 8 squares of side 3 cm → stage 2",
+       "result": "8 × 8 = 64"
       }
      ],
-     "answer": "Stage 1: 2 segments of 9 cm each; stage 2: 4 segments of 3 cm each",
-     "why": "rule acts on every piece of the previous stage → each stage = shrunken copies of the one before → same rule, smaller scale, again and again"
+     "answer": "Stage 1: 8 squares of side 9 cm; stage 2: 64 squares of side 3 cm",
+     "why": "rule acts on every square of the previous stage → each stage = 8 shrunken copies of the one before → same rule, smaller scale"
     },
     {
      "skillId": "c8-maths-ch11-t01-s3",
