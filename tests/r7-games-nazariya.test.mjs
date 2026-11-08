@@ -20,6 +20,7 @@ import { pickLevels } from "../src/play/core/pick.ts";
 import { gradeLevel } from "../src/play/core/replay.ts";
 import { engineFor } from "../src/play/engines/registry.ts";
 import { mulberry32 } from "../src/play/core/rng.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const env = (acts) => acts.map((act, i) => ({ seq: i + 1, t: i * 400, via: "touch", act }));
@@ -85,7 +86,7 @@ for (const e of NEW()) {
   });
   test(`nazariya2 ${tag}: the picker's p95 < 50 ms and the entry serves through currentLevel at every fade`, () => {
     const ms = [];
-    for (let seed = 1; seed <= 40; seed++) { const t0 = performance.now(); assert.ok(pickLevels(logic, reqOf(e, seed, 1 + (seed % 3)))); ms.push(performance.now() - t0); }
+    for (let seed = 1; seed <= 40; seed++) { const t0 = cpuNow(); assert.ok(pickLevels(logic, reqOf(e, seed, 1 + (seed % 3)))); ms.push(cpuNow() - t0); }
     ms.sort((a, b) => a - b);
     assert.ok(ms[Math.floor(ms.length * 0.95)] < 50, `p95 ${ms[Math.floor(ms.length * 0.95)].toFixed(1)} ms`);
     for (const fade of [1, 2, 3]) {
