@@ -643,9 +643,11 @@ export function segmentsOf(ask) {
   const cb = ask?.intent?.cardBoard, cbAt = cb?.boardRef && cb.cardText ? text.lastIndexOf(String(cb.cardText).trim()) : -1;
   const marks = Array.isArray(ask?.intent?.segments) ? ask.intent.segments : ask?.intent?.then ? [ask.intent.then]
     : cbAt > 0 ? [{ atChar: cbAt, atClause: cb.atClause, boardRef: cb.boardRef, scriptBeat: cb.scriptBeat }] : [];
+  // (main 2026-11-08, App 3b: Brain's `ofCard` per page, page 0 on the intent, each later page on its segment)
+  const flag = (v) => (typeof v === "boolean" ? { ofCard: v } : {});
   const cuts = marks.filter((m) => m?.boardRef && Number.isInteger(m.atChar) && m.atChar > 0 && m.atChar < text.length).sort((x, y) => x.atChar - y.atChar);
   if (!cuts.length || !ask?.intent?.boardRef) return null;
-  const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause }))];
+  const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat, ...flag(ask.intent.ofCard) }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause, ...flag(m.ofCard) }))];
   const out = [];
   for (let i = 0; i < pages.length; i++) {
     const to = i + 1 < pages.length ? pages[i + 1].from : text.length;
@@ -655,7 +657,7 @@ export function segmentsOf(ask) {
     // is the number of clauses before it; Brain's atClause, when sent, wins
     const before = text.slice(0, pages[i].from).trim();
     const clause = Number.isInteger(pages[i].atClause) && pages[i].atClause >= 0 ? pages[i].atClause : before ? splitSentences(before).reduce((n, part) => n + voiceClausesOf(part).length, 0) : 0;
-    out.push({ from: pages[i].from, to, text: seg, clause, boardRef: pages[i].boardRef, scriptBeat: pages[i].scriptBeat });
+    out.push({ from: pages[i].from, to, text: seg, clause, boardRef: pages[i].boardRef, scriptBeat: pages[i].scriptBeat, ...flag(pages[i].ofCard) });
   }
   return out.length >= 2 ? out : null;
 }
@@ -770,7 +772,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null 
     if (ops.length > WB_LIMITS.maxOps) return null;
     const first = takes[0].script, last = takes.at(-1);
     const raw = { ...first, scriptId: `${first.scriptId ?? id}:pg`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
-      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from) })) };
+      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from), ...(typeof g.ofCard === "boolean" ? { ofCard: g.ofCard } : {}) })),
+      ...(typeof sg[0].ofCard === "boolean" ? { ofCard: sg[0].ofCard } : {}) };
     delete raw.card;
     const n = normalizeScript(raw, { strict: false });
     if (!n.ok || !n.script?.switches?.length) return null;

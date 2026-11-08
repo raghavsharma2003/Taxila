@@ -1046,6 +1046,9 @@ export const studioSeam = {
         traceRecord("studio.board_stated_unknown", { intentId, values: statedUnknown, source: r.source ?? "line", template: r.template ?? null });
         console.warn(`[studio] board writes "?" over a number her line states: ${statedUnknown.join(",")} (source=${r.source ?? "line"})`);
       }
+      // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's intent reaches the client on the script; a paged script's
+      // later pages carry theirs on `switches[]`, pagesBoard)
+      if (typeof ask?.intent?.ofCard === "boolean" && typeof r.script.ofCard !== "boolean") r.script = { ...r.script, ofCard: ask.intent.ofCard };
       // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
         ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}), ...(r.altView ? { altView: r.altView } : {}) };
