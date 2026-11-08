@@ -74,7 +74,7 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     assert.deepEqual(segmentsAt(plan, long, null, parts).map((g) => g.scriptBeat.beatId), ["then", "e1", "then"]);
   });
 
-  test("P1 replay director9 c5-t02 stuck T18 (picture): 'drawing karke samjhao' over the e2 bar draws its second view, a number line, and her line names it", async () => {
+  test("P1 replay director9 c5-t02 stuck T18 (picture): 'drawing karke samjhao' over the e2 bar draws its second view — the same whole round (director12 S4) — and her line names it", async () => {
     const T = "c5-maths-ch02-t02";
     setScriptForTest(T, runScript(T));
     const { kit, rows, plans, last } = await replay(RUN, "stuck", T, 19);
@@ -90,18 +90,20 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     const row = seam.studioSeam.preselectWhiteboard(a);
     const hint = typeof seam.studioSeam.preselectedAltView === "function" ? seam.studioSeam.preselectedAltView(L) : null;
     const alt = altViewOfRow(row, hint) ?? hint;
-    assert.deepEqual(alt, { view: "line", labels: ["1/8"], gaps: 8 }, `the second view (row: ${String(row).slice(0, 160)})`);
+    // (until Brain's patch 015: altViewOfRow reads no round row, so the hint stands alone, and her opener says "patti")
+    assert.equal(alt, "round", `the second view (row: ${String(row).slice(0, 160)})`);
     const st = { ...last.state, lastMove: { ...last.state.lastMove, altView: alt } };
     replyDeps.chat = async () => ({ text: `Screen par ek bar hai, 8 barabar hisson mein bata hua, 1 hissa rangin. ${rows[16].text}` });
     const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-    assert.match(out.reply, /^Dekho, yahi 0 se 1 ki sankhya rekha par, 8 barabar gaps, nishaan 1\/8 par\./, out.reply);
+    assert.match(out.reply, /^Dekho, yahi numbers ab patti par\./, out.reply);
     assert.doesNotMatch(out.reply, /Screen par ek bar hai/, "her words about the old drawing go");
     const v = seam.studioSeam.requestIntent({ ...a, line: { ...a.line, text: out.reply, ...(out.guard?.parts ? { parts: out.guard.parts } : {}) } });
     assert.equal(v?.state, "revealed");
-    assert.equal(v.artifact.altView, "line", "something new is drawn (it was the same bar again)");
+    // (a circle her line calls a "patti" is refused; the card's own bar is re-shown — patch 015 draws the circle)
+    assert.equal(v.artifact.altView, undefined);
     const scr = v.artifact.screens?.[0] ?? v.artifact.screen;
-    assert.equal(scr.template, "fraction-line@1");
-    assert.deepEqual(scr.counts.marks, [{ at: "1/8", label: "1/8" }]);
+    assert.equal(scr.template, "fraction-parts@1");
+    assert.deepEqual(scr.counts, { parts: 8, shaded: 1 });
   });
 
   test("director10 offtopic c4 T9 (unpaged): the bare code verdict 'Nahi, yeh jawab nahi hai.' is no first page of its own; the turn pages", async () => {
@@ -131,3 +133,4 @@ describe("r7-brain-v61-replay.test.mjs", () => {
   });
 
 });
+

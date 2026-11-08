@@ -1105,9 +1105,10 @@ export const studioSeam = {
     const first = boardFirst.takePreselected(ask, ctxFirst);
     // director8 S3′ (main, amends SC2): a picture asked for while the card's OWN board is already the page on screen draws a
     // second view of the same numbers (artifact.altView, Brain's line describes it); no second view → re-shown as before
-    const cardUp = !!L.wbPrevRef && boardFirst.refKey(ask?.intent?.boardRef) === L.wbPrevRef;
+    // (director12 S4: or the same figure shaded otherwise — the card's 0-shaded bar under the 3-shaded one up)
+    const cardUp = boardFirst.sameFigure(ask?.intent?.boardRef, L.wbPrevRef);
     if (first?.script && !first.altView && onPage && request && request.kind !== "example" && (cardUp || shownBefore(dress(first.script), { avoid: onPage }))) {
-      const alt = boardFirst.altView(ask, ctxFirst);
+      const alt = boardFirst.altView(ask, ctxFirst, { upKey: L.wbPrevRef ?? null });
       if (alt && drawn(alt)) { traceRecord("studio.board_alt_view", { intentId, altView: alt.altView, template: alt.template }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
     }
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };

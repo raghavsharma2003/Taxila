@@ -177,3 +177,24 @@ test("Learning's regression on 2b78db98: number-line-hop@1 never draws touching 
   const g = gateWhiteboard(far, { reply: line, speechMs: 8000, withhold: { values: [] } });
   assert.ok(g.checks.find((c) => c.id === "W4.numbers_from_truth" && !c.pass), "60 is no axis end of 25");
 });
+
+test("Learning (c4 s2 e1): equal-groups@1 takes a short `title` — '8 ka 1/2 = 4' over the 2 × 4 board, '8 ka 1/4 = 2' over the 4 × 2 — its numbers drawn and gated (a wrong one, '= 5', is refused)", async () => {
+  const { certifyBoardRef } = await import("../server/forge/explainer/board-ref.js");
+  const { lintScript } = await import("../shared/whiteboard.js");
+  for (const [p, line] of [
+    [{ groups: 2, each: 4, title: "8 ka 1/2 = 4" }, "Dekho, 8 laddoo 2 barabar group mein hain, har group mein 4. Ek group 8 ka aadha hai. Toh 8 ka 1/2 = 4. Check karo: 2 × 4 = 8."],
+    [{ groups: 4, each: 2, title: "8 ka 1/4 = 2" }, "Ab wahi 8 laddoo 4 barabar group mein: har group mein 2. Toh 8 ka 1/4 = 2."],
+    [{ sizes: [6, 3, 3], title: "12 pencil" }, "12 pencil 3 bachchon mein baanti: ek ko 6, doosre do ko 3-3. Kya har bachche ko 1/3 mila?"],
+  ]) {
+    const x = expand({ template: "equal-groups@1", ...p });
+    assert.ok(x.ok, String(x.errors));
+    assert.deepEqual(lintScript(x.script), []);
+    assert.ok(texts(x.script).includes(p.title));
+    assert.equal(x.script.facts.onScreen.title, p.title);
+    const r = await certifyBoardRef({ template: "equal-groups@1", params: p }, { line, withhold: { values: [] } });
+    assert.ok(r.ok, JSON.stringify(r.failed));
+  }
+  const wrong = await certifyBoardRef({ template: "equal-groups@1", params: { groups: 2, each: 4, title: "8 ka 1/2 = 5" } }, { line: "Dekho, 8 laddoo 2 barabar group mein hain, har group mein 4. Toh 8 ka 1/2 = 4.", withhold: { values: [] } });
+  assert.ok(!wrong.ok && wrong.failed.includes("W4.numbers_from_truth"));
+  assert.equal(expand({ template: "equal-groups@1", groups: 2, each: 4, title: "x".repeat(60) }).ok, false, "a title over LABEL_MAX is refused");
+});
