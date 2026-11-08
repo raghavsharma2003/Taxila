@@ -32,6 +32,7 @@ import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
 import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
 import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
+import { gatiHidden } from "../../src/play/families/gati/gati.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -101,6 +102,8 @@ export function hiddenOf(level) {
   // r7 galti-pakdo: whether the working is all correct, the first wrong line, the mended line and the true x are never said
   // first. Checked by family first: modes may share names with other families
   if (level.family === "galti-pakdo") return galtiHidden(level);
+  // r7 gati: the speed a trip makes and the m/s a speedometer reading is are never said first. Checked by family first
+  if (level.family === "gati") return gatiHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

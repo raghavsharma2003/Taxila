@@ -30,6 +30,7 @@ import { makeParkarView } from "./parkar/parkar.view.ts";
 import { makeAankdeView } from "./aankde/aankde.view.ts";
 import { makePaheliView } from "./paheli/paheli.view.ts";
 import { makeGaltiView } from "./galti-pakdo/galti.view.ts";
+import { makeGatiView } from "./gati/gati.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
 import { makeFeetaView } from "./feeta/feeta.view.ts";
@@ -119,5 +120,8 @@ export const VIEWS: Record<string, MakeView> = {
   "paheli/cipher": makePaheliView,
   "paheli/mirror": makePaheliView,
   "galti-pakdo/kaapi": makeGaltiView,
+  "gati/drishti": makeGatiView,
+  "gati/raftaar": makeGatiView,
+  "gati/nishaan": makeGatiView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }
