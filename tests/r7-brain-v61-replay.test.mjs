@@ -5,7 +5,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay } from "./fixtures/replay.mjs";
+import { replay, runScriptOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { whiteboardIntentOf, boardItemOf, altViewOfRow, segmentsAt } from "../server/brain/propose.js";
@@ -20,7 +20,7 @@ import * as seam from "../server/studio/seam.js";
 describe("r7-brain-v61-replay.test.mjs", () => {
 
   const RUN = "2026-11-06-director9";
-  const runScript = (T) => JSON.parse(readFileSync(new URL(`../evals/hybrid-side-by-side/results/${RUN}/scripts/${T}.json`, import.meta.url), "utf8"));
+  const runScript = (T) => runScriptOf(RUN, T);
   const KEEP = {};
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT; setScriptForTest(); });
   afterEach(() => { replyDeps.chat = chat; setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
@@ -102,6 +102,32 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     const scr = v.artifact.screens?.[0] ?? v.artifact.screen;
     assert.equal(scr.template, "fraction-line@1");
     assert.deepEqual(scr.counts.marks, [{ at: "1/8", label: "1/8" }]);
+  });
+
+  test("director10 offtopic c4 T9 (unpaged): the bare code verdict 'Nahi, yeh jawab nahi hai.' is no first page of its own; the turn pages", async () => {
+    const R10 = "2026-11-07-director10", T = "c4-maths-ch05-t01";
+    setScriptForTest(T, runScriptOf(R10, T));
+    const { kit, last } = await replay(R10, "offtopic", T, 9);
+    assert.equal(last.child, "Yes");
+    assert.equal(last.p.r.move.kind, "reteach", "the run's own move");
+    replyDeps.chat = async () => ({ text: "Nahi, yeh jawab nahi hai." });
+    const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    assert.match(out.reply, /^Nahi, yeh jawab nahi hai\. /, out.reply);
+    const L = lessonOf(kit, "d10t9");
+    const a = intentAt(L, last, kit, out.reply, out.guard?.parts);
+    // (the run paged it as e1's board for the 5-word verdict, then the remediation's, then the then-card's: the first page failed)
+    assert.equal(a.intent.scriptBeat?.beatId, "rem:c4-maths-ch05-t01-m-part-part", "the verdict is said over the remediation's board");
+    const v = show(a).ack;
+    assert.equal(v?.state, "revealed", "the turn pages (the run: 'planning', nothing drawn beside her line)");
+  });
+
+  test("a first page of a bare verdict (under FIRST_PAGE_MIN_WORDS, no card) joins the next page", () => {
+    const a = { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } }, b = { template: "fraction-parts@1", params: { parts: 4, shade: 1, whole: "circle" } };
+    const plan = [{ part: "close", boardRef: a, scriptBeat: { beatId: "e1" } }, { part: "body", boardRef: b, scriptBeat: { beatId: "rem" } }];
+    const line = "Nahi, yeh jawab nahi hai. Poori roti ke 4 barabar tukde neeche aate hain, aur khaya hua 1 rangin tukda upar.";
+    assert.deepEqual(segmentsAt(plan, line, null, { prev: "Nahi, yeh jawab nahi hai." }).map((g) => [g.atChar, g.scriptBeat.beatId]), [[0, "rem"]]);
+    const long = line.replace("Nahi, yeh jawab nahi hai.", "Bilkul, Riya: pehla hissa 1/8 km hai, kyunki sadak 8 hisson mein hai.");
+    assert.deepEqual(segmentsAt(plan, long, null, { prev: "Bilkul, Riya: pehla hissa 1/8 km hai, kyunki sadak 8 hisson mein hai." }).map((g) => g.scriptBeat.beatId), ["e1", "rem"], "a verdict with content keeps the answered card's board");
   });
 
 });

@@ -270,6 +270,15 @@ export const R7 = {
   "jar.answered": "Answered",
   "jar.answeredOn": "answered on {date}",
   "jar.empty": "When {T} saves a question for later, it waits here.",
+  // r7 (Learning to-app/007): "Maths feels…" at Hello: a feeling, never a test (no right answer, no score)
+  "feel.title": "How school feels right now",
+  "feel.sub": "Pick a face. There is no right answer.",
+  "feel.row": "{S} feels",
+  "feel.easy": "Easy",
+  "feel.okay": "Okay",
+  "feel.tricky": "Tricky",
+  "feel.got": "Got it",
+  "feel.next": "Next",
   // r7 app-auth-email-otp: sign in with a code sent by email
   "code.title": "Sign in with a code",
   "code.why": "We email you a 6-digit code. No password needed.",

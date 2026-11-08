@@ -25,6 +25,8 @@ import { makeKramView } from "./kram/kram.view.ts";
 import { makeHissaView } from "./hissa/hissa.view.ts";
 import { makeKoshtakView } from "./koshtak/koshtak.view.ts";
 import { makeParkarView } from "./parkar/parkar.view.ts";
+import { makeAankdeView } from "./aankde/aankde.view.ts";
+import { makePaheliView } from "./paheli/paheli.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
 import { makeFeetaView } from "./feeta/feeta.view.ts";
 
@@ -96,5 +98,12 @@ export const VIEWS: Record<string, MakeView> = {
   "parkar/build": makeParkarView,
   "parkar/bisect": makeParkarView,
   "parkar/drop": makeParkarView,
+  "aankde/tally": makeAankdeView,
+  "aankde/stack": makeAankdeView,
+  "aankde/line": makeAankdeView,
+  "paheli/pairs": makePaheliView,
+  "paheli/magic": makePaheliView,
+  "paheli/cipher": makePaheliView,
+  "paheli/mirror": makePaheliView,
 };
 export function viewFor(family: FamilyId, mode: PlayMode): MakeView | null { return VIEWS[`${family}/${mode}`] ?? null; }

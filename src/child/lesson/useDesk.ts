@@ -25,6 +25,8 @@ import { getJson } from "../../lesson/api.ts";
 import { enginesForTopic, prewarmWhenIdle } from "../../modules/prewarm.ts";
 import { openStudioWire, studioApi, useEarlySlot } from "../../studio/useStudio.ts";
 import { workTrayBox } from "./trayBox.ts";
+import { cardOnAsk, cardOnHandover, cardOnPage, cardWaiting, isPaged, lastPage, pageOfCard } from "./cardTiming.ts";
+import { boardOnTray, useBoardPage } from "./boardPage.ts";
 import { fractionQuestion, helpAskedKey } from "./answers.ts";
 import { prepareEarcons, setEarcons } from "../../ui/sound/earcons.ts";
 import { setHapticsEnabled } from "../../ui/haptics.ts";
@@ -147,7 +149,9 @@ function shortTitleOf(ui: { shortTitle?: string }, topic: { title: string; chapt
   return out;
 }
 
-interface Item { ask: Ask | null; answer: AnswerChip | null; pendingVerdict: Verdict | null; pendingWithHelp?: boolean; nextAsk?: Ask | null }
+interface Item { ask: Ask | null; answer: AnswerChip | null; pendingVerdict: Verdict | null; pendingWithHelp?: boolean; nextAsk?: Ask | null;
+  /** r7 (3a): when the queued ask takes the card: the paged board's last page, or the hand-over. */
+  nextWhen?: "lastPage" | "handover" }
 
 /** The Director's ui.affect → her face: effort / insight is the one face reaction to a result (§4.6). */
 const AFFECT: Record<string, Emotion> = { effort: "proud", insight: "excited" };
@@ -303,6 +307,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
   // ───────── the question card: the pinned ask + the answer chip ─────────
   const [item, setItem] = useState<Item>({ ask: null, answer: null, pendingVerdict: null });
   const serverAsk = ui.ask?.text ? ui.ask : null;
+  // r7 (3a/3b, main 2026-11-08): the tray's whiteboard and the page of it now up, on the board player's own clock
+  const cardBoard = useMemo(() => boardOnTray(ui.studioSlot), [ui.studioSlot]);
+  const boardPage = useBoardPage(cardBoard);
   const lastUi = useRef<unknown>(null);
   useEffect(() => {
     if (state.ui === lastUi.current) return;
@@ -315,7 +322,10 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
         // A new item. If this turn also grades the child's answer, the old question and answer stay up while she
         // speaks, so the verdict lands on THEIR answer on her first voiced frame; the new ask takes the card at
         // the hand-over. Otherwise the new ask pins at once (from her first frame).
-        next = ui.verdict && it.answer ? { ...it, nextAsk: ask } : { ask, answer: null, pendingVerdict: null };
+        // r7 (3a): on a PAGED board the new ask takes the card when its last page turns (the page that draws its board),
+        // chip or not: never over the verdict page's old board, never left behind the new board until the hand-over.
+        next = cardOnAsk(it, ask, { paged: isPaged(cardBoard), verdict: !!ui.verdict });
+        if (next.ask === ask) next = { ...next, pendingVerdict: null, pendingWithHelp: undefined };
       }
       if (ui.hint?.text && next.ask) {
         const line = { kind: "hint" as const, text: ui.hint.text, level: ui.hint.level ?? 1 };
@@ -324,12 +334,19 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
       if (ui.verdict) next = { ...next, pendingVerdict: ui.verdict, pendingWithHelp: withHelpNow };
       return next;
     });
-  }, [state.ui, serverAsk, ui.hint, ui.verdict, withHelpNow, ctx.lessonLang, state.replySeq, state.replyText]);
+  }, [state.ui, serverAsk, ui.hint, ui.verdict, withHelpNow, ctx.lessonLang, state.replySeq, state.replyText, cardBoard]);
 
-  // The hand-over: a queued next question takes the card (the graded answer has been seen with its mark).
+  // r7 (3a): the paged board's last page is up: the queued ask takes the card now
+  useEffect(() => {
+    if (!cardBoard || !isPaged(cardBoard) || boardPage < lastPage(cardBoard)) return;
+    setItem((it) => { const n = cardOnPage(it, boardPage, lastPage(cardBoard)); return n === it ? it : { ...n, pendingVerdict: null, pendingWithHelp: undefined }; });
+  }, [boardPage, cardBoard]);
+
+  // The hand-over: a queued next question takes the card (the graded answer has been seen with its mark). A card queued
+  // for a last page that never turned (a dropped page, a missed anchor) takes it here too.
   useEffect(() => {
     if (floor === "your_turn" || floor === "yielding" || floor === "idle") {
-      setItem((it) => (it.nextAsk ? { ask: it.nextAsk, answer: null, pendingVerdict: null, nextAsk: null } : it));
+      setItem((it) => { const n = cardOnHandover(it); return n === it ? it : { ...n, pendingVerdict: null, pendingWithHelp: undefined }; });
     }
   }, [floor]);
 
@@ -801,6 +818,9 @@ export function useDesk(runtime: LessonRuntime, bridge: UiBridge | null, ctx: De
     noPack: true, // no offline lesson pack exists yet: T2 always offers "Finish for now"
     ask: item.ask,
     answer,
+    // r7 (3b): Brain's ofCard flag on the page now up; absent → never waits (today's behaviour)
+    askWaiting: cardWaiting({ hasAsk: !!item.ask, hasAnswer: !!answer, ofCard: geometryOut === "work" && tray?.kind === "studio" ? pageOfCard(cardBoard, boardPage) : undefined,
+      handedOver: floor === "your_turn" || floor === "yielding" }),
     caption: { text: teacherCap?.text ?? "", speaking: floor === "speaking" || floor === "showing", mode: captionsOn ? "phrase" : "icons", lang: langAttr(ctx.lessonLang) },
     tray: tray && geometryOut === "work" ? { ...tray } : null,
     answerForm,

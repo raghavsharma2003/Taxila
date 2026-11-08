@@ -36,7 +36,7 @@ import { skillSess } from "../comprehension/budget.js";
 import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, workedLeadContent, fadeBoard, startedFirstStep, FADE_PREFIX, clip } from "./fading.js";
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
-import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend } from "./script.js";
+import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -104,7 +104,7 @@ export function scriptWhyOf(kit, item, lang = "hinglish") {
     : (item.scriptAsk ?? item.scriptCheck ?? item.scriptThen)?.why ?? null;
   const t = src ? saidIn(src, lang) : null;
   const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
-  return one && one.split(/\s+/).length <= 22 ? one : null;
+  return one && one.split(/\s+/).length <= WHY_MAX_WORDS ? one : null; // (2.3's validator refuses a longer one)
 }
 /**
  * A card's key in the lesson language, from its AUTHORED forms only (director7: "jawab 0 tha" for the key "between 0 and 1"
@@ -2843,9 +2843,20 @@ export function step(prev, input) {
   // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
   // scripted card, a don't-know or a "didn't understand" gets the card's AUTHORED simpler (a one-step hint, never its key)
   if (!move.simpler && scriptOn() && item && isScriptCard(item) && ["hint", "reteach", "repair", "practice"].includes(move.kind)
-    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused")) {
+    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused"
+      // v6.2 H1 (main, director10: 12 model-written hints in c4, 4 of them giving the live answer): a wrong answer's hint is the
+      // card's authored simpler too
+      || (["incorrect", "misconception", "partial"].includes(input?.cls?.outcome) && move.kind !== "reteach"))) {
     const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
-    const sm = meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : null;
+    // (Learning, director10 item 1: still lost straight after a remediation's say — its follow-up card up — the remediation's own
+    // simpler, a plainer restatement of that say, comes first)
+    const remBeat = String(prev?.lastMove?.scriptBeat?.beatId ?? "");
+    const remSimpler = remBeat.startsWith("rem:") && item.scriptThen && !["incorrect", "misconception", "partial"].includes(input?.cls?.outcome)
+      ? skillScriptOf(input.kit, item.skillId)?.remediation?.find((r) => `rem:${r.targets}` === remBeat)?.simpler ?? null : null;
+    // (an explain beat's card with no simpler of its own: its beat's simpler — Learning's v2.3 pilots put it on the beat)
+    const beatSimpler = !meta?.simpler && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
+      ? skillScriptOf(input.kit, item.skillId)?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.simpler ?? null : null;
+    const sm = remSimpler ? saidIn(remSimpler, s.ctx?.lang ?? "hinglish") : meta?.simpler ? saidIn(meta.simpler, s.ctx?.lang ?? "hinglish") : beatSimpler ? saidIn(beatSimpler, s.ctx?.lang ?? "hinglish") : null;
     if (sm && String(sm).trim()) move.simpler = String(sm).trim();
   }
   if (p.probeAck) move.probeAck = true;
@@ -2877,12 +2888,25 @@ export function step(prev, input) {
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
   // v6 R4 (main: "'turant baad' means the next turn"): in a scripted lesson an aside parked on the last turn is returned to on
   // this one, whatever the move (never on a safeguard, a wrap or a break)
+  // v6.2 H2 (main, director10: c5-t02 5 of 6 returns early, mid-card): the promise is "after this part": an aside parked while a
+  // card was live is returned to once that card is resolved (answered, let go, or another card up), never while it is still live
+  if (scriptOn() && scriptIdOf(input.kit)) {
+    for (const e of s.later ?? []) if (e.share && e.at === s.turn && e.onItem === undefined) { e.onItem = prev.activeItemId ?? null; e.said ??= String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80); }
+  }
   if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
-    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1);
-    if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share }; }
+    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && Number.isFinite(e.at) && s.turn - e.at >= 1
+      && (!e.onItem || (s.activeItemId !== e.onItem && !(s.splitHold?.activeItemId === e.onItem))));
+    if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   if (s.servedNow?.topic) {
-    const line = asideFactOf(s.servedNow.topic, s.ctx.lang ?? "hinglish");
+    // v6.2 H2 (director10: the canned "ek over mein chhe ball" repeated, "Virat ke sixer" invented): a topic's plain fact is said at
+    // most once a lesson; after that the return is about what THEY said, in their own words
+    const lang = s.ctx.lang ?? "hinglish";
+    const fact = asideFactOf(s.servedNow.topic, lang);
+    const used = (s.asideFactsSaid ?? []).includes(fact);
+    const said = s.servedNow.said && !unsafeChildPhrase(s.servedNow.said) ? s.servedNow.said.replace(/[.!?]+$/, "") : null;
+    const line = fact && !used ? fact : said ? (lang === "english" ? `you told me "${said}", and I liked hearing it.` : `tumne bataya tha "${said}", sunke achha laga.`) : null;
+    if (fact && !used) s.asideFactsSaid = [...(s.asideFactsSaid ?? []), fact];
     move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
   }
   // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for
@@ -2994,9 +3018,12 @@ export function splitLong(out, input) {
   // v6.1 (main's split policy B, on director9: 45 split turns slowed skill 1 to 66 turns): closures never cause a split on
   // their own; they stay in the beat's turn (brain/say.js trims her own words first). Only authored teaching plus its card
   // that still do not fit is split. TAXILA_R7_SPLIT_CLOSE=on brings back the closing split.
-  if (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on") return splitTeach(out, input, cap);
+  // v6.2 T3 (main, director10: c6's bridge turns ran 121-132 words): a turn ends after a bridge; the new skill's first point and
+  // its card come on the next turn (the closing split, whatever the split policy)
+  const bridgeTurn = !!move.bridgeSaid;
+  if (!bridgeTurn && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
   // (her verdict and the joins are about a dozen words beside the authored ones)
-  if (wordsIn(closing, teaching) + 12 <= cap) return out;
+  if (!bridgeTurn && wordsIn(closing, teaching) + 12 <= cap) return out;
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", "bridgeSaid", "bridgeBeat", "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
@@ -3049,6 +3076,24 @@ function heldTurn(prev, input) {
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
   // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
   // following it is such a request too)
+  // (Learning, director10 item 1; steering c5-t01 T13: "samajh nahi aaya" after a remediation's say, split from its card, let the
+  // card go and the walk moved on to the next beat): still lost after a remediation's say, the held follow-up card comes now,
+  // with the remediation's own simpler (else the card's) said first
+  const lost = c?.flags?.dontKnow || ["confused", "another", "clarify"].includes(c?.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused";
+  const remId = String(prev.lastMove?.scriptBeat?.beatId ?? "");
+  if (h.teach && lost && remId.startsWith("rem:") && h.activeItemId) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    s.splitHold = undefined;
+    const item = findItem(s, input.kit, h.activeItemId);
+    const rem = item ? skillScriptOf(input.kit, item.skillId)?.remediation?.find((r) => `rem:${r.targets}` === remId) : null;
+    const lang = s.ctx?.lang ?? "hinglish";
+    const meta = item?.scriptThen ?? item?.scriptCheck ?? item?.scriptAsk;
+    const sm = rem?.simpler ? saidIn(rem.simpler, lang) : meta?.simpler ? saidIn(meta.simpler, lang) : null;
+    const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true } : {}) };
+    s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
+    return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   if (c?.help || c?.request || (h.teach && (c?.flags?.dontKnow || readIntent(String(input.text ?? ""))?.type === "confused"))) return null;
   // v6.1 R9: "nahi" to the teaching half's check-in is acted on: the same teaching again, smaller (the beat's authored simpler,
   // else one sentence of its point), the card still held for the next turn; asked once, so no second check-in follows

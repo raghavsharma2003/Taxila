@@ -417,3 +417,7 @@
 .dk-mute::after { content: ""; position: absolute; inset: -8px -4px; } /* 48 dp hit area around a 32 dp switch */
 .dk-hf[data-dock="muted"] .dk-hf-orb, .dk-hf[data-dock="starting"] .dk-hf-orb { color: var(--ink-2); border-color: var(--line); border-style: dashed; }
 .dk-hf[data-dock="muted"] .dk-hf-ring, .dk-hf[data-dock="starting"] .dk-hf-ring { opacity: 0; }
+
+/* r7 (3b): the open question waits while the board shows something else: one quiet line, the same card zone */
+.dk-card--waiting .dk-card-body { padding-block: var(--space-2); }
+.dk-ask-waiting { display: flex; align-items: center; gap: var(--space-2); margin: 0; color: var(--ink-2); font-size: var(--t-meta); }

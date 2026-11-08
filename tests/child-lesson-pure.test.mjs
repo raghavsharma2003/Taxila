@@ -154,9 +154,10 @@ test("captions: dashes are clause boundaries, short tails merge, at rest the las
   const list = clauses(q);
   assert.ok(list.every((c) => c.split(" ").length <= 12), JSON.stringify(list));
   assert.equal(list.at(-1), "likhne ya padhne mein?");
-  // 11 words without punctuation: no stranded 2-word tail.
+  // 11 words without punctuation (54 characters, over two lines at 360 px): two balanced chunks, no stranded 2-word tail.
   const long = clauses("ek do teen chaar paanch chheh saat aath nau das gyaarah");
-  assert.equal(long.length, 1);
+  assert.equal(long.length, 2);
+  assert.ok(long.every((c) => c.split(" ").length >= 4 && c.length <= 38), JSON.stringify(long));
   assert.equal(restingLine("Bahut accha. Ab batao, kaunsa bada hai — aadha ya teesra?"), "Ab batao, kaunsa bada hai — aadha ya teesra?");
   assert.equal(restingLine(""), "");
 });

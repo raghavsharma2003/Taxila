@@ -1,0 +1,90 @@
+From: E App (round 7, main 2026-11-08, App 3b)
+Subject: carry Brain's `ofCard` from the whiteboard intent to the client's script
+
+Brain ships `ofCard: boolean` (shared/contracts.ts BoardSegment; tests/r7-brain-v62.test.mjs T46): on the whiteboard intent
+for page 0, and on each intent.segments[] entry for its page. true = the page is the open card's own board, false = any
+other board, absent = no card open (today's behaviour). The client only sees the composed script, so the question card can
+fold to "Your question is waiting" (App, src/child/lesson/cardTiming.ts) only if the flag rides on it:
+- shared/whiteboard.js normalizeScript keeps a boolean `ofCard` on the script and on each `switches[]` entry (it whitelists
+  fields, so today both are stripped);
+- board-first.js segmentsOf carries each page's flag; pagesBoard writes page 0's on the script and each later page's on
+  its switch;
+- seam.js drawn(): page 0's flag from the intent goes on the script for single-page boards too.
+Absent stays absent everywhere (no behaviour change until Brain sends the field). Apply with `git apply`.
+App's test tests/r7-app-ofcard-wire.test.mjs runs the whole chain (Brain's intent shape → segmentsOf → normalizeScript →
+the App reader) once this is applied, and checks that it applies until then.
+
+diff --git a/server/stagecraft/board-first.js b/server/stagecraft/board-first.js
+index 9d61edc12..befc130c3 100644
+--- a/server/stagecraft/board-first.js
++++ b/server/stagecraft/board-first.js
+@@ -598,9 +598,11 @@ export function segmentsOf(ask) {
+   const cb = ask?.intent?.cardBoard, cbAt = cb?.boardRef && cb.cardText ? text.lastIndexOf(String(cb.cardText).trim()) : -1;
+   const marks = Array.isArray(ask?.intent?.segments) ? ask.intent.segments : ask?.intent?.then ? [ask.intent.then]
+     : cbAt > 0 ? [{ atChar: cbAt, atClause: cb.atClause, boardRef: cb.boardRef, scriptBeat: cb.scriptBeat }] : [];
++  // (main 2026-11-08, App 3b: Brain's `ofCard` per page, page 0 on the intent, each later page on its segment)
++  const flag = (v) => (typeof v === "boolean" ? { ofCard: v } : {});
+   const cuts = marks.filter((m) => m?.boardRef && Number.isInteger(m.atChar) && m.atChar > 0 && m.atChar < text.length).sort((x, y) => x.atChar - y.atChar);
+   if (!cuts.length || !ask?.intent?.boardRef) return null;
+-  const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause }))];
++  const pages = [{ from: 0, boardRef: ask.intent.boardRef, scriptBeat: ask.intent.scriptBeat, ...flag(ask.intent.ofCard) }, ...cuts.map((m) => ({ from: m.atChar, boardRef: m.boardRef, scriptBeat: m.scriptBeat, atClause: m.atClause, ...flag(m.ofCard) }))];
+   const out = [];
+   for (let i = 0; i < pages.length; i++) {
+     const to = i + 1 < pages.length ? pages[i + 1].from : text.length;
+@@ -610,7 +612,7 @@ export function segmentsOf(ask) {
+     // is the number of clauses before it; Brain's atClause, when sent, wins
+     const before = text.slice(0, pages[i].from).trim();
+     const clause = Number.isInteger(pages[i].atClause) && pages[i].atClause >= 0 ? pages[i].atClause : before ? splitSentences(before).reduce((n, part) => n + voiceClausesOf(part).length, 0) : 0;
+-    out.push({ from: pages[i].from, to, text: seg, clause, boardRef: pages[i].boardRef, scriptBeat: pages[i].scriptBeat });
++    out.push({ from: pages[i].from, to, text: seg, clause, boardRef: pages[i].boardRef, scriptBeat: pages[i].scriptBeat, ...flag(pages[i].ofCard) });
+   }
+   return out.length >= 2 ? out : null;
+ }
+@@ -705,7 +707,8 @@ export function pagesBoard(ask, { kit, redact = [], keep = null, keepRef = null
+     if (ops.length > WB_LIMITS.maxOps) return null;
+     const first = takes[0].script, last = takes.at(-1);
+     const raw = { ...first, scriptId: `${first.scriptId ?? id}:pg`.slice(0, 64), ops, durationMs: Math.max(...ops.map((o) => o.endMs)) + 200,
+-      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from) })) };
++      facts: last.script.facts ?? first.facts, switches: sg.slice(1).map((g, k) => ({ clause: g.clause, atMs: starts[k + 1], ...firstWordOf(ask?.line?.text, g.from), ...(typeof g.ofCard === "boolean" ? { ofCard: g.ofCard } : {}) })),
++      ...(typeof sg[0].ofCard === "boolean" ? { ofCard: sg[0].ofCard } : {}) };
+     delete raw.card;
+     const n = normalizeScript(raw, { strict: false });
+     if (!n.ok || !n.script?.switches?.length) return null;
+diff --git a/server/studio/seam.js b/server/studio/seam.js
+index 4852ab98a..df91a8fdd 100644
+--- a/server/studio/seam.js
++++ b/server/studio/seam.js
+@@ -1046,6 +1046,9 @@ export const studioSeam = {
+         traceRecord("studio.board_stated_unknown", { intentId, values: statedUnknown, source: r.source ?? "line", template: r.template ?? null });
+         console.warn(`[studio] board writes "?" over a number her line states: ${statedUnknown.join(",")} (source=${r.source ?? "line"})`);
+       }
++      // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's intent reaches the client on the script; a paged script's
++      // later pages carry theirs on `switches[]`, pagesBoard)
++      if (typeof ask?.intent?.ofCard === "boolean" && typeof r.script.ofCard !== "boolean") r.script = { ...r.script, ofCard: ask.intent.ofCard };
+       // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
+       p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
+         ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}), ...(r.altView ? { altView: r.altView } : {}) };
+diff --git a/shared/whiteboard.js b/shared/whiteboard.js
+index 713ac9bc6..d0ecdd42e 100644
+--- a/shared/whiteboard.js
++++ b/shared/whiteboard.js
+@@ -291,6 +291,8 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
+   const script = { v: 1, scriptId: typeof raw.scriptId === "string" ? raw.scriptId.slice(0, 64) : "wb", line, anchor: "line_audio_start", board,
+     mode: raw.mode === "continue" ? "continue" : "fresh", durationMs: Math.round(durationMs), ops: sorted };
+   if (raw.facts && typeof raw.facts === "object" && raw.facts.onScreen && typeof raw.facts.onScreen === "object") script.facts = cleanFacts(raw.facts);
++  // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's whiteboard intent; absent = no card open, today's behaviour)
++  if (typeof raw.ofCard === "boolean") script.ofCard = raw.ofCard;
+   // round 7 (director7 B1/S2: one board per segment of a turn): the page turns at each later segment. `switches` [{ clause,
+   // atMs }] in order: the ops from atMs (the estimate) to the next switch are that segment's page (and the erase of the page
+   // before); the player moves them onto clause `clause`'s real onset when the voice reports it (lineClock.ts)
+@@ -299,7 +301,9 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
+       // (#44: `word` / `wordIndex` — the segment's first spoken word and how many words of her line come before it: the
+       // player lands the page on that word's REAL onset when the voice sends word timings, else on the clause's)
+       .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs), ...(typeof x.word === "string" && x.word.length > 0 && x.word.length <= 24 ? { word: x.word } : {}),
+-        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}) })).sort((a, b) => a.atMs - b.atMs);
++        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}),
++        // (main 2026-11-08, App 3b: Brain's segment `ofCard`, is this page the open card's own board; the card waits when not)
++        ...(typeof x.ofCard === "boolean" ? { ofCard: x.ofCard } : {}) })).sort((a, b) => a.atMs - b.atMs);
+     if (sw.length) script.switches = sw;
+   }
+   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };

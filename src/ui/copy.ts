@@ -52,6 +52,8 @@ export const EN = {
   "card.hear_short": "Hear",
   "card.your_answer": "Your answer:",
   "card.your_question": "Your question",
+  // r7 (3b): the board on screen is about something else for a moment; the open question folds to this line
+  "card.waiting": "Your question is waiting",
   "card.not_sent": "Not sent yet",
   "card.sent": "Sent",
   "card.not_yet": "Let's look again",

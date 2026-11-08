@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-aankde",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "aankde (data and statistics) as one never-timed law family for classes 6-7: tally (survey slips stroked into rows in bundles of five; a lost row stroked so the total makes the children asked; the stock crate on the size sold most), stack (towers levelled by moving blocks; a level line the blocks above pour into), line (value cards put in order and pegged at the fold's middle). 2 topics: c6-maths-ch04-t01, c7-maths-ch13-t02. Why: both were served only by ITEM-ARENA. Reverse: a child pilot shows the across stroke is pressed by rhythm rather than counting, or the level line is slid until the counters agree without looking at the towers."
+  },
+  {
+   "id": "ms-r7-games-aankde-cert",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "aankde play-cert (forge3-qa, p360/p412/l1366, game mounted): 48/48 aankde samples pass at every size; 42 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-aankde",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-aankde-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-aankde`\n\n**aankde** (data and statistics, classes 6-7) is a law family. Nothing in it runs on a clock, and the law reads only what the child built: the strokes in each tally row, the slips taken, the stock crate, the towers' blocks, the level line, the order of the cards and the peg.\n\n- **tally/sort** (c6-ch04-t01 s2): a pile of survey slips (a fruit stall, the vehicles at the gate, favourite sports); the child takes the top slip into a row as ONE stroke, upright or across the four before it. On count the table reads each row as a reader does (a stroke across closes a bundle that reads five whatever it holds) and adds the total row against the survey. Solved: the pile empty, every slip in its row, every row bundled.\n- **tally/missing** (s3, s2): N children chose one each; every row but one stands tallied; the child strokes the lost row until the total row makes N.\n- **stack/even** (c7-ch13-t02 s1): blocks moved from tall towers to short ones until every tower is level (blocks are never made or lost, so the level IS the mean; the mean is never one of the towers on pour levels).\n- **stack/pour** (s1): the level line set where the blocks above exactly fill the gaps below; on pour they drop in one by one, and what is left over or still empty shows.\n- **line/middle** (s2): value cards swapped into order, the peg set on a card or in the gap between two; the line folds from both ends to its middle (the median; halfway for an even count).\n- **tally/mode** (s3): the sizes a shoe shop sold are tallied as in sort; the stock crate goes on the size sold most.\n\nMal-rules map only to the topic's own kit beliefs: tally-five (the fifth stroke drawn upright; the standing bundles read as four) and total-mismatch (counted with slips still on the pile) for c6-ch04-t01; mean-in-data (the line at the data value nearest the mean; the crate on the size nearest the mean, the kit's own shoe item), outlier (the line where the towers stand without the one far taller) and median-unordered (the written line pegged in its middle) for c7-ch13-t02. zero-dropped (an empty tower left out of the levelling) and one-card (one middle card pegged for an even count) are implemented but no kit names them, so they are never claimed. Not admitted: c6-ch04-t01-s1 (choosing a clear survey question: a written judgement). Kit beliefs with no honest set-up: raw-organised (the pile must be emptied to count), median-mean (the peg names a place, not a worked value). Pictographs and bar graphs stay with stambh.\n\nReverse if a child pilot shows the across stroke is pressed by rhythm rather than by counting to five, or the level line is found by sliding until the counters agree without the child looking at the towers.",
+  "measurements": "## `ms-r7-games-aankde-cert`\n\naankde play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 48 of 48 aankde samples pass at every size (p360, p412, l1366) with the game mounted, in all four art directions; the smallest text 16 px. Counts are in server/forge3/certs/play.json.\n- **Tests:** tests/r7-games-aankde.test.mjs, 42 tests. An independent checker (its own tally reader, frequency counts, sums, means, medians and modes; its own copy of the set-up fed every act the law accepted) agrees with the law over at least 2000 random acts per case; every coverage entry serves a proven level through the play server at every fade.\n- **Browser runs:** the opening board, a solved run and a misconception run per goal driven at 360 px in the dev harness, and all six goals solved by real taps only (page.mouse on the canvas targets, the run button by its role); the end states were looked at.\n- **lint-ui:** 354 findings before and after (no new finding)."
+ }
+}

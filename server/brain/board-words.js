@@ -47,6 +47,22 @@ export function boardWords(board, lang = "hinglish", key = null) {
     bare = en ? `On the screen is a ${shape}.` : `Screen par ek ${shape} hai.`;
     if (num(p.w) && num(p.h)) s = en ? `On the screen is a ${shape}, ${u(p.w)} long and ${u(p.h)} wide.` : `Screen par ek ${shape} hai, ${u(p.w)} lamba aur ${u(p.h)} chauda.`;
     else if (Array.isArray(p.sides) && p.sides.length) { const xs = p.sides.map((x) => (num(x) != null ? u(x) : null)).filter(Boolean); if (xs.length) s = en ? `On the screen is a ${shape} with sides ${list(xs, lang)}.` : `Screen par ek ${shape} hai, bhujayein ${list(xs, lang)}.`; }
+  } else if (t === "fraction-bars") {
+    // (Studio fraction-bars@1, Learning's c5-t02 worked board: two bars of the same size, each in its own equal parts)
+    const bars = (Array.isArray(p.bars) ? p.bars : []).filter((b) => b && num(b.parts));
+    bare = en ? "On the screen are bars of the same size." : "Screen par ek jaisi pattiyan hain.";
+    if (bars.length) {
+      const one = (b) => (en ? `one in ${b.parts} equal parts${num(b.shade) ? `, ${b.shade} coloured` : ""}` : `ek ${b.parts} barabar hisson mein${num(b.shade) ? `, ${b.shade} rangin` : ""}`);
+      s = en ? `On the screen are ${bars.length} bars of the same size: ${list(bars.map(one), lang)}.` : `Screen par ${bars.length} ek jaisi pattiyan hain: ${list(bars.map(one), lang)}.`;
+    }
+  } else if (t === "wholes") {
+    // (Studio wholes@1, Learning's c4 e2: two wholes cut into pieces, equal or not)
+    const ws = (Array.isArray(p.wholes) ? p.wholes : []).filter((w) => w && num(w.parts));
+    if (ws.length) {
+      const one = (w, i) => { const n = typeof w.title === "string" && w.title.trim() ? w.title.trim() : en ? `whole ${i + 1}` : `${i + 1} wala`; const eq = w.equal !== false;
+        return en ? `${n} in ${w.parts} ${eq ? "equal" : "unequal"} pieces` : `${n} ke ${w.parts} ${eq ? "barabar" : "alag-alag"} tukde`; };
+      s = en ? `On the screen: ${ws.map(one).join("; ")}.` : `Screen par: ${ws.map(one).join("; ")}.`;
+    }
   } else if (t === "shape") {
     const name = typeof p.name === "string" && p.name.trim() ? p.name.trim() : SHAPE_HI[String(p.shape ?? "").toLowerCase()] ?? p.shape;
     if (name) s = en ? `On the screen is a ${name}.` : `Screen par ek ${name} hai.`;
