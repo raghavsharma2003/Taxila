@@ -5998,3 +5998,8 @@ The M3/M4 60-day clock started on **day 1 = 2026-11-06** (now closed) and **comp
 **Runway.** Projected ₹129,630 remaining at 2027-01-12.
 
 **Method.** `scripts/m3.mjs status`, reading Cost Management ActualCost grouped by ServiceName.
+
+
+<!-- merged from inbox/r7-app-24.json -->
+## `m-r7-app-lesson-replay-d10-2026-11-07`
+Method and per-turn findings: docs/design/round7/app/LESSON-REPLAY-d10.md.

@@ -26065,6 +26065,48 @@
    "at": "2026-11-08",
    "title": "M3/M4 60-day clock: day 1 = 2026-11-06, confirmed closed (Cost Management ActualCost by ServiceName, read 2026-11-08 09:16 UTC). Completes 2027-01-04, which meets even the worst-case reading of the 180-day clause (from the 2026-07-08 sponsorship start).\n\n2026-11-06 closed with 8 services ≥ $1: Container Apps 4.45, PostgreSQL 4.00, Foundry Models 3.33, Virtual Machines 2.20, Container Registry 1.75, Storage 1.46, Foundry Tools 1.45, Load Balancer 1.26. Virtual Network was 0.90, because the spares started ~10:55 UTC.\n\n2026-11-07 (near-final): 9 services ≥ $1 — ACA 4.46, PG 2.63, Models 1.93, VM 2.67, ACR 2.27, Storage 1.47, Tools 1.39, LB 1.92, VNet 1.56. Whole subscription $20.5/day.\n\nKeeper ledgers: 2026-11-07 had 16 runs (ACA + VM alternating every 1.5 h); 2026-11-08 had 6 runs by 09:00. The verifier report for 2026-11-08 is OK, with a projected runway of ₹129,630 at 2027-01-12.",
    "source": "inbox/r7-main-22.json"
+  },
+  {
+   "id": "m-r7-app-lesson-replay-d10-2026-11-07",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "director10 steady-c6-ch06-t01 replayed through the real Desk at 360 (59 board renders from 42 teacher turns, run tree 14883b7f). Every board drew, with no text overlap, no text off the board and the caption on screen. Paged timing, re-composed with pagesBoard's rules: 1 of 17 non-last pages is crushed. T55 p0's perimeter trace has 3 of 4 follow ops squeezed into its last 120 ms, and it redraws the board already up. The pinned question names another figure in 15 of 58 board renders. Caption clauses cut by the two-line clamp: 39/273 at 360 and 6/273 at 412 before the fix, 0/343 after.",
+   "source": "inbox/r7-app-24.json"
+  },
+  {
+   "id": "dc-r7-app-caption-char-budget",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "A caption clause is chunked into the fewest pieces of at most 9 words AND 38 characters, balanced by length (captions.ts), so a chunk always fits the two-line caption at the narrowest box (195 px beside her picture at 360 px). Reverse: word timestamps arrive (E-8), or the caption box gets wider than about 24 characters a line at 360.",
+   "source": "inbox/r7-app-24.json"
+  },
+  {
+   "id": "dc-r7-page-still",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 (App replay d10, T55): a paged turn's page 0 that is the page already on screen is kept still (no redraw, no replayed motion); a page whose retimed drawing cannot finish before its switch drops its motion ops and shows the still board, as takePreselected does for a refused split. Built by Studio (42534c19; pageTimingCounts firstSame/stilled). Why: T55 p0 '36 cm sahi nahi hai.' crushed three of four perimeter follow ops into 0.12 s while T53 had left the same square on screen. Reverse: judges find teaching motion lost on pages that could have finished it (the ~330 ms/word lateness reading is too pessimistic).",
+   "source": "inbox/r7-main-23.json"
+  },
+  {
+   "id": "dc-r7-second-view-hides-key",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7: a second view drawn for a live, unanswered card never shows that card's key, on every template: a scale whose part count is the asked value is drawn uncut, a side that is the asked length is drawn unlabelled, an asked fraction is not marked. The key may appear only at the reveal on a correct verdict. Studio builds it against the card's keyed answers. Why: Studio's run-path replay of c5-t01 e2 ('7 marks… kitne barabar gaps?', key 8) found the current second view would draw an 8-part bar, handing the child the count; the v6.1 R8 rule is that the live answer is never given away. Reverse: none expected; if a template cannot draw a useful second view without the key, it re-shows the card's board instead.",
+   "source": "inbox/r7-main-23.json"
+  },
+  {
+   "id": "dc-r7-ask-own-board",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7: an ask whose posed figure differs from its beat's board carries its own unmarked `board` (the figure without the answer) beside its answerBoard; check.mjs refuses such an ask without one; Brain sends ask.board as the boardRef while the ask is live, and Studio's second view follows from it. Why: c5-t01 e3 asks about a 10-gap line that exists only as its answerBoard (dens [5,10] with the key marked), so no second view could draw the card's figure; director10 cause #2 saw the explanation's 1/8–1/2 bars drawn instead. Reverse: a sweep shows the pattern is rare enough that hand-authoring per ask costs more than Studio deriving an unmarked board from the answerBoard by stripping marks.",
+   "source": "inbox/r7-main-23.json"
+  },
+  {
+   "id": "dc-r7-unrolled-shows-shape",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7: unrolled@1 (the perimeter second view) draws a small copy of the shape beside the strip of its sides laid straight, so 'this shape, laid straight on a ruler' is on the screen and a picture line naming the rectangle or hexagon is true (W15 passes). Why: Studio's replay of steady-c6 T14→T18 found preselect picked the unrolled view but W15 refused it because her line named the rectangle, falling back to re-showing the card's board, so no new picture was drawn; the script's own move is 'seedha karke scale par napo', which is the idea of perimeter. Reverse: the side-by-side copy crowds the strip at 360 px, or judges find the child reads the copy as a second, different shape.",
+   "source": "inbox/r7-main-23.json"
   }
  ],
  "edges": [
@@ -40782,6 +40824,31 @@
    "src": "dc-r7-m4-without-fail",
    "rel": "measured_by",
    "dst": "ms-r7-m4-day1-2026-11-06"
+  },
+  {
+   "src": "dc-r7-app-caption-char-budget",
+   "rel": "measured_by",
+   "dst": "m-r7-app-lesson-replay-d10-2026-11-07"
+  },
+  {
+   "src": "dc-r7-page-still",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-second-view-hides-key",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-ask-own-board",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
+  },
+  {
+   "src": "dc-r7-unrolled-shows-shape",
+   "rel": "part_of",
+   "dst": "dc-r7-script-walk-v6-2"
   }
  ]
 }

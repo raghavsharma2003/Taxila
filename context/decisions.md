@@ -8704,3 +8704,26 @@ A correct verdict reveals the card's key on its board even when her page says no
 ## `dc-r7-second-view-every-template`
 
 Extends the picture second view to every card template, built from the card on screen. Wholes become strips; measured and regular shapes are unrolled onto a ruler; bars become their line; a two-scale line becomes a bar per scale. Brain's `show` request draws them too. Reverse if a view confuses more than the card's own board.
+
+
+<!-- merged from inbox/r7-app-24.json -->
+## `dc-r7-app-caption-char-budget`
+She says the whole sentence, and the caption showed only part of it on one in seven clauses at 360. Each caption piece is now short enough to fit.
+
+
+<!-- merged from inbox/r7-main-23.json -->
+## `dc-r7-page-still` (2026-11-08)
+
+a paged turn's page 0 that is the page already on screen is kept still (no redraw, no replayed motion); a page whose retimed drawing cannot finish before its switch drops its motion ops and shows the still board, as takePreselected does for a refused split. Built by Studio (42534c19; pageTimingCounts firstSame/stilled). Why: T55 p0 '36 cm sahi nahi hai.' crushed three of four perimeter follow ops into 0.12 s while T53 had left the same square on screen. Reverse: judges find teaching motion lost on pages that could have finished it (the ~330 ms/word lateness reading is too pessimistic).
+
+## `dc-r7-second-view-hides-key` (2026-11-08)
+
+a second view drawn for a live, unanswered card never shows that card's key, on every template: a scale whose part count is the asked value is drawn uncut, a side that is the asked length is drawn unlabelled, an asked fraction is not marked. The key may appear only at the reveal on a correct verdict. Studio builds it against the card's keyed answers. Why: Studio's run-path replay of c5-t01 e2 ('7 marks… kitne barabar gaps?', key 8) found the current second view would draw an 8-part bar, handing the child the count; the v6.1 R8 rule is that the live answer is never given away. Reverse: none expected; if a template cannot draw a useful second view without the key, it re-shows the card's board instead.
+
+## `dc-r7-ask-own-board` (2026-11-08)
+
+an ask whose posed figure differs from its beat's board carries its own unmarked `board` (the figure without the answer) beside its answerBoard; check.mjs refuses such an ask without one; Brain sends ask.board as the boardRef while the ask is live, and Studio's second view follows from it. Why: c5-t01 e3 asks about a 10-gap line that exists only as its answerBoard (dens [5,10] with the key marked), so no second view could draw the card's figure; director10 cause #2 saw the explanation's 1/8–1/2 bars drawn instead. Reverse: a sweep shows the pattern is rare enough that hand-authoring per ask costs more than Studio deriving an unmarked board from the answerBoard by stripping marks.
+
+## `dc-r7-unrolled-shows-shape` (2026-11-08)
+
+unrolled@1 (the perimeter second view) draws a small copy of the shape beside the strip of its sides laid straight, so 'this shape, laid straight on a ruler' is on the screen and a picture line naming the rectangle or hexagon is true (W15 passes). Why: Studio's replay of steady-c6 T14→T18 found preselect picked the unrolled view but W15 refused it because her line named the rectangle, falling back to re-showing the card's board, so no new picture was drawn; the script's own move is 'seedha karke scale par napo', which is the idea of perimeter. Reverse: the side-by-side copy crowds the strip at 360 px, or judges find the child reads the copy as a second, different shape.
