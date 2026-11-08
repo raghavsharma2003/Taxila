@@ -8903,3 +8903,30 @@ A paired device can open only its own child's lessons: a sibling's lesson is ref
 
 ## `dc-r7-device-cohort-override-later`
 On a paired device, the owner's test-group switches for hands-free and the face look are not applied yet; the device gets the default until this is picked up.
+
+
+<!-- merged from inbox/r7-app-28.json -->
+## `dc-r7-app-device-pairing`
+A child with their own phone no longer borrows the parent's for every lesson: one code from the grown-up, and the device opens straight to their lessons. The parent can take it back at any time.
+
+
+<!-- merged from inbox/r7-app-29.json -->
+## `dc-r7-app-device-boot`
+The child's own device knows whose it is from a cookie the pairing left, and asks only child routes for the rest. Nothing on it shows a brother's or sister's name or the parent's email.
+
+
+<!-- merged from inbox/r7-app-30.json -->
+## `dc-r7-app-growth-page`
+A child who struggled can see it: the board from the day they first met fractions, and the day it became pakka, side by side. It is the reason to open the Notebook between lessons.
+
+
+<!-- merged from inbox/r7-learning-33.json -->
+## `dc-r7-script-why-figure` (2026-11-08, F Learning)
+Director11 found that whys and answer boards spoke about one figure while the screen showed another: a why naming a number line over a picture of rotis, or an equal cake drawn under a card that judged an unequal one. Two fixes follow from that. `scripts/lesson-scripts/check.mjs` now refuses a why whose named figure does not match the board it closes over. A judgement card's answerBoard now draws the judged figure, with the equal figure beside it when the why contrasts the two. Three cards lost their answerBoard because no template draws 2 unequal parts or unequal groups. Studio has been asked for both templates.
+
+**Reverse if:** those templates ship (put the boards back), or the runtime stops speaking the why over the board.
+
+## `dc-r7-kit-chapter-scope` (2026-11-08, F Learning)
+In the c8 depth pilot, two items sat outside the chapter: the Cantor set, and a rectangle test that leaned on parallelogram facts from a later topic. Both are now replaced, and both replacements were blind-solved 6/6. Every c8/c9 author prompt now carries the chapter-scope brief in `docs/design/round7/learning/C89-KIT-GAPS.md`: chapter statements only, topic order, a cited section for each addition, an error-spot item or nothing when a result is out of scope, and misconceptions about the skill's own move.
+
+**Reverse if:** a non-NCERT board whose chapter states more is targeted.

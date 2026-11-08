@@ -26275,6 +26275,41 @@
    "at": "2026-11-08",
    "title": "tests/pair-db.run.mjs test 4 on the Neon test branch (2026-11-08, n=4 paths with a sibling's real lesson): turn, tts-stream, studio slot and lesson end each answer 403 to the paired device; the device's own lesson answers 200 on studio slot, and the parent's session reaches the sibling's. With the three join changes reverted the same test fails. Migration ordering: scripts/migrate-core.mjs applies the set difference, so 041 is applied after 044-047 (unit test in tests/migrate-tooling.test.mjs; also seen on the branch database).",
    "source": "inbox/r7-platform-7.json"
+  },
+  {
+   "id": "dc-r7-app-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The child's own phone or tablet joins its profile with a one-time code the parent makes in the corner (Children: 'Put Taxila on {name}'s device', code plus QR, 10 minutes, one use, Unpair per device), redeemed at /pair into a child-scoped session. On that session /api/me is scope:'child', guardian:null, one child. Who opens that child, and /parent/* asks for the grown-up's own sign-in. Platform owns the routes (main's shape); App asks for a separate child-session cookie so a parent sign-in on the device does not erase the pairing. Identity stays the authenticated child id; the device holds only a revocable session. Reverse: the owner prefers child-mode PINs on a parent-signed-in device, or Platform cannot scope sessions.",
+   "source": "inbox/r7-app-28.json"
+  },
+  {
+   "id": "dc-r7-app-device-boot",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "A paired child device boots child mode from the readable tx_paired cookie and GET /api/child/boot, never /api/me (403 scope.child_device on a device-only browser). The boot's me is cut client-side to scope:'child', guardian:null, that one child. A 401 with tx_paired set means unpaired: back to /pair with a gentle note. Supersedes the /api/me scope:'child' ask in dc-r7-app-device-pairing. Reverse: Platform serves a child-scoped /api/me.",
+   "source": "inbox/r7-app-29.json"
+  },
+  {
+   "id": "dc-r7-app-growth-page",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "The Notebook's 'Then and now' page lists each skill that became pakka at a known time (the map's secureSince, 046), newest first, at most 12. Each entry shows 'First met on {date}' with the first Notebook lesson on its topic before then ('with a hint' when that lesson's card says so; never 'wrong'), that lesson's first board (replayable), 'Pakka since {date}', and the made-for pieces on the topic built before it was pakka ('This helped'). No counts, scores or streaks; no new server work. Also fixes the Notebook's board frame (the Studio stage filled the whole page entry). Reverse: Learning ships a per-skill first-try record, which then replaces the first-lesson proxy.",
+   "source": "inbox/r7-app-30.json"
+  },
+  {
+   "id": "dc-r7-script-why-figure",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: a lesson-script card's why must name only the figure its closing board draws (check.mjs whyFigureErrors: line/mark, bar, round whole, group sizes, 'not equal'), and a judgement card's answerBoard draws the judged figure; where no template can draw it (2 unequal parts, unequal groups) the card has no answerBoard rather than an equal stand-in. Reverse if: Studio ships templates for unequal parts and groups (then the removed answerBoards return) or the runtime stops speaking the why over the board.",
+   "source": "inbox/r7-learning-33.json"
+  },
+  {
+   "id": "dc-r7-kit-chapter-scope",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7 F: class 8-9 kit additions stay inside the NCERT chapter's own statements and topic order (no Cantor set; the rectangle converse only as 'equal diagonals that bisect each other'; no later-topic facts); anything needing an unstated result becomes an error-spot on the forward fact or is dropped. Reverse if: a board other than NCERT is targeted whose chapter states more.",
+   "source": "inbox/r7-learning-33.json"
   }
  ],
  "edges": [
@@ -41102,6 +41137,11 @@
    "src": "dc-r7-device-lesson-joins",
    "rel": "measured_by",
    "dst": "ms-r7-device-lesson-joins-2026-11-08"
+  },
+  {
+   "src": "dc-r7-app-device-boot",
+   "rel": "supersedes",
+   "dst": "dc-r7-app-device-pairing"
   }
  ]
 }
