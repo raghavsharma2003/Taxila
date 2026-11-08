@@ -76,3 +76,13 @@ test("c8 maths pilot: every skill has a worked example, a ≥ 3-item ladder and 
     assert.ok(k.items.every((i) => i.verified?.agrees === true), `${id}: every item verified`);
   }
 });
+
+test("c8 pilot scope (NCERT chapter only): no Cantor set; the rectangle converse needs bisecting diagonals; ch11 s1 has its own misconception", () => {
+  const fr = kitTopic("c8-maths-ch11-t01"), qd = kitTopic("c8-maths-ch04-t01");
+  assert.doesNotMatch(JSON.stringify(fr), /middle third|cantor/i, "the chapter builds the carpet, gasket and Koch snowflake only");
+  const s3 = qd.skillExamples.find((e) => e.skillId === "c8-maths-ch04-t01-s3");
+  assert.match(s3.problem, /KO = OM and LO = ON/, "the chapter's test: equal diagonals that bisect each other");
+  assert.doesNotMatch(JSON.stringify(s3.steps), /parallelogram/i, "t01 does not lean on t03's parallelogram facts");
+  assert.ok(fr.misconceptions.some((m) => m.skillId === "c8-maths-ch11-t01-s1"), "a misconception about following the rule");
+  assert.equal(fr.items.find((i) => i.id === "c8-maths-ch11-t01-i14").targetsMisconception, "c8-maths-ch11-t01-m-one-piece");
+});
