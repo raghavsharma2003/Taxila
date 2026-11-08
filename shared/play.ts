@@ -49,7 +49,7 @@ export const MODES = {
   "todo-jodo": ["atoms", "strips", "bundles"],
   taraazu: ["equation", "equality", "weigh", "fill"],   // r7: weigh (kg / g on a pan balance), fill (l / ml with jugs)
   nishana: ["place", "compare", "hop"],
-  "kyun-lab": ["fair-test"],
+  "kyun-lab": ["fair-test", "dhruv", "disha"],   // r7 chumbak: magnets (dhruv: poles, push and pull; disha: finding directions)
   kon: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends"],
   nazariya: ["views", "array", "floor", "powers", "mirror", "tri", "solid"],   // r4-khand; r7 nazariya2: tri (a triangle's cloth as half a rectangle), solid (faces / edges / corners of a solid turned in the hand)
   arena: ["pick"],
@@ -367,7 +367,27 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct | GatiAct | ChumbakAct;
+// Kyun-Lab chumbak (round 7, magnets, class 6 science): a pin touched along a hidden magnet and its poles flagged; carriages
+// turned round and pushed together; a marked magnet's pole brought to an end; a snapped magnet's new ends labelled; magnets
+// dipped into pins; a hung magnet twisted and let go, a map turned; she turns, the compass box turns, she walks off the iron;
+// the law answers on "run" (or on a claim), never on a clock
+export type ChumbakAct =
+  | { kind: "probe"; at: number }                        // dhruv/sira: a pin touched to spot `at` along the cover
+  | { kind: "mark"; at: number }                         // dhruv/sira: spot `at` flagged as a pole (again = off)
+  | { kind: "flip"; i: number }                          // dhruv/jodo: carriage i turned round
+  | { kind: "near"; i: number; end: number; p: string }  // dhruv/pakka, todo: the marked magnet's pole p ("N" / "S") to thing i's end (0 left, 1 right)
+  | { kind: "label"; i: number; end: number; v: string } // dhruv/todo: piece i's end labelled "N", "S" or "-" (no pole)
+  | { kind: "claim"; i: number }                         // dhruv/pakka: bar i is the magnet; taakat: magnet i is the stronger
+  | { kind: "dip"; i: number }                           // dhruv/taakat: magnet i dipped into the pins and lifted
+  | { kind: "twist"; by: number }                        // disha/latkao: the hung magnet turned a quarter (±1) in the hand
+  | { kind: "let" }                                      // disha/latkao: let go; it hangs free
+  | { kind: "spin"; by: number }                         // disha/latkao: the map turned a quarter (±1)
+  | { kind: "turn"; by: number }                         // disha: she turns a quarter (±1), the compass in her hands with her
+  | { kind: "dial"; by: number }                         // disha: the compass box turned a quarter (±1) in her hands
+  | { kind: "go"; to: number }                           // disha/loha: she walks to spot `to` (0 by the iron, 1 away)
+  | { kind: "run" }                                      // lift the cover / push the train / check the labels / the map is set / read the compass
+  | { kind: "undo" };
 // Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
 // solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
 export type ChhaanoAct =

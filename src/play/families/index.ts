@@ -7,6 +7,7 @@ import { balanceLogic } from "./taraazu/balance.logic.ts";
 import { weighLogic } from "./taraazu/weigh.logic.ts";
 import { lineLogic } from "./nishana/line.logic.ts";
 import { labLogic } from "./kyun-lab/lab.logic.ts";
+import { chumbakLogic } from "./kyun-lab/chumbak.logic.ts";   // r7 chumbak
 import { konLogic } from "./kon/kon.logic.ts";
 import { stambhLogic } from "./stambh/stambh.logic.ts";
 import { beamLogic } from "./yantra/beam.logic.ts";
@@ -49,6 +50,10 @@ export const LOGIC: Record<string, AnyLogic> = {
   "nishana/compare": asAny(lineLogic),
   "nishana/hop": asAny(lineLogic),
   "kyun-lab/fair-test": asAny(labLogic),
+  // r7 chumbak: magnets, class 6 science (pins along a hidden magnet, a toy train, the sure test, a snapped magnet, the kit's
+  // 20 pins against 8; a hung magnet and a map, a compass turned with her, a compass by the iron); never timed
+  "kyun-lab/dhruv": asAny(chumbakLogic),
+  "kyun-lab/disha": asAny(chumbakLogic),
   "kon/turn": asAny(konLogic),
   "kon/set": asAny(konLogic),
   "kon/zone": asAny(konLogic),

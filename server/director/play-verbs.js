@@ -16,7 +16,11 @@ export const PLAY_ACTS = Object.freeze({
   nishana: { place: { act: "place", hi: "line par rakho", en: "place it on the line" }, compare: { act: "choose", hi: "chuniye", en: "choose" },
     // r7 games: integer operations as hops from a start on the line
     hop: { act: "place", hi: "jahan pahunchoge wahan rakho", en: "land it where the hop ends" } },
-  "kyun-lab": { "fair-test": { act: "test", hi: "ek cheez badlo aur test karo", en: "change one thing and test" } },
+  "kyun-lab": { "fair-test": { act: "test", hi: "ek cheez badlo aur test karo", en: "change one thing and test" },
+    // r7 chumbak: magnets (touch, flag, turn round, bring a pole near, label, dip; let the magnet hang, turn the map, turn
+    // yourself and the compass box)
+    dhruv: { act: "test", hi: "magnet paas lao, chhu kar dekho aur pole dhoondho", en: "bring the magnet near, test it and find the poles" },
+    disha: { act: "turn", hi: "ghoomo, compass ka dabba ghumao aur disha padho", en: "turn round, turn the compass box and read the direction" } },
   // r4-khand (claude/r4-khand, src/play/engines/khand/copy.json goal lines)
   nazariya: { views: { act: "build", hi: "banao", en: "build" }, array: { act: "fill_count", hi: "bharo, phir gino", en: "fill, then count" },
     floor: { act: "lay", hi: "farsh bichhao", en: "lay the floor" }, powers: { act: "build", hi: "banao", en: "build" }, mirror: { act: "build", hi: "banao", en: "build" } },

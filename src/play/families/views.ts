@@ -8,6 +8,7 @@ import { makeBalanceView } from "./taraazu/balance.view.ts";
 import { makeWeighView } from "./taraazu/weigh.view.ts";
 import { makeLineView } from "./nishana/line.view.ts";
 import { makeLabView } from "./kyun-lab/lab.view.ts";
+import { makeChumbakView } from "./kyun-lab/chumbak.view.ts";   // r7 chumbak
 import { makeKonView } from "./kon/kon.view.ts";
 import { makeStambhView } from "./stambh/stambh.view.ts";
 import { makeBeamView } from "./yantra/beam.view.ts";
@@ -49,6 +50,8 @@ export const VIEWS: Record<string, MakeView> = {
   "nishana/compare": makeLineView,
   "nishana/hop": makeLineView,
   "kyun-lab/fair-test": makeLabView,
+  "kyun-lab/dhruv": makeChumbakView,
+  "kyun-lab/disha": makeChumbakView,
   "kon/turn": makeKonView,
   "kon/set": makeKonView,
   "kon/zone": makeKonView,
