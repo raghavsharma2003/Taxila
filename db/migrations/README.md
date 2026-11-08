@@ -55,3 +55,4 @@ cannot run in a transaction (`create index concurrently`, `vacuum`).
 -- lesson.cost rollup). Numbering is owned by stream G (platform).
 -- Update (2026-11-04, main): Learning used all of 034-039 and also gets 044-049 (044 = the parent_report cadence check).
 -- Brain stays 031-033, Platform 040-043. Applied so far: 034-040.
+-- Platform 041 (2026-11-08) = child device pairing (device_session, pair_code).
