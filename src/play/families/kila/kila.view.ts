@@ -37,13 +37,22 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const st = () => ctl.state;
   let w = 320, h = 420, cols = 6, cell = 48, gap = 4, x0 = 8, y0 = 8;
   let shown = 0, speed = STEP_SPEED;
+  // a long path on a small phone: squares never shrink under a 44 px tap; the path scrolls by rows instead (two pan
+  // buttons on a rail at the right; the camera follows the ball while the wave rolls)
+  const MIN_CELL = 44, RAIL = 52;
+  let scroll = false, rowsAll = 1, rowsSeen = 1, top = 0, topWant = 0, bandH = 0;
   const shots: { from: number; to: number; t0: number }[] = [];
 
   /** slot k (0-based; slot n is the gate) → its cell's top-left corner, snaking row by row */
   function slotXY(k: number): [number, number] {
     const r = Math.floor(k / cols), c = r % 2 === 0 ? k % cols : cols - 1 - (k % cols);
-    return [x0 + c * (cell + gap), y0 + r * (cell + gap)];
+    return [x0 + c * (cell + gap), y0 + (r - top) * (cell + gap)];
   }
+  const rowOf = (k: number) => Math.floor(k / cols);
+  /** a slot's whole row is inside the scrolled window (only those squares take a tap) */
+  const seen = (k: number) => !scroll || (rowOf(k) >= top - 0.02 && rowOf(k) <= top + rowsSeen - 1 + 0.02);
+  const maxTop = () => Math.max(0, rowsAll - rowsSeen);
+  const panTo = (r: number) => { topWant = clamp(Math.round(r), 0, maxTop()); if (api.reduced) top = topWant; api.invalidate(); };
   const centre = (sq: number): [number, number] => { const [x, y] = slotXY(sq - 1); return [x + cell / 2, y + cell / 2]; };
 
   function layout(bw: number, bh: number): void {
@@ -60,11 +69,25 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const s = Math.min((w - 16 - g * (c - 1)) / c, (ph - 16 - g * (rows - 1)) / rows, cap);
       if (s > best + 0.5) { best = s; cols = c; }
     }
-    gap = 4; cell = Math.max(30, best);
+    gap = 4;
+    scroll = best < MIN_CELL;
+    if (scroll) {
+      const room = w - 16 - RAIL;
+      cols = Math.max(2, Math.floor((room + gap) / (MIN_CELL + gap)));
+      cell = Math.max(MIN_CELL, Math.min(cap, (room - gap * (cols - 1)) / cols));
+      rowsAll = Math.ceil((n + 1) / cols);
+      rowsSeen = Math.max(2, Math.floor((ph - 16 + gap) / (cell + gap)));
+      if (rowsSeen >= rowsAll) { scroll = false; rowsSeen = rowsAll; }
+    }
+    if (!scroll) cell = Math.max(30, best);
     const rows = Math.ceil((n + 1) / cols);
-    x0 = Math.max(8, (w - (cols * cell + (cols - 1) * gap)) / 2);
-    y0 = Math.max(8, (ph - (rows * cell + (rows - 1) * gap)) / 2);
-    scaleY = y0 + rows * cell + (rows - 1) * gap + 8;
+    if (!scroll) { rowsAll = rowsSeen = rows; top = topWant = 0; }
+    const seenRows = scroll ? rowsSeen : rows;
+    x0 = scroll ? 8 + Math.max(0, (w - 16 - RAIL - (cols * cell + (cols - 1) * gap)) / 2) : Math.max(8, (w - (cols * cell + (cols - 1) * gap)) / 2);
+    y0 = Math.max(8, (ph - (seenRows * cell + (seenRows - 1) * gap)) / 2);
+    bandH = y0 + seenRows * cell + (seenRows - 1) * gap + 4;
+    scaleY = bandH + 4;
+    top = topWant = clamp(top, 0, maxTop());
   }
   const act = (a: KilaAct) => { ctl.dispatch(a); deps.changed(); };
 
@@ -76,7 +99,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     else if (last.kind === "remove" || last.kind === "mark") api.sfx("tap");
     else if (last.kind === "undo") api.sfx("tap");
     else if (last.kind === "next" || last.kind === "run") { speed = last.kind === "run" ? (hl ? Math.max(RUN_SPEED, n / 4) : RUN_SPEED) : STEP_SPEED; api.sfx("slide"); }
-    if (st().beat === 0) { shown = 0; shots.length = 0; }
+    if (st().beat === 0) { shown = 0; shots.length = 0; if (scroll && last.kind === "undo") panTo(0); }
     if (api.reduced) shown = st().beat;
     void ms;
     api.invalidate(); deps.changed();
@@ -111,16 +134,30 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const before = Math.floor(shown);
       shown = api.reduced ? target : Math.min(target, shown + dt * speed);
       for (let b = before + 1; b <= Math.floor(shown); b++) landed(b);
+      // the camera follows the ball: its row stays in the window (one row of the road behind it shows)
+      if (scroll) {
+        const br = rowOf(Math.max(0, Math.min(n, Math.ceil(shown)) - 1));
+        if (br > topWant + rowsSeen - 1 || br < topWant) panTo(br - 1);
+        if (Math.ceil(shown) >= n) panTo(Math.max(topWant, rowOf(n) - rowsSeen + 1));
+      }
+      api.invalidate();
+    }
+    if (top !== topWant) {
+      const d = topWant - top;
+      top = Math.abs(d) < 0.02 || api.reduced ? topWant : top + d * Math.min(1, dt * 9);
       api.invalidate();
     }
     while (shots.length && api.t - shots[0].t0 > SHOT_LIFE) shots.shift();
     if (shots.length) api.invalidate();
   }
-  const busy = () => shown < st().beat || shots.length > 0;
+  const busy = () => shown < st().beat || shots.length > 0 || top !== topWant;
 
   function pointer(kind: PointerKind, x: number, y: number): void {
-    if (kind !== "down" || st().done) return;
+    if (kind !== "down") return;
     const id = api.hit(x, y);
+    if (id === "pan-up") { panTo(topWant - (rowsSeen - 1)); return; }
+    if (id === "pan-down") { panTo(topWant + (rowsSeen - 1)); return; }
+    if (st().done) return;
     if (!id?.startsWith("sq-")) return;
     const at = Number(id.slice(3));
     if (hl) {
@@ -227,6 +264,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), all = allTowers(p, s), rolled = Math.floor(shown), end = atGate();
     const look = end && !s.done ? lookSquares() : [];
+    if (scroll) { c.save(); c.beginPath(); c.rect(0, y0 - 3, w, bandH - y0 + 3); c.clip(); }
     // the path: a faint line through the squares' centres, from square 1 to the gate
     const line: [number, number][] = [];
     for (let k = 0; k <= n; k++) { const [x, y] = slotXY(k); line.push([x + cell / 2, y + cell / 2]); }
@@ -236,7 +274,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const big = clamp(Math.min(cell * 0.34, (cell - 8) / (digits * 0.62)), 16, 28);
     if (div) for (let sq = 1; sq <= n; sq++) {
       const [x, y] = slotXY(sq - 1), broke = sq <= rolled && divBreaks(p, sq);
-      if (!s.done) api.target(`sq-${sq}`, x, y, cell, cell);
+      if (!s.done && seen(sq - 1)) api.target(`sq-${sq}`, x, y, cell, cell);
       P.body(c, x, y, cell, cell, { role: "panel", r: Math.min(8, cell * 0.16), state: look.includes(sq) ? "look" : "idle", seed: sq });
       P.text(c, String(foes[sq - 1]), x + cell / 2, y + cell * 0.36, { size: big, role: "ink", font: "mono", weight: 700, align: "center", baseline: "middle", maxW: cell - 6 });
       if (s.marks.includes(sq)) divNet(c, x, y, cell);
@@ -249,7 +287,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     else for (let sq = 1; sq <= n; sq++) {
       const [x, y] = slotXY(sq - 1);
       if (hl) { hlSquare(c, sq, x, y, rolled, look); continue; }
-      if (!s.done) api.target(`sq-${sq}`, x, y, cell, cell);
+      if (!s.done && seen(sq - 1)) api.target(`sq-${sq}`, x, y, cell, cell);
       P.body(c, x, y, cell, cell, { role: "panel", r: Math.min(8, cell * 0.16), state: look.includes(sq) ? "look" : "idle", seed: sq });
       if (labelled(sq)) P.text(c, String(sq), x + cell * 0.08, y + small * 0.75, { size: small, role: "ink2", font: "mono", weight: 700, align: "left" });
       else P.circle(c, x + cell * 0.18, y + small * 0.75, 2, { role: "ink3", fill: true });
@@ -289,14 +327,36 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.circle(c, ax + cell * (div ? 0.14 : 0.16), ay + cell * (div ? 0.8 : 0.5), cell * (div ? 0.09 : 0.12), { role: "ink2", fill: true, alpha: 0.7 });
     }
     if (end && s.done) P.tick(c, gx + cell / 2, gy + cell * 0.1, Math.min(26, cell * 0.5), 1);
-    if (hl) drawScale(c, end);
     if (end) for (const sq of look) { const [x, y] = slotXY(sq - 1); P.magnifier(c, x + cell * (div ? 0.84 : 0.78), y + cell * (div ? 0.76 : 0.5), Math.min(22, cell * (div ? 0.3 : 0.36))); }
+    if (scroll) { c.restore(); drawRail(c, look); }
+    if (hl) drawScale(c, end);
+  }
+  /** the pan rail: ▲ / ▼ (44 px), and between them a strip of the whole road with the window on it and the squares the
+   *  wave's end marked (so a magnifier off screen is still seen) */
+  function drawRail(c: CanvasRenderingContext2D, look: number[]): void {
+    const P = api.P, bx = w - 8 - 44, yTop = y0, yBot = bandH - 4 - 44;
+    const btn = (id: string, y: number, up: boolean, on: boolean) => {
+      if (on) api.target(id, bx, y, 44, 44);
+      P.body(c, bx, y, 44, 44, { role: "panel", r: 8, state: on ? "idle" : "dim" });
+      const cx = bx + 22, cy = y + 22, d = up ? -1 : 1;
+      P.stroke(c, [[cx - 9, cy - d * 5], [cx, cy + d * 5], [cx + 9, cy - d * 5]], { role: on ? "ink" : "ink3", width: 3 });
+    };
+    btn("pan-up", yTop, true, topWant > 0);
+    btn("pan-down", yBot, false, topWant < maxTop());
+    const sy = yTop + 52, sh = yBot - 8 - sy;
+    if (sh < 24) return;
+    const sx = bx + 18, rowH = sh / rowsAll;
+    P.body(c, sx, sy, 8, sh, { role: "ink3", r: 4 });
+    c.save(); c.globalAlpha = 0.9; P.body(c, sx - 2, sy + top * rowH, 12, Math.max(8, rowsSeen * rowH), { role: "you", r: 5 }); c.restore();
+    for (const q of look) P.circle(c, sx + 4, sy + (rowOf(q - 1) + 0.5) * rowH, 4, { role: "q4", fill: true });
+    const br = rowOf(Math.max(0, Math.min(n, Math.ceil(shown)) - 1));
+    if (st().beat > 0) P.circle(c, sx + 4, sy + (br + 0.5) * rowH, 3, { role: "ink2", fill: true });
   }
 
   /** one square of an HCF × LCM path: its number, the wall (or mend's draft), the towers, the trap, the shots and bricks */
   function hlSquare(c: CanvasRenderingContext2D, sq: number, x: number, y: number, rolled: number, look: number[]): void {
     const P = api.P, s = st(), fire = hlFiring(p, s.towers), wl = hlWall(p, s.towers), t = hlTrap(p, s.marks), small = clamp(cell * 0.3, 14, 18);
-    if (!s.done) api.target(`sq-${sq}`, x, y, cell, cell);
+    if (!s.done && seen(sq - 1)) api.target(`sq-${sq}`, x, y, cell, cell);
     P.body(c, x, y, cell, cell, { role: "panel", r: Math.min(8, cell * 0.16), state: look.includes(sq) ? "look" : "idle", seed: sq });
     if (labelled(sq)) P.text(c, String(sq), x + cell * 0.08, y + small * 0.75, { size: small, role: "ink2", font: "mono", weight: 700, align: "left" });
     else P.circle(c, x + cell * 0.18, y + small * 0.75, 2, { role: "ink3", fill: true });
