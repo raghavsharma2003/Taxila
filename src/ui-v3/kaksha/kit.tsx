@@ -53,6 +53,9 @@ const G = {
   door: "M6 3.5h10v17H6zM16 20.5h3M12.5 12h.01",
   play: "M8 5.5v13l10.5-6.5z",
   hand: "M8 12V5.5a1.5 1.5 0 0 1 3 0V11M11 10V4.5a1.5 1.5 0 0 1 3 0V11M14 10.5V6a1.5 1.5 0 0 1 3 0v7c0 4-2.5 7-6 7-2.6 0-4.3-1.4-5.6-3.6L3.6 13a1.4 1.4 0 0 1 2.4-1.5L8 14",
+  // r7 Hangar emotes (catalog emote-spark / emote-star): the child's own goodbye flourish
+  spark: "M12 3v5M12 16v5M3 12h5M16 12h5M6.5 6.5l2.5 2.5M15 15l2.5 2.5M17.5 6.5L15 9M9 15l-2.5 2.5",
+  star: "M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8L3.5 9.7l5.9-.8z",
   heart: "M12 19.5s-7.5-4.6-7.5-10A4 4 0 0 1 12 7.2a4 4 0 0 1 7.5 2.3c0 5.4-7.5 10-7.5 10z",
 } as const;
 export type GlyphName = keyof typeof G;
