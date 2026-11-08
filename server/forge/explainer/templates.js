@@ -119,7 +119,8 @@ function fractionParts(c, tl) {
   // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
   if (shade > 0 && !c.hideResult) tl.add({ id: "frac", op: "numwork", at: [fx - 14, fy], layout: "fraction", rows: [[String(shade)], [String(parts)]], ink: "accent", weight: 2 }, 800, { gap: 300 });
   if (shade > 0 && !c.hideResult) tl.add({ op: "highlight", target: "frac", style: "circle", ink: "mark" }, 600, { gap: 300 });
-  if (c.hideResult) delete facts.fraction;
+  // (director12 S4: nor does its facts row — "fraction 0/4" under an unshaded bar is a number no board writes)
+  if (c.hideResult || shade === 0) delete facts.fraction;
   return { facts, counts: { parts, shaded: shade } };
 }
 
