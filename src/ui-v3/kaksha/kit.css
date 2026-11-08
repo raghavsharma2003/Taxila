@@ -202,3 +202,15 @@
 .kx[data-motion="reduced"] .kx-rec-dot { animation: none; }
 /* her window on Your teacher shares Home's transition name (kaksha.css ::view-transition-group(kx-asha)) */
 .kx-teacher-face { view-transition-name: kx-asha; }
+
+/* r7 (Learning to-app/007) "Maths feels…" at Hello: one row of three faces per subject; a feeling, never a quiz */
+.kx-feel-row { display: grid; gap: 6px; margin-top: 8px; }
+.kx-feel-label { margin: 0; font: 600 16px/1.3 var(--k-sans); color: var(--k-ink); }
+.kx-feel-faces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kx-feel { --k-cut: 10px; display: grid; justify-items: center; gap: 2px; min-height: 72px; padding: 6px 4px; border: 1px solid var(--k-line); background: var(--k-deep); color: var(--k-ink-2); font: 600 15px/1.2 var(--k-sans); }
+.kx-feel[aria-checked="true"] { color: var(--k-ink); border-color: var(--k-ion); box-shadow: inset 0 0 0 1px var(--k-ion); }
+.kx-feel-got { margin: 0; font: 500 14px/1.3 var(--k-sans); color: var(--k-ion); }
+/* the "Got it" line sits beside the row label, so a pick never pushes Next down */
+.kx-feel-row { grid-template-columns: 1fr auto; }
+.kx-feel-row .kx-feel-faces { grid-column: 1 / -1; }
+.kx-feel-row .kx-feel-got { grid-row: 1; grid-column: 2; align-self: end; }

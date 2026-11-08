@@ -18,7 +18,8 @@ import { isGateError } from "../parent/api.ts";
 import { kidLook, StepFrame } from "./Layout.tsx";
 import { clearDraft, useDraft } from "./draft.ts";
 import { defaultsFor } from "./Setup.tsx";
-import { ChapterPicker } from "../parent/SchoolPlan.tsx";
+import { ChapterPicker, FeelPicker } from "../parent/SchoolPlan.tsx";
+import { feelSubjects } from "../child/feel.ts";
 import { NamePreview } from "./NamePreview.tsx";
 import { parentApi, type ChapterRef } from "../parent/api.ts";
 import { teacherBandFor } from "./teacherBand.ts";
@@ -108,6 +109,10 @@ export function ChildStep() {
       for (const [subject, chapter] of Object.entries(d.schoolChapter ?? {})) {
         await parentApi.setSchoolChapter(child.id, subject, chapter).catch((e3) => { if (isGateError(e3)) throw e3; });
       }
+      // r7 (Learning to-app/007): how each main subject feels to the parent, for cold-start placement; a miss never stops set-up
+      if (d.parentView && Object.keys(d.parentView).length) {
+        await parentApi.setParentView(child.id, d.parentView).catch((e3) => { if (isGateError(e3)) throw e3; });
+      }
       if (!pinSaved && pin1) { stage = "pin"; await postJson("/api/parent/pin", { pin: pin1 }); pinSaved = true; setHasPin(true); }
       await refreshMe();
       // the hand-over: the tap is her audio unlock; the corner is locked behind her. "Later": the Parent corner.
@@ -152,6 +157,20 @@ export function ChildStep() {
                 return { schoolChapter: sc };
               })} />
             <p className="t-note">Optional. Other subjects and the school timetable are in the Parent corner, under Progress.</p>
+          </section>
+        )}
+        {cl && (
+          <section className="card card-flat stack-sm" aria-labelledby="onb-feel-h" data-testid="onb-feel">
+            <h2 id="onb-feel-h" className="t-h3" style={{ fontFamily: "var(--font-text)" }}>{`How does school feel for ${first || "your child"} right now?`}</h2>
+            {feelSubjects(cl).map((s) => (
+              <FeelPicker key={s} subject={s} name={first || "your child"} value={d.parentView?.[s] ?? null}
+                onChange={(v) => set((cur) => {
+                  const pv = { ...(cur.parentView ?? {}) };
+                  if (v === "unsure") delete pv[s]; else pv[s] = v;
+                  return { parentView: pv };
+                })} />
+            ))}
+            <p className="t-note">Optional. One tap each. It only sets where the first lessons begin; the lessons adjust from there.</p>
           </section>
         )}
         {hasPin === false && (

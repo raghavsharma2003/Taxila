@@ -215,6 +215,7 @@
       "hi": "Is roti ka aadha hissa rang wala hai. Roti ko 8 barabar tukdon mein moda, toh rang wale tukde 4 dikhte hain, par rang wali jagah utni hi hai jitni aadhi roti.",
       "en": "Half of this roti is shaded. Fold the roti into 8 equal pieces and 4 shaded pieces show, but the shaded area is just as much as half a roti."
      },
+     "simpler": { "hi": "Aadhi roti rang wali hai. 8 tukdon mein se 4 rang wale dikhte hain, par rang wali jagah utni hi hai.", "en": "Half the roti is shaded. 4 of the 8 pieces show shaded, but the shaded area is just the same." },
      "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 4, "whole": "roti" } },
      "then": {
       "prompt": {
@@ -342,7 +343,7 @@
       "accept": ["3 by 5", "teen bata paanch", "three fifths"],
       "targets": "c6-maths-ch07-t03-m-one-side",
       "wrongIfMis": "3/25",
-      "why": { "hi": "upar 15 ÷ 5 = 3 aur neeche 25 ÷ 5 = 5", "en": "top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5" }
+      "why": { "hi": "upar 15 ÷ 5 = 3 aur neeche 25 ÷ 5 = 5, yaani 3/5", "en": "top 15 ÷ 5 = 3 and bottom 25 ÷ 5 = 5, so 3/5" }
      },
      "simpler": { "hi": "9/12 ke upar aur neeche dono ko 3 se bhaag do. Upar 3, neeche 4, wahi 3/4 wapas mil gaya.", "en": "Divide both the top and bottom of 9/12 by 3. The top is 3 and the bottom 4, so we are back at 3/4." }
     },
@@ -373,7 +374,7 @@
       "accept": ["4 by 10", "chaar bata das", "four tenths"],
       "targets": "c6-maths-ch07-t03-m-add-same",
       "wrongIfMis": "4/7",
-      "why": { "hi": "upar 2 × 2 = 4 aur neeche 5 × 2 = 10", "en": "top 2 × 2 = 4 and bottom 5 × 2 = 10" }
+      "why": { "hi": "upar 2 × 2 = 4 aur neeche 5 × 2 = 10, yaani 4/10", "en": "top 2 × 2 = 4 and bottom 5 × 2 = 10, so 4/10" }
      },
      "simpler": { "hi": "1/2 ke upar aur neeche 1 jodne se 2/3 bana, jo aadhe se zyada hai. Dono ko 2 se guna karne se 2/4 bana, jo theek aadha hai.", "en": "Adding 1 to the top and bottom of 1/2 made 2/3, which is more than half. Multiplying both by 2 made 2/4, exactly half." }
     }
@@ -416,7 +417,7 @@
     "answer": { "hi": "21 ke upar 12 aayega, yaani 4/7 = 12/21", "en": "12 goes on top of 21, so 4/7 = 12/21" },
     "why": {
      "hi": "upar aur neeche dono ko 3 se guna kiya, toh har saatvaan hissa 3 barabar tukdon mein bata aur amount wahi raha",
-     "en": "both the top and the bottom were multiplied by 3, so every seventh was split into 3 equal pieces and the amount stayed the same"
+     "en": "the top and bottom were multiplied by 3, so each seventh split into 3 equal pieces and the amount stayed the same"
     },
     "board": {
      "template": "compare@1",
@@ -503,6 +504,7 @@
       "hi": "Yeh patti ab 6 barabar tukdon mein hai aur 4 tukde rang wale hain. Pehle har do tukde milkar ek hissa the, tab bhinn 2/3 tha, neeche 3 aur upar 2. Ab neeche 6 aur upar 4, dono dugne.",
       "en": "This bar now has 6 equal pieces and 4 are shaded. Before, every two pieces made one part, so the fraction was 2/3, bottom 3 and top 2. Now the bottom is 6 and the top 4: both doubled."
      },
+     "simpler": { "hi": "Pehle bhinn 2/3 tha: neeche 3, upar 2. Ab neeche 6 aur upar 4. Dono dugne hue, rang wala hissa wahi hai.", "en": "Before, the fraction was 2/3: bottom 3, top 2. Now the bottom is 6 and the top 4. Both doubled; the shaded part is the same." },
      "board": { "template": "fraction-parts@1", "params": { "parts": 6, "shade": 4, "whole": "bar" } },
      "then": {
       "prompt": {
@@ -531,6 +533,7 @@
       "hi": "Is rekha par 1/2 chhathe nishaan par hai aur 2/3 aathve par, dono alag jagah. 1/2 ke upar aur neeche mein 1 jodne se 2/3 bana, aur amount badal gaya.",
       "en": "On this line 1/2 is on the 6th mark and 2/3 on the 8th, two different places. Adding 1 to the top and bottom of 1/2 made 2/3, and the amount changed."
      },
+     "simpler": { "hi": "Rekha par 1/2 aur 2/3 alag jagah par hain. Upar aur neeche 1 jodne se amount badal jaata hai.", "en": "On the line, 1/2 and 2/3 are in different places. Adding 1 to the top and bottom changes the amount." },
      "board": {
       "template": "fraction-line@1",
       "params": { "den": 12, "from": 0, "to": 1, "marks": [ { "num": 6, "label": "1/2" }, { "num": 8, "label": "2/3" } ] }
@@ -609,7 +612,7 @@
       },
       "key": "4/5",
       "accept": ["4 by 5", "chaar bata paanch", "four fifths"],
-      "why": { "hi": "16 aur 20 ka sabse bada common factor 4 hai, 16 ÷ 4 = 4 aur 20 ÷ 4 = 5", "en": "the biggest common factor of 16 and 20 is 4, 16 ÷ 4 = 4 and 20 ÷ 4 = 5" }
+      "why": { "hi": "16 aur 20 ka sabse bada common factor 4 hai, 16 ÷ 4 = 4, 20 ÷ 4 = 5, yaani 4/5", "en": "the biggest common factor of 16 and 20 is 4: 16 ÷ 4 = 4, 20 ÷ 4 = 5, so 4/5" }
      },
      "simpler": { "hi": "16 aur 20 dono ki factor list dekho. Jo numbers dono mein hain, woh common factors hain: 1, 2 aur 4.", "en": "Look at the factor lists of 16 and 20. The numbers in both lists are the common factors: 1, 2 and 4." }
     },
@@ -640,7 +643,7 @@
       "accept": ["3 by 7", "teen bata saat", "three sevenths"],
       "targets": "c6-maths-ch07-t03-m-stop-early",
       "wrongIfMis": "9/21",
-      "why": { "hi": "9 aur 21 mein 3 abhi common hai, 9 ÷ 3 = 3 aur 21 ÷ 3 = 7, aur 3 aur 7 mein sirf 1 common hai", "en": "9 and 21 still share 3, 9 ÷ 3 = 3 and 21 ÷ 3 = 7, and 3 and 7 share only 1" }
+      "why": { "hi": "9 aur 21 mein 3 abhi common: 9 ÷ 3 = 3, 21 ÷ 3 = 7; 3/7 mein sirf 1 common", "en": "9 and 21 still share 3: 9 ÷ 3 = 3, 21 ÷ 3 = 7, and 3/7 shares only 1" }
      },
      "simpler": { "hi": "16/24 ko 2 se bhaag diya toh 8/12 mila. 8 aur 12 abhi bhi 4 se poore bat-te hain, isliye tab tak bhaag do jab tak common factor sirf 1 bache.", "en": "Dividing 16/24 by 2 gave 8/12. But 8 and 12 still both divide by 4, so keep dividing until the only common factor is 1." }
     },
@@ -669,7 +672,7 @@
       },
       "key": "5/8",
       "accept": ["5 by 8", "paanch bata aath", "five eighths"],
-      "why": { "hi": "35 ÷ 7 = 5 aur 56 ÷ 7 = 8", "en": "35 ÷ 7 = 5 and 56 ÷ 7 = 8" }
+      "why": { "hi": "35 ÷ 7 = 5 aur 56 ÷ 7 = 8, yaani 5/8", "en": "35 ÷ 7 = 5 and 56 ÷ 7 = 8, so 5/8" }
      },
      "simpler": { "hi": "20 aur 50 dono 10 se poore bat-te hain. Ek hi baar 10 se bhaag do, toh seedha 2/5 milta hai.", "en": "Both 20 and 50 divide exactly by 10. Divide by 10 just once and you get 2/5 straight away." }
     }
@@ -739,7 +742,7 @@
        "right": { "title": "2 se bhaag", "items": ["upar 12", "neeche 20"] }
       }
      },
-     "why": { "hi": "12 aur 20 mein 4 abhi common hai, 12 ÷ 4 = 3 aur 20 ÷ 4 = 5", "en": "12 and 20 still share 4, 12 ÷ 4 = 3 and 20 ÷ 4 = 5" },
+     "why": { "hi": "12 aur 20 mein 4 abhi common hai, 12 ÷ 4 = 3, 20 ÷ 4 = 5, yaani 3/5", "en": "12 and 20 still share 4: 12 ÷ 4 = 3, 20 ÷ 4 = 5, so 3/5" },
      "simpler": { "hi": "12 aur 20 mein ab bhi ek common factor bacha hai. Dekho dono kis bade number ke pahade mein aate hain, aur dono ko usse bhaag do.", "en": "12 and 20 still share a common factor. Find the biggest times table they are both in, and divide both by that number." }
     },
     {
@@ -759,7 +762,7 @@
        "right": { "title": "lowest terms", "items": ["common factor sirf 1"] }
       }
      },
-     "why": { "hi": "45 aur 60 ka sabse bada common factor 15 hai, 45 ÷ 15 = 3 aur 60 ÷ 15 = 4", "en": "the biggest common factor of 45 and 60 is 15, 45 ÷ 15 = 3 and 60 ÷ 15 = 4" },
+     "why": { "hi": "45 aur 60 ka sabse bada common factor 15: 45 ÷ 15 = 3, 60 ÷ 15 = 4, yaani 3/4", "en": "the biggest common factor of 45 and 60 is 15: 45 ÷ 15 = 3, 60 ÷ 15 = 4, so 3/4" },
      "simpler": { "hi": "45 aur 60 ka sabse bada common factor dhoondo. Upar aur neeche dono ko usi se bhaag do.", "en": "Find the biggest common factor of 45 and 60. Divide both the top and the bottom by it." }
     }
    ],
@@ -778,6 +781,7 @@
       "hi": "8 ke factor 1, 2, 4, 8 hain, aur 12 ke 1, 2, 3, 4, 6, 12. Dono mein 4 abhi bhi common hai, isliye 8/12 aakhri jawab nahi hai.",
       "en": "The factors of 8 are 1, 2, 4, 8, and of 12 are 1, 2, 3, 4, 6, 12. Both still share 4, so 8/12 is not the final answer."
      },
+     "simpler": { "hi": "8 aur 12 mein 4 abhi bhi common hai. Isliye 8/12 aakhri jawab nahi, aur bhaag karo.", "en": "8 and 12 still share 4. So 8/12 is not the final answer; keep dividing." },
      "board": {
       "template": "compare@1",
       "params": {
@@ -801,7 +805,7 @@
         "right": { "title": "2 se bhaag", "items": ["upar 15", "neeche 21"] }
        }
       },
-      "why": { "hi": "15 aur 21 mein 3 abhi common hai, 15 ÷ 3 = 5 aur 21 ÷ 3 = 7", "en": "15 and 21 still share 3, 15 ÷ 3 = 5 and 21 ÷ 3 = 7" },
+      "why": { "hi": "15 aur 21 mein 3 abhi common hai, 15 ÷ 3 = 5, 21 ÷ 3 = 7, yaani 5/7", "en": "15 and 21 still share 3: 15 ÷ 3 = 5, 21 ÷ 3 = 7, so 5/7" },
       "simpler": { "hi": "15 aur 21 mein ab bhi ek common factor bacha hai. Dono kis pahade mein aate hain, dekho, aur dono ko usse bhaag do.", "en": "15 and 21 still share a common factor. See which times table both are in, and divide both by that number." }
      }
     }

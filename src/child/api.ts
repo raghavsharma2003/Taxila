@@ -113,6 +113,10 @@ export async function getLessonSummary(lessonId: string, signal?: AbortSignal): 
 export const updateChild = (childId: string, patch: { avatar?: string; interests?: string[] }) =>
   postPatch("/api/children", { childId, ...patch });
 
+/** r7 (Learning to-app/007): her one-tap "Maths feels…" picks at Hello, for cold-start placement. Never blocks Hello. */
+export const postFeelPicks = (body: { childId: string; childPicks: Record<string, "easy" | "okay" | "tricky"> }) =>
+  postJson<{ note?: unknown }>("/api/placement/onboarding", body);
+
 async function postPatch(path: string, body: unknown): Promise<unknown> {
   const res = await fetch(path, {
     method: "PATCH",
