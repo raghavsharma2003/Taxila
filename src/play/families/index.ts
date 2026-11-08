@@ -27,6 +27,7 @@ import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { aankdeLogic } from "./aankde/aankde.logic.ts";
 import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { galtiLogic } from "./galti-pakdo/galti.logic.ts";
+import { chhaanoLogic } from "./chhaano/chhaano.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
 import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
@@ -144,5 +145,9 @@ export const LOGIC: Record<string, AnyLogic> = {
   "paheli/mirror": asAny(paheliLogic),
   // round 7: Galti Pakdo, a friend's working of an equation checked on the taraazu, the first wrong line caught and mended
   "galti-pakdo/kaapi": asAny(galtiLogic),
+  // round 7: Chhaano, separating mixtures (class 6 science): dry piles split by threshing, winnowing, handpicking and sieving;
+  // a beaker of water settled, decanted, filtered and dried in the sun, every solid scooped into its jar
+  "chhaano/sukha": asAny(chhaanoLogic),
+  "chhaano/geela": asAny(chhaanoLogic),
 };
 export function logicFor(family: FamilyId, mode: PlayMode): AnyLogic | null { return LOGIC[`${family}/${mode}`] ?? null; }

@@ -32,6 +32,7 @@ import { parkarHidden } from "../../src/play/families/parkar/parkar.logic.ts";
 import { aankdeHidden } from "../../src/play/families/aankde/aankde.logic.ts";
 import { paheliHidden } from "../../src/play/families/paheli/paheli.logic.ts";
 import { galtiHidden } from "../../src/play/families/galti-pakdo/galti.logic.ts";
+import { chhaanoHidden } from "../../src/play/families/chhaano/chhaano.logic.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 let BANK = null;
@@ -101,6 +102,9 @@ export function hiddenOf(level) {
   // r7 galti-pakdo: whether the working is all correct, the first wrong line, the mended line and the true x are never said
   // first. Checked by family first: modes may share names with other families
   if (level.family === "galti-pakdo") return galtiHidden(level);
+  // r7 chhaano: the methods the mixture needs (and, when it winnows, where the grain falls) are never said first. Checked
+  // by family first: modes may share names with other families
+  if (level.family === "chhaano") return chhaanoHidden(level);
   switch (level.mode) {
     case "equation": return [p.x];
     case "equality": return [p.x];

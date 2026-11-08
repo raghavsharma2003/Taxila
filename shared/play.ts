@@ -40,6 +40,7 @@ export const FAMILIES = ["todo-jodo", "taraazu", "nishana", "kyun-lab",
   "aankde",     // round 7: data (slips tallied in bundles of five, a lost row, the size sold most; towers levelled, a pour line; a line of cards folded to its middle)
   "paheli",     // round 7: number puzzles (bags loaded by parity, magic squares, letter sums with carries, reverse-and-add palindromes)
   "galti-pakdo", // round 7: a friend's working of an equation checked on the taraazu; the first wrong line caught and mended
+  "chhaano",    // round 7: separating mixtures (class 6 science): methods chosen and applied in turn until every part is recovered
 ] as const;
 export type FamilyId = (typeof FAMILIES)[number];
 /** Family sub-worlds. A mode is one representation with its own law inside a family. */
@@ -68,6 +69,7 @@ export const MODES = {
   aankde: ["tally", "stack", "line"],
   paheli: ["pairs", "magic", "cipher", "mirror"],
   "galti-pakdo": ["kaapi"],   // the friend's notebook (kaapi)
+  chhaano: ["sukha", "geela"], // dry mixtures (handpick, thresh, winnow, sieve); mixtures in water (settle, decant, filter, evaporate)
 } as const satisfies Record<FamilyId, readonly string[]>;
 export type ModeOf<F extends FamilyId> = (typeof MODES)[F][number];
 export type PlayMode = (typeof MODES)[FamilyId][number];
@@ -363,7 +365,14 @@ export type AankdeAct =
   | { kind: "peg"; at: number }                          // middle: the peg at slot `at` (2i on card i, 2i + 1 in the gap after it)
   | { kind: "run" }                                      // count / level / pour / fold: the law answers
   | { kind: "undo" };
-export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct;
+export type PlayActBody = AtomsAct | StripsAct | BundlesAct | BalanceAct | LineAct | LabAct | KonAct | NazariyaAct | ArenaAct | StambhAct | YantraAct | KaalAct | WeighAct | VakyaAct | KilaAct | NakshaAct | GhadiAct | DarpanAct | FeetaAct | GunaAct | KramAct | HissaAct | KoshtakAct | ParkarAct | AankdeAct | PaheliAct | GaltiAct | ChhaanoAct;
+// Chhaano (round 7, separating mixtures, class 6 science): a method applied to one pile (sukha) or one vessel (geela), a dry
+// solid scooped into its jar, or "ho gaya"; the law answers at once, never on a clock (settling advances one wait at a time)
+export type ChhaanoAct =
+  | { kind: "use"; m: string; at: number; spot?: "near" | "far" }   // method m on pile / vessel `at` (winnow: the sack near or far)
+  | { kind: "take"; at: number; jar: number }                       // geela: the dry solid at `at` scooped into jar `jar`
+  | { kind: "done" }                                                // "ho gaya": every part is separated / recovered
+  | { kind: "undo" };
 // Paheli (round 7, number puzzles): load bags onto the boat, put number tiles on the grid, give letters digit tiles, set a
 // start; the law (plain arithmetic: pairing, line sums, column addition with carries, reverse-and-add) answers on "run"
 export type PaheliAct =
@@ -575,6 +584,7 @@ export const FAMILY_ARTS: Record<FamilyId, readonly ArtId[]> = {
   aankde: ["kagaz", "chalk", "blueprint", "raat"],
   paheli: ["kagaz", "chalk", "blueprint", "raat"],
   "galti-pakdo": ["kagaz", "chalk", "blueprint", "raat"],
+  chhaano: ["kagaz", "chalk", "blueprint", "raat"],
 };
 export interface ArtPickInput {
   family: FamilyId; subject: Subject; topicId: string; classLevel: number;
