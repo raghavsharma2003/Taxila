@@ -251,9 +251,31 @@ export function whyFigureErrors(why, board) {
 }
 
 /**
+ * director12 D6: a card's PROMPT names the figure it is posed on, so the board on screen while it is asked must draw it:
+ *  - "patti" / strip / bar → bars (a bar whole or fraction bars), never a number line
+ *  - "rekha" / number line / "nishaan" / mark → a line, never a fraction picture
+ *  - "ringed" / "gola lagaya" or "<fraction> wala nishaan" → that mark is drawn on the posing board
+ * PURE. Geometry boards draw their own lines and are left alone.
+ */
+export function promptFigureErrors(prompt, board) {
+  const t = `${prompt?.hi ?? ""} ${prompt?.en ?? ""}`.toLowerCase();
+  if (!t.trim() || !board?.template) return [];
+  const p = board.params ?? {}, tpl = board.template, out = [];
+  const isLine = tpl === "fraction-line@1" || tpl === "number-line-scale@1";
+  const isBar = tpl === "fraction-bars@1" || (tpl === "fraction-parts@1" && p.whole === "bar") || (tpl === "wholes@1" && p.as === "bar");
+  const fractionBoard = ["fraction-bars@1", "wholes@1", "fraction-parts@1", "equal-groups@1", "shade-grid@1"].includes(tpl);
+  if (/\b(patti|strip|bars?)\b/.test(t) && !/chocolate bar/.test(t) && isLine) out.push(`its prompt says "patti"/bar, it is posed on a line (${tpl}): pose it on bars`);
+  if (/\b(rekha|nishaan|number line|on the line)\b/.test(t) && fractionBoard) out.push(`its prompt points at a line or a mark, it is posed on ${tpl}`);
+  const marks = [...(p.marks ?? []), ...(p.mark ? [p.mark] : [])];
+  if (/\b(ringed|circled)\b|gol(a)? (kiya|lagaya|ghera)|ghera hua/.test(t) && !marks.length) out.push(`its prompt names a ringed mark, the posing board (${tpl}) draws no mark`);
+  return out;
+}
+
+/**
  * The posed figure of a board: what is drawn, never what answers (shade, marks, labels, hops). Equivalent drawings of
  * one figure compare equal, so a card may pose it one way and reveal it another:
- *   fractions   fraction-bars@1 parts and a 0-1 fraction-line@1's dens are both "these (distinct) denominators"
+ *   fractions   fraction-bars@1 parts are "bars of these denominators"; a 0-1 fraction-line@1 is "a line of these
+ *               denominators" (director12 D6: a card that says "patti" is posed on bars, never on a line, so the two differ)
  *   a shape     area-grid@1 (w = h → square), shape@1 and measured@1 are "this kind of shape" (its unknown side is the
  *               answer, so dimensions are not part of the figure)
  *   groups      equal-groups@1 is its total (groups × each), the same as a shade-grid@1 of that many cells (the
@@ -266,8 +288,8 @@ export function figureOf(board) {
   const sorted = (xs) => [...new Set([...xs].map(Number))].sort((a, b) => a - b);   // distinct denominators
   const kind = (k) => ({ rect: "rectangle", rectangle: "rectangle", square: "square" }[k] ?? k);
   switch (board.template) {
-    case "fraction-bars@1": return `fractions${JSON.stringify(sorted((p.bars ?? []).map((x) => x.parts)))}`;
-    case "fraction-line@1": return (p.from ?? 0) === 0 && (p.to ?? 1) === 1 ? `fractions${JSON.stringify(sorted(p.dens ?? [p.den]))}` : `line${JSON.stringify([p.dens ?? [p.den], p.from, p.to])}`;
+    case "fraction-bars@1": return `bars${JSON.stringify(sorted((p.bars ?? []).map((x) => x.parts)))}`;
+    case "fraction-line@1": return (p.from ?? 0) === 0 && (p.to ?? 1) === 1 ? `line${JSON.stringify(sorted(p.dens ?? [p.den]))}` : `line${JSON.stringify([p.dens ?? [p.den], p.from, p.to])}`;
     case "area-grid@1": return `shape["${Number(p.w) === Number(p.h) ? "square" : "rectangle"}"]`;
     case "shape@1": case "measured@1": return `shape["${kind(p.shape)}"]`;
     case "fraction-parts@1": return `parts${JSON.stringify([p.parts, p.whole ?? null])}`;
@@ -353,6 +375,8 @@ export function v22Errors(s) {
       ...k.checks.map((c, i) => [`checks[${i}]`, c, c.board]), ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board]).filter(([, c]) => c),
       ...(we.yourStep ? [["workedExample.yourStep", { ...we.yourStep, why: we.yourStep.why ?? we.why }, we.yourStep.board ?? we.board]] : [])];
     for (const [where, c, own] of closes) for (const m of whyFigureErrors(c.why, c.answerBoard ?? own)) e.push(at(`${where}: ${m}`));
+    // director12 D6: and its prompt names the figure it is POSED on (its own board, else the beat's)
+    for (const [where, c, posed] of closes) for (const m of promptFigureErrors(c.prompt, posed)) e.push(at(`${where}: ${m}`));
     // integration 13 (Brain, state.js scriptWhyOf): the runtime silently drops a why over WHY_MAX_WORDS, so the checker
     // refuses one: every authored why (cards, worked example, its steps and yourStep) in hi and en
     const whys = [...cards.map(([where, c]) => [where, c.why]), ["workedExample", we.why], ...(we.steps ?? []).map((st, i) => [`workedExample.steps[${i}]`, st.why]),

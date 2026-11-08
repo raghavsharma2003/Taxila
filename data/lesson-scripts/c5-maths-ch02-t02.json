@@ -62,7 +62,7 @@
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "bigger",
       "why": { "hi": "wahi patti 8 hisson mein bate toh har hissa chhota hota hai, 1/8 wala hissa 1/4 wale hisse ka aadha hai", "en": "when the same bar is split into 8, each part is smaller: a 1/8 part is half of a 1/4 part" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": "?"}, {"parts": 8, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
      },
      "simpler": { "hi": "Patti ke 4 barabar hisse hain, aur ek rang wala hissa 1/4 hai. Neeche ka 4 batata hai ki patti kitne hisson mein bati hai.", "en": "The bar has 4 equal parts, and the one shaded part is 1/4. The bottom 4 tells how many parts the bar is split into." }
     },
@@ -88,7 +88,7 @@
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "1/8",
       "why": { "hi": "ek 1/4 hissa do 1/8 hisson ke barabar hai, isliye 1/4 bada hai", "en": "one 1/4 part equals two 1/8 parts, so 1/4 is bigger" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": "?"}, {"parts": 8, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 1, "label": "1/4" }, { "parts": 8, "shade": 1, "label": "1/8" } ] } }
      },
      "simpler": { "hi": "Wahi patti ab 8 barabar hisson mein hai, aur ek rang wala hissa 1/8 hai. Pehle ka har hissa ab do tukdon mein bant gaya.", "en": "The same bar is now in 8 equal parts, and the one shaded part is 1/8. Each earlier part is now split into two pieces." }
     },
@@ -210,9 +210,9 @@
      "accept": ["bada", "bada hai", "it is bigger", "1/4 is bigger", "1/4 bada hai"],
      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
      "wrongIfMis": "smaller",
-     "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} },
+     "board": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "mark": 1} },
      "why": { "hi": "ringed nishaan 1/4 hai, aur 1/4 do 1/8 ke barabar hai, isliye woh 1/8 se bada hai", "en": "the circled mark is 1/4, and 1/4 equals two 1/8s, so it is bigger than 1/8" },
-     "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1, "marks": [[1, 4], [1, 8]]} },
+     "answerBoard": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "marks": [{"num": 1, "label": "1/4"}]} },
      "simpler": { "hi": "Line 4 barabar hisson mein bati hai, toh pehla nishaan ek chauthai par hai. Kam hisse matlab bada hissa.", "en": "The line is split into 4 equal parts, so the first mark is at one quarter. Fewer parts means bigger parts." }
     }
    ],
@@ -381,7 +381,7 @@
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "3/10",
       "why": { "hi": "2/3 aadhe se zyada hai, par 3/10 aadhe yaani 5/10 se bhi kam hai", "en": "2/3 is more than a half, but 3/10 is less than a half, 5/10" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [3, 10], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 3, "shade": 2, "label": "2/3" }, { "parts": 10, "shade": 3, "label": "3/10" } ] } }
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 0, "label": "?"}, {"parts": 10, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 3, "shade": 2, "label": "2/3" }, { "parts": 10, "shade": 3, "label": "3/10" } ] } }
      },
      "simpler": { "hi": "Neeche ke number same hon, toh bas hisse gin lo. Neeche ke number alag hon, toh hisson ka size bhi dekhna padta hai.", "en": "If the bottom numbers are the same, just count the parts. If they are different, you must also look at the size of the parts." }
     }
@@ -531,17 +531,14 @@
       "params": { "den": 9, "from": 0, "to": 1, "marks": [ { "num": 2, "label": "2/9" }, { "num": 3, "label": "1/3" } ] }
      },
      "then": {
-      "prompt": {
-       "hi": "Do ek jaise bar: ek ke 5 barabar tukdon mein se 3 tukde lo, doosre ke 10 mein se 4. Kaun zyada hai, 3/5 ya 4/10?",
-       "en": "Two identical bars: take 3 of 5 equal pieces of one, 4 of 10 of the other. Which is more, 3/5 or 4/10?"
-      },
+      "prompt": { "hi": "0 se 1 ki rekha ek baar 5 barabar hisson mein, ek baar 10 mein bati hai. Kaun zyada hai, 3/5 ya 4/10?", "en": "The 0 to 1 line is cut once into 5 equal parts and once into 10. Which is more, 3/5 or 4/10?" },
       "key": "3/5",
       "accept": ["three fifths", "3/5 wala", "5 wale bar ke 3 tukde", "3 pieces of the bar cut into 5", "6/10"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "4/10",
-      "board": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1 } },
+      "board": { "template": "fraction-line@1", "params": {"dens": [5, 10], "from": 0, "to": 1} },
       "why": { "hi": "3/5 utna hai jitna 6/10, aur 6/10, 4/10 se zyada hai", "en": "3/5 is as much as 6/10, and 6/10 is more than 4/10" },
-      "answerBoard": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1, "marks": [ [3, 5], [4, 10] ] } },
+      "answerBoard": { "template": "fraction-line@1", "params": {"dens": [5, 10], "from": 0, "to": 1, "marks": [[3, 5], [4, 10]]} },
       "simpler": { "hi": "10 hisson wala ek tukda, 5 hisson wale ek tukde ka aadha hai. Toh 4/10 ko 5 hisson wale tukdon mein badal kar dekho.", "en": "One piece out of 10 is half of one piece out of 5. So turn 4/10 into pieces out of 5 and compare." }
      }
     },
@@ -558,17 +555,14 @@
       "params": { "den": 10, "from": 0, "to": 1, "marks": [ { "num": 5, "label": "1/2" }, { "num": 8, "label": "4/5" } ] }
      },
      "then": {
-      "prompt": {
-       "hi": "Ek bar ke 8 barabar tukdon mein se 7, waise hi bar ke 10 mein se 9. Dono mein ek tukda kam. Kaunsa bada, 7/8 ya 9/10?",
-       "en": "7 of 8 equal pieces of one bar, 9 of 10 of a bar just like it. Each is one piece short. Which is bigger, 7/8 or 9/10?"
-      },
+      "prompt": { "hi": "Rekha 0 se 1: ek baar 8, ek baar 10 barabar hisse. Dono 1 se ek hissa peeche. Kaunsa bada, 7/8 ya 9/10?", "en": "The 0 to 1 line cut into 8 and into 10 equal parts. Both are one part short of 1. Which is bigger, 7/8 or 9/10?" },
       "key": "9/10",
       "accept": ["nine tenths", "9/10 bada hai"],
       "targets": "c5-maths-ch02-t02-m-gap-thinking",
       "wrongIfMis": "they are equal",
-      "board": { "template": "fraction-line@1", "params": { "dens": [8, 10], "from": 0, "to": 1 } },
+      "board": { "template": "fraction-line@1", "params": {"dens": [8, 10], "from": 0, "to": 1} },
       "why": { "hi": "9/10 mein 1/10 kam hai aur 7/8 mein 1/8 kam, aur 1/10 ka gap 1/8 ke gap se chhota hai", "en": "9/10 is short by 1/10 and 7/8 by 1/8, and a 1/10 gap is smaller than a 1/8 gap" },
-      "answerBoard": { "template": "fraction-line@1", "params": { "dens": [8, 10], "from": 0, "to": 1, "marks": [ [7, 8], [9, 10] ] } },
+      "answerBoard": { "template": "fraction-line@1", "params": {"dens": [8, 10], "from": 0, "to": 1, "marks": [[7, 8], [9, 10]]} },
       "simpler": { "hi": "Dono mein ek tukda kam hai. 8 hisson wala tukda 10 hisson wale tukde se bada hai, toh jismein bada tukda kam hai, uska hissa chhota.", "en": "Both are one piece short. A piece out of 8 is bigger than a piece out of 10, so the one missing the bigger piece is smaller." }
      }
     }
@@ -676,7 +670,7 @@
       "targets": "c5-maths-ch02-t02-m-bigger-denominator",
       "wrongIfMis": "2/9",
       "why": { "hi": "dono mein 2 hisse hain, aur 1/5 wala hissa 1/9 wale hisse se bada hai, isliye 2/5 zyada hai", "en": "both have 2 parts, and a fifth is bigger than a ninth, so 2/5 is more than 2/9" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [9, 5], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 9, "shade": 2, "label": "2/9" }, { "parts": 5, "shade": 2, "label": "2/5" } ] } }
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": "?"}, {"parts": 5, "shade": 0, "label": "?"}]} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 9, "shade": 2, "label": "2/9" }, { "parts": 5, "shade": 2, "label": "2/5" } ] } }
      },
      "simpler": { "hi": "Dono mein 3 hisse hain, toh ginti same hai. Ab hisse ka size dekho: 1/5 wala hissa 1/8 wale se bada hai.", "en": "Both have 3 parts, so the count is the same. Now look at part size: a 1/5 part is bigger than a 1/8 part." }
     },
@@ -703,7 +697,7 @@
       "key": "5/8",
       "accept": ["five eighths", "5/8 bada hai", "5/8 wala", "5/8 is bigger"],
       "why": { "hi": "2/4 utna hai jitna 4/8, aur 5/8 usse ek hissa aage hai", "en": "2/4 is as much as 4/8, and 5/8 is one part beyond it" },
-      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 4, "shade": 2, "label": "2/4" }, { "parts": 8, "shade": 5, "label": "5/8" } ] } }
+      "board": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1} }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [4, 8], "from": 0, "to": 1, "marks": [[2, 4], [5, 8]]} }
      },
      "simpler": { "hi": "Ek 1/4 do 1/8 ke barabar hai. Isliye 3/4 line par 6 hisson tak jaata hai, aur 3/8 sirf 3 tak.", "en": "One 1/4 equals two 1/8. So 3/4 goes up to 6 parts on the line, and 3/8 only to 3." }
     }
@@ -740,7 +734,7 @@
      "prompt": {
       "hi": "Isha ne 2/3 khaya, yaani 1/3 wale 2 tukde; Farhan ne 2/5, yaani 1/5 wale 2 tukde. Toh zyada kisne khaya, Farhan ne ya Isha ne?",
       "en": "Isha's 2 pieces are thirds, Farhan's 2 pieces are fifths. So who ate more, Farhan or Isha?"
-     },
+     }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": "?"}, {"parts": 3, "shade": 0, "label": "?"}]} },
      "key": "Isha",
      "accept": ["Isha ne", "Isha ne zyada khaya", "Isha, 2/3"],
      "targets": "c5-maths-ch02-t02-m-tops-only",
@@ -783,7 +777,7 @@
      "wrongIfMis": "Anjali",
      "board": { "template": "fraction-line@1", "params": {"dens": [12, 6], "from": 0, "to": 1} },
      "why": { "hi": "dono ne 5 tukde kaate, Gopi ka 1/6 tukda Anjali ke 1/12 se do guna hai, isliye Gopi ka 5/6 lamba", "en": "both cut 5 pieces, and Gopi's 1/6 piece is twice Anjali's 1/12, so Gopi's 5/6 is longer than her 5/12" },
-     "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 12, "shade": 5, "label": "5/12" }, { "parts": 6, "shade": 5, "label": "5/6" } ] } },
+     "answerBoard": { "template": "fraction-line@1", "params": {"dens": [12, 6], "from": 0, "to": 1, "marks": [[5, 12], [5, 6]]} },
      "simpler": { "hi": "Dono ke paas 5-5 tukde hain. 6 hisson wala tukda 12 hisson wale tukde se bada hota hai.", "en": "Both have 5 pieces. A piece out of 6 is bigger than a piece out of 12." }
     },
     {
@@ -831,7 +825,7 @@
       "accept": ["three fifths", "3/5 wala", "3/5 wale ka"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
       "wrongIfMis": "they are equal",
-      "board": { "template": "fraction-line@1", "params": { "dens": [5, 10], "from": 0, "to": 1 } },
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": "?"}, {"parts": 10, "shade": 0, "label": "?"}]} },
       "why": { "hi": "dono mein 3 tukde hain, aur 1/5 wala tukda 1/10 wale tukde se do guna hai, isliye 3/5 zyada hai", "en": "both have 3 pieces, and a fifth is twice a tenth, so 3/5 is more than 3/10" },
       "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [ { "parts": 5, "shade": 3, "label": "3/5" }, { "parts": 10, "shade": 3, "label": "3/10" } ] } },
       "simpler": { "hi": "Dono mein 3 tukde rang wale hain. 5 hisson wala tukda 10 hisson wale tukde se bada hai.", "en": "Both have 3 shaded pieces. A piece out of 5 is bigger than a piece out of 10." }
@@ -888,9 +882,9 @@
       "accept": ["eight ninths", "8/9 bada hai", "8/9 wala"],
       "targets": "c5-maths-ch02-t02-m-gap-thinking",
       "wrongIfMis": "they are equal",
-      "board": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1 } },
+      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 0, "label": "?"}, {"parts": 9, "shade": 0, "label": "?"}]} },
       "why": { "hi": "8/9 mein 1/9 kam hai aur 6/7 mein 1/7 kam, aur 1/9 ka gap 1/7 ke gap se chhota hai", "en": "8/9 is short by 1/9 and 6/7 by 1/7, and a 1/9 gap is smaller than a 1/7 gap" },
-      "answerBoard": { "template": "fraction-line@1", "params": { "dens": [7, 9], "from": 0, "to": 1, "marks": [ [6, 7], [8, 9] ] } },
+      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 6, "label": "6/7"}, {"parts": 9, "shade": 8, "label": "8/9"}]} },
       "simpler": { "hi": "Dono mein ek tukda kam hai. 7 hisson wala tukda 9 hisson wale tukde se bada hai, toh jismein bada tukda kam hai, uska hissa chhota.", "en": "Both are one piece short. A piece out of 7 is bigger than a piece out of 9, so the one missing the bigger piece is smaller." }
      }
     }

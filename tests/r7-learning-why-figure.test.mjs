@@ -2,7 +2,7 @@
 // draws, and an ask's answerBoard draws the posed figure. Pure: check.mjs's whyFigureErrors / figureOf / RANGE.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { whyFigureErrors, figureOf, RANGE } from "../scripts/lesson-scripts/check.mjs";
+import { whyFigureErrors, promptFigureErrors, figureOf, RANGE } from "../scripts/lesson-scripts/check.mjs";
 
 const why = (en) => ({ hi: "", en });
 
@@ -30,4 +30,23 @@ test("unequal groups: `sizes` draws them, the why's sizes must be the drawn size
   assert.equal(whyFigureErrors(why("groups 6, 3, 3 are not equal"), b).length, 1, "the why lists other groups than the board draws");
   assert.equal(whyFigureErrors(why("groups 7, 3, 3, 3 are not equal"), { template: "equal-groups@1", params: { groups: 4, each: 4 } }).length, 2);
   assert.equal(figureOf(b), figureOf({ template: "shade-grid@1", params: { rows: 2, cols: 8 } }), "the same 16 things");
+});
+
+test("director12 D6: bars and a number line of the same denominators are different figures", () => {
+  const bars = { template: "fraction-bars@1", params: { bars: [{ parts: 4 }, { parts: 8 }] } };
+  const line = { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1 } };
+  assert.notEqual(figureOf(bars), figureOf(line));
+  assert.equal(figureOf(line), figureOf({ template: "fraction-line@1", params: { dens: [8, 4], from: 0, to: 1, marks: [[1, 4]] } }), "marks are the answer, not the figure");
+});
+
+test("director12 D6: a prompt names the figure it is posed on (patti → bars, rekha → line, ringed → a drawn mark)", () => {
+  const p = (en, hi = "") => ({ en, hi });
+  const line = { template: "fraction-line@1", params: { dens: [4, 8], from: 0, to: 1 } };
+  const bars = { template: "fraction-bars@1", params: { bars: [{ parts: 4 }, { parts: 8 }] } };
+  assert.equal(promptFigureErrors(p("", "Isi patti ko 8 barabar hisson mein kaato"), line).length, 1);
+  assert.deepEqual(promptFigureErrors(p("", "Isi patti ko 8 barabar hisson mein kaato"), bars), []);
+  assert.equal(promptFigureErrors(p("Think on this same number line"), bars).length, 1);
+  assert.equal(promptFigureErrors(p("The first mark after 0 is circled."), { template: "fraction-line@1", params: { den: 4 } }).length, 1);
+  assert.deepEqual(promptFigureErrors(p("The first mark after 0 is circled."), { template: "fraction-line@1", params: { den: 4, mark: 1 } }), []);
+  assert.deepEqual(promptFigureErrors(p("Two temple bells ring together every 30 minutes"), { template: "compare@1", params: {} }), [], "a bell rings; nothing is ringed");
 });
