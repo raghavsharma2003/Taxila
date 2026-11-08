@@ -120,4 +120,29 @@ describe("r7-brain-v64.test.mjs", () => {
       assert.deepEqual(await unanswered(persona, topic), []);
     });
   }
+  // Q1 — a turn that answered nothing re-poses only the card
+  const NON_ANSWER = /^(?:sawaal kya hai\?|phir se bolo(?: na)?|kya poochha, phir se bolo na|kis cheez ka jawab dun\?|mujhe khud try karne do|ruko, main khud (?:karta|karti) hoon|pehle main try karun\?)$/i;
+  async function recitals(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [];
+    for (const pl of plans) {
+      const n = pl.row - 1;
+      if (!rows[n] || !NON_ANSWER.test(String(pl.child ?? "").trim())) continue;
+      const card = pl.p.r.ui?.ask?.text ?? "";
+      if (!card || pl.state.activeItemId !== pl.before.activeItemId) continue;
+      replyDeps.chat = async () => ({ text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      const rest = out.reply.replace(card, "").replace(/^\s*(?:Phir se dekho:|Here it is again:|Theek hai[,.]?|Achha[,.]?|Haan[,.]?|Zaroor[,.]?)\s*/i, "").trim();
+      if (/Yaad karo:|Remember:/.test(out.reply)) bad.push(`row ${n}: "Yaad karo" | ${out.reply.slice(0, 100)}`);
+      else if (sentences(rest).length) bad.push(`row ${n}: more than the card (${JSON.stringify(rest.slice(0, 80))})`);
+    }
+    return bad;
+  }
+  for (const persona of ["steady", "stuck", "offtopic", "steering"]) for (const topic of Object.keys(TOPIC)) {
+    test(`Q1 predicate: try-first, "sawaal kya hai", "phir se bolo" re-pose only the card (${persona} ${topic})`, async () => {
+      assert.deepEqual(await recitals(persona, topic), []);
+    });
+  }
 });
