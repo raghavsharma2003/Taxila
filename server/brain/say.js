@@ -90,6 +90,30 @@ const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein ba
 const capT = (t) => { const x = String(t ?? "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
 const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad karenge.`, (t) => `${capT(t)} yaad rahega; yeh sawaal khatam karke uspar aate hain.`, (t) => `${capT(t)} ke baare mein is sawaal ke baad baat karenge, pakka.`],
   english: [(t) => `We'll talk about ${t} after this question.`, (t) => `I'll remember ${t}; we'll come back to it once this question is done.`, (t) => `${capT(t)}: yes, right after this question.`] };
+/** v6.4 H2″: the instruction for an aside's return — ONE line answering what they said. */
+export function returnNoteOf(said, topic, lang = "hinglish", alone = false) {
+  const en = lang === "english";
+  return `${alone ? "You are a warm teacher of a child, mid-lesson. " : ""}Earlier the child said: "${String(said).slice(0, 80)}". ${alone ? "Write" : "Start your turn with"} ONE short sentence (at most 20 words, ${en ? "in English" : "in simple Hinglish, Roman script"}) that answers that — reply to what they said or asked about ${topic}, using one of their own words. No numbers, no maths, no promise to talk later, no question back.${alone ? " Only that sentence." : ""}`;
+}
+const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "hai", "hain", "tha", "thi", "kal", "aaj", "bahut", "kiya", "khela", "aur", "kya", "with", "that", "this", "have"]);
+/** v6.4 H2″: an aside's return line: 4-20 words, one content word of theirs, no digits or lesson words, no promise, no template. */
+export function returnLineOk(x, said, topic) {
+  const t = String(x ?? "").trim();
+  if (!t || /\d/.test(t) || /[?？]/.test(t)) return false;
+  const n = t.split(/\s+/).filter(Boolean).length;
+  if (n < 4 || n > 20) return false;
+  if (/sunke bahut achha laga|tumne bataya tha|tumne mujhse .* poocha tha/i.test(t)) return false;
+  // (the old code return's "Aur X ki baat: <a fact>" frame is a fixed template too)
+  if (/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(t)) return false;
+  // (v6 R4 still holds: never an analogy to the lesson, never words put in their mouth)
+  if (/(?<![\p{L}])(?:jaisa|jaise|jaisi|ki\s+tarah|socho|like\s+(?:a|the)|just\s+like)(?![\p{L}])/iu.test(t)) return false;
+  if (/(?<![\p{L}])(?:tumne|aapne|you)\s+(?:kaha|bataya|bola|said|told)|tumhe\s+\S+(?:\s+\S+)?\s+pasand|you\s+like/iu.test(t)) return false;
+  if (/(?<![\p{L}])(?:baad\s+mein|lesson\s+ke\s+baad|phir\s+baat|thodi\s+der|later|after\s+the\s+lesson|wapas\s+aa\w*|laut\w*)(?![\p{L}])/iu.test(t)) return false;
+  if (LESSON_SAID.test(t) || RULE_SAID.test(t)) return false;
+  const theirs = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).filter((w) => !RET_STOP.has(w));
+  const all = [...new Set([...theirs, ...(String(topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])])];
+  return all.some((w) => new RegExp(`(?<![\\p{L}])${w}`, "iu").test(t));
+}
 /** v6.3 R2: her own promise to come back, with no topic named (said once: code's park already promises). */
 const PROMISE_SAID = /(?<![\p{L}])(?:wapas\s+aa\w*|laut\w*|baat\s+kar(?:enge|ungi|unga)|uspar\s+aa\w*|baad\s+mein\s+(?:aa|baat)\w*|come\s+back|talk\s+about\s+it)(?![\p{L}])/iu;
 /** v6.3 R7: a sentence that talks about the lesson's own things (parts, fractions, sides, the line), not a framing line. */
@@ -1169,7 +1193,10 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
   // (dc-r7-script-walk-v3 V1: a scripted remediation's authored explanation is spoken by code the same way)
   const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && ["remediation", "explain"].includes(state.lastMove?.scriptBeat?.kind))) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote].filter(Boolean).join(" ");
+  // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
+  const retSaid = state.lastMove?.returned?.said ?? null;
+  const retNote = retSaid ? returnNoteOf(retSaid, state.lastMove.returned.topic, lang) : null;
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -1868,15 +1895,17 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
     const keyOf = (t) => (String(t ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? []).find((w) => !PARK_STOP.has(w)) ?? null;
     const parkedNow = (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null);
     const ret = state.lastMove?.returned ?? null;
-    const aside = [];
+    const aside = [], retMine = [];
     for (const [topic, kind] of [[parkedNow?.topic, "park"], [ret?.topic, "return"]]) {
       const k = keyOf(topic);
       if (!k) continue;
-      const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, 2);
+      // (a return's candidates are all her sentences naming it: H2″ picks the one line that passes)
+      const mine = ss.filter((x) => new RegExp(`\\b${k}`, "i").test(x)).slice(0, kind === "return" ? 6 : 2);
       ss = ss.filter((x) => !mine.includes(x));
       // v5 B3 (director7: "Virat wali baat mujhe yaad hai" ×8): a return is one line of REAL content: her own sentence about it,
       // else the script's authored interest line (state.js returnLineOf); never the "I remember" stub
-      const authoredReturn = kind === "return" && ret?.line ? (lang === "english" ? `And about ${topic}: ${dot(ret.line)}` : `Aur ${topic} ki baat: ${dot(ret.line)}`) : null;
+      // (v6.4 H2″: no code line — the return is hers, held to returnLineOk below)
+      const authoredReturn = null;
       // v6 R4 (director8: "Virat ka cover drive boundary ke poore round jaisa", "tumne kaha tha ki tumhe woh pasand hain"): a
       // return of hers is content about the thing itself: never an analogy to the lesson, never words put in their mouth
       const real = mine.filter((x) => words(x) >= 6 && !/(?:yaad hai|i remember)/i.test(x) && !/\d/.test(x)
@@ -1890,9 +1919,26 @@ export async function textReply({ instructions, state, kit, childText, trace, hi
       if (kind === "park" && mine.length > parkOk.length) guard.parkFiltered = mine.length - parkOk.length;
       // (v6.3 R2: a park is promised once: when code's promise is said, her own promise sentence that names no topic goes)
       if (kind === "park" && !parkOk.length) { const n0 = ss.length; ss = ss.filter((x) => !(PROMISE_SAID.test(x) && !/\d/.test(x))); if (ss.length < n0) guard.parkDup = n0 - ss.length; }
-      aside.push(...(kind === "park" ? (parkOk.length ? parkOk : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)])
-        : authoredReturn ? [authoredReturn] : real.length ? real.slice(0, 1) : []));
-      if (kind === "return" && !real.length && !authoredReturn) guard.returnMissed = true;
+      if (kind === "park") aside.push(...(parkOk.length ? parkOk : [pickOf(PARK_ACK[lang === "english" ? "english" : "hinglish"], state)(topic)]));
+      else retMine.push(...mine.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)));
+    }
+    // v6.4 H2″ (main, director12): the return is ONE line of hers that answers what they said — their question too — with one of their
+    // words, at most 20 words, no lesson numbers, no new promise, no fixed template; else one short retry; else none this turn
+    // (an "Aur X ki baat: …" of hers — the old code return, said again from her history — always goes)
+    { const n0 = ss.length; ss = ss.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)); if (ss.length < n0) guard.returnFiltered = (guard.returnFiltered ?? 0) + n0 - ss.length; }
+    if (ret?.topic) {
+      const said0 = ret.said ?? "";
+      const pool = [...retMine, ...ss.filter((x) => !retMine.includes(x) && returnLineOk(x, said0, ret.topic))];
+      let line = pool.find((x) => returnLineOk(x, said0, ret.topic)) ?? null;
+      ss = ss.filter((x) => x !== line);
+      if (!line && said0) {
+        try {
+          const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: returnNoteOf(said0, ret.topic, lang, true) }, { role: "user", content: said0 }], { maxTokens: 60, effort: "none", timeoutMs: 3000, trace });
+          const c = (String(r?.text ?? "").match(/[^.!?\u0964]+[.!?\u0964]?/) ?? [""])[0].trim();
+          if (returnLineOk(c, said0, ret.topic)) { line = dot(c); guard.returnRetry = true; }
+        } catch { /* no line: the return is not said this turn */ }
+      }
+      if (line) { aside.push(line); guard.returnSaid = true; } else guard.returnMissed = true;
     }
     // v6.3 H2′ (director11: "Aur Virat ki baat: …" mid-card, before the promised card was closed): an open aside that is neither
     // parked nor returned on this turn is not talked about by her either (a sentence naming it with no number of the lesson goes)

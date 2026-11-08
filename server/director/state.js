@@ -3021,7 +3021,8 @@ export function step(prev, input) {
   if (scriptOn() && scriptIdOf(input.kit) && !s.servedNow && !["safeguard", "wrap", "break"].includes(move.kind)) {
     const live = s.activeItemId ?? null;
     const boundary = !(live && live === prev.activeItemId) && !String(live ?? "").includes(":then:") && !s.splitHold
-      && !/^worked/.test(move.scriptBeat?.beatId ?? "") && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type;
+      // (v6.4 H2″, director12 c5-t02 steering 23→40: the worked example's opening is a boundary, its steps and card are not)
+      && !/^worked(?::step|$)/.test(move.scriptBeat?.beatId ?? "") && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type;
     const due = boundary ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
       && live !== e.onItem) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
@@ -3029,8 +3030,9 @@ export function step(prev, input) {
   if (s.servedNow?.topic) {
     const lang = s.ctx.lang ?? "hinglish";
     const said = s.servedNow.said ?? (s.later ?? []).find((e) => e.servedAt === s.turn && e.topic === s.servedNow.topic)?.said ?? null;
-    const line = said ? asideReturnLine(said, s.servedNow.topic, lang) : null;
-    move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(line ? { line } : {}) };
+    // v6.4 H2″ (main, director12: "…yeh sunke bahut achha laga" on every return; "aapko Virat pasand hai?" never answered): the return
+    // is HER one line answering what they said, held to a predicate in brain/say.js (returnLineOk); code carries their words only
+    move.returned = { topic: s.servedNow.topic, share: !!s.servedNow.share, ...(said ? { said: String(said) } : {}) };
   }
   // (v6, director9: a request turn — "samajh nahi aaya", "picture dikhao" — answers the request; a missed card's close waits for
   // the next turn instead of making that turn too long)

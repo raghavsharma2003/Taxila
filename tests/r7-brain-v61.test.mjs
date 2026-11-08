@@ -173,7 +173,8 @@ describe("r7-brain-v61.test.mjs", () => {
     const r = all.find((p) => p.state.lastMove?.returned?.topic === "cricket");
     assert.ok(r, "returned to");
     assert.notEqual(r.state.activeItemId, e.onItem, "after the promised card is closed");
-    assert.match(r.state.lastMove.returned.line ?? "", /cricket/, "in their words");
+    // (v6.4 H2″: her line answers their words, which the move carries)
+    assert.match(r.state.lastMove.returned.said ?? "", /cricket/i, "their words carried");
   });
 
   test("R10: in the Hindi mode a scripted card is shown and read in Hindi words", async () => {

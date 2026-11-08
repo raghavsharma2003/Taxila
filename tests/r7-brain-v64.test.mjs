@@ -4,7 +4,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { replay, runScriptOf } from "./fixtures/replay.mjs";
-import { textReply, replyDeps } from "../server/brain/say.js";
+import { textReply, replyDeps, returnLineOk } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { setScriptForTest } from "../server/director/script.js";
@@ -143,6 +143,43 @@ describe("r7-brain-v64.test.mjs", () => {
   for (const persona of ["steady", "stuck", "offtopic", "steering"]) for (const topic of Object.keys(TOPIC)) {
     test(`Q1 predicate: try-first, "sawaal kya hai", "phir se bolo" re-pose only the card (${persona} ${topic})`, async () => {
       assert.deepEqual(await recitals(persona, topic), []);
+    });
+  }
+  // H2″ — asides
+  test("H2″ predicate: the return comes at the FIRST boundary after the promised card closes (c5-t02 steering: row 28, not 40)", async () => {
+    const T = TOPIC["c5-t02"];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { plans } = await replay(RUN, "steering", T, 1e9);
+    const r = plans.find((p) => p.state.lastMove?.returned);
+    assert.ok(r, "returned");
+    assert.equal(r.row - 1, 28, `returned at row ${r.row - 1}: ${r.state.lastMove.scriptBeat?.beatId}`);
+  });
+
+  async function returns(persona, topic) {
+    const T = TOPIC[topic];
+    setScriptForTest(T, runScriptOf(RUN, T));
+    const { kit, rows, plans } = await replay(RUN, persona, T, 1e9);
+    const bad = [], lines = [];
+    for (const pl of plans) {
+      const ret = pl.state.lastMove?.returned;
+      if (!ret) continue;
+      const n = pl.row - 1;
+      // her recorded line for the turn; the retry (one short call) answers with a line of its own about their words
+      replyDeps.chat = async (_d, msgs) => (/^You are a warm teacher/.test(msgs?.[0]?.content ?? "")
+        ? { text: `Wah, ${String(ret.said ?? ret.topic).split(/\s+/).find((w) => w.length > 4 && !/maine|mujhe|aapko/i.test(w)) ?? ret.topic} sunkar mazaa aa gaya!` }
+        : { text: rows[n].text });
+      const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
+      if (/sunke bahut achha laga|tumne mujhse .* poocha tha|lesson ke baad mujhe/i.test(out.reply)) bad.push(`row ${n}: a fixed template | ${out.reply.slice(0, 120)}`);
+      const line = sentences(out.reply).find((x) => returnLineOk(x, ret.said, ret.topic));
+      if (!line && !out.guard.returnMissed) bad.push(`row ${n}: no return line and none reported missed | ${out.reply.slice(0, 120)}`);
+      if (line) lines.push(line);
+    }
+    return { bad, lines };
+  }
+  for (const persona of ["offtopic", "steering", "steady", "stuck"]) for (const topic of Object.keys(TOPIC)) {
+    test(`H2″ predicate: each return is one line of hers answering what they said — no template, no promise, ≤ 20 words (${persona} ${topic})`, async () => {
+      const { bad } = await returns(persona, topic);
+      assert.deepEqual(bad, []);
     });
   }
 });
