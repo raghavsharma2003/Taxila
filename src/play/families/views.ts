@@ -30,6 +30,7 @@ import { makeParkarView } from "./parkar/parkar.view.ts";
 import { makeAankdeView } from "./aankde/aankde.view.ts";
 import { makePaheliView } from "./paheli/paheli.view.ts";
 import { makeDarpanView } from "./darpan/darpan.view.ts";
+import { makeTileView } from "./darpan/tile.view.ts";   // r7 tilings2
 import { makeFeetaView } from "./feeta/feeta.view.ts";
 
 export const VIEWS: Record<string, MakeView> = {
@@ -82,6 +83,7 @@ export const VIEWS: Record<string, MakeView> = {
   "ghadi/calendar": makeGhadiView,
   "darpan/mirror": makeDarpanView,
   "darpan/turn": makeDarpanView,
+  "darpan/tile": makeTileView,
   "feeta/measure": makeFeetaView,
   "feeta/fence": makeFeetaView,
   "feeta/trip": makeFeetaView,

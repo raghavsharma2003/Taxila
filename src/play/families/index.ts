@@ -27,6 +27,7 @@ import { parkarLogic } from "./parkar/parkar.logic.ts";
 import { aankdeLogic } from "./aankde/aankde.logic.ts";
 import { paheliLogic } from "./paheli/paheli.logic.ts";
 import { darpanLogic } from "./darpan/darpan.logic.ts";
+import { tileLogic } from "./darpan/tile.logic.ts";   // r7 tilings2
 import { feetaLogic } from "./feeta/feeta.logic.ts";
 
 type AnyLogic = FamilyLogic<unknown, unknown, PlayActBody>;
@@ -91,6 +92,7 @@ export const LOGIC: Record<string, AnyLogic> = {
   // round 7: Darpan, symmetry (lines of symmetry laid and folded; the smallest turn and the order of turn symmetry)
   "darpan/mirror": asAny(darpanLogic),
   "darpan/turn": asAny(darpanLogic),
+  "darpan/tile": asAny(tileLogic),   // r7 tilings2: copies round one point until the corner closes (c7-maths-ch14-t02)
   // round 7: Feeta, length and distance (a ruler, a cm tape, a garden fence, a trip meter, routes in order); never timed
   "feeta/measure": asAny(feetaLogic),
   "feeta/fence": asAny(feetaLogic),

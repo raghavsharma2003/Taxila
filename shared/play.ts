@@ -57,7 +57,7 @@ export const MODES = {
   kila: ["multiples", "factors", "lcm", "divisibility"],
   naksha: ["locate", "route", "scale", "shape"],
   ghadi: ["set", "run", "race", "calendar"],
-  darpan: ["mirror", "turn"],
+  darpan: ["mirror", "turn", "tile"],   // r7 tilings2: tile (copies laid round one point until the corner closes)
   feeta: ["measure", "fence", "trip", "compare"],
   guna: ["field", "pack", "story", "yard"],   // r7 place2: yard (a truck loaded to a named number; comma posts set for lakhs and crores)
   kram: ["grow", "machine", "beats", "nest"],
@@ -293,7 +293,9 @@ export type DarpanAct =
   | { kind: "line"; deg: number }                        // mirror: lay (or lift) the fold line through the centre at this angle
   | { kind: "turn"; by: number }                         // turn: move the dial by this many degrees (clockwise +)
   | { kind: "mark" }                                     // turn (order): mark (or unmark) the dial's present stop
-  | { kind: "run" }                                      // fold / spin: the law answers
+  | { kind: "lay"; t: number; c?: number }               // tile: lay a copy of tray tile t round the point (its corner c there)
+  | { kind: "lift"; j: number }                          // tile: lift the j-th copy laid
+  | { kind: "run" }                                      // fold / spin / tile the floor: the law answers
   | { kind: "undo" };
 // Feeta (round 7, length and distance): set a measuring instrument (a ribbon's cut on a ruler from 0, a cm tape, a fence
 // roll, a trip meter) or put lengths in order; the law (plain arithmetic in one unit) answers on "run", never on a clock
